@@ -216,7 +216,6 @@ contains
   GLSimpleNavigation in '..\Source\GLSimpleNavigation.pas',
   GLAtmosphere in '..\Source\GLAtmosphere.pas',
   GLMaterialMultiProxy in '..\Source\GLMaterialMultiProxy.pas',
-  GLWideBitmapFont in '..\Source\GLWideBitmapFont.pas',
   GLShaderCombiner in '..\Source\Shaders\GLShaderCombiner.pas',
   GLCustomShader in '..\Source\Shaders\GLCustomShader.pas',
   GLSLShader in '..\Source\GLSLShaders\GLSLShader.pas',

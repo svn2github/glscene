@@ -35,7 +35,8 @@ requires
   designide,
   GLScene_RunTime,
   vclimg,
-  vcl;
+  vcl,
+  VclSmp;
 
 contains
   FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
