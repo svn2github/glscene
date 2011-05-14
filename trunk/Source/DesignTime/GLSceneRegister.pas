@@ -664,7 +664,6 @@ uses
   GLSpaceText,
   Joystick,
   ScreenSaver,
-  GLWideBitmapFont,
   GLFullScreenViewer;
 
 var
@@ -2236,7 +2235,6 @@ begin
       TGLCadencer,
       TGLGuiLayout,
       TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
-      TGLWideBitmapFont,
       TGLScriptLibrary,
       TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer
