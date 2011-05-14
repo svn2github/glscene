@@ -1,34 +1,34 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGeomObjects<p>
+{ : GLGeomObjects<p>
 
-   Geometric objects.<p>
+  Geometric objects.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>13/05/11 - Vince - Add ArrowArc object
-      <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
-                             to display a slice of TGLTorus between start and stop angles
-      <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
-                             now this function references the inherited function
-      <li>20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
-                              (thanks Sandor Domokos) (BugTrackerID = 1864314)
-                             Added a TGLCapsule object (thanks Dave Gravel)
-      <li>18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
-      <li>07/05/07 - DanB - Added TGLCone.RayCastIntersect
-                            Improved TGLDisk.RayCastIntersect
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
-                                    AxisAlignedBoundingBoxUnscaled,
-                                    AxisAlignedDimensionsUnscaled
-      <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
-                          Added GetTopRadius to facilitate silhouette.
-      <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
-      <li>21/07/03 - EG - Creation from GLObjects split
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>13/05/11 - Vince - Add ArrowArc object
+  <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
+  to display a slice of TGLTorus between start and stop angles
+  <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
+  now this function references the inherited function
+  <li>20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
+  (thanks Sandor Domokos) (BugTrackerID = 1864314)
+  Added a TGLCapsule object (thanks Dave Gravel)
+  <li>18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
+  <li>07/05/07 - DanB - Added TGLCone.RayCastIntersect
+  Improved TGLDisk.RayCastIntersect
+  <li>30/03/07 - DaStr - Added $I GLScene.inc
+  <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
+  AxisAlignedBoundingBoxUnscaled,
+  AxisAlignedDimensionsUnscaled
+  <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
+  Added GetTopRadius to facilitate silhouette.
+  <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
+  <li>21/07/03 - EG - Creation from GLObjects split
+  </ul></font>
 }
 unit GLGeomObjects;
 
@@ -53,10 +53,10 @@ type
 
   // TGLDisk
   //
-  {: A Disk object.<p>
-     The disk may not be complete, it can have a hole (controled by the
-     InnerRadius property) and can only be a slice (controled by the StartAngle
-     and SweepAngle properties). }
+  { : A Disk object.<p>
+    The disk may not be complete, it can have a hole (controled by the
+    InnerRadius property) and can only be a slice (controled by the StartAngle
+    and SweepAngle properties). }
   TGLDisk = class(TGLQuadricObject)
   private
     { Private Declarations }
@@ -77,32 +77,32 @@ type
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
 
   published
     { Published Declarations }
-    {: Allows defining a "hole" in the disk. }
+    { : Allows defining a "hole" in the disk. }
     property InnerRadius: TGLFloat read FInnerRadius write SetInnerRadius;
-    {: Number of radial mesh subdivisions. }
+    { : Number of radial mesh subdivisions. }
     property Loops: TGLInt read FLoops write SetLoops default 2;
-    {: Outer radius for the disk.<p>
-       If you leave InnerRadius at 0, this is the disk radius. }
+    { : Outer radius for the disk.<p>
+      If you leave InnerRadius at 0, this is the disk radius. }
     property OuterRadius: TGLFloat read FOuterRadius write SetOuterRadius;
-    {: Number of mesh slices.<p>
-       For instance, if Slices=6, your disk will look like an hexagon. }
+    { : Number of mesh slices.<p>
+      For instance, if Slices=6, your disk will look like an hexagon. }
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
     property SweepAngle: TGLFloat read FSweepAngle write SetSweepAngle;
   end;
 
   // TGLCylinderBase
-    //
-    {: Base class to cylinder-like objects.<p>
-       Introduces the basic cylinder description properties.<p>
-       Be aware teh default slices and stacks make up for a high-poly cylinder,
-       unless you're after high-quality lighting it is recommended to reduce the
-       Stacks property to 1. }
+  //
+  { : Base class to cylinder-like objects.<p>
+    Introduces the basic cylinder description properties.<p>
+    Be aware teh default slices and stacks make up for a high-poly cylinder,
+    unless you're after high-quality lighting it is recommended to reduce the
+    Stacks property to 1. }
   TGLCylinderBase = class(TGLQuadricObject)
   private
     { Private Declarations }
@@ -117,21 +117,22 @@ type
     procedure SetSlices(aValue: TGLInt);
     procedure SetStacks(aValue: TGLInt);
     procedure SetLoops(aValue: TGLInt);
-    function GetTopRadius: single; virtual;
+    function GetTopRadius: Single; virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
 
-    function GenerateSilhouette(const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette; override;
+    function GenerateSilhouette(const silhouetteParameters
+      : TGLSilhouetteParameters): TGLSilhouette; override;
   published
     { Published Declarations }
     property BottomRadius: TGLFloat read FBottomRadius write SetBottomRadius;
     property Height: TGLFloat read FHeight write SetHeight;
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property Stacks: TGLInt read FStacks write SetStacks default 4;
-    {: Number of concentric rings for top/bottom disk(s). }
+    { : Number of concentric rings for top/bottom disk(s). }
     property Loops: TGLInt read FLoops write SetLoops default 1;
   end;
 
@@ -142,7 +143,7 @@ type
 
   // TGLCone
   //
-    {: A cone object. }
+  { : A cone object. }
   TGLCone = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -151,7 +152,7 @@ type
   protected
     { Protected Declarations }
     procedure SetParts(aValue: TConeParts);
-    function GetTopRadius: single; override;
+    function GetTopRadius: Single; override;
 
   public
     { Public Declarations }
@@ -161,12 +162,13 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
 
   published
     { Published Declarations }
-    property Parts: TConeParts read FParts write SetParts default [coSides, coBottom];
+    property Parts: TConeParts read FParts write SetParts
+      default [coSides, coBottom];
   end;
 
   // TCylinderPart
@@ -180,11 +182,11 @@ type
 
   // TGLCylinder
   //
-    {: Cylinder object, can also be used to make truncated cones }
+  { : Cylinder object, can also be used to make truncated cones }
   TGLCylinder = class(TGLCylinderBase)
   private
     { Private Declarations }
-    FParts: TCylinderparts;
+    FParts: TCylinderParts;
     FTopRadius: TGLFloat;
     FAlignment: TCylinderAlignment;
 
@@ -193,7 +195,7 @@ type
     procedure SetTopRadius(const aValue: Single);
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
-    function GetTopRadius: single; override;
+    function GetTopRadius: Single; override;
 
   public
     { Public Declarations }
@@ -203,8 +205,8 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
 
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
@@ -213,15 +215,17 @@ type
   published
     { Published Declarations }
     property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
-    property Parts: TCylinderParts read FParts write SetParts default [cySides, cyBottom, cyTop];
-    property Alignment: TCylinderAlignment read FAlignment write SetAlignment default caCenter;
+    property Parts: TCylinderParts read FParts write SetParts
+      default [cySides, cyBottom, cyTop];
+    property Alignment: TCylinderAlignment read FAlignment write SetAlignment
+      default caCenter;
   end;
 
-  {: Capsule object, can also be used to make truncated cones }
+  { : Capsule object, can also be used to make truncated cones }
   TGLCapsule = class(TGLSceneObject)
   private
     { Private Declarations }
-    FParts: TCylinderparts;
+    FParts: TCylinderParts;
     FRadius: TGLFloat;
     FSlices: TGLInt;
     FStacks: TGLInt;
@@ -241,7 +245,9 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
@@ -251,8 +257,10 @@ type
     property Slices: TGLInt read FSlices write SetSlices;
     property Stacks: TGLInt read FStacks write SetStacks;
     property Radius: TGLFloat read FRadius write SetRadius;
-    property Parts: TCylinderParts read FParts write SetParts default [cySides, cyBottom, cyTop];
-    property Alignment: TCylinderAlignment read FAlignment write SetAlignment default caCenter;
+    property Parts: TCylinderParts read FParts write SetParts
+      default [cySides, cyBottom, cyTop];
+    property Alignment: TCylinderAlignment read FAlignment write SetAlignment
+      default caCenter;
   end;
 
   // TAnnulusPart
@@ -262,7 +270,7 @@ type
 
   // TGLAnnulus
   //
-  {: An annulus is a cylinder that can be made hollow (pipe-like). }
+  { : An annulus is a cylinder that can be made hollow (pipe-like). }
   TGLAnnulus = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -286,15 +294,18 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
 
   published
     { Published Declarations }
-    property BottomInnerRadius: TGLFLoat read FBottomInnerRadius write SetBottomInnerRadius;
-    property TopInnerRadius: TGLFloat read FTopInnerRadius write SetTopInnerRadius;
+    property BottomInnerRadius: TGLFloat read FBottomInnerRadius
+      write SetBottomInnerRadius;
+    property TopInnerRadius: TGLFloat read FTopInnerRadius
+      write SetTopInnerRadius;
     property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
-    property Parts: TAnnulusParts read FParts write SetParts default [anInnerSides, anOuterSides, anBottom, anTop];
+    property Parts: TAnnulusParts read FParts write SetParts
+      default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
 
   // TTorusPart
@@ -304,7 +315,7 @@ type
 
   // TGLTorus
   //
-  {: A Torus object. }
+  { : A Torus object. }
   TGLTorus = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -330,8 +341,8 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
 
   published
     { Published Declarations }
@@ -355,17 +366,17 @@ type
 
   // TGLArrowLine
   //
-  {: Draws an arrowhead (cylinder + cone).<p>
-     The arrow head is a cone that shares the attributes of the cylinder
-     (ie stacks/slices, materials etc). Seems to work ok.<br>
-     This is useful for displaying a vector based field (eg velocity) or
-     other arrows that might be required.<br>
-     By default the bottom arrow is off }
+  { : Draws an arrowhead (cylinder + cone).<p>
+    The arrow head is a cone that shares the attributes of the cylinder
+    (ie stacks/slices, materials etc). Seems to work ok.<br>
+    This is useful for displaying a vector based field (eg velocity) or
+    other arrows that might be required.<br>
+    By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
-    { Private Declarations}
-    fParts: TArrowLineParts;
-    fTopRadius: Single;
+    { Private Declarations }
+    FParts: TArrowLineParts;
+    FTopRadius: Single;
     fTopArrowHeadHeight: Single;
     fTopArrowHeadRadius: Single;
     fBottomArrowHeadHeight: Single;
@@ -373,7 +384,7 @@ type
     FHeadStackingStyle: TArrowHeadStackingStyle;
 
   protected
-    { Protected Declarations}
+    { Protected Declarations }
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopArrowHeadHeight(const aValue: Single);
     procedure SetTopArrowHeadRadius(const aValue: Single);
@@ -383,20 +394,26 @@ type
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 
   public
-    { Public Declarations}
+    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations}
-    property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
-    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle write SetHeadStackingStyle default ahssStacked;
-    property Parts: TArrowLineParts read fParts write SetParts default [alLine, alTopArrow];
-    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius write SetBottomArrowHeadRadius;
+    { Published Declarations }
+    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
+      write SetHeadStackingStyle default ahssStacked;
+    property Parts: TArrowLineParts read FParts write SetParts
+      default [alLine, alTopArrow];
+    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight
+      write SetTopArrowHeadHeight;
+    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius
+      write SetTopArrowHeadRadius;
+    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight
+      write SetBottomArrowHeadHeight;
+    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
+      write SetBottomArrowHeadRadius;
   end;
 
   // TArrowArcPart
@@ -406,20 +423,20 @@ type
 
   // TGLArrowArc
   //
-  {: Draws an arrowhead (Sliced Torus + cone).<p>
-     The arrow head is a cone that shares the attributes of the Torus
-     (ie stacks/slices, materials etc).<br>
-     This is useful for displaying a movement (eg twist) or
-     other arc arrows that might be required.<br>
-     By default the bottom arrow is off }
+  { : Draws an arrowhead (Sliced Torus + cone).<p>
+    The arrow head is a cone that shares the attributes of the Torus
+    (ie stacks/slices, materials etc).<br>
+    This is useful for displaying a movement (eg twist) or
+    other arc arrows that might be required.<br>
+    By default the bottom arrow is off }
   TGLArrowArc = class(TGLCylinderBase)
   private
-    { Private Declarations}
+    { Private Declarations }
     fArcRadius: Single;
-    fStartAngle: Single;
-    fStopAngle: Single;
-    fParts: TArrowArcParts;
-    fTopRadius: Single;
+    FStartAngle: Single;
+    FStopAngle: Single;
+    FParts: TArrowArcParts;
+    FTopRadius: Single;
     fTopArrowHeadHeight: Single;
     fTopArrowHeadRadius: Single;
     fBottomArrowHeadHeight: Single;
@@ -428,7 +445,7 @@ type
     FMesh: array of array of TVertexRec;
 
   protected
-    { Protected Declarations}
+    { Protected Declarations }
     procedure SetArcRadius(const aValue: Single);
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
@@ -441,23 +458,29 @@ type
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 
   public
-    { Public Declarations}
+    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations}
+    { Published Declarations }
     property ArcRadius: TGLFloat read fArcRadius write SetArcRadius;
-    property StartAngle: TGLFloat read fStartAngle write SetStartAngle;
-    property StopAngle: TGLFloat read fStopAngle write SetStopAngle;
-    property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
-    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle write SetHeadStackingStyle default ahssStacked;
-    property Parts: TArrowArcParts read fParts write SetParts default [aaArc, aaTopArrow];
-    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius write SetBottomArrowHeadRadius;
+    property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
+    property StopAngle: TGLFloat read FStopAngle write SetStopAngle;
+    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
+      write SetHeadStackingStyle default ahssStacked;
+    property Parts: TArrowArcParts read FParts write SetParts
+      default [aaArc, aaTopArrow];
+    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight
+      write SetTopArrowHeadHeight;
+    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius
+      write SetTopArrowHeadRadius;
+    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight
+      write SetBottomArrowHeadHeight;
+    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
+      write SetBottomArrowHeadRadius;
   end;
 
   // TPolygonParts
@@ -467,12 +490,12 @@ type
 
   // TGLPolygon
   //
-  {: A basic polygon object.<p>
-     The curve is described by the Nodes and SplineMode properties, should be
-     planar and is automatically tessellated.<p>
-     Texture coordinates are deduced from X and Y coordinates only.<p>
-     This object allows only for polygons described by a single curve, if you
-     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
+  { : A basic polygon object.<p>
+    The curve is described by the Nodes and SplineMode properties, should be
+    planar and is automatically tessellated.<p>
+    Texture coordinates are deduced from X and Y coordinates only.<p>
+    This object allows only for polygons described by a single curve, if you
+    need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
   TGLPolygon = class(TGLPolygonBase)
   private
     { Private Declarations }
@@ -491,10 +514,11 @@ type
 
   published
     { Published Declarations }
-          {: Parts of polygon.<p>
-             The 'top' of the polygon is the position were the curve describing
-             the polygon spin counter-clockwise (i.e. right handed convention). }
-    property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
+    { : Parts of polygon.<p>
+      The 'top' of the polygon is the position were the curve describing
+      the polygon spin counter-clockwise (i.e. right handed convention). }
+    property Parts: TPolygonParts read FParts write SetParts
+      default [ppTop, ppBottom];
   end;
 
   // TFrustrumParts
@@ -509,10 +533,10 @@ type
   // TGLFrustrum
   //
   { A frustrum is a pyramid with the top chopped off.<p>
-     The height of the imaginary pyramid is ApexHeight, the height of the
-     frustrum is Height. If ApexHeight and Height are the same, the frustrum
-     degenerates into a pyramid.<br>
-     Height cannot be greater than ApexHeight. }
+    The height of the imaginary pyramid is ApexHeight, the height of the
+    frustrum is Height. If ApexHeight and Height are the same, the frustrum
+    degenerates into a pyramid.<br>
+    Height cannot be greater than ApexHeight. }
   TGLFrustrum = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -543,21 +567,27 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: TGLFloat read FApexHeight write SetApexHeight stored False;
-    property BaseDepth: TGLFloat read FBaseDepth write SetBaseDepth stored False;
-    property BaseWidth: TGLFloat read FBaseWidth write SetBaseWidth stored False;
+    property ApexHeight: TGLFloat read FApexHeight write SetApexHeight
+      stored False;
+    property BaseDepth: TGLFloat read FBaseDepth write SetBaseDepth
+      stored False;
+    property BaseWidth: TGLFloat read FBaseWidth write SetBaseWidth
+      stored False;
     property Height: TGLFloat read FHeight write SetHeight stored False;
-    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
-    property Parts: TFrustrumParts read FParts write SetParts default cAllFrustrumParts;
+    property NormalDirection: TNormalDirection read FNormalDirection
+      write SetNormalDirection default ndOutside;
+    property Parts: TFrustrumParts read FParts write SetParts
+      default cAllFrustrumParts;
   end;
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
+
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
 
 uses Polynomials,
   XOpenGL;
@@ -588,9 +618,10 @@ var
   quadric: PGLUquadricObj;
 begin
   quadric := gluNewQuadric();
-  SetupQuadricParams(Quadric);
-  gluPartialDisk(Quadric, FInnerRadius, FOuterRadius, FSlices, FLoops, FStartAngle, FSweepAngle);
-  gluDeleteQuadric(Quadric);
+  SetupQuadricParams(quadric);
+  gluPartialDisk(quadric, FInnerRadius, FOuterRadius, FSlices, FLoops,
+    FStartAngle, FSweepAngle);
+  gluDeleteQuadric(quadric);
 end;
 
 // SetOuterRadius
@@ -620,7 +651,7 @@ end;
 // SetSlices
 //
 
-procedure TGLDisk.SetSlices(aValue: Integer);
+procedure TGLDisk.SetSlices(aValue: integer);
 begin
   if aValue <> FSlices then
   begin
@@ -632,7 +663,7 @@ end;
 // SetLoops
 //
 
-procedure TGLDisk.SetLoops(aValue: Integer);
+procedure TGLDisk.SetLoops(aValue: integer);
 begin
   if aValue <> FLoops then
   begin
@@ -697,17 +728,17 @@ end;
 //
 
 function TGLDisk.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   ip: TVector;
   d: Single;
   angle, beginAngle, endAngle: Single;
   localIntPoint: TVector;
 begin
-  Result := false;
+  Result := False;
   if SweepAngle > 0 then
-    if RayCastPlaneIntersect(rayStart, rayVector, AbsolutePosition, AbsoluteDirection, @ip) then
+    if RayCastPlaneIntersect(rayStart, rayVector, AbsolutePosition,
+      AbsoluteDirection, @ip) then
     begin
       if Assigned(intersectPoint) then
         SetVector(intersectPoint^, ip);
@@ -719,23 +750,23 @@ begin
           Result := true
         else
         begin
-          //arctan2 returns results between -pi and +pi, we want between 0 and 360
+          // arctan2 returns results between -pi and +pi, we want between 0 and 360
           angle := 180 / pi * arctan2(localIntPoint[0], localIntPoint[1]);
           if angle < 0 then
             angle := angle + 360;
-          //we also want StartAngle and StartAngle+SweepAngle to be in this range
+          // we also want StartAngle and StartAngle+SweepAngle to be in this range
           beginAngle := Trunc(StartAngle) mod 360;
           endAngle := Trunc(StartAngle + SweepAngle) mod 360;
-          //If beginAngle>endAngle then area crosses the boundary from 360=>0 degrees
-          //therefore have 2 valid regions  (beginAngle to 360) & (0 to endAngle)
-          //otherwise just 1 valid region (beginAngle to endAngle)
+          // If beginAngle>endAngle then area crosses the boundary from 360=>0 degrees
+          // therefore have 2 valid regions  (beginAngle to 360) & (0 to endAngle)
+          // otherwise just 1 valid region (beginAngle to endAngle)
           if beginAngle > endAngle then
           begin
             if (angle > beginAngle) or (angle < endAngle) then
-              Result := True;
+              Result := true;
           end
           else if (angle > beginAngle) and (angle < endAngle) then
-            Result := True;
+            Result := true;
         end;
       end;
     end;
@@ -777,9 +808,9 @@ end;
 // GetTopRadius
 //
 
-function TGLCylinderBase.GetTopRadius: single;
+function TGLCylinderBase.GetTopRadius: Single;
 begin
-  result := FBottomRadius;
+  Result := FBottomRadius;
 end;
 
 // SetHeight
@@ -835,7 +866,7 @@ end;
 
 procedure TGLCylinderBase.Assign(Source: TPersistent);
 begin
-  if assigned(Source) and (Source is TGLCylinderBase) then
+  if Assigned(Source) and (Source is TGLCylinderBase) then
   begin
     FBottomRadius := TGLCylinderBase(Source).FBottomRadius;
     FSlices := TGLCylinderBase(Source).FSlices;
@@ -849,30 +880,30 @@ end;
 // GenerateSilhouette
 //
 
-function TGLCylinderBase.GenerateSilhouette(
-  const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette;
+function TGLCylinderBase.GenerateSilhouette(const silhouetteParameters
+  : TGLSilhouetteParameters): TGLSilhouette;
 var
   connectivity: TConnectivity;
   sil: TGLSilhouette;
   ShadowSlices: integer;
 
   i: integer;
-  p: array[0..3] of TVector3f;
-  PiDivSlices: single;
-  a1, a2: single;
+  p: array [0 .. 3] of TVector3f;
+  PiDivSlices: Single;
+  a1, a2: Single;
   c1, c2: TVector3f;
-  cosa1, cosa2, sina1, sina2: single;
-  HalfHeight: single;
-  ShadowTopRadius: single;
+  cosa1, cosa2, sina1, sina2: Single;
+  HalfHeight: Single;
+  ShadowTopRadius: Single;
 begin
-  Connectivity := TConnectivity.Create(true);
+  connectivity := TConnectivity.Create(true);
 
   ShadowSlices := FSlices div 1;
 
   if FSlices < 5 then
     FSlices := 5;
 
-  PiDivSlices := 2 * Pi / ShadowSlices;
+  PiDivSlices := 2 * pi / ShadowSlices;
 
   a1 := 0;
 
@@ -900,8 +931,10 @@ begin
     MakeVector(p[1], FBottomRadius * sina1, -HalfHeight, FBottomRadius * cosa1);
 
     // Top corners
-    MakeVector(p[2], ShadowTopRadius * sina1, HalfHeight, ShadowTopRadius * cosa1);
-    MakeVector(p[3], ShadowTopRadius * sina2, HalfHeight, ShadowTopRadius * cosa2); //}
+    MakeVector(p[2], ShadowTopRadius * sina1, HalfHeight,
+      ShadowTopRadius * cosa1);
+    MakeVector(p[3], ShadowTopRadius * sina2, HalfHeight,
+      ShadowTopRadius * cosa2); // }
 
     // This should be optimized to use AddIndexedFace, because this method
     // searches for each of the vertices and adds them or re-uses them.
@@ -918,12 +951,11 @@ begin
   end;
 
   sil := nil;
-  Connectivity.CreateSilhouette(
-    silhouetteParameters, sil, false);
+  connectivity.CreateSilhouette(silhouetteParameters, sil, False);
 
-  result := sil;
+  Result := sil;
 
-  Connectivity.Free;
+  connectivity.Free;
 end;
 
 // ------------------
@@ -948,7 +980,7 @@ var
 begin
   GL.PushMatrix;
   quadric := gluNewQuadric();
-  SetupQuadricParams(Quadric);
+  SetupQuadricParams(quadric);
   GL.Rotated(-90, 1, 0, 0);
   GL.Translatef(0, 0, -FHeight * 0.5);
   if coSides in FParts then
@@ -959,7 +991,7 @@ begin
     SetInvertedQuadricOrientation(quadric);
     gluDisk(quadric, 0, BottomRadius, Slices, FLoops);
   end;
-  gluDeleteQuadric(Quadric);
+  gluDeleteQuadric(quadric);
   GL.PopMatrix;
 end;
 
@@ -995,40 +1027,41 @@ var
   r: TGLFloat;
 begin
   r := Abs(FBottomRadius);
-  Result := VectorMake(r {*Scale.DirectX}, 0.5 * FHeight {*Scale.DirectY}, r {*Scale.DirectZ});
+  Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
+    r { *Scale.DirectZ } );
 end;
 
 // GetTopRadius
 //
 
-function TGLCone.GetTopRadius: single;
+function TGLCone.GetTopRadius: Single;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 // RayCastIntersect
 //
 
 function TGLCone.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   ip, localRayStart, localRayVector: TVector;
-  poly: array[0..2] of Double;
+  poly: array [0 .. 2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   d, t, hconst: Single;
 begin
-  Result := false;
+  Result := False;
   localRayStart := AbsoluteToLocal(rayStart);
   localRayVector := VectorNormalize(AbsoluteToLocal(rayVector));
 
   if coBottom in Parts then
   begin
-    //bottom can only be raycast from beneath
-    if localRayStart[1] < -fHeight * 0.5 then
+    // bottom can only be raycast from beneath
+    if localRayStart[1] < -FHeight * 0.5 then
     begin
-      if RayCastPlaneIntersect(localRayStart, localRayVector, PointMake(0, -fHeight * 0.5, 0), YHmgVector, @ip) then
+      if RayCastPlaneIntersect(localRayStart, localRayVector,
+        PointMake(0, -FHeight * 0.5, 0), YHmgVector, @ip) then
       begin
         d := VectorNorm(ip[0], ip[2]);
         if (d <= Sqr(BottomRadius)) then
@@ -1047,9 +1080,13 @@ begin
   begin
     hconst := -Sqr(BottomRadius) / Sqr(Height);
     // intersect against infinite cones (in positive and negative direction)
-    poly[0] := Sqr(localRayStart[0]) + hconst * Sqr(localRayStart[1] - 0.5 * fHeight) + Sqr(localRayStart[2]);
-    poly[1] := 2 * (localRayStart[0] * localRayVector[0] + hconst * (localRayStart[1] - 0.5 * fHeight) * localRayVector[1] + localRayStart[2] * localRayVector[2]);
-    poly[2] := Sqr(localRayVector[0]) + hconst * Sqr(localRayVector[1]) + Sqr(localRayVector[2]);
+    poly[0] := Sqr(localRayStart[0]) + hconst *
+      Sqr(localRayStart[1] - 0.5 * FHeight) + Sqr(localRayStart[2]);
+    poly[1] := 2 * (localRayStart[0] * localRayVector[0] + hconst *
+      (localRayStart[1] - 0.5 * FHeight) * localRayVector[1] + localRayStart[2]
+      * localRayVector[2]);
+    poly[2] := Sqr(localRayVector[0]) + hconst * Sqr(localRayVector[1]) +
+      Sqr(localRayVector[2]);
     SetLength(roots, 0);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
@@ -1057,7 +1094,7 @@ begin
       t := minRoot;
       ip := VectorCombine(localRayStart, localRayVector, 1, t);
       // check that intersection with infinite cone is within the range we want
-      if (ip[1] > -fHeight * 0.5) and (ip[1] < fHeight * 0.5) then
+      if (ip[1] > -FHeight * 0.5) and (ip[1] < FHeight * 0.5) then
       begin
         Result := true;
         if Assigned(intersectPoint) then
@@ -1098,21 +1135,23 @@ var
 begin
   GL.PushMatrix;
   quadric := gluNewQuadric;
-  SetupQuadricParams(Quadric);
+  SetupQuadricParams(quadric);
   GL.Rotatef(-90, 1, 0, 0);
   case Alignment of
-    caTop: GL.Translatef(0, 0, -FHeight);
-    caBottom: ;
+    caTop:
+      GL.Translatef(0, 0, -FHeight);
+    caBottom:
+      ;
   else // caCenter
     GL.Translatef(0, 0, -FHeight * 0.5);
   end;
   if cySides in FParts then
-    gluCylinder(Quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
+    gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if cyTop in FParts then
   begin
     GL.PushMatrix;
     GL.Translatef(0, 0, FHeight);
-    gluDisk(Quadric, 0, FTopRadius, FSlices, FLoops);
+    gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
     GL.PopMatrix;
   end;
   if cyBottom in FParts then
@@ -1121,7 +1160,7 @@ begin
     SetInvertedQuadricOrientation(quadric);
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
-  gluDeleteQuadric(Quadric);
+  gluDeleteQuadric(quadric);
   GL.PopMatrix;
 end;
 
@@ -1140,9 +1179,9 @@ end;
 // GetTopRadius
 //
 
-function TGLCylinder.GetTopRadius: single;
+function TGLCylinder.GetTopRadius: Single;
 begin
-  result := FTopRadius;
+  Result := FTopRadius;
 end;
 
 // SetParts
@@ -1174,7 +1213,7 @@ end;
 
 procedure TGLCylinder.Assign(Source: TPersistent);
 begin
-  if Assigned(SOurce) and (Source is TGLCylinder) then
+  if Assigned(Source) and (Source is TGLCylinder) then
   begin
     FParts := TGLCylinder(Source).FParts;
     FTopRadius := TGLCylinder(Source).FTopRadius;
@@ -1194,20 +1233,19 @@ begin
   if r1 > r then
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
-  //  ScaleVector(Result, Scale.AsVector);
+  // ScaleVector(Result, Scale.AsVector);
 end;
 
 // RayCastIntersect
 //
 
 function TGLCylinder.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
+  poly: array [0 .. 2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   t, tr2, invRayVector1, hTop, hBottom: Single;
@@ -1239,8 +1277,8 @@ begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
       Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
+    tPlaneMin := -1E99;
+    tPlaneMax := 1E99;
   end
   else
   begin
@@ -1260,7 +1298,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
+        Result := true;
       end;
     end;
     tPlaneMin := t;
@@ -1271,16 +1309,17 @@ begin
     begin
       ip[0] := locRayStart[0] + t * locRayVector[0];
       ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not (cyTop in Parts)) then
+      if (t < tPlaneMin) or (not(cyTop in Parts)) then
       begin
         if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom,
+              ip[2], 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
+          Result := true;
         end;
       end;
     end;
@@ -1293,7 +1332,8 @@ begin
   begin
     // intersect against cylinder infinite cylinder
     poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopRadius);
-    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
+    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
+      locRayVector[2]);
     poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
@@ -1313,7 +1353,7 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := True;
+        Result := true;
       end;
     end;
   end
@@ -1378,25 +1418,25 @@ end;
 procedure TGLCapsule.BuildList(var rci: TRenderContextInfo);
 var
   i, j, n: integer;
-  start_nx2: single;
-  start_ny2: single;
-  tmp, nx, ny, nz,
-    start_nx, start_ny,
-    a, ca, sa, l: single;
-  nx2, ny2, nz2: single;
+  start_nx2: Single;
+  start_ny2: Single;
+  tmp, nx, ny, nz, start_nx, start_ny, a, ca, sa, l: Single;
+  nx2, ny2, nz2: Single;
 begin
   GL.PushMatrix;
   GL.Rotatef(-90, 0, 0, 1);
   case Alignment of
-    caTop: GL.Translatef(0, 0, FHeight + 1);
-    caBottom: GL.Translatef(0, 0, -FHeight);
+    caTop:
+      GL.Translatef(0, 0, FHeight + 1);
+    caBottom:
+      GL.Translatef(0, 0, -FHeight);
   else // caCenter
     GL.Translatef(0, 0, 0.5);
   end;
   n := FSlices * FStacks;
   l := FHeight;
   l := l * 0.5;
-  a := (PI * 2.0) / n;
+  a := (pi * 2.0) / n;
   sa := sin(a);
   ca := cos(a);
   ny := 0;
@@ -1576,7 +1616,7 @@ end;
 
 procedure TGLCapsule.Assign(Source: TPersistent);
 begin
-  if Assigned(SOurce) and (Source is TGLCapsule) then
+  if Assigned(Source) and (Source is TGLCapsule) then
   begin
     FParts := TGLCapsule(Source).FParts;
     FRadius := TGLCapsule(Source).FRadius;
@@ -1596,20 +1636,19 @@ begin
   if r1 > r then
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
-  //  ScaleVector(Result, Scale.AsVector);
+  // ScaleVector(Result, Scale.AsVector);
 end;
 
 // RayCastIntersect
 //
 
 function TGLCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
+  poly: array [0 .. 2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   t, tr2, invRayVector1, hTop, hBottom: Single;
@@ -1641,8 +1680,8 @@ begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
       Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
+    tPlaneMin := -1E99;
+    tPlaneMax := 1E99;
   end
   else
   begin
@@ -1662,7 +1701,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
+        Result := true;
       end;
     end;
     tPlaneMin := t;
@@ -1673,16 +1712,17 @@ begin
     begin
       ip[0] := locRayStart[0] + t * locRayVector[0];
       ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not (cyTop in Parts)) then
+      if (t < tPlaneMin) or (not(cyTop in Parts)) then
       begin
         if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom,
+              ip[2], 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
+          Result := true;
         end;
       end;
     end;
@@ -1695,7 +1735,8 @@ begin
   begin
     // intersect against cylinder infinite cylinder
     poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(Radius);
-    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
+    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
+      locRayVector[2]);
     poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
@@ -1715,7 +1756,7 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := True;
+        Result := true;
       end;
     end;
   end
@@ -1766,10 +1807,10 @@ end;
 constructor TGLAnnulus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  fBottomInnerRadius := 0.3;
-  fTopInnerRadius := 0.3;
-  fTopRadius := 0.5;
-  fParts := [anInnerSides, anOuterSides, anBottom, anTop];
+  FBottomInnerRadius := 0.3;
+  FTopInnerRadius := 0.3;
+  FTopRadius := 0.5;
+  FParts := [anInnerSides, anOuterSides, anBottom, anTop];
 end;
 
 // SetBottomInnerRadius
@@ -1829,16 +1870,16 @@ var
 begin
   GL.PushMatrix;
   quadric := gluNewQuadric;
-  SetupQuadricParams(Quadric);
+  SetupQuadricParams(quadric);
   GL.Rotatef(-90, 1, 0, 0);
   GL.Translatef(0, 0, -FHeight * 0.5);
   if anOuterSides in FParts then
-    gluCylinder(Quadric, fBottomRadius, fTopRadius, fHeight, fSlices, fStacks);
+    gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if anTop in FParts then
   begin
     GL.PushMatrix;
     GL.Translatef(0, 0, FHeight);
-    gluDisk(Quadric, fTopInnerRadius, FTopRadius, FSlices, FLoops);
+    gluDisk(quadric, FTopInnerRadius, FTopRadius, FSlices, FLoops);
     GL.PopMatrix;
   end;
   if [anBottom, anInnerSides] * FParts <> [] then
@@ -1846,11 +1887,12 @@ begin
     // swap quadric orientation because top of a disk is defined as outside
     SetInvertedQuadricOrientation(quadric);
     if anBottom in FParts then
-      gluDisk(quadric, fBottominnerRadius, FBottomRadius, FSlices, FLoops);
-    if anInnerSides in fParts then
-      gluCylinder(Quadric, fBottomInnerRadius, fTopInnerRadius, fHeight, fSlices, fStacks);
+      gluDisk(quadric, FBottomInnerRadius, FBottomRadius, FSlices, FLoops);
+    if anInnerSides in FParts then
+      gluCylinder(quadric, FBottomInnerRadius, FTopInnerRadius, FHeight,
+        FSlices, FStacks);
   end;
-  gluDeleteQuadric(Quadric);
+  gluDeleteQuadric(quadric);
   GL.PopMatrix;
 end;
 
@@ -1859,13 +1901,13 @@ end;
 
 procedure TGLAnnulus.Assign(Source: TPersistent);
 begin
-  if assigned(SOurce) and (Source is TGLAnnulus) then
+  if Assigned(Source) and (Source is TGLAnnulus) then
   begin
     FParts := TGLAnnulus(Source).FParts;
     FTopRadius := TGLAnnulus(Source).FTopRadius;
-    FTopInnerRadius := TGLAnnulus(Source).fTopInnerRadius;
-    FBottomRadius := TGLAnnulus(Source).fBottomRadius;
-    FBottomInnerRadius := TGLAnnulus(Source).fbottomInnerRadius;
+    FTopInnerRadius := TGLAnnulus(Source).FTopInnerRadius;
+    FBottomRadius := TGLAnnulus(Source).FBottomRadius;
+    FBottomInnerRadius := TGLAnnulus(Source).FBottomInnerRadius;
   end;
   inherited Assign(Source);
 end;
@@ -1893,15 +1935,15 @@ const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
+  poly: array [0 .. 2] of Double;
   t, tr2, invRayVector1: Single;
   tPlaneMin, tPlaneMax: Single;
-  tir2, d2: single;
+  tir2, d2: Single;
   Root: Double;
-  Roots, tmpRoots: TDoubleArray;
-  FirstIntersected: boolean;
-  h1, h2, hTop, hBot: single;
-  Draw1, Draw2: boolean;
+  roots, tmpRoots: TDoubleArray;
+  FirstIntersected: Boolean;
+  h1, h2, hTop, hBot: Single;
+  Draw1, Draw2: Boolean;
 begin
   Result := False;
   FirstIntersected := False;
@@ -1924,15 +1966,15 @@ begin
     h2 := hTop;
     Draw1 := (anBottom in Parts);
     Draw2 := (anTop in Parts);
-  end; //if
+  end; // if
 
   if locRayVector[1] = 0 then
   begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBot) then
       Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
+    tPlaneMin := -1E99;
+    tPlaneMax := 1E99;
   end
   else
   begin
@@ -1956,7 +1998,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h1, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
+        Result := true;
       end;
     end;
     tPlaneMin := t;
@@ -1978,63 +2020,68 @@ begin
             intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h2, ip[2], 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
+          Result := true;
         end;
       end;
     end;
     if t < tPlaneMin then
     begin
       tPlaneMin := t;
-    end; //if
+    end; // if
     if t > tPlaneMax then
       tPlaneMax := t;
   end;
 
   try
-    SetLength(Roots, 4);
-    Roots[0] := -1;
-    Roots[1] := -1;
-    Roots[2] := -1;
-    Roots[3] := -1; // By default, side is behind rayStart
+    SetLength(roots, 4);
+    roots[0] := -1;
+    roots[1] := -1;
+    roots[2] := -1;
+    roots[3] := -1; // By default, side is behind rayStart
 
-    {Compute roots for outer cylinder}
+    { Compute roots for outer cylinder }
     if anOuterSides in Parts then
     begin
       // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
       poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
+      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
+        locRayVector[2]);
       poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmpRoots := SolveQuadric(@poly); // Intersect coordinates on rayVector (rayStart=0)
-      if (High(tmproots) >= 0) and // Does root exist?
-      ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and // In the annulus and not masked by first cap
-      ((tmpRoots[0] < tPlaneMax)) {// In the annulus} then
-        Roots[0] := tmpRoots[0];
-      if (High(tmproots) >= 1) and
+      tmpRoots := SolveQuadric(@poly);
+      // Intersect coordinates on rayVector (rayStart=0)
+      if ( High(tmpRoots) >= 0) and // Does root exist?
+        ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
+      // In the annulus and not masked by first cap
+        ((tmpRoots[0] < tPlaneMax)) { // In the annulus } then
+        roots[0] := tmpRoots[0];
+      if ( High(tmpRoots) >= 1) and
         ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[1] < tPlaneMax)) then
-        Roots[1] := tmpRoots[1];
-    end; //if
+        roots[1] := tmpRoots[1];
+    end; // if
 
-    {Compute roots for inner cylinder}
+    { Compute roots for inner cylinder }
     if anInnerSides in Parts then
     begin
       // intersect against infinite cylinder
-      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopInnerRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
+      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) -
+        Sqr(TopInnerRadius);
+      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
+        locRayVector[2]);
       poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmproots := SolveQuadric(@poly);
-      if (High(tmproots) >= 0) and
+      tmpRoots := SolveQuadric(@poly);
+      if ( High(tmpRoots) >= 0) and
         ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[0] < tPlaneMax)) then
-        Roots[2] := tmpRoots[0];
-      if (High(tmproots) >= 1) and
+        roots[2] := tmpRoots[0];
+      if ( High(tmpRoots) >= 1) and
         ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[1] < tPlaneMax)) then
-        Roots[3] := tmpRoots[1];
-    end; //if
+        roots[3] := tmpRoots[1];
+    end; // if
 
-    {Find the first intersection point and compute its coordinates and normal}
-    if MinPositiveCoef(Roots, Root) then
+    { Find the first intersection point and compute its coordinates and normal }
+    if MinPositiveCoef(roots, Root) then
     begin
       t := Root;
       if (t >= tPlaneMin) and (t < tPlaneMax) then
@@ -2051,14 +2098,14 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := True;
+        Result := true;
       end;
     end;
 
   finally
-    Roots := nil;
+    roots := nil;
     tmpRoots := nil;
-  end; //finally
+  end; // finally
 end;
 
 // ------------------
@@ -2085,7 +2132,8 @@ end;
 
 procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer);// {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
+  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     with GL do
@@ -2100,68 +2148,73 @@ procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
   end;
 
 var
-  I, J: Integer;
+  i, j: integer;
   Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
   cosTheta1, sinTheta1: TGLFloat;
   ringDelta, sideDelta: TGLFloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLint;
-  MeshSize: Integer;
-  MeshIndex: Integer;
+  TanLoc, BinLoc: TGLInt;
+  MeshSize: integer;
+  MeshIndex: integer;
   Vertex: TVertexRec;
 begin
   if FMesh = nil then
   begin
-    MeshSize:=0;
-    MeshIndex:=0;
+    MeshSize := 0;
+    MeshIndex := 0;
     if toStartDisk in FParts then
-      MeshSize := MeshSize +1;
+      MeshSize := MeshSize + 1;
     if toStopDisk in FParts then
-      MeshSize := MeshSize +1;
+      MeshSize := MeshSize + 1;
     if toSides in FParts then
-      MeshSize := MeshSize + FRings+1;
+      MeshSize := MeshSize + Integer(FRings) + 1;
     SetLength(FMesh, MeshSize);
     // handle texture generation
-    ringDelta := ((FStopAngle - FStartAngle)/360) * c2PI / FRings;
+    ringDelta := ((FStopAngle - FStartAngle) / 360) * c2PI / FRings;
     sideDelta := c2PI / FSides;
 
     iFact := 1 / FRings;
     jFact := 1 / FSides;
     if toSides in FParts then
     begin
-      theta := DegToRad(FStartAngle) - ringDelta;
-      for I := FRings downto 0 do
+      Theta := DegToRad(FStartAngle) - ringDelta;
+      for i := FRings downto 0 do
       begin
-        SetLength(FMesh[I], FSides+1);
-        theta1 := theta + ringDelta;
-        SinCos(theta1, sinTheta1, cosTheta1);
-        phi := 0;
-        for J := FSides downto 0 do
+        SetLength(FMesh[i], FSides + 1);
+        Theta1 := Theta + ringDelta;
+        SinCos(Theta1, sinTheta1, cosTheta1);
+        Phi := 0;
+        for j := FSides downto 0 do
         begin
-          phi := phi + sideDelta;
-          SinCos(phi, sinPhi, cosPhi);
+          Phi := Phi + sideDelta;
+          SinCos(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
 
-          FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[I][J].Position;
+          FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
+            -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[i][j].Position;
           ringDir[2] := 0.0;
           NormalizeVector(ringDir);
-          FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-          FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
-          FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
-          FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
+          FMesh[i][j].Normal := Vector3fMake(cosTheta1 * cosPhi,
+            -sinTheta1 * cosPhi, sinPhi);
+          FMesh[i][j].Tangent := VectorCrossProduct(ZVector, ringDir);
+          FMesh[i][j].Binormal := VectorCrossProduct(FMesh[i][j].Normal,
+            FMesh[i][j].Tangent);
+          FMesh[i][j].TexCoord := Vector2fMake(i * iFact, j * jFact);
         end;
-        theta := theta1;
+        Theta := Theta1;
       end;
-      MeshIndex := FRings+1;
+      MeshIndex := FRings + 1;
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -2170,25 +2223,25 @@ begin
         end;
 
         Begin_(GL_TRIANGLES);
-        for I := FRings - 1 downto 0 do
-          for J := FSides - 1 downto 0 do
+        for i := FRings - 1 downto 0 do
+          for j := FSides - 1 downto 0 do
           begin
-            pVertex := @FMesh[I][J];
+            pVertex := @FMesh[i][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I][J+1];
+            pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J];
+            pVertex := @FMesh[i + 1][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J+1];
+            pVertex := @FMesh[i + 1][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J];
+            pVertex := @FMesh[i + 1][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I][J+1];
+            pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
           end;
         End_;
@@ -2197,52 +2250,56 @@ begin
 
     if toStartDisk in FParts then
     begin
-      SetLength(FMesh[MeshIndex], FSides+1);
-      theta1 := DegToRad(FStartAngle);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSides + 1);
+      Theta1 := DegToRad(FStartAngle);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
       if toSides in FParts then
       begin
-        for J := FSides downto 0 do
+        for j := FSides downto 0 do
         begin
-          FMesh[MeshIndex][J].Position := FMesh[MeshIndex-1][J].Position;
-          FMesh[MeshIndex][J].Normal := FMesh[MeshIndex-1][J].Tangent;
-          FMesh[MeshIndex][J].Tangent := FMesh[MeshIndex-1][J].Position;
-          FMesh[MeshIndex][J].Tangent[2] :=0;
-          FMesh[MeshIndex][J].Binormal := ZVector;
-          FMesh[MeshIndex][J].TexCoord := FMesh[MeshIndex-1][J].TexCoord;
-          FMesh[MeshIndex][J].TexCoord[0] := 0;
+          FMesh[MeshIndex][j].Position := FMesh[MeshIndex - 1][j].Position;
+          FMesh[MeshIndex][j].Normal := FMesh[MeshIndex - 1][j].Tangent;
+          FMesh[MeshIndex][j].Tangent := FMesh[MeshIndex - 1][j].Position;
+          FMesh[MeshIndex][j].Tangent[2] := 0;
+          FMesh[MeshIndex][j].Binormal := ZVector;
+          FMesh[MeshIndex][j].TexCoord := FMesh[MeshIndex - 1][j].TexCoord;
+          FMesh[MeshIndex][j].TexCoord[0] := 0;
         end;
       end
       else
       begin
-        phi := 0;
-        for J := FSides downto 0 do
+        Phi := 0;
+        for j := FSides downto 0 do
         begin
-          phi := phi + sideDelta;
-          SinCos(phi, sinPhi, cosPhi);
+          Phi := Phi + sideDelta;
+          SinCos(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
-          FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[MeshIndex][J].Position;
+          FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+            -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[MeshIndex][j].Position;
           ringDir[2] := 0.0;
           NormalizeVector(ringDir);
-          FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
-          FMesh[MeshIndex][J].Tangent := ringDir;
-          FMesh[MeshIndex][J].Binormal := ZVector;
-          FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+          FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
+          FMesh[MeshIndex][j].Tangent := ringDir;
+          FMesh[MeshIndex][j].Binormal := ZVector;
+          FMesh[MeshIndex][j].TexCoord := Vector2fMake(0, j * jFact);
         end;
       end;
-      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius, -sinTheta1 * FMajorRadius, 0);
-      Vertex.Normal :=  FMesh[MeshIndex][0].Normal;
-      Vertex.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      Vertex.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      Vertex.TexCoord :=  Vector2fMake(1,1);
+      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius,
+        -sinTheta1 * FMajorRadius, 0);
+      Vertex.Normal := FMesh[MeshIndex][0].Normal;
+      Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
+      Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
+      Vertex.TexCoord := Vector2fMake(1, 1);
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -2252,9 +2309,9 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @Vertex;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := 0 to FSides do
+        for j := 0 to FSides do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
@@ -2265,52 +2322,56 @@ begin
 
     if toStopDisk in FParts then
     begin
-      SetLength(FMesh[MeshIndex], FSides+1);
-      theta1 := DegToRad(FStopAngle);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSides + 1);
+      Theta1 := DegToRad(FStopAngle);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
       if toSides in FParts then
       begin
-        for J := FSides downto 0 do
+        for j := FSides downto 0 do
         begin
-          FMesh[MeshIndex][J].Position := FMesh[0][J].Position;
-          FMesh[MeshIndex][J].Normal := VectorNegate(FMesh[0][J].Tangent);
-          FMesh[MeshIndex][J].Tangent := FMesh[0][J].Position;
-          FMesh[MeshIndex][J].Tangent[2] :=0;
-          FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
-          FMesh[MeshIndex][J].TexCoord := FMesh[0][J].TexCoord;
-          FMesh[MeshIndex][J].TexCoord[0] := 1;
+          FMesh[MeshIndex][j].Position := FMesh[0][j].Position;
+          FMesh[MeshIndex][j].Normal := VectorNegate(FMesh[0][j].Tangent);
+          FMesh[MeshIndex][j].Tangent := FMesh[0][j].Position;
+          FMesh[MeshIndex][j].Tangent[2] := 0;
+          FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
+          FMesh[MeshIndex][j].TexCoord := FMesh[0][j].TexCoord;
+          FMesh[MeshIndex][j].TexCoord[0] := 1;
         end;
       end
       else
       begin
-        phi := 0;
-        for J := FSides downto 0 do
+        Phi := 0;
+        for j := FSides downto 0 do
         begin
-          phi := phi + sideDelta;
-          SinCos(phi, sinPhi, cosPhi);
+          Phi := Phi + sideDelta;
+          SinCos(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
-          FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[MeshIndex][J].Position;
+          FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+            -sinTheta1 * dist, FMinorRadius * sinPhi);
+          ringDir := FMesh[MeshIndex][j].Position;
           ringDir[2] := 0.0;
           NormalizeVector(ringDir);
-          FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
-          FMesh[MeshIndex][J].Tangent := ringDir;
-          FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
-          FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+          FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
+          FMesh[MeshIndex][j].Tangent := ringDir;
+          FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
+          FMesh[MeshIndex][j].TexCoord := Vector2fMake(1, j * jFact);
         end;
       end;
-      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius, -sinTheta1 * FMajorRadius, 0);
-      Vertex.Normal :=  FMesh[MeshIndex][0].Normal;
-      Vertex.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      Vertex.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      Vertex.TexCoord :=  Vector2fMake(0,0);
+      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius,
+        -sinTheta1 * FMajorRadius, 0);
+      Vertex.Normal := FMesh[MeshIndex][0].Normal;
+      Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
+      Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
+      Vertex.TexCoord := Vector2fMake(0, 0);
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -2320,14 +2381,13 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @Vertex;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := FSides downto 0 do
+        for j := FSides downto 0 do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
       end;
-      MeshIndex := MeshIndex + 1;
     end;
   end;
 end;
@@ -2390,7 +2450,7 @@ end;
 
 procedure TGLTorus.SetStartAngle(const aValue: Single);
 begin
-  if FStartAngle<>aValue then
+  if FStartAngle <> aValue then
   begin
     FStartAngle := aValue;
     FMesh := nil;
@@ -2400,7 +2460,7 @@ end;
 
 procedure TGLTorus.SetStopAngle(const aValue: Single);
 begin
-  if FStopAngle<>aValue then
+  if FStopAngle <> aValue then
   begin
     FStopAngle := aValue;
     FMesh := nil;
@@ -2426,19 +2486,18 @@ var
 begin
   r := Abs(FMajorRadius);
   r1 := Abs(FMinorRadius);
-  Result := VectorMake(r + r1, r + r1, r1); //Danb
+  Result := VectorMake(r + r1, r + r1, r1); // Danb
 end;
 
 // RayCastIntersect
 //
 
 function TGLTorus.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
-  i: Integer;
+  i: integer;
   fRo2, fRi2, fDE, fVal, r, nearest: Double;
-  polynom: array[0..4] of Double;
+  polynom: array [0 .. 4] of Double;
   polyRoots: TDoubleArray;
   localStart, localVector: TVector;
   vi, vc: TVector;
@@ -2465,14 +2524,14 @@ begin
   Result := (Length(polyRoots) > 0);
   if Result then
   begin
-    nearest := 1e20;
+    nearest := 1E20;
     for i := 0 to High(polyRoots) do
     begin
       r := polyRoots[i];
       if (r > 0) and (r < nearest) then
       begin
         nearest := r;
-        Result := True;
+        Result := true;
       end;
     end;
     vi := VectorCombine(localStart, localVector, 1, nearest);
@@ -2505,7 +2564,7 @@ end;
 constructor TGLArrowLine.Create(AOwner: TComponent);
 begin
   inherited;
-  fTopRadius := 0.1;
+  FTopRadius := 0.1;
   BottomRadius := 0.1;
   fTopArrowHeadRadius := 0.2;
   fTopArrowHeadHeight := 0.5;
@@ -2514,8 +2573,8 @@ begin
   FHeadStackingStyle := ahssStacked;
   { by default there is not much point having the top of the line (cylinder)
     showing as it is coincidental with the Toparrowhead bottom.
-    Note I've defaulted to "vector" type arrows (arrow head on top only}
-  fParts := [alLine, alTopArrow];
+    Note I've defaulted to "vector" type arrows (arrow head on top only }
+  FParts := [alLine, alTopArrow];
 end;
 
 // SetTopRadius
@@ -2523,9 +2582,9 @@ end;
 
 procedure TGLArrowLine.SetTopRadius(const aValue: Single);
 begin
-  if aValue <> fTopRadius then
+  if aValue <> FTopRadius then
   begin
-    fTopRadius := aValue;
+    FTopRadius := aValue;
     StructureChanged;
   end;
 end;
@@ -2611,8 +2670,10 @@ var
   cylHeight, cylOffset, headInfluence: Single;
 begin
   case HeadStackingStyle of
-    ahssCentered: headInfluence := 0.5;
-    ahssIncluded: headInfluence := 1;
+    ahssCentered:
+      headInfluence := 0.5;
+    ahssIncluded:
+      headInfluence := 1;
   else // ahssStacked
     headInfluence := 0;
   end;
@@ -2620,18 +2681,19 @@ begin
   cylOffset := -FHeight * 0.5;
   // create a new quadric
   quadric := gluNewQuadric;
-  SetupQuadricParams(Quadric);
+  SetupQuadricParams(quadric);
   // does the top arrow part - the cone
   if alTopArrow in Parts then
   begin
     cylHeight := cylHeight - TopArrowHeadHeight * headInfluence;
     GL.PushMatrix;
     GL.Translatef(0, 0, Height * 0.5 - TopArrowHeadHeight * headInfluence);
-    gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight, Slices, Stacks);
+    gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight,
+      Slices, Stacks);
     // top of a disk is defined as outside
     SetInvertedQuadricOrientation(quadric);
     if alLine in Parts then
-      gluDisk(quadric, fTopRadius, fTopArrowHeadRadius, Slices, FLoops)
+      gluDisk(quadric, FTopRadius, fTopArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fTopArrowHeadRadius, Slices, FLoops);
     GL.PopMatrix;
@@ -2646,11 +2708,12 @@ begin
     GL.Rotatef(180, 1, 0, 0);
     GL.Translatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
     SetNormalQuadricOrientation(quadric);
-    gluCylinder(quadric, fBottomArrowHeadRadius, 0, fBottomArrowHeadHeight, Slices, Stacks);
+    gluCylinder(quadric, fBottomArrowHeadRadius, 0, fBottomArrowHeadHeight,
+      Slices, Stacks);
     // top of a disk is defined as outside
     SetInvertedQuadricOrientation(quadric);
     if alLine in Parts then
-      gluDisk(quadric, fBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
+      gluDisk(quadric, FBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fBottomArrowHeadRadius, Slices, FLoops);
     GL.PopMatrix;
@@ -2661,15 +2724,16 @@ begin
     GL.PushMatrix;
     GL.Translatef(0, 0, cylOffset);
     SetNormalQuadricOrientation(quadric);
-    gluCylinder(Quadric, FBottomRadius, FTopRadius, cylHeight, FSlices, FStacks);
-    if not (alTopArrow in Parts) then
+    gluCylinder(quadric, FBottomRadius, FTopRadius, cylHeight, FSlices,
+      FStacks);
+    if not(alTopArrow in Parts) then
     begin
       GL.PushMatrix;
       GL.Translatef(0, 0, cylHeight);
-      gluDisk(Quadric, 0, FTopRadius, FSlices, FLoops);
+      gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
       GL.PopMatrix;
     end;
-    if not (alBottomArrow in Parts) then
+    if not(alBottomArrow in Parts) then
     begin
       // swap quadric orientation because top of a disk is defined as outside
       SetInvertedQuadricOrientation(quadric);
@@ -2677,7 +2741,7 @@ begin
     end;
     GL.PopMatrix;
   end;
-  gluDeleteQuadric(Quadric);
+  gluDeleteQuadric(quadric);
 end;
 
 // Assign
@@ -2685,7 +2749,7 @@ end;
 
 procedure TGLArrowLine.Assign(Source: TPersistent);
 begin
-  if assigned(SOurce) and (Source is TGLArrowLine) then
+  if Assigned(Source) and (Source is TGLArrowLine) then
   begin
     FParts := TGLArrowLine(Source).FParts;
     FTopRadius := TGLArrowLine(Source).FTopRadius;
@@ -2710,16 +2774,16 @@ begin
   inherited;
   FStacks := 16;
   fArcRadius := 0.5;
-  fStartAngle := 0;
-  fStopAngle := 360;
-  fTopRadius := 0.1;
+  FStartAngle := 0;
+  FStopAngle := 360;
+  FTopRadius := 0.1;
   BottomRadius := 0.1;
   fTopArrowHeadRadius := 0.2;
   fTopArrowHeadHeight := 0.5;
   fBottomArrowHeadRadius := 0.2;
   fBottomArrowHeadHeight := 0.5;
   FHeadStackingStyle := ahssStacked;
-  fParts := [aaArc, aaTopArrow];
+  FParts := [aaArc, aaTopArrow];
 end;
 
 // SetArcRadius
@@ -2727,7 +2791,7 @@ end;
 
 procedure TGLArrowArc.SetArcRadius(const aValue: Single);
 begin
-  if fArcRadius<>aValue then
+  if fArcRadius <> aValue then
   begin
     fArcRadius := aValue;
     FMesh := nil;
@@ -2740,9 +2804,9 @@ end;
 
 procedure TGLArrowArc.SetStartAngle(const aValue: Single);
 begin
-  if fStartAngle<>aValue then
+  if FStartAngle <> aValue then
   begin
-    fStartAngle := aValue;
+    FStartAngle := aValue;
     FMesh := nil;
     StructureChanged;
   end;
@@ -2753,9 +2817,9 @@ end;
 
 procedure TGLArrowArc.SetStopAngle(const aValue: Single);
 begin
-  if fStopAngle<>aValue then
+  if FStopAngle <> aValue then
   begin
-    fStopAngle := aValue;
+    FStopAngle := aValue;
     FMesh := nil;
     StructureChanged;
   end;
@@ -2766,9 +2830,9 @@ end;
 
 procedure TGLArrowArc.SetTopRadius(const aValue: Single);
 begin
-  if aValue <> fTopRadius then
+  if aValue <> FTopRadius then
   begin
-    fTopRadius := aValue;
+    FTopRadius := aValue;
     FMesh := nil;
     StructureChanged;
   end;
@@ -2856,7 +2920,8 @@ end;
 //
 
 procedure TGLArrowArc.BuildList(var rci: TRenderContextInfo);
-  procedure EmitVertex(ptr: PVertexRec; L1, L2: Integer);// {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
+  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     with GL do
@@ -2871,94 +2936,104 @@ procedure TGLArrowArc.BuildList(var rci: TRenderContextInfo);
   end;
 
 var
-  I, J: Integer;
+  i, j: integer;
   Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
   cosTheta1, sinTheta1: TGLFloat;
   ringDelta, sideDelta: TGLFloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLint;
-  MeshSize: Integer;
-  MeshIndex: Integer;
+  TanLoc, BinLoc: TGLInt;
+  MeshSize: integer;
+  MeshIndex: integer;
   ConeCenter: TVertexRec;
   StartOffset, StopOffset: Single;
 begin
   if FMesh = nil then
   begin
-    MeshIndex:=0;
+    MeshIndex := 0;
     MeshSize := 0;
-    //Check Parts
-    if aaArc in fParts then
-      MeshSize := MeshSize + FStacks +1;
-    if aaTopArrow in fParts then
+    // Check Parts
+    if aaArc in FParts then
+      MeshSize := MeshSize + FStacks + 1;
+    if aaTopArrow in FParts then
       MeshSize := MeshSize + 3
     else
       MeshSize := MeshSize + 1;
-    if aaBottomArrow in fParts then
+    if aaBottomArrow in FParts then
       MeshSize := MeshSize + 3
     else
       MeshSize := MeshSize + 1;
-    //Allocate Mesh
+    // Allocate Mesh
     SetLength(FMesh, MeshSize);
 
     case FHeadStackingStyle of
       ahssStacked:
-      begin
-        StartOffset :=0;
-        StopOffset :=0;
-      end ;
+        begin
+          StartOffset := 0;
+          StopOffset := 0;
+        end;
       ahssCentered:
-      begin
-        StartOffset := RadToDeg(ArcTan(0.5*fTopArrowHeadHeight/fArcRadius));
-        StopOffset := RadToDeg(ArcTan(0.5*fBottomArrowHeadHeight/fArcRadius));
-      end ;
+        begin
+          StartOffset :=
+            RadToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius));
+          StopOffset :=
+            RadToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius));
+        end;
       ahssIncluded:
-      begin
-        StartOffset := RadToDeg(ArcTan(fTopArrowHeadHeight/fArcRadius));
-        StopOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight/fArcRadius));
-      end ;
+        begin
+          StartOffset := RadToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius));
+          StopOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius));
+        end;
     end;
 
     // handle texture generation
-    ringDelta := (((FStopAngle-StopOffset) - (FStartAngle+StartOffset))/360) * c2PI / FStacks;
+    ringDelta := (((FStopAngle - StopOffset) - (FStartAngle + StartOffset)) /
+      360) * c2PI / FStacks;
     sideDelta := c2PI / FSlices;
 
     iFact := 1 / FStacks;
     jFact := 1 / FSlices;
     if aaArc in FParts then
     begin
-      theta := DegToRad(FStartAngle+StartOffset) - ringDelta;
-      for I := FStacks downto 0 do
+      Theta := DegToRad(FStartAngle + StartOffset) - ringDelta;
+      for i := FStacks downto 0 do
       begin
-        SetLength(FMesh[I], FSlices+1);
-        theta1 := theta + ringDelta;
-        SinCos(theta1, sinTheta1, cosTheta1);
-        phi := 0;
-        for J := FSlices downto 0 do
+        SetLength(FMesh[i], FSlices + 1);
+        Theta1 := Theta + ringDelta;
+        SinCos(Theta1, sinTheta1, cosTheta1);
+        Phi := 0;
+        for j := FSlices downto 0 do
         begin
-          phi := phi + sideDelta;
-          SinCos(phi, sinPhi, cosPhi);
-          dist := fArcRadius + Lerp(fTopRadius,fBottomRadius,1-i*iFact) * cosPhi;
+          Phi := Phi + sideDelta;
+          SinCos(Phi, sinPhi, cosPhi);
+          dist := fArcRadius + Lerp(FTopRadius, FBottomRadius,
+            1 - i * iFact) * cosPhi;
 
-          FMesh[I][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, Lerp(fTopRadius,fBottomRadius,1-i*iFact) * sinPhi);
-          ringDir := FMesh[I][J].Position;
+          FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
+            -sinTheta1 * dist, Lerp(FTopRadius, FBottomRadius, 1 - i * iFact)
+            * sinPhi);
+          ringDir := FMesh[i][j].Position;
           ringDir[2] := 0.0;
           NormalizeVector(ringDir);
-          FMesh[I][J].Normal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi, sinPhi);
-          FMesh[I][J].Tangent := VectorCrossProduct(ZVector, ringDir);
-          FMesh[I][J].Binormal := VectorCrossProduct(FMesh[I][J].Normal, FMesh[I][J].Tangent);
-          FMesh[I][J].TexCoord := Vector2fMake(i * iFact, j * jFact);
+          FMesh[i][j].Normal := Vector3fMake(cosTheta1 * cosPhi,
+            -sinTheta1 * cosPhi, sinPhi);
+          FMesh[i][j].Tangent := VectorCrossProduct(ZVector, ringDir);
+          FMesh[i][j].Binormal := VectorCrossProduct(FMesh[i][j].Normal,
+            FMesh[i][j].Tangent);
+          FMesh[i][j].TexCoord := Vector2fMake(i * iFact, j * jFact);
         end;
-        theta := theta1;
+        Theta := Theta1;
       end;
-      MeshIndex := FStacks+1;
+      MeshIndex := FStacks + 1;
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -2967,87 +3042,100 @@ begin
         end;
 
         Begin_(GL_TRIANGLES);
-        for I := FStacks - 1 downto 0 do
-          for J := FSlices - 1 downto 0 do
+        for i := FStacks - 1 downto 0 do
+          for j := FSlices - 1 downto 0 do
           begin
-            pVertex := @FMesh[I][J];
+            pVertex := @FMesh[i][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I][J+1];
+            pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J];
+            pVertex := @FMesh[i + 1][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J+1];
+            pVertex := @FMesh[i + 1][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I+1][J];
+            pVertex := @FMesh[i + 1][j];
             EmitVertex(pVertex, TanLoc, BinLoc);
 
-            pVertex := @FMesh[I][J+1];
+            pVertex := @FMesh[i][j + 1];
             EmitVertex(pVertex, TanLoc, BinLoc);
           end;
         End_;
       end;
     end;
 
-    //Build Arrow or start cap
+    // Build Arrow or start cap
     if aaTopArrow in FParts then
     begin
-      SetLength(FMesh[MeshIndex], FSlices+1);
-      SetLength(FMesh[MeshIndex+1], FSlices+1);
-      SetLength(FMesh[MeshIndex+2], FSlices+1);
-      theta1 := DegToRad(FStartAngle+StartOffset);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSlices + 1);
+      SetLength(FMesh[MeshIndex + 1], FSlices + 1);
+      SetLength(FMesh[MeshIndex + 2], FSlices + 1);
+      Theta1 := DegToRad(FStartAngle + StartOffset);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
-      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
+        -sinTheta1 * fArcRadius, 0);
 
-      phi := 0;
-      for J := FSlices downto 0 do
+      Phi := 0;
+      for j := FSlices downto 0 do
       begin
-        phi := phi + sideDelta;
-        SinCos(phi, sinPhi, cosPhi);
+        Phi := Phi + sideDelta;
+        SinCos(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fTopArrowHeadRadius * cosPhi;
 
-        //Cap
-        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
-        ringDir := FMesh[MeshIndex][J].Position;
+        // Cap
+        FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
-        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
-        FMesh[MeshIndex][J].Tangent := ringDir;
-        FMesh[MeshIndex][J].Binormal := ZVector;
-        FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+        FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
+        FMesh[MeshIndex][j].Tangent := ringDir;
+        FMesh[MeshIndex][j].Binormal := ZVector;
+        FMesh[MeshIndex][j].TexCoord := Vector2fMake(1, j * jFact);
 
-        //Cone
-        FMesh[MeshIndex+1][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
-        FMesh[MeshIndex+2][J].Position := VectorAdd(ConeCenter.Position, Vector3fMake(sinTheta1 * fTopArrowHeadHeight,cosTheta1* fTopArrowHeadHeight,0));//Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+        // Cone
+        FMesh[MeshIndex + 1][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex + 2][j].Position := VectorAdd(ConeCenter.Position,
+          Vector3fMake(sinTheta1 * fTopArrowHeadHeight,
+          cosTheta1 * fTopArrowHeadHeight, 0));
+        // Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
 
-        FMesh[MeshIndex+1][J].Tangent := VectorNormalize(VectorSubtract(FMesh[MeshIndex+1][J].Position,FMesh[MeshIndex+2][J].Position));
-        FMesh[MeshIndex+2][J].Tangent := FMesh[MeshIndex+1][J].Tangent;
+        FMesh[MeshIndex + 1][j].Tangent :=
+          VectorNormalize(VectorSubtract(FMesh[MeshIndex + 1][j].Position,
+          FMesh[MeshIndex + 2][j].Position));
+        FMesh[MeshIndex + 2][j].Tangent := FMesh[MeshIndex + 1][j].Tangent;
 
-        FMesh[MeshIndex+1][J].Binormal := Vector3fMake(cosTheta1 * -sinPhi, sinTheta1 * sinPhi, cosPhi);
-        FMesh[MeshIndex+2][J].Binormal := FMesh[MeshIndex+1][J].Binormal;
+        FMesh[MeshIndex + 1][j].Binormal := Vector3fMake(cosTheta1 * -sinPhi,
+          sinTheta1 * sinPhi, cosPhi);
+        FMesh[MeshIndex + 2][j].Binormal := FMesh[MeshIndex + 1][j].Binormal;
 
-        FMesh[MeshIndex+1][J].Normal :=  VectorCrossProduct(FMesh[MeshIndex+1][J].Binormal,FMesh[MeshIndex+1][J].Tangent);
-        FMesh[MeshIndex+2][J].Normal := FMesh[MeshIndex+1][J].Normal;
+        FMesh[MeshIndex + 1][j].Normal :=
+          VectorCrossProduct(FMesh[MeshIndex + 1][j].Binormal,
+          FMesh[MeshIndex + 1][j].Tangent);
+        FMesh[MeshIndex + 2][j].Normal := FMesh[MeshIndex + 1][j].Normal;
 
-        FMesh[MeshIndex+1][J].TexCoord := Vector2fMake(0, j * jFact);
-        FMesh[MeshIndex+2][J].TexCoord := Vector2fMake(1, j * jFact);
+        FMesh[MeshIndex + 1][j].TexCoord := Vector2fMake(0, j * jFact);
+        FMesh[MeshIndex + 2][j].TexCoord := Vector2fMake(1, j * jFact);
       end;
 
-      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
-      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      ConeCenter.TexCoord :=  Vector2fMake(0,0);
+      ConeCenter.Normal := FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord := Vector2fMake(0, 0);
 
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -3058,33 +3146,33 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := FSlices downto 0 do
+        for j := FSlices downto 0 do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
 
         Begin_(GL_TRIANGLES);
 
-        for J := FSlices - 1 downto 0 do
+        for j := FSlices - 1 downto 0 do
         begin
-          pVertex := @FMesh[MeshIndex+1][J];
+          pVertex := @FMesh[MeshIndex + 1][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+1][J+1];
+          pVertex := @FMesh[MeshIndex + 1][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+2][J];
+          pVertex := @FMesh[MeshIndex + 2][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+2][J+1];
+          pVertex := @FMesh[MeshIndex + 2][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+2][J];
+          pVertex := @FMesh[MeshIndex + 2][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+1][J+1];
+          pVertex := @FMesh[MeshIndex + 1][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
@@ -3094,37 +3182,41 @@ begin
     end
     else
     begin
-      SetLength(FMesh[MeshIndex], FSlices+1);
-      theta1 := DegToRad(FStartAngle);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSlices + 1);
+      Theta1 := DegToRad(FStartAngle);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
-      phi := 0;
-      for J := FSlices downto 0 do
+      Phi := 0;
+      for j := FSlices downto 0 do
       begin
-        phi := phi + sideDelta;
-        SinCos(phi, sinPhi, cosPhi);
-        dist := fArcRadius + fTopRadius * cosPhi;
-        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
-        ringDir := FMesh[MeshIndex][J].Position;
+        Phi := Phi + sideDelta;
+        SinCos(Phi, sinPhi, cosPhi);
+        dist := fArcRadius + FTopRadius * cosPhi;
+        FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, FTopRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
-        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
-        FMesh[MeshIndex][J].Tangent := ringDir;
-        FMesh[MeshIndex][J].Binormal := ZVector;
-        FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+        FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
+        FMesh[MeshIndex][j].Tangent := ringDir;
+        FMesh[MeshIndex][j].Binormal := ZVector;
+        FMesh[MeshIndex][j].TexCoord := Vector2fMake(0, j * jFact);
       end;
 
-      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
-      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
-      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      ConeCenter.TexCoord :=  Vector2fMake(1,1);
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
+        -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Normal := FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord := Vector2fMake(1, 1);
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -3134,9 +3226,9 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := 0 to FSlices do
+        for j := 0 to FSlices do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
@@ -3146,59 +3238,72 @@ begin
 
     if aaBottomArrow in FParts then
     begin
-      SetLength(FMesh[MeshIndex], FSlices+1);
-      SetLength(FMesh[MeshIndex+1], FSlices+1);
-      SetLength(FMesh[MeshIndex+2], FSlices+1);
-      theta1 := DegToRad(FStopAngle-StopOffset);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSlices + 1);
+      SetLength(FMesh[MeshIndex + 1], FSlices + 1);
+      SetLength(FMesh[MeshIndex + 2], FSlices + 1);
+      Theta1 := DegToRad(FStopAngle - StopOffset);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
-      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
+        -sinTheta1 * fArcRadius, 0);
 
-      phi := 0;
-      for J := FSlices downto 0 do
+      Phi := 0;
+      for j := FSlices downto 0 do
       begin
-        phi := phi + sideDelta;
-        SinCos(phi, sinPhi, cosPhi);
+        Phi := Phi + sideDelta;
+        SinCos(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fBottomArrowHeadRadius * cosPhi;
 
-        //Cap
-        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
-        ringDir := FMesh[MeshIndex][J].Position;
+        // Cap
+        FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
-        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ZVector, ringDir);
-        FMesh[MeshIndex][J].Tangent := ringDir;
-        FMesh[MeshIndex][J].Binormal := ZVector;
-        FMesh[MeshIndex][J].TexCoord := Vector2fMake(0, j * jFact);
+        FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
+        FMesh[MeshIndex][j].Tangent := ringDir;
+        FMesh[MeshIndex][j].Binormal := ZVector;
+        FMesh[MeshIndex][j].TexCoord := Vector2fMake(0, j * jFact);
 
-        //Cone
-        FMesh[MeshIndex+1][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
-        FMesh[MeshIndex+2][J].Position := VectorSubtract(ConeCenter.Position, Vector3fMake(sinTheta1 * fBottomArrowHeadHeight,cosTheta1* fBottomArrowHeadHeight,0));//Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+        // Cone
+        FMesh[MeshIndex + 1][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex + 2][j].Position := VectorSubtract(ConeCenter.Position,
+          Vector3fMake(sinTheta1 * fBottomArrowHeadHeight,
+          cosTheta1 * fBottomArrowHeadHeight, 0));
+        // Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
 
-        FMesh[MeshIndex+1][J].Tangent := VectorNormalize(VectorSubtract(FMesh[MeshIndex+2][J].Position,FMesh[MeshIndex+1][J].Position));
-        FMesh[MeshIndex+2][J].Tangent := FMesh[MeshIndex+1][J].Tangent;
+        FMesh[MeshIndex + 1][j].Tangent :=
+          VectorNormalize(VectorSubtract(FMesh[MeshIndex + 2][j].Position,
+          FMesh[MeshIndex + 1][j].Position));
+        FMesh[MeshIndex + 2][j].Tangent := FMesh[MeshIndex + 1][j].Tangent;
 
-        FMesh[MeshIndex+1][J].Binormal := Vector3fMake(cosTheta1 * -sinPhi, sinTheta1 * sinPhi, cosPhi);
-        FMesh[MeshIndex+2][J].Binormal := FMesh[MeshIndex+1][J].Binormal;
+        FMesh[MeshIndex + 1][j].Binormal := Vector3fMake(cosTheta1 * -sinPhi,
+          sinTheta1 * sinPhi, cosPhi);
+        FMesh[MeshIndex + 2][j].Binormal := FMesh[MeshIndex + 1][j].Binormal;
 
-        FMesh[MeshIndex+1][J].Normal :=  VectorCrossProduct(FMesh[MeshIndex+1][J].Binormal,FMesh[MeshIndex+1][J].Tangent);
-        FMesh[MeshIndex+2][J].Normal := FMesh[MeshIndex+1][J].Normal;
+        FMesh[MeshIndex + 1][j].Normal :=
+          VectorCrossProduct(FMesh[MeshIndex + 1][j].Binormal,
+          FMesh[MeshIndex + 1][j].Tangent);
+        FMesh[MeshIndex + 2][j].Normal := FMesh[MeshIndex + 1][j].Normal;
 
-        FMesh[MeshIndex+1][J].TexCoord := Vector2fMake(1, j * jFact);
-        FMesh[MeshIndex+2][J].TexCoord := Vector2fMake(0, j * jFact);
+        FMesh[MeshIndex + 1][j].TexCoord := Vector2fMake(1, j * jFact);
+        FMesh[MeshIndex + 2][j].TexCoord := Vector2fMake(0, j * jFact);
       end;
 
-      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
-      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      ConeCenter.TexCoord :=  Vector2fMake(1,1);
+      ConeCenter.Normal := FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord := Vector2fMake(1, 1);
 
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -3209,72 +3314,75 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := 0 to FSlices do
+        for j := 0 to FSlices do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
 
         Begin_(GL_TRIANGLES);
 
-        for J := FSlices - 1 downto 0 do
+        for j := FSlices - 1 downto 0 do
         begin
-          pVertex := @FMesh[MeshIndex+2][J];
+          pVertex := @FMesh[MeshIndex + 2][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+2][J+1];
+          pVertex := @FMesh[MeshIndex + 2][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+1][J];
+          pVertex := @FMesh[MeshIndex + 1][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+1][J+1];
+          pVertex := @FMesh[MeshIndex + 1][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+1][J];
+          pVertex := @FMesh[MeshIndex + 1][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
 
-          pVertex := @FMesh[MeshIndex+2][J+1];
+          pVertex := @FMesh[MeshIndex + 2][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
 
       end;
-      MeshIndex := MeshIndex + 3;
     end
     else
     begin
-      SetLength(FMesh[MeshIndex], FSlices+1);
-      theta1 := DegToRad(FStopAngle);
-      SinCos(theta1, sinTheta1, cosTheta1);
+      SetLength(FMesh[MeshIndex], FSlices + 1);
+      Theta1 := DegToRad(FStopAngle);
+      SinCos(Theta1, sinTheta1, cosTheta1);
 
-      phi := 0;
-      for J := FSlices downto 0 do
+      Phi := 0;
+      for j := FSlices downto 0 do
       begin
-        phi := phi + sideDelta;
-        SinCos(phi, sinPhi, cosPhi);
-        dist := fArcRadius + fBottomRadius * cosPhi;
-        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fBottomRadius * sinPhi);
-        ringDir := FMesh[MeshIndex][J].Position;
+        Phi := Phi + sideDelta;
+        SinCos(Phi, sinPhi, cosPhi);
+        dist := fArcRadius + FBottomRadius * cosPhi;
+        FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, FBottomRadius * sinPhi);
+        ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
-        FMesh[MeshIndex][J].Normal := VectorCrossProduct(ringDir, ZVector);
-        FMesh[MeshIndex][J].Tangent := ringDir;
-        FMesh[MeshIndex][J].Binormal := VectorNegate(ZVector);
-        FMesh[MeshIndex][J].TexCoord := Vector2fMake(1, j * jFact);
+        FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
+        FMesh[MeshIndex][j].Tangent := ringDir;
+        FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
+        FMesh[MeshIndex][j].TexCoord := Vector2fMake(1, j * jFact);
       end;
-      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius, -sinTheta1 * fArcRadius, 0);
-      ConeCenter.Normal :=  FMesh[MeshIndex][0].Normal;
-      ConeCenter.Tangent :=  FMesh[MeshIndex][0].Tangent;
-      ConeCenter.Binormal :=  FMesh[MeshIndex][0].Binormal;
-      ConeCenter.TexCoord :=  Vector2fMake(0,0);
+      ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
+        -sinTheta1 * fArcRadius, 0);
+      ConeCenter.Normal := FMesh[MeshIndex][0].Normal;
+      ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
+      ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
+      ConeCenter.TexCoord := Vector2fMake(0, 0);
       with GL do
       begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(TangentAttributeName));
+          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+            PGLChar(BinormalAttributeName));
         end
         else
         begin
@@ -3284,14 +3392,13 @@ begin
         Begin_(GL_TRIANGLE_FAN);
         pVertex := @ConeCenter;
         EmitVertex(pVertex, TanLoc, BinLoc);
-        for J := FSlices downto 0 do
+        for j := FSlices downto 0 do
         begin
-          pVertex := @FMesh[MeshIndex][J];
+          pVertex := @FMesh[MeshIndex][j];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
         End_;
       end;
-      MeshIndex := MeshIndex + 1;
     end;
   end;
 end;
@@ -3301,10 +3408,10 @@ end;
 
 procedure TGLArrowArc.Assign(Source: TPersistent);
 begin
-  if assigned(SOurce) and (Source is TGLArrowLine) then
+  if Assigned(Source) and (Source is TGLArrowLine) then
   begin
-    fStartAngle := TGLArrowArc(Source).fStartAngle;
-    fStopAngle := TGLArrowArc(Source).fStopAngle;
+    FStartAngle := TGLArrowArc(Source).FStartAngle;
+    FStopAngle := TGLArrowArc(Source).FStopAngle;
     fArcRadius := TGLArrowArc(Source).fArcRadius;
     FParts := TGLArrowArc(Source).FParts;
     FTopRadius := TGLArrowArc(Source).FTopRadius;
@@ -3338,7 +3445,7 @@ var
   HTW, HTD: TGLFloat; // half of width, half of depth at top of frustrum
   HFH: TGLFloat; // half of height, for align to center
   Sign: TGLFloat; // +1 or -1
-  Angle: TGLFloat; // in radians
+  angle: TGLFloat; // in radians
   ASin, ACos: TGLFloat;
 begin
   if FNormalDirection = ndInside then
@@ -3355,60 +3462,61 @@ begin
 
   if [fpFront, fpBack] * FParts <> [] then
   begin
-    Angle := Arctan(FApexHeight / HBD); // angle of front plane with bottom plane
-    SinCos(Angle, ASin, ACos);
+    angle := ArcTan(FApexHeight / HBD);
+    // angle of front plane with bottom plane
+    SinCos(angle, ASin, ACos);
     if fpFront in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, Sign * ASin);
-      xgl.TexCoord2fv(@XYTexPoint);
+      XGL.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(HTW, HFH, HTD);
-      xgl.TexCoord2fv(@YTexPoint);
+      XGL.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(-HTW, HFH, HTD);
-      xgl.TexCoord2fv(@NullTexPoint);
+      XGL.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(-HBW, -HFH, HBD);
-      xgl.TexCoord2fv(@XTexPoint);
+      XGL.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(HBW, -HFH, HBD);
     end;
     if fpBack in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, -Sign * ASin);
-      xgl.TexCoord2fv(@YTexPoint);
+      XGL.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(HTW, HFH, -HTD);
-      xgl.TexCoord2fv(@NullTexPoint);
+      XGL.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(HBW, -HFH, -HBD);
-      xgl.TexCoord2fv(@XTexPoint);
+      XGL.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(-HBW, -HFH, -HBD);
-      xgl.TexCoord2fv(@XYTexPoint);
+      XGL.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(-HTW, HFH, -HTD);
     end;
   end;
 
   if [fpLeft, fpRight] * FParts <> [] then
   begin
-    Angle := Arctan(FApexHeight / HBW); // angle of side plane with bottom plane
-    SinCos(Angle, ASin, ACos);
+    angle := ArcTan(FApexHeight / HBW); // angle of side plane with bottom plane
+    SinCos(angle, ASin, ACos);
     if fpLeft in FParts then
     begin
       GL.Normal3f(-Sign * ASin, Sign * ACos, 0);
-      xgl.TexCoord2fv(@XYTexPoint);
+      XGL.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(-HTW, HFH, HTD);
-      xgl.TexCoord2fv(@YTexPoint);
+      XGL.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(-HTW, HFH, -HTD);
-      xgl.TexCoord2fv(@NullTexPoint);
+      XGL.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(-HBW, -HFH, -HBD);
-      xgl.TexCoord2fv(@XTexPoint);
+      XGL.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(-HBW, -HFH, HBD);
     end;
     if fpRight in FParts then
     begin
       GL.Normal3f(Sign * ASin, Sign * ACos, 0);
-      xgl.TexCoord2fv(@YTexPoint);
+      XGL.TexCoord2fv(@YTexPoint);
       GL.Vertex3f(HTW, HFH, HTD);
-      xgl.TexCoord2fv(@NullTexPoint);
+      XGL.TexCoord2fv(@NullTexPoint);
       GL.Vertex3f(HBW, -HFH, HBD);
-      xgl.TexCoord2fv(@XTexPoint);
+      XGL.TexCoord2fv(@XTexPoint);
       GL.Vertex3f(HBW, -HFH, -HBD);
-      xgl.TexCoord2fv(@XYTexPoint);
+      XGL.TexCoord2fv(@XYTexPoint);
       GL.Vertex3f(HTW, HFH, -HTD);
     end;
   end;
@@ -3416,25 +3524,25 @@ begin
   if (fpTop in FParts) and (FHeight < FApexHeight) then
   begin
     GL.Normal3f(0, Sign, 0);
-    xgl.TexCoord2fv(@YTexPoint);
+    XGL.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-HTW, HFH, -HTD);
-    xgl.TexCoord2fv(@NullTexPoint);
+    XGL.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-HTW, HFH, HTD);
-    xgl.TexCoord2fv(@XTexPoint);
+    XGL.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(HTW, HFH, HTD);
-    xgl.TexCoord2fv(@XYTexPoint);
+    XGL.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(HTW, HFH, -HTD);
   end;
   if fpBottom in FParts then
   begin
     GL.Normal3f(0, -Sign, 0);
-    xgl.TexCoord2fv(@NullTexPoint);
+    XGL.TexCoord2fv(@NullTexPoint);
     GL.Vertex3f(-HBW, -HFH, -HBD);
-    xgl.TexCoord2fv(@XTexPoint);
+    XGL.TexCoord2fv(@XTexPoint);
     GL.Vertex3f(HBW, -HFH, -HBD);
-    xgl.TexCoord2fv(@XYTexPoint);
+    XGL.TexCoord2fv(@XYTexPoint);
     GL.Vertex3f(HBW, -HFH, HBD);
-    xgl.TexCoord2fv(@YTexPoint);
+    XGL.TexCoord2fv(@YTexPoint);
     GL.Vertex3f(-HBW, -HFH, HBD);
   end;
 
@@ -3557,7 +3665,7 @@ function TGLFrustrum.AxisAlignedBoundingBoxUnscaled: TAABB;
 var
   aabb: TAABB;
   child: TGLBaseSceneObject;
-  i: Integer;
+  i: integer;
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   OffsetAABB(Result, VectorMake(0, FHeight * 0.5, 0));
@@ -3630,47 +3738,47 @@ end;
 
 procedure TGLPolygon.BuildList(var rci: TRenderContextInfo);
 var
-  normal: TAffineVector;
+  Normal: TAffineVector;
   pNorm: PAffineVector;
 begin
   if (Nodes.Count > 1) then
   begin
-    normal := Nodes.Normal;
-    if VectorIsNull(normal) then
+    Normal := Nodes.Normal;
+    if VectorIsNull(Normal) then
       pNorm := nil
     else
-      pNorm := @normal;
+      pNorm := @Normal;
     if ppTop in FParts then
     begin
       if SplineMode = lsmLines then
-        Nodes.RenderTesselatedPolygon(True, pNorm, 1)
+        Nodes.RenderTesselatedPolygon(true, pNorm, 1)
       else
-        Nodes.RenderTesselatedPolygon(True, pNorm, Division);
+        Nodes.RenderTesselatedPolygon(true, pNorm, Division);
     end;
     // tessellate bottom polygon
     if ppBottom in FParts then
     begin
       if Assigned(pNorm) then
-        NegateVector(normal);
+        NegateVector(Normal);
       if SplineMode = lsmLines then
-        Nodes.RenderTesselatedPolygon(True, pNorm, 1, True)
+        Nodes.RenderTesselatedPolygon(true, pNorm, 1, true)
       else
-        Nodes.RenderTesselatedPolygon(True, pNorm, Division, True);
+        Nodes.RenderTesselatedPolygon(true, pNorm, Division, true);
     end;
   end;
 end;
 
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
 
 initialization
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
 
-  RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
-    TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule, TGLArrowArc]);
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+
+RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
+  TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule, TGLArrowArc]);
 
 end.
-
