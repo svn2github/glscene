@@ -30,7 +30,11 @@ interface
 {$INCLUDE GLScene.inc}
 
 uses
+{$IFDEF MSWINDOWS}
   Windows,
+{$ELSE FPC}
+  LCLIntf, LCLType, Types, LCLProc,
+{$ENDIF}
   GLBitmapFont,
   Classes,
   GLScene,
@@ -128,8 +132,10 @@ uses
 const
   cDefaultLast = '}';
 
+{$IFDEF MSWINDOWS}
 Var
   Win32PlatformIsUnicode : Boolean;
+{$ENDIF}
 
 // ------------------
 // ------------------ TGLWindowsBitmapFont ------------------
@@ -202,6 +208,11 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     px, py, cw, n: Integer;
     rect: TGLRect;
     buffer : array[0..2] of WideChar;
+{$IFNDEF MSWINDOWS}
+    utfs: string;
+    utfbuffer: array[0..3] of Char;
+    i: integer;
+{$ENDIF}
  begin
     buffer[1] := WideChar(#32);
     buffer[2] := WideChar(#0);
@@ -233,11 +244,25 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           rect.Top := py;
           rect.Right := px + cw;
           rect.Bottom := py + CharHeight;
-          // Draw the Char, the trailing space is to properly handle the italics.
-          //canvas.TextRect(rect, px + 1, py + 1, TileIndexToChar(n) + ' ');
           buffer[0] := TileIndexToChar(n);
+          // Draw the Char, the trailing space is to properly handle the italics.
+{$IFDEF MSWINDOWS}
           // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
-          Windows.ExtTextOutW(canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, buffer, 2, nil);
+          Windows.ExtTextOutW(Canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, buffer, 2, nil);
+{$ELSE}
+          utfs := UTF16ToUTF8(buffer[0]);
+          utfbuffer[0] := utfs[1];
+          i := 1;
+          if Length(utfs)>1 then
+          begin
+            utfbuffer[1] := utfs[2];
+            inc(i);
+          end;
+          utfbuffer[i] := #32;
+          Inc(i);
+          utfbuffer[i] := #0;
+          LCLIntf.ExtTextOut(Canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, utfbuffer, i, nil);
+{$ENDIF}
         end;
         Inc(px, cw);
       end
@@ -252,19 +277,33 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   // credits to the Unicode version of SynEdit for this function. GPL/MPL as GLScene
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
   var
-    tm: {$IFDEF FPC}LPTextMetric{$ELSE}TTextMetricA{$ENDIF};
+    {$IFDEF FPC}
+    {$IFDEF MSWINDOWS}
+    tm:  FPCLPTextMetric;
+    {$ELSE}
+    LString: string;
+    {$ENDIF}
+    {$ELSE}
+    tm: TTextMetricA;
+    {$ENDIF}
   begin
     Result.cx := 0;
     Result.cy := 0;
+{$IFDEF MSWINDOWS}
     GetTextExtentPoint32W(DC, Str, Count, Result);
     if not Win32PlatformIsUnicode then
     begin
-      GetTextMetricsA(DC, tm);
+      GetTextMetrics(DC, tm);
       if tm.tmPitchAndFamily and TMPF_TRUETYPE <> 0 then
         Result.cx := Result.cx - tm.tmOverhang
       else
         Result.cx := tm.tmAveCharWidth * Count;
     end;
+  end;
+{$ELSE}
+    LString := UTF16ToUTF8(WideString(Str));
+    GetTextExtentPoint32(DC, PChar(LString), UTF8Length(LString), Result);
+{$ENDIF}
   end;
 
 var
@@ -272,6 +311,7 @@ var
   ch: widechar;
   x, y, i, cw: Integer;
   nbChars: Integer;
+
 begin
   InvalidateUsers;
   bitmap := Glyphs.Bitmap;
@@ -339,6 +379,7 @@ begin
   end;
 
   ComputeCharRects(x, y, bitmap.Canvas);
+  Glyphs.Graphic.Modified := True;
   Glyphs.OnChange := OnGlyphsChanged;
 end;
 
@@ -550,8 +591,9 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
+{$IFDEF MSWINDOWS}
   Win32PlatformIsUnicode := (Win32Platform = VER_PLATFORM_WIN32_NT);
+{$ENDIF}
 
    // class registrations
   RegisterClasses([TGLWindowsBitmapFont, TGLStoredBitmapFont]);

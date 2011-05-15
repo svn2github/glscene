@@ -875,19 +875,27 @@ procedure TGLCustomBitmapFont.PrepareImage;
 var
   bitmap: TGLBitmap;
   bitmap32: TGLBitmap32;
-  cap: Integer;
+  cap, w, h: Integer;
 begin
-  bitmap := TGLBitmap.Create;
-  with bitmap do
-  begin
-    PixelFormat := glpf24bit;
-    Width := RoundUpToPowerOf2(Glyphs.Width);
-    Height := RoundUpToPowerOf2(Glyphs.Height);
-    Canvas.Draw(0, 0, Glyphs.Graphic);
-  end;
   bitmap32 := TGLBitmap32.Create;
-  bitmap32.Assign(bitmap);
-  bitmap.Free;
+  w := RoundUpToPowerOf2(Glyphs.Width);
+  h := RoundUpToPowerOf2(Glyphs.Height);
+  if (w <> Glyphs.Width) or (h <> Glyphs.Height) then
+  begin
+    bitmap := TGLBitmap.Create;
+    with bitmap do
+    begin
+      PixelFormat := glpf32bit;
+      Width := w;
+      Height := h;
+      Canvas.Draw(0, 0, Glyphs.Graphic);
+    end;
+    bitmap32.Assign(bitmap);
+    bitmap.Destroy;
+  end
+  else
+    bitmap32.Assign(Glyphs.bitmap);
+
   bitmap32.Narrow;
   with bitmap32 do
   begin
