@@ -299,7 +299,6 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
       else
         Result.cx := tm.tmAveCharWidth * Count;
     end;
-  end;
 {$ELSE}
     LString := UTF16ToUTF8(WideString(Str));
     GetTextExtentPoint32(DC, PChar(LString), UTF8Length(LString), Result);

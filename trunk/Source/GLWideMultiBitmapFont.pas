@@ -53,11 +53,12 @@ type
     Procedure FreeCharByIndex(aIndex: Integer);
     Procedure AddMaterial(aMaterial: TGlMaterial);
     Procedure RenderString(var rci: TRenderContextInfo;
-      const aText: WideString; aAlignment: TAlignment; layout: TGLTextLayout;
+      const aText: UnicodeString; aAlignment: TAlignment; layout: TGLTextLayout;
       const aColor: TColorVector; aPosition: PVector = nil;
       aReverseY: Boolean = False); override;
-    function CalcStringWidth(const aText: WideString): Integer; override;
+
     function IsContainChar(const aChar: WideChar): Boolean;
+    function CalcStringWidth(const aText: UnicodeString): Integer; override;
   end;
 
 implementation
@@ -129,11 +130,9 @@ Function TGLWideMultiBitmapFont.SizeOfChar: Int64;
 var
   ch: TUnicodeChar;
 begin
-  ch := TUnicodeChar.Create;
   with ch do
     result := sizeOf(fUnicodeIndex) + sizeOf(fCharRect) + sizeOf(fCharWidth)
       + sizeOf(fCharHeight) + sizeOf(fMaterialIndex);
-  FreeAndNil(ch);
 end;
 
 // SaveCharsToFile
@@ -144,8 +143,8 @@ var
   i: Integer;
   fFile: TStream;
 begin
+  fFile := CreateFileStream(aFileName, fmCreate);
   try
-    fFile := CreateFileStream(aFileName, fmCreate);
     for i := 0 to 65535 do
       if fChars[i] <> nil then
         with fChars[i] do
@@ -168,8 +167,8 @@ Procedure TGLWideMultiBitmapFont.LoadCharsFromFile(aFileName: String);
 var
   fFile: TStream;
 begin
+  fFile := CreateFileStream(aFileName, fmOpenRead);
   try
-    fFile := CreateFileStream(aFileName, fmOpenRead);
     LoadCharsFromStream(fFile);
   finally
     fFile.Free;
@@ -232,7 +231,7 @@ end;
 //
 
 Procedure TGLWideMultiBitmapFont.RenderString(var rci: TRenderContextInfo;
-  const aText: WideString; aAlignment: TAlignment; layout: TGLTextLayout;
+  const aText: UnicodeString; aAlignment: TAlignment; layout: TGLTextLayout;
   const aColor: TColorVector; aPosition: PVector = nil;
   aReverseY: Boolean = False);
 
@@ -349,7 +348,7 @@ end;
 // CalcStringWidth
 //
 
-function TGLWideMultiBitmapFont.CalcStringWidth(const aText: WideString): Integer;
+function TGLWideMultiBitmapFont.CalcStringWidth(const aText: UnicodeString): Integer;
 var
   i: Integer;
   wChar: WideChar;

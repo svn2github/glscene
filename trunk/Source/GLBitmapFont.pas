@@ -252,7 +252,7 @@ type
     {: Get the actual width for this char. }
     function  GetCharWidth(ch: widechar): Integer;
     {: Get the actual pixel width for this string. }
-    function  CalcStringWidth(const aText: UnicodeString): Integer; overload; virtual;
+    function  CalcStringWidth(const aText: UnicodeString): Integer; virtual;
 
     // make texture if needed
     procedure CheckTexture(var rci: TRenderContextInfo);
@@ -1169,19 +1169,20 @@ begin
   begin
     ResetCharWidths;
     SetLength(FCharRects, CharacterCount);
-    for tileIndex := 0 to CharacterCount - 1 do
-    begin
-      p := @FCharRects[tileIndex];
-      carX := (tileIndex mod CharactersPerRow) * (CharWidth + GlyphsIntervalX);
-      carY := (tileIndex div CharactersPerRow) * (CharHeight + GlyphsIntervalY);
-      p[0] := (carX + 0.05) / FTextureWidth;
-      p[1] := (FTextureHeight - (carY + 0.05)) / FTextureHeight;
-      p[2] := (carX + CharWidths[tileIndex] - 0.05) / FTextureWidth;
-      p[3] := (FTextureHeight - (carY + CharHeight - 0.05)) / FTextureHeight;
-    end;
+    if (CharactersPerRow > 0) then
+      for tileIndex := 0 to CharacterCount - 1 do
+      begin
+        p := @FCharRects[tileIndex];
+        carX := (tileIndex mod CharactersPerRow) * (CharWidth + GlyphsIntervalX);
+        carY := (tileIndex div CharactersPerRow) * (CharHeight + GlyphsIntervalY);
+        p[0] := (carX + 0.05) / FTextureWidth;
+        p[1] := (FTextureHeight - (carY + 0.05)) / FTextureHeight;
+        p[2] := (carX + CharWidths[tileIndex] - 0.05) / FTextureWidth;
+        p[3] := (FTextureHeight - (carY + CharHeight - 0.05)) / FTextureHeight;
+      end;
   end;
 
-  if chi < 0 then
+  if (chi < 0) or (chi >= CharacterCount) then
   begin
     //invalid char
     topLeft := NullTexPoint;
