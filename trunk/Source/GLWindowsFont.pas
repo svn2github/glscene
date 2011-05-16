@@ -277,14 +277,14 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
 
   // credits to the Unicode version of SynEdit for this function. GPL/MPL as GLScene
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
-  var
-    tm: TTextMetricA;
     {$IFDEF FPC}
-    {$IFNDEF MSWINDOWS}
-    LString: string;
+    {$IFDEF MSWINDOWS}
+    var tm: LPTextMetric;
+    {$ELSE}
+    var LString: string;
     {$ENDIF}
     {$ELSE}
-
+    var tm: TTextMetricW;
     {$ENDIF}
   begin
     Result.cx := 0;
@@ -293,7 +293,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     GetTextExtentPoint32W(DC, Str, Count, Result);
     if not Win32PlatformIsUnicode then
     begin
-      GetTextMetrics(DC, tm);
+      GetTextMetricsW(DC, tm);
       if tm.tmPitchAndFamily and TMPF_TRUETYPE <> 0 then
         Result.cx := Result.cx - tm.tmOverhang
       else
