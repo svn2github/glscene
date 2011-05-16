@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/05/11 - Vince - Fix picking problems with Ortho2D Camera
       <li>21/11/10 - Yar - Added design time navigation
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>25/10/10 - Yar - Bugfixed TGLSceneBuffer.CopyToTexture
@@ -5957,8 +5958,9 @@ begin
     vTop := AHeight;
     FNearPlane := -1;
     vFar := 1;
+    mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
     with CurrentGLContext.PipelineTransformation do
-      ProjectionMatrix := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
     FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
   else if CameraStyle = csCustom then
