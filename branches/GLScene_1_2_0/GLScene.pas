@@ -6,6 +6,8 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/05/11 - Yar - Transition to indirect rendering objects, added light source glyphs
+      <li>04/05/11 - Vince - Fix picking problems with Ortho2D Camera
       <li>21/11/10 - Yar - Added design time navigation
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>25/10/10 - Yar - Bugfixed TGLSceneBuffer.CopyToTexture
@@ -353,6 +355,7 @@ uses
   Controls,
 {$IFDEF FPC}
   LCLType,
+  LResources,
 {$ENDIF}
 
   // GLScene
@@ -363,6 +366,7 @@ uses
   GLSilhouette,
   PersistentClasses,
   GLState,
+  GLPipelineTransformation,
   GLGraphics,
   GeometryBB,
   GLCrossPlatform,
@@ -373,8 +377,11 @@ uses
   GLCoordinates,
   GLRenderContextInfo,
   GLMaterial,
+  GLMaterialEx,
   GLTextureFormat,
-  GLSelection;
+  GLSelection,
+  GLSMesh,
+  GLSDrawTechnique;
 
 type
 
@@ -471,6 +478,7 @@ type
      </ul> }
   TGLObjectStyle = (
     osDirectDraw,
+    osDeferredDraw,
     osIgnoreDepthBuffer,
     osNoVisibilityCulling);
   TGLObjectStyles = set of TGLObjectStyle;
@@ -951,7 +959,7 @@ type
 
     //: Recalculate an orthonormal system
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); override;
-    procedure TransformationChanged;
+    procedure TransformationChanged; virtual;
     procedure NotifyChange(Sender: TObject); override;
 
     property Rotation: TGLCoordinates read FRotation write SetRotation;
@@ -1163,17 +1171,15 @@ type
   TGLCustomSceneObject = class(TGLBaseSceneObject)
   private
     { Private Declarations }
-    FMaterial: TGLMaterial;
-    FHint: string;
-
   protected
     { Protected Declarations }
+    FMaterial: TGLLibMaterial;
+    FHint: string;
     function Blended: Boolean; override;
-
+    function GetMaterial: TGLMaterial;
     procedure SetGLMaterial(AValue: TGLMaterial);
     procedure DestroyHandle; override;
     procedure Loaded; override;
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1183,7 +1189,7 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    property Material: TGLMaterial read FMaterial write SeTGLMaterial;
+    property Material: TGLMaterial read GetMaterial write SetGLMaterial;
     property Hint: string read FHint write FHint;
   end;
 
@@ -1449,8 +1455,10 @@ type
         all directions uniformously
      <li>lsParallel : a parallel light, oriented as the light source is (this
         type of light can help speed up rendering)
+     <li>lsParallelSpot : a parallel light with a cutoff where spot exponent
+        define gain
       </ul> }
-  TLightStyle = (lsSpot, lsOmni, lsParallel);
+  TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   // TGLLightSource
   //
@@ -1468,6 +1476,8 @@ type
   TGLLightSource = class(TGLBaseSceneObject)
   private
     { Private Declarations }
+    FBatch: TDrawBatch;
+    FTransformation: TTransformationRec;
     FLightID: Cardinal;
     FSpotDirection: TGLCoordinates;
     FSpotExponent, FSpotCutOff: Single;
@@ -1475,9 +1485,15 @@ type
     FShining: Boolean;
     FAmbient, FDiffuse, FSpecular: TGLColor;
     FLightStyle: TLightStyle;
-
+    FGlyphScale: Single;
+    FVisibleAtRunTime: Boolean;
+    procedure UpdateMaterial;
+    procedure SetGlyphScale(const Value: Single);
+    function StoreGlyphScale: Boolean;
+    procedure OnDiffuseChaged(Sender: TObject);
   protected
     { Protected Declarations }
+    procedure BuildMesh;
     procedure SetAmbient(AValue: TGLColor);
     procedure SetDiffuse(AValue: TGLColor);
     procedure SetSpecular(AValue: TGLColor);
@@ -1489,7 +1505,8 @@ type
     procedure SetSpotExponent(AValue: Single);
     procedure SetSpotCutOff(const val: Single);
     procedure SetLightStyle(const val: TLightStyle);
-
+    procedure SetScene(const value: TGLScene); override;
+    procedure OnShaderInitialize(Sender: TGLBaseShaderModel);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1528,6 +1545,11 @@ type
     property SpotDirection: TGLCoordinates read FSpotDirection write
       SetSpotDirection;
     property SpotExponent: Single read FSpotExponent write SetSpotExponent;
+    property GlyphScale: Single read FGlyphScale write SetGlyphScale
+      stored StoreGlyphScale;
+    property GlyphVisibleAtRunTime: Boolean read FVisibleAtRunTime
+      write FVisibleAtRunTime default False;
+    property Direction;
     property OnProgress;
   end;
 
@@ -1756,7 +1778,7 @@ type
     FOnProgress: TGLProgressEvent;
     FCurrentDeltaTime: Double;
     FInitializableObjects: TGLInitializableObjectList;
-
+    FRenderManager: TGLRenderManager;
   protected
     { Protected Declarations }
     procedure AddLight(aLight: TGLLightSource);
@@ -1827,6 +1849,8 @@ type
     property InitializableObjects: TGLInitializableObjectList read
       FInitializableObjects;
     property CurrentDeltaTime: Double read FCurrentDeltaTime;
+
+    property RenderManager: TGLRenderManager read FRenderManager;
   published
     { Published Declarations }
     {: Defines default ObjectSorting option for scene objects. }
@@ -2499,6 +2523,9 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+{$IFDEF GLS_DELPHI_OR_CPPB}
+{$R GLSceneRunTime.dcr}
+{$ENDIF}
 
 uses
   GLSLog,
@@ -2506,6 +2533,8 @@ uses
   XOpenGL,
   VectorTypes,
   ApplicationFileIO,
+  GLSLParameter,
+  GLFileDDS,
   GLUtils;
 
 var
@@ -2534,6 +2563,7 @@ begin
 {$ENDIF}
   with rci.GLStates do
   begin
+    Disable(stColorMaterial);
     Disable(stLighting);
     if not rci.ignoreBlendingRequests then
     begin
@@ -4847,13 +4877,16 @@ var
   aabb: TAABB;
   master: TObject;
 begin
+  Inc(ARci.orderCounter);
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
 {$ENDIF}
-  if (ARci.drawState = dsPicking) and not FPickable then
+  if (ARci.drawState = dsPicking)
+    and (not FPickable or (osDeferredDraw in ObjectStyle)) then
     exit;
+
   // visibility culling determination
   if ARci.visibilityCulling in [vcObjectBased, vcHierarchical] then
   begin
@@ -4877,13 +4910,16 @@ begin
   end
   else
   begin
-    Assert(ARci.visibilityCulling in [vcNone, vcInherited],
-      'Unknown visibility culling option');
     shouldRenderSelf := True;
     shouldRenderChildren := Assigned(FChildren);
   end;
 
-  // Prepare Matrix and PickList stuff
+  // Apply hierarchical transformation
+  if osDeferredDraw in ObjectStyle then
+    ARci.PipelineTransformation.LoadMatricesEnabled := False
+  else
+    ARci.PipelineTransformation.LoadMatricesEnabled := not ARci.GLStates.ForwardContext;
+
   ARci.PipelineTransformation.Push;
   if ocTransformation in FChanges then
     RebuildMatrix;
@@ -4907,16 +4943,16 @@ begin
   begin
     vCurrentRenderingObject := Self;
 {$IFNDEF GLS_OPTIMIZATIONS}
-    if FShowAxes then
+    if FShowAxes and not (osDeferredDraw in ObjectStyle) then
       DrawAxes(ARci, $CCCC);
 {$ENDIF}
     if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
     begin
       ARci.PipelineTransformation.Push;
       FGLObjectEffects.RenderPreEffects(ARci);
-      ARci.PipelineTransformation.Pop;
 
-      ARci.PipelineTransformation.Push;
+      ARci.PipelineTransformation.ReplaceFromStack;
+
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
         ARci.GLStates.Disable(stDepthTest);
@@ -4983,9 +5019,8 @@ end;
 // RenderChildren
 //
 
-procedure TGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex:
-  Integer;
-  var rci: TRenderContextInfo);
+procedure TGLBaseSceneObject.RenderChildren(
+  firstChildIndex, lastChildIndex: Integer; var rci: TRenderContextInfo);
 var
   i: Integer;
   objList: TPersistentObjectList;
@@ -5684,7 +5719,8 @@ end;
 constructor TGLCustomSceneObject.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FMaterial := TGLMaterial.Create(Self);
+  FMaterial := TGLLibMaterial.Create(nil);
+  FMaterial.RegisterUser(Self);
 end;
 
 // Destroy
@@ -5692,8 +5728,8 @@ end;
 
 destructor TGLCustomSceneObject.Destroy;
 begin
-  inherited Destroy;
   FMaterial.Free;
+  inherited Destroy;
 end;
 
 // Assign
@@ -5723,7 +5759,7 @@ end;
 procedure TGLCustomSceneObject.Loaded;
 begin
   inherited;
-  FMaterial.Loaded;
+  Material.Loaded;
 end;
 
 // SetGLMaterial
@@ -5741,7 +5777,7 @@ end;
 procedure TGLCustomSceneObject.DestroyHandle;
 begin
   inherited;
-  FMaterial.DestroyHandles;
+  Material.DestroyHandles;
 end;
 
 // DoRender
@@ -5770,6 +5806,11 @@ begin
   // start rendering children (if any)
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
+end;
+
+function TGLCustomSceneObject.GetMaterial: TGLMaterial;
+begin
+  Result := FMaterial.Material;
 end;
 
 // ------------------
@@ -5957,8 +5998,9 @@ begin
     vTop := AHeight;
     FNearPlane := -1;
     vFar := 1;
+    mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
     with CurrentGLContext.PipelineTransformation do
-      ProjectionMatrix := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
     FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
   else if CameraStyle = csCustom then
@@ -7037,12 +7079,57 @@ end;
 //
 
 constructor TGLLightSource.Create(AOwner: TComponent);
+const
+  cLightMaterialNames: array[TLightStyle] of string =
+  ('SpotLightMaterial',
+   'OmniLightMaterial',
+   'ParallelLightMaterial',
+   'ParallelSpotLightMaterial');
+  cLightVertexShader120 =
+    '#version 120'#10#13 +
+    'attribute vec3 Position;'#10#13 +
+    'attribute vec2 TexCoord0;'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
+    ' v2f_TexCoord0 = TexCoord0; }';
+  cLightFragmentShader120 =
+    '#version 120'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'uniform sampler2D Glyph;'#10#13 +
+    'uniform vec4 Diffuse;'#10#13 +
+    'void main() {'#10#13 +
+    ' vec4 Color = texture2D(Glyph, v2f_TexCoord0);'#10#13 +
+    ' if (Color.a < 0.5) discard;'#10#13 +
+    ' gl_FragColor = Diffuse * Color; }'#10#13;
+  cLightVertexShader330 =
+    '#version 330'#10#13 +
+    'in vec3 Position;'#10#13 +
+    'in vec2 TexCoord0;'#10#13 +
+    'out vec2 v2f_TexCoord0;'#10#13 +
+    'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
+    ' v2f_TexCoord0 = TexCoord0; }';
+  cLightFragmentShader330 =
+    '#version 330'#10#13 +
+    'in vec2 v2f_TexCoord0;'#10#13 +
+    'out vec4 FragColor;'#10#13 +
+    'uniform sampler2D Glyph;'#10#13 +
+    'uniform vec4 Diffuse;'#10#13 +
+    'void main() {'#10#13 +
+    ' vec4 Color = texture(Glyph, v2f_TexCoord0);'#10#13 +
+    ' if (Color.a < 0.5) discard;'#10#13 +
+    ' FragColor = Diffuse * Color; }'#10#13;
+var
+  LShader: TGLShaderEx;
 begin
-  inherited Create(AOwner);
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling, osDeferredDraw];
   FShining := True;
-  FSpotDirection := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 0, -1,
-    0),
-    csVector);
+  FSpotDirection := TGLCoordinates.CreateInitialized(Self,
+    VectorMake(0, 0, -1, 0), csVector);
   FConstAttenuation := 1;
   FLinearAttenuation := 0;
   FQuadraticAttenuation := 0;
@@ -7052,7 +7139,47 @@ begin
   FAmbient := TGLColor.Create(Self);
   FDiffuse := TGLColor.Create(Self);
   FDiffuse.Initialize(clrWhite);
+  FDiffuse.OnNotifyChange := OnDiffuseChaged;
   FSpecular := TGLColor.Create(Self);
+  FGlyphScale := 1.0;
+  FVisibleAtRunTime := False;
+
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Material := GetInternalMaterialLibrary.Materials.Add;
+  with TGLLibMaterialEx(FBatch.Material) do
+  begin
+    Name := cLightMaterialNames[FLightStyle];
+    FixedFunction.BlendingMode := bmAlphaTest50;
+    FixedFunction.MaterialOptions := [moNoLighting];
+    FixedFunction.Texture.Enabled := True;
+    FixedFunction.TextureMode := tmModulate;
+    // GLSL 120
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add(cLightVertexShader120);
+    ShaderModel3.LibVertexShaderName := LShader.Name;
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(cLightFragmentShader120);
+    ShaderModel3.LibFragmentShaderName := LShader.Name;
+    OnSM3UniformInitialize := OnShaderInitialize;
+    ShaderModel3.Enabled := True;
+    // GLSL 330
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add(cLightVertexShader330);
+    ShaderModel4.LibVertexShaderName := LShader.Name;
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(cLightFragmentShader330);
+    ShaderModel4.LibFragmentShaderName := LShader.Name;
+    OnSM4UniformInitialize := OnShaderInitialize;
+    ShaderModel4.Enabled := True;
+  end;
+
+  FBatch.Transformation := @FTransformation;
+  FBatch.Changed := True;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -7064,6 +7191,7 @@ begin
   FAmbient.Free;
   FDiffuse.Free;
   FSpecular.Free;
+  FBatch.Mesh.Free;
   inherited Destroy;
 end;
 
@@ -7073,7 +7201,29 @@ end;
 procedure TGLLightSource.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
-  if ARenderChildren and Assigned(FChildren) then
+  if ocStructure in Changes then
+  begin
+    UpdateMaterial;
+    BuildMesh;
+  end;
+  ARci.PipelineTransformation.ModelViewMatrix;
+  FTransformation := ARci.PipelineTransformation.StackTop;
+  FTransformation.FModelViewMatrix[0, 0] := FGlyphScale;
+  FTransformation.FModelViewMatrix[0, 1] := 0;
+  FTransformation.FModelViewMatrix[0, 2] := 0;
+  FTransformation.FModelViewMatrix[1, 0] := 0;
+  FTransformation.FModelViewMatrix[1, 1] := FGlyphScale;
+  FTransformation.FModelViewMatrix[1, 2] := 0;
+  FTransformation.FModelViewMatrix[2, 0] := 0;
+  FTransformation.FModelViewMatrix[2, 1] := 0;
+  FTransformation.FModelViewMatrix[2, 2] := 1;
+  FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
+  FTransformation.FModelMatrix := IdentityHmgMatrix;
+  FTransformation.FStates := cAllStatesChanged;
+  if (csDesigning in ComponentState) or FVisibleAtRunTime then
+    FBatch.Order := ARci.orderCounter;
+
+  if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
@@ -7089,6 +7239,40 @@ end;
 
 // CoordinateChanged
 //
+
+procedure TGLLightSource.BuildMesh;
+begin
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      Attribute2f(attrTexCoord0, 0, 1);
+      Attribute3f(attrPosition, -0.5, 0.5, 0);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, 0, 0);
+      Attribute3f(attrPosition, -0.5, -0.5, 0);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, 1, 1);
+      Attribute3f(attrPosition, 0.5, 0.5, 0);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, 1, 0);
+      Attribute3f(attrPosition, 0.5, -0.5, 0);
+      EmitVertex;
+
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
+  FBatch.Changed := True;
+  ClearStructureChanged;
+end;
 
 procedure TGLLightSource.CoordinateChanged(Sender: TGLCustomCoordinates);
 begin
@@ -7114,8 +7298,34 @@ begin
   Result := 0;
 end;
 
+procedure TGLLightSource.OnDiffuseChaged(Sender: TObject);
+begin
+  UpdateMaterial;
+end;
+
+procedure TGLLightSource.OnShaderInitialize(Sender: TGLBaseShaderModel);
+begin
+  with Sender do
+  begin
+    Uniforms['ModelViewProjectionMatrix'].AutoSetMethod := cafWorldViewProjectionMatrix;
+    Uniforms['Diffuse'].AutoSetMethod := cafMaterialFrontFaceDiffuse;
+  end;
+end;
+
 // SetShining
 //
+
+procedure TGLLightSource.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FBatch);
+  end;
+  inherited;
+end;
 
 procedure TGLLightSource.SetShining(AValue: Boolean);
 begin
@@ -7148,6 +7358,55 @@ begin
   end;
 end;
 
+function TGLLightSource.StoreGlyphScale: Boolean;
+begin
+  Result := FGlyphScale <> 1.0;
+end;
+
+procedure TGLLightSource.UpdateMaterial;
+const
+  cLightTextureNames: array[TLightStyle] of string =
+  ('SpotLightTexture',
+   'OmniLightTexture',
+   'ParallelLightTexture',
+   'ParallelSpotLightTexture');
+  cDefaultTextureSamplerName = 'DefaultTextureSampler';
+var
+  LSampler: TGLTextureSampler;
+  LTexture: TGLTextureImageEx;
+begin
+  // GetSampler
+  LSampler := GetInternalMaterialLibrary.Components.GetSamplerByName(cDefaultTextureSamplerName);
+  if not Assigned(LSampler) then
+    LSampler := GetInternalMaterialLibrary.AddSampler(cDefaultTextureSamplerName);
+  // GetTexture
+  LTexture := TGLTextureImageEx(GetInternalMaterialLibrary.Components.GetTextureByName(cLightTextureNames[FLightStyle]));
+  if not Assigned(LTexture) then
+  begin
+    LTexture := GetInternalMaterialLibrary.AddTexture(cLightTextureNames[FLightStyle]);
+    LTexture.SourceFile := cLightTextureNames[FLightStyle] + '.DDS';
+    LTexture.InternalFormat := tfCOMPRESSED_RGBA_S3TC_DXT3;
+    LTexture.ApplicationResource := True;
+  end;
+  // Setup material
+  with TGLLibMaterialEx(FBatch.Material) do
+  begin
+    FixedFunction.FrontProperties.Diffuse := Diffuse;
+    FixedFunction.Texture.LibTextureName := LTexture.Name;
+    FixedFunction.Texture.LibSamplerName := LSampler.Name;
+    if ShaderModel3.IsValid then
+    begin
+      ShaderModel3.Uniforms['Glyph'].TextureName := LTexture.Name;
+      ShaderModel3.Uniforms['Glyph'].SamplerName := LSampler.Name;
+    end;
+    if ShaderModel4.IsValid then
+    begin
+      ShaderModel4.Uniforms['Glyph'].TextureName := LTexture.Name;
+      ShaderModel4.Uniforms['Glyph'].SamplerName := LSampler.Name;
+    end;
+  end;
+end;
+
 // SetSpotCutOff
 //
 
@@ -7171,6 +7430,7 @@ begin
   if FLightStyle <> val then
   begin
     FLightStyle := val;
+    UpdateMaterial;
     NotifyChange(Self);
   end;
 end;
@@ -7191,6 +7451,15 @@ procedure TGLLightSource.SetDiffuse(AValue: TGLColor);
 begin
   FDiffuse.Color := AValue.Color;
   NotifyChange(Self);
+end;
+
+procedure TGLLightSource.SetGlyphScale(const Value: Single);
+begin
+  if FGlyphScale <> Value then
+  begin
+    FGlyphScale := Value;
+    NotifyChange(Self);
+  end;
 end;
 
 // SetSpecular
@@ -7268,6 +7537,7 @@ begin
   // actual maximum number of lights is stored in TGLSceneViewer
   FLights.Count := 8;
   FInitializableObjects := TGLInitializableObjectList.Create;
+  FRenderManager := TGLRenderManager.Create(Self);
 end;
 
 // Destroy
@@ -7279,6 +7549,7 @@ begin
   FObjects.DestroyHandles;
   FLights.Free;
   FObjects.Free;
+  FRenderManager.Destroy;
   inherited Destroy;
 end;
 
@@ -7317,7 +7588,7 @@ procedure TGLScene.AddLights(anObj: TGLBaseSceneObject);
 var
   i: Integer;
 begin
-  if anObj is TGLLightSource then
+  if anObj.ClassName = TGLLightSource.ClassName then
     AddLight(TGLLightSource(anObj));
   for i := 0 to anObj.Count - 1 do
     AddLights(anObj.Children[i]);
@@ -7718,6 +7989,8 @@ end;
 //
 
 procedure TGLScene.SetupLights(maxLights: Integer);
+const
+  c180: Single = 180;
 var
   i: Integer;
   lightSource: TGLLightSource;
@@ -7741,26 +8014,31 @@ begin
           begin
             if FixedFunctionPipeLight then
             begin
+              LoadMatricesEnabled := True;
               RebuildMatrix;
-              if LightStyle = lsParallel then
+              if LightStyle in [lsParallel, lsParallelSpot] then
               begin
-                ModelMatrix := AbsoluteMatrix;
-                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
+                ModelMatrix := Parent.AbsoluteMatrix;
+                lPos := Direction.AsVector;
+                NegateVector(lPos);
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, @lPos);
               end
               else
               begin
                 ModelMatrix := Parent.AbsoluteMatrix;
                 GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
-              if LightStyle = lsSpot then
+              if LightStyle in [lsSpot, lsParallelSpot] then
               begin
-                if FSpotCutOff <> 180 then
-                  GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-              end;
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, SpotDirection.AsAddress);
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_CUTOFF, @FSpotCutOff);
+              end
+              else
+                GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_CUTOFF, @c180);
             end;
 
             lPos := lightSource.AbsolutePosition;
-            if LightStyle = lsParallel then
+            if LightStyle in [lsParallel, lsParallelSpot] then
               lPos[3] := 0.0
             else
               lPos[3] := 1.0;
@@ -9362,62 +9640,64 @@ procedure TGLSceneBuffer.RenderScene(aScene: TGLScene;
 
 var
   i: Integer;
-  rci: TRenderContextInfo;
+  LRci: TRenderContextInfo;
   rightVector: TVector;
 begin
   FAfterRenderEffects.Clear;
   aScene.FCurrentBuffer := Self;
-  FillChar(rci, SizeOf(rci), 0);
-  rci.scene := aScene;
-  rci.buffer := Self;
-  rci.afterRenderEffects := FAfterRenderEffects;
-  rci.objectsSorting := aScene.ObjectsSorting;
-  rci.visibilityCulling := aScene.VisibilityCulling;
-  rci.bufferFaceCull := FFaceCulling;
-  rci.bufferLighting := FLighting;
-  rci.bufferFog := FFogEnable;
-  rci.bufferDepthTest := FDepthTest;
-  rci.drawState := drawState;
-  rci.sceneAmbientColor := FAmbientColor.Color;
-  rci.primitiveMask := cAllMeshPrimitive;
+  FillChar(LRci, SizeOf(LRci), 0);
+  LRci.scene := aScene;
+  LRci.buffer := Self;
+  LRci.afterRenderEffects := FAfterRenderEffects;
+  LRci.objectsSorting := aScene.ObjectsSorting;
+  LRci.visibilityCulling := aScene.VisibilityCulling;
+  LRci.bufferFaceCull := FFaceCulling;
+  LRci.bufferLighting := FLighting;
+  LRci.bufferFog := FFogEnable;
+  LRci.bufferDepthTest := FDepthTest;
+  LRci.drawState := drawState;
+  LRci.sceneAmbientColor := FAmbientColor.Color;
+  LRci.primitiveMask := cAllMeshPrimitive;
+  LRci.orderCounter := 0;
   with FCamera do
   begin
-    rci.cameraPosition := FCameraAbsolutePosition;
-    rci.cameraDirection := FLastDirection;
-    NormalizeVector(rci.cameraDirection);
-    rci.cameraDirection[3] := 0;
-    rightVector := VectorCrossProduct(rci.cameraDirection, Up.AsVector);
-    rci.cameraUp := VectorCrossProduct(rightVector, rci.cameraDirection);
-    NormalizeVector(rci.cameraUp);
+    LRci.cameraPosition := FCameraAbsolutePosition;
 
-    with rci.rcci do
+    LRci.cameraDirection := FLastDirection;
+    NormalizeVector(LRci.cameraDirection);
+    LRci.cameraDirection[3] := 0;
+    rightVector := VectorCrossProduct(LRci.cameraDirection, Up.AsVector);
+    LRci.cameraUp := VectorCrossProduct(rightVector, LRci.cameraDirection);
+    NormalizeVector(LRci.cameraUp);
+
+    with LRci.rcci do
     begin
-      origin := rci.cameraPosition;
-      clippingDirection := rci.cameraDirection;
+      origin := LRci.cameraPosition;
+      clippingDirection := LRci.cameraDirection;
       viewPortRadius := FViewPortRadius;
       nearClippingDistance := FNearPlane;
       farClippingDistance := FNearPlane + FDepthOfView;
       frustum := RenderingContext.PipelineTransformation.Frustum;
     end;
   end;
-  rci.viewPortSize.cx := viewPortSizeX;
-  rci.viewPortSize.cy := viewPortSizeY;
-  rci.renderDPI := FRenderDPI;
-  rci.GLStates := RenderingContext.GLStates;
-  rci.PipelineTransformation := RenderingContext.PipelineTransformation;
-  rci.proxySubObject := False;
-  rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
-    or (rci.drawState = dsPicking);
-  rci.GLStates.SetGLColorWriting(not rci.ignoreMaterials);
+  LRci.viewPortSize.cx := viewPortSizeX;
+  LRci.viewPortSize.cy := viewPortSizeY;
+  LRci.renderDPI := FRenderDPI;
+  LRci.GLStates := RenderingContext.GLStates;
+  LRci.PipelineTransformation := RenderingContext.PipelineTransformation;
+  LRci.proxySubObject := False;
+  LRci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
+    or (LRci.drawState = dsPicking);
+  LRci.GLStates.SetGLColorWriting(not LRci.ignoreMaterials);
   if Assigned(FInitiateRendering) then
-    FInitiateRendering(Self, rci);
+    FInitiateRendering(Self, LRci);
 
   if aScene.InitializableObjects.Count <> 0 then
   begin
     // First initialize all objects and delete them from the list.
     for I := aScene.InitializableObjects.Count - 1 downto 0 do
     begin
-      aScene.InitializableObjects.Items[I].InitializeObject({Self?}aScene, rci);
+      aScene.InitializableObjects.Items[I].InitializeObject({Self?}aScene, LRci);
       aScene.InitializableObjects.Delete(I);
     end;
   end;
@@ -9427,17 +9707,21 @@ begin
 
   if baseObject = nil then
   begin
-    aScene.Objects.Render(rci);
+    aScene.Objects.Render(LRci);
+    aScene.RenderManager.DrawOrderedAll(LRci);
   end
   else
-    baseObject.Render(rci);
-  rci.GLStates.SetGLColorWriting(True);
+  begin
+    baseObject.Render(LRci);
+  end;
+
+  LRci.GLStates.SetGLColorWriting(True);
   with FAfterRenderEffects do
     if Count > 0 then
       for i := 0 to Count - 1 do
-        TGLObjectAfterEffect(Items[i]).Render(rci);
+        TGLObjectAfterEffect(Items[i]).Render(LRci);
   if Assigned(FWrapUpRendering) then
-    FWrapUpRendering(Self, rci);
+    FWrapUpRendering(Self, LRci);
 end;
 
 // SetBackgroundColor
@@ -10104,5 +10388,7 @@ initialization
 
   // preparation for high resolution timer
   QueryPerformanceFrequency(vCounterFrequency);
-
+{$IFDEF FPC}
+{$I GLSceneRunTimeLCL.lrs}
+{$ENDIF}
 end.

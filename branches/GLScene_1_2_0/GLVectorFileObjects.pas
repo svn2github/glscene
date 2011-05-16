@@ -7836,13 +7836,13 @@ begin
       if rci.amalgamating
         or not (ListHandleAllocated or (osDirectDraw in ObjectStyle)) then
         PrepareBuildList(rci);
-      Material.Apply(rci);
+      FMaterial.Apply(rci);
       repeat
         if (osDirectDraw in ObjectStyle) or rci.amalgamating then
           BuildList(rci)
         else
           rci.GLStates.CallList(GetHandle(rci));
-      until not Material.UnApply(rci);
+      until not FMaterial.UnApply(rci);
       rci.materialLibrary := nil;
     end
     else

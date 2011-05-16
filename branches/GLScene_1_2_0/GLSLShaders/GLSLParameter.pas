@@ -90,7 +90,7 @@ type
   TGLgsOutTypes = (
     gsOutPoints,
     gsOutLineStrip,
-    sOutTriangleStrip
+    gsOutTriangleStrip
   );
 
 

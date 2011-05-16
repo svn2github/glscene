@@ -14,6 +14,8 @@
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
  <b>History : </b><font size=-1><ul>
+      <li>08/05/11 - Yar - Added ApplicationResource for TGLTextureImageEx
+      <li>21/04/11 - Yar - Added LineProperties for FixedFunction
       <li>13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
       <li>11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
       <li>11/03/11 - Yar - Created
@@ -31,6 +33,12 @@ uses
   GLMaterial, GLTexture, GLColor, GLCoordinates, VectorGeometry, GLGraphics,
   PersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
   GLTextureCombiners, OpenGLTokens, GLSLParameter;
+
+const
+  cInternalShader = 'InternalShader';
+  cafMaterialFrontFaceDiffuse = 'Material front face diffuse';
+  cafViewProjectionMatrix = 'ViewProjection matrix';
+  cafWorldViewProjectionMatrix = 'WorldViewProjection matrix';
 
 type
 
@@ -260,6 +268,7 @@ type
     FBaseLevel: Integer;
     FMaxLevel: Integer;
     FLastTime: Double;
+    FAppResource: Boolean;
     procedure SetInternalFormat(const AValue: TGLInternalFormat);
     procedure SetImageAlpha(const AValue: TGLTextureImageAlpha);
     procedure SetImageBrightness(const AValue: Single);
@@ -277,6 +286,7 @@ type
     procedure FullTransfer;
     procedure StreamTransfer;
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
+    procedure SetAppResource(const Value: Boolean);
   public
     { Public Declarations }
     constructor Create(AOwner: TXCollection); override;
@@ -330,6 +340,9 @@ type
       write SetNormalMapScale stored StoreNormalMapScale;
     {: Source file path and name. }
     property SourceFile: string read FSourceFile write SetSourceFile;
+    {: Indicate that image is application resource. }
+    property ApplicationResource: Boolean read FAppResource
+      write SetAppResource default False;
     {: Force to store image levels in separate files in ready to transfer format. }
     property InternallyStored: Boolean read FInternallyStored
       write SetInternallyStored default False;
@@ -357,6 +370,7 @@ type
     FSamples: Integer;
     FOnlyWrite: Boolean;
     FFixedSamplesLocation: Boolean;
+    FMaxLOD: Integer;
     procedure SetWidth(AValue: Integer);
     procedure SetHeight(AValue: Integer);
     procedure SetDepth(AValue: Integer);
@@ -366,6 +380,7 @@ type
     procedure SetCubeMap(AValue: Boolean);
     procedure SetSamples(AValue: Integer);
     procedure SetFixedSamplesLocation(AValue: Boolean);
+    procedure SetMaxLOD(Value: Integer);
   public
     { Public Declarations }
     constructor Create(AOwner: TXCollection); override;
@@ -408,6 +423,8 @@ type
       internalformat or size of the image. }
     property FixedSamplesLocation: Boolean read FFixedSamplesLocation
       write SetFixedSamplesLocation default False;
+    {: Maximum value for Level-Of-Detail. 1000 - full pyramid, 0 - no mipmap }
+    property MaxLOD: Integer read FMaxLOD write SetMaxLOD default 1000;
   end;
 
   // TGLTextureSwizzling
@@ -551,6 +568,35 @@ type
       SetSwizzling stored StoreSwizzling;
   end;
 
+  // TGLLineProperties
+  //
+  TGLLineProperties = class(TGLLibMaterialProperty)
+  private
+    { Private Declarations }
+    FSmooth: Boolean;
+    FWidth: Single;
+    FStippleFactor: Integer;
+    FStipplePattern: Word;
+    procedure SetSmooth(const Value: Boolean);
+    procedure SetStippleFactor(const Value: Integer);
+    procedure SetStipplePattern(const Value: Word);
+    procedure SetWidth(const Value: Single);
+    function StoreWidth: Boolean;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+    procedure Apply(var ARci: TRenderContextInfo);
+  published
+    { Published Declarations }
+    property Smooth: Boolean read FSmooth write SetSmooth default False;
+    property Width: Single read FWidth write SetWidth stored StoreWidth;
+    property StippleFactor: Integer read FStippleFactor
+      write SetStippleFactor default 0;
+    property StipplePattern: Word read FStipplePattern
+      write SetStipplePattern default $CCCC;
+  end;
+
   //  TGLFixedFunctionProperties
   //
   TGLFixedFunctionProperties = class(TGLLibMaterialProperty)
@@ -566,6 +612,7 @@ type
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
     FTextureMode: TGLTextureMode;
+    FLineProperties: TGLLineProperties;
     function GetBackProperties: TGLFaceProperties;
     procedure SetBackProperties(AValues: TGLFaceProperties);
     procedure SetFrontProperties(AValues: TGLFaceProperties);
@@ -577,6 +624,9 @@ type
     procedure SetBlendingParams(const AValue: TGLBlendingParameters);
     procedure SetTexProp(AValue: TGLTextureProperties);
     procedure SetTextureMode(AValue: TGLTextureMode);
+    function GetLineProperties: TGLLineProperties;
+    procedure SetLineProperties(const Value: TGLLineProperties);
+    function StoreLineProperties: Boolean;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -603,6 +653,8 @@ type
       default bmOpaque;
     property BlendingParams: TGLBlendingParameters read FBlendingParams write
       SetBlendingParams;
+    property LineProperties: TGLLineProperties read GetLineProperties
+      write SetLineProperties stored StoreLineProperties;
 
     property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling
       default fcBufferDefault;
@@ -882,6 +934,8 @@ type
     procedure WriteToFiler(AWriter: TWriter); virtual;
     procedure ReadFromFiler(AReader: TReader); virtual;
     procedure Apply(var ARci: TRenderContextInfo); virtual;
+  public
+    destructor Destroy; override;
   end;
 
   CGLAbstractShaderUniform = class of TGLAbstractShaderUniform;
@@ -1047,6 +1101,7 @@ type
     FInfoLog: string;
     FUniforms: TPersistentObjectList;
     FAutoFill: Boolean;
+    FpRci: PRenderContextInfo;
 
     function GetLibShaderName(AType: TGLShaderType): string;
     procedure SetLibShaderName(AType: TGLShaderType; const AValue: string);
@@ -1070,7 +1125,8 @@ type
     procedure WriteUniforms(AStream: TStream);
     procedure Loaded; override;
     class function IsSupported: Boolean; virtual; abstract;
-
+    class function ShaderModel: string; virtual; abstract;
+    procedure DoAutoFillUniforms;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -1103,6 +1159,7 @@ type
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
+    class function ShaderModel: string; override;
   published
     { Published Declarations }
     property LibVertexShaderName;
@@ -1112,7 +1169,9 @@ type
   TGLShaderModel4 = class(TGLBaseShaderModel)
   public
     { Public Declarations }
+    procedure Apply(var ARci: TRenderContextInfo); override;
     class function IsSupported: Boolean; override;
+    class function ShaderModel: string; override;
   published
     { Published Declarations }
     property LibVertexShaderName;
@@ -1126,6 +1185,7 @@ type
     procedure Apply(var ARci: TRenderContextInfo); override;
     procedure UnApply(var ARci: TRenderContextInfo); override;
     class function IsSupported: Boolean; override;
+    class function ShaderModel: string; override;
   published
     { Published Declarations }
     property LibTessControlShaderName;
@@ -1321,11 +1381,24 @@ type
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
+function GetInternalMaterialLibrary: TGLMaterialLibraryEx;
 
 implementation
 
 uses
-  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils, XOpenGL;
+{$IFDEF GLS_DELPHI_OR_CPPB}
+  Windows,
+{$ENDIF}
+{$IFDEF FPC}
+  LCLType, LResources,
+{$ENDIF}
+  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils, XOpenGL,
+  GLSMesh, GLPipelineTransformation;
+
+
+resourcestring
+  glsDoOnPrepare = '.DoOnPrepare';
+  glsApply = '.Apply';
 
 const
   cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =
@@ -1401,6 +1474,7 @@ const
 
 type
   TFriendlyImage = class(TGLBaseImage);
+  TFriendlyTransformation = class(TGLTransformation);
 
   TStandartUniformAutoSetExecutor = class
   public
@@ -1452,6 +1526,7 @@ type
   end;
 
 var
+  vMaterialLibrary: TGLMaterialLibraryEx;
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
   vStoreBegin: procedure(mode: TGLEnum);
@@ -1467,6 +1542,18 @@ end;
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
   vGLMaterialExNameChangeEvent := nil;
+end;
+
+function GetInternalMaterialLibrary: TGLMaterialLibraryEx;
+begin
+  if not Assigned(vMaterialLibrary) then
+    vMaterialLibrary := TGLMaterialLibraryEx.Create(nil);
+  Result := vMaterialLibrary;
+end;
+
+procedure ReleaseInternalMaterialLibrary;
+begin
+  FreeAndNil(vMaterialLibrary);
 end;
 
 function ComputeNameHashKey(
@@ -1636,6 +1723,8 @@ begin
   begin
     Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
+    if Assigned(FLineProperties) and FLineProperties.Enabled then
+      FLineProperties.Apply(ARci);
 
     // Fixed functionality state
     if not ARci.GLStates.ForwardContext then
@@ -1797,6 +1886,7 @@ begin
   FBackProperties.Free;
   FDepthProperties.Destroy;
   FBlendingParams.Destroy;
+  FLineProperties.Free;
   FTexProp.Destroy;
   inherited;
 end;
@@ -1806,6 +1896,13 @@ begin
   if not Assigned(FBackProperties) then
     FBackProperties := TGLFaceProperties.Create(Self);
   Result := FBackProperties;
+end;
+
+function TGLFixedFunctionProperties.GetLineProperties: TGLLineProperties;
+begin
+  if not Assigned(FLineProperties) then
+    FLineProperties := TGLLineProperties.Create(Self);
+  Result := FLineProperties;
 end;
 
 procedure TGLFixedFunctionProperties.SetBackProperties(AValues:
@@ -1853,6 +1950,17 @@ begin
   end;
 end;
 
+function TGLFixedFunctionProperties.StoreLineProperties: Boolean;
+begin
+  if Assigned(FLineProperties) then
+    Result := FLineProperties.FSmooth
+      or FLineProperties.StoreWidth
+      or (FLineProperties.FStippleFactor <> 1)
+      or (FLineProperties.FStipplePattern <> $CCCC)
+  else
+    Result := False;
+end;
+
 procedure TGLFixedFunctionProperties.SetFaceCulling(const AValue: TFaceCulling);
 begin
   if AValue <> FFaceCulling then
@@ -1867,6 +1975,11 @@ procedure TGLFixedFunctionProperties.SetFrontProperties(AValues:
 begin
   FFrontProperties.Assign(AValues);
   NotifyChange(Self);
+end;
+
+procedure TGLFixedFunctionProperties.SetLineProperties(const Value: TGLLineProperties);
+begin
+  LineProperties.Assign(Value);
 end;
 
 procedure TGLFixedFunctionProperties.SetMaterialOptions(const AValue:
@@ -2007,14 +2120,21 @@ begin
     exit;
 
   try
+    if not IsFormatSupported(FInternalFormat) then
+    begin
+      FInternalFormat := tfRGBA8;
+      GLSLogger.LogWarningFmt(
+        'Format of texture "%s" not supported, falldown to RGBA8', [Name]);
+      FreeAndNil(FImage);
+    end;
+
     PrepareImage;
 
     // Target
     LTarget := FImage.GetTextureTarget;
 
     // Check supporting
-    if not IsTargetSupported(LTarget)
-      or not IsFormatSupported(FInternalFormat) then
+    if not IsTargetSupported(LTarget) then
       Abort;
 
     if (FHandle.Target <> LTarget)
@@ -2123,10 +2243,8 @@ begin
       ClearError;
       CurrentGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
       GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.Name]);
-      Abort;
-    end
-    else
-      FHandle.NotifyDataUpdated;
+    end;
+    FHandle.NotifyDataUpdated;
   end;
 end;
 
@@ -2315,12 +2433,11 @@ const
 
 var
   ext, filename: string;
+  rStream: {$IFNDEF FPC}TResourceStream{$ELSE}TLazarusResourceStream{$ENDIF};
   BaseImageClass: TGLBaseImageClass;
   LPicture: TGLPicture;
   LGraphic: TGLGraphic;
   LImage: TGLImage;
-  level: Integer;
-  glColorFormat, glDataType: TGLEnum;
   bReadFromSource: Boolean;
   LStream: TStream;
   ptr: PByte;
@@ -2338,12 +2455,111 @@ var
       LImage := TGLImage(FImage);
   end;
 
+  procedure DoPreProcess;
+  var
+    level: Integer;
+    glColorFormat, glDataType: TGLEnum;
+  begin
+    if FInternalFormat <> FImage.InternalFormat then
+    begin
+      ReplaceImageClass;
+      FindCompatibleDataFormat(FInternalFormat, glColorFormat, glDataType);
+      TFriendlyImage(FImage).fInternalFormat := FInternalFormat;
+      TGLImage(FImage).SetColorFormatDataType(glColorFormat, glDataType);
+    end;
+
+    if (ImageAlpha <> tiaDefault)
+      or (FImageBrightness <> 1.0)
+      or (FImageGamma <> 1.0) then
+    begin
+      ReplaceImageClass;
+      for level := 0 to FImage.LevelCount - 1 do
+      begin
+        AlphaGammaBrightCorrection(
+          TFriendlyImage(FImage).GetLevelAddress(level),
+          FImage.ColorFormat,
+          FImage.DataType,
+          FImage.LevelWidth[level],
+          FImage.LevelHeight[level],
+          cAlphaProc[ImageAlpha],
+          FImageBrightness,
+          FImageGamma);
+      end;
+    end
+    else if FHeightToNormalScale <> 1.0 then
+    begin
+      ReplaceImageClass;
+//          HeightToNormalMap();
+{$Message Hint 'TGLTextureImageEx.HeightToNormalScale not yet implemented' }
+    end;
+
+    case FMipGenMode of
+      mgmNoMip:
+        FImage.UnMipmap;
+
+      mgmLeaveExisting, mgmOnFly: ;
+
+      mgmBoxFilter:
+        FImage.GenerateMipmap(ImageBoxFilter);
+
+      mgmTriangleFilter:
+        FImage.GenerateMipmap(ImageTriangleFilter);
+
+      mgmHermiteFilter:
+        FImage.GenerateMipmap(ImageHermiteFilter);
+
+      mgmBellFilter:
+        FImage.GenerateMipmap(ImageBellFilter);
+
+      mgmSplineFilter:
+        FImage.GenerateMipmap(ImageSplineFilter);
+
+      mgmLanczos3Filter:
+        FImage.GenerateMipmap(ImageLanczos3Filter);
+
+      mgmMitchellFilter:
+        FImage.GenerateMipmap(ImageMitchellFilter);
+    end;
+  end;
+
+  var
+    level: Integer;
+
 begin
   if not Assigned(FImage) then
   begin
     try
       SetExeDirectory;
       bReadFromSource := True;
+
+      ext := ExtractFileExt(FSourceFile);
+      System.Delete(ext, 1, 1);
+
+      if FAppResource then
+      begin
+        filename := ExtractFileName(FSourceFile);
+        filename := Copy(filename, 1, Length(filename)-Length(ext)-1);
+        {$IFNDEF FPC}
+        rStream := CreateResourceStream(filename, RT_RCDATA);
+        {$ELSE}
+        rStream := CreateResourceStream(filename, PChar(ext));
+        {$ENDIF}
+        if Assigned(rStream) then
+        begin
+          try
+            BaseImageClass := GetRasterFileFormats.FindExt(ext);
+            if Assigned(BaseImageClass) then
+            begin
+              FImage := BaseImageClass.Create;
+              FImage.LoadFromStream(rStream);
+              DoPreProcess;
+              bReadFromSource := False;
+            end
+          finally
+            rStream.Free;
+          end;
+        end;
+      end;
 
       if FInternallyStored and not IsDesignTime then
       begin
@@ -2378,8 +2594,6 @@ begin
         if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
         begin
           // At first check moder image file loaders
-          ext := ExtractFileExt(FSourceFile);
-          System.Delete(ext, 1, 1);
           BaseImageClass := GetRasterFileFormats.FindExt(ext);
 
           if Assigned(BaseImageClass) then
@@ -2406,66 +2620,7 @@ begin
             end;
           end;
 
-          if FInternalFormat <> FImage.InternalFormat then
-          begin
-            ReplaceImageClass;
-            FindCompatibleDataFormat(FInternalFormat, glColorFormat, glDataType);
-            TGLImage(FImage).SetColorFormatDataType(glColorFormat, glDataType);
-            TFriendlyImage(FImage).fInternalFormat := FInternalFormat;
-          end;
-
-          if (ImageAlpha <> tiaDefault)
-            or (FImageBrightness <> 1.0)
-            or (FImageGamma <> 1.0) then
-          begin
-            ReplaceImageClass;
-            for level := 0 to FImage.LevelCount - 1 do
-            begin
-              AlphaGammaBrightCorrection(
-                TFriendlyImage(FImage).GetLevelAddress(level),
-                FImage.ColorFormat,
-                FImage.DataType,
-                FImage.LevelWidth[level],
-                FImage.LevelHeight[level],
-                cAlphaProc[ImageAlpha],
-                FImageBrightness,
-                FImageGamma);
-            end;
-          end
-          else if FHeightToNormalScale <> 1.0 then
-          begin
-            ReplaceImageClass;
-  //          HeightToNormalMap();
-  {$Message Hint 'TGLTextureImageEx.HeightToNormalScale not yet implemented' }
-          end;
-
-          case FMipGenMode of
-            mgmNoMip:
-              FImage.UnMipmap;
-
-            mgmLeaveExisting, mgmOnFly: ;
-
-            mgmBoxFilter:
-              FImage.GenerateMipmap(ImageBoxFilter);
-
-            mgmTriangleFilter:
-              FImage.GenerateMipmap(ImageTriangleFilter);
-
-            mgmHermiteFilter:
-              FImage.GenerateMipmap(ImageHermiteFilter);
-
-            mgmBellFilter:
-              FImage.GenerateMipmap(ImageBellFilter);
-
-            mgmSplineFilter:
-              FImage.GenerateMipmap(ImageSplineFilter);
-
-            mgmLanczos3Filter:
-              FImage.GenerateMipmap(ImageLanczos3Filter);
-
-            mgmMitchellFilter:
-              FImage.GenerateMipmap(ImageMitchellFilter);
-          end;
+          DoPreProcess;
 
           // Store cooked image
           if FInternallyStored and IsDesignTime then
@@ -2516,7 +2671,7 @@ begin
   with AReader do
   begin
     archiveVersion := ReadInteger;
-    if archiveVersion = 0 then
+    if archiveVersion < 2 then
     begin
       Name := ReadWideString;
       FDefferedInit := ReadBoolean;
@@ -2531,9 +2686,28 @@ begin
       FInternallyStored := ReadBoolean;
       FMipGenMode := TMipmapGenerationMode(ReadInteger);
       FUseStreaming := ReadBoolean;
+      if archiveVersion > 0 then
+      begin
+        FAppResource := ReadBoolean;
+      end;
     end
     else
       RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TGLTextureImageEx.SetAppResource(const Value: Boolean);
+begin
+  if FAppResource <> Value then
+  begin
+    FAppResource := Value;
+    if Value then
+    begin
+      FUseStreaming := False;
+      FInternallyStored := False;
+    end;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
   end;
 end;
 
@@ -2675,7 +2849,7 @@ procedure TGLTextureImageEx.WriteToFiler(AWriter: TWriter);
 begin
   with AWriter do
   begin
-    WriteInteger(0); // archive version
+    WriteInteger(1); // archive version
     WriteWideString(Name);
     WriteBoolean(FDefferedInit);
     WriteInteger(Integer(FInternalFormat));
@@ -2689,6 +2863,7 @@ begin
     WriteBoolean(FInternallyStored);
     WriteInteger(Integer(FMipGenMode));
     WriteBoolean(FUseStreaming);
+    WriteBoolean(FAppResource);
   end;
 end;
 
@@ -2777,6 +2952,11 @@ begin
       if FHandle.IsDataNeedUpdate then
         with Sender.GL do
         begin
+{$IFDEF GLS_OPENGL_DEBUG}
+          if GL.GREMEDY_string_marker then
+            GL.StringMarkerGREMEDY(
+              Length(Name) + Length(glsDoOnPrepare), PGLChar(TGLString(Name + glsDoOnPrepare)));
+{$ENDIF}
           SamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR,
             FBorderColor.AsAddress);
           SamplerParameteri(ID, GL_TEXTURE_WRAP_S, cTextureWrapMode[FWrap[0]]);
@@ -3031,6 +3211,11 @@ begin
     FHandle.AllocateHandle;
     if FHandle.IsDataNeedUpdate then
     begin
+{$IFDEF GLS_OPENGL_DEBUG}
+      if GL.GREMEDY_string_marker then
+        GL.StringMarkerGREMEDY(
+          Length(Name) + Length(glsDoOnPrepare), PGLChar(TGLString(Name + glsDoOnPrepare)));
+{$ENDIF}
       try
         FCommandCache := GetTextureCombiners(FScript);
         FIsValid := True;
@@ -3099,6 +3284,9 @@ procedure TGLLibMaterialEx.Apply(var ARci: TRenderContextInfo);
 var
   LevelReady: array[TGLMaterialLevel] of Boolean;
   L, MaxLevel: TGLMaterialLevel;
+{$IFDEF GLS_OPENGL_DEBUG}
+  LString: string;
+{$ENDIF}
 begin
   if Assigned(FNextPass) then
   begin
@@ -3111,8 +3299,8 @@ begin
   begin
     // Other value than mlAuto indicates a level failure
     // Need remove deffered initialization and reinitialize used resources
-    if not IsDesignTime and (FSelectedLevel <> mlAuto) then
-      RemoveDefferedInit;
+//    if not IsDesignTime and (FSelectedLevel <> mlAuto) then
+//      RemoveDefferedInit;
     // Level selection
     LevelReady[mlFixedFunction] := FFixedFunc.Enabled;
     LevelReady[mlMultitexturing] := FMultitexturing.Enabled and
@@ -3141,38 +3329,49 @@ begin
 
   ARci.currentMaterialLevel := FSelectedLevel;
 
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL.GREMEDY_string_marker then
+  begin
+    LString := Name + glsApply;
+    GL.StringMarkerGREMEDY(
+      Length(LString), PGLChar(TGLString(LString)));
+  end;
+{$ENDIF}
+
   case FSelectedLevel of
     mlAuto: ; // No one level can be used. Worst case.
 
     mlFixedFunction:
       begin
+        ARci.GLStates.CurrentProgram := 0;
         FFixedFunc.Apply(ARci);
       end;
 
     mlMultitexturing:
       begin
-        if LevelReady[mlFixedFunction] then
+        ARci.GLStates.CurrentProgram := 0;
+        if FFixedFunc.Enabled then
           FFixedFunc.Apply(ARci);
         FMultitexturing.Apply(ARci);
       end;
 
     mlSM3:
       begin
-        if LevelReady[mlFixedFunction] then
+        if FFixedFunc.Enabled then
           FFixedFunc.Apply(ARci);
         FSM3.Apply(ARci);
       end;
 
     mlSM4:
       begin
-        if LevelReady[mlFixedFunction] then
+        if FFixedFunc.Enabled then
           FFixedFunc.Apply(ARci);
         FSM4.Apply(ARci);
       end;
 
     mlSM5:
       begin
-        if LevelReady[mlFixedFunction] then
+        if FFixedFunc.Enabled then
           FFixedFunc.Apply(ARci);
         FSM5.Apply(ARci);
       end;
@@ -3226,7 +3425,6 @@ var
   I: Integer;
   LUser: TObject;
 begin
-  FHandle.Destroy;
   FFixedFunc.Destroy;
   FMultitexturing.Destroy;
   FSM3.Destroy;
@@ -3238,6 +3436,7 @@ begin
     if LUser is TGLMaterial then
       TGLFreindlyMaterial(LUser).NotifyLibMaterialDestruction;
   end;
+  FHandle.Destroy;
   inherited;
 end;
 
@@ -4377,23 +4576,43 @@ begin
       FHandle[FShaderType].AllocateHandle;
       if FHandle[FShaderType].IsDataNeedUpdate then
       begin
+{$IFDEF GLS_OPENGL_DEBUG}
+        if GL.GREMEDY_string_marker then
+          GL.StringMarkerGREMEDY(
+            Length(Name) + Length(glsDoOnPrepare), PGLChar(TGLString(Name + glsDoOnPrepare)));
+{$ENDIF}
         SetExeDirectory;
         if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
           FSource.LoadFromFile(FSourceFile);
-        FHandle[FShaderType].ShaderSource(AnsiString(FSource.Text));
-        FIsValid := FHandle[FShaderType].CompileShader;
-        if IsDesignTime then
-        begin
-          FInfoLog := FHandle[FShaderType].InfoLog;
-          if (Length(FInfoLog) = 0) and FIsValid then
-            FInfoLog := 'Compilation successful';
-        end
-        else if FIsValid then
-          GLSLogger.LogInfoFmt('Shader "%s" compilation successful - %s',
-            [Name, FHandle[FShaderType].InfoLog])
+        if Sender.GLStates.ForwardContext then
+          FIsValid := (Pos('330', FSource.Strings[0]) > 0)
+            or (Pos('410', FSource.Strings[0]) > 0)
         else
-          GLSLogger.LogErrorFmt('Shader "%s" compilation failed - %s',
-            [Name, FHandle[FShaderType].InfoLog]);
+          FIsValid := True;
+
+        if FIsValid then
+        begin
+          FHandle[FShaderType].ShaderSource(AnsiString(FSource.Text));
+          FIsValid := FHandle[FShaderType].CompileShader;
+          if IsDesignTime then
+          begin
+            FInfoLog := FHandle[FShaderType].InfoLog;
+            if (Length(FInfoLog) = 0) and FIsValid then
+              FInfoLog := 'Compilation successful';
+          end
+          else if FIsValid then
+            GLSLogger.LogInfoFmt('Shader "%s" compilation successful - %s',
+              [Name, FHandle[FShaderType].InfoLog])
+          else
+            GLSLogger.LogErrorFmt('Shader "%s" compilation failed - %s',
+              [Name, FHandle[FShaderType].InfoLog]);
+        end
+        else
+        begin
+          GLSLogger.LogInfoFmt(
+            'Shader "%s" ignored - incompatible with core', [Name]);
+        end;
+
         FHandle[FShaderType].NotifyDataUpdated;
       end;
     end
@@ -4656,15 +4875,13 @@ end;
 
 procedure TGLBaseShaderModel.Apply(var ARci: TRenderContextInfo);
 var
-  I: Integer;
   LEvent: TOnUniformSetting;
 begin
   if FIsValid then
   begin
+    FpRci := @ARci;
     FHandle.UseProgramObject;
-    if FAutoFill then
-      for I := FUniforms.Count - 1 downto 0 do
-        TGLAbstractShaderUniform(FUniforms[I]).Apply(ARci);
+    DoAutoFillUniforms;
 
     if Self is TGLShaderModel3 then
       LEvent := GetMaterial.FOnSM3UniformSetting
@@ -4677,6 +4894,8 @@ begin
 
     if Assigned(LEvent) then
       LEvent(Self, ARci);
+
+    TFriendlyTransformation(ARci.PipelineTransformation).OnPush := DoAutoFillUniforms;
   end;
 end;
 
@@ -4728,6 +4947,26 @@ begin
   inherited;
 end;
 
+procedure BindAttrib(ID: TGLuint; var L: TGLuint; Attrib: TAttribLocation);
+var
+  LAttribName: array[0..255] of AnsiChar;
+begin
+  Move(vAttributeNames[Attrib][1],
+    LAttribName[0], Length(vAttributeNames[Attrib]));
+  LAttribName[Length(vAttributeNames[Attrib])] := #00;
+  GL.BindAttribLocation(ID, L, @LAttribName[0]);
+  Inc(L);
+end;
+
+procedure TGLBaseShaderModel.DoAutoFillUniforms;
+var
+  I: Integer;
+begin
+  if FAutoFill then
+    for I := FUniforms.Count - 1 downto 0 do
+      TGLAbstractShaderUniform(FUniforms[I]).Apply(FpRci^);
+end;
+
 procedure TGLBaseShaderModel.DoOnPrepare(Sender: TGLContext);
 var
   T: TGLShaderType;
@@ -4735,6 +4974,7 @@ var
   LUniform, LUniform2: TGLShaderUniform;
   ID: TGLuint;
   I, J, C: Integer;
+  Location: TGLuint;
   buff: array[0..255] of AnsiChar;
   Size: TGLInt;
   Len: GLsizei;
@@ -4746,6 +4986,9 @@ var
   bSampler: Boolean;
   bNew: Boolean;
   LEvent: TOnUniformInitialize;
+{$IFDEF GLS_OPENGL_DEBUG}
+  LString: string;
+{$ENDIF}
 begin
   if FEnabled then
     try
@@ -4754,6 +4997,14 @@ begin
         FHandle.AllocateHandle;
         if FHandle.IsDataNeedUpdate then
         begin
+{$IFDEF GLS_OPENGL_DEBUG}
+          if GL.GREMEDY_string_marker then
+          begin
+            LString := ShaderModel + ' ' + GetMaterial.Name + glsDoOnPrepare;
+            GL.StringMarkerGREMEDY(
+              Length(LString), PGLChar(TGLString(LString)));
+          end;
+{$ENDIF}
           // Validate shaders
           for T := Low(TGLShaderType) to High(TGLShaderType) do
             if Assigned(FShaders[T]) then
@@ -4789,6 +5040,25 @@ begin
                 FShaders[shtGeometry].GeometryVerticesOut);
             end;
 
+            // Bind attribute to mandatory locations
+            Location := 0;
+            BindAttrib(ID, Location, attrPosition);
+            BindAttrib(ID, Location, attrNormal);
+            BindAttrib(ID, Location, attrColor);
+            BindAttrib(ID, Location, attrTangent);
+            BindAttrib(ID, Location, attrBinormal);
+            BindAttrib(ID, Location, attrTexCoord0);
+            BindAttrib(ID, Location, attrTexCoord1);
+            BindAttrib(ID, Location, attrTexCoord2);
+            BindAttrib(ID, Location, attrTexCoord3);
+            BindAttrib(ID, Location, attrTexCoord4);
+            BindAttrib(ID, Location, attrTexCoord5);
+            BindAttrib(ID, Location, attrTexCoord6);
+            BindAttrib(ID, Location, attrTexCoord7);
+            BindAttrib(ID, Location, attrCustom0);
+            BindAttrib(ID, Location, attrCustom1);
+            BindAttrib(ID, Location, attrCustom2);
+
             if FHandle.LinkProgram then
             begin
 
@@ -4813,7 +5083,7 @@ begin
                   GL_LINE_STRIP: FShaders[shtGeometry].FGeometryOutput :=
                     gsOutLineStrip;
                   GL_TRIANGLE_STRIP: FShaders[shtGeometry].FGeometryOutput :=
-                    sOutTriangleStrip;
+                    gsOutTriangleStrip;
                 end;
                 GetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @I);
                 if I > 0 then
@@ -4961,9 +5231,8 @@ begin
                         begin
                           LUniform2 := LUniform;
                           LUniform := TGLShaderUniform.Create(Self);
-                          LUniform._AddRef;
                           LUniform.Assign(LUniform2);
-                          LUniform2._Release;
+                          LUniform2.Destroy;
                         end;
                         LUniform.FLocation := Loc;
                         LUniforms.Add(LUniform);
@@ -4995,7 +5264,6 @@ begin
                       LUniform := TGLShaderUniform.Create(Self);
                     LUniform.FType := GLSLData;
                   end;
-                  LUniform._AddRef;
                   LUniform.FName := UName;
                   LUniform.FNameHashCode := ComputeNameHashKey(UName);
                   LUniform.FLocation := Loc;
@@ -5035,11 +5303,11 @@ begin
               FInfoLog := 'Link successful';
           end
           else if FIsValid then
-            GLSLogger.LogInfoFmt('Program "%s" link successful - %s',
-              [GetMaterial.Name, FHandle.InfoLog])
+            GLSLogger.LogInfoFmt('%s Program "%s" link successful - %s',
+              [ShaderModel, GetMaterial.Name, FHandle.InfoLog])
           else
-            GLSLogger.LogErrorFmt('Program "%s" link failed! - %s',
-              [GetMaterial.Name, FHandle.InfoLog]);
+            GLSLogger.LogErrorFmt('%s Program "%s" link failed! - %s',
+              [ShaderModel, GetMaterial.Name, FHandle.InfoLog]);
         end;
       end
       else
@@ -5101,7 +5369,6 @@ begin
       str := LReader.ReadWideString;
       LClass := CGLAbstractShaderUniform(FindClass(str));
       LUniform := LClass.Create(Self);
-      LUniform._AddRef;
       LUniform.ReadFromFiler(LReader);
       FUniforms.Add(LUniform);
     end;
@@ -5117,7 +5384,7 @@ var
 begin
   for I := 0 to AList.Count - 1 do
     if Assigned(AList[I]) then
-      TGLAbstractShaderUniform(AList[I])._Release;
+      TGLAbstractShaderUniform(AList[I]).Destroy;
   AList.Destroy;
 end;
 
@@ -5148,10 +5415,9 @@ begin
 
   if not IsDesignTime then
   begin
-    GLSLogger.LogErrorFmt('Attempt to use unknow uniform "%s" for material "%s"',
+    GLSLogger.LogWarningFmt('Attempt to use unknow uniform "%s" for material "%s"',
       [AName, GetMaterial.Name]);
     U := TGLAbstractShaderUniform.Create(Self);
-    U._AddRef;
     U.FName := AName;
     U.FNameHashCode := H;
     FUniforms.Add(U);
@@ -5216,8 +5482,9 @@ end;
 
 procedure TGLBaseShaderModel.UnApply(var ARci: TRenderContextInfo);
 begin
-  if FIsValid and not ARci.GLStates.ForwardContext then
-    FHandle.EndUseProgramObject;
+  TFriendlyTransformation(ARci.PipelineTransformation).OnPush := nil;
+//  if FIsValid and not ARci.GLStates.ForwardContext then
+//    FHandle.EndUseProgramObject;
 end;
 
 procedure TGLBaseShaderModel.WriteUniforms(AStream: TStream);
@@ -5243,14 +5510,44 @@ begin
   Result := GL.ARB_shader_objects;
 end;
 
+class function TGLShaderModel3.ShaderModel: string;
+begin
+  Result := 'SM 3.0';
+end;
+
 class function TGLShaderModel4.IsSupported: Boolean;
 begin
   Result := GL.EXT_gpu_shader4;
 end;
 
+class function TGLShaderModel4.ShaderModel: string;
+begin
+  Result := 'SM 4.0';
+end;
+
+procedure TGLShaderModel4.Apply(var ARci: TRenderContextInfo);
+begin
+  if Assigned(FShaders[shtGeometry]) then
+  begin
+    case FShaders[shtGeometry].FGeometryInput of
+      gsInPoints: ARci.primitiveMask := [mpPOINTS];
+      gsInLines: ARci.primitiveMask := [mpLINES, mpLINE_LOOP, mpLINE_STRIP];
+      gsInAdjLines: ARci.primitiveMask := [mpLINES_ADJACENCY, mpLINE_STRIP_ADJACENCY];
+      gsInTriangles: ARci.primitiveMask := [mpTRIANGLES, mpTRIANGLE_STRIP, mpTRIANGLE_FAN];
+      gsInAdjTriangles: ARci.primitiveMask := [mpTRIANGLES_ADJACENCY, mpTRIANGLE_STRIP_ADJACENCY];
+    end;
+  end;
+  inherited;
+end;
+
 class function TGLShaderModel5.IsSupported: Boolean;
 begin
   Result := GL.ARB_gpu_shader5;
+end;
+
+class function TGLShaderModel5.ShaderModel: string;
+begin
+  Result := 'SM 5.0';
 end;
 
 procedure BeginPatch(mode: TGLEnum);
@@ -5286,6 +5583,7 @@ begin
     vStoreBegin := GL.Begin_;
     GL.Begin_ := BeginPatch;
     ARci.amalgamating := True;
+    ARci.primitiveMask := [mpPATCHES];
   end;
   inherited;
 end;
@@ -5701,8 +5999,10 @@ var
 begin
   if FLocation > -1 then
   begin
-    if FindHotActiveUnit and Assigned(FLibTexture) and Assigned(FLibSampler)
-      then
+    if FindHotActiveUnit
+      and Assigned(FLibTexture)
+      and Assigned(FLibSampler)
+      and (FLibTexture.Shape <> ttNoShape) then
       with GL do
       begin
         // Apply swizzling if possible
@@ -6026,6 +6326,11 @@ end;
 
 procedure TGLAbstractShaderUniform.Apply(var ARci: TRenderContextInfo);
 begin
+end;
+
+destructor TGLAbstractShaderUniform.Destroy;
+begin
+  inherited;
 end;
 
 function TGLAbstractShaderUniform.GetAutoSetMethod: string;
@@ -6685,6 +6990,7 @@ begin
   FCubeMap := False;
   FOnlyWrite := False;
   FFixedSamplesLocation := False;
+  FMaxLOD := 1000;
   Name := TGLMatLibComponents(AOwner).MakeUniqueName('Attachment');
 end;
 
@@ -6705,9 +7011,16 @@ begin
     exit;
 
   FHandle.AllocateHandle;
-  FRenderBufferHandle.AllocateHandle;
+  if FRenderBufferHandle.IsSupported then
+    FRenderBufferHandle.AllocateHandle;
   if not (FHandle.IsDataNeedUpdate or FRenderBufferHandle.IsDataNeedUpdate) then
     exit;
+
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(
+      Length(Name) + Length(glsDoOnPrepare), PGLChar(TGLString(Name + glsDoOnPrepare)));
+{$ENDIF}
 
   // Target
 
@@ -6795,8 +7108,9 @@ begin
 
   glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
 
-  if FOnlyWrite and ((LTarget = ttTexture2D) or (LTarget =
-    ttTexture2DMultisample))
+  if FRenderBufferHandle.IsSupported
+    and FOnlyWrite
+    and ((LTarget = ttTexture2D) or (LTarget = ttTexture2DMultisample))
     and FRenderBufferHandle.IsSupported then
   begin
     if LTarget = ttTexture2D then
@@ -6811,6 +7125,7 @@ begin
       GLStates.TextureBinding[GLStates.ActiveTexture, FHandle.Target] :=
         FHandle.Handle;
       MaxLevel := CalcTextureLevelNumber(LTarget, w, h, d);
+      MaxLevel := MinInteger(MaxLevel, FMaxLOD+1);
 
       case glTarget of
 
@@ -6891,7 +7206,6 @@ begin
   begin
     GL.ClearError;
     GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.Name]);
-    exit;
   end
   else
     FIsValid := True;
@@ -6932,6 +7246,7 @@ begin
       FHeight := ReadInteger;
       FDepth := ReadInteger;
       FInternalFormat := TGLInternalFormat(ReadInteger);
+      FMaxLOD := ReadInteger;
     end
     else
       RaiseFilerException(archiveVersion);
@@ -7001,6 +7316,16 @@ begin
   end;
 end;
 
+procedure TGLFrameBufferAttachment.SetMaxLOD(Value: Integer);
+begin
+  Value := ClampInteger(Value, 0, 1000);
+  if FMaxLOD <> Value then
+  begin
+    FMaxLOD := Value;
+    NotifyChange(Self);
+  end;
+end;
+
 procedure TGLFrameBufferAttachment.SetOnlyWrite(AValue: Boolean);
 begin
   if FOnlyWrite <> AValue then
@@ -7008,6 +7333,8 @@ begin
     if AValue
       and ((FDepth > 0) or FLayered or FFixedSamplesLocation or FCubeMap) then
       exit;
+    if AValue then
+      FMaxLOD := 0;
     FOnlyWrite := AValue;
     NotifyChange(Self);
   end;
@@ -7020,6 +7347,8 @@ begin
   if FSamples <> AValue then
   begin
     FSamples := AValue;
+    if AValue = -1 then
+      FMaxLOD := 0;
     NotifyChange(Self);
   end;
 end;
@@ -7058,6 +7387,7 @@ begin
     WriteInteger(FHeight);
     WriteInteger(FDepth);
     WriteInteger(Integer(FInternalFormat));
+    WriteInteger(FMaxLOD);
   end;
 end;
 
@@ -7084,15 +7414,15 @@ begin
     SetInvModelViewMatrix);
   RegisterUniformAutoSetMethod('Projection matrix', GLSLTypeMat4F,
     SetProjectionMatrix);
-  RegisterUniformAutoSetMethod('ViewProjection matrix', GLSLTypeMat4F,
+  RegisterUniformAutoSetMethod(cafViewProjectionMatrix, GLSLTypeMat4F,
     SetViewProjectionMatrix);
-  RegisterUniformAutoSetMethod('WorldViewProjection matrix', GLSLTypeMat4F,
+  RegisterUniformAutoSetMethod(cafWorldViewProjectionMatrix, GLSLTypeMat4F,
     SetWorldViewProjectionMatrix);
   RegisterUniformAutoSetMethod('Material front face emission', GLSLType4F,
     SetMaterialFrontEmission);
   RegisterUniformAutoSetMethod('Material front face ambient', GLSLType4F,
     SetMaterialFrontAmbient);
-  RegisterUniformAutoSetMethod('Material front face diffuse', GLSLType4F,
+  RegisterUniformAutoSetMethod(cafMaterialFrontFaceDiffuse, GLSLType4F,
     SetMaterialFrontDiffuse);
   RegisterUniformAutoSetMethod('Material front face specular', GLSLType4F,
     SetMaterialFrontSpecular);
@@ -7113,7 +7443,7 @@ end;
 procedure TStandartUniformAutoSetExecutor.SetCameraPosition(Sender:
   IShaderParameter; var ARci: TRenderContextInfo);
 begin
-  Sender.vec4 := ARci.cameraPosition;
+  Sender.vec4 := ARci.CameraPosition;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetInvModelMatrix(Sender:
@@ -7281,6 +7611,11 @@ begin
       FHandle.AllocateHandle;
       if FHandle.IsDataNeedUpdate then
       begin
+{$IFDEF GLS_OPENGL_DEBUG}
+        if GL.GREMEDY_string_marker then
+          GL.StringMarkerGREMEDY(
+            Length(Name) + Length(glsDoOnPrepare), PGLChar(TGLString(Name + glsDoOnPrepare)));
+{$ENDIF}
         SetExeDirectory;
         if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
           FSource.LoadFromFile(FSourceFile);
@@ -7397,6 +7732,97 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
+{$IFDEF GLS_REGION}{$REGION 'TGLLineProperties'}{$ENDIF}
+
+procedure TGLLineProperties.Apply(var ARci: TRenderContextInfo);
+begin
+  with ARci.GLStates do
+  begin
+    LineWidth := FWidth;
+    if FStippleFactor > 0 then
+    begin
+      LineStippleFactor := FStippleFactor;
+      LineStipplePattern := FStipplePattern;
+      Enable(stLineStipple);
+    end
+    else
+      Disable(stLineStipple);
+    if FSmooth then
+      Enable(stLineSmooth)
+    else
+      Disable(stLineSmooth);
+  end;
+end;
+
+procedure TGLLineProperties.Assign(Source: TPersistent);
+var
+  LLineProp: TGLLineProperties;
+begin
+  if Source is TGLLineProperties then
+  begin
+    LLineProp := TGLLineProperties(Source);
+    FWidth := LLineProp.Width;
+    FSmooth := LLineProp.Smooth;
+    FStippleFactor := LLineProp.StippleFactor;
+    FStipplePattern := LLineProp.StipplePattern;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+constructor TGLLineProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FSmooth := False;
+  FWidth := 1.0;
+  FStippleFactor := 0;
+  FStipplePattern := $CCCC;
+end;
+
+procedure TGLLineProperties.SetSmooth(const Value: Boolean);
+begin
+  if FSmooth <> Value then
+  begin
+    FSmooth := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLLineProperties.SetStippleFactor(const Value: Integer);
+begin
+  if FStippleFactor <> Value then
+  begin
+    FStippleFactor := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLLineProperties.SetStipplePattern(const Value: Word);
+begin
+  if FStipplePattern <> Value then
+  begin
+    FStipplePattern := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLLineProperties.SetWidth(const Value: Single);
+begin
+  if FWidth <> Value then
+  begin
+    FWidth := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+function TGLLineProperties.StoreWidth: Boolean;
+begin
+  Result := FWidth <> 1.0;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLLineProperties'}{$ENDIF}
+
+
 initialization
 
   RegisterClasses(
@@ -7425,6 +7851,7 @@ initialization
 finalization
 
   vStandartUniformAutoSetExecutor.Destroy;
+  ReleaseInternalMaterialLibrary;
 
 end.
 

@@ -6,6 +6,7 @@
   Geometric objects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>16/05/11 - Yar - Transition to indirect rendering objects
   <li>13/05/11 - Vince - Add ArrowArc object
   <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
   to display a slice of TGLTorus between start and stop angles
@@ -47,7 +48,14 @@ uses
   GLSilhouette,
   VectorTypes,
   GeometryBB,
-  GLRenderContextInfo;
+  GLPipelineTransformation,
+  GLRenderContextInfo,
+  GLNodes,
+  GLCoordinates,
+  GLMaterial,
+  GLMaterialEx,
+  GLSMesh,
+  GLSDrawTechnique;
 
 type
 
@@ -57,7 +65,7 @@ type
     The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
-  TGLDisk = class(TGLQuadricObject)
+  TGLDisk = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TGLFloat;
@@ -68,71 +76,99 @@ type
     procedure SetLoops(aValue: TGLInt);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
-
+  protected
+    { Protected Declarations }
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
 
+    function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    { : Allows defining a "hole" in the disk. }
+    {: Allows defining a "hole" in the disk. }
     property InnerRadius: TGLFloat read FInnerRadius write SetInnerRadius;
-    { : Number of radial mesh subdivisions. }
+    {: Number of radial mesh subdivisions. }
     property Loops: TGLInt read FLoops write SetLoops default 2;
-    { : Outer radius for the disk.<p>
-      If you leave InnerRadius at 0, this is the disk radius. }
+    {: Outer radius for the disk.<p>
+       If you leave InnerRadius at 0, this is the disk radius. }
     property OuterRadius: TGLFloat read FOuterRadius write SetOuterRadius;
-    { : Number of mesh slices.<p>
-      For instance, if Slices=6, your disk will look like an hexagon. }
+    {: Number of mesh slices.<p>
+       For instance, if Slices=6, your disk will look like an hexagon. }
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
     property SweepAngle: TGLFloat read FSweepAngle write SetSweepAngle;
   end;
 
+  // TGLGeoSphere
+  //
+  {: A geodesical shpere object. }
+  TGLGeoSphere = class(TGLSceneObjectEx)
+  private
+    { Private Declarations }
+    FRadius: TGLFloat;
+    FLevel: Integer;
+    FNormalDirection: TNormalDirection;
+    FNormals: TNormalSmoothing;
+    procedure SetRadius(const Value: TGLFloat);
+    procedure SetSubdivisionLevel(Value: Integer);
+    procedure SetNormalDirection(const Value: TNormalDirection);
+    procedure SetNormals(const Value: TNormalSmoothing);
+  protected
+    { Protected declaration }
+    procedure BuildMesh; override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    procedure Assign(Source: TPersistent); override;
+  published
+    { Published Declarations }
+    property Radius: TGLFloat read FRadius write SetRadius;
+    property SubdivisionLevel: Integer read FLevel write SetSubdivisionLevel
+      default 2;
+    property NormalDirection: TNormalDirection read FNormalDirection
+      write SetNormalDirection default ndOutside;
+    property Normals: TNormalSmoothing read FNormals write SetNormals
+      default nsSmooth;
+  end;
+
   // TGLCylinderBase
   //
-  { : Base class to cylinder-like objects.<p>
-    Introduces the basic cylinder description properties.<p>
-    Be aware teh default slices and stacks make up for a high-poly cylinder,
-    unless you're after high-quality lighting it is recommended to reduce the
-    Stacks property to 1. }
-  TGLCylinderBase = class(TGLQuadricObject)
+    {: Base class to cylinder-like objects.<p>
+       Introduces the basic cylinder description properties.<p>
+       Be aware teh default slices and stacks make up for a high-poly cylinder,
+       unless you're after high-quality lighting it is recommended to reduce the
+       Stacks property to 1. }
+  TGLCylinderBase = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FBottomRadius: TGLFloat;
     FSlices, FStacks, FLoops: TGLInt;
     FHeight: TGLFloat;
-
   protected
     { Protected Declarations }
+
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
     procedure SetSlices(aValue: TGLInt);
     procedure SetStacks(aValue: TGLInt);
     procedure SetLoops(aValue: TGLInt);
-    function GetTopRadius: Single; virtual;
+    function GetTopRadius: single; virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
 
-    function GenerateSilhouette(const silhouetteParameters
-      : TGLSilhouetteParameters): TGLSilhouette; override;
+    function GenerateSilhouette(const silhouetteParameters:
+      TGLSilhouetteParameters): TGLSilhouette; override;
   published
     { Published Declarations }
     property BottomRadius: TGLFloat read FBottomRadius write SetBottomRadius;
     property Height: TGLFloat read FHeight write SetHeight;
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property Stacks: TGLInt read FStacks write SetStacks default 4;
-    { : Number of concentric rings for top/bottom disk(s). }
+    {: Number of concentric rings for top/bottom disk(s). }
     property Loops: TGLInt read FLoops write SetLoops default 1;
   end;
 
@@ -143,32 +179,28 @@ type
 
   // TGLCone
   //
-  { : A cone object. }
+  {: A cone object. }
   TGLCone = class(TGLCylinderBase)
   private
     { Private Declarations }
     FParts: TConeParts;
-
+    procedure SetParts(aValue: TConeParts);
   protected
     { Protected Declarations }
-    procedure SetParts(aValue: TConeParts);
-    function GetTopRadius: Single; override;
-
+    procedure BuildMesh; override;
+    function GetTopRadius: single; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-
+      intersectPoint, intersectNormal: PVector): Boolean; override;
   published
     { Published Declarations }
-    property Parts: TConeParts read FParts write SetParts
-      default [coSides, coBottom];
+    property Parts: TConeParts read FParts write SetParts default [coSides,
+      coBottom];
   end;
 
   // TCylinderPart
@@ -182,50 +214,49 @@ type
 
   // TGLCylinder
   //
-  { : Cylinder object, can also be used to make truncated cones }
+    {: Cylinder object, can also be used to make truncated cones }
   TGLCylinder = class(TGLCylinderBase)
   private
     { Private Declarations }
-    FParts: TCylinderParts;
+    FParts: TCylinderparts;
     FTopRadius: TGLFloat;
     FAlignment: TCylinderAlignment;
-
   protected
     { Protected Declarations }
     procedure SetTopRadius(const aValue: Single);
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
-    function GetTopRadius: Single; override;
-
+    function GetTopRadius: single; override;
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil;
+      intersectNormal: PVector = nil): Boolean; override;
 
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
-
   published
     { Published Declarations }
     property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
-    property Parts: TCylinderParts read FParts write SetParts
-      default [cySides, cyBottom, cyTop];
+    property Parts: TCylinderParts read FParts write SetParts default [cySides,
+      cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
       default caCenter;
   end;
 
-  { : Capsule object, can also be used to make truncated cones }
-  TGLCapsule = class(TGLSceneObject)
+  // TGLCapsule
+  //
+  {: Capsule object, can also be used to make truncated cones }
+  TGLCapsule = class(TGLSceneObjectEx)
   private
     { Private Declarations }
-    FParts: TCylinderParts;
+    FParts: TCylinderparts;
     FRadius: TGLFloat;
     FSlices: TGLInt;
     FStacks: TGLInt;
@@ -233,6 +264,7 @@ type
     FAlignment: TCylinderAlignment;
   protected
     { Protected Declarations }
+    procedure BuildMesh; override;
     procedure SetHeight(const aValue: Single);
     procedure SetRadius(const aValue: Single);
     procedure SetSlices(const aValue: integer);
@@ -243,11 +275,11 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+      override;
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
@@ -257,8 +289,8 @@ type
     property Slices: TGLInt read FSlices write SetSlices;
     property Stacks: TGLInt read FStacks write SetStacks;
     property Radius: TGLFloat read FRadius write SetRadius;
-    property Parts: TCylinderParts read FParts write SetParts
-      default [cySides, cyBottom, cyTop];
+    property Parts: TCylinderParts read FParts write SetParts default [cySides,
+      cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
       default caCenter;
   end;
@@ -270,7 +302,7 @@ type
 
   // TGLAnnulus
   //
-  { : An annulus is a cylinder that can be made hollow (pipe-like). }
+  {: An annulus is a cylinder that can be made hollow (pipe-like). }
   TGLAnnulus = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -278,34 +310,29 @@ type
     FBottomInnerRadius: TGLFloat;
     FTopInnerRadius: TGLFloat;
     FTopRadius: TGLFloat;
-
   protected
     { Protected Declarations }
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
     procedure SetBottomInnerRadius(const aValue: Single);
     procedure SetParts(aValue: TAnnulusParts);
-
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil;
+      intersectNormal: PVector = nil): Boolean; override;
 
   published
     { Published Declarations }
-    property BottomInnerRadius: TGLFloat read FBottomInnerRadius
-      write SetBottomInnerRadius;
-    property TopInnerRadius: TGLFloat read FTopInnerRadius
-      write SetTopInnerRadius;
+    property BottomInnerRadius: TGLFLoat read FBottomInnerRadius write SetBottomInnerRadius;
+    property TopInnerRadius: TGLFloat read FTopInnerRadius write SetTopInnerRadius;
     property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
-    property Parts: TAnnulusParts read FParts write SetParts
-      default [anInnerSides, anOuterSides, anBottom, anTop];
+    property Parts: TAnnulusParts read FParts write SetParts default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
 
   // TTorusPart
@@ -316,16 +343,16 @@ type
   // TGLTorus
   //
   { : A Torus object. }
-  TGLTorus = class(TGLSceneObject)
+  // TGLTorus
+  //
+  {: A Torus object. }
+  TGLTorus = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FParts: TTorusParts;
     FRings, FSides: Cardinal;
-    FStartAngle, FStopAngle: Single;
     FMinorRadius, FMajorRadius: Single;
-    FMesh: array of array of TVertexRec;
-  protected
-    { Protected Declarations }
+    FStartAngle, FStopAngle: Single;
     procedure SetMajorRadius(const aValue: Single);
     procedure SetMinorRadius(const aValue: Single);
     procedure SetRings(aValue: Cardinal);
@@ -333,16 +360,13 @@ type
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
     procedure SetParts(aValue: TTorusParts);
-
+  protected
+    { Protected Declarations }
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+    procedure Assign(Source: TPersistent); override;
 
   published
     { Published Declarations }
@@ -374,17 +398,16 @@ type
     By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
-    { Private Declarations }
-    FParts: TArrowLineParts;
-    FTopRadius: Single;
+    { Private Declarations}
+    fParts: TArrowLineParts;
+    fTopRadius: Single;
     fTopArrowHeadHeight: Single;
     fTopArrowHeadRadius: Single;
     fBottomArrowHeadHeight: Single;
     fBottomArrowHeadRadius: Single;
     FHeadStackingStyle: TArrowHeadStackingStyle;
-
   protected
-    { Protected Declarations }
+    { Protected Declarations}
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopArrowHeadHeight(const aValue: Single);
     procedure SetTopArrowHeadRadius(const aValue: Single);
@@ -392,28 +415,20 @@ type
     procedure SetBottomArrowHeadRadius(const aValue: Single);
     procedure SetParts(aValue: TArrowLineParts);
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
-
+    procedure BuildMesh; override;
   public
-    { Public Declarations }
+    { Public Declarations}
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-
   published
-    { Published Declarations }
-    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
-    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
-      write SetHeadStackingStyle default ahssStacked;
-    property Parts: TArrowLineParts read FParts write SetParts
-      default [alLine, alTopArrow];
-    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight
-      write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius
-      write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight
-      write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
-      write SetBottomArrowHeadRadius;
+    { Published Declarations}
+    property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
+    property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle write SetHeadStackingStyle default ahssStacked;
+    property Parts: TArrowLineParts read fParts write SetParts default [alLine, alTopArrow];
+    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight write SetTopArrowHeadHeight;
+    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius write SetTopArrowHeadRadius;
+    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight write SetBottomArrowHeadHeight;
+    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius write SetBottomArrowHeadRadius;
   end;
 
   // TArrowArcPart
@@ -429,7 +444,7 @@ type
     This is useful for displaying a movement (eg twist) or
     other arc arrows that might be required.<br>
     By default the bottom arrow is off }
-  TGLArrowArc = class(TGLCylinderBase)
+(*  TGLArrowArc = class(TGLCylinderBase)
   private
     { Private Declarations }
     fArcRadius: Single;
@@ -482,7 +497,7 @@ type
     property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
-
+*)
   // TPolygonParts
   //
   TPolygonPart = (ppTop, ppBottom);
@@ -533,11 +548,11 @@ type
   // TGLFrustrum
   //
   { A frustrum is a pyramid with the top chopped off.<p>
-    The height of the imaginary pyramid is ApexHeight, the height of the
-    frustrum is Height. If ApexHeight and Height are the same, the frustrum
-    degenerates into a pyramid.<br>
-    Height cannot be greater than ApexHeight. }
-  TGLFrustrum = class(TGLSceneObject)
+     The height of the imaginary pyramid is ApexHeight, the height of the
+     frustrum is Height. If ApexHeight and Height are the same, the frustrum
+     degenerates into a pyramid.<br>
+     Height cannot be greater than ApexHeight. }
+  TGLFrustrum = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLFloat;
@@ -549,35 +564,34 @@ type
     procedure SetHeight(const aValue: Single);
     procedure SetParts(aValue: TFrustrumParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
-
   protected
     { Protected Declarations }
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
+
     function TopDepth: TGLFloat;
     function TopWidth: TGLFloat;
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: TGLFloat read FApexHeight write SetApexHeight
-      stored False;
-    property BaseDepth: TGLFloat read FBaseDepth write SetBaseDepth
-      stored False;
-    property BaseWidth: TGLFloat read FBaseWidth write SetBaseWidth
-      stored False;
+    property ApexHeight: TGLFloat read FApexHeight write SetApexHeight stored
+      False;
+    property BaseDepth: TGLFloat read FBaseDepth write SetBaseDepth stored
+      False;
+    property BaseWidth: TGLFloat read FBaseWidth write SetBaseWidth stored
+      False;
     property Height: TGLFloat read FHeight write SetHeight stored False;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
-    property Parts: TFrustrumParts read FParts write SetParts
-      default cAllFrustrumParts;
+    property NormalDirection: TNormalDirection read FNormalDirection write
+      SetNormalDirection default ndOutside;
+    property Parts: TFrustrumParts read FParts write SetParts default
+      cAllFrustrumParts;
   end;
 
   // -------------------------------------------------------------
@@ -589,115 +603,13 @@ implementation
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 
-uses Polynomials,
-  XOpenGL;
+uses
+  Polynomials,
+  XOpenGL,
+  GLSLParameter,
+  GLState;
 
-// ------------------
-// ------------------ TGLDisk ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLDisk.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FOuterRadius := 0.5;
-  FInnerRadius := 0;
-  FSlices := 16;
-  FLoops := 2;
-  FStartAngle := 0;
-  FSweepAngle := 360;
-end;
-
-// BuildList
-//
-
-procedure TGLDisk.BuildList(var rci: TRenderContextInfo);
-var
-  quadric: PGLUquadricObj;
-begin
-  quadric := gluNewQuadric();
-  SetupQuadricParams(quadric);
-  gluPartialDisk(quadric, FInnerRadius, FOuterRadius, FSlices, FLoops,
-    FStartAngle, FSweepAngle);
-  gluDeleteQuadric(quadric);
-end;
-
-// SetOuterRadius
-//
-
-procedure TGLDisk.SetOuterRadius(const aValue: Single);
-begin
-  if aValue <> FOuterRadius then
-  begin
-    FOuterRadius := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetInnerRadius
-//
-
-procedure TGLDisk.SetInnerRadius(const aValue: Single);
-begin
-  if aValue <> FInnerRadius then
-  begin
-    FInnerRadius := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetSlices
-//
-
-procedure TGLDisk.SetSlices(aValue: integer);
-begin
-  if aValue <> FSlices then
-  begin
-    FSlices := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetLoops
-//
-
-procedure TGLDisk.SetLoops(aValue: integer);
-begin
-  if aValue <> FLoops then
-  begin
-    FLoops := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetStartAngle
-//
-
-procedure TGLDisk.SetStartAngle(const aValue: Single);
-begin
-  if aValue <> FStartAngle then
-  begin
-    FStartAngle := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetSweepAngle
-//
-
-procedure TGLDisk.SetSweepAngle(const aValue: Single);
-begin
-  if aValue <> FSweepAngle then
-  begin
-    FSweepAngle := aValue;
-    StructureChanged;
-  end;
-end;
-
-// Assign
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLDisk'}{$ENDIF}
 
 procedure TGLDisk.Assign(Source: TPersistent);
 begin
@@ -724,111 +636,102 @@ begin
   Result := VectorMake(r, r, 0);
 end;
 
-// RayCastIntersect
-//
-
-function TGLDisk.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+procedure TGLDisk.BuildMesh;
 var
-  ip: TVector;
-  d: Single;
-  angle, beginAngle, endAngle: Single;
-  localIntPoint: TVector;
+  cosCache, sinCache: array of Single;
+  i, j: Integer;
+  Rstep, R: Single;
 begin
-  Result := False;
-  if SweepAngle > 0 then
-    if RayCastPlaneIntersect(rayStart, rayVector, AbsolutePosition,
-      AbsoluteDirection, @ip) then
-    begin
-      if Assigned(intersectPoint) then
-        SetVector(intersectPoint^, ip);
-      localIntPoint := AbsoluteToLocal(ip);
-      d := VectorNorm(localIntPoint);
-      if (d >= Sqr(InnerRadius)) and (d <= Sqr(OuterRadius)) then
+  SetLength(cosCache, FSlices + 1);
+  SetLength(sinCache, FSlices + 1);
+  PrepareSinCosCache(sinCache, cosCache,
+    FStartAngle, FStartAngle + FSweepAngle);
+
+  Rstep := (FOuterRadius - FInnerRadius) / FLoops;
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      Attribute3f(attrNormal, 0, 0, 1);
+      Attribute3f(attrTangent, 1, 0, 0);
+      Attribute3f(attrBinormal, 0, 1, 0);
+      for j := 0 to FLoops - 1 do
       begin
-        if SweepAngle >= 360 then
-          Result := true
-        else
+        for i := 0 to FSlices do
         begin
-          // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * arctan2(localIntPoint[0], localIntPoint[1]);
-          if angle < 0 then
-            angle := angle + 360;
-          // we also want StartAngle and StartAngle+SweepAngle to be in this range
-          beginAngle := Trunc(StartAngle) mod 360;
-          endAngle := Trunc(StartAngle + SweepAngle) mod 360;
-          // If beginAngle>endAngle then area crosses the boundary from 360=>0 degrees
-          // therefore have 2 valid regions  (beginAngle to 360) & (0 to endAngle)
-          // otherwise just 1 valid region (beginAngle to endAngle)
-          if beginAngle > endAngle then
-          begin
-            if (angle > beginAngle) or (angle < endAngle) then
-              Result := true;
-          end
-          else if (angle > beginAngle) and (angle < endAngle) then
-            Result := true;
+          Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+          R := FInnerRadius + j * Rstep;
+          Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, 0);
+          EmitVertex;
+          Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+          R := FInnerRadius + (j + 1) * Rstep;
+          Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, 0);
+          EmitVertex;
         end;
       end;
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
     end;
-  if Result = true then
-    if Assigned(intersectNormal) then
-      SetVector(intersectNormal^, AbsoluteUp);
-
+  end;
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
-// ------------------
-// ------------------ TGLCylinderBase ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLCylinderBase.Create(AOwner: TComponent);
+constructor TGLDisk.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  FBottomRadius := 0.5;
-  FHeight := 1;
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FOuterRadius := 0.5;
+  FInnerRadius := 0;
   FSlices := 16;
-  FStacks := 4;
-  FLoops := 1;
+  FLoops := 2;
+  FStartAngle := 0;
+  FSweepAngle := 360;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
 end;
 
-// SetBottomRadius
-//
-
-procedure TGLCylinderBase.SetBottomRadius(const aValue: Single);
+procedure TGLDisk.SetInnerRadius(const aValue: Single);
 begin
-  if aValue <> FBottomRadius then
+  if aValue <> FInnerRadius then
   begin
-    FBottomRadius := aValue;
+    FInnerRadius := aValue;
     StructureChanged;
   end;
 end;
 
-// GetTopRadius
-//
-
-function TGLCylinderBase.GetTopRadius: Single;
+procedure TGLDisk.SetLoops(aValue: TGLInt);
 begin
-  Result := FBottomRadius;
-end;
-
-// SetHeight
-//
-
-procedure TGLCylinderBase.SetHeight(const aValue: Single);
-begin
-  if aValue <> FHeight then
+  if aValue <> FLoops then
   begin
-    FHeight := aValue;
+    FLoops := aValue;
     StructureChanged;
   end;
 end;
 
-// SetSlices
-//
+procedure TGLDisk.SetOuterRadius(const aValue: Single);
+begin
+  if aValue <> FOuterRadius then
+  begin
+    FOuterRadius := aValue;
+    StructureChanged;
+  end;
+end;
 
-procedure TGLCylinderBase.SetSlices(aValue: TGLInt);
+procedure TGLDisk.SetSlices(aValue: TGLInt);
 begin
   if aValue <> FSlices then
   begin
@@ -837,73 +740,352 @@ begin
   end;
 end;
 
-// SetStack
-//
-
-procedure TGLCylinderBase.SetStacks(aValue: TGLInt);
+procedure TGLDisk.SetStartAngle(const aValue: Single);
 begin
-  if aValue <> FStacks then
+  if aValue <> FStartAngle then
   begin
-    FStacks := aValue;
+    FStartAngle := aValue;
     StructureChanged;
   end;
 end;
 
-// SetLoops
-//
-
-procedure TGLCylinderBase.SetLoops(aValue: TGLInt);
+procedure TGLDisk.SetSweepAngle(const aValue: Single);
 begin
-  if (aValue >= 1) and (aValue <> FLoops) then
+  if aValue <> FSweepAngle then
   begin
-    FLoops := aValue;
+    FSweepAngle := aValue;
     StructureChanged;
   end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLDisk'}{$ENDIF}
+
+{$IFDEF GLS_REGIONS}{$REGION 'TGLGeoSphere'}{$ENDIF}
+
+constructor TGLGeoSphere.Create(AOwner: TComponent);
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FRadius := 0.5;
+  FLevel := 1;
+  FNormals := nsSmooth;
+  FNormalDirection := ndOutside;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
+end;
+
+procedure TGLGeoSphere.BuildMesh;
+var
+  pivot, dir1, dir2, V, B: TAffineVector;
+  level, numLayers: Integer;
+  dt, t_top, t_bot, ds_top, ds_bot, s_top, s_bot,
+    smax_top, smax_bot: Single;
+  offset: Boolean;
+
+  procedure ProduceVertex(s, t, sb, tb: Single; uprow: Boolean);
+  var
+    XZR: Single;
+    LTangent: TVector3f;
+  begin
+    V[0] := pivot[0] + s * dir1[0] + t * dir2[0];
+    V[1] := pivot[1] + s * dir1[1] + t * dir2[1];
+    V[2] := pivot[2] + s * dir1[2] + t * dir2[2];
+    B[0] := pivot[0] + sb * dir1[0] + tb * dir2[0];
+    B[1] := pivot[1] + sb * dir1[1] + tb * dir2[1];
+    B[2] := pivot[2] + sb * dir1[2] + tb * dir2[2];
+    NormalizeVector(V);
+    NormalizeVector(B);
+
+    if uprow then
+    begin
+      // Poles
+      XZR := sqrt(B[0] * B[0] + B[2] * B[2]);
+      s := V[0];
+      t := V[2];
+      if XZR > 0 then
+      begin
+        s := s / XZR;
+        t := t / XZR;
+      end;
+      s := 0.5 + (1 / 6) * s;
+      t := (1 / 6) * (t + 1);
+      if V[1] > 0 then
+        t := 1 - t;
+    end
+    else
+    begin
+      // Equator
+      s := 0.5 + 0.5 * arctan2(V[0], V[2]) / Pi;
+      if offset and (s > 0.99) then
+        s := 0;
+
+      t := 0.5;
+      if B[1] <> 0 then
+        t := t + (1 / 6) * V[1] / Abs(B[1]);
+    end;
+
+    with FBatch.Mesh do
+    begin
+      Attribute2f(attrTexCoord0, s, t);
+      Attribute3f(attrNormal, V);
+      LTangent := VectorCrossProduct(YVector, V);
+      Attribute3f(attrTangent, LTangent);
+      Attribute3f(attrBinormal, VectorCrossProduct(V, LTangent));
+      ScaleVector(V, FRadius);
+      Attribute3f(attrPosition, V);
+      EmitVertex;
+    end;
+  end;
+
+  procedure ProduceOctant;
+  var
+    i, j, caps: Integer;
+    t_border, smax_border: Single;
+  begin
+    t_top := 1;
+    ds_top := 0;
+    caps := numLayers div 2;
+
+    t_border := 1 - caps * dt;
+    smax_border := 1 - t_border;
+
+    for i := 0 to numLayers - 1 do
+    begin
+      t_bot := t_top - dt;
+      smax_top := 1 - t_top;
+      smax_bot := 1 - t_bot;
+      if i > 0 then
+        ds_top := smax_top / i;
+      ds_bot := smax_bot / (i + 1);
+      s_top := 0;
+      s_bot := 0;
+      for j := 0 to i do
+      begin
+        ProduceVertex(s_bot, t_bot, s_bot * smax_border / smax_bot, t_border, i
+          < caps);
+        ProduceVertex(s_top, t_top, s_top * smax_border / smax_top, t_border, i
+          < caps);
+        s_top := s_top + ds_top;
+        s_bot := s_bot + ds_bot;
+      end;
+      ProduceVertex(s_bot, t_bot, s_bot * smax_border / smax_bot, t_border, i <
+        caps);
+      FBatch.Mesh.RestartStrip;
+      t_top := t_bot;
+    end;
+  end;
+
+begin
+  level := FLevel;
+  numLayers := 1 shl level;
+  dt := 1 / numLayers;
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      offset := false;
+      SetVector(pivot, 1, 0, 0);
+      SetVector(dir1, -1, 0, 1);
+      SetVector(dir2, -1, 1, 0);
+      ProduceOctant;
+
+      SetVector(pivot, 0, 0, 1);
+      SetVector(dir1, -1, 0, -1);
+      SetVector(dir2, 0, 1, -1);
+      ProduceOctant;
+
+      SetVector(pivot, 0, 0, -1);
+      SetVector(dir1, 1, 0, 1);
+      SetVector(dir2, 0, 1, 1);
+      ProduceOctant;
+
+      SetVector(pivot, -1, 0, 0);
+      SetVector(dir1, 1, 0, 1);
+      SetVector(dir2, 1, -1, 0);
+      ProduceOctant;
+
+      SetVector(pivot, 0, 0, 1);
+      SetVector(dir1, 1, 0, -1);
+      SetVector(dir2, 0, -1, -1);
+      ProduceOctant;
+
+      SetVector(pivot, 1, 0, 0);
+      SetVector(dir1, -1, 0, -1);
+      SetVector(dir2, -1, -1, 0);
+      ProduceOctant;
+
+      offset := true;
+      SetVector(pivot, -1, 0, 0);
+      SetVector(dir1, 1, 0, -1);
+      SetVector(dir2, 1, 1, 0);
+      ProduceOctant;
+
+      SetVector(pivot, 0, 0, -1);
+      SetVector(dir1, -1, 0, 1);
+      SetVector(dir2, 0, -1, 1);
+      ProduceOctant;
+
+      EndAssembly;
+
+      case FNormals of
+        nsSmooth:
+          begin
+            if FNormalDirection = ndInside then
+            begin
+              FBatch.Mesh.Triangulate;
+              FBatch.Mesh.FlipFaces;
+            end;
+            ApplyExtras;
+          end;
+        nsFlat:
+          begin
+            if FNormalDirection = ndInside then
+            begin
+              FBatch.Mesh.Triangulate;
+              FBatch.Mesh.FlipFaces;
+            end;
+            FBatch.Mesh.ComputeNormals(False);
+            ApplyExtras;
+          end;
+        nsNone:
+          begin
+            FBatch.Mesh.Attributes[attrNormal] := False;
+            FBatch.Mesh.Validate;
+            ApplyExtras;
+          end;
+      end;
+
+    finally
+      UnLock;
+    end;
+  end;
+  ClearStructureChanged;
 end;
 
 // Assign
 //
 
+procedure TGLGeoSphere.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TGLGeoSphere) then
+  begin
+    Radius := TGLGeoSphere(Source).FRadius;
+    SubdivisionLevel := TGLGeoSphere(Source).FLevel;
+  end;
+  inherited;
+end;
+
+// SetRadius
+//
+
+procedure TGLGeoSphere.SetRadius(const Value: TGLFloat);
+begin
+  if Value <> FRadius then
+  begin
+    FRadius := Value;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLGeoSphere.SetSubdivisionLevel(Value: Integer);
+begin
+  if Value <> FLevel then
+  begin
+    if Value < 0 then
+      Value := 0;
+    if Value > 4 then
+      Value := 4;
+    FLevel := Value;
+    StructureChanged;
+  end;
+end;
+
+
+procedure TGLGeoSphere.SetNormalDirection(const Value: TNormalDirection);
+begin
+  if Value <> FNormalDirection then
+  begin
+    FNormalDirection := Value;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLGeoSphere.SetNormals(const Value: TNormalSmoothing);
+begin
+  if Value <> FNormals then
+  begin
+    FNormals := Value;
+    StructureChanged;
+  end;
+end;
+
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCylinderBase'}{$ENDIF}
+
 procedure TGLCylinderBase.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TGLCylinderBase) then
+  if Source is TGLCylinderBase then
   begin
-    FBottomRadius := TGLCylinderBase(Source).FBottomRadius;
-    FSlices := TGLCylinderBase(Source).FSlices;
-    FStacks := TGLCylinderBase(Source).FStacks;
-    FLoops := TGLCylinderBase(Source).FLoops;
-    FHeight := TGLCylinderBase(Source).FHeight;
+    FBottomRadius := TGLCone(Source).FBottomRadius;
+    FSlices := TGLCone(Source).FSlices;
+    FStacks := TGLCone(Source).FStacks;
+    FLoops := TGLCone(Source).FLoops;
+    FHeight := TGLCone(Source).FHeight;
   end;
   inherited Assign(Source);
 end;
 
-// GenerateSilhouette
-//
+constructor TGLCylinderBase.Create(AOwner: TComponent);
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FBottomRadius := 0.5;
+  FHeight := 1;
+  FSlices := 16;
+  FStacks := 4;
+  FLoops := 1;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
 
-function TGLCylinderBase.GenerateSilhouette(const silhouetteParameters
-  : TGLSilhouetteParameters): TGLSilhouette;
+end;
+
+function TGLCylinderBase.GenerateSilhouette(
+  const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette;
 var
   connectivity: TConnectivity;
   sil: TGLSilhouette;
   ShadowSlices: integer;
 
   i: integer;
-  p: array [0 .. 3] of TVector3f;
-  PiDivSlices: Single;
-  a1, a2: Single;
+  p: array[0..3] of TVector3f;
+  PiDivSlices: single;
+  a1, a2: single;
   c1, c2: TVector3f;
-  cosa1, cosa2, sina1, sina2: Single;
-  HalfHeight: Single;
-  ShadowTopRadius: Single;
+  cosa1, cosa2, sina1, sina2: single;
+  HalfHeight: single;
+  ShadowTopRadius: single;
 begin
-  connectivity := TConnectivity.Create(true);
+  Connectivity := TConnectivity.Create(true);
 
   ShadowSlices := FSlices div 1;
 
   if FSlices < 5 then
     FSlices := 5;
 
-  PiDivSlices := 2 * pi / ShadowSlices;
+  PiDivSlices := 2 * Pi / ShadowSlices;
 
   a1 := 0;
 
@@ -931,10 +1113,10 @@ begin
     MakeVector(p[1], FBottomRadius * sina1, -HalfHeight, FBottomRadius * cosa1);
 
     // Top corners
-    MakeVector(p[2], ShadowTopRadius * sina1, HalfHeight,
-      ShadowTopRadius * cosa1);
-    MakeVector(p[3], ShadowTopRadius * sina2, HalfHeight,
-      ShadowTopRadius * cosa2); // }
+    MakeVector(p[2], ShadowTopRadius * sina1, HalfHeight, ShadowTopRadius *
+      cosa1);
+    MakeVector(p[3], ShadowTopRadius * sina2, HalfHeight, ShadowTopRadius *
+      cosa2);
 
     // This should be optimized to use AddIndexedFace, because this method
     // searches for each of the vertices and adds them or re-uses them.
@@ -951,117 +1133,220 @@ begin
   end;
 
   sil := nil;
-  connectivity.CreateSilhouette(silhouetteParameters, sil, False);
+  Connectivity.CreateSilhouette(
+    silhouetteParameters, sil, false);
 
-  Result := sil;
+  result := sil;
 
-  connectivity.Free;
+  Connectivity.Free;
 end;
 
-// ------------------
-// ------------------ TGLCone ------------------
-// ------------------
-
-// Create
+// GetTopRadius
 //
 
-constructor TGLCone.Create(AOwner: TComponent);
+function TGLCylinderBase.GetTopRadius: single;
 begin
-  inherited Create(AOwner);
-  FParts := [coSides, coBottom];
+  Result := FBottomRadius;
 end;
 
-// BuildList
-//
-
-procedure TGLCone.BuildList(var rci: TRenderContextInfo);
-var
-  quadric: PGLUquadricObj;
+procedure TGLCylinderBase.SetBottomRadius(const aValue: Single);
 begin
-  GL.PushMatrix;
-  quadric := gluNewQuadric();
-  SetupQuadricParams(quadric);
-  GL.Rotated(-90, 1, 0, 0);
-  GL.Translatef(0, 0, -FHeight * 0.5);
-  if coSides in FParts then
-    gluCylinder(quadric, BottomRadius, 0, Height, Slices, Stacks);
-  if coBottom in FParts then
+  if aValue <> FBottomRadius then
   begin
-    // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
-    gluDisk(quadric, 0, BottomRadius, Slices, FLoops);
-  end;
-  gluDeleteQuadric(quadric);
-  GL.PopMatrix;
-end;
-
-// SetParts
-//
-
-procedure TGLCone.SetParts(aValue: TConeParts);
-begin
-  if aValue <> FParts then
-  begin
-    FParts := aValue;
+    FBottomRadius := aValue;
     StructureChanged;
   end;
 end;
 
-// Assign
-//
+procedure TGLCylinderBase.SetHeight(const aValue: Single);
+begin
+  if aValue <> FHeight then
+  begin
+    FHeight := aValue;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLCylinderBase.SetLoops(aValue: TGLInt);
+begin
+  if (aValue >= 1) and (aValue <> FLoops) then
+  begin
+    FLoops := aValue;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLCylinderBase.SetSlices(aValue: TGLInt);
+begin
+  if aValue <> FSlices then
+  begin
+    FSlices := aValue;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLCylinderBase.SetStacks(aValue: TGLInt);
+begin
+  if aValue <> FStacks then
+  begin
+    FStacks := aValue;
+    StructureChanged;
+  end;
+end;
+
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCone'}{$ENDIF}
 
 procedure TGLCone.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TGLCone) then
+  if Source is TGLCone then
   begin
     FParts := TGLCone(Source).FParts;
   end;
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TGLCone.AxisAlignedDimensionsUnscaled: TVector;
 var
   r: TGLFloat;
 begin
   r := Abs(FBottomRadius);
-  Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
-    r { *Scale.DirectZ } );
+  Result := VectorMake(r, 0.5 * FHeight, r);
 end;
 
-// GetTopRadius
-//
+procedure TGLCone.BuildMesh;
+var
+  cosCache, sinCache: array of Single;
+  i, j: Integer;
+  yLow, yHigh: Single;
+  length: Single;
+  deltaRadius: Single;
+  xzNormalRatio, yNormal: Single;
+  radiusLow, radiusHigh, Rstep: Single;
+  LNormal, LTangent: TVector3f;
+begin
+  SetLength(cosCache, FSlices + 1);
+  SetLength(sinCache, FSlices + 1);
+  PrepareSinCosCache(sinCache, cosCache, 0, 360);
 
-function TGLCone.GetTopRadius: Single;
+  deltaRadius := Abs(FBottomRadius - GetTopRadius);
+  length := SQRT(deltaRadius * deltaRadius + FHeight * FHeight);
+  yNormal := deltaRadius / length;
+  xzNormalRatio := FHeight / length;
+  ScaleFloatArray(@sinCache[0], FSlices + 1, xzNormalRatio);
+  ScaleFloatArray(@cosCache[0], FSlices + 1, xzNormalRatio);
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if coSides in FParts then
+      begin
+        for J := 0 to FStacks - 1 do
+        begin
+          yLow := j * FHeight / FStacks - 0.5 * FHeight;
+          yHigh := (j + 1) * FHeight / FStacks - 0.5 * FHeight;
+          radiusLow := FBottomRadius - deltaRadius * (j / FStacks);
+          radiusHigh := FBottomRadius - deltaRadius * ((j + 1) / FStacks);
+
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition, radiusHigh * sinCache[I], yHigh, radiusHigh
+              * cosCache[I]);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+            LNormal := Vector3fMake(sinCache[I], yNormal, cosCache[I]);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(YVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            EmitVertex;
+            Attribute3f(attrPosition, radiusLow * sinCache[I], yLow, radiusLow *
+              cosCache[I]);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      if coBottom in FParts then
+      begin
+        yLow := -0.5 * FHeight;
+        Rstep := FBottomRadius / FLoops;
+        Attribute3f(attrNormal, 0, 0, -1);
+        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrBinormal, 0, -1, 0);
+        for j := 0 to FLoops - 1 do
+        begin
+          for i := 0 to FSlices do
+          begin
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            radiusLow := j * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusLow, yLow, sinCache[i]
+              * radiusLow);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            radiusLow := (j + 1) * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusLow, yLow, sinCache[i]
+              * radiusLow);
+            EmitVertex;
+          end;
+        end;
+      end;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
+  end;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
+end;
+
+constructor TGLCone.Create(AOwner: TComponent);
+begin
+  inherited;
+  FParts := [coSides, coBottom];
+  FBatch.Mesh.TagName := ClassName;
+end;
+
+function TGLCone.GetTopRadius: single;
 begin
   Result := 0;
 end;
 
-// RayCastIntersect
-//
-
 function TGLCone.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+  intersectPoint, intersectNormal: PVector): Boolean;
 var
   ip, localRayStart, localRayVector: TVector;
-  poly: array [0 .. 2] of Double;
+  poly: array[0..2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   d, t, hconst: Single;
 begin
-  Result := False;
+  Result := false;
   localRayStart := AbsoluteToLocal(rayStart);
   localRayVector := VectorNormalize(AbsoluteToLocal(rayVector));
 
   if coBottom in Parts then
   begin
-    // bottom can only be raycast from beneath
-    if localRayStart[1] < -FHeight * 0.5 then
+    //bottom can only be raycast from beneath
+    if localRayStart[1] < -fHeight * 0.5 then
     begin
-      if RayCastPlaneIntersect(localRayStart, localRayVector,
-        PointMake(0, -FHeight * 0.5, 0), YHmgVector, @ip) then
+      if RayCastPlaneIntersect(localRayStart, localRayVector, PointMake(0,
+        -fHeight * 0.5, 0), YHmgVector, @ip) then
       begin
         d := VectorNorm(ip[0], ip[2]);
         if (d <= Sqr(BottomRadius)) then
@@ -1080,11 +1365,12 @@ begin
   begin
     hconst := -Sqr(BottomRadius) / Sqr(Height);
     // intersect against infinite cones (in positive and negative direction)
-    poly[0] := Sqr(localRayStart[0]) + hconst *
-      Sqr(localRayStart[1] - 0.5 * FHeight) + Sqr(localRayStart[2]);
+    poly[0] := Sqr(localRayStart[0]) + hconst * Sqr(localRayStart[1] - 0.5 *
+      fHeight) + Sqr(localRayStart[2]);
     poly[1] := 2 * (localRayStart[0] * localRayVector[0] + hconst *
-      (localRayStart[1] - 0.5 * FHeight) * localRayVector[1] + localRayStart[2]
-      * localRayVector[2]);
+      (localRayStart[1] - 0.5 * fHeight) * localRayVector[1] + localRayStart[2]
+        *
+      localRayVector[2]);
     poly[2] := Sqr(localRayVector[0]) + hconst * Sqr(localRayVector[1]) +
       Sqr(localRayVector[2]);
     SetLength(roots, 0);
@@ -1094,7 +1380,7 @@ begin
       t := minRoot;
       ip := VectorCombine(localRayStart, localRayVector, 1, t);
       // check that intersection with infinite cone is within the range we want
-      if (ip[1] > -FHeight * 0.5) and (ip[1] < FHeight * 0.5) then
+      if (ip[1] > -fHeight * 0.5) and (ip[1] < fHeight * 0.5) then
       begin
         Result := true;
         if Assigned(intersectPoint) then
@@ -1111,12 +1397,19 @@ begin
   end;
 end;
 
-// ------------------
-// ------------------ TGLCylinder ------------------
-// ------------------
+procedure TGLCone.SetParts(aValue: TConeParts);
+begin
+  if aValue <> FParts then
+  begin
+    FParts := aValue;
+    StructureChanged;
+  end;
+end;
 
-// Create
-//
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCylinder'}{$ENDIF}
 
 constructor TGLCylinder.Create(AOwner: TComponent);
 begin
@@ -1124,44 +1417,7 @@ begin
   FTopRadius := 0.5;
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
-end;
-
-// BuildList
-//
-
-procedure TGLCylinder.BuildList(var rci: TRenderContextInfo);
-var
-  quadric: PGLUquadricObj;
-begin
-  GL.PushMatrix;
-  quadric := gluNewQuadric;
-  SetupQuadricParams(quadric);
-  GL.Rotatef(-90, 1, 0, 0);
-  case Alignment of
-    caTop:
-      GL.Translatef(0, 0, -FHeight);
-    caBottom:
-      ;
-  else // caCenter
-    GL.Translatef(0, 0, -FHeight * 0.5);
-  end;
-  if cySides in FParts then
-    gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
-  if cyTop in FParts then
-  begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, FHeight);
-    gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
-  end;
-  if cyBottom in FParts then
-  begin
-    // swap quadric orientation because top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
-    gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
-  end;
-  gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetTopRadius
@@ -1179,9 +1435,9 @@ end;
 // GetTopRadius
 //
 
-function TGLCylinder.GetTopRadius: Single;
+function TGLCylinder.GetTopRadius: single;
 begin
-  Result := FTopRadius;
+  result := FTopRadius;
 end;
 
 // SetParts
@@ -1213,7 +1469,7 @@ end;
 
 procedure TGLCylinder.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TGLCylinder) then
+  if Assigned(SOurce) and (Source is TGLCylinder) then
   begin
     FParts := TGLCylinder(Source).FParts;
     FTopRadius := TGLCylinder(Source).FTopRadius;
@@ -1233,19 +1489,144 @@ begin
   if r1 > r then
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
-  // ScaleVector(Result, Scale.AsVector);
+end;
+
+procedure TGLCylinder.BuildMesh;
+var
+  cosCache, sinCache: array of Single;
+  i, j: Integer;
+  yLow, yHigh: Single;
+  length: Single;
+  deltaRadius: Single;
+  xzNormalRatio, yNormal: Single;
+  radiusLow, radiusHigh, Rstep: Single;
+  LNormal, LTangent: TVector3f;
+begin
+  SetLength(cosCache, FSlices + 1);
+  SetLength(sinCache, FSlices + 1);
+  PrepareSinCosCache(sinCache, cosCache, 0, 360);
+
+  deltaRadius := FBottomRadius - GetTopRadius;
+  length := SQRT(deltaRadius * deltaRadius + FHeight * FHeight);
+  yNormal := deltaRadius / length;
+  xzNormalRatio := FHeight / length;
+  ScaleFloatArray(@sinCache[0], FSlices + 1, xzNormalRatio);
+  ScaleFloatArray(@cosCache[0], FSlices + 1, xzNormalRatio);
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if cySides in FParts then
+      begin
+        for J := 0 to FStacks - 1 do
+        begin
+          yLow := j * FHeight / FStacks - 0.5 * FHeight;
+          yHigh := (j + 1) * FHeight / FStacks - 0.5 * FHeight;
+          radiusLow := FBottomRadius - deltaRadius * (j / FStacks);
+          radiusHigh := FBottomRadius - deltaRadius * ((j + 1) / FStacks);
+          Attribute3f(attrBinormal, YVector);
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition, radiusHigh * sinCache[I], yHigh, radiusHigh
+              * cosCache[I]);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+            LNormal := Vector3fMake(sinCache[I], yNormal, cosCache[I]);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(YVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            EmitVertex;
+            Attribute3f(attrPosition, radiusLow * sinCache[I], yLow, radiusLow *
+              cosCache[I]);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      if cyTop in FParts then
+      begin
+        yHigh := 0.5 * FHeight;
+        Rstep := GetTopRadius / FLoops;
+        Attribute3f(attrNormal, 0, 1, 0);
+        Attribute3f(attrTangent, 1, 0, 0);
+        Attribute3f(attrBinormal, 0, 0, 1);
+        for j := 0 to FLoops - 1 do
+        begin
+          for i := 0 to FSlices do
+          begin
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            radiusHigh := (j + 1) * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusHigh, yHigh,
+              sinCache[i] * radiusHigh);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            radiusHigh := j * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusHigh, yHigh,
+              sinCache[i] * radiusHigh);
+            EmitVertex;
+          end;
+        end;
+        RestartStrip;
+      end;
+
+      if cyBottom in FParts then
+      begin
+        yLow := -0.5 * FHeight;
+        Rstep := FBottomRadius / FLoops;
+        Attribute3f(attrNormal, 0, -1, 0);
+        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrBinormal, 0, 0, -1);
+        for j := 0 to FLoops - 1 do
+        begin
+          for i := 0 to FSlices do
+          begin
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            radiusLow := j * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusLow, yLow, sinCache[i]
+              * radiusLow);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            radiusLow := (j + 1) * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * radiusLow, yLow, sinCache[i]
+              * radiusLow);
+            EmitVertex;
+          end;
+        end;
+      end;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
+  end;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
 // RayCastIntersect
 //
 
 function TGLCylinder.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil;
+  intersectNormal: PVector = nil): Boolean;
 const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array [0 .. 2] of Double;
+  poly: array[0..2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   t, tr2, invRayVector1, hTop, hBottom: Single;
@@ -1277,8 +1658,8 @@ begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
       Exit;
-    tPlaneMin := -1E99;
-    tPlaneMax := 1E99;
+    tPlaneMin := -1e99;
+    tPlaneMax := 1e99;
   end
   else
   begin
@@ -1298,7 +1679,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := true;
+        Result := True;
       end;
     end;
     tPlaneMin := t;
@@ -1309,17 +1690,17 @@ begin
     begin
       ip[0] := locRayStart[0] + t * locRayVector[0];
       ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not(cyTop in Parts)) then
+      if (t < tPlaneMin) or (not (cyTop in Parts)) then
       begin
         if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom,
-              ip[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2],
+              1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := true;
+          Result := True;
         end;
       end;
     end;
@@ -1353,7 +1734,7 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := true;
+        Result := True;
       end;
     end;
   end
@@ -1394,149 +1775,194 @@ begin
   Align(PointMake(startPoint), PointMake(endPoint));
 end;
 
-// ------------------
-// ------------------ TGLCapsule ------------------
-// ------------------
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-// Create
-//
+{$IFDEF GLS_REGIONS}{$REGION 'TGLCapsule'}{$ENDIF}
 
 constructor TGLCapsule.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FHeight := 1;
   FRadius := 0.5;
   FSlices := 4;
   FStacks := 4;
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
 end;
 
-// BuildList
-//
-
-procedure TGLCapsule.BuildList(var rci: TRenderContextInfo);
+procedure TGLCapsule.BuildMesh;
 var
-  i, j, n: integer;
+  i, j, n: Integer;
   start_nx2: Single;
   start_ny2: Single;
-  tmp, nx, ny, nz, start_nx, start_ny, a, ca, sa, l: Single;
+  tmp, nx, ny, nz,
+    start_nx, start_ny,
+    a, ca, sa, l: Single;
   nx2, ny2, nz2: Single;
+  zCentre: Single;
+  LNormal, LTangent: TVector3f;
 begin
-  GL.PushMatrix;
-  GL.Rotatef(-90, 0, 0, 1);
   case Alignment of
-    caTop:
-      GL.Translatef(0, 0, FHeight + 1);
-    caBottom:
-      GL.Translatef(0, 0, -FHeight);
+    caTop: zCentre := FHeight + 1;
+    caBottom: zCentre := -FHeight;
   else // caCenter
-    GL.Translatef(0, 0, 0.5);
+    zCentre := 0.5;
   end;
   n := FSlices * FStacks;
   l := FHeight;
   l := l * 0.5;
-  a := (pi * 2.0) / n;
+  a := (PI * 2.0) / n;
   sa := sin(a);
   ca := cos(a);
   ny := 0;
   nz := 1;
-  if cySides in FParts then
+
+  with FBatch.Mesh do
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    for i := 0 to n do
-    begin
-      GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 1);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, l - 0.5);
-      GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 0);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, -l - 0.5);
-      tmp := ca * ny - sa * nz;
-      nz := sa * ny + ca * nz;
-      ny := tmp;
-    end;
-    GL.End_();
-  end;
-  //
-  if cyTop in FParts then
-  begin
-    start_nx := 0;
-    start_ny := 1;
-    for j := 0 to (n div FStacks) do
-    begin
-      start_nx2 := ca * start_nx + sa * start_ny;
-      start_ny2 := -sa * start_nx + ca * start_ny;
-      nx := start_nx;
-      ny := start_ny;
-      nz := 0;
-      nx2 := start_nx2;
-      ny2 := start_ny2;
-      nz2 := 0;
-      GL.PushMatrix;
-      GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
-      for i := 0 to n do
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if cySides in FParts then
       begin
-        GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, l + nx2 * FRadius);
-        GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, l + nx * FRadius);
-        tmp := ca * ny - sa * nz;
-        nz := sa * ny + ca * nz;
-        ny := tmp;
-        tmp := ca * ny2 - sa * nz2;
-        nz2 := sa * ny2 + ca * nz2;
-        ny2 := tmp;
+        Attribute3f(attrBinormal, ZVector);
+        for i := 0 to n do
+        begin
+          LNormal := Vector3fMake(ny, nz, 0);
+          Attribute3f(attrNormal, LNormal);
+          LTangent := VectorCrossProduct(ZVector, LNormal);
+          Attribute3f(attrTangent, LTangent);
+          Attribute3f(attrPosition, ny * FRadius, nz * FRadius, zCentre + l - 0.5);
+          Attribute2f(attrTexCoord0, i / n, 1);
+          EmitVertex;
+
+          Attribute3f(attrPosition, ny * FRadius, nz * FRadius, zCentre - l - 0.5);
+          Attribute2f(attrTexCoord0, i / n, 0);
+          EmitVertex;
+
+          tmp := ca * ny - sa * nz;
+          nz := sa * ny + ca * nz;
+          ny := tmp;
+        end;
+        RestartStrip;
       end;
-      GL.End_();
-      GL.PopMatrix;
-      start_nx := start_nx2;
-      start_ny := start_ny2;
-    end;
-  end;
-  //
-  if cyBottom in FParts then
-  begin
-    start_nx := 0;
-    start_ny := 1;
-    for j := 0 to (n div FStacks) do
-    begin
-      start_nx2 := ca * start_nx - sa * start_ny;
-      start_ny2 := sa * start_nx + ca * start_ny;
-      nx := start_nx;
-      ny := start_ny;
-      nz := 0;
-      nx2 := start_nx2;
-      ny2 := start_ny2;
-      nz2 := 0;
-      GL.PushMatrix;
-      GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
-      for i := 0 to n do
+
+      zCentre := zCentre - 0.5;
+
+      if cyTop in FParts then
       begin
-        GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, -l + nx * FRadius);
-        GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, -l + nx2 * FRadius);
-        tmp := ca * ny - sa * nz;
-        nz := sa * ny + ca * nz;
-        ny := tmp;
-        tmp := ca * ny2 - sa * nz2;
-        nz2 := sa * ny2 + ca * nz2;
-        ny2 := tmp;
+        start_nx := 0;
+        start_ny := 1;
+        for j := 0 to (n div FStacks) do
+        begin
+          start_nx2 := ca * start_nx + sa * start_ny;
+          start_ny2 := -sa * start_nx + ca * start_ny;
+          nx := start_nx;
+          ny := start_ny;
+          nz := 0;
+          nx2 := start_nx2;
+          ny2 := start_ny2;
+          nz2 := 0;
+          for i := 0 to n do
+          begin
+            LNormal := Vector3fMake(ny2, nz2, nx2);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(ZVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            Attribute3f(attrPosition, ny2 * FRadius, nz2 * FRadius, zCentre + l + nx2 * FRadius);
+            Attribute2f(attrTexCoord0, i / n, j / n);
+            EmitVertex;
+
+            LNormal := Vector3fMake(ny, nz, nx);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(ZVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            Attribute3f(attrPosition, ny * FRadius, nz * FRadius, zCentre + l + nx * FRadius);
+            Attribute2f(attrTexCoord0, i / n, (j - 1) / n);
+            EmitVertex;
+
+            tmp := ca * ny - sa * nz;
+            nz := sa * ny + ca * nz;
+            ny := tmp;
+            tmp := ca * ny2 - sa * nz2;
+            nz2 := sa * ny2 + ca * nz2;
+            ny2 := tmp;
+          end;
+          RestartStrip;
+          start_nx := start_nx2;
+          start_ny := start_ny2;
+        end;
       end;
-      GL.End_();
-      GL.PopMatrix;
-      start_nx := start_nx2;
-      start_ny := start_ny2;
+
+      if cyBottom in FParts then
+      begin
+        start_nx := 0;
+        start_ny := 1;
+        for j := 0 to (n div FStacks) do
+        begin
+          start_nx2 := ca * start_nx - sa * start_ny;
+          start_ny2 := sa * start_nx + ca * start_ny;
+          nx := start_nx;
+          ny := start_ny;
+          nz := 0;
+          nx2 := start_nx2;
+          ny2 := start_ny2;
+          nz2 := 0;
+          for i := 0 to n do
+          begin
+            LNormal := Vector3fMake(ny, nz, nx);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(ZVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            Attribute3f(attrPosition, ny * FRadius, nz * FRadius, zCentre - l + nx * FRadius);
+            Attribute2f(attrTexCoord0, i / n, (j - 1) / n);
+            EmitVertex;
+
+            LNormal := Vector3fMake(ny2, nz2, nx2);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(ZVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            Attribute3f(attrPosition, ny2 * FRadius, nz2 * FRadius, zCentre - l + nx2 * FRadius);
+            Attribute2f(attrTexCoord0, i / n, j / n);
+            EmitVertex;
+
+            tmp := ca * ny - sa * nz;
+            nz := sa * ny + ca * nz;
+            ny := tmp;
+            tmp := ca * ny2 - sa * nz2;
+            nz2 := sa * ny2 + ca * nz2;
+            ny2 := tmp;
+          end;
+          RestartStrip;
+          start_nx := start_nx2;
+          start_ny := start_ny2;
+        end;
+      end;
+      EndAssembly;
+      ApplyExtras;
+    finally
+      Unlock;
     end;
   end;
-  GL.PopMatrix;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
 // SetLength
@@ -1616,7 +2042,7 @@ end;
 
 procedure TGLCapsule.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TGLCapsule) then
+  if Assigned(SOurce) and (Source is TGLCapsule) then
   begin
     FParts := TGLCapsule(Source).FParts;
     FRadius := TGLCapsule(Source).FRadius;
@@ -1636,19 +2062,20 @@ begin
   if r1 > r then
     r := r1;
   Result := VectorMake(r, 0.5 * FHeight, r);
-  // ScaleVector(Result, Scale.AsVector);
+  //  ScaleVector(Result, Scale.AsVector);
 end;
 
 // RayCastIntersect
 //
 
 function TGLCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+  intersectPoint: PVector = nil;
+  intersectNormal: PVector = nil): Boolean;
 const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array [0 .. 2] of Double;
+  poly: array[0..2] of Double;
   roots: TDoubleArray;
   minRoot: Double;
   t, tr2, invRayVector1, hTop, hBottom: Single;
@@ -1680,8 +2107,8 @@ begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
       Exit;
-    tPlaneMin := -1E99;
-    tPlaneMax := 1E99;
+    tPlaneMin := -1e99;
+    tPlaneMax := 1e99;
   end
   else
   begin
@@ -1701,7 +2128,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := true;
+        Result := True;
       end;
     end;
     tPlaneMin := t;
@@ -1712,17 +2139,17 @@ begin
     begin
       ip[0] := locRayStart[0] + t * locRayVector[0];
       ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not(cyTop in Parts)) then
+      if (t < tPlaneMin) or (not (cyTop in Parts)) then
       begin
         if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom,
-              ip[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2],
+              1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := true;
+          Result := True;
         end;
       end;
     end;
@@ -1756,7 +2183,7 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := true;
+        Result := True;
       end;
     end;
   end
@@ -1797,20 +2224,19 @@ begin
   Align(PointMake(startPoint), PointMake(endPoint));
 end;
 
-// ------------------
-// ------------------ TGLAnnulus ------------------
-// ------------------
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-// Create
-//
+{$IFDEF GLS_REGIONS}{$REGION 'TGLAnnulus'}{$ENDIF}
 
 constructor TGLAnnulus.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FBottomInnerRadius := 0.3;
-  FTopInnerRadius := 0.3;
-  FTopRadius := 0.5;
-  FParts := [anInnerSides, anOuterSides, anBottom, anTop];
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  fBottomInnerRadius := 0.3;
+  fTopInnerRadius := 0.3;
+  fTopRadius := 0.5;
+  fParts := [anInnerSides, anOuterSides, anBottom, anTop];
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetBottomInnerRadius
@@ -1864,36 +2290,178 @@ end;
 // BuildList
 //
 
-procedure TGLAnnulus.BuildList(var rci: TRenderContextInfo);
+procedure TGLAnnulus.BuildMesh;
 var
-  quadric: PGLUquadricObj;
+  cosCache, sinCache: array of Single;
+  i, j: Integer;
+  yLow, yHigh: Single;
+  length: Single;
+  deltaRadius: Single;
+  xzNormalRatio, yNormal: Single;
+  radiusLow, radiusHigh, Rstep, R: Single;
+  LNormal, LTangent: TVector3f;
 begin
-  GL.PushMatrix;
-  quadric := gluNewQuadric;
-  SetupQuadricParams(quadric);
-  GL.Rotatef(-90, 1, 0, 0);
-  GL.Translatef(0, 0, -FHeight * 0.5);
-  if anOuterSides in FParts then
-    gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
-  if anTop in FParts then
+  SetLength(cosCache, FSlices + 1);
+  SetLength(sinCache, FSlices + 1);
+  PrepareSinCosCache(sinCache, cosCache, 0, 360);
+
+  with FBatch.Mesh do
   begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, FHeight);
-    gluDisk(quadric, FTopInnerRadius, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if anOuterSides in FParts then
+      begin
+        deltaRadius := Abs(FBottomRadius - FTopRadius);
+        length := SQRT(deltaRadius * deltaRadius + FHeight * FHeight);
+        yNormal := deltaRadius / length;
+        xzNormalRatio := FHeight / length;
+
+        for J := 0 to FStacks - 1 do
+        begin
+          yLow := j * FHeight / FStacks - 0.5 * FHeight;
+          yHigh := (j + 1) * FHeight / FStacks - 0.5 * FHeight;
+          radiusLow := FBottomRadius - deltaRadius * (j / FStacks);
+          radiusHigh := FBottomRadius - deltaRadius * ((j + 1) / FStacks);
+
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition,
+              radiusHigh * sinCache[I] * xzNormalRatio,
+              yHigh,
+              radiusHigh * cosCache[I] * xzNormalRatio);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+            LNormal := Vector3fMake(
+              sinCache[I] * xzNormalRatio,
+              yNormal,
+              cosCache[I] * xzNormalRatio);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(YVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            EmitVertex;
+
+            Attribute3f(attrPosition,
+              radiusLow * sinCache[I] * xzNormalRatio,
+              yLow,
+              radiusLow * cosCache[I] * xzNormalRatio);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      if anInnerSides in FParts then
+      begin
+        deltaRadius := Abs(FTopInnerRadius - FBottominnerRadius);
+        length := SQRT(deltaRadius * deltaRadius + FHeight * FHeight);
+        yNormal := deltaRadius / length;
+        xzNormalRatio := FHeight / length;
+
+        for J := 0 to FStacks - 1 do
+        begin
+          yLow := j * FHeight / FStacks - 0.5 * FHeight;
+          yHigh := (j + 1) * FHeight / FStacks - 0.5 * FHeight;
+          radiusLow := FBottominnerRadius - deltaRadius * (j / FStacks);
+          radiusHigh := FBottominnerRadius - deltaRadius * ((j + 1) / FStacks);
+
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition,
+              radiusLow * sinCache[I] * xzNormalRatio,
+              yLow,
+              radiusLow * cosCache[I] * xzNormalRatio);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            LNormal := Vector3fMake(
+              -sinCache[I] * xzNormalRatio,
+              -yNormal,
+              -cosCache[I] * xzNormalRatio);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(MinusYVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            EmitVertex;
+
+            Attribute3f(attrPosition,
+              radiusHigh * sinCache[I] * xzNormalRatio,
+              yHigh,
+              radiusHigh * cosCache[I] * xzNormalRatio);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      if anTop in FParts then
+      begin
+        Rstep := (FTopRadius - FTopInnerRadius) / FLoops;
+        yHigh := 0.5 * FHeight;
+
+        Attribute3f(attrNormal, 0, 0, 1);
+        Attribute3f(attrTangent, 1, 0, 0);
+        Attribute3f(attrBinormal, 0, 1, 0);
+        for j := 0 to FLoops - 1 do
+        begin
+          for i := 0 to FSlices do
+          begin
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            R := FTopInnerRadius + (j + 1) * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * R, yHigh, sinCache[i] * R);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            R := FTopInnerRadius + j * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * R, yHigh, sinCache[i] * R);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      if anBottom in FParts then
+      begin
+        Rstep := (FBottomRadius - FBottominnerRadius) / FLoops;
+        yLow := - 0.5 * FHeight;
+
+        Attribute3f(attrNormal, 0, 0, -1);
+        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrBinormal, 0, -1, 0);
+        for j := 0 to FLoops - 1 do
+        begin
+          for i := 0 to FSlices do
+          begin
+            Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+            R := FBottominnerRadius + j * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * R, yLow, sinCache[i] * R);
+            EmitVertex;
+            Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+            R := FBottominnerRadius + (j + 1) * Rstep;
+            Attribute3f(attrPosition, cosCache[i] * R, yLow, sinCache[i] * R);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+      end;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
   end;
-  if [anBottom, anInnerSides] * FParts <> [] then
-  begin
-    // swap quadric orientation because top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
-    if anBottom in FParts then
-      gluDisk(quadric, FBottomInnerRadius, FBottomRadius, FSlices, FLoops);
-    if anInnerSides in FParts then
-      gluCylinder(quadric, FBottomInnerRadius, FTopInnerRadius, FHeight,
-        FSlices, FStacks);
-  end;
-  gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
 // Assign
@@ -1901,13 +2469,13 @@ end;
 
 procedure TGLAnnulus.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TGLAnnulus) then
+  if assigned(SOurce) and (Source is TGLAnnulus) then
   begin
     FParts := TGLAnnulus(Source).FParts;
     FTopRadius := TGLAnnulus(Source).FTopRadius;
-    FTopInnerRadius := TGLAnnulus(Source).FTopInnerRadius;
-    FBottomRadius := TGLAnnulus(Source).FBottomRadius;
-    FBottomInnerRadius := TGLAnnulus(Source).FBottomInnerRadius;
+    FTopInnerRadius := TGLAnnulus(Source).fTopInnerRadius;
+    FBottomRadius := TGLAnnulus(Source).fBottomRadius;
+    FBottomInnerRadius := TGLAnnulus(Source).fbottomInnerRadius;
   end;
   inherited Assign(Source);
 end;
@@ -1935,15 +2503,15 @@ const
   cOne: Single = 1;
 var
   locRayStart, locRayVector, ip: TVector;
-  poly: array [0 .. 2] of Double;
+  poly: array[0..2] of Double;
   t, tr2, invRayVector1: Single;
   tPlaneMin, tPlaneMax: Single;
-  tir2, d2: Single;
+  tir2, d2: single;
   Root: Double;
-  roots, tmpRoots: TDoubleArray;
-  FirstIntersected: Boolean;
-  h1, h2, hTop, hBot: Single;
-  Draw1, Draw2: Boolean;
+  Roots, tmpRoots: TDoubleArray;
+  FirstIntersected: boolean;
+  h1, h2, hTop, hBot: single;
+  Draw1, Draw2: boolean;
 begin
   Result := False;
   FirstIntersected := False;
@@ -1966,15 +2534,15 @@ begin
     h2 := hTop;
     Draw1 := (anBottom in Parts);
     Draw2 := (anTop in Parts);
-  end; // if
+  end; //if
 
   if locRayVector[1] = 0 then
   begin
     // intersect if ray shot through the top/bottom planes
     if (locRayStart[0] > hTop) or (locRayStart[0] < hBot) then
       Exit;
-    tPlaneMin := -1E99;
-    tPlaneMax := 1E99;
+    tPlaneMin := -1e99;
+    tPlaneMax := 1e99;
   end
   else
   begin
@@ -1998,7 +2566,7 @@ begin
           intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h1, ip[2], 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := true;
+        Result := True;
       end;
     end;
     tPlaneMin := t;
@@ -2020,68 +2588,63 @@ begin
             intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h2, ip[2], 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := true;
+          Result := True;
         end;
       end;
     end;
     if t < tPlaneMin then
     begin
       tPlaneMin := t;
-    end; // if
+    end; //if
     if t > tPlaneMax then
       tPlaneMax := t;
   end;
 
   try
-    SetLength(roots, 4);
-    roots[0] := -1;
-    roots[1] := -1;
-    roots[2] := -1;
-    roots[3] := -1; // By default, side is behind rayStart
+    SetLength(Roots, 4);
+    Roots[0] := -1;
+    Roots[1] := -1;
+    Roots[2] := -1;
+    Roots[3] := -1; // By default, side is behind rayStart
 
-    { Compute roots for outer cylinder }
+    {Compute roots for outer cylinder}
     if anOuterSides in Parts then
     begin
       // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
       poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
-        locRayVector[2]);
+      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
       poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmpRoots := SolveQuadric(@poly);
-      // Intersect coordinates on rayVector (rayStart=0)
-      if ( High(tmpRoots) >= 0) and // Does root exist?
-        ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
-      // In the annulus and not masked by first cap
-        ((tmpRoots[0] < tPlaneMax)) { // In the annulus } then
-        roots[0] := tmpRoots[0];
-      if ( High(tmpRoots) >= 1) and
+      tmpRoots := SolveQuadric(@poly); // Intersect coordinates on rayVector (rayStart=0)
+      if (High(tmproots) >= 0) and // Does root exist?
+      ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and // In the annulus and not masked by first cap
+      ((tmpRoots[0] < tPlaneMax)) {// In the annulus} then
+        Roots[0] := tmpRoots[0];
+      if (High(tmproots) >= 1) and
         ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[1] < tPlaneMax)) then
-        roots[1] := tmpRoots[1];
-    end; // if
+        Roots[1] := tmpRoots[1];
+    end; //if
 
-    { Compute roots for inner cylinder }
+    {Compute roots for inner cylinder}
     if anInnerSides in Parts then
     begin
       // intersect against infinite cylinder
-      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) -
-        Sqr(TopInnerRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
-        locRayVector[2]);
+      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopInnerRadius);
+      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
       poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmpRoots := SolveQuadric(@poly);
-      if ( High(tmpRoots) >= 0) and
+      tmproots := SolveQuadric(@poly);
+      if (High(tmproots) >= 0) and
         ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[0] < tPlaneMax)) then
-        roots[2] := tmpRoots[0];
-      if ( High(tmpRoots) >= 1) and
+        Roots[2] := tmpRoots[0];
+      if (High(tmproots) >= 1) and
         ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
         ((tmpRoots[1] < tPlaneMax)) then
-        roots[3] := tmpRoots[1];
-    end; // if
+        Roots[3] := tmpRoots[1];
+    end; //if
 
-    { Find the first intersection point and compute its coordinates and normal }
-    if MinPositiveCoef(roots, Root) then
+    {Find the first intersection point and compute its coordinates and normal}
+    if MinPositiveCoef(Roots, Root) then
     begin
       t := Root;
       if (t >= tPlaneMin) and (t < tPlaneMax) then
@@ -2098,298 +2661,135 @@ begin
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
-        Result := true;
+        Result := True;
       end;
     end;
 
   finally
-    roots := nil;
+    Roots := nil;
     tmpRoots := nil;
-  end; // finally
+  end;
 end;
 
-// ------------------
-// ------------------ TGLTorus ------------------
-// ------------------
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-// Create
-//
+{$IFDEF GLS_REGIONS}{$REGION 'TGLTorus'}{$ENDIF}
+
+procedure TGLTorus.Assign(Source: TPersistent);
+var
+  LTorus: TGLTorus;
+begin
+  if Source is TGLTorus then
+  begin
+    LTorus := TGLTorus(Source);
+    FParts := LTorus.FParts;
+    FRings := LTorus.FRings;
+    FSides := LTorus.FSides;
+    FMinorRadius := LTorus.FMinorRadius;
+    FMajorRadius := LTorus.FMajorRadius;
+    FStartAngle := LTorus.FStartAngle;
+    FStopAngle := LTorus.FStopAngle;
+    StructureChanged;
+  end;
+  inherited;
+end;
+
+procedure TGLTorus.BuildMesh;
+var
+  I, J: Integer;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
+  cosTheta1, sinTheta1: TGLFloat;
+  ringDelta, sideDelta: TGLFloat;
+  LPosition, LNormal, LTangent: TAffineVector;
+  iFact, jFact, cosTheta, sinTheta: Single;
+begin
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      ringDelta := c2PI / FRings;
+      sideDelta := c2PI / FSides;
+      theta := 0;
+      cosTheta := 1;
+      sinTheta := 0;
+      iFact := 1 / FRings;
+      jFact := 1 / FSides;
+      for I := FRings - 1 downto 0 do
+      begin
+        theta1 := theta + ringDelta;
+        SinCos(theta1, sinTheta1, cosTheta1);
+        phi := 0;
+        for J := FSides downto 0 do
+        begin
+          phi := phi + sideDelta;
+          SinCos(phi, sinPhi, cosPhi);
+          dist := FMajorRadius + FMinorRadius * cosPhi;
+
+          Attribute2f(attrTexCoord0, i * iFact, j * jFact);
+          LNormal := Vector3fMake(cosTheta1 * cosPhi, -sinTheta1 * cosPhi,
+            sinPhi);
+          Attribute3f(attrNormal, LNormal);
+          LPosition := Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist,
+            FMinorRadius * sinPhi);
+          Attribute3f(attrPosition, LPosition);
+          LPosition[2] := 0.0;
+          NormalizeVector(LPosition);
+          LTangent := VectorCrossProduct(ZVector, LPosition);
+          Attribute3f(attrTangent, LTangent);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+          EmitVertex;
+
+          Attribute2f(attrTexCoord0, (i + 1) * iFact, j * jFact);
+          LNormal := Vector3fMake(cosTheta * cosPhi, -sinTheta * cosPhi,
+            sinPhi);
+          Attribute3f(attrNormal, LNormal);
+          LPosition := Vector3fMake(cosTheta * dist, -sinTheta * dist,
+            FMinorRadius
+            * sinPhi);
+          Attribute3f(attrPosition, LPosition);
+          LPosition[2] := 0.0;
+          NormalizeVector(LPosition);
+          LTangent := VectorCrossProduct(ZVector, LPosition);
+          Attribute3f(attrTangent, LTangent);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+          EmitVertex;
+        end;
+        RestartStrip;
+        theta := theta1;
+        cosTheta := cosTheta1;
+        sinTheta := sinTheta1;
+      end;
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
+  end;
+  FBatch.Changed := True;
+  ClearStructureChanged;
+end;
 
 constructor TGLTorus.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FRings := 25;
   FSides := 15;
   FMinorRadius := 0.1;
   FMajorRadius := 0.4;
-  FStartAngle := 0.0;
-  FStopAngle := 360.0;
-  FParts := [toSides, toStartDisk, toStopDisk];
-end;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
 
-// BuildList
-//
-
-procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
-
-  procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
-  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
-  begin
-    XGL.TexCoord2fv(@ptr^.TexCoord);
-    with GL do
-    begin
-      Normal3fv(@ptr^.Normal);
-      if L1 > -1 then
-        VertexAttrib3fv(L1, @ptr.Tangent);
-      if L2 > -1 then
-        VertexAttrib3fv(L2, @ptr.Binormal);
-      Vertex3fv(@ptr^.Position);
-    end;
-  end;
-
-var
-  i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
-  cosTheta1, sinTheta1: TGLFloat;
-  ringDelta, sideDelta: TGLFloat;
-  ringDir: TAffineVector;
-  iFact, jFact: Single;
-  pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLInt;
-  MeshSize: integer;
-  MeshIndex: integer;
-  Vertex: TVertexRec;
-begin
-  if FMesh = nil then
-  begin
-    MeshSize := 0;
-    MeshIndex := 0;
-    if toStartDisk in FParts then
-      MeshSize := MeshSize + 1;
-    if toStopDisk in FParts then
-      MeshSize := MeshSize + 1;
-    if toSides in FParts then
-      MeshSize := MeshSize + Integer(FRings) + 1;
-    SetLength(FMesh, MeshSize);
-    // handle texture generation
-    ringDelta := ((FStopAngle - FStartAngle) / 360) * c2PI / FRings;
-    sideDelta := c2PI / FSides;
-
-    iFact := 1 / FRings;
-    jFact := 1 / FSides;
-    if toSides in FParts then
-    begin
-      Theta := DegToRad(FStartAngle) - ringDelta;
-      for i := FRings downto 0 do
-      begin
-        SetLength(FMesh[i], FSides + 1);
-        Theta1 := Theta + ringDelta;
-        SinCos(Theta1, sinTheta1, cosTheta1);
-        Phi := 0;
-        for j := FSides downto 0 do
-        begin
-          Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
-          dist := FMajorRadius + FMinorRadius * cosPhi;
-
-          FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
-            -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[i][j].Position;
-          ringDir[2] := 0.0;
-          NormalizeVector(ringDir);
-          FMesh[i][j].Normal := Vector3fMake(cosTheta1 * cosPhi,
-            -sinTheta1 * cosPhi, sinPhi);
-          FMesh[i][j].Tangent := VectorCrossProduct(ZVector, ringDir);
-          FMesh[i][j].Binormal := VectorCrossProduct(FMesh[i][j].Normal,
-            FMesh[i][j].Tangent);
-          FMesh[i][j].TexCoord := Vector2fMake(i * iFact, j * jFact);
-        end;
-        Theta := Theta1;
-      end;
-      MeshIndex := FRings + 1;
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-        begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-
-        Begin_(GL_TRIANGLES);
-        for i := FRings - 1 downto 0 do
-          for j := FSides - 1 downto 0 do
-          begin
-            pVertex := @FMesh[i][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-          end;
-        End_;
-      end;
-    end;
-
-    if toStartDisk in FParts then
-    begin
-      SetLength(FMesh[MeshIndex], FSides + 1);
-      Theta1 := DegToRad(FStartAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
-
-      if toSides in FParts then
-      begin
-        for j := FSides downto 0 do
-        begin
-          FMesh[MeshIndex][j].Position := FMesh[MeshIndex - 1][j].Position;
-          FMesh[MeshIndex][j].Normal := FMesh[MeshIndex - 1][j].Tangent;
-          FMesh[MeshIndex][j].Tangent := FMesh[MeshIndex - 1][j].Position;
-          FMesh[MeshIndex][j].Tangent[2] := 0;
-          FMesh[MeshIndex][j].Binormal := ZVector;
-          FMesh[MeshIndex][j].TexCoord := FMesh[MeshIndex - 1][j].TexCoord;
-          FMesh[MeshIndex][j].TexCoord[0] := 0;
-        end;
-      end
-      else
-      begin
-        Phi := 0;
-        for j := FSides downto 0 do
-        begin
-          Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
-          dist := FMajorRadius + FMinorRadius * cosPhi;
-          FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-            -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[MeshIndex][j].Position;
-          ringDir[2] := 0.0;
-          NormalizeVector(ringDir);
-          FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
-          FMesh[MeshIndex][j].Tangent := ringDir;
-          FMesh[MeshIndex][j].Binormal := ZVector;
-          FMesh[MeshIndex][j].TexCoord := Vector2fMake(0, j * jFact);
-        end;
-      end;
-      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius,
-        -sinTheta1 * FMajorRadius, 0);
-      Vertex.Normal := FMesh[MeshIndex][0].Normal;
-      Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
-      Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
-      Vertex.TexCoord := Vector2fMake(1, 1);
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-        begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-        Begin_(GL_TRIANGLE_FAN);
-        pVertex := @Vertex;
-        EmitVertex(pVertex, TanLoc, BinLoc);
-        for j := 0 to FSides do
-        begin
-          pVertex := @FMesh[MeshIndex][j];
-          EmitVertex(pVertex, TanLoc, BinLoc);
-        end;
-        End_;
-      end;
-
-      MeshIndex := MeshIndex + 1;
-    end;
-
-    if toStopDisk in FParts then
-    begin
-      SetLength(FMesh[MeshIndex], FSides + 1);
-      Theta1 := DegToRad(FStopAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
-
-      if toSides in FParts then
-      begin
-        for j := FSides downto 0 do
-        begin
-          FMesh[MeshIndex][j].Position := FMesh[0][j].Position;
-          FMesh[MeshIndex][j].Normal := VectorNegate(FMesh[0][j].Tangent);
-          FMesh[MeshIndex][j].Tangent := FMesh[0][j].Position;
-          FMesh[MeshIndex][j].Tangent[2] := 0;
-          FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
-          FMesh[MeshIndex][j].TexCoord := FMesh[0][j].TexCoord;
-          FMesh[MeshIndex][j].TexCoord[0] := 1;
-        end;
-      end
-      else
-      begin
-        Phi := 0;
-        for j := FSides downto 0 do
-        begin
-          Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
-          dist := FMajorRadius + FMinorRadius * cosPhi;
-          FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-            -sinTheta1 * dist, FMinorRadius * sinPhi);
-          ringDir := FMesh[MeshIndex][j].Position;
-          ringDir[2] := 0.0;
-          NormalizeVector(ringDir);
-          FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
-          FMesh[MeshIndex][j].Tangent := ringDir;
-          FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
-          FMesh[MeshIndex][j].TexCoord := Vector2fMake(1, j * jFact);
-        end;
-      end;
-      Vertex.Position := Vector3fMake(cosTheta1 * FMajorRadius,
-        -sinTheta1 * FMajorRadius, 0);
-      Vertex.Normal := FMesh[MeshIndex][0].Normal;
-      Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
-      Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
-      Vertex.TexCoord := Vector2fMake(0, 0);
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-        begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-        Begin_(GL_TRIANGLE_FAN);
-        pVertex := @Vertex;
-        EmitVertex(pVertex, TanLoc, BinLoc);
-        for j := FSides downto 0 do
-        begin
-          pVertex := @FMesh[MeshIndex][j];
-          EmitVertex(pVertex, TanLoc, BinLoc);
-        end;
-        End_;
-      end;
-    end;
-  end;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetMajorRadius
@@ -2400,7 +2800,6 @@ begin
   if FMajorRadius <> aValue then
   begin
     FMajorRadius := aValue;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2413,7 +2812,6 @@ begin
   if FMinorRadius <> aValue then
   begin
     FMinorRadius := aValue;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2428,7 +2826,6 @@ begin
     FRings := aValue;
     if FRings < 2 then
       FRings := 2;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2443,7 +2840,6 @@ begin
     FSides := aValue;
     if FSides < 3 then
       FSides := 3;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2453,7 +2849,6 @@ begin
   if FStartAngle <> aValue then
   begin
     FStartAngle := aValue;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2463,7 +2858,6 @@ begin
   if FStopAngle <> aValue then
   begin
     FStopAngle := aValue;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -2477,94 +2871,30 @@ begin
   end;
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-function TGLTorus.AxisAlignedDimensionsUnscaled: TVector;
-var
-  r, r1: TGLFloat;
+{$IFDEF GLS_REGIONS}{$REGION 'TGLArrowLine'}{$ENDIF}
+
+procedure TGLArrowLine.Assign(Source: TPersistent);
 begin
-  r := Abs(FMajorRadius);
-  r1 := Abs(FMinorRadius);
-  Result := VectorMake(r + r1, r + r1, r1); // Danb
-end;
-
-// RayCastIntersect
-//
-
-function TGLTorus.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-var
-  i: integer;
-  fRo2, fRi2, fDE, fVal, r, nearest: Double;
-  polynom: array [0 .. 4] of Double;
-  polyRoots: TDoubleArray;
-  localStart, localVector: TVector;
-  vi, vc: TVector;
-begin
-  // compute coefficients of quartic polynomial
-  fRo2 := Sqr(MajorRadius);
-  fRi2 := Sqr(MinorRadius);
-  localStart := AbsoluteToLocal(rayStart);
-  localVector := AbsoluteToLocal(rayVector);
-  NormalizeVector(localVector);
-  fDE := VectorDotProduct(localStart, localVector);
-  fVal := VectorNorm(localStart) - (fRo2 + fRi2);
-
-  polynom[0] := Sqr(fVal) - 4.0 * fRo2 * (fRi2 - Sqr(localStart[2]));
-  polynom[1] := 4.0 * fDE * fVal + 8.0 * fRo2 * localVector[2] * localStart[2];
-  polynom[2] := 2.0 * fVal + 4.0 * Sqr(fDE) + 4.0 * fRo2 * Sqr(localVector[2]);
-  polynom[3] := 4.0 * fDE;
-  polynom[4] := 1;
-
-  // solve the quartic
-  polyRoots := SolveQuartic(@polynom[0]);
-
-  // search for closest point
-  Result := (Length(polyRoots) > 0);
-  if Result then
+  if assigned(Source) and (Source is TGLArrowLine) then
   begin
-    nearest := 1E20;
-    for i := 0 to High(polyRoots) do
-    begin
-      r := polyRoots[i];
-      if (r > 0) and (r < nearest) then
-      begin
-        nearest := r;
-        Result := true;
-      end;
-    end;
-    vi := VectorCombine(localStart, localVector, 1, nearest);
-    if Assigned(intersectPoint) then
-      SetVector(intersectPoint^, LocalToAbsolute(vi));
-    if Assigned(intersectNormal) then
-    begin
-      // project vi on local torus plane
-      vc[0] := vi[0];
-      vc[1] := vi[1];
-      vc[2] := 0;
-      // project vc on MajorRadius circle
-      ScaleVector(vc, MajorRadius / (VectorLength(vc) + 0.000001));
-      // calculate circle to intersect vector (gives normal);
-      SubtractVector(vi, vc);
-      // return to absolute coordinates and normalize
-      vi[3] := 0;
-      SetVector(intersectNormal^, LocalToAbsolute(vi));
-    end;
+    FParts := TGLArrowLine(Source).FParts;
+    FTopRadius := TGLArrowLine(Source).FTopRadius;
+    FTopArrowHeadHeight := TGLArrowLine(Source).FTopArrowHeadHeight;
+    FTopArrowHeadRadius := TGLArrowLine(Source).FTopArrowHeadRadius;
+    FBottomArrowHeadHeight := TGLArrowLine(Source).FBottomArrowHeadHeight;
+    FBottomArrowHeadRadius := TGLArrowLine(Source).FBottomArrowHeadRadius;
+    FHeadStackingStyle := TGLArrowLine(Source).FHeadStackingStyle;
   end;
+  inherited Assign(Source);
 end;
-
-// ------------------
-// ------------------ TGLArrowLine ------------------
-// ------------------
-
-// Create
-//
 
 constructor TGLArrowLine.Create(AOwner: TComponent);
 begin
   inherited;
-  FTopRadius := 0.1;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  fTopRadius := 0.1;
   BottomRadius := 0.1;
   fTopArrowHeadRadius := 0.2;
   fTopArrowHeadHeight := 0.5;
@@ -2573,24 +2903,19 @@ begin
   FHeadStackingStyle := ahssStacked;
   { by default there is not much point having the top of the line (cylinder)
     showing as it is coincidental with the Toparrowhead bottom.
-    Note I've defaulted to "vector" type arrows (arrow head on top only }
-  FParts := [alLine, alTopArrow];
+    Note I've defaulted to "vector" type arrows (arrow head on top only}
+  fParts := [alLine, alTopArrow];
+  FBatch.Mesh.TagName := ClassName;
 end;
-
-// SetTopRadius
-//
 
 procedure TGLArrowLine.SetTopRadius(const aValue: Single);
 begin
-  if aValue <> FTopRadius then
+  if aValue <> fTopRadius then
   begin
-    FTopRadius := aValue;
+    fTopRadius := aValue;
     StructureChanged;
   end;
 end;
-
-// SetTopArrowHeadHeight
-//
 
 procedure TGLArrowLine.SetTopArrowHeadHeight(const aValue: Single);
 begin
@@ -2601,9 +2926,6 @@ begin
   end;
 end;
 
-// SetTopArrowHeadRadius
-//
-
 procedure TGLArrowLine.SetTopArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fTopArrowHeadRadius then
@@ -2612,9 +2934,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetBottomArrowHeadHeight
-//
 
 procedure TGLArrowLine.SetBottomArrowHeadHeight(const aValue: Single);
 begin
@@ -2625,9 +2944,6 @@ begin
   end;
 end;
 
-// SetBottomArrowHeadRadius
-//
-
 procedure TGLArrowLine.SetBottomArrowHeadRadius(const aValue: Single);
 begin
   if aValue <> fBottomArrowHeadRadius then
@@ -2636,9 +2952,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetParts
-//
 
 procedure TGLArrowLine.SetParts(aValue: TArrowLineParts);
 begin
@@ -2649,9 +2962,6 @@ begin
   end;
 end;
 
-// SetHeadStackingStyle
-//
-
 procedure TGLArrowLine.SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 begin
   if val <> FHeadStackingStyle then
@@ -2661,106 +2971,302 @@ begin
   end;
 end;
 
-// BuildList
-//
-
-procedure TGLArrowLine.BuildList(var rci: TRenderContextInfo);
+procedure TGLArrowLine.BuildMesh;
 var
-  quadric: PGLUquadricObj;
-  cylHeight, cylOffset, headInfluence: Single;
+  cosCache, sinCache: array of Single;
+  cylHeight, cylOffset, headInfluence, headCentre: Single;
+  zLow, zHigh: Single;
+  length: Single;
+  deltaRadius: Single;
+  xzNormalRatio, zNormal: Single;
+  radiusLow, radiusHigh, R, Rstep, Rstart: Single;
+  LNormal, LTangent: TVector3f;
+  I, J: Integer;
 begin
   case HeadStackingStyle of
-    ahssCentered:
-      headInfluence := 0.5;
-    ahssIncluded:
-      headInfluence := 1;
+    ahssCentered: headInfluence := 0.5;
+    ahssIncluded: headInfluence := 1;
   else // ahssStacked
     headInfluence := 0;
   end;
   cylHeight := Height;
   cylOffset := -FHeight * 0.5;
-  // create a new quadric
-  quadric := gluNewQuadric;
-  SetupQuadricParams(quadric);
-  // does the top arrow part - the cone
-  if alTopArrow in Parts then
+
+  SetLength(cosCache, FSlices + 1);
+  SetLength(sinCache, FSlices + 1);
+  PrepareSinCosCache(sinCache, cosCache, 0, 360);
+
+  with FBatch.Mesh do
   begin
-    cylHeight := cylHeight - TopArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
-    GL.Translatef(0, 0, Height * 0.5 - TopArrowHeadHeight * headInfluence);
-    gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight,
-      Slices, Stacks);
-    // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
-    if alLine in Parts then
-      gluDisk(quadric, FTopRadius, fTopArrowHeadRadius, Slices, FLoops)
-    else
-      gluDisk(quadric, 0, fTopArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
-  end;
-  // does the bottom arrow part - another cone
-  if alBottomArrow in Parts then
-  begin
-    cylHeight := cylHeight - BottomArrowHeadHeight * headInfluence;
-    cylOffset := cylOffset + BottomArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
-    // make the bottom arrow point in the other direction
-    GL.Rotatef(180, 1, 0, 0);
-    GL.Translatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
-    SetNormalQuadricOrientation(quadric);
-    gluCylinder(quadric, fBottomArrowHeadRadius, 0, fBottomArrowHeadHeight,
-      Slices, Stacks);
-    // top of a disk is defined as outside
-    SetInvertedQuadricOrientation(quadric);
-    if alLine in Parts then
-      gluDisk(quadric, FBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
-    else
-      gluDisk(quadric, 0, fBottomArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
-  end;
-  // does the cylinder that makes the line
-  if (cylHeight > 0) and (alLine in Parts) then
-  begin
-    GL.PushMatrix;
-    GL.Translatef(0, 0, cylOffset);
-    SetNormalQuadricOrientation(quadric);
-    gluCylinder(quadric, FBottomRadius, FTopRadius, cylHeight, FSlices,
-      FStacks);
-    if not(alTopArrow in Parts) then
-    begin
-      GL.PushMatrix;
-      GL.Translatef(0, 0, cylHeight);
-      gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-      GL.PopMatrix;
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      // does the top arrow part - the cone
+      if alTopArrow in Parts then
+      begin
+        cylHeight := cylHeight - FTopArrowHeadHeight * headInfluence;
+        headCentre := Height * 0.5 - FTopArrowHeadHeight * headInfluence;
+        length := SQRT(FTopArrowHeadRadius * FTopArrowHeadRadius + FTopArrowHeadHeight * FTopArrowHeadHeight);
+        zNormal := FTopArrowHeadRadius / length;
+        xzNormalRatio := FTopArrowHeadHeight / length;
+
+        for J := 0 to FStacks - 1 do
+        begin
+          zLow := j * FTopArrowHeadHeight / FStacks + headCentre;
+          zHigh := (j + 1) * FTopArrowHeadHeight / FStacks + headCentre;
+          radiusLow := FTopArrowHeadRadius * (1.0 - j / FStacks);
+          radiusHigh := FTopArrowHeadRadius * (1.0 - (j + 1) / FStacks);
+          radiusLow := radiusLow * xzNormalRatio;
+          radiusHigh := radiusHigh * xzNormalRatio;
+
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition,
+              radiusLow * sinCache[I],
+              radiusLow * cosCache[I],
+              zLow);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            LNormal := Vector3fMake(
+              sinCache[I] * xzNormalRatio,
+              cosCache[I] * xzNormalRatio,
+              zNormal);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(YVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            EmitVertex;
+
+            Attribute3f(attrPosition,
+              radiusHigh * sinCache[I],
+              radiusHigh * cosCache[I],
+              zHigh);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+
+        if alLine in Parts then
+        begin
+          Rstep := (FTopArrowHeadRadius - FTopRadius) / FLoops;
+          Rstart := FTopRadius;
+        end
+        else
+        begin
+          Rstep := FTopArrowHeadRadius / FLoops;
+          Rstart := 0;
+        end;
+          Attribute3f(attrNormal, 0, 0, -1);
+          Attribute3f(attrTangent, -1, 0, 0);
+          Attribute3f(attrBinormal, 0, -1, 0);
+          for j := 0 to FLoops - 1 do
+          begin
+            for i := 0 to FSlices do
+            begin
+              Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+              R := Rstart + (j + 1) * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, headCentre);
+              EmitVertex;
+              Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+              R := Rstart + j * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, headCentre);
+              EmitVertex;
+            end;
+            RestartStrip;
+          end;
+      end;
+
+      // does the bottom arrow part - another cone
+      if alBottomArrow in Parts then
+      begin
+        cylHeight := cylHeight - FBottomArrowHeadHeight * headInfluence;
+        cylOffset := cylOffset + FBottomArrowHeadHeight * headInfluence;
+        headCentre := - Height * 0.5 + FBottomArrowHeadHeight * headInfluence;
+        length := SQRT(FBottomArrowHeadRadius * FBottomArrowHeadRadius +
+          FBottomArrowHeadHeight * FBottomArrowHeadHeight);
+        zNormal := FBottomArrowHeadRadius / length;
+        xzNormalRatio := FBottomArrowHeadHeight / length;
+
+        for J := 0 to FStacks - 1 do
+        begin
+          zLow := - j * FBottomArrowHeadHeight / FStacks + headCentre;
+          zHigh := - (j + 1) * FBottomArrowHeadHeight / FStacks + headCentre;
+          radiusLow := FBottomArrowHeadRadius * (1.0 - j / FStacks);
+          radiusHigh := FBottomArrowHeadRadius * (1.0 - (j + 1) / FStacks);
+
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition,
+              radiusHigh * sinCache[I],
+              radiusHigh * cosCache[I],
+              zHigh);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(YVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            Attribute3f(attrBinormal, VectorCrossProduct(LNormal, LTangent));
+            EmitVertex;
+
+            Attribute3f(attrPosition,
+              radiusLow * sinCache[I],
+              radiusLow * cosCache[I],
+              zLow);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            LNormal := Vector3fMake(
+              sinCache[I] * xzNormalRatio,
+              cosCache[I] * xzNormalRatio,
+              zNormal);
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+
+        if alLine in Parts then
+        begin
+          Rstep := (FBottomArrowHeadRadius - FBottomRadius) / FLoops;
+          Rstart := FBottomRadius;
+        end
+        else
+        begin
+          Rstep := FBottomArrowHeadRadius / FLoops;
+          Rstart := 0;
+        end;
+          Attribute3f(attrNormal, 0, 0, 1);
+          Attribute3f(attrTangent, 1, 0, 0);
+          Attribute3f(attrBinormal, 0, 1, 0);
+          for j := 0 to FLoops - 1 do
+          begin
+            for i := 0 to FSlices do
+            begin
+              Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+              R := Rstart + j * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, headCentre);
+              EmitVertex;
+
+              Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+              R := Rstart + (j + 1) * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, headCentre);
+              EmitVertex;
+            end;
+            RestartStrip;
+          end;
+      end;
+
+      // does the cylinder that makes the line
+      if (cylHeight > 0) and (alLine in Parts) then
+      begin
+        deltaRadius := FBottomRadius - FTopRadius;
+        length := SQRT(deltaRadius * deltaRadius + cylHeight * cylHeight);
+        zNormal := deltaRadius / length;
+        xzNormalRatio := cylHeight / length;
+
+        for J := 0 to FStacks - 1 do
+        begin
+          zLow := j * FHeight / FStacks - 0.5 * cylHeight;
+          zHigh := (j + 1) * FHeight / FStacks - 0.5 * cylHeight;
+          radiusLow := FBottomRadius - deltaRadius * (j / FStacks);
+          radiusHigh := FBottomRadius - deltaRadius * ((j + 1) / FStacks);
+          radiusLow := radiusLow * xzNormalRatio;
+          radiusHigh := radiusHigh * xzNormalRatio;
+          Attribute3f(attrBinormal, ZVector);
+          for I := 0 to FSlices do
+          begin
+            Attribute3f(attrPosition,
+              radiusLow * sinCache[I],
+              radiusLow * cosCache[I],
+              zLow
+              );
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, J / FStacks);
+            LNormal := Vector3fMake(
+              sinCache[I] * xzNormalRatio,
+              cosCache[I] * xzNormalRatio,
+              zNormal);
+            Attribute3f(attrNormal, LNormal);
+            LTangent := VectorCrossProduct(ZVector, LNormal);
+            Attribute3f(attrTangent, LTangent);
+            EmitVertex;
+
+            Attribute3f(attrPosition,
+              radiusHigh * sinCache[I],
+              radiusHigh * cosCache[I],
+              zHigh);
+            Attribute2f(attrTexCoord0, 1 - I / FSlices, (J + 1) / FStacks);
+
+            EmitVertex;
+          end;
+          RestartStrip;
+        end;
+
+        if not (alBottomArrow in Parts) then
+        begin
+          Rstep := FBottomRadius / FLoops;
+          Attribute3f(attrNormal, 0, 0, -1);
+          Attribute3f(attrTangent, -1, 0, 0);
+          Attribute3f(attrBinormal, 0, -1, 0);
+          for j := 0 to FLoops - 1 do
+          begin
+            for i := 0 to FSlices do
+            begin
+              Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+              R := (j + 1) * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, cylOffset);
+              EmitVertex;
+
+              Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+              R := j * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, cylOffset);
+              EmitVertex;
+            end;
+            RestartStrip;
+          end;
+        end;
+
+        if not (alTopArrow in Parts) then
+        begin
+          cylOffset := cylHeight + cylOffset;
+          Rstep := FTopRadius / FLoops;
+          Attribute3f(attrNormal, 0, 0, 1);
+          Attribute3f(attrTangent, 1, 0, 0);
+          Attribute3f(attrBinormal, 0, 1, 0);
+          for j := 0 to FLoops - 1 do
+          begin
+            for i := 0 to FSlices do
+            begin
+              Attribute2f(attrTexCoord0, i / FSlices, j / FLoops);
+              R := j * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, cylOffset);
+              EmitVertex;
+
+              Attribute2f(attrTexCoord0, i / FSlices, (j + 1) / FLoops);
+              R := (j + 1) * Rstep;
+              Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, cylOffset);
+              EmitVertex;
+            end;
+            RestartStrip;
+          end;
+        end;
+      end;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
     end;
-    if not(alBottomArrow in Parts) then
-    begin
-      // swap quadric orientation because top of a disk is defined as outside
-      SetInvertedQuadricOrientation(quadric);
-      gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
-    end;
-    GL.PopMatrix;
   end;
-  gluDeleteQuadric(quadric);
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
-// Assign
-//
-
-procedure TGLArrowLine.Assign(Source: TPersistent);
-begin
-  if Assigned(Source) and (Source is TGLArrowLine) then
-  begin
-    FParts := TGLArrowLine(Source).FParts;
-    FTopRadius := TGLArrowLine(Source).FTopRadius;
-    fTopArrowHeadHeight := TGLArrowLine(Source).fTopArrowHeadHeight;
-    fTopArrowHeadRadius := TGLArrowLine(Source).fTopArrowHeadRadius;
-    fBottomArrowHeadHeight := TGLArrowLine(Source).fBottomArrowHeadHeight;
-    fBottomArrowHeadRadius := TGLArrowLine(Source).fBottomArrowHeadRadius;
-    FHeadStackingStyle := TGLArrowLine(Source).FHeadStackingStyle;
-  end;
-  inherited Assign(Source);
-end;
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLArrowArc ------------------
@@ -2769,7 +3275,7 @@ end;
 // Create
 //
 
-constructor TGLArrowArc.Create(AOwner: TComponent);
+(*constructor TGLArrowArc.Create(AOwner: TComponent);
 begin
   inherited;
   FStacks := 16;
@@ -3431,130 +3937,226 @@ begin
   end;
   inherited Assign(Source);
 end;
+*)
 
-// ------------------
-// ------------------ TGLFrustrum ------------------
-// ------------------
+{$IFDEF GLS_REGIONS}{$REGION 'TGLFrustrum'}{$ENDIF}
 
 constructor TGLFrustrum.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FApexHeight := 1;
   FBaseWidth := 1;
   FBaseDepth := 1;
   FHeight := 0.5;
   FParts := cAllFrustrumParts;
   FNormalDirection := ndOutside;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
 end;
 
-procedure TGLFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TGLFrustrum.BuildMesh;
 var
   HBW, HBD: TGLFloat; // half of width, half of depth at base
   HTW, HTD: TGLFloat; // half of width, half of depth at top of frustrum
   HFH: TGLFloat; // half of height, for align to center
-  Sign: TGLFloat; // +1 or -1
-  angle: TGLFloat; // in radians
+  Angle: TGLFloat; // in radians
   ASin, ACos: TGLFloat;
+  LNormal: TVector3f;
 begin
-  if FNormalDirection = ndInside then
-    Sign := -1
-  else
-    Sign := 1;
   HBW := FBaseWidth * 0.5;
   HBD := FBaseDepth * 0.5;
   HTW := HBW * (FApexHeight - FHeight) / FApexHeight;
   HTD := HBD * (FApexHeight - FHeight) / FApexHeight;
   HFH := FHeight * 0.5;
 
-  GL.Begin_(GL_QUADS);
-
-  if [fpFront, fpBack] * FParts <> [] then
+  with FBatch.Mesh do
   begin
-    angle := ArcTan(FApexHeight / HBD);
-    // angle of front plane with bottom plane
-    SinCos(angle, ASin, ACos);
-    if fpFront in FParts then
-    begin
-      GL.Normal3f(0, Sign * ACos, Sign * ASin);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
-    end;
-    if fpBack in FParts then
-    begin
-      GL.Normal3f(0, Sign * ACos, -Sign * ASin);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if [fpFront, fpBack] * FParts <> [] then
+      begin
+        Angle := Arctan(FApexHeight / HBD);
+          // angle of front plane with bottom plane
+        SinCos(Angle, ASin, ACos);
+        if fpFront in FParts then
+        begin
+          LNormal := Vector3fMake(0, ACos, ASin);
+          Attribute3f(attrNormal, LNormal);
+          Attribute3f(attrTangent, XVector);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, XVector));
+
+          Attribute3f(attrPosition, HTW, HFH, HTD);
+          Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HTW, HFH, HTD);
+          Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, HBW, -HFH, HBD);
+          Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HBW, -HFH, HBD);
+          Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+          EmitVertex;
+          RestartStrip;
+        end;
+
+        if fpBack in FParts then
+        begin
+          LNormal := Vector3fMake(0, ACos, -ASin);
+          Attribute3f(attrNormal, LNormal);
+          Attribute3f(attrTangent, MinusXVector);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, MinusXVector));
+
+          Attribute3f(attrPosition, HTW, HFH, -HTD);
+          Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, HBW, -HFH, -HBD);
+          Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HTW, HFH, -HTD);
+          Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HBW, -HFH, -HBD);
+          Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+          EmitVertex;
+          RestartStrip;
+        end;
+      end;
+
+      if [fpLeft, fpRight] * FParts <> [] then
+      begin
+        Angle := Arctan(FApexHeight / HBW);
+          // angle of side plane with bottom plane
+        SinCos(Angle, ASin, ACos);
+        if fpLeft in FParts then
+        begin
+          LNormal := Vector3fMake(-ASin, ACos, 0);
+          Attribute3f(attrNormal, LNormal);
+          Attribute3f(attrTangent, MinusZVector);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, MinusZVector));
+
+          Attribute3f(attrPosition, -HTW, HFH, HTD);
+          Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HTW, HFH, -HTD);
+          Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HBW, -HFH, HBD);
+          Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, -HBW, -HFH, -HBD);
+          Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+          EmitVertex;
+          RestartStrip;
+        end;
+        if fpRight in FParts then
+        begin
+          LNormal := Vector3fMake(ASin, ACos, 0);
+          Attribute3f(attrNormal, LNormal);
+          Attribute3f(attrTangent, ZVector);
+          Attribute3f(attrBinormal, VectorCrossProduct(LNormal, ZVector));
+
+          Attribute3f(attrPosition, HTW, HFH, HTD);
+          Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, HBW, -HFH, HBD);
+          Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, HTW, HFH, -HTD);
+          Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+          EmitVertex;
+
+          Attribute3f(attrPosition, HBW, -HFH, -HBD);
+          Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+          EmitVertex;
+          RestartStrip;
+        end;
+      end;
+
+      if (fpTop in FParts) and (FHeight < FApexHeight) then
+      begin
+        Attribute3f(attrNormal, YVector);
+        Attribute3f(attrTangent, XVector);
+        Attribute3f(attrBinormal, ZVector);
+
+        Attribute3f(attrPosition, -HTW, HFH, -HTD);
+        Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, -HTW, HFH, HTD);
+        Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, HTW, HFH, -HTD);
+        Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, HTW, HFH, HTD);
+        Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+        EmitVertex;
+        RestartStrip;
+      end;
+      if fpBottom in FParts then
+      begin
+        Attribute3f(attrNormal, YVector);
+        Attribute3f(attrTangent, XVector);
+        Attribute3f(attrBinormal, ZVector);
+
+        Attribute3f(attrPosition, -HBW, -HFH, -HBD);
+        Attribute2f(attrTexCoord0, NullTexPoint.S, NullTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, HBW, -HFH, -HBD);
+        Attribute2f(attrTexCoord0, XTexPoint.S, XTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, -HBW, -HFH, HBD);
+        Attribute2f(attrTexCoord0, YTexPoint.S, YTexPoint.T);
+        EmitVertex;
+
+        Attribute3f(attrPosition, HBW, -HFH, HBD);
+        Attribute2f(attrTexCoord0, XYTexPoint.S, XYTexPoint.T);
+        EmitVertex;
+        RestartStrip;
+      end;
+
+      EndAssembly;
+      if FNormalDirection = ndInside then
+      begin
+        Triangulate;
+        FlipFaces;
+      end;
+      ApplyExtras;
+    finally
+      UnLock;
     end;
   end;
 
-  if [fpLeft, fpRight] * FParts <> [] then
-  begin
-    angle := ArcTan(FApexHeight / HBW); // angle of side plane with bottom plane
-    SinCos(angle, ASin, ACos);
-    if fpLeft in FParts then
-    begin
-      GL.Normal3f(-Sign * ASin, Sign * ACos, 0);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
-    end;
-    if fpRight in FParts then
-    begin
-      GL.Normal3f(Sign * ASin, Sign * ACos, 0);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
-    end;
-  end;
-
-  if (fpTop in FParts) and (FHeight < FApexHeight) then
-  begin
-    GL.Normal3f(0, Sign, 0);
-    XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HTW, HFH, -HTD);
-    XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HTW, HFH, HTD);
-    XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HTW, HFH, HTD);
-    XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HTW, HFH, -HTD);
-  end;
-  if fpBottom in FParts then
-  begin
-    GL.Normal3f(0, -Sign, 0);
-    XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HBW, -HFH, -HBD);
-    XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HBW, -HFH, -HBD);
-    XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HBW, -HFH, HBD);
-    XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HBW, -HFH, HBD);
-  end;
-
-  GL.End_;
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
 procedure TGLFrustrum.SetApexHeight(const aValue: Single);
@@ -3673,7 +4275,7 @@ function TGLFrustrum.AxisAlignedBoundingBoxUnscaled: TAABB;
 var
   aabb: TAABB;
   child: TGLBaseSceneObject;
-  i: integer;
+  i: Integer;
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   OffsetAABB(Result, VectorMake(0, FHeight * 0.5, 0));
@@ -3695,6 +4297,8 @@ begin
   Result[2] := FBaseDepth * 0.5;
   Result[3] := 0;
 end;
+
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPolygon ------------------
@@ -3786,7 +4390,7 @@ initialization
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 
-RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
-  TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule, TGLArrowArc]);
+RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLGeoSphere,
+  TGLArrowLine, TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule {, TGLArrowArc}]);
 
 end.

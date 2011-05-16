@@ -13,6 +13,7 @@
   objects can be found GLGeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>16/05/11 - Yar - Transition to indirect rendering objects
   <li>23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
                        Replaced plane primitives to triangles, added tangent and binormal attributes
   <li>29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
@@ -153,30 +154,63 @@ uses
   OpenGLTokens,
   SysUtils,
   VectorLists,
+  BaseClasses,
   GLCrossPlatform,
   GLContext,
   GLSilhouette,
   GLColor,
+  GLPipelineTransformation,
   GLRenderContextInfo,
-  BaseClasses,
   GLNodes,
-  GLCoordinates;
+  GLCoordinates,
+  GLMaterial,
+  GLMaterialEx,
+  GLSMesh,
+  GLSDrawTechnique;
 
 type
+
+  // TGLSceneObjectEx
+  //
+  TGLSceneObjectEx = class(TGLSceneObject)
+  private
+    FMeshExtras: TMeshExtras;
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
+    procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
+    procedure SetShowAABB(const Value: Boolean);
+    function GetShowAABB: Boolean;
+    procedure SetMeshExtras(const Value: TMeshExtras);
+  protected
+    { Protected Declarations }
+    FBatch: TDrawBatch;
+    FTransformation: TTransformationRec;
+    procedure BuildMesh; virtual; abstract;
+    function GetLibMaterialName: string; virtual;
+    procedure SetLibMaterialName(const Value: string); virtual;
+    procedure SetScene(const value: TGLScene); override;
+    procedure Loaded; override;
+    procedure ApplyExtras;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+    procedure TransformationChanged; override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
+  published
+    { Published Declarations }
+    property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
+      write SetMaterialLibrary;
+    property LibMaterialName: string read GetLibMaterialName
+      write SetLibMaterialName;
+    property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
+    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default
+      [];
+  end;
 
   // TGLVisibilityDeterminationEvent
   //
   TGLVisibilityDeterminationEvent = function(Sender: TObject;
     var rci: TRenderContextInfo): Boolean of object;
-
-  PVertexRec = ^TVertexRec;
-  TVertexRec = record
-    Position: TVector3f;
-    Normal: TVector3f;
-    Binormal: TVector3f;
-    Tangent: TVector3f;
-    TexCoord: TVector2f;
-  end;
 
   // TGLDummyCube
   //
@@ -184,42 +218,36 @@ type
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
     mechanism needs be described, you can use DummyCubes.<br>
-    DummyCube's barycenter is its children's barycenter.<br>
-    The DummyCube can optionnally amalgamate all its children into a single
-    display list (see Amalgamate property). }
+    DummyCube's barycenter is its children's barycenter.<br> }
+
   TGLDummyCube = class(TGLCameraInvariantObject)
   private
     { Private Declarations }
+    FBatch: TDrawBatch;
+    FTransformation: TTransformationRec;
     FCubeSize: TGLFloat;
     FEdgeColor: TGLColor;
-    FVisibleAtRunTime, FAmalgamate: Boolean;
-    FGroupList: TGLListHandle;
+    FVisibleAtRunTime: Boolean;
+    FAmalgamate: Boolean;
     FOnVisibilityDetermination: TGLVisibilityDeterminationEvent;
-
+    procedure BuildMesh;
   protected
     { Protected Declarations }
     procedure SetCubeSize(const val: TGLFloat);
     procedure SetEdgeColor(const val: TGLColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
-    procedure SetAmalgamate(const val: Boolean);
-
+    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
 
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
-    procedure StructureChanged; override;
-    function BarycenterAbsolutePosition: TVector; override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
+    function BarycenterAbsolutePosition: TVector; override;
+    procedure TransformationChanged; override;
   published
     { Published Declarations }
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
@@ -229,19 +257,8 @@ type
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime
       write SetVisibleAtRunTime default False;
-    { : Amalgamate the dummy's children in a single OpenGL entity.<p>
-      This activates a special rendering mode, which will compile
-      the rendering of all of the dummycube's children objects into a
-      single display list. This may provide a significant speed up in some
-      situations, however, this means that changes to the children will
-      be ignored untill you call StructureChanged on the dummy cube.<br>
-      Some objects, that have their own display list management, may not
-      be compatible with this behaviour. This will also prevents sorting
-      and culling to operate as usual.<p>
-      In short, this features is best used for static, non-transparent
-      geometry, or when the point of view won't change over a large
-      number of frames. }
-    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
+    { : Fake property for backward compatibility. }
+    property Amalgamate: Boolean read FAmalgamate write FAmalgamate
       default False;
     { : Camera Invariance Options.<p>
       These options allow to "deactivate" sensitivity to camera, f.i. by
@@ -264,7 +281,7 @@ type
   { : A simple plane object.<p>
     Note that a plane is always made of a single quad (two triangles) and the
     tiling is only applied to texture coordinates. }
-  TGLPlane = class(TGLSceneObject)
+  TGLPlane = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FXOffset, FYOffset: TGLFloat;
@@ -272,9 +289,9 @@ type
     FWidth, FHeight: TGLFloat;
     FXTiles, FYTiles: Cardinal;
     FStyle: TPlaneStyles;
-    FMesh: array of array of TVertexRec;
   protected
     { Protected Declarations }
+    procedure BuildMesh; override;
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
     procedure SetXOffset(const Value: TGLFloat);
@@ -286,29 +303,13 @@ type
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TPlaneStyles);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    function GenerateSilhouette(const silhouetteParameters
-      : TGLSilhouetteParameters): TGLSilhouette; override;
-
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-    { : Computes the screen coordinates of the smallest rectangle encompassing the plane.<p>
-      Returned extents are NOT limited to any physical screen extents. }
-    function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
-
-    { : Computes the signed distance to the point.<p>
-      Point coordinates are expected in absolute coordinates. }
+    function ScreenRect(ABuffer: TGLSceneBuffer): TGLRect;
     function PointDistance(const aPoint: TVector): Single;
-
   published
     { Public Declarations }
     property Height: TGLFloat read FHeight write SetHeight;
@@ -323,43 +324,41 @@ type
       default [psSingleQuad, psTileTexture];
   end;
 
+  TGLSpriteAlign = (alSpherical, alCylindrical);
+
   // TGLSprite
   //
   { : A rectangular area, perspective projected, but always facing the camera.<p>
     A TGLSprite is perspective projected and as such is scaled with distance,
     if you want a 2D sprite that does not get scaled, see TGLHUDSprite. }
-  TGLSprite = class(TGLSceneObject)
+  TGLSprite = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FWidth: TGLFloat;
     FHeight: TGLFloat;
     FRotation: TGLFloat;
     FAlphaChannel: Single;
-    FMirrorU, FMirrorV: Boolean;
-
+    FMirrorU: Boolean;
+    FMirrorV: Boolean;
+    FAlign: TGLSpriteAlign;
   protected
     { Protected Declarations }
+    procedure BuildMesh; override;
     procedure SetWidth(const val: TGLFloat);
     procedure SetHeight(const val: TGLFloat);
     procedure SetRotation(const val: TGLFloat);
-    procedure SetAlphaChannel(const val: Single);
-    function StoreAlphaChannel: Boolean;
     procedure SetMirrorU(const val: Boolean);
     procedure SetMirrorV(const val: Boolean);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
     procedure SetSize(const Width, Height: TGLFloat);
     // : Set width and height to "size"
     procedure SetSquareSize(const size: TGLFloat);
-
   published
     { Published Declarations }
     { : Sprite Width in 3D world units. }
@@ -369,13 +368,14 @@ type
     { : This the ON-SCREEN rotation of the sprite.<p>
       Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
-    { : If different from 1, this value will replace that of Diffuse.Alpha }
-    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
-      stored StoreAlphaChannel;
+    { : Fake property for backward compatibility. }
+    property AlphaChannel: Single read FAlphaChannel write FAlphaChannel;
     { : Reverses the texture coordinates in the U and V direction to mirror
       the texture. }
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
+    { : Align to camera view. }
+    property Align: TGLSpriteAlign read FAlign write FAlign default alSpherical;
   end;
 
   // TGLPointStyle
@@ -726,11 +726,7 @@ type
 
   // TGLCube
   //
-  { : A simple cube object.<p>
-    This cube use the same material for each of its faces, ie. all faces look
-    the same. If you want a multi-material cube, use a mesh in conjunction
-    with a TGLFreeForm and a material library. }
-  TGLCube = class(TGLSceneObject)
+  TGLCube = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FCubeSize: TAffineVector;
@@ -741,37 +737,26 @@ type
     procedure SetCubeDepth(const aValue: Single);
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
-
   protected
     { Protected Declarations }
+    procedure BuildMesh; override;
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
-    function GenerateSilhouette(const silhouetteParameters
-      : TGLSilhouetteParameters): TGLSilhouette; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-
     procedure Assign(Source: TPersistent); override;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-
   published
     { Published Declarations }
-    property CubeWidth: TGLFloat read FCubeSize[0]write SetCubeWidth
-      stored False;
-    property CubeHeight: TGLFloat read FCubeSize[1]write SetCubeHeight
-      stored False;
-    property CubeDepth: TGLFloat read FCubeSize[2]write SetCubeDepth
-      stored False;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
+    property CubeWidth: Single read FCubeSize[0] write SetCubeWidth stored
+      False;
+    property CubeHeight: Single read FCubeSize[1] write SetCubeHeight stored
+      False;
+    property CubeDepth: Single read FCubeSize[2] write SetCubeDepth stored
+      False;
+    property NormalDirection: TNormalDirection read FNormalDirection write
+      SetNormalDirection default ndOutside;
     property Parts: TCubeParts read FParts write SetParts
       default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   end;
@@ -781,43 +766,16 @@ type
   { : Determines how and if normals are smoothed.<p>
     - nsFlat : facetted look<br>
     - nsSmooth : smooth look<br>
-    - nsNone : unlighted rendering, usefull for decla texturing }
-  TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
+    - nsNone : unlighted rendering, usefull for decal texturing }
+  TNormalSmoothing =
+    (
+    nsFlat,
+    nsSmooth,
+    nsNone
+    );
 
-  // TGLQuadricObject
-  //
-  { : Base class for quadric objects.<p>
-    Introduces some basic Quadric interaction functions (the actual quadric
-    math is part of the GLU library). }
-  TGLQuadricObject = class(TGLSceneObject)
-  private
-    { Private Declarations }
-    FNormals: TNormalSmoothing;
-    FNormalDirection: TNormalDirection;
-
-  protected
-    { Protected Declarations }
-    procedure SetNormals(aValue: TNormalSmoothing);
-    procedure SetNormalDirection(aValue: TNormalDirection);
-    procedure SetupQuadricParams(quadric: PGLUquadricObj);
-    procedure SetNormalQuadricOrientation(quadric: PGLUquadricObj);
-    procedure SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
-
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-    procedure Assign(Source: TPersistent); override;
-
-  published
-    { Published Declarations }
-    property Normals: TNormalSmoothing read FNormals write SetNormals
-      default nsSmooth;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
-  end;
-
-  TAngleLimit1 = -90 .. 90;
-  TAngleLimit2 = 0 .. 360;
+  TAngleLimit1 = -90..90;
+  TAngleLimit2 = 0..360;
   TCapType = (ctNone, ctCenter, ctFlat);
 
   // TGLSphere
@@ -825,7 +783,7 @@ type
   { : A sphere object.<p>
     The sphere can have to and bottom caps, as well as being just a slice
     of sphere. }
-  TGLSphere = class(TGLQuadricObject)
+  TGLSphere = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FRadius: TGLFloat;
@@ -835,6 +793,8 @@ type
     FStart: TAngleLimit2;
     FStop: TAngleLimit2;
     FTopCap, FBottomCap: TCapType;
+    FNormalDirection: TNormalDirection;
+    FNormals: TNormalSmoothing;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
     procedure SetRadius(const aValue: TGLFloat);
@@ -844,20 +804,17 @@ type
     procedure SetStacks(aValue: TGLInt);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
-
+    procedure SetNormalDirection(const Value: TNormalDirection);
+    procedure SetNormals(const Value: TNormalSmoothing);
+  protected
+    { Protected Declarations }
+    procedure BuildMesh; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
-
-    function GenerateSilhouette(const silhouetteParameters
-      : TGLSilhouetteParameters): TGLSilhouette; override;
+    function AxisAlignedDimensionsUnscaled: TVector;
   published
     { Published Declarations }
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
@@ -870,6 +827,10 @@ type
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
     property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
+    property NormalDirection: TNormalDirection read FNormalDirection
+      write SetNormalDirection default ndOutside;
+    property Normals: TNormalSmoothing read FNormals write SetNormals
+      default nsSmooth;
   end;
 
   // TGLPolygonBase
@@ -927,9 +888,9 @@ var
   TangentAttributeName: AnsiString = 'Tangent';
   BinormalAttributeName: AnsiString = 'Binormal';
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
 implementation
 
 // -------------------------------------------------------------
@@ -939,7 +900,8 @@ implementation
 uses
   Spline,
   XOpenGL,
-  GLState;
+  GLState,
+  GLSLParameter;
 
 const
   cDefaultPointSize: Single = 1.0;
@@ -1008,12 +970,12 @@ const
   B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
   C = 1 * 0.3;
 const
-  vertices: packed array [0 .. 19] of TAffineVector = ((-A, 0, B), (-A, 0, -B),
+  vertices: packed array[0..19] of TAffineVector = ((-A, 0, B), (-A, 0, -B),
     (A, 0, -B), (A, 0, B), (B, -A, 0), (-B, -A, 0), (-B, A, 0), (B, A, 0),
     (0, B, -A), (0, -B, -A), (0, -B, A), (0, B, A), (-C, -C, C), (-C, -C, -C),
     (C, -C, -C), (C, -C, C), (-C, C, C), (-C, C, -C), (C, C, -C), (C, C, C));
 
-  polygons: packed array [0 .. 11] of packed array [0 .. 4]
+  polygons: packed array[0..11] of packed array[0..4]
     of Byte = ((0, 12, 10, 11, 16), (1, 17, 8, 9, 13), (2, 14, 9, 8, 18),
     (3, 19, 11, 10, 15), (4, 14, 2, 3, 15), (5, 12, 0, 1, 13),
     (6, 17, 1, 0, 16), (7, 19, 3, 2, 18), (8, 17, 6, 7, 18), (9, 14, 4, 5, 13),
@@ -1032,10 +994,10 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-//    GL.Begin_(GL_TRIANGLE_FAN);
-//    for j := 0 to 4 do
-//      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-//    GL.End_;
+    //    GL.Begin_(GL_TRIANGLE_FAN);
+    //    for j := 0 to 4 do
+    //      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    //    GL.End_;
 
     GL.Begin_(GL_TRIANGLES);
 
@@ -1043,7 +1005,7 @@ begin
     begin
       GL.Vertex3fv(@vertices[faceIndices^[0]]);
       GL.Vertex3fv(@vertices[faceIndices^[j]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j+1]]);
+      GL.Vertex3fv(@vertices[faceIndices^[j + 1]]);
     end;
     GL.End_;
   end;
@@ -1057,11 +1019,11 @@ const
   A = 0.5;
   B = 0.30901699437; // 1/(1+Sqrt(5))
 const
-  vertices: packed array [0 .. 11] of TAffineVector = ((0, -B, -A), (0, -B, A),
+  vertices: packed array[0..11] of TAffineVector = ((0, -B, -A), (0, -B, A),
     (0, B, -A), (0, B, A), (-A, 0, -B), (-A, 0, B), (A, 0, -B), (A, 0, B),
     (-B, -A, 0), (-B, A, 0), (B, -A, 0), (B, A, 0));
 
-  triangles: packed array [0 .. 19] of packed array [0 .. 2]
+  triangles: packed array[0..19] of packed array[0..2]
     of Byte = ((2, 9, 11), (3, 11, 9), (3, 5, 1), (3, 1, 7), (2, 6, 0),
     (2, 0, 4), (1, 8, 10), (0, 10, 8), (9, 4, 5), (8, 5, 4), (11, 7, 6),
     (10, 6, 7), (3, 9, 5), (3, 7, 11), (2, 4, 9), (2, 11, 6), (0, 8, 4),
@@ -1087,36 +1049,168 @@ begin
   end;
 end;
 
-// ------------------
-// ------------------ TGLDummyCube ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLSceneObjectEx'}{$ENDIF}
 
-// Create
-//
-
-constructor TGLDummyCube.Create(AOwner: TComponent);
+procedure TGLSceneObjectEx.Loaded;
+var
+  LMaterial: TGLAbstractLibMaterial;
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
-  FCubeSize := 1;
-  FEdgeColor := TGLColor.Create(Self);
-  FEdgeColor.Initialize(clrWhite);
-  FGroupList := TGLListHandle.Create;
-  CamInvarianceMode := cimNone;
+  if Assigned(MaterialLibrary) then
+  begin
+    if MaterialLibrary is TGLMaterialLibraryEx then
+      LMaterial :=
+        TGLMaterialLibraryEx(MaterialLibrary).Materials.GetLibMaterialByName(FMaterial.Material.LibMaterialName)
+    else
+      LMaterial :=
+        TGLMaterialLibrary(MaterialLibrary).Materials.GetLibMaterialByName(FMaterial.Material.LibMaterialName);
+
+    if Assigned(LMaterial) then
+    begin
+      FBatch.Material := LMaterial;
+      LMaterial.RegisterUser(Self);
+    end
+    else
+      FBatch.Material := FMaterial;
+  end
+  else
+  begin
+    FBatch.Material := FMaterial;
+  end;
 end;
 
-// Destroy
-//
-
-destructor TGLDummyCube.Destroy;
+procedure TGLSceneObjectEx.TransformationChanged;
 begin
-  FGroupList.Free;
-  FEdgeColor.Free;
+  inherited;
+  FBatch.Changed := True;
+end;
+
+procedure TGLSceneObjectEx.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FBatch);
+  end;
   inherited;
 end;
 
-// Assign
-//
+procedure TGLSceneObjectEx.SetShowAABB(const Value: Boolean);
+begin
+  FBatch.ShowAABB := Value;
+end;
+
+procedure TGLSceneObjectEx.ApplyExtras;
+begin
+  if mesTangents in FMeshExtras then
+  begin
+    if not FBatch.Mesh.Attributes[attrTangent] then
+      FBatch.Mesh.ComputeTangents;
+  end
+  else
+  begin
+    FBatch.Mesh.Attributes[attrTangent] := False;
+    FBatch.Mesh.Attributes[attrBinormal] := False;
+    FBatch.Mesh.Validate;
+  end;
+
+  if mesAdjacency in FMeshExtras then
+  begin
+    FBatch.Mesh.MakeAdjacencyElements;
+  end;
+
+  FBatch.Mesh.WeldVertices;
+end;
+
+destructor TGLSceneObjectEx.Destroy;
+begin
+  FBatch.Mesh.Free;
+  inherited;
+end;
+
+procedure TGLSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  if ARenderSelf then
+  begin
+    if ocStructure in Changes then
+    begin
+      BuildMesh;
+    end;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    FBatch.Order := ARci.orderCounter;
+  end;
+
+  if ARenderChildren then
+    Self.RenderChildren(0, Count - 1, ARci);
+end;
+
+function TGLSceneObjectEx.GetLibMaterialName: string;
+begin
+  if Assigned(FBatch.Material) then
+    Result := FBatch.Material.Name
+  else
+    Result := '';
+end;
+
+function TGLSceneObjectEx.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+begin
+  Result := FMaterial.Material.MaterialLibrary;
+end;
+
+function TGLSceneObjectEx.GetShowAABB: Boolean;
+begin
+  Result := FBatch.ShowAABB;
+end;
+
+procedure TGLSceneObjectEx.SetLibMaterialName(const Value: string);
+var
+  LMaterial: TGLAbstractLibMaterial;
+begin
+  if Value <> GetLibMaterialName then
+  begin
+    if Assigned(FBatch.Material) then
+      FBatch.Material.UnregisterUser(Self);
+
+    if Assigned(MaterialLibrary) then
+    begin
+      if MaterialLibrary is TGLMaterialLibraryEx then
+        LMaterial :=
+          TGLMaterialLibraryEx(MaterialLibrary).Materials.GetLibMaterialByName(Value)
+      else
+        LMaterial :=
+          TGLMaterialLibrary(MaterialLibrary).Materials.GetLibMaterialByName(Value);
+      FBatch.Material := LMaterial;
+      if Assigned(LMaterial) then
+        LMaterial.RegisterUser(Self);
+    end
+    else
+    begin
+      FBatch.Material := FMaterial;
+    end;
+  end;
+end;
+
+procedure TGLSceneObjectEx.SetMaterialLibrary(
+  const Value: TGLAbstractMaterialLibrary);
+begin
+  FMaterial.Material.MaterialLibrary := Value;
+end;
+
+procedure TGLSceneObjectEx.SetMeshExtras(const Value: TMeshExtras);
+begin
+  if FMeshExtras <> Value then
+  begin
+    FMeshExtras := Value;
+    StructureChanged;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLSceneObjectEx'}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLDummyCube'}{$ENDIF}
 
 procedure TGLDummyCube.Assign(Source: TPersistent);
 begin
@@ -1130,76 +1224,187 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
-function TGLDummyCube.AxisAlignedDimensionsUnscaled: TVector;
+procedure TGLDummyCube.BuildMesh;
+var
+  pn, pp: Single;
 begin
-  Result[0] := 0.5 * Abs(FCubeSize);
-  Result[1] := Result[0];
-  Result[2] := Result[0];
-  Result[3] := 0;
-end;
-
-// RayCastIntersect
-//
-
-function TGLDummyCube.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-begin
-  Result := False;
-end;
-
-// BuildList
-//
-
-procedure TGLDummyCube.BuildList(var rci: TRenderContextInfo);
-begin
-  if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
-    CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
-end;
-
-// DoRender
-//
-
-procedure TGLDummyCube.DoRender(var rci: TRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
-begin
-  if Assigned(FOnVisibilityDetermination) then
-    if not FOnVisibilityDetermination(Self, rci) then
-      Exit;
-  if FAmalgamate and (not rci.amalgamating) then
+  pp := FCubeSize * 0.5;
+  pn := -pp;
+  with FBatch.Mesh do
   begin
-    if FGroupList.Handle = 0 then
-    begin
-      FGroupList.AllocateHandle;
-      Assert(FGroupList.Handle <> 0, 'Handle=0 for ' + ClassName);
-      rci.GLStates.NewList(FGroupList.Handle, GL_COMPILE);
-      rci.amalgamating := True;
-      try
-        inherited;
-      finally
-        rci.amalgamating := False;
-        rci.GLStates.EndList;
-      end;
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
+
+      BeginAssembly(mpLINES);
+      Attribute3f(attrPosition, pp, pp, pp);
+      Attribute4f(attrColor, FEdgeColor.Color);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      EndAssembly;
+    finally
+      UnLock;
     end;
-    rci.GLStates.CallList(FGroupList.Handle);
-  end
-  else
+  end;
+
+  ClearStructureChanged;
+end;
+
+constructor TGLDummyCube.Create(AOwner: TComponent);
+const
+  cDummyCubeMaterialName = 'GLScene_DummyCube_Material';
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FCubeSize := 1;
+  FEdgeColor := TGLColor.Create(Self);
+  FEdgeColor.Initialize(clrWhite);
+  CamInvarianceMode := cimNone;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Material :=
+    GetInternalMaterialLibrary.Materials.GetLibMaterialByName(cDummyCubeMaterialName);
+  if FBatch.Material = nil then
   begin
-    // proceed as usual
-    inherited;
+    FBatch.Material := GetInternalMaterialLibrary.Materials.Add;
+    with TGLLibMaterialEx(FBatch.Material) do
+    begin
+      Name := cDummyCubeMaterialName;
+      FixedFunction.BlendingMode := bmTransparency;
+      FixedFunction.MaterialOptions := [moNoLighting];
+      FixedFunction.LineProperties.Enabled := True;
+      FixedFunction.LineProperties.StippleFactor := 1;
+      FixedFunction.LineProperties.Smooth := True;
+    end;
+  end;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Changed := True;
+  FBatch.Mesh.TagName := ClassName;
+end;
+
+destructor TGLDummyCube.Destroy;
+begin
+  FEdgeColor.Free;
+  FBatch.Mesh.Destroy;
+  inherited;
+end;
+
+procedure TGLDummyCube.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  if ocStructure in Changes then
+  begin
+    BuildMesh;
+  end;
+  FTransformation := ARci.PipelineTransformation.StackTop;
+  if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
+    FBatch.Order := ARci.orderCounter;
+
+  if ARenderChildren then
+    Self.RenderChildren(0, Count - 1, ARci);
+end;
+
+procedure TGLDummyCube.SetCubeSize(const val: TGLFloat);
+begin
+  if val <> FCubeSize then
+  begin
+    FCubeSize := val;
+    StructureChanged;
   end;
 end;
 
-// StructureChanged
-//
-
-procedure TGLDummyCube.StructureChanged;
+procedure TGLDummyCube.SetEdgeColor(const val: TGLColor);
 begin
-  if FAmalgamate then
-    FGroupList.DestroyHandle;
+  if val <> FEdgeColor then
+  begin
+    FEdgeColor.Assign(val);
+    StructureChanged;
+  end;
+end;
+
+procedure TGLDummyCube.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FBatch);
+  end;
   inherited;
+end;
+
+procedure TGLDummyCube.SetVisibleAtRunTime(const val: Boolean);
+begin
+  if val <> FVisibleAtRunTime then
+  begin
+    FVisibleAtRunTime := val;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLDummyCube.TransformationChanged;
+begin
+  inherited;
+  FBatch.Changed := True;
 end;
 
 // BarycenterAbsolutePosition
@@ -1207,7 +1412,7 @@ end;
 
 function TGLDummyCube.BarycenterAbsolutePosition: TVector;
 var
-  i: Integer;
+  I: Integer;
 begin
   if Count > 0 then
   begin
@@ -1220,78 +1425,9 @@ begin
     Result := AbsolutePosition;
 end;
 
-// SetCubeSize
-//
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLDummyCube'}{$ENDIF}
 
-procedure TGLDummyCube.SetCubeSize(const val: TGLFloat);
-begin
-  if val <> FCubeSize then
-  begin
-    FCubeSize := val;
-    StructureChanged;
-  end;
-end;
-
-// SetEdgeColor
-//
-
-procedure TGLDummyCube.SetEdgeColor(const val: TGLColor);
-begin
-  if val <> FEdgeColor then
-  begin
-    FEdgeColor.Assign(val);
-    StructureChanged;
-  end;
-end;
-
-// SetVisibleAtRunTime
-//
-
-procedure TGLDummyCube.SetVisibleAtRunTime(const val: Boolean);
-begin
-  if val <> FVisibleAtRunTime then
-  begin
-    FVisibleAtRunTime := val;
-    StructureChanged;
-  end;
-end;
-
-// SetAmalgamate
-//
-
-procedure TGLDummyCube.SetAmalgamate(const val: Boolean);
-begin
-  if val <> FAmalgamate then
-  begin
-    FAmalgamate := val;
-    if not val then
-      FGroupList.DestroyHandle;
-    inherited StructureChanged;
-  end;
-end;
-
-// ------------------
-// ------------------ TGLPlane ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLPlane.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FWidth := 1;
-  FHeight := 1;
-  FXTiles := 1;
-  FYTiles := 1;
-  FXScope := 1;
-  FYScope := 1;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
-  FStyle := [psSingleQuad, psTileTexture];
-end;
-
-// Assign
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLPlane'}{$ENDIF}
 
 procedure TGLPlane.Assign(Source: TPersistent);
 begin
@@ -1311,147 +1447,24 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
-function TGLPlane.AxisAlignedDimensionsUnscaled: TVector;
-begin
-  Result[0] := 0.5 * Abs(FWidth);
-  Result[1] := 0.5 * Abs(FHeight);
-  Result[2] := 0;
-end;
-
-// RayCastIntersect
-//
-
-function TGLPlane.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+procedure TGLPlane.BuildMesh;
 var
-  locRayStart, locRayVector, ip: TVector;
-  t: Single;
-begin
-  locRayStart := AbsoluteToLocal(rayStart);
-  locRayVector := AbsoluteToLocal(rayVector);
-  if locRayStart[2] >= 0 then
-  begin
-    // ray start over plane
-    if locRayVector[2] < 0 then
-    begin
-      t := locRayStart[2] / locRayVector[2];
-      ip[0] := locRayStart[0] - t * locRayVector[0];
-      ip[1] := locRayStart[1] - t * locRayVector[1];
-      if (Abs(ip[0]) <= 0.5 * Width) and (Abs(ip[1]) <= 0.5 * Height) then
-      begin
-        Result := True;
-        if Assigned(intersectNormal) then
-          intersectNormal^ := AbsoluteDirection;
-      end
-      else
-        Result := False;
-    end
-    else
-      Result := False;
-  end
-  else
-  begin
-    // ray start below plane
-    if locRayVector[2] > 0 then
-    begin
-      t := locRayStart[2] / locRayVector[2];
-      ip[0] := locRayStart[0] - t * locRayVector[0];
-      ip[1] := locRayStart[1] - t * locRayVector[1];
-      if (Abs(ip[0]) <= 0.5 * Width) and (Abs(ip[1]) <= 0.5 * Height) then
-      begin
-        Result := True;
-        if Assigned(intersectNormal) then
-          intersectNormal^ := VectorNegate(AbsoluteDirection);
-      end
-      else
-        Result := False;
-    end
-    else
-      Result := False;
-  end;
-  if Result and Assigned(intersectPoint) then
-  begin
-    ip[2] := 0;
-    ip[3] := 1;
-    intersectPoint^ := LocalToAbsolute(ip);
-  end;
-end;
-
-// GenerateSilhouette
-//
-
-function TGLPlane.GenerateSilhouette(const silhouetteParameters
-  : TGLSilhouetteParameters): TGLSilhouette;
-var
-  hw, hh: Single;
-begin
-  Result := TGLSilhouette.Create;
-
-  hw := FWidth * 0.5;
-  hh := FHeight * 0.5;
-
-  with Result.vertices do
-  begin
-    AddPoint(hw, hh);
-    AddPoint(hw, -hh);
-    AddPoint(-hw, -hh);
-    AddPoint(-hw, hh);
-  end;
-
-  with Result.Indices do
-  begin
-    Add(0, 1);
-    Add(1, 2);
-    Add(2, 3);
-    Add(3, 0);
-  end;
-
-  if silhouetteParameters.CappingRequired then
-    with Result.CapIndices do
-    begin
-      Add(0, 1, 2);
-      Add(2, 3, 0);
-    end;
-end;
-
-// BuildList
-//
-
-procedure TGLPlane.BuildList(var rci: TRenderContextInfo);
-
-  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
-  begin
-    XGL.TexCoord2fv(@ptr^.TexCoord);
-    GL.Vertex3fv(@ptr^.Position);
-  end;
-
-var
-  hw, hh, posXFact, posYFact, pX, pY1: TGLFloat;
+  hw, hh, posXFact, posYFact, pX, pY: TGLFloat;
   tx0, tx1, ty0, ty1, texSFact, texTFact: TGLFloat;
-  texS, texT1: TGLFloat;
+  texS, texT: TGLFloat;
   X, Y: Integer;
-  TanLoc, BinLoc: Integer;
-  pVertex: PVertexRec;
+
+  procedure CalcPosTexCoord(aX, aY: Integer);
+  begin
+    texT := aY * texTFact;
+    pY := aY * posYFact - hh;
+    texS := aX * texSFact;
+    pX := aX * posXFact - hw;
+  end;
+
 begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
-
-  with GL do
-  begin
-    Normal3fv(@ZVector);
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-    begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
-      if TanLoc > -1 then
-        VertexAttrib3fv(TanLoc, @XVector);
-      if BinLoc > -1 then
-        VertexAttrib3fv(BinLoc, @YVector);
-    end;
-  end;
   // determine tex coords extents
   if psTileTexture in FStyle then
   begin
@@ -1468,89 +1481,227 @@ begin
     ty1 := FYScope;
   end;
 
-  if psSingleQuad in FStyle then
+  with FBatch.Mesh do
   begin
-    // single quad plane
-    GL.Begin_(GL_TRIANGLES);
-    xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
-    xgl.TexCoord2f(tx0, ty1);
-    GL.Vertex2f(-hw, hh);
-    xgl.TexCoord2f(tx0, ty0);
-    GL.Vertex2f(-hw, -hh);
+    Lock;
+    Clear;
+    DeclareAttribute(attrPosition, GLSLType2f);
+    DeclareAttribute(attrNormal, GLSLType3f);
+    DeclareAttribute(attrTangent, GLSLType3f);
+    DeclareAttribute(attrBinormal, GLSLType3f);
+    DeclareAttribute(attrTexCoord0, GLSLType2f);
 
-    GL.Vertex2f(-hw, -hh);
-    xgl.TexCoord2f(tx1, ty0);
-    GL.Vertex2f(hw, -hh);
-    xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
-    GL.End_;
-    exit;
-  end
-  else
-  begin
-    // multi-quad plane (actually built from tri-strips)
-    texSFact := (tx1 - tx0) / FXTiles;
-    texTFact := (ty1 - ty0) / FYTiles;
-    posXFact := FWidth / FXTiles;
-    posYFact := FHeight / FYTiles;
-    if FMesh = nil then
+    BeginAssembly(mpTRIANGLES);
+    Attribute3f(attrNormal, ZVector);
+    Attribute3f(attrTangent, XVector);
+    Attribute3f(attrBinormal, YVector);
+
+    if psSingleQuad in FStyle then
     begin
-      SetLength(FMesh, FYTiles+1, FXTiles+1);
-      for Y := 0 to FYTiles do
+      // single quad plane
+      Attribute2f(attrTexCoord0, tx1, ty1);
+      Attribute2f(attrPosition, hw, hh);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, tx0, ty1);
+      Attribute2f(attrPosition, -hw, hh);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, tx0, ty0);
+      Attribute2f(attrPosition, -hw, -hh);
+      EmitVertex;
+
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, tx1, ty0);
+      Attribute2f(attrPosition, hw, -hh);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, tx1, ty1);
+      Attribute2f(attrPosition, hw, hh);
+      EmitVertex;
+    end
+    else
+    begin
+      // multi-quad plane (actually built from tri-strips)
+      texSFact := (tx1 - tx0) / FXTiles;
+      texTFact := (ty1 - ty0) / FYTiles;
+      posXFact := FWidth / FXTiles;
+      posYFact := FHeight / FYTiles;
+      for Y := 0 to FYTiles - 1 do
       begin
-        texT1 := Y * texTFact;
-        pY1 := Y * posYFact - hh;
-        for X := 0 to FXTiles do
+        for X := 0 to FXTiles - 1 do
         begin
-          texS := X * texSFact;
-          pX := X * posXFact - hw;
-          FMesh[Y][X].Position := Vector3fMake(pX, pY1, 0.0);
-          FMesh[Y][X].TexCoord := Vector2fMake(texS, texT1);
+          CalcPosTexCoord(X, Y);
+          Attribute2f(attrTexCoord0, texS, texT);
+          Attribute2f(attrPosition, pX, pY);
+          EmitVertex;
+          CalcPosTexCoord(X + 1, Y);
+          Attribute2f(attrTexCoord0, texS, texT);
+          Attribute2f(attrPosition, pX, pY);
+          EmitVertex;
+          CalcPosTexCoord(X, Y + 1);
+          Attribute2f(attrTexCoord0, texS, texT);
+          Attribute2f(attrPosition, pX, pY);
+          EmitVertex;
+          EmitVertex;
+          CalcPosTexCoord(X + 1, Y);
+          Attribute2f(attrTexCoord0, texS, texT);
+          Attribute2f(attrPosition, pX, pY);
+          EmitVertex;
+          CalcPosTexCoord(X + 1, Y + 1);
+          Attribute2f(attrTexCoord0, texS, texT);
+          Attribute2f(attrPosition, pX, pY);
+          EmitVertex;
         end;
       end;
     end;
+    EndAssembly;
+    ApplyExtras;
+    UnLock;
   end;
 
-  with GL do
+  ClearStructureChanged;
+end;
+
+constructor TGLPlane.Create(AOwner: TComponent);
+begin
+  inherited;
+  FWidth := 1;
+  FHeight := 1;
+  FXTiles := 1;
+  FYTiles := 1;
+  FXScope := 1;
+  FYScope := 1;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FStyle := [psSingleQuad, psTileTexture];
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
+end;
+
+// SetHeight
+//
+
+procedure TGLPlane.SetHeight(const aValue: Single);
+begin
+  if aValue <> FHeight then
   begin
-    Begin_(GL_TRIANGLES);
-    for Y := 0 to FYTiles-1 do
-    begin
-      for X := 0 to FXTiles-1 do
-      begin
-        pVertex := @FMesh[Y][X];
-        EmitVertex(pVertex);
-
-        pVertex := @FMesh[Y][X+1];
-        EmitVertex(pVertex);
-
-        pVertex := @FMesh[Y+1][X];
-        EmitVertex(pVertex);
-
-        pVertex := @FMesh[Y+1][X+1];
-        EmitVertex(pVertex);
-
-        pVertex := @FMesh[Y+1][X];
-        EmitVertex(pVertex);
-
-        pVertex := @FMesh[Y][X+1];
-        EmitVertex(pVertex);
-      end;
-    end;
-    End_;
+    FHeight := aValue;
+    StructureChanged;
   end;
 end;
 
-// SetWidth
+// SetXOffset
 //
+
+procedure TGLPlane.SetXOffset(const Value: TGLFloat);
+begin
+  if Value <> FXOffset then
+  begin
+    FXOffset := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetXScope
+//
+
+procedure TGLPlane.SetXScope(const Value: TGLFloat);
+begin
+  if Value <> FXScope then
+  begin
+    FXScope := Value;
+    if FXScope > 1 then
+      FXScope := 1;
+    StructureChanged;
+  end;
+end;
+
+// StoreXScope
+//
+
+function TGLPlane.StoreXScope: Boolean;
+begin
+  Result := (FXScope <> 1);
+end;
+
+// SetXTiles
+//
+
+procedure TGLPlane.SetXTiles(const Value: Cardinal);
+begin
+  if Value <> FXTiles then
+  begin
+    FXTiles := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetYOffset
+//
+
+procedure TGLPlane.SetYOffset(const Value: TGLFloat);
+begin
+  if Value <> FYOffset then
+  begin
+    FYOffset := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetYScope
+//
+
+procedure TGLPlane.SetYScope(const Value: TGLFloat);
+begin
+  if Value <> FYScope then
+  begin
+    FYScope := Value;
+    if FYScope > 1 then
+      FYScope := 1;
+    StructureChanged;
+  end;
+end;
+
+// StoreYScope
+//
+
+function TGLPlane.StoreYScope: Boolean;
+begin
+  Result := (FYScope <> 1);
+end;
+
+// SetYTiles
+//
+
+procedure TGLPlane.SetYTiles(const Value: Cardinal);
+begin
+  if Value <> FYTiles then
+  begin
+    FYTiles := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetStyle
+//
+
+procedure TGLPlane.SetStyle(const val: TPlaneStyles);
+begin
+  if val <> FStyle then
+  begin
+    FStyle := val;
+    StructureChanged;
+  end;
+end;
 
 procedure TGLPlane.SetWidth(const aValue: Single);
 begin
   if aValue <> FWidth then
   begin
     FWidth := aValue;
-    FMesh := nil;
     StructureChanged;
   end;
 end;
@@ -1560,7 +1711,7 @@ end;
 
 function TGLPlane.ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
 var
-  v: array [0 .. 3] of TVector;
+  v: array[0..3] of TVector;
   buf: TGLSceneBuffer;
   hw, hh: TGLFloat;
 begin
@@ -1592,147 +1743,9 @@ begin
     AbsoluteDirection);
 end;
 
-// SetHeight
-//
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLPlane'}{$ENDIF}
 
-procedure TGLPlane.SetHeight(const aValue: Single);
-begin
-  if aValue <> FHeight then
-  begin
-    FHeight := aValue;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// SetXOffset
-//
-
-procedure TGLPlane.SetXOffset(const Value: TGLFloat);
-begin
-  if Value <> FXOffset then
-  begin
-    FXOffset := Value;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// SetXScope
-//
-
-procedure TGLPlane.SetXScope(const Value: TGLFloat);
-begin
-  if Value <> FXScope then
-  begin
-    FXScope := Value;
-    if FXScope > 1 then
-      FXScope := 1;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// StoreXScope
-//
-
-function TGLPlane.StoreXScope: Boolean;
-begin
-  Result := (FXScope <> 1);
-end;
-
-// SetXTiles
-//
-
-procedure TGLPlane.SetXTiles(const Value: Cardinal);
-begin
-  if Value <> FXTiles then
-  begin
-    FXTiles := Value;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// SetYOffset
-//
-
-procedure TGLPlane.SetYOffset(const Value: TGLFloat);
-begin
-  if Value <> FYOffset then
-  begin
-    FYOffset := Value;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// SetYScope
-//
-
-procedure TGLPlane.SetYScope(const Value: TGLFloat);
-begin
-  if Value <> FYScope then
-  begin
-    FYScope := Value;
-    if FYScope > 1 then
-      FYScope := 1;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// StoreYScope
-//
-
-function TGLPlane.StoreYScope: Boolean;
-begin
-  Result := (FYScope <> 1);
-end;
-
-// SetYTiles
-//
-
-procedure TGLPlane.SetYTiles(const Value: Cardinal);
-begin
-  if Value <> FYTiles then
-  begin
-    FYTiles := Value;
-    FMesh := nil;
-    StructureChanged;
-  end;
-end;
-
-// SetStyle
-//
-
-procedure TGLPlane.SetStyle(const val: TPlaneStyles);
-begin
-  if val <> FStyle then
-  begin
-    FStyle := val;
-    StructureChanged;
-  end;
-end;
-
-// ------------------
-// ------------------ TGLSprite ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLSprite.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
-  FAlphaChannel := 1;
-  FWidth := 1;
-  FHeight := 1;
-end;
-
-// Assign
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLSprite'}{$ENDIF}
 
 procedure TGLSprite.Assign(Source: TPersistent);
 begin
@@ -1746,41 +1759,14 @@ begin
   inherited Assign(Source);
 end;
 
-function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
-begin
-  Result[0] := 0.5 * Abs(FWidth);
-  Result[1] := 0.5 * Abs(FHeight);
-  // Sprites turn with the camera and can be considered to have the same depth
-  // as width
-  Result[2] := 0.5 * Abs(FWidth);
-end;
-
-// BuildList
-//
-
-procedure TGLSprite.BuildList(var rci: TRenderContextInfo);
+procedure TGLSprite.BuildMesh;
 var
-  vx, vy: TAffineVector;
-  w, h: Single;
-  mat: TMatrix;
+  x, y: TAffineVector;
   u0, v0, u1, v1: Integer;
+  RM: TMatrix;
 begin
-  if FAlphaChannel <> 1 then
-    rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
-
-  mat := rci.PipelineTransformation.ModelViewMatrix;
-  // extraction of the "vecteurs directeurs de la matrice"
-  // (dunno how they are named in english)
-  w := FWidth * 0.5;
-  h := FHeight * 0.5;
-  vx[0] := mat[0][0];
-  vy[0] := mat[0][1];
-  vx[1] := mat[1][0];
-  vy[1] := mat[1][1];
-  vx[2] := mat[2][0];
-  vy[2] := mat[2][1];
-  ScaleVector(vx, w / VectorLength(vx));
-  ScaleVector(vy, h / VectorLength(vy));
+  x := AffineVectorMake(FWidth * 0.5, 0, 0);
+  y := AffineVectorMake(0, FHeight * 0.5, 0);
   if FMirrorU then
   begin
     u0 := 1;
@@ -1804,21 +1790,110 @@ begin
 
   if FRotation <> 0 then
   begin
-    GL.PushMatrix;
-    GL.Rotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
+    RM := CreateRotationMatrix(ZVector, FRotation);
+    x := VectorTransform(x, RM);
+    y := VectorTransform(y, RM);
   end;
-  GL.Begin_(GL_QUADS);
-  xgl.TexCoord2f(u1, v1);
-  GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
-  xgl.TexCoord2f(u0, v1);
-  GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
-  xgl.TexCoord2f(u0, v0);
-  GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
-  xgl.TexCoord2f(u1, v0);
-  GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
-  GL.End_;
-  if FRotation <> 0 then
-    GL.PopMatrix;
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+
+      BeginAssembly(mpTRIANGLES);
+
+      Attribute3f(attrNormal, 0, 0, 1);
+      Attribute3f(attrTangent, VectorNormalize(x));
+      Attribute3f(attrBinormal, VectorNormalize(y));
+      Attribute2f(attrTexCoord0, u1, v1);
+      Attribute3f(attrPosition, x[0] + y[0], x[1] + y[1], x[2] + y[2]);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, u0, v1);
+      Attribute3f(attrPosition, -x[0] + y[0], -x[1] + y[1], -x[2] + y[2]);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, u1, v0);
+      Attribute3f(attrPosition, x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+      EmitVertex;
+      EmitVertex;
+      Attribute2f(attrTexCoord0, u0, v1);
+      Attribute3f(attrPosition, -x[0] + y[0], -x[1] + y[1], -x[2] + y[2]);
+      EmitVertex;
+      Attribute2f(attrTexCoord0, u0, v0);
+      Attribute3f(attrPosition, -x[0] - y[0], -x[1] - y[1], -x[2] - y[2]);
+      EmitVertex;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
+  end;
+  ClearStructureChanged;
+end;
+
+constructor TGLSprite.Create(AOwner: TComponent);
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling,
+    osDeferredDraw];
+  FWidth := 1;
+  FHeight := 1;
+  FAlign := alSpherical;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+
+  FBatch.Mesh.TagName := ClassName;
+end;
+
+procedure TGLSprite.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  if ARenderSelf then
+  begin
+    if ocStructure in Changes then
+    begin
+      BuildMesh;
+    end;
+    ARci.PipelineTransformation.ModelViewMatrix;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    case FAlign of
+      alSpherical:
+        begin
+          FTransformation.FModelViewMatrix[0, 0] := Scale.X;
+          FTransformation.FModelViewMatrix[0, 1] := 0;
+          FTransformation.FModelViewMatrix[0, 2] := 0;
+          FTransformation.FModelViewMatrix[1, 0] := 0;
+          FTransformation.FModelViewMatrix[1, 1] := Scale.Y;
+          FTransformation.FModelViewMatrix[1, 2] := 0;
+          FTransformation.FModelViewMatrix[2, 0] := 0;
+          FTransformation.FModelViewMatrix[2, 1] := 0;
+          FTransformation.FModelViewMatrix[2, 2] := 1;
+          FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
+        end;
+      alCylindrical:
+        begin
+          FTransformation.FModelViewMatrix[0, 0] := 1;
+          FTransformation.FModelViewMatrix[0, 1] := 0;
+          FTransformation.FModelViewMatrix[0, 2] := 0;
+          FTransformation.FModelViewMatrix[2, 0] := 0;
+          FTransformation.FModelViewMatrix[2, 1] := 0;
+          FTransformation.FModelViewMatrix[2, 2] := 1;
+          FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
+        end;
+    end;
+    FTransformation.FModelMatrix := IdentityHmgMatrix;
+    FTransformation.FStates := cAllStatesChanged;
+    FBatch.Order := ARci.orderCounter;
+  end;
+
+  if ARenderChildren then
+    Self.RenderChildren(0, Count - 1, ARci);
 end;
 
 // SetWidth
@@ -1855,31 +1930,6 @@ begin
     FRotation := val;
     NotifyChange(Self);
   end;
-end;
-
-// SetAlphaChannel
-//
-
-procedure TGLSprite.SetAlphaChannel(const val: Single);
-begin
-  if val <> FAlphaChannel then
-  begin
-    if val < 0 then
-      FAlphaChannel := 0
-    else if val > 1 then
-      FAlphaChannel := 1
-    else
-      FAlphaChannel := val;
-    NotifyChange(Self);
-  end;
-end;
-
-// StoreAlphaChannel
-//
-
-function TGLSprite.StoreAlphaChannel: Boolean;
-begin
-  Result := (FAlphaChannel <> 1);
 end;
 
 // SetMirrorU
@@ -1919,6 +1969,8 @@ begin
   FHeight := size;
   NotifyChange(Self);
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLSprite'}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPointParameters ------------------
@@ -2423,6 +2475,7 @@ procedure TGLLineBase.SetupLineStyle(var rci: TRenderContextInfo);
 begin
   with rci.GLStates do
   begin
+    Disable(stColorMaterial);
     Disable(stLighting);
     if FLinePattern <> $FFFF then
     begin
@@ -2455,7 +2508,6 @@ begin
     end
     else
       GL.Color3fv(FLineColor.AsAddress);
-
   end;
 end;
 
@@ -3010,229 +3062,233 @@ begin
   end;
 end;
 
-// ------------------
-// ------------------ TGLCube ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLCube'}{$ENDIF}
 
-// Create
-//
+procedure TGLCube.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TGLCube) then
+  begin
+    FCubeSize := TGLCube(Source).FCubeSize;
+    FParts := TGLCube(Source).FParts;
+    FNormalDirection := TGLCube(Source).FNormalDirection;
+  end;
+  inherited Assign(Source);
+end;
+
+procedure TGLCube.BuildMesh;
+var
+  hw, hh, hd: Single;
+begin
+  hw := FCubeSize[0] * 0.5;
+  hh := FCubeSize[1] * 0.5;
+  hd := FCubeSize[2] * 0.5;
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+      DeclareAttribute(attrColor, GLSLType4f);
+
+      BeginAssembly(mpTRIANGLES);
+
+      if cpFront in FParts then
+      begin
+        Attribute3f(attrNormal, 0, 0, 1);
+        Attribute3f(attrTangent, 1, 0, 0);
+        Attribute3f(attrBinormal, 0, 1, 0);
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, hw, hh, hd);
+        Attribute4f(attrColor, 1, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, -hw * 1, hh * 1, hd);
+        Attribute4f(attrColor, 0, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, -hw, -hh, hd);
+        Attribute4f(attrColor, 0, 0, 1, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, hw * 1, -hh * 1, hd);
+        Attribute4f(attrColor, 1, 0, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, hw, hh, hd);
+        Attribute4f(attrColor, 1, 1, 1, 1);
+        EmitVertex;
+      end;
+
+      if cpBack in FParts then
+      begin
+        Attribute3f(attrNormal, 0, 0, -1);
+        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrBinormal, 0, -1, 0);
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, hw, hh, -hd);
+        Attribute4f(attrColor, 1, 1, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, hw * 1, -hh * 1, -hd);
+        Attribute4f(attrColor, 1, 0, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, -hw, -hh, -hd);
+        Attribute4f(attrColor, 0, 0, 0, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, -hw * 1, hh * 1, -hd);
+        Attribute4f(attrColor, 0, 1, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, hw, hh, -hd);
+        Attribute4f(attrColor, 1, 1, 0, 1);
+        EmitVertex;
+      end;
+
+      if cpLeft in FParts then
+      begin
+        Attribute3f(attrNormal, -1, 0, 0);
+        Attribute3f(attrTangent, 0, 0, 1);
+        Attribute3f(attrBinormal, 0, -1, 0);
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, -hw, hh, hd);
+        Attribute4f(attrColor, 0, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, -hw, hh * 1, -hd * 1);
+        Attribute4f(attrColor, 0, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, -hw, -hh, -hd);
+        Attribute4f(attrColor, 0, 0, 0, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, -hw, -hh * 1, hd * 1);
+        Attribute4f(attrColor, 0, 0, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, -hw, hh, hd);
+        Attribute4f(attrColor, 0, 1, 1, 1);
+        EmitVertex;
+      end;
+
+      if cpRight in FParts then
+      begin
+        Attribute3f(attrNormal, 1, 0, 0);
+        Attribute3f(attrTangent, 0, 0, -1);
+        Attribute3f(attrBinormal, 0, 1, 0);
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, hw, hh, hd);
+        Attribute4f(attrColor, 1, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, hw, -hh * 1, hd * 1);
+        Attribute4f(attrColor, 1, 0, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, hw, -hh, -hd);
+        Attribute4f(attrColor, 1, 0, 0, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, hw, hh * 1, -hd * 1);
+        Attribute4f(attrColor, 1, 1, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, hw, hh, hd);
+        Attribute4f(attrColor, 1, 1, 1, 1);
+        EmitVertex;
+      end;
+
+      if cpTop in FParts then
+      begin
+        Attribute3f(attrNormal, 0, 1, 0);
+        Attribute3f(attrTangent, 1, 0, 0);
+        Attribute3f(attrBinormal, 0, 0, 1);
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, -hw, hh, -hd);
+        Attribute4f(attrColor, 0, 1, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, -hw * 1, hh, hd * 1);
+        Attribute4f(attrColor, 0, 1, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, hw, hh, hd);
+        Attribute4f(attrColor, 1, 1, 1, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, hw * 1, hh, -hd * 1);
+        Attribute4f(attrColor, 1, 1, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, -hw, hh, -hd);
+        Attribute4f(attrColor, 0, 1, 0, 1);
+        EmitVertex;
+      end;
+
+      if cpBottom in FParts then
+      begin
+        Attribute3f(attrNormal, 0, -1, 0);
+        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrBinormal, 0, 0, -1);
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, -hw, -hh, -hd);
+        Attribute4f(attrColor, 0, 0, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 0);
+        Attribute3f(attrPosition, hw * 1, -hh, -hd * 1);
+        Attribute4f(attrColor, 1, 0, 0, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 1, 1);
+        Attribute3f(attrPosition, hw, -hh, hd);
+        Attribute4f(attrColor, 1, 0, 1, 1);
+        EmitVertex;
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 1);
+        Attribute3f(attrPosition, -hw * 1, -hh, hd * 1);
+        Attribute4f(attrColor, 0, 0, 1, 1);
+        EmitVertex;
+        Attribute2f(attrTexCoord0, 0, 0);
+        Attribute3f(attrPosition, -hw, -hh, -hd);
+        Attribute4f(attrColor, 0, 0, 0, 1);
+        EmitVertex;
+      end;
+
+      EndAssembly;
+      if FNormalDirection = ndInside then
+        FlipFaces;
+      ApplyExtras;
+    finally
+      UnLock;
+    end;
+  end;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
+end;
 
 constructor TGLCube.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FCubeSize := XYZVector;
   FParts := [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   FNormalDirection := ndOutside;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
-end;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
 
-// BuildList
-//
-
-procedure TGLCube.BuildList(var rci: TRenderContextInfo);
-var
-  hw, hh, hd, nd: TGLFloat;
-  TanLoc, BinLoc: Integer;
-begin
-  if FNormalDirection = ndInside then
-    nd := -1
-  else
-    nd := 1;
-  hw := FCubeSize[0] * 0.5;
-  hh := FCubeSize[1] * 0.5;
-  hd := FCubeSize[2] * 0.5;
-
-  with GL do
-  begin
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-    begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
-    end
-    else
-    begin
-      TanLoc := -1;
-      BinLoc := -1;
-    end;
-
-    Begin_(GL_TRIANGLES);
-    if cpFront in FParts then
-    begin
-      Normal3f(0, 0, nd);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, nd, 0, 0);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(-hw * nd, hh * nd, hd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, hd);
-      Vertex3f(-hw, -hh, hd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(hw * nd, -hh * nd, hd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh, hd);
-    end;
-    if cpBack in FParts then
-    begin
-      Normal3f(0, 0, -nd);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, -nd, 0, 0);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, -hd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(hw * nd, -hh * nd, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw * nd, hh * nd, -hd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, -hd);
-    end;
-    if cpLeft in FParts then
-    begin
-      Normal3f(-nd, 0, 0);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, 0, 0, nd);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw, hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh * nd, -hd * nd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(-hw, -hh * nd, hd * nd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw, hh, hd);
-    end;
-    if cpRight in FParts then
-    begin
-      Normal3f(nd, 0, 0);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, 0, 0, -nd);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(hw, -hh * nd, hd * nd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(hw, -hh, -hd);
-      Vertex3f(hw, -hh, -hd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh * nd, -hd * nd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, hd);
-    end;
-    if cpTop in FParts then
-    begin
-      Normal3f(0, nd, 0);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, nd, 0, 0);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, 0, -nd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh, -hd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw * nd, hh, hd * nd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(hw, hh, hd);
-      Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(hw * nd, hh, -hd * nd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh, -hd);
-    end;
-    if cpBottom in FParts then
-    begin
-      Normal3f(0, -nd, 0);
-      if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, -nd, 0, 0);
-      if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, 0, nd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
-      Vertex3f(hw * nd, -hh, -hd * nd);
-      xgl.TexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, -hh, hd);
-      Vertex3f(hw, -hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
-      Vertex3f(-hw * nd, -hh, hd * nd);
-      xgl.TexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-    end;
-    End_;
-  end;
-end;
-
-// GenerateSilhouette
-//
-
-function TGLCube.GenerateSilhouette(const silhouetteParameters
-  : TGLSilhouetteParameters): TGLSilhouette;
-var
-  hw, hh, hd: TGLFloat;
-  connectivity: TConnectivity;
-  sil: TGLSilhouette;
-begin
-  connectivity := TConnectivity.Create(True);
-
-  hw := FCubeSize[0] * 0.5;
-  hh := FCubeSize[1] * 0.5;
-  hd := FCubeSize[2] * 0.5;
-
-  if cpFront in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(hw, hh, hd),
-      AffineVectorMake(-hw, hh, hd), AffineVectorMake(-hw, -hh, hd),
-      AffineVectorMake(hw, -hh, hd));
-  end;
-  if cpBack in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(hw, hh, -hd),
-      AffineVectorMake(hw, -hh, -hd), AffineVectorMake(-hw, -hh, -hd),
-      AffineVectorMake(-hw, hh, -hd));
-  end;
-  if cpLeft in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(-hw, hh, hd),
-      AffineVectorMake(-hw, hh, -hd), AffineVectorMake(-hw, -hh, -hd),
-      AffineVectorMake(-hw, -hh, hd));
-  end;
-  if cpRight in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(hw, hh, hd),
-      AffineVectorMake(hw, -hh, hd), AffineVectorMake(hw, -hh, -hd),
-      AffineVectorMake(hw, hh, -hd));
-  end;
-  if cpTop in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(-hw, hh, -hd),
-      AffineVectorMake(-hw, hh, hd), AffineVectorMake(hw, hh, hd),
-      AffineVectorMake(hw, hh, -hd));
-  end;
-  if cpBottom in FParts then
-  begin
-    connectivity.AddQuad(AffineVectorMake(-hw, -hh, -hd),
-      AffineVectorMake(hw, -hh, -hd), AffineVectorMake(hw, -hh, hd),
-      AffineVectorMake(-hw, -hh, hd));
-  end;
-
-  sil := nil;
-  connectivity.CreateSilhouette(silhouetteParameters, sil, False);
-
-  Result := sil;
-
-  connectivity.Free;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetCubeWidth
@@ -3295,80 +3351,6 @@ begin
   end;
 end;
 
-// Assign
-//
-
-procedure TGLCube.Assign(Source: TPersistent);
-begin
-  if Assigned(Source) and (Source is TGLCube) then
-  begin
-    FCubeSize := TGLCube(Source).FCubeSize;
-    FParts := TGLCube(Source).FParts;
-    FNormalDirection := TGLCube(Source).FNormalDirection;
-  end;
-  inherited Assign(Source);
-end;
-
-// AxisAlignedDimensions
-//
-
-function TGLCube.AxisAlignedDimensionsUnscaled: TVector;
-begin
-  Result[0] := FCubeSize[0] * 0.5;
-  Result[1] := FCubeSize[1] * 0.5;
-  Result[2] := FCubeSize[2] * 0.5;
-  Result[3] := 0;
-end;
-
-// RayCastIntersect
-//
-
-function TGLCube.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-var
-  p: array [0 .. 5] of TVector;
-  rv: TVector;
-  rs, r: TVector;
-  i: Integer;
-  t, e: Single;
-  eSize: TAffineVector;
-begin
-  rs := AbsoluteToLocal(rayStart);
-  SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
-  e := 0.5 + 0.0001; // Small value for floating point imprecisions
-  eSize[0] := FCubeSize[0] * e;
-  eSize[1] := FCubeSize[1] * e;
-  eSize[2] := FCubeSize[2] * e;
-  p[0] := XHmgVector;
-  p[1] := YHmgVector;
-  p[2] := ZHmgVector;
-  SetVector(p[3], -1, 0, 0);
-  SetVector(p[4], 0, -1, 0);
-  SetVector(p[5], 0, 0, -1);
-  for i := 0 to 5 do
-  begin
-    if VectorDotProduct(p[i], rv) > 0 then
-    begin
-      t := -(p[i][0] * rs[0] + p[i][1] * rs[1] + p[i][2] * rs[2] + 0.5 *
-        FCubeSize[i mod 3]) / (p[i][0] * rv[0] + p[i][1] * rv[1] +
-        p[i][2] * rv[2]);
-      MakePoint(r, rs[0] + t * rv[0], rs[1] + t * rv[1], rs[2] + t * rv[2]);
-      if (Abs(r[0]) <= eSize[0]) and (Abs(r[1]) <= eSize[1]) and
-        (Abs(r[2]) <= eSize[2]) and
-        (VectorDotProduct(VectorSubtract(r, rs), rv) > 0) then
-      begin
-        if Assigned(intersectPoint) then
-          MakePoint(intersectPoint^, LocalToAbsolute(r));
-        if Assigned(intersectNormal) then
-          MakeVector(intersectNormal^, LocalToAbsolute(VectorNegate(p[i])));
-        Result := True;
-        Exit;
-      end;
-    end;
-  end;
-  Result := False;
-end;
-
 // DefineProperties
 //
 
@@ -3401,130 +3383,19 @@ begin
   end;
 end;
 
-// ------------------
-// ------------------ TGLQuadricObject ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLCube'}{$ENDIF}
 
-// Create
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLSphere'}{$ENDIF}
 
-constructor TGLQuadricObject.Create(AOwner: TComponent);
-begin
-  inherited;
-  FNormals := nsSmooth;
-  FNormalDirection := ndOutside;
-end;
-
-// SetNormals
-//
-
-procedure TGLQuadricObject.SetNormals(aValue: TNormalSmoothing);
-begin
-  if aValue <> FNormals then
-  begin
-    FNormals := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetNormalDirection
-//
-
-procedure TGLQuadricObject.SetNormalDirection(aValue: TNormalDirection);
-begin
-  if aValue <> FNormalDirection then
-  begin
-    FNormalDirection := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetupQuadricParams
-//
-
-procedure TGLQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
-const
-  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLEnum = (GLU_FLAT,
-    GLU_SMOOTH, GLU_NONE);
-begin
-  gluQuadricDrawStyle(quadric, GLU_FILL);
-  gluQuadricNormals(quadric, cNormalSmoothinToEnum[FNormals]);
-  SetNormalQuadricOrientation(quadric);
-  gluQuadricTexture(quadric, True);
-end;
-
-// SetNormalQuadricOrientation
-//
-
-procedure TGLQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
-const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLEnum =
-    (GLU_INSIDE, GLU_OUTSIDE);
-begin
-  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
-end;
-
-// SetInvertedQuadricOrientation
-//
-
-procedure TGLQuadricObject.SetInvertedQuadricOrientation
-  (quadric: PGLUquadricObj);
-const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLEnum =
-    (GLU_OUTSIDE, GLU_INSIDE);
-begin
-  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
-end;
-
-// Assign
-//
-
-procedure TGLQuadricObject.Assign(Source: TPersistent);
-begin
-  if Assigned(Source) and (Source is TGLQuadricObject) then
-  begin
-    FNormals := TGLQuadricObject(Source).FNormals;
-    FNormalDirection := TGLQuadricObject(Source).FNormalDirection;
-  end;
-  inherited Assign(Source);
-end;
-
-// ------------------
-// ------------------ TGLSphere ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLSphere.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FRadius := 0.5;
-  FSlices := 16;
-  FStacks := 16;
-  FTop := 90;
-  FBottom := -90;
-  FStart := 0;
-  FStop := 360;
-end;
-
-// BuildList
-//
-
-procedure TGLSphere.BuildList(var rci: TRenderContextInfo);
+procedure TGLSphere.BuildMesh;
 var
-  v1, V2, N1: TAffineVector;
+  LCapMesh: TMeshAtom;
+  V1, V2, N1, T1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
-  i, j: Integer;
-  DoReverse: Boolean;
+  I, J: Integer;
 begin
-  DoReverse := (FNormalDirection = ndInside);
-  rci.GLStates.PushAttrib([sttPolygon]);
-  if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
-
   // common settings
   AngTop := DegToRad(1.0 * FTop);
   AngBottom := DegToRad(1.0 * FBottom);
@@ -3532,212 +3403,262 @@ begin
   AngStop := DegToRad(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
-  GL.PushMatrix;
-  GL.Scalef(Radius, Radius, Radius);
-
-  // top cap
-  if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
-  begin
-    GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngTop, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
-    if DoReverse then
-      GL.Normal3f(0, -1, 0)
-    else
-      GL.Normal3f(0, 1, 0);
-    if FTopCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
-    else
-    begin
-      GL.Vertex3f(0, SinP, 0);
-      N1 := YVector;
-      if DoReverse then
-        N1[1] := -N1[1];
-    end;
-    v1[1] := SinP;
-    Theta := AngStart;
-    for i := 0 to FSlices do
-    begin
-      SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      v1[2] := CosP * CosT;
-      if FTopCap = ctCenter then
-      begin
-        N1 := VectorPerpendicular(YVector, v1);
-        if DoReverse then
-          NegateVector(N1);
-      end;
-      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
-      Theta := Theta + StepH;
-    end;
-    GL.End_;
-  end;
+  LCapMesh := nil;
 
   // main body
-  Phi := AngTop;
-  Phi2 := Phi - StepV;
-  uTexFactor := 1 / FSlices;
-  vTexFactor := 1 / FStacks;
-
-  for j := 0 to FStacks - 1 do
-  begin
-    Theta := AngStart;
-    SinCos(Phi, SinP, CosP);
-    SinCos(Phi2, SinP2, CosP2);
-    v1[1] := SinP;
-    V2[1] := SinP2;
-    vTexCoord0 := 1 - j * vTexFactor;
-    vTexCoord1 := 1 - (j + 1) * vTexFactor;
-
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    for i := 0 to FSlices do
+  FBatch.Mesh.Lock;
+  try
+    with FBatch.Mesh do
     begin
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
 
-      SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      V2[0] := CosP2 * SinT;
-      v1[2] := CosP * CosT;
-      V2[2] := CosP2 * CosT;
+      Phi := AngTop;
+      Phi2 := Phi - StepV;
 
-      uTexCoord := i * uTexFactor;
-      xgl.TexCoord2f(uTexCoord, vTexCoord0);
-      if DoReverse then
+      uTexFactor := 1 / FSlices;
+      vTexFactor := 1 / FStacks;
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+      for j := 0 to FStacks - 1 do
       begin
-        N1 := VectorNegate(v1);
-        GL.Normal3fv(@N1);
-      end
-      else
-        GL.Normal3fv(@v1);
-      GL.Vertex3fv(@v1);
+        Theta := AngStart;
+        SinCos(Phi, SinP, CosP);
+        SinCos(Phi2, SinP2, CosP2);
 
-      xgl.TexCoord2f(uTexCoord, vTexCoord1);
-      if DoReverse then
-      begin
-        N1 := VectorNegate(V2);
-        GL.Normal3fv(@N1);
-      end
-      else
-        GL.Normal3fv(@V2);
-      GL.Vertex3fv(@V2);
+        vTexCoord0 := 1 - j * vTexFactor;
+        vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
-      Theta := Theta + StepH;
-    end;
-    GL.End_;
-    Phi := Phi2;
-    Phi2 := Phi2 - StepV;
-  end;
+        for i := 0 to FSlices do
+        begin
+          SinCos(Theta, SinT, CosT);
+          V1[0] := CosP * SinT;
+          V1[1] := SinP;
+          V1[2] := CosP * CosT;
 
-  // bottom cap
-  if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
-  begin
-    GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngBottom, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
-    if DoReverse then
-      GL.Normal3f(0, 1, 0)
-    else
-      GL.Normal3f(0, -1, 0);
-    if FBottomCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
-    else
-    begin
-      GL.Vertex3f(0, SinP, 0);
-      if DoReverse then
-        MakeVector(N1, 0, -1, 0)
-      else
-        N1 := YVector;
-    end;
-    v1[1] := SinP;
-    Theta := AngStop;
-    for i := 0 to FSlices do
-    begin
-      SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      v1[2] := CosP * CosT;
-      if FTopCap = ctCenter then
-      begin
-        N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
-        if DoReverse then
-          NegateVector(N1);
+          V2[0] := CosP2 * SinT;
+          V2[1] := SinP2;
+          V2[2] := CosP2 * CosT;
+
+          uTexCoord := i * uTexFactor;
+          Attribute2f(attrTexCoord0, uTexCoord, vTexCoord0);
+          Attribute3f(attrNormal, V1);
+          T1 := VectorCrossProduct(V1, YVector);
+          Attribute3f(attrTangent, T1);
+          T1 := VectorCrossProduct(T1, V1);
+          Attribute3f(attrBinormal, T1);
+          ScaleVector(V1, Radius);
+          Attribute3f(attrPosition, V1);
+          EmitVertex;
+
+          Attribute2f(attrTexCoord0, uTexCoord, vTexCoord1);
+          Attribute3f(attrNormal, V2);
+          T1 := VectorCrossProduct(V2, YVector);
+          Attribute3f(attrTangent, T1);
+          T1 := VectorCrossProduct(T1, V2);
+          Attribute3f(attrBinormal, T1);
+          ScaleVector(V2, Radius);
+          Attribute3f(attrPosition, V2);
+          EmitVertex;
+
+          Theta := Theta + StepH;
+        end;
+        RestartStrip;
+        Phi := Phi2;
+        Phi2 := Phi2 - StepV;
       end;
-      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
-      Theta := Theta - StepH;
+      EndAssembly;
+      Triangulate;
+      SplitVertices;
     end;
-    GL.End_;
-  end;
-  if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
-  GL.PopMatrix;
-  rci.GLStates.PopAttrib;
-end;
 
-// RayCastIntersect
-//
-
-function TGLSphere.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-var
-  i1, i2: TVector;
-  localStart, localVector: TVector;
-begin
-  // compute coefficients of quartic polynomial
-  SetVector(localStart, AbsoluteToLocal(rayStart));
-  SetVector(localVector, AbsoluteToLocal(rayVector));
-  NormalizeVector(localVector);
-  if RayCastSphereIntersect(localStart, localVector, NullHmgVector, Radius, i1,
-    i2) > 0 then
-  begin
-    Result := True;
-    if Assigned(intersectPoint) then
-      SetVector(intersectPoint^, LocalToAbsolute(i1));
-    if Assigned(intersectNormal) then
+    // top cap
+    if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
     begin
-      i1[3] := 0; // vector transform
-      SetVector(intersectNormal^, LocalToAbsolute(i1));
+      LCapMesh := TMeshAtom.Create;
+      SinCos(AngTop, SinP, CosP);
+      with LCapMesh do
+      begin
+        Lock;
+        try
+          Clear;
+          DeclareAttribute(attrPosition, GLSLType3f);
+          DeclareAttribute(attrNormal, GLSLType3f);
+          DeclareAttribute(attrTangent, GLSLType3f);
+          DeclareAttribute(attrBinormal, GLSLType3f);
+          DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+          BeginAssembly(mpTRIANGLE_FAN);
+
+          Attribute2f(attrTexCoord0, 0.5, 0.5);
+          Attribute3f(attrNormal, 0, 1, 0);
+          Attribute3f(attrTangent, 1, 0, 0);
+          Attribute3f(attrBinormal, 0, 0, 1);
+          if FTopCap = ctCenter then
+            Attribute3f(attrPosition, 0, 0, 0)
+          else
+          begin
+            Attribute3f(attrPosition, 0, SinP * Radius, 0);
+            N1 := YVector;
+            T1 := XVector;
+          end;
+          EmitVertex;
+          Theta := AngStart;
+          for I := 0 to FSlices do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * SinT;
+            V1[1] := SinP;
+            V1[2] := CosP * CosT;
+            if FTopCap = ctCenter then
+            begin
+              N1 := VectorPerpendicular(YVector, V1);
+              T1 := VectorCrossProduct(N1, YVector);
+              Attribute3f(attrNormal, N1);
+              Attribute3f(attrTangent, T1);
+              T1 := VectorCrossProduct(T1, N1);
+              Attribute3f(attrBinormal, T1);
+            end;
+            Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+            ScaleVector(V1, Radius);
+            Attribute3f(attrPosition, V1);
+            EmitVertex;
+            Theta := Theta + StepH;
+          end;
+          EndAssembly;
+          Triangulate;
+          SplitVertices;
+          FBatch.Mesh.Merge(LCapMesh);
+        finally
+          UnLock;
+        end;
+      end;
     end;
-  end
-  else
-    Result := False;
+
+    // bottom cap
+    if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
+    begin
+      if not Assigned(LCapMesh) then
+        LCapMesh := TMeshAtom.Create;
+      SinCos(AngBottom, SinP, CosP);
+
+      with LCapMesh do
+      begin
+        Lock;
+        try
+          Clear;
+          DeclareAttribute(attrPosition, GLSLType3f);
+          DeclareAttribute(attrNormal, GLSLType3f);
+          DeclareAttribute(attrTangent, GLSLType3f);
+          DeclareAttribute(attrBinormal, GLSLType3f);
+          DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+          BeginAssembly(mpTRIANGLE_FAN);
+
+          Attribute2f(attrTexCoord0, 0.5, 0.5);
+          Attribute3f(attrNormal, 0, -1, 0);
+          Attribute3f(attrTangent, -1, 0, 0);
+          Attribute3f(attrBinormal, 0, 0, -1);
+
+          if FBottomCap = ctCenter then
+            Attribute3f(attrPosition, 0, 0, 0)
+          else
+          begin
+            Attribute3f(attrPosition, 0, SinP * Radius, 0);
+            N1 := YVector;
+            T1 := XVector;
+          end;
+          EmitVertex;
+          Theta := AngStop;
+          for I := 0 to FSlices do
+          begin
+            SinCos(Theta, SinT, CosT);
+            V1[0] := CosP * SinT;
+            V1[1] := SinP;
+            V1[2] := CosP * CosT;
+            if FTopCap = ctCenter then
+            begin
+              N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), V1);
+              T1 := VectorCrossProduct(N1, YVector);
+              Attribute3f(attrNormal, N1);
+              Attribute3f(attrTangent, T1);
+              T1 := VectorCrossProduct(T1, N1);
+              Attribute3f(attrBinormal, T1);
+            end;
+            Attribute2f(attrTexCoord0, SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+            ScaleVector(V1, Radius);
+            Attribute3f(attrPosition, V1);
+            EmitVertex;
+            Theta := Theta - StepH;
+          end;
+          EndAssembly;
+          Triangulate;
+          SplitVertices;
+          FBatch.Mesh.Merge(LCapMesh);
+          WeldVertices;
+        finally
+          UnLock;
+        end;
+      end;
+    end;
+
+    case FNormals of
+      nsSmooth:
+        begin
+          if FNormalDirection = ndInside then
+          begin
+            FBatch.Mesh.Triangulate;
+            FBatch.Mesh.FlipFaces;
+          end;
+          ApplyExtras;
+        end;
+      nsFlat:
+        begin
+          if FNormalDirection = ndInside then
+          begin
+            FBatch.Mesh.Triangulate;
+            FBatch.Mesh.FlipFaces;
+          end;
+          FBatch.Mesh.ComputeNormals(False);
+          ApplyExtras;
+        end;
+      nsNone:
+        begin
+          FBatch.Mesh.Attributes[attrNormal] := False;
+          FBatch.Mesh.Validate;
+          ApplyExtras;
+        end;
+    end;
+
+  finally
+    FBatch.Mesh.UnLock;
+    LCapMesh.Free;
+  end;
+
+  ClearStructureChanged;
 end;
 
-// GenerateSilhouette
-//
-
-function TGLSphere.GenerateSilhouette(const silhouetteParameters
-  : TGLSilhouetteParameters): TGLSilhouette;
-var
-  i, j: Integer;
-  s, C, angleFactor: Single;
-  sVec, tVec: TAffineVector;
-  Segments: Integer;
+constructor TGLSphere.Create(AOwner: TComponent);
 begin
-  Segments := MaxInteger(FStacks, FSlices);
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FRadius := 0.5;
+  FSlices := 16;
+  FStacks := 16;
+  FTop := 90;
+  FBottom := -90;
+  FStart := 0;
+  FStop := 360;
+  FNormals := nsSmooth;
+  FNormalDirection := ndOutside;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
 
-  // determine a local orthonormal matrix, viewer-oriented
-  sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
-  if VectorLength(sVec) < 1E-3 then
-    sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
-  tVec := VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
-  NormalizeVector(sVec);
-  NormalizeVector(tVec);
-  // generate the silhouette (outline and capping)
-  Result := TGLSilhouette.Create;
-  angleFactor := (2 * PI) / Segments;
-  for i := 0 to Segments - 1 do
-  begin
-    SinCos(i * angleFactor, FRadius, s, C);
-    Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
-    j := (i + 1) mod Segments;
-    Result.Indices.Add(i, j);
-    if silhouetteParameters.CappingRequired then
-      Result.CapIndices.Add(Segments, i, j)
-  end;
-  if silhouetteParameters.CappingRequired then
-    Result.vertices.Add(NullHmgPoint);
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetBottom
@@ -3760,6 +3681,24 @@ begin
   if FBottomCap <> aValue then
   begin
     FBottomCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLSphere.SetNormalDirection(const Value: TNormalDirection);
+begin
+  if Value <> FNormalDirection then
+  begin
+    FNormalDirection := Value;
+    StructureChanged;
+  end;
+end;
+
+procedure TGLSphere.SetNormals(const Value: TNormalSmoothing);
+begin
+  if Value <> FNormals then
+  begin
+    FNormals := Value;
     StructureChanged;
   end;
 end;
@@ -3856,9 +3795,6 @@ begin
   end;
 end;
 
-// Assign
-//
-
 procedure TGLSphere.Assign(Source: TPersistent);
 begin
   if Assigned(Source) and (Source is TGLSphere) then
@@ -3884,6 +3820,8 @@ begin
   Result[2] := Result[0];
   Result[3] := 0;
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLSphere'}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPolygonBase ------------------
@@ -4032,11 +3970,12 @@ end;
 
 initialization
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
 
-RegisterClasses([TGLSphere, TGLCube, TGLPlane, TGLSprite, TGLPoints,
-  TGLDummyCube, TGLLines]);
+  RegisterClasses([TGLSphere, TGLCube, TGLPlane, TGLSprite, TGLPoints,
+    TGLDummyCube, TGLLines]);
 
 end.
+
