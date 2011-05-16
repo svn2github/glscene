@@ -2975,16 +2975,28 @@ begin
         end;
       ahssCentered:
         begin
-          StartOffset :=
-            RadToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius));
-          StopOffset :=
-            RadToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius));
-        end;
+          if aaBottomArrow in Parts then
+            StartOffset :=
+              RadToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius))
+          else
+            StartOffset :=0;
+          if aaTopArrow in Parts then
+            StopOffset :=
+              RadToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius))
+          else
+            StopOffset :=0;
+        end ;
       ahssIncluded:
         begin
-          StartOffset := RadToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius));
-          StopOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius));
-        end;
+          if aaBottomArrow in Parts then
+            StartOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius))
+          else
+            StartOffset :=0;
+          if aaTopArrow in Parts then
+            StopOffset := RadToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius))
+          else
+            StopOffset :=0;
+        end ;
     end;
 
     // handle texture generation
@@ -3007,12 +3019,10 @@ begin
         begin
           Phi := Phi + sideDelta;
           SinCos(Phi, sinPhi, cosPhi);
-          dist := fArcRadius + Lerp(FTopRadius, FBottomRadius,
-            1 - i * iFact) * cosPhi;
+          dist := fArcRadius + Lerp(FTopRadius, FBottomRadius, i * iFact) * cosPhi;
 
           FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
-            -sinTheta1 * dist, Lerp(FTopRadius, FBottomRadius, 1 - i * iFact)
-            * sinPhi);
+            -sinTheta1 * dist, Lerp(FTopRadius, FBottomRadius, i * iFact) * sinPhi);
           ringDir := FMesh[i][j].Position;
           ringDir[2] := 0.0;
           NormalizeVector(ringDir);
@@ -3068,7 +3078,7 @@ begin
     end;
 
     // Build Arrow or start cap
-    if aaTopArrow in FParts then
+    if aaBottomArrow in FParts then
     begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
       SetLength(FMesh[MeshIndex + 1], FSlices + 1);
@@ -3084,11 +3094,11 @@ begin
       begin
         Phi := Phi + sideDelta;
         SinCos(Phi, sinPhi, cosPhi);
-        dist := fArcRadius + fTopArrowHeadRadius * cosPhi;
+        dist := fArcRadius + fBottomArrowHeadRadius * cosPhi;
 
         // Cap
-        FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
@@ -3098,12 +3108,11 @@ begin
         FMesh[MeshIndex][j].TexCoord := Vector2fMake(1, j * jFact);
 
         // Cone
-        FMesh[MeshIndex + 1][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
-        FMesh[MeshIndex + 2][j].Position := VectorAdd(ConeCenter.Position,
-          Vector3fMake(sinTheta1 * fTopArrowHeadHeight,
-          cosTheta1 * fTopArrowHeadHeight, 0));
-        // Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+        FMesh[MeshIndex+1][j].Position := Vector3fMake(cosTheta1 * dist,
+          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+        FMesh[MeshIndex+2][j].Position := VectorAdd(ConeCenter.Position,
+          Vector3fMake(sinTheta1 * fBottomArrowHeadHeight,
+          cosTheta1 * fBottomArrowHeadHeight, 0));
 
         FMesh[MeshIndex + 1][j].Tangent :=
           VectorNormalize(VectorSubtract(FMesh[MeshIndex + 1][j].Position,
@@ -3191,9 +3200,9 @@ begin
       begin
         Phi := Phi + sideDelta;
         SinCos(Phi, sinPhi, cosPhi);
-        dist := fArcRadius + FTopRadius * cosPhi;
+        dist := fArcRadius + fBottomRadius * cosPhi;
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, FTopRadius * sinPhi);
+          -sinTheta1 * dist, FBottomRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
@@ -3236,7 +3245,7 @@ begin
       MeshIndex := MeshIndex + 1;
     end;
 
-    if aaBottomArrow in FParts then
+    if aaTopArrow in FParts then
     begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
       SetLength(FMesh[MeshIndex + 1], FSlices + 1);
@@ -3252,11 +3261,11 @@ begin
       begin
         Phi := Phi + sideDelta;
         SinCos(Phi, sinPhi, cosPhi);
-        dist := fArcRadius + fBottomArrowHeadRadius * cosPhi;
+        dist := fArcRadius + fTopArrowHeadRadius * cosPhi;
 
         // Cap
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
@@ -3267,11 +3276,10 @@ begin
 
         // Cone
         FMesh[MeshIndex + 1][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
+          -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
         FMesh[MeshIndex + 2][j].Position := VectorSubtract(ConeCenter.Position,
-          Vector3fMake(sinTheta1 * fBottomArrowHeadHeight,
-          cosTheta1 * fBottomArrowHeadHeight, 0));
-        // Vector3fMake(cosTheta1 * dist, -sinTheta1 * dist, fTopRadius * sinPhi);
+          Vector3fMake(sinTheta1 * fTopArrowHeadHeight,
+          cosTheta1 * fTopArrowHeadHeight, 0));
 
         FMesh[MeshIndex + 1][j].Tangent :=
           VectorNormalize(VectorSubtract(FMesh[MeshIndex + 2][j].Position,
@@ -3358,9 +3366,9 @@ begin
       begin
         Phi := Phi + sideDelta;
         SinCos(Phi, sinPhi, cosPhi);
-        dist := fArcRadius + FBottomRadius * cosPhi;
+        dist := fArcRadius + fTopRadius * cosPhi;
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
-          -sinTheta1 * dist, FBottomRadius * sinPhi);
+          -sinTheta1 * dist, fTopRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
         ringDir[2] := 0.0;
         NormalizeVector(ringDir);
