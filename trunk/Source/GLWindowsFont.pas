@@ -32,7 +32,8 @@ interface
 uses
 {$IFDEF MSWINDOWS}
   Windows,
-{$ELSE FPC}
+{$ENDIF}
+{$IFDEF FPC}
   LCLIntf, LCLType, Types, LCLProc,
 {$ENDIF}
   GLBitmapFont,
@@ -277,14 +278,13 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   // credits to the Unicode version of SynEdit for this function. GPL/MPL as GLScene
   function GetTextSize(DC: HDC; Str: PWideChar; Count: Integer): TSize;
   var
+    tm: TTextMetricA;
     {$IFDEF FPC}
-    {$IFDEF MSWINDOWS}
-    tm:  FPCLPTextMetric;
-    {$ELSE}
+    {$IFNDEF MSWINDOWS}
     LString: string;
     {$ENDIF}
     {$ELSE}
-    tm: TTextMetricA;
+
     {$ENDIF}
   begin
     Result.cx := 0;
