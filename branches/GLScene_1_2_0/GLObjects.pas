@@ -149,6 +149,7 @@ uses
   Classes,
   VectorGeometry,
   VectorTypes,
+  GeometryBB,
   GLScene,
   OpenGLAdapter,
   OpenGLTokens,
@@ -196,6 +197,13 @@ type
     procedure TransformationChanged; override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function AxisAlignedBoundingBoxUnscaled(
+      const AIncludeChilden: Boolean = True): TAABB; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil;
+      intersectNormal: PVector = nil): Boolean; override;
   published
     { Published Declarations }
     property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
@@ -246,8 +254,13 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
+    function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
     procedure TransformationChanged; override;
+
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil;
+      intersectNormal: PVector = nil): Boolean; override;
   published
     { Published Declarations }
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
@@ -308,6 +321,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
+    function AxisAlignedDimensionsUnscaled: TVector; override;
     function ScreenRect(ABuffer: TGLSceneBuffer): TGLRect;
     function PointDistance(const aPoint: TVector): Single;
   published
@@ -356,6 +370,9 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+
     procedure SetSize(const Width, Height: TGLFloat);
     // : Set width and height to "size"
     procedure SetSquareSize(const size: TGLFloat);
@@ -814,7 +831,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    function AxisAlignedDimensionsUnscaled: TVector;
+    function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
@@ -1051,6 +1068,36 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSceneObjectEx'}{$ENDIF}
 
+function TGLSceneObjectEx.AxisAlignedBoundingBoxUnscaled(
+  const AIncludeChilden: Boolean): TAABB;
+var
+  I: Integer;
+  LAABB: TAABB;
+begin
+  Result := FBatch.Mesh.AABB;
+  //not tested for child objects
+  if AIncludeChilden then
+  begin
+    for I := 0 to Count - 1 do
+    begin
+      LAABB := Children[I].AxisAlignedBoundingBoxUnscaled(AIncludeChilden);
+      AABBTransform(LAABB, Children[I].Matrix);
+      AddAABB(Result, LAABB);
+    end;
+  end;
+end;
+
+function TGLSceneObjectEx.AxisAlignedDimensionsUnscaled: TVector;
+var
+  V3: TVector3f;
+  LAABB: TAABB;
+begin
+  LAABB := FBatch.Mesh.AABB;
+  V3 := VectorAdd(LAABB.min, LAABB.max);
+  ScaleVector(V3, 0.5);
+  Result := VectorMake(V3);
+end;
+
 procedure TGLSceneObjectEx.Loaded;
 var
   LMaterial: TGLAbstractLibMaterial;
@@ -1085,6 +1132,33 @@ begin
   FBatch.Changed := True;
 end;
 
+
+function TGLSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint, intersectNormal: PVector): Boolean;
+var
+  locRayStart, locRayVector, locPoint, locNormal: TVector;
+begin
+  SetVector(locRayStart, AbsoluteToLocal(rayStart));
+  SetVector(locRayVector, AbsoluteToLocal(rayVector));
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Result := RayCastIntersect(locRayStart, locRayVector, locPoint, locNormal);
+      if Result then
+      begin
+        if Assigned(intersectPoint) then
+          SetVector(intersectPoint^, LocalToAbsolute(locPoint));
+        if Assigned(intersectNormal) then
+          SetVector(intersectNormal^, LocalToAbsolute(locNormal));
+      end;
+    finally
+      UnLock;
+    end;
+  end;
+end;
+
 procedure TGLSceneObjectEx.SetScene(const value: TGLScene);
 begin
   if value <> Scene then
@@ -1116,12 +1190,22 @@ begin
     FBatch.Mesh.Validate;
   end;
 
+  FBatch.Mesh.WeldVertices;
+
   if mesAdjacency in FMeshExtras then
   begin
     FBatch.Mesh.MakeAdjacencyElements;
   end;
 
-  FBatch.Mesh.WeldVertices;
+  if mesFastWireframe in FMeshExtras then
+  begin
+
+  end;
+
+  if mesOctreeRayCast in FMeshExtras then
+  begin
+
+  end;
 end;
 
 destructor TGLSceneObjectEx.Destroy;
@@ -1362,6 +1446,12 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
+function TGLDummyCube.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint, intersectNormal: PVector): Boolean;
+begin
+  Result := False;
+end;
+
 procedure TGLDummyCube.SetCubeSize(const val: TGLFloat);
 begin
   if val <> FCubeSize then
@@ -1407,6 +1497,14 @@ begin
   FBatch.Changed := True;
 end;
 
+function TGLDummyCube.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result[0] := 0.5 * Abs(FCubeSize);
+  Result[1] := Result[0];
+  Result[2] := Result[0];
+  Result[3] := 0;
+end;
+
 // BarycenterAbsolutePosition
 //
 
@@ -1428,6 +1526,13 @@ end;
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDummyCube'}{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TGLPlane'}{$ENDIF}
+
+function TGLPlane.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result[0] := 0.5 * Abs(FWidth);
+  Result[1] := 0.5 * Abs(FHeight);
+  Result[2] := 0;
+end;
 
 procedure TGLPlane.Assign(Source: TPersistent);
 begin
@@ -1747,6 +1852,15 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSprite'}{$ENDIF}
 
+function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result[0] := 0.5 * Abs(FWidth);
+  Result[1] := 0.5 * Abs(FHeight);
+  // Sprites turn with the camera and can be considered to have the same depth
+  // as width
+  Result[2] := 0.5 * Abs(FWidth);
+end;
+
 procedure TGLSprite.Assign(Source: TPersistent);
 begin
   if Source is TGLSprite then
@@ -1755,6 +1869,9 @@ begin
     FHeight := TGLSprite(Source).FHeight;
     FRotation := TGLSprite(Source).FRotation;
     FAlphaChannel := TGLSprite(Source).FAlphaChannel;
+    FMirrorU := TGLSprite(Source).FMirrorU;
+    FMirrorV := TGLSprite(Source).FMirrorV;
+    FAlign := TGLSprite(Source).FAlign;
   end;
   inherited Assign(Source);
 end;

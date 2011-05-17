@@ -367,7 +367,6 @@ var
   A: TAttribLocation;
   T: TGLEnum;
   glPrimitive: TGLEnum;
-  bPushed: Boolean;
 begin
   with GL do
   begin
@@ -471,17 +470,14 @@ begin
 
     if Assigned(ABatch.Material) then
     begin
-      bPushed := False;
+      ARci.PipelineTransformation.Push(ABatch.Transformation);
       try
         ABatch.Material.Apply(ARci);
-        ARci.PipelineTransformation.Push(ABatch.Transformation);
-        bPushed := True;
         repeat
           LMesh.FDLO.CallList;
         until not ABatch.Material.UnApply(ARci);
       finally
-        if bPushed then
-          ARci.PipelineTransformation.Pop;
+        ARci.PipelineTransformation.Pop;
       end;
     end;
 
@@ -1227,7 +1223,6 @@ var
   glPrimitive: TGLEnum;
   glType: TGLEnum;
   LOffset: Pointer;
-  bPushed: Boolean;
 begin
   AllocateBuffers;
 
@@ -1241,7 +1236,7 @@ begin
   if ABatch.Material = nil then
     exit;
 
-  bPushed := False;
+  ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
       glPrimitive := cPrimitiveType[LMesh.FPrimitive];
@@ -1256,8 +1251,6 @@ begin
         LOffset := Pointer(FElementBufferMap.Sectors[LMesh.FElementSectorIndex].Offset);
 
       ABatch.Material.Apply(ARci);
-      ARci.PipelineTransformation.Push(ABatch.Transformation);
-      bPushed := True;
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       repeat
@@ -1271,8 +1264,7 @@ begin
           DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
       until not ABatch.Material.UnApply(ARci);
     finally
-      if bPushed then
-        ARci.PipelineTransformation.Pop;
+      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
@@ -1323,7 +1315,6 @@ var
   LOffset: Pointer;
   LCount: Integer;
   storeRci: TRenderContextInfo;
-  bPushed: Boolean;
 begin
   AllocateBuffers;
 
@@ -1337,13 +1328,12 @@ begin
   if ABatch.Material = nil then
     exit;
 
-  bPushed := False;
+  ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
       storeRci := ARci;
       ABatch.Material.Apply(ARci);
-      ARci.PipelineTransformation.Push(ABatch.Transformation);
-      bPushed := True;
+
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
         if LMesh.FRestartIndex > $FFFF then
@@ -1397,8 +1387,7 @@ begin
       end;
     finally
       ARci := storeRci;
-      if bPushed then
-        ARci.PipelineTransformation.Pop;
+      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
@@ -1417,7 +1406,6 @@ var
   LOffset: Pointer;
   LCount: Integer;
   storeRci: TRenderContextInfo;
-  bPushed: Boolean;
 begin
   AllocateBuffers;
 
@@ -1430,14 +1418,13 @@ begin
 
   if ABatch.Material = nil then
     exit;
-  bPushed := False;
 
+  ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
       storeRci := ARci;
       ABatch.Material.Apply(ARci);
-      ARci.PipelineTransformation.Push(ABatch.Transformation);
-      bPushed := True;
+
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
 
@@ -1512,8 +1499,7 @@ begin
       end;
     finally
       ARci := storeRci;
-      if bPushed then
-        ARci.PipelineTransformation.Pop;
+      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;

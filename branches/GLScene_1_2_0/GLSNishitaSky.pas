@@ -85,7 +85,7 @@ type
   TGLCustomNishitaSky = class(TGLBaseSceneObject)
   private
     { Private Declarations }
-    FSoftwareMode: Boolean;
+    FOnCPUGenMode: Boolean;
     FBatch: TDrawBatch;
     FScreenQuadBatch: TDrawBatch;
     FTransformation: TTransformationRec;
@@ -94,6 +94,7 @@ type
     FDomeDiv: Integer;
     FOpticalDepthN: Integer;
     FRayleighMieN: Integer;
+    FLowResolutionTexture: TGLFrameBufferAttachment;
     FMieTexture: TGLFrameBufferAttachment;
     FRayleighTexture: TGLFrameBufferAttachment;
     FOpticalDepthTexture: TGLFrameBufferAttachment;
@@ -109,6 +110,8 @@ type
     FUpdateFastMaterial: TGLLibMaterialEx;
     FCreateOpticalDepthMaterial: TGLLibMaterialEx;
     FSun: TGLLightSource;
+    FCPUGenImage: PGLPixel32Array;
+    FFinishEvent: TFinishTaskEvent;
     procedure SetOclock(Value: Double);
     function StoreOclock: Boolean;
     procedure SetDomeDivision(Value: Integer);
@@ -130,6 +133,7 @@ type
   protected
     { Protected Declarations }
     procedure Update(var ARci: TRenderContextInfo);
+    procedure MakeCPUSkyTexture; stdcall;
     procedure MakeGPUOpticalDepth(var ARci: TRenderContextInfo);
     procedure MakeGPUMieRayleighBuffer(var ARci: TRenderContextInfo);
     procedure BuildMesh;
@@ -198,7 +202,12 @@ uses
   GLFileDDS,
 {$ENDIF}
   GLSLog,
-  GLSLParameter;
+  GLSLParameter,
+  GLColor
+{$IFDEF GLS_SERVICE_CONTEXT}
+  ,SyncObjs
+{$ENDIF GLS_SERVICE_CONTEXT}
+  ;
 
 const
   cDrawBuffers: array[0..1] of GLenum =
@@ -346,6 +355,11 @@ const
     ' FragColor.rgb = getRayleighPhase(fCos2) * v3RayleighSamples.rgb +'#10#13 +
     '  getMiePhase(fCos, fCos2) * v3MieSamples.rgb;'#10#13 +
     ' FragColor = vec4(HDR( FragColor.rgb ), 1.0);'#10#13 +
+//    ' vec3 n;'#10#13 +
+//    ' n.y = cos(0.5*3.14*v2f_TexCoord.s);'#10#13 +
+//    ' n.x = cos(3.14*v2f_TexCoord.t)*(1.0-n.y);'#10#13 +
+//    ' n.z = sin(3.14*v2f_TexCoord.t)*(1.0-n.y);'#10#13 +
+//    ' FragColor = 0.001*FragColor+vec4(abs(n), 0.0);'#10#13 +
     '}';
 
   Update_fp =
@@ -508,6 +522,7 @@ begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FChanges := [nscConstants, nscRayleighMie,  nscOpticalDepth, nscTime];
+  Pickable := False;
 
   ConstantBlock.PI := PI;
   ConstantBlock.KrESun := Kr * ESun;
@@ -562,6 +577,11 @@ begin
   FRayleighMieFBO := TGLFramebufferHandle.Create;
   FRayleighMieFBO.OnPrapare := DoOnPrepareRayleighMieFBO;
   // Create attachments
+  FLowResolutionTexture := GetInternalMaterialLibrary.AddAttachment('NishitaSkyLow');
+  FLowResolutionTexture.InternalFormat := tfRGB8;
+  FLowResolutionTexture.InternalWidth := 64;
+  FLowResolutionTexture.InternalHeight := 64;
+  FLowResolutionTexture.MaxLOD := 0;
   FMieTexture := GetInternalMaterialLibrary.AddAttachment('NishitaSkyMie');
   FRayleighTexture := GetInternalMaterialLibrary.AddAttachment('NishitaSkyRayleigh');
   FOpticalDepthTexture := GetInternalMaterialLibrary.AddAttachment('NishitaSkyOpticalDepth');
@@ -572,8 +592,8 @@ begin
     FCommonSampler := GetInternalMaterialLibrary.AddSampler(cSamplerName);
     FCommonSampler.MinFilter := miLinear;
     FCommonSampler.FilteringQuality := tfIsotropic;
-    FCommonSampler.WrapX := twClampToEdge;
-    FCommonSampler.WrapY := twClampToEdge;
+    FCommonSampler.WrapX := twMirrorRepeat;
+    FCommonSampler.WrapY := twMirrorRepeat;
   end;
 
   FBatch.Mesh := TMeshAtom.Create;
@@ -593,6 +613,10 @@ begin
       FixedFunction.DepthProperties.DepthTest := False;
       FixedFunction.DepthProperties.DepthWrite := False;
       FixedFunction.DepthProperties.DepthClamp := True;
+      FixedFunction.TextureMode := tmReplace;
+      FixedFunction.Texture.LibTextureName := FLowResolutionTexture.Name;
+      FixedFunction.Texture.LibSamplerName := FCommonSampler.Name;
+      FixedFunction.Texture.Enabled := True;
       // GLSL 120
       LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
       LShader.ShaderType := shtVertex;
@@ -724,7 +748,7 @@ begin
   end;
   FScreenQuadBatch.Transformation := @cIdentityTransformationRec;
 
-  FSoftwareMode := False;
+  FOnCPUGenMode := False;
   FColorPrecision := nsp11bit;
   FFastUpdate := False;
 
@@ -742,6 +766,9 @@ begin
   FOpticalDepthTexture.Destroy;
   FOpticalDepthFBO.Destroy;
   FRayleighMieFBO.Destroy;
+  if Assigned(FCPUGenImage) then
+    FreeMem(FCPUGenImage);
+  FFinishEvent.Free;
   inherited;
 end;
 
@@ -764,9 +791,45 @@ begin
     Include(FChanges, nscTime);
   end;
 
-  if FSoftwareMode then
+  if FOnCPUGenMode then
   begin
+    TGLLibMaterialEx(FBatch.Material).ApplicableLevel := mlFixedFunction;
+{$IFDEF GLS_SERVICE_CONTEXT}
+    if Assigned(FFinishEvent) then
+    begin
+      if FFinishEvent.WaitFor(0) = wrSignaled then
+      begin
+        ARci.GLStates.TextureBinding[0, ttTexture2D] := FLowResolutionTexture.Handle.Handle;
+        GL.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 64, 64, GL_BGRA, GL_UNSIGNED_BYTE, FCPUGenImage);
+        FFinishEvent.ResetEvent;
+      end;
+    end
+    else
+    begin
+      FFinishEvent := TFinishTaskEvent.Create;
+      FFinishEvent.ResetEvent;
+    end;
+{$ENDIF GLS_SERVICE_CONTEXT}
 
+    if [nscRayleighMie, nscTime] * FChanges <> [] then
+    begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if IsServiceContextAvaible then
+      begin
+        AddTaskForServiceContext(MakeCPUSkyTexture, FFinishEvent);
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+      begin
+        MakeCPUSkyTexture;
+        ARci.GLStates.TextureBinding[0, ttTexture2D] := FLowResolutionTexture.Handle.Handle;
+        GL.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 64, 64, GL_BGRA, GL_UNSIGNED_BYTE, FCPUGenImage);
+      end;
+
+      if Assigned(FSun) then
+        FSun.Direction.SetVector(VectorNegate(v3SunDir));
+      FChanges := [];
+    end;
   end
   else
   begin
@@ -930,6 +993,156 @@ begin
   inherited;
 end;
 
+procedure TGLCustomNishitaSky.MakeCPUSkyTexture;
+
+  function HitOuterSphere(const O, Dir: TVector3f): Single;
+  var
+    L: TVector3f;
+    B, C, D, q: Single;
+  begin
+    L := VectorNegate(O);
+    B := VectorDotProduct(L, Dir);
+    C := VectorDotProduct(L, L);
+    D := C - B * B;
+    q := sqrt(ConstantBlock.OuterRadius * ConstantBlock.OuterRadius - D);
+    Result := B + q;
+  end;
+
+  function GetDensityRatio(fHeight: Single): TVector2f;
+  var
+    fAltitude: Single;
+  begin
+    fAltitude := (fHeight - ConstantBlock.InnerRadius) * ConstantBlock.fScale;
+    Result[0] := Exp(-fAltitude / ConstantBlock.v2dRayleighMieScaleHeight[0]);
+    Result[1] := Exp(-fAltitude / ConstantBlock.v2dRayleighMieScaleHeight[1]);
+  end;
+
+  function GetOpticalDepth(P: TVector3f; const Px: TVector3f): TVector2f;
+  var
+    v3Vector, v3Dir: TVector3f;
+    fFar, fSampleLength, fScaledLength, fHeight: Single;
+    v3SampleRay: TVector3f;
+    OpticalDepth, DR: TVector2f;
+    i: Integer;
+  begin
+    OpticalDepth[0] := 0;
+    OpticalDepth[1] := 0;
+    v3Vector := VectorSubtract(Px, P);
+    fFar := VectorLength(v3Vector);
+    v3Dir := VectorScale(v3Vector, 1.0 / fFar);
+    fSampleLength := fFar / ConstantBlock.tNumSamples;
+    fScaledLength := fSampleLength * ConstantBlock.fScale;
+    v3SampleRay := VectorScale(v3Dir, fSampleLength);
+    AddVector(P, VectorScale(v3SampleRay, 0.5));
+    for I := 0 to ConstantBlock.tNumSamples div 2 - 1 do
+    begin
+      fHeight := VectorLength(P);
+      DR := GetDensityRatio(fHeight);
+      OpticalDepth[0] := OpticalDepth[0] + DR[0];
+      OpticalDepth[1] := OpticalDepth[1] + DR[1];
+      AddVector(P, v3SampleRay);
+    end;
+    OpticalDepth[0] := OpticalDepth[0] * fScaledLength;
+    OpticalDepth[1] := OpticalDepth[1] * fScaledLength;
+    Result := OpticalDepth;
+  end;
+
+  const
+    cInv63 = 1.0/63.0;
+
+  var
+    I, J, K, P: Integer;
+    Tex0: TVector2f;
+    v3PointPv: TVector3f;
+    AngleY, AngleXZ: Single;
+    v3Dir: TVector3f;
+    fFarPvPa: Single;
+    v3Ray, v3PointP, v3SampleRay, v3RayleighSum, v3MieSum: TVector3f;
+    fSampleLength, fScaledLength: Single;
+    PointPHeight: Single;
+    DensityRatio, ViewerOpticalDepth, SunOpticalDepth, OpticalDepthP: TVector2f;
+    dFarPPc: Single;
+    v3Attenuation: TVector3f;
+    RayLeigh, Mie: TVector3f;
+    Normal, FinalColor: TVector3f;
+    fCos, fCos2: Single;
+
+begin
+  ReallocMem(FCPUGenImage, 64*64*SizeOf(TGLPixel32));
+  P := 0;
+  for I := 63 downto 0 do
+  begin
+    for J := 0 to 63 do
+    begin
+      with ConstantBlock do
+      begin
+        try
+          Tex0[0] := j * cInv63;
+          Tex0[1] := i * cInv63;
+          v3PointPv := Vector3fMake(0.0, InnerRadius + 1e-3, 0.0);
+          AngleY := 100.0 * Tex0[0] * PI / 180.0;
+          AngleXZ := PI * Tex0[1];
+          v3Dir[0] := sin(AngleY) * cos(AngleXZ);
+          v3Dir[1] := cos(AngleY);
+          v3Dir[2] := sin(AngleY) * sin(AngleXZ);
+          NormalizeVector(v3Dir);
+
+          fFarPvPa := HitOuterSphere(v3PointPv, v3Dir);
+          v3Ray := v3Dir;
+          v3PointP := v3PointPv;
+          fSampleLength := fFarPvPa / iNumSamples;
+          fScaledLength := fSampleLength * fScale;
+          v3SampleRay := VectorScale(v3Ray, fSampleLength);
+          v3PointP := VectorAdd(v3PointP, VectorScale(v3SampleRay, 0.5));
+          v3RayleighSum := NullVector;
+          v3MieSum := NullVector;
+          for k := 0 to iNumSamples div 2 - 1 do
+          begin
+            PointPHeight := VectorLength(v3PointP);
+            DensityRatio := GetDensityRatio(PointPHeight);
+            DensityRatio[0] := DensityRatio[0] * fScaledLength;
+            DensityRatio[1] := DensityRatio[1] * fScaledLength;
+            ViewerOpticalDepth := GetOpticalDepth(v3PointP, v3PointPv);
+            dFarPPc := HitOuterSphere(v3PointP, v3SunDir);
+            SunOpticalDepth := GetOpticalDepth(v3PointP, VectorAdd(v3PointP, VectorScale(v3SunDir, dFarPPc)));
+            OpticalDepthP[0] := SunOpticalDepth[0] + ViewerOpticalDepth[0];
+            OpticalDepthP[1] := SunOpticalDepth[1] + ViewerOpticalDepth[1];
+            v3Attenuation[0] := Exp(-Kr4PI * InvWavelength4[0] * OpticalDepthP[0] - Km4PI * OpticalDepthP[1]);
+            v3Attenuation[1] := v3Attenuation[0];
+            v3Attenuation[2] := v3Attenuation[0];
+            AddVector(v3RayleighSum, VectorScale(v3Attenuation, DensityRatio[0]));
+            AddVector(v3MieSum, VectorScale(v3Attenuation, DensityRatio[1]));
+            AddVector(v3PointP, v3SampleRay);
+          end;
+          RayLeigh[0] := v3RayleighSum[0] * KrESun * InvWavelength4[0];
+          RayLeigh[1] := v3RayleighSum[1] * KrESun * InvWavelength4[1];
+          RayLeigh[2] := v3RayleighSum[2] * KrESun * InvWavelength4[2];
+          Mie[0] := v3MieSum[0] * KmESun * WavelengthMie[0];
+          Mie[1] := v3MieSum[1] * KmESun * WavelengthMie[1];
+          Mie[2] := v3MieSum[2] * KmESun * WavelengthMie[2];
+          Normal[1] := -cos(Pi * 0.5 * Tex0[1]);
+          Normal[0] := cos(Pi * Tex0[0]) * (1.0 + Normal[1]);
+          Normal[2] := sin(Pi * Tex0[0]) * (1.0 + Normal[1]);
+          fCos := VectorDotProduct(v3SunDir, Normal);
+          fCos2 := fCos * fCos;
+          ScaleVector(RayLeigh, 0.75 * (1.0 + fCos2));
+          ScaleVector(Mie, v3HG[0] * (1.0 + fCos2) / power(v3HG[1] - v3HG[3] * fCos, 1.5));
+          FinalColor := VectorAdd(RayLeigh, Mie);
+          FinalColor[0] := 1.0 - exp(-2.0 * FinalColor[0]);
+          FinalColor[1] := 1.0 - exp(-2.0 * FinalColor[1]);
+          FinalColor[2] := 1.0 - exp(-2.0 * FinalColor[2]);
+        except
+          FinalColor := NullVector;
+        end;
+      end;
+      FCPUGenImage[P].r := Round(FinalColor[2]*255);
+      FCPUGenImage[P].g := Round(FinalColor[1]*255);
+      FCPUGenImage[P].b := Round(FinalColor[0]*255);
+      Inc(P);
+    end;
+  end;
+end;
+
 procedure TGLCustomNishitaSky.MakeGPUMieRayleighBuffer(
   var ARci: TRenderContextInfo);
 
@@ -1027,7 +1240,7 @@ begin
   end;
 
   if FOpticalDepthFBO.IsDataNeedUpdate then
-    FSoftwareMode := True;
+    FOnCPUGenMode := True;
 end;
 
 procedure TGLCustomNishitaSky.DoOnPrepareRayleighMieFBO(Sender: TGLContext);
@@ -1071,7 +1284,7 @@ begin
   end;
 
   if FRayleighMieFBO.IsDataNeedUpdate then
-    FSoftwareMode := True;
+    FOnCPUGenMode := True;
 end;
 
 procedure TGLCustomNishitaSky.DoRender(var ARci: TRenderContextInfo;
@@ -1116,7 +1329,7 @@ begin
   StepH := 2 * StepV;
   Phi := Pi / 2;
   Phi2 := Phi - StepH;
-  TexFactor := 2 / (FDomeDiv + 2);
+  TexFactor := 2 / (FDomeDiv + 1);
 
   with FBatch.Mesh do
   begin
@@ -1137,7 +1350,7 @@ begin
         uTexCoord0 := (0.5 + j) * TexFactor;
         uTexCoord1 := (j + 1.5) * TexFactor;
 
-        for i := 0 to FDomeDiv div 2 do
+        for i := 0 to FDomeDiv do
         begin
           SinCos(Theta, SinT, CosT);
           V1[0] := CosP * CosT;
@@ -1145,23 +1358,6 @@ begin
           V1[2] := CosP * SinT;
           V2[2] := CosP2 * SinT;
           vTexCoord := (0.5 + i) * TexFactor;
-          Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
-          Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
-          EmitVertex;
-          Attribute2f(attrTexCoord0, uTexCoord0, vTexCoord);
-          Attribute3f(attrPosition, V1[0], V1[1], V1[2]);
-          EmitVertex;
-          Theta := Theta - StepH;
-        end;
-
-        for i := 0 to FDomeDiv div 2 do
-        begin
-          SinCos(Theta, SinT, CosT);
-          V1[0] := CosP * CosT;
-          V2[0] := CosP2 * CosT;
-          V1[2] := CosP * SinT;
-          V2[2] := CosP2 * SinT;
-          vTexCoord := 1.0 - (0.5 + i) * TexFactor;
           Attribute2f(attrTexCoord0, uTexCoord1, vTexCoord);
           Attribute3f(attrPosition, V2[0], V2[1], V2[2]);
           EmitVertex;

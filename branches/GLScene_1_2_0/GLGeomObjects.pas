@@ -122,6 +122,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
     property Radius: TGLFloat read FRadius write SetRadius;
@@ -195,8 +197,6 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint, intersectNormal: PVector): Boolean; override;
   published
     { Published Declarations }
     property Parts: TConeParts read FParts write SetParts default [coSides,
@@ -234,9 +234,6 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
 
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
@@ -277,9 +274,6 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-      override;
     procedure Align(const startPoint, endPoint: TVector); overload;
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
@@ -323,10 +317,6 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): Boolean; override;
-
   published
     { Published Declarations }
     property BottomInnerRadius: TGLFLoat read FBottomInnerRadius write SetBottomInnerRadius;
@@ -368,6 +358,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
+    function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
     property MajorRadius: Single read FMajorRadius write SetMajorRadius;
@@ -420,6 +411,7 @@ type
     { Public Declarations}
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
+
   published
     { Published Declarations}
     property TopRadius: TGLFloat read fTopRadius write SetTopRadius;
@@ -762,6 +754,24 @@ end;
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLGeoSphere'}{$ENDIF}
 
+function TGLGeoSphere.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result[0] := Abs(FRadius);
+  Result[1] := Result[0];
+  Result[2] := Result[0];
+  Result[3] := 0;
+end;
+
+procedure TGLGeoSphere.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TGLGeoSphere) then
+  begin
+    Radius := TGLGeoSphere(Source).FRadius;
+    SubdivisionLevel := TGLGeoSphere(Source).FLevel;
+  end;
+  inherited;
+end;
+
 constructor TGLGeoSphere.Create(AOwner: TComponent);
 begin
   inherited;
@@ -971,19 +981,6 @@ begin
     end;
   end;
   ClearStructureChanged;
-end;
-
-// Assign
-//
-
-procedure TGLGeoSphere.Assign(Source: TPersistent);
-begin
-  if Assigned(Source) and (Source is TGLGeoSphere) then
-  begin
-    Radius := TGLGeoSphere(Source).FRadius;
-    SubdivisionLevel := TGLGeoSphere(Source).FLevel;
-  end;
-  inherited;
 end;
 
 // SetRadius
@@ -1327,76 +1324,6 @@ begin
   Result := 0;
 end;
 
-function TGLCone.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint, intersectNormal: PVector): Boolean;
-var
-  ip, localRayStart, localRayVector: TVector;
-  poly: array[0..2] of Double;
-  roots: TDoubleArray;
-  minRoot: Double;
-  d, t, hconst: Single;
-begin
-  Result := false;
-  localRayStart := AbsoluteToLocal(rayStart);
-  localRayVector := VectorNormalize(AbsoluteToLocal(rayVector));
-
-  if coBottom in Parts then
-  begin
-    //bottom can only be raycast from beneath
-    if localRayStart[1] < -fHeight * 0.5 then
-    begin
-      if RayCastPlaneIntersect(localRayStart, localRayVector, PointMake(0,
-        -fHeight * 0.5, 0), YHmgVector, @ip) then
-      begin
-        d := VectorNorm(ip[0], ip[2]);
-        if (d <= Sqr(BottomRadius)) then
-        begin
-          Result := true;
-          if Assigned(intersectPoint) then
-            SetVector(intersectPoint^, LocalToAbsolute(ip));
-          if Assigned(intersectNormal) then
-            SetVector(intersectNormal^, VectorNegate(AbsoluteUp));
-          Exit;
-        end;
-      end;
-    end;
-  end;
-  if coSides in Parts then
-  begin
-    hconst := -Sqr(BottomRadius) / Sqr(Height);
-    // intersect against infinite cones (in positive and negative direction)
-    poly[0] := Sqr(localRayStart[0]) + hconst * Sqr(localRayStart[1] - 0.5 *
-      fHeight) + Sqr(localRayStart[2]);
-    poly[1] := 2 * (localRayStart[0] * localRayVector[0] + hconst *
-      (localRayStart[1] - 0.5 * fHeight) * localRayVector[1] + localRayStart[2]
-        *
-      localRayVector[2]);
-    poly[2] := Sqr(localRayVector[0]) + hconst * Sqr(localRayVector[1]) +
-      Sqr(localRayVector[2]);
-    SetLength(roots, 0);
-    roots := SolveQuadric(@poly);
-    if MinPositiveCoef(roots, minRoot) then
-    begin
-      t := minRoot;
-      ip := VectorCombine(localRayStart, localRayVector, 1, t);
-      // check that intersection with infinite cone is within the range we want
-      if (ip[1] > -fHeight * 0.5) and (ip[1] < fHeight * 0.5) then
-      begin
-        Result := true;
-        if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(ip);
-        if Assigned(intersectNormal) then
-        begin
-          ip[1] := hconst * (ip[1] - 0.5 * Height);
-          ip[3] := 0;
-          NormalizeVector(ip);
-          intersectNormal^ := LocalToAbsolute(ip);
-        end;
-      end;
-    end;
-  end;
-end;
-
 procedure TGLCone.SetParts(aValue: TConeParts);
 begin
   if aValue <> FParts then
@@ -1615,135 +1542,6 @@ begin
   FBatch.Changed := True;
   ClearStructureChanged;
 end;
-
-// RayCastIntersect
-//
-
-function TGLCylinder.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
-const
-  cOne: Single = 1;
-var
-  locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
-  roots: TDoubleArray;
-  minRoot: Double;
-  t, tr2, invRayVector1, hTop, hBottom: Single;
-  tPlaneMin, tPlaneMax: Single;
-begin
-  Result := False;
-  locRayStart := AbsoluteToLocal(rayStart);
-  locRayVector := AbsoluteToLocal(rayVector);
-
-  case Alignment of
-    caTop:
-      begin
-        hTop := 0;
-        hBottom := -Height;
-      end;
-    caBottom:
-      begin
-        hTop := Height;
-        hBottom := 0;
-      end;
-  else
-    // caCenter
-    hTop := Height * 0.5;
-    hBottom := -hTop;
-  end;
-
-  if locRayVector[1] = 0 then
-  begin
-    // intersect if ray shot through the top/bottom planes
-    if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
-      Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
-  end
-  else
-  begin
-    invRayVector1 := cOne / locRayVector[1];
-    tr2 := Sqr(TopRadius);
-
-    // compute intersection with topPlane
-    t := (hTop - locRayStart[1]) * invRayVector1;
-    if (t > 0) and (cyTop in Parts) then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
-      begin
-        // intersect with top plane
-        if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
-        if Assigned(intersectNormal) then
-          intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
-      end;
-    end;
-    tPlaneMin := t;
-    tPlaneMax := t;
-    // compute intersection with bottomPlane
-    t := (hBottom - locRayStart[1]) * invRayVector1;
-    if (t > 0) and (cyBottom in Parts) then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not (cyTop in Parts)) then
-      begin
-        if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
-        begin
-          // intersect with top plane
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2],
-              1));
-          if Assigned(intersectNormal) then
-            intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
-        end;
-      end;
-    end;
-    if t < tPlaneMin then
-      tPlaneMin := t;
-    if t > tPlaneMax then
-      tPlaneMax := t;
-  end;
-  if cySides in Parts then
-  begin
-    // intersect against cylinder infinite cylinder
-    poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopRadius);
-    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
-      locRayVector[2]);
-    poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-    roots := SolveQuadric(@poly);
-    if MinPositiveCoef(roots, minRoot) then
-    begin
-      t := minRoot;
-      if (t >= tPlaneMin) and (t < tPlaneMax) then
-      begin
-        if Assigned(intersectPoint) or Assigned(intersectNormal) then
-        begin
-          ip := VectorCombine(locRayStart, locRayVector, 1, t);
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(ip);
-          if Assigned(intersectNormal) then
-          begin
-            ip[1] := 0;
-            ip[3] := 0;
-            intersectNormal^ := LocalToAbsolute(ip);
-          end;
-        end;
-        Result := True;
-      end;
-    end;
-  end
-  else
-    SetLength(roots, 0);
-end;
-
-// Align
-//
 
 procedure TGLCylinder.Align(const startPoint, endPoint: TVector);
 var
@@ -2065,132 +1863,6 @@ begin
   //  ScaleVector(Result, Scale.AsVector);
 end;
 
-// RayCastIntersect
-//
-
-function TGLCapsule.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): Boolean;
-const
-  cOne: Single = 1;
-var
-  locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
-  roots: TDoubleArray;
-  minRoot: Double;
-  t, tr2, invRayVector1, hTop, hBottom: Single;
-  tPlaneMin, tPlaneMax: Single;
-begin
-  Result := False;
-  locRayStart := AbsoluteToLocal(rayStart);
-  locRayVector := AbsoluteToLocal(rayVector);
-
-  case Alignment of
-    caTop:
-      begin
-        hTop := 0;
-        hBottom := -FHeight;
-      end;
-    caBottom:
-      begin
-        hTop := FHeight;
-        hBottom := 0;
-      end;
-  else
-    // caCenter
-    hTop := FHeight * 0.5;
-    hBottom := -hTop;
-  end;
-
-  if locRayVector[1] = 0 then
-  begin
-    // intersect if ray shot through the top/bottom planes
-    if (locRayStart[0] > hTop) or (locRayStart[0] < hBottom) then
-      Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
-  end
-  else
-  begin
-    invRayVector1 := cOne / locRayVector[1];
-    tr2 := Sqr(Radius);
-
-    // compute intersection with topPlane
-    t := (hTop - locRayStart[1]) * invRayVector1;
-    if (t > 0) and (cyTop in Parts) then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
-      begin
-        // intersect with top plane
-        if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
-        if Assigned(intersectNormal) then
-          intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
-      end;
-    end;
-    tPlaneMin := t;
-    tPlaneMax := t;
-    // compute intersection with bottomPlane
-    t := (hBottom - locRayStart[1]) * invRayVector1;
-    if (t > 0) and (cyBottom in Parts) then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      if (t < tPlaneMin) or (not (cyTop in Parts)) then
-      begin
-        if Sqr(ip[0]) + Sqr(ip[2]) <= tr2 then
-        begin
-          // intersect with top plane
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2],
-              1));
-          if Assigned(intersectNormal) then
-            intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
-        end;
-      end;
-    end;
-    if t < tPlaneMin then
-      tPlaneMin := t;
-    if t > tPlaneMax then
-      tPlaneMax := t;
-  end;
-  if cySides in Parts then
-  begin
-    // intersect against cylinder infinite cylinder
-    poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(Radius);
-    poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] *
-      locRayVector[2]);
-    poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-    roots := SolveQuadric(@poly);
-    if MinPositiveCoef(roots, minRoot) then
-    begin
-      t := minRoot;
-      if (t >= tPlaneMin) and (t < tPlaneMax) then
-      begin
-        if Assigned(intersectPoint) or Assigned(intersectNormal) then
-        begin
-          ip := VectorCombine(locRayStart, locRayVector, 1, t);
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(ip);
-          if Assigned(intersectNormal) then
-          begin
-            ip[1] := 0;
-            ip[3] := 0;
-            intersectNormal^ := LocalToAbsolute(ip);
-          end;
-        end;
-        Result := True;
-      end;
-    end;
-  end
-  else
-    SetLength(roots, 0);
-end;
-
 // Align
 //
 
@@ -2494,183 +2166,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
 end;
 
-// RayCastIntersect
-//
-
-function TGLAnnulus.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint, intersectNormal: PVector): Boolean;
-const
-  cOne: Single = 1;
-var
-  locRayStart, locRayVector, ip: TVector;
-  poly: array[0..2] of Double;
-  t, tr2, invRayVector1: Single;
-  tPlaneMin, tPlaneMax: Single;
-  tir2, d2: single;
-  Root: Double;
-  Roots, tmpRoots: TDoubleArray;
-  FirstIntersected: boolean;
-  h1, h2, hTop, hBot: single;
-  Draw1, Draw2: boolean;
-begin
-  Result := False;
-  FirstIntersected := False;
-  SetLength(tmpRoots, 0);
-  locRayStart := AbsoluteToLocal(rayStart);
-  locRayVector := AbsoluteToLocal(rayVector);
-
-  hTop := Height * 0.5;
-  hBot := -hTop;
-  if locRayVector[1] < 0 then
-  begin // Sort the planes according to the direction of view
-    h1 := hTop; // Height of the 1st plane
-    h2 := hBot; // Height of the 2nd plane
-    Draw1 := (anTop in Parts); // 1st "cap" Must be drawn?
-    Draw2 := (anBottom in Parts);
-  end
-  else
-  begin
-    h1 := hBot;
-    h2 := hTop;
-    Draw1 := (anBottom in Parts);
-    Draw2 := (anTop in Parts);
-  end; //if
-
-  if locRayVector[1] = 0 then
-  begin
-    // intersect if ray shot through the top/bottom planes
-    if (locRayStart[0] > hTop) or (locRayStart[0] < hBot) then
-      Exit;
-    tPlaneMin := -1e99;
-    tPlaneMax := 1e99;
-  end
-  else
-  begin
-    invRayVector1 := cOne / locRayVector[1];
-    tr2 := Sqr(TopRadius);
-    tir2 := Sqr(TopInnerRadius);
-    FirstIntersected := False;
-
-    // compute intersection with first plane
-    t := (h1 - locRayStart[1]) * invRayVector1;
-    if (t > 0) and Draw1 then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      d2 := Sqr(ip[0]) + Sqr(ip[2]);
-      if (d2 <= tr2) and (d2 >= tir2) then
-      begin
-        // intersect with top plane
-        FirstIntersected := true;
-        if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h1, ip[2], 1));
-        if Assigned(intersectNormal) then
-          intersectNormal^ := LocalToAbsolute(YHmgVector);
-        Result := True;
-      end;
-    end;
-    tPlaneMin := t;
-    tPlaneMax := t;
-
-    // compute intersection with second plane
-    t := (h2 - locRayStart[1]) * invRayVector1;
-    if (t > 0) and Draw2 then
-    begin
-      ip[0] := locRayStart[0] + t * locRayVector[0];
-      ip[2] := locRayStart[2] + t * locRayVector[2];
-      d2 := Sqr(ip[0]) + Sqr(ip[2]);
-      if (t < tPlaneMin) or (not FirstIntersected) then
-      begin
-        if (d2 <= tr2) and (d2 >= tir2) then
-        begin
-          // intersect with top plane
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip[0], h2, ip[2], 1));
-          if Assigned(intersectNormal) then
-            intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
-          Result := True;
-        end;
-      end;
-    end;
-    if t < tPlaneMin then
-    begin
-      tPlaneMin := t;
-    end; //if
-    if t > tPlaneMax then
-      tPlaneMax := t;
-  end;
-
-  try
-    SetLength(Roots, 4);
-    Roots[0] := -1;
-    Roots[1] := -1;
-    Roots[2] := -1;
-    Roots[3] := -1; // By default, side is behind rayStart
-
-    {Compute roots for outer cylinder}
-    if anOuterSides in Parts then
-    begin
-      // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
-      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
-      poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmpRoots := SolveQuadric(@poly); // Intersect coordinates on rayVector (rayStart=0)
-      if (High(tmproots) >= 0) and // Does root exist?
-      ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and // In the annulus and not masked by first cap
-      ((tmpRoots[0] < tPlaneMax)) {// In the annulus} then
-        Roots[0] := tmpRoots[0];
-      if (High(tmproots) >= 1) and
-        ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
-        ((tmpRoots[1] < tPlaneMax)) then
-        Roots[1] := tmpRoots[1];
-    end; //if
-
-    {Compute roots for inner cylinder}
-    if anInnerSides in Parts then
-    begin
-      // intersect against infinite cylinder
-      poly[0] := Sqr(locRayStart[0]) + Sqr(locRayStart[2]) - Sqr(TopInnerRadius);
-      poly[1] := 2 * (locRayStart[0] * locRayVector[0] + locRayStart[2] * locRayVector[2]);
-      poly[2] := Sqr(locRayVector[0]) + Sqr(locRayVector[2]);
-      tmproots := SolveQuadric(@poly);
-      if (High(tmproots) >= 0) and
-        ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
-        ((tmpRoots[0] < tPlaneMax)) then
-        Roots[2] := tmpRoots[0];
-      if (High(tmproots) >= 1) and
-        ((tmpRoots[1] > tPlaneMin) and not FirstIntersected) and
-        ((tmpRoots[1] < tPlaneMax)) then
-        Roots[3] := tmpRoots[1];
-    end; //if
-
-    {Find the first intersection point and compute its coordinates and normal}
-    if MinPositiveCoef(Roots, Root) then
-    begin
-      t := Root;
-      if (t >= tPlaneMin) and (t < tPlaneMax) then
-      begin
-        if Assigned(intersectPoint) or Assigned(intersectNormal) then
-        begin
-          ip := VectorCombine(locRayStart, locRayVector, 1, t);
-          if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(ip);
-          if Assigned(intersectNormal) then
-          begin
-            ip[1] := 0;
-            ip[3] := 0;
-            intersectNormal^ := LocalToAbsolute(ip);
-          end;
-        end;
-        Result := True;
-      end;
-    end;
-
-  finally
-    Roots := nil;
-    tmpRoots := nil;
-  end;
-end;
-
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLTorus'}{$ENDIF}
@@ -2692,6 +2187,15 @@ begin
     StructureChanged;
   end;
   inherited;
+end;
+
+function TGLTorus.AxisAlignedDimensionsUnscaled: TVector;
+var
+  r, r1: TGLFloat;
+begin
+  r := Abs(FMajorRadius);
+  r1 := Abs(FMinorRadius);
+  Result := VectorMake(r + r1, r + r1, r1); // Danb
 end;
 
 procedure TGLTorus.BuildMesh;

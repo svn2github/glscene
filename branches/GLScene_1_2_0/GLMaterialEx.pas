@@ -7126,6 +7126,7 @@ begin
         FHandle.Handle;
       MaxLevel := CalcTextureLevelNumber(LTarget, w, h, d);
       MaxLevel := MinInteger(MaxLevel, FMaxLOD+1);
+      GL.TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL, MaxLevel-1);
 
       case glTarget of
 

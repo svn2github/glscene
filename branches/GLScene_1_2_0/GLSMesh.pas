@@ -4,6 +4,7 @@
 {: GLSMesh<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>18/05/11 - Yar - Added RayCastIntersect
     <li>16/04/11 - Yar - Rewriten
     <li>15/10/10 - Yar - Creation
  </ul></font>
@@ -51,7 +52,7 @@ type
     attrCustom2 = 15
     );
 
-  TMeshExtra = (mesTangents, mesAdjacency, mesFastWireframe);
+  TMeshExtra = (mesTangents, mesAdjacency, mesFastWireFrame, mesOctreeRayCast);
   TMeshExtras = set of TMeshExtra;
 
 //  TMeshPurpose = (fgpCommon, fgpInterior, fgpExterior, fgpOcluder,
@@ -182,7 +183,7 @@ type
     procedure WeldVertices;
     {: Slit equivalent vertices, every element becomes unique. }
     procedure SplitVertices;
-    {: }
+    {: Update element buffer where pure triangle indexing. }
     procedure MakeTriangleElements;
     {: Cast strip and fans of triangles to simple triangles. }
     procedure Triangulate;
@@ -196,6 +197,10 @@ type
     procedure ComputeTangents;
     {: Rescales and alignes mesh based on bounding box. }
     procedure Rescale(ARadius: Single = 1.0);
+    {: Intersection with a casted ray.
+       Given coordinates & vector are in local coordinates. }
+    function RayCastIntersect(const ARayStart, ARayVector: TVector;
+      out AnIntersectPoint, AnIntersectNormal: TVector): Boolean;
     {: Ends assembling of mesh. }
     procedure UnLock; virtual;
 
@@ -2539,6 +2544,125 @@ begin
   FAABB.revision := FRevisionNum;
 end;
 
+function TMeshAtom.RayCastIntersect(const ARayStart, ARayVector: TVector;
+  out AnIntersectPoint, AnIntersectNormal: TVector): Boolean;
+var
+  Positions: T4ByteList;
+  PosSize, PosMoveSize: Integer;
+
+  Normals: T4ByteList;
+  NormSize, NormMoveSize: Integer;
+
+  function GetPosition(Index: Integer): TVector3f;
+  begin
+    Result := NullVector;
+    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
+  end;
+
+  function GetPosition4f(Index: Integer): TVector4f;
+  begin
+    Result := NullHmgPoint;
+    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
+  end;
+
+  function GetNormal(Index: Integer): TVector4f;
+  begin
+    Result := NullHmgVector;
+    Move(Normals.List[Index * NormSize], Result[0], NormMoveSize);
+  end;
+
+var
+  Dis, minDis: Single;
+  pE: ^TVector3i;
+  I: Integer;
+  V1, V2, V3: TVector3f;
+  V4: TVector4f;
+  iPoint, iNormal: TVector;
+begin
+  Result := False;
+
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  if not FAttributes[attrPosition] then
+    exit; // Nothing todo
+
+  Positions := FAttributeArrays[attrPosition];
+  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
+  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+
+  if FAttributes[attrNormal] then
+  begin
+    Normals := FAttributeArrays[attrNormal];
+    NormSize := GLSLTypeComponentCount(FType[attrNormal]);
+    NormMoveSize := MinInteger(NormSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  end
+  else
+    Normals := nil;
+
+  minDis := -1;
+
+  case FPrimitive of
+    mpTRIANGLES, mpTRIANGLE_STRIP, mpTRIANGLE_FAN:
+      begin
+        if FTrianglesElements.Revision <> FElements.Revision then
+          MakeTriangleElements;
+        for I := FTrianglesElements.Count div 3 - 1 downto 0 do
+        begin
+          pE := @FTrianglesElements.List[3*I];
+          V1 := GetPosition(pE^[0]);
+          V2 := GetPosition(pE^[1]);
+          V3 := GetPosition(pE^[2]);
+          if RayCastTriangleIntersect(
+            ARayStart, ARayVector,
+            V1, V2, V3,
+            @iPoint, @iNormal) then
+          begin
+            Dis := VectorDistance2(ARayStart, iPoint);
+            if (Dis < minDis) or (minDis < 0) then
+            begin
+              minDis := Dis;
+              AnIntersectPoint := iPoint;
+              AnIntersectNormal := iNormal;
+            end;
+          end;
+        end;
+      end;
+
+    mpPOINTS:
+      begin
+        for I := FVertexCount - 1 downto 0 do
+        begin
+          V4 := GetPosition4f(I);
+          iNormal := VectorSubtract(V4, ARayStart);
+          NormalizeVector(iNormal);
+          if VectorEquals(iNormal, ARayVector) then
+          begin
+            Dis := VectorDistance2(ARayStart, V4);
+            if (Dis < minDis) or (minDis < 0) then
+            begin
+              minDis := Dis;
+              AnIntersectPoint := V4;
+              if Assigned(Normals) then
+                AnIntersectNormal := GetNormal(I)
+              else
+                AnIntersectNormal := ARayVector;
+            end;
+          end;
+        end;
+      end;
+  end;
+
+  Result := (minDis >= 0);
+end;
+
 procedure TMeshAtom.Rescale(ARadius: Single);
 var
   Positions: T4ByteList;
@@ -2559,6 +2683,15 @@ var
   end;
 
 begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
   ComputeBoundingBox;
   if not FAttributes[attrPosition] then
     exit; // Nothing todo

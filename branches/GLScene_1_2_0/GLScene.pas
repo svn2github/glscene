@@ -650,7 +650,7 @@ type
        By default it is calculated from AxisAlignedBoundingBoxUnscaled and
        BarycenterAbsolutePosition, but for most objects there is a more
        efficient method, that's why it is virtual. }
-    procedure CalculateBoundingBoxPersonalUnscaled(var ANewBoundingBox:
+    procedure CalculateBoundingBoxPersonalUnscaled(out ANewBoundingBox:
       THmgBoundingBox); virtual;
   public
     { Public Declarations }
@@ -799,7 +799,7 @@ type
     function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True):
       TAABB;
     function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean =
-      True): TAABB;
+      True): TAABB; virtual;
     function AxisAlignedBoundingBoxAbsolute(const AIncludeChilden: Boolean =
       True; const AUseBaryCenter: Boolean = False): TAABB;
 
@@ -3679,7 +3679,7 @@ end;
 // CalculateBoundingBoxPersonalUnscaled
 //
 
-procedure TGLBaseSceneObject.CalculateBoundingBoxPersonalUnscaled(var
+procedure TGLBaseSceneObject.CalculateBoundingBoxPersonalUnscaled(out
   ANewBoundingBox: THmgBoundingBox);
 begin
   // Using the standard method to get the local BB.
@@ -7933,7 +7933,7 @@ var
     for i := 0 to baseObject.Count - 1 do
     begin
       curObj := baseObject.Children[i];
-      if curObj.Visible then
+      if curObj.Visible and curObj.Pickable then
       begin
         if RayCastAABBIntersect(rayStart, rayVector,
           curObj.AxisAlignedBoundingBoxAbsoluteEx, fNear, fFar) then
