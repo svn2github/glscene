@@ -1189,7 +1189,7 @@ begin
   RegisterComponents('GLScene',
     [TGLScene, TGLSceneViewer, TGLMemoryViewer, TGLMaterialLibrary,
     TGLCadencer, TGLGuiLayout, TGLBitmapFont, TGLWindowsBitmapFont,
-    TGLStoredBitmapFont, TGLScriptLibrary, TGLSoundLibrary,
+    TGLScriptLibrary, TGLSoundLibrary,
     TGLFullScreenViewer, TGLMaterialLibraryEx]);
 
   RegisterComponents('GLScene PFX',

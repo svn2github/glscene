@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
@@ -88,17 +89,17 @@ type
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
-    destructor Destroy; override;
+    destructor  Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange;
   published
     { Published Declarations }
-     property StartASCII: widechar read FStartASCII write SetStartASCII;
-     property StopASCII: widechar read FStopASCII write SetStopASCII;
+    property StartASCII: widechar read FStartASCII write SetStartASCII;
+    property StopASCII: widechar read FStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
-     property StopGlyphIdx: Integer read FStopGlyphIdx;
-     property CharCount: integer read FCharCount;
+    property StopGlyphIdx: Integer read FStopGlyphIdx;
+    property CharCount: integer read FCharCount;
   end;
 
   // TBitmapFontRanges
@@ -136,7 +137,10 @@ type
     property CharacterCount: Integer read FCharCount;
   end;
 
-  TDynIntegerArray = array of Integer;
+  PCharInfo = ^TCharInfo;
+  TCharInfo = record
+    l, t, w : word;
+  end;
 
   // TGLCustomBitmapFont
   //
@@ -161,16 +165,17 @@ type
     FMinFilter: TGLMinFilter;
     FMagFilter: TGLMagFilter;
     FTextureWidth, FTextureHeight: Integer;
+    FTextRows, FTextCols: integer;
     FGlyphsAlpha: TGLTextureImageAlpha;
+    FTextures: TList;
+    FTextureModified: boolean;
+    FLastTexture : TGLTextureHandle;
   protected
     { Protected Declarations }
-    FCharRects: array of TVector;
-    FCharWidths: TDynIntegerArray;
-    FTextureHandle: TGLTextureHandle;
-    property CharWidths: TDynIntegerArray read FCharWidths write FCharWidths;
+    FChars      : array of TCharInfo;
+    FCharsLoaded: boolean;
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
-    procedure SetCharRects(index: Integer; const p: TVector);
 
     procedure SetRanges(const val: TBitmapFontRanges);
     procedure SetGlyphs(const val: TGLPicture);
@@ -185,15 +190,16 @@ type
     procedure SetMinFilter(AValue: TGLMinFilter);
     procedure SetGlyphsAlpha(val: TGLTextureImageAlpha);
 
+    procedure TextureChanged;
     procedure FreeTextureHandle; dynamic;
-    function TextureFormat: Integer; dynamic;
+    function  TextureFormat: Integer; dynamic;
 
     procedure InvalidateUsers;
-    function CharactersPerRow: Integer;
+    function  CharactersPerRow: Integer;
     procedure GetCharTexCoords(ch: widechar; var topLeft, bottomRight: TTexPoint);
-    procedure GetICharTexCoords(chi: integer; var topLeft, bottomRight: TTexPoint);
+    procedure GetICharTexCoords(var ARci: TRenderContextInfo; chi: Integer; out topLeft, bottomRight: TTexPoint);
     procedure PrepareImage; virtual;
-    procedure PrepareParams(var rci: TRenderContextInfo);
+    procedure PrepareParams(var ARci: TRenderContextInfo);
 
     {: A single bitmap containing all the characters.<p>
        The transparent color is that of the top left pixel. }
@@ -233,7 +239,7 @@ type
        The current matrix is blindly used, meaning you can render all kinds
        of rotated and linear distorted text with this method, OpenGL
        Enable states are also possibly altered. }
-    procedure RenderString(var rci: TRenderContextInfo;
+    procedure RenderString(var ARci: TRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False); overload; virtual;
@@ -243,7 +249,7 @@ type
        with TGLCanvas }
     procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload;
     procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload;
-    function TextWidth(const text: UnicodeString): Integer;
+    function  TextWidth(const text: UnicodeString): Integer;
 
     function  CharacterToTileIndex(aChar: widechar): Integer; virtual;
     function  TileIndexToChar(aIndex: integer): widechar; virtual;
@@ -252,13 +258,16 @@ type
     {: Get the actual width for this char. }
     function  GetCharWidth(ch: widechar): Integer;
     {: Get the actual pixel width for this string. }
-    function  CalcStringWidth(const aText: UnicodeString): Integer; virtual;
+    function  CalcStringWidth(const aText: UnicodeString): Integer; overload; virtual;
 
     // make texture if needed
-    procedure CheckTexture(var rci: TRenderContextInfo);
+    procedure CheckTexture(var ARci: TRenderContextInfo);
 
     {: Height of a single character. }
     property CharHeight: Integer read FCharHeight write SetCharHeight default 16;
+
+    property TextureWidth : integer read FTextureWidth write FTextureWidth;
+    property TextureHeight: integer read FTextureHeight write FTextureHeight;
   end;
 
   // TGLBitmapFont
@@ -607,7 +616,7 @@ begin
   FUsers := TList.Create;
   FMinFilter := miLinear;
   FMagFilter := maLinear;
-  FTextureHandle := TGLTextureHandle.Create;
+  FTextures  := TList.Create;
 end;
 
 // Destroy
@@ -615,28 +624,13 @@ end;
 
 destructor TGLCustomBitmapFont.Destroy;
 begin
+  FreeTextureHandle;
   inherited Destroy;
-  FTextureHandle.Free;
+  FTextures.Free;
   FRanges.Free;
   FGlyphs.Free;
   Assert(FUsers.Count = 0);
   FUsers.Free;
-end;
-
-// force texture when needed
-procedure TGLCustomBitmapFont.CheckTexture(var rci: TRenderContextInfo);
-begin
-  if FTextureHandle.IsDataNeedUpdate then
-  begin
-    // prepare handle
-    FTextureHandle.AllocateHandle;
-    // texture registration
-    FTextureHandle.Target := ttTexture2D;
-    rci.GLStates.TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
-    PrepareImage;
-    PrepareParams(rci);
-    FTextureHandle.NotifyDataUpdated;
-  end;
 end;
 
 // GetCharWidth
@@ -646,11 +640,11 @@ function TGLCustomBitmapFont.GetCharWidth(ch: widechar): Integer;
 var
   chi: Integer;
 begin
-  if Length(FCharWidths) = 0 then
-    ResetCharWidths;
   chi := CharacterToTileIndex(ch);
+  if Length(FChars) = 0 then
+    ResetCharWidths;
   if chi >= 0 then
-       Result := FCharWidths[chi]
+       Result := FChars[chi].w
   else Result := 0;
 end;
 
@@ -665,7 +659,7 @@ begin
   begin
     Result := -HSpace + Length(aText) * (HSpaceFix + HSpace);
     for i := 1 to Length(aText) do
-      Result := Result + GetCharWidth(WideChar(aText[i]));
+      Result := Result + GetCharWidth(aText[i]);
   end
   else
     Result := 0;
@@ -678,15 +672,13 @@ procedure TGLCustomBitmapFont.ResetCharWidths(w: Integer = -1);
 var
   i: Integer;
 begin
+  FCharsLoaded := false;
   i := CharacterCount;
-  if i > GLS_FONT_CHARS_COUNT then
-    i := GLS_FONT_CHARS_COUNT;
-
-  if Length(FCharWidths) < i then
-      SetLength(FCharWidths, i);
+  if Length(FChars) < i then
+      SetLength(FChars, i);
   if w < 0 then w := CharWidth;
-  for i := 0 to High(FCharWidths) do
-    FCharWidths[i] := w;
+  for i := 0 to High(FChars) do
+    FChars[i].w := w;
 end;
 
 // SetCharWidths
@@ -695,18 +687,7 @@ end;
 procedure TGLCustomBitmapFont.SetCharWidths(index, value: Integer);
 begin
   if index >= 0 then
-    FCharWidths[index] := value;
-end;
-
-// SetCharRects
-//
-
-procedure TGLCustomBitmapFont.SetCharRects(index: Integer; const p: TVector);
-begin
-  if Length(FCharRects) < CharacterCount then
-    Setlength(FCharRects, CharacterCount);
-  if index < CharacterCount then
-    FCharRects[index] := p;
+    FChars[index].w := value;
 end;
 
 // SetRanges
@@ -812,7 +793,7 @@ begin
   if AValue <> FMagFilter then
   begin
     FMagFilter := AValue;
-    FTextureHandle.NotifyChangesOfData;
+    TextureChanged;
     InvalidateUsers;
   end;
 end;
@@ -825,7 +806,7 @@ begin
   if AValue <> FMinFilter then
   begin
     FMinFilter := AValue;
-    FTextureHandle.NotifyChangesOfData;
+    TextureChanged;
     InvalidateUsers;
   end;
 end;
@@ -838,7 +819,7 @@ begin
   if val <> FGlyphsAlpha then
   begin
     FGlyphsAlpha := val;
-    FTextureHandle.NotifyChangesOfData;
+    TextureChanged;
     InvalidateUsers;
   end;
 end;
@@ -849,6 +830,10 @@ end;
 procedure TGLCustomBitmapFont.OnGlyphsChanged(Sender: TObject);
 begin
   InvalidateUsers;
+  if FTextureWidth = 0 then
+    FTextureWidth := RoundUpToPowerOf2(Glyphs.Width);
+  if FTextureHeight = 0 then
+    FTextureHeight := RoundUpToPowerOf2(Glyphs.Height);
 end;
 
 // RegisterUser
@@ -875,65 +860,84 @@ procedure TGLCustomBitmapFont.PrepareImage;
 var
   bitmap: TGLBitmap;
   bitmap32: TGLBitmap32;
-  cap, w, h: Integer;
+  cap: Integer;
+  x, y, w, h : integer;
+  t : TGLTextureHandle;
 begin
-  bitmap32 := TGLBitmap32.Create;
-  w := RoundUpToPowerOf2(Glyphs.Width);
-  h := RoundUpToPowerOf2(Glyphs.Height);
-  if (w <> Glyphs.Width) or (h <> Glyphs.Height) then
-  begin
-    bitmap := TGLBitmap.Create;
-    with bitmap do
-    begin
-      PixelFormat := glpf32bit;
-      Width := w;
-      Height := h;
-      Canvas.Draw(0, 0, Glyphs.Graphic);
-    end;
-    bitmap32.Assign(bitmap);
-    bitmap.Destroy;
-  end
-  else
-    bitmap32.Assign(Glyphs.bitmap);
+  x := 0; y := 0; w := Glyphs.Width; h := Glyphs.Height;
 
-  bitmap32.Narrow;
-  with bitmap32 do
+  FTextRows := 1 + (h - 1) div FTextureWidth;
+  FTextCols := 1 + (w - 1) div FTextureHeight;
+
+  bitmap := TGLBitmap.Create;
+  with bitmap do
   begin
-    case FGlyphsAlpha of
-      tiaAlphaFromIntensity:
-        SetAlphaFromIntensity;
-      tiaSuperBlackTransparent:
-        SetAlphaTransparentForColor($000000);
-      tiaLuminance:
-        SetAlphaFromIntensity;
-      tiaLuminanceSqrt:
-        begin
-          SetAlphaFromIntensity;
-          SqrtAlpha;
-        end;
-      tiaOpaque:
-        SetAlphaToValue(255);
-      tiaDefault,
-        tiaTopLeftPointColorTransparent:
-        SetAlphaTransparentForColor(Data[Width * (Height - 1)]);
-    else
-      Assert(False);
-    end;
-    RegisterAsOpenGLTexture(
-      FTextureHandle,
-      not (FMinFilter in [miNearest, miLinear]),
-      TextureFormat,
-      FTextureWidth,
-      FTextureHeight,
-      cap);
-    Free;
+    PixelFormat := glpf32bit;
+    Width  := RoundUpToPowerOf2(FTextureWidth);
+    Height := RoundUpToPowerOf2(FTextureHeight);
   end;
+
+  bitmap32 := TGLBitmap32.Create;
+
+  while (x < w) and (y < h) do
+  begin
+    T := TGLTextureHandle.Create;
+    // prepare handle
+    T.AllocateHandle;
+    // texture registration
+    T.Target := ttTexture2D;
+
+    //copy data
+    bitmap.Canvas.Draw(-x, -y, Glyphs.Graphic);
+    //Clipboard.Assign(bitmap);
+    bitmap32.Assign(bitmap);
+    bitmap32.Narrow;
+    with bitmap32 do
+    begin
+      case FGlyphsAlpha of
+        tiaAlphaFromIntensity:
+          SetAlphaFromIntensity;
+        tiaSuperBlackTransparent:
+          SetAlphaTransparentForColor($000000);
+        tiaLuminance:
+          SetAlphaFromIntensity;
+        tiaLuminanceSqrt:
+          begin
+            SetAlphaFromIntensity;
+            SqrtAlpha;
+          end;
+        tiaOpaque:
+          SetAlphaToValue(255);
+        tiaDefault,
+          tiaTopLeftPointColorTransparent:
+          SetAlphaTransparentForColor(Data[Width * (Height - 1)]);
+      else
+        Assert(False);
+      end;
+      RegisterAsOpenGLTexture(
+        t,
+        not (FMinFilter in [miNearest, miLinear]),
+        TextureFormat,
+        cap,
+        cap,
+        cap);
+    end;
+    FTextures.Add(t);
+    inc(x, FTextureWidth);
+    if x >= w then
+    begin
+      inc(y, FTextureHeight);
+      x := 0;
+    end;
+  end;
+  bitmap.Free;
+  bitmap32.Free;
 end;
 
 // PrepareParams
 //
 
-procedure TGLCustomBitmapFont.PrepareParams(var rci: TRenderContextInfo);
+procedure TGLCustomBitmapFont.PrepareParams(var ARci: TRenderContextInfo);
 const
   cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =
     (GL_NEAREST, GL_LINEAR);
@@ -943,7 +947,7 @@ const
     GL_LINEAR_MIPMAP_LINEAR);
 begin
 
-  with rci.GLStates do
+  with ARci.GLStates do
   begin
     UnpackAlignment := 4;
     UnpackRowLength := 0;
@@ -976,7 +980,7 @@ end;
 // RenderString
 //
 
-procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
+procedure TGLCustomBitmapFont.RenderString(var ARci: TRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
@@ -1017,15 +1021,16 @@ procedure TGLCustomBitmapFont.RenderString(var rci: TRenderContextInfo;
 
 var
   i, chi: Integer;
+  pch   : PCharInfo;
   topLeft, bottomRight: TTexPoint;
   vTopLeft, vBottomRight: TVector;
-  deltaH, deltaV, spaceDeltaH: Single;
+  deltaV, spaceDeltaH: Single;
   currentChar: widechar;
 begin
   if (aText = '') then
     Exit;
   // prepare texture if necessary
-  CheckTexture(rci);
+  CheckTexture(ARci);
   // precalcs
   if Assigned(aPosition) then
     MakePoint(vTopLeft, aPosition[0] + AlignmentAdjustement(1), aPosition[1] + LayoutAdjustement, 0)
@@ -1040,16 +1045,15 @@ begin
   vBottomRight[3] := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
-  with rci.GLStates do
+  with ARci.GLStates do
   begin
     ActiveTextureEnabled[ttTexture2D] := True;
     Disable(stLighting);
     Enable(stBlend);
     SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    TextureBinding[0, ttTexture2D] := FTextureHandle.Handle;
+    FLastTexture := nil;
   end;
 
-  GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   // start rendering
   GL.Color4fv(@aColor);
   GL.Begin_(GL_QUADS);
@@ -1074,12 +1078,12 @@ begin
     else
       chi := CharacterToTileIndex(currentChar);
       if chi < 0 then continue; //not found
-      deltaH := CharWidths[chi];
-      if deltaH > 0 then
+      pch := @FChars[chi];
+      if pch.w > 0 then
       with GL do
       begin
-        GetICharTexCoords(chi, topLeft, bottomRight);
-        vBottomRight[0] := vTopLeft[0] + deltaH;
+        GetICharTexCoords(ARci, chi, topLeft, bottomRight);
+        vBottomRight[0] := vTopLeft[0] + pch.w;
 
         TexCoord2fv(@topLeft);
         Vertex4fv(@vTopLeft);
@@ -1093,14 +1097,14 @@ begin
         TexCoord2f(bottomRight.S, topLeft.T);
         Vertex2f(vBottomRight[0], vTopLeft[1]);
 
-        vTopLeft[0] := vTopLeft[0] + deltaH + HSpace;
+        vTopLeft[0] := vTopLeft[0] + pch.w + HSpace;
       end;
     end;
   end;
   GL.End_;
   // unbind texture
-  rci.GLStates.TextureBinding[0, ttTexture2d] := 0;
-  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+  ARci.GLStates.TextureBinding[0, ttTexture2d] := 0;
+  ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
 // TextOut
@@ -1152,34 +1156,22 @@ begin
 end;
 
 procedure TGLCustomBitmapFont.GetCharTexCoords(ch: widechar; var topLeft, bottomRight: TTexPoint);
-begin
-  GetICharTexCoords(CharacterToTileIndex(ch), topLeft, bottomRight);
-end;
-
-// TileIndexToTexCoords
-//
-
-procedure TGLCustomBitmapFont.GetICharTexCoords(chi: integer; var topLeft, bottomRight: TTexPoint);
 var
-  carX, carY: Integer;
-  tileIndex: Integer;
-  p: PVector;
+  chi, tileIndex: Integer;
+  ci: TCharInfo;
+  r : integer;
 begin
-  if Length(FCharRects) = 0 then
+  chi := CharacterToTileIndex(ch);
+  if not FCharsLoaded then
   begin
     ResetCharWidths;
-    SetLength(FCharRects, CharacterCount);
-    if (CharactersPerRow > 0) then
-      for tileIndex := 0 to CharacterCount - 1 do
-      begin
-        p := @FCharRects[tileIndex];
-        carX := (tileIndex mod CharactersPerRow) * (CharWidth + GlyphsIntervalX);
-        carY := (tileIndex div CharactersPerRow) * (CharHeight + GlyphsIntervalY);
-        p[0] := (carX + 0.05) / FTextureWidth;
-        p[1] := (FTextureHeight - (carY + 0.05)) / FTextureHeight;
-        p[2] := (carX + CharWidths[tileIndex] - 0.05) / FTextureWidth;
-        p[3] := (FTextureHeight - (carY + CharHeight - 0.05)) / FTextureHeight;
-      end;
+    FCharsLoaded := true;
+    r := CharactersPerRow;
+    for tileIndex := 0 to CharacterCount - 1 do
+    begin
+      FChars[tileIndex].l := (tileIndex mod r) * (CharWidth + GlyphsIntervalX);
+      FChars[tileIndex].t := (tileIndex div r) * (CharHeight + GlyphsIntervalY);
+    end;
   end;
 
   if (chi < 0) or (chi >= CharacterCount) then
@@ -1189,13 +1181,72 @@ begin
     bottomRight := NullTexPoint;
     exit;
   end;
-  if chi >= Length(FCharRects) then
-    chi := 0;
-  p := @FCharRects[chi];
-  topLeft.S := p[0];
-  topLeft.T := p[1];
-  bottomRight.S := p[2];
-  bottomRight.T := p[3];
+
+  ci := FChars[chi];
+  ci.l := ci.l mod FTextureWidth;
+  ci.t := ci.t mod FTextureHeight;
+
+  topLeft.S := ci.l / FTextureWidth;
+  topLeft.T := 1 - ci.t / FTextureHeight;
+  bottomRight.S := (ci.l + ci.w) / FTextureWidth;
+  bottomRight.T := 1 - (ci.t + CharHeight) / FTextureHeight;
+end;
+
+// TileIndexToTexCoords
+// it also activates the target texture
+
+procedure TGLCustomBitmapFont.GetICharTexCoords(var ARci: TRenderContextInfo;
+  chi: Integer; out topLeft, bottomRight: TTexPoint);
+var
+  tileIndex: Integer;
+  ci: TCharInfo;
+  t: TGLTextureHandle;
+  r,c : integer;
+begin
+  if not FCharsLoaded then
+  begin
+    ResetCharWidths;
+    FCharsLoaded := true;
+    r := CharactersPerRow;
+    for tileIndex := 0 to CharacterCount - 1 do
+    begin
+      FChars[tileIndex].l := (tileIndex mod r) * (CharWidth + GlyphsIntervalX);
+      FChars[tileIndex].t := (tileIndex div r) * (CharHeight + GlyphsIntervalY);
+    end;
+  end;
+
+  if (chi < 0) or (chi >= CharacterCount) then
+  begin
+    //invalid char
+    topLeft := NullTexPoint;
+    bottomRight := NullTexPoint;
+    exit;
+  end;
+
+  ci := FChars[chi];
+
+  c := ci.l div FTextureWidth;
+  r := ci.t div FTextureHeight;
+  ci.l := ci.l mod FTextureWidth;
+  ci.t := ci.t mod FTextureHeight;
+  t := FTextures[r * FTextCols + c];
+
+
+
+  topLeft.S := ci.l / FTextureWidth;
+  topLeft.T := 1 - ci.t / FTextureHeight;
+  bottomRight.S := (ci.l + ci.w) / FTextureWidth;
+  bottomRight.T := 1 - (ci.t + CharHeight) / FTextureHeight;
+
+  if t <> FLastTexture then
+  with GL do
+  begin
+    FLastTexture := t;
+    End_;
+    ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
+    TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    Begin_(GL_QUADS);
+  end;
 end;
 
 // InvalidateUsers
@@ -1205,8 +1256,8 @@ procedure TGLCustomBitmapFont.InvalidateUsers;
 var
   i: Integer;
 begin
-  ResetCharWidths;
-  SetLength(FCharRects, 0);
+  FCharsLoaded := false;
+  FTextureModified := true;
   for i := FUsers.Count - 1 downto 0 do
     TGLBaseSceneObject(FUsers[i]).NotifyChange(Self);
 end;
@@ -1215,8 +1266,53 @@ end;
 //
 
 procedure TGLCustomBitmapFont.FreeTextureHandle;
+var
+  i : Integer;
 begin
-  FTextureHandle.DestroyHandle;
+  FTextureModified := true;
+  for i := 0 to FTextures.Count - 1 do
+    TObject(FTextures[i]).Free;
+  FTextures.Clear;
+end;
+
+procedure TGLCustomBitmapFont.TextureChanged;
+begin
+  FTextureModified := true;
+//  FTextureHandle.NotifyChangesOfData;
+end;
+
+// force texture when needed
+procedure TGLCustomBitmapFont.CheckTexture(var ARci: TRenderContextInfo);
+var
+  T : TGLTextureHandle;
+  i : integer;
+begin
+  if FTextureWidth = 0 then
+  begin
+    FTextureWidth  := CurrentGLContext.GLStates.MaxTextureSize;
+    if FTextureWidth > 512 then FTextureWidth := 512;
+    if FTextureWidth < 64  then FTextureWidth := 64;
+  end;
+  if FTextureHeight = 0 then
+  begin
+    FTextureHeight := CurrentGLContext.GLStates.MaxTextureSize;
+    if FTextureHeight > 512 then FTextureHeight := 512;
+    if FTextureHeight < 64  then FTextureHeight := 64;
+  end;
+
+  if FTextureModified then
+  begin
+    PrepareImage;
+
+    for i := 0 to FTextures.Count-1 do
+    begin
+      T := FTextures[i];
+      ARci.GLStates.TextureBinding[0, ttTexture2D] := T.Handle;
+      PrepareParams(ARci);
+      T.NotifyDataUpdated;
+    end;
+    FTextureModified := false;
+  end;
 end;
 
 // TextureFormat

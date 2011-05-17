@@ -2234,7 +2234,7 @@ begin
       TGLMaterialLibrary, TGLMaterialLibraryEx,
       TGLCadencer,
       TGLGuiLayout,
-      TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
+      TGLBitmapFont, TGLWindowsBitmapFont, 
       TGLScriptLibrary,
       TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer
