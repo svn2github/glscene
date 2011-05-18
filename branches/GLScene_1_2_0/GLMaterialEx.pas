@@ -1392,7 +1392,7 @@ uses
 {$IFDEF FPC}
   LCLType, LResources,
 {$ENDIF}
-  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils, XOpenGL,
+  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils,
   GLSMesh, GLPipelineTransformation;
 
 
@@ -3645,7 +3645,7 @@ end;
 
 procedure TGLMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
 var
-  N, U: Integer;
+  N: Integer;
   LDir: TVector;
 begin
   if FEnabled then
@@ -3655,7 +3655,6 @@ begin
     if Assigned(FLibAsmProg) and not FLibAsmProg.FIsValid then
       exit;
 
-    U := 0;
     for N := 0 to High(FTexProps) do
     begin
       if Assigned(FTexProps[N]) and FTexProps[N].Enabled then
@@ -3669,7 +3668,6 @@ begin
           NormalizeVector(LDir);
           GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
         end;
-        U := U or (1 shl N);
       end;
     end;
 
@@ -3699,22 +3697,6 @@ begin
       ActiveTexture := 0;
 
     end;
-
-    XGL.BeginUpdate;
-    if U > 3 then
-      XGL.MapTexCoordToArbitrary(U)
-    else if (FTexProps[0].Enabled)
-      and (FTexProps[0].MappingMode = tmmUser) then
-      if FTexProps[1].MappingMode = tmmUser then
-        XGL.MapTexCoordToDual
-      else
-        XGL.MapTexCoordToMain
-    else if FTexProps[1].MappingMode = tmmUser then
-      XGL.MapTexCoordToSecond
-    else
-      XGL.MapTexCoordToMain;
-    XGL.EndUpdate;
-
   end;
 end;
 
@@ -3996,8 +3978,6 @@ begin
       begin
         GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
-        if ARci.currentMaterialLevel = mlFixedFunction then
-          XGL.MapTexCoordToMain;
       end;
     end;
 end;

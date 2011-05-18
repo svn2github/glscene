@@ -4,6 +4,7 @@
 {: GLSDrawTechnique<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>18/05/11 - Yar - Added axes drawing
     <li>17/04/11 - Yar - Creation
  </ul></font>
 }
@@ -40,6 +41,7 @@ type
     Mesh: TMeshAtom;
     Material: TGLAbstractLibMaterial;
     Transformation: PTransformationRec;
+    ShowAxes: Boolean;
     ShowAABB: Boolean;
     Changed: Boolean;
     Order: Integer;
@@ -179,6 +181,7 @@ type
   protected
     FBatchList: TList;
     FDrawOrderArray: TDrawOrderArray;
+    FAxesBatch: TDrawBatch;
     function GetDrawTechnique: TGLAbstractDrawTechnique; virtual;
   public
     { Public Declarations }
@@ -190,6 +193,9 @@ type
 
     property DrawTechnique: TGLAbstractDrawTechnique read GetDrawTechnique;
   end;
+
+function GetOrCreateDummyCubeMaterial: TGLAbstractLibMaterial;
+procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
 
 implementation
 
@@ -225,6 +231,81 @@ type
 
 var
   vDrawTechniques: array[0..3] of TGLAbstractDrawTechnique;
+
+function GetOrCreateDummyCubeMaterial: TGLAbstractLibMaterial;
+const
+  cDummyCubeMaterialName = 'GLScene_DummyCube_Material';
+begin
+  Result :=
+    GetInternalMaterialLibrary.Materials.GetLibMaterialByName(cDummyCubeMaterialName);
+  if Result = nil then
+  begin
+    Result := GetInternalMaterialLibrary.Materials.Add;
+    with TGLLibMaterialEx(Result) do
+    begin
+      Name := cDummyCubeMaterialName;
+      FixedFunction.BlendingMode := bmTransparency;
+      FixedFunction.MaterialOptions := [moNoLighting];
+      FixedFunction.LineProperties.Enabled := True;
+      FixedFunction.LineProperties.StippleFactor := 1;
+      FixedFunction.LineProperties.Smooth := True;
+    end;
+  end;
+end;
+
+procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
+begin
+  with AMesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType3f);
+
+      BeginAssembly(mpLINES);
+
+      Attribute3f(attrColor, 0.5, 0.0, 0.0);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, -AnAxisLen, 0, 0);
+      EmitVertex;
+
+      Attribute3f(attrColor, 1.0, 0.0, 0.0);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, AnAxisLen, 0, 0);
+      EmitVertex;
+
+      Attribute3f(attrColor, 0.0, 0.5, 0.0);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, 0, -AnAxisLen, 0);
+      EmitVertex;
+
+      Attribute3f(attrColor, 0.0, 1.0, 0.0);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, 0, AnAxisLen, 0);
+      EmitVertex;
+
+      Attribute3f(attrColor, 0.0, 0.0, 0.5);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, 0, 0, -AnAxisLen);
+      EmitVertex;
+
+      Attribute3f(attrColor, 0.0, 0.0, 1.0);
+      Attribute3f(attrPosition, NullVector);
+      EmitVertex;
+      Attribute3f(attrPosition, 0, 0, AnAxisLen);
+      EmitVertex;
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
+end;
 
 procedure ReleaseDrawTechniques;
 var
@@ -468,17 +549,17 @@ begin
       LMesh.FDLO.NotifyDataUpdated;
     end;
 
-    if Assigned(ABatch.Material) then
-    begin
-      ARci.PipelineTransformation.Push(ABatch.Transformation);
-      try
+    ARci.PipelineTransformation.Push(ABatch.Transformation);
+    try
+      if Assigned(ABatch.Material) then
         ABatch.Material.Apply(ARci);
-        repeat
-          LMesh.FDLO.CallList;
-        until not ABatch.Material.UnApply(ARci);
-      finally
-        ARci.PipelineTransformation.Pop;
-      end;
+      repeat
+        LMesh.FDLO.CallList;
+        if not Assigned(ABatch.Material) then
+          break;
+      until not ABatch.Material.UnApply(ARci);
+    finally
+      ARci.PipelineTransformation.Pop;
     end;
 
   end;
@@ -1233,9 +1314,6 @@ begin
     LMesh.FBufferRevision := LMesh.FRevisionNum;
   end;
 
-  if ABatch.Material = nil then
-    exit;
-
   ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
@@ -1250,7 +1328,8 @@ begin
       else
         LOffset := Pointer(FElementBufferMap.Sectors[LMesh.FElementSectorIndex].Offset);
 
-      ABatch.Material.Apply(ARci);
+      if Assigned(ABatch.Material) then
+        ABatch.Material.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       repeat
@@ -1262,6 +1341,8 @@ begin
             LOffset)
         else
           DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+        if not Assigned(ABatch.Material) then
+          break;
       until not ABatch.Material.UnApply(ARci);
     finally
       ARci.PipelineTransformation.Pop;
@@ -1325,14 +1406,12 @@ begin
     LMesh.FBufferRevision := LMesh.FRevisionNum;
   end;
 
-  if ABatch.Material = nil then
-    exit;
-
   ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
       storeRci := ARci;
-      ABatch.Material.Apply(ARci);
+      if Assigned(ABatch.Material) then
+        ABatch.Material.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
@@ -1383,6 +1462,9 @@ begin
               LOffset)
           else
             DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+
+          if not Assigned(ABatch.Material) then
+            break;
         until not ABatch.Material.UnApply(ARci);
       end;
     finally
@@ -1416,14 +1498,12 @@ begin
     LMesh.FBufferRevision := LMesh.FRevisionNum;
   end;
 
-  if ABatch.Material = nil then
-    exit;
-
   ARci.PipelineTransformation.Push(ABatch.Transformation);
   with GL do
     try
       storeRci := ARci;
-      ABatch.Material.Apply(ARci);
+      if Assigned(ABatch.Material) then
+        ABatch.Material.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
@@ -1470,6 +1550,7 @@ begin
               if glType = GL_UNSIGNED_SHORT then
               begin
                 LShift := LShift * SizeOf(TGLushort);
+                RoundTo(LShift, 4);
                 glType := GL_UNSIGNED_INT;
               end
               else
@@ -1495,6 +1576,9 @@ begin
               LOffset)
           else
             DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+
+          if not Assigned(ABatch.Material) then
+            break;
         until not ABatch.Material.UnApply(ARci);
       end;
     finally
@@ -1532,11 +1616,14 @@ constructor TGLRenderManager.Create(AOwner: TPersistent);
 begin
   inherited;
   FBatchList := TList.Create;
+  FAxesBatch.Mesh := TMeshAtom.Create;
+  AxesBuildMesh(FAxesBatch.Mesh, 1000);
 end;
 
 destructor TGLRenderManager.Destroy;
 begin
   FBatchList.Destroy;
+  FAxesBatch.Mesh.Destroy;
   inherited;
 end;
 
@@ -1609,6 +1696,7 @@ begin
       LDrawTech.DrawBatch(ARci, pBatch^);
     end;
 
+    // Draw AABB
     LFirst := True;
     try
       for I := 0 to C - 1 do
@@ -1629,6 +1717,28 @@ begin
     finally
       if not LFirst then
         LDrawTech.DoAfterAABBDrawing(ARci);
+    end;
+
+    // Draw Axes
+    LFirst := True;
+    try
+      for I := 0 to C - 1 do
+      begin
+        pBatch := FBatchList[FDrawOrderArray[I].Index];
+        FAxesBatch.Transformation := pBatch^.Transformation;
+        if pBatch^.ShowAxes then
+        begin
+          if LFirst then
+          begin
+            GetOrCreateDummyCubeMaterial.Apply(ARci);
+            LFirst := False;
+          end;
+          LDrawTech.DrawBatch(ARci, FAxesBatch);
+        end;
+      end;
+    finally
+      if not LFirst then
+        GetOrCreateDummyCubeMaterial.UnApply(ARci);
     end;
   end;
 end;

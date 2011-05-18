@@ -29,7 +29,8 @@ uses
   GLContext,
   BaseClasses,
   GLCoordinates,
-  Spline;
+  Spline,
+  GLSDrawTechnique;
 
 {$I GLScene.inc}
 
@@ -48,10 +49,9 @@ type
 
   protected
     { Protected Declarations }
+    FBatch: TDrawBatch;
     function StoreCoordinate(AIndex: Integer): Boolean;
-
     function GetDisplayName: string; override;
-
   public
     { Public Declarations }
     constructor Create(ACollection: TCollection); override;
@@ -82,9 +82,6 @@ type
   // TGLNodes
   //
   TGLNodes = class(TOwnedCollection)
-  private
-    { Private Declarations }
-
   protected
     { Protected Declarations }
     procedure SetItems(index: Integer; const val: TGLNode);
@@ -146,6 +143,8 @@ type
 
     function CreateNewCubicSpline: TCubicSpline;
 
+    procedure RegisterNodeBatches(AManager: TGLRenderManager);
+    procedure UnRegisterNodeBatches(AManager: TGLRenderManager);
   end;
 
   TGLNodesClass = class of TGLNodes;
@@ -155,7 +154,8 @@ implementation
 uses
   SysUtils,
   XOpenGL
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLNode ------------------
@@ -321,6 +321,14 @@ begin
     Result := nil;
 end;
 
+procedure TGLNodes.UnRegisterNodeBatches(AManager: TGLRenderManager);
+var
+  I: Integer;
+begin
+  for I := Count - 1 downto 0 do
+    AManager.UnRegisterBatch(Items[I].FBatch);
+end;
+
 // Update
 //
 
@@ -475,8 +483,8 @@ function TGLNodes.Vector(i: Integer): TAffineVector;
       CalcUsingNext;
   end;
 var
-  j:Integer;
-  vecnull : Boolean;
+  j: Integer;
+  vecnull: Boolean;
 begin
   Assert((i >= 0) and (i < Count));
   if i = 0 then
@@ -491,22 +499,22 @@ begin
   if VectorNorm(Result) < 1e-5 then
   begin
     // avoid returning null vector which generates display bugs in geometry
-    j:=1;
-    vecnull:=True;
-    while (i+j < Count) and (vecnull) do
+    j := 1;
+    vecnull := True;
+    while (i + j < Count) and (vecnull) do
     begin
-      VectorSubtract(Items[i+j].AsVector, Items[i].AsVector, Result);
-      if(VectorNorm(Result) > 1e-5)then
-        vecnull:=False
+      VectorSubtract(Items[i + j].AsVector, Items[i].AsVector, Result);
+      if (VectorNorm(Result) > 1e-5) then
+        vecnull := False
       else
         Inc(j);
     end;
-    j:=1;
-    while (i-j > 0) and (vecnull)  do
+    j := 1;
+    while (i - j > 0) and (vecnull) do
     begin
-      VectorSubtract(Items[i].AsVector, Items[i-j].AsVector, Result);
-      if(VectorNorm(Result) > 1e-5)then
-        vecnull:=False
+      VectorSubtract(Items[i].AsVector, Items[i - j].AsVector, Result);
+      if (VectorNorm(Result) > 1e-5) then
+        vecnull := False
       else
         Inc(j);
     end;
@@ -665,6 +673,15 @@ begin
   FreeMem(za);
 end;
 
+
+procedure TGLNodes.RegisterNodeBatches(AManager: TGLRenderManager);
+var
+  I: Integer;
+begin
+  for I := Count - 1 downto 0 do
+    AManager.RegisterBatch(Items[I].FBatch);
+end;
+
 // RenderTesselatedPolygon
 //
 var
@@ -682,7 +699,7 @@ procedure tessError(errno: TGLEnum);
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Assert(False, IntToStr(errno)+': '+string(gluErrorString(errno)));
+  Assert(False, IntToStr(errno) + ': ' + string(gluErrorString(errno)));
 end;
 
 procedure tessIssueVertex(vertexData: Pointer);

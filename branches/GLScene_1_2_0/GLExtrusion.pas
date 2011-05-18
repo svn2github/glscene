@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLExtrusion<p>
@@ -51,7 +51,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   OpenGLTokens,
   GLContext,
   GLObjects,

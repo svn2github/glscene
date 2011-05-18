@@ -136,7 +136,7 @@ type
     procedure MakeCPUSkyTexture; stdcall;
     procedure MakeGPUOpticalDepth(var ARci: TRenderContextInfo);
     procedure MakeGPUMieRayleighBuffer(var ARci: TRenderContextInfo);
-    procedure BuildMesh;
+    procedure BuildMesh; stdcall;
     procedure SetScene(const value: TGLScene); override;
     procedure Loaded; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -1289,28 +1289,54 @@ end;
 
 procedure TGLCustomNishitaSky.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
+
+  procedure DoRenderSelf;
+  begin
+    if ocStructure in Changes then
+    begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if IsServiceContextAvaible then
+      begin
+        if not Assigned(FFinishEvent) then
+        begin
+          FFinishEvent := TFinishTaskEvent.Create;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end
+        else if FFinishEvent.WaitFor(0) = wrSignaled then
+        begin
+          FFinishEvent.ResetEvent;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end;
+        exit;
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+        BuildMesh;
+    end;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    FTransformation.FViewMatrix[3, 0] := 0;
+    FTransformation.FViewMatrix[3, 1] := 0;
+    FTransformation.FViewMatrix[3, 2] := 0;
+    FTransformation.FStates := cAllStatesChanged;
+    FBatch.Order := ARci.orderCounter;
+  end;
+
 var
   vp: TVector4i;
   storeFrameBuffer: TGLuint;
 begin
-  // store states
-  vp := ARci.GLStates.ViewPort;
-  storeFrameBuffer := ARci.GLStates.DrawFrameBuffer;
-  Update(ARci);
-  // restore states
-  ARci.GLStates.ViewPort := vp;
-  ARci.GLStates.DrawFrameBuffer := storeFrameBuffer;
-
-  if ocStructure in Changes then
+  if ARenderSelf then
   begin
-    BuildMesh;
+    // store states
+    vp := ARci.GLStates.ViewPort;
+    storeFrameBuffer := ARci.GLStates.DrawFrameBuffer;
+    Update(ARci);
+    // restore states
+    ARci.GLStates.ViewPort := vp;
+    ARci.GLStates.DrawFrameBuffer := storeFrameBuffer;
+
+    DoRenderSelf;
   end;
-  FTransformation := ARci.PipelineTransformation.StackTop;
-  FTransformation.FViewMatrix[3, 0] := 0;
-  FTransformation.FViewMatrix[3, 1] := 0;
-  FTransformation.FViewMatrix[3, 2] := 0;
-  FTransformation.FStates := cAllStatesChanged;
-  FBatch.Order := ARci.orderCounter;
 
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);

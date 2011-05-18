@@ -176,8 +176,11 @@ type
   TGLSceneObjectEx = class(TGLSceneObject)
   private
     FMeshExtras: TMeshExtras;
+    FFinishEvent: TFinishTaskEvent;
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
+    function GetShowAxes: Boolean;
+    procedure SetShowAxesEx(AValue: Boolean);
     procedure SetShowAABB(const Value: Boolean);
     function GetShowAABB: Boolean;
     procedure SetMeshExtras(const Value: TMeshExtras);
@@ -185,7 +188,7 @@ type
     { Protected Declarations }
     FBatch: TDrawBatch;
     FTransformation: TTransformationRec;
-    procedure BuildMesh; virtual; abstract;
+    procedure BuildMesh; virtual; stdcall; abstract;
     function GetLibMaterialName: string; virtual;
     procedure SetLibMaterialName(const Value: string); virtual;
     procedure SetScene(const value: TGLScene); override;
@@ -210,9 +213,9 @@ type
       write SetMaterialLibrary;
     property LibMaterialName: string read GetLibMaterialName
       write SetLibMaterialName;
+    property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx;
     property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
-    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default
-      [];
+    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default  [];
   end;
 
   // TGLVisibilityDeterminationEvent
@@ -304,7 +307,7 @@ type
     FStyle: TPlaneStyles;
   protected
     { Protected Declarations }
-    procedure BuildMesh; override;
+    procedure BuildMesh; override; stdcall;
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
     procedure SetXOffset(const Value: TGLFloat);
@@ -357,7 +360,7 @@ type
     FAlign: TGLSpriteAlign;
   protected
     { Protected Declarations }
-    procedure BuildMesh; override;
+    procedure BuildMesh; override; stdcall;
     procedure SetWidth(const val: TGLFloat);
     procedure SetHeight(const val: TGLFloat);
     procedure SetRotation(const val: TGLFloat);
@@ -372,6 +375,9 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil;
+      intersectNormal: PVector = nil): Boolean; override;
 
     procedure SetSize(const Width, Height: TGLFloat);
     // : Set width and height to "size"
@@ -533,22 +539,19 @@ type
   private
     { Private Declarations }
     FColor: TGLColor;
-
   protected
     { Protected Declarations }
     procedure SetColor(const val: TGLColor);
     procedure OnColorChange(Sender: TObject);
     function StoreColor: Boolean;
-
+//    procedure SetBatch();
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-
   published
     { Published Declarations }
-
     { : The node color.<p>
       Can also defined the line color (interpolated between nodes) if
       loUseNodeColorForLines is set (in TGLLines). }
@@ -567,63 +570,11 @@ type
     procedure NotifyChange; override;
   end;
 
-  // TGLLineBase
-  //
-  { : Base class for line objects.<p>
-    Introduces line style properties (width, color...). }
-  TGLLineBase = class(TGLImmaterialSceneObject)
-  private
-    { Private Declarations }
-    FLineColor: TGLColor;
-    FLinePattern: TGLushort;
-    FLineWidth: Single;
-    FAntiAliased: Boolean;
-
-  protected
-    { Protected Declarations }
-    procedure SetLineColor(const Value: TGLColor);
-    procedure SetLinePattern(const Value: TGLushort);
-    procedure SetLineWidth(const val: Single);
-    function StoreLineWidth: Boolean;
-    procedure SetAntiAliased(const val: Boolean);
-
-    { : Setup OpenGL states according to line style.<p>
-      You must call RestoreLineStyle after drawing your lines.<p>
-      You may use nested calls with SetupLineStyle/RestoreLineStyle. }
-    procedure SetupLineStyle(var rci: TRenderContextInfo);
-
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure Assign(Source: TPersistent); override;
-    procedure NotifyChange(Sender: TObject); override;
-
-  published
-    { Published Declarations }
-    { : Indicates if OpenGL should smooth line edges.<p>
-      Smoothed lines looks better but are poorly implemented in most OpenGL
-      drivers and take *lots* of rendering time. }
-    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
-      default False;
-    { : Default color of the lines. }
-    property LineColor: TGLColor read FLineColor write SetLineColor;
-    { : Bitwise line pattern.<p>
-      For instance $FFFF (65535) is a white line (stipple disabled), $0000
-      is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
-    property LinePattern: TGLushort read FLinePattern write SetLinePattern
-      default $FFFF;
-    { : Default width of the lines. }
-    property LineWidth: Single read FLineWidth write SetLineWidth
-      stored StoreLineWidth;
-    property Visible;
-  end;
-
   // TGLNodedLines
   //
   { : Class that defines lines via a series of nodes.<p>
     Base class, does not render anything. }
-  TGLNodedLines = class(TGLLineBase)
+  TGLNodedLines = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FNodes: TGLLinesNodes;
@@ -631,7 +582,7 @@ type
     FNodeColor: TGLColor;
     FNodeSize: Single;
     FOldNodeColor: TColorVector;
-
+    FNodeMesh: TMeshAtom;
   protected
     { Protected Declarations }
     procedure SetNodesAspect(const Value: TLineNodesAspect);
@@ -641,9 +592,8 @@ type
     procedure SetNodeSize(const val: Single);
     function StoreNodeSize: Boolean;
 
-    procedure DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
-      Color: TGLColor);
-
+    procedure BuildNodeMesh;
+    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -712,7 +662,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+//    procedure BuildList(var rci: TRenderContextInfo); override;
 
     property NURBSKnots: TSingleList read FNURBSKnots;
     property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
@@ -756,7 +706,7 @@ type
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
     { Protected Declarations }
-    procedure BuildMesh; override;
+    procedure BuildMesh; override; stdcall;
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
@@ -825,7 +775,7 @@ type
     procedure SetNormals(const Value: TNormalSmoothing);
   protected
     { Protected Declarations }
-    procedure BuildMesh; override;
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -853,7 +803,7 @@ type
   // TGLPolygonBase
   //
   { : Base class for objects based on a polygon. }
-  TGLPolygonBase = class(TGLSceneObject)
+  TGLPolygonBase = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FDivision: Integer;
@@ -894,12 +844,12 @@ type
   end;
 
   { : Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; size: TGLFloat;
-  stipple: Boolean; const Color: TColorVector);
+procedure CubeWireframeBuildMesh(AMesh: TMeshAtom;
+    ASize: TGLFloat; const AColor: TColorVector);
 { : Issues OpenGL for a unit-size dodecahedron. }
-procedure DodecahedronBuildList;
+procedure DodecahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
 { : Issues OpenGL for a unit-size icosahedron. }
-procedure IcosahedronBuildList;
+procedure IcosahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
 
 var
   TangentAttributeName: AnsiString = 'Tangent';
@@ -915,73 +865,107 @@ implementation
 // -------------------------------------------------------------
 
 uses
+{$IFDEF GLS_SERVICE_CONTEXT}
+  SyncObjs,
+{$ENDIF}
   Spline,
-  XOpenGL,
   GLState,
   GLSLParameter;
 
 const
   cDefaultPointSize: Single = 1.0;
 
-  // CubeWireframeBuildList
-  //
+// CubeWireframeBuildList
+//
 
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; size: TGLFloat;
-  stipple: Boolean; const Color: TColorVector);
+procedure CubeWireframeBuildMesh(AMesh: TMeshAtom;
+  ASize: TGLFloat; const AColor: TColorVector);
 var
-  mi, ma: Single;
+  pn, pp: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
-{$ENDIF}
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.Enable(stLineSmooth);
-  if stipple then
+  pp := ASize * 0.5;
+  pn := -pp;
+  with AMesh do
   begin
-    rci.GLStates.Enable(stLineStipple);
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    rci.GLStates.LineStippleFactor := 1;
-    rci.GLStates.LineStipplePattern := $CCCC;
-  end;
-  rci.GLStates.LineWidth := 1;
-  ma := 0.5 * size;
-  mi := -ma;
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
 
-  GL.Color4fv(@Color);
-  GL.Begin_(GL_LINE_STRIP);
-  // front face
-  GL.Vertex3f(ma, mi, mi);
-  GL.Vertex3f(ma, ma, mi);
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(ma, mi, mi);
-  // partial up back face
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, mi, ma);
-  GL.Vertex3f(mi, ma, ma);
-  GL.Vertex3f(mi, ma, mi);
-  // right side low
-  GL.Vertex3f(ma, ma, mi);
-  GL.End_;
-  GL.Begin_(GL_LINES);
-  // right high
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(mi, ma, ma);
-  // back low
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, ma, mi);
-  // left high
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(mi, mi, ma);
-  GL.End_;
+      BeginAssembly(mpLINES);
+      Attribute3f(attrPosition, pp, pp, pp);
+      Attribute4f(attrColor, AColor);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pp, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pp, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pp, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pp, pn, pn);
+      EmitVertex;
+
+      Attribute3f(attrPosition, pn, pn, pp);
+      EmitVertex;
+      Attribute3f(attrPosition, pn, pn, pn);
+      EmitVertex;
+
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
 end;
 
 // DodecahedronBuildList
 //
 
-procedure DodecahedronBuildList;
+procedure DodecahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
 const
   A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
   B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
@@ -1000,38 +984,60 @@ const
 
 var
   i, j: Integer;
-  n: TAffineVector;
+  n, t, bn: TAffineVector;
   faceIndices: PByteArray;
 begin
-  for i := 0 to 11 do
+  with AMesh do
   begin
-    faceIndices := @polygons[i, 0];
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
 
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+      BeginAssembly(mpTRIANGLE_FAN);
+      Attribute4f(attrColor, AColor);
+      for I := 0 to 11 do
+      begin
+        faceIndices := @polygons[i, 0];
 
-    //    GL.Begin_(GL_TRIANGLE_FAN);
-    //    for j := 0 to 4 do
-    //      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    //    GL.End_;
+        n := CalcPlaneNormal(
+          vertices[faceIndices^[0]],
+          vertices[faceIndices^[1]],
+          vertices[faceIndices^[2]]);
 
-    GL.Begin_(GL_TRIANGLES);
+        t := VectorSubtract(
+          vertices[faceIndices^[0]],
+          vertices[faceIndices^[1]]);
+        NormalizeVector(t);
 
-    for j := 1 to 3 do
-    begin
-      GL.Vertex3fv(@vertices[faceIndices^[0]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j + 1]]);
+        bn := VectorCrossProduct(t, n);
+
+        Attribute3f(attrNormal, n);
+        Attribute3f(attrTangent, t);
+        Attribute3f(attrBinormal, bn);
+        for j := 0 to 4 do
+        begin
+          Attribute3f(attrPosition, vertices[faceIndices^[j]]);
+          EmitVertex;
+        end;
+        RestartStrip;
+      end;
+      EndAssembly;
+      ComputeTexCoords;
+    finally
+      UnLock;
     end;
-    GL.End_;
   end;
 end;
 
 // IcosahedronBuildList
 //
 
-procedure IcosahedronBuildList;
+procedure IcosahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
 const
   A = 0.5;
   B = 0.30901699437; // 1/(1+Sqrt(5))
@@ -1048,21 +1054,53 @@ const
 
 var
   i, j: Integer;
-  n: TAffineVector;
+  n, t, bn: TAffineVector;
   faceIndices: PByteArray;
 begin
-  for i := 0 to 19 do
+  with AMesh do
   begin
-    faceIndices := @triangles[i, 0];
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
 
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+      BeginAssembly(mpTRIANGLES);
+      Attribute4f(attrColor, AColor);
+      for i := 0 to 19 do
+      begin
+        faceIndices := @triangles[i, 0];
 
-    GL.Begin_(GL_TRIANGLES);
-    for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
+        n := CalcPlaneNormal(
+          vertices[faceIndices^[0]],
+          vertices[faceIndices^[1]],
+          vertices[faceIndices^[2]]);
+
+        t := VectorSubtract(
+          vertices[faceIndices^[0]],
+          vertices[faceIndices^[1]]);
+        NormalizeVector(t);
+
+        bn := VectorCrossProduct(t, n);
+
+        Attribute3f(attrNormal, n);
+        Attribute3f(attrTangent, t);
+        Attribute3f(attrBinormal, bn);
+
+        for j := 0 to 2 do
+        begin
+          Attribute3f(attrPosition, vertices[faceIndices^[j]]);
+          EmitVertex;
+        end;
+      end;
+      EndAssembly;
+      ComputeTexCoords;
+    finally
+      UnLock;
+    end;
   end;
 end;
 
@@ -1093,7 +1131,7 @@ var
   LAABB: TAABB;
 begin
   LAABB := FBatch.Mesh.AABB;
-  V3 := VectorAdd(LAABB.min, LAABB.max);
+  V3 := VectorAdd(VectorAbs(LAABB.min), VectorAbs(LAABB.max));
   ScaleVector(V3, 0.5);
   Result := VectorMake(V3);
 end;
@@ -1176,6 +1214,11 @@ begin
   FBatch.ShowAABB := Value;
 end;
 
+procedure TGLSceneObjectEx.SetShowAxesEx(AValue: Boolean);
+begin
+  FBatch.ShowAxes := AValue;
+end;
+
 procedure TGLSceneObjectEx.ApplyExtras;
 begin
   if mesTangents in FMeshExtras then
@@ -1211,24 +1254,46 @@ end;
 destructor TGLSceneObjectEx.Destroy;
 begin
   FBatch.Mesh.Free;
+  FFinishEvent.Free;
   inherited;
 end;
 
 procedure TGLSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
-begin
-  if ARenderSelf then
+
+  procedure DoRenderSelf;
   begin
     if ocStructure in Changes then
     begin
-      BuildMesh;
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if IsServiceContextAvaible then
+      begin
+        if not Assigned(FFinishEvent) then
+        begin
+          FFinishEvent := TFinishTaskEvent.Create;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end
+        else if FFinishEvent.WaitFor(0) = wrSignaled then
+        begin
+          FFinishEvent.ResetEvent;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end;
+        exit;
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+        BuildMesh;
     end;
     FTransformation := ARci.PipelineTransformation.StackTop;
     FBatch.Order := ARci.orderCounter;
   end;
 
+begin
+  if ARenderSelf then
+    DoRenderSelf;
+
   if ARenderChildren then
-    Self.RenderChildren(0, Count - 1, ARci);
+    RenderChildren(0, Count - 1, ARci);
 end;
 
 function TGLSceneObjectEx.GetLibMaterialName: string;
@@ -1247,6 +1312,11 @@ end;
 function TGLSceneObjectEx.GetShowAABB: Boolean;
 begin
   Result := FBatch.ShowAABB;
+end;
+
+function TGLSceneObjectEx.GetShowAxes: Boolean;
+begin
+  Result := FBatch.ShowAxes;
 end;
 
 procedure TGLSceneObjectEx.SetLibMaterialName(const Value: string);
@@ -1309,87 +1379,9 @@ begin
 end;
 
 procedure TGLDummyCube.BuildMesh;
-var
-  pn, pp: Single;
 begin
-  pp := FCubeSize * 0.5;
-  pn := -pp;
-  with FBatch.Mesh do
-  begin
-    Lock;
-    try
-      Clear;
-      DeclareAttribute(attrPosition, GLSLType3f);
-      DeclareAttribute(attrColor, GLSLType4f);
-
-      BeginAssembly(mpLINES);
-      Attribute3f(attrPosition, pp, pp, pp);
-      Attribute4f(attrColor, FEdgeColor.Color);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pp, pp);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pn, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pn, pp);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pp, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pp, pn, pp);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pn, pp, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pn, pp);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pp, pn);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pp, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pn, pn);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pn, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pp, pn);
-      EmitVertex;
-      Attribute3f(attrPosition, pp, pn, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pn, pp, pn);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pn, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pp, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pp, pp, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pn, pp, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pp, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pp, pn, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pp, pn, pn);
-      EmitVertex;
-
-      Attribute3f(attrPosition, pn, pn, pp);
-      EmitVertex;
-      Attribute3f(attrPosition, pn, pn, pn);
-      EmitVertex;
-
-      EndAssembly;
-    finally
-      UnLock;
-    end;
-  end;
-
+  CubeWireframeBuildMesh(FBatch.Mesh, FCubeSize, FEdgeColor.Color);
+  FBatch.Changed := True;
   ClearStructureChanged;
 end;
 
@@ -1404,21 +1396,7 @@ begin
   FEdgeColor.Initialize(clrWhite);
   CamInvarianceMode := cimNone;
   FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Material :=
-    GetInternalMaterialLibrary.Materials.GetLibMaterialByName(cDummyCubeMaterialName);
-  if FBatch.Material = nil then
-  begin
-    FBatch.Material := GetInternalMaterialLibrary.Materials.Add;
-    with TGLLibMaterialEx(FBatch.Material) do
-    begin
-      Name := cDummyCubeMaterialName;
-      FixedFunction.BlendingMode := bmTransparency;
-      FixedFunction.MaterialOptions := [moNoLighting];
-      FixedFunction.LineProperties.Enabled := True;
-      FixedFunction.LineProperties.StippleFactor := 1;
-      FixedFunction.LineProperties.Smooth := True;
-    end;
-  end;
+  FBatch.Material := GetOrCreateDummyCubeMaterial;
   FBatch.Transformation := @FTransformation;
   FBatch.Changed := True;
   FBatch.Mesh.TagName := ClassName;
@@ -2013,6 +1991,29 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
+function TGLSprite.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint, intersectNormal: PVector): Boolean;
+var
+  i1, i2, absPos: TVector;
+begin
+  SetVector(absPos, AbsolutePosition);
+  if RayCastSphereIntersect(rayStart, rayVector, absPos, BoundingSphereRadius,
+    i1, i2) > 0 then
+  begin
+    Result := True;
+    if Assigned(intersectPoint) then
+      SetVector(intersectPoint^, i1);
+    if Assigned(intersectNormal) then
+    begin
+      SubtractVector(i1, absPos);
+      NormalizeVector(i1);
+      SetVector(intersectNormal^, i1);
+    end;
+  end
+  else
+    Result := False;
+end;
+
 // SetWidth
 //
 
@@ -2485,150 +2486,6 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLLineBase ------------------
-// ------------------
-
-// Create
-//
-
-constructor TGLLineBase.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FLineColor := TGLColor.Create(Self);
-  FLineColor.Initialize(clrWhite);
-  FLinePattern := $FFFF;
-  FAntiAliased := False;
-  FLineWidth := 1.0;
-end;
-
-// Destroy
-//
-
-destructor TGLLineBase.Destroy;
-begin
-  FLineColor.Free;
-  inherited Destroy;
-end;
-
-procedure TGLLineBase.NotifyChange(Sender: TObject);
-begin
-  if Sender = FLineColor then
-    StructureChanged;
-  inherited;
-end;
-
-// SetLineColor
-//
-
-procedure TGLLineBase.SetLineColor(const Value: TGLColor);
-begin
-  FLineColor.Color := Value.Color;
-  StructureChanged;
-end;
-
-// SetLinePattern
-//
-
-procedure TGLLineBase.SetLinePattern(const Value: TGLushort);
-begin
-  if FLinePattern <> Value then
-  begin
-    FLinePattern := Value;
-    StructureChanged;
-  end;
-end;
-
-// SetLineWidth
-//
-
-procedure TGLLineBase.SetLineWidth(const val: Single);
-begin
-  if FLineWidth <> val then
-  begin
-    FLineWidth := val;
-    StructureChanged;
-  end;
-end;
-
-// StoreLineWidth
-//
-
-function TGLLineBase.StoreLineWidth: Boolean;
-begin
-  Result := (FLineWidth <> 1.0);
-end;
-
-// SetAntiAliased
-//
-
-procedure TGLLineBase.SetAntiAliased(const val: Boolean);
-begin
-  if FAntiAliased <> val then
-  begin
-    FAntiAliased := val;
-    StructureChanged;
-  end;
-end;
-
-// Assign
-//
-
-procedure TGLLineBase.Assign(Source: TPersistent);
-begin
-  if Source is TGLLineBase then
-  begin
-    LineColor := TGLLineBase(Source).FLineColor;
-    LinePattern := TGLLineBase(Source).FLinePattern;
-    LineWidth := TGLLineBase(Source).FLineWidth;
-    AntiAliased := TGLLineBase(Source).FAntiAliased;
-  end;
-  inherited Assign(Source);
-end;
-
-// SetupLineStyle
-//
-
-procedure TGLLineBase.SetupLineStyle(var rci: TRenderContextInfo);
-begin
-  with rci.GLStates do
-  begin
-    Disable(stColorMaterial);
-    Disable(stLighting);
-    if FLinePattern <> $FFFF then
-    begin
-      Enable(stLineStipple);
-      Enable(stBlend);
-      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-      LineStippleFactor := 1;
-      LineStipplePattern := FLinePattern;
-    end
-    else
-      Disable(stLineStipple);
-    if FAntiAliased then
-    begin
-      Enable(stLineSmooth);
-      Enable(stBlend);
-      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    end
-    else
-      Disable(stLineSmooth);
-    LineWidth := FLineWidth;
-
-    if FLineColor.Alpha <> 1 then
-    begin
-      if not FAntiAliased then
-      begin
-        Enable(stBlend);
-        SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-      end;
-      GL.Color4fv(FLineColor.AsAddress);
-    end
-    else
-      GL.Color3fv(FLineColor.AsAddress);
-  end;
-end;
-
-// ------------------
 // ------------------ TGLLinesNode ------------------
 // ------------------
 
@@ -2794,6 +2651,18 @@ begin
   StructureChanged;
 end;
 
+procedure TGLNodedLines.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      FNodes.UnRegisterNodeBatches(Scene.RenderManager);
+    if Assigned(value) then
+      FNodes.RegisterNodeBatches(value.RenderManager);
+    inherited SetScene(value);
+  end;
+end;
+
 // StoreNodeSize
 //
 
@@ -2817,43 +2686,6 @@ begin
   inherited Assign(Source);
 end;
 
-// DrawNode
-//
-
-procedure TGLNodedLines.DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
-  Color: TGLColor);
-begin
-  GL.PushMatrix;
-  GL.Translatef(X, Y, Z);
-  case NodesAspect of
-    lnaAxes:
-      AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
-    lnaCube:
-      CubeWireframeBuildList(rci, FNodeSize, False, Color.Color);
-    lnaDodecahedron:
-      begin
-        if FNodeSize <> 1 then
-        begin
-          GL.PushMatrix;
-          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-          GL.PopMatrix;
-        end
-        else
-        begin
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-        end;
-      end;
-  else
-    Assert(False)
-  end;
-  GL.PopMatrix;
-end;
-
 // AxisAlignedDimensionsUnscaled
 //
 
@@ -2867,6 +2699,36 @@ begin
   // EG: commented out, line below looks suspicious, since scale isn't taken
   // into account in previous loop, must have been hiding another bug... somewhere...
   // DivideVector(Result, Scale.AsVector);     //DanB ?
+end;
+
+procedure TGLNodedLines.BuildNodeMesh;
+begin
+  case NodesAspect of
+    lnaAxes:
+      AxesBuildMesh(FNodeMesh, FNodeSize * 0.5);
+    lnaCube:
+      CubeWireframeBuildMesh(FNodeMesh, FNodeSize, FNodeColor.Color);
+    lnaDodecahedron:
+//      begin
+//        if FNodeSize <> 1 then
+//        begin
+//          GL.PushMatrix;
+//          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
+//          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+//            Color.Color, clrBlack, 0);
+//          DodecahedronBuildList;
+//          GL.PopMatrix;
+//        end
+//        else
+//        begin
+//          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+//            Color.Color, clrBlack, 0);
+//          DodecahedronBuildList;
+//        end;
+//      end;
+  else
+    Assert(False)
+  end;
 end;
 
 // AddNode (coords)
@@ -3020,7 +2882,7 @@ end;
 
 // BuildList
 //
-
+{
 procedure TGLLines.BuildList(var rci: TRenderContextInfo);
 var
   i, n: Integer;
@@ -3178,7 +3040,7 @@ begin
     end;
   end;
 end;
-
+}
 {$IFDEF GLS_REGION}{$REGION 'TGLCube'}{$ENDIF}
 
 procedure TGLCube.Assign(Source: TPersistent);

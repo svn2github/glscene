@@ -632,7 +632,6 @@ type
 
     procedure RecTransformationChanged;
 
-    procedure DrawAxes(var rci: TRenderContextInfo; pattern: Word);
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
     //: Should the object be considered as blended for sorting purposes?
     function Blended: Boolean; virtual;
@@ -2506,10 +2505,6 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
    See RegisterGLBaseSceneObjectNameChangeEvent. }
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
-{: Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
-  Single);
-
 {: Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
@@ -2549,56 +2544,6 @@ threadvar
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 begin
   Result := vCurrentRenderingObject;
-end;
-
-  // AxesBuildList
-  //
-
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
-  Single);
-begin
-{$IFDEF GLS_OPENGL_DEBUG}
-  if GL.GREMEDY_string_marker then
-    GL.StringMarkerGREMEDY(13, 'AxesBuildList');
-{$ENDIF}
-  with rci.GLStates do
-  begin
-    Disable(stColorMaterial);
-    Disable(stLighting);
-    if not rci.ignoreBlendingRequests then
-    begin
-      Enable(stBlend);
-      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    end;
-    LineWidth := 1;
-    Enable(stLineStipple);
-    LineStippleFactor := 1;
-    LineStipplePattern := Pattern;
-    DepthWriteMask := True;
-    DepthFunc := cfLEqual;
-    if rci.bufferDepthTest then
-      Enable(stDepthTest);
-  end;
-  GL.Begin_(GL_LINES);
-  GL.Color3f(0.5, 0.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(-AxisLen, 0, 0);
-  GL.Color3f(1.0, 0.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(AxisLen, 0, 0);
-  GL.Color3f(0.0, 0.5, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, -AxisLen, 0);
-  GL.Color3f(0.0, 1.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, AxisLen, 0);
-  GL.Color3f(0.0, 0.0, 0.5);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, 0, -AxisLen);
-  GL.Color3f(0.0, 0.0, 1.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, 0, AxisLen);
-  GL.End_;
 end;
 
 // RegisterInfoForm
@@ -3008,16 +2953,6 @@ end;
 procedure TGLBaseSceneObject.ReadRotations(stream: TStream);
 begin
   stream.Read(FRotation.AsAddress^, 3 * SizeOf(TGLFloat));
-end;
-
-// DrawAxes
-//
-
-procedure TGLBaseSceneObject.DrawAxes(var rci: TRenderContextInfo; pattern:
-  Word);
-begin
-  AxesBuildList(rci, Pattern, rci.rcci.farClippingDistance -
-    rci.rcci.nearClippingDistance);
 end;
 
 // GetChildren
@@ -4892,10 +4827,13 @@ begin
   begin
     if ARci.visibilityCulling = vcObjectBased then
     begin
-      shouldRenderSelf := (osNoVisibilityCulling in ObjectStyle)
-        or (not IsVolumeClipped(AbsolutePosition,
-        BoundingSphereRadius,
-        ARci.rcci.frustum));
+      if (osDeferredDraw in ObjectStyle) and (ocStructure in Changes) then
+        shouldRenderSelf := True
+      else
+        shouldRenderSelf := (osNoVisibilityCulling in ObjectStyle)
+          or (not IsVolumeClipped(AbsolutePosition,
+          BoundingSphereRadius,
+          ARci.rcci.frustum));
       shouldRenderChildren := Assigned(FChildren);
     end
     else
@@ -4942,10 +4880,6 @@ begin
   if shouldRenderSelf then
   begin
     vCurrentRenderingObject := Self;
-{$IFNDEF GLS_OPTIMIZATIONS}
-    if FShowAxes and not (osDeferredDraw in ObjectStyle) then
-      DrawAxes(ARci, $CCCC);
-{$ENDIF}
     if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
     begin
       ARci.PipelineTransformation.Push;

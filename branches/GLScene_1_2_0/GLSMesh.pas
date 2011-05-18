@@ -71,6 +71,7 @@ type
     procedure SetAttributesType(Attribs: TAttribLocation;
       const Value: TGLSLDataType);
     procedure SetElements(const Value: T4ByteList);
+    function GetValid: Boolean;
   protected
     { Protected Declarations }
 {$IFDEF GLS_MULTITHREAD}
@@ -204,7 +205,7 @@ type
     {: Ends assembling of mesh. }
     procedure UnLock; virtual;
 
-    property IsValid: Boolean read FValid;
+    property IsValid: Boolean read GetValid;
     property VertexCount: Integer read FVertexCount;
     property Attributes[Attribs: TAttribLocation]: Boolean
     read GetAttributes write SetAttributes;
@@ -300,7 +301,11 @@ type
   GRedBlackTree < Integer, Integer > ;
 {$ENDIF}
 
+{$IFNDEF GLS_MULTITHREAD}
 var
+{$ELSE}
+threadvar
+{$ENDIF}
   vDefaultMesh: TMeshAtom;
   vTempMesh: TMeshAtom;
 
@@ -533,6 +538,11 @@ function TMeshAtom.GetAttributesType(
   Attribs: TAttribLocation): TGLSLDataType;
 begin
   Result := FType[Attribs];
+end;
+
+function TMeshAtom.GetValid: Boolean;
+begin
+  Result := FValid and (FBuildingState = mmsDefault);
 end;
 
 procedure TMeshAtom.SetAttributeDivisor(Attribs: TAttribLocation;
@@ -2221,12 +2231,10 @@ var
   newTexCoords: TTexPointList;
   BD: T4ByteData;
   TT: TTexPoint;
+  pV: ^TVector3ui;
 begin
   if not FAttributes[attrPosition] then
     exit; // Nothing todo
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
   // Clear old texture coordinates
   FAttributes[attrTexCoord0] := False;
@@ -2237,24 +2245,23 @@ begin
 
   Triangulate;
 
-  if FTrianglesElements.Revision <> FElements.Revision then
-    MakeTriangleElements;
+  Positions := FAttributeArrays[attrPosition];
+  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
+  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
   // Allocate and initialize the tangent values
   newTexCoords := TTexPointList.Create;
   newTexCoords.SetCountResetsMemory := True;
-  newTexCoords.Count := FTrianglesElements.Count;
+  newTexCoords.Count := FElements.Count;
 
   EJ := 0;
-  for T := 0 to FTrianglesElements.Count div 3 - 1 do
+  for T := 0 to FElements.Count div 3 - 1 do
   begin
     E := 3 * T;
-    BD := FTrianglesElements[E + 0];
-    p0 := GetPosition(BD.Int.Value);
-    BD := FTrianglesElements[E + 1];
-    p1 := GetPosition(BD.Int.Value);
-    BD := FTrianglesElements[E + 2];
-    p2 := GetPosition(BD.Int.Value);
+    pV := @FElements.List[E];
+    p0 := GetPosition(pV^[0]);
+    p1 := GetPosition(pV^[1]);
+    p2 := GetPosition(pV^[2]);
 
     // Compute the edge vectors
     dp0 := VectorSubtract(p1, p0);
@@ -2292,14 +2299,13 @@ begin
 
   // Place new texture coordinates
   SplitVertices;
-  MakeTriangleElements;
   FAttributes[attrTexCoord0] := True;
   FAttributeArrays[attrTexCoord0].Count := 2 * newTexCoords.Count;
   FType[attrTexCoord0] := GLSLType2F;
   FAttributeDivisor[attrTexCoord0] := 0;
   for I := 0 to newTexCoords.Count - 1 do
   begin
-    BD := FTrianglesElements[I];
+    BD := FElements[I];
     E_ := 3 * BD.Int.Value;
     TT := newTexCoords[I];
     BD.Float.Value := TT.S;
@@ -2307,7 +2313,6 @@ begin
     BD.Float.Value := TT.T;
     FAttributeArrays[attrTexCoord0].Items[E_ + 1] := BD;
   end;
-  WeldVertices;
 
   newTexCoords.Destroy;
 end;
@@ -2323,6 +2328,11 @@ var
   begin
     Result := NullVector;
     Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
+  end;
+
+  function sameVertex(i0, i1: Integer): Boolean;
+  begin
+    Result := VectorEquals_(GetPosition(i0), GetPosition(i1));
   end;
 
   function GetTexCoord(Index: Integer): TVector3f;
@@ -2342,12 +2352,10 @@ var
   collisionMap: TIntIntRBT;
   Agrees: Boolean;
   BD: T4ByteData;
+  pV: ^TVector3ui;
 begin
   if not FAttributes[attrPosition] then
     exit; // Nothing todo
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
   if not FAttributes[attrTexCoord0] then
   begin
@@ -2355,6 +2363,12 @@ begin
     if not FAttributes[attrTexCoord0] then
       exit; // Force Majeure
   end;
+
+  Triangulate;
+
+  Positions := FAttributeArrays[attrPosition];
+  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
+  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
 
   TexCoords := FAttributeArrays[attrTexCoord0];
   TexCoordSize := GLSLTypeComponentCount(FType[attrTexCoord0]);
@@ -2366,7 +2380,27 @@ begin
   FAttributeArrays[attrTangent].Clear;
 
   if not FHasIndices then
-    WeldVertices;
+  begin
+    // Lets make element list with position based welded vertices
+    MakeTriangleElements;
+    for I := 1 to FTrianglesElements.Count - 1 do
+    begin
+      BD := FTrianglesElements[I];
+      E := BD.Int.Value;
+      for J := 0 to I - 1 do
+      begin
+        BD := FTrianglesElements[J];
+        E_ := BD.Int.Value;
+        if E = E_ then
+          continue;
+        if sameVertex(E, E_) then
+        begin
+          FTrianglesElements[I] := BD;
+          break;
+        end;
+      end;
+    end;
+  end;
 
   Triangulate;
 
@@ -2387,15 +2421,13 @@ begin
   for T := 0 to FTrianglesElements.Count div 3 - 1 do
   begin
     E := 3 * T;
-    BD := FTrianglesElements[E + 0];
-    p0 := GetPosition(BD.Int.Value);
-    st0 := GetTexCoord(BD.Int.Value);
-    BD := FTrianglesElements[E + 1];
-    p1 := GetPosition(BD.Int.Value);
-    st1 := GetTexCoord(BD.Int.Value);
-    BD := FTrianglesElements[E + 2];
-    p2 := GetPosition(BD.Int.Value);
-    st2 := GetTexCoord(BD.Int.Value);
+    pV := @FTrianglesElements.List[E];
+    p0 := GetPosition(pV^[0]);
+    p1 := GetPosition(pV^[1]);
+    p2 := GetPosition(pV^[2]);
+    st0 := GetTexCoord(pV^[0]);
+    st1 := GetTexCoord(pV^[1]);
+    st2 := GetTexCoord(pV^[2]);
 
     // Compute the edge and tc differentials
     dp0 := VectorSubtract(p1, p0);
@@ -2418,8 +2450,7 @@ begin
     for J := 0 to 2 do
     begin
       // Get the current normal from the default location (index shared with position)
-      BD := FTrianglesElements[E + J];
-      EJ := BD.Int.Value;
+      EJ := pV^[J];
       cTangent := newTangents[EJ];
 
       // Check to see if this normal has not yet been touched
@@ -2484,24 +2515,35 @@ begin
 
   // Place new tangent
   SplitVertices;
-  MakeTriangleElements;
+
   FAttributes[attrTangent] := True;
   FAttributeArrays[attrTangent].Count := 3 * newTangentIndices.Count;
   FType[attrTangent] := GLSLType3F;
   FAttributeDivisor[attrTangent] := 0;
-  for I := 0 to newTangentIndices.Count - 1 do
+  if FAttributes[attrNormal] then
   begin
-    E := newTangentIndices[I];
-    BD := FTrianglesElements[I];
-    E_ := 3 * BD.Int.Value;
-    BD.Float.Value := newTangents[E][0];
-    FAttributeArrays[attrTangent].Items[E_ + 0] := BD;
-    BD.Float.Value := newTangents[E][1];
-    FAttributeArrays[attrTangent].Items[E_ + 1] := BD;
-    BD.Float.Value := newTangents[E][2];
-    FAttributeArrays[attrTangent].Items[E_ + 2] := BD;
-  end;
-  WeldVertices;
+    FAttributes[attrBinormal] := True;
+    FAttributeArrays[attrBinormal].Count := 3 * newTangentIndices.Count;
+    FType[attrBinormal] := GLSLType3F;
+    for I := 0 to newTangentIndices.Count - 1 do
+    begin
+      E := newTangentIndices[I];
+      BD := FElements[I];
+      E_ := 3 * BD.Int.Value;
+      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_], SizeOf(TVector3f));
+      PAffineVector(@FAttributeArrays[attrBinormal].List[E_])^ := VectorCrossProduct(
+        PAffineVector(@FAttributeArrays[attrNormal].List[E_])^,
+        PAffineVector(@FAttributeArrays[attrTangent].List[E_])^);
+    end;
+  end
+  else
+    for I := 0 to newTangentIndices.Count - 1 do
+    begin
+      E := newTangentIndices[I];
+      BD := FElements[I];
+      E_ := 3 * BD.Int.Value;
+      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_], SizeOf(TVector3f));
+    end;
 
   newTangents.Destroy;
   newTangentIndices.Destroy;
