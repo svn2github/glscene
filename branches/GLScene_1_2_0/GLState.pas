@@ -276,6 +276,9 @@ type
 
     // Rasterization state
     FPointSize: TGLfloat;
+    FPointSizeMin: TGLfloat;
+    FDistanceAttenuation: TVector;
+    FPointSizeMax: TGLfloat;
     FPointFadeThresholdSize: TGLfloat;
     FPointSpriteCoordOrigin: TGLenum; // GL_UPPER_LEFT
     FLineWidth: Single;
@@ -450,6 +453,9 @@ type
     procedure SetProvokingVertex(const Value: TGLenum);
     // Rasterization state
     procedure SetPointSize(const Value: TGLfloat);
+    procedure SetPointDistanceAtten(const Value: TVector);
+    procedure SetPointSizeMax(const Value: TGLfloat);
+    procedure SetPointSizeMin(const Value: TGLfloat);
     procedure SetPointFadeThresholdSize(const Value: TGLfloat);
     procedure SetPointSpriteCoordOrigin(const Value: TGLenum);
     procedure SetLineWidth(const Value: TGLfloat);
@@ -727,6 +733,10 @@ type
     // Rasterization state
     {: The default point size, used when EnableProgramPointSize = false. }
     property PointSize: TGLfloat read FPointSize write SetPointSize;
+    property PointSizeMin: TGLfloat read FPointSizeMin write SetPointSizeMin;
+    property PointSizeMax: TGLfloat read FPointSizeMax write SetPointSizeMax;
+    property PointDistanceAttenuation: TVector read FDistanceAttenuation
+      write SetPointDistanceAtten;
     {: If multisampling is enabled, this can control when points are faded out.}
     property PointFadeThresholdSize: TGLfloat read FPointFadeThresholdSize write
       SetPointFadeThresholdSize;
@@ -1336,6 +1346,9 @@ begin
 
   // Rasterization state
   FPointSize := 1.0;
+  FPointSizeMin := 0.0;
+  FDistanceAttenuation := XHmgVector;
+  FPointSizeMax := -1.0;
   FPointFadeThresholdSize := 1.0;
   FPointSpriteCoordOrigin := GL_UPPER_LEFT;
   FLineWidth := 1.0;
@@ -2648,6 +2661,18 @@ begin
   end;
 end;
 
+procedure TGLStateCache.SetPointDistanceAtten(const Value: TVector);
+begin
+  if not VectorEquals(FDistanceAttenuation, Value) or FInsideList then
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttScissor)
+    else
+      FDistanceAttenuation := Value;
+    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @Value);
+  end;
+end;
+
 procedure TGLStateCache.SetPointFadeThresholdSize(const Value: TGLfloat);
 begin
   if (Value <> FPointFadeThresholdSize) or FInsideList then
@@ -2669,6 +2694,30 @@ begin
     else
       FPointSize := Value;
     GL.PointSize(Value);
+  end;
+end;
+
+procedure TGLStateCache.SetPointSizeMax(const Value: TGLfloat);
+begin
+  if (Value <> FPointSizeMax) or FInsideList then
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttPoint)
+    else
+      FPointSizeMax := Value;
+    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, Value);
+  end;
+end;
+
+procedure TGLStateCache.SetPointSizeMin(const Value: TGLfloat);
+begin
+  if (Value <> FPointSizeMin) or FInsideList then
+  begin
+    if FInsideList then
+      Include(FListStates[FCurrentList], sttPoint)
+    else
+      FPointSizeMin := Value;
+    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, Value);
   end;
 end;
 
