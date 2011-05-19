@@ -14,6 +14,7 @@
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
  <b>History : </b><font size=-1><ul>
+      <li>19/05/11 - Yar - Added PointProperties for FixedFunction
       <li>08/05/11 - Yar - Added ApplicationResource for TGLTextureImageEx
       <li>21/04/11 - Yar - Added LineProperties for FixedFunction
       <li>13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
@@ -568,6 +569,55 @@ type
       SetSwizzling stored StoreSwizzling;
   end;
 
+  TPointSpriteOrigin = (psoUpperLeft, psoLowerLeft);
+  // TGLPointProperties
+  //
+  { : Point parameters as in ARB_point_parameters.<p>
+    Make sure to read the ARB_point_parameters spec if you want to understand
+    what each parameter does. }
+  TGLPointProperties = class(TGLLibMaterialProperty)
+  private
+    { Private Declarations }
+    FSmooth: Boolean;
+    FSize, FMinSize, FMaxSize: Single;
+    FFadeTresholdSize: Single;
+    FDistanceAttenuation: TGLCoordinates;
+    FOrigin: TPointSpriteOrigin;
+    procedure SetSpriteCoordOrigin(const Value: TPointSpriteOrigin);
+    function StoreDistanceAtten: Boolean;
+    function StoreFadeTresholdSize: Boolean;
+    function StoreMaxSize: Boolean;
+    function StoreMinSize: Boolean;
+    procedure SetSize(Value: Single);
+    function StoreSize: Boolean;
+  protected
+    { Protected Declarations }
+    procedure SetSmooth(const Value: Boolean);
+    procedure SetMinSize(Value: Single);
+    procedure SetMaxSize(Value: Single);
+    procedure SetFadeTresholdSize(Value: Single);
+    procedure SetDistanceAttenuation(const Value: TGLCoordinates);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure Apply(var ARci: TRenderContextInfo);
+  published
+    { Published Declarations }
+    property Smooth: Boolean read FSmooth write SetSmooth default False;
+    property Size: Single read FSize write SetSize stored StoreSize;
+    property MinSize: Single read FMinSize write SetMinSize stored StoreMinSize;
+    property MaxSize: Single read FMaxSize write SetMaxSize stored StoreMaxSize;
+    property FadeTresholdSize: Single read FFadeTresholdSize
+      write SetFadeTresholdSize stored StoreFadeTresholdSize;
+    { : Components XYZ are for constant, linear and quadratic attenuation. }
+    property DistanceAttenuation: TGLCoordinates read FDistanceAttenuation
+      write SetDistanceAttenuation stored StoreDistanceAtten;
+    property SpriteCoordOrigin: TPointSpriteOrigin read FOrigin
+      write SetSpriteCoordOrigin default psoUpperLeft;
+  end;
+
   // TGLLineProperties
   //
   TGLLineProperties = class(TGLLibMaterialProperty)
@@ -597,6 +647,8 @@ type
       write SetStipplePattern default $CCCC;
   end;
 
+  TVertexColorMode = (vcmNone, vcmEmission, vcmAmbient, vcmDiffuse, vcmAmbientAndDiffuse);
+
   //  TGLFixedFunctionProperties
   //
   TGLFixedFunctionProperties = class(TGLLibMaterialProperty)
@@ -612,7 +664,9 @@ type
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
     FTextureMode: TGLTextureMode;
+    FPointProperties: TGLPointProperties;
     FLineProperties: TGLLineProperties;
+    FVertexColorMode: TVertexColorMode;
     function GetBackProperties: TGLFaceProperties;
     procedure SetBackProperties(AValues: TGLFaceProperties);
     procedure SetFrontProperties(AValues: TGLFaceProperties);
@@ -624,9 +678,13 @@ type
     procedure SetBlendingParams(const AValue: TGLBlendingParameters);
     procedure SetTexProp(AValue: TGLTextureProperties);
     procedure SetTextureMode(AValue: TGLTextureMode);
+    function GetPointProperties: TGLPointProperties;
+    procedure SetPointProperties(const Value: TGLPointProperties);
+    function StorePointProperties: Boolean;
     function GetLineProperties: TGLLineProperties;
     procedure SetLineProperties(const Value: TGLLineProperties);
     function StoreLineProperties: Boolean;
+    procedure SetVertexColorMode(const Value: TVertexColorMode);
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -643,6 +701,8 @@ type
     property MaterialOptions: TMaterialOptions read FMaterialOptions write
       SetMaterialOptions default [];
 
+    property VertexColorMode: TVertexColorMode read FVertexColorMode write
+      SetVertexColorMode default vcmNone;
     property BackProperties: TGLFaceProperties read GetBackProperties write
       SetBackProperties;
     property FrontProperties: TGLFaceProperties read FFrontProperties write
@@ -653,6 +713,8 @@ type
       default bmOpaque;
     property BlendingParams: TGLBlendingParameters read FBlendingParams write
       SetBlendingParams;
+    property PointProperties: TGLPointProperties read GetPointProperties write
+      SetPointProperties stored StorePointProperties;
     property LineProperties: TGLLineProperties read GetLineProperties
       write SetLineProperties stored StoreLineProperties;
 
@@ -1718,17 +1780,32 @@ end;
 {$IFDEF GLS_REGION}{$REGION 'TGLFixedFunctionProperties'}{$ENDIF}
 
 procedure TGLFixedFunctionProperties.Apply(var ARci: TRenderContextInfo);
+const
+  cColorMaterialTokens: array[TVertexColorMode] of TGLEnum =
+    (0, GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
+var
+  bSprite: Boolean;
 begin
+  bSprite := False;
   with ARci.GLStates do
   begin
-    Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
     if Assigned(FLineProperties) and FLineProperties.Enabled then
       FLineProperties.Apply(ARci);
+    if Assigned(FPointProperties) and FPointProperties.Enabled then
+      FPointProperties.Apply(ARci);
 
     // Fixed functionality state
     if not ARci.GLStates.ForwardContext then
     begin
+      // Vertex color
+      if FVertexColorMode <> vcmNone then
+      begin
+        GL.ColorMaterial(GL_FRONT_AND_BACK, cColorMaterialTokens[FVertexColorMode]);
+        Enable(stColorMaterial);
+      end
+      else
+        Disable(stColorMaterial);
       // Lighting switch
       if (moNoLighting in MaterialOptions) or not ARci.bufferLighting then
       begin
@@ -1832,9 +1909,15 @@ begin
         FTexProp.Apply(ARci);
         GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
           cTextureMode[FTextureMode]);
+        bSprite := Assigned(FPointProperties) and FPointProperties.Enabled;
       end;
     end;
 
+    if GL.ARB_point_sprite then
+      if bSprite then
+        Enable(stPointSprite)
+      else
+        Disable(stPointSprite);
   end;
 end;
 
@@ -1877,6 +1960,7 @@ begin
   FDepthProperties := TGLDepthProperties.Create(Self);
   FTexProp := TGLTextureProperties.Create(Self);
   FTextureMode := tmDecal;
+  FVertexColorMode := vcmNone;
   FEnabled := True;
 end;
 
@@ -1887,6 +1971,7 @@ begin
   FDepthProperties.Destroy;
   FBlendingParams.Destroy;
   FLineProperties.Free;
+  FPointProperties.Free;
   FTexProp.Destroy;
   inherited;
 end;
@@ -1903,6 +1988,13 @@ begin
   if not Assigned(FLineProperties) then
     FLineProperties := TGLLineProperties.Create(Self);
   Result := FLineProperties;
+end;
+
+function TGLFixedFunctionProperties.GetPointProperties: TGLPointProperties;
+begin
+  if not Assigned(FPointProperties) then
+    FPointProperties := TGLPointProperties.Create(Self);
+  Result := FPointProperties;
 end;
 
 procedure TGLFixedFunctionProperties.SetBackProperties(AValues:
@@ -1950,6 +2042,15 @@ begin
   end;
 end;
 
+procedure TGLFixedFunctionProperties.SetVertexColorMode(const Value: TVertexColorMode);
+begin
+  if Value <> FVertexColorMode then
+  begin
+    FVertexColorMode := Value;
+    NotifyChange(Self);
+  end;
+end;
+
 function TGLFixedFunctionProperties.StoreLineProperties: Boolean;
 begin
   if Assigned(FLineProperties) then
@@ -1957,6 +2058,18 @@ begin
       or FLineProperties.StoreWidth
       or (FLineProperties.FStippleFactor <> 1)
       or (FLineProperties.FStipplePattern <> $CCCC)
+  else
+    Result := False;
+end;
+
+function TGLFixedFunctionProperties.StorePointProperties: Boolean;
+begin
+  if Assigned(FPointProperties) then
+    Result := FPointProperties.FSmooth
+      or (FPointProperties.FMinSize <> 0)
+      or (FPointProperties.FMaxSize <> 128)
+      or (FPointProperties.FFadeTresholdSize <> 1)
+      or not VectorEquals(FPointProperties.FDistanceAttenuation.AsVector, XHmgVector)
   else
     Result := False;
 end;
@@ -1990,6 +2103,11 @@ begin
     FMaterialOptions := AValue;
     NotifyChange(Self);
   end;
+end;
+
+procedure TGLFixedFunctionProperties.SetPointProperties(const Value: TGLPointProperties);
+begin
+  PointProperties.Assign(Value);
 end;
 
 procedure TGLFixedFunctionProperties.SetPolygonMode(AValue: TPolygonMode);
@@ -7803,6 +7921,158 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLLineProperties'}{$ENDIF}
 
+
+{$IFDEF GLS_REGION}{$REGION 'TGLPointProperties'}{$ENDIF}
+
+procedure TGLPointProperties.Apply(var ARci: TRenderContextInfo);
+const
+  cOriginTokens: array[TPointSpriteOrigin] of TGLEnum =
+    (GL_UPPER_LEFT, GL_LOWER_LEFT);
+begin
+  with ARci.GLStates do
+  begin
+    if not ForwardContext then
+      if FSmooth then
+        Enable(stPointSmooth)
+      else
+        Disable(stPointSmooth);
+
+    PointSize := FSize;
+
+    if GL.ARB_point_parameters then
+    begin
+      PointFadeThresholdSize := FFadeTresholdSize;
+      PointSizeMin := FMinSize;
+      PointSizeMax := FMaxSize;
+      PointDistanceAttenuation := FDistanceAttenuation.AsVector;
+      PointSpriteCoordOrigin := cOriginTokens[FOrigin];
+    end;
+  end;
+end;
+
+procedure TGLPointProperties.Assign(Source: TPersistent);
+var
+  LPoint: TGLPointProperties;
+begin
+  if Source is TGLPointProperties then
+  begin
+    LPoint := TGLPointProperties(Source);
+    FSmooth := LPoint.FSmooth;
+    FMinSize := LPoint.FMinSize;
+    FMaxSize := LPoint.FMaxSize;
+    FFadeTresholdSize := LPoint.FFadeTresholdSize;
+    FDistanceAttenuation.Assign(LPoint.DistanceAttenuation);
+    FOrigin := LPoint.FOrigin;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+constructor TGLPointProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FSmooth := False;
+  FMinSize := 0.0;
+  FMaxSize := 128.0;
+  FFadeTresholdSize := 1.0;
+  FDistanceAttenuation := TGLCoordinates.CreateInitialized(Self, XHmgVector,
+    csVector);
+  FOrigin := psoUpperLeft;
+end;
+
+procedure TGLPointProperties.SetDistanceAttenuation(const Value: TGLCoordinates);
+begin
+  FDistanceAttenuation.Assign(Value);
+end;
+
+procedure TGLPointProperties.SetFadeTresholdSize(Value: Single);
+begin
+  if Value < 0 then
+    Value := 0;
+  if Value <> FFadeTresholdSize then
+  begin
+    FFadeTresholdSize := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLPointProperties.SetMaxSize(Value: Single);
+begin
+  if Value < 0 then
+    Value := 0;
+  if Value <> FMaxSize then
+  begin
+    FMaxSize := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLPointProperties.SetMinSize(Value: Single);
+begin
+  if Value < 0 then
+    Value := 0;
+  if Value <> FMinSize then
+  begin
+    FMinSize := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLPointProperties.SetSize(Value: Single);
+begin
+  if Value <= 0 then
+    Value := 0.1;
+  if Value <> FSize then
+  begin
+    FSize := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLPointProperties.SetSmooth(const Value: Boolean);
+begin
+  if FSmooth <> Value then
+  begin
+    FSmooth := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLPointProperties.SetSpriteCoordOrigin(const Value: TPointSpriteOrigin);
+begin
+  if FOrigin <> Value then
+  begin
+    FOrigin := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+function TGLPointProperties.StoreDistanceAtten: Boolean;
+begin
+  Result := not VectorEquals(FDistanceAttenuation.AsVector, XHmgVector);
+end;
+
+function TGLPointProperties.StoreFadeTresholdSize: Boolean;
+begin
+  Result := FFadeTresholdSize <> 1.0;
+end;
+
+function TGLPointProperties.StoreMaxSize: Boolean;
+begin
+  Result := FMaxSize <> 128.0;
+end;
+
+function TGLPointProperties.StoreMinSize: Boolean;
+begin
+  Result := FMinSize <> 0.0;
+end;
+
+function TGLPointProperties.StoreSize: Boolean;
+begin
+  Result := FSize <> 1.0;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 
