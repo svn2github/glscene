@@ -599,14 +599,7 @@ type
     constructor Create(AOwner: TComponent); override;
   end;
 
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 
 uses
   Polynomials,
@@ -1023,7 +1016,6 @@ end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-
 {$IFDEF GLS_REGIONS}{$REGION 'TGLCylinderBase'}{$ENDIF}
 
 procedure TGLCylinderBase.Assign(Source: TPersistent);
@@ -1319,7 +1311,6 @@ begin
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLCylinder'}{$ENDIF}
 
@@ -3802,7 +3793,7 @@ end;
 
 procedure TGLDodecahedron.BuildMesh;
 begin
-  DodecahedronBuildMesh(FBatch.Mesh, clrWhite);
+  DodecahedronBuildMesh(FBatch.Mesh, 1.0, clrWhite);
   with FBatch.Mesh do
   begin
     Lock;
@@ -3831,7 +3822,7 @@ end;
 
 procedure TGLIcosahedron.BuildMesh;
 begin
-  IcosahedronBuildMesh(FBatch.Mesh, clrWhite);
+  IcosahedronBuildMesh(FBatch.Mesh, 1.0, clrWhite);
   with FBatch.Mesh do
   begin
     Lock;
@@ -3855,15 +3846,8 @@ begin
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 
 initialization
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 
 RegisterClasses([TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLGeoSphere,
   TGLArrowLine, TGLAnnulus, TGLFrustrum, TGLPolygon, TGLCapsule, TGLArrowArc,
