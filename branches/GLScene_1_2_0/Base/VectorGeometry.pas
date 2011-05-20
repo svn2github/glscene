@@ -31,7 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>11/05/11 - Yar - Added ClampInteger
+      <li>11/05/11 - Yar - Added ClampValue for Integer
       <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
@@ -1394,9 +1394,6 @@ function MaxInteger(const v1, v2 : Cardinal) : Cardinal; overload;
 function MaxInteger(const v1, v2, v3 : Integer) : Integer; overload;
 function MaxInteger(const v1, v2, v3 : Cardinal) : Cardinal; overload;
 
-function ClampInteger(const value, min, max : Integer) : Integer; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-function ClampInteger(const value, min, max : Cardinal) : Cardinal; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-
 {: Computes the triangle's area. }
 function TriangleArea(const p1, p2, p3 : TAffineVector) : Single; overload;
 {: Computes the polygons's area.<p>
@@ -1439,12 +1436,12 @@ function MaxAbsXYZComponent(v : TVector) : Single;
 function MinAbsXYZComponent(v : TVector) : Single;
 {: Replace components of v with the max of v or v1 component.<p>
    Maximum is computed per component. }
-procedure MaxVector(var v : TVector; const v1 : TVector); overload;
-procedure MaxVector(var v : TAffineVector; const v1 : TAffineVector); overload;
+procedure MaxVector(var v : TVector; const v1 : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MaxVector(var v : TAffineVector; const v1 : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 {: Replace components of v with the min of v or v1 component.<p>
    Minimum is computed per component. }
-procedure MinVector(var v : TVector; const v1 : TVector); overload;
-procedure MinVector(var v : TAffineVector; const v1 : TAffineVector); overload;
+procedure MinVector(var v : TVector; const v1 : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure MinVector(var v : TAffineVector; const v1 : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 {: Sorts given array in ascending order.<p>
    NOTE : current implementation is a slow bubble sort... }
@@ -1453,7 +1450,10 @@ procedure SortArrayAscending(var a : array of Extended);
 {: Clamps aValue in the aMin-aMax interval.<p> }
 function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
 {: Clamps aValue in the aMin-INF interval.<p> }
-function ClampValue(const aValue, aMin : Single) : Single; overload;
+function ClampValue(const aValue, aMin : Single) : Single; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+{: Clamps integer aValue in the aMin-aMax interval.<p> }
+function ClampValue(const value, min, max : Integer) : Integer; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function ClampValue(const value, min, max : Cardinal) : Cardinal; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 {: Returns the detected optimization mode.<p>
    Returned values is either 'FPU', '3DNow!' or 'SSE'. }
@@ -8656,12 +8656,12 @@ begin
    else Result:=v1;
 end;
 
-function ClampInteger(const value, min, max : Integer): Integer;
+function ClampValue(const value, min, max : Integer): Integer;
 begin
   Result := MinInteger( MaxInteger(value, min), max);
 end;
 
-function ClampInteger(const value, min, max : Cardinal): Cardinal;
+function ClampValue(const value, min, max : Cardinal): Cardinal;
 begin
   Result := MinInteger( MaxInteger(value, min), max);
 end;
