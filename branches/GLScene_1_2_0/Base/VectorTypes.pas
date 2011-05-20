@@ -19,6 +19,7 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>21/05/11 - Yar - Added pointer types of vectors
     <li>21/02/11 - Yar - Added half and signed byte vectors
     <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
     <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
@@ -100,6 +101,69 @@ type
   TMatrix4e = array[0..3] of TVector4e;
   TMatrix4w = array[0..3] of TVector4w;
   TMatrix4p = array[0..3] of TVector4p;
+
+  PVector2d = ^TVector2d;
+  PVector2f = ^TVector2f;
+  PVector2h = ^TVector2h;
+  PVector2i = ^TVector2i;
+  PVector2ui = ^TVector2ui;
+  PVector2s = ^TVector2s;
+  PVector2b = ^TVector2b;
+  PVector2sb = ^TVector2sb;
+  PVector2e = ^TVector2e;
+  PVector2w = ^TVector2w;
+  PVector2p = ^TVector2p;
+
+  PVector3d = ^TVector3d;
+  PVector3f = ^TVector3f;
+  PVector3h = ^TVector3h;
+  PVector3i = ^TVector3i;
+  PVector3ui = ^TVector3ui;
+  PVector3s = ^TVector3s;
+  PVector3b = ^TVector3b;
+  PVector3sb = ^TVector3sb;
+  PVector3e = ^TVector3e;
+  PVector3w = ^TVector3w;
+  PVector3p = ^TVector3p;
+
+  PVector4d = ^TVector4d;
+  PVector4f = ^TVector4f;
+  PVector4h = ^TVector4h;
+  PVector4i = ^TVector4i;
+  PVector4ui = ^TVector4ui;
+  PVector4s = ^TVector4s;
+  PVector4b = ^TVector4b;
+  PVector4sb = ^TVector4sb;
+  PVector4e = ^TVector4e;
+  PVector4w = ^TVector4w;
+  PVector4p = ^TVector4p;
+
+  PMatrix2d = ^TMatrix2d;
+  PMatrix2f = ^TMatrix2f;
+  PMatrix2i = ^TMatrix2i;
+  PMatrix2s = ^TMatrix2s;
+  PMatrix2b = ^TMatrix2b;
+  PMatrix2e = ^TMatrix2e;
+  PMatrix2w = ^TMatrix2w;
+  PMatrix2p = ^TMatrix2p;
+
+  PMatrix3d = ^TMatrix3d;
+  PMatrix3f = ^TMatrix3f;
+  PMatrix3i = ^TMatrix3i;
+  PMatrix3s = ^TMatrix3s;
+  PMatrix3b = ^TMatrix3b;
+  PMatrix3e = ^TMatrix3e;
+  PMatrix3w = ^TMatrix3w;
+  PMatrix3p = ^TMatrix3p;
+
+  PMatrix4d = ^TMatrix4d;
+  PMatrix4f = ^TMatrix4f;
+  PMatrix4i = ^TMatrix4i;
+  PMatrix4s = ^TMatrix4s;
+  PMatrix4b = ^TMatrix4b;
+  PMatrix4e = ^TMatrix4e;
+  PMatrix4w = ^TMatrix4w;
+  PMatrix4p = ^TMatrix4p;
 
   TD3DVector = packed record
     case Integer of
