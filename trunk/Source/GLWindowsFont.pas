@@ -38,6 +38,7 @@ uses
   LCLIntf, LCLType, Types, LCLProc,
 {$ENDIF}
   GLBitmapFont,
+  GLRenderContextInfo,
   Classes,
   GLScene,
   GLTexture,
@@ -69,7 +70,7 @@ type
     procedure LoadWindowsFont; virtual;
     function  StoreRanges: Boolean;
 
-    procedure PrepareImage; override;
+    procedure PrepareImage(var ARci: TRenderContextInfo); override;
     function  TextureFormat: Integer; override;
 
   public
@@ -109,6 +110,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+  GLUtils,
+  math,
   SysUtils,
   VectorGeometry,
   OpenGLTokens,
@@ -237,7 +240,10 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
 
         if Assigned(bitmap) then
         begin
-          p.l := px+1;
+          //+1 makes right align (padding left);
+          // I prefer padding right for compatibility with bitmap font...
+          p.l := px;
+          //should make it consistent, same as above
           p.t := py;
 
           r.Left := px;
@@ -248,7 +254,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           // Draw the Char, the trailing space is to properly handle the italics.
 {$IFDEF MSWINDOWS}
           // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
-          Windows.ExtTextOutW(bitmap.Canvas.Handle, px+1, py+1, ETO_CLIPPED, @r, buffer, 2, nil);
+          Windows.ExtTextOutW(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, buffer, 2, nil);
 {$ELSE}
           utfs := UTF16ToUTF8(buffer[0]);
           utfbuffer[0] := utfs[1];
@@ -261,7 +267,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           utfbuffer[i] := #32;
           Inc(i);
           utfbuffer[i] := #0;
-          LCLIntf.ExtTextOut(bitmap.Canvas.Handle, px+1, py+1, ETO_CLIPPED, @rect, utfbuffer, i, nil);
+          LCLIntf.ExtTextOut(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @rect, utfbuffer, i, nil);
 {$ENDIF}
         end;
         Inc(px, cw);
@@ -308,27 +314,24 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
 var
   bitmap: TGLBitmap;
   ch: widechar;
-  i, cw, nbChars: Integer;
+  i, cw, nbChars, n: Integer;
 begin
   InvalidateUsers;
-  bitmap := Glyphs.Bitmap;
   Glyphs.OnChange := nil;
+  //accessing Bitmap might trigger onchange
+  bitmap := Glyphs.Bitmap;
 
-  if TextureWidth = 0 then
-    TextureWidth  := 128;
-  if TextureHeight = 0 then
-    TextureHeight := 128;
-
-  bitmap.PixelFormat := glpf32bit;
   bitmap.Height      := 0;
-  bitmap.Width       := TextureWidth;
+  bitmap.PixelFormat := glpf32bit;
   with bitmap.Canvas do
   begin
     Font := Self.Font;
     Font.Color := clWhite;
     // get characters dimensions for the font
-    CharWidth := Round(2 + MaxInteger(TextWidth('M'), TextWidth('W'), TextWidth('_')));
-    CharHeight := 2 + TextHeight('"_pI|,');
+    // character size without padding; paddings are used from GlyphsInterval
+    CharWidth  := Round(MaxInteger(TextWidth('M'), TextWidth('W'), TextWidth('_')));
+    CharHeight := TextHeight('"_pI|,');
+    // used for padding
     GlyphsIntervalX := 1;
     GlyphsIntervalY := 1;
     if fsItalic in Font.Style then
@@ -345,12 +348,21 @@ begin
 
   // Retrieve width of all characters (texture width)
   ResetCharWidths(0);
+  n := 0;
   for i := 0 to nbChars - 1 do
   begin
     ch := TileIndexToChar(i);
     cw := GetTextSize(bitmap.canvas.Handle, @ch, 1).cx-HSpaceFix;
+    n  := n + cw + GlyphsIntervalX;
     SetCharWidths(i, cw);
   end;
+  //try to make best guess...
+  //~total pixels, including some waste (10%)
+  n := n * (CharHeight + GlyphsIntervalY) * 11 div 10;
+  TextureWidth := min(512, RoundUpToPowerOf2( round(sqrt(n)) ));
+  TextureHeight := min(512, RoundUpToPowerOf2( n div TextureWidth));
+
+  bitmap.Width := TextureWidth;
 
   ComputeCharRects(bitmap);
   FCharsLoaded := true;
@@ -429,10 +441,10 @@ end;
 // PrepareImage
 //
 
-procedure TGLWindowsBitmapFont.PrepareImage;
+procedure TGLWindowsBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
 begin
   LoadWindowsFont;
-  inherited PrepareImage;
+  inherited PrepareImage(ARci);
 end;
 
 // TextureFormat

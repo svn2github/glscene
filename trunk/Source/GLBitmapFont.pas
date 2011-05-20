@@ -198,7 +198,7 @@ type
     function  CharactersPerRow: Integer;
     procedure GetCharTexCoords(ch: widechar; var topLeft, bottomRight: TTexPoint);
     procedure GetICharTexCoords(var ARci: TRenderContextInfo; chi: Integer; out topLeft, bottomRight: TTexPoint);
-    procedure PrepareImage; virtual;
+    procedure PrepareImage(var ARci: TRenderContextInfo); virtual;
     procedure PrepareParams(var ARci: TRenderContextInfo);
 
     {: A single bitmap containing all the characters.<p>
@@ -617,6 +617,7 @@ begin
   FMinFilter := miLinear;
   FMagFilter := maLinear;
   FTextures  := TList.Create;
+  FTextureModified := true;
 end;
 
 // Destroy
@@ -830,10 +831,14 @@ end;
 procedure TGLCustomBitmapFont.OnGlyphsChanged(Sender: TObject);
 begin
   InvalidateUsers;
-  if FTextureWidth = 0 then
-    FTextureWidth := RoundUpToPowerOf2(Glyphs.Width);
-  if FTextureHeight = 0 then
-    FTextureHeight := RoundUpToPowerOf2(Glyphs.Height);
+  //when empty, width is 0 and roundup give 1
+  if not Glyphs.Graphic.Empty then
+  begin
+    if FTextureWidth = 0 then
+      FTextureWidth := RoundUpToPowerOf2(Glyphs.Width);
+    if FTextureHeight = 0 then
+      FTextureHeight := RoundUpToPowerOf2(Glyphs.Height);
+  end;
 end;
 
 // RegisterUser
@@ -856,7 +861,7 @@ end;
 // PrepareImage
 //
 
-procedure TGLCustomBitmapFont.PrepareImage;
+procedure TGLCustomBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
 var
   bitmap: TGLBitmap;
   bitmap32: TGLBitmap32;
@@ -864,10 +869,25 @@ var
   x, y, w, h : integer;
   t : TGLTextureHandle;
 begin
+  //only check when really used
+  if FTextureWidth = 0 then
+  begin
+    FTextureWidth  := ARci.GLStates.MaxTextureSize;
+    if FTextureWidth > 512 then FTextureWidth := 512;
+    if FTextureWidth < 64  then FTextureWidth := 64;
+  end;
+  if FTextureHeight = 0 then
+  begin
+    FTextureHeight := ARci.GLStates.MaxTextureSize;
+    if FTextureHeight > 512 then FTextureHeight := 512;
+    if FTextureHeight < 64  then FTextureHeight := 64;
+  end;
+
   x := 0; y := 0; w := Glyphs.Width; h := Glyphs.Height;
 
-  FTextRows := 1 + (h - 1) div FTextureWidth;
-  FTextCols := 1 + (w - 1) div FTextureHeight;
+  //was an error...
+  FTextRows := 1 + (h - 1) div FTextureHeight;
+  FTextCols := 1 + (w - 1) div FTextureWidth;
 
   bitmap := TGLBitmap.Create;
   with bitmap do
@@ -882,10 +902,12 @@ begin
   while (x < w) and (y < h) do
   begin
     T := TGLTextureHandle.Create;
+    FTextures.Add(T);
     // prepare handle
     T.AllocateHandle;
     // texture registration
     T.Target := ttTexture2D;
+    ARci.GLStates.TextureBinding[0, ttTexture2D] := T.Handle;
 
     //copy data
     bitmap.Canvas.Draw(-x, -y, Glyphs.Graphic);
@@ -922,7 +944,10 @@ begin
         cap,
         cap);
     end;
-    FTextures.Add(t);
+
+    PrepareParams(ARci);
+    T.NotifyDataUpdated;
+
     inc(x, FTextureWidth);
     if x >= w then
     begin
@@ -1205,9 +1230,10 @@ var
 begin
   if not FCharsLoaded then
   begin
+    r := CharactersPerRow;
+    if r = 0 then exit;
     ResetCharWidths;
     FCharsLoaded := true;
-    r := CharactersPerRow;
     for tileIndex := 0 to CharacterCount - 1 do
     begin
       FChars[tileIndex].l := (tileIndex mod r) * (CharWidth + GlyphsIntervalX);
@@ -1278,39 +1304,21 @@ end;
 procedure TGLCustomBitmapFont.TextureChanged;
 begin
   FTextureModified := true;
-//  FTextureHandle.NotifyChangesOfData;
 end;
 
 // force texture when needed
 procedure TGLCustomBitmapFont.CheckTexture(var ARci: TRenderContextInfo);
 var
-  T : TGLTextureHandle;
   i : integer;
 begin
-  if FTextureWidth = 0 then
-  begin
-    FTextureWidth  := CurrentGLContext.GLStates.MaxTextureSize;
-    if FTextureWidth > 512 then FTextureWidth := 512;
-    if FTextureWidth < 64  then FTextureWidth := 64;
-  end;
-  if FTextureHeight = 0 then
-  begin
-    FTextureHeight := CurrentGLContext.GLStates.MaxTextureSize;
-    if FTextureHeight > 512 then FTextureHeight := 512;
-    if FTextureHeight < 64  then FTextureHeight := 64;
-  end;
+  //important: IsDataNeedUpdate might come from another source!
+  for i := 0 to FTextures.Count - 1 do
+    FTextureModified := FTextureModified or TGLTextureHandle(FTextures[i]).IsDataNeedUpdate;
 
   if FTextureModified then
   begin
-    PrepareImage;
-
-    for i := 0 to FTextures.Count-1 do
-    begin
-      T := FTextures[i];
-      ARci.GLStates.TextureBinding[0, ttTexture2D] := T.Handle;
-      PrepareParams(ARci);
-      T.NotifyDataUpdated;
-    end;
+    FreeTextureHandle; //instances are recreated in prepare
+    PrepareImage(Arci);
     FTextureModified := false;
   end;
 end;
