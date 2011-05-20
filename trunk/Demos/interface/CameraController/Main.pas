@@ -36,7 +36,6 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCadencer1: TGLCadencer;
     GLSceneViewer1: TGLSceneViewer;
-    GLCameraController1: TGLCameraController;
     GLSphere3: TGLSphere;
     Panel3: TPanel;
     Label6: TLabel;
@@ -65,7 +64,28 @@ type
     Label4: TLabel;
     Panel6: TPanel;
     Label15: TLabel;
-    btnStopMovement: TButton;
+    btnOrbitToPosAdv: TButton;
+    UpAxis: TCheckBox;
+    Timer1: TTimer;
+    GLCameraController1: TGLCameraController;
+    Panel8: TPanel;
+    Label20: TLabel;
+    Panel7: TPanel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    camDirX: TEdit;
+    camDirY: TEdit;
+    camDirZ: TEdit;
+    Panel9: TPanel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    camUpX: TEdit;
+    camUpY: TEdit;
+    camUpZ: TEdit;
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -78,10 +98,15 @@ type
     procedure btnSafeOrbitAndZoomToPosClick(Sender: TObject);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure btnStopMovementClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
+    procedure btnOrbitToPosAdvClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
+    FGLCameraController : TGLCameraController;
     DextX, DextY, DextZ, Time, ZoomDistance: double;
     mx, my : Integer;
     procedure GetInput(Sender:TButton);
@@ -102,6 +127,7 @@ procedure TForm1.GetInput(Sender:TButton);
 begin
   if (Sender.Name='btnMoveToPos') or
      (Sender.Name='btnOrbitToPos') or
+     (Sender.Name='btnOrbitToPosAdv') or
      (Sender.Name='btnSafeOrbitAndZoomToPos') then
   begin
     DextX:=strtofloat(eDestX.text);
@@ -110,6 +136,7 @@ begin
   end;
   if (Sender.Name='btnMoveToPos') or
      (Sender.Name='btnZoomToDistance') or
+     (Sender.Name='btnOrbitToPosAdv') or
      (Sender.Name='btnOrbitToPos') then
   begin
     Time:= strtofloat(eTime.text);
@@ -120,59 +147,69 @@ begin
   end;
   if (Sender.Name='btnSafeOrbitAndZoomToPos')then
   begin
-    GLCameraController1.soSafeDistance := strtofloat(eSafeDistance.text);
-    GLCameraController1.soTimeToSafePlacement := strtofloat(eTimeToSafePlacement.text);
-    GLCameraController1.soTimeToOrbit := strtofloat(eTimeToOrbit.text);
-    GLCameraController1.soTimeToZoomBackIn := strtofloat(eTimeToZoomBackIn.text);
+    FGLCameraController.soSafeDistance := strtofloat(eSafeDistance.text);
+    FGLCameraController.soTimeToSafePlacement := strtofloat(eTimeToSafePlacement.text);
+    FGLCameraController.soTimeToOrbit := strtofloat(eTimeToOrbit.text);
+    FGLCameraController.soTimeToZoomBackIn := strtofloat(eTimeToZoomBackIn.text);
   end;
 end;
 
 //MoveToPos Usage
 procedure TForm1.btnMoveToPosClick(Sender: TObject);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
   GetInput(TButton(Sender));
-  GLCameraController1.MoveToPos(DextX, DextY, DextZ, Time);
+  FGLCameraController.MoveToPos(DextX, DextY, DextZ, Time);
 end;
 
 //ZoomToDistance Usage
 procedure TForm1.btnZoomToDistanceClick(Sender: TObject);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
   GetInput(TButton(Sender));
-  GLCameraController1.ZoomToDistance(ZoomDistance,Time);
+  FGLCameraController.ZoomToDistance(ZoomDistance,Time);
 end;
 
 //OrbitToPos Usage
+
+
 procedure TForm1.btnOrbitToPosClick(Sender: TObject);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
   GetInput(TButton(Sender));
-  GLCameraController1.OrbitToPos(DextX, DextY, DextZ, Time);
+  FGLCameraController.OrbitToPos(DextX, DextY, DextZ, Time);
 end;
+
+procedure TForm1.btnOrbitToPosAdvClick(Sender: TObject);
+begin
+  GetInput(TButton(Sender));
+  FGLCameraController.OrbitToPosAdvanced(DextX, DextY, DextZ, Time, UpAxis.Checked);
+end;
+
 
 //SafeOrbitAndZoomToPos Usage
 procedure TForm1.btnSafeOrbitAndZoomToPosClick(Sender: TObject);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
   GetInput(TButton(Sender));
-  GLCameraController1.SafeOrbitAndZoomToPos(DextX, DextY, DextZ);
+  FGLCameraController.SafeOrbitAndZoomToPos(DextX, DextY, DextZ);
 end;
 
-//GUI Implementation - Pay attention to GLCameraController1.AllowUserAction!
+//GUI Implementation - Pay attention to FGLCameraController.AllowUserAction!
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
 	GLCamera.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
   GLCamera.DepthOfView:=2*GLCamera.DistanceToTarget+2*GLcamera.TargetObject.BoundingSphereRadius;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+  FGLCameraController.Step(deltaTime, newtime);
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-   if not GLCameraController1.AllowUserAction then exit;
+  FGLCameraController.StopMovement;
    if Shift=[ssLeft] then
    begin
      mx:=x; my:=y;
@@ -182,7 +219,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
+
   if Shift=[ssLeft] then
   begin
     GLCamera.MoveAroundTarget(my-y, mx-x);
@@ -194,18 +231,28 @@ end;
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if not GLCameraController1.AllowUserAction then exit;
   caption:= 'CameraController Demo';
 end;
 
-procedure TForm1.btnStopMovementClick(Sender: TObject);
+procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  GLCameraController1.StopMovement;
+  camDirX.Text := Format('%.4f',[GLCamera.Direction.X]);
+  camDirY.Text := Format('%.4f',[GLCamera.Direction.Y]);
+  camDirZ.Text := Format('%.4f',[GLCamera.Direction.Z]);
+
+  camUpX.Text := Format('%.4f',[GLCamera.Up.X]);
+  camUpY.Text := Format('%.4f',[GLCamera.Up.Y]);
+  camUpZ.Text := Format('%.4f',[GLCamera.Up.Z]);
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  GLCameraController1.StopMovement;
+  FGLCameraController.StopMovement;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  FGLCameraController := GLCameraController1;
 end;
 
 initialization

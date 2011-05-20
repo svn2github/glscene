@@ -9,10 +9,10 @@
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
   <b>History : </b><font size=-1><ul>
+      <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
       <li>10/05/11 - Vince - Add OnMove event
-      <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support
-                              OrbitToPos when axis are different from -1,0 or 1
-      <li>24/07/09 - DaStr - Got rid of compiler hints
+      <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support OrbitToPos when axis are different from -1,0 or 1
+      <li>24/07/09 - DaStr - Got rid of compiler hints 
       <li>20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
     </ul></font>
 }
@@ -43,26 +43,123 @@ unit GLCameraController;
 
 interface
 
-uses GLScene, Classes, GLCadencer;
+uses GLScene, Classes, SysUtils, Contnrs, GLCadencer, VectorGeometry;
 
 type
+
+  EGLCameraController = class(Exception);
+
+  // Forward declaration of the camera controller main class
+  TGLCameraController = class;
+
+  // Forward declaration of a generic camera job
+  TGLCameraJob = class;
+
+  TGLCameraJobList = class(TObjectList)
+  private
+    FController : TGLCameraController;
+    function GetCameraJob(AIndex: integer): TGLCameraJob;
+    procedure SetCameraJob(AIndex: integer; const Value: TGLCameraJob);
+  public
+    constructor Create(AController: TGLCameraController);
+    function Add(ACameraJob: TGLCameraJob): integer;
+    property Items[AIndex: integer]: TGLCameraJob read GetCameraJob write SetCameraJob; default;
+    function First: TGLCameraJob;
+    function Last: TGLCameraJob;
+    function Camera : TGLCamera;
+  end;
+
+  TGLCameraJob = class
+  private
+    FJoblist : TGLCameraJobList;
+  protected
+    FAbort         : boolean;
+    FInit          : boolean;
+    FRunning       : Boolean;
+
+    FInitialPos    : TVector;
+    FInitialUp     : TVector;
+    FInitialDir    : TVector;
+
+    FFinalPos      : TVector;
+
+    FElapsedTime   : Double;
+    FDiffTime      : Double;
+    FStartTime     : Double;
+    FProceedTime   : Double;
+  public
+    constructor Create(AJoblist : TGLCameraJobList);
+    destructor Destroy; override;
+
+    procedure Abort;
+    procedure Step; virtual; abstract;
+    procedure Init; virtual; abstract;
+  end;
+
+  TGLMoveToPosJob = class(TGLCameraJob)
+  public
+    X : Double;
+    Y : Double;
+    Z : Double;
+    Time : Double;
+    procedure Step; override;
+    procedure Init; override;
+  end;
+
+  TGLZoomToDistanceJob = class(TGLCameraJob)
+  public
+    Distance : Double;
+    Time : Double;
+    procedure Step; override;
+    procedure Init; override;
+  end;
+
+  TGLOrbitToPosJob = class(TGLCameraJob)
+  private
+    FRotateSpeedX : Double;
+    FRotateSpeedZ : Double;
+  public
+    X : Double;
+    Y : Double;
+    Z : Double;
+    Time : Double;
+    procedure Step; override;
+    procedure Init; override;
+  end;
+
+
+  TGLOrbitToPosAdvJob = class(TGLCameraJob)
+  private
+    FRotAxis : TVector;
+    FAngle   : Double;
+  public
+    X : Double;
+    Y : Double;
+    Z : Double;
+    Time : Double;
+    PreferUpAxis : Boolean;
+    procedure Step; override;
+    procedure Init; override;
+  end;
+
+  TGLCameraJobEvent = procedure(Sender : TGLCameraJob) of object;
 
   TGLCameraController = class(TComponent)
   private
     //private variables - explained at the respective properties
-    FAllowUserAction:boolean;
     FCamera:TGLCamera;
     FCadencer:TGLCadencer;
+    FOnJobAdded: TGLCameraJobEvent;
+    FOnJobFinished: TGLCameraJobEvent;
+    FOnJobStep: TGLCameraJobEvent;
+
     //fields used by SafeOrbitAndZoomToPos
     FsoSafeDist,FsoTimeToSafePlacement,FsoTimeToOrbit,FsoTimeToZoomBackIn:double;
-    //used to break current movement
-    Stopped:boolean;
-    //On Move Event
-    FOnMove: TNotifyEvent;
+
     //private methods
     //used to test whether camera and cadencer are assigned
-    //TestExtendedPremises = true -> will test also for Camera.TargetObject
-    function TestPremises(TestExtendedPremises:boolean):boolean;
+    //Extended = true -> will test also for Camera.TargetObject
+    procedure CheckAssignments(Extended:boolean);
     //this adjusts camera depth of view after each movement
     //contains a call to Application.Processmessages for not blocking the app
     procedure AdjustScene;
@@ -70,11 +167,15 @@ type
     //if you want to zoom back in from GUI
     //you should use something like
     //  Camera.DepthOfView:=2*Camera.DistanceToTarget+2*camera.TargetObject.BoundingSphereRadius;
-    //it calls FOnMove event if assigned
-    procedure DoMove();
+    procedure SetOnJobAdded(const Value: TGLCameraJobEvent);
+    procedure SetOnJobFinished(const Value: TGLCameraJobEvent);
+    procedure SetOnJobStep(const Value: TGLCameraJobEvent);
   public
+    CameraJobList : TGLCameraJobList;
     //constructor
     constructor Create(AOwner:TComponent); override;
+    destructor Destroy; override;
+
     //methods
     //linear movement from current pos
     procedure MoveToPos(x,y,z,time:double);
@@ -83,8 +184,6 @@ type
     //it will not move to the given point(!), use SafeOrbitAndZoomToPos instead
     //there has to be a camera.targetObject assigned!
     procedure OrbitToPos(x,y,z,time:double);
-    //old commented prov with vectors - it's here only for reference
-    //procedure OrbitToPosVector(x,y,z,time:double);
     //Same function as OrbitToPos but support all camera states
     //PreferUpAxis value is to setup if function use Camera Up based rotation axis
     //instead of Camera direction based rotation axis when destination and camera
@@ -101,16 +200,21 @@ type
     //to introduce ability to stop movement and return control to user
     //here it is
     procedure StopMovement;
+    //<alled by the cadencer to animate the camera
+    procedure Step(const deltaTime, newTime: Double);
   published
     //properties
     //assign a TGLCamera instance to this
     property Camera:TGLCamera read FCamera write FCamera;
     //assign a TGLCadencer instance to this
+
     property Cadencer:TGLCadencer read FCadencer write FCadencer;
+
     //specifies whether user should be able interract with the GLSceneViewer
     //it is set to false while the camera is moving and
     //coders should check this value and block GUI access to GLSceneViewer
-    property AllowUserAction:boolean read FAllowUserAction;
+    //property AllowUserAction:boolean read FAllowUserAction;
+
     //safe distance to avoid moving the camera trough the camera.targetObject
     //while performing  SafeOrbitAndZoomToPos
     property soSafeDistance:double read FsoSafeDist write FsoSafeDist;
@@ -120,132 +224,368 @@ type
     property soTimeToOrbit:double read FsoTimeToOrbit write FsoTimeToOrbit;
     //time to zoom in/out to the given final position while performing  SafeOrbitAndZoomToPos
     property soTimeToZoomBackIn:double read FsoTimeToZoomBackIn write FsoTimeToZoomBackIn;
-    //function called when camera moves
-    property OnMove: TNotifyEvent read FOnMove write FOnMove;
+
+    //this event is triggered when a job is init
+    property OnJobAdded : TGLCameraJobEvent read FOnJobAdded write SetOnJobAdded;
+
+    //this event is triggered when a job is step (like an OnMove)
+    property OnJobStep : TGLCameraJobEvent read FOnJobStep write SetOnJobStep;
+
+    //this event is triggered when a job is finished (not canceled)
+    property OnJobFinished : TGLCameraJobEvent read FOnJobFinished write SetOnJobFinished;
   end;
 
 implementation
 
+
 uses
-  SysUtils, Forms, VectorGeometry
-  {$IFNDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  {$IFNDEF GLS_DELPHI} VectorTypes{$ENDIF};
 
-//---TGLCameraMover
+const
+  cGLCAMERACONTROLLER_CHECK_EXTENDED = TRUE;
 
-function TGLCameraController.TestPremises(TestExtendedPremises:boolean):boolean;
+{ TGLCameraController }
+
+
+constructor TGLCameraController.Create(AOwner:TComponent);
 begin
-  result:=true;
-  //check camera assignament
-  if not assigned(Camera) then
+  inherited;
+  //create the job list container
+  CameraJobList := TGLCameraJobList.Create(Self);
+  CameraJobList.OwnsObjects := true;
+
+  //initialize values
+  soSafeDistance:=10;
+  soTimeToSafePlacement:=1;
+  soTimeToOrbit:=2;
+  soTimeToZoomBackIn:=1;
+end;
+
+destructor TGLCameraController.Destroy;
+begin
+  //delete job list and all jobs inside
+  CameraJobList.Free;
+  inherited;
+end;
+
+
+procedure TGLCameraController.CheckAssignments(Extended:boolean);
+begin
+  /// Check camera assignment
+  if not Assigned(Camera) then
   begin
-//    result:=false;
-    raise Exception.Create('CameraMover needs to have camera assigned');
-    exit;
+    Raise EGLCameraController.CreateFmt('%s (%s) needs to have a Camera assigned',[Self.Name, Self.ClassName]);
   end;
-  //check cadencer assignament
-  if not assigned(Cadencer) then
+  /// Check cadencer assignament
+  if not Assigned(Cadencer) then
   begin
-//    result:=false;
-    raise Exception.Create('CameraMover needs to have Cadencer assigned');
-    exit;
+    Raise EGLCameraController.CreateFmt('%s (%s) needs to have a Cadencer assigned',[Self.Name, Self.ClassName]);
   end;
-  if TestExtendedPremises then
-  //TestExtendedPremises = check camera.TargetObject assignament
-  if not assigned(Camera.TargetObject) then
-  begin
-//    result:=false;
-    raise Exception.Create('This movement needs needs to have Camera.TargetObject assigned');
-  end;
+  if Extended then
+    /// Check camera;TargetObject assignment
+    if not Assigned(Camera.TargetObject) then
+    begin
+      Raise EGLCameraController.CreateFmt('%s (%s) needs Camera to have a TargetObject assigned',[Self.Name, Self.ClassName]);
+    end;
 end;
 
 procedure TGLCameraController.AdjustScene;
 begin
   Camera.DepthOfView:=2*Camera.DistanceToTarget+2*camera.TargetObject.BoundingSphereRadius;
   Camera.TransformationChanged;
-  Application.ProcessMessages; //I call this for not blocking the app while moving the camera
 end;
 
-procedure TGLCameraController.DoMove;
+procedure TGLCameraController.Step(const deltaTime, newTime: Double);
+var
+  CurrentJob : TGLCameraJob;
 begin
-  if Assigned(FOnMove) then
-    FOnMove(Self);
+
+  if CameraJobList.Count > 0 then
+  begin
+    CurrentJob := CameraJobList.First;
+
+    if CurrentJob.FInit then
+    begin
+      CurrentJob.Init;
+      CurrentJob.FStartTime := newTime;
+      CurrentJob.FRunning := True;
+      CurrentJob.FInit := False;
+
+      // Notify job
+      if Assigned(FOnJobAdded) then
+        FOnJobAdded(CurrentJob);
+    end;
+
+    if CurrentJob.FRunning then
+    begin
+      CurrentJob.FElapsedTime := newTime - CurrentJob.FStartTime;
+      CurrentJob.FDiffTime := deltaTime;// newTime - CurrentJob.FElapsedTime;
+      CurrentJob.Step;
+
+      // Notify job
+      if Assigned(FOnJobStep) then
+        FOnJobStep(CurrentJob);
+    end;
+
+    if not CurrentJob.FRunning then
+    begin
+      CameraJobList.Remove(CurrentJob);
+
+      // Notify job
+      if Assigned(FOnJobFinished) then
+        FOnJobFinished(CurrentJob);
+    end;
+
+  end;
+
+  //AdjustScene;
 end;
+
+
+procedure TGLCameraController.MoveToPos(x,y,z, time:double);
+var
+  Job : TGLMoveToPosJob;
+begin
+  Job := TGLMoveToPosJob.Create(CameraJobList);
+
+  Job.X := x;
+  Job.Y := y;
+  Job.Z := z;
+  Job.Time := time;
+end;
+
+
+procedure TGLCameraController.ZoomToDistance(Distance, Time:double);
+var
+  Job : TGLZoomToDistanceJob;
+begin
+  Job := TGLZoomToDistanceJob.Create(CameraJobList);
+  Job.Distance := Distance;
+  Job.Time := Time;
+end;
+
+
+procedure TGLCameraController.OrbitToPos(x,y,z,time:double);
+var
+  Job : TGLOrbitToPosJob;
+begin
+  Job := TGLOrbitToPosJob.Create(CameraJobList);
+
+  Job.X := x;
+  Job.Y := y;
+  Job.Z := z;
+  Job.Time := time;
+end;
+
+procedure TGLCameraController.OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True);
+var
+  Job : TGLOrbitToPosAdvJob;
+begin
+  Job := TGLOrbitToPosAdvJob.Create(CameraJobList);
+
+  Job.X := x;
+  Job.Y := y;
+  Job.Z := z;
+  Job.PreferUpAxis := PreferUpAxis;
+  Job.Time := time;
+end;
+
+
+procedure TGLCameraController.SafeOrbitAndZoomToPos(x,y,z:double);
+begin
+  //this was the main purpose of this component
+  //as you can see, it actually is a combination of the other 3 methods
+  CheckAssignments(cGLCAMERACONTROLLER_CHECK_EXTENDED);
+  ZoomToDistance(soSafeDistance,soTimeToSafePlacement);
+  OrbitToPos(x,y,z,soTimeToOrbit);
+  MoveToPos(x,y,z,soTimeToZoomBackIn);
+end;
+
 
 procedure TGLCameraController.StopMovement;
 begin
-  Stopped:=true;
+  CameraJobList.Clear;
 end;
 
-procedure TGLCameraController.MoveToPos(x,y,z,time:double);
-var InitialCameraPos, FinalCameraPos, Vect: TVector;
-    StartTime, TimeElapsed :double;
+
+procedure TGLCameraController.SetOnJobAdded(const Value: TGLCameraJobEvent);
 begin
-  if not TestPremises(true) then exit;
-  FAllowUserAction:=false;
-  //assign initial and final positions
-  InitialCameraPos:=VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
-  MakeVector(FinalCameraPos, x, y, z);
-  //movement
-  StartTime:=Cadencer.GetCurrentTime;
-  TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-  while TimeElapsed<time do
+  FOnJobAdded := Value;
+end;
+
+procedure TGLCameraController.SetOnJobStep(const Value: TGLCameraJobEvent);
+begin
+  FOnJobStep := Value;
+end;
+
+procedure TGLCameraController.SetOnJobFinished(const Value: TGLCameraJobEvent);
+begin
+  FOnJobFinished := Value;
+end;
+
+
+{ TGLCameraJobList }
+
+
+constructor TGLCameraJobList.Create(AController: TGLCameraController);
+begin
+  inherited Create;
+  FController := AController;
+end;
+
+function TGLCameraJobList.GetCameraJob(AIndex: integer): TGLCameraJob;
+begin
+  Result := inherited Get(AIndex);
+end;
+
+procedure TGLCameraJobList.SetCameraJob(AIndex: integer;
+  const Value: TGLCameraJob);
+begin
+  inherited Put(AIndex, Value);
+end;
+
+function TGLCameraJobList.Add(ACameraJob: TGLCameraJob): integer;
+begin
+  Result := inherited Add(ACameraJob);
+end;
+
+function TGLCameraJobList.First: TGLCameraJob;
+begin
+  Result := TGLCameraJob(inherited First);
+end;
+
+function TGLCameraJobList.Last: TGLCameraJob;
+begin
+  Result := TGLCameraJob(inherited Last);
+end;
+
+function TGLCameraJobList.Camera: TGLCamera;
+begin
+  Result := FController.Camera;
+end;
+
+{ TGLCameraJob }
+
+constructor TGLCameraJob.Create(AJoblist : TGLCameraJobList);
+begin
+  FJoblist := AJoblist;
+  FJoblist.Add(Self);
+
+  FInit := True;
+  FStartTime := 0;
+  FProceedTime := 0;
+end;
+
+destructor TGLCameraJob.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TGLCameraJob.Abort;
+begin
+
+end;
+
+
+{ TGLMoveToPosJob }
+
+procedure TGLMoveToPosJob.Init;
+begin
+  FProceedTime := Time;
+  FInitialPos := VectorSubtract(FJoblist.Camera.AbsolutePosition, FJoblist.Camera.TargetObject.AbsolutePosition);
+  MakeVector(FFinalPos, X, Y, Z);
+end;
+
+procedure TGLMoveToPosJob.Step;
+var
+  Vect : TVector;
+begin
+  if FElapsedTime < FProceedTime then
   begin
-    TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-    Vect:=VectorLerp(InitialCameraPos,FinalCameraPos,TimeElapsed/time);
-    if Assigned(Camera.Parent) then
-      Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-    Camera.Position.AsVector:=Vect;
-    AdjustScene;
-    if Stopped then begin Stopped:=false; break; end;
-    DoMove;
+    Vect := VectorLerp(FInitialPos, FFinalPos, FElapsedTime/FProceedTime);
+  end
+    else
+  begin
+    Vect := FFinalPos;
+    FRunning := false;
   end;
-  //finish movement - adjust to final point
-  vect:=FinalCameraPos;
-  if Assigned(Camera.Parent) then
-    Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-  Camera.Position.AsVector:=Vect;
-  AdjustScene;
-  DoMove;
-  FAllowUserAction:=true;
+
+  if Assigned(FJoblist.Camera.Parent) then
+    Vect:=FJoblist.Camera.Parent.AbsoluteToLocal(Vect);
+
+  FJoblist.Camera.Position.AsVector := Vect;
 end;
 
-procedure TGLCameraController.OrbitToPos(x,y,z,time:double);
-var pitchangle0,pitchangle1,turnangle0,turnangle1,
-    pitchangledif,turnangledif,
-    dx0,dy0,dz0,dx1,dy1,dz1,speedx,speedz,
-    StartTime,LastTime,TimeElapsed:double;
-    sign:shortint;
-    InitialCameraPos, AbsFinalCameraPos, FinalCameraPos, Vect: TVector;
-    Radius: double;
+{ TGLZoomToDistanceJob }
+
+procedure TGLZoomToDistanceJob.Init;
 begin
-  //all vector approaches have failed
+  FProceedTime := Time;
+  FInitialPos := VectorSubtract(FJoblist.Camera.AbsolutePosition, FJoblist.Camera.TargetObject.AbsolutePosition);
+  // To determine final position, we normalize original position and scale it with final distance
+  SetVector(FFinalPos, FInitialPos);
+  NormalizeVector(FFinalPos);
+  ScaleVector(FFinalPos, Distance);
+end;
 
-  //some problems with VectorAngleLerp which internally uses Quaterinion Slerp
-  //that is known to be problematic in a couple of particular cases
-  //but I think the implementation is also wrong
-  //also, a method where vectorlerp + normalize + scale was developed  (OrbitToPosVector)
-  //but the velocity is not constant (of course) + other problems in particular cases
+procedure TGLZoomToDistanceJob.Step;
+var
+  Vect : TVector;
+begin
+  if FElapsedTime < FProceedTime then
+  begin
+    Vect := VectorLerp(FInitialPos, FFinalPos, FElapsedTime/FProceedTime);
+  end
+    else
+  begin
+    Vect := FFinalPos;
+    FRunning := false;
+  end;
 
-  //this method works superbly, as long as the camera position is
-  //a combination of two 0s and one 1(or even -1)
-  //the final adjustment is done with vectors and
-  //the display is cleared for some reason in you position the camera on the Up axis.
+  if Assigned(FJoblist.Camera.Parent) then
+    Vect:=FJoblist.Camera.Parent.AbsoluteToLocal(Vect);
 
-  //this method does not have the problems of Slerp or general spherical interpolation
-  //it computes the difference between Pitch and Turn Angles and rotates the camera around the target
-  //it will never try to go over the blocking upper/lower points!  - this cause error in the mentioned algorithms
+  FJoblist.Camera.Position.AsVector := Vect;
+end;
 
-  if not TestPremises(true) then exit;
-  FAllowUserAction:=false;
+
+
+{ TGLOrbitToPosJob }
+
+procedure TGLOrbitToPosJob.Init;
+var
+  pitchangle0,pitchangle1,turnangle0,turnangle1,
+  pitchangledif,turnangledif,
+  dx0,dy0,dz0,dx1,dy1,dz1:double;
+  sign:shortint;
+begin
+
+  FProceedTime := Time;
+  FInitialPos := VectorSubtract(FJoblist.Camera.AbsolutePosition, FJoblist.Camera.TargetObject.AbsolutePosition);
+  // Determine final position
+  MakeVector(FFinalPos, X, Y, Z);
+  FFinalPos := VectorSubtract(FFinalPos, FJoblist.Camera.TargetObject.AbsolutePosition);
+  NormalizeVector(FFinalPos);
+  ScaleVector(FFinalPos, VectorLength(FInitialPos)); // Scale to radius
+
+
   //determine relative positions to determine the lines which form the angles
   //distances from initial camera pos to target object
-  dx0:=Camera.Position.X-Camera.TargetObject.Position.x;
-  dy0:=Camera.Position.Y-Camera.TargetObject.Position.Y;
-  dz0:=Camera.Position.Z-Camera.TargetObject.Position.Z;
+  with FJoblist.Camera do
+  begin
+    dx0 := Position.X - TargetObject.Position.x;
+    dy0 := Position.Y - TargetObject.Position.Y;
+    dz0 := Position.Z - TargetObject.Position.Z;
+  end;
+
   //distances from final camera pos to target object
-  dx1:=X-Camera.TargetObject.Position.x;
-  dy1:=Y-Camera.TargetObject.Position.Y;
-  dz1:=Z-Camera.TargetObject.Position.Z;
+  with FJoblist.Camera do
+  begin
+    dx1 := X - TargetObject.Position.x;
+    dy1 := Y - TargetObject.Position.Y;
+    dz1 := Z - TargetObject.Position.Z;
+  end;
 
   //just to make sure we don't get division by 0 exceptions
   if dx0=0 then dx0:=0.001;
@@ -255,12 +595,13 @@ begin
   if dy1=0 then dy1:=0.001;
   if dz1=0 then dz1:=0.001;
 
+
   //determine "pitch" and "turn" angles for the initial and  final camera position
   //the formulas differ depending on the camera.Up vector
-  //I tested all quadrants for all possible integer Camera.Up directions
-  if abs(Camera.Up.AsAffineVector[2])=1 then  //Z=1/-1
+  //I tested all quadrants for all possible integer FJoblist.Camera.Up directions
+  if abs(FJoblist.Camera.Up.AsAffineVector[2])=1 then  //Z=1/-1
   begin
-    sign:= round(Camera.Up.AsAffineVector[2]/abs(Camera.Up.AsAffineVector[2]));
+    sign:= round(FJoblist.Camera.Up.AsAffineVector[2]/abs(FJoblist.Camera.Up.AsAffineVector[2]));
     pitchangle0:=arctan(dz0/sqrt(sqr(dx0)+sqr(dy0)));
     pitchangle1:=arctan(dz1/sqrt(sqr(dx1)+sqr(dy1)));
     turnangle0:=arctan(dy0/dx0);
@@ -270,9 +611,9 @@ begin
     if (dx1<0) and (dy1<0) then turnangle1:=-(pi-turnangle1)
     else  if (dx1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
   end
-  else if abs(Camera.Up.AsAffineVector[1])=1 then  //Y=1/-1
+  else if abs(FJoblist.Camera.Up.AsAffineVector[1])=1 then  //Y=1/-1
   begin
-    sign:= round(Camera.Up.AsAffineVector[1]/abs(Camera.Up.AsAffineVector[1]));
+    sign:= round(FJoblist.Camera.Up.AsAffineVector[1]/abs(FJoblist.Camera.Up.AsAffineVector[1]));
     pitchangle0:=arctan(dy0/sqrt(sqr(dx0)+sqr(dz0)));
     pitchangle1:=arctan(dy1/sqrt(sqr(dx1)+sqr(dz1)));
     turnangle0:=-arctan(dz0/dx0);
@@ -282,9 +623,9 @@ begin
     if (dx1<0) and (dz1<0) then turnangle1:=-(pi-turnangle1)
     else  if (dx1<0) and (dz1>0) then turnangle1:=-(pi-turnangle1);
   end
-  else if abs(Camera.Up.AsAffineVector[0])=1 then //X=1/-1
+  else if abs(FJoblist.Camera.Up.AsAffineVector[0])=1 then //X=1/-1
   begin
-    sign:= round(Camera.Up.AsAffineVector[0]/abs(Camera.Up.AsAffineVector[0]));
+    sign:= round(FJoblist.Camera.Up.AsAffineVector[0]/abs(FJoblist.Camera.Up.AsAffineVector[0]));
     pitchangle0:=arctan(dx0/sqrt(sqr(dz0)+sqr(dy0)));
     pitchangle1:=arctan(dx1/sqrt(sqr(dz1)+sqr(dy1)));
     turnangle0:=arctan(dz0/dy0);
@@ -296,280 +637,123 @@ begin
   end
   else
   begin
-    raise Exception.Create('The Camera.Up vector may contain only -1, 0 or 1');
-    exit;
+    Raise EGLCameraController.Create('The Camera.Up vector may contain only -1, 0 or 1');
   end;
+
   //determine pitch and turn angle differences
   pitchangledif:=sign*(pitchangle1-pitchangle0);
   turnangledif:=sign*(turnangle1-turnangle0);
-  if abs(turnangledif)>pi then turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
-  //determine rotation speeds
-  speedx:=-pitchangledif/time;
-  speedz:=turnangledif/time;
 
-  StartTime:=Cadencer.GetCurrentTime;
-  LastTime:=StartTime;
+  if abs(turnangledif)>pi then
+    turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
-  //make the actual movement
-  while Cadencer.GetCurrentTime-StartTime<time do
-  begin
-    TimeElapsed:=(Cadencer.GetCurrentTime-LastTime);
-    LastTime:=Cadencer.GetCurrentTime;
-    Camera.MoveAroundTarget(radtodeg(speedx)*TimeElapsed,radtodeg(speedz)*TimeElapsed);
-    AdjustScene;
-    if Stopped then begin Stopped:=false; break; end;
-    DoMove;
-  end;
+  // Determine rotation speeds
+  FRotateSpeedX := -pitchangledif/time;
+  FRotateSpeedZ := turnangledif/time;
 
-  //finish  movement - init vectors
-  InitialCameraPos:=VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
-  Radius:=VectorLength(InitialCameraPos);
-  MakeVector(AbsFinalCameraPos, x, y, z);
-  FinalCameraPos:=VectorSubtract(AbsFinalCameraPos, Camera.TargetObject.AbsolutePosition);
-  NormalizeVector(FinalCameraPos);
-  ScaleVector(FinalCameraPos, Radius);
-  //finish  movement - adjust to final point
-  Vect:=FinalCameraPos;
-  if Assigned(Camera.Parent) then
-    Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-  Camera.Position.AsVector:=Vect;
-  AdjustScene;
-  DoMove;
-  FAllowUserAction:=true;
 end;
 
-procedure TGLCameraController.OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True);
+procedure TGLOrbitToPosJob.Step;
 var
-    StartTime,LastTime,TimeElapsed:double;
-    Radius: double;
-    RotAxis: TVector;
-    StartPos: TVector;
-    DestPos: TVector;
-    Angle: Single;
-    TgtToCam: TVector;
-    CamPos: TVector;
-    Right: TVector;
-    Up, tempUp: TVector;
-    Dir, tempDir: TVector;
-    Dist : Single;
+  Vect : TVector;
 begin
-  if not TestPremises(true) then exit;
-  FAllowUserAction:=false;
 
-  StartPos:= VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
-  //StartPos[3]:=1;
-  if Assigned(Camera.Parent) then
-    DestPos:=  VectorSubtract(Camera.Parent.LocalToAbsolute(VectorMake(x,y,z,1)), Camera.TargetObject.AbsolutePosition)
+  if FElapsedTime < FProceedTime then
+  begin
+    FJoblist.Camera.MoveAroundTarget(radtodeg(FRotateSpeedX)*FDiffTime, radtodeg(FRotateSpeedZ)*FDiffTime);
+  end
+    else
+  begin
+    Vect := FFinalPos;
+
+    if Assigned(FJoblist.Camera.Parent) then
+      Vect:=FJoblist.Camera.Parent.AbsoluteToLocal(Vect);
+
+    FJoblist.Camera.Position.AsVector := Vect;
+    FRunning := false;
+  end;
+
+end;
+
+
+{ TGLOrbitToPosAdvJob }
+
+procedure TGLOrbitToPosAdvJob.Init;
+var
+  Right: TVector;
+begin
+
+  FProceedTime := time;
+  FInitialPos:= VectorSubtract(FJoblist.Camera.AbsolutePosition, FJoblist.Camera.TargetObject.AbsolutePosition);
+
+  if Assigned(FJoblist.Camera.Parent) then
+    FFinalPos := VectorSubtract(FJoblist.Camera.Parent.LocalToAbsolute(VectorMake(x,y,z,1)), FJoblist.Camera.TargetObject.AbsolutePosition)
   else
-    DestPos:=  VectorSubtract(VectorMake(x,y,z,1), Camera.TargetObject.AbsolutePosition);
+    FFinalPos := VectorSubtract(VectorMake(x,y,z,1), FJoblist.Camera.TargetObject.AbsolutePosition);
 
   //if destination is Target Pos, we can't compute
-  if VectorLength(DestPos)<0.001 then
+  if VectorLength(FFinalPos)<0.001 then
   begin
-    FAllowUserAction := True;
+    //FAllowUserAction := True;
     Exit;
   end;
 
   //Compute Angle of Rotation
-  Angle:= ArcCos(VectorAngleCosine(Vector3fMake(DestPos), Vector3fMake(StartPos)));
+  FAngle:= ArcCos(VectorAngleCosine(Vector3fMake(FFinalPos), Vector3fMake(FInitialPos)));
 
-  Right := VectorNormalize(VectorCrossProduct(Camera.AbsoluteVectorToTarget,Camera.AbsoluteUp));
+  Right := VectorNormalize(VectorCrossProduct(FJoblist.Camera.AbsoluteVectorToTarget, FJoblist.Camera.AbsoluteUp));
 
-  Dir := Camera.AbsoluteDirection;
-  Up := Camera.AbsoluteUp;
+  FInitialDir := FJoblist.Camera.AbsoluteDirection;
+  FInitialUp := FJoblist.Camera.AbsoluteUp;
 
   // Determine rotation Axis
-  //if Angle equals 0°
-  if Angle < 0.001 then
+  // if Angle equals 0°
+  if FAngle < 0.001 then
     if PreferUpAxis then
-      RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,Up),DestPos))
+      FRotAxis := VectorNormalize(VectorCrossProduct(
+                   VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
     else
-      RotAxis := Right
+      FRotAxis := Right
   else
     // if Angle equals 180°
-    if Angle>Pi - 0.001  then
+    if FAngle >Pi - 0.001  then
       if PreferUpAxis then
-        RotAxis := VectorNormalize(VectorCrossProduct(
-                   VectorCrossProduct(DestPos,Up),DestPos))
+        FRotAxis := VectorNormalize(VectorCrossProduct(VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
       else
-        RotAxis := Right
+        FRotAxis := Right
     else
-      RotAxis:= VectorNormalize(VectorCrossProduct(DestPos, StartPos));
+      FRotAxis:= VectorNormalize(VectorCrossProduct(FFinalPos, FInitialPos));
 
-  StartTime:=Cadencer.GetCurrentTime;
-  LastTime:=StartTime;
+end;
 
-  //make the actual movement
-  while Cadencer.GetCurrentTime-StartTime<time do
+procedure TGLOrbitToPosAdvJob.Step;
+var
+  tempUp, tempDir, tempPos : TVector;
+begin
+
+  if FElapsedTime < FProceedTime then
   begin
-    TimeElapsed:=(LastTime - StartTime);
-    LastTime:=Cadencer.GetCurrentTime;
     //Compute Position
-    TgtToCam := StartPos;
-    RotateVector(TgtToCam, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
-    Camera.AbsolutePosition:= VectorAdd(Camera.TargetObject.AbsolutePosition, TgtToCam);
+    tempPos := FInitialPos;
+    RotateVector(tempPos, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FJoblist.Camera.AbsolutePosition:= VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
     //Compute Up Vector
-    tempUp := Up;
-    RotateVector(tempUp, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
-    Camera.AbsoluteUp := tempUp;
+    tempUp := FInitialUp;
+    RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FJoblist.Camera.AbsoluteUp := tempUp;
     //Compute Direction vector
-    tempDir := Dir;
-    RotateVector(tempDir, Vector3fMake(RotAxis), Angle * TimeElapsed/time);
-    Camera.AbsoluteDirection := tempDir;
-    AdjustScene;
-    if Stopped then begin Stopped:=false; break; end;
-    DoMove;
-  end;
-
-  // Update Camera Data to destination position
-  RotateVector(Up, Vector3fMake(RotAxis), Angle);
-  Camera.AbsoluteUp := Up;
-  RotateVector(Dir, Vector3fMake(RotAxis), Angle);
-  Camera.AbsoluteDirection := Dir;
-  //Method 1   //more accuracy
-  Radius := VectorLength(StartPos);
-  Dist := VectorLength(DestPos);
-  DestPos[0] := (DestPos[0] * Radius) / Dist;
-  DestPos[1] := (DestPos[1] * Radius) / Dist;
-  DestPos[2] := (DestPos[2] * Radius) / Dist;
-  //Method 2
-  //DestPos:= StartPos;
-  //RotateVector(DestPos,Vector3fMake(RotAxis), Angle);
-  CamPos:= VectorAdd(DestPos, Camera.TargetObject.AbsolutePosition);
-
-  if Assigned(Camera.Parent) then
-    CamPos:=Camera.Parent.AbsoluteToLocal(CamPos);
-  Camera.Position.AsVector:=CamPos;
-
-  AdjustScene;
-  DoMove;
-  FAllowUserAction:=true;
-end;
-
-//OrbitToPosVector - old vector implementation - not working well
-//I left it here for reference
-//the try with VectorAngleLerp was deleted as it proved
-//uselles at the time of development
-
-{procedure TGLCameraController.OrbitToPosVector(x,y,z,time:double);
-var InitialCameraPos, AbsFinalCameraPos, FinalCameraPos, Vect, MidWayVector: TVector;
-    StartTime, TimeElapsed, Radius :double;
-begin
-  //I have tried VectorAngleLerp but it does not seem to work correctly
-  if not TestPremises(true) then exit;
-  FAllowUserAction:=false;
-  //assign initial and final positions
-  InitialCameraPos:=VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
-  Radius:=VectorLength(InitialCameraPos);
-  MakeVector(AbsFinalCameraPos, x, y, z);
-  FinalCameraPos:=VectorSubtract(AbsFinalCameraPos, Camera.TargetObject.AbsolutePosition);
-  NormalizeVector(FinalCameraPos);
-  ScaleVector(FinalCameraPos, Radius);
-
-  MidWayVector:=VectorLerp(InitialCameraPos,FinalCameraPos,0.499); //0.5 is more probable to give sometimes the 0 point
-  NormalizeVector(MidWayVector);
-  ScaleVector(MidWayVector, Radius);
-
-  //movement
-  StartTime:=Cadencer.GetCurrentTime;
-  TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-  while TimeElapsed<time*0.499 do
+    tempDir := FInitialDir;
+    RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FJoblist.Camera.AbsoluteDirection := tempDir;
+  end
+    else
   begin
-    TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-    Vect:=VectorLerp(InitialCameraPos,MidWayVector,TimeElapsed/(time*0.499));
-    NormalizeVector(Vect);
-    ScaleVector(Vect, Radius);
-    if Assigned(Camera.Parent) then
-      Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-    Camera.Position.AsVector:=Vect;
-    AdjustScene;
-  end;
-  //finish half movement - adjust to mid point
-  vect:=MidWayVector;
-  if Assigned(Camera.Parent) then
-    Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-  Camera.Position.AsVector:=Vect;
-  AdjustScene;
-  //showmessage(floattostr(Camera.Position.AsVector[0])+'/'+floattostr(Camera.Position.AsVector[1])+'/'+floattostr(Camera.Position.AsVector[2]));
 
-  StartTime:=Cadencer.GetCurrentTime;
-  TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-  while TimeElapsed<time*0.501 do
-  begin
-    TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-    Vect:=VectorLerp(MidWayVector,FinalCameraPos,TimeElapsed/(time*0.501));
-    NormalizeVector(Vect);
-    ScaleVector(Vect, Radius);
-    if Assigned(Camera.Parent) then
-      Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-    Camera.Position.AsVector:=Vect;
-    AdjustScene;
+    FRunning := false;
   end;
-  //finish  movement - adjust to final point
-  vect:=FinalCameraPos;
-  if Assigned(Camera.Parent) then
-    Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-  Camera.Position.AsVector:=Vect;
-  AdjustScene;
-  FAllowUserAction:=true;
-end;     }
 
-procedure TGLCameraController.ZoomToDistance(Distance,Time:double);
-var InitialCameraPos, FinalCameraPos, Vect: TVector;
-    StartTime, TimeElapsed :double;
-begin
-  if not TestPremises(true) then exit;
-  FAllowUserAction:=false;
-  InitialCameraPos:=VectorSubtract(Camera.AbsolutePosition, Camera.TargetObject.AbsolutePosition);
-  //to determine final positon we normalize original pos and scale it with final distance
-  SetVector(FinalCameraPos, InitialCameraPos);
-  NormalizeVector(FinalCameraPos);
-  ScaleVector(FinalCameraPos,Distance);
-  //movement
-  StartTime:=Cadencer.GetCurrentTime;
-  TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-  while TimeElapsed<time do
-  begin
-    TimeElapsed:=Cadencer.GetCurrentTime-StartTime;
-    Vect:=VectorLerp(InitialCameraPos,FinalCameraPos,TimeElapsed/time);
-    if Assigned(Camera.Parent) then
-      Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-    Camera.Position.AsVector:=Vect;
-    AdjustScene;
-    if Stopped then begin Stopped:=false; break; end;
-    DoMove;
-  end;
-  //finish movement - adjust to final point
-  vect:=FinalCameraPos;
-  if Assigned(Camera.Parent) then
-    Vect:=Camera.Parent.AbsoluteToLocal(Vect);
-  Camera.Position.AsVector:=Vect;
-  AdjustScene;
-  DoMove;
-  FAllowUserAction:=true;
 end;
 
-procedure TGLCameraController.SafeOrbitAndZoomToPos(x,y,z:double);
-begin
-  //this was the main purpose of this component
-  //as you can see, it actually is a combination of the other 3 methods
-  if not TestPremises(true) then exit;
-  ZoomToDistance(soSafeDistance,soTimeToSafePlacement);
-  OrbitToPos(x,y,z,soTimeToOrbit);
-  MoveToPos(x,y,z,soTimeToZoomBackIn);
-end;
 
-constructor TGLCameraController.Create(AOwner:TComponent);
-begin
-  inherited;
-  //initialize values
-  soSafeDistance:=10;
-  soTimeToSafePlacement:=1;
-  soTimeToOrbit:=2;
-  soTimeToZoomBackIn:=1;
-  FAllowUserAction:=true;
-  Stopped:=false;
-end;
 
 end.

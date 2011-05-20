@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 138
   Top = 176
   Caption = 'CameraController Demo'
-  ClientHeight = 588
-  ClientWidth = 863
+  ClientHeight = 577
+  ClientWidth = 785
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,16 +12,19 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnClose = FormClose
+  OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 533
+    Left = 333
     Top = 0
-    Width = 330
-    Height = 553
+    Width = 452
+    Height = 542
     Align = alRight
     TabOrder = 0
+    ExplicitLeft = 528
+    ExplicitHeight = 611
     object Panel2: TPanel
       Left = 6
       Top = 9
@@ -287,33 +290,196 @@ object Form1: TForm1
       TabOrder = 7
       OnClick = btnSafeOrbitAndZoomToPosClick
     end
-    object btnStopMovement: TButton
+    object btnOrbitToPosAdv: TButton
       Left = 25
-      Top = 504
+      Top = 495
       Width = 280
-      Height = 33
-      Caption = 'StopMovement'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clNavy
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsItalic]
-      ParentFont = False
+      Height = 34
+      Caption = 'OrbitToPosAdv (will not zoom in to pos)'
       TabOrder = 8
-      OnClick = btnStopMovementClick
+      WordWrap = True
+      OnClick = btnOrbitToPosAdvClick
+    end
+    object UpAxis: TCheckBox
+      Left = 311
+      Top = 503
+      Width = 97
+      Height = 17
+      Caption = 'Prefer up axis'
+      TabOrder = 9
+    end
+    object Panel8: TPanel
+      Left = 327
+      Top = 9
+      Width = 114
+      Height = 304
+      TabOrder = 10
+      object Label20: TLabel
+        Left = 4
+        Top = 2
+        Width = 44
+        Height = 13
+        Caption = 'Camera'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        WordWrap = True
+      end
+      object Panel7: TPanel
+        Left = 8
+        Top = 19
+        Width = 97
+        Height = 118
+        BevelOuter = bvLowered
+        Caption = ' '
+        TabOrder = 0
+        object Label16: TLabel
+          Left = 8
+          Top = 34
+          Width = 6
+          Height = 13
+          Caption = 'X'
+        end
+        object Label17: TLabel
+          Left = 8
+          Top = 61
+          Width = 6
+          Height = 13
+          Caption = 'Y'
+        end
+        object Label18: TLabel
+          Left = 8
+          Top = 88
+          Width = 6
+          Height = 13
+          Caption = 'Z'
+        end
+        object Label19: TLabel
+          Left = 4
+          Top = 2
+          Width = 51
+          Height = 13
+          Caption = 'Direction'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          WordWrap = True
+        end
+        object camDirX: TEdit
+          Left = 20
+          Top = 31
+          Width = 68
+          Height = 21
+          TabOrder = 0
+          Text = '0.0'
+        end
+        object camDirY: TEdit
+          Left = 20
+          Top = 58
+          Width = 68
+          Height = 21
+          TabOrder = 1
+          Text = '0.0'
+        end
+        object camDirZ: TEdit
+          Left = 20
+          Top = 85
+          Width = 68
+          Height = 21
+          TabOrder = 2
+          Text = '0.0'
+        end
+      end
+      object Panel9: TPanel
+        Left = 8
+        Top = 143
+        Width = 97
+        Height = 118
+        BevelOuter = bvLowered
+        Caption = ' '
+        TabOrder = 1
+        object Label21: TLabel
+          Left = 8
+          Top = 34
+          Width = 6
+          Height = 13
+          Caption = 'X'
+        end
+        object Label22: TLabel
+          Left = 8
+          Top = 61
+          Width = 6
+          Height = 13
+          Caption = 'Y'
+        end
+        object Label23: TLabel
+          Left = 8
+          Top = 88
+          Width = 6
+          Height = 13
+          Caption = 'Z'
+        end
+        object Label24: TLabel
+          Left = 4
+          Top = 2
+          Width = 15
+          Height = 13
+          Caption = 'Up'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          WordWrap = True
+        end
+        object camUpX: TEdit
+          Left = 20
+          Top = 31
+          Width = 68
+          Height = 21
+          TabOrder = 0
+          Text = '0.0'
+        end
+        object camUpY: TEdit
+          Left = 20
+          Top = 58
+          Width = 68
+          Height = 21
+          TabOrder = 1
+          Text = '0.0'
+        end
+        object camUpZ: TEdit
+          Left = 20
+          Top = 85
+          Width = 68
+          Height = 21
+          TabOrder = 2
+          Text = '0.0'
+        end
+      end
     end
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 533
-    Height = 553
+    Width = 333
+    Height = 542
     Camera = GLCamera
-    FieldOfView = 131.517700195312500000
+    FieldOfView = 108.437850952148400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
+    TabOrder = 1
+    ExplicitWidth = 528
+    ExplicitHeight = 611
   end
   object pImg: TPanel
     Left = 4
@@ -396,12 +562,14 @@ object Form1: TForm1
   end
   object Panel6: TPanel
     Left = 0
-    Top = 553
-    Width = 863
+    Top = 542
+    Width = 785
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
+    ExplicitTop = 611
+    ExplicitWidth = 980
     object Label15: TLabel
       Left = 4
       Top = 6
@@ -426,8 +594,8 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     VisibilityCulling = vcHierarchical
-    Left = 16
-    Top = 48
+    Left = 8
+    Top = 40
     object GLDummyCube1: TGLDummyCube
       ShowAxes = True
       Up.Coordinates = {000000000000803F0000008000000000}
@@ -478,27 +646,36 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'transparent blue'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {FBFAFA3EF7F6F63E0000803F9A99193F}
         Material.BlendingMode = bmTransparency
-        Tag = 0
       end
       item
         Name = 'opaque green'
-        Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
       end
       item
         Name = 'opaque red'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-        Tag = 0
       end>
-    Left = 48
-    Top = 48
+    Left = 40
+    Top = 40
   end
   object GLCadencer1: TGLCadencer
-    Left = 16
-    Top = 80
+    Scene = GLScene1
+    SleepLength = 0
+    OnProgress = GLCadencer1Progress
+    Left = 8
+    Top = 72
+  end
+  object Timer1: TTimer
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 8
+    Top = 104
   end
   object GLCameraController1: TGLCameraController
     Camera = GLCamera
@@ -507,7 +684,7 @@ object Form1: TForm1
     soTimeToSafePlacement = 1.000000000000000000
     soTimeToOrbit = 2.000000000000000000
     soTimeToZoomBackIn = 1.000000000000000000
-    Left = 48
-    Top = 80
+    Left = 40
+    Top = 72
   end
 end
