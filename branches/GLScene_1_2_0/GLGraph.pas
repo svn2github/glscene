@@ -6,6 +6,7 @@
   Graph plotting objects for GLScene<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>21/05/11 - Yar - Transition to indirect rendering objects
   <li>07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -36,15 +37,21 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
+  GLContext,
   GLScene,
   VectorGeometry,
   GLMaterial,
+  GLMaterialEx,
   GLObjects,
   VectorLists,
   GLColor,
   BaseClasses,
-  GLRenderContextInfo;
+  GLPipelineTransformation,
+  GLRenderContextInfo,
+  GLSMesh,
+  GLSDrawTechnique;
 
 type
 
@@ -118,7 +125,8 @@ type
     The component will then invoke it OnGetHeight event to retrieve Z values for
     all of the grid points (values are retrieved only once for each point). Each
     point may have an additionnal color and texture coordinate. }
-  TGLHeightField = class(TGLSceneObject)
+
+  TGLHeightField = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FOnGetHeight: THeightFieldGetHeightEvent;
@@ -142,18 +150,18 @@ type
       var color: TColorVector; var texPoint: TTexPoint);
     procedure Height2Field(const x, y: Single; var z: Single;
       var color: TColorVector; var texPoint: TTexPoint);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
     procedure NotifyChange(Sender: TObject); override;
 
     property TriangleCount: Integer read FTriangleCount;
-
   published
     { Published Declarations }
     property XSamplingScale: TGLSamplingScale read FXSamplingScale
@@ -195,33 +203,46 @@ type
   //
   { : An XYZ Grid object.<p>
     Renders an XYZ grid using lines. }
-  TGLXYZGrid = class(TGLLineBase)
+  TGLXYZGrid = class(TGLSceneObject)
   private
     { Private Declarations }
+    FLineColor: TGLColor;
+    FLinePattern: Word;
+    FLineWidth: Single;
+    FSmoothing: Boolean;
     FXSamplingScale: TGLSamplingScale;
     FYSamplingScale: TGLSamplingScale;
     FZSamplingScale: TGLSamplingScale;
     FParts: TXYZGridParts;
     FLinesStyle: TXYZGridLinesStyle;
-
+    FFinishEvent: TFinishTaskEvent;
+    procedure SetLineColor(const Value: TGLColor);
+    procedure SetLinePattern(const Value: Word);
+    procedure SetLineWidth(const Value: Single);
+    function StoreLineWidth: Boolean;
   protected
     { Protected Declarations }
+    FBatch: TDrawBatch;
+    FTransformation: TTransformationRec;
     procedure SetXSamplingScale(const val: TGLSamplingScale);
     procedure SetYSamplingScale(const val: TGLSamplingScale);
     procedure SetZSamplingScale(const val: TGLSamplingScale);
     procedure SetParts(const val: TXYZGridParts);
     procedure SetLinesStyle(const val: TXYZGridLinesStyle);
     procedure SetLinesSmoothing(const val: Boolean);
-
+    procedure BuildMesh; virtual; stdcall;
+    procedure SetScene(const value: TGLScene); override;
+    procedure UpdateMaterial;
+    procedure Loaded; override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
     procedure NotifyChange(Sender: TObject); override;
-
   published
     { Published Declarations }
     property XSamplingScale: TGLSamplingScale read FXSamplingScale
@@ -233,9 +254,18 @@ type
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
     property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    { : Adjusts lines smoothing (or antialiasing).<p>
-      Obsolete, now maps to Antialiased property. }
-    property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
+    { : Default color of the lines. }
+    property LineColor: TGLColor read FLineColor write SetLineColor;
+    { : Bitwise line pattern.<p>
+      For instance $FFFF (65535) is a white line (stipple disabled), $0000
+      is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
+    property LinePattern: Word read FLinePattern write SetLinePattern
+      default $FFFF;
+    { : Default width of the lines. }
+    property LineWidth: Single read FLineWidth write SetLineWidth
+      stored StoreLineWidth;
+    { : Adjusts lines smoothing (or antialiasing).<p> }
+    property LinesSmoothing: Boolean read FSmoothing write SetLinesSmoothing stored False;
   end;
 
   // ------------------------------------------------------------------
@@ -248,19 +278,18 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+{$IFDEF GLS_SERVICE_CONTEXT}
+  SyncObjs,
+{$ENDIF}
   SysUtils,
+{$IFDEF GLS_DELPHI}
+  VectorTypes,
+{$ENDIF}
   OpenGLTokens,
-  GLContext,
-  XOpenGL,
-  GLState
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLSLParameter,
+  GLState;
 
-// ------------------
-// ------------------ TGLSamplingScale ------------------
-// ------------------
-
-// Create
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLSamplingScale'}{$ENDIF}
 
 constructor TGLSamplingScale.Create(AOwner: TPersistent);
 begin
@@ -389,16 +418,20 @@ begin
   end;
 end;
 
-// ------------------
-// ------------------ TGLHeightField ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLHeightField'}{$ENDIF}
 
 constructor TGLHeightField.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osStreamDraw, osDeferredDraw];
   FXSamplingScale := TGLSamplingScale.Create(Self);
   FYSamplingScale := TGLSamplingScale.Create(Self);
   FOptions := [hfoTwoSided];
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -409,6 +442,14 @@ begin
   FXSamplingScale.Free;
   FYSamplingScale.Free;
   inherited Destroy;
+end;
+
+procedure TGLHeightField.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  inherited DoRender(ARci, ARenderSelf, ARenderChildren);
+  if not (XSamplingScale.IsValid and YSamplingScale.IsValid) then
+    FBatch.Order := -1;
 end;
 
 // Assign
@@ -437,10 +478,7 @@ begin
   inherited NotifyChange(Sender);
 end;
 
-// BuildList
-//
-
-procedure TGLHeightField.BuildList(var rci: TRenderContextInfo);
+procedure TGLHeightField.BuildMesh;
 type
   TRowData = packed record
     color: TColorVector;
@@ -449,30 +487,30 @@ type
     normal: TAffineVector;
   end;
 
-  TRowDataArray = array [0 .. Maxint shr 6] of TRowData;
+  TRowDataArray = array[0..Maxint shr 6] of TRowData;
   PRowData = ^TRowDataArray;
-const
-  cHFCMtoEnum: array [hfcmEmission .. hfcmAmbientAndDiffuse] of TGLEnum =
-    (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
 var
   nx, m, k: Integer;
   x, y, x1, y1, y2, xStep, yStep, xBase, dx, dy: Single;
   invXStep, invYStep: Single;
-  row: packed array [0 .. 2] of PRowData;
+  row: packed array[0..2] of PRowData;
   rowTop, rowMid, rowBottom: PRowData;
   func: THeightFieldGetHeightEvent;
 
   procedure IssuePoint(var x, y: Single; const pt: TRowData);
+  type
+    PVector2f = ^TVector2f;
   begin
-    with pt do
+    with pt, FBatch.Mesh do
     begin
-      GL.Normal3fv(@normal);
+      Attribute3f(attrNormal, normal);
       if ColorMode <> hfcmNone then
-        GL.Color4fv(@color);
+        Attribute4f(attrColor, color);
       if hfoTextureCoordinates in Options then
-        xgl.TexCoord2fv(@texPoint);
-      GL.Vertex4f(x, y, z, 1);
+        Attribute2f(attrTexCoord0, PVector2f(@texPoint)^);
+      Attribute3f(attrPosition, x, y, z);
+      EmitVertex;
     end;
   end;
 
@@ -480,7 +518,6 @@ var
   var
     k: Integer;
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
     x := xBase;
     IssuePoint(x, y1, pLowRow^[0]);
     for k := 0 to m - 2 do
@@ -491,129 +528,132 @@ var
       x := x1;
     end;
     IssuePoint(x, y2, pHighRow^[m - 1]);
-    GL.End_;
+    FBatch.Mesh.RestartStrip;
   end;
 
 begin
-  if not(XSamplingScale.IsValid and YSamplingScale.IsValid) then
-    Exit;
-  if Assigned(FOnGetHeight) and (not(csDesigning in ComponentState)) then
-    func := FOnGetHeight
-  else if Assigned(FOnGetHeight2) and (not(csDesigning in ComponentState)) then
-    func := Height2Field
-  else
-    func := DefaultHeightField;
-  // allocate row cache
-  nx := (XSamplingScale.MaxStepCount + 1) * SizeOf(TRowData);
-  for k := 0 to 2 do
+  with FBatch.Mesh do
   begin
-    GetMem(row[k], nx);
-    FillChar(row[k][0], nx, 0);
-  end;
-  try
-    // precompute grid values
-    xBase := XSamplingScale.StepBase;
-    xStep := XSamplingScale.step;
-    invXStep := 1 / xStep;
-    yStep := YSamplingScale.step;
-    invYStep := 1 / yStep;
-    // get through the grid
-    if (hfoTwoSided in Options) or (ColorMode <> hfcmNone) then
-    begin
-      // if we're not two-sided, we doesn't have to enable face-culling, it's
-      // controled at the sceneviewer level
-      if hfoTwoSided in Options then
-      begin
-        rci.GLStates.Disable(stCullFace);
-        rci.GLStates.PolygonMode := Material.PolygonMode;
-      end;
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
       if ColorMode <> hfcmNone then
+        DeclareAttribute(attrColor, GLSLType4f);
+      if hfoTextureCoordinates in Options then
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if Assigned(FOnGetHeight) and (not (csDesigning in ComponentState)) then
+        func := FOnGetHeight
+      else if Assigned(FOnGetHeight2) and (not (csDesigning in ComponentState)) then
+        func := Height2Field
+      else
+        func := DefaultHeightField;
+      // allocate row cache
+      nx := (XSamplingScale.MaxStepCount + 1) * SizeOf(TRowData);
+      for k := 0 to 2 do
       begin
-        rci.GLStates.Enable(stColorMaterial);
-        GL.ColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
-        rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-          clrGray80, clrBlack, 0);
-        rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
-          clrBlack, 0);
+        GetMem(row[k], nx);
+        FillChar(row[k][0], nx, 0);
       end;
-    end;
-    rowBottom := nil;
-    rowMid := nil;
-    nx := 0;
-    y := YSamplingScale.StepBase;
-    y1 := y;
-    y2 := y;
-    while y <= YSamplingScale.max do
-    begin
-      rowTop := rowMid;
-      rowMid := rowBottom;
-      rowBottom := row[nx mod 3];
-      x := xBase;
-      m := 0;
-      while x <= XSamplingScale.max do
-      begin
-        with rowBottom^[m] do
+      try
+        // precompute grid values
+        xBase := XSamplingScale.StepBase;
+        xStep := XSamplingScale.step;
+        invXStep := 1 / xStep;
+        yStep := YSamplingScale.step;
+        invYStep := 1 / yStep;
+        // get through the grid
+        rowBottom := nil;
+        rowMid := nil;
+        nx := 0;
+        y := YSamplingScale.StepBase;
+        y1 := y;
+        y2 := y;
+        while y <= YSamplingScale.max do
         begin
-          with texPoint do
+          rowTop := rowMid;
+          rowMid := rowBottom;
+          rowBottom := row[nx mod 3];
+          x := xBase;
+          m := 0;
+          while x <= XSamplingScale.max do
           begin
-            S := x;
-            T := y;
+            with rowBottom^[m] do
+            begin
+              with texPoint do
+              begin
+                S := x;
+                T := y;
+              end;
+              func(x, y, z, color, texPoint);
+            end;
+            Inc(m);
+            x := x + xStep;
           end;
-          func(x, y, z, color, texPoint);
+          if Assigned(rowMid) then
+          begin
+            for k := 0 to m - 1 do
+            begin
+              if k > 0 then
+                dx := (rowMid^[k - 1].z - rowMid^[k].z) * invXStep
+              else
+                dx := 0;
+              if k < m - 1 then
+                dx := dx + (rowMid^[k].z - rowMid^[k + 1].z) * invXStep;
+              if Assigned(rowTop) then
+                dy := (rowTop^[k].z - rowMid^[k].z) * invYStep
+              else
+                dy := 0;
+              if Assigned(rowBottom) then
+                dy := dy + (rowMid^[k].z - rowBottom^[k].z) * invYStep;
+              rowMid^[k].normal := VectorNormalize(AffineVectorMake(dx, dy, 1));
+            end;
+          end;
+          if nx > 1 then
+          begin
+            RenderRow(rowTop, rowMid);
+          end;
+          Inc(nx);
+          y2 := y1;
+          y1 := y;
+          y := y + yStep;
         end;
-        Inc(m);
-        x := x + xStep;
-      end;
-      if Assigned(rowMid) then
-      begin
         for k := 0 to m - 1 do
         begin
           if k > 0 then
-            dx := (rowMid^[k - 1].z - rowMid^[k].z) * invXStep
+            dx := (rowBottom^[k - 1].z - rowBottom^[k].z) * invXStep
           else
             dx := 0;
           if k < m - 1 then
-            dx := dx + (rowMid^[k].z - rowMid^[k + 1].z) * invXStep;
-          if Assigned(rowTop) then
-            dy := (rowTop^[k].z - rowMid^[k].z) * invYStep
+            dx := dx + (rowBottom^[k].z - rowBottom^[k + 1].z) * invXStep;
+          if Assigned(rowMid) then
+            dy := (rowMid^[k].z - rowBottom^[k].z) * invYStep
           else
             dy := 0;
-          if Assigned(rowBottom) then
-            dy := dy + (rowMid^[k].z - rowBottom^[k].z) * invYStep;
-          rowMid^[k].normal := VectorNormalize(AffineVectorMake(dx, dy, 1));
+          rowBottom^[k].normal := VectorNormalize(AffineVectorMake(dx, dy, 1));
         end;
+        if Assigned(rowMid) and Assigned(rowBottom) then
+          RenderRow(rowMid, rowBottom);
+        FTriangleCount := 2 * (nx - 1) * (m - 1);
+      finally
+        FreeMem(row[0]);
+        FreeMem(row[1]);
+        FreeMem(row[2]);
       end;
-      if nx > 1 then
-      begin
-        RenderRow(rowTop, rowMid);
-      end;
-      Inc(nx);
-      y2 := y1;
-      y1 := y;
-      y := y + yStep;
+
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
     end;
-    for k := 0 to m - 1 do
-    begin
-      if k > 0 then
-        dx := (rowBottom^[k - 1].z - rowBottom^[k].z) * invXStep
-      else
-        dx := 0;
-      if k < m - 1 then
-        dx := dx + (rowBottom^[k].z - rowBottom^[k + 1].z) * invXStep;
-      if Assigned(rowMid) then
-        dy := (rowMid^[k].z - rowBottom^[k].z) * invYStep
-      else
-        dy := 0;
-      rowBottom^[k].normal := VectorNormalize(AffineVectorMake(dx, dy, 1));
-    end;
-    if Assigned(rowMid) and Assigned(rowBottom) then
-      RenderRow(rowMid, rowBottom);
-    FTriangleCount := 2 * (nx - 1) * (m - 1);
-  finally
-    FreeMem(row[0]);
-    FreeMem(row[1]);
-    FreeMem(row[2]);
   end;
+
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
 // SetXSamplingScale
@@ -671,6 +711,8 @@ begin
   if val <> FColorMode then
   begin
     FColorMode := val;
+    if FBatch.Material is TGLLibMaterialEx then
+      TGLLibMaterialEx(FBatch.Material).FixedFunction.VertexColorMode := TVertexColorMode(val);
     StructureChanged;
   end;
 end;
@@ -695,9 +737,9 @@ begin
   FOnGetHeight2(Self, x, y, z, color, texPoint);
 end;
 
-// ------------------
-// ------------------ TGLXYZGrid ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLXYZGrid'}{$ENDIF}
 
 // Create
 //
@@ -705,11 +747,28 @@ end;
 constructor TGLXYZGrid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDeferredDraw];
+  FLineColor := TGLColor.CreateInitialized(Self, clrWhite);
+  FLinePattern := $FFFF;
+  FLineWidth := 1.0;
+  FSmoothing := False;
   FXSamplingScale := TGLSamplingScale.Create(Self);
   FYSamplingScale := TGLSamplingScale.Create(Self);
   FZSamplingScale := TGLSamplingScale.Create(Self);
   FParts := [gpX, gpY];
   FLinesStyle := glsSegments;
+
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Material := GetInternalMaterialLibrary.Materials.Add;
+  with TGLLibMaterialEx(FBatch.Material) do
+  begin
+    Name := GetInternalMaterialLibrary.Materials.MakeUniqueName('GLScene_XYZGrid_Material');
+    FixedFunction.MaterialOptions := [moNoLighting];
+    FixedFunction.LineProperties.Enabled := True;
+  end;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Changed := True;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -720,7 +779,52 @@ begin
   FXSamplingScale.Free;
   FYSamplingScale.Free;
   FZSamplingScale.Free;
+  FBatch.Mesh.Free;
+  FFinishEvent.Free;
   inherited Destroy;
+end;
+
+procedure TGLXYZGrid.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+
+  procedure DoRenderSelf;
+  begin
+    if ocStructure in Changes then
+    begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
+      begin
+        if not Assigned(FFinishEvent) then
+        begin
+          FFinishEvent := TFinishTaskEvent.Create;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end
+        else if FFinishEvent.WaitFor(0) = wrSignaled then
+        begin
+          FFinishEvent.ResetEvent;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end;
+        exit;
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+        BuildMesh;
+    end;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    FBatch.Order := ARci.orderCounter;
+  end;
+
+begin
+  if ARenderSelf then
+    DoRenderSelf;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
+end;
+
+procedure TGLXYZGrid.Loaded;
+begin
+  inherited;
+  UpdateMaterial;
 end;
 
 // Assign
@@ -763,6 +867,37 @@ begin
   FZSamplingScale.Assign(val);
 end;
 
+function TGLXYZGrid.StoreLineWidth: Boolean;
+begin
+  Result := FLineWidth <> 1.0;
+end;
+
+procedure TGLXYZGrid.UpdateMaterial;
+var
+  LBlending: TBlendingMode;
+begin
+  LBlending := bmOpaque;
+  with TGLLibMaterialEx(FBatch.Material) do
+  begin
+    FixedFunction.LineProperties.Width := FLineWidth;
+    FixedFunction.LineProperties.StipplePattern := FLinePattern;
+    if FLinePattern <> $FFFF then
+    begin
+      FixedFunction.LineProperties.StippleFactor := 1;
+      LBlending := bmTransparency;
+    end
+    else
+      FixedFunction.LineProperties.StippleFactor := 0;
+    if FSmoothing then
+      LBlending := bmTransparency;
+    FixedFunction.LineProperties.Smooth := FSmoothing;
+    if FLineColor.Alpha <> 1.0 then
+      LBlending := bmTransparency;
+    FixedFunction.BlendingMode := LBlending;
+    FixedFunction.DepthProperties.DepthWrite := LBlending <> bmTransparency;
+  end;
+end;
+
 // SetParts
 //
 
@@ -773,6 +908,18 @@ begin
     FParts := val;
     StructureChanged;
   end;
+end;
+
+procedure TGLXYZGrid.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FBatch);
+  end;
+  inherited;
 end;
 
 // SetLinesStyle
@@ -787,12 +934,36 @@ begin
   end;
 end;
 
-// SetLinesSmoothing
-//
+procedure TGLXYZGrid.SetLineWidth(const Value: Single);
+begin
+  if FLineWidth <> Value then
+  begin
+    FLineWidth := Value;
+    UpdateMaterial;
+  end;
+end;
+
+procedure TGLXYZGrid.SetLineColor(const Value: TGLColor);
+begin
+  FLineColor.Assign(Value);
+end;
+
+procedure TGLXYZGrid.SetLinePattern(const Value: Word);
+begin
+  if FLinePattern <> Value then
+  begin
+    FLinePattern := Value;
+    UpdateMaterial;
+  end;
+end;
 
 procedure TGLXYZGrid.SetLinesSmoothing(const val: Boolean);
 begin
-  AntiAliased := val;
+  if FSmoothing <> val then
+  begin
+    FSmoothing := val;
+    UpdateMaterial;
+  end;
 end;
 
 // NotifyChange
@@ -802,122 +973,145 @@ procedure TGLXYZGrid.NotifyChange(Sender: TObject);
 begin
   if Sender is TGLSamplingScale then
     StructureChanged;
+  if Sender is TGLColor then
+  begin
+    UpdateMaterial;
+    StructureChanged;
+  end;
   inherited NotifyChange(Sender);
 end;
 
-// BuildList
-//
-
-procedure TGLXYZGrid.BuildList(var rci: TRenderContextInfo);
+procedure TGLXYZGrid.BuildMesh;
 var
   xBase, x, xStep, xMax, yBase, y, yStep, yMax, zBase, z, zStep, zMax: Single;
 begin
-  SetupLineStyle(rci);
   // precache values
   XSamplingScale.SetBaseStepMaxToVars(xBase, xStep, xMax, (gpX in Parts));
   YSamplingScale.SetBaseStepMaxToVars(yBase, yStep, yMax, (gpY in Parts));
   ZSamplingScale.SetBaseStepMaxToVars(zBase, zStep, zMax, (gpZ in Parts));
-  // render X parallel lines
-  if gpX in Parts then
+
+  with FBatch.Mesh do
   begin
-    y := yBase;
-    while y <= yMax do
-    begin
-      z := zBase;
-      while z <= zMax do
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
+
+      BeginAssembly(mpLINE_STRIP);
+      Attribute4f(attrColor, FLineColor.Color);
+
+      // render X parallel lines
+      if gpX in Parts then
       begin
-        GL.Begin_(GL_LINE_STRIP);
-        if LinesStyle = glsSegments then
-        begin
-          x := xBase;
-          while x <= xMax do
-          begin
-            GL.Vertex3f(x, y, z);
-            x := x + xStep;
-          end;
-        end
-        else
-        begin
-          GL.Vertex3f(XSamplingScale.Min, y, z);
-          GL.Vertex3f(XSamplingScale.max, y, z);
-        end;
-        GL.End_;
-        z := z + zStep;
-      end;
-      y := y + yStep;
-    end;
-  end;
-  // render Y parallel lines
-  if gpY in Parts then
-  begin
-    x := xBase;
-    while x <= xMax do
-    begin
-      z := zBase;
-      while z <= zMax do
-      begin
-        GL.Begin_(GL_LINE_STRIP);
-        if LinesStyle = glsSegments then
-        begin
-          y := yBase;
-          while y <= yMax do
-          begin
-            GL.Vertex3f(x, y, z);
-            y := y + yStep;
-          end;
-        end
-        else
-        begin
-          GL.Vertex3f(x, YSamplingScale.Min, z);
-          GL.Vertex3f(x, YSamplingScale.max, z);
-        end;
-        GL.End_;
-        z := z + zStep;
-      end;
-      x := x + xStep;
-    end;
-  end;
-  // render Z parallel lines
-  if gpZ in Parts then
-  begin
-    x := xBase;
-    while x <= xMax do
-    begin
-      y := yBase;
-      while y <= yMax do
-      begin
-        GL.Begin_(GL_LINE_STRIP);
-        if LinesStyle = glsSegments then
+        y := yBase;
+        while y <= yMax do
         begin
           z := zBase;
           while z <= zMax do
           begin
-            GL.Vertex3f(x, y, z);
+            if LinesStyle = glsSegments then
+            begin
+              x := xBase;
+              while x <= xMax do
+              begin
+                Attribute3f(attrPosition, x, y, z);
+                EmitVertex;
+                x := x + xStep;
+              end;
+            end
+            else
+            begin
+              Attribute3f(attrPosition, XSamplingScale.Min, y, z);
+              EmitVertex;
+              Attribute3f(attrPosition, XSamplingScale.Max, y, z);
+              EmitVertex;
+            end;
+            RestartStrip;
             z := z + zStep;
           end;
-        end
-        else
-        begin
-          GL.Vertex3f(x, y, ZSamplingScale.Min);
-          GL.Vertex3f(x, y, ZSamplingScale.max);
+          y := y + yStep;
         end;
-        GL.End_;
-        y := y + yStep;
       end;
-      x := x + xStep;
+      // render Y parallel lines
+      if gpY in Parts then
+      begin
+        x := xBase;
+        while x <= xMax do
+        begin
+          z := zBase;
+          while z <= zMax do
+          begin
+            if LinesStyle = glsSegments then
+            begin
+              y := yBase;
+              while y <= yMax do
+              begin
+                Attribute3f(attrPosition, x, y, z);
+                EmitVertex;
+                y := y + yStep;
+              end;
+            end
+            else
+            begin
+              Attribute3f(attrPosition, x, YSamplingScale.Min, z);
+              EmitVertex;
+              Attribute3f(attrPosition, x, YSamplingScale.Max, z);
+              EmitVertex;
+            end;
+            RestartStrip;
+            z := z + zStep;
+          end;
+          x := x + xStep;
+        end;
+      end;
+      // render Z parallel lines
+      if gpZ in Parts then
+      begin
+        x := xBase;
+        while x <= xMax do
+        begin
+          y := yBase;
+          while y <= yMax do
+          begin
+            if LinesStyle = glsSegments then
+            begin
+              z := zBase;
+              while z <= zMax do
+              begin
+                Attribute3f(attrPosition, x, y, z);
+                EmitVertex;
+                z := z + zStep;
+              end;
+            end
+            else
+            begin
+              Attribute3f(attrPosition, x, y, ZSamplingScale.Min);
+              EmitVertex;
+              Attribute3f(attrPosition, x, y, ZSamplingScale.Max);
+              EmitVertex;
+            end;
+            RestartStrip;
+            y := y + yStep;
+          end;
+          x := x + xStep;
+        end;
+      end;
+      EndAssembly;
+      WeldVertices;
+    finally
+      UnLock;
     end;
   end;
+  FBatch.Changed := True;
+  ClearStructureChanged;
 end;
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 initialization
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
-RegisterClasses([TGLHeightField, TGLXYZGrid]);
+  RegisterClasses([TGLHeightField, TGLXYZGrid]);
 
 end.
+
