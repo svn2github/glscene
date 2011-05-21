@@ -1555,7 +1555,7 @@ type
      This object is commonly referred by TGLSceneViewer and defines a position,
      direction, focal length, depth of view... all the properties needed for
      defining a point of view and optical characteristics. }
-  TGLCamera = class(TGLBaseSceneObject)
+  TGLCamera = class(TGLCustomSceneObject)
   private
     { Private Declarations }
     FFocalLength: Single;
@@ -1570,6 +1570,7 @@ type
     FDeferredApply: TNotifyEvent;
     FOnCustomPerspective: TOnCustomPerspective;
     FDesign: Boolean;
+    FVisibleAtRunTime: Boolean;
 
   protected
     { Protected Declarations }
@@ -1580,6 +1581,7 @@ type
     procedure SetFocalLength(AValue: Single);
     procedure SetCameraStyle(const val: TGLCameraStyle);
     procedure SetSceneScale(value: Single);
+    procedure SetVisibleAtRunTime(const Value: Boolean);
     function StoreSceneScale: Boolean;
     procedure SetNearPlaneBias(value: Single);
     function StoreNearPlaneBias: Boolean;
@@ -1598,8 +1600,12 @@ type
 
     //: Apply camera transformation
     procedure Apply;
-    procedure DoRender(var ARci: TRenderContextInfo;
-      ARenderSelf, ARenderChildren: Boolean); override;
+
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf: Boolean;
+      ARenderChildren: Boolean); override;
+
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -1722,6 +1728,13 @@ type
        </ul> }
     property CameraStyle: TGLCameraStyle read FCameraStyle write SetCameraStyle
       default csPerspective;
+
+
+    { : If true the camera icon will be visible at runtime.<p>
+      The default behaviour of a camera is to be visible at design-time
+      only, and invisible at runtime. }
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
+      write SetVisibleAtRunTime default False;
 
     {: Custom perspective event.<p>
        This event allows you to specify your custom perpective, either
@@ -5816,6 +5829,26 @@ begin
   FCameraStyle := csPerspective;
   FSceneScale := 1;
   FDesign := False;
+
+
+  // Since TGLCamera is also a sprite, we set it to drawable
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
+
+  // And we apply the default sprite bitmap values
+  with Material do
+  begin
+    MaterialOptions := [moNoLighting];
+    BlendingMode := bmTransparency;
+    Texture.Enabled := true;
+    Texture.ImageAlpha := tiaTopLeftPointColorTransparent;
+    Texture.TextureMode := tmReplace;
+    Texture.MinFilter := miNearest;
+    Texture.MagFilter := maNearest;
+    {$IfNDef FPC}
+    (Texture.Image as TGLPersistentImage).Picture.Bitmap.Handle := LoadBitmap(hInstance, 'EdCamera');
+    {$EndIf}
+  end;
+
 end;
 
 // destroy
@@ -6083,6 +6116,8 @@ begin
   end;
 end;
 
+
+
 // Notification
 //
 
@@ -6107,6 +6142,18 @@ begin
       FTargetObject.FreeNotification(Self);
     if not (csLoading in ComponentState) then
       TransformationChanged;
+  end;
+end;
+
+// SetVisibleAtRunTime
+//
+
+procedure TGLCamera.SetVisibleAtRunTime(const Value: Boolean);
+begin
+  if Value <> FVisibleAtRunTime then
+  begin
+    FVisibleAtRunTime := Value;
+    StructureChanged;
   end;
 end;
 
@@ -6320,6 +6367,8 @@ begin
   else
     Result := 1;
 end;
+
+
 
 // ScreenDeltaToVector
 //
@@ -6539,14 +6588,56 @@ begin
   Result := (FNearPlaneBias <> 1);
 end;
 
-// DoRender
+procedure TGLCamera.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  inherited;
+
+end;
+
+// BuildList
 //
 
-procedure TGLCamera.DoRender(var ARci: TRenderContextInfo;
-  ARenderSelf, ARenderChildren: Boolean);
+procedure TGLCamera.BuildList(var rci: TRenderContextInfo);
+var
+  vx, vy: TAffineVector;
+  w, h: Single;
+  mat: TMatrix;
+  u0, v0, u1, v1: Integer;
 begin
-  if ARenderChildren and (Count > 0) then
-    Self.RenderChildren(0, Count - 1, ARci);
+
+  if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
+  begin
+    mat := rci.PipelineTransformation.ModelViewMatrix;
+    // extraction of the "vecteurs directeurs de la matrice"
+    // (dunno how they are named in english)
+    w := 0.5;
+    h := 0.5;
+    vx[0] := mat[0][0];
+    vy[0] := mat[0][1];
+    vx[1] := mat[1][0];
+    vy[1] := mat[1][1];
+    vx[2] := mat[2][0];
+    vy[2] := mat[2][1];
+    ScaleVector(vx, w / VectorLength(vx));
+    ScaleVector(vy, h / VectorLength(vy));
+
+    u0 := 0;
+    u1 := 1;
+    v0 := 0;
+    v1 := 1;
+
+    GL.Begin_(GL_QUADS);
+    xgl.TexCoord2f(u1, v1);
+    GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
+    xgl.TexCoord2f(u0, v1);
+    GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
+    xgl.TexCoord2f(u0, v0);
+    GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
+    xgl.TexCoord2f(u1, v0);
+    GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
+    GL.End_;
+  end;
 end;
 
 // RayCastIntersect
