@@ -1603,9 +1603,6 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo); override;
 
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf: Boolean;
-      ARenderChildren: Boolean); override;
-
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -6588,12 +6585,6 @@ begin
   Result := (FNearPlaneBias <> 1);
 end;
 
-procedure TGLCamera.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
-  ARenderChildren: Boolean);
-begin
-  inherited;
-
-end;
 
 // BuildList
 //
