@@ -232,7 +232,7 @@ type
     function CanPaste(obj, destination: TGLBaseSceneObject): Boolean;
     procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
     procedure MethodError(Reader: TReader; const MethodName: string; var Address: Pointer; var Error: Boolean);
-    procedure PasteComponents(AOwner, AParent: TComponent; const Components: IDesignerSelections);
+    function PasteComponents(AOwner, AParent: TComponent; const Components: IDesignerSelections) : boolean;
     procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
     procedure ComponentRead(Component: TComponent);
     function UniqueName(Component: TComponent): string;
@@ -1244,13 +1244,15 @@ procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S:
       TmpContainer := TComponent.Create(self);
       try
         ComponentList := TDesignerSelections.Create;
-        PasteComponents(TmpContainer, TmpContainer, ComponentList);
-        if (ComponentList.Count > 0) and (ComponentList[0] is TGLBaseSceneObject) then
-        begin
-          anObject := TGLBaseSceneObject(ComponentList[0]);
-          destination := TGLBaseSceneObject(selNode.Data);
-          Result := CanPaste(anObject, destination);
-        end
+        if PasteComponents(TmpContainer, TmpContainer, ComponentList) then
+          if (ComponentList.Count > 0) and (ComponentList[0] is TGLBaseSceneObject) then
+          begin
+            anObject := TGLBaseSceneObject(ComponentList[0]);
+            destination := TGLBaseSceneObject(selNode.Data);
+            Result := CanPaste(anObject, destination);
+          end
+          else
+            Result := False
         else
           Result := False;
       finally
@@ -1380,26 +1382,34 @@ procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S:
     Error := false;
   end;
 
-  procedure TGLSceneEditorForm.PasteComponents(AOwner, AParent: TComponent; const Components: IDesignerSelections);
+  function TGLSceneEditorForm.PasteComponents(AOwner, AParent: TComponent; const Components: IDesignerSelections) : boolean;
   var
     S: TStream;
     R: TReader;
   begin
-    S := GetClipboardStream;
+    // catch GetClipboardStream exceptions that can easilly occured
+    Result := false;
     try
-      R := TReader.Create(S, 1024);
+      S := GetClipboardStream;
       try
-        R.OnSetName := ReaderSetName;
-        R.OnFindMethod := MethodError;
-        FPasteOwner := AOwner;
-        FPasteSelection := Components;
-        R.ReadComponents(AOwner, AParent, ComponentRead);
+        R := TReader.Create(S, 1024);
+        try
+          R.OnSetName := ReaderSetName;
+          R.OnFindMethod := MethodError;
+          FPasteOwner := AOwner;
+          FPasteSelection := Components;
+          R.ReadComponents(AOwner, AParent, ComponentRead);
+          Result := true;
+        finally
+          R.Free;
+        end;
       finally
-        R.Free;
+        S.Free;
       end;
     finally
-      S.Free;
+
     end;
+
   end;
 
   procedure TGLSceneEditorForm.ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
