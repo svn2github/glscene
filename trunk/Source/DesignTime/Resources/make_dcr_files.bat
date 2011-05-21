@@ -1,5 +1,6 @@
 @echo off
 del *.dcr
+del *.res
 BRCC32 -r -foGLSceneVCL.dcr GLSceneVCL.rc
 BRCC32 -r -foGLSceneObjects.dcr GLSceneObjects.rc
 BRCC32 -r -fononGLSceneVCL.dcr nonGLSceneVCL.rc
@@ -11,4 +12,5 @@ BRCC32 -r -foGLSceneVCLSDL.dcr GLSceneVCLSDL.rc
 BRCC32 -r -foGLSceneVCLCg.dcr GLSceneVCLCg.rc
 BRCC32 -r -foGLSceneVCLCUDA.dcr GLSceneVCLCUDA.rc
 BRCC32 -r -foGLSceneRunTime.dcr GLSceneRunTime.rc
+BRCC32 -r -foGLSceneEditor.res GLSceneEditor.rc
 pause
