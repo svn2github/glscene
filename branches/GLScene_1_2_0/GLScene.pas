@@ -478,6 +478,7 @@ type
      </ul> }
   TGLObjectStyle = (
     osDirectDraw,
+    osStreamDraw,
     osDeferredDraw,
     osIgnoreDepthBuffer,
     osNoVisibilityCulling);
@@ -527,7 +528,6 @@ type
     FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
     FLocalMatrix: PMatrix;
     FObjectStyle: TGLObjectStyles;
-    FListHandle: TGLListHandle; // created on 1st use
     FPosition: TGLCoordinates;
     FDirection, FUp: TGLCoordinates;
     FScaling: TGLCoordinates;
@@ -638,8 +638,6 @@ type
     procedure RebuildMatrix;
     procedure SetName(const NewName: TComponentName); override;
     procedure SetParentComponent(Value: TComponent); override;
-    procedure DestroyHandle; dynamic;
-    procedure DestroyHandles;
     procedure DeleteChildCameras;
     procedure DoOnAddedToParent; virtual;
 
@@ -661,11 +659,6 @@ type
     {: Controls and adjusts internal optimizations based on object's style.<p>
        Advanced user only. }
     property ObjectStyle: TGLObjectStyles read FObjectStyle write FObjectStyle;
-
-    {: Returns the handle to the object's build list.<p>
-       Use with caution! Some objects don't support buildlists! }
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
-    function ListHandleAllocated: Boolean;
 
     {: The local transformation (relative to parent).<p>
        If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
@@ -1177,7 +1170,6 @@ type
     function Blended: Boolean; override;
     function GetMaterial: TGLMaterial;
     procedure SetGLMaterial(AValue: TGLMaterial);
-    procedure DestroyHandle; override;
     procedure Loaded; override;
   public
     { Public Declarations }
@@ -1513,7 +1505,6 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     //: light sources have different handle types than normal scene objects
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -2659,7 +2650,6 @@ begin
   // k00m memory fix and remove some leak of the old version.
   FGLObjectEffects.Free;
   FGLBehaviours.Free;
-  FListHandle.Free;
   FPosition.Free;
   FRotation.Free;
   FDirection.Free;
@@ -2673,66 +2663,6 @@ begin
     FChildren.Free;
   end;
   inherited Destroy;
-end;
-
-// GetHandle
-//
-
-function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
-begin
-  if not Assigned(FListHandle) then
-    FListHandle := TGLListHandle.Create;
-  FListHandle.AllocateHandle;
-
-  if ocStructure in FChanges then
-  begin
-    ClearStructureChanged;
-    FListHandle.NotifyChangesOfData;
-  end;
-
-  if FListHandle.IsDataNeedUpdate then
-  begin
-    rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
-    try
-      BuildList(rci);
-    finally
-      rci.GLStates.EndList;
-    end;
-    FListHandle.NotifyDataUpdated;
-  end;
-
-  Result := FListHandle.Handle;
-end;
-
-// ListHandleAllocated
-//
-
-function TGLBaseSceneObject.ListHandleAllocated: Boolean;
-begin
-  Result := Assigned(FListHandle)
-    and (FListHandle.Handle <> 0)
-    and not (ocStructure in FChanges);
-end;
-
-// DestroyHandle
-//
-
-procedure TGLBaseSceneObject.DestroyHandle;
-begin
-  if Assigned(FListHandle) then
-    FListHandle.DestroyHandle;
-end;
-
-// DestroyHandles
-//
-
-procedure TGLBaseSceneObject.DestroyHandles;
-var
-  i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    Children[i].DestroyHandles;
-  DestroyHandle;
 end;
 
 // SetBBChanges
@@ -3797,7 +3727,6 @@ var
 begin
   if Assigned(Source) and (Source is TGLBaseSceneObject) then
   begin
-    DestroyHandles;
     FVisible := TGLBaseSceneObject(Source).FVisible;
     TGLBaseSceneObject(Source).RebuildMatrix;
     SetMatrix(TGLBaseSceneObject(Source).FLocalMatrix^);
@@ -4639,8 +4568,6 @@ begin
     Insert(aIndex, aChild);
   end;
   aChild.FParent := Self;
-  if AChild.FScene <> FScene then
-    AChild.DestroyHandles;
   AChild.SetScene(FScene);
   if Assigned(FScene) then
     FScene.AddLights(aChild);
@@ -4940,10 +4867,7 @@ begin
   // start rendering self
   if ARenderSelf then
   begin
-    if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-      BuildList(ARci)
-    else
-      ARci.GLStates.CallList(GetHandle(ARci));
+    BuildList(ARci);
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -5226,8 +5150,6 @@ begin
   if value <> FScene then
   begin
     // must be freed, the new scene may be using a non-compatible RC
-    if FScene <> nil then
-      DestroyHandles;
     FScene := value;
     // propagate for childs
     if Assigned(FChildren) then
@@ -5705,15 +5627,6 @@ begin
   NotifyChange(Self);
 end;
 
-// DestroyHandle
-//
-
-procedure TGLCustomSceneObject.DestroyHandle;
-begin
-  inherited;
-  Material.DestroyHandles;
-end;
-
 // DoRender
 //
 
@@ -5723,18 +5636,12 @@ begin
   // start rendering self
   if ARenderSelf then
     if ARci.ignoreMaterials then
-      if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
-      else
-        ARci.GLStates.CallList(GetHandle(ARci))
     else
     begin
       FMaterial.Apply(ARci);
       repeat
-        if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
-        else
-          ARci.GLStates.CallList(GetHandle(ARci));
       until not FMaterial.UnApply(ARci);
     end;
   // start rendering children (if any)
@@ -6535,10 +6442,7 @@ begin
   // start rendering self
   if ARenderSelf then
   begin
-    if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-      BuildList(ARci)
-    else
-      ARci.GLStates.CallList(GetHandle(ARci));
+    BuildList(ARci)
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -6602,10 +6506,7 @@ begin
 
         if ARenderSelf then
         begin
-          if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-            BuildList(ARci)
-          else
-            ARci.GLStates.CallList(GetHandle(ARci));
+          BuildList(ARci)
         end;
         if ARenderChildren then
           Self.RenderChildren(0, Count - 1, ARci);
@@ -7224,14 +7125,6 @@ begin
   Result := nil;
 end;
 
-// GetHandle
-//
-
-function TGLLightSource.GetHandle(var rci: TRenderContextInfo): Cardinal;
-begin
-  Result := 0;
-end;
-
 procedure TGLLightSource.OnDiffuseChaged(Sender: TObject);
 begin
   UpdateMaterial;
@@ -7480,7 +7373,6 @@ end;
 destructor TGLScene.Destroy;
 begin
   InitializableObjects.Free;
-  FObjects.DestroyHandles;
   FLights.Free;
   FObjects.Free;
   FRenderManager.Destroy;

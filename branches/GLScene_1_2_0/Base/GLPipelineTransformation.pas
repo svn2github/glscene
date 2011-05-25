@@ -80,6 +80,8 @@ type
     procedure SetModelMatrix(const AMatrix: TMatrix);
     procedure SetViewMatrix(const AMatrix: TMatrix);
     procedure SetProjectionMatrix(const AMatrix: TMatrix);
+    function GetStackTop: TTransformationRec;
+    procedure SetStackTop(const Value: TTransformationRec);
   protected
     procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
     procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
@@ -92,8 +94,8 @@ type
     procedure Push(AValue: PTransformationRec = nil);
     procedure Pop;
     procedure ReplaceFromStack;
-    function StackTop: TTransformationRec;
 
+    property StackTop: TTransformationRec read GetStackTop write SetStackTop;
     property ModelMatrix: TMatrix read GetModelMatrix write SetModelMatrix;
     property ViewMatrix: TMatrix read GetViewMatrix write SetViewMatrix;
     property ProjectionMatrix: TMatrix read GetProjectionMatrix write SetProjectionMatrix;
@@ -254,7 +256,7 @@ begin
     LoadModelViewMatrix;
 end;
 
-function TGLTransformation.StackTop: TTransformationRec;
+function TGLTransformation.GetStackTop: TTransformationRec;
 begin
   Result := FStack[FStackPos];
 end;
@@ -266,6 +268,16 @@ begin
     [trsViewProjChanged, trsFrustum];
   if LoadMatricesEnabled then
     LoadProjectionMatrix;
+end;
+
+procedure TGLTransformation.SetStackTop(const Value: TTransformationRec);
+begin
+  FStack[FStackPos] := Value;
+  if LoadMatricesEnabled then
+  begin
+    LoadModelViewMatrix;
+    LoadProjectionMatrix;
+  end;
 end;
 
 function TGLTransformation.GetModelViewMatrix: TMatrix;

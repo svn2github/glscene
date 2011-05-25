@@ -287,7 +287,8 @@ uses
 {$ENDIF}
   OpenGLTokens,
   GLSLParameter,
-  GLState;
+  GLState,
+  GLSLog;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSamplingScale'}{$ENDIF}
 
@@ -652,8 +653,7 @@ begin
     end;
   end;
 
-  FBatch.Changed := True;
-  ClearStructureChanged;
+  Inherited;
 end;
 
 // SetXSamplingScale
@@ -1103,8 +1103,11 @@ begin
       UnLock;
     end;
   end;
+
   FBatch.Changed := True;
   ClearStructureChanged;
+  if not IsMainThread and Assigned(Scene) then
+    Scene.NotifyChange(Self);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}

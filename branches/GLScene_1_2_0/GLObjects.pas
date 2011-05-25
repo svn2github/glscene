@@ -188,7 +188,7 @@ type
     { Protected Declarations }
     FBatch: TDrawBatch;
     FTransformation: TTransformationRec;
-    procedure BuildMesh; virtual; stdcall; abstract;
+    procedure BuildMesh; virtual; stdcall;
     function GetLibMaterialName: string; virtual;
     procedure SetLibMaterialName(const Value: string); virtual;
     procedure SetScene(const value: TGLScene); override;
@@ -215,7 +215,7 @@ type
       write SetLibMaterialName;
     property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx;
     property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
-    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default  [];
+    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
   end;
 
   // TGLVisibilityDeterminationEvent
@@ -403,8 +403,15 @@ type
 
   // TGLPointStyle
   //
-  TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive,
-    psSquareAdditive);
+  TGLPointStyle =
+    (
+    psCustom,
+    psSquare,
+    psRound,
+    psSmooth,
+    psSmoothAdditive,
+    psSquareAdditive
+    );
 
   // TGLPointParameters
   //
@@ -418,7 +425,6 @@ type
     FMinSize, FMaxSize: Single;
     FFadeTresholdSize: Single;
     FDistanceAttenuation: TGLCoordinates;
-
   protected
     { Protected Declarations }
     procedure SetEnabled(const val: Boolean);
@@ -430,17 +436,10 @@ type
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-
-    procedure Assign(Source: TPersistent); override;
-
-    procedure Apply;
-    procedure UnApply;
-
   published
     { Published Declarations }
     property Enabled: Boolean read FEnabled write SetEnabled default False;
@@ -458,49 +457,52 @@ type
   { : Renders a set of non-transparent colored points.<p>
     The points positions and their color are defined through the Positions
     and Colors properties. }
-  TGLPoints = class(TGLImmaterialSceneObject)
+  TGLPoints = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FPositions: TAffineVectorList;
     FColors: TVectorList;
     FSize: Single;
     FStyle: TGLPointStyle;
-    FPointParameters: TGLPointParameters;
     FStatic, FNoZWrite: Boolean;
-
+    FPointParameters: TGLPointParameters;
+    procedure SetNoZWrite(const Value: Boolean);
+    procedure SetSize(const Value: Single);
+    procedure SetStatic(const Value: Boolean);
+    procedure SetStyle(const Value: TGLPointStyle);
+    function StoreSize: Boolean;
+    procedure SetPointParameters(const Value: TGLPointParameters);
   protected
     { Protected Declarations }
-    function StoreSize: Boolean;
-    procedure SetNoZWrite(const val: Boolean);
-    procedure SetStatic(const val: Boolean);
-    procedure SetSize(const val: Single);
+    procedure BuildMesh; override; stdcall;
+    procedure UpdateMaterial;
     procedure SetPositions(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
-    procedure SetStyle(const val: TGLPointStyle);
-    procedure SetPointParameters(const val: TGLPointParameters);
-
+    procedure Loaded; override;
+    procedure SetLibMaterialName(const Value: string); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-
+    procedure NotifyChange(Sender: TObject); override;
     { : Points positions.<p>
       If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
     { : Defines the points colors.<p>
       <ul>
       <li>if empty, point color will be opaque white
-      <li>if contains a single color, all points will use that color
       <li>if contains N colors, the first N points (at max) will be rendered
       using the corresponding colors.
       </ul> }
     property Colors: TVectorList read FColors write SetColors;
-
   published
     { Published Declarations }
+
+    {: Use this properties for quick setup library material.
+       Whithout it they has no afect! }
+
     { : If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
     { : Tells the component if point coordinates are static.<p>
@@ -509,15 +511,61 @@ type
       Static sets of points may render faster than dynamic ones. }
     property Static: Boolean read FStatic write SetStatic;
     { : Point size, all points have a fixed size. }
-    property size: Single read FSize write SetSize stored StoreSize;
+    property Size: Single read FSize write SetSize stored StoreSize;
     { : Points style.<p> }
     property Style: TGLPointStyle read FStyle write SetStyle default psSquare;
     { : Point parameters as of ARB_point_parameters.<p>
-      Allows to vary the size and transparency of points depending
-      on their distance to the observer. }
+       Allows to vary the size and transparency of points depending
+       on their distance to the observer. }
     property PointParameters: TGLPointParameters read FPointParameters
       write SetPointParameters;
+  end;
 
+  // TGLLineBase
+  //
+  { : Base class for line objects.<p>
+    Introduces line style properties (width, color...). }
+  TGLLineBase = class(TGLSceneObjectEx)
+  private
+    { Private Declarations }
+    FLineColor: TGLColor;
+    FLinePattern: TGLushort;
+    FLineWidth: Single;
+    FAntiAliased: Boolean;
+  protected
+    { Protected Declarations }
+    procedure UpdateMaterial;
+    procedure SetLineColor(const Value: TGLColor);
+    procedure SetLinePattern(const Value: TGLushort);
+    procedure SetLineWidth(const val: Single);
+    function StoreLineWidth: Boolean;
+    procedure SetAntiAliased(const val: Boolean);
+    procedure Loaded; override;
+    procedure SetLibMaterialName(const Value: string); override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+    procedure NotifyChange(Sender: TObject); override;
+  published
+    { Published Declarations }
+    { : Indicates if OpenGL should smooth line edges.<p>
+      Smoothed lines looks better but are poorly implemented in most OpenGL
+      drivers and take *lots* of rendering time. }
+    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
+      default False;
+    { : Default color of the lines. }
+    property LineColor: TGLColor read FLineColor write SetLineColor;
+    { : Bitwise line pattern.<p>
+      For instance $FFFF (65535) is a white line (stipple disabled), $0000
+      is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
+    property LinePattern: TGLushort read FLinePattern write SetLinePattern
+      default $FFFF;
+    { : Default width of the lines. }
+    property LineWidth: Single read FLineWidth write SetLineWidth
+      stored StoreLineWidth;
   end;
 
   // TLineNodesAspect
@@ -539,12 +587,12 @@ type
   private
     { Private Declarations }
     FColor: TGLColor;
+    FNodeTransformation: TTransformationRec;
   protected
     { Protected Declarations }
     procedure SetColor(const val: TGLColor);
     procedure OnColorChange(Sender: TObject);
     function StoreColor: Boolean;
-//    procedure SetBatch();
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
@@ -566,7 +614,6 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); overload;
-
     procedure NotifyChange; override;
   end;
 
@@ -574,15 +621,15 @@ type
   //
   { : Class that defines lines via a series of nodes.<p>
     Base class, does not render anything. }
-  TGLNodedLines = class(TGLSceneObjectEx)
+  TGLNodedLines = class(TGLLineBase)
   private
     { Private Declarations }
     FNodes: TGLLinesNodes;
     FNodesAspect: TLineNodesAspect;
-    FNodeColor: TGLColor;
+    FDefaultNodeColor: TGLColor;
     FNodeSize: Single;
     FOldNodeColor: TColorVector;
-    FNodeMesh: TMeshAtom;
+    FNodeBatch: TDrawBatch;
   protected
     { Protected Declarations }
     procedure SetNodesAspect(const Value: TLineNodesAspect);
@@ -611,7 +658,7 @@ type
     { Published Declarations }
     { : Default color for nodes.<p>
       lnaInvisible and lnaAxes ignore this setting. }
-    property NodeColor: TGLColor read FNodeColor write SetNodeColor;
+    property DefaultNodeColor: TGLColor read FDefaultNodeColor write SetNodeColor;
     { : The nodes list.<p> }
     property Nodes: TGLLinesNodes read FNodes write SetNodes;
 
@@ -626,7 +673,7 @@ type
 
   // TLinesOptions
   //
-  TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
+  TLinesOption = (loUseNodeColorForLines, loTextureCoord, loColorLogicXor);
   TLinesOptions = set of TLinesOption;
 
   // TGLLines
@@ -655,14 +702,15 @@ type
     procedure SetOptions(const val: TLinesOptions);
     procedure SetNURBSOrder(const val: Integer);
     procedure SetNURBSTolerance(const val: Single);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-//    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
     property NURBSKnots: TSingleList read FNURBSKnots;
     property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
@@ -844,25 +892,17 @@ type
   end;
 
   { : Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildMesh(AMesh: TMeshAtom;
-    ASize: TGLFloat; const AColor: TColorVector);
+procedure CubeWireframeBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 { : Issues OpenGL for a unit-size dodecahedron. }
-procedure DodecahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
+procedure DodecahedronBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 { : Issues OpenGL for a unit-size icosahedron. }
-procedure IcosahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
+procedure IcosahedronBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 
 var
   TangentAttributeName: AnsiString = 'Tangent';
   BinormalAttributeName: AnsiString = 'Binormal';
 
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
 
 uses
 {$IFDEF GLS_SERVICE_CONTEXT}
@@ -872,14 +912,12 @@ uses
   GLState,
   GLSLParameter;
 
-const
-  cDefaultPointSize: Single = 1.0;
+{$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
 
 // CubeWireframeBuildList
 //
 
-procedure CubeWireframeBuildMesh(AMesh: TMeshAtom;
-  ASize: TGLFloat; const AColor: TColorVector);
+procedure CubeWireframeBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 var
   pn, pp: Single;
 begin
@@ -891,11 +929,9 @@ begin
     try
       Clear;
       DeclareAttribute(attrPosition, GLSLType3f);
-      DeclareAttribute(attrColor, GLSLType4f);
 
       BeginAssembly(mpLINES);
       Attribute3f(attrPosition, pp, pp, pp);
-      Attribute4f(attrColor, AColor);
       EmitVertex;
       Attribute3f(attrPosition, pn, pp, pp);
       EmitVertex;
@@ -965,7 +1001,7 @@ end;
 // DodecahedronBuildList
 //
 
-procedure DodecahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
+procedure DodecahedronBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 const
   A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
   B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
@@ -996,10 +1032,8 @@ begin
       DeclareAttribute(attrNormal, GLSLType3f);
       DeclareAttribute(attrTangent, GLSLType3f);
       DeclareAttribute(attrBinormal, GLSLType3f);
-      DeclareAttribute(attrColor, GLSLType4f);
 
       BeginAssembly(mpTRIANGLE_FAN);
-      Attribute4f(attrColor, AColor);
       for I := 0 to 11 do
       begin
         faceIndices := @polygons[i, 0];
@@ -1021,7 +1055,7 @@ begin
         Attribute3f(attrBinormal, bn);
         for j := 0 to 4 do
         begin
-          Attribute3f(attrPosition, vertices[faceIndices^[j]]);
+          Attribute3f(attrPosition, VectorScale(vertices[faceIndices^[j]], ASize));
           EmitVertex;
         end;
         RestartStrip;
@@ -1037,7 +1071,7 @@ end;
 // IcosahedronBuildList
 //
 
-procedure IcosahedronBuildMesh(AMesh: TMeshAtom; const AColor: TColorVector);
+procedure IcosahedronBuildMesh(AMesh: TMeshAtom; ASize: TGLFloat);
 const
   A = 0.5;
   B = 0.30901699437; // 1/(1+Sqrt(5))
@@ -1066,10 +1100,8 @@ begin
       DeclareAttribute(attrNormal, GLSLType3f);
       DeclareAttribute(attrTangent, GLSLType3f);
       DeclareAttribute(attrBinormal, GLSLType3f);
-      DeclareAttribute(attrColor, GLSLType4f);
 
       BeginAssembly(mpTRIANGLES);
-      Attribute4f(attrColor, AColor);
       for i := 0 to 19 do
       begin
         faceIndices := @triangles[i, 0];
@@ -1092,7 +1124,7 @@ begin
 
         for j := 0 to 2 do
         begin
-          Attribute3f(attrPosition, vertices[faceIndices^[j]]);
+          Attribute3f(attrPosition, VectorScale(vertices[faceIndices^[j]], ASize));
           EmitVertex;
         end;
       end;
@@ -1103,6 +1135,8 @@ begin
     end;
   end;
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSceneObjectEx'}{$ENDIF}
 
@@ -1134,6 +1168,14 @@ begin
   V3 := VectorAdd(VectorAbs(LAABB.min), VectorAbs(LAABB.max));
   ScaleVector(V3, 0.5);
   Result := VectorMake(V3);
+end;
+
+procedure TGLSceneObjectEx.BuildMesh;
+begin
+  FBatch.Changed := True;
+  ClearStructureChanged;
+  if not IsMainThread and Assigned(Scene) then
+    Scene.NotifyChange(Self);
 end;
 
 procedure TGLSceneObjectEx.Loaded;
@@ -1170,7 +1212,6 @@ begin
   FBatch.Changed := True;
 end;
 
-
 function TGLSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
 var
@@ -1205,8 +1246,8 @@ begin
       Scene.RenderManager.UnRegisterBatch(FBatch);
     if Assigned(value) then
       value.RenderManager.RegisterBatch(FBatch);
+    inherited;
   end;
-  inherited;
 end;
 
 procedure TGLSceneObjectEx.SetShowAABB(const Value: Boolean);
@@ -1266,7 +1307,7 @@ procedure TGLSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
     if ocStructure in Changes then
     begin
 {$IFDEF GLS_SERVICE_CONTEXT}
-      if IsServiceContextAvaible then
+      if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
       begin
         if not Assigned(FFinishEvent) then
         begin
@@ -1380,14 +1421,25 @@ end;
 
 procedure TGLDummyCube.BuildMesh;
 begin
-  CubeWireframeBuildMesh(FBatch.Mesh, FCubeSize, FEdgeColor.Color);
-  FBatch.Changed := True;
-  ClearStructureChanged;
+  CubeWireframeBuildMesh(FBatch.Mesh, FCubeSize);
+  with FBatch.InstancesChain do
+  begin
+    Lock;
+    try
+      Clear;
+      Attributes[attrColor] := True;
+      AttributesType[attrColor] := GLSLType4f;
+      with FEdgeColor do
+        AttributeLists[attrColor].Add(Red, Green, Blue, Alpha);
+    finally
+      UnLock;
+    end;
+  end;
+
+  Inherited;
 end;
 
 constructor TGLDummyCube.Create(AOwner: TComponent);
-const
-  cDummyCubeMaterialName = 'GLScene_DummyCube_Material';
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
@@ -1396,6 +1448,7 @@ begin
   FEdgeColor.Initialize(clrWhite);
   CamInvarianceMode := cimNone;
   FBatch.Mesh := TMeshAtom.Create;
+  FBatch.InstancesChain := TInstancesChain.Create;
   FBatch.Material := GetOrCreateDummyCubeMaterial;
   FBatch.Transformation := @FTransformation;
   FBatch.Changed := True;
@@ -1406,6 +1459,7 @@ destructor TGLDummyCube.Destroy;
 begin
   FEdgeColor.Free;
   FBatch.Mesh.Destroy;
+  FBatch.InstancesChain.Destroy;
   inherited;
 end;
 
@@ -1567,100 +1621,102 @@ begin
   with FBatch.Mesh do
   begin
     Lock;
-    Clear;
-    DeclareAttribute(attrPosition, GLSLType2f);
-    DeclareAttribute(attrNormal, GLSLType3f);
-    DeclareAttribute(attrTangent, GLSLType3f);
-    DeclareAttribute(attrBinormal, GLSLType3f);
-    DeclareAttribute(attrTexCoord0, GLSLType2f);
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType2f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTangent, GLSLType3f);
+      DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
 
-    BeginAssembly(mpTRIANGLES);
-    Attribute3f(attrNormal, ZVector);
-    Attribute3f(attrTangent, XVector);
-    Attribute3f(attrBinormal, YVector);
+      BeginAssembly(mpTRIANGLES);
+      Attribute3f(attrNormal, ZVector);
+      Attribute3f(attrTangent, XVector);
+      Attribute3f(attrBinormal, YVector);
 
-    if psSingleQuad in FStyle then
-    begin
-      // single quad plane
-      Attribute2f(attrTexCoord0, tx1, ty1);
-      Attribute2f(attrPosition, hw, hh);
-      EmitVertex;
-
-      Attribute2f(attrTexCoord0, tx0, ty1);
-      Attribute2f(attrPosition, -hw, hh);
-      EmitVertex;
-
-      Attribute2f(attrTexCoord0, tx0, ty0);
-      Attribute2f(attrPosition, -hw, -hh);
-      EmitVertex;
-
-      EmitVertex;
-
-      Attribute2f(attrTexCoord0, tx1, ty0);
-      Attribute2f(attrPosition, hw, -hh);
-      EmitVertex;
-
-      Attribute2f(attrTexCoord0, tx1, ty1);
-      Attribute2f(attrPosition, hw, hh);
-      EmitVertex;
-    end
-    else
-    begin
-      // multi-quad plane (actually built from tri-strips)
-      texSFact := (tx1 - tx0) / FXTiles;
-      texTFact := (ty1 - ty0) / FYTiles;
-      posXFact := FWidth / FXTiles;
-      posYFact := FHeight / FYTiles;
-      for Y := 0 to FYTiles - 1 do
+      if psSingleQuad in FStyle then
       begin
-        for X := 0 to FXTiles - 1 do
+        // single quad plane
+        Attribute2f(attrTexCoord0, tx1, ty1);
+        Attribute2f(attrPosition, hw, hh);
+        EmitVertex;
+
+        Attribute2f(attrTexCoord0, tx0, ty1);
+        Attribute2f(attrPosition, -hw, hh);
+        EmitVertex;
+
+        Attribute2f(attrTexCoord0, tx0, ty0);
+        Attribute2f(attrPosition, -hw, -hh);
+        EmitVertex;
+
+        EmitVertex;
+
+        Attribute2f(attrTexCoord0, tx1, ty0);
+        Attribute2f(attrPosition, hw, -hh);
+        EmitVertex;
+
+        Attribute2f(attrTexCoord0, tx1, ty1);
+        Attribute2f(attrPosition, hw, hh);
+        EmitVertex;
+      end
+      else
+      begin
+        // multi-quad plane (actually built from tri-strips)
+        texSFact := (tx1 - tx0) / FXTiles;
+        texTFact := (ty1 - ty0) / FYTiles;
+        posXFact := FWidth / FXTiles;
+        posYFact := FHeight / FYTiles;
+        for Y := 0 to FYTiles - 1 do
         begin
-          CalcPosTexCoord(X, Y);
-          Attribute2f(attrTexCoord0, texS, texT);
-          Attribute2f(attrPosition, pX, pY);
-          EmitVertex;
-          CalcPosTexCoord(X + 1, Y);
-          Attribute2f(attrTexCoord0, texS, texT);
-          Attribute2f(attrPosition, pX, pY);
-          EmitVertex;
-          CalcPosTexCoord(X, Y + 1);
-          Attribute2f(attrTexCoord0, texS, texT);
-          Attribute2f(attrPosition, pX, pY);
-          EmitVertex;
-          EmitVertex;
-          CalcPosTexCoord(X + 1, Y);
-          Attribute2f(attrTexCoord0, texS, texT);
-          Attribute2f(attrPosition, pX, pY);
-          EmitVertex;
-          CalcPosTexCoord(X + 1, Y + 1);
-          Attribute2f(attrTexCoord0, texS, texT);
-          Attribute2f(attrPosition, pX, pY);
-          EmitVertex;
+          for X := 0 to FXTiles - 1 do
+          begin
+            CalcPosTexCoord(X, Y);
+            Attribute2f(attrTexCoord0, texS, texT);
+            Attribute2f(attrPosition, pX, pY);
+            EmitVertex;
+            CalcPosTexCoord(X + 1, Y);
+            Attribute2f(attrTexCoord0, texS, texT);
+            Attribute2f(attrPosition, pX, pY);
+            EmitVertex;
+            CalcPosTexCoord(X, Y + 1);
+            Attribute2f(attrTexCoord0, texS, texT);
+            Attribute2f(attrPosition, pX, pY);
+            EmitVertex;
+            EmitVertex;
+            CalcPosTexCoord(X + 1, Y);
+            Attribute2f(attrTexCoord0, texS, texT);
+            Attribute2f(attrPosition, pX, pY);
+            EmitVertex;
+            CalcPosTexCoord(X + 1, Y + 1);
+            Attribute2f(attrTexCoord0, texS, texT);
+            Attribute2f(attrPosition, pX, pY);
+            EmitVertex;
+          end;
         end;
       end;
+      EndAssembly;
+      ApplyExtras;
+    finally
+      UnLock;
     end;
-    EndAssembly;
-    ApplyExtras;
-    UnLock;
   end;
 
-  ClearStructureChanged;
+  Inherited;
 end;
 
 constructor TGLPlane.Create(AOwner: TComponent);
 begin
   inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FWidth := 1;
   FHeight := 1;
   FXTiles := 1;
   FYTiles := 1;
   FXScope := 1;
   FYScope := 1;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FStyle := [psSingleQuad, psTileTexture];
   FBatch.Mesh := TMeshAtom.Create;
   FBatch.Transformation := @FTransformation;
-
   FBatch.Mesh.TagName := ClassName;
 end;
 
@@ -1929,7 +1985,8 @@ begin
       UnLock;
     end;
   end;
-  ClearStructureChanged;
+
+  Inherited;
 end;
 
 constructor TGLSprite.Create(AOwner: TComponent);
@@ -2090,9 +2147,7 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLSprite'}{$ENDIF}
 
-// ------------------
-// ------------------ TGLPointParameters ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLPoints'}{$ENDIF}
 
 // Create
 //
@@ -2114,20 +2169,6 @@ destructor TGLPointParameters.Destroy;
 begin
   FDistanceAttenuation.Free;
   inherited;
-end;
-
-// Assign
-//
-
-procedure TGLPointParameters.Assign(Source: TPersistent);
-begin
-  if Source is TGLPointParameters then
-  begin
-    FMinSize := TGLPointParameters(Source).FMinSize;
-    FMaxSize := TGLPointParameters(Source).FMaxSize;
-    FFadeTresholdSize := TGLPointParameters(Source).FFadeTresholdSize;
-    FDistanceAttenuation.Assign(TGLPointParameters(Source).DistanceAttenuation);
-  end;
 end;
 
 // DefineProperties
@@ -2170,37 +2211,13 @@ begin
   end;
 end;
 
-// Apply
-//
-
-procedure TGLPointParameters.Apply;
-begin
-  if Enabled and GL.ARB_point_parameters then
-  begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
-      FDistanceAttenuation.AsAddress);
-  end;
-end;
-
-// UnApply
-//
-
-procedure TGLPointParameters.UnApply;
-begin
-  if Enabled and GL.ARB_point_parameters then
-  begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
-  end;
-end;
-
 // SetEnabled
 //
+
+procedure TGLPointParameters.SetDistanceAttenuation(const val: TGLCoordinates);
+begin
+  FDistanceAttenuation.Assign(val);
+end;
 
 procedure TGLPointParameters.SetEnabled(const val: Boolean);
 begin
@@ -2256,199 +2273,108 @@ begin
   end;
 end;
 
-// SetDistanceAttenuation
-//
-
-procedure TGLPointParameters.SetDistanceAttenuation(const val: TGLCoordinates);
+procedure TGLPoints.BuildMesh;
+var
+  bColor: Boolean;
+  LColor: TVector4f;
 begin
-  FDistanceAttenuation.Assign(val);
+  bColor := (FColors.Count > 1) and (FColors.Count = FPositions.Count);
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      if bColor then
+        DeclareAttribute(attrColor, GLSLType4f);
+
+      BeginAssembly(mpPOINTS);
+
+      AttributeList(attrPosition, FPositions);
+      if bColor then
+        AttributeList(attrColor, FColors);
+
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
+
+  with FBatch.InstancesChain do
+  begin
+    Lock;
+    try
+      Clear;
+      if not bColor then
+      begin
+        Attributes[attrColor] := True;
+        AttributesType[attrColor] := GLSLType4f;
+        if FColors.Count = 1 then
+          LColor := FColors[0]
+        else
+          LColor := clrWhite;
+        AttributeLists[attrColor].Add(LColor[0], LColor[1], LColor[2], LColor[3]);
+      end;
+    finally
+      UnLock;
+    end;
+  end;
+
+  Inherited;
 end;
-
-// ------------------
-// ------------------ TGLPoints ------------------
-// ------------------
-
-// Create
-//
 
 constructor TGLPoints.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
-  FStyle := psSquare;
-  FSize := cDefaultPointSize;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling, osDeferredDraw];
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
+  FBatch.InstancesChain := TInstancesChain.Create;
+
   FPositions := TAffineVectorList.Create;
   FPositions.Add(NullVector);
   FColors := TVectorList.Create;
   FPointParameters := TGLPointParameters.Create(Self);
 end;
 
-// Destroy
-//
-
 destructor TGLPoints.Destroy;
 begin
-  FPointParameters.Free;
   FColors.Free;
   FPositions.Free;
+  FPointParameters.Destroy;
+  FBatch.InstancesChain.Destroy;
   inherited;
 end;
 
-// Assign
-//
+procedure TGLPoints.Loaded;
+begin
+  inherited;
+  UpdateMaterial;
+end;
+
+procedure TGLPoints.NotifyChange(Sender: TObject);
+begin
+  inherited;
+  if Sender = FPointParameters then
+    UpdateMaterial;
+end;
 
 procedure TGLPoints.Assign(Source: TPersistent);
 begin
   if Source is TGLPoints then
   begin
-    FSize := TGLPoints(Source).FSize;
-    FStyle := TGLPoints(Source).FStyle;
     FPositions.Assign(TGLPoints(Source).FPositions);
     FColors.Assign(TGLPoints(Source).FColors);
-    StructureChanged
+    StructureChanged;
   end;
   inherited Assign(Source);
 end;
 
-// BuildList
-//
-
-procedure TGLPoints.BuildList(var rci: TRenderContextInfo);
-var
-  n: Integer;
-  v: TVector;
+procedure TGLPoints.SetPointParameters(const Value: TGLPointParameters);
 begin
-  n := FPositions.Count;
-  if n = 0 then
-    Exit;
-
-  case FColors.Count of
-    0:
-      GL.Color4f(1, 1, 1, 1);
-    1:
-      GL.Color4fv(PGLFloat(FColors.List));
-  else
-    if FColors.Count < n then
-      n := FColors.Count;
-    GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
-    GL.EnableClientState(GL_COLOR_ARRAY);
-  end;
-  if FColors.Count < 2 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
-
-  rci.GLStates.Disable(stLighting);
-  if n = 0 then
-  begin
-    v := NullHmgPoint;
-    GL.VertexPointer(3, GL_FLOAT, 0, @v);
-    n := 1;
-  end
-  else
-    GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
-  GL.EnableClientState(GL_VERTEX_ARRAY);
-
-  if NoZWrite then
-    rci.GLStates.DepthWriteMask := False;
-  rci.GLStates.PointSize := FSize;
-  PointParameters.Apply;
-  if GL.EXT_compiled_vertex_array and (n > 64) then
-    GL.LockArrays(0, n);
-  case FStyle of
-    psSquare:
-      begin
-        // square point (simplest method, fastest)
-        rci.GLStates.Disable(stBlend);
-      end;
-    psRound:
-      begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfGreater, 0.5);
-        rci.GLStates.Disable(stBlend);
-      end;
-    psSmooth:
-      begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-      end;
-    psSmoothAdditive:
-      begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-      end;
-    psSquareAdditive:
-      begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-      end;
-  else
-    Assert(False);
-  end;
-  GL.DrawArrays(GL_POINTS, 0, n);
-  if GL.EXT_compiled_vertex_array and (n > 64) then
-    GL.UnlockArrays;
-  PointParameters.UnApply;
-  GL.DisableClientState(GL_VERTEX_ARRAY);
-  if FColors.Count > 1 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
+  FPointParameters := Value;
 end;
-
-// StoreSize
-//
-
-function TGLPoints.StoreSize: Boolean;
-begin
-  Result := (FSize <> cDefaultPointSize);
-end;
-
-// SetNoZWrite
-//
-
-procedure TGLPoints.SetNoZWrite(const val: Boolean);
-begin
-  if FNoZWrite <> val then
-  begin
-    FNoZWrite := val;
-    StructureChanged;
-  end;
-end;
-
-// SetStatic
-//
-
-procedure TGLPoints.SetStatic(const val: Boolean);
-begin
-  if FStatic <> val then
-  begin
-    FStatic := val;
-    if val then
-      ObjectStyle := ObjectStyle - [osDirectDraw]
-    else
-      ObjectStyle := ObjectStyle + [osDirectDraw];
-    StructureChanged;
-  end;
-end;
-
-// SetSize
-//
-
-procedure TGLPoints.SetSize(const val: Single);
-begin
-  if FSize <> val then
-  begin
-    FSize := val;
-    StructureChanged;
-  end;
-end;
-
-// SetPositions
-//
 
 procedure TGLPoints.SetPositions(const val: TAffineVectorList);
 begin
@@ -2456,8 +2382,99 @@ begin
   StructureChanged;
 end;
 
-// SetColors
-//
+procedure TGLPoints.SetSize(const Value: Single);
+begin
+  FSize := Value;
+  UpdateMaterial;
+end;
+
+procedure TGLPoints.SetStatic(const Value: Boolean);
+begin
+  FStatic := Value;
+  if FStatic then
+    ObjectStyle := ObjectStyle - [osStreamDraw]
+  else
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+end;
+
+procedure TGLPoints.SetStyle(const Value: TGLPointStyle);
+begin
+  FStyle := Value;
+  UpdateMaterial;
+end;
+
+function TGLPoints.StoreSize: Boolean;
+begin
+  Result := FSize <> 1.0;
+end;
+
+procedure TGLPoints.UpdateMaterial;
+begin
+  if FBatch.Material is TGLLibMaterialEx then
+    with TGLLibMaterialEx(FBatch.Material).FixedFunction do
+    begin
+      PointProperties.Enabled := True;
+      PointProperties.Size := FSize;
+      DepthProperties.DepthWrite := not FNoZWrite;
+
+      case FStyle of
+        psSquare:
+          begin
+            MaterialOptions := [moNoLighting];
+            PointProperties.Smooth := False;
+            BlendingMode := bmOpaque;
+          end;
+
+        psRound:
+          begin
+            MaterialOptions := [moNoLighting];
+            PointProperties.Smooth := True;
+            BlendingMode := bmAlphaTest50;
+          end;
+
+        psSmooth:
+          begin
+            MaterialOptions := [moNoLighting];
+            PointProperties.Smooth := True;
+            BlendingMode := bmCustom;
+            BlendingParams.UseAlphaFunc := True;
+            BlendingParams.AlphaFunctType := cfNotEqual;
+            BlendingParams.AlphaFuncRef := 0.0;
+            BlendingParams.UseBlendFunc := True;
+            BlendingParams.BlendFuncSFactor := bfSrcAlpha;
+            BlendingParams.BlendFuncDFactor := bfOneMinusSrcAlpha;
+          end;
+
+        psSmoothAdditive:
+          begin
+            MaterialOptions := [moNoLighting];
+            PointProperties.Smooth := True;
+            BlendingMode := bmCustom;
+            BlendingParams.UseAlphaFunc := True;
+            BlendingParams.AlphaFunctType := cfNotEqual;
+            BlendingParams.AlphaFuncRef := 0.0;
+            BlendingParams.UseBlendFunc := True;
+            BlendingParams.BlendFuncSFactor := bfSrcAlpha;
+            BlendingParams.BlendFuncDFactor := bfOne;
+          end;
+
+        psSquareAdditive:
+          begin
+            MaterialOptions := [moNoLighting];
+            PointProperties.Smooth := False;
+            BlendingMode := bmAdditive;
+          end;
+      end;
+
+      if FPointParameters.Enabled then
+      begin
+        PointProperties.MinSize := FPointParameters.MinSize;
+        PointProperties.MaxSize := FPointParameters.MaxSize;
+        PointProperties.FadeTresholdSize := FPointParameters.FadeTresholdSize;
+        PointProperties.DistanceAttenuation := FPointParameters.DistanceAttenuation;
+      end;
+    end;
+end;
 
 procedure TGLPoints.SetColors(const val: TVectorList);
 begin
@@ -2465,29 +2482,151 @@ begin
   StructureChanged;
 end;
 
-// SetStyle
+procedure TGLPoints.SetLibMaterialName(const Value: string);
+begin
+  inherited SetLibMaterialName(Value);
+  UpdateMaterial;
+end;
+
+procedure TGLPoints.SetNoZWrite(const Value: Boolean);
+begin
+  FNoZWrite := Value;
+  UpdateMaterial;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLLineBase'}{$ENDIF}
+
+// Create
 //
 
-procedure TGLPoints.SetStyle(const val: TGLPointStyle);
+constructor TGLLineBase.Create(AOwner: TComponent);
 begin
-  if FStyle <> val then
+  inherited Create(AOwner);
+  FLineColor := TGLColor.Create(Self);
+  FLineColor.Initialize(clrWhite);
+  FLinePattern := $FFFF;
+  FAntiAliased := False;
+  FLineWidth := 1.0;
+end;
+
+// Destroy
+//
+
+destructor TGLLineBase.Destroy;
+begin
+  FLineColor.Free;
+  inherited Destroy;
+end;
+
+procedure TGLLineBase.Loaded;
+begin
+  inherited;
+  UpdateMaterial;
+end;
+
+procedure TGLLineBase.NotifyChange(Sender: TObject);
+begin
+  if Sender = FLineColor  then
+    StructureChanged;
+  inherited;
+end;
+
+// SetLineColor
+//
+
+procedure TGLLineBase.SetLibMaterialName(const Value: string);
+begin
+  inherited SetLibMaterialName(Value);
+  UpdateMaterial;
+end;
+
+procedure TGLLineBase.SetLineColor(const Value: TGLColor);
+begin
+  FLineColor.Color := Value.Color;
+  StructureChanged;
+end;
+
+// SetLinePattern
+//
+
+procedure TGLLineBase.SetLinePattern(const Value: TGLushort);
+begin
+  if FLinePattern <> Value then
   begin
-    FStyle := val;
+    FLinePattern := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetLineWidth
+//
+
+procedure TGLLineBase.SetLineWidth(const val: Single);
+begin
+  if FLineWidth <> val then
+  begin
+    FLineWidth := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// StoreLineWidth
+//
+
+function TGLLineBase.StoreLineWidth: Boolean;
+begin
+  Result := (FLineWidth <> 1.0);
+end;
+
+procedure TGLLineBase.UpdateMaterial;
+begin
+  if FBatch.Material is TGLLibMaterialEx then
+    with TGLLibMaterialEx(FBatch.Material).FixedFunction do
+    begin
+      MaterialOptions := [moNoLighting];
+      LineProperties.Enabled := True;
+      LineProperties.Smooth := FAntiAliased;
+      LineProperties.Width := FLineWidth;
+      LineProperties.StipplePattern := FLinePattern;
+      if FLinePattern <> $FFFF then
+        LineProperties.StippleFactor := 1
+      else
+        LineProperties.StippleFactor := 0;
+    end;
+end;
+
+// SetAntiAliased
+//
+
+procedure TGLLineBase.SetAntiAliased(const val: Boolean);
+begin
+  if FAntiAliased <> val then
+  begin
+    FAntiAliased := val;
     StructureChanged;
   end;
 end;
 
-// SetPointParameters
+// Assign
 //
 
-procedure TGLPoints.SetPointParameters(const val: TGLPointParameters);
+procedure TGLLineBase.Assign(Source: TPersistent);
 begin
-  FPointParameters.Assign(val);
+  if Source is TGLLineBase then
+  begin
+    LineColor := TGLLineBase(Source).FLineColor;
+    LinePattern := TGLLineBase(Source).FLinePattern;
+    LineWidth := TGLLineBase(Source).FLineWidth;
+    AntiAliased := TGLLineBase(Source).FAntiAliased;
+  end;
+  inherited Assign(Source);
 end;
 
-// ------------------
-// ------------------ TGLLinesNode ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLLinesNode'}{$ENDIF}
 
 // Create
 //
@@ -2496,8 +2635,7 @@ constructor TGLLinesNode.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
   FColor := TGLColor.Create(Self);
-  FColor.Initialize((TGLLinesNodes(Collection).GetOwner as TGLLines)
-    .NodeColor.Color);
+  FColor.Initialize((TGLLinesNodes(Collection).GetOwner as TGLLines).DefaultNodeColor.Color);
   FColor.OnNotifyChange := OnColorChange;
 end;
 
@@ -2542,12 +2680,12 @@ end;
 function TGLLinesNode.StoreColor: Boolean;
 begin
   Result := not VectorEquals((TGLLinesNodes(Collection).GetOwner as TGLLines)
-    .NodeColor.Color, FColor.Color);
+    .DefaultNodeColor.Color, FColor.Color);
 end;
 
-// ------------------
-// ------------------ TGLLinesNodes ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLLinesNodes'}{$ENDIF}
 
 // Create
 //
@@ -2566,9 +2704,9 @@ begin
     (GetOwner as TGLBaseSceneObject).StructureChanged;
 end;
 
-// ------------------
-// ------------------ TGLNodedLines ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLNodedLines'}{$ENDIF}
 
 // Create
 //
@@ -2577,12 +2715,21 @@ constructor TGLNodedLines.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FNodes := TGLLinesNodes.Create(Self);
-  FNodeColor := TGLColor.Create(Self);
-  FNodeColor.Initialize(clrBlue);
-  FNodeColor.OnNotifyChange := OnNodeColorChanged;
+  FDefaultNodeColor := TGLColor.Create(Self);
+  FDefaultNodeColor.Initialize(clrBlue);
+  FDefaultNodeColor.OnNotifyChange := OnNodeColorChanged;
   FOldNodeColor := clrBlue;
   FNodesAspect := lnaAxes;
   FNodeSize := 1;
+
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
+  FBatch.InstancesChain := TInstancesChain.Create;
+
+  FNodeBatch.Mesh := TMeshAtom.Create;
+  FNodeBatch.Mesh.TagName := ClassName + '_' + FNodes.ClassName;
+  FNodeBatch.InstancesChain := TInstancesChain.Create;
 end;
 
 // Destroy
@@ -2591,7 +2738,10 @@ end;
 destructor TGLNodedLines.Destroy;
 begin
   FNodes.Free;
-  FNodeColor.Free;
+  FDefaultNodeColor.Free;
+  FBatch.InstancesChain.Destroy;
+  FNodeBatch.Mesh.Destroy;
+  FNodeBatch.InstancesChain.Destroy;
   inherited Destroy;
 end;
 
@@ -2612,7 +2762,7 @@ end;
 
 procedure TGLNodedLines.SetNodeColor(const Value: TGLColor);
 begin
-  FNodeColor.Color := Value.Color;
+  FDefaultNodeColor.Color := Value.Color;
   StructureChanged;
 end;
 
@@ -2626,8 +2776,8 @@ begin
   // update color for nodes...
   for i := 0 to Nodes.Count - 1 do
     if VectorEquals(TGLLinesNode(Nodes[i]).Color.Color, FOldNodeColor) then
-      TGLLinesNode(Nodes[i]).Color.Assign(FNodeColor);
-  SetVector(FOldNodeColor, FNodeColor.Color);
+      TGLLinesNode(Nodes[i]).Color.Assign(FDefaultNodeColor);
+  SetVector(FOldNodeColor, FDefaultNodeColor.Color);
 end;
 
 // SetNodes
@@ -2651,15 +2801,16 @@ begin
   StructureChanged;
 end;
 
-procedure TGLNodedLines.SetScene(const value: TGLScene);
+procedure TGLNodedLines.SetScene(const Value: TGLScene);
 begin
-  if value <> Scene then
+  if Value <> Scene then
   begin
-    if Assigned(Scene) then
-      FNodes.UnRegisterNodeBatches(Scene.RenderManager);
-    if Assigned(value) then
-      FNodes.RegisterNodeBatches(value.RenderManager);
-    inherited SetScene(value);
+      if Assigned(Scene) then
+        Scene.RenderManager.UnRegisterBatch(FNodeBatch);
+      if Assigned(Value) then
+        Value.RenderManager.RegisterBatch(FNodeBatch);
+
+    inherited SetScene(Value);
   end;
 end;
 
@@ -2680,7 +2831,7 @@ begin
   begin
     SetNodes(TGLNodedLines(Source).FNodes);
     FNodesAspect := TGLNodedLines(Source).FNodesAspect;
-    FNodeColor.Color := TGLNodedLines(Source).FNodeColor.Color;
+    FDefaultNodeColor.Color := TGLNodedLines(Source).FDefaultNodeColor.Color;
     FNodeSize := TGLNodedLines(Source).FNodeSize;
   end;
   inherited Assign(Source);
@@ -2702,33 +2853,45 @@ begin
 end;
 
 procedure TGLNodedLines.BuildNodeMesh;
+var
+  I: Integer;
 begin
   case NodesAspect of
     lnaAxes:
-      AxesBuildMesh(FNodeMesh, FNodeSize * 0.5);
+      AxesBuildMesh(FNodeBatch.Mesh, FNodeSize * 0.5);
     lnaCube:
-      CubeWireframeBuildMesh(FNodeMesh, FNodeSize, FNodeColor.Color);
+      CubeWireframeBuildMesh(FNodeBatch.Mesh, FNodeSize);
     lnaDodecahedron:
-//      begin
-//        if FNodeSize <> 1 then
-//        begin
-//          GL.PushMatrix;
-//          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
-//          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-//            Color.Color, clrBlack, 0);
-//          DodecahedronBuildList;
-//          GL.PopMatrix;
-//        end
-//        else
-//        begin
-//          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-//            Color.Color, clrBlack, 0);
-//          DodecahedronBuildList;
-//        end;
-//      end;
-  else
-    Assert(False)
+      DodecahedronBuildMesh(FNodeBatch.Mesh, FNodeSize);
   end;
+
+  with FNodeBatch.InstancesChain do
+  begin
+    Lock;
+    try
+      Clear;
+      if FNodesAspect <> lnaInvisible then
+      begin
+        if FNodesAspect <> lnaAxes then
+        begin
+          Attributes[attrColor] := True;
+          AttributesType[attrColor] := GLSLType4f;
+          for I := 0 to Nodes.Count - 1 do
+            with TGLLinesNode(Nodes[I]).Color do
+              AttributeLists[attrColor].Add(Red, Green, Blue, Alpha);
+        end;
+
+        TransformationEnabled := True;
+        for I := 0 to Nodes.Count - 1 do
+          with TGLLinesNode(Nodes[I]) do
+            Transformations.Add(@FNodeTransformation);
+      end;
+    finally
+      UnLock;
+    end;
+  end;
+
+  FNodeBatch.Material := GetOrCreateDummyCubeMaterial;
 end;
 
 // AddNode (coords)
@@ -2773,16 +2936,16 @@ end;
 
 procedure TGLNodedLines.AddNode(const Value: TAffineVector);
 var
-  n: TGLNode;
+  LNode: TGLNode;
 begin
-  n := Nodes.Add;
-  n.AsVector := VectorMake(Value);
+  LNode := Nodes.Add;
+  LNode.AsVector := VectorMake(Value);
   StructureChanged;
 end;
 
-// ------------------
-// ------------------ TGLLines ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLLines'}{$ENDIF}
 
 // Create
 //
@@ -2804,6 +2967,32 @@ destructor TGLLines.Destroy;
 begin
   FNURBSKnots.Free;
   inherited Destroy;
+end;
+
+procedure TGLLines.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+var
+  I: Integer;
+begin
+  inherited;
+
+  if (FNodesAspect <> lnaInvisible) and (FBatch.Order > -1) then
+  begin
+    if Nodes.Count > 0 then
+    begin
+      for I := Nodes.Count - 1 downto 0 do
+      with TGLLinesNode(Nodes[I]) do
+      begin
+        FNodeTransformation := FBatch.Transformation^;
+        FNodeTransformation.FModelMatrix := MatrixMultiply(
+          FNodeTransformation.FModelMatrix,
+          CreateTranslationMatrix(AsAffineVector));
+        FNodeTransformation.FStates := cAllStatesChanged;
+      end;
+      FNodeBatch.Order := ARci.orderCounter;
+      Inc(ARci.orderCounter);
+    end;
+  end;
 end;
 
 // SetDivision
@@ -2880,10 +3069,178 @@ begin
   inherited Assign(Source);
 end;
 
+procedure TGLLines.BuildMesh;
+var
+  LMode: TLineSplineMode;
+  I, NC, n: Integer;
+  vertexColor: TVector;
+  A, B, C: TGLFloat;
+  f, invC, u, u0, u1: Single;
+  Spline: TCubicSpline;
+  BzSpline: TBezierSpline;
+begin
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      if loUseNodeColorForLines in Options then
+        DeclareAttribute(attrColor, GLSLType4f);
+      if loTextureCoord in Options then
+        DeclareAttribute(attrTexCoord0, GLSLType1f);
+
+      LMode := FSplineMode;
+      if (LMode = lsmBezierSpline) and (Nodes.Count < 3) then
+        LMode := lsmLines;
+      invC := 1 / Nodes.Count;
+
+      case LMode of
+        lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve:
+          BeginAssembly(mpLINE_STRIP);
+        lsmSegments:
+          BeginAssembly(mpLINES);
+        lsmLoop:
+          BeginAssembly(mpLINE_LOOP);
+      end;
+
+      if (FDivision < 2)
+        or (LMode in [lsmLines, lsmSegments, lsmLoop]) then
+      begin
+        // standard line(s)
+        NC := Nodes.Count;
+        if LMode = lsmSegments then
+          NC := 2*(NC div 2);
+        if loUseNodeColorForLines in Options then
+        begin
+          // node color interpolation
+          for I := 0 to NC - 1 do
+            with TGLLinesNode(Nodes[i]) do
+            begin
+              if loTextureCoord in Options then
+                Attribute1f(attrTexCoord0, i * InvC);
+              Attribute4f(attrColor, Color.Color);
+              Attribute3f(attrPosition, X, Y, Z);
+              EmitVertex;
+            end;
+        end
+        else
+        begin
+          // single color
+          for i := 0 to NC - 1 do
+            with Nodes[i] do
+            begin
+              if loTextureCoord in Options then
+                Attribute1f(attrTexCoord0, i * InvC);
+              Attribute3f(attrPosition, X, Y, Z);
+              EmitVertex;
+            end;
+        end;
+      end
+      else if LMode = lsmCubicSpline then
+      begin
+        // cubic spline
+        Spline := Nodes.CreateNewCubicSpline;
+        try
+          f := 1 / FDivision;
+          for I := 0 to (Nodes.Count - 1) * FDivision do
+          begin
+            u := I * f;
+            Spline.SplineXYZ(u, A, B, C);
+            if loUseNodeColorForLines in Options then
+            begin
+              n := (i div FDivision);
+              if n < Nodes.Count - 1 then
+                VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
+                  TGLLinesNode(Nodes[n + 1]).Color.Color, (i mod FDivision) * f,
+                  vertexColor)
+              else
+                SetVector(vertexColor,
+                  TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
+              Attribute4f(attrColor, vertexColor);
+            end;
+            if loTextureCoord in Options then
+              Attribute1f(attrTexCoord0, u * InvC);
+            Attribute3f(attrPosition, A, B, C);
+            EmitVertex;
+          end;
+        finally
+          Spline.Free;
+        end;
+      end
+      else if LMode = lsmBezierSpline then
+      begin
+        // bezier spline
+        BzSpline := Nodes.CreateNewBezierSpline;
+        try
+          f := 1 / FDivision;
+          for I := 0 to FDivision do
+          begin
+            u := i * f;
+            BzSpline.SplineXYZ(u, A, B, C);
+            if loUseNodeColorForLines in Options then
+            begin
+              u := 1 - u;
+              n := Floor(u * Nodes.Count);
+              if n < Nodes.Count - 1 then
+              begin
+                u0 := n * invC;
+                u1 := (1 + n) * invC;
+                VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
+                  TGLLinesNode(Nodes[n + 1]).Color.Color, (u - u0)/(u1 - u0),
+                  vertexColor);
+              end
+              else
+                SetVector(vertexColor,
+                  TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
+              Attribute4f(attrColor, vertexColor);
+            end;
+            if loTextureCoord in Options then
+              Attribute1f(attrTexCoord0, u);
+            Attribute3f(attrPosition, A, B, C);
+            EmitVertex;
+          end;
+        finally
+          BzSpline.Free;
+        end;
+      end
+      else if LMode = lsmNURBSCurve then
+      begin
+{$Message Hint 'lsmNURBSCurve mode not yet implemented for TGLLines' }
+      end;
+
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
+
+  with FBatch.InstancesChain do
+  begin
+    Lock;
+    try
+      Clear;
+      if not (loUseNodeColorForLines in Options) then
+      begin
+        Attributes[attrColor] := True;
+        AttributesType[attrColor] := GLSLType4f;
+        with FLineColor do
+          AttributeLists[attrColor].Add(Red, Green, Blue, Alpha);
+      end;
+    finally
+      UnLock;
+    end;
+  end;
+
+  BuildNodeMesh;
+
+  Inherited;
+end;
+{
 // BuildList
 //
-{
-procedure TGLLines.BuildList(var rci: TRenderContextInfo);
+
+procedure BuildList(var rci: TRenderContextInfo);
 var
   i, n: Integer;
   A, B, C: TGLFloat;
@@ -3041,6 +3398,9 @@ begin
   end;
 end;
 }
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 {$IFDEF GLS_REGION}{$REGION 'TGLCube'}{$ENDIF}
 
 procedure TGLCube.Assign(Source: TPersistent);
@@ -3253,8 +3613,7 @@ begin
     end;
   end;
 
-  FBatch.Changed := True;
-  ClearStructureChanged;
+  Inherited;
 end;
 
 constructor TGLCube.Create(AOwner: TComponent);
@@ -3266,7 +3625,6 @@ begin
   FNormalDirection := ndOutside;
   FBatch.Mesh := TMeshAtom.Create;
   FBatch.Transformation := @FTransformation;
-
   FBatch.Mesh.TagName := ClassName;
 end;
 
@@ -3618,7 +3976,7 @@ begin
     LCapMesh.Free;
   end;
 
-  ClearStructureChanged;
+  Inherited;
 end;
 
 constructor TGLSphere.Create(AOwner: TComponent);
@@ -3802,9 +4160,7 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLSphere'}{$ENDIF}
 
-// ------------------
-// ------------------ TGLPolygonBase ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLPolygonBase'}{$ENDIF}
 
 // Create
 //
@@ -3899,11 +4255,11 @@ end;
 
 procedure TGLPolygonBase.AddNode(const coords: TGLCoordinates);
 var
-  n: TGLNode;
+  LNode: TGLNode;
 begin
-  n := Nodes.Add;
+  LNode := Nodes.Add;
   if Assigned(coords) then
-    n.AsVector := coords.AsVector;
+    LNode.AsVector := coords.AsVector;
   StructureChanged;
 end;
 
@@ -3912,10 +4268,10 @@ end;
 
 procedure TGLPolygonBase.AddNode(const X, Y, Z: TGLFloat);
 var
-  n: TGLNode;
+  LNode: TGLNode;
 begin
-  n := Nodes.Add;
-  n.AsVector := VectorMake(X, Y, Z, 1);
+  LNode := Nodes.Add;
+  LNode.AsVector := VectorMake(X, Y, Z, 1);
   StructureChanged;
 end;
 
@@ -3924,10 +4280,10 @@ end;
 
 procedure TGLPolygonBase.AddNode(const Value: TVector);
 var
-  n: TGLNode;
+  LNode: TGLNode;
 begin
-  n := Nodes.Add;
-  n.AsVector := Value;
+  LNode := Nodes.Add;
+  LNode.AsVector := Value;
   StructureChanged;
 end;
 
@@ -3936,22 +4292,16 @@ end;
 
 procedure TGLPolygonBase.AddNode(const Value: TAffineVector);
 var
-  n: TGLNode;
+  LNode: TGLNode;
 begin
-  n := Nodes.Add;
-  n.AsVector := VectorMake(Value);
+  LNode := Nodes.Add;
+  LNode.AsVector := VectorMake(Value);
   StructureChanged;
 end;
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
-
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
 
   RegisterClasses([TGLSphere, TGLCube, TGLPlane, TGLSprite, TGLPoints,
     TGLDummyCube, TGLLines]);

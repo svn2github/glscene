@@ -4,6 +4,7 @@
 {: GLSMesh<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>25/05/11 - Yar - Added TInstancesChain
     <li>18/05/11 - Yar - Added RayCastIntersect
     <li>16/04/11 - Yar - Rewriten
     <li>15/10/10 - Yar - Creation
@@ -52,21 +53,83 @@ type
     attrCustom2 = 15
     );
 
+  TMeshState = (mmsDefault, mmsAssembling, mmsPrimitives, mmsIgnoring);
+
+  // TInstancesChain
+  //
+  TInstancesChain = class(TObject)
+  private
+    { Private Declarations }
+{$IFDEF GLS_MULTITHREAD}
+    FLock: TCriticalSection;
+{$ENDIF}
+    FBuildingState: TMeshState;
+    FValid: Boolean;
+    FLastRevision: Cardinal;
+    FInstanceCount: Integer;
+    function GetValid: Boolean;
+    function GetAttributeDivisor(Attribs: TAttribLocation): TGLint;
+    function GetAttributes(Attribs: TAttribLocation): Boolean;
+    function GetAttributesType(Attribs: TAttribLocation): TGLSLDataType;
+    procedure SetAttributeDivisor(Attribs: TAttribLocation;
+      const Value: TGLint);
+    procedure SetAttributes(Attribs: TAttribLocation; const Value: Boolean);
+    procedure SetAttributesType(Attribs: TAttribLocation;
+      const Value: TGLSLDataType);
+    function GetAttributeLists(Attribs: TAttribLocation): T4ByteList;
+    procedure SetAttributeLists(Attribs: TAttribLocation;
+      const Value: T4ByteList);
+    procedure SetTransformationEnabled(const Value: Boolean);
+  protected
+    FAttributes: array[TAttribLocation] of Boolean;
+    FType: array[TAttribLocation] of TGLSLDataType;
+    FAttributeArrays: array[TAttribLocation] of T4ByteList;
+    FAttributeDivisor: array[TAttribLocation] of TGLint;
+    FTransformationEnabled: Boolean;
+    FTransformations: TList;
+  public
+    { Public Declarations }
+    constructor Create; virtual;
+    destructor Destroy; override;
+
+    {: Begins working. }
+    procedure Lock; virtual;
+    {: Clear content. }
+    procedure Clear;
+    {: Ends working with mesh. }
+    procedure UnLock; virtual;
+    {: Current validation state. }
+    property IsValid: Boolean read GetValid;
+
+    {: Direct access to content. }
+    property Attributes[Attribs: TAttribLocation]: Boolean
+    read GetAttributes write SetAttributes;
+    property AttributesType[Attribs: TAttribLocation]: TGLSLDataType
+    read GetAttributesType write SetAttributesType;
+    property AttributeDivisor[Attribs: TAttribLocation]: TGLint
+    read GetAttributeDivisor write SetAttributeDivisor;
+    property AttributeLists[Attribs: TAttribLocation]: T4ByteList
+    read GetAttributeLists write SetAttributeLists;
+    property TransformationEnabled: Boolean read FTransformationEnabled
+      write SetTransformationEnabled;
+    property Transformations: TList read FTransformations;
+    property InstanceCount: Integer read FInstanceCount;
+  end;
+
   TMeshExtra = (mesTangents, mesAdjacency, mesFastWireFrame, mesOctreeRayCast);
   TMeshExtras = set of TMeshExtra;
 
-//  TMeshPurpose = (fgpCommon, fgpInterior, fgpExterior, fgpOcluder,
-//    fgpControlCage);
+  //  TMeshPurpose = (fgpCommon, fgpInterior, fgpExterior, fgpOcluder,
+  //    fgpControlCage);
 
+  // TMeshAtom
+  //
   TMeshAtom = class(TObject)
   private
     { Private Declarations }
     FAABB: TAABB;
-    function GetAttributeDivisor(Attribs: TAttribLocation): TGLuint;
     function GetAttributes(Attribs: TAttribLocation): Boolean;
     function GetAttributesType(Attribs: TAttribLocation): TGLSLDataType;
-    procedure SetAttributeDivisor(Attribs: TAttribLocation;
-      const Value: TGLuint);
     procedure SetAttributes(Attribs: TAttribLocation; const Value: Boolean);
     procedure SetAttributesType(Attribs: TAttribLocation;
       const Value: TGLSLDataType);
@@ -77,7 +140,7 @@ type
 {$IFDEF GLS_MULTITHREAD}
     FLock: TCriticalSection;
 {$ENDIF}
-    FBuildingState: (mmsDefault, mmsAssembling, mmsPrimitives, mmsIgnoring);
+    FBuildingState: TMeshState;
     FCurrentAttribValue: array[TAttribLocation, 0..15] of T4ByteData;
     FRemoveLastElement: Boolean;
     FValid: Boolean;
@@ -89,7 +152,6 @@ type
     FAttributes: array[TAttribLocation] of Boolean;
     FType: array[TAttribLocation] of TGLSLDataType;
     FAttributeArrays: array[TAttribLocation] of T4ByteList;
-    FAttributeDivisor: array[TAttribLocation] of TGLuint;
     FVertexCount: Integer;
 
     FHasIndices: Boolean;
@@ -107,8 +169,8 @@ type
 
     function GetAttributeCount: Integer;
     function GetAABB: TAABB;
-    function GetAttributeIndex(Attrib: TAttribLocation; AType: TGLSLDataType):
-      Boolean;
+    function GetAttributeIndex(Attrib: TAttribLocation;
+      AType: TGLSLDataType): Boolean;
     procedure ComputeBoundingBox;
     procedure DoOnPrepare(Sender: TGLContext);
   public
@@ -163,6 +225,11 @@ type
     procedure Attribute4ui(Attrib: TAttribLocation; const a: TVector4ui);
       overload;
     procedure AttributeList(Attrib: TAttribLocation; AList: T4ByteList);
+      overload;
+    procedure AttributeList(Attrib: TAttribLocation; AList: TAffineVectorList);
+      overload;
+    procedure AttributeList(Attrib: TAttribLocation; AList: TVectorList);
+      overload;
     {: Specifies a new vertex of a primitive. }
     procedure EmitVertex;
     {: Reserve space for vertices. They value is undefined.
@@ -172,7 +239,7 @@ type
     procedure RestartStrip;
     {: Ends gathering information about the primitives. }
     procedure EndAssembly;
-
+    {: Validate mesh after custom changes. }
     procedure Validate;
     {: Clear mesh content. }
     procedure Clear;
@@ -199,29 +266,56 @@ type
     {: Rescales and alignes mesh based on bounding box. }
     procedure Rescale(ARadius: Single = 1.0);
     {: Intersection with a casted ray.
-       Given coordinates & vector are in local coordinates. }
+       Given coordinates & vector are in local coordinate system. }
     function RayCastIntersect(const ARayStart, ARayVector: TVector;
       out AnIntersectPoint, AnIntersectNormal: TVector): Boolean;
-    {: Ends assembling of mesh. }
+    {: Ends working with mesh. }
     procedure UnLock; virtual;
-
+    {: Current validation state. }
     property IsValid: Boolean read GetValid;
     property VertexCount: Integer read FVertexCount;
+    property AttributeCount: Integer read GetAttributeCount;
+    {: Direct asscess to content. }
     property Attributes[Attribs: TAttribLocation]: Boolean
     read GetAttributes write SetAttributes;
     property AttributesType[Attribs: TAttribLocation]: TGLSLDataType
     read GetAttributesType write SetAttributesType;
-    property AttributeDivisor[Attribs: TAttribLocation]: TGLuint
-    read GetAttributeDivisor write SetAttributeDivisor;
     property Elements: T4ByteList read FElements write SetElements;
 
     property TagName: string read FTagName write FTagName;
-    property AttributeCount: Integer read GetAttributeCount;
     property RestartStripIndex: TGLuint read FRestartIndex;
 
     {: This property returns the points defining the axis-
        aligned bounding box containing the model. }
     property AABB: TAABB read GetAABB;
+  end;
+
+  I4ByteListToVectorList = interface(IInterface)
+    function Count: Integer;
+    function Get(AIndex: Integer): TVector3f;
+    function Get4f(AIndex: Integer): TVector4f;
+    procedure Put(AIndex: Integer; const Value: TVector3f);
+    property Items[Index: Integer]: TVector3f read Get write Put; default;
+  end;
+
+  T4ByteListToVectorList = class(TInterfacedObject, I4ByteListToVectorList)
+  private
+    FSource: P4ByteArrayList;
+    FType: TGLSLDataType;
+    FSize: Integer;
+    FCount: Integer;
+    function Get(AIndex: Integer): TVector3f;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
+    procedure Put(AIndex: Integer; const Value: TVector3f);
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
+    function Get4f(AIndex: Integer): TVector4f;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
+  public
+    constructor Create(AList: T4ByteList; AType: TGLSLDataType);
+    function Count: Integer;
   end;
 
 function GetDefaultMesh: TMeshAtom;
@@ -260,7 +354,9 @@ uses
 {$IFNDEF GLS_DELPHI_2007_DOWN}
   GLSRedBlackTree,
 {$ENDIF}
-  SysUtils, GLSLog, GLStrings;
+  SysUtils,
+  GLSLog,
+  GLStrings;
 
 resourcestring
   glsWrongAttrType =
@@ -400,7 +496,8 @@ begin
 end;
 
 function VectorEquals_(const V1, V2: TAffineVector): Boolean;
-{$IFDEF GLS_INLINE} inline; {$ENDIF}
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
 const
   EPSILON3 = 1e-3;
 begin
@@ -435,11 +532,278 @@ type
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
+{$IFDEF GLS_REGION}{$REGION 'TInstancesChain'}{$ENDIF}
+
+procedure TInstancesChain.Clear;
+var
+  A: TAttribLocation;
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  for A := High(TAttribLocation) downto Low(TAttribLocation) do
+  begin
+    FAttributes[A] := False;
+    FType[A] := GLSLTypeVoid;
+    FAttributeArrays[A].Clear;
+    FAttributeDivisor[A] := 0;
+  end;
+
+  FTransformations.Clear;
+  FTransformationEnabled := False;
+  FValid := False;
+  FInstanceCount := 0;
+end;
+
+constructor TInstancesChain.Create;
+var
+  A: TAttribLocation;
+begin
+{$IFDEF GLS_MULTITHREAD}
+  FLock := SyncObjs.TCriticalSection.Create;
+{$ENDIF}
+  FValid := False;
+  for A := High(TAttribLocation) downto Low(TAttribLocation) do
+    FAttributeArrays[A] := T4ByteList.Create;
+  FLastRevision := 0;
+  FInstanceCount := 0;
+  FTransformations := TList.Create;
+  FTransformationEnabled := False;
+end;
+
+destructor TInstancesChain.Destroy;
+var
+  A: TAttribLocation;
+begin
+  for A := High(TAttribLocation) downto Low(TAttribLocation) do
+    FreeAndNil(FAttributeArrays[A]);
+  FTransformations.Destroy;
+{$IFDEF GLS_MULTITHREAD}
+  FLock.Destroy;
+{$ENDIF}
+  inherited;
+end;
+
+function TInstancesChain.GetAttributeDivisor(
+  Attribs: TAttribLocation): TGLint;
+begin
+  Result := FAttributeDivisor[Attribs];
+end;
+
+function TInstancesChain.GetAttributeLists(
+  Attribs: TAttribLocation): T4ByteList;
+begin
+  Result := FAttributeArrays[Attribs];
+end;
+
+function TInstancesChain.GetAttributes(Attribs: TAttribLocation): Boolean;
+begin
+  Result := FAttributes[Attribs];
+end;
+
+function TInstancesChain.GetAttributesType(
+  Attribs: TAttribLocation): TGLSLDataType;
+begin
+  Result := FType[Attribs];
+end;
+
+function TInstancesChain.GetValid: Boolean;
+var
+  A: TAttribLocation;
+begin
+  Result := FValid and (FBuildingState = mmsDefault);
+  if Result then
+  begin
+    for A := High(TAttribLocation) downto Low(TAttribLocation) do
+      if FAttributeArrays[A].Revision <> FLastRevision then
+      begin
+        Result := False;
+        exit;
+      end;
+
+    if FTransformationEnabled then
+      if (FInstanceCount = 1) and (FTransformations.Count = 0) then
+        Result := False
+      else if (FInstanceCount > 1) and (FTransformations.Count <> FInstanceCount) then
+        Result := False;
+  end;
+end;
+
+procedure TInstancesChain.Lock;
+begin
+{$IFDEF GLS_MULTITHREAD}
+  FLock.Enter;
+{$ENDIF}
+  if not (FBuildingState in [mmsDefault, mmsIgnoring]) then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    exit;
+  end;
+
+  FBuildingState := mmsAssembling;
+end;
+
+procedure TInstancesChain.SetAttributeDivisor(Attribs: TAttribLocation;
+  const Value: TGLint);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FAttributeDivisor[Attribs] := MaxInteger(Value, 0);
+  FValid := False;
+end;
+
+procedure TInstancesChain.SetAttributeLists(Attribs: TAttribLocation;
+  const Value: T4ByteList);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FAttributeArrays[Attribs].Assign(Value);
+  FValid := False;
+end;
+
+procedure TInstancesChain.SetAttributes(Attribs: TAttribLocation;
+  const Value: Boolean);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FAttributes[Attribs] := Value;
+  FValid := False;
+end;
+
+procedure TInstancesChain.SetAttributesType(Attribs: TAttribLocation;
+  const Value: TGLSLDataType);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FType[Attribs] := Value;
+  FValid := False;
+end;
+
+procedure TInstancesChain.SetTransformationEnabled(const Value: Boolean);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FTransformationEnabled := Value;
+  FValid := False;
+end;
+
+procedure TInstancesChain.UnLock;
+var
+  A: TAttribLocation;
+  C, E: Integer;
+  S: TMeshState;
+begin
+{$IFDEF GLS_MULTITHREAD}
+  FLock.Leave;
+{$ENDIF}
+  Inc(FLastRevision);
+  FValid := False;
+  S := FBuildingState;
+  FBuildingState := mmsDefault;
+
+  if S = mmsIgnoring then
+    exit;
+
+  if S <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [ClassName]);
+    exit;
+  end;
+
+  E := 0;
+  for A := High(TAttribLocation) downto Low(TAttribLocation) do
+  begin
+    FAttributeArrays[A].Revision := FLastRevision;
+    if FAttributes[A] then
+    begin
+      C := FAttributeArrays[A].Count;
+      if C = 0 then
+      begin
+        FAttributes[A] := False;
+        continue;
+      end;
+      C := C div GLSLTypeComponentCount(FType[A]);
+      if FAttributeDivisor[A] > 1 then
+        C := C div FAttributeDivisor[A];
+
+      if E = 0 then
+        E := C
+      else if E <> C then
+      begin
+        GLSLogger.LogErrorFmt(glsMeshInvalidArraySize,
+          [vAttributeNames[A], ClassName]);
+        exit;
+      end;
+    end;
+  end;
+
+  if E > 0 then
+  begin
+    FInstanceCount := E;
+    if FTransformationEnabled and (FTransformations.Count <> E) then
+      exit;
+    FValid := True;
+  end
+  else
+  begin
+    FInstanceCount := FTransformations.Count;
+    FValid := FTransformationEnabled and (FInstanceCount > 0);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 {$IFDEF GLS_REGION}{$REGION 'TMeshAtom'}{$ENDIF}
 
-  // ------------------
-  // ------------------ TMeshAtom ------------------
-  // ------------------
+// ------------------
+// ------------------ TMeshAtom ------------------
+// ------------------
 
 constructor TMeshAtom.Create;
 var
@@ -523,12 +887,6 @@ begin
   Result := C;
 end;
 
-function TMeshAtom.GetAttributeDivisor(
-  Attribs: TAttribLocation): TGLuint;
-begin
-  Result := FAttributeDivisor[Attribs];
-end;
-
 function TMeshAtom.GetAttributes(Attribs: TAttribLocation): Boolean;
 begin
   Result := FAttributes[Attribs];
@@ -545,16 +903,19 @@ begin
   Result := FValid and (FBuildingState = mmsDefault);
 end;
 
-procedure TMeshAtom.SetAttributeDivisor(Attribs: TAttribLocation;
-  const Value: TGLuint);
-begin
-  FAttributeDivisor[Attribs] := Value;
-  FValid := False;
-end;
-
 procedure TMeshAtom.SetAttributes(Attribs: TAttribLocation;
   const Value: Boolean);
 begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
   FAttributes[Attribs] := Value;
   FValid := False;
 end;
@@ -562,12 +923,32 @@ end;
 procedure TMeshAtom.SetAttributesType(Attribs: TAttribLocation;
   const Value: TGLSLDataType);
 begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
   FType[Attribs] := Value;
   FValid := False;
 end;
 
 procedure TMeshAtom.SetElements(const Value: T4ByteList);
 begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
   FElements := Value;
   FValid := False;
 end;
@@ -610,12 +991,13 @@ begin
     FAttributes[A] := False;
     FType[A] := GLSLTypeVoid;
     FAttributeArrays[A].Clear;
-    FAttributeDivisor[A] := 0;
   end;
+
   FHasIndices := False;
   FElements.Clear;
   FAdjacencyElements.Clear;
   FPrimitive := mpNOPRIMITIVE;
+  FValid := False;
 end;
 
 procedure TMeshAtom.Merge(AMesh: TMeshAtom);
@@ -652,8 +1034,7 @@ begin
   begin
     if FAttributes[A]
       and AMesh.FAttributes[A]
-      and (FType[A] = AMesh.FType[A])
-      and (FAttributeDivisor[A] = AMesh.FAttributeDivisor[A]) then
+      and (FType[A] = AMesh.FType[A]) then
     begin
       FAttributeArrays[A].Add(AMesh.FAttributeArrays[A]);
       bSuccess := True;
@@ -663,7 +1044,6 @@ begin
       FAttributes[A] := False;
       FAttributeArrays[A].Flush;
       FType[A] := GLSLTypeVoid;
-      FAttributeDivisor[A] := 0;
     end;
   end;
 
@@ -759,12 +1139,12 @@ begin
     mpTRIANGLE_STRIP, mpTRIANGLE_FAN: FValid := FVertexCount > 2;
     mpPOINTS: FValid := FVertexCount > 0;
     mpLINES: FValid := (FVertexCount mod 2 = 0) and (FVertexCount > 1);
-    mpLINE_STRIP, mpLINE_LOOP: FValid := FVertexCount > 2;
+    mpLINE_STRIP, mpLINE_LOOP: FValid := FVertexCount > 1;
     mpLINES_ADJACENCY: FValid := (FVertexCount mod 4 = 0) and (FVertexCount >
-      3);
+        3);
     mpLINE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
     mpTRIANGLES_ADJACENCY: FValid := (FVertexCount mod 6 = 0) and (FVertexCount
-      > 5);
+        > 5);
     mpTRIANGLE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
     mpPATCHES: FValid := FVertexCount > 1;
   end;
@@ -826,24 +1206,31 @@ begin
 end;
 
 procedure TMeshAtom.UnLock;
+var
+  S: TMeshState;
 begin
-  if FBuildingState = mmsIgnoring then
-    exit;
-  if FBuildingState <> mmsAssembling then
-  begin
-    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
-    FBuildingState := mmsIgnoring;
-    exit;
-  end;
-  Inc(FRevisionNum);
-  ComputeBoundingBox;
-  FBuildingState := mmsDefault;
-  FDLO.NotifyChangesOfData;
-  FVAO_BuildIn.NotifyChangesOfData;
-  FVAO_Generic.NotifyChangesOfData;
 {$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
+  S := FBuildingState;
+  FBuildingState := mmsDefault;
+  FValid := False;
+
+  if S = mmsIgnoring then
+    exit;
+
+  if S <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    exit;
+  end;
+
+  Inc(FRevisionNum);
+  ComputeBoundingBox;
+  FDLO.NotifyChangesOfData;
+  FVAO_BuildIn.NotifyChangesOfData;
+  FVAO_Generic.NotifyChangesOfData;
+  FValid := True;
 end;
 
 procedure TMeshAtom.Validate;
@@ -856,10 +1243,10 @@ begin
     mpLINES: FValid := (FVertexCount mod 2 = 0) and (FVertexCount > 1);
     mpLINE_STRIP, mpLINE_LOOP: FValid := FVertexCount > 2;
     mpLINES_ADJACENCY: FValid := (FVertexCount mod 4 = 0) and (FVertexCount >
-      3);
+        3);
     mpLINE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
     mpTRIANGLES_ADJACENCY: FValid := (FVertexCount mod 6 = 0) and (FVertexCount
-      > 5);
+        > 5);
     mpTRIANGLE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
     mpPATCHES: FValid := FVertexCount > 1;
   end;
@@ -915,12 +1302,7 @@ procedure TMeshAtom.Attribute1f(Attrib: TAttribLocation; a1:
 begin
   if GetAttributeIndex(Attrib, GLSLType1F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1);
-    end
-    else
-      FCurrentAttribValue[Attrib, 0].Float.Value := a1;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a1;
   end;
 end;
 
@@ -929,15 +1311,8 @@ procedure TMeshAtom.Attribute2f(Attrib: TAttribLocation; a1, a2:
 begin
   if GetAttributeIndex(Attrib, GLSLType2F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Float.Value := a2;
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Float.Value := a2;
   end;
 end;
 
@@ -946,15 +1321,8 @@ procedure TMeshAtom.Attribute2f(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType2F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
   end;
 end;
 
@@ -963,16 +1331,9 @@ procedure TMeshAtom.Attribute3f(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Float.Value := a2;
-      FCurrentAttribValue[Attrib, 2].Float.Value := a3;
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Float.Value := a2;
+    FCurrentAttribValue[Attrib, 2].Float.Value := a3;
   end;
 end;
 
@@ -981,16 +1342,9 @@ procedure TMeshAtom.Attribute3f(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].Float.Value := a[2];
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].Float.Value := a[2];
   end;
 end;
 
@@ -999,17 +1353,10 @@ procedure TMeshAtom.Attribute4f(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3, a4);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Float.Value := a2;
-      FCurrentAttribValue[Attrib, 2].Float.Value := a3;
-      FCurrentAttribValue[Attrib, 3].Float.Value := a4;
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Float.Value := a2;
+    FCurrentAttribValue[Attrib, 2].Float.Value := a3;
+    FCurrentAttribValue[Attrib, 3].Float.Value := a4;
   end;
 end;
 
@@ -1018,17 +1365,10 @@ procedure TMeshAtom.Attribute4f(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4F) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2], a[3]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].Float.Value := a[2];
-      FCurrentAttribValue[Attrib, 3].Float.Value := a[3];
-    end;
+    FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].Float.Value := a[2];
+    FCurrentAttribValue[Attrib, 3].Float.Value := a[3];
   end;
 end;
 
@@ -1037,14 +1377,7 @@ procedure TMeshAtom.Attribute1i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType1I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a1;
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a1;
   end;
 end;
 
@@ -1053,15 +1386,8 @@ procedure TMeshAtom.Attribute2i(Attrib: TAttribLocation; a1, a2:
 begin
   if GetAttributeIndex(Attrib, GLSLType2I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Int.Value := a2;
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Int.Value := a2;
   end;
 end;
 
@@ -1070,15 +1396,8 @@ procedure TMeshAtom.Attribute2i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType2I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
   end;
 end;
 
@@ -1087,16 +1406,9 @@ procedure TMeshAtom.Attribute3i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Int.Value := a2;
-      FCurrentAttribValue[Attrib, 2].Int.Value := a3;
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Int.Value := a2;
+    FCurrentAttribValue[Attrib, 2].Int.Value := a3;
   end;
 end;
 
@@ -1105,16 +1417,9 @@ procedure TMeshAtom.Attribute3i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].Int.Value := a[2];
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].Int.Value := a[2];
   end;
 end;
 
@@ -1123,17 +1428,10 @@ procedure TMeshAtom.Attribute4i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3, a4);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a1;
-      FCurrentAttribValue[Attrib, 1].Int.Value := a2;
-      FCurrentAttribValue[Attrib, 2].Int.Value := a3;
-      FCurrentAttribValue[Attrib, 3].Int.Value := a4;
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a1;
+    FCurrentAttribValue[Attrib, 1].Int.Value := a2;
+    FCurrentAttribValue[Attrib, 2].Int.Value := a3;
+    FCurrentAttribValue[Attrib, 3].Int.Value := a4;
   end;
 end;
 
@@ -1142,17 +1440,10 @@ procedure TMeshAtom.Attribute4i(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4I) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2], a[3]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].Int.Value := a[2];
-      FCurrentAttribValue[Attrib, 3].Int.Value := a[3];
-    end;
+    FCurrentAttribValue[Attrib, 0].Int.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].Int.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].Int.Value := a[2];
+    FCurrentAttribValue[Attrib, 3].Int.Value := a[3];
   end;
 end;
 
@@ -1161,14 +1452,7 @@ procedure TMeshAtom.Attribute1ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType1UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
   end;
 end;
 
@@ -1177,15 +1461,8 @@ procedure TMeshAtom.Attribute2ui(Attrib: TAttribLocation; a1, a2:
 begin
   if GetAttributeIndex(Attrib, GLSLType2UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
   end;
 end;
 
@@ -1194,15 +1471,8 @@ procedure TMeshAtom.Attribute2ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType2UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
   end;
 end;
 
@@ -1211,16 +1481,9 @@ procedure TMeshAtom.Attribute3ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
-      FCurrentAttribValue[Attrib, 2].UInt.Value := a3;
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
+    FCurrentAttribValue[Attrib, 2].UInt.Value := a3;
   end;
 end;
 
@@ -1229,16 +1492,9 @@ procedure TMeshAtom.Attribute3ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType3UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].UInt.Value := a[2];
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].UInt.Value := a[2];
   end;
 end;
 
@@ -1247,17 +1503,10 @@ procedure TMeshAtom.Attribute4ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
-    begin
-      FAttributeArrays[Attrib].Add(a1, a2, a3, a4);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
-      FCurrentAttribValue[Attrib, 2].UInt.Value := a3;
-      FCurrentAttribValue[Attrib, 3].UInt.Value := a4;
-    end;
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a1;
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a2;
+    FCurrentAttribValue[Attrib, 2].UInt.Value := a3;
+    FCurrentAttribValue[Attrib, 3].UInt.Value := a4;
   end;
 end;
 
@@ -1266,17 +1515,59 @@ procedure TMeshAtom.Attribute4ui(Attrib: TAttribLocation;
 begin
   if GetAttributeIndex(Attrib, GLSLType4UI) then
   begin
-    if FAttributeDivisor[Attrib] > 0 then
+    FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
+    FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
+    FCurrentAttribValue[Attrib, 2].UInt.Value := a[2];
+    FCurrentAttribValue[Attrib, 3].UInt.Value := a[3];
+  end;
+end;
+
+procedure TMeshAtom.AttributeList(Attrib: TAttribLocation; AList:
+  TAffineVectorList);
+var
+  AA: T4ByteList;
+  Last: Integer;
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if GetAttributeIndex(Attrib, GLSLTypeVoid) then
+  begin
+    if FType[Attrib] <> GLSLType3F then
     begin
-      FAttributeArrays[Attrib].Add(a[0], a[1], a[2], a[3]);
-    end
-    else
-    begin
-      FCurrentAttribValue[Attrib, 0].UInt.Value := a[0];
-      FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
-      FCurrentAttribValue[Attrib, 2].UInt.Value := a[2];
-      FCurrentAttribValue[Attrib, 3].UInt.Value := a[3];
+      GLSLogger.LogWarning(glsWrongAttrType);
+      FBuildingState := mmsIgnoring;
+      exit;
     end;
+
+    AA := FAttributeArrays[Attrib];
+    Last := AA.Count;
+    AA.Count := Last + 3 * AList.Count;
+    System.Move(AList.List^, AA.List[Last], AList.DataSize);
+    FVertexCount := AA.Count div 3;
+  end;
+end;
+
+procedure TMeshAtom.AttributeList(Attrib: TAttribLocation; AList: TVectorList);
+var
+  AA: T4ByteList;
+  Last: Integer;
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if GetAttributeIndex(Attrib, GLSLTypeVoid) then
+  begin
+    if FType[Attrib] <> GLSLType4F then
+    begin
+      GLSLogger.LogWarning(glsWrongAttrType);
+      FBuildingState := mmsIgnoring;
+      exit;
+    end;
+
+    AA := FAttributeArrays[Attrib];
+    Last := AA.Count;
+    AA.Count := Last + 4 * AList.Count;
+    System.Move(AList.List^, AA.List[Last], AList.DataSize);
+    FVertexCount := AA.Count div 4;
   end;
 end;
 
@@ -1309,6 +1600,7 @@ begin
     Last := AA.Count;
     AA.Count := Last + AList.Count;
     System.Move(AList.List^, AA.List[Last], AList.Count * SizeOf(T4ByteData));
+    FVertexCount := AA.Count div GLSLTypeComponentCount(FType[Attrib]);
   end;
 end;
 
@@ -1328,7 +1620,7 @@ begin
 
   // Push vertex attributes into lists
   for A := High(TAttribLocation) downto Low(TAttribLocation) do
-    if FAttributes[A] and not (FAttributeDivisor[A] > 0) then
+    if FAttributes[A] then
     begin
       for C := 0 to GLSLTypeComponentCount(FType[A]) - 1 do
         FAttributeArrays[A].Push(FCurrentAttribValue[A][C]);
@@ -1354,7 +1646,7 @@ begin
   end;
   // Increase vertex attributes lists
   for A := High(TAttribLocation) downto Low(TAttribLocation) do
-    if FAttributes[A] and not (FAttributeDivisor[A] > 0) then
+    if FAttributes[A] then
     begin
       Size := GLSLTypeComponentCount(FType[A]);
       FAttributeArrays[A].Count := FAttributeArrays[A].Count + Size *
@@ -1743,23 +2035,15 @@ end;
 
 procedure TMeshAtom.MakeAdjacencyElements;
 var
-  Positions: T4ByteList;
-  PosSize, MoveSize: Integer;
+  Positions: I4ByteListToVectorList;
   LElements: T4ByteList;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], MoveSize);
-  end;
-
 var
   edgeInfo: TTriangleEdgeInfoArray;
   triangleNum: Integer;
 
   function sameVertex(i0, i1: LongWord): Boolean;
   begin
-    Result := VectorEquals_(GetPosition(i0), GetPosition(i1));
+    Result := VectorEquals_(Positions[i0], Positions[i1]);
   end;
 
   procedure joinTriangles(
@@ -1914,9 +2198,9 @@ begin
 
   if FAttributes[attrPosition] and (FTrianglesElements.Count > 0) then
   begin
-    Positions := FAttributeArrays[attrPosition];
-    PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-    MoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+    Positions :=
+      T4ByteListToVectorList.Create(FAttributeArrays[attrPosition],
+      FType[attrPosition]);
 
     // Lets make element list with position based welded vertices
     LElements := T4ByteList.Create;
@@ -2009,18 +2293,11 @@ end;
 
 procedure TMeshAtom.ComputeNormals(ASmooth: Boolean);
 var
-  Positions: T4ByteList;
-  PosSize, MoveSize: Integer;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], MoveSize);
-  end;
+  Positions: I4ByteListToVectorList;
 
   function sameVertex(i0, i1: Integer): Boolean;
   begin
-    Result := VectorEquals_(GetPosition(i0), GetPosition(i1));
+    Result := VectorEquals_(Positions[i0], Positions[i1]);
   end;
 
 var
@@ -2041,10 +2318,9 @@ begin
   // Clear old normals
   FAttributes[attrNormal] := False;
   FAttributeArrays[attrNormal].Clear;
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  MoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
-
+  Positions :=
+    T4ByteListToVectorList.Create(FAttributeArrays[attrPosition],
+    FType[attrPosition]);
 
   if ASmooth then
   begin
@@ -2098,9 +2374,9 @@ begin
   begin
     E := 3 * T;
     pV := @FTrianglesElements.List[E];
-    p0 := GetPosition(pV^[0]);
-    p1 := GetPosition(pV^[1]);
-    p2 := GetPosition(pV^[2]);
+    p0 := Positions[pV^[0]];
+    p1 := Positions[pV^[1]];
+    p2 := Positions[pV^[2]];
 
     // Compute the edge vectors
     dp0 := VectorSubtract(p1, p0);
@@ -2160,8 +2436,7 @@ begin
             repeat
               cNormal := newNormals[E_];
               NormalizeVector(cNormal);
-              if VectorDotProduct(cNormal, nNormal) >= cos(3.1415926 * 0.333333)
-                then
+              if VectorDotProduct(cNormal, nNormal) >= cos(3.1415926 * 0.333333) then
               begin
                 Agrees := True;
                 break;
@@ -2198,13 +2473,13 @@ begin
   FAttributes[attrNormal] := True;
   FAttributeArrays[attrNormal].Count := 3 * newNormalIndices.Count;
   FType[attrNormal] := GLSLType3F;
-  FAttributeDivisor[attrNormal] := 0;
   for I := 0 to newNormalIndices.Count - 1 do
   begin
     E := newNormalIndices[I];
     BD := FElements[I];
     E_ := 3 * BD.Int.Value;
-    Move(newNormals.List[E], FAttributeArrays[attrNormal].List[E_], SizeOf(TVector3f));
+    Move(newNormals.List[E], FAttributeArrays[attrNormal].List[E_],
+      SizeOf(TVector3f));
   end;
   WeldVertices;
 
@@ -2215,16 +2490,7 @@ end;
 
 procedure TMeshAtom.ComputeTexCoords;
 var
-  Positions: T4ByteList;
-  PosSize, PosMoveSize: Integer;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
-
-var
+  Positions: I4ByteListToVectorList;
   I, T, E, EJ, E_: Integer;
   p0, p1, p2, dp0, dp1, fNormal, fTangent, fBinormal: TVector3f;
   TBN: TMatrix3f;
@@ -2245,9 +2511,7 @@ begin
 
   Triangulate;
 
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  Positions := T4ByteListToVectorList.Create(FAttributeArrays[attrPosition], FType[attrPosition]);
 
   // Allocate and initialize the tangent values
   newTexCoords := TTexPointList.Create;
@@ -2259,9 +2523,9 @@ begin
   begin
     E := 3 * T;
     pV := @FElements.List[E];
-    p0 := GetPosition(pV^[0]);
-    p1 := GetPosition(pV^[1]);
-    p2 := GetPosition(pV^[2]);
+    p0 := Positions[pV^[0]];
+    p1 := Positions[pV^[1]];
+    p2 := Positions[pV^[2]];
 
     // Compute the edge vectors
     dp0 := VectorSubtract(p1, p0);
@@ -2302,7 +2566,6 @@ begin
   FAttributes[attrTexCoord0] := True;
   FAttributeArrays[attrTexCoord0].Count := 2 * newTexCoords.Count;
   FType[attrTexCoord0] := GLSLType2F;
-  FAttributeDivisor[attrTexCoord0] := 0;
   for I := 0 to newTexCoords.Count - 1 do
   begin
     BD := FElements[I];
@@ -2319,26 +2582,12 @@ end;
 
 procedure TMeshAtom.ComputeTangents;
 var
-  Positions: T4ByteList;
-  PosSize, PosMoveSize: Integer;
-  TexCoords: T4ByteList;
-  TexCoordSize, TexCoordMoveSize: Integer;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
+  Positions: I4ByteListToVectorList;
+  TexCoords: I4ByteListToVectorList;
 
   function sameVertex(i0, i1: Integer): Boolean;
   begin
-    Result := VectorEquals_(GetPosition(i0), GetPosition(i1));
-  end;
-
-  function GetTexCoord(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(TexCoords.List[Index * TexCoordSize], Result[0], TexCoordMoveSize);
+    Result := VectorEquals_(Positions[i0], Positions[i1]);
   end;
 
 var
@@ -2366,14 +2615,9 @@ begin
 
   Triangulate;
 
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  Positions := T4ByteListToVectorList.Create(FAttributeArrays[attrPosition], FType[attrPosition]);
 
-  TexCoords := FAttributeArrays[attrTexCoord0];
-  TexCoordSize := GLSLTypeComponentCount(FType[attrTexCoord0]);
-  TexCoordMoveSize := MinInteger(TexCoordSize * SizeOf(T4ByteData),
-    3 * SizeOf(Single));
+  TexCoords := T4ByteListToVectorList.Create(FAttributeArrays[attrTexCoord0], FType[attrTexCoord0]);
 
   // Clear old tangents
   FAttributes[attrTangent] := False;
@@ -2422,12 +2666,12 @@ begin
   begin
     E := 3 * T;
     pV := @FTrianglesElements.List[E];
-    p0 := GetPosition(pV^[0]);
-    p1 := GetPosition(pV^[1]);
-    p2 := GetPosition(pV^[2]);
-    st0 := GetTexCoord(pV^[0]);
-    st1 := GetTexCoord(pV^[1]);
-    st2 := GetTexCoord(pV^[2]);
+    p0 := Positions[pV^[0]];
+    p1 := Positions[pV^[1]];
+    p2 := Positions[pV^[2]];
+    st0 := TexCoords[pV^[0]];
+    st1 := TexCoords[pV^[1]];
+    st2 := TexCoords[pV^[2]];
 
     // Compute the edge and tc differentials
     dp0 := VectorSubtract(p1, p0);
@@ -2465,8 +2709,7 @@ begin
         // Check for agreement
         NormalizeVector(cTangent);
 
-        if VectorDotProduct(cTangent, nTangent) >= cos(3.1415926 * 0.333333)
-          then
+        if VectorDotProduct(cTangent, nTangent) >= cos(3.1415926 * 0.333333) then
         begin
           // Normal agrees, so add it
           newTangents[EJ] := VectorAdd(newTangents[EJ], fTangent);
@@ -2519,7 +2762,6 @@ begin
   FAttributes[attrTangent] := True;
   FAttributeArrays[attrTangent].Count := 3 * newTangentIndices.Count;
   FType[attrTangent] := GLSLType3F;
-  FAttributeDivisor[attrTangent] := 0;
   if FAttributes[attrNormal] then
   begin
     FAttributes[attrBinormal] := True;
@@ -2530,8 +2772,10 @@ begin
       E := newTangentIndices[I];
       BD := FElements[I];
       E_ := 3 * BD.Int.Value;
-      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_], SizeOf(TVector3f));
-      PAffineVector(@FAttributeArrays[attrBinormal].List[E_])^ := VectorCrossProduct(
+      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_],
+        SizeOf(TVector3f));
+      PAffineVector(@FAttributeArrays[attrBinormal].List[E_])^ :=
+        VectorCrossProduct(
         PAffineVector(@FAttributeArrays[attrNormal].List[E_])^,
         PAffineVector(@FAttributeArrays[attrTangent].List[E_])^);
     end;
@@ -2542,7 +2786,8 @@ begin
       E := newTangentIndices[I];
       BD := FElements[I];
       E_ := 3 * BD.Int.Value;
-      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_], SizeOf(TVector3f));
+      Move(newTangents.List[E], FAttributeArrays[attrTangent].List[E_],
+        SizeOf(TVector3f));
     end;
 
   newTangents.Destroy;
@@ -2552,31 +2797,24 @@ end;
 
 procedure TMeshAtom.ComputeBoundingBox;
 var
-  Positions: T4ByteList;
-  PosSize, PosMoveSize: Integer;
+  Positions: I4ByteListToVectorList;
   I: Integer;
   min, max, p: TVector3f;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
 
 begin
   if not FAttributes[attrPosition] then
     exit; // Nothing todo
 
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  Positions :=
+    T4ByteListToVectorList.Create(FAttributeArrays[attrPosition],
+    FType[attrPosition]);
 
   min := Vector3fMake(1e10, 1e10, 1e10);
   max := Vector3fMake(-1e10, -1e10, -1e10);
 
-  for I := Positions.Count div PosSize - 1 downto 0 do
+  for I := Positions.Count - 1 downto 0 do
   begin
-    p := GetPosition(I);
+    p := Positions[I];
     MinVector(min, p);
     MaxVector(max, p);
   end;
@@ -2589,29 +2827,8 @@ end;
 function TMeshAtom.RayCastIntersect(const ARayStart, ARayVector: TVector;
   out AnIntersectPoint, AnIntersectNormal: TVector): Boolean;
 var
-  Positions: T4ByteList;
-  PosSize, PosMoveSize: Integer;
-
-  Normals: T4ByteList;
-  NormSize, NormMoveSize: Integer;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
-
-  function GetPosition4f(Index: Integer): TVector4f;
-  begin
-    Result := NullHmgPoint;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
-
-  function GetNormal(Index: Integer): TVector4f;
-  begin
-    Result := NullHmgVector;
-    Move(Normals.List[Index * NormSize], Result[0], NormMoveSize);
-  end;
+  Positions: I4ByteListToVectorList;
+  Normals: I4ByteListToVectorList;
 
 var
   Dis, minDis: Single;
@@ -2636,16 +2853,10 @@ begin
   if not FAttributes[attrPosition] then
     exit; // Nothing todo
 
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  Positions := T4ByteListToVectorList.Create(FAttributeArrays[attrPosition], FType[attrPosition]);
 
   if FAttributes[attrNormal] then
-  begin
-    Normals := FAttributeArrays[attrNormal];
-    NormSize := GLSLTypeComponentCount(FType[attrNormal]);
-    NormMoveSize := MinInteger(NormSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
-  end
+    Normals := T4ByteListToVectorList.Create(FAttributeArrays[attrNormal], FType[attrNormal])
   else
     Normals := nil;
 
@@ -2658,10 +2869,10 @@ begin
           MakeTriangleElements;
         for I := FTrianglesElements.Count div 3 - 1 downto 0 do
         begin
-          pE := @FTrianglesElements.List[3*I];
-          V1 := GetPosition(pE^[0]);
-          V2 := GetPosition(pE^[1]);
-          V3 := GetPosition(pE^[2]);
+          pE := @FTrianglesElements.List[3 * I];
+          V1 := Positions[pE^[0]];
+          V2 := Positions[pE^[1]];
+          V3 := Positions[pE^[2]];
           if RayCastTriangleIntersect(
             ARayStart, ARayVector,
             V1, V2, V3,
@@ -2682,7 +2893,7 @@ begin
       begin
         for I := FVertexCount - 1 downto 0 do
         begin
-          V4 := GetPosition4f(I);
+          V4 := Positions.Get4f(I);
           iNormal := VectorSubtract(V4, ARayStart);
           NormalizeVector(iNormal);
           if VectorEquals(iNormal, ARayVector) then
@@ -2693,7 +2904,7 @@ begin
               minDis := Dis;
               AnIntersectPoint := V4;
               if Assigned(Normals) then
-                AnIntersectNormal := GetNormal(I)
+                AnIntersectNormal := Normals.Get4f(I)
               else
                 AnIntersectNormal := ARayVector;
             end;
@@ -2707,22 +2918,10 @@ end;
 
 procedure TMeshAtom.Rescale(ARadius: Single);
 var
-  Positions: T4ByteList;
-  PosSize, PosMoveSize: Integer;
+  Positions: I4ByteListToVectorList;
   I: Integer;
   min, max, p, r, center: TVector3f;
   oldRadius, scale: Single;
-
-  function GetPosition(Index: Integer): TVector3f;
-  begin
-    Result := NullVector;
-    Move(Positions.List[Index * PosSize], Result[0], PosMoveSize);
-  end;
-
-  procedure SetPosition(Index: Integer; const Value: TVector3f);
-  begin
-    Move(Value[0], Positions.List[Index * PosSize], PosMoveSize);
-  end;
 
 begin
   if FBuildingState = mmsIgnoring then
@@ -2738,9 +2937,7 @@ begin
   if not FAttributes[attrPosition] then
     exit; // Nothing todo
 
-  Positions := FAttributeArrays[attrPosition];
-  PosSize := GLSLTypeComponentCount(FType[attrPosition]);
-  PosMoveSize := MinInteger(PosSize * SizeOf(T4ByteData), 3 * SizeOf(Single));
+  Positions := T4ByteListToVectorList.Create(FAttributeArrays[attrPosition], FType[attrPosition]);
 
   min := FAABB.min;
   max := FAABB.max;
@@ -2752,12 +2949,12 @@ begin
   min := Vector3fMake(1e10, 1e10, 1e10);
   max := Vector3fMake(-1e10, -1e10, -1e10);
 
-  for I := Positions.Count div PosSize - 1 downto 0 do
+  for I := Positions.Count - 1 downto 0 do
   begin
-    p := GetPosition(I);
+    p := Positions[I];
     p := VectorSubtract(p, center);
     ScaleVector(p, scale);
-    SetPosition(I, p);
+    Positions[I] := p;
     MinVector(min, p);
     MaxVector(max, p);
   end;
@@ -2800,6 +2997,130 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TMeshAtom'}{$ENDIF}
+
+{ T4ByteListToAffineVectorList }
+
+function T4ByteListToVectorList.Count: Integer;
+begin
+  Result := FCount;
+end;
+
+constructor T4ByteListToVectorList.Create(AList: T4ByteList; AType:
+  TGLSLDataType);
+begin
+  FSource := AList.List;
+  FType := AType;
+  FSize := GLSLTypeComponentCount(AType);
+  FCount := AList.Count div FSize;
+end;
+
+function T4ByteListToVectorList.Get(AIndex: Integer): TVector3f;
+var
+  AsVec2f: TVector2f absolute Result;
+begin
+  case FType of
+    GLSLType1F:
+      begin
+        Result[0] := PSingle(@FSource[AIndex])^;
+        Result[1] := 0.0;
+        Result[2] := 0.0;
+      end;
+    GLSLType2F:
+      begin
+        AsVec2f := PVector2f(@FSource[FSize * AIndex])^;
+        Result[2] := 0.0;
+      end;
+    GLSLType3F, GLSLType4F:
+      begin
+        Result := PVector3f(@FSource[FSize * AIndex])^;
+      end;
+    GLSLType1I: ;
+    GLSLType2I: ;
+    GLSLType3I: ;
+    GLSLType4I: ;
+    GLSLType1UI: ;
+    GLSLType2UI: ;
+    GLSLType3UI: ;
+    GLSLType4UI: ;
+    GLSLTypeMat2F: ;
+    GLSLTypeMat3F: ;
+    GLSLTypeMat4F: ;
+  end;
+end;
+
+function T4ByteListToVectorList.Get4f(AIndex: Integer): TVector4f;
+var
+  AsVec2f: TVector2f absolute Result;
+  AsVec3f: TVector3f absolute Result;
+begin
+  case FType of
+    GLSLType1F:
+      begin
+        Result[0] := PSingle(@FSource[AIndex])^;
+        Result[1] := 0.0;
+        Result[2] := 0.0;
+        Result[3] := 0.0;
+      end;
+    GLSLType2F:
+      begin
+        AsVec2f := PVector2f(@FSource[FSize * AIndex])^;
+        Result[2] := 0.0;
+        Result[3] := 0.0;
+      end;
+    GLSLType3F:
+      begin
+        AsVec3f := PVector3f(@FSource[FSize * AIndex])^;
+        Result[3] := 0.0;
+      end;
+    GLSLType4F:
+      begin
+        Result := PVector4f(@FSource[FSize * AIndex])^;
+      end;
+    GLSLType1I: ;
+    GLSLType2I: ;
+    GLSLType3I: ;
+    GLSLType4I: ;
+    GLSLType1UI: ;
+    GLSLType2UI: ;
+    GLSLType3UI: ;
+    GLSLType4UI: ;
+    GLSLTypeMat2F: ;
+    GLSLTypeMat3F: ;
+    GLSLTypeMat4F: ;
+  end;
+end;
+
+procedure T4ByteListToVectorList.Put(AIndex: Integer; const Value:
+  TVector3f);
+var
+  AsVec2f: TVector2f absolute Value;
+begin
+  case FType of
+    GLSLType1F:
+      begin
+        PSingle(@FSource[AIndex])^ := Value[0];
+      end;
+    GLSLType2F:
+      begin
+        PVector2f(@FSource[FSize * AIndex])^ := AsVec2f
+      end;
+    GLSLType3F, GLSLType4F:
+      begin
+        PVector3f(@FSource[FSize * AIndex])^ := Value;
+      end;
+    GLSLType1I: ;
+    GLSLType2I: ;
+    GLSLType3I: ;
+    GLSLType4I: ;
+    GLSLType1UI: ;
+    GLSLType2UI: ;
+    GLSLType3UI: ;
+    GLSLType4UI: ;
+    GLSLTypeMat2F: ;
+    GLSLTypeMat3F: ;
+    GLSLTypeMat4F: ;
+  end;
+end;
 
 initialization
 

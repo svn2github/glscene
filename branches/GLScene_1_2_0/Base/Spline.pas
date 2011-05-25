@@ -141,6 +141,10 @@ type
 
 implementation
 
+{$IFDEF GLS_DELPHI_2009_UP}
+uses VectorTypes;
+{$ENDIF}
+
 {$IFDEF GLS_REGION}{$REGION 'TCubicSpline'}{$ENDIF}
 
 // VECCholeskyTriDiagResol

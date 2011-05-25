@@ -3793,7 +3793,7 @@ end;
 
 procedure TGLDodecahedron.BuildMesh;
 begin
-  DodecahedronBuildMesh(FBatch.Mesh, 1.0, clrWhite);
+  DodecahedronBuildMesh(FBatch.Mesh, 1.0);
   with FBatch.Mesh do
   begin
     Lock;
@@ -3822,7 +3822,7 @@ end;
 
 procedure TGLIcosahedron.BuildMesh;
 begin
-  IcosahedronBuildMesh(FBatch.Mesh, 1.0, clrWhite);
+  IcosahedronBuildMesh(FBatch.Mesh, 1.0);
   with FBatch.Mesh do
   begin
     Lock;

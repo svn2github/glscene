@@ -49,7 +49,6 @@ type
 
   protected
     { Protected Declarations }
-    FBatch: TDrawBatch;
     function StoreCoordinate(AIndex: Integer): Boolean;
     function GetDisplayName: string; override;
   public
@@ -142,9 +141,7 @@ type
       AInvertNormals: Boolean = False);
 
     function CreateNewCubicSpline: TCubicSpline;
-
-    procedure RegisterNodeBatches(AManager: TGLRenderManager);
-    procedure UnRegisterNodeBatches(AManager: TGLRenderManager);
+    function CreateNewBezierSpline: TBezierSpline;
   end;
 
   TGLNodesClass = class of TGLNodes;
@@ -319,14 +316,6 @@ begin
     Result := TGLNode(inherited Items[n])
   else
     Result := nil;
-end;
-
-procedure TGLNodes.UnRegisterNodeBatches(AManager: TGLRenderManager);
-var
-  I: Integer;
-begin
-  for I := Count - 1 downto 0 do
-    AManager.UnRegisterBatch(Items[I].FBatch);
 end;
 
 // Update
@@ -673,14 +662,27 @@ begin
   FreeMem(za);
 end;
 
-
-procedure TGLNodes.RegisterNodeBatches(AManager: TGLRenderManager);
+function TGLNodes.CreateNewBezierSpline: TBezierSpline;
 var
-  I: Integer;
+  i: Integer;
+  xa, ya, za: PFloatArray;
 begin
-  for I := Count - 1 downto 0 do
-    AManager.RegisterBatch(Items[I].FBatch);
+  GetMem(xa, SizeOf(TGLFloat) * Count);
+  GetMem(ya, SizeOf(TGLFloat) * Count);
+  GetMem(za, SizeOf(TGLFloat) * Count);
+  for i := 0 to Count - 1 do
+    with Items[i] do
+    begin
+      xa^[i] := X;
+      ya^[i] := Y;
+      za^[i] := Z;
+    end;
+  Result := TBezierSpline.Create(xa, ya, za, nil, Count);
+  FreeMem(xa);
+  FreeMem(ya);
+  FreeMem(za);
 end;
+
 
 // RenderTesselatedPolygon
 //
