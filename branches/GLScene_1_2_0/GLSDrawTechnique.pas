@@ -1828,7 +1828,13 @@ begin
                 glType,
                 LOffset)
             else
-              DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+            begin
+              MultiDrawArrays(
+                glPrimitive,
+                PGLint(LMesh.FRestartVertex.List),
+                PGLsizei(LMesh.FStripCounts.List),
+                LMesh.FRestartVertex.Count);
+            end;
 
           until LInstanceID <= 0;
 

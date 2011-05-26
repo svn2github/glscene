@@ -152,6 +152,7 @@ type
     FPrimitive: TGLMeshPrimitive;
     FAttributes: array[TAttribLocation] of Boolean;
     FType: array[TAttribLocation] of TGLSLDataType;
+    FTypeComponentCount: array[TAttribLocation] of Byte;
     FAttributeArrays: array[TAttribLocation] of T4ByteList;
     FVertexCount: Integer;
 
@@ -160,6 +161,8 @@ type
     FAdjacencyElements: T4ByteList;
     FTrianglesElements: T4ByteList;
     FRestartIndex: TGLuint;
+    FRestartVertex: TIntegerList;
+    FStripCounts: TIntegerList;
 
     FDLO: TGLListHandle;
     FVAO_BuildIn: TGLVertexArrayHandle;
@@ -171,7 +174,7 @@ type
     function GetAttributeCount: Integer;
     function GetAABB: TAABB;
     function GetAttributeIndex(Attrib: TAttribLocation;
-      AType: TGLSLDataType): Boolean;
+      AType: TGLSLDataType): Boolean; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure ComputeBoundingBox;
     procedure DoOnPrepare(Sender: TGLContext);
   public
@@ -367,27 +370,6 @@ uses
   GLSLog,
   GLStrings;
 
-resourcestring
-  glsWrongAttrType =
-    'An attribute was used with different type than previously or bad list size';
-  glsUnknownAttrib = 'Used undeclared attribute "%s" for mesh "%s" assembly.';
-  glsMeshWrongCall =
-    'Mesh assembling - Wrong method call of mesh "%s"- ignored';
-  glsMeshNoPrimitive = 'Mesh assembling - No primitive for batch - ignored';
-  glsMeshNoAttrDeclar = 'Mesh assembling - No declaration of attributes';
-  glsMeshExcesAttrib =
-    'Mesh assembling - Excessive attribute declaration for mesh "%s".';
-  glsMeshInvalidArraySize =
-    'Mesh assembling - Invalid array size of attribute "%s" of mesh "%s"';
-  glsMeshHashingError =
-    'Mesh assembling - %s: hashing error during vertex welding in mesh %s';
-  glsMeshNoNeedRestart =
-    'Mesh assembling - %s: This primitive type does not need to restart.';
-  glsInvalidNumberOfVertex =
-    'The number of primitives to render is invalid. You need to construct complete primitives.';
-  glsMeshNEquPrimitive =
-    'Mesh assembling - Unable to merge "%s" and "%s" - unequal primitive type';
-
 {$IFDEF GLS_DELPHI_2007_DOWN}
 {$I OldDelphiSpike.inc}
 {$ELSE}
@@ -466,7 +448,7 @@ begin
       for a := High(TAttribLocation) downto Low(TAttribLocation) do
         if FAttributes[a] then
         begin
-          size := GLSLTypeComponentCount(FType[a]);
+          size := FTypeComponentCount[a]+1;
           p1 := @FAttributeArrays[a].List[Idx1 * size];
           p2 := @FAttributeArrays[a].List[Idx2 * size];
           if not CompareMem(p1, p2, size * SizeOf(T4ByteData)) then
@@ -829,6 +811,8 @@ begin
   FElements := T4ByteList.Create;
   FAdjacencyElements := T4ByteList.Create;
   FTrianglesElements := T4ByteList.Create;
+  FRestartVertex := TIntegerList.Create;
+  FStripCounts := TIntegerList.Create;
   FRevisionNum := 0;
   FIndexNum := -1;
   FTagName := 'Nameless';
@@ -849,6 +833,8 @@ begin
   FreeAndNil(FElements);
   FreeAndNil(FTrianglesElements);
   FreeAndNil(FAdjacencyElements);
+  FreeAndNil(FRestartVertex);
+  FreeAndNil(FStripCounts);
   FreeAndNil(FDLO);
   FreeAndNil(FVAO_BuildIn);
   FreeAndNil(FVAO_Generic);
@@ -1021,6 +1007,8 @@ begin
   FHasIndices := False;
   FElements.Clear;
   FAdjacencyElements.Clear;
+  FRestartVertex.Clear;
+  FRestartVertex.Add(0);
   FPrimitive := mpNOPRIMITIVE;
   FValid := False;
 end;
@@ -1032,6 +1020,7 @@ var
   I: Integer;
   E, J, C: Cardinal;
   BD: T4ByteData;
+  Ptr: P4ByteArrayList;
 begin
   if (FBuildingState = mmsIgnoring)
     or (AMesh.FBuildingState = mmsIgnoring) then
@@ -1076,13 +1065,18 @@ begin
       BD := AMesh.FElements[I];
       E := BD.UInt.Value;
       if E = AMesh.RestartStripIndex then
+      begin
+        FElements.Add(FRestartIndex);
+        FRestartVertex.Add(FVertexCount);
         continue;
+      end;
       for A := High(TAttribLocation) downto Low(TAttribLocation) do
         if FAttributes[A] then
         begin
-          C := GLSLTypeComponentCount(FType[A]);
-          for J := 0 to C - 1 do
-            FAttributeArrays[A].Add(AMesh.FAttributeArrays[A][C*E+J]);
+          C := FTypeComponentCount[A];
+          Ptr := @AMesh.FAttributeArrays[A].List[(C+1)*E];
+          for J := 0 to C do
+            FAttributeArrays[A].Add(Ptr[J]);
         end;
       FElements.Add(FVertexCount);
       Inc(FVertexCount);
@@ -1163,6 +1157,7 @@ begin
     if not vUsePrimitiveRestart then
       FElements.Pop;
     FElements.Pop;
+    FRestartVertex.Pop;
   end;
 
   FHasIndices := False;
@@ -1281,29 +1276,45 @@ end;
 procedure TMeshAtom.UnLock;
 var
   S: TMeshState;
+  I: Integer;
 begin
 {$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
   S := FBuildingState;
   FBuildingState := mmsDefault;
-  FValid := False;
 
-  if S = mmsIgnoring then
-    exit;
-
-  if S <> mmsAssembling then
+  if FValid then
   begin
-    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
-    exit;
-  end;
+    if S = mmsIgnoring then
+    begin
+      FValid := False;
+      exit;
+    end;
 
-  Inc(FRevisionNum);
-  ComputeBoundingBox;
-  FDLO.NotifyChangesOfData;
-  FVAO_BuildIn.NotifyChangesOfData;
-  FVAO_Generic.NotifyChangesOfData;
-  FValid := True;
+    if S <> mmsAssembling then
+    begin
+      FValid := False;
+      GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+      exit;
+    end;
+
+    if not FHasIndices then
+    begin
+      FStripCounts.Count := FRestartVertex.Count;
+      for I := 0 to FRestartVertex.Count - 2 do
+      begin
+        FStripCounts[I] := FRestartVertex[I+1] - FRestartVertex[I];
+      end;
+      FStripCounts[FRestartVertex.Count - 1] := FVertexCount - FRestartVertex[FRestartVertex.Count - 1];
+    end;
+
+    Inc(FRevisionNum);
+    ComputeBoundingBox;
+    FDLO.NotifyChangesOfData;
+    FVAO_BuildIn.NotifyChangesOfData;
+    FVAO_Generic.NotifyChangesOfData;
+  end;
 end;
 
 procedure TMeshAtom.Validate;
@@ -1348,6 +1359,7 @@ begin
   // Enable attribute
   FAttributes[Attrib] := True;
   FType[Attrib] := AType;
+  FTypeComponentCount[Attrib] := GLSLTypeComponentCount(AType) - 1;
 end;
 
 function TMeshAtom.GetAttributeIndex(
@@ -1691,6 +1703,7 @@ procedure TMeshAtom.EmitVertex;
 var
   A: TAttribLocation;
   C: Integer;
+  Ptr: P4ByteArrayList;
 begin
   if FBuildingState = mmsIgnoring then
     exit;
@@ -1705,8 +1718,9 @@ begin
   for A := High(TAttribLocation) downto Low(TAttribLocation) do
     if FAttributes[A] then
     begin
-      for C := 0 to GLSLTypeComponentCount(FType[A]) - 1 do
-        FAttributeArrays[A].Push(FCurrentAttribValue[A][C]);
+      Ptr := @FCurrentAttribValue[A][0];
+      for C := 0 to FTypeComponentCount[A] do
+        FAttributeArrays[A].Add(Ptr[C]);
     end;
 
   FElements.Add(FVertexCount);
@@ -1717,7 +1731,6 @@ end;
 procedure TMeshAtom.EmitVertices(ANumber: LongWord);
 var
   A: TAttribLocation;
-  Size: Integer;
 begin
   if FBuildingState = mmsIgnoring then
     exit;
@@ -1731,9 +1744,8 @@ begin
   for A := High(TAttribLocation) downto Low(TAttribLocation) do
     if FAttributes[A] then
     begin
-      Size := GLSLTypeComponentCount(FType[A]);
-      FAttributeArrays[A].Count := FAttributeArrays[A].Count + Size *
-        Integer(ANumber);
+      FAttributeArrays[A].Count := FAttributeArrays[A].Count +
+        (FTypeComponentCount[A]+1) * Integer(ANumber);
     end;
   FElements.AddNulls(ANumber);
   Inc(FVertexCount, ANumber);
@@ -1755,7 +1767,7 @@ var
       for AA := High(TAttribLocation) downto Low(TAttribLocation) do
         if FAttributes[AA] then
         begin
-          size := GLSLTypeComponentCount(FType[AA]);
+          size := FTypeComponentCount[AA]+1;
           p1 := @StoreAttribArrays[AA].List[Integer(Item1) * size];
           p2 := @StoreAttribArrays[AA].List[Integer(Item2) * size];
           if not CompareMem(p1, p2, size * SizeOf(T4ByteData)) then
@@ -1771,13 +1783,15 @@ var
   var
     AA: TAttribLocation;
     C, size: Integer;
+    Ptr: P4ByteArrayList;
   begin
     for AA := High(TAttribLocation) downto Low(TAttribLocation) do
       if FAttributes[AA] then
       begin
-        size := GLSLTypeComponentCount(FType[AA]);
-        for C := 0 to size - 1 do
-          FAttributeArrays[AA].Add(StoreAttribArrays[AA].Items[N * size + C]);
+        size := FTypeComponentCount[AA];
+        Ptr := @StoreAttribArrays[AA].List[N * (size+1)];
+        for C := 0 to size do
+          FAttributeArrays[AA].Add(Ptr[C]);
       end;
     Inc(VertexIndex);
   end;
@@ -1801,7 +1815,7 @@ var
     vertexKey := 0;
     pKey := @vertexKey;
     J := Integer(E) * Size;
-    for K := Size - 1 downto 0 do
+    for K := Size downto 0 do
     begin
       BD2 := StoreAttribArrays[attrPosition][J + K];
       pKey^ := BD2.Word.Value[1];
@@ -1836,7 +1850,7 @@ begin
     VertexHashMap := TVertexHashMap.Create(CompareVertexKey, CompareVertex);
     VertexHashKey := TDoubleList.Create;
     VertexHashKey.Count := FElements.Count;
-    Size := GLSLTypeComponentCount(FType[attrPosition]);
+    Size := FTypeComponentCount[attrPosition] + 1;
     for I := 0 to FElements.Count - 1 do
     begin
       E := FElements[I].UInt.Value;
@@ -1921,6 +1935,7 @@ var
   A: TAttribLocation;
   E: LongWord;
   BD: T4ByteData;
+  Ptr: P4ByteArrayList;
 begin
   if FBuildingState = mmsIgnoring then
     exit;
@@ -1950,10 +1965,10 @@ begin
     for A := High(TAttribLocation) downto Low(TAttribLocation) do
       if FAttributes[A] then
       begin
-        size := GLSLTypeComponentCount(FType[A]);
-        for C := 0 to Size - 1 do
-          FAttributeArrays[A].Add(StoreAttribArrays[A].Items[Integer(E) * Size +
-            C]);
+        size := FTypeComponentCount[A];
+        Ptr := @StoreAttribArrays[A].List[Integer(E) * (Size+1)];
+        for C := 0 to Size do
+          FAttributeArrays[A].Add(Ptr[C]);
       end;
     FElements.Add(I);
   end;
@@ -1986,6 +2001,9 @@ begin
     FElements.Assign(FTrianglesElements);
     FTrianglesElements.Revision := FElements.Revision;
     FPrimitive := mpTRIANGLES;
+    // Triangles no need restarting
+    FRestartVertex.Clear;
+    FRestartVertex.Add(0);
   end;
 end;
 
@@ -2042,6 +2060,8 @@ begin
     FElements.Destroy;
     FElements := LElemets;
     FPrimitive := mpLINES;
+    FRestartVertex.Clear;
+    FRestartVertex.Add(0);
   end
 end;
 
@@ -3212,6 +3232,7 @@ begin
     exit;
   end;
 
+  FRestartVertex.Add(FVertexCount);
   if vUsePrimitiveRestart then
   begin
     FElements.Add(FRestartIndex);

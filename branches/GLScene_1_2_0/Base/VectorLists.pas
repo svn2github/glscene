@@ -635,7 +635,7 @@ type
     constructor Create; override;
     procedure Assign(Src: TPersistent); override;
 
-    function  Add(const item: T4ByteData): Integer; overload;
+    function  Add(const item: T4ByteData): Integer; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure Add(const i1: Single); overload;
     procedure Add(const i1, i2: Single); overload;
     procedure Add(const i1, i2, i3: Single); overload;

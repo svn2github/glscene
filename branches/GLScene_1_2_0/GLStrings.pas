@@ -97,6 +97,28 @@ resourcestring
   glsUnknownParam =
     'Unknown %s "%s" for "%s" or program not in use';
 
+  // Mesh assebling
+  glsWrongAttrType =
+    'An attribute was used with different type than previously or bad list size';
+  glsUnknownAttrib = 'Used undeclared attribute "%s" for mesh "%s" assembly.';
+  glsMeshWrongCall =
+    'Mesh assembling - Wrong method call of mesh "%s"- ignored';
+  glsMeshNoPrimitive = 'Mesh assembling - No primitive for batch - ignored';
+  glsMeshNoAttrDeclar = 'Mesh assembling - No declaration of attributes';
+  glsMeshExcesAttrib =
+    'Mesh assembling - Excessive attribute declaration for mesh "%s".';
+  glsMeshInvalidArraySize =
+    'Mesh assembling - Invalid array size of attribute "%s" of mesh "%s"';
+  glsMeshHashingError =
+    'Mesh assembling - %s: hashing error during vertex welding in mesh %s';
+  glsMeshNoNeedRestart =
+    'Mesh assembling - %s: This primitive type does not need to restart.';
+  glsInvalidNumberOfVertex =
+    'The number of primitives to render is invalid. You need to construct complete primitives.';
+  glsMeshNEquPrimitive =
+    'Mesh assembling - Unable to merge "%s" and "%s" - unequal primitive type';
+
+
 implementation
 
 end.

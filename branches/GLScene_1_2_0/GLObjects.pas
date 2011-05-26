@@ -1274,7 +1274,8 @@ begin
     FBatch.Mesh.Validate;
   end;
 
-  FBatch.Mesh.WeldVertices;
+  if not (osStreamDraw in ObjectStyle) then
+    FBatch.Mesh.WeldVertices;
 
   if mesAdjacency in FMeshExtras then
   begin
