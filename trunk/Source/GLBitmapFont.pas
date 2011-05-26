@@ -124,6 +124,7 @@ type
 
     function Add: TBitmapFontRange; overload;
     function Add(startASCII, stopASCII: widechar): TBitmapFontRange; overload;
+    function Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
     function FindItemID(ID: Integer): TBitmapFontRange;
     property Items[index: Integer]: TBitmapFontRange read GetItems write SetItems; default;
 
@@ -521,6 +522,14 @@ begin
   Result := Add;
   Result.StartASCII := startASCII;
   Result.StopASCII := stopASCII;
+end;
+
+// Add
+//
+
+function TBitmapFontRanges.Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange;
+begin
+  Result := Add(WideChar(startASCII), WideChar(stopASCII));
 end;
 
 // FindItemID
