@@ -6,8 +6,9 @@
    Nodes are used to describe lines, polygons + more.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>26/05/11 - Yar - Transition to indirect rendering objects
       <li>01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
-      <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
+      <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks ÷Ålexx)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>26/11/09 - DaStr - Improved Lazarus compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
@@ -30,6 +31,7 @@ uses
   BaseClasses,
   GLCoordinates,
   Spline,
+  GLSMesh,
   GLSDrawTechnique;
 
 {$I GLScene.inc}
@@ -135,10 +137,11 @@ type
     //: Rotate nodes around Y axis by the given angle (degrees)
     procedure RotateAroundZ(angle: Single);
 
-    procedure RenderTesselatedPolygon(ATextured: Boolean;
-      ANormal: PAffineVector = nil;
-      ASplineDivisions: Integer = 1;
-      AInvertNormals: Boolean = False);
+    procedure BuildTesselatedPolygon(
+      AMesh: TMeshAtom;
+      ANormal: PAffineVector;
+      ASplineDivisions: Integer;
+      AInvertNormals, ATextureCoord: Boolean);
 
     function CreateNewCubicSpline: TCubicSpline;
     function CreateNewBezierSpline: TBezierSpline;
@@ -150,7 +153,8 @@ implementation
 
 uses
   SysUtils,
-  XOpenGL
+  GLState,
+  GLSLParameter
 {$IFDEF GLS_DELPHI},
   VectorTypes{$ENDIF};
 
@@ -683,10 +687,14 @@ begin
   FreeMem(za);
 end;
 
-
-// RenderTesselatedPolygon
-//
+{$IFDEF GLS_MULTITHREAD}
+threadvar
+{$ELSE}
 var
+{$ENDIF}
+  vMainMesh: TMeshAtom;
+  vTempMesh: TMeshAtom;
+  vNormal: PAffineVector;
   nbExtraVertices: Integer;
   newVertices: PAffineVectorArray;
 
@@ -694,6 +702,54 @@ function AllocNewVertex: PAffineVector;
 begin
   Inc(nbExtraVertices);
   Result := @newVertices[nbExtraVertices - 1];
+end;
+
+procedure tessBegin(Atype: GLenum);
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  with vTempMesh do
+  begin
+    Clear;
+    DeclareAttribute(attrPosition, GLSLType3f);
+    if vMainMesh.Attributes[attrNormal] then
+      DeclareAttribute(attrNormal, GLSLType3f);
+    if vMainMesh.Attributes[attrTexCoord0] then
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+    case AType of
+      GL_TRIANGLE_FAN: BeginAssembly(mpTRIANGLE_FAN);
+      GL_TRIANGLE_STRIP: BeginAssembly(mpTRIANGLE_STRIP);
+      GL_TRIANGLES: BeginAssembly(mpTRIANGLES);
+      GL_LINE_LOOP: BeginAssembly(mpLINE_LOOP);
+    end;
+  end;
+end;
+
+procedure tessEnd();
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  case vTempMesh.Primitive of
+    mpTRIANGLE_FAN, mpTRIANGLE_STRIP:
+    begin
+      vTempMesh.EndAssembly;
+      vTempMesh.Triangulate;
+      vMainMesh.Merge(vTempMesh);
+    end;
+    mpTRIANGLES:
+    begin
+      vTempMesh.EndAssembly;
+      vMainMesh.Merge(vTempMesh);
+    end;
+    mpLINE_LOOP:
+    begin
+      vTempMesh.EndAssembly;
+      vTempMesh.LineSegmentation;
+      vMainMesh.Merge(vTempMesh);
+    end;
+  end;
 end;
 
 procedure tessError(errno: TGLEnum);
@@ -704,13 +760,34 @@ begin
   Assert(False, IntToStr(errno) + ': ' + string(gluErrorString(errno)));
 end;
 
-procedure tessIssueVertex(vertexData: Pointer);
+
+procedure tessPosition(vertexData: Pointer);
 {$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
-  xgl.TexCoord2fv(vertexData);
-  GL.Vertex3fv(vertexData);
+  with vTempMesh do
+  begin
+    Attribute3f(attrPosition, PVector3f(vertexData)^);
+    if Assigned(vNormal) then
+      Attribute3f(attrNormal, vNormal^);
+    EmitVertex;
+  end;
+end;
+
+procedure tessTexCoordPosition(vertexData: Pointer);
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  with vTempMesh do
+  begin
+    Attribute3f(attrPosition, PVector3f(vertexData)^);
+    Attribute2f(attrTexCoord0, PVector2f(vertexData)^);
+    if Assigned(vNormal) then
+      Attribute3f(attrNormal, vNormal^);
+    EmitVertex;
+  end;
 end;
 
 procedure tessCombine(coords: PDoubleVector; vertex_data: Pointer;
@@ -723,10 +800,11 @@ begin
   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
-procedure TGLNodes.RenderTesselatedPolygon(ATextured: Boolean;
-  ANormal: PAffineVector = nil;
-  ASplineDivisions: Integer = 1;
-  AInvertNormals: Boolean = False);
+procedure TGLNodes.BuildTesselatedPolygon(
+  AMesh: TMeshAtom;
+  ANormal: PAffineVector;
+  ASplineDivisions: Integer;
+  AInvertNormals, ATextureCoord: Boolean);
 var
   i: Integer;
   tess: PGLUTesselator;
@@ -736,83 +814,108 @@ var
   f: Single;
 
 begin
-  if Count > 2 then
+  vMainMesh := AMesh;
+  vTempMesh := TMeshAtom.Create;
+  tess := gluNewTess;
+
+  with vMainMesh do
   begin
-    // Create and initialize the GLU tesselator
-    tess := gluNewTess;
-    gluTessCallback(tess, GLU_TESS_BEGIN, @GL.Begin_);
-    if ATextured then
-      gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
-    else
-      gluTessCallback(tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    gluTessCallback(tess, GLU_TESS_END, @GL.End_);
-    gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
-    gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
-    nbExtraVertices := 0;
-    // Issue normal
-    if Assigned(ANormal) then
-    begin
-      GL.Normal3fv(PGLFloat(ANormal));
-      gluTessNormal(tess, ANormal^[0], ANormal^[1], ANormal^[2]);
-    end;
-    // Issue polygon
-    gluTessBeginPolygon(tess, nil);
-    gluTessBeginContour(tess);
-    if ASplineDivisions <= 1 then
-    begin
-      // no spline, use direct coordinates
-      GetMem(newVertices, Count * SizeOf(TAffineVector));
-      if AInvertNormals then
+    Lock;
+    vTempMesh.Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      if Assigned(ANormal) then
+        DeclareAttribute(attrNormal, GLSLType3f);
+      if ATextureCoord then
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+      BeginAssembly(mpTRIANGLES);
+      // Empty mesh
+      EndAssembly;
+
+      if Count > 2 then
       begin
-        for i := Count - 1 downto 0 do
+        // Create and initialize the GLU tesselator
+
+        gluTessCallback(tess, GLU_TESS_BEGIN, @tessBegin);
+        if ATextureCoord then
+          gluTessCallback(tess, GLU_TESS_VERTEX, @tessTexCoordPosition)
+        else
+          gluTessCallback(tess, GLU_TESS_VERTEX, @tessPosition);
+        gluTessCallback(tess, GLU_TESS_END, @tessEnd);
+        gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
+        gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
+        nbExtraVertices := 0;
+        // Issue normal
+        vNormal := ANormal;
+        if Assigned(ANormal) then
+          gluTessNormal(tess, ANormal^[0], ANormal^[1], ANormal^[2]);
+        // Issue polygon
+        gluTessBeginPolygon(tess, nil);
+        gluTessBeginContour(tess);
+        if ASplineDivisions <= 1 then
         begin
-          SetVector(dblVector, PAffineVector(Items[i].AsAddress)^);
-          gluTessVertex(tess, dblVector, Items[i].AsAddress);
-        end;
-      end
-      else
-      begin
-        for i := 0 to Count - 1 do
+          // no spline, use direct coordinates
+          GetMem(newVertices, Count * SizeOf(TAffineVector));
+          if AInvertNormals then
+          begin
+            for i := Count - 1 downto 0 do
+            begin
+              SetVector(dblVector, PAffineVector(Items[i].AsAddress)^);
+              gluTessVertex(tess, dblVector, Items[i].AsAddress);
+            end;
+          end
+          else
+          begin
+            for i := 0 to Count - 1 do
+            begin
+              SetVector(dblVector, PAffineVector(Items[i].AsAddress)^);
+              gluTessVertex(tess, dblVector, Items[i].AsAddress);
+            end;
+          end;
+        end
+        else
         begin
-          SetVector(dblVector, PAffineVector(Items[i].AsAddress)^);
-          gluTessVertex(tess, dblVector, Items[i].AsAddress);
+          // cubic spline
+          GetMem(newVertices, 2 * ASplineDivisions * Count * SizeOf(TAffineVector));
+          spline := CreateNewCubicSpline;
+          f := 1.0 / ASplineDivisions;
+          if AInvertNormals then
+          begin
+            for i := ASplineDivisions * (Count - 1) downto 0 do
+            begin
+              splinePos := AllocNewVertex;
+              spline.SplineAffineVector(i * f, splinePos^);
+              SetVector(dblVector, splinePos^);
+              gluTessVertex(tess, dblVector, splinePos);
+            end;
+          end
+          else
+          begin
+            for i := 0 to ASplineDivisions * (Count - 1) do
+            begin
+              splinePos := AllocNewVertex;
+              spline.SplineAffineVector(i * f, splinePos^);
+              SetVector(dblVector, splinePos^);
+              gluTessVertex(tess, dblVector, splinePos);
+            end;
+          end;
+          spline.Free;
         end;
+        gluTessEndContour(tess);
+        gluTessEndPolygon(tess);
+        Validate;
       end;
-    end
-    else
-    begin
-      // cubic spline
-      GetMem(newVertices, 2 * ASplineDivisions * Count * SizeOf(TAffineVector));
-      spline := CreateNewCubicSpline;
-      f := 1.0 / ASplineDivisions;
-      if AInvertNormals then
-      begin
-        for i := ASplineDivisions * (Count - 1) downto 0 do
-        begin
-          splinePos := AllocNewVertex;
-          spline.SplineAffineVector(i * f, splinePos^);
-          SetVector(dblVector, splinePos^);
-          gluTessVertex(tess, dblVector, splinePos);
-        end;
-      end
-      else
-      begin
-        for i := 0 to ASplineDivisions * (Count - 1) do
-        begin
-          splinePos := AllocNewVertex;
-          spline.SplineAffineVector(i * f, splinePos^);
-          SetVector(dblVector, splinePos^);
-          gluTessVertex(tess, dblVector, splinePos);
-        end;
-      end;
-      spline.Free;
+    finally
+      // release stuff
+      UnLock;
+      vTempMesh.UnLock;
+      vTempMesh.Destroy;
+      vTempMesh := nil;
+      if Assigned(newVertices) then
+        FreeMem(newVertices);
+      gluDeleteTess(tess);
     end;
-    gluTessEndContour(tess);
-    gluTessEndPolygon(tess);
-    // release stuff
-    if Assigned(newVertices) then
-      FreeMem(newVertices);
-    gluDeleteTess(tess);
   end;
 end;
 

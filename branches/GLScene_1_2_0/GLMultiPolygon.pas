@@ -6,6 +6,7 @@
    Object with support for complex polygons.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>26/05/11 - Yar - Transition to indirect rendering objects
       <li>04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/11/09 - DaStr - Improved Unix compatibility
@@ -63,7 +64,8 @@ uses
   GLNodes,
   BaseClasses,
   GLCoordinates,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  GLSMesh;
 
 type
 
@@ -159,7 +161,7 @@ type
      make an outline from it (this is done in RetreiveOutline). This outline is
      used for Rendering. Only when there are changes in the contours, the
      outline will be recalculated. The ouline in fact is a list of VectorLists. }
-  TMultiPolygonBase = class(TGLSceneObject)
+  TMultiPolygonBase = class(TGLSceneObjectEx)
   private
     { Private Declarations }
     FContours: TGLContours;
@@ -174,11 +176,10 @@ type
 
   protected
     { Protected Declarations }
-    procedure RenderTesselatedPolygon(textured: Boolean;
-      normal: PAffineVector; invertNormals: Boolean);
+    procedure BuildTesselatedPolygon(AMesh: TMeshAtom;
+      ANormal: PAffineVector; AnInvNormals, ATextureCoord: Boolean);
     procedure RetrieveOutline(List: TPolygonList);
     procedure ContourChanged(Sender: TObject); virtual;
-    //property PNormal:PAffineVector read FPNormal;
 
   public
     { Public Declarations }
@@ -216,14 +217,12 @@ type
   protected
     { Protected Declarations }
     procedure SetParts(const value: TPolygonParts);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-
   published
     { Published Declarations }
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
@@ -237,9 +236,12 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils,
+uses
+  SysUtils,
   XOpenGL,
-  GLContext
+  GLContext,
+  GLState,
+  GLSLParameter
   {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
@@ -469,6 +471,10 @@ begin
   FContours.OnNotifyChange := ContourChanged;
   FContoursNormal := AffineVectorMake(0, 0, 1);
   FAxisAlignedDimensionsCache[0] := -1;
+
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -587,8 +593,63 @@ end;
 // Tessellation routines (OpenGL callbacks)
 //
 
+{$IFDEF GLS_MULTITHREAD}
+threadvar
+{$ELSE}
 var
+{$ENDIF}
+  vMainMesh: TMeshAtom;
+  vTempMesh: TMeshAtom;
+  vNormal: PAffineVector;
   vVertexPool: TVectorPool;
+
+procedure tessBegin(Atype: GLenum);
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  with vTempMesh do
+  begin
+    Clear;
+    DeclareAttribute(attrPosition, GLSLType3f);
+    if vMainMesh.Attributes[attrNormal] then
+      DeclareAttribute(attrNormal, GLSLType3f);
+    if vMainMesh.Attributes[attrTexCoord0] then
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+    case AType of
+      GL_TRIANGLE_FAN: BeginAssembly(mpTRIANGLE_FAN);
+      GL_TRIANGLE_STRIP: BeginAssembly(mpTRIANGLE_STRIP);
+      GL_TRIANGLES: BeginAssembly(mpTRIANGLES);
+      GL_LINE_LOOP: BeginAssembly(mpLINE_LOOP);
+    end;
+  end;
+end;
+
+procedure tessEnd();
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  case vTempMesh.Primitive of
+    mpTRIANGLE_FAN, mpTRIANGLE_STRIP:
+    begin
+      vTempMesh.EndAssembly;
+      vTempMesh.Triangulate;
+      vMainMesh.Merge(vTempMesh);
+    end;
+    mpTRIANGLES:
+    begin
+      vTempMesh.EndAssembly;
+      vMainMesh.Merge(vTempMesh);
+    end;
+    mpLINE_LOOP:
+    begin
+      vTempMesh.EndAssembly;
+      vTempMesh.LineSegmentation;
+      vMainMesh.Merge(vTempMesh);
+    end;
+  end;
+end;
 
 procedure tessError(errno: TGLEnum);
 {$IFDEF Win32} stdcall;
@@ -598,13 +659,33 @@ begin
   Assert(False, IntToStr(errno) + ' : ' + string(gluErrorString(errno)));
 end;
 
-procedure tessIssueVertex(vertexData: Pointer);
+procedure tessPosition(vertexData: Pointer);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
-  xgl.TexCoord2fv(vertexData);
-  GL.Vertex3fv(vertexData);
+  with vTempMesh do
+  begin
+    Attribute3f(attrPosition, PVector3f(vertexData)^);
+    if Assigned(vNormal) then
+      Attribute3f(attrNormal, vNormal^);
+    EmitVertex;
+  end;
+end;
+
+procedure tessTexCoordPosition(vertexData: Pointer);
+{$IFDEF Win32} stdcall;
+{$ENDIF}{$IFDEF unix} cdecl;
+{$ENDIF}
+begin
+  with vTempMesh do
+  begin
+    Attribute3f(attrPosition, PVector3f(vertexData)^);
+    Attribute2f(attrTexCoord0, PVector2f(vertexData)^);
+    if Assigned(vNormal) then
+      Attribute3f(attrNormal, vNormal^);
+    EmitVertex;
+  end;
 end;
 
 procedure tessCombine(coords: PDoubleVector; vertex_data: Pointer;
@@ -738,16 +819,16 @@ begin
       gluDeleteTess(tess);
       vVertexPool.Free;
       vVertexPool := nil;
+      vTempMesh := nil;
     end;
   end;
 end;
 
-// RenderTesselatedPolygon
+// BuildTesselatedPolygon
 //
 
-procedure TMultiPolygonBase.RenderTesselatedPolygon(textured: Boolean;
-  normal: PAffineVector;
-  invertNormals: Boolean);
+procedure TMultiPolygonBase.BuildTesselatedPolygon(AMesh: TMeshAtom;
+  ANormal: PAffineVector; AnInvNormals, ATextureCoord: Boolean);
 var
   tess: PGLUTesselator;
 
@@ -765,54 +846,78 @@ var
 var
   i, n: Integer;
 begin
-  // call to Outline will call RetrieveOutline if necessary
-  if (Outline.Count = 0) or (Outline.List[0].Count < 2) then
-    Exit;
-  // Vertex count
-  n := 0;
-  for i := 0 to Outline.Count - 1 do
-    n := n + Outline.List[i].Count;
-  // Create and initialize a vertex pool and the GLU tesselator
-  vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
+
+  vMainMesh := AMesh;
+  vTempMesh := TMeshAtom.Create;
   tess := gluNewTess;
-  try
-    gluTessCallback(tess, GLU_TESS_BEGIN, @GL.Begin_);
-    if textured then
-      gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
-    else
-      gluTessCallback(tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    gluTessCallback(tess, GLU_TESS_END, @GL.End_);
-    gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
-    gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
-    // Issue normal
-    if Assigned(normal) then
-    begin
-      GL.Normal3fv(PGLFloat(normal));
-      gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
-    end;
-    gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
-    // Issue polygon
-    gluTessBeginPolygon(tess, nil);
-    for n := 0 to Outline.Count - 1 do
-    begin
-      with Outline.List[n] do
+
+  with vMainMesh do
+  begin
+    Lock;
+    vTempMesh.Lock;
+    try
+      Clear;
+      if (Outline.Count > 0) and (Outline.List[0].Count > 1) then
       begin
-        gluTessBeginContour(tess);
-        if invertNormals then
-          for i := Count - 1 downto 0 do
-            IssueVertex(Items[i])
+        DeclareAttribute(attrPosition, GLSLType3f);
+        if Assigned(ANormal) then
+          DeclareAttribute(attrNormal, GLSLType3f);
+        if ATextureCoord then
+          DeclareAttribute(attrTexCoord0, GLSLType2f);
+        BeginAssembly(mpTRIANGLES);
+        // Empty mesh
+        EndAssembly;
+
+        // Vertex count
+        n := 0;
+        for i := 0 to Outline.Count - 1 do
+          n := n + Outline.List[i].Count;
+        // Create and initialize a vertex pool and the GLU tesselator
+        vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
+
+        gluTessCallback(tess, GLU_TESS_BEGIN, @tessBegin);
+        if ATextureCoord then
+          gluTessCallback(tess, GLU_TESS_VERTEX, @tessTexCoordPosition)
         else
-          for i := 0 to Count - 1 do
-            IssueVertex(Items[i]);
-        gluTessEndContour(tess);
+          gluTessCallback(tess, GLU_TESS_VERTEX, @tessPosition);
+        gluTessCallback(tess, GLU_TESS_END, @tessEnd);
+        gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
+        gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
+        // Issue normal
+        vNormal := ANormal;
+        if Assigned(ANormal) then
+          gluTessNormal(tess, ANormal^[0], ANormal^[1], ANormal^[2]);
+        gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+        // Issue polygon
+        gluTessBeginPolygon(tess, nil);
+        for n := 0 to Outline.Count - 1 do
+        begin
+          with Outline.List[n] do
+          begin
+            gluTessBeginContour(tess);
+            if AnInvNormals then
+              for i := Count - 1 downto 0 do
+                IssueVertex(Items[i])
+            else
+              for i := 0 to Count - 1 do
+                IssueVertex(Items[i]);
+            gluTessEndContour(tess);
+          end;
+        end;
+        gluTessEndPolygon(tess);
       end;
+      Validate;
+    finally
+      UnLock;
+      vTempMesh.UnLock;
+      vTempMesh.Destroy;
+      vTempMesh := nil;
+      vVertexPool.Free;
+      vVertexPool := nil;
+      gluDeleteTess(tess);
     end;
-    gluTessEndPolygon(tess);
-  finally
-    gluDeleteTess(tess);
-    vVertexPool.Free;
-    vVertexPool := nil;
   end;
+
 end;
 
 // ------------------
@@ -843,23 +948,43 @@ end;
 // BuildList
 //
 
-procedure TGLMultiPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TGLMultiPolygon.BuildMesh;
 var
-  normal: TAffineVector;
+  LNormal: TAffineVector;
 begin
-  if (Outline.Count < 1) then
-    Exit;
-  normal := ContoursNormal;
-  // Render
-  // tessellate top polygon
-  if ppTop in FParts then
-    RenderTesselatedPolygon(True, @normal, False);
-  // tessellate bottom polygon
-  if ppBottom in FParts then
+  if (Outline.Count > 0) then
   begin
-    NegateVector(normal);
-    RenderTesselatedPolygon(True, @normal, True)
+    LNormal := ContoursNormal;
+    if ppTop in FParts then
+    begin
+      // tessellate top polygon
+      BuildTesselatedPolygon(FBatch.Mesh, @LNormal, False, True);
+      if ppBottom in FParts then
+      begin
+        FBatch.Mesh.Lock;
+        try
+          FBatch.Mesh.FlipFaces(True);
+          ApplyExtras;
+        finally
+          FBatch.Mesh.UnLock;
+        end;
+      end;
+    end
+    else if ppBottom in FParts then
+    begin
+      // tessellate bottom polygon
+      NegateVector(LNormal);
+      BuildTesselatedPolygon(FBatch.Mesh, @LNormal, True, True);
+      FBatch.Mesh.Lock;
+      try
+        ApplyExtras;
+      finally
+        FBatch.Mesh.UnLock;
+      end;
+    end;
   end;
+
+  inherited;
 end;
 
 // SetParts

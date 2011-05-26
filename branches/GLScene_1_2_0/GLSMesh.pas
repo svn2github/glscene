@@ -135,6 +135,7 @@ type
       const Value: TGLSLDataType);
     procedure SetElements(const Value: T4ByteList);
     function GetValid: Boolean;
+    procedure SetPrimitive(const Value: TGLMeshPrimitive);
   protected
     { Protected Declarations }
 {$IFDEF GLS_MULTITHREAD}
@@ -189,6 +190,8 @@ type
     procedure Attribute2f(Attrib: TAttribLocation; a1, a2: GLfloat);
       overload;
     procedure Attribute2f(Attrib: TAttribLocation; const a: TVector2f);
+      overload;
+    procedure Attribute2f(Attrib: TAttribLocation; const a: TTexPoint);
       overload;
     procedure Attribute3f(Attrib: TAttribLocation; a1, a2, a3: GLfloat);
       overload;
@@ -245,8 +248,9 @@ type
     procedure Clear;
     {: Merge vertices of other mesh, leaving only same name attributes. }
     procedure Merge(AMesh: TMeshAtom);
-    {: Flip face side, front <-> back, negate normals. }
-    procedure FlipFaces;
+    {: Flip face side, front <-> back, negate normals.
+       True for TwoSide to duplicate triangles froom front side to back. }
+    procedure FlipFaces(ATwoSide: Boolean = False);
     {: Weld equivalent vertices, rebuild element buffer. }
     procedure WeldVertices;
     {: Slit equivalent vertices, every element becomes unique. }
@@ -255,6 +259,8 @@ type
     procedure MakeTriangleElements;
     {: Cast strip and fans of triangles to simple triangles. }
     procedure Triangulate;
+    {: Cast strip and loop of lines to simple lines. }
+    procedure LineSegmentation;
     {: Make additional element buffer with triangle adjacency (. }
     procedure MakeAdjacencyElements;
     {: Compute triangle's normals. }
@@ -263,6 +269,8 @@ type
     procedure ComputeTexCoords;
     {: Compute triangle's normals. }
     procedure ComputeTangents;
+    {: Transform positions, normals. }
+    procedure Transform(const AMatrix: TMatrix);
     {: Rescales and alignes mesh based on bounding box. }
     procedure Rescale(ARadius: Single = 1.0);
     {: Intersection with a casted ray.
@@ -273,6 +281,7 @@ type
     procedure UnLock; virtual;
     {: Current validation state. }
     property IsValid: Boolean read GetValid;
+    property Primitive: TGLMeshPrimitive read FPrimitive write SetPrimitive;
     property VertexCount: Integer read FVertexCount;
     property AttributeCount: Integer read GetAttributeCount;
     {: Direct asscess to content. }
@@ -953,6 +962,22 @@ begin
   FValid := False;
 end;
 
+procedure TMeshAtom.SetPrimitive(const Value: TGLMeshPrimitive);
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  FPrimitive := Value;
+  FValid := False;
+end;
+
 procedure TMeshAtom.Lock;
 begin
 {$IFDEF GLS_MULTITHREAD}
@@ -1005,6 +1030,8 @@ var
   A: TAttribLocation;
   bSuccess: Boolean;
   I: Integer;
+  E, J, C: Cardinal;
+  BD: T4ByteData;
 begin
   if (FBuildingState = mmsIgnoring)
     or (AMesh.FBuildingState = mmsIgnoring) then
@@ -1024,19 +1051,14 @@ begin
     exit;
   end;
 
-  if FHasIndices then
-    SplitVertices;
-  if AMesh.FHasIndices then
-    AMesh.SplitVertices;
   bSuccess := False;
-
+  // Merge attributes
   for A := High(TAttribLocation) downto Low(TAttribLocation) do
   begin
     if FAttributes[A]
       and AMesh.FAttributes[A]
       and (FType[A] = AMesh.FType[A]) then
     begin
-      FAttributeArrays[A].Add(AMesh.FAttributeArrays[A]);
       bSuccess := True;
     end
     else
@@ -1046,14 +1068,25 @@ begin
       FType[A] := GLSLTypeVoid;
     end;
   end;
-
+  // Append data
   if bSuccess then
   begin
-    Inc(FVertexCount, AMesh.FVertexCount);
-    FElements.Flush;
-    for I := 0 to FVertexCount - 1 do
-      FElements.Add(I);
-    FAdjacencyElements.Clear;
+    for I := 0 to AMesh.FElements.Count - 1 do
+    begin
+      BD := AMesh.FElements[I];
+      E := BD.UInt.Value;
+      if E = AMesh.RestartStripIndex then
+        continue;
+      for A := High(TAttribLocation) downto Low(TAttribLocation) do
+        if FAttributes[A] then
+        begin
+          C := GLSLTypeComponentCount(FType[A]);
+          for J := 0 to C - 1 do
+            FAttributeArrays[A].Add(AMesh.FAttributeArrays[A][C*E+J]);
+        end;
+      FElements.Add(FVertexCount);
+      Inc(FVertexCount);
+    end;
   end;
 end;
 
@@ -1156,9 +1189,9 @@ begin
   end;
 end;
 
-procedure TMeshAtom.FlipFaces;
+procedure TMeshAtom.FlipFaces(ATwoSide: Boolean = False);
 var
-  I: Integer;
+  I, C: Integer;
   BD: T4ByteData;
 begin
   if FBuildingState = mmsIgnoring then
@@ -1172,36 +1205,76 @@ begin
 
   if FPrimitive = mpTRIANGLES then
   begin
-    I := 0;
-    while I < FElements.Count do
+    if ATwoSide then
     begin
-      BD := FElements[I];
-      FElements[I] := FElements[I + 1];
-      FElements[I + 1] := BD;
-      Inc(I, 3);
+      I := 0;
+      C := FElements.Count;
+      while I < C do
+      begin
+        BD := FElements[I + 1];
+        FElements.Add(BD);
+        BD := FElements[I];
+        FElements.Add(BD);
+        BD := FElements[I+2];
+        FElements.Add(BD);
+        Inc(I, 3);
+      end;
+      SplitVertices;
+      if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
+        for I := FAttributeArrays[attrNormal].Count div 2 to FAttributeArrays[attrNormal].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrNormal][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrNormal][I] := BD;
+        end;
+      if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
+        for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrTangent].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrTangent][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrTangent][I] := BD;
+        end;
+      if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
+        for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrBinormal].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrBinormal][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrBinormal][I] := BD;
+        end;
+    end
+    else
+    begin
+      I := 0;
+      while I < FElements.Count do
+      begin
+        BD := FElements[I];
+        FElements[I] := FElements[I + 1];
+        FElements[I + 1] := BD;
+        Inc(I, 3);
+      end;
+      SplitVertices;
+      if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
+        for I := 0 to FAttributeArrays[attrNormal].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrNormal][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrNormal][I] := BD;
+        end;
+      if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
+        for I := 0 to FAttributeArrays[attrTangent].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrTangent][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrTangent][I] := BD;
+        end;
+      if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
+        for I := 0 to FAttributeArrays[attrBinormal].Count - 1 do
+        begin
+          BD := FAttributeArrays[attrBinormal][I];
+          BD.Float.Value := -BD.Float.Value;
+          FAttributeArrays[attrBinormal][I] := BD;
+        end;
     end;
-    SplitVertices;
-    if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
-      for I := 0 to FAttributeArrays[attrNormal].Count - 1 do
-      begin
-        BD := FAttributeArrays[attrNormal][I];
-        BD.Float.Value := -BD.Float.Value;
-        FAttributeArrays[attrNormal][I] := BD;
-      end;
-    if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
-      for I := 0 to FAttributeArrays[attrTangent].Count - 1 do
-      begin
-        BD := FAttributeArrays[attrTangent][I];
-        BD.Float.Value := -BD.Float.Value;
-        FAttributeArrays[attrTangent][I] := BD;
-      end;
-    if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
-      for I := 0 to FAttributeArrays[attrBinormal].Count - 1 do
-      begin
-        BD := FAttributeArrays[attrBinormal][I];
-        BD.Float.Value := -BD.Float.Value;
-        FAttributeArrays[attrBinormal][I] := BD;
-      end;
   end;
 end;
 
@@ -1323,6 +1396,16 @@ begin
   begin
     FCurrentAttribValue[Attrib, 0].Float.Value := a[0];
     FCurrentAttribValue[Attrib, 1].Float.Value := a[1];
+  end;
+end;
+
+procedure TMeshAtom.Attribute2f(Attrib: TAttribLocation;
+  const a: TTexPoint);
+begin
+  if GetAttributeIndex(Attrib, GLSLType2F) then
+  begin
+    FCurrentAttribValue[Attrib, 0].Float.Value := a.S;
+    FCurrentAttribValue[Attrib, 1].Float.Value := a.T;
   end;
 end;
 
@@ -1904,6 +1987,62 @@ begin
     FTrianglesElements.Revision := FElements.Revision;
     FPrimitive := mpTRIANGLES;
   end;
+end;
+
+procedure TMeshAtom.LineSegmentation;
+var
+  I: Integer;
+  LElemets: T4ByteList;
+  BD: T4ByteData;
+  bRst: Boolean;
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  if FPrimitive = mpLINE_LOOP then
+  begin
+    LElemets := T4ByteList.Create;
+    LElemets.Add(FElements[0]);
+    for I := 1 to FElements.Count - 1 do
+    begin
+      BD := FElements[I];
+      LElemets.Add(BD);
+      LElemets.Add(BD);
+    end;
+    LElemets.Add(FElements[0]);
+    FElements.Destroy;
+    FElements := LElemets;
+    FPrimitive := mpLINES;
+  end
+  else if FPrimitive = mpLINE_STRIP then
+  begin
+    LElemets := T4ByteList.Create;
+    LElemets.Add(FElements[0]);
+    bRst := False;
+    for I := 1 to FElements.Count - 1 do
+    begin
+      BD := FElements[I];
+      if BD.UInt.Value = RestartStripIndex then
+      begin
+        LElemets.Pop;
+        bRst := True;
+        continue;
+      end;
+      LElemets.Add(BD);
+      if not bRst then
+        LElemets.Add(BD);
+      bRst := False;
+    end;
+    FElements.Destroy;
+    FElements := LElemets;
+    FPrimitive := mpLINES;
+  end
 end;
 
 procedure TMeshAtom.MakeTriangleElements;
@@ -2914,6 +3053,97 @@ begin
   end;
 
   Result := (minDis >= 0);
+end;
+
+procedure TMeshAtom.Transform(const AMatrix: TMatrix);
+
+  function IsMatrixIdentity: Boolean;
+  var R, C: Integer;
+  begin
+    Result := True;
+    for R := 0 to 3 do
+      for C := 0 to 3 do
+        if R = C then
+        begin
+          if AMatrix[R,C] <> 1.0 then
+          begin
+            Result := False;
+            exit;
+          end;
+        end
+        else
+          if AMatrix[R,C] <> 0.0 then
+          begin
+            Result := False;
+            exit;
+          end;
+  end;
+
+  var
+    Positions: I4ByteListToVectorList;
+    Normals: I4ByteListToVectorList;
+    Tangents: I4ByteListToVectorList;
+    Binormals: I4ByteListToVectorList;
+    NMatrix: TMatrix;
+    I: Integer;
+    p: TVector3f;
+
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if FBuildingState <> mmsAssembling then
+  begin
+    GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+    FBuildingState := mmsIgnoring;
+    exit;
+  end;
+
+  if not FAttributes[attrPosition] then
+    exit; // Nothing todo
+
+  Positions := T4ByteListToVectorList.Create(FAttributeArrays[attrPosition], FType[attrPosition]);
+  Normals := nil;
+  Tangents := nil;
+  Binormals := nil;
+  if not IsMatrixIdentity then
+  begin
+    NMatrix := AMatrix;
+    NormalizeMatrix(NMatrix);
+    if FAttributes[attrNormal] then
+      Normals := T4ByteListToVectorList.Create(FAttributeArrays[attrNormal], FType[attrNormal]);
+    if FAttributes[attrTangent] then
+      Tangents := T4ByteListToVectorList.Create(FAttributeArrays[attrTangent], FType[attrTangent]);
+    if FAttributes[attrBinormal] then
+      Binormals := T4ByteListToVectorList.Create(FAttributeArrays[attrBinormal], FType[attrBinormal]);
+  end;
+
+  for I := Positions.Count - 1 downto 0 do
+  begin
+    p := Positions[I];
+    p := VectorTransform(p, AMatrix);
+    Positions[I] := p;
+
+    if Assigned(Normals) then
+    begin
+      p := Normals[I];
+      p := VectorTransform(p, NMatrix);
+      Normals[I] := p;
+    end;
+
+    if Assigned(Tangents) then
+    begin
+      p := Tangents[I];
+      p := VectorTransform(p, NMatrix);
+      Tangents[I] := p;
+    end;
+
+    if Assigned(Binormals) then
+    begin
+      p := Binormals[I];
+      p := VectorTransform(p, NMatrix);
+      Binormals[I] := p;
+    end;
+  end;
 end;
 
 procedure TMeshAtom.Rescale(ARadius: Single);

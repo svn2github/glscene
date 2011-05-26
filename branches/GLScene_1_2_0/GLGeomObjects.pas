@@ -498,13 +498,12 @@ type
   protected
     { Protected Declarations }
     procedure SetParts(const val: TPolygonParts);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -2027,9 +2026,9 @@ begin
         Rstep := (FTopRadius - FTopInnerRadius) / FLoops;
         yHigh := 0.5 * FHeight;
 
-        Attribute3f(attrNormal, 0, 0, 1);
+        Attribute3f(attrNormal, 0, 1, 0);
         Attribute3f(attrTangent, 1, 0, 0);
-        Attribute3f(attrBinormal, 0, 1, 0);
+        Attribute3f(attrBinormal, 0, 0, 1);
         for j := 0 to FLoops - 1 do
         begin
           for i := 0 to FSlices do
@@ -2052,9 +2051,9 @@ begin
         Rstep := (FBottomRadius - FBottominnerRadius) / FLoops;
         yLow := - 0.5 * FHeight;
 
-        Attribute3f(attrNormal, 0, 0, -1);
+        Attribute3f(attrNormal, 0, -1, 0);
         Attribute3f(attrTangent, -1, 0, 0);
-        Attribute3f(attrBinormal, 0, -1, 0);
+        Attribute3f(attrBinormal, 0, 1, -1);
         for j := 0 to FLoops - 1 do
         begin
           for i := 0 to FSlices do
@@ -3755,7 +3754,7 @@ end;
 // BuildList
 //
 
-procedure TGLPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TGLPolygon.BuildMesh;
 var
   Normal: TAffineVector;
   pNorm: PAffineVector;
@@ -3767,24 +3766,43 @@ begin
       pNorm := nil
     else
       pNorm := @Normal;
+
     if ppTop in FParts then
     begin
+      // tessellate top polygon
       if SplineMode = lsmLines then
-        Nodes.RenderTesselatedPolygon(true, pNorm, 1)
+        Nodes.BuildTesselatedPolygon(FBatch.Mesh, pNorm, 1, False, True)
       else
-        Nodes.RenderTesselatedPolygon(true, pNorm, Division);
-    end;
-    // tessellate bottom polygon
-    if ppBottom in FParts then
+        Nodes.BuildTesselatedPolygon(FBatch.Mesh, pNorm, Division, False, True);
+      if ppBottom in FParts then
+      begin
+        FBatch.Mesh.Lock;
+        try
+          FBatch.Mesh.FlipFaces(True);
+          ApplyExtras;
+        finally
+          FBatch.Mesh.UnLock;
+        end;
+      end;
+    end
+    else
     begin
-      if Assigned(pNorm) then
-        NegateVector(Normal);
+      // tessellate bottom polygon
+      NegateVector(Normal);
       if SplineMode = lsmLines then
-        Nodes.RenderTesselatedPolygon(true, pNorm, 1, true)
+        Nodes.BuildTesselatedPolygon(FBatch.Mesh, pNorm, 1, True, True)
       else
-        Nodes.RenderTesselatedPolygon(true, pNorm, Division, true);
+        Nodes.BuildTesselatedPolygon(FBatch.Mesh, pNorm, Division, True, True);
+        FBatch.Mesh.Lock;
+        try
+          ApplyExtras;
+        finally
+          FBatch.Mesh.UnLock;
+        end;
     end;
   end;
+
+  inherited;
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
