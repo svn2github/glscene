@@ -7,7 +7,7 @@
    surface described by a moving curve.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>07/05/11 - Yar - Fixed stColorMaterial state switching accordingly NodesColorMode
+      <li>26/05/11 - Yar - Transition to indirect rendering objects
       <li>28/03/11 - Vince - Improve Normals generation on Pipes
       <li>28/03/11 - Vince - Improve Texture coordinates on Pipes Add Tile
                               (Add TileS and TileT) and Manual Texture Mode
@@ -62,6 +62,7 @@ uses
   VectorGeometry,
   GLRenderContextInfo,
   GLNodes,
+  GLSMesh,
   GLState,
   VectorTypes;
 
@@ -92,12 +93,11 @@ type
     { Private Declarations }
     FSlices: Integer;
     FStartAngle, FStopAngle: Single;
-    FNormals: TNormalSmoothing;
     FYOffsetPerTurn: Single;
     FTriangleCount: Integer;
-    FNormalDirection: TNormalDirection;
     FParts: TRevolutionSolidParts;
-    FAxisAlignedDimensionsCache: TVector;
+    FNormals: TNormalSmoothing;
+    FNormalDirection: TNormalDirection;
   protected
     { Protected Declarations }
     procedure SetStartAngle(const val: Single);
@@ -108,18 +108,15 @@ type
     procedure SetYOffsetPerTurn(const val: Single);
     procedure SetNormalDirection(const val: TNormalDirection);
     procedure SetParts(const val: TRevolutionSolidParts);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     {: Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    procedure StructureChanged; override;
 
   published
     { Published Declarations }
@@ -128,8 +125,8 @@ type
              inside/outside as long as NormalDirection=ndOutside and the solid
              is described by the curve that goes from top to bottom.<p>
              Start/StopPolygon are tesselated from the curve (considered as closed). }
-    property Parts: TRevolutionSolidParts read FParts write SetParts default
-      [rspOutside];
+    property Parts: TRevolutionSolidParts read FParts
+      write SetParts default [rspOutside];
 
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StopAngle: Single read FStopAngle write SetStopAngle stored
@@ -167,36 +164,30 @@ type
   private
     { Private Declarations }
     FStacks: Integer;
-    FNormals: TNormalSmoothing;
     FTriangleCount: Integer;
-    FNormalDirection: TNormalDirection;
     FParts: TExtrusionSolidParts;
     FHeight: TGLFloat;
     FMinSmoothAngle: Single;
     FMinSmoothAngleCos: Single;
-    FAxisAlignedDimensionsCache: TVector;
+    FNormals: TNormalSmoothing;
+    FNormalDirection: TNormalDirection;
     procedure SetHeight(const Value: TGLFloat);
     procedure SetMinSmoothAngle(const Value: Single);
-
   protected
     { Protected Declarations }
     procedure SetStacks(const val: Integer);
     procedure SetNormals(const val: TNormalSmoothing);
     procedure SetNormalDirection(const val: TNormalDirection);
     procedure SetParts(const val: TExtrusionSolidParts);
-
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     {: Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    procedure StructureChanged; override;
-
   published
     { Published Declarations }
     property Parts: TExtrusionSolidParts read FParts write SetParts default
@@ -260,7 +251,7 @@ type
     function Add: TGLPipeNode;
     function FindItemID(ID: Integer): TGLPipeNode;
     property Items[index: Integer]: TGLPipeNode read GetItems write SetItems;
-      default;
+    default;
   end;
 
   // TPipeParts
@@ -298,7 +289,7 @@ type
     FTextCoordTileT: Single;
     FNormalMode: TPipeNormalMode;
     FNormalSmoothAngle: Single;
-
+    FSinCache, FCosCache: array of Single;
   protected
     { Protected Declarations }
     procedure CreateNodes; override;
@@ -315,12 +306,12 @@ type
 
     procedure SetNormalMode(const val: TPipeNormalMode);
     procedure SetNormalSmoothAngle(const val: Single);
+    procedure BuildMesh; override; stdcall;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
 
     {: Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
@@ -354,9 +345,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils,
+uses
+  SysUtils,
   Spline,
   VectorLists,
+  GLSLParameter,
   XOpenGL;
 
 // ------------------
@@ -369,12 +362,17 @@ uses SysUtils,
 constructor TGLRevolutionSolid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDeferredDraw];
   FStartAngle := 0;
   FStopAngle := 360;
   FSlices := 16;
   FNormals := nsFlat;
   FNormalDirection := ndOutside;
   FParts := [rspOutside];
+
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -502,7 +500,7 @@ end;
 // BuildList
 //
 
-procedure TGLRevolutionSolid.BuildList(var rci: TRenderContextInfo);
+procedure TGLRevolutionSolid.BuildMesh;
 var
   deltaAlpha, startAlpha, stopAlpha, alpha: Single;
   deltaS: Single;
@@ -569,7 +567,6 @@ var
       ptBottom := ptBuffer;
     end;
     // generate triangle strip for a level
-    // TODO : support for triangle fans (when ptTop or ptBottom is on the Y Axis)
     alpha := startAlpha;
     i := 0;
     yOffset := startYOffset;
@@ -589,42 +586,53 @@ var
     inc(i);
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@topNormal);
-    xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
-    while alpha < stopAlpha do
+
+    with FBatch.Mesh do
     begin
-      GL.Normal3fv(@bottomNormal);
-      xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
-      nextAlpha := alpha + deltaAlpha;
-      topTPNext.S := topTPNext.S + deltaS;
-      bottomTPNext.S := bottomTPNext.S + deltaS;
-      VectorRotateAroundY(ptTop^, nextAlpha, topNext);
-      VectorRotateAroundY(ptBottom^, nextAlpha, bottomNext);
-      if gotYDeltaOffset then
+      Attribute3f(attrNormal, topNormal);
+      Attribute2f(attrTexCoord0, topTPBase);
+      Attribute3f(attrPosition, topBase);
+      EmitVertex;
+      while alpha < stopAlpha do
       begin
-        topNext[1] := topNext[1] + yOffset;
-        bottomNext[1] := bottomNext[1] + yOffset;
-        yOffset := yOffset + deltaYOffset
+        Attribute3f(attrNormal, bottomNormal);
+        Attribute2f(attrTexCoord0, bottomTPBase);
+        Attribute3f(attrPosition, bottomBase);
+        EmitVertex;
+
+        nextAlpha := alpha + deltaAlpha;
+        topTPNext.S := topTPNext.S + deltaS;
+        bottomTPNext.S := bottomTPNext.S + deltaS;
+        VectorRotateAroundY(ptTop^, nextAlpha, topNext);
+        VectorRotateAroundY(ptBottom^, nextAlpha, bottomNext);
+        if gotYDeltaOffset then
+        begin
+          topNext[1] := topNext[1] + yOffset;
+          bottomNext[1] := bottomNext[1] + yOffset;
+          yOffset := yOffset + deltaYOffset
+        end;
+        CalcNormal(@topNext, @bottomNext, normal);
+        SetLocalNormals;
+        inc(i);
+
+        Attribute3f(attrNormal, topNormal);
+        Attribute2f(attrTexCoord0, topTPNext);
+        Attribute3f(attrPosition, topNext);
+        EmitVertex;
+
+        alpha := nextAlpha;
+        topBase := topNext;
+        topTPBase := topTPNext;
+        bottomBase := bottomNext;
+        bottomTPBase := bottomTPNext;
       end;
-      CalcNormal(@topNext, @bottomNext, normal);
-      SetLocalNormals;
-      inc(i);
-      xgl.TexCoord2fv(@topTPNext);
-      GL.Normal3fv(@topNormal);
-      GL.Vertex3fv(@topNext);
-      alpha := nextAlpha;
-      topBase := topNext;
-      topTPBase := topTPNext;
-      bottomBase := bottomNext;
-      bottomTPBase := bottomTPNext;
+      Attribute3f(attrNormal, bottomNormal);
+      Attribute2f(attrTexCoord0, bottomTPBase);
+      Attribute3f(attrPosition, bottomBase);
+      EmitVertex;
+
+      RestartStrip;
     end;
-    GL.Normal3fv(@bottomNormal);
-    xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
     firstStep := False;
   end;
 
@@ -635,194 +643,229 @@ var
   spline: TCubicSpline;
   invertedNormals: Boolean;
   polygon: TGLNodes;
+  LMesh: TMeshAtom;
 begin
-  if (Nodes.Count > 1) and (FStopAngle > FStartAngle) then
+  LMesh := nil;
+
+  with FBatch.Mesh do
   begin
-    startAlpha := FStartAngle * cPIdiv180;
-    stopAlpha := FStopAngle * cPIdiv180;
-    nbSteps := Round(((stopAlpha - startAlpha) / (2 * PI)) * FSlices);
-    // drop 0.1% to slice count to care for precision losses
-    deltaAlpha := (stopAlpha - startAlpha) / (nbSteps * 0.999);
-    deltaS := (stopAlpha - startAlpha) / (2 * PI * nbSteps);
-    gotYDeltaOffset := FYOffsetPerTurn <> 0;
-    if gotYDeltaOffset then
-      deltaYOffset := (FYOffsetPerTurn * (stopAlpha - startAlpha) / (2 * PI)) /
-        nbSteps
-    else
-      deltaYOffset := 0;
-    startYOffset := YOffsetPerTurn * startAlpha / (2 * PI);
-    invertedNormals := (FNormalDirection = ndInside);
-    FTriangleCount := 0;
-    // generate sides
-    if (rspInside in FParts) or (rspOutside in FParts) then
-    begin
-      // allocate lastNormals buffer (if smoothing)
-      if FNormals = nsSmooth then
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType3f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+
+      if (Nodes.Count > 1) and (FStopAngle > FStartAngle) then
       begin
-        GetMem(lastNormals, (FSlices + 2) * SizeOf(TAffineVector));
-        firstStep := True;
-      end;
-      // start working
-      if rspInside in Parts then
-      begin
-        firstStep := True;
-        if (Division < 2) or (SplineMode = lsmLines) then
-        begin
-          // standard line(s), draw directly
-          for i := 0 to Nodes.Count - 2 do
-            with Nodes[i] do
-            begin
-              BuildStep(PAffineVector(Nodes[i].AsAddress),
-                PAffineVector(Nodes[i + 1].AsAddress), not invertedNormals,
-                i / (Nodes.Count - 1), (i + 1) / (Nodes.Count - 1));
-            end;
-          FTriangleCount := nbSteps * Nodes.Count * 2;
-        end
+        startAlpha := FStartAngle * cPIdiv180;
+        stopAlpha := FStopAngle * cPIdiv180;
+        nbSteps := Round(((stopAlpha - startAlpha) / (2 * PI)) * FSlices);
+        // drop 0.1% to slice count to care for precision losses
+        deltaAlpha := (stopAlpha - startAlpha) / (nbSteps * 0.999);
+        deltaS := (stopAlpha - startAlpha) / (2 * PI * nbSteps);
+        gotYDeltaOffset := FYOffsetPerTurn <> 0;
+        if gotYDeltaOffset then
+          deltaYOffset := (FYOffsetPerTurn * (stopAlpha - startAlpha) / (2 * PI)) /
+            nbSteps
         else
+          deltaYOffset := 0;
+        startYOffset := YOffsetPerTurn * startAlpha / (2 * PI);
+        invertedNormals := (FNormalDirection = ndInside);
+        FTriangleCount := 0;
+        // generate sides
+        if (rspInside in FParts) or (rspOutside in FParts) then
         begin
-          // cubic spline
-          Spline := Nodes.CreateNewCubicSpline;
-          Spline.SplineAffineVector(0, lastSplinePos);
-          f := 1 / Division;
-          nbDivisions := (Nodes.Count - 1) * Division;
-          for i := 1 to nbDivisions do
+          // allocate lastNormals buffer (if smoothing)
+          if FNormals = nsSmooth then
           begin
-            Spline.SplineAffineVector(i * f, splinePos);
-            BuildStep(@lastSplinePos, @splinePos, not invertedNormals,
-              (i - 1) / nbDivisions, i / nbDivisions);
-            lastSplinePos := splinePos;
+            GetMem(lastNormals, (FSlices + 2) * SizeOf(TAffineVector));
+            firstStep := True;
           end;
-          Spline.Free;
-          FTriangleCount := nbSteps * nbDivisions * 2;
-        end;
-      end;
-      if rspOutside in Parts then
-      begin
-        firstStep := True;
-        if (Division < 2) or (SplineMode = lsmLines) then
-        begin
-          // standard line(s), draw directly
-          for i := 0 to Nodes.Count - 2 do
-            with Nodes[i] do
+          // start working
+          if rspInside in Parts then
+          begin
+            firstStep := True;
+            if (Division < 2) or (SplineMode = lsmLines) then
             begin
-              BuildStep(PAffineVector(Nodes[i].AsAddress),
-                PAffineVector(Nodes[i + 1].AsAddress), invertedNormals,
-                i / (Nodes.Count - 1), (i + 1) / (Nodes.Count - 1));
+              // standard line(s), draw directly
+              for i := 0 to Nodes.Count - 2 do
+                with Nodes[i] do
+                begin
+                  BuildStep(PAffineVector(Nodes[i].AsAddress),
+                    PAffineVector(Nodes[i + 1].AsAddress), not invertedNormals,
+                    i / (Nodes.Count - 1), (i + 1) / (Nodes.Count - 1));
+                end;
+              FTriangleCount := nbSteps * Nodes.Count * 2;
+            end
+            else
+            begin
+              // cubic spline
+              Spline := Nodes.CreateNewCubicSpline;
+              Spline.SplineAffineVector(0, lastSplinePos);
+              f := 1 / Division;
+              nbDivisions := (Nodes.Count - 1) * Division;
+              for i := 1 to nbDivisions do
+              begin
+                Spline.SplineAffineVector(i * f, splinePos);
+                BuildStep(@lastSplinePos, @splinePos, not invertedNormals,
+                  (i - 1) / nbDivisions, i / nbDivisions);
+                lastSplinePos := splinePos;
+              end;
+              Spline.Free;
+              FTriangleCount := nbSteps * nbDivisions * 2;
             end;
-          FTriangleCount := nbSteps * Nodes.Count * 2;
-        end
-        else
-        begin
-          // cubic spline
-          Spline := Nodes.CreateNewCubicSpline;
-          Spline.SplineAffineVector(0, lastSplinePos);
-          f := 1 / Division;
-          nbDivisions := (Nodes.Count - 1) * Division;
-          for i := 1 to nbDivisions do
-          begin
-            Spline.SplineAffineVector(i * f, splinePos);
-            BuildStep(@lastSplinePos, @splinePos, invertedNormals,
-              (i - 1) / nbDivisions, i / nbDivisions);
-            lastSplinePos := splinePos;
           end;
-          Spline.Free;
-          FTriangleCount := nbSteps * nbDivisions * 2;
+          if rspOutside in Parts then
+          begin
+            firstStep := True;
+            if (Division < 2) or (SplineMode = lsmLines) then
+            begin
+              // standard line(s), draw directly
+              for i := 0 to Nodes.Count - 2 do
+                with Nodes[i] do
+                begin
+                  BuildStep(PAffineVector(Nodes[i].AsAddress),
+                    PAffineVector(Nodes[i + 1].AsAddress), invertedNormals,
+                    i / (Nodes.Count - 1), (i + 1) / (Nodes.Count - 1));
+                end;
+              FTriangleCount := nbSteps * Nodes.Count * 2;
+            end
+            else
+            begin
+              // cubic spline
+              Spline := Nodes.CreateNewCubicSpline;
+              Spline.SplineAffineVector(0, lastSplinePos);
+              f := 1 / Division;
+              nbDivisions := (Nodes.Count - 1) * Division;
+              for i := 1 to nbDivisions do
+              begin
+                Spline.SplineAffineVector(i * f, splinePos);
+                BuildStep(@lastSplinePos, @splinePos, invertedNormals,
+                  (i - 1) / nbDivisions, i / nbDivisions);
+                lastSplinePos := splinePos;
+              end;
+              Spline.Free;
+              FTriangleCount := nbSteps * nbDivisions * 2;
+            end;
+          end;
+          if (rspInside in FParts) and (rspOutside in FParts) then
+            FTriangleCount := FTriangleCount * 2;
+
+          // release lastNormals buffer (if smoothing)
+          if FNormals = nsSmooth then
+            FreeMem(lastNormals);
         end;
-      end;
-      if (rspInside in FParts) and (rspOutside in FParts) then
-        FTriangleCount := FTriangleCount * 2;
-      xgl.TexCoord2fv(@NullTexPoint);
-      // release lastNormals buffer (if smoothing)
-      if FNormals = nsSmooth then
-        FreeMem(lastNormals);
-    end;
-    // tessellate start/stop polygons
-    if (rspStartPolygon in FParts) or (rspStopPolygon in FParts) then
-    begin
-      bary := Nodes.Barycenter;
-      bary[1] := 0;
-      NormalizeVector(bary);
-      // tessellate start polygon
-      if rspStartPolygon in FParts then
-      begin
-        polygon := Nodes.CreateCopy(nil);
-        with polygon do
+
+        EndAssembly;
+
+        // tessellate start/stop polygons
+        if (rspStartPolygon in FParts) or (rspStopPolygon in FParts) then
         begin
-          RotateAroundY(RadToDeg(startAlpha));
-          Translate(AffineVectorMake(0, startYOffset, 0));
-          if invertedNormals then
-            alpha := startAlpha + PI / 2
-          else
-            alpha := startAlpha + PI + PI / 2;
-          polygonNormal := VectorRotateAroundY(bary, alpha);
-          if SplineMode = lsmLines then
-            RenderTesselatedPolygon(False, @polygonNormal, 1)
-          else
-            RenderTesselatedPolygon(False, @polygonNormal, Division);
-          Free;
+          LMesh := TMeshAtom.Create;
+          bary := Nodes.Barycenter;
+          bary[1] := 0;
+          NormalizeVector(bary);
+          // tessellate start polygon
+          if rspStartPolygon in FParts then
+          begin
+            polygon := Nodes.CreateCopy(nil);
+            with polygon do
+            begin
+              RotateAroundY(RadToDeg(startAlpha));
+              Translate(AffineVectorMake(0, startYOffset, 0));
+              if invertedNormals then
+                alpha := startAlpha + PI / 2
+              else
+                alpha := startAlpha + PI + PI / 2;
+              polygonNormal := VectorRotateAroundY(bary, alpha);
+
+              if SplineMode = lsmLines then
+                BuildTesselatedPolygon(LMesh, @polygonNormal, 1, False, True)
+              else
+                BuildTesselatedPolygon(LMesh, @polygonNormal, Division, False, True);
+              Free;
+            end;
+            LMesh.Lock;
+            try
+              Triangulate;
+              SplitVertices;
+              FBatch.Mesh.Merge(LMesh);
+            finally
+              LMesh.UnLock;
+            end;
+            // estimated count
+            FTriangleCount := FTriangleCount + Nodes.Count + (Nodes.Count shr 1);
+          end;
+          // tessellate stop polygon
+          if rspStopPolygon in FParts then
+          begin
+            polygon := Nodes.CreateCopy(nil);
+            with polygon do
+            begin
+              RotateAroundY(RadToDeg(stopAlpha));
+              Translate(AffineVectorMake(0, startYOffset + (stopAlpha - startAlpha)
+                * YOffsetPerTurn / (2 * PI), 0));
+              if invertedNormals then
+                alpha := stopAlpha + PI + PI / 2
+              else
+                alpha := stopAlpha + PI / 2;
+              polygonNormal := VectorRotateAroundY(bary, alpha);
+              if SplineMode = lsmLines then
+                BuildTesselatedPolygon(LMesh, @polygonNormal, 1, False, True)
+              else
+                BuildTesselatedPolygon(LMesh, @polygonNormal, Division, False, True);
+              Free;
+            end;
+            LMesh.Lock;
+            try
+              Triangulate;
+              SplitVertices;
+              FBatch.Mesh.Merge(LMesh);
+            finally
+              LMesh.UnLock;
+            end;
+            // estimated count
+            FTriangleCount := FTriangleCount + Nodes.Count + (Nodes.Count shr 1);
+          end;
         end;
-        // estimated count
-        FTriangleCount := FTriangleCount + Nodes.Count + (Nodes.Count shr 1);
-      end;
-      // tessellate stop polygon
-      if rspStopPolygon in FParts then
-      begin
-        polygon := Nodes.CreateCopy(nil);
-        with polygon do
-        begin
-          RotateAroundY(RadToDeg(stopAlpha));
-          Translate(AffineVectorMake(0, startYOffset + (stopAlpha - startAlpha)
-            * YOffsetPerTurn / (2 * PI), 0));
-          if invertedNormals then
-            alpha := stopAlpha + PI + PI / 2
-          else
-            alpha := stopAlpha + PI / 2;
-          polygonNormal := VectorRotateAroundY(bary, alpha);
-          if SplineMode = lsmLines then
-            RenderTesselatedPolygon(False, @polygonNormal, 1)
-          else
-            RenderTesselatedPolygon(False, @polygonNormal, Division);
-          Free;
+
+        case FNormals of
+          nsSmooth:
+            begin
+              if FNormalDirection = ndInside then
+              begin
+                FBatch.Mesh.Triangulate;
+                FBatch.Mesh.FlipFaces;
+              end;
+              ApplyExtras;
+            end;
+          nsFlat:
+            begin
+              if FNormalDirection = ndInside then
+              begin
+                FBatch.Mesh.Triangulate;
+                FBatch.Mesh.FlipFaces;
+              end;
+              FBatch.Mesh.ComputeNormals(False);
+              ApplyExtras;
+            end;
+          nsNone:
+            begin
+              FBatch.Mesh.Attributes[attrNormal] := False;
+              FBatch.Mesh.Validate;
+              ApplyExtras;
+            end;
         end;
-        // estimated count
-        FTriangleCount := FTriangleCount + Nodes.Count + (Nodes.Count shr 1);
       end;
+    finally
+      UnLock;
+      LMesh.Free;
     end;
   end;
-end;
 
-// AxisAlignedDimensionsUnscaled
-//
-
-function TGLRevolutionSolid.AxisAlignedDimensionsUnscaled: TVector;
-var
-  maxRadius: Single;
-  maxHeight: Single;
-  i: integer;
-begin
-  maxRadius := 0;
-  maxHeight := 0;
-  if FAxisAlignedDimensionsCache[0] < 0 then
-  begin
-    for i := 0 to Nodes.Count - 1 do
-    begin
-      maxHeight := MaxFloat(maxHeight, Abs(Nodes[i].Y));
-      maxRadius := MaxFloat(maxRadius, Sqr(Nodes[i].X) + Sqr(Nodes[i].Z));
-    end;
-    maxRadius := sqrt(maxRadius);
-    FAxisAlignedDimensionsCache[0] := maxRadius;
-    FAxisAlignedDimensionsCache[1] := maxHeight;
-    FAxisAlignedDimensionsCache[2] := maxRadius;
-  end;
-  SetVector(Result, FAxisAlignedDimensionsCache);
-end;
-
-// StructureChanged
-//
-
-procedure TGLRevolutionSolid.StructureChanged;
-begin
-  FAxisAlignedDimensionsCache[0] := -1;
   inherited;
 end;
 
@@ -953,6 +996,11 @@ end;
 constructor TGLPipe.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
+
   FSlices := 16;
   FParts := [ppOutside];
   FRadius := 1.0;
@@ -1125,12 +1173,7 @@ begin
   inherited;
 end;
 
-// BuildList
-//
-var
-  vSinCache, vCosCache: array of Single;
-
-procedure TGLPipe.BuildList(var rci: TRenderContextInfo);
+procedure TGLPipe.BuildMesh;
 type
   TNodeData = record
     pos: TAffineVector;
@@ -1145,9 +1188,6 @@ type
     textcoordT: Single;
   end;
   PRowData = ^TRowData;
-const
-  cPNCMtoEnum: array[pncmEmission..pncmAmbientAndDiffuse] of TGLEnum =
-    (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
   procedure CalculateRow(row: PRowData;
     const center, normal: TAffineVector; radius: Single);
@@ -1183,7 +1223,7 @@ const
     // generate the circle
     for i := 0 to High(row^.node) do
     begin
-      row^.node[i].normal := VectorCombine(vx, vy, vCosCache[i], vSinCache[i]);
+      row^.node[i].normal := VectorCombine(vx, vy, FCosCache[i], FSinCache[i]);
       row^.node[i].pos := VectorCombine(PAffineVector(@center)^,
         row^.node[i].normal, 1, radius);
       SetVector(row^.node[i].sidedir, 0, 0, 0);
@@ -1192,18 +1232,17 @@ const
   end;
 
   procedure RenderDisk(row: PRowData;
-    const center: TVector; const normal: TAffineVector;
+    const center: TVector3f; const normal: TAffineVector;
     invert: Boolean; TextCoordTileS: Single);
   var
     i: Integer;
   begin
-    with GL do
+    with FBatch.Mesh do
     begin
       if NodesColorMode <> pncmNone then
-        Color4fv(@row^.color);
+        Attribute4f(attrColor, row^.color);
       // it was necessary to change build process to generate textcoords
-      Begin_(GL_TRIANGLE_STRIP);
-      Normal3fv(@normal);
+      Attribute3f(attrNormal, normal);
 
       case TexCoordMode of
         ptcmDefault, ptcmManual:
@@ -1212,30 +1251,40 @@ const
             begin
               for i := 0 to High(row^.node) - 1 do
               begin
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-                Vertex3fv(@row^.node[i].pos);
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-                Vertex3fv(@center);
+                Attribute2f(attrTexCoord0, i / (High(row^.node)) * TextCoordTileS, 1);
+                Attribute3f(attrPosition, row^.node[i].pos);
+                EmitVertex;
+
+                Attribute2f(attrTexCoord0, i / (High(row^.node)) * TextCoordTileS, 0);
+                Attribute3f(attrPosition, center);
+                EmitVertex;
               end;
-              TexCoord2f(TextCoordTileS, 1);
-              Vertex3fv(@row^.node[High(row^.node)].pos);
+
+              Attribute2f(attrTexCoord0, TextCoordTileS, 1);
+              Attribute3f(attrPosition, row^.node[High(row^.node)].pos);
+              EmitVertex;
             end
             else
             begin
               for i := High(row^.node) downto 1 do
               begin
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-                Vertex3fv(@row^.node[i].pos);
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-                Vertex3fv(@center);
+                Attribute2f(attrTexCoord0, i / (High(row^.node)) * TextCoordTileS, 0);
+                Attribute3f(attrPosition, row^.node[i].pos);
+                EmitVertex;
+
+                Attribute2f(attrTexCoord0, i / (High(row^.node)) * TextCoordTileS, 1);
+                Attribute3f(attrPosition, center);
+                EmitVertex;
               end;
-              TexCoord2f(0, 0);
-              Vertex3fv(@row^.node[0].pos);
+
+              Attribute2f(attrTexCoord0, NullTexPoint);
+              Attribute3f(attrPosition, row^.node[0].pos);
+              EmitVertex;
             end;
           end;
       end;
 
-      End_;
+      RestartStrip;
     end;
   end;
 
@@ -1302,24 +1351,23 @@ const
                 curRow.node[j].normal :=
                   VectorCrossProduct(curRow.node[j].sidedir,
                   VectorCrossProduct(curRow.node[j].sidedir,
-                    VectorNormalize(trajvec)));
+                  VectorNormalize(trajvec)));
                 prevRow.node[j].normal :=
                   VectorCrossProduct(curRow.node[j].sidedir,
                   VectorCrossProduct(curRow.node[j].sidedir,
-                    VectorNormalize(trajvec)));
+                  VectorNormalize(trajvec)));
               end
               else
               begin
                 if VectorDotProduct(curRow.node[j].sidedir, VectorNormalize(
-                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99
-                    then
+                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99 then
                 begin
                   curRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
                     (curRow.node[j].sidedir, VectorNormalize(trajvec)),
-                      curRow.node[j].sidedir);
+                    curRow.node[j].sidedir);
                   prevRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
                     (curRow.node[j].sidedir, VectorNormalize(trajvec)),
-                      curRow.node[j].sidedir);
+                    curRow.node[j].sidedir);
                 end
                 else
                 begin
@@ -1328,12 +1376,12 @@ const
                     curRow.node[j].normal :=
                       VectorCrossProduct(VectorNormalize(VectorCrossProduct
                       (VectorNormalize(VectorSubtract(curRow.node[j].pos,
-                        curRow.center)),
+                      curRow.center)),
                       curRow.node[j].sidedir)), curRow.node[j].sidedir);
                     prevRow.node[j].normal :=
                       VectorCrossProduct(VectorNormalize(VectorCrossProduct
                       (VectorNormalize(VectorSubtract(prevRow.node[j].pos,
-                        prevRow.center)),
+                      prevRow.center)),
                       curRow.node[j].sidedir)), curRow.node[j].sidedir);
                   end
                   else
@@ -1367,17 +1415,16 @@ const
                 curRow.node[j].normal :=
                   VectorCrossProduct(curRow.node[j].sidedir,
                   VectorCrossProduct(curRow.node[j].sidedir,
-                    VectorNormalize(trajvec)));
+                  VectorNormalize(trajvec)));
               end
               else
               begin
                 if VectorDotProduct(curRow.node[j].sidedir, VectorNormalize(
-                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99
-                    then
+                  VectorSubtract(curRow.node[j].pos, curRow.center))) < -0.99 then
                 begin
                   curRow.node[j].normal := VectorCrossProduct(VectorCrossProduct
                     (curRow.node[j].sidedir, VectorNormalize(trajvec)),
-                      curRow.node[j].sidedir);
+                    curRow.node[j].sidedir);
                 end
                 else
                 begin
@@ -1386,7 +1433,7 @@ const
                     curRow.node[j].normal :=
                       VectorCrossProduct(VectorNormalize(VectorCrossProduct
                       (VectorNormalize(VectorSubtract(curRow.node[j].pos,
-                        curRow.center)),
+                      curRow.center)),
                       curRow.node[j].sidedir)), curRow.node[j].sidedir);
                   end
                   else
@@ -1411,37 +1458,40 @@ const
   var
     j: Integer;
   begin
-    with GL do
+    with FBatch.Mesh do
     begin
-      Begin_(GL_TRIANGLE_STRIP);
       if outside then
       begin
         if NodesColorMode <> pncmNone then
-          Color4fv(@curRow^.color);
+          Attribute4f(attrColor, curRow^.color);
+        Attribute2f(attrTexCoord0, 0, curRow^.textcoordT * TextCoordTileT);
+        Attribute3f(attrNormal, curRow^.node[0].normal);
+        Attribute3f(attrPosition, curRow^.node[0].pos);
+        EmitVertex;
 
-        TexCoord2f(0, curRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@curRow^.node[0].normal);
-        Vertex3fv(@curRow^.node[0].pos);
         for j := 0 to Slices - 1 do
         begin
           if NodesColorMode <> pncmNone then
-            Color4fv(@prevRow^.color);
-          TexCoord2f(j / Slices * TextCoordTileS, prevRow^.textcoordT *
-            TextCoordTileT);
-          Normal3fv(@prevRow^.node[j].normal);
-          Vertex3fv(@prevRow^.node[j].pos);
+            Attribute4f(attrColor, prevRow^.color);
+          Attribute2f(attrTexCoord0, j / Slices * TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
+          Attribute3f(attrNormal, prevRow^.node[j].normal);
+          Attribute3f(attrPosition, prevRow^.node[j].pos);
+          EmitVertex;
+
           if NodesColorMode <> pncmNone then
-            Color4fv(@curRow^.color);
-          TexCoord2f((j + 1) / Slices * TextCoordTileS, curRow^.textcoordT *
-            TextCoordTileT);
-          Normal3fv(@curRow^.node[j + 1].normal);
-          Vertex3fv(@curRow^.node[j + 1].pos);
+            Attribute4f(attrColor, curRow^.color);
+          Attribute2f(attrTexCoord0, (j + 1) / Slices * TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
+          Attribute3f(attrNormal, curRow^.node[j + 1].normal);
+          Attribute3f(attrPosition, curRow^.node[j + 1].pos);
+          EmitVertex;
         end;
+
         if NodesColorMode <> pncmNone then
-          Color4fv(@prevRow^.color);
-        TexCoord2f(TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@prevRow^.node[Slices].normal);
-        Vertex3fv(@prevRow^.node[Slices].pos);
+          Attribute4f(attrColor, prevRow^.color);
+        Attribute2f(attrTexCoord0, TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
+        Attribute3f(attrNormal, prevRow^.node[Slices].normal);
+        Attribute3f(attrPosition, prevRow^.node[Slices].pos);
+        EmitVertex;
       end
       else
       begin
@@ -1450,221 +1500,253 @@ const
           curRow.node[j].innormal := VectorNegate(curRow.node[j].normal);
           prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
         end;
-        if NodesColorMode <> pncmNone then
-          Color4fv(@prevRow^.color);
 
-        TexCoord2f(0, prevRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@prevRow^.node[0].innormal);
-        Vertex3fv(@prevRow^.node[0].pos);
+        if NodesColorMode <> pncmNone then
+          Attribute4f(attrColor, prevRow^.color);
+        Attribute2f(attrTexCoord0, 0, prevRow^.textcoordT * TextCoordTileT);
+        Attribute3f(attrNormal, prevRow^.node[0].innormal);
+        Attribute3f(attrPosition, prevRow^.node[0].pos);
+        EmitVertex;
+
         for j := 0 to Slices - 1 do
         begin
           if NodesColorMode <> pncmNone then
-            Color4fv(@curRow^.color);
-          TexCoord2f(j / Slices * TextCoordTileS, curRow^.textcoordT *
-            TextCoordTileT);
-          Normal3fv(@curRow^.node[j].innormal);
-          Vertex3fv(@curRow^.node[j].pos);
+            Attribute4f(attrColor, curRow^.color);
+          Attribute2f(attrTexCoord0, j / Slices * TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
+          Attribute3f(attrNormal, curRow^.node[j].innormal);
+          Attribute3f(attrPosition, curRow^.node[j].pos);
+          EmitVertex;
+
           if NodesColorMode <> pncmNone then
-            Color4fv(@prevRow^.color);
-          TexCoord2f((j + 1) / Slices * TextCoordTileS, prevRow^.textcoordT *
-            TextCoordTileT);
-          Normal3fv(@prevRow^.node[j + 1].innormal);
-          Vertex3fv(@prevRow^.node[j + 1].pos);
+            Attribute4f(attrColor, prevRow^.color);
+          Attribute2f(attrTexCoord0, (j + 1) / Slices * TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
+          Attribute3f(attrNormal, prevRow^.node[j + 1].innormal);
+          Attribute3f(attrPosition, prevRow^.node[j + 1].pos);
+          EmitVertex;
         end;
+
         if NodesColorMode <> pncmNone then
-          Color4fv(@curRow^.color);
-        TexCoord2f(TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@curRow^.node[Slices].innormal);
-        Vertex3fv(@curRow^.node[Slices].pos);
+          Attribute4f(attrColor, curRow^.color);
+        Attribute2f(attrTexCoord0, TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
+        Attribute3f(attrNormal, curRow^.node[Slices].innormal);
+        Attribute3f(attrPosition, curRow^.node[Slices].pos);
+        EmitVertex;
+
       end;
-      End_;
+      RestartStrip;
     end;
   end;
-var
-  i, curRow, nbDivisions, k: Integer;
-  normal, splinePos: TAffineVector;
-  rows: array[0..1] of TRowData;
-  ra: PFloatArray;
-  posSpline, rSpline: TCubicSpline;
-  f, t: Single;
+
+  var
+    i, curRow, nbDivisions, k: Integer;
+    normal, splinePos: TAffineVector;
+    rows: array[0..1] of TRowData;
+    ra: PFloatArray;
+    posSpline, rSpline: TCubicSpline;
+    f, t: Single;
 begin
-  FTriangleCount := 0;
-  if Nodes.Count = 0 then
-    Exit;
-  SetLength(rows[0].node, Slices + 1);
-  SetLength(rows[1].node, Slices + 1);
-  if (Length(vSinCache) <> Slices + 1) or (Length(vCosCache) <> Slices + 1) then
-  begin
-    SetLength(vSinCache, Slices + 1);
-    SetLength(vCosCache, Slices + 1);
-    PrepareSinCosCache(vSinCache, vCosCache, 0, 360);
-  end;
-  if (SplineMode = lsmCubicSpline) and (Nodes.Count > 1) then
-  begin
-    // create position spline
-    posSpline := Nodes.CreateNewCubicSpline;
-    // create radius spline
-    GetMem(ra, SizeOf(TGLFloat) * Nodes.Count);
-    for i := 0 to Nodes.Count - 1 do
-      ra^[i] := TGLPipeNode(Nodes[i]).RadiusFactor;
-    rSpline := TCubicSpline.Create(ra, nil, nil, nil, Nodes.Count);
-    FreeMem(ra);
-    normal := posSpline.SplineSlopeVector(0);
-  end
-  else
-  begin
-    normal := Nodes.Vector(0);
-    posSpline := nil;
-    rSpline := nil;
-  end;
 
-  if NodesColorMode <> pncmNone then
+  with FBatch.Mesh do
   begin
-    GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
-    rci.GLStates.Enable(stColorMaterial);
-  end
-  else
-    rci.GLStates.Disable(stColorMaterial);
+    Lock;
+    try
+      Clear;
+      FTriangleCount := 0;
 
-  CalculateRow(@rows[0], PAffineVector(@Nodes[0].AsVector)^, normal,
-    TGLPipeNode(Nodes[0]).RadiusFactor);
-  rows[0].color := TGLPipeNodes(Nodes)[0].Color.Color;
-
-  if ppStartDisk in Parts then
-  begin
-    NegateVector(normal);
-    if ppOutside in Parts then
-    begin
-      RenderDisk(@rows[0], Nodes[0].AsVector, normal, True, TexCoordTileS);
-      FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
-    end;
-    if ppInside in Parts then
-    begin
-      RenderDisk(@rows[0], Nodes[0].AsVector, VectorNegate(normal), False,
-        TexCoordTileS);
-      FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
-    end;
-  end;
-  if (Nodes.Count > 1) then
-  begin
-    if SplineMode = lsmCubicSpline then
-    begin
-      f := 1 / Division;
-      nbDivisions := (Nodes.Count - 1) * Division;
-      for i := 1 to nbDivisions do
+      if Nodes.Count > 0 then
       begin
-        t := i * f;
-        posSpline.SplineAffineVector(t, splinePos);
-        normal := posSpline.SplineSlopeVector(t);
-        NormalizeVector(normal);
-        curRow := (i and 1);
-        CalculateRow(@rows[curRow], splinePos, normal,
-          rSpline.SplineX(t));
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
         if NodesColorMode <> pncmNone then
+          DeclareAttribute(attrColor, GLSLType4f);
+
+        BeginAssembly(mpTRIANGLE_STRIP);
+
+        SetLength(rows[0].node, Slices + 1);
+        SetLength(rows[1].node, Slices + 1);
+        if (Length(FSinCache) <> Slices + 1) or (Length(FCosCache) <> Slices + 1) then
         begin
-          k := Trunc(t);
-          if k < Nodes.Count - 1 then
-            rows[curRow].color := VectorLerp(TGLPipeNodes(Nodes)[k].Color.Color,
-              TGLPipeNodes(Nodes)[k + 1].Color.Color,
-              Frac(t))
+          SetLength(FSinCache, Slices + 1);
+          SetLength(FCosCache, Slices + 1);
+          PrepareSinCosCache(FSinCache, FCosCache, 0, 360);
+        end;
+        if (SplineMode = lsmCubicSpline) and (Nodes.Count > 1) then
+        begin
+          // create position spline
+          posSpline := Nodes.CreateNewCubicSpline;
+          // create radius spline
+          GetMem(ra, SizeOf(TGLFloat) * Nodes.Count);
+          for i := 0 to Nodes.Count - 1 do
+            ra^[i] := TGLPipeNode(Nodes[i]).RadiusFactor;
+          rSpline := TCubicSpline.Create(ra, nil, nil, nil, Nodes.Count);
+          FreeMem(ra);
+          normal := posSpline.SplineSlopeVector(0);
+        end
+        else
+        begin
+          normal := Nodes.Vector(0);
+          posSpline := nil;
+          rSpline := nil;
+        end;
+
+//        if NodesColorMode <> pncmNone then
+//        begin
+//          GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
+//          rci.GLStates.Enable(stColorMaterial);
+//        end
+//        else
+//          rci.GLStates.Disable(stColorMaterial);
+
+        CalculateRow(@rows[0], PAffineVector(@Nodes[0].AsVector)^, normal,
+          TGLPipeNode(Nodes[0]).RadiusFactor);
+        rows[0].color := TGLPipeNodes(Nodes)[0].Color.Color;
+
+        if ppStartDisk in Parts then
+        begin
+          NegateVector(normal);
+          if ppOutside in Parts then
+          begin
+            RenderDisk(@rows[0], Nodes[0].AsAffineVector, normal, True, TexCoordTileS);
+            FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
+          end;
+          if ppInside in Parts then
+          begin
+            RenderDisk(@rows[0], Nodes[0].AsAffineVector, VectorNegate(normal), False,
+              TexCoordTileS);
+            FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
+          end;
+        end;
+        if (Nodes.Count > 1) then
+        begin
+          if SplineMode = lsmCubicSpline then
+          begin
+            f := 1 / Division;
+            nbDivisions := (Nodes.Count - 1) * Division;
+            for i := 1 to nbDivisions do
+            begin
+              t := i * f;
+              posSpline.SplineAffineVector(t, splinePos);
+              normal := posSpline.SplineSlopeVector(t);
+              NormalizeVector(normal);
+              curRow := (i and 1);
+              CalculateRow(@rows[curRow], splinePos, normal,
+                rSpline.SplineX(t));
+              if NodesColorMode <> pncmNone then
+              begin
+                k := Trunc(t);
+                if k < Nodes.Count - 1 then
+                  rows[curRow].color := VectorLerp(TGLPipeNodes(Nodes)[k].Color.Color,
+                    TGLPipeNodes(Nodes)[k + 1].Color.Color,
+                    Frac(t))
+                else
+                  rows[curRow].color := TGLPipeNodes(Nodes)[k].Color.Color;
+              end;
+              //
+              case TexCoordMode of
+                ptcmDefault:
+                  begin
+                    k := Trunc(t);
+                    if k < Nodes.Count - 1 then
+                      rows[curRow].textcoordT := Lerp(k,
+                        k + 1,
+                        Frac(t))
+                    else
+                      rows[curRow].textcoordT := k;
+                  end;
+                ptcmManual:
+                  begin
+                    k := Trunc(t);
+                    if k < Nodes.Count - 1 then
+                      rows[curRow].textcoordT := Lerp(TGLPipeNode(Nodes[k]).TexCoordT,
+                        TGLPipeNode(Nodes[k + 1]).TexCoordT,
+                        Frac(t))
+                    else
+                      rows[curRow].textcoordT := TGLPipeNode(Nodes[k]).TexCoordT;
+                  end;
+              end;
+              if (ppOutside in Parts) or (ppInside in Parts) then
+                CalculateSides(@rows[curRow xor 1], @rows[curRow], normal);
+              if ppOutside in Parts then
+                RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+                  TexCoordTileT, True);
+              if ppInside in Parts then
+                RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+                  TexCoordTileT, False);
+            end;
+            i := nbDivisions * (Slices + 1) * 2;
+            if ppOutside in Parts then
+              Inc(FTriangleCount, i);
+            if ppInside in Parts then
+              Inc(FTriangleCount, i);
+          end
           else
-            rows[curRow].color := TGLPipeNodes(Nodes)[k].Color.Color;
-        end;
-        //
-        case TexCoordMode of
-          ptcmDefault:
+          begin
+            for i := 1 to Nodes.Count - 1 do
             begin
-              k := Trunc(t);
-              if k < Nodes.Count - 1 then
-                rows[curRow].textcoordT := Lerp(k,
-                  k + 1,
-                  Frac(t))
-              else
-                rows[curRow].textcoordT := k;
+              curRow := (i and 1);
+              //Initialize Texture coordinates
+              case TexCoordMode of
+                ptcmDefault: rows[curRow].textcoordT := i;
+                ptcmManual: rows[curRow].textcoordT :=
+                  TGLPipeNode(Nodes[i]).TexCoordT;
+              end;
+              CalculateRow(@rows[curRow], PAffineVector(@Nodes[i].AsVector)^,
+                Nodes.Vector(i), TGLPipeNode(Nodes[i]).RadiusFactor);
+              rows[curRow].color := TGLPipeNodes(Nodes)[i].Color.Color;
+              if (ppOutside in Parts) or (ppInside in Parts) then
+                CalculateSides(@rows[curRow xor 1], @rows[curRow], Nodes.Vector(i));
+              if ppOutside in Parts then
+                RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+                  TexCoordTileT, True);
+              if ppInside in Parts then
+                RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
+                  TexCoordTileT, False);
             end;
-          ptcmManual:
-            begin
-              k := Trunc(t);
-              if k < Nodes.Count - 1 then
-                rows[curRow].textcoordT := Lerp(TGLPipeNode(Nodes[k]).TexCoordT,
-                  TGLPipeNode(Nodes[k + 1]).TexCoordT,
-                  Frac(t))
-              else
-                rows[curRow].textcoordT := TGLPipeNode(Nodes[k]).TexCoordT;
-            end;
+            i := Nodes.Count * (Slices + 1) * 2;
+            if ppOutside in Parts then
+              Inc(FTriangleCount, i);
+            if ppInside in Parts then
+              Inc(FTriangleCount, i);
+          end;
         end;
-        if (ppOutside in Parts) or (ppInside in Parts) then
-          CalculateSides(@rows[curRow xor 1], @rows[curRow], normal);
-        if ppOutside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
-            TexCoordTileT, True);
-        if ppInside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
-            TexCoordTileT, False);
-      end;
-      i := nbDivisions * (Slices + 1) * 2;
-      if ppOutside in Parts then
-        Inc(FTriangleCount, i);
-      if ppInside in Parts then
-        Inc(FTriangleCount, i);
-    end
-    else
-    begin
-      for i := 1 to Nodes.Count - 1 do
-      begin
-        curRow := (i and 1);
-        //Initialize Texture coordinates
-        case TexCoordMode of
-          ptcmDefault: rows[curRow].textcoordT := i;
-          ptcmManual: rows[curRow].textcoordT :=
-            TGLPipeNode(Nodes[i]).TexCoordT;
+        if ppStopDisk in Parts then
+        begin
+          i := Nodes.Count - 1;
+          if SplineMode = lsmCubicSpline then
+            normal := posSpline.SplineSlopeVector(Nodes.Count - 1)
+          else
+            normal := Nodes.Vector(i);
+          CalculateRow(@rows[0], PAffineVector(@Nodes[i].AsVector)^, normal,
+            TGLPipeNode(Nodes[i]).RadiusFactor);
+          rows[0].color := TGLPipeNodes(Nodes)[i].Color.Color;
+          if ppOutside in Parts then
+          begin
+            RenderDisk(@rows[0], Nodes[i].AsAffineVector, normal, False, TexCoordTileS);
+            FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
+          end;
+          if ppInside in Parts then
+          begin
+            RenderDisk(@rows[0], Nodes[i].AsAffineVector, VectorNegate(normal), True,
+              TexCoordTileS);
+            FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
+          end;
         end;
-        CalculateRow(@rows[curRow], PAffineVector(@Nodes[i].AsVector)^,
-          Nodes.Vector(i), TGLPipeNode(Nodes[i]).RadiusFactor);
-        rows[curRow].color := TGLPipeNodes(Nodes)[i].Color.Color;
-        if (ppOutside in Parts) or (ppInside in Parts) then
-          CalculateSides(@rows[curRow xor 1], @rows[curRow], Nodes.Vector(i));
-        if ppOutside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
-            TexCoordTileT, True);
-        if ppInside in Parts then
-          RenderSides(@rows[curRow xor 1], @rows[curRow], TexCoordTileS,
-            TexCoordTileT, False);
+        if SplineMode = lsmCubicSpline then
+        begin
+          posSpline.Free;
+          rSpline.Free;
+        end;
+
+        EndAssembly;
+        ApplyExtras;
       end;
-      i := Nodes.Count * (Slices + 1) * 2;
-      if ppOutside in Parts then
-        Inc(FTriangleCount, i);
-      if ppInside in Parts then
-        Inc(FTriangleCount, i);
+    finally
+      UnLock;
     end;
   end;
-  if ppStopDisk in Parts then
-  begin
-    i := Nodes.Count - 1;
-    if SplineMode = lsmCubicSpline then
-      normal := posSpline.SplineSlopeVector(Nodes.Count - 1)
-    else
-      normal := Nodes.Vector(i);
-    CalculateRow(@rows[0], PAffineVector(@Nodes[i].AsVector)^, normal,
-      TGLPipeNode(Nodes[i]).RadiusFactor);
-    rows[0].color := TGLPipeNodes(Nodes)[i].Color.Color;
-    if ppOutside in Parts then
-    begin
-      RenderDisk(@rows[0], Nodes[i].AsVector, normal, False, TexCoordTileS);
-      FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
-    end;
-    if ppInside in Parts then
-    begin
-      RenderDisk(@rows[0], Nodes[i].AsVector, VectorNegate(normal), True,
-        TexCoordTileS);
-      FTriangleCount := FTriangleCount + Slices * 2; //Slices+1;
-    end;
-  end;
-  if SplineMode = lsmCubicSpline then
-  begin
-    posSpline.Free;
-    rSpline.Free;
-  end;
+
+  Inherited;
 end;
 
 // ------------------
@@ -1689,7 +1771,7 @@ end;
 // BuildList
 //
 
-procedure TGLExtrusionSolid.BuildList(var rci: TRenderContextInfo);
+procedure TGLExtrusionSolid.BuildMesh;
 var
   {deltaS,}deltaZ: Single;
   lastNormal: TAffineVector;
@@ -1732,8 +1814,6 @@ var
       ptBottom := ptBuffer;
     end;
     // generate triangle strip for a level
-    // TODO : support for triangle fans (when ptTop or ptBottom is on the Y Axis)
-//      topTPBase.S:=0;         bottomTPBase.S:=0;
     topTPBase.T := topT;
     bottomTPBase.T := bottomT;
     topBase := ptTop;
@@ -1772,97 +1852,172 @@ var
     bottomNext := bottomBase;
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@normTop);
-    xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
-    for step := 1 to FStacks do
+
+    with FBatch.Mesh do
     begin
-      GL.Normal3fv(@normBottom);
-      xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
-      topNext[2] := step * DeltaZ;
-      bottomNext[2] := topNext[2];
-      topTPNext.T := topNext[2];
-      bottomTPNext.T := bottomNext[2];
-      xgl.TexCoord2fv(@topTPNext);
-      GL.Normal3fv(@normTop);
-      GL.Vertex3fv(@topNext);
-      topBase := topNext;
-      topTPBase := topTPNext;
-      bottomBase := bottomNext;
-      bottomTPBase := bottomTPNext;
+      Attribute3f(attrNormal, normTop);
+      Attribute2f(attrTexCoord0, topTPBase);
+      Attribute3f(attrPosition, topBase);
+      EmitVertex;
+      for step := 1 to FStacks do
+      begin
+        Attribute3f(attrNormal, normBottom);
+        Attribute2f(attrTexCoord0, bottomTPBase);
+        Attribute3f(attrPosition, bottomBase);
+        EmitVertex;
+
+        topNext[2] := step * DeltaZ;
+        bottomNext[2] := topNext[2];
+        topTPNext.T := topNext[2];
+        bottomTPNext.T := bottomNext[2];
+
+        Attribute3f(attrNormal, normTop);
+        Attribute2f(attrTexCoord0, topTPNext);
+        Attribute3f(attrPosition, topNext);
+        EmitVertex;
+
+        topBase := topNext;
+        topTPBase := topTPNext;
+        bottomBase := bottomNext;
+        bottomTPBase := bottomTPNext;
+      end;
+      Attribute3f(attrNormal, normBottom);
+      Attribute2f(attrTexCoord0, bottomTPBase);
+      Attribute3f(attrPosition, bottomBase);
+      EmitVertex;
+
+      FBatch.Mesh.RestartStrip;
     end;
-    GL.Normal3fv(@normBottom);
-    xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
   end;
 
 var
   n, i: Integer;
   invertedNormals: Boolean;
-  normal: TAffineVector;
+  LNormal: TAffineVector;
+  LMesh: TMeshAtom;
 begin
-  if Outline.Count < 1 then
-    Exit;
-  deltaZ := FHeight / FStacks;
-  //   deltaS:=1/FStacks;
-  invertedNormals := (FNormalDirection = ndInside);
-  FTriangleCount := 0;
-  // generate sides
-  if (FHeight <> 0) and ((espInside in FParts) or (espOutside in FParts)) then
+  LMesh := nil;
+
+  with FBatch.Mesh do
   begin
-    for n := 0 to Outline.Count - 1 do
-    begin
-      with Outline.List[n] do
-        if count > 1 then
+    Lock;
+    try
+      Clear;
+      if Outline.Count > 0 then
+      begin
+        DeclareAttribute(attrPosition, GLSLType3f);
+        DeclareAttribute(attrNormal, GLSLType3f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+        BeginAssembly(mpTRIANGLE_STRIP);
+
+        deltaZ := FHeight / FStacks;
+        //   deltaS:=1/FStacks;
+        invertedNormals := (FNormalDirection = ndInside);
+        FTriangleCount := 0;
+        // generate sides
+        if (FHeight <> 0) and ((espInside in FParts) or (espOutside in FParts)) then
         begin
-          if espInside in Parts then
+          for n := 0 to Outline.Count - 1 do
           begin
-            CalcNormal(List^[count - 1], List^[0], lastNormal);
-            if not InvertedNormals then
-              NegateVector(lastNormal);
-            for i := 0 to Count - 2 do
-            begin
-              BuildStep(List^[i], List^[i + 1], not invertedNormals,
-                i / (Count - 1), (i + 1) / (Count - 1));
-            end;
-            BuildStep(List^[count - 1], List^[0], not invertedNormals, 1, 0);
-          end;
-          if espOutside in Parts then
-          begin
-            CalcNormal(List^[count - 1], List^[0], lastNormal);
-            if InvertedNormals then
-              NegateVector(lastNormal);
-            for i := 0 to Count - 2 do
-            begin
-              BuildStep(List^[i], List^[i + 1], invertedNormals,
-                i / (Count - 1), (i + 1) / (Count - 1));
-            end;
-            BuildStep(List^[count - 1], List^[0], invertedNormals, 1, 0);
+            with Outline.List[n] do
+              if count > 1 then
+              begin
+                if espInside in Parts then
+                begin
+                  CalcNormal(List^[count - 1], List^[0], lastNormal);
+                  if not InvertedNormals then
+                    NegateVector(lastNormal);
+                  for i := 0 to Count - 2 do
+                  begin
+                    BuildStep(List^[i], List^[i + 1], not invertedNormals,
+                      i / (Count - 1), (i + 1) / (Count - 1));
+                  end;
+                  BuildStep(List^[count - 1], List^[0], not invertedNormals, 1, 0);
+                end;
+                if espOutside in Parts then
+                begin
+                  CalcNormal(List^[count - 1], List^[0], lastNormal);
+                  if InvertedNormals then
+                    NegateVector(lastNormal);
+                  for i := 0 to Count - 2 do
+                  begin
+                    BuildStep(List^[i], List^[i + 1], invertedNormals,
+                      i / (Count - 1), (i + 1) / (Count - 1));
+                  end;
+                  BuildStep(List^[count - 1], List^[0], invertedNormals, 1, 0);
+                end;
+              end;
           end;
         end;
-    end;
-    xgl.TexCoord2fv(@NullTexPoint);
-  end;
-  // tessellate start/stop polygons
-  if (espStartPolygon in FParts) or (espStopPolygon in FParts) then
-  begin
-    normal := ContoursNormal;
-    // tessellate stop polygon
-    if espStopPolygon in FParts then
-    begin
-      GL.PushMatrix;
-      GL.Translatef(0, 0, FHeight);
-      RenderTesselatedPolygon(true, @normal, invertedNormals);
-      GL.PopMatrix;
-    end;
-    // tessellate start polygon
-    if espStartPolygon in FParts then
-    begin
-      NegateVector(normal);
-      RenderTesselatedPolygon(true, @normal, not invertedNormals);
+        EndAssembly;
+
+        // tessellate start/stop polygons
+        if (espStartPolygon in FParts) or (espStopPolygon in FParts) then
+        begin
+          LMesh := TMeshAtom.Create;
+          LNormal := ContoursNormal;
+          // tessellate stop polygon
+          if espStopPolygon in FParts then
+          begin
+            BuildTesselatedPolygon(LMesh, @LNormal, invertedNormals, True);
+            LMesh.Lock;
+            try
+              LMesh.Transform(CreateTranslationMatrix(Vector3fMake(0, 0, FHeight)));
+              Triangulate;
+              SplitVertices;
+              FBatch.Mesh.Merge(LMesh);
+            finally
+              LMesh.UnLock;
+            end;
+          end;
+          // tessellate start polygon
+          if espStartPolygon in FParts then
+          begin
+            NegateVector(LNormal);
+            BuildTesselatedPolygon(LMesh, @LNormal, not invertedNormals, True);
+            LMesh.Lock;
+            try
+              Triangulate;
+              SplitVertices;
+              FBatch.Mesh.Merge(LMesh);
+            finally
+              LMesh.UnLock;
+            end;
+          end;
+        end;
+
+        case FNormals of
+          nsSmooth:
+            begin
+              if FNormalDirection = ndInside then
+              begin
+                FBatch.Mesh.Triangulate;
+                FBatch.Mesh.FlipFaces;
+              end;
+              ApplyExtras;
+            end;
+          nsFlat:
+            begin
+              if FNormalDirection = ndInside then
+              begin
+                FBatch.Mesh.Triangulate;
+                FBatch.Mesh.FlipFaces;
+              end;
+              FBatch.Mesh.ComputeNormals(False);
+              ApplyExtras;
+            end;
+          nsNone:
+            begin
+              FBatch.Mesh.Attributes[attrNormal] := False;
+              FBatch.Mesh.Validate;
+              ApplyExtras;
+            end;
+        end;
+      end;
+    finally
+      UnLock;
+      LMesh.Free;
     end;
   end;
 end;
@@ -1879,7 +2034,6 @@ begin
   FNormalDirection := ndOutside;
   FParts := [espOutside];
   MinSmoothAngle := 5;
-  FAxisAlignedDimensionsCache[0] := -1;
 end;
 
 // Destroy
@@ -1960,33 +2114,6 @@ begin
     FStacks := val;
     StructureChanged;
   end;
-end;
-
-// AxisAlignedDimensionsUnscaled
-//
-
-function TGLExtrusionSolid.AxisAlignedDimensionsUnscaled: TVector;
-var
-  dMin, dMax: TAffineVector;
-begin
-  if FAxisAlignedDimensionsCache[0] < 0 then
-  begin
-    Contours.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache[0] := MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-    FAxisAlignedDimensionsCache[1] := MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2] +
-      Height));
-  end;
-  SetVector(Result, FAxisAlignedDimensionsCache);
-end;
-
-// StructureChanged
-//
-
-procedure TGLExtrusionSolid.StructureChanged;
-begin
-  FAxisAlignedDimensionsCache[0] := -1;
-  inherited;
 end;
 
 // ------------------------------------------------------------------
