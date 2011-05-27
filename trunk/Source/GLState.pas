@@ -1313,6 +1313,7 @@ begin
     FLightStates.Attenuation[I] := NullHmgVector;
   end;
   FLightStates.Diffuse[0] := clrWhite;
+  FLightStates.Specular[0] := clrWhite;
 
   for I := High(FTextureMatrixIsIdentity) downto 0 do
     FTextureMatrixIsIdentity[I] := False;
