@@ -15,6 +15,7 @@
 
 
    <b>History : </b><font size=-1><ul>
+      <li>28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
       <li>25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
       <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
 
@@ -53,33 +54,63 @@ uses
   GLNavigator, VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen;
 
 type
+
 	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
        affect how the AdjustDisanceTo[...] methods work<p>
   }
-  TGLNavigatorAdjustDistanceParameters = class(TPersistent)
+  TGLNavigatorAbstractParameters = class(TPersistent)
   private
     FOwner: TPersistent;
-    OldDistanceRatio: Single;
     FInertia: Single;
     FSpeed: Single;
-    FImpulseSpeed: Single;
     function StoreInertia: Boolean;
     function StoreSpeed: Boolean;
-    function StoreImpulseSpeed: Boolean;
   protected
     function GetOwner: TPersistent; override;
   public
     constructor Create(AOwner: TPersistent); virtual;
     procedure Assign(Source: TPersistent); override;
     procedure ScaleParameters(const Value: Single); virtual;
-
-    procedure AddImpulse(const Impulse: Single); virtual;
   published
     property Inertia: Single read FInertia write FInertia stored StoreInertia;
     property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
+  end;
+
+	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
+       affect how the AdjustDisanceTo[...] methods work<p>
+  }
+  TGLNavigatorAdjustDistanceParameters = class(TGLNavigatorAbstractParameters)
+  private
+    FOldDistanceRatio: Single;
+    FImpulseSpeed: Single;
+    function StoreImpulseSpeed: Boolean;
+  public
+    constructor Create(AOwner: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+    procedure ScaleParameters(const Value: Single); override;
+
+    procedure AddImpulse(const Impulse: Single); virtual;
+  published
     property ImpulseSpeed: Single read FImpulseSpeed write FImpulseSpeed stored StoreImpulseSpeed;
   end;
 
+	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
+       affect how the AdjustDisanceTo[...]Ex methods work<p>
+
+     You need to set the TargetObject and desired distance to it,
+     then call AdjustDisanceTo[...]Ex() in your Cadencer.OnProgress code.
+  }
+  TGLNavigatorAdjustDistanceParametersEx = class(TGLNavigatorAbstractParameters)
+  private
+    FSpeedLimit: Single;
+    FTargetDistance: Single;
+  public
+    constructor Create(AOwner: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+  published
+    property TargetDistance: Single read FTargetDistance write FTargetDistance;
+    property SpeedLimit: Single read FSpeedLimit write FSpeedLimit;
+  end;
 
 	{: TGLNavigatorInertiaParameters is wrapper for all parameters that affect the
        smoothness of movement<p>
@@ -223,11 +254,14 @@ type
     FGeneralParams: TGLNavigatorGeneralParameters;
     FMoveAroundParams: TGLNavigatorMoveAroundParameters;
     FAdjustDistanceParams: TGLNavigatorAdjustDistanceParameters;
+    FAdjustDistanceParamsEx: TGLNavigatorAdjustDistanceParametersEx;
     procedure SetInertiaParams(const Value: TGLNavigatorInertiaParameters);
     function StoreMaxExpectedDeltaTime: Boolean;
     procedure SetGeneralParams(const Value: TGLNavigatorGeneralParameters);
     procedure SetMoveAroundParams(const Value: TGLNavigatorMoveAroundParameters);
     procedure SetAdjustDistanceParams(const Value: TGLNavigatorAdjustDistanceParameters);
+    procedure SetAdjustDistanceParamsEx(
+      const Value: TGLNavigatorAdjustDistanceParametersEx);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -254,17 +288,22 @@ type
     procedure AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; DeltaTime: Single); virtual;
     procedure AdjustDistanceToTarget(const DistanceRatio : Single; const DeltaTime: Single); virtual;
 
+    //: AdjustDistanceParamsEx
+    procedure AdjustDistanceToPointEx(const  APoint: TVector; DeltaTime: Single); virtual;
+    procedure AdjustDistanceToTargetEx(const DeltaTime: Single); virtual;
+
     //: GeneralParams
       {: In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
     procedure AutoScaleParameters(const FPS: Single); virtual;
     procedure AutoScaleParametersUp(const FPS: Single); virtual;
- published
+  published
     property MaxExpectedDeltaTime: Single read FMaxExpectedDeltaTime write FMaxExpectedDeltaTime stored StoreMaxExpectedDeltaTime;
     property InertiaParams: TGLNavigatorInertiaParameters read FInertiaParams write SetInertiaParams;
     property GeneralParams: TGLNavigatorGeneralParameters read FGeneralParams write SetGeneralParams;
     property MoveAroundParams: TGLNavigatorMoveAroundParameters read FMoveAroundParams write SetMoveAroundParams;
     property AdjustDistanceParams: TGLNavigatorAdjustDistanceParameters read FAdjustDistanceParams write SetAdjustDistanceParams;
+    property AdjustDistanceParamsEx: TGLNavigatorAdjustDistanceParametersEx read FAdjustDistanceParamsEx write SetAdjustDistanceParamsEx;
   end;
 
 
@@ -320,7 +359,8 @@ type
 
 implementation
 
-{$IFDEF GLS_DELPHI}uses VectorTypes;{$ENDIF}
+uses
+  VectorTypes;
 
 const
   EPS =  0.001;
@@ -336,6 +376,7 @@ begin
   FGeneralParams := TGLNavigatorGeneralParameters.Create(Self);
   FMoveAroundParams := TGLNavigatorMoveAroundParameters.Create(Self);
   FAdjustDistanceParams := TGLNavigatorAdjustDistanceParameters.Create(Self);
+  FAdjustDistanceParamsEx := TGLNavigatorAdjustDistanceParametersEx.Create(Self);  
 end;
 
 destructor TGLSmoothNavigator.Destroy;
@@ -344,6 +385,7 @@ begin
   FGeneralParams.Free;
   FMoveAroundParams.Free;
   FAdjustDistanceParams.Free;
+  FAdjustDistanceParamsEx.Free;
   inherited;
 end;
 
@@ -668,10 +710,10 @@ begin
     FinalDistanceRatio := 0;
     while DeltaTime > FMaxExpectedDeltaTime do
     begin
-      TempDistanceRatio := (TempDistanceRatio * FMaxExpectedDeltaTime + OldDistanceRatio * FInertia) / (FInertia + 1);
-      OldDistanceRatio := TempDistanceRatio;
+      TempDistanceRatio := (TempDistanceRatio * FMaxExpectedDeltaTime + FOldDistanceRatio * FInertia) / (FInertia + 1);
+      FOldDistanceRatio := TempDistanceRatio;
       DeltaTime := DeltaTime - FMaxExpectedDeltaTime;
-      FinalDistanceRatio := FinalDistanceRatio + OldDistanceRatio / FMaxExpectedDeltaTime;
+      FinalDistanceRatio := FinalDistanceRatio + FOldDistanceRatio / FMaxExpectedDeltaTime;
     end;
 
     if Abs(FinalDistanceRatio) > EPS2 then
@@ -696,6 +738,60 @@ procedure TGLSmoothNavigator.SetAdjustDistanceParams(
   const Value: TGLNavigatorAdjustDistanceParameters);
 begin
   FAdjustDistanceParams.Assign(Value);
+end;
+
+procedure TGLSmoothNavigator.AdjustDistanceToPointEx(const APoint: TVector;
+  DeltaTime: Single);
+
+var
+  lAbsolutePosition: TVector;
+  lCurrentDistance: Single;
+  lDistanceDifference, lTempCurrentDistance: Single;
+
+  procedure DoAdjustDistanceToPoint(const DistanceValue: Single);
+  var
+    vect: TVector;
+  begin
+    vect := VectorSubtract(APoint, lAbsolutePosition);
+    NormalizeVector(vect);
+    ScaleVector(vect, DistanceValue);
+    MovingObject.AbsolutePosition := VectorAdd(lAbsolutePosition, vect);
+  end;
+
+begin
+  lAbsolutePosition := MovingObject.AbsolutePosition;
+  lCurrentDistance := VectorDistance(lAbsolutePosition, APoint);
+  lDistanceDifference := lCurrentDistance - FAdjustDistanceParamsEx.FTargetDistance;
+
+  with FAdjustDistanceParamsEx do
+  begin
+    lTempCurrentDistance := 0;
+    while DeltaTime > FMaxExpectedDeltaTime do
+    begin
+      lTempCurrentDistance := (FSpeed * FMaxExpectedDeltaTime * lDistanceDifference * FInertia) / (FInertia + 1);
+//      lTempCurrentDistance := (FSpeed * FMaxExpectedDeltaTime + lDistanceDifference * FInertia) / (FInertia + 1);-  this also works, but a bit different.
+      DeltaTime := DeltaTime - FMaxExpectedDeltaTime;
+    end;
+    
+    lTempCurrentDistance :=  ClampValue(lTempCurrentDistance, -FSpeedLimit * DeltaTime, FSpeedLimit * DeltaTime);
+  end;
+
+  if Abs(lTempCurrentDistance) > EPS2 then
+    DoAdjustDistanceToPoint(lTempCurrentDistance);
+end;
+
+procedure TGLSmoothNavigator.AdjustDistanceToTargetEx(
+  const DeltaTime: Single);
+begin
+  Assert(FMoveAroundParams.FTargetObject <> nil);
+  AdjustDistanceToPointEx(FMoveAroundParams.FTargetObject.AbsolutePosition,
+                          DeltaTime);
+end;
+
+procedure TGLSmoothNavigator.SetAdjustDistanceParamsEx(
+  const Value: TGLNavigatorAdjustDistanceParametersEx);
+begin
+  FAdjustDistanceParamsEx.Assign(Value);
 end;
 
 { TGLSmoothUserInterface }
@@ -1055,15 +1151,13 @@ end;
 procedure TGLNavigatorAdjustDistanceParameters.AddImpulse(
   const Impulse: Single);
 begin
-  OldDistanceRatio := OldDistanceRatio + Impulse * FSpeed / FInertia * FImpulseSpeed;
+  FOldDistanceRatio := FOldDistanceRatio + Impulse * FSpeed / FInertia * FImpulseSpeed;
 end;
 
 procedure TGLNavigatorAdjustDistanceParameters.Assign(Source: TPersistent);
 begin
   if Source is TGLNavigatorAdjustDistanceParameters then
   begin
-    FInertia :=      TGLNavigatorAdjustDistanceParameters(Source).FInertia;
-    FSpeed :=        TGLNavigatorAdjustDistanceParameters(Source).FSpeed;
     FImpulseSpeed := TGLNavigatorAdjustDistanceParameters(Source).FImpulseSpeed;
   end
   else
@@ -1073,28 +1167,15 @@ end;
 constructor TGLNavigatorAdjustDistanceParameters.Create(
   AOwner: TPersistent);
 begin
-  FOwner := AOwner;
-  FInertia := 100;
-  FSpeed := 0.005;
+  inherited;
   FImpulseSpeed := 0.02;
-end;
-
-function TGLNavigatorAdjustDistanceParameters.GetOwner: TPersistent;
-begin
-  Result := FOwner;
 end;
 
 
 procedure TGLNavigatorAdjustDistanceParameters.ScaleParameters(
   const Value: Single);
 begin
-  Assert(Value > 0);
-
-  if Value < 1 then
-    FInertia := FInertia / VectorGeometry.Power(2, Value)
-  else
-    FInertia := FInertia * VectorGeometry.Power(2, 1 / Value);
-
+  inherited;
   FImpulseSpeed := FImpulseSpeed / Value;
 end;
 
@@ -1103,15 +1184,77 @@ begin
   Result := Abs(FImpulseSpeed - 0.02) > EPS;
 end;
 
-function TGLNavigatorAdjustDistanceParameters.StoreInertia: Boolean;
+{ TGLNavigatorAbstractParameters }
+
+
+procedure TGLNavigatorAbstractParameters.Assign(Source: TPersistent);
+begin
+  if Source is TGLNavigatorAbstractParameters then
+  begin
+    FInertia := TGLNavigatorAbstractParameters(Source).FInertia;
+    FSpeed :=   TGLNavigatorAbstractParameters(Source).FSpeed;
+  end
+  else
+    inherited; //to the pit of doom ;)
+end;
+
+constructor TGLNavigatorAbstractParameters.Create(
+  AOwner: TPersistent);
+begin
+  FOwner := AOwner;
+  FInertia := 100;
+  FSpeed := 0.005;
+end;
+
+function TGLNavigatorAbstractParameters.GetOwner: TPersistent;
+begin
+  Result := FOwner;
+end;
+
+procedure TGLNavigatorAbstractParameters.ScaleParameters(
+  const Value: Single);
+begin
+  Assert(Value > 0);
+
+  if Value < 1 then
+    FInertia := FInertia / VectorGeometry.Power(2, Value)
+  else
+    FInertia := FInertia * VectorGeometry.Power(2, 1 / Value);
+end;
+
+function TGLNavigatorAbstractParameters.StoreInertia: Boolean;
 begin
   Result := Abs(FInertia - 100) > EPS;
 end;
 
-function TGLNavigatorAdjustDistanceParameters.StoreSpeed: Boolean;
+function TGLNavigatorAbstractParameters.StoreSpeed: Boolean;
 begin
   Result := Abs(FSpeed - 0.005) > EPS2;
 end;
+
+{ TGLNavigatorAdjustDistanceParametersEx }
+
+procedure TGLNavigatorAdjustDistanceParametersEx.Assign(
+  Source: TPersistent);
+begin
+  if Source is TGLNavigatorAdjustDistanceParametersEx then
+  begin
+    FTargetDistance := TGLNavigatorAdjustDistanceParametersEx(Source).FTargetDistance;
+  end
+  else
+    inherited;
+end;
+
+constructor TGLNavigatorAdjustDistanceParametersEx.Create(
+  AOwner: TPersistent);
+begin
+  inherited;
+  FInertia := 0.5;
+  FTargetDistance := 100;
+  FSpeed := 100;
+  FSpeedLimit := 20000;
+end;
+
 
 initialization
   RegisterClasses([
