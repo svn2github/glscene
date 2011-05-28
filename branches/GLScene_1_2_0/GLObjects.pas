@@ -196,6 +196,7 @@ type
     procedure ApplyExtras;
   public
     { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure TransformationChanged; override;
     procedure DoRender(var ARci: TRenderContextInfo;
@@ -1178,6 +1179,16 @@ begin
     Scene.NotifyChange(Self);
 end;
 
+constructor TGLSceneObjectEx.Create(AOwner: TComponent);
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDeferredDraw];
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.TagName := ClassName;
+  FBatch.PickCallback := DoOnPicked;
+end;
+
 procedure TGLSceneObjectEx.Loaded;
 var
   LMaterial: TGLAbstractLibMaterial;
@@ -1296,6 +1307,7 @@ end;
 destructor TGLSceneObjectEx.Destroy;
 begin
   FBatch.Mesh.Free;
+  FBatch.InstancesChain.Free;
   FFinishEvent.Free;
   inherited;
 end;
@@ -1437,13 +1449,13 @@ begin
     end;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLDummyCube.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
+  ObjectStyle := ObjectStyle + [osDeferredDraw];
   FCubeSize := 1;
   FEdgeColor := TGLColor.Create(Self);
   FEdgeColor.Initialize(clrWhite);
@@ -1454,6 +1466,7 @@ begin
   FBatch.Transformation := @FTransformation;
   FBatch.Changed := True;
   FBatch.Mesh.TagName := ClassName;
+  FBatch.PickCallback := DoOnPicked;
 end;
 
 destructor TGLDummyCube.Destroy;
@@ -1702,13 +1715,12 @@ begin
     end;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLPlane.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FWidth := 1;
   FHeight := 1;
   FXTiles := 1;
@@ -1716,9 +1728,6 @@ begin
   FXScope := 1;
   FYScope := 1;
   FStyle := [psSingleQuad, psTileTexture];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetHeight
@@ -1987,21 +1996,16 @@ begin
     end;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLSprite.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling,
-    osDeferredDraw];
+  ObjectStyle := ObjectStyle + [osNoVisibilityCulling];
   FWidth := 1;
   FHeight := 1;
   FAlign := alSpherical;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 procedure TGLSprite.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
@@ -2321,16 +2325,12 @@ begin
     end;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLPoints.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling, osDeferredDraw];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
   FBatch.InstancesChain := TInstancesChain.Create;
 
   FPositions := TAffineVectorList.Create;
@@ -2344,7 +2344,6 @@ begin
   FColors.Free;
   FPositions.Free;
   FPointParameters.Destroy;
-  FBatch.InstancesChain.Destroy;
   inherited;
 end;
 
@@ -2529,7 +2528,7 @@ end;
 
 procedure TGLLineBase.NotifyChange(Sender: TObject);
 begin
-  if Sender = FLineColor  then
+  if Sender = FLineColor then
     StructureChanged;
   inherited;
 end;
@@ -2723,11 +2722,7 @@ begin
   FNodesAspect := lnaAxes;
   FNodeSize := 1;
 
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
   FBatch.InstancesChain := TInstancesChain.Create;
-
   FNodeBatch.Mesh := TMeshAtom.Create;
   FNodeBatch.Mesh.TagName := ClassName + '_' + FNodes.ClassName;
   FNodeBatch.InstancesChain := TInstancesChain.Create;
@@ -2806,10 +2801,10 @@ procedure TGLNodedLines.SetScene(const Value: TGLScene);
 begin
   if Value <> Scene then
   begin
-      if Assigned(Scene) then
-        Scene.RenderManager.UnRegisterBatch(FNodeBatch);
-      if Assigned(Value) then
-        Value.RenderManager.RegisterBatch(FNodeBatch);
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FNodeBatch);
+    if Assigned(Value) then
+      Value.RenderManager.RegisterBatch(FNodeBatch);
 
     inherited SetScene(Value);
   end;
@@ -2982,14 +2977,14 @@ begin
     if Nodes.Count > 0 then
     begin
       for I := Nodes.Count - 1 downto 0 do
-      with TGLLinesNode(Nodes[I]) do
-      begin
-        FNodeTransformation := FBatch.Transformation^;
-        FNodeTransformation.FModelMatrix := MatrixMultiply(
-          FNodeTransformation.FModelMatrix,
-          CreateTranslationMatrix(AsAffineVector));
-        FNodeTransformation.FStates := cAllStatesChanged;
-      end;
+        with TGLLinesNode(Nodes[I]) do
+        begin
+          FNodeTransformation := FBatch.Transformation^;
+          FNodeTransformation.FModelMatrix := MatrixMultiply(
+            FNodeTransformation.FModelMatrix,
+            CreateTranslationMatrix(AsAffineVector));
+          FNodeTransformation.FStates := cAllStatesChanged;
+        end;
       FNodeBatch.Order := ARci.orderCounter;
       Inc(ARci.orderCounter);
     end;
@@ -3085,132 +3080,135 @@ begin
     Lock;
     try
       Clear;
-      DeclareAttribute(attrPosition, GLSLType3f);
-      if loUseNodeColorForLines in Options then
-        DeclareAttribute(attrColor, GLSLType4f);
-      if loTextureCoord in Options then
-        DeclareAttribute(attrTexCoord0, GLSLType1f);
-
-      LMode := FSplineMode;
-      if (LMode = lsmBezierSpline) and (Nodes.Count < 3) then
-        LMode := lsmLines;
-      invC := 1 / Nodes.Count;
-
-      case LMode of
-        lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve:
-          BeginAssembly(mpLINE_STRIP);
-        lsmSegments:
-          BeginAssembly(mpLINES);
-        lsmLoop:
-          BeginAssembly(mpLINE_LOOP);
-      end;
-
-      if (FDivision < 2)
-        or (LMode in [lsmLines, lsmSegments, lsmLoop]) then
+      if Nodes.Count > 1 then
       begin
-        // standard line(s)
-        NC := Nodes.Count;
-        if LMode = lsmSegments then
-          NC := 2*(NC div 2);
+        DeclareAttribute(attrPosition, GLSLType3f);
         if loUseNodeColorForLines in Options then
-        begin
-          // node color interpolation
-          for I := 0 to NC - 1 do
-            with TGLLinesNode(Nodes[i]) do
-            begin
-              if loTextureCoord in Options then
-                Attribute1f(attrTexCoord0, i * InvC);
-              Attribute4f(attrColor, Color.Color);
-              Attribute3f(attrPosition, X, Y, Z);
-              EmitVertex;
-            end;
-        end
-        else
-        begin
-          // single color
-          for i := 0 to NC - 1 do
-            with Nodes[i] do
-            begin
-              if loTextureCoord in Options then
-                Attribute1f(attrTexCoord0, i * InvC);
-              Attribute3f(attrPosition, X, Y, Z);
-              EmitVertex;
-            end;
-        end;
-      end
-      else if LMode = lsmCubicSpline then
-      begin
-        // cubic spline
-        Spline := Nodes.CreateNewCubicSpline;
-        try
-          f := 1 / FDivision;
-          for I := 0 to (Nodes.Count - 1) * FDivision do
-          begin
-            u := I * f;
-            Spline.SplineXYZ(u, A, B, C);
-            if loUseNodeColorForLines in Options then
-            begin
-              n := (i div FDivision);
-              if n < Nodes.Count - 1 then
-                VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
-                  TGLLinesNode(Nodes[n + 1]).Color.Color, (i mod FDivision) * f,
-                  vertexColor)
-              else
-                SetVector(vertexColor,
-                  TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
-              Attribute4f(attrColor, vertexColor);
-            end;
-            if loTextureCoord in Options then
-              Attribute1f(attrTexCoord0, u * InvC);
-            Attribute3f(attrPosition, A, B, C);
-            EmitVertex;
-          end;
-        finally
-          Spline.Free;
-        end;
-      end
-      else if LMode = lsmBezierSpline then
-      begin
-        // bezier spline
-        BzSpline := Nodes.CreateNewBezierSpline;
-        try
-          f := 1 / FDivision;
-          for I := 0 to FDivision do
-          begin
-            u := i * f;
-            BzSpline.SplineXYZ(u, A, B, C);
-            if loUseNodeColorForLines in Options then
-            begin
-              u := 1 - u;
-              n := Floor(u * Nodes.Count);
-              if n < Nodes.Count - 1 then
-              begin
-                u0 := n * invC;
-                u1 := (1 + n) * invC;
-                VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
-                  TGLLinesNode(Nodes[n + 1]).Color.Color, (u - u0)/(u1 - u0),
-                  vertexColor);
-              end
-              else
-                SetVector(vertexColor,
-                  TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
-              Attribute4f(attrColor, vertexColor);
-            end;
-            if loTextureCoord in Options then
-              Attribute1f(attrTexCoord0, u);
-            Attribute3f(attrPosition, A, B, C);
-            EmitVertex;
-          end;
-        finally
-          BzSpline.Free;
-        end;
-      end
-      else if LMode = lsmNURBSCurve then
-      begin
-{$Message Hint 'lsmNURBSCurve mode not yet implemented for TGLLines' }
-      end;
+          DeclareAttribute(attrColor, GLSLType4f);
+        if loTextureCoord in Options then
+          DeclareAttribute(attrTexCoord0, GLSLType1f);
 
-      EndAssembly;
+        LMode := FSplineMode;
+        if (LMode = lsmBezierSpline) and (Nodes.Count < 3) then
+          LMode := lsmLines;
+        invC := 1 / Nodes.Count;
+
+        case LMode of
+          lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve:
+            BeginAssembly(mpLINE_STRIP);
+          lsmSegments:
+            BeginAssembly(mpLINES);
+          lsmLoop:
+            BeginAssembly(mpLINE_LOOP);
+        end;
+
+        if (FDivision < 2)
+          or (LMode in [lsmLines, lsmSegments, lsmLoop]) then
+        begin
+          // standard line(s)
+          NC := Nodes.Count;
+          if LMode = lsmSegments then
+            NC := 2 * (NC div 2);
+          if loUseNodeColorForLines in Options then
+          begin
+            // node color interpolation
+            for I := 0 to NC - 1 do
+              with TGLLinesNode(Nodes[i]) do
+              begin
+                if loTextureCoord in Options then
+                  Attribute1f(attrTexCoord0, i * InvC);
+                Attribute4f(attrColor, Color.Color);
+                Attribute3f(attrPosition, X, Y, Z);
+                EmitVertex;
+              end;
+          end
+          else
+          begin
+            // single color
+            for i := 0 to NC - 1 do
+              with Nodes[i] do
+              begin
+                if loTextureCoord in Options then
+                  Attribute1f(attrTexCoord0, i * InvC);
+                Attribute3f(attrPosition, X, Y, Z);
+                EmitVertex;
+              end;
+          end;
+        end
+        else if LMode = lsmCubicSpline then
+        begin
+          // cubic spline
+          Spline := Nodes.CreateNewCubicSpline;
+          try
+            f := 1 / FDivision;
+            for I := 0 to (Nodes.Count - 1) * FDivision do
+            begin
+              u := I * f;
+              Spline.SplineXYZ(u, A, B, C);
+              if loUseNodeColorForLines in Options then
+              begin
+                n := (i div FDivision);
+                if n < Nodes.Count - 1 then
+                  VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
+                    TGLLinesNode(Nodes[n + 1]).Color.Color, (i mod FDivision) * f,
+                    vertexColor)
+                else
+                  SetVector(vertexColor,
+                    TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
+                Attribute4f(attrColor, vertexColor);
+              end;
+              if loTextureCoord in Options then
+                Attribute1f(attrTexCoord0, u * InvC);
+              Attribute3f(attrPosition, A, B, C);
+              EmitVertex;
+            end;
+          finally
+            Spline.Free;
+          end;
+        end
+        else if LMode = lsmBezierSpline then
+        begin
+          // bezier spline
+          BzSpline := Nodes.CreateNewBezierSpline;
+          try
+            f := 1 / FDivision;
+            for I := 0 to FDivision do
+            begin
+              u := i * f;
+              BzSpline.SplineXYZ(u, A, B, C);
+              if loUseNodeColorForLines in Options then
+              begin
+                u := 1 - u;
+                n := Floor(u * Nodes.Count);
+                if n < Nodes.Count - 1 then
+                begin
+                  u0 := n * invC;
+                  u1 := (1 + n) * invC;
+                  VectorLerp(TGLLinesNode(Nodes[n]).Color.Color,
+                    TGLLinesNode(Nodes[n + 1]).Color.Color, (u - u0) / (u1 - u0),
+                    vertexColor);
+                end
+                else
+                  SetVector(vertexColor,
+                    TGLLinesNode(Nodes[Nodes.Count - 1]).Color.Color);
+                Attribute4f(attrColor, vertexColor);
+              end;
+              if loTextureCoord in Options then
+                Attribute1f(attrTexCoord0, u);
+              Attribute3f(attrPosition, A, B, C);
+              EmitVertex;
+            end;
+          finally
+            BzSpline.Free;
+          end;
+        end
+        else if LMode = lsmNURBSCurve then
+        begin
+{$MESSAGE Hint 'lsmNURBSCurve mode not yet implemented for TGLLines' }
+        end;
+
+        EndAssembly;
+      end;
     finally
       UnLock;
     end;
@@ -3235,7 +3233,7 @@ begin
 
   BuildNodeMesh;
 
-  Inherited;
+  inherited;
 end;
 {
 // BuildList
@@ -3614,19 +3612,15 @@ begin
     end;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLCube.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FCubeSize := XYZVector;
   FParts := [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   FNormalDirection := ndOutside;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetCubeWidth
@@ -3977,13 +3971,12 @@ begin
     LCapMesh.Free;
   end;
 
-  Inherited;
+  inherited;
 end;
 
 constructor TGLSphere.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FRadius := 0.5;
   FSlices := 16;
   FStacks := 16;
@@ -3993,10 +3986,6 @@ begin
   FStop := 360;
   FNormals := nsSmooth;
   FNormalDirection := ndOutside;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetBottom

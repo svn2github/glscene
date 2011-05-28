@@ -4,6 +4,7 @@
 {: GLSDrawTechnique<p>
 
    <b>History : </b><font size=-1><ul>
+    <li>29/05/11 - Yar - Added picking: name based for OGL1, color based for other techniques
     <li>25/05/11 - Yar - Added instancing 
     <li>18/05/11 - Yar - Added axes drawing
     <li>17/04/11 - Yar - Creation
@@ -37,6 +38,8 @@ const
 
 type
 
+  TPickCallback = procedure of object;
+
   PDrawBatch = ^TDrawBatch;
   TDrawBatch = record
     Mesh: TMeshAtom;
@@ -47,6 +50,7 @@ type
     ShowAABB: Boolean;
     Changed: Boolean;
     Order: Integer;
+    PickCallback: TPickCallback;
   end;
 
   PPoolSector = ^TPoolSector;
@@ -82,6 +86,8 @@ type
     procedure DoAfterAABBDrawing(var ARci: TRenderContextInfo); virtual; abstract;
     procedure ApplyInstance(var ARci: TRenderContextInfo;
       const AInstance: TInstancesChain; const AID: Integer); virtual; abstract;
+    procedure DoBeforePicking(AnObjectCountGuess: Integer); virtual; abstract;
+    procedure DoAfterPicking(const AList: TList); virtual; abstract;
   public
     { Public Declarations }
     procedure DrawBatch(
@@ -98,12 +104,16 @@ type
   //
   { : Fixed function pipeline draw technique. }
   TGLDrawTechniqueOGL1 = class(TGLAbstractDrawTechnique)
+  private
+    FBuffer: array of TGLuint;
   protected
     { Protected Declarations }
     procedure DoBeforeAABBDrawing(var ARci: TRenderContextInfo); override;
     procedure DoAfterAABBDrawing(var ARci: TRenderContextInfo); override;
     procedure ApplyInstance(var ARci: TRenderContextInfo;
       const AInstance: TInstancesChain; const AID: Integer); override;
+    procedure DoBeforePicking(AnObjectCountGuess: Integer); override;
+    procedure DoAfterPicking(const AList: TList); override;
   public
     { Public Declarations }
     procedure DrawBatch(
@@ -139,6 +149,8 @@ type
     procedure DoAfterAABBDrawing(var ARci: TRenderContextInfo); override;
     procedure ApplyInstance(var ARci: TRenderContextInfo;
       const AInstance: TInstancesChain; const AID: Integer); override;
+    procedure DoBeforePicking(AnObjectCountGuess: Integer); override;
+    procedure DoAfterPicking(const AList: TList); override;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -198,12 +210,14 @@ type
     destructor Destroy; override;
     procedure RegisterBatch(var ABatch: TDrawBatch);
     procedure UnRegisterBatch(var ABatch: TDrawBatch);
+    procedure ResetOrders;
     procedure DrawOrderedAll(var ARci: TRenderContextInfo);
 
     property DrawTechnique: TGLAbstractDrawTechnique read GetDrawTechnique;
   end;
 
 function GetOrCreateDummyCubeMaterial: TGLAbstractLibMaterial;
+function GetOrCreatePickingMaterial: TGLAbstractLibMaterial;
 procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
 
 implementation
@@ -260,6 +274,27 @@ begin
       FixedFunction.LineProperties.StippleFactor := 1;
       FixedFunction.LineProperties.Smooth := True;
     end;
+  end;
+end;
+
+var
+  vPickingMaterial: TGLAbstractLibMaterial;
+
+function GetOrCreatePickingMaterial: TGLAbstractLibMaterial;
+const
+  cPickingMaterialName = 'GLScene_Picking_Material';
+begin
+  Result :=
+    GetInternalMaterialLibrary.Materials.GetLibMaterialByName(cPickingMaterialName);
+  if Result = nil then
+  begin
+    Result := GetInternalMaterialLibrary.Materials.Add;
+    with TGLLibMaterialEx(Result) do
+    begin
+      Name := cPickingMaterialName;
+      FixedFunction.MaterialOptions := [moNoLighting];
+    end;
+    vPickingMaterial := Result;
   end;
 end;
 
@@ -523,9 +558,66 @@ begin
   GetAABBMaterial.UnApply(ARci);
 end;
 
+procedure TGLDrawTechniqueOGL1.DoAfterPicking(const AList: TList);
+type
+  TPickSubObjects = array of TGLuint;
+var
+  subObj: TPickSubObjects;
+  next, current, subObjIndex: Cardinal;
+//  szmin, szmax: Single;
+  LHits, I: Integer;
+  pBatch: PDrawBatch;
+begin
+  with GL do
+  begin
+    Flush;
+    LHits := RenderMode(GL_RENDER);
+  end;
+  CurrentGLContext.GLStates.SetGLColorWriting(True);
+
+  if LHits > -1 then
+  begin
+    next := 0;
+    for I := 0 to LHits - 1 do
+    begin
+      current := next;
+      next := current + FBuffer[current] + 3;
+//      szmin := (FBuffer[current + 1] shr 1) * (1 / MaxInt);
+//      szmax := (FBuffer[current + 2] shr 1) * (1 / MaxInt);
+      subObj := nil;
+      subObjIndex := current + 4;
+      if subObjIndex < next then
+      begin
+        SetLength(subObj, FBuffer[current] - 1);
+        while subObjIndex < next do
+        begin
+          subObj[subObjIndex - current - 4] := FBuffer[subObjIndex];
+          inc(subObjIndex);
+        end;
+      end;
+      pBatch := AList[FBuffer[current + 3]];
+      if Assigned(pBatch.PickCallback) then
+        pBatch.PickCallback();
+    end;
+  end;
+end;
+
 procedure TGLDrawTechniqueOGL1.DoBeforeAABBDrawing(var ARci: TRenderContextInfo);
 begin
   GetAABBMaterial.Apply(ARci);
+end;
+
+procedure TGLDrawTechniqueOGL1.DoBeforePicking(AnObjectCountGuess: Integer);
+begin
+  SetLength(FBuffer, AnObjectCountGuess * 4 + 32);
+  with GL do
+  begin
+    SelectBuffer(AnObjectCountGuess * SizeOf(TGLuint), @FBuffer[0]);
+    RenderMode(GL_SELECT);
+    InitNames;
+    PushName(0);
+  end;
+  CurrentGLContext.GLStates.SetGLColorWriting(False);
 end;
 
 procedure TGLDrawTechniqueOGL1.DrawAABB(var ARci: TRenderContextInfo;
@@ -566,6 +658,7 @@ procedure TGLDrawTechniqueOGL1.DrawBatch(
 var
   LMesh: TFriendlyMesh;
   LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
   LInstanceID: Integer;
   A: TAttribLocation;
   T: TGLEnum;
@@ -675,34 +768,42 @@ begin
       end
       else
       begin
-        DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+        MultiDrawArrays(
+          glPrimitive,
+          PGLint(LMesh.FRestartVertex.List),
+          PGLsizei(LMesh.FStripCounts.List),
+          LMesh.FRestartVertex.Count);
       end;
 
       LMesh.FDLO.EndList;
       LMesh.FDLO.NotifyDataUpdated;
     end;
 
-    ARci.PipelineTransformation.Push(ABatch.Transformation);
-    try
-      if Assigned(ABatch.Material) then
-        ABatch.Material.Apply(ARci);
+    ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
+    if ARci.drawState = dsPicking then
+    begin
+      LoadName(ABatch.Order);
+      LMaterial := nil;
+    end
+    else
+      LMaterial := ABatch.Material;
+
+    if Assigned(LMaterial) then
+      LMaterial.Apply(ARci);
+    repeat
+
       repeat
+        Dec(LInstanceID);
+        if Assigned(LInstanceChain) then
+          ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
-        repeat
-          Dec(LInstanceID);
-          if Assigned(LInstanceChain) then
-            ApplyInstance(ARci, LInstanceChain, LInstanceID);
+        LMesh.FDLO.CallList;
 
-          LMesh.FDLO.CallList;
+      until LInstanceID <= 0;
 
-        until LInstanceID <= 0;
-
-        if not Assigned(ABatch.Material) then
-          break;
-      until not ABatch.Material.UnApply(ARci);
-    finally
-      ARci.PipelineTransformation.Pop;
-    end;
+      if not Assigned(LMaterial) then
+        break;
+    until not LMaterial.UnApply(ARci);
 
   end;
 end;
@@ -836,12 +937,72 @@ begin
   GetAABBMaterial.UnApply(ARci);
 end;
 
+procedure TGLDrawTechniqueOGL2.DoAfterPicking(const AList: TList);
+var
+  LReadBuffer: PIntegerArray;
+  LBox: TVector4i;
+  LPixels: Integer;
+  I, N: Integer;
+  pBatch: PDrawBatch;
+begin
+  LBox := CurrentGLContext.PipelineTransformation.PickingBox;
+  LPixels := LBox[2]*LBox[3];
+  if LPixels > 0 then
+  begin
+    GetMem(LReadBuffer, LPixels*4);
+    try
+      GL.ReadBuffer(GL_BACK);
+      GL.ReadPixels(
+        LBox[0],
+        LBox[1],
+        LBox[2],
+        LBox[3],
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        LReadBuffer);
+
+      if GL.GREMEDY_frame_terminator then
+        GL.FrameTerminatorGREMEDY;
+
+      for I := LPixels - 1 downto 0 do
+      begin
+        N := LReadBuffer[I] and $FFFFFF;
+        if N < AList.Count then
+        begin
+          pBatch := AList[N];
+          if Assigned(pBatch.PickCallback) then
+            pBatch.PickCallback();
+        end;
+      end;
+    finally
+      FreeMem(LReadBuffer);
+    end;
+  end;
+end;
+
 procedure TGLDrawTechniqueOGL2.DoBeforeAABBDrawing(
   var ARci: TRenderContextInfo);
 begin
   ARci.GLStates.ArrayBufferBinding := 0;
   ARci.GLStates.ElementBufferBinding := 0;
   GetAABBMaterial.Apply(ARci);
+end;
+
+procedure TGLDrawTechniqueOGL2.DoBeforePicking(AnObjectCountGuess: Integer);
+var
+  storeClearColor: TVector4f;
+begin
+  with CurrentGLContext do
+  begin
+    storeClearColor := GLStates.ColorClearValue;
+    GLStates.ScissorBox := PipelineTransformation.PickingBox;
+    GLStates.Enable(stScissorTest);
+    GLStates.ColorClearValue := clrWhite;
+    GLStates.DepthWriteMask := True;
+    GL.Clear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT);
+    GLStates.Disable(stScissorTest);
+    GLStates.ColorClearValue := storeClearColor;
+  end;
 end;
 
 procedure TGLDrawTechniqueOGL2.AllocateBuffers;
@@ -1624,6 +1785,7 @@ procedure TGLDrawTechniqueOGL2.DrawBatch(
 var
   LMesh: TFriendlyMesh;
   LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
   LInstanceID: Integer;
   glPrimitive: TGLEnum;
   glType: TGLEnum;
@@ -1656,7 +1818,14 @@ begin
     LInstanceID := 1;
   end;
 
-  ARci.PipelineTransformation.Push(ABatch.Transformation);
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
   with GL do
     try
       glPrimitive := cPrimitiveType[LMesh.FPrimitive];
@@ -1670,8 +1839,8 @@ begin
       else
         LOffset := Pointer(FElementBufferMap.Sectors[LMesh.FElementSectorIndex].Offset);
 
-      if Assigned(ABatch.Material) then
-        ABatch.Material.Apply(ARci);
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
         repeat
@@ -1681,6 +1850,13 @@ begin
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
+            if (ARci.drawState = dsPicking)
+              and (ARci.GLStates.CurrentProgram = 0) then
+            begin
+              DisableClientState(GL_COLOR_ARRAY);
+              Color3ubv(@ABatch.Order);
+            end;
+
             if LMesh.FHasIndices then
               DrawElements(
                 glPrimitive,
@@ -1688,14 +1864,19 @@ begin
                 glType,
                 LOffset)
             else
-              DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+            begin
+              MultiDrawArrays(
+                glPrimitive,
+                PGLint(LMesh.FRestartVertex.List),
+                PGLsizei(LMesh.FStripCounts.List),
+                LMesh.FRestartVertex.Count);
+            end;
           until LInstanceID <= 0;
 
-          if not Assigned(ABatch.Material) then
+          if not Assigned(LMaterial) then
             break;
-        until not ABatch.Material.UnApply(ARci);
+        until not LMaterial.UnApply(ARci);
     finally
-      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
@@ -1741,6 +1922,7 @@ procedure TGLDrawTechniqueOGL3.DrawBatch(
 var
   LMesh: TFriendlyMesh;
   LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
   glPrimitive: TGLEnum;
   glType: TGLEnum;
   LShift: PtrUInt;
@@ -1768,12 +1950,19 @@ begin
     LInstanceID := 1;
   end;
 
-  ARci.PipelineTransformation.Push(ABatch.Transformation);
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
   with GL do
     try
       storeRci := ARci;
-      if Assigned(ABatch.Material) then
-        ABatch.Material.Apply(ARci);
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
@@ -1821,6 +2010,13 @@ begin
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
+            if (ARci.drawState = dsPicking)
+              and (ARci.GLStates.CurrentProgram = 0) then
+            begin
+              DisableClientState(GL_COLOR_ARRAY);
+              Color3ubv(@ABatch.Order);
+            end;
+
             if LMesh.FHasIndices then
               DrawElements(
                 glPrimitive,
@@ -1838,13 +2034,12 @@ begin
 
           until LInstanceID <= 0;
 
-          if not Assigned(ABatch.Material) then
+          if not Assigned(LMaterial) then
             break;
-        until not ABatch.Material.UnApply(ARci);
+        until not LMaterial.UnApply(ARci);
       end;
     finally
       ARci := storeRci;
-      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
@@ -1858,6 +2053,7 @@ procedure TGLDrawTechniqueOGL4.DrawBatch(
 var
   LMesh: TFriendlyMesh;
   LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
   glPrimitive: TGLEnum;
   glType: TGLEnum;
   LShift: PtrUInt;
@@ -1885,12 +2081,19 @@ begin
     LInstanceID := 1;
   end;
 
-  ARci.PipelineTransformation.Push(ABatch.Transformation);
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
   with GL do
     try
       storeRci := ARci;
-      if Assigned(ABatch.Material) then
-        ABatch.Material.Apply(ARci);
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
 
       if BindStateHandle(ARci.GLStates, LMesh) then
       begin
@@ -1960,6 +2163,13 @@ begin
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
+            if (ARci.drawState = dsPicking)
+              and (ARci.GLStates.CurrentProgram = 0) then
+            begin
+              DisableClientState(GL_COLOR_ARRAY);
+              Color3ubv(@ABatch.Order);
+            end;
+
             if LMesh.FHasIndices then
               DrawElements(
                 glPrimitive,
@@ -1967,17 +2177,22 @@ begin
                 glType,
                 LOffset)
             else
-              DrawArrays(glPrimitive, 0, LMesh.FVertexCount);
+            begin
+              MultiDrawArrays(
+                glPrimitive,
+                PGLint(LMesh.FRestartVertex.List),
+                PGLsizei(LMesh.FStripCounts.List),
+                LMesh.FRestartVertex.Count);
+            end;
 
           until LInstanceID <= 0;
 
-          if not Assigned(ABatch.Material) then
+          if not Assigned(LMaterial) then
             break;
-        until not ABatch.Material.UnApply(ARci);
+        until not LMaterial.UnApply(ARci);
       end;
     finally
       ARci := storeRci;
-      ARci.PipelineTransformation.Pop;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
@@ -1995,6 +2210,18 @@ begin
   if FBatchList.IndexOf(pBatch) < 0 then
   begin
     FBatchList.Add(pBatch);
+  end;
+end;
+
+procedure TGLRenderManager.ResetOrders;
+var
+  pBatch: PDrawBatch;
+  I: Integer;
+begin
+  for I := FBatchList.Count - 1 downto 0 do
+  begin
+    pBatch := FBatchList[I];
+    pBatch.Order := -1;
   end;
 end;
 
@@ -2057,8 +2284,11 @@ procedure TGLRenderManager.DrawOrderedAll(var ARci: TRenderContextInfo);
 var
   pBatch: PDrawBatch;
   LDrawTech: TGLAbstractDrawTechnique;
-  I, C: Integer;
+  I, O, C: Integer;
   LFirst: Boolean;
+{$IFDEF GLS_OPENGL_DEBUG}
+  LStr: string;
+{$ENDIF}
 begin
   ARci.PipelineTransformation.LoadMatricesEnabled := not ARci.GLStates.ForwardContext;
   LDrawTech := GetDrawTechnique;
@@ -2082,58 +2312,82 @@ begin
 
   if C > 0 then
   begin
+    ARci.PipelineTransformation.Push;
+
     BatchSort(FDrawOrderArray, 0, C - 1);
+
+    if ARci.drawState = dsPicking then
+    begin
+      GetOrCreatePickingMaterial;
+      LDrawTech.DoBeforePicking(C);
+    end;
 
     for I := 0 to C - 1 do
     begin
-      pBatch := FBatchList[FDrawOrderArray[I].Index];
+      O := FDrawOrderArray[I].Index;
+      pBatch := FBatchList[O];
+      pBatch.Order := O;
+{$IFDEF GLS_OPENGL_DEBUG}
+      if GL.GREMEDY_string_marker then
+      begin
+        LStr := Format('Drawing of mesh "%s"', [pBatch.Mesh.TagName]);
+        GL.StringMarkerGREMEDY(Length(LStr), PGLChar(TGLString(LStr)));
+      end;
+{$ENDIF}
       LDrawTech.DrawBatch(ARci, pBatch^);
     end;
 
-    // Draw AABB
-    LFirst := True;
-    try
-      for I := 0 to C - 1 do
-      begin
-        pBatch := FBatchList[FDrawOrderArray[I].Index];
-        if pBatch^.ShowAABB then
-        begin
-          if LFirst then
-          begin
-            LDrawTech.DoBeforeAABBDrawing(ARci);
-            LFirst := False;
-          end;
-          LDrawTech.DrawAABB(ARci, pBatch^);
-        end;
-        // Reset order
-        pBatch^.Order := -1;
-      end;
-    finally
-      if not LFirst then
-        LDrawTech.DoAfterAABBDrawing(ARci);
-    end;
+    if ARci.drawState = dsPicking then
+    begin
+      LDrawTech.DoAfterPicking(FBatchList);
+    end
+    else
+    begin
 
-    // Draw Axes
-    LFirst := True;
-    try
-      for I := 0 to C - 1 do
-      begin
-        pBatch := FBatchList[FDrawOrderArray[I].Index];
-        FAxesBatch.Transformation := pBatch^.Transformation;
-        if pBatch^.ShowAxes then
+      // Draw AABB
+      LFirst := True;
+      try
+        for I := 0 to C - 1 do
         begin
-          if LFirst then
+          pBatch := FBatchList[FDrawOrderArray[I].Index];
+          if pBatch^.ShowAABB then
           begin
-            GetOrCreateDummyCubeMaterial.Apply(ARci);
-            LFirst := False;
+            if LFirst then
+            begin
+              LDrawTech.DoBeforeAABBDrawing(ARci);
+              LFirst := False;
+            end;
+            LDrawTech.DrawAABB(ARci, pBatch^);
           end;
-          LDrawTech.DrawBatch(ARci, FAxesBatch);
         end;
+      finally
+        if not LFirst then
+          LDrawTech.DoAfterAABBDrawing(ARci);
       end;
-    finally
-      if not LFirst then
-        GetOrCreateDummyCubeMaterial.UnApply(ARci);
+
+      // Draw Axes
+      LFirst := True;
+      try
+        for I := 0 to C - 1 do
+        begin
+          pBatch := FBatchList[FDrawOrderArray[I].Index];
+          FAxesBatch.Transformation := pBatch^.Transformation;
+          if pBatch^.ShowAxes then
+          begin
+            if LFirst then
+            begin
+              GetOrCreateDummyCubeMaterial.Apply(ARci);
+              LFirst := False;
+            end;
+            LDrawTech.DrawBatch(ARci, FAxesBatch);
+          end;
+        end;
+      finally
+        if not LFirst then
+          GetOrCreateDummyCubeMaterial.UnApply(ARci);
+      end;
     end;
+    ARci.PipelineTransformation.Pop;
   end;
 end;
 

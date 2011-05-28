@@ -1366,7 +1366,6 @@ type
     procedure SetNormalsOrientation(const val: TMeshNormalsOrientation);
     procedure SetOverlaySkeleton(const val: Boolean);
     procedure SetAutoScaling(const Value: TGLCoordinates);
-    procedure DestroyHandle; override;
 
     {: Invoked after creating a TVectorFile and before loading.<p>
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
@@ -7558,7 +7557,6 @@ begin
       DropMaterialLibraryCache;
     if Assigned(FMaterialLibrary) then
     begin
-      DestroyHandle;
       FMaterialLibrary.RemoveFreeNotification(Self);
     end;
     FMaterialLibrary := val;
@@ -7577,7 +7575,6 @@ begin
   begin
     if Assigned(FLightmapLibrary) then
     begin
-      DestroyHandle;
       FLightmapLibrary.RemoveFreeNotification(Self);
     end;
     FLightmapLibrary := val;
@@ -7667,18 +7664,6 @@ begin
   Result[3] := 1;
 
   Result := LocalToAbsolute(Result);
-end;
-
-// DestroyHandle
-//
-
-procedure TGLBaseMesh.DestroyHandle;
-begin
-  if Assigned(FMaterialLibrary) then
-    MaterialLibrary.DestroyHandles;
-  if Assigned(FLightmapLibrary) then
-    LightmapLibrary.DestroyHandles;
-  inherited;
 end;
 
 // PrepareVectorFile
@@ -7833,24 +7818,16 @@ begin
         rci.lightmapLibrary := LightmapLibrary
       else
         rci.lightmapLibrary := nil;
-      if rci.amalgamating
-        or not (ListHandleAllocated or (osDirectDraw in ObjectStyle)) then
         PrepareBuildList(rci);
       FMaterial.Apply(rci);
       repeat
-        if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-          BuildList(rci)
-        else
-          rci.GLStates.CallList(GetHandle(rci));
+        BuildList(rci);
       until not FMaterial.UnApply(rci);
       rci.materialLibrary := nil;
     end
     else
     begin
-      if (osDirectDraw in ObjectStyle) or rci.amalgamating then
-        BuildList(rci)
-      else
-        rci.GLStates.CallList(GetHandle(rci));
+      BuildList(rci);
     end;
     if FNormalsOrientation <> mnoDefault then
       rci.GLStates.InvertGLFrontFace;

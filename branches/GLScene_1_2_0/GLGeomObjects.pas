@@ -579,9 +579,6 @@ type
   protected
     { Protected Declarations }
     procedure BuildMesh; override; stdcall;
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
   end;
 
   // TGLIcosahedron
@@ -593,9 +590,6 @@ type
   protected
     { Protected Declarations }
     procedure BuildMesh; override; stdcall;
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
   end;
 
 implementation
@@ -677,17 +671,12 @@ end;
 constructor TGLDisk.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FOuterRadius := 0.5;
   FInnerRadius := 0;
   FSlices := 16;
   FLoops := 2;
   FStartAngle := 0;
   FSweepAngle := 360;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 procedure TGLDisk.SetInnerRadius(const aValue: Single);
@@ -761,15 +750,10 @@ end;
 constructor TGLGeoSphere.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FRadius := 0.5;
   FLevel := 1;
   FNormals := nsSmooth;
   FNormalDirection := ndOutside;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 procedure TGLGeoSphere.BuildMesh;
@@ -1033,14 +1017,11 @@ end;
 constructor TGLCylinderBase.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FBottomRadius := 0.5;
   FHeight := 1;
   FSlices := 16;
   FStacks := 4;
   FLoops := 1;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
 end;
 
 function TGLCylinderBase.GenerateSilhouette(
@@ -1541,17 +1522,12 @@ end;
 constructor TGLCapsule.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FHeight := 1;
   FRadius := 0.5;
   FSlices := 4;
   FStacks := 4;
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 procedure TGLCapsule.BuildMesh;
@@ -2267,7 +2243,6 @@ end;
 constructor TGLTorus.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FRings := 25;
   FSides := 15;
   FMinorRadius := 0.1;
@@ -2275,10 +2250,6 @@ begin
   FStartAngle := 0.0;
   FStopAngle := 360.0;
   FParts := [toSides, toStartDisk, toStopDisk];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 // SetMajorRadius
@@ -3379,17 +3350,12 @@ end;
 constructor TGLFrustrum.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
   FApexHeight := 1;
   FBaseWidth := 1;
   FBaseDepth := 1;
   FHeight := 0.5;
   FParts := cAllFrustrumParts;
   FNormalDirection := ndOutside;
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 procedure TGLFrustrum.BuildMesh;
@@ -3825,15 +3791,6 @@ begin
   ClearStructureChanged;
 end;
 
-constructor TGLDodecahedron.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
-end;
-
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLIcosahedron'}{$ENDIF}
@@ -3852,15 +3809,6 @@ begin
   end;
   FBatch.Changed := True;
   ClearStructureChanged;
-end;
-
-constructor TGLIcosahedron.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}

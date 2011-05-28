@@ -1810,7 +1810,8 @@ begin
       if (moNoLighting in MaterialOptions) or not ARci.bufferLighting then
       begin
         Disable(stLighting);
-        FFrontProperties.ApplyNoLighting(ARci, cmFront);
+        if ARci.drawState <> dsPicking then
+          FFrontProperties.ApplyNoLighting(ARci, cmFront);
       end
       else
       begin

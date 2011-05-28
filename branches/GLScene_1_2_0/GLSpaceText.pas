@@ -143,7 +143,6 @@ type
     { Protected Declarations }
     FTextFontEntry: PFontEntry;
     FontChanged: Boolean;
-    procedure DestroyHandle; override;
     procedure OnFontChange(sender: TObject);
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
@@ -537,15 +536,6 @@ begin
     rci.GLStates.PopAttrib();
     GL.PopMatrix;
   end;
-end;
-
-// DestroyHandle
-//
-
-procedure TGLSpaceText.DestroyHandle;
-begin
-  FontChanged := True;
-  inherited;
 end;
 
 // GetFirstAndLastChar

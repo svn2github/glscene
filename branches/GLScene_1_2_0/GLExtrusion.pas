@@ -349,8 +349,7 @@ uses
   SysUtils,
   Spline,
   VectorLists,
-  GLSLParameter,
-  XOpenGL;
+  GLSLParameter;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------
@@ -362,17 +361,12 @@ uses
 constructor TGLRevolutionSolid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDeferredDraw];
   FStartAngle := 0;
   FStopAngle := 360;
   FSlices := 16;
   FNormals := nsFlat;
   FNormalDirection := ndOutside;
   FParts := [rspOutside];
-
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
 end;
 
 // Destroy
@@ -996,11 +990,6 @@ end;
 constructor TGLPipe.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle + [osDirectDraw, osDeferredDraw];
-  FBatch.Mesh := TMeshAtom.Create;
-  FBatch.Transformation := @FTransformation;
-  FBatch.Mesh.TagName := ClassName;
-
   FSlices := 16;
   FParts := [ppOutside];
   FRadius := 1.0;

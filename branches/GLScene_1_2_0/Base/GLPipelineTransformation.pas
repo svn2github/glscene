@@ -17,7 +17,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  VectorGeometry;
+  VectorGeometry, VectorTypes;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
@@ -67,6 +67,7 @@ type
     FStack: array of TTransformationRec;
     FLoadMatricesEnabled: Boolean;
     FOnPush: TOnMatricesPush;
+    FPickingBox: TVector4i;
     function GetModelMatrix: TMatrix;
     function GetViewMatrix: TMatrix;
     function GetProjectionMatrix: TMatrix;
@@ -108,6 +109,7 @@ type
     property Frustum: TFrustum read GetFrustum;
 
     property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
+    property PickingBox: TVector4i read FPickingBox write FPickingBox;
   end;
 
 implementation
@@ -210,16 +212,29 @@ var
   M: TMatrix;
 begin
   M := GetModelViewMatrix;
-  GL.LoadMatrixf(PGLFloat(@M));
+  with GL do
+  begin
+    if EXT_direct_state_access then
+      MatrixLoadf(GL_MODELVIEW, PGLFloat(@M))
+    else
+      LoadMatrixf(PGLFloat(@M));
+  end;
 end;
 
 procedure TGLTransformation.LoadProjectionMatrix;
 begin
   with GL do
   begin
-    MatrixMode(GL_PROJECTION);
-    LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
-    MatrixMode(GL_MODELVIEW);
+    if EXT_direct_state_access then
+    begin
+      MatrixLoadf(GL_PROJECTION, PGLFloat(@FStack[FStackPos].FProjectionMatrix))
+    end
+    else
+    begin
+      MatrixMode(GL_PROJECTION);
+      LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
+      MatrixMode(GL_MODELVIEW);
+    end;
   end;
 end;
 

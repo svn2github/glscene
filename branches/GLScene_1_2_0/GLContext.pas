@@ -198,6 +198,7 @@ type
     FActivationCount: Integer;
     FOwnedHandlesCount: Integer;
     FIsPraparationNeed: Boolean;
+
   protected
     { Protected Declarations }
     FGL: TGLExtensionsAndEntryPoints;
@@ -205,6 +206,7 @@ type
     FGLStates: TGLStateCache;
     FTransformation: TGLTransformation;
     FAcceleration: TGLContextAcceleration;
+    FPassSwap: Boolean;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
 {$ELSE}
@@ -316,6 +318,7 @@ type
     function IsValid: Boolean; virtual; abstract;
     {: Request to swap front and back buffers if they were defined. }
     procedure SwapBuffers; virtual; abstract;
+    property PassSwap: Boolean read FPassSwap write FPassSwap;
 
     {: Returns the first compatible context that isn't self in the shares. }
     function FindCompatibleContext: TGLContext;

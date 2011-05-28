@@ -1168,20 +1168,15 @@ begin
     mpPOINTS: FValid := FVertexCount > 0;
     mpLINES: FValid := (FVertexCount mod 2 = 0) and (FVertexCount > 1);
     mpLINE_STRIP, mpLINE_LOOP: FValid := FVertexCount > 1;
-    mpLINES_ADJACENCY: FValid := (FVertexCount mod 4 = 0) and (FVertexCount >
-        3);
+    mpLINES_ADJACENCY: FValid := (FVertexCount mod 4 = 0) and (FVertexCount > 3);
     mpLINE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
-    mpTRIANGLES_ADJACENCY: FValid := (FVertexCount mod 6 = 0) and (FVertexCount
-        > 5);
+    mpTRIANGLES_ADJACENCY: FValid := (FVertexCount mod 6 = 0) and (FVertexCount > 5);
     mpTRIANGLE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
     mpPATCHES: FValid := FVertexCount > 1;
   end;
 
   if not FValid then
-  begin
     GLSLogger.LogError(glsInvalidNumberOfVertex);
-    exit;
-  end;
 end;
 
 procedure TMeshAtom.FlipFaces(ATwoSide: Boolean = False);

@@ -1159,7 +1159,9 @@ end;
 
 procedure TGLWin32Context.SwapBuffers;
 begin
-  if (FDC <> 0) and (rcoDoubleBuffered in Options) then
+  if FPassSwap then
+    FPassSwap := False
+  else if (FDC <> 0) and (rcoDoubleBuffered in Options) then
     Windows.SwapBuffers(FDC);
 end;
 

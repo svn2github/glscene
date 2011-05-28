@@ -379,7 +379,6 @@ uses
   GLMaterial,
   GLMaterialEx,
   GLTextureFormat,
-  GLSelection,
   GLSMesh,
   GLSDrawTechnique;
 
@@ -602,6 +601,7 @@ type
     { Protected Declarations }
     procedure Loaded; override;
     procedure SetScene(const Value: TGLScene); virtual;
+    procedure DoOnPicked; virtual;
 
     procedure DefineProperties(Filer: TFiler); override;
     procedure WriteBehaviours(stream: TStream);
@@ -1952,7 +1952,6 @@ type
     FBaseProjectionMatrix: TMatrix;
     FCameraAbsolutePosition: TVector;
     FViewPort: TRectangle;
-    FSelector: TGLBaseSelectTechnique;
 
     // Options & User Properties
     FFaceCulling, FFogEnable, FLighting: Boolean;
@@ -1995,6 +1994,9 @@ type
     FInitiateRendering: TDirectRenderEvent;
     FWrapUpRendering: TDirectRenderEvent;
 
+    // Picking
+    FNearestPickedObject: TGLBaseSceneObject;
+    FPickDistance: Single;
   protected
     { Protected Declarations }
     procedure SetBackgroundColor(AColor: TColor);
@@ -2016,7 +2018,7 @@ type
     procedure SetAccumBufferBits(const val: Integer);
 
     procedure PrepareRenderingMatrices(const aViewPort: TRectangle;
-      resolution: Integer; pickingRect: PGLRect = nil);
+      resolution: Integer; APickingRect: PGLRect = nil);
     procedure DoBaseRender(const aViewPort: TRectangle; resolution: Integer;
       drawState: TDrawState; baseObject: TGLBaseSceneObject);
 
@@ -2053,13 +2055,7 @@ type
     property ViewPort: TRectangle read FViewPort;
 
     //: Fills the PickList with objects in Rect area
-    procedure PickObjects(const rect: TGLRect; pickList: TGLPickList;
-      objectCountGuess: Integer);
-    {: Returns a PickList with objects in Rect area.<p>
-       Returned list should be freed by caller.<br>
-       Objects are sorted by depth (nearest objects first). }
-    function GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer =
-      64): TGLPickList;
+    procedure PickObjects(const rect: TGLRect);
     //: Returns the nearest object at x, y coordinates or nil if there is none
     function GetPickedObject(x, y: Integer): TGLBaseSceneObject;
 
@@ -4737,7 +4733,6 @@ procedure TGLBaseSceneObject.Render(var ARci: TRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
-  master: TObject;
 begin
   Inc(ARci.orderCounter);
 {$IFDEF GLS_OPENGL_DEBUG}
@@ -4745,8 +4740,7 @@ begin
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
 {$ENDIF}
-  if (ARci.drawState = dsPicking)
-    and (not FPickable or (osDeferredDraw in ObjectStyle)) then
+  if (ARci.drawState = dsPicking) and (not FPickable) then
     exit;
 
   // visibility culling determination
@@ -4794,14 +4788,6 @@ begin
       MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix)
   else
     ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
-
-  master := nil;
-  if ARci.drawState = dsPicking then
-  begin
-    if ARci.proxySubObject then
-      master := TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject;
-    TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := Self;
-  end;
 
   // Start rendering
   if shouldRenderSelf then
@@ -4853,8 +4839,6 @@ begin
       DoRender(ARci, False, shouldRenderChildren);
   end;
   // Pop Name & Matrix
-  if Assigned(master) then
-    TGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := master;
   ARci.PipelineTransformation.Pop;
 end;
 
@@ -5262,7 +5246,28 @@ end;
 procedure TGLBaseSceneObject.DoOnAddedToParent;
 begin
   if Assigned(FOnAddedToParent) then
-    FOnAddedToParent(self);
+    FOnAddedToParent(Self);
+end;
+
+// DoOnPicked
+//
+
+procedure TGLBaseSceneObject.DoOnPicked;
+var
+  dis: Single;
+begin
+  if FPickable then
+  begin
+    dis := Self.DistanceTo(Scene.CurrentGLCamera);
+    if dis < Scene.CurrentBuffer.FPickDistance then
+    begin
+      Scene.CurrentBuffer.FPickDistance := dis;
+      Scene.CurrentBuffer.FNearestPickedObject := Self;
+    end;
+
+    if Assigned(FOnPicked) then
+      FOnPicked(Self);
+  end;
 end;
 
 // GetAbsoluteAffineScale
@@ -8238,7 +8243,6 @@ begin
   begin
     Melt;
     // for some obscure reason, Mesa3D doesn't like this call... any help welcome
-    FreeAndNil(FSelector);
     FreeAndNil(FRenderingContext);
     if Assigned(FCamera) and Assigned(FCamera.FScene) then
       FCamera.FScene.RemoveBuffer(Self);
@@ -9113,74 +9117,36 @@ end;
 // PickObjects
 //
 
-procedure TGLSceneBuffer.PickObjects(const rect: TGLRect; pickList: TGLPickList;
-  objectCountGuess: Integer);
-var
-  I: Integer;
-  obj: TGLBaseSceneObject;
+procedure TGLSceneBuffer.PickObjects(const rect: TGLRect);
 begin
-  if not Assigned(FCamera) then
-    Exit;
-  Assert((not FRendering), glsAlreadyRendering);
-  Assert(Assigned(PickList));
-  FRenderingContext.Activate;
-  FRendering := True;
-  try
-    // Create best selector which techniques is hardware can do
-    if not Assigned(FSelector) then
-      FSelector := GetBestSelectorClass.Create;
-
-    xgl.MapTexCoordToNull; // turn off
-    PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
-    FSelector.Hits := -1;
-    FSelector.ObjectCountGuess := objectCountGuess;
-    repeat
-      FSelector.Start;
+  if Assigned(FCamera) and Assigned(FCamera.FScene) then
+  begin
+    Assert((not FRendering), glsAlreadyRendering);
+    FRenderingContext.Activate;
+    FRendering := True;
+    FNearestPickedObject := nil;
+    FPickDistance := 1e10;
+    try
+      // Create best selector which techniques is hardware can do
+      PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
       // render the scene (in select mode, nothing is drawn)
       FRenderDPI := 96;
-      if Assigned(FCamera) and Assigned(FCamera.FScene) then
-        RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height,
-          dsPicking, nil);
-    until FSelector.Stop;
-    FSelector.FillPickingList(PickList);
-    for I := 0 to PickList.Count-1 do
-    begin
-      obj := TGLBaseSceneObject(PickList[I]);
-      if Assigned(obj.FOnPicked) then
-        obj.FOnPicked(obj);
+      RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height, dsPicking, nil);
+      FRenderingContext.PassSwap := True;
+    finally
+      FRendering := False;
+      FRenderingContext.Deactivate;
     end;
-  finally
-    FRendering := False;
-    FRenderingContext.Deactivate;
   end;
-end;
-
-// GetPickedObjects
-//
-
-function TGLSceneBuffer.GetPickedObjects(const rect: TGLRect; objectCountGuess:
-  Integer = 64): TGLPickList;
-begin
-  Result := TGLPickList.Create(psMinDepth);
-  PickObjects(Rect, Result, objectCountGuess);
 end;
 
 // GetPickedObject
 //
 
 function TGLSceneBuffer.GetPickedObject(x, y: Integer): TGLBaseSceneObject;
-var
-  pkList: TGLPickList;
 begin
-  pkList := GetPickedObjects(Rect(x - 1, y - 1, x + 1, y + 1));
-  try
-    if pkList.Count > 0 then
-      Result := TGLBaseSceneObject(pkList.Hit[0])
-    else
-      Result := nil;
-  finally
-    pkList.Free;
-  end;
+  PickObjects(Rect(x - 1, y - 1, x + 1, y + 1));
+  Result := FNearestPickedObject;
 end;
 
 // GetPixelColor
@@ -9280,34 +9246,44 @@ end;
 //
 
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
-  resolution: Integer; pickingRect: PGLRect = nil);
+  resolution: Integer; APickingRect: PGLRect = nil);
+var
+  V: TVector4i;
 begin
-  RenderingContext.PipelineTransformation.IdentityAll;
-  // setup projection matrix
-  if Assigned(pickingRect) then
+  with RenderingContext.PipelineTransformation do
   begin
-    CurrentGLContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix(
-      (pickingRect^.Left + pickingRect^.Right) div 2,
-      FViewPort.Height - ((pickingRect^.Top + pickingRect^.Bottom) div 2),
-      Abs(pickingRect^.Right - pickingRect^.Left),
-      Abs(pickingRect^.Bottom - pickingRect^.Top),
-      TVector4i(FViewport));
-  end;
-  FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
+    IdentityAll;
+    // setup projection matrix
+    if Assigned(APickingRect) then
+    begin
+      ProjectionMatrix := CreatePickMatrix(
+        (APickingRect^.Left + APickingRect^.Right) div 2,
+        FViewPort.Height - ((APickingRect^.Top + APickingRect^.Bottom) div 2),
+        Abs(APickingRect^.Right - APickingRect^.Left),
+        Abs(APickingRect^.Bottom - APickingRect^.Top),
+        TVector4i(FViewport));
+      V[0] := APickingRect^.Left;
+      V[1] := Height - APickingRect^.Top;
+      V[2] := APickingRect^.Right - APickingRect^.Left;
+      V[3] := APickingRect^.Bottom - APickingRect^.Top;
+      PickingBox := V;
+    end;
+    FBaseProjectionMatrix := ProjectionMatrix;
 
-  if Assigned(FCamera) then
-  begin
-    FCamera.Scene.FCurrentGLCamera := FCamera;
-    // apply camera perpective
-    FCamera.ApplyPerspective(
-      aViewport,
-      FViewPort.Width,
-      FViewPort.Height,
-      resolution);
-    // setup model view matrix
-    // apply camera transformation (viewpoint)
-    FCamera.Apply;
-    FCameraAbsolutePosition := FCamera.AbsolutePosition;
+    if Assigned(FCamera) then
+    begin
+      FCamera.Scene.FCurrentGLCamera := FCamera;
+      // apply camera perpective
+      FCamera.ApplyPerspective(
+        aViewport,
+        FViewPort.Width,
+        FViewPort.Height,
+        resolution);
+      // setup model view matrix
+      // apply camera transformation (viewpoint)
+      FCamera.Apply;
+      FCameraAbsolutePosition := FCamera.AbsolutePosition;
+    end;
   end;
 end;
 
@@ -9512,8 +9488,7 @@ begin
   LRci.GLStates := RenderingContext.GLStates;
   LRci.PipelineTransformation := RenderingContext.PipelineTransformation;
   LRci.proxySubObject := False;
-  LRci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
-    or (LRci.drawState = dsPicking);
+  LRci.ignoreMaterials := (roNoColorBuffer in FContextOptions);
   LRci.GLStates.SetGLColorWriting(not LRci.ignoreMaterials);
   if Assigned(FInitiateRendering) then
     FInitiateRendering(Self, LRci);
@@ -9532,14 +9507,10 @@ begin
     RenderingContext.PrepareHandlesData;
 
   if baseObject = nil then
-  begin
-    aScene.Objects.Render(LRci);
-    aScene.RenderManager.DrawOrderedAll(LRci);
-  end
-  else
-  begin
-    baseObject.Render(LRci);
-  end;
+    baseObject := aScene.Objects;
+  aScene.RenderManager.ResetOrders;
+  baseObject.Render(LRci);
+  aScene.RenderManager.DrawOrderedAll(LRci);
 
   LRci.GLStates.SetGLColorWriting(True);
   with FAfterRenderEffects do
