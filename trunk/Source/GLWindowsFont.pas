@@ -6,6 +6,7 @@
   TFont Import into a BitmapFont using variable width...<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>29/05/11 - Yar - Unicode support for Unix OSes (by Gabriel Corneanu)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -200,9 +201,8 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     p : PCharInfo;
     r : TGLRect;
 {$IFNDEF MSWINDOWS}
-    utfs: string;
-    utfbuffer: array[0..3] of Char;
-    i: integer;
+    utfbuffer: array[0..5] of Char;
+    i: SizeUInt;
 {$ENDIF}
   begin
     buffer[1] := WideChar(#32);
@@ -256,18 +256,8 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
           Windows.ExtTextOutW(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, buffer, 2, nil);
 {$ELSE}
-          utfs := UTF16ToUTF8(buffer[0]);
-          utfbuffer[0] := utfs[1];
-          i := 1;
-          if Length(utfs)>1 then
-          begin
-            utfbuffer[1] := utfs[2];
-            inc(i);
-          end;
-          utfbuffer[i] := #32;
-          Inc(i);
-          utfbuffer[i] := #0;
-          LCLIntf.ExtTextOut(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @rect, utfbuffer, i, nil);
+          ConvertUTF16ToUTF8(utfbuffer, 5, buffer, 2,  [toInvalidCharToSymbol], i);
+          LCLIntf.ExtTextOut(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, utfbuffer, i-1, nil);
 {$ENDIF}
         end;
         Inc(px, cw);
@@ -287,7 +277,8 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     {$IFDEF MSWINDOWS}
     var tm: LPTextMetric;
     {$ELSE}
-    var LString: string;
+    var LString: array[0..5] of char; //here we always have 1 char, so it's safe
+      i : SizeUInt;
     {$ENDIF}
     {$ELSE}
     var tm: TTextMetricW;
@@ -306,8 +297,8 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
         Result.cx := tm.tmAveCharWidth * Count;
     end;
 {$ELSE}
-    LString := UTF16ToUTF8(WideString(Str));
-    GetTextExtentPoint32(DC, PChar(LString), UTF8Length(LString), Result);
+    if ConvertUTF16ToUTF8(LString, 5, Str, Count,  [toInvalidCharToSymbol], i) = trNoError then
+      GetTextExtentPoint32(DC, LString, i-1, Result);
 {$ENDIF}
   end;
 
