@@ -25,7 +25,7 @@ TGLTexCombineShader BITMAP vcl\TGLTexCombineShader.bmp
 TGLThorFXManager BITMAP vcl\TGLThorFXManager.bmp
 TGLTimeEventsMGR BITMAP vcl\TGLTimeEventsMGR.bmp
 TGLUserInterface BITMAP vcl\TGLUserInterface.bmp
-TGLWindowsBitmapFont BITMAP vcl\TGLWindowsBitmapFont.bmp
+TGLUnicodeBitmapFont BITMAP vcl\TGLUnicodeBitmapFont.bmp
 TGLUserShader BITMAP vcl\TGLUserShader.bmp
 TGLOutlineShader BITMAP vcl\TGLOutlineShader.bmp
 TGLHiddenlineShader BITMAP vcl\TGLHiddenlineShader.bmp
@@ -46,7 +46,6 @@ TGLTexturedHDS BITMAP vcl\TGLTexturedHDS.bmp
 TGLAsyncHDS BITMAP vcl\TGLAsyncHDS.bmp
 TGLShadowHDS BITMAP vcl\TGLShadowHDS.bmp
 TGLEParticleMasksManager BITMAP vcl\TGLEParticleMasksManager.bmp
-TGLWideBitmapFont BITMAP vcl\TGLWideBitmapFont.bmp
 TGLSimpleNavigation BITMAP vcl\TGLSimpleNavigation.bmp
 TGLSmoothNavigator BITMAP vcl\TGLSmoothNavigator.bmp
 TGLSmoothUserInterface BITMAP vcl\TGLSmoothUserInterface.bmp
