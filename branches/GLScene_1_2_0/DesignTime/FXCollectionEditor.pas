@@ -92,7 +92,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SysUtils, GLBehaviours, GLScene, Dialogs, GLMaterialEx;
+  SysUtils, GLBehaviours, GLScene, Dialogs, GLS_Material;
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';

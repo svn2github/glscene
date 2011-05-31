@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSceneFormDesign<p>
@@ -700,7 +700,7 @@ const
     'uses' + LineEnding +
     '  Windows, Messages, Classes, SysUtils, Forms, Controls, Graphics,' + LineEnding +
     '  Dialogs, GLScene, GLSceneForm, GLCadencer, GLMaterial, GLObjects, ' + LineEnding +
-    '  GLHUDObjects, GLWindowsFont, GLSkydome, GLGeomObjects, GLShadowPlane,' + LineEnding +
+    '  GLHUDObjects, GLS_UnicodeBitmapFont, GLSkydome, GLGeomObjects, GLShadowPlane,' + LineEnding +
     '  GLLCLViewer, BaseClasses, GLFilePNG;' + LineEnding +
 
     '' + LineEnding +
@@ -723,7 +723,7 @@ const
     '    GLInterfaceText1: TGLHUDText;' + LineEnding +
     '    GLSkyDome1: TGLSkyDome;' + LineEnding +
     '    GLWorldObject3: TGLSphere;' + LineEnding +
-    '    GLWindowsBitmapFont1: TGLWindowsBitmapFont;' + LineEnding +
+    '    GLUnicodeBitmapFont1: TGLUnicodeBitmapFont;' + LineEnding +
     '    GLMaterialLibrary1: TGLMaterialLibrary;' + LineEnding +
     '    procedure GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: Double);' + LineEnding +
     '  private' + LineEnding +
@@ -859,7 +859,7 @@ const
     '      CubeSize = 1.000000000000000000' + LineEnding +
     '      object GLInterfaceText1: TGLHUDText' + LineEnding +
     '        Position.Coordinates = {0000F04100002042000000000000803F}' + LineEnding +
-    '        BitmapFont = GLWindowsBitmapFont1' + LineEnding +
+    '        BitmapFont = GLUnicodeBitmapFont1' + LineEnding +
     '        Text = ''GLScene Project''' + LineEnding +
     '        ModulateColor.Color = {D0CF4F3FDBDA5A3FF6F5753F0000803F}' + LineEnding +
     '      end' + LineEnding +
@@ -1334,7 +1334,7 @@ const
     '    Left = 74' + LineEnding +
     '    Top = 88' + LineEnding +
     '  end' + LineEnding +
-    '  object GLWindowsBitmapFont1: TGLWindowsBitmapFont' + LineEnding +
+    '  object GLUnicodeBitmapFont1: TGLUnicodeBitmapFont' + LineEnding +
     '    Font.Charset = DEFAULT_CHARSET' + LineEnding +
     '    Font.Color = clWhite' + LineEnding +
     '    Font.Height = -32' + LineEnding +
@@ -2310,7 +2310,7 @@ function TGLSceneExtendedFileDescriptor.GetInterfaceUsesSection: string;
 begin
    Result:=
     ' Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, GLScene,' + LineEnding +
-    '  GLSceneForm, GLCadencer, GLMaterial, GLObjects, GLHUDObjects, GLWindowsFont,' + LineEnding +
+    '  GLSceneForm, GLCadencer, GLMaterial, GLObjects, GLHUDObjects, GLS_UnicodeBitmapFont,' + LineEnding +
     '  GLSkydome, GLGeomObjects, GLShadowPlane, GLLCLViewer, BaseClasses, GLFilePNG;' + LineEnding;
 
 end;
@@ -2340,7 +2340,7 @@ begin
             '    GLLightSource1: TGLLightSource;' + LineEnding +
             '    GLSkyDome1: TGLSkyDome;' + LineEnding +
             '    GLWorldObject3: TGLSphere;' + LineEnding +
-            '    GLWindowsBitmapFont1: TGLWindowsBitmapFont;' + LineEnding +
+            '    GLUnicodeBitmapFont1: TGLUnicodeBitmapFont;' + LineEnding +
             '    GLWorld: TGLDummyCube;' + LineEnding +
             '    GLMaterialLibrary1: TGLMaterialLibrary;' + LineEnding +
             '    GLScene1: TGLScene;' + LineEnding +
@@ -2526,7 +2526,7 @@ begin
     '        Position.Coordinates = {' + LineEnding +
     '          0000F0410000F041000000000000803F' + LineEnding +
     '        }' + LineEnding +
-    '        BitmapFont = GLWindowsBitmapFont1' + LineEnding +
+    '        BitmapFont = GLUnicodeBitmapFont1' + LineEnding +
     '        Text = ''GLScene Project''' + LineEnding +
     '        Rotation = 0' + LineEnding +
     '        ModulateColor.Color = {' + LineEnding +
@@ -2793,7 +2793,7 @@ begin
     '    left = 74' + LineEnding +
     '    top = 88' + LineEnding +
     '  end' + LineEnding +
-    '  object GLWindowsBitmapFont1: TGLWindowsBitmapFont' + LineEnding +
+    '  object GLUnicodeBitmapFont1: TGLUnicodeBitmapFont' + LineEnding +
     '    Font.CharSet = DEFAULT_CHARSET' + LineEnding +
     '    Font.Color = clWhite' + LineEnding +
     '    Font.Height = -32' + LineEnding +
