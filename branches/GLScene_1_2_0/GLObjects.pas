@@ -165,9 +165,9 @@ uses
   GLNodes,
   GLCoordinates,
   GLMaterial,
-  GLMaterialEx,
-  GLSMesh,
-  GLSDrawTechnique;
+  GLS_Material,
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -911,7 +911,7 @@ uses
 {$ENDIF}
   Spline,
   GLState,
-  GLSLParameter;
+  GLS_ShaderParameter;
 
 {$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
 

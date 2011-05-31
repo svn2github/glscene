@@ -53,9 +53,9 @@ uses
   GLNodes,
   GLCoordinates,
   GLMaterial,
-  GLMaterialEx,
-  GLSMesh,
-  GLSDrawTechnique;
+  GLS_Material,
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -597,7 +597,7 @@ implementation
 uses
   Polynomials,
   GLColor,
-  GLSLParameter,
+  GLS_ShaderParameter,
   GLState;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLDisk'}{$ENDIF}

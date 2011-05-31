@@ -43,15 +43,15 @@ uses
   GLScene,
   VectorGeometry,
   GLMaterial,
-  GLMaterialEx,
+  GLS_Material,
   GLObjects,
   VectorLists,
   GLColor,
   BaseClasses,
   GLPipelineTransformation,
   GLRenderContextInfo,
-  GLSMesh,
-  GLSDrawTechnique;
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -286,7 +286,7 @@ uses
   VectorTypes,
 {$ENDIF}
   OpenGLTokens,
-  GLSLParameter,
+  GLS_ShaderParameter,
   GLState,
   GLSLog;
 

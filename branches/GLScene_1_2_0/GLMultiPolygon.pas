@@ -65,7 +65,7 @@ uses
   BaseClasses,
   GLCoordinates,
   GLRenderContextInfo,
-  GLSMesh;
+  GLS_Mesh;
 
 type
 
@@ -238,10 +238,9 @@ implementation
 
 uses
   SysUtils,
-  XOpenGL,
   GLContext,
   GLState,
-  GLSLParameter
+  GLS_ShaderParameter
   {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type

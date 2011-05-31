@@ -62,7 +62,7 @@ uses
   VectorGeometry,
   GLRenderContextInfo,
   GLNodes,
-  GLSMesh,
+  GLS_Mesh,
   GLState,
   VectorTypes;
 
@@ -349,7 +349,7 @@ uses
   SysUtils,
   Spline,
   VectorLists,
-  GLSLParameter;
+  GLS_ShaderParameter;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------

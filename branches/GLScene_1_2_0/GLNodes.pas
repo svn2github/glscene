@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLNodes<p>
@@ -31,8 +31,8 @@ uses
   BaseClasses,
   GLCoordinates,
   Spline,
-  GLSMesh,
-  GLSDrawTechnique;
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 {$I GLScene.inc}
 
@@ -154,7 +154,7 @@ implementation
 uses
   SysUtils,
   GLState,
-  GLSLParameter
+  GLS_ShaderParameter
 {$IFDEF GLS_DELPHI},
   VectorTypes{$ENDIF};
 
