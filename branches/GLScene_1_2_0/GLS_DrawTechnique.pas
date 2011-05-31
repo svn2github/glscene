@@ -11,7 +11,7 @@
  </ul></font>
 }
 
-unit GLSDrawTechnique;
+unit GLS_DrawTechnique;
 
 interface
 
@@ -30,7 +30,7 @@ uses
   GLState,
   GLRenderContextInfo,
   OpenGLTokens,
-  GLSMesh,
+  GLS_Mesh,
   GLMaterial;
 
 const
@@ -223,13 +223,13 @@ procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
 implementation
 
 uses
-  GLMaterialEx,
+  GLS_Material,
   GLColor,
   GLStrings,
   VectorGeometry,
   VectorTypes,
   VectorLists,
-  GLSLParameter,
+  GLS_ShaderParameter,
   GLSLog;
 
 const

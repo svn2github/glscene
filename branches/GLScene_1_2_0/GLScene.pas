@@ -377,10 +377,10 @@ uses
   GLCoordinates,
   GLRenderContextInfo,
   GLMaterial,
-  GLMaterialEx,
+  GLS_Material,
   GLTextureFormat,
-  GLSMesh,
-  GLSDrawTechnique;
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -2515,7 +2515,7 @@ uses
   XOpenGL,
   VectorTypes,
   ApplicationFileIO,
-  GLSLParameter,
+  GLS_ShaderParameter,
   GLFileDDS,
   GLUtils;
 

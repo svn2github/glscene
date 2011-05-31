@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialEx<p>
+{: GLS_Material<p>
 
  Handles extended material and it components:
   textures, samplers, combiners, shaders and etc.
@@ -23,7 +23,7 @@
    </ul></font>
 }
 
-unit GLMaterialEx;
+unit GLS_Material;
 
 interface
 
@@ -33,7 +33,7 @@ uses
   Classes, SysUtils, GLRenderContextInfo, BaseClasses, GLContext, VectorTypes,
   GLMaterial, GLTexture, GLColor, GLCoordinates, VectorGeometry, GLGraphics,
   PersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
-  GLTextureCombiners, OpenGLTokens, GLSLParameter;
+  GLTextureCombiners, OpenGLTokens, GLS_ShaderParameter;
 
 const
   cInternalShader = 'InternalShader';
@@ -1455,7 +1455,7 @@ uses
   LCLType, LResources,
 {$ENDIF}
   GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils,
-  GLSMesh, GLPipelineTransformation;
+  GLS_Mesh, GLPipelineTransformation;
 
 
 resourcestring

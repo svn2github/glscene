@@ -16,7 +16,7 @@ interface
 
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons, GLSLParameter, GLTextureFormat;
+  Dialogs, StdCtrls, ExtCtrls, Buttons, GLS_ShaderParameter, GLTextureFormat;
 
 type
   TShaderUniformEditor = class(TForm)

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSNishitaSky <p>
+{: GLS_NishitaSky <p>
 
    GPU Crysis Atmospheric scattering.<p>
    There is two methods for update: <p>
@@ -16,7 +16,7 @@
    </ul></font><p>
 }
 
-unit GLSNishitaSky;
+unit GLS_NishitaSky;
 
 interface
 
@@ -39,10 +39,10 @@ uses
   GLTexture,
   GLGraphics,
   GLTextureFormat,
-  GLSMesh,
-  GLSDrawTechnique,
+  GLS_Mesh,
+  GLS_DrawTechnique,
   GLMaterial,
-  GLMaterialEx,
+  GLS_Material,
   GLRenderContextInfo,
   GLPipelineTransformation;
 
@@ -202,7 +202,7 @@ uses
   GLFileDDS,
 {$ENDIF}
   GLSLog,
-  GLSLParameter,
+  GLS_ShaderParameter,
   GLColor
 {$IFDEF GLS_SERVICE_CONTEXT}
   ,SyncObjs

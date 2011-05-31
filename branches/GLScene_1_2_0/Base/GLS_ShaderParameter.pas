@@ -7,7 +7,7 @@
     <li>14/03/11 - Yar - Creation
   </ul>
 }
-unit GLSLParameter;
+unit GLS_ShaderParameter;
 
 interface
 

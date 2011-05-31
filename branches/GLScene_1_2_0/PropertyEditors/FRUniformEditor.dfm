@@ -67,7 +67,6 @@ object ShaderUniformEditor: TShaderUniformEditor
     Width = 209
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 1
     OnChange = AutoSetBoxChange
   end
@@ -78,7 +77,6 @@ object ShaderUniformEditor: TShaderUniformEditor
     Height = 21
     Style = csDropDownList
     Enabled = False
-    ItemHeight = 13
     TabOrder = 2
     OnChange = SamplerBoxChange
   end
@@ -171,7 +169,6 @@ object ShaderUniformEditor: TShaderUniformEditor
     Height = 21
     Style = csDropDownList
     Enabled = False
-    ItemHeight = 13
     TabOrder = 4
     OnChange = TextureBoxChange
   end
