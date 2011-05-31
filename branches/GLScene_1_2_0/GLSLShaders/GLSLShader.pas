@@ -75,7 +75,7 @@ uses
 
   // GLScene
   VectorGeometry, VectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat, GLSLParameter;
+  GLRenderContextInfo, GLTextureFormat, GLS_ShaderParameter;
 
 type
   TGLSLShaderParameter = class;
