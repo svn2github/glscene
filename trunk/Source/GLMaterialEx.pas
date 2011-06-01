@@ -1923,7 +1923,7 @@ begin
       if not FUseStreaming and Assigned(FImage) then
       begin
         Inc(FApplyCounter);
-        if FApplyCounter > GLS_MAX_RENDERING_CONTEXT_NUM then
+        if FApplyCounter > 16 then
           FreeAndNil(FImage);
       end;
 
@@ -5644,7 +5644,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
         begin
           LTex := TGLTextureImageEx(FLibTexture);
           Inc(LTex.FApplyCounter);
-          if LTex.FApplyCounter > GLS_MAX_RENDERING_CONTEXT_NUM then
+          if LTex.FApplyCounter > 16 then
             FreeAndNil(LTex.FImage);
         end;
       end

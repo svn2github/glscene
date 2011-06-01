@@ -6,6 +6,7 @@
    Prototypes and base implementation of TGLContext.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>01/06/11 - Yar - Now number of rendering contexts is unlimited (by Gabriel Corneanu)  
       <li>13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
       <li>24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
       <li>24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
@@ -110,7 +111,6 @@ uses
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  GLS_MAX_RENDERING_CONTEXT_NUM = 16;
   MRT_BUFFERS: array[0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 {$IFDEF FPC}
@@ -185,7 +185,6 @@ type
   TGLContext = class
   private
     { Private Declarations }
-    FID: Integer;
     FColorBits, FAlphaBits: Integer;
     FDepthBits: Integer;
     FStencilBits: Integer;
@@ -240,7 +239,6 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    property ID: Integer read FID;
     {: An application-side cache of global per-context OpenGL states
        and parameters }
     property GLStates: TGLStateCache read FGLStates;
@@ -354,6 +352,7 @@ type
     property FullScreen: Boolean read FFullScreen write FFullScreen;
   end;
 
+  PGLRCHandle = ^TGLRCHandle;
   TGLRCHandle = record
     FRenderingContext: TGLContext;
     FHandle: TGLuint;
@@ -371,10 +370,14 @@ type
   TGLContextHandle = class
   private
     { Private Declarations }
-    FHandles: array[0..GLS_MAX_RENDERING_CONTEXT_NUM - 1] of TGLRCHandle;
+    FHandles: TList;
+    FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
     function GetHandle: TGLuint;
     function GetContext: TGLContext;
+    function SearchRC(AContext: TGLContext): PGLRCHandle;
+    function RCItem(AIndex: integer): PGLRCHandle; inline;
+    procedure CheckCurrentRC;
   protected
     { Protected Declarations }
     //: Invoked by when there is no compatible context left for relocation
@@ -1929,7 +1932,11 @@ end;
 constructor TGLContextHandle.Create;
 begin
   inherited Create;
-  FillChar(FHandles[0], SizeOf(FHandles), $00);
+  FHandles := TList.Create;
+  //first is a dummy record
+  new(FLastHandle);
+  FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
+  FHandles.Add(FLastHandle);
   GLContextManager.FHandles.Add(Self);
 end;
 
@@ -1949,8 +1956,13 @@ end;
 //
 
 destructor TGLContextHandle.Destroy;
+var
+  i : integer;
 begin
   DestroyHandle;
+  for i := 0 to FHandles.Count-1 do
+    Dispose(RCItem(i));
+  FHandles.Free;
   GLContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
@@ -1963,7 +1975,7 @@ var
   I: Integer;
   bSucces: Boolean;
   aList: TList;
-  LContext: TGLContext;
+  p : PGLRCHandle;
 
 begin
   if vCurrentGLContext = nil then
@@ -1975,44 +1987,37 @@ begin
   if GetHandle <> 0 then
     exit;
 
+  //add entry
+  New(FLastHandle);
+  FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
+  FHandles.Add(FLastHandle);
+  FLastHandle.FRenderingContext := vCurrentGLContext;
+
   bSucces := False;
   if Transferable then
   begin
 {$IFNDEF GLS_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
-    for I := aList.Count - 1 downto 0 do
-    begin
-      LContext := aList[I];
-      if (FHandles[LContext.FID].FRenderingContext = LContext)
-        and (FHandles[LContext.FID].FHandle > 0) then
-      begin
-        // Copy shared handle
-        FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
-        FHandles[vCurrentGLContext.FID].FHandle := FHandles[LContext.FID].FHandle;
-        FHandles[vCurrentGLContext.FID].FChanged := FHandles[LContext.FID].FChanged;
-        Inc(vCurrentGLContext.FOwnedHandlesCount);
-        bSucces := True;
-        break;
-      end;
-    end; // of I
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
     try
+{$ENDIF}
       for I := aList.Count - 1 downto 0 do
       begin
-        LContext := aList[I];
-        if (FHandles[LContext.FID].FRenderingContext = LContext)
-          and (FHandles[LContext.FID].FHandle > 0) then
+        P := SearchRC(aList[I]);
+        if (P.FHandle > 0) then
         begin
           // Copy shared handle
-          FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
-          FHandles[vCurrentGLContext.FID].FHandle := FHandles[LContext.FID].FHandle;
-          FHandles[vCurrentGLContext.FID].FChanged := FHandles[LContext.FID].FChanged;
+          //FLastHandle.FRenderingContext := vCurrentGLContext;
+          FLastHandle.FHandle           := P.FHandle;
+          FLastHandle.FChanged          := P.FChanged;
           Inc(vCurrentGLContext.FOwnedHandlesCount);
           bSucces := True;
           break;
         end;
       end;
+{$IFNDEF GLS_MULTITHREAD}
+{$ELSE}
     finally
       vCurrentGLContext.FSharedContexts.UnlockList;
     end;
@@ -2022,10 +2027,9 @@ begin
   if not bSucces then
   begin
     // Allocate handle in current context
-    FHandles[vCurrentGLContext.FID].FRenderingContext := vCurrentGLContext;
-    FHandles[vCurrentGLContext.FID].FHandle := DoAllocateHandle;
-    bSucces := FHandles[vCurrentGLContext.FID].FHandle <> 0;
-    FHandles[vCurrentGLContext.FID].FChanged := bSucces;
+    FLastHandle.FHandle := DoAllocateHandle;
+    bSucces := FLastHandle.FHandle <> 0;
+    FLastHandle.FChanged := bSucces;
     if bSucces then
       Inc(vCurrentGLContext.FOwnedHandlesCount);
   end;
@@ -2038,23 +2042,47 @@ end;
 
 function TGLContextHandle.IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
 begin
+  Result := SearchRC(AContext).FHandle > 0;
+end;
+
+function TGLContextHandle.SearchRC(AContext: TGLContext): PGLRCHandle;
+var
+  i : integer;
+begin
   if AContext = nil then
     AContext := vCurrentGLContext;
 
-  if Assigned(AContext) then
-    Result := (FHandles[AContext.FID].FRenderingContext = AContext)
-      and (FHandles[AContext.FID].FHandle > 0)
-  else
-    Result := False;
+  if AContext = FLastHandle.FRenderingContext then
+  begin
+    Result := FLastHandle;
+    exit;
+  end;
+
+  for i := 1 to FHandles.Count-1 do
+    if RCItem(i).FRenderingContext = AContext then
+    begin
+      Result := RCItem(i);
+      exit;
+    end;
+
+  //first handle is always a dummy
+  Result := FHandles[0];
+end;
+
+procedure TGLContextHandle.CheckCurrentRC;
+begin
+  if vCurrentGLContext <> FLastHandle.FRenderingContext then
+    FLastHandle := SearchRC(vCurrentGLContext);
 end;
 
 function TGLContextHandle.GetHandle: TGLuint;
 begin
-  if Assigned(vCurrentGLContext)
-    and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext) then
-    Result := FHandles[vCurrentGLContext.FID].FHandle
-  else
-    Result := 0;
+//  CheckCurrentRC;
+//inline doesn't always work... so optimize it here
+  if vCurrentGLContext <> FLastHandle.FRenderingContext then
+    FLastHandle := SearchRC(vCurrentGLContext);
+
+  Result := FLastHandle.FHandle;
 end;
 
 // DestroyHandle
@@ -2063,33 +2091,36 @@ end;
 procedure TGLContextHandle.DestroyHandle;
 var
   oldContext: TGLContext;
+  P : PGLRCHandle;
   I: Integer;
 begin
   oldContext := vCurrentGLContext;
   if Assigned(oldContext) then
     oldContext.Deactivate;
   try
-    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+    for I := FHandles.Count-1 downto 1 do
     begin
-      if FHandles[I].FHandle > 0 then
+      P := FHandles[I];
+      if P.FHandle > 0 then
       begin
-        FHandles[I].FRenderingContext.Activate;
-        if IsValid(FHandles[I].FHandle) then
-          DoDestroyHandle(FHandles[I].FHandle);
-        Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
-        FHandles[I].FRenderingContext.Deactivate;
-        FHandles[I].FRenderingContext := nil;
-        FHandles[I].FHandle := 0;
-        FHandles[I].FChanged := True;
+        P.FRenderingContext.Activate;
+        if IsValid(P.FHandle) then
+          DoDestroyHandle(P.FHandle);
+        Dec(P.FRenderingContext.FOwnedHandlesCount);
+        P.FRenderingContext.Deactivate;
+        P.FRenderingContext := nil;
+        P.FHandle := 0;
+        P.FChanged := True;
       end;
+      Dispose(P);
     end;
+    FHandles.Count := 1; //delete all in 1 step
   finally
     if Assigned(vCurrentGLContext) then
       vCurrentGLContext.Deactivate;
     if Assigned(oldContext) then
       oldContext.Activate;
   end;
-  FillChar(FHandles[0], SizeOf(FHandles), 0);
 end;
 
 // ContextDestroying
@@ -2098,6 +2129,7 @@ end;
 procedure TGLContextHandle.ContextDestroying;
 var
   I: Integer;
+  P: PGLRCHandle;
   aList: TList;
   bShared: Boolean;
 begin
@@ -2112,14 +2144,17 @@ begin
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
     {$ENDIF GLS_MULTITHREAD}
-        for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-          if (FHandles[I].FRenderingContext <> vCurrentGLContext)
-            and (FHandles[I].FHandle <> 0)
-            and (aList.IndexOf(FHandles[I].FRenderingContext) > -1) then
+        for I := FHandles.Count-1 downto 1 do
+        begin
+          P := RCItem(I);
+          if (P.FRenderingContext <> vCurrentGLContext)
+            and (P.FHandle <> 0)
+            and (aList.IndexOf(P.FRenderingContext) > -1) then
             begin
               bShared := True;
               break;
             end;
+        end;
     {$IFDEF GLS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnLockList;
@@ -2127,18 +2162,20 @@ begin
     {$ENDIF GLS_MULTITHREAD}
     end;
 
-    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+    for I := FHandles.Count-1 downto 1 do
     begin
-      if (FHandles[I].FRenderingContext = vCurrentGLContext)
-        and (FHandles[I].FHandle <> 0) then
+      P := RCItem(I);
+      if (P.FRenderingContext = vCurrentGLContext) and (P.FHandle <> 0) then
       begin
         if not bShared then
-          if IsValid(FHandles[I].FHandle) then
-            DoDestroyHandle(FHandles[I].FHandle);
-        Dec(FHandles[I].FRenderingContext.FOwnedHandlesCount);
-        FHandles[I].FHandle := 0;
-        FHandles[I].FRenderingContext := nil;
-        FHandles[I].FChanged := True;
+          if IsValid(P.FHandle) then
+            DoDestroyHandle(P.FHandle);
+        Dec(P.FRenderingContext.FOwnedHandlesCount);
+        P.FHandle := 0;
+        P.FRenderingContext := nil;
+        P.FChanged := True;
+        Dispose(P);
+        FHandles.Delete(I);
         exit;
       end;
     end;
@@ -2148,103 +2185,74 @@ end;
 function TGLContextHandle.GetContext: TGLContext;
 var
   I: Integer;
+  P: PGLRCHandle;
 begin
-  // If handle allocated in active context - return it
-  if vCurrentGLContext <> nil then
+  Result := nil;
+  // Return first context where handle is allocated
+  for I := FHandles.Count-1 downto 1 do
   begin
-    Result := vCurrentGLContext;
-    for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+    P := RCItem(I);
+    if (P.FRenderingContext <> nil) and (P.FHandle <> 0) then
     begin
-      if (FHandles[I].FRenderingContext = vCurrentGLContext)
-        and (FHandles[I].FHandle <> 0) then
+      Result := P.FRenderingContext;
+      // If handle allocated in active context - return it
+      if (Result = vCurrentGLContext) then
         exit;
     end;
   end;
-  // Return first context where handle is allocated
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-  begin
-    if (FHandles[I].FRenderingContext <> nil)
-      and (FHandles[I].FHandle <> 0) then
-    begin
-      Result := FHandles[I].FRenderingContext;
-      exit;
-    end;
-  end;
-  Result := nil;
 end;
 
 function TGLContextHandle.IsDataNeedUpdate: Boolean;
 begin
-  Result := True;
-  if Assigned(vCurrentGLContext) then
-  begin
-    if (FHandles[vCurrentGLContext.FID].FHandle <> 0)
-    and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext) then
-      Result := FHandles[vCurrentGLContext.FID].FChanged;
-  end
-  else
-    Result := False;
+  if GetHandle = 0 then
+    CheckCurrentRC;
+  Result := (FLastHandle.FHandle <> 0) and FLastHandle.FChanged;
 end;
 
 function TGLContextHandle.IsDataComplitelyUpdated: Boolean;
 var
-  I, J: Integer;
+  I: Integer;
 begin
-  Result := False;
-  J := 0;
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
+  Result := false;
+  for I := FHandles.Count-1 downto 1 do
   begin
-    if (FHandles[I].FRenderingContext <> nil)
-      and (FHandles[I].FHandle <> 0) then
-      Result := Result or FHandles[I].FChanged;
-    if FHandles[I].FRenderingContext = nil then
-      Inc(J);
+    with RCItem(i)^ do
+      if (FRenderingContext <> nil) and (FHandle <> 0) and FChanged then exit;
   end;
-  Result := Result or (J = Length(FHandles));
-  Result := not Result;
+  Result := true;
 end;
 
 procedure TGLContextHandle.NotifyDataUpdated;
 var
   I: Integer;
-  vContext: TGLContext;
-{$IFDEF GLS_MULTITHREAD}
   aList: TList;
-{$ENDIF}
 begin
   if Assigned(vCurrentGLContext) then
   begin
     if not Transferable then
     begin
-      if Assigned(vCurrentGLContext)
-        and (FHandles[vCurrentGLContext.FID].FRenderingContext = vCurrentGLContext)
-        and (FHandles[vCurrentGLContext.FID].FHandle <> 0) then
-        begin
-          FHandles[vCurrentGLContext.FID].FChanged := False;
-          exit;
-        end;
+      CheckCurrentRC();
+      if FLastHandle.FHandle <> 0 then
+      begin
+        FLastHandle.FChanged := False;
+        exit;
+      end;
     end
-
     else
     begin
   {$IFNDEF GLS_MULTITHREAD}
-      for i := 0 to vCurrentGLContext.FSharedContexts.Count - 1 do
-      begin
-        vContext := TGLContext(vCurrentGLContext.FSharedContexts[i]);
-        if (FHandles[vContext.FID].FRenderingContext = vContext)
-          and (FHandles[vContext.FID].FHandle <> 0) then
-          FHandles[vContext.FID].FChanged := False;
-      end;
+      aList := vCurrentGLContext.FSharedContexts;
   {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
+  {$ENDIF}
         for I := 0 to aList.Count - 1 do
         begin
-          vContext := TGLContext(aList[I]);
-          if (FHandles[vContext.FID].FRenderingContext = vContext)
-            and (FHandles[vContext.FID].FHandle <> 0) then
-            FHandles[vContext.FID].FChanged := False;
+          with SearchRC(aList[I])^ do
+            if (FHandle <> 0) then
+              FChanged := False;
         end;
+  {$IFDEF GLS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnlockList;
       end;
@@ -2255,12 +2263,17 @@ begin
     GLSLogger.LogError(cNoActiveRC);
 end;
 
+function TGLContextHandle.RCItem(AIndex: integer): PGLRCHandle;
+begin
+  Result := FHandles[AIndex];
+end;
+
 procedure TGLContextHandle.NotifyChangesOfData;
 var
   I: Integer;
 begin
-  for I := GLS_MAX_RENDERING_CONTEXT_NUM - 1 downto 0 do
-    FHandles[I].FChanged := True;
+  for I := FHandles.Count-1 downto 1 do
+    RCItem(I).FChanged := True;
   if Assigned(FOnPrepare) then
     GLContextManager.NotifyPreparationNeed;
 end;
@@ -2269,43 +2282,33 @@ function TGLContextHandle.IsShared: Boolean;
 var
   I: Integer;
   vContext: TGLContext;
-{$IFDEF GLS_MULTITHREAD}aList: TList;
-{$ENDIF}
+  aList: TList;
 begin
   Result := False;
   // untransferable handles can't be shared
   if not Transferable then
     exit;
+  Result := True;
 {$IFNDEF GLS_MULTITHREAD}
-  for I := 0 to vCurrentGLContext.FSharedContexts.Count - 1 do
-  begin
-    vContext := TGLContext(vCurrentGLContext.FSharedContexts[I]);
-    if (vContext <> vCurrentGLContext)
-      and (FHandles[vContext.FID].FRenderingContext = vContext) then
-    begin
-      // at least one context is friendly
-      Result := True;
-      exit;
-    end;
-  end;
+  aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
   aList := vCurrentGLContext.FSharedContexts.LockList;
   try
+{$ENDIF}
     for I := 0 to aList.Count - 1 do
     begin
-      vContext := TGLContext(aList[I]);
-      if (vContext <> vCurrentGLContext)
-        and (FHandles[vContext.FID].FRenderingContext = vContext) then
-      begin
+      vContext := aList[I];
+      if (vContext <> vCurrentGLContext) and
         // at least one context is friendly
-        Result := True;
-        break;
-      end;
+        (SearchRC(vContext).FHandle <> 0) then
+        exit;
     end;
+{$IFDEF GLS_MULTITHREAD}
   finally
     vCurrentGLContext.FSharedContexts.UnlockList;
   end;
 {$ENDIF}
+  Result := false;
 end;
 
 // Transferable
@@ -4590,7 +4593,7 @@ begin
       if IndexOf(aContext) >= 0 then
         raise EGLContext.Create(cInvalidContextRegistration)
       else
-        aContext.FID := Add(aContext);
+        Add(aContext);
     finally
       FList.UnlockList;
     end;

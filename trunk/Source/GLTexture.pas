@@ -3180,19 +3180,21 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
         end;
     end;
   end;
-
+var
+  H : TGLuint;
 begin
   // Multisample image do not work with FFP
   if (FTextureHandle.Target = ttTexture2DMultisample) or
     (FTextureHandle.Target = ttTexture2DMultisampleArray) then
     exit;
 
-  if not Disabled and (Handle > 0) then
+  H := Handle;
+  if not Disabled and (H > 0) then
   begin
     with rci.GLStates do
     begin
       ActiveTexture := 0;
-      TextureBinding[0, FTextureHandle.Target] := Handle;
+      TextureBinding[0, FTextureHandle.Target] := H;
       ActiveTextureEnabled[FTextureHandle.Target] := True;
     end;
 
@@ -3329,14 +3331,19 @@ begin
   if (vTarget <> ttNoShape) and (FTextureHandle.Target <> vTarget) then
     FTextureHandle.DestroyHandle;
 
-  FTextureHandle.AllocateHandle;
   Result := FTextureHandle.Handle;
+  if Result = 0 then
+  begin
+    FTextureHandle.AllocateHandle;
+    Result := FTextureHandle.Handle;
+  end;
   if FTextureHandle.IsDataNeedUpdate then
   begin
     FTextureHandle.Target := vTarget;
     FSamplerHandle.NotifyChangesOfData;
   end;
-  FSamplerHandle.AllocateHandle;
+  if FSamplerHandle.Handle = 0 then
+    FSamplerHandle.AllocateHandle;
 
   // bind texture
   if IsTargetSupported(FTextureHandle.Target) then
@@ -3344,7 +3351,7 @@ begin
     if FSamplerHandle.IsDataNeedUpdate then
     begin
       with CurrentGLContext.GLStates do
-        TextureBinding[ActiveTexture, FTextureHandle.Target] := FTextureHandle.Handle;
+        TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
       PrepareParams(DecodeGLTextureTarget(FTextureHandle.Target));
       FSamplerHandle.NotifyDataUpdated;
     end;

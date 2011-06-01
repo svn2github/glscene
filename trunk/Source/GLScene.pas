@@ -2707,8 +2707,8 @@ end;
 function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
 begin
   if not Assigned(FListHandle) then
-    FListHandle := TGLListHandle.Create;
-  FListHandle.AllocateHandle;
+    FListHandle := TGLListHandle.CreateAndAllocate(false);
+  Result := FListHandle.Handle;
 
   if ocStructure in FChanges then
   begin
@@ -2718,7 +2718,7 @@ begin
 
   if FListHandle.IsDataNeedUpdate then
   begin
-    rci.GLStates.NewList(FListHandle.Handle, GL_COMPILE);
+    rci.GLStates.NewList(Result, GL_COMPILE);
     try
       BuildList(rci);
     finally
@@ -2726,8 +2726,6 @@ begin
     end;
     FListHandle.NotifyDataUpdated;
   end;
-
-  Result := FListHandle.Handle;
 end;
 
 // ListHandleAllocated
@@ -8606,7 +8604,8 @@ begin
           FRenderDPI := GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
         // render
         DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
-        FViewport := TRectangle(nativeContext.GLStates.ViewPort);
+        if nativeContext <> nil then
+          FViewport := TRectangle(nativeContext.GLStates.ViewPort);
         GL.Finish;
       finally
         FRenderingContext.Deactivate;
