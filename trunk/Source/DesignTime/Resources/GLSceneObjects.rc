@@ -52,11 +52,13 @@ TGLCapsule BITMAP objects\basic_geometry\TGLCapsule.bmp
 TGLAnimatedSprite BITMAP objects\advanced_geometry\TGLAnimatedSprite.bmp
 TGLAnnulus BITMAP objects\advanced_geometry\TGLAnnulus.bmp
 TGLArrowLine BITMAP objects\advanced_geometry\TGLArrowLine.bmp
+TGLArrowArc BITMAP objects\advanced_geometry\TGLArrowArc.bmp
 TGLExtrusionSolid BITMAP objects\advanced_geometry\TGLExtrusionSolid.bmp
 TGLMultiPolygon BITMAP objects\advanced_geometry\TGLMultiPolygon.bmp
 TGLPipe BITMAP objects\advanced_geometry\TGLPipe.bmp
 TGLRevolutionSolid BITMAP objects\advanced_geometry\TGLRevolutionSolid.bmp
 TGLTorus BITMAP objects\advanced_geometry\TGLTorus.bmp
+TGLGeoSphere BITMAP objects\advanced_geometry\TGLGeoSphere.bmp
 
 TGLActor BITMAP objects\mesh_objects\TGLActor.bmp
 TGLFreeForm BITMAP objects\mesh_objects\TGLFreeForm.bmp

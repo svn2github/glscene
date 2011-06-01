@@ -14,11 +14,13 @@ objects\TGLRenderPoint.bmp
 objects\advanced_geometry\TGLAnimatedSprite.bmp
 objects\advanced_geometry\TGLAnnulus.bmp
 objects\advanced_geometry\TGLArrowLine.bmp
+objects\advanced_geometry\TGLArrowArc.bmp
 objects\advanced_geometry\TGLExtrusionSolid.bmp
 objects\advanced_geometry\TGLMultiPolygon.bmp
 objects\advanced_geometry\TGLPipe.bmp
 objects\advanced_geometry\TGLRevolutionSolid.bmp
 objects\advanced_geometry\TGLTorus.bmp
+objects\advanced_geometry\TGLGeoSphere.bmp
 objects\basic_geometry\TGLCapsule.bmp
 objects\basic_geometry\TGLCone.bmp
 objects\basic_geometry\TGLCube.bmp
