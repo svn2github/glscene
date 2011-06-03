@@ -20,8 +20,6 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
   SysUtils,
   Variants,
   Classes,
@@ -60,7 +58,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLNGDManager1: TGLNGDManager;
     GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     Panel1: TPanel;
     Button1: TButton;
     Button2: TButton;
@@ -77,9 +75,9 @@ type
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
   private
-    { Déclarations privées }
+    { Dê¤¬arations privê¦³ }
   public
-    { Déclarations publiques }
+    { Dê¤¬arations publiques }
   end;
 
 var

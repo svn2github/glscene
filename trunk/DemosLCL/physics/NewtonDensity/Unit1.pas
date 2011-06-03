@@ -33,8 +33,6 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
   SysUtils,
   Variants,
   Classes,
@@ -57,7 +55,8 @@ uses
   GLBitmapFont,
   GLWindowsFont,
   Spin,
-  NewtonImport, GLGeomObjects;
+  NewtonImport,
+  GLGeomObjects;
 
 type
 
@@ -71,13 +70,13 @@ type
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     GLPlane1: TGLPlane;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     Mag: TGLDummyCube;
     SubMarine: TGLCube;
     GLPaperSphere: TGLSphere;
     GLLeadSphere: TGLSphere;
     GLCube1: TGLCube;
     SpinEdit1: TSpinEdit;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
     GLHUDText1: TGLHUDText;
     GLNGDManager1: TGLNGDManager;
     SpinEdit2: TSpinEdit;

@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
-  LCLVersion = '0.9.31'
+  LCLVersion = '0.9.30'
   object GLSceneViewer1: TGLSceneViewer
     Left = 105
     Height = 433
@@ -139,7 +139,7 @@ object Form1: TForm1
       }
       RollAngle = 0
       TurnAngle = 0
-      BitmapFont = GLStoredBitmapFont1
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Bodycount:=1'
       Rotation = 0
     end
@@ -180,11 +180,14 @@ object Form1: TForm1
     left = 232
     top = 8
   end
-  object GLStoredBitmapFont1: TGLStoredBitmapFont
+  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
+    Font.CharSet = RUSSIAN_CHARSET
     Font.Color = clWhite
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Tahoma'
-    left = 272
-    top = 8
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    left = 40
+    top = 312
   end
 end

@@ -52,7 +52,7 @@ type
     Universal: TGLCone;
     CustomBall: TGLSphere;
     Ball: TGLSphere;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLAbsoluteHUDText1: TGLAbsoluteHUDText;
     GLAbsoluteHUDText2: TGLAbsoluteHUDText;
     GLAbsoluteHUDText3: TGLAbsoluteHUDText;
@@ -72,11 +72,11 @@ type
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Déclarations privées }
+    { Dê¤¬arations privê¦³ }
        point3d, FPaneNormal: TVector;
 
   public
-    { Déclarations publiques }
+    { Dê¤¬arations publiques }
         PickJoint: TNGDJoint;
     MousePoint: TPoint;
   end;

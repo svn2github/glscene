@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 548
+  Left = 307
   Height = 549
-  Top = 133
+  Top = 165
   Width = 723
   Caption = 'Form1'
   ClientHeight = 549
@@ -11,40 +11,41 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'Tahoma'
   OnCreate = FormCreate
-  LCLVersion = '0.9.31'
+  LCLVersion = '0.9.30'
   object GLSceneViewer1: TGLSceneViewer
-    Left = 128
+    Left = 96
     Height = 549
     Top = 0
-    Width = 595
+    Width = 627
     Camera = GLCamera1
+    Buffer.BackgroundColor = clSkyBlue
     FieldOfView = 159.353576660156
     Align = alRight
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
   end
   object SpinEdit1: TSpinEdit
-    Left = 16
+    Left = 8
     Height = 21
-    Top = 103
+    Top = 128
     Width = 75
     MaxValue = 20
     TabOrder = 1
     Value = 1
   end
   object SpinEdit2: TSpinEdit
-    Left = 16
+    Left = 8
     Height = 21
-    Top = 159
+    Top = 184
     Width = 75
     MaxValue = 10
     TabOrder = 2
     Value = 1
   end
   object SpinEdit3: TSpinEdit
-    Left = 16
+    Left = 8
     Height = 21
-    Top = 215
+    Top = 240
     Width = 75
     MaxValue = 10
     TabOrder = 3
@@ -146,7 +147,8 @@ object Form1: TForm1
           0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
           44796E616D696302000201060D474C4E47444D616E6167657231080009050000
           0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
-          80FF3F090500000000000000000000020008020008020008020008
+          80FF3F090500000000000000000000020008020008020009E2CD0C33000040BF
+          000000000000803F020008
         }
       end
       object GLCube2: TGLCube
@@ -189,7 +191,8 @@ object Form1: TForm1
           0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
           44796E616D696302000201060D474C4E47444D616E6167657231080009050000
           0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
-          80FF3F090500000000000000000000020008020008020008020008
+          80FF3F0905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
         }
         CubeSize = {
           0000803F0000803F0000A040
@@ -248,7 +251,8 @@ object Form1: TForm1
           0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
           44796E616D696302000201060D474C4E47444D616E6167657231080009050000
           0000000AD7A3F83F0600020109050000000000CDCCCCFB3F0500000000000000
-          80FF3F090500000000000000000000020008020008020008020008
+          80FF3F0905000000000000000000000200080200080200090000000000000000
+          000000000000803F020008
         }
       end
     end
@@ -277,7 +281,7 @@ object Form1: TForm1
       }
       RollAngle = 0
       TurnAngle = 0
-      BitmapFont = GLStoredBitmapFont1
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Water Density'
       Rotation = 0
       ModulateColor.Color = {
@@ -292,7 +296,7 @@ object Form1: TForm1
       }
       RollAngle = 0
       TurnAngle = 0
-      BitmapFont = GLStoredBitmapFont1
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Linear Viscosity'
       Rotation = 0
       ModulateColor.Color = {
@@ -307,7 +311,7 @@ object Form1: TForm1
       }
       RollAngle = 0
       TurnAngle = 0
-      BitmapFont = GLStoredBitmapFont1
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Angular Viscosity'
       Rotation = 0
       ModulateColor.Color = {
@@ -340,18 +344,21 @@ object Form1: TForm1
     left = 24
     top = 8
   end
-  object GLStoredBitmapFont1: TGLStoredBitmapFont
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    left = 80
-    top = 56
-  end
   object GLNGDManager1: TGLNGDManager
     NewtonSurfaceItem = <>
     NewtonSurfacePair = <>
     NewtonJoint = <>
     left = 40
     top = 256
+  end
+  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
+    Font.CharSet = RUSSIAN_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    left = 40
+    top = 312
   end
 end

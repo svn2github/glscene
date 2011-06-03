@@ -19,8 +19,6 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
   SysUtils,
   Variants,
   Classes,
