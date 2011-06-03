@@ -376,7 +376,7 @@ type
     function GetHandle: TGLuint;
     function GetContext: TGLContext;
     function SearchRC(AContext: TGLContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; inline;
+    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
     { Protected Declarations }
