@@ -15,6 +15,7 @@
           <SyntaxMode Value="Delphi"/>
           <CStyleOperator Value="False"/>
           <IncludeAssertionCode Value="True"/>
+          <StaticKeyword Value="True"/>
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
