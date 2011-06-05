@@ -43,6 +43,7 @@ objects\environment_objects\TGLAtmosphere.bmp
 objects\environment_objects\TGLEarthSkyDome.bmp
 objects\environment_objects\TGLSkyBox.bmp
 objects\environment_objects\TGLSkyDome.bmp
+objects\environment_objects\TGLNishitaSky.bmp
 objects\graph_plotting_objects\TGLFlatText.bmp
 objects\graph_plotting_objects\TGLHeightfield.bmp
 objects\graph_plotting_objects\TGLXYZGrid.bmp

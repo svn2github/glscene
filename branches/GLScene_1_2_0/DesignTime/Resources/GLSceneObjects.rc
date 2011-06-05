@@ -78,6 +78,7 @@ TGLEarthSkyDome BITMAP objects\environment_objects\TGLEarthSkyDome.bmp
 TGLSkyDome BITMAP objects\environment_objects\TGLSkyDome.bmp
 TGLAtmosphere BITMAP objects\environment_objects\TGLAtmosphere.bmp
 TGLSkyBox BITMAP objects\environment_objects\TGLSkyBox.bmp
+TGLNishitaSky BITMAP objects\environment_objects\TGLNishitaSky.bmp
 
 TGLSpaceText BITMAP objects\doodad_objects\TGLSpaceText.bmp
 TGLTeapot BITMAP objects\doodad_objects\TGLTeapot.bmp

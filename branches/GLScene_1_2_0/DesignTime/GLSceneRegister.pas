@@ -514,7 +514,7 @@ uses
   GLAtmosphere,
   GLAVIRecorder,
   GLBitmapFont,
-  GLS_UnicodeBitmapFont,
+  GLS_SystemBitmapFont,
   GLBlur,
   GLBumpmapHDS,
   GLBumpShader,
@@ -581,6 +581,7 @@ uses
   GLSimpleNavigation,
   GLSkyBox,
   GLSkydome,
+  GLS_NishitaSky,
   GLSLanguage,
   GLSLBumpShader,
   GLSLDiffuseSpecularShader,
@@ -2233,7 +2234,7 @@ begin
       TGLMaterialLibrary, TGLMaterialLibraryEx,
       TGLCadencer,
       TGLGuiLayout,
-      TGLBitmapFont, TGLUnicodeBitmapFont,
+      TGLBitmapFont, TGLSystemBitmapFont,
       TGLScriptLibrary,
       TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer
@@ -2448,6 +2449,7 @@ initialization
     RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects, HInstance);
     RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects, HInstance);
     RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects, HInstance);
+    RegisterSceneObject(TGLNishitaSky, 'NishitaSkyDome', glsOCEnvironmentObjects, HInstance);
     RegisterSceneObject(TGLAtmosphere, 'Atmosphere', glsOCEnvironmentObjects, HInstance);
 
     // HUD objects.
