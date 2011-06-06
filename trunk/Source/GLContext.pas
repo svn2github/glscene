@@ -415,7 +415,7 @@ type
     function IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
     function IsShared: Boolean;
 
-    procedure AllocateHandle;
+    function  AllocateHandle: TGLuint;
     procedure DestroyHandle;
 
     property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
@@ -1970,7 +1970,7 @@ end;
 // AllocateHandle
 //
 
-procedure TGLContextHandle.AllocateHandle;
+function TGLContextHandle.AllocateHandle: TGLuint;
 var
   I: Integer;
   bSucces: Boolean;
@@ -1978,14 +1978,16 @@ var
   p : PGLRCHandle;
 
 begin
+  // if handle aready allocated in current context
+  Result := GetHandle;
+  if Result <> 0 then
+    exit;
+
   if vCurrentGLContext = nil then
   begin
     GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
     exit;
   end;
-  // if handle aready allocated in current context
-  if GetHandle <> 0 then
-    exit;
 
   //add entry
   New(FLastHandle);
@@ -2034,6 +2036,7 @@ begin
       Inc(vCurrentGLContext.FOwnedHandlesCount);
   end;
 
+  Result := FLastHandle.FHandle;
   if not bSucces then
     GLSLogger.LogError(cNoActiveRC)
   else if Assigned(FOnPrepare) then
@@ -2115,6 +2118,7 @@ begin
       Dispose(P);
     end;
     FHandles.Count := 1; //delete all in 1 step
+    FLastHandle := FHandles[0];
   finally
     if Assigned(vCurrentGLContext) then
       vCurrentGLContext.Deactivate;
@@ -2176,6 +2180,8 @@ begin
         P.FChanged := True;
         Dispose(P);
         FHandles.Delete(I);
+        if FLastHandle = P then
+          FLastHandle := FHandles[0];
         exit;
       end;
     end;
@@ -2206,7 +2212,7 @@ function TGLContextHandle.IsDataNeedUpdate: Boolean;
 begin
   if GetHandle = 0 then
     CheckCurrentRC;
-  Result := (FLastHandle.FHandle <> 0) and FLastHandle.FChanged;
+  Result := (FLastHandle.FHandle = 0) or FLastHandle.FChanged;
 end;
 
 function TGLContextHandle.IsDataComplitelyUpdated: Boolean;
