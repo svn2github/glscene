@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 138
   Top = 176
+  Width = 1078
+  Height = 640
   Caption = 'CameraController Demo'
-  ClientHeight = 577
-  ClientWidth = 785
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,14 +17,12 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 333
+    Left = 624
     Top = 0
-    Width = 452
-    Height = 542
+    Width = 446
+    Height = 578
     Align = alRight
     TabOrder = 0
-    ExplicitLeft = 528
-    ExplicitHeight = 611
     object Panel2: TPanel
       Left = 6
       Top = 9
@@ -251,7 +249,7 @@ object Form1: TForm1
     object btnMoveToPos: TButton
       Left = 25
       Top = 336
-      Width = 280
+      Width = 224
       Height = 33
       Caption = 'MoveToPos (linear interpolation)'
       TabOrder = 4
@@ -260,7 +258,7 @@ object Form1: TForm1
     object btnZoomToDistance: TButton
       Left = 25
       Top = 375
-      Width = 280
+      Width = 224
       Height = 34
       Caption = 'ZoomToDistance'
       TabOrder = 5
@@ -269,7 +267,7 @@ object Form1: TForm1
     object btnOrbitToPos: TButton
       Left = 25
       Top = 415
-      Width = 280
+      Width = 224
       Height = 34
       Caption = 'OrbitToPos (will not zoom in to pos)'
       TabOrder = 6
@@ -278,7 +276,7 @@ object Form1: TForm1
     object btnSafeOrbitAndZoomToPos: TButton
       Left = 25
       Top = 455
-      Width = 280
+      Width = 224
       Height = 34
       Caption = 'SafeOrbitAndZoomToPos'
       Font.Charset = DEFAULT_CHARSET
@@ -293,27 +291,19 @@ object Form1: TForm1
     object btnOrbitToPosAdv: TButton
       Left = 25
       Top = 495
-      Width = 280
+      Width = 224
       Height = 34
       Caption = 'OrbitToPosAdv (will not zoom in to pos)'
       TabOrder = 8
       WordWrap = True
       OnClick = btnOrbitToPosAdvClick
     end
-    object UpAxis: TCheckBox
-      Left = 311
-      Top = 503
-      Width = 97
-      Height = 17
-      Caption = 'Prefer up axis'
-      TabOrder = 9
-    end
     object Panel8: TPanel
       Left = 327
       Top = 9
       Width = 114
       Height = 304
-      TabOrder = 10
+      TabOrder = 9
       object Label20: TLabel
         Left = 4
         Top = 2
@@ -464,22 +454,74 @@ object Form1: TForm1
           Text = '0.0'
         end
       end
+      object UpAxis: TCheckBox
+        Left = 9
+        Top = 271
+        Width = 97
+        Height = 17
+        Caption = 'Prefer up axis'
+        TabOrder = 2
+      end
+    end
+    object btSmoothOrbit: TButton
+      Left = 257
+      Top = 415
+      Width = 184
+      Height = 34
+      Caption = 'Smooth OrbitToPos'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 10
+      OnClick = btSmoothOrbitClick
+    end
+    object btSmoothOrbitToPosAdv: TButton
+      Left = 254
+      Top = 495
+      Width = 184
+      Height = 34
+      Caption = 'Smooth OrbitToPosAdv'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 11
+      OnClick = btSmoothOrbitToPosAdvClick
+    end
+    object btSmoothOrbitAndZoom: TButton
+      Left = 257
+      Top = 455
+      Width = 184
+      Height = 34
+      Caption = 'Smooth OrbitToPos and Zoom'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 12
+      OnClick = btSmoothOrbitAndZoomClick
     end
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 333
-    Height = 542
+    Width = 624
+    Height = 578
     Camera = GLCamera
-    FieldOfView = 108.437850952148400000
+    VSync = vsmSync
+    FieldOfView = 134.901107788085900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
     TabOrder = 1
-    ExplicitWidth = 528
-    ExplicitHeight = 611
   end
   object pImg: TPanel
     Left = 4
@@ -562,14 +604,12 @@ object Form1: TForm1
   end
   object Panel6: TPanel
     Left = 0
-    Top = 542
-    Width = 785
+    Top = 578
+    Width = 1070
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 3
-    ExplicitTop = 611
-    ExplicitWidth = 980
     object Label15: TLabel
       Left = 4
       Top = 6
@@ -632,8 +672,9 @@ object Form1: TForm1
       end
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100.000000000000000000
+      DepthOfView = 500.000000000000000000
       FocalLength = 120.000000000000000000
+      NearPlaneBias = 0.100000001490116100
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000204100002041000020410000803F}
       object GLLightSource1: TGLLightSource
@@ -641,31 +682,71 @@ object Form1: TForm1
         SpotCutOff = 180.000000000000000000
       end
     end
+    object dcDebugGUI: TGLDummyCube
+      Scale.Coordinates = {0000003F0000003F0000003F00000000}
+      CubeSize = 1.000000000000000000
+      object ArrowLine: TGLArrowLine
+        Direction.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000000000004843000000000000803F}
+        Scale.Coordinates = {0000C0400000C0400000004100000000}
+        Up.Coordinates = {00000000000000000000803F00000000}
+        BottomRadius = 0.100000001490116100
+        Height = 1.000000000000000000
+        TopRadius = 0.100000001490116100
+        TopArrowHeadHeight = 0.500000000000000000
+        TopArrowHeadRadius = 0.200000002980232200
+        BottomArrowHeadHeight = 0.500000000000000000
+        BottomArrowHeadRadius = 0.200000002980232200
+      end
+      object XYZGrid: TGLXYZGrid
+        Position.Coordinates = {000000000000F0C1000000000000803F}
+        XSamplingScale.Min = -150.000000000000000000
+        XSamplingScale.Max = 150.000000000000000000
+        XSamplingScale.Step = 5.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
+        ZSamplingScale.Min = -150.000000000000000000
+        ZSamplingScale.Max = 150.000000000000000000
+        ZSamplingScale.Step = 5.000000000000000000
+        Parts = [gpX, gpZ]
+      end
+      object GLPlane1: TGLPlane
+        Material.FrontProperties.Ambient.Color = {8180003ECDCC4C3EEEED6D3F0000803F}
+        Material.FrontProperties.Diffuse.Color = {CFCECE3ECDCC4C3F0000803F0000803F}
+        Material.FrontProperties.Emission.Color = {0000000000000000BBBABA3E0000803F}
+        Direction.Coordinates = {000000800000803F0000000000000000}
+        Position.Coordinates = {00000000CDCCF4C1000000000000803F}
+        Scale.Coordinates = {00009643000096430000803F00000000}
+        Up.Coordinates = {0000803F000000000000000000000000}
+        Height = 1.000000000000000000
+        Width = 1.000000000000000000
+      end
+    end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'transparent blue'
-        Tag = 0
         Material.FrontProperties.Diffuse.Color = {FBFAFA3EF7F6F63E0000803F9A99193F}
         Material.BlendingMode = bmTransparency
+        Tag = 0
       end
       item
         Name = 'opaque green'
-        Tag = 0
         Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
+        Tag = 0
       end
       item
         Name = 'opaque red'
-        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
+        Tag = 0
       end>
     Left = 40
     Top = 40
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    FixedDeltaTime = 0.010000000000000000
     SleepLength = 0
     OnProgress = GLCadencer1Progress
     Left = 8
@@ -686,5 +767,14 @@ object Form1: TForm1
     soTimeToZoomBackIn = 1.000000000000000000
     Left = 40
     Top = 72
+  end
+  object GLSmoothNavigator: TGLSmoothNavigator
+    MoveAroundParams.Inertia = 0.500000000000000000
+    MoveAroundParams.MaxAngle = 0.500000000000000000
+    MoveAroundParams.PitchSpeed = 50.000000000000000000
+    MoveAroundParams.TurnSpeed = 50.000000000000000000
+    AdjustDistanceParams.Inertia = 1000.000000000000000000
+    Left = 40
+    Top = 104
   end
 end

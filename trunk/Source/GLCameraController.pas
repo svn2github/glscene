@@ -9,6 +9,7 @@
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
   <b>History : </b><font size=-1><ul>
+      <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
       <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
       <li>10/05/11 - Vince - Add OnMove event
       <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support OrbitToPos when axis are different from -1,0 or 1
@@ -43,7 +44,7 @@ unit GLCameraController;
 
 interface
 
-uses GLScene, Classes, SysUtils, Contnrs, GLCadencer, VectorGeometry;
+uses GLScene, Classes, SysUtils, Contnrs, GLCadencer, VectorGeometry, GLSmoothNavigator;
 
 type
 
@@ -84,7 +85,7 @@ type
     FFinalPos      : TVector;
 
     FElapsedTime   : Double;
-    FDiffTime      : Double;
+    FDeltaTime      : Double;
     FStartTime     : Double;
     FProceedTime   : Double;
   public
@@ -118,6 +119,7 @@ type
   private
     FRotateSpeedX : Double;
     FRotateSpeedZ : Double;
+    FCalculated: Boolean;
   public
     X : Double;
     Y : Double;
@@ -127,6 +129,14 @@ type
     procedure Init; override;
   end;
 
+  TGLSmoothOrbitToPos = class(TGLOrbitToPosJob)
+  private
+    FNeedToRecalculateZoom: Boolean;
+    FShouldBeMatrix: TMatrix;
+    FSmoothNavigator: TGLNavigatorSmoothChangeVector;
+  public
+    procedure Step; override;
+  end;
 
   TGLOrbitToPosAdvJob = class(TGLCameraJob)
   private
@@ -138,6 +148,16 @@ type
     Z : Double;
     Time : Double;
     PreferUpAxis : Boolean;
+    procedure Step; override;
+    procedure Init; override;
+  end;
+
+  TGLSmoothOrbitToPosAdvJob = class(TGLOrbitToPosAdvJob)
+  private
+    FPreviousPosition: TVector;
+    FSmoothNavigator: TGLNavigatorSmoothChangeVector;
+    FRestoreUpVector: Boolean;
+  public
     procedure Step; override;
     procedure Init; override;
   end;
@@ -160,9 +180,7 @@ type
     //used to test whether camera and cadencer are assigned
     //Extended = true -> will test also for Camera.TargetObject
     procedure CheckAssignments(Extended:boolean);
-    //this adjusts camera depth of view after each movement
-    //contains a call to Application.Processmessages for not blocking the app
-    procedure AdjustScene;
+
     //after AdjustScene the Camera.DepthofView will be modified
     //if you want to zoom back in from GUI
     //you should use something like
@@ -170,6 +188,10 @@ type
     procedure SetOnJobAdded(const Value: TGLCameraJobEvent);
     procedure SetOnJobFinished(const Value: TGLCameraJobEvent);
     procedure SetOnJobStep(const Value: TGLCameraJobEvent);
+  protected
+    //this adjusts camera depth of view after each movement
+    //contains a call to Application.Processmessages for not blocking the app
+    procedure AdjustScene;  
   public
     CameraJobList : TGLCameraJobList;
     //constructor
@@ -179,27 +201,44 @@ type
     //methods
     //linear movement from current pos
     procedure MoveToPos(x,y,z,time:double);
+
     //orbiting from current pos to the pos where
     //the camera points at the camera.targetObject TROUGH the given point
     //it will not move to the given point(!), use SafeOrbitAndZoomToPos instead
     //there has to be a camera.targetObject assigned!
     procedure OrbitToPos(x,y,z,time:double);
+
+    // Same as OrbitToPos(), but makes use of SmoothNavigator to make
+    // sure all camera movements are smooth.
+    procedure OrbitToPosSmooth(const x,y,z,time:double;
+      const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const AFNeedToRecalculateZoom: Boolean);
+
     //Same function as OrbitToPos but support all camera states
     //PreferUpAxis value is to setup if function use Camera Up based rotation axis
     //instead of Camera direction based rotation axis when destination and camera
     //position are opposite from Camera Target
     procedure OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True);
+
+
+    // Same as OrbitToPosAdvanced(), but makes use of SmoothNavigator to make
+    // sure all camera movements are smooth.
+    procedure OrbitToPosAdvancedSmooth(const x,y,z, time: double;
+      const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const PreferUpAxis: Boolean = True);
+
     //zooms in/out by moving to the given distance from camera.targetObject
     //there has to be a camera.targetObject assigned!
     procedure ZoomToDistance(Distance,Time:double);
+
     //google earth - like "fly-to"
     // = zoom out to safe distance, orbit, and then zoom in to the given point
     //there has to be a camera.targetObject assigned!
     procedure SafeOrbitAndZoomToPos(x,y,z:double);
+
     //Dan Bartlett said in the GLScene newsgroup that it might be a good idea
     //to introduce ability to stop movement and return control to user
     //here it is
     procedure StopMovement;
+
     //<alled by the cadencer to animate the camera
     procedure Step(const deltaTime, newTime: Double);
   published
@@ -319,7 +358,7 @@ begin
     if CurrentJob.FRunning then
     begin
       CurrentJob.FElapsedTime := newTime - CurrentJob.FStartTime;
-      CurrentJob.FDiffTime := deltaTime;// newTime - CurrentJob.FElapsedTime;
+      CurrentJob.FDeltaTime := deltaTime;// newTime - CurrentJob.FElapsedTime;
       CurrentJob.Step;
 
       // Notify job
@@ -377,6 +416,23 @@ begin
   Job.Time := time;
 end;
 
+
+procedure TGLCameraController.OrbitToPosSmooth(const x, y, z, time: double;
+  const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const AFNeedToRecalculateZoom: Boolean);
+var
+  Job : TGLSmoothOrbitToPos;
+begin
+  Job := TGLSmoothOrbitToPos.Create(CameraJobList);
+
+  Job.X := x;
+  Job.Y := y;
+  Job.Z := z;
+  Job.Time := time;
+  Job.FSmoothNavigator := ASmoothNavigator;
+  Job.FShouldBeMatrix := CameraJobList.Camera.Matrix;
+  Job.FNeedToRecalculateZoom := AFNeedToRecalculateZoom;
+end;
+
 procedure TGLCameraController.OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True);
 var
   Job : TGLOrbitToPosAdvJob;
@@ -390,6 +446,22 @@ begin
   Job.Time := time;
 end;
 
+procedure TGLCameraController.OrbitToPosAdvancedSmooth(const x,y,z, time: double;
+  const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const PreferUpAxis: Boolean = True);
+var
+  Job : TGLSmoothOrbitToPosAdvJob;
+begin
+  Job := TGLSmoothOrbitToPosAdvJob.Create(CameraJobList);
+
+  Job.X := x;
+  Job.Y := y;
+  Job.Z := z;
+  Job.PreferUpAxis := PreferUpAxis;
+  Job.Time := time;
+  Job.FSmoothNavigator := ASmoothNavigator;
+  Job.FPreviousPosition := ASmoothNavigator.OnGetCurrentValue(ASmoothNavigator);
+  Job.FRestoreUpVector := True;
+end;
 
 procedure TGLCameraController.SafeOrbitAndZoomToPos(x,y,z:double);
 begin
@@ -422,7 +494,6 @@ procedure TGLCameraController.SetOnJobFinished(const Value: TGLCameraJobEvent);
 begin
   FOnJobFinished := Value;
 end;
-
 
 { TGLCameraJobList }
 
@@ -562,6 +633,8 @@ var
 begin
 
   FProceedTime := Time;
+  if FCalculated then Exit;
+
   FInitialPos := VectorSubtract(FJoblist.Camera.AbsolutePosition, FJoblist.Camera.TargetObject.AbsolutePosition);
   // Determine final position
   MakeVector(FFinalPos, X, Y, Z);
@@ -648,9 +721,9 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  FRotateSpeedX := -pitchangledif/time;
-  FRotateSpeedZ := turnangledif/time;
-
+  FRotateSpeedX := RadToDeg(-pitchangledif/time);
+  FRotateSpeedZ := RadToDeg(turnangledif/time);
+  FCalculated := True;
 end;
 
 procedure TGLOrbitToPosJob.Step;
@@ -660,14 +733,14 @@ begin
 
   if FElapsedTime < FProceedTime then
   begin
-    FJoblist.Camera.MoveAroundTarget(radtodeg(FRotateSpeedX)*FDiffTime, radtodeg(FRotateSpeedZ)*FDiffTime);
+    FJoblist.Camera.MoveAroundTarget(FRotateSpeedX * FDeltaTime, FRotateSpeedZ * FDeltaTime);
   end
     else
   begin
     Vect := FFinalPos;
 
     if Assigned(FJoblist.Camera.Parent) then
-      Vect:=FJoblist.Camera.Parent.AbsoluteToLocal(Vect);
+      Vect := FJoblist.Camera.Parent.AbsoluteToLocal(Vect);
 
     FJoblist.Camera.Position.AsVector := Vect;
     FRunning := false;
@@ -736,15 +809,17 @@ begin
     //Compute Position
     tempPos := FInitialPos;
     RotateVector(tempPos, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
-    FJoblist.Camera.AbsolutePosition:= VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
-    //Compute Up Vector
-    tempUp := FInitialUp;
-    RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
-    FJoblist.Camera.AbsoluteUp := tempUp;
+    FJoblist.Camera.AbsolutePosition := VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
+
     //Compute Direction vector
     tempDir := FInitialDir;
     RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
     FJoblist.Camera.AbsoluteDirection := tempDir;
+    
+    //Compute Up Vector
+    tempUp := FInitialUp;
+    RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FJoblist.Camera.AbsoluteUp := tempUp;
   end
     else
   begin
@@ -754,6 +829,139 @@ begin
 
 end;
 
+{ TGLSmoothOrbitToPosAdvJob }
 
+procedure TGLSmoothOrbitToPosAdvJob.Init;
+var
+  Right: TVector;
+begin
+
+  FProceedTime := time;
+  FInitialPos:= VectorSubtract(FPreviousPosition, FJoblist.Camera.TargetObject.AbsolutePosition);
+
+  if Assigned(FJoblist.Camera.Parent) then
+    FFinalPos := VectorSubtract(FJoblist.Camera.Parent.LocalToAbsolute(VectorMake(x,y,z,1)), FJoblist.Camera.TargetObject.AbsolutePosition)
+  else
+    FFinalPos := VectorSubtract(VectorMake(x,y,z,1), FJoblist.Camera.TargetObject.AbsolutePosition);
+
+  //if destination is Target Pos, we can't compute
+  if VectorLength(FFinalPos)<0.001 then
+  begin
+    //FAllowUserAction := True;
+    Exit;
+  end;
+
+  //Compute Angle of Rotation
+  FAngle:= ArcCos(VectorAngleCosine(Vector3fMake(FFinalPos), Vector3fMake(FInitialPos)));
+
+  Right := VectorNormalize(VectorCrossProduct(
+//    FJoblist.Camera.AbsoluteVectorToTarget,
+    VectorNormalize(VectorSubtract(FJoblist.Camera.TargetObject.AbsolutePosition, FPreviousPosition)),
+    FJoblist.Camera.AbsoluteUp));
+
+  FInitialDir := FJoblist.Camera.AbsoluteDirection;
+  FInitialUp := FJoblist.Camera.AbsoluteUp;
+
+  // Determine rotation Axis
+  // if Angle equals 0°
+  if FAngle < 0.001 then
+    if PreferUpAxis then
+      FRotAxis := VectorNormalize(VectorCrossProduct(
+                   VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
+    else
+      FRotAxis := Right
+  else
+    // if Angle equals 180°
+    if FAngle >Pi - 0.001  then
+      if PreferUpAxis then
+        FRotAxis := VectorNormalize(VectorCrossProduct(VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
+      else
+        FRotAxis := Right
+    else
+      FRotAxis:= VectorNormalize(VectorCrossProduct(FFinalPos, FInitialPos));
+
+end;
+
+procedure TGLSmoothOrbitToPosAdvJob.Step;
+var
+  tempUp, tempDir, tempPos : TVector;
+begin
+
+  if FElapsedTime < FProceedTime then
+  begin
+    //Compute Position
+    tempPos := FInitialPos;
+    RotateVector(tempPos, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FSmoothNavigator.TargetValue.DirectVector := VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
+    FPreviousPosition := FSmoothNavigator.TargetValue.DirectVector;
+
+    //Compute Direction vector
+    tempDir := FInitialDir;
+    RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+    FJoblist.Camera.AbsoluteDirection := tempDir;
+
+    //Compute Up Vector
+    if FRestoreUpVector then
+      FJoblist.Camera.AbsoluteUp := FInitialUp
+    else
+    begin
+      tempUp := FInitialUp;
+      RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
+      FJoblist.Camera.AbsoluteUp := tempUp;
+    end;
+  end
+    else
+  begin
+
+    FRunning := false;
+  end;
+end;
+
+{ TGLSmoothOrbitToPosAdv }
+
+procedure TGLSmoothOrbitToPos.Step;
+var
+  lCurrentDistanceToTarget: Single;
+  lTargetPosition: TVector;
+  lCurrentMatrix: TMatrix;
+
+  procedure RestoreDistanceToTarget();
+  var
+    lDirection: TVector;
+  begin
+    lDirection := FJoblist.Camera.AbsoluteVectorToTarget;
+    FJoblist.Camera.AbsolutePosition := VectorAdd(
+      FJoblist.Camera.TargetObject.AbsolutePosition, VectorScale(lDirection, - lCurrentDistanceToTarget));
+  end;
+  
+begin
+
+  if FElapsedTime < FProceedTime then
+  begin
+    // Save current matrix.
+    lCurrentMatrix := FJoblist.Camera.Matrix;
+
+    if FNeedToRecalculateZoom then
+      lCurrentDistanceToTarget := FJoblist.Camera.DistanceToTarget
+    else
+      lCurrentDistanceToTarget := 0; // To avoid warning message.
+
+    // Calculate the position, in which camera should have been.
+    FJoblist.Camera.Matrix := FShouldBeMatrix;
+    FJoblist.Camera.MoveAroundTarget(FRotateSpeedX * FDeltaTime, FRotateSpeedZ * FDeltaTime);
+    if FNeedToRecalculateZoom then
+      RestoreDistanceToTarget();
+    lTargetPosition := FJoblist.Camera.AbsolutePosition;
+    FShouldBeMatrix := FJoblist.Camera.Matrix;
+
+    // Restore Camera position and move it to the desired vector.
+    FJoblist.Camera.Matrix := lCurrentMatrix;
+    FSmoothNavigator.TargetValue.DirectVector := lTargetPosition;
+  end
+    else
+  begin
+    FRunning := false;
+  end;
+end;
 
 end.
