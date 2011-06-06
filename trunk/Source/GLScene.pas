@@ -2708,7 +2708,9 @@ function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
 begin
   if not Assigned(FListHandle) then
     FListHandle := TGLListHandle.Create;
-  Result := FListHandle.AllocateHandle;
+  Result := FListHandle.Handle;
+  if Result = 0 then
+    Result := FListHandle.AllocateHandle;
 
   if ocStructure in FChanges then
   begin
