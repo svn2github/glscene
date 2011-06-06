@@ -3,6 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>06/06/11 - Yar - Added GL_NV_vertex_buffer_unified_memory, GL_NV_shader_buffer_load
   <li>11/03/11 - Yar - Added GL_EXT_texture_sRGB_decode, GL_ARB_separate_shader_objects, EXT_direct_state_access
   <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
   <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
@@ -2019,6 +2020,32 @@ type
     GetTexParameterIuiv: PFNGLGETTEXPARAMETERIUIVPROC;
     PatchParameteri: PFNGLPATCHPARAMETERIPROC;
     PatchParameterfv: PFNGLPATCHPARAMETERFVPROC;
+    BufferAddressRangeNV: PFNGLBUFFERADDRESSRANGENVPROC;
+    VertexFormatNV: PFNGLVERTEXFORMATNVPROC;
+    NormalFormatNV: PFNGLNORMALFORMATNVPROC;
+    ColorFormatNV: PFNGLCOLORFORMATNVPROC;
+    IndexFormatNV: PFNGLINDEXFORMATNVPROC;
+    TexCoordFormatNV: PFNGLTEXCOORDFORMATNVPROC;
+    EdgeFlagFormatNV: PFNGLEDGEFLAGFORMATNVPROC;
+    SecondaryColorFormatNV: PFNGLSECONDARYCOLORFORMATNVPROC;
+    FogCoordFormatNV: PFNGLFOGCOORDFORMATNVPROC;
+    VertexAttribFormatNV: PFNGLVERTEXATTRIBFORMATNVPROC;
+    VertexAttribIFormatNV: PFNGLVERTEXATTRIBIFORMATNVPROC;
+    GetIntegerui64i_vNV: PFNGLGETINTEGERUI64I_VNVPROC;
+    GetBufferParameterui64vNV: PGNGLGETBUFFERPARAMETERUI64VNV;
+    MakeBufferResidentNV: PFNGLMAKEBUFFERRESIDENTNVPROC;
+    MakeBufferNonResidentNV: PFNGLMAKEBUFFERNONRESIDENTNVPROC;
+    IsBufferResidentNV: PFNGLISBUFFERRESIDENTNVPROC;
+    MakeNamedBufferResidentNV: PFNGLMAKENAMEDBUFFERRESIDENTNVPROC;
+    MakeNamedBufferNonResidentNV: PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC;
+    IsNamedBufferResidentNV: PFNGLISNAMEDBUFFERRESIDENTNVPROC;
+    GetNamedBufferParameterui64vNV: PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC;
+    GetIntegerui64vNV: PFNGLGETINTEGERUI64VNVPROC;
+    Uniformui64NV: PFNGLUNIFORMUI64NVPROC;
+    Uniformui64vNV: PFNGLUNIFORMUI64VNVPROC;
+    GetUniformui64vNV: PFNGLGETUNIFORMUI64VNVPROC;
+    ProgramUniformui64NV: PFNGLPROGRAMUNIFORMUI64NVPROC;
+    ProgramUniformui64vNV: PFNGLPROGRAMUNIFORMUI64VNVPROC;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Shader object'}{$ENDIF}
     DeleteObject: PFNGLDELETEOBJECTARBPROC; // ARB only
@@ -4382,6 +4409,33 @@ begin
   PatchParameteri := GetAddress('PatchParameteri');
   PatchParameterfv := GetAddress('PatchParameterfv');
 
+  BufferAddressRangeNV := GetAddressNoSuffixes('BufferAddressRangeNV');
+  VertexFormatNV := GetAddressNoSuffixes('VertexFormatNV');
+  NormalFormatNV := GetAddressNoSuffixes('NormalFormatNV');
+  ColorFormatNV := GetAddressNoSuffixes('ColorFormatNV');
+  IndexFormatNV := GetAddressNoSuffixes('IndexFormatNV');
+  TexCoordFormatNV := GetAddressNoSuffixes('TexCoordFormatNV');
+  EdgeFlagFormatNV := GetAddressNoSuffixes('EdgeFlagFormatNV');
+  SecondaryColorFormatNV := GetAddressNoSuffixes('SecondaryColorFormatNV');
+  FogCoordFormatNV := GetAddressNoSuffixes('FogCoordFormatNV');
+  VertexAttribFormatNV := GetAddressNoSuffixes('VertexAttribFormatNV');
+  VertexAttribIFormatNV := GetAddressNoSuffixes('VertexAttribIFormatNV');
+  GetIntegerui64i_vNV := GetAddressNoSuffixes('GetIntegerui64i_vNV');
+  GetBufferParameterui64vNV := GetAddressNoSuffixes('GetBufferParameterui64vNV');
+  MakeBufferResidentNV := GetAddressNoSuffixes('MakeBufferResidentNV');
+  MakeBufferNonResidentNV := GetAddressNoSuffixes('MakeBufferNonResidentNV');
+  IsBufferResidentNV := GetAddressNoSuffixes('IsBufferResidentNV');
+  MakeNamedBufferResidentNV := GetAddressNoSuffixes('MakeNamedBufferResidentNV');
+  MakeNamedBufferNonResidentNV := GetAddressNoSuffixes('MakeNamedBufferNonResidentNV');
+  IsNamedBufferResidentNV := GetAddressNoSuffixes('IsNamedBufferResidentNV');
+  GetNamedBufferParameterui64vNV := GetAddressNoSuffixes('GetNamedBufferParameterui64vNV');
+  GetIntegerui64vNV := GetAddressNoSuffixes('GetIntegerui64vNV');
+  Uniformui64NV := GetAddressNoSuffixes('Uniformui64NV');
+  Uniformui64vNV := GetAddressNoSuffixes('Uniformui64vNV');
+  GetUniformui64vNV := GetAddressNoSuffixes('GetUniformui64vNV');
+  ProgramUniformui64NV := GetAddressNoSuffixes('ProgramUniformui64NV');
+  ProgramUniformui64vNV := GetAddressNoSuffixes('ProgramUniformui64vNV');
+
   TexImage2DMultisample := GetAddress('TexImage2DMultisample');
   TexImage3DMultisample := GetAddress('TexImage3DMultisample');
   GetMultisamplefv := GetAddress('GetMultisamplefv');
@@ -5581,6 +5635,33 @@ begin
   GetTexParameterIuiv := GetCapAddress();
   PatchParameteri := GetCapAddress();
   PatchParameterfv := GetCapAddress();
+
+  BufferAddressRangeNV := GetCapAddress();
+  VertexFormatNV := GetCapAddress();
+  NormalFormatNV := GetCapAddress();
+  ColorFormatNV := GetCapAddress();
+  IndexFormatNV := GetCapAddress();
+  TexCoordFormatNV := GetCapAddress();
+  EdgeFlagFormatNV := GetCapAddress();
+  SecondaryColorFormatNV := GetCapAddress();
+  FogCoordFormatNV := GetCapAddress();
+  VertexAttribFormatNV := GetCapAddress();
+  VertexAttribIFormatNV := GetCapAddress();
+  GetIntegerui64i_vNV := GetCapAddress();
+  GetBufferParameterui64vNV := GetCapAddress();
+  MakeBufferResidentNV := GetCapAddress();
+  MakeBufferNonResidentNV := GetCapAddress();
+  IsBufferResidentNV := GetCapAddress();
+  MakeNamedBufferResidentNV := GetCapAddress();
+  MakeNamedBufferNonResidentNV := GetCapAddress();
+  IsNamedBufferResidentNV := GetCapAddress();
+  GetNamedBufferParameterui64vNV := GetCapAddress();
+  GetIntegerui64vNV := GetCapAddress();
+  Uniformui64NV := GetCapAddress();
+  Uniformui64vNV := GetCapAddress();
+  GetUniformui64vNV := GetCapAddress();
+  ProgramUniformui64NV := GetCapAddress();
+  ProgramUniformui64vNV := GetCapAddress();
 
   TexImage2DMultisample := GetCapAddress();
   TexImage3DMultisample := GetCapAddress();
