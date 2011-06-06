@@ -6,9 +6,10 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>31/05/11 - Yar - Disabled cache changing inside display list, added ActiveTextureEnviromentMode, ActiveTextureEnviromentColor states
       <li>12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
       <li>07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+      <li>16/03/11 - Yar - Fixes after emergence of GLS_Material
       <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
       <li>14/12/10 - DaStr - Added to TGLStateCache:
                                Color property
@@ -250,7 +251,6 @@ type
 
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
-    FListStates: array of TGLStateTypes;
     FCurrentList: TGLuint;
     FTextureMatrixIsIdentity: array[0..3] of Boolean;
     FForwardContext: Boolean;
@@ -322,6 +322,8 @@ type
     // Active texture state
     FActiveTexture: TGLint; // 0 .. Max_texture_units
     FActiveTextureEnabling: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Boolean;
+    FTextureEnvironmentMode: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TGLEnum;
+    FTextureEnvironmentColor: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TVector;
 
     // Pixel operation state
     FEnableScissorTest: TGLboolean;
@@ -500,6 +502,10 @@ type
     function GetActiveTextureEnabled(Target: TGLTextureTarget): Boolean;
     procedure SetActiveTextureEnabled(Target: TGLTextureTarget; const Value:
       Boolean);
+    function GetTextureEnvironmentColor: TVector;
+    function GetTextureEnvironmentMode: TGLEnum;
+    procedure SetTextureEnvironmentColor(const Value: TVector);
+    procedure SetTextureEnvironmentMode(const Value: TGLEnum);
     function GetSamplerBinding(Index: TGLuint): TGLuint;
     procedure SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
     // Active texture
@@ -822,7 +828,11 @@ type
     property TextureBindingTime[Index: Integer; target: TGLTextureTarget]: Double
       read GetTextureBindingTime;
     property ActiveTextureEnabled[Target: TGLTextureTarget]: Boolean read
-    GetActiveTextureEnabled write SetActiveTextureEnabled;
+      GetActiveTextureEnabled write SetActiveTextureEnabled;
+    property ActiveTextureEnvironmentMode: TGLEnum read GetTextureEnvironmentMode
+      write SetTextureEnvironmentMode;
+    property ActiveTextureEnvironmentColor: TVector read GetTextureEnvironmentColor
+      write SetTextureEnvironmentColor;
     property SamplerBinding[Index: TGLuint]: TGLuint read GetSamplerBinding
       write SetSamplerBinding;
     property MaxTextureSize: TGLuint read GetMaxTextureSize;
@@ -1255,8 +1265,9 @@ implementation
 uses
   GLContext, GLColor;
 
-{$IFDEF GLS_CACHE_MISS_CHECK}
 resourcestring
+  glsStateCashInsideList = 'State cash can not work inside display list';
+{$IFDEF GLS_CACHE_MISS_CHECK}
   glsStateCashMissing = 'States cash missing: ';
 {$ENDIF}
 
@@ -1285,7 +1296,6 @@ var
   I: Integer;
 begin
   inherited;
-  SetLength(FListStates, 128);
   FCurrentList := 0;
 
   // Material colors
@@ -1379,6 +1389,11 @@ begin
   // Texture state
   FillChar(FTextureBinding, sizeof(FTextureBinding), $00);
   FillChar(FActiveTextureEnabling, sizeof(FActiveTextureEnabling), $00);
+  for I := MAX_HARDWARE_TEXTURE_UNIT - 1 downto 0 do
+  begin
+    FTextureEnvironmentMode[I] := GL_MODULATE;
+    FTextureEnvironmentColor[I] := clrTransparent;
+  end;
 
   // Active texture state
   FActiveTexture := 0;
@@ -1507,14 +1522,12 @@ end;
 
 procedure TGLStateCache.Enable(const aState: TGLState);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
-  if not (aState in FStates) or FInsideList then
+  if not (aState in FStates) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttEnable)
-    else
-      Include(FStates, aState);
+    Include(FStates, aState);
 {$IFDEF GLS_CACHE_MISS_CHECK}
     if GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Enable');
@@ -1528,37 +1541,32 @@ end;
 
 procedure TGLStateCache.Disable(const aState: TGLState);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
-  if (aState in FStates) or FInsideList then
+  if aState in FStates then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttEnable)
-    else
-      Exclude(FStates, aState);
+    Exclude(FStates, aState);
 {$IFDEF GLS_CACHE_MISS_CHECK}
     if not GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Disable');
 {$ENDIF}
     GL.Disable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
-      if FInsideList then
-        Include(FListStates[FCurrentList], sttLighting)
-      else
-        with GL do
-        begin
-          Materialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
-          Materialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
-          Materialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
-          Materialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
-          Materiali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
+    with GL do
+    begin
+      Materialfv(GL_FRONT, GL_EMISSION, @FFrontBackColors[0][0]);
+      Materialfv(GL_FRONT, GL_AMBIENT, @FFrontBackColors[0][1]);
+      Materialfv(GL_FRONT, GL_DIFFUSE, @FFrontBackColors[0][2]);
+      Materialfv(GL_FRONT, GL_SPECULAR, @FFrontBackColors[0][3]);
+      Materiali(GL_FRONT, GL_SHININESS, FFrontBackShininess[0]);
 
-          Materialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
-          Materialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
-          Materialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
-          Materialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
-          Materiali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
-        end;
+      Materialfv(GL_BACK, GL_EMISSION, @FFrontBackColors[1][0]);
+      Materialfv(GL_BACK, GL_AMBIENT, @FFrontBackColors[1][1]);
+      Materialfv(GL_BACK, GL_DIFFUSE, @FFrontBackColors[1][2]);
+      Materialfv(GL_BACK, GL_SPECULAR, @FFrontBackColors[1][3]);
+      Materiali(GL_BACK, GL_SHININESS, FFrontBackShininess[1]);
+    end;
   end;
 end;
 
@@ -1567,6 +1575,7 @@ end;
 
 procedure TGLStateCache.PerformEnable(const aState: TGLState);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Include(FStates, aState);
@@ -1578,6 +1587,7 @@ end;
 
 procedure TGLStateCache.PerformDisable(const aState: TGLState);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
     exit;
   Exclude(FStates, aState);
@@ -1619,48 +1629,37 @@ var
 begin
   if FForwardContext then
     exit;
+  Assert(not FInsideList, glsStateCashInsideList);
   Assert((aFace = cmFront) or (aFace = cmBack),
     'Only cmFront or cmBack supported');
   i := Integer(aFace);
   currentFace := cGLCullFaceModeToGLEnum[aFace];
 
-  if (FFrontBackShininess[i] <> shininess)
-    or FInsideList then
+  if FFrontBackShininess[i] <> shininess then
   begin
     GL.Materiali(currentFace, GL_SHININESS, shininess);
-    if not FInsideList then
-      FFrontBackShininess[i] := shininess;
+    FFrontBackShininess[i] := shininess;
   end;
-  if not AffineVectorEquals(FFrontBackColors[i][0], emission)
-    or FInsideList then
+  if not AffineVectorEquals(FFrontBackColors[i][0], emission) then
   begin
     GL.Materialfv(currentFace, GL_EMISSION, @emission);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][0], emission);
+    SetVector(FFrontBackColors[i][0], emission);
   end;
-  if not AffineVectorEquals(FFrontBackColors[i][1], ambient)
-    or FInsideList then
+  if not AffineVectorEquals(FFrontBackColors[i][1], ambient) then
   begin
     GL.Materialfv(currentFace, GL_AMBIENT, @ambient);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][1], ambient);
+    SetVector(FFrontBackColors[i][1], ambient);
   end;
-  if not VectorEquals(FFrontBackColors[i][2], diffuse)
-    or FInsideList then
+  if not VectorEquals(FFrontBackColors[i][2], diffuse) then
   begin
     GL.Materialfv(currentFace, GL_DIFFUSE, @diffuse);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][2], diffuse);
+    SetVector(FFrontBackColors[i][2], diffuse);
   end;
-  if not AffineVectorEquals(FFrontBackColors[i][3], specular)
-    or FInsideList then
+  if not AffineVectorEquals(FFrontBackColors[i][3], specular) then
   begin
     GL.Materialfv(currentFace, GL_SPECULAR, @specular);
-    if not FInsideList then
-      SetVector(FFrontBackColors[i][3], specular);
+    SetVector(FFrontBackColors[i][3], specular);
   end;
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttLighting);
 end;
 
 // SetGLMaterialAlphaChannel
@@ -1673,6 +1672,7 @@ var
   color: TVector4f;
 begin
   if FForwardContext then Exit;
+  Assert(not FInsideList, glsStateCashInsideList);
 
   if not(stLighting in FStates) then
   begin
@@ -1684,19 +1684,10 @@ begin
   else
   begin
     i := aFace - GL_FRONT;
-    if (FFrontBackColors[i][2][3] <> alpha) or FInsideList then
+    if FFrontBackColors[i][2][3] <> alpha then
     begin
-      if FInsideList then
-      begin
-        Include(FListStates[FCurrentList], sttLighting);
-        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
-
-      end
-      else
-      begin
-        FFrontBackColors[i][2][3] := alpha;
-        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
-      end;
+      FFrontBackColors[i][2][3] := alpha;
+      GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
     end;
   end;
 end;
@@ -1706,6 +1697,7 @@ var
   i: Integer;
 begin
   if FForwardContext then Exit;
+  Assert(not FInsideList, glsStateCashInsideList);
 
   if not(stLighting in FStates) then
   begin
@@ -1715,37 +1707,28 @@ begin
   begin
     //
     i := aFace - GL_FRONT;
-    if (not VectorEquals(FFrontBackColors[i][2], diffuse)) or FInsideList then
+    if not VectorEquals(FFrontBackColors[i][2], diffuse) then
     begin
-      if FInsideList then
-      begin
-        Include(FListStates[FCurrentList], sttLighting);
-        GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
-      end
-      else
-      begin
-        FFrontBackColors[i][2] := diffuse;
-        GL.Materialfv(aFace, GL_DIFFUSE, @diffuse);
-      end;
+      FFrontBackColors[i][2] := diffuse;
+      GL.Materialfv(aFace, GL_DIFFUSE, @diffuse);
     end;
   end;
 end;
 
 procedure TGLStateCache.SetActiveTexture(const Value: TGLint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if GL.ARB_multitexture then
-    if (Value <> FActiveTexture) or FInsideList then
+    if (Value <> FActiveTexture) then
     begin
-      if FInsideList then
-        Include(FListStates[FCurrentList], sttTexture)
-      else
-        FActiveTexture := Value;
+      FActiveTexture := Value;
       GL.ActiveTexture(GL_TEXTURE0 + Value);
     end;
 end;
 
 procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FVertexArrayBinding then
   begin
     FVertexArrayBinding := Value;
@@ -1760,6 +1743,7 @@ end;
 
 procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if (Value <> FArrayBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
     FArrayBufferBinding := Value;
@@ -1774,6 +1758,7 @@ end;
 
 procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if (Value <> FElementBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
     FElementBufferBinding := Value;
@@ -1788,6 +1773,7 @@ end;
 
 procedure TGLStateCache.SetEnablePrimitiveRestart(const enabled: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
@@ -1815,6 +1801,7 @@ end;
 
 procedure TGLStateCache.SetPrimitiveRestartIndex(const index: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if index <> FPrimitiveRestartIndex then
   begin
     if GL.NV_primitive_restart or FForwardContext then
@@ -1827,6 +1814,7 @@ end;
 
 procedure TGLStateCache.SetEnableProgramPointSize(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableProgramPointSize then
   begin
     FEnableProgramPointSize := Value;
@@ -1839,12 +1827,10 @@ end;
 
 procedure TGLStateCache.SetBlendColor(const Value: TVector);
 begin
-  if not VectorEquals(Value, FBlendColor) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if not VectorEquals(Value, FBlendColor) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-      FBlendColor := Value;
+    FBlendColor := Value;
     GL.BlendColor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
@@ -1852,30 +1838,25 @@ end;
 procedure TGLStateCache.SetBlendEquationSeparate(const modeRGB, modeAlpha:
   TBlendEquation);
 begin
-  if (modeRGB <> FBlendEquationRGB) or (modeAlpha <> FBlendEquationAlpha)
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (modeRGB <> FBlendEquationRGB)
+    or (modeAlpha <> FBlendEquationAlpha) then
   begin
     FBlendEquationRGB := modeRGB;
     FBlendEquationAlpha := modeAlpha;
     GL.BlendEquationSeparate(cGLBlendEquationToGLEnum[modeRGB],
       cGLBlendEquationToGLEnum[modeAlpha]);
   end;
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttColorBuffer);
 end;
 
 procedure TGLStateCache.SetBlendEquation(const mode: TBlendEquation);
 begin
-  if (mode <> FBlendEquationRGB) or (mode <> FBlendEquationAlpha)
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (mode <> FBlendEquationRGB)
+    or (mode <> FBlendEquationAlpha) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-    begin
-      FBlendEquationRGB := mode;
-      FBlendEquationAlpha := mode;
-    end;
+    FBlendEquationRGB := mode;
+    FBlendEquationAlpha := mode;
     GL.BlendEquation(cGLBlendEquationToGLEnum[mode]);
   end;
 end;
@@ -1883,17 +1864,13 @@ end;
 procedure TGLStateCache.SetBlendFunc(const Src: TBlendFunction;
   const Dst: TDstBlendFunction);
 begin
-  if (Src <> FBlendSrcRGB) or (Dst <> FBlendDstRGB) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Src <> FBlendSrcRGB) or (Dst <> FBlendDstRGB) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-    begin
-      FBlendSrcRGB := Src;
-      FBlendDstRGB := Dst;
-      FBlendSrcAlpha := Src;
-      FBlendSrcAlpha := Dst;
-    end;
+    FBlendSrcRGB := Src;
+    FBlendDstRGB := Dst;
+    FBlendSrcAlpha := Src;
+    FBlendSrcAlpha := Dst;
     GL.BlendFunc(cGLBlendFunctionToGLEnum[Src], cGLBlendFunctionToGLEnum[Dst]);
   end;
 end;
@@ -1902,19 +1879,14 @@ procedure TGLStateCache.SetBlendFuncSeparate(const SrcRGB: TBlendFunction;
   const DstRGB: TDstBlendFunction; const SrcAlpha: TBlendFunction;
   const DstAlpha: TDstBlendFunction);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if (SrcRGB <> FBlendSrcRGB) or (DstRGB <> FBlendDstRGB) or
-    (SrcAlpha <> FBlendSrcAlpha) or (DstAlpha <> FBlendDstAlpha)
-    or FInsideList then
+    (SrcAlpha <> FBlendSrcAlpha) or (DstAlpha <> FBlendDstAlpha) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-    begin
-      FBlendSrcRGB := SrcRGB;
-      FBlendDstRGB := DstRGB;
-      FBlendSrcAlpha := SrcAlpha;
-      FBlendDstAlpha := DstAlpha;
-    end;
+    FBlendSrcRGB := SrcRGB;
+    FBlendDstRGB := DstRGB;
+    FBlendSrcAlpha := SrcAlpha;
+    FBlendDstAlpha := DstAlpha;
     GL.BlendFuncSeparate(
       cGLBlendFunctionToGLEnum[SrcRGB],
       cGLBlendFunctionToGLEnum[DstRGB],
@@ -1925,12 +1897,10 @@ end;
 
 procedure TGLStateCache.SetClampReadColor(const Value: TGLenum);
 begin
-  if (Value <> FClampReadColor) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FClampReadColor) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-      FClampReadColor := Value;
+    FClampReadColor := Value;
     GL.ClampColor(GL_CLAMP_READ_COLOR, Value);
   end;
 end;
@@ -1938,6 +1908,7 @@ end;
 procedure TGLStateCache.SetColorWriteMask(Index: Integer;
   const Value: TColorMask);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FColorWriteMask[Index] <> Value then
   begin
     FColorWriteMask[Index] := Value;
@@ -1948,6 +1919,7 @@ end;
 
 procedure TGLStateCache.SetCopyReadBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FCopyReadBufferBinding then
   begin
     FCopyReadBufferBinding := Value;
@@ -1957,6 +1929,7 @@ end;
 
 procedure TGLStateCache.SetCopyWriteBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FCopyWriteBufferBinding then
   begin
     FCopyWriteBufferBinding := Value;
@@ -1966,19 +1939,17 @@ end;
 
 procedure TGLStateCache.SetCullFaceMode(const Value: TCullFaceMode);
 begin
-  if (Value <> FCullFaceMode) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FCullFaceMode) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-      FCullFaceMode := Value;
+    FCullFaceMode := Value;
     GL.CullFace(cGLCullFaceModeToGLEnum[Value]);
   end;
-
 end;
 
 procedure TGLStateCache.SetCurrentProgram(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FCurrentProgram then
   begin
     FCurrentProgram := Value;
@@ -1988,6 +1959,7 @@ end;
 
 procedure TGLStateCache.SetTextureBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FTextureBufferBinding then
   begin
     FTextureBufferBinding := Value;
@@ -1998,6 +1970,7 @@ end;
 procedure TGLStateCache.SetCurrentVertexAttrib(Index: Integer;
   const Value: TVector);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if not VectorEquals(Value, FCurrentVertexAttrib[Index]) then
   begin
     FCurrentVertexAttrib[Index] := Value;
@@ -2007,84 +1980,68 @@ end;
 
 procedure TGLStateCache.SetDepthClearValue(const Value: TGLfloat);
 begin
-  if (Value <> FDepthClearValue) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDepthClearValue) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttDepthBuffer)
-    else
-      FDepthClearValue := Value;
+    FDepthClearValue := Value;
     GL.ClearDepth(Value);
   end;
-
 end;
 
 procedure TGLStateCache.SetDepthFunc(const Value: TDepthFunction);
 begin
-  if (Value <> FDepthFunc) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDepthFunc) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttDepthBuffer)
-    else
-      FDepthFunc := Value;
+    FDepthFunc := Value;
     GL.DepthFunc(cGLComparisonFunctionToGLEnum[Value]);
   end;
-
 end;
 
 procedure TGLStateCache.SetDepthRange(const ZNear, ZFar: TGLclampd);
 begin
-  if (ZNear <> FDepthRange[0]) or (ZFar <> FDepthRange[1])
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (ZNear <> FDepthRange[0]) or (ZFar <> FDepthRange[1]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttViewport)
-    else
-    begin
-      FDepthRange[0] := ZNear;
-      FDepthRange[1] := ZFar;
-    end;
+    FDepthRange[0] := ZNear;
+    FDepthRange[1] := ZFar;
     GL.DepthRange(ZNear, ZFar);
   end;
 end;
 
 procedure TGLStateCache.SetDepthRangeFar(const Value: TGLclampd);
 begin
-  if (Value <> FDepthRange[1]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDepthRange[1]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttViewport)
-    else
-      FDepthRange[1] := Value;
+    FDepthRange[1] := Value;
     GL.DepthRange(FDepthRange[0], Value);
   end;
 end;
 
 procedure TGLStateCache.SetDepthRangeNear(const Value: TGLclampd);
 begin
-  if (Value <> FDepthRange[0]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDepthRange[0]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttViewport)
-    else
-      FDepthRange[0] := Value;
+    FDepthRange[0] := Value;
     GL.DepthRange(Value, FDepthRange[1]);
   end;
 end;
 
 procedure TGLStateCache.SetDepthWriteMask(const Value: TGLboolean);
 begin
-  if (Value <> FDepthWriteMask) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDepthWriteMask) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttDepthBuffer)
-    else
-      FDepthWriteMask := Value;
+    FDepthWriteMask := Value;
     GL.DepthMask(Value);
   end;
 end;
 
 procedure TGLStateCache.SetDrawFrameBuffer(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FDrawFrameBuffer then
   begin
     FDrawFrameBuffer := Value;
@@ -2095,6 +2052,7 @@ end;
 procedure TGLStateCache.SetEnableBlend(Index: Integer;
   const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FEnableBlend[Index] <> Value then
   begin
     FEnableBlend[Index] := Value;
@@ -2108,6 +2066,7 @@ end;
 procedure TGLStateCache.SetEnableClipDistance(Index: Cardinal;
   const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FEnableClipDistance[Index] <> Value then
   begin
     FEnableClipDistance[Index] := Value;
@@ -2120,6 +2079,7 @@ end;
 
 procedure TGLStateCache.SetEnableColorLogicOp(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableColorLogicOp then
   begin
     FEnableColorLogicOp := Value;
@@ -2187,6 +2147,7 @@ end;
 
 procedure TGLStateCache.SetEnableSampleAlphaToCoverage(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableSampleAlphaToCoverage then
   begin
     FEnableSampleAlphaToCoverage := Value;
@@ -2199,6 +2160,7 @@ end;
 
 procedure TGLStateCache.SetEnableSampleCoverage(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableSampleAlphaToCoverage then
   begin
     FEnableSampleCoverage := Value;
@@ -2211,6 +2173,7 @@ end;
 
 procedure TGLStateCache.SetEnableSampleMask(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableSampleMask then
   begin
     FEnableSampleMask := Value;
@@ -2223,6 +2186,7 @@ end;
 
 procedure TGLStateCache.SetEnableSampleAlphaToOne(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FEnableSampleMask then
   begin
     FEnableSampleMask := Value;
@@ -2245,33 +2209,30 @@ end;
 
 procedure TGLStateCache.SetFragmentShaderDerivitiveHint(const Value: THintType);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FFragmentShaderDerivitiveHint then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttHint)
-    else
-      FFragmentShaderDerivitiveHint := Value;
+    FFragmentShaderDerivitiveHint := Value;
     GL.Hint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetMultisampleFilterHint(const Value: THintType);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if GL.NV_multisample_filter_hint then
     if Value <> FMultisampleFilterHint then
     begin
-      if FInsideList then
-        Include(FListStates[FCurrentList], sttHint)
-      else
-        FMultisampleFilterHint := Value;
+      FMultisampleFilterHint := Value;
       GL.Hint(GL_MULTISAMPLE_FILTER_HINT_NV, cGLHintToGLEnum[Value]);
     end;
 end;
 
 procedure TGLStateCache.SetFrameBuffer(const Value: TGLuint);
 begin
-  if (Value <> FDrawFrameBuffer) or (Value <> FReadFrameBuffer)
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FDrawFrameBuffer)
+    or (Value <> FReadFrameBuffer) then
   begin
     FDrawFrameBuffer := Value;
     FReadFrameBuffer := Value;
@@ -2281,12 +2242,10 @@ end;
 
 procedure TGLStateCache.SetFrontFace(const Value: TFaceWinding);
 begin
-  if (Value <> FFrontFace) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FFrontFace) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-      FFrontFace := Value;
+    FFrontFace := Value;
     GL.FrontFace(cGLFaceWindingToGLEnum[Value]);
   end;
 end;
@@ -2308,15 +2267,10 @@ begin
     GLSLogger.LogError(glsStateCashMissing + 'AlphaTest reference');
 {$ENDIF}
   if (FAlphaFunc <> func) or (FAlphaRef <> ref)
-    or FInsideList then
+    then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-    begin
-      FAlphaFunc := func;
-      FAlphaRef := ref;
-    end;
+    FAlphaFunc := func;
+    FAlphaRef := ref;
     GL.AlphaFunc(cGLComparisonFunctionToGLEnum[func], ref);
   end;
 end;
@@ -2446,14 +2400,12 @@ end;
 
 procedure TGLStateCache.SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Index > High(FSamplerBinding) then
     exit;
-  if (Value <> FSamplerBinding[Index]) or FInsideList then
+  if (Value <> FSamplerBinding[Index]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttTexture)
-    else
-      FSamplerBinding[Index] := Value;
+    FSamplerBinding[Index] := Value;
     GL.BindSampler(Index, Value);
   end;
 end;
@@ -2463,15 +2415,21 @@ end;
 
 procedure TGLStateCache.SetGLTextureMatrix(const matrix: TMatrix);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FForwardContext then
     exit;
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttTransform)
-  else
-    FTextureMatrixIsIdentity[ActiveTexture] := False;
-  GL.MatrixMode(GL_TEXTURE);
-  GL.LoadMatrixf(PGLFloat(@matrix[0][0]));
-  GL.MatrixMode(GL_MODELVIEW);
+  FTextureMatrixIsIdentity[ActiveTexture] := False;
+  with GL do
+  begin
+    if EXT_direct_state_access then
+      MatrixLoadf(GL_TEXTURE, PGLFloat(@matrix[0][0]))
+    else
+    begin
+      MatrixMode(GL_TEXTURE);
+      LoadMatrixf(PGLFloat(@matrix[0][0]));
+      MatrixMode(GL_MODELVIEW);
+    end;
+  end;
 end;
 
 // ResetGLTextureMatrix
@@ -2479,12 +2437,21 @@ end;
 
 procedure TGLStateCache.ResetGLTextureMatrix;
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FForwardContext then
     exit;
-  GL.MatrixMode(GL_TEXTURE);
-  GL.LoadIdentity;
+  with GL do
+  begin
+    if EXT_direct_state_access then
+      MatrixLoadf(GL_TEXTURE, @IdentityHmgMatrix)
+    else
+    begin
+      MatrixMode(GL_TEXTURE);
+      LoadMatrixf(@IdentityHmgMatrix);
+      MatrixMode(GL_MODELVIEW);
+    end;
+  end;
   FTextureMatrixIsIdentity[ActiveTexture] := True;
-  GL.MatrixMode(GL_MODELVIEW);
 end;
 
 // ResetAllGLTextureMatrix
@@ -2495,84 +2462,79 @@ var
   I: Integer;
   lastActiveTexture: TGLuint;
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if FForwardContext then
     exit;
   lastActiveTexture := ActiveTexture;
-  GL.MatrixMode(GL_TEXTURE);
-  for I := High(FTextureMatrixIsIdentity) downto 0 do
-    if not FTextureMatrixIsIdentity[I] then
-    begin
-      ActiveTexture := I;
-      GL.LoadIdentity;
-      FTextureMatrixIsIdentity[I] := True;
-    end;
-  GL.MatrixMode(GL_MODELVIEW);
+  with GL do
+  begin
+    MatrixMode(GL_TEXTURE);
+    for I := High(FTextureMatrixIsIdentity) downto 0 do
+      if not FTextureMatrixIsIdentity[I] then
+      begin
+        Self.ActiveTexture := I;
+        LoadIdentity;
+        FTextureMatrixIsIdentity[I] := True;
+      end;
+    MatrixMode(GL_MODELVIEW);
+  end;
   ActiveTexture := lastActiveTexture;
 end;
 
 procedure TGLStateCache.SetLineSmoothHint(const Value: THintType);
 begin
-  if (Value <> FLineSmoothHint) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FLineSmoothHint) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttHint)
-    else
-      FLineSmoothHint := Value;
+    FLineSmoothHint := Value;
     GL.Hint(GL_LINE_SMOOTH_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetLineWidth(const Value: TGLfloat);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   // note: wide lines no longer deprecated (see OpenGL spec)
-  if (Value <> FLineWidth) or FInsideList then
+  if (Value <> FLineWidth) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLine)
-    else
-      FLineWidth := Value;
+    FLineWidth := Value;
     GL.LineWidth(Value);
   end;
 end;
 
 procedure TGLStateCache.SetLineStippleFactor(const Value: TGLint);
 begin
-  if (Value <> FLineStippleFactor) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FLineStippleFactor) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLine)
-    else
-      FLineStippleFactor := Value;
+    FLineStippleFactor := Value;
     GL.LineStipple(Value, FLineStipplePattern);
   end;
 end;
 
 procedure TGLStateCache.SetLineStipplePattern(const Value: TGLushort);
 begin
-  if (Value <> FLineStipplePattern) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FLineStipplePattern) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLine)
-    else
-      FLineStipplePattern := Value;
+    FLineStipplePattern := Value;
     GL.LineStipple(FLineStippleFactor, Value);
   end;
 end;
 
 procedure TGLStateCache.SetLogicOpMode(const Value: TLogicOp);
 begin
-  if (Value <> FLogicOpMode) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FLogicOpMode) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-      FLogicOpMode := Value;
+    FLogicOpMode := Value;
     GL.LogicOp(cGLLogicOpToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetPackAlignment(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackAlignment then
   begin
     FPackAlignment := Value;
@@ -2582,6 +2544,7 @@ end;
 
 procedure TGLStateCache.SetPackImageHeight(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackImageHeight then
   begin
     FPackImageHeight := Value;
@@ -2591,6 +2554,7 @@ end;
 
 procedure TGLStateCache.SetPackLSBFirst(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackLSBFirst then
   begin
     FPackLSBFirst := Value;
@@ -2600,6 +2564,7 @@ end;
 
 procedure TGLStateCache.SetPackRowLength(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackRowLength then
   begin
     FPackRowLength := Value;
@@ -2609,6 +2574,7 @@ end;
 
 procedure TGLStateCache.SetPackSkipImages(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackSkipImages then
   begin
     FPackSkipImages := Value;
@@ -2618,6 +2584,7 @@ end;
 
 procedure TGLStateCache.SetPackSkipPixels(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackSkipPixels then
   begin
     FPackSkipPixels := Value;
@@ -2627,6 +2594,7 @@ end;
 
 procedure TGLStateCache.SetPackSkipRows(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackSkipRows then
   begin
     FPackSkipRows := Value;
@@ -2636,6 +2604,7 @@ end;
 
 procedure TGLStateCache.SetPackSwapBytes(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPackSwapBytes then
   begin
     FPackSwapBytes := Value;
@@ -2645,6 +2614,7 @@ end;
 
 procedure TGLStateCache.SetPixelPackBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPixelPackBufferBinding then
   begin
     FPixelPackBufferBinding := Value;
@@ -2654,6 +2624,7 @@ end;
 
 procedure TGLStateCache.SetPixelUnpackBufferBinding(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FPixelUnpackBufferBinding then
   begin
     FPixelUnpackBufferBinding := Value;
@@ -2663,145 +2634,120 @@ end;
 
 procedure TGLStateCache.SetPointDistanceAtten(const Value: TVector);
 begin
-  if not VectorEquals(FDistanceAttenuation, Value) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if not VectorEquals(FDistanceAttenuation, Value) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttScissor)
-    else
-      FDistanceAttenuation := Value;
+    FDistanceAttenuation := Value;
     GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @Value);
   end;
 end;
 
 procedure TGLStateCache.SetPointFadeThresholdSize(const Value: TGLfloat);
 begin
-  if (Value <> FPointFadeThresholdSize) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPointFadeThresholdSize) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPoint)
-    else
-      FPointFadeThresholdSize := Value;
+    FPointFadeThresholdSize := Value;
     GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, Value);
   end;
 end;
 
 procedure TGLStateCache.SetPointSize(const Value: TGLfloat);
 begin
-  if (Value <> FPointSize) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPointSize) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPoint)
-    else
-      FPointSize := Value;
+    FPointSize := Value;
     GL.PointSize(Value);
   end;
 end;
 
 procedure TGLStateCache.SetPointSizeMax(const Value: TGLfloat);
 begin
-  if (Value <> FPointSizeMax) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPointSizeMax) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPoint)
-    else
-      FPointSizeMax := Value;
+     FPointSizeMax := Value;
     GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, Value);
   end;
 end;
 
 procedure TGLStateCache.SetPointSizeMin(const Value: TGLfloat);
 begin
-  if (Value <> FPointSizeMin) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPointSizeMin) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPoint)
-    else
-      FPointSizeMin := Value;
+    FPointSizeMin := Value;
     GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, Value);
   end;
 end;
 
 procedure TGLStateCache.SetPointSpriteCoordOrigin(const Value: TGLenum);
 begin
-  if (Value <> FPointSpriteCoordOrigin) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPointSpriteCoordOrigin) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPoint)
-    else
-      FPointSpriteCoordOrigin := Value;
+    FPointSpriteCoordOrigin := Value;
     GL.PointParameterf(GL_POINT_SPRITE_COORD_ORIGIN, Value);
   end;
 end;
 
 procedure TGLStateCache.SetPolygonMode(const Value: TPolygonMode);
 begin
-  if (Value <> FPolygonMode) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPolygonMode) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-    begin
-      FPolygonMode := Value;
-      FPolygonBackMode := Value;
-    end;
+    FPolygonMode := Value;
+    FPolygonBackMode := Value;
     GL.PolygonMode(GL_FRONT_AND_BACK, cGLPolygonModeToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetPolygonOffset(const factor, units: TGLfloat);
 begin
-  if (factor <> FPolygonOffsetFactor) or (units <> FPolygonOffsetUnits)
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (factor <> FPolygonOffsetFactor)
+    or (units <> FPolygonOffsetUnits) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-    begin
-      FPolygonOffsetFactor := factor;
-      FPolygonOffsetUnits := units;
-    end;
+    FPolygonOffsetFactor := factor;
+    FPolygonOffsetUnits := units;
     GL.PolygonOffset(factor, units);
   end;
 end;
 
 procedure TGLStateCache.SetPolygonOffsetFactor(const Value: TGLfloat);
 begin
-  if (Value <> FPolygonOffsetFactor) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPolygonOffsetFactor) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-      FPolygonOffsetFactor := Value;
+    FPolygonOffsetFactor := Value;
     GL.PolygonOffset(Value, FPolygonOffsetUnits);
   end;
 end;
 
 procedure TGLStateCache.SetPolygonOffsetUnits(const Value: TGLfloat);
 begin
-  if (Value <> FPolygonOffsetUnits) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPolygonOffsetUnits) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttPolygon)
-    else
-      FPolygonOffsetUnits := Value;
+    FPolygonOffsetUnits := Value;
     GL.PolygonOffset(FPolygonOffsetFactor, Value);
   end;
 end;
 
 procedure TGLStateCache.SetPolygonSmoothHint(const Value: THintType);
 begin
-  if (Value <> FPolygonSmoothHint) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FPolygonSmoothHint) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttHint)
-    else
-      FPolygonSmoothHint := Value;
+    FPolygonSmoothHint := Value;
     GL.Hint(GL_POLYGON_SMOOTH_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetProvokingVertex(const Value: TGLenum);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FProvokingVertex then
   begin
     FProvokingVertex := Value;
@@ -2811,6 +2757,7 @@ end;
 
 procedure TGLStateCache.SetReadFrameBuffer(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FReadFrameBuffer then
   begin
     FReadFrameBuffer := Value;
@@ -2820,6 +2767,7 @@ end;
 
 procedure TGLStateCache.SetRenderBuffer(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FRenderBuffer then
   begin
     FRenderBuffer := Value;
@@ -2830,40 +2778,32 @@ end;
 procedure TGLStateCache.SetSampleCoverage(const Value: TGLfloat;
   invert: TGLboolean);
 begin
-  if (Value <> FSampleCoverageValue) or (invert <> FSampleCoverageInvert)
-    or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FSampleCoverageValue)
+    or (invert <> FSampleCoverageInvert) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttMultisample)
-    else
-    begin
-      FSampleCoverageValue := Value;
-      FSampleCoverageInvert := invert;
-    end;
+    FSampleCoverageValue := Value;
+    FSampleCoverageInvert := invert;
     GL.SampleCoverage(Value, invert);
   end;
 end;
 
 procedure TGLStateCache.SetSampleCoverageInvert(const Value: TGLboolean);
 begin
-  if (Value <> FSampleCoverageInvert) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FSampleCoverageInvert) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttMultisample)
-    else
-      FSampleCoverageInvert := Value;
+    FSampleCoverageInvert := Value;
     GL.SampleCoverage(FSampleCoverageValue, Value);
   end;
 end;
 
 procedure TGLStateCache.SetSampleCoverageValue(const Value: TGLfloat);
 begin
-  if (Value <> FSampleCoverageValue) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FSampleCoverageValue) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttMultisample)
-    else
-      FSampleCoverageValue := Value;
+    FSampleCoverageValue := Value;
     GL.SampleCoverage(Value, FSampleCoverageInvert);
   end;
 end;
@@ -2871,36 +2811,30 @@ end;
 procedure TGLStateCache.SetSampleMaskValue(Index: Integer;
   const Value: TGLbitfield);
 begin
-  if (FSampleMaskValue[Index] <> Value) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (FSampleMaskValue[Index] <> Value) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttMultisample)
-    else
-      FSampleMaskValue[Index] := Value;
+    FSampleMaskValue[Index] := Value;
     GL.SampleMaski(Index, Value);
   end;
 end;
 
 procedure TGLStateCache.SetScissorBox(const Value: TVector4i);
 begin
-  if not VectorEquals(FScissorBox, Value) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if not VectorEquals(FScissorBox, Value) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttScissor)
-    else
-      FScissorBox := Value;
+    FScissorBox := Value;
     GL.Scissor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
 
 procedure TGLStateCache.SetStencilBackWriteMask(const Value: TGLuint);
 begin
-  if (Value <> FStencilBackWriteMask) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FStencilBackWriteMask) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-      FStencilBackWriteMask := Value;
+     FStencilBackWriteMask := Value;
     // DONE: ignore if unsupported
     if GL.VERSION_2_0 then
       GL.StencilMaskSeparate(GL_BACK, Value);
@@ -2908,33 +2842,21 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilClearValue(const Value: TGLuint);
-{$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
-{$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
-  GL.GetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
-  if FStencilClearValue <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil clear value');
-{$ENDIF}
-  if (Value <> FStencilClearValue) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FStencilClearValue) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-      FStencilClearValue := Value;
+    FStencilClearValue := Value;
     GL.ClearStencil(Value);
   end;
 end;
 
 procedure TGLStateCache.SetColorClearValue(const Value: TVector);
 begin
-  if not VectorEquals(Value, FColorClearValue) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if not VectorEquals(Value, FColorClearValue) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-      FColorClearValue := Value;
+    FColorClearValue := Value;
     GL.ClearColor(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
@@ -2943,117 +2865,72 @@ procedure TGLStateCache.SetColorMask(mask: TColorMask);
 var
   i: integer;
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   // it might be faster to keep track of whether all draw buffers are same
   // value or not, since using this is probably more common than setting
   // the color write mask for individual draw buffers
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttColorBuffer)
-  else
-    for I := low(FColorWriteMask) to high(FColorWriteMask) do
-    begin
-      FColorWriteMask[I] := mask;
-    end;
+  for I := low(FColorWriteMask) to high(FColorWriteMask) do
+  begin
+    FColorWriteMask[I] := mask;
+  end;
   GL.ColorMask(ccRed in mask, ccGreen in mask, ccBlue in mask, ccAlpha in mask);
 end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
   const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
-{$IFDEF GLS_CACHE_MISS_CHECK}
-var UI: TGLuint; I: TGLint;
-{$ENDIF}
 begin
-//  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
-//    or FInsideList then
-{$IFDEF GLS_CACHE_MISS_CHECK}
-  GL.GetIntegerv(GL_STENCIL_FUNC, @UI);
-  if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
-  GL.GetIntegerv(GL_STENCIL_REF, @I);
-  if FStencilRef <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil reference');
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
-  GL.GetIntegerv(GL_STENCIL_VALUE_MASK, @UI);
-  if FStencilValueMask <> UI then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil value mask');
-{$ENDIF}
-  begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-      case face of
-        cmFront:
-          begin
-            FStencilFunc := func;
-            FStencilRef := ref;
-            FStencilValueMask := mask;
-          end;
-        cmBack:
-          begin
-            FStencilBackFunc := func;
-            FStencilBackRef := ref;
-            FStencilBackValueMask := mask;
-          end;
-        cmFrontAndBack:
-          begin
-            FStencilFunc := func;
-            FStencilRef := ref;
-            FStencilValueMask := mask;
-            FStencilBackFunc := func;
-            FStencilBackRef := ref;
-            FStencilBackValueMask := mask;
-          end;
-      end;
+  Assert(not FInsideList, glsStateCashInsideList);
 
-    GL.StencilFuncSeparate(cGLCullFaceModeToGLEnum[face],
-      cGLComparisonFunctionToGLEnum[func], ref, mask);
+  case face of
+    cmFront:
+      begin
+        FStencilFunc := func;
+        FStencilRef := ref;
+        FStencilValueMask := mask;
+      end;
+    cmBack:
+      begin
+        FStencilBackFunc := func;
+        FStencilBackRef := ref;
+        FStencilBackValueMask := mask;
+      end;
+    cmFrontAndBack:
+      begin
+        FStencilFunc := func;
+        FStencilRef := ref;
+        FStencilValueMask := mask;
+        FStencilBackFunc := func;
+        FStencilBackRef := ref;
+        FStencilBackValueMask := mask;
+      end;
   end;
+
+  GL.StencilFuncSeparate(cGLCullFaceModeToGLEnum[face],
+    cGLComparisonFunctionToGLEnum[func], ref, mask);
 end;
 
 procedure TGLStateCache.SetStencilFunc(const func: TStencilFunction; const ref:
   TGLint; const mask: TGLuint);
 begin
-  if (func <> FStencilFunc) or (ref <> FStencilRef) or (mask <>
-    FStencilValueMask) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (func <> FStencilFunc) or (ref <> FStencilRef)
+    or (mask <>  FStencilValueMask) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-    begin
-      FStencilFunc := func;
-      FStencilRef := ref;
-      FStencilValueMask := mask;
-    end;
+    FStencilFunc := func;
+    FStencilRef := ref;
+    FStencilValueMask := mask;
     GL.StencilFunc(cGLComparisonFunctionToGLEnum[func], ref, mask);
   end;
 end;
 
 procedure TGLStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
-{$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
-{$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
-  GL.GetIntegerv(GL_STENCIL_FAIL, @I);
-  if cGLStencilOpToGLEnum[FStencilFail] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil fail');
-  GL.GetIntegerv(GL_STENCIL_PASS_DEPTH_FAIL, @I);
-  if cGLStencilOpToGLEnum[FStencilPassDepthFail] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil zfail');
-  GL.GetIntegerv(GL_STENCIL_PASS_DEPTH_PASS, @I);
-  if cGLStencilOpToGLEnum[FStencilPassDepthPass] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil zpass');
-{$ENDIF}
   if (fail <> FStencilFail) or (zfail <> FStencilPassDepthFail)
-    or (zpass <> FStencilPassDepthPass) or FInsideList then
+    or (zpass <> FStencilPassDepthPass) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-    begin
-      FStencilFail := fail;
-      FStencilPassDepthFail := zfail;
-      FStencilPassDepthPass := zpass;
-    end;
+    FStencilFail := fail;
+    FStencilPassDepthFail := zfail;
+    FStencilPassDepthPass := zpass;
     GL.StencilOp(cGLStencilOpToGLEnum[fail],
       cGLStencilOpToGLEnum[zfail],
       cGLStencilOpToGLEnum[zpass]);
@@ -3063,32 +2940,31 @@ end;
 procedure TGLStateCache.SetStencilOpSeparate(const face: TCullFaceMode;
   const sfail, dpfail, dppass: TStencilOp);
 begin
-  if FInsideList then
-    Include(FListStates[FCurrentList], sttStencilBuffer)
-  else
-    case face of
-      cmFront:
-        begin
-          FStencilFail := sfail;
-          FStencilPassDepthFail := dpfail;
-          FStencilPassDepthPass := dppass;
-        end;
-      cmBack:
-        begin
-          FStencilBackFail := sfail;
-          FStencilBackPassDepthFail := dpfail;
-          FStencilBackPassDepthPass := dppass;
-        end;
-      cmFrontAndBack:
-        begin
-          FStencilFail := sfail;
-          FStencilPassDepthFail := dpfail;
-          FStencilPassDepthPass := dppass;
-          FStencilBackFail := sfail;
-          FStencilBackPassDepthFail := dpfail;
-          FStencilBackPassDepthPass := dppass;
-        end;
-    end;
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  case face of
+    cmFront:
+      begin
+        FStencilFail := sfail;
+        FStencilPassDepthFail := dpfail;
+        FStencilPassDepthPass := dppass;
+      end;
+    cmBack:
+      begin
+        FStencilBackFail := sfail;
+        FStencilBackPassDepthFail := dpfail;
+        FStencilBackPassDepthPass := dppass;
+      end;
+    cmFrontAndBack:
+      begin
+        FStencilFail := sfail;
+        FStencilPassDepthFail := dpfail;
+        FStencilPassDepthPass := dppass;
+        FStencilBackFail := sfail;
+        FStencilBackPassDepthFail := dpfail;
+        FStencilBackPassDepthPass := dppass;
+      end;
+  end;
 
   GL.StencilOpSeparate(cGLCullFaceModeToGLEnum[face],
     cGLStencilOpToGLEnum[sfail],
@@ -3097,21 +2973,11 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilWriteMask(const Value: TGLuint);
-{$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
-{$ENDIF}
 begin
-{$IFDEF GLS_CACHE_MISS_CHECK}
-  GL.GetIntegerv(GL_STENCIL_WRITEMASK, @I);
-  if FStencilWriteMask <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil write mask');
-{$ENDIF}
-  if (Value <> FStencilWriteMask) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if (Value <> FStencilWriteMask) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttStencilBuffer)
-    else
-      FStencilWriteMask := Value;
+    FStencilWriteMask := Value;
     GL.StencilMaskSeparate(GL_FRONT, Value);
   end;
 end;
@@ -3122,14 +2988,12 @@ procedure TGLStateCache.SetTextureBinding(Index: Integer; target:
 var
   lastActiveTexture: TGLuint;
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if target = ttNoShape then
     exit;
-  if (Value <> FTextureBinding[Index, target]) or FInsideList then
+  if (Value <> FTextureBinding[Index, target]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttTexture)
-    else
-      FTextureBinding[Index, target] := Value;
+    FTextureBinding[Index, target] := Value;
     lastActiveTexture := ActiveTexture;
     ActiveTexture := Index;
     GL.BindTexture(cGLTexTypeToGLEnum[target], Value);
@@ -3144,21 +3008,29 @@ begin
   Result := FActiveTextureEnabling[FActiveTexture][Target];
 end;
 
+function TGLStateCache.GetTextureEnvironmentColor: TVector;
+begin
+  Result := FTextureEnvironmentColor[ActiveTexture];
+end;
+
+function TGLStateCache.GetTextureEnvironmentMode: TGLEnum;
+begin
+  Result := FTextureEnvironmentMode[ActiveTexture];
+end;
+
 procedure TGLStateCache.SetActiveTextureEnabled(Target: TGLTextureTarget;
   const Value: Boolean);
 var
   glTarget: TGLEnum;
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
   glTarget := DecodeGLTextureTarget(Target);
   if FForwardContext or not IsTargetSupported(glTarget) then
     exit;
-  if (Value <> FActiveTextureEnabling[FActiveTexture][Target])
-    or FInsideList then
+  if (Value <> FActiveTextureEnabling[FActiveTexture][Target]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttEnable)
-    else
-      FActiveTextureEnabling[FActiveTexture][Target] := Value;
+    FActiveTextureEnabling[FActiveTexture][Target] := Value;
     if Value then
       GL.Enable(glTarget)
     else
@@ -3166,21 +3038,44 @@ begin
   end;
 end;
 
+procedure TGLStateCache.SetTextureEnvironmentColor(const Value: TVector);
+begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if not VectorEquals(FTextureEnvironmentColor[ActiveTexture], Value) then
+  begin
+    FTextureEnvironmentColor[ActiveTexture] := Value;
+    GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @Value);
+  end;
+end;
+
+procedure TGLStateCache.SetTextureEnvironmentMode(const Value: TGLEnum);
+begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if FTextureEnvironmentMode[ActiveTexture] <> Value then
+  begin
+    FTextureEnvironmentMode[ActiveTexture] := Value;
+    GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, Value);
+  end;
+end;
+
 procedure TGLStateCache.SetTextureCompressionHint(const Value: THintType);
 begin
-  if (Value <> FTextureCompressionHint) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FTextureCompressionHint) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttHint)
-    else
-      FTextureCompressionHint := Value;
+    FTextureCompressionHint := Value;
     GL.Hint(GL_TEXTURE_COMPRESSION_HINT, cGLHintToGLEnum[Value]);
   end;
 end;
 
 procedure TGLStateCache.SetTransformFeedbackBufferBinding(const Value: TGLuint);
 begin
-  if (Value <> FTransformFeedbackBufferBinding) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FTransformFeedbackBufferBinding) then
   begin
     FTransformFeedbackBufferBinding := Value;
     GL.BindBuffer(GL_TRANSFORM_FEEDBACK_BUFFER, Value);
@@ -3190,6 +3085,8 @@ end;
 procedure TGLStateCache.SetEnableTextureCubeMapSeamless(const Value:
   TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
   if Value <> FEnableTextureCubeMapSeamless then
   begin
     FEnableTextureCubeMapSeamless := Value;
@@ -3206,11 +3103,7 @@ var
 begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
-  FCurrentList := list - 1;
-  while High(FListStates) < Integer(FCurrentList) do
-    SetLength(FListStates, 2 * Length(FListStates));
 
-  FListStates[FCurrentList] := [];
   FInsideList := True;
   // Reset VBO binding and client attribute
   with GL do
@@ -3234,16 +3127,12 @@ end;
 
 procedure TGLStateCache.CallList(list: TGLuint);
 begin
-  while High(FListStates) < Integer(list) do
-    SetLength(FListStates, 2 * Length(FListStates));
-  PushAttrib(FListStates[list - 1]);
   GL.CallList(list);
-  PopAttrib;
 end;
 
 procedure TGLStateCache.SetUniformBufferBinding(const Value: TGLuint);
 begin
-  Assert(not FInsideList);
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUniformBufferBinding then
   begin
     FUniformBufferBinding := Value;
@@ -3254,7 +3143,7 @@ end;
 procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
   ATarget: TGLBufferBindingTarget; AIndex: TGLuint; ABufferSize: TGLsizeiptr);
 begin
-  Assert(not FInsideList);
+  Assert(not FInsideList, glsStateCashInsideList);
   if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
     or (FUBOStates[ATarget, AIndex].FOffset > 0)
     or (FUBOStates[ATarget, AIndex].FSize <> ABufferSize) then
@@ -3279,7 +3168,7 @@ procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
   ATarget: TGLBufferBindingTarget; AIndex: TGLuint;
     AOffset: TGLintptr; ARangeSize: TGLsizeiptr);
 begin
-  Assert(not FInsideList);
+  Assert(not FInsideList, glsStateCashInsideList);
   if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
     or (FUBOStates[ATarget, AIndex].FOffset <> AOffset)
     or (FUBOStates[ATarget, AIndex].FSize <> ARangeSize) then
@@ -3304,6 +3193,7 @@ end;
 
 procedure TGLStateCache.SetUnpackAlignment(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackAlignment then
   begin
     FUnpackAlignment := Value;
@@ -3313,6 +3203,7 @@ end;
 
 procedure TGLStateCache.SetUnpackImageHeight(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackImageHeight then
   begin
     FUnpackImageHeight := Value;
@@ -3322,6 +3213,7 @@ end;
 
 procedure TGLStateCache.SetUnpackLSBFirst(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackLSBFirst then
   begin
     FUnpackLSBFirst := Value;
@@ -3331,6 +3223,7 @@ end;
 
 procedure TGLStateCache.SetUnpackRowLength(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackRowLength then
   begin
     FUnpackRowLength := Value;
@@ -3340,6 +3233,7 @@ end;
 
 procedure TGLStateCache.SetUnpackSkipImages(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackSkipImages then
   begin
     FUnpackSkipImages := Value;
@@ -3349,6 +3243,7 @@ end;
 
 procedure TGLStateCache.SetUnpackSkipPixels(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackSkipPixels then
   begin
     FUnpackSkipPixels := Value;
@@ -3358,6 +3253,7 @@ end;
 
 procedure TGLStateCache.SetUnpackSkipRows(const Value: TGLuint);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackSkipRows then
   begin
     FUnpackSkipRows := Value;
@@ -3367,6 +3263,7 @@ end;
 
 procedure TGLStateCache.SetUnpackSwapBytes(const Value: TGLboolean);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
   if Value <> FUnpackSwapBytes then
   begin
     FUnpackSwapBytes := Value;
@@ -3376,12 +3273,10 @@ end;
 
 procedure TGLStateCache.SetViewPort(const Value: TVector4i);
 begin
-  if not VectorEquals(Value, FViewPort) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+  if not VectorEquals(Value, FViewPort) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttViewport)
-    else
-      FViewPort := Value;
+    FViewPort := Value;
     GL.Viewport(Value[0], Value[1], Value[2], Value[3]);
   end;
 end;
@@ -3410,12 +3305,9 @@ procedure TGLStateCache.SetLightEnabling(I: Integer; Value: Boolean);
 var
   J, K: Integer;
 begin
-  if (FLightEnabling[I] <> Value) or FInsideList then
+  if (FLightEnabling[I] <> Value) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightEnabling[I] := Value;
+    FLightEnabling[I] := Value;
 
     if FFFPLight then
     begin
@@ -3524,6 +3416,8 @@ end;
 
 procedure TGLStateCache.SetLightSpotDirection(I: Integer; const Value: TAffineVector);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
   if not VectorEquals(Value, AffineVectorMake(FLightStates.SpotDirection[I])) then
   begin
     FLightStates.SpotDirection[I] := VectorMake(Value);
@@ -3540,12 +3434,11 @@ end;
 
 procedure TGLStateCache.SetLightAmbient(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates.Ambient[I]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if not VectorEquals(Value, FLightStates.Ambient[I]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Ambient[I] := Value;
+    FLightStates.Ambient[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_AMBIENT, @Value);
@@ -3563,12 +3456,11 @@ end;
 
 procedure TGLStateCache.SetLightDiffuse(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates.Diffuse[I]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if not VectorEquals(Value, FLightStates.Diffuse[I]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Diffuse[I] := Value;
+    FLightStates.Diffuse[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_DIFFUSE, @Value);
@@ -3586,12 +3478,11 @@ end;
 
 procedure TGLStateCache.SetLightSpecular(I: Integer; const Value: TVector);
 begin
-  if not VectorEquals(Value, FLightStates.Specular[I]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if not VectorEquals(Value, FLightStates.Specular[I]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Specular[I] := Value;
+    FLightStates.Specular[I] := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPECULAR, @Value);
@@ -3609,15 +3500,12 @@ end;
 
 procedure TGLStateCache.SetSpotCutoff(I: Integer; const Value: Single);
 begin
-  if (Value <> FSpotCutoff[I]) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FSpotCutoff[I]) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-    begin
-      FSpotCutoff[I] := Value;
-      FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
-    end;
+    FSpotCutoff[I] := Value;
+    FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
 
     FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
@@ -3632,13 +3520,12 @@ end;
 
 procedure TGLStateCache.SetSpotExponent(I: Integer; const Value: Single);
 begin
+  Assert(not FInsideList, glsStateCashInsideList);
+
   if (Value <> FLightStates.SpotCosCutoffExponent[I][1] )
-    or FInsideList then
+    then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.SpotCosCutoffExponent[I][1]  := Value;
+    FLightStates.SpotCosCutoffExponent[I][1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
@@ -3656,12 +3543,11 @@ end;
 
 procedure TGLStateCache.SetConstantAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][0] ) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FLightStates.Attenuation[I][0] ) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Attenuation[I][0]  := Value;
+    FLightStates.Attenuation[I][0]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
@@ -3679,12 +3565,11 @@ end;
 
 procedure TGLStateCache.SetLinearAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][1] ) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FLightStates.Attenuation[I][1] ) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Attenuation[I][1]  := Value;
+    FLightStates.Attenuation[I][1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
@@ -3702,12 +3587,11 @@ end;
 
 procedure TGLStateCache.SetQuadAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][2] ) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (Value <> FLightStates.Attenuation[I][2] ) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttLighting)
-    else
-      FLightStates.Attenuation[I][2]  := Value;
+    FLightStates.Attenuation[I][2]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
@@ -3736,12 +3620,11 @@ end;
 
 procedure TGLStateCache.SetGLColorWriting(flag: Boolean);
 begin
-  if (FColorWriting <> flag) or FInsideList then
+  Assert(not FInsideList, glsStateCashInsideList);
+
+  if (FColorWriting <> flag) then
   begin
-    if FInsideList then
-      Include(FListStates[FCurrentList], sttColorBuffer)
-    else
-      FColorWriting := flag;
+    FColorWriting := flag;
     GL.ColorMask(flag, flag, flag, flag);
   end;
 end;

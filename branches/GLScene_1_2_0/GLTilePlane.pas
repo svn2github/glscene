@@ -546,7 +546,7 @@ procedure TGLTilePlane.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
       if Assigned(FMaterialLibrary) then begin
-         DestroyHandle;
+         //DestroyHandle;
          FMaterialLibrary.RemoveFreeNotification(Self);
       end;
       FMaterialLibrary:=val;
@@ -582,10 +582,10 @@ procedure TGLTilePlane.DoRender(var ARci : TRenderContextInfo;
 var
    i : Integer;
 begin
-   if (not ListHandleAllocated) and Assigned(FMaterialLibrary) then begin
-      for i:=0 to MaterialLibrary.Materials.Count-1 do
-         MaterialLibrary.Materials[i].PrepareBuildList;
-   end;
+//   if (not ListHandleAllocated) and Assigned(FMaterialLibrary) then begin
+//      for i:=0 to MaterialLibrary.Materials.Count-1 do
+//         MaterialLibrary.Materials[i].PrepareBuildList;
+//   end;
    inherited;
 end;
 

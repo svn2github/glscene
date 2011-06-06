@@ -613,7 +613,7 @@ begin
       FixedFunction.DepthProperties.DepthTest := False;
       FixedFunction.DepthProperties.DepthWrite := False;
       FixedFunction.DepthProperties.DepthClamp := True;
-      FixedFunction.TextureMode := tmReplace;
+      FixedFunction.Texture.EnvMode := tmReplace;
       FixedFunction.Texture.LibTextureName := FLowResolutionTexture.Name;
       FixedFunction.Texture.LibSamplerName := FCommonSampler.Name;
       FixedFunction.Texture.Enabled := True;

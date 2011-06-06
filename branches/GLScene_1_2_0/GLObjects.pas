@@ -171,12 +171,11 @@ uses
 
 type
 
-  // TGLSceneObjectEx
+  // TGLCustomSceneObjectEx
   //
-  TGLSceneObjectEx = class(TGLSceneObject)
+  TGLCustomSceneObjectEx = class(TGLCustomSceneObject)
   private
     FMeshExtras: TMeshExtras;
-    FFinishEvent: TFinishTaskEvent;
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
     function GetShowAxes: Boolean;
@@ -188,16 +187,28 @@ type
     { Protected Declarations }
     FBatch: TDrawBatch;
     FTransformation: TTransformationRec;
+    FFinishEvent: TFinishTaskEvent;
     procedure BuildMesh; virtual; stdcall;
     function GetLibMaterialName: string; virtual;
     procedure SetLibMaterialName(const Value: string); virtual;
     procedure SetScene(const value: TGLScene); override;
+    procedure SelectMaterial;
     procedure Loaded; override;
     procedure ApplyExtras;
+
+    property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
+      write SetMaterialLibrary;
+    property LibMaterialName: string read GetLibMaterialName
+      write SetLibMaterialName;
+    property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx default False;
+    property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
+    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
     procedure TransformationChanged; override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
@@ -208,15 +219,33 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
+  end;
+
+  TGLSceneObjectEx = class(TGLCustomSceneObjectEx)
   published
     { Published Declarations }
-    property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
-      write SetMaterialLibrary;
-    property LibMaterialName: string read GetLibMaterialName
-      write SetLibMaterialName;
-    property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx;
-    property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
-    property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
+    property MeshExtras;
+    property Material;
+    property MaterialLibrary;
+    property LibMaterialName;
+    property ObjectsSorting;
+    property VisibilityCulling;
+    property Direction;
+    property PitchAngle;
+    property Position;
+    property RollAngle;
+    property Scale;
+    property ShowAxes;
+    property ShowAABB;
+    property TurnAngle;
+    property Up;
+    property Visible;
+    property Pickable;
+    property OnProgress;
+    property OnPicked;
+    property Behaviours;
+    property Effects;
+    property Hint;
   end;
 
   // TGLVisibilityDeterminationEvent
@@ -355,10 +384,12 @@ type
     FWidth: TGLFloat;
     FHeight: TGLFloat;
     FRotation: TGLFloat;
-    FAlphaChannel: Single;
     FMirrorU: Boolean;
     FMirrorV: Boolean;
     FAlign: TGLSpriteAlign;
+    FModulateColor: TGLColor;
+    function GetAlphaChannel: Single;
+    procedure SetAlphaChannel(const Value: Single);
   protected
     { Protected Declarations }
     procedure BuildMesh; override; stdcall;
@@ -367,9 +398,11 @@ type
     procedure SetRotation(const val: TGLFloat);
     procedure SetMirrorU(const val: Boolean);
     procedure SetMirrorV(const val: Boolean);
+    procedure OnColorChange(Sender: TObject);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
     procedure DoRender(var ARci: TRenderContextInfo;
@@ -393,7 +426,7 @@ type
       Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
     { : Fake property for backward compatibility. }
-    property AlphaChannel: Single read FAlphaChannel write FAlphaChannel;
+    property AlphaChannel: Single read GetAlphaChannel write SetAlphaChannel;
     { : Reverses the texture coordinates in the U and V direction to mirror
       the texture. }
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
@@ -1139,9 +1172,15 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSceneObjectEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLCustomSceneObjectEx'}{$ENDIF}
 
-function TGLSceneObjectEx.AxisAlignedBoundingBoxUnscaled(
+procedure TGLCustomSceneObjectEx.Assign(Source: TPersistent);
+begin
+  inherited Assign(Source);
+  SelectMaterial;
+end;
+
+function TGLCustomSceneObjectEx.AxisAlignedBoundingBoxUnscaled(
   const AIncludeChilden: Boolean): TAABB;
 var
   I: Integer;
@@ -1160,7 +1199,7 @@ begin
   end;
 end;
 
-function TGLSceneObjectEx.AxisAlignedDimensionsUnscaled: TVector;
+function TGLCustomSceneObjectEx.AxisAlignedDimensionsUnscaled: TVector;
 var
   V3: TVector3f;
   LAABB: TAABB;
@@ -1171,7 +1210,7 @@ begin
   Result := VectorMake(V3);
 end;
 
-procedure TGLSceneObjectEx.BuildMesh;
+procedure TGLCustomSceneObjectEx.BuildMesh;
 begin
   FBatch.Changed := True;
   ClearStructureChanged;
@@ -1179,21 +1218,24 @@ begin
     Scene.NotifyChange(Self);
 end;
 
-constructor TGLSceneObjectEx.Create(AOwner: TComponent);
+constructor TGLCustomSceneObjectEx.Create(AOwner: TComponent);
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDeferredDraw];
   FBatch.Mesh := TMeshAtom.Create;
   FBatch.Transformation := @FTransformation;
   FBatch.Mesh.TagName := ClassName;
+  FBatch.Material := FMaterial;
   FBatch.PickCallback := DoOnPicked;
 end;
 
-procedure TGLSceneObjectEx.Loaded;
+procedure TGLCustomSceneObjectEx.SelectMaterial;
 var
   LMaterial: TGLAbstractLibMaterial;
 begin
-  inherited;
+  if Assigned(FBatch.Material) and (FBatch.Material <> FMaterial) then
+    FBatch.Material.UnRegisterUser(Self);
+
   if Assigned(MaterialLibrary) then
   begin
     if MaterialLibrary is TGLMaterialLibraryEx then
@@ -1217,13 +1259,19 @@ begin
   end;
 end;
 
-procedure TGLSceneObjectEx.TransformationChanged;
+procedure TGLCustomSceneObjectEx.Loaded;
+begin
+  inherited;
+  SelectMaterial;
+end;
+
+procedure TGLCustomSceneObjectEx.TransformationChanged;
 begin
   inherited;
   FBatch.Changed := True;
 end;
 
-function TGLSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVector;
+function TGLCustomSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
 var
   locRayStart, locRayVector, locPoint, locNormal: TVector;
@@ -1249,7 +1297,7 @@ begin
   end;
 end;
 
-procedure TGLSceneObjectEx.SetScene(const value: TGLScene);
+procedure TGLCustomSceneObjectEx.SetScene(const value: TGLScene);
 begin
   if value <> Scene then
   begin
@@ -1261,17 +1309,17 @@ begin
   end;
 end;
 
-procedure TGLSceneObjectEx.SetShowAABB(const Value: Boolean);
+procedure TGLCustomSceneObjectEx.SetShowAABB(const Value: Boolean);
 begin
   FBatch.ShowAABB := Value;
 end;
 
-procedure TGLSceneObjectEx.SetShowAxesEx(AValue: Boolean);
+procedure TGLCustomSceneObjectEx.SetShowAxesEx(AValue: Boolean);
 begin
   FBatch.ShowAxes := AValue;
 end;
 
-procedure TGLSceneObjectEx.ApplyExtras;
+procedure TGLCustomSceneObjectEx.ApplyExtras;
 begin
   if mesTangents in FMeshExtras then
   begin
@@ -1304,18 +1352,21 @@ begin
   end;
 end;
 
-destructor TGLSceneObjectEx.Destroy;
+destructor TGLCustomSceneObjectEx.Destroy;
 begin
+  SetScene(nil);
+  if Assigned(FBatch.Material) and (FBatch.Material <> FMaterial) then
+    FBatch.Material.UnRegisterUser(Self);
   FBatch.Mesh.Free;
   FBatch.InstancesChain.Free;
   FFinishEvent.Free;
   inherited;
 end;
 
-procedure TGLSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TGLCustomSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 
-  procedure DoRenderSelf;
+  procedure PrepareSelf;
   begin
     if ocStructure in Changes then
     begin
@@ -1338,19 +1389,22 @@ procedure TGLSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
 {$ENDIF GLS_SERVICE_CONTEXT}
         BuildMesh;
     end;
-    FTransformation := ARci.PipelineTransformation.StackTop;
-    FBatch.Order := ARci.orderCounter;
+
+    if ARenderSelf then
+    begin
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      FBatch.Order := ARci.orderCounter;
+    end;
   end;
 
 begin
-  if ARenderSelf then
-    DoRenderSelf;
+  PrepareSelf;
 
   if ARenderChildren then
     RenderChildren(0, Count - 1, ARci);
 end;
 
-function TGLSceneObjectEx.GetLibMaterialName: string;
+function TGLCustomSceneObjectEx.GetLibMaterialName: string;
 begin
   if Assigned(FBatch.Material) then
     Result := FBatch.Material.Name
@@ -1358,22 +1412,22 @@ begin
     Result := '';
 end;
 
-function TGLSceneObjectEx.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+function TGLCustomSceneObjectEx.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterial.Material.MaterialLibrary;
 end;
 
-function TGLSceneObjectEx.GetShowAABB: Boolean;
+function TGLCustomSceneObjectEx.GetShowAABB: Boolean;
 begin
   Result := FBatch.ShowAABB;
 end;
 
-function TGLSceneObjectEx.GetShowAxes: Boolean;
+function TGLCustomSceneObjectEx.GetShowAxes: Boolean;
 begin
   Result := FBatch.ShowAxes;
 end;
 
-procedure TGLSceneObjectEx.SetLibMaterialName(const Value: string);
+procedure TGLCustomSceneObjectEx.SetLibMaterialName(const Value: string);
 var
   LMaterial: TGLAbstractLibMaterial;
 begin
@@ -1401,13 +1455,14 @@ begin
   end;
 end;
 
-procedure TGLSceneObjectEx.SetMaterialLibrary(
+procedure TGLCustomSceneObjectEx.SetMaterialLibrary(
   const Value: TGLAbstractMaterialLibrary);
 begin
   FMaterial.Material.MaterialLibrary := Value;
+  SelectMaterial;
 end;
 
-procedure TGLSceneObjectEx.SetMeshExtras(const Value: TMeshExtras);
+procedure TGLCustomSceneObjectEx.SetMeshExtras(const Value: TMeshExtras);
 begin
   if FMeshExtras <> Value then
   begin
@@ -1416,7 +1471,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION 'TGLSceneObjectEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLCustomSceneObjectEx'}{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TGLDummyCube'}{$ENDIF}
 
@@ -1906,15 +1961,18 @@ begin
 end;
 
 procedure TGLSprite.Assign(Source: TPersistent);
+var
+  LSprite: TGLSprite;
 begin
   if Source is TGLSprite then
   begin
-    FWidth := TGLSprite(Source).FWidth;
-    FHeight := TGLSprite(Source).FHeight;
-    FRotation := TGLSprite(Source).FRotation;
-    FAlphaChannel := TGLSprite(Source).FAlphaChannel;
-    FMirrorU := TGLSprite(Source).FMirrorU;
-    FMirrorV := TGLSprite(Source).FMirrorV;
+    LSprite := TGLSprite(Source);
+    FWidth := LSprite.FWidth;
+    FHeight := LSprite.FHeight;
+    FRotation := LSprite.FRotation;
+    FModulateColor.Assign(LSprite.FModulateColor);
+    FMirrorU := LSprite.FMirrorU;
+    FMirrorV := LSprite.FMirrorV;
     FAlign := TGLSprite(Source).FAlign;
   end;
   inherited Assign(Source);
@@ -1966,9 +2024,11 @@ begin
       DeclareAttribute(attrNormal, GLSLType3f);
       DeclareAttribute(attrTangent, GLSLType3f);
       DeclareAttribute(attrBinormal, GLSLType3f);
+      DeclareAttribute(attrColor, GLSLType4f);
 
       BeginAssembly(mpTRIANGLES);
 
+      Attribute4f(attrColor, FModulateColor.Color);
       Attribute3f(attrNormal, 0, 0, 1);
       Attribute3f(attrTangent, VectorNormalize(x));
       Attribute3f(attrBinormal, VectorNormalize(y));
@@ -2005,7 +2065,18 @@ begin
   ObjectStyle := ObjectStyle + [osNoVisibilityCulling];
   FWidth := 1;
   FHeight := 1;
+  FRotation := 0;
+  FMirrorU := False;
+  FMirrorV := False;
   FAlign := alSpherical;
+  FModulateColor := TGLColor.CreateInitialized(Self, clrGray80);
+  FModulateColor.OnNotifyChange := OnColorChange;
+end;
+
+destructor TGLSprite.Destroy;
+begin
+  FModulateColor.Destroy;
+  inherited;
 end;
 
 procedure TGLSprite.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
@@ -2053,6 +2124,16 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
+function TGLSprite.GetAlphaChannel: Single;
+begin
+  Result := FModulateColor.Alpha;
+end;
+
+procedure TGLSprite.OnColorChange(Sender: TObject);
+begin
+  StructureChanged;
+end;
+
 function TGLSprite.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint, intersectNormal: PVector): Boolean;
 var
@@ -2090,6 +2171,11 @@ end;
 
 // SetHeight
 //
+
+procedure TGLSprite.SetAlphaChannel(const Value: Single);
+begin
+  FModulateColor.Alpha := Value;
+end;
 
 procedure TGLSprite.SetHeight(const val: TGLFloat);
 begin

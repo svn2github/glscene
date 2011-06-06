@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSkydome<p>
@@ -979,7 +979,6 @@ begin
     else
     begin
       ObjectStyle := ObjectStyle - [osDirectDraw];
-      DestroyHandle;
     end;
     StructureChanged;
   end;

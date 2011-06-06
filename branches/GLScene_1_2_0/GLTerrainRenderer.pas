@@ -125,7 +125,7 @@ type
     procedure SetOcclusionFrameSkip(val: integer);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure DestroyHandle; override;
+//    procedure DestroyHandle; override;
 
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
@@ -333,13 +333,13 @@ end;
 
 // DestroyHandle
 
-procedure TGLTerrainRenderer.DestroyHandle;
-begin
-  inherited;
-  ReleaseAllTiles;
-  if Assigned(HeightDataSource) then
-    HeightDataSource.Clear;
-end;
+//procedure TGLTerrainRenderer.DestroyHandle;
+//begin
+//  inherited;
+//  ReleaseAllTiles;
+//  if Assigned(HeightDataSource) then
+//    HeightDataSource.Clear;
+//end;
 
 // RayCastIntersect
 

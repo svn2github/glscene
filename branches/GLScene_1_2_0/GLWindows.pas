@@ -51,7 +51,7 @@ interface
 
 uses
   SysUtils, Classes, GLScene, GLHUDObjects,
-  GLMaterial, OpenGLTokens, GLContext, GLBitmapFont, GLWindowsFont,
+  GLMaterial, OpenGLTokens, GLContext, GLBitmapFont, GLS_SystemBitmapFont,
     VectorGeometry,
   GLGui, GLCrossPlatform, GLColor, GLRenderContextInfo, BaseClasses;
 
@@ -470,7 +470,7 @@ type
     procedure SetGuiLayoutNamePressed(newName: TGLGuiComponentName);
     procedure SetGuiLayout(NewGui: TGLGuiLayout); override;
     procedure SetBitBtn(AValue: TGLMaterial);
-    procedure DestroyHandle; override;
+//    procedure DestroyHandle; override;
     procedure SetGroup(const val: Integer);
     procedure SetLogicWidth(const val: single);
     procedure SetLogicHeight(const val: single);
@@ -1837,8 +1837,8 @@ function TGLBaseFontControl.GetFontHeight: Integer;
 
 begin
   if Assigned(BitmapFont) then
-    if BitmapFont is TGLWindowsBitmapFont then
-      Result := Abs((BitmapFont as TGLWindowsBitmapFont).Font.Height)
+    if BitmapFont is TGLSystemBitmapFont then
+      Result := Abs((BitmapFont as TGLSystemBitmapFont).Font.Height)
     else
       Result := BitmapFont.CharHeight
   else
@@ -2623,11 +2623,11 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TGLButton.DestroyHandle;
-begin
-  inherited;
-  FBitBtn.DestroyHandles;
-end;
+//procedure TGLButton.DestroyHandle;
+//begin
+//  inherited;
+//  FBitBtn.DestroyHandles;
+//end;
 
 procedure TGLButton.SetGroup(const val: Integer);
 

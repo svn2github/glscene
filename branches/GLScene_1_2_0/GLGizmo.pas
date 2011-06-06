@@ -71,7 +71,7 @@ uses
   // GLScene
   GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLState, GLSelection
+  GLCoordinates, GLRenderContextInfo, GLState
   {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 type
@@ -243,7 +243,7 @@ type
     procedure UpdateVisibleInfoLabels;
     procedure SetGLGizmoThickness(const Value: Single);
 
-    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TGLPickList;
+//    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TGLPickList;
     procedure ClearInternalRaycastHitData;
     procedure SetViewer(const Value: TGLSceneViewer);
     procedure SetLabelFont(const Value: TGLCustomBitmapFont);
@@ -946,7 +946,7 @@ begin
     end;
   end;
 end;
-
+{
 function TGLGizmo.InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer): TGLPickList;
 var
   t:    Integer;
@@ -1013,7 +1013,7 @@ begin
 
   end;
 end;
-
+}
 procedure TGLGizmo.Loaded;
 begin
   inherited;
@@ -1149,7 +1149,7 @@ end;
 
 procedure TGLGizmo.ViewerMouseMove(const X, Y: Integer);
 var
-  pickList: TGLPickList;
+//  pickList: TGLPickList;
   mousePos: TVector;
 
   function indexOf(obj: TGLBaseSceneObject): Integer;
@@ -1157,12 +1157,12 @@ var
     I: Integer;
   begin
     Result := -1;
-    for I := 0 to pickList.Count - 1 do
-      if pickList.hit[I] = obj then
-      begin
-        Result := I;
-        Break;
-      end;
+//    for I := 0 to pickList.Count - 1 do
+//      if pickList.hit[I] = obj then
+//      begin
+//        Result := I;
+//        Break;
+//      end;
   end;
 
   function lightLine(const line: TGLLines; const dark: TVector;
@@ -1472,7 +1472,7 @@ begin
   end;
 
   Assert(FViewer <> nil, 'Viewer not Assigned to gizmo');
-  picklist := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);//Viewer.buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1), 8);
+//  picklist := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);//Viewer.buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1), 8);
 
   if not lightLine(_GZOlinex, clrRed, gaX) and not lightLine(_GZOliney, clrLime, gaY) and not lightLine(_GZOlinez, clrBlue, gaZ) and not lightTorus(_GZOTorusX, clrRed, gaX) and not lightTorus(_GZOTorusY, clrLime, gaY) and not lightTorus(_GZOTorusz, clrBlue, gaZ) and not lightCube(_GZOCubeX, clrRed, gaX) and not lightCube(_GZOCubeY, clrLime, gaY) and not lightCube(_GZOCubeZ, clrBlue, gaZ) and not lightLine(_GZOplaneXY, clrWhite, gaXY, True) and not lightLine(_GZOplaneXZ, clrWhite, gaXZ, True) and not lightLine(_GZOplaneYZ, clrWhite, gaYZ, True) then
   begin
@@ -1482,7 +1482,7 @@ begin
       Operation := gopNone;
   end;
 
-  picklist.Free;
+//  picklist.Free;
 
   mx := X;
   my := Y;
@@ -1490,7 +1490,7 @@ end;
 
 procedure TGLGizmo.ViewerMouseDown(const X, Y: Integer);
 var
-  pick:   TGLPickList;
+//  pick:   TGLPickList;
   I:      Integer;
   accept: Boolean;
   dimensions: TVector;
@@ -1505,7 +1505,7 @@ begin
   if not Enabled then
     Exit;
 
-  pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1);//Viewer.Buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1));
+{  pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1);//Viewer.Buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1));
   gotPick := False;
   accept := False;
 
@@ -1566,7 +1566,7 @@ begin
   pick.Free;
 
   moving := True;
-  lastMousePos := MouseWorldPos(X, Y);
+  lastMousePos := MouseWorldPos(X, Y);}
 end;
 
 procedure TGLGizmo.ViewerMouseUp(const X, Y: Integer);

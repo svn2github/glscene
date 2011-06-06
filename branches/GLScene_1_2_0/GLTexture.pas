@@ -3200,9 +3200,8 @@ begin
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
-        cTextureMode[FTextureMode]);
-      GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      rci.GLStates.ActiveTextureEnvironmentMode := cTextureMode[FTextureMode];
+      rci.GLStates.ActiveTextureEnvironmentColor := FEnvColor.Color;
       ApplyMappingMode;
       xgl.MapTexCoordToMain;
     end;
@@ -3285,8 +3284,8 @@ begin
 
       if not ForwardContext then
       begin
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        rci.GLStates.ActiveTextureEnvironmentMode := cTextureMode[FTextureMode];
+        rci.GLStates.ActiveTextureEnvironmentColor := FEnvColor.Color;
         ApplyMappingMode;
         ActiveTexture := 0;
       end;

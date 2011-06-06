@@ -115,6 +115,7 @@ type
     currentMaterialLevel: TGLMaterialLevel;
     primitiveMask: TGLMeshPrimitives;
     orderCounter: Integer;
+    mesh: TObject;
   end;
   PRenderContextInfo = ^TRenderContextInfo;
 

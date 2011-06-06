@@ -68,11 +68,11 @@ type
     FUserList: TPersistentObjectList;
     FDefferedInit: Boolean;
     FNotifying: Boolean;
-    FIsValid: Boolean;
     function GetUserList: TPersistentObjectList;
     function GetMaterialLibraryEx: TGLMaterialLibraryEx;
   protected
     { Protected Declarations }
+    FIsValid: Boolean;
     procedure SetName(const AValue: TGLMaterialComponentName); override;
     procedure NotifyChange(Sender: TObject); virtual;
     property UserList: TPersistentObjectList read GetUserList;
@@ -91,10 +91,6 @@ type
   published
     { Published Declarations }
     property Name: TGLMaterialComponentName read GetName write SetName;
-    {: Run-time flag, indicate that resource
-       should initialize in case of failure material's level. }
-    property DefferedInit: Boolean read FDefferedInit write FDefferedInit
-      default False;
   end;
 
   CGLBaseMaterialCollectionItem = class of TGLBaseMaterialCollectionItem;
@@ -251,12 +247,16 @@ type
   TGLTextureImageEx = class(TGLAbstractTexture)
   protected
     { Protected Declarations }
+    FImage: TGLBaseImage;
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
+    procedure PrepareImage; virtual;
+    procedure FullTransfer; virtual;
+    procedure StreamTransfer; virtual;
+    procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   private
     { Private Declarations }
     FCompression: TGLTextureCompression;
-    FImage: TGLBaseImage;
     FImageAlpha: TGLTextureImageAlpha;
     FImageBrightness: Single;
     FImageGamma: Single;
@@ -283,10 +283,6 @@ type
     procedure SetInternallyStored(const AValue: Boolean);
     procedure SetMipGenMode(const AValue: TMipmapGenerationMode);
     procedure SetUseStreaming(const AValue: Boolean);
-    procedure PrepareImage;
-    procedure FullTransfer;
-    procedure StreamTransfer;
-    procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
     procedure SetAppResource(const Value: Boolean);
   public
     { Public Declarations }
@@ -473,6 +469,7 @@ type
     FTextureOverride: Boolean;
     FTextureMatrix: TMatrix;
     FMappingMode: TGLTextureMappingMode;
+    FTextureMode: TGLTextureMode;
     FEnvColor: TGLColor;
     FMapSCoordinates: TGLCoordinates4;
     FMapTCoordinates: TGLCoordinates4;
@@ -507,6 +504,7 @@ type
     function StoreMappingQCoordinates: Boolean;
     procedure SetSwizzling(const AValue: TGLTextureSwizzling);
     function StoreSwizzling: Boolean;
+    procedure SetTextureMode(AValue: TGLTextureMode);
     procedure SetEnvColor(const AValue: TGLColor);
 
     procedure CalculateTextureMatrix;
@@ -547,6 +545,9 @@ type
        and rotate ST direction around R axis. }
     property TextureRotate: Single read FTextureRotate write
       SetTextureRotate stored StoreTextureRotate;
+    {: Texture application mode. }
+    property EnvMode: TGLTextureMode read FTextureMode write SetTextureMode
+      default tmDecal;
     {: Texture Environment color. }
     property EnvColor: TGLColor read FEnvColor write SetEnvColor;
     {: Texture coordinates mapping mode.<p>
@@ -663,7 +664,6 @@ type
     FMaterialOptions: TMaterialOptions;
     FFaceCulling: TFaceCulling;
     FPolygonMode: TPolygonMode;
-    FTextureMode: TGLTextureMode;
     FPointProperties: TGLPointProperties;
     FLineProperties: TGLLineProperties;
     FVertexColorMode: TVertexColorMode;
@@ -677,7 +677,6 @@ type
     procedure SetPolygonMode(AValue: TPolygonMode);
     procedure SetBlendingParams(const AValue: TGLBlendingParameters);
     procedure SetTexProp(AValue: TGLTextureProperties);
-    procedure SetTextureMode(AValue: TGLTextureMode);
     function GetPointProperties: TGLPointProperties;
     procedure SetPointProperties(const Value: TGLPointProperties);
     function StorePointProperties: Boolean;
@@ -723,9 +722,6 @@ type
     property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode
       default pmFill;
     property Texture: TGLTextureProperties read FTexProp write SetTexProp;
-    {: Texture application mode. }
-    property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
-      default tmDecal;
     {: Next pass of FFP. }
     property NextPass;
   end;
@@ -853,9 +849,6 @@ type
       SetTexProps;
     property Texture3: TGLTextureProperties index 3 read GetTexProps write
       SetTexProps;
-    {: Texture application mode. }
-    property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
-      default tmDecal;
     {: Pass light source direction to enviroment color of choosen texture.
        Vector in model space. }
     property LightDirTo: TLightDir2TexEnvColor read FLightDir
@@ -1290,7 +1283,6 @@ type
     procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: TGLUint);
   protected
     procedure Loaded; override;
-    procedure RemoveDefferedInit;
     procedure DoOnPrepare(Sender: TGLContext);
   public
     { Public Declarations }
@@ -1908,8 +1900,6 @@ begin
       begin
         ARci.GLStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
-          cTextureMode[FTextureMode]);
         bSprite := Assigned(FPointProperties) and FPointProperties.Enabled;
       end;
     end;
@@ -1940,7 +1930,6 @@ begin
     FFaceCulling := LFFP.FFaceCulling;
     FDepthProperties.Assign(LFFP.FDepthProperties);
     FTexProp.Assign(LFFP.FTexProp);
-    FTextureMode := LFFP.TextureMode;
     NotifyChange(Self);
   end;
   inherited;
@@ -1960,7 +1949,6 @@ begin
   FBlendingParams := TGLBlendingParameters.Create(Self);
   FDepthProperties := TGLDepthProperties.Create(Self);
   FTexProp := TGLTextureProperties.Create(Self);
-  FTextureMode := tmDecal;
   FVertexColorMode := vcmNone;
   FEnabled := True;
 end;
@@ -2032,15 +2020,6 @@ end;
 procedure TGLFixedFunctionProperties.SetTexProp(AValue: TGLTextureProperties);
 begin
   FTexProp.Assign(AValue);
-end;
-
-procedure TGLFixedFunctionProperties.SetTextureMode(AValue: TGLTextureMode);
-begin
-  if AValue <> FTextureMode then
-  begin
-    FTextureMode := AValue;
-    NotifyChange(Self);
-  end;
 end;
 
 procedure TGLFixedFunctionProperties.SetVertexColorMode(const Value: TVertexColorMode);
@@ -2155,7 +2134,7 @@ begin
       if not FUseStreaming and Assigned(FImage) then
       begin
         Inc(FApplyCounter);
-        if FApplyCounter > GLS_MAX_RENDERING_CONTEXT_NUM then
+        if FApplyCounter > 16 then
           FreeAndNil(FImage);
       end;
 
@@ -2197,7 +2176,7 @@ end;
 
 constructor TGLTextureImageEx.Create(AOwner: TXCollection);
 begin
-  inherited;
+  inherited Create(AOwner);
   FDefferedInit := False;
   FHandle := TGLTextureHandle.Create;
   FHandle.OnPrapare := DoOnPrepare;
@@ -2231,9 +2210,6 @@ var
   LTarget: TGLTextureTarget;
   rowSize: Integer;
 begin
-  if IsDesignTime and FDefferedInit then
-    exit;
-
   FHandle.AllocateHandle;
   if not FHandle.IsDataNeedUpdate then
     exit;
@@ -3061,8 +3037,6 @@ procedure TGLTextureSampler.DoOnPrepare(Sender: TGLContext);
 var
   ID: TGLUint;
 begin
-  if IsDesignTime and FDefferedInit then
-    exit;
   try
     if FHandle.IsSupported then
     begin
@@ -3323,8 +3297,6 @@ end;
 
 procedure TGLTextureCombiner.DoOnPrepare(Sender: TGLContext);
 begin
-  if IsDesignTime and FDefferedInit then
-    exit;
   if Sender.GL.ARB_multitexture then
   begin
     FHandle.AllocateHandle;
@@ -3588,60 +3560,6 @@ procedure TGLLibMaterialEx.NotifyChange(Sender: TObject);
 begin
   inherited;
   FHandle.NotifyChangesOfData;
-end;
-
-procedure TGLLibMaterialEx.RemoveDefferedInit;
-var
-  I: Integer;
-  ST: TGLShaderType;
-begin
-  if FFixedFunc.FTexProp.Enabled then
-  begin
-    if Assigned(FFixedFunc.FTexProp.FLibTexture) then
-      FFixedFunc.FTexProp.FLibTexture.FDefferedInit := False;
-    if Assigned(FFixedFunc.FTexProp.FLibSampler) then
-      FFixedFunc.FTexProp.FLibSampler.FDefferedInit := False;
-  end;
-
-  if FMultitexturing.Enabled then
-  begin
-    if Assigned(FMultitexturing.FLibCombiner) then
-    begin
-      FMultitexturing.FLibCombiner.FDefferedInit := False;
-      for I := 0 to 3 do
-        if Assigned(FMultitexturing.FTexProps[I]) then
-          with FMultitexturing.FTexProps[I] do
-          begin
-            if Assigned(FLibTexture) then
-              FLibTexture.FDefferedInit := False;
-            if Assigned(FLibSampler) then
-              FLibSampler.FDefferedInit := False;
-          end;
-    end;
-  end;
-
-  if FSM3.Enabled then
-  begin
-    for ST := Low(TGLShaderType) to High(TGLShaderType) do
-      if Assigned(FSM3.FShaders[ST]) then
-        FSM3.FShaders[ST].FDefferedInit := False;
-  end;
-
-  if FSM4.Enabled then
-  begin
-    for ST := Low(TGLShaderType) to High(TGLShaderType) do
-      if Assigned(FSM4.FShaders[ST]) then
-        FSM4.FShaders[ST].FDefferedInit := False;
-  end;
-
-  if FSM5.Enabled then
-  begin
-    for ST := Low(TGLShaderType) to High(TGLShaderType) do
-      if Assigned(FSM5.FShaders[ST]) then
-        FSM5.FShaders[ST].FDefferedInit := False;
-  end;
-
-  CurrentGLContext.PrepareHandlesData;
 end;
 
 procedure TGLLibMaterialEx.SetMultitexturing(AValue:
@@ -4095,7 +4013,8 @@ begin
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        ARci.GLStates.ActiveTextureEnvironmentMode := cTextureMode[FTextureMode];
+        ARci.GLStates.ActiveTextureEnvironmentColor := FEnvColor.Color;
         ApplyMappingMode;
       end;
     end;
@@ -4200,6 +4119,7 @@ begin
     TextureOffset.Assign(LTexProp.TextureOffset);
     TextureScale.Assign(LTexProp.TextureScale);
     FTextureRotate := LTexProp.TextureRotate;
+    FTextureMode := LTexProp.EnvMode;
     FEnvColor.Assign(LTexProp.EnvColor);
     FMappingMode := LTexProp.MappingMode;
     MappingSCoordinates.Assign(LTexProp.MappingSCoordinates);
@@ -4245,6 +4165,7 @@ begin
   FTextureMatrix := IdentityHmgMatrix;
   FEnabled := False;
   FSwizzling := TGLTextureSwizzling.Create(Self);
+  FTextureMode := tmDecal;
   FEnvColor := TGLColor.CreateInitialized(Self, clrTransparent);
 end;
 
@@ -4556,6 +4477,15 @@ begin
   Result := Assigned(FTextureScale);
 end;
 
+procedure TGLTextureProperties.SetTextureMode(AValue: TGLTextureMode);
+begin
+  if AValue <> FTextureMode then
+  begin
+    FTextureMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
 procedure TGLTextureProperties.SetEnvColor(const AValue:
   TGLColor);
 begin
@@ -4667,8 +4597,6 @@ end;
 
 procedure TGLShaderEx.DoOnPrepare(Sender: TGLContext);
 begin
-  if not IsDesignTime and FDefferedInit then
-    exit;
   try
     if FHandle[FShaderType].IsSupported then
     begin
@@ -6041,7 +5969,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
         begin
           LTex := TGLTextureImageEx(FLibTexture);
           Inc(LTex.FApplyCounter);
-          if LTex.FApplyCounter > GLS_MAX_RENDERING_CONTEXT_NUM then
+          if LTex.FApplyCounter > 16 then
             FreeAndNil(LTex.FImage);
         end;
       end
@@ -7106,9 +7034,6 @@ var
   w, h, d, s, Level, MaxLevel: Integer;
   glTarget, glFormat, glFace: TGLEnum;
 begin
-  if IsDesignTime and FDefferedInit then
-    exit;
-
   FHandle.AllocateHandle;
   if FRenderBufferHandle.IsSupported then
     FRenderBufferHandle.AllocateHandle;
@@ -7703,8 +7628,6 @@ end;
 
 procedure TGLASMVertexProgram.DoOnPrepare(Sender: TGLContext);
 begin
-  if FDefferedInit and not IsDesignTime then
-    exit;
   try
     if FHandle.IsSupported then
     begin

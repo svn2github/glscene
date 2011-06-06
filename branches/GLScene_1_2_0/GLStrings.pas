@@ -103,7 +103,7 @@ resourcestring
   glsUnknownAttrib = 'Used undeclared attribute "%s" for mesh "%s" assembly.';
   glsMeshWrongCall =
     'Mesh assembling - Wrong method call of mesh "%s"- ignored';
-  glsMeshNoPrimitive = 'Mesh assembling - No primitive for batch - ignored';
+  glsMeshMismatchPrimitive = 'Mesh assembling - Primitive mismatch - ignored';
   glsMeshNoAttrDeclar = 'Mesh assembling - No declaration of attributes';
   glsMeshExcesAttrib =
     'Mesh assembling - Excessive attribute declaration for mesh "%s".';

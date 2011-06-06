@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLUnicodeBitmapFont<p>
+{: GLS_SystemBitmapFont<p>
 
   TFont Import into a BitmapFont using variable width...<p>
 
@@ -26,7 +26,7 @@
       <li>12/08/02 - JAJ - Made into a standalone unit...
  </ul></font>
 }
-unit GLS_UnicodeBitmapFont;
+unit GLS_SystemBitmapFont;
 
 interface
 
@@ -44,13 +44,14 @@ uses
   Classes,
   GLScene,
   GLTexture,
+  GLTextureFormat,
   Graphics,
   VectorLists,
   GLCrossPlatform;
 
 type
 
-  // TGLUnicodeBitmapFont
+  // TGLSystemBitmapFont
   //
   {: A bitmap font automatically built from a TFont.<p>
      It works like a TGLBitmapfont, you set ranges and which chars are assigned
@@ -61,19 +62,21 @@ type
      Ranges must be sorted in ascending ASCII order and should not overlap.
      As the font texture is automatically layed out, the Ranges StartGlyphIdx
      property is ignored and replaced appropriately. }
-  TGLUnicodeBitmapFont = class(TGLCustomBitmapFont)
+  TGLSystemBitmapFont = class(TGLCustomBitmapFont)
   private
     { Private Declarations }
     FFont: TFont;
     procedure SetList(const AList : TIntegerList);
+    function GetFontTextureWidth: Integer;
+    function GetFontTextureHeight: Integer;
   protected
     { Protected Declarations }
     procedure SetFont(value: TFont);
-    procedure LoadWindowsFont; virtual;
+    procedure LoadSystemFont; virtual;
     function  StoreRanges: Boolean;
 
-    procedure PrepareImage(var ARci: TRenderContextInfo); override;
-    function  TextureFormat: Integer; override;
+    procedure PrepareFontBook; override;
+    function TextureFormat: TGLInternalFormat; override;
 
   public
     { Public Declarations }
@@ -82,18 +85,17 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    function FontTextureWidth: Integer;
-    function FontTextureHeight: Integer;
-
     procedure EnsureString(const s : UnicodeString); overload;
     procedure EnsureChars(const AStart, AEnd: widechar);
 
     property Glyphs;
-
   published
     { Published Declarations }
-      {: The font used to prepare the texture.<p>
-         Note: the font color is ignored. }
+    {: Actual font's texture sizes. }
+    property FontTextureWidth: Integer read GetFontTextureWidth;
+    property FontTextureHeight: Integer read GetFontTextureHeight;
+    {: The font used to prepare the texture.<p>
+       Note: the font color is ignored. }
     property Font: TFont read FFont write SetFont;
 
     property HSpace;
@@ -113,12 +115,10 @@ implementation
 
 uses
   GLUtils,
-  math,
   SysUtils,
+  {$IFDEF GLS_DELPHI}VectorTypes,{$ENDIF}
   VectorGeometry,
-  OpenGLTokens,
-  ApplicationFileIO
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  ApplicationFileIO;
 
 const
   cDefaultLast = '}';
@@ -129,13 +129,13 @@ Var
 {$ENDIF}
 
 // ------------------
-// ------------------ TGLUnicodeBitmapFont ------------------
+// ------------------ TGLSystemBitmapFont ------------------
 // ------------------
 
 // Create
 //
 
-constructor TGLUnicodeBitmapFont.Create(AOwner: TComponent);
+constructor TGLSystemBitmapFont.Create(AOwner: TComponent);
 begin
   inherited;
 
@@ -149,7 +149,7 @@ end;
 // Destroy
 //
 
-destructor TGLUnicodeBitmapFont.Destroy;
+destructor TGLSystemBitmapFont.Destroy;
 begin
   FFont.Free;
   inherited;
@@ -158,7 +158,7 @@ end;
 // FontTextureWidth
 //
 
-function TGLUnicodeBitmapFont.FontTextureWidth: Integer;
+function TGLSystemBitmapFont.GetFontTextureWidth: Integer;
 begin
   Result := Glyphs.Width;
 end;
@@ -166,7 +166,7 @@ end;
 // FontTextureHeight
 //
 
-function TGLUnicodeBitmapFont.FontTextureHeight: Integer;
+function TGLSystemBitmapFont.GetFontTextureHeight: Integer;
 begin
   Result := Glyphs.Height;
 end;
@@ -174,7 +174,7 @@ end;
 // SetFont
 //
 
-procedure TGLUnicodeBitmapFont.SetFont(value: TFont);
+procedure TGLSystemBitmapFont.SetFont(value: TFont);
 begin
   FFont.Assign(value);
 end;
@@ -182,9 +182,8 @@ end;
 // NotifyChange
 //
 
-procedure TGLUnicodeBitmapFont.NotifyChange(Sender: TObject);
+procedure TGLSystemBitmapFont.NotifyChange(Sender: TObject);
 begin
-  FreeTextureHandle;
   InvalidateUsers;
   inherited;
 end;
@@ -192,7 +191,7 @@ end;
 // LoadWindowsFont
 //
 
-procedure TGLUnicodeBitmapFont.LoadWindowsFont;
+procedure TGLSystemBitmapFont.LoadSystemFont;
 
   procedure ComputeCharRects(bitmap: TGLBitmap);
   var
@@ -351,8 +350,8 @@ begin
   //try to make best guess...
   //~total pixels, including some waste (10%)
   n := n * (CharHeight + GlyphsIntervalY) * 11 div 10;
-  TextureWidth := min(512, RoundUpToPowerOf2( round(sqrt(n)) ));
-  TextureHeight := min(512, RoundUpToPowerOf2( n div TextureWidth));
+  TextureWidth := MinInteger(512, RoundUpToPowerOf2( round(sqrt(n)) ));
+  TextureHeight := MinInteger(512, RoundUpToPowerOf2( n div TextureWidth));
 
   bitmap.Width := TextureWidth;
 
@@ -364,12 +363,12 @@ end;
 // StoreRanges
 //
 
-function TGLUnicodeBitmapFont.StoreRanges: Boolean;
+function TGLSystemBitmapFont.StoreRanges: Boolean;
 begin
   Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> cDefaultLast);
 end;
 
-procedure TGLUnicodeBitmapFont.SetList(const AList: TIntegerList);
+procedure TGLSystemBitmapFont.SetList(const AList: TIntegerList);
 var
   i : integer;
   f, n, s : integer;
@@ -405,7 +404,7 @@ begin
 end;
 
 //add characters to internal list
-procedure TGLUnicodeBitmapFont.EnsureChars(const AStart, AEnd: widechar);
+procedure TGLSystemBitmapFont.EnsureChars(const AStart, AEnd: widechar);
 var
   c : widechar;
   ACharList : TIntegerList;
@@ -418,7 +417,7 @@ begin
 end;
 
 //add characters to internal list
-procedure TGLUnicodeBitmapFont.EnsureString(const s: UnicodeString);
+procedure TGLSystemBitmapFont.EnsureString(const s: UnicodeString);
 var
   i : integer;
   ACharList : TIntegerList;
@@ -433,18 +432,18 @@ end;
 // PrepareImage
 //
 
-procedure TGLUnicodeBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
+procedure TGLSystemBitmapFont.PrepareFontBook;
 begin
-  LoadWindowsFont;
-  inherited PrepareImage(ARci);
+  LoadSystemFont;
+  inherited PrepareFontBook;
 end;
 
 // TextureFormat
 //
 
-function TGLUnicodeBitmapFont.TextureFormat: Integer;
+function TGLSystemBitmapFont.TextureFormat: TGLInternalFormat;
 begin
-  Result := GL_ALPHA;
+  Result := tfALPHA8;
 end;
 
 initialization
@@ -456,7 +455,7 @@ initialization
 {$ENDIF}
 
    // class registrations
-  RegisterClasses([TGLUnicodeBitmapFont]);
+  RegisterClasses([TGLSystemBitmapFont]);
 
 end.
 

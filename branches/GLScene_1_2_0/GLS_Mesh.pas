@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMesh<p>
+{: GLS_Mesh<p>
 
    <b>History : </b><font size=-1><ul>
     <li>25/05/11 - Yar - Added TInstancesChain
@@ -146,7 +146,7 @@ type
     FRemoveLastElement: Boolean;
     FValid: Boolean;
     FTagName: string;
-    FIndexNum: Integer;
+    FTagInteger: Integer;
     FRevisionNum: Integer;
 
     FPrimitive: TGLMeshPrimitive;
@@ -295,6 +295,7 @@ type
     property Elements: T4ByteList read FElements write SetElements;
 
     property TagName: string read FTagName write FTagName;
+    property TagInteger: Integer read FTagInteger write FTagInteger;
     property RestartStripIndex: TGLuint read FRestartIndex;
 
     {: This property returns the points defining the axis-
@@ -812,9 +813,12 @@ begin
   FAdjacencyElements := T4ByteList.Create;
   FTrianglesElements := T4ByteList.Create;
   FRestartVertex := TIntegerList.Create;
+  FRestartVertex.Add(0);
   FStripCounts := TIntegerList.Create;
   FRevisionNum := 0;
-  FIndexNum := -1;
+  FBufferRevision := -1;
+  FArraySectorIndex := -1;
+  FElementSectorIndex := -1;
   FTagName := 'Nameless';
   FDLO := TGLListHandle.Create;
   FDLO.OnPrapare := DoOnPrepare;
@@ -1010,6 +1014,7 @@ begin
   FRestartVertex.Clear;
   FRestartVertex.Add(0);
   FPrimitive := mpNOPRIMITIVE;
+  FVertexCount := 0;
   FValid := False;
 end;
 
@@ -1088,9 +1093,12 @@ procedure TMeshAtom.BeginAssembly(APrimitiveType: TGLMeshPrimitive);
 begin
   if FBuildingState = mmsIgnoring then
     exit;
-  if APrimitiveType = mpNOPRIMITIVE then
+  Assert(APrimitiveType <> mpNOPRIMITIVE);
+
+  if (FPrimitive <> mpNOPRIMITIVE)
+    and (FPrimitive <> APrimitiveType) then
   begin
-    GLSLogger.LogWarning(glsMeshNoPrimitive);
+    GLSLogger.LogWarning(glsMeshMismatchPrimitive);
     FBuildingState := mmsIgnoring;
     exit;
   end;
@@ -1110,7 +1118,6 @@ begin
 
   FBuildingState := mmsPrimitives;
   FPrimitive := APrimitiveType;
-  FVertexCount := 0;
 end;
 
 procedure TMeshAtom.EndAssembly;

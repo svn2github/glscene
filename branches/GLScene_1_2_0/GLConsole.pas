@@ -6,6 +6,7 @@
    The console is a popdown window that appears on a game for text output/input.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/06/11 - Yar - Transition to indirect rendering objects
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
       <li>30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
@@ -79,7 +80,7 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
-  PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
+  PersistentClasses, GLContext, GLTexture, GLS_Material, GLUtils, GLStrings,
   GLCrossPlatform, GLMaterial{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
 
 const
@@ -435,6 +436,9 @@ type
   end;
 
 implementation
+
+uses
+  GLColor;
 
 const
   STR_NO_DUPLICATE_NAMES_ALLOWED = 'Duplicate names not allowed!';
@@ -808,18 +812,22 @@ begin
   FControls := TGLConsoleControls.Create(Self);
 
   FHudSprite := TGLHudSprite.Create(Self);
+  FHudSprite.ObjectStyle := FHudSprite.ObjectStyle + [osStreamDraw];
   MakeSubComponent(FHudSprite, True);
   AddChild(FHudSprite);
   FHudSprite.FreeNotification(Self);
+  SetHUDSpriteColor(clWhite);
+
   with FHudSprite.Material do
   begin
+    MaterialOptions := [moIgnoreFog, moNoLighting];
     BlendingMode := bmTransparency;
-    FrontProperties.Diffuse.Alpha := 0.5;
     Texture.TextureMode := tmModulate;
     Texture.Enabled := True;
   end;
 
   FHudText := TGLHudText.Create(Self);
+  FHudText.ObjectStyle := FHudText.ObjectStyle + [osStreamDraw];
   MakeSubComponent(FHudText, True);
   AddChild(FHUDText);
   FHudText.FreeNotification(Self);
@@ -830,7 +838,6 @@ begin
 
   RegisterBuiltIncommands;
   SetVisible(False);
-  SetHUDSpriteColor(clWhite);
   SetFontColor(clBlue);
 end;
 
@@ -1422,23 +1429,12 @@ end;
 
 function TGLCustomConsole.GetHUDSpriteColor: TColor;
 begin
-  if Assigned(HUDSprite.Material.MaterialLibrary)
-    and (HUDSprite.Material.MaterialLibrary is TGLMaterialLibrary)
-    and (HUDSprite.Material.LibMaterialName <> '') then
-    Result :=
-      TGLMaterialLibrary(HUDSprite.Material.MaterialLibrary).LibMaterialByName(HUDSprite.Material.LibMaterialName).Material.FrontProperties.Ambient.AsWinColor
-  else
-    Result := HUDSprite.Material.FrontProperties.Ambient.AsWinColor;
+  Result := HUDSprite.ModulateColor.AsWinColor;
 end;
 
 procedure TGLCustomConsole.SetHUDSpriteColor(const Color: TColor);
 begin
-  if Assigned(HUDSprite.Material.MaterialLibrary)
-    and (HUDSprite.Material.MaterialLibrary is TGLMaterialLibrary)
-    and (HUDSprite.Material.LibMaterialName <> '') then
-      TGLMaterialLibrary(HUDSprite.Material.MaterialLibrary).LibMaterialByName(HUDSprite.Material.LibMaterialName).Material.FrontProperties.Ambient.AsWinColor := Color
-  else
-    HUDSprite.Material.FrontProperties.Ambient.AsWinColor := Color;
+  HUDSprite.ModulateColor.Color := ConvertWinColor(Color, 0.5);
 end;
 
 procedure TGLCustomConsole.SetSize(const Value: Single);

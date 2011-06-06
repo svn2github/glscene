@@ -1958,9 +1958,11 @@ procedure TGLAbstractLibMaterial.Assign(Source: TPersistent);
 begin
   if Source is TGLAbstractLibMaterial then
   begin
-    FName :=
-      TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
-    FNameHashKey := ComputeNameHashKey(FName);
+    if Assigned(Collection) then
+    begin
+      FName := TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
+      FNameHashKey := ComputeNameHashKey(FName);
+    end;
   end
   else
     inherited; // Raise AssignError

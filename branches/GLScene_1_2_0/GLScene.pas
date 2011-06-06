@@ -3723,6 +3723,7 @@ var
 begin
   if Assigned(Source) and (Source is TGLBaseSceneObject) then
   begin
+    FObjectStyle := FObjectStyle +  TGLBaseSceneObject(Source).ObjectStyle * [osStreamDraw];
     FVisible := TGLBaseSceneObject(Source).FVisible;
     TGLBaseSceneObject(Source).RebuildMatrix;
     SetMatrix(TGLBaseSceneObject(Source).FLocalMatrix^);
@@ -6992,7 +6993,7 @@ begin
     FixedFunction.BlendingMode := bmAlphaTest50;
     FixedFunction.MaterialOptions := [moNoLighting];
     FixedFunction.Texture.Enabled := True;
-    FixedFunction.TextureMode := tmModulate;
+    FixedFunction.Texture.EnvMode := tmModulate;
     // GLSL 120
     LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
     LShader.ShaderType := shtVertex;

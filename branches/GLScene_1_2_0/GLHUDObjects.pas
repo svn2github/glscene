@@ -6,6 +6,7 @@
    GLScene objects that get rendered in 2D coordinates<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>06/06/11 - Yar - Transition to indirect rendering objects
       <li>15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
                            Fixed light state changing
@@ -48,7 +49,10 @@ uses
   GLBitmapFont,
   GLCrossPlatform,
   GLColor,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  GLPipelineTransformation,
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -71,31 +75,78 @@ type
      alpha-blended blitting.<p>
      Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
      can't be used to duplicate an hud sprite. }
-  TGLHUDSprite = class(TGLSprite)
+  TGLHUDSprite = class(TGLCustomSceneObjectEx)
   private
     { Private Declarations }
+    FWidth: Single;
+    FHeight: Single;
+    FRotation: Single;
+    FMirrorU: Boolean;
+    FMirrorV: Boolean;
     FXTiles, FYTiles: Integer;
-    function StoreWidth: Boolean;
-    function StoreHeight: Boolean;
-  protected
-    { Protected Declarations }
+    FModulateColor: TGLColor;
+    procedure SetWidth(const val: Single);
+    procedure SetHeight(const val: Single);
+    procedure SetRotation(const val: Single);
+    procedure SetMirrorU(const val: Boolean);
+    procedure SetMirrorV(const val: Boolean);
     procedure SetXTiles(const val: Integer);
     procedure SetYTiles(const val: Integer);
-
+    function StoreWidth: Boolean;
+    function StoreHeight: Boolean;
+    function GetAlphaChannel: Single;
+    procedure SetAlphaChannel(const Value: Single);
+    procedure SetModulateColor(const Value: TGLColor);
+  protected
+    { Protected Declarations }
+    procedure BuildMesh; override; stdcall;
+    procedure OnColorChange(Sender: TObject);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
+    procedure SetSize(const AWidth, AHeight: Single);
+    // : Set width and height to "size"
+    procedure SetSquareSize(const ASize: Single);
   published
     { Published Declarations }
+    { : Sprite Width in 3D world units. }
+    property Width: Single read FWidth write SetWidth stored StoreWidth;
+    { : Sprite Height in 3D world units. }
+    property Height: Single read FHeight write SetHeight stored StoreHeight;
+    { : This the ON-SCREEN rotation of the sprite.<p>
+      Rotatation=0 is handled faster. }
+    property Rotation: Single read FRotation write SetRotation;
+    { : Fake property for backward compatibility. }
+    property AlphaChannel: Single read GetAlphaChannel write SetAlphaChannel;
+    { : Reverses the texture coordinates in the U and V direction to mirror
+      the texture. }
+    property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
+    property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
+
     property XTiles: Integer read FXTiles write SetXTiles default 1;
     property YTiles: Integer read FYTiles write SetYTiles default 1;
-    // Redeclare them with new default values.
-    property Width stored StoreWidth;
-    property Height stored StoreHeight;
+
+    property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
+
+    property Material;
+    property MaterialLibrary;
+    property LibMaterialName;
+    property ObjectsSorting;
+    property Position;
+    property Scale;
+    property Visible;
+    property Pickable;
+    property OnProgress;
+    property OnPicked;
+    property Behaviours;
+    property Effects;
+    property Hint;
   end;
 
   // TGLHUDText
@@ -104,64 +155,40 @@ type
      The HUDText uses a character font defined and stored by a TGLBitmapFont
      component. The text can be scaled and rotated (2D), the layout and
      alignment can also be controled. }
-  TGLHUDText = class(TGLImmaterialSceneObject)
+  TGLHUDText = class(TGLAbstractText)
   private
     { Private Declarations }
-    FBitmapFont: TGLCustomBitmapFont;
-    FText: UnicodeString;
     FRotation: Single;
-    FAlignment: TAlignment;
-    FLayout: TGLTextLayout;
-    FModulateColor: TGLColor;
-
   protected
     { Protected Declarations }
-    procedure SetBitmapFont(const val: TGLCustomBitmapFont);
-    procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
-    procedure SetAlignment(const val: TAlignment);
-    procedure SetLayout(const val: TGLTextLayout);
-    procedure SetModulateColor(const val: TGLColor);
-
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure RenderTextAtPosition(const X, Y, Z: Single;
-      var rci: TRenderContextInfo);
-
+    function GetTextPosition(var ARci: TRenderContextInfo): TAffineVector; virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
   published
     { Published Declarations }
-      {: Refers the bitmap font to use.<p>
-         The referred bitmap font component stores and allows access to
-         individual character bitmaps. }
-    property BitmapFont: TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
-    {: Text to render.<p>
-       Be aware that only the characters available in the bitmap font will
-       be rendered. CR LF sequences are allowed. }
-    property Text: UnicodeString read FText write SetText;
     {: Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    {: Controls the text alignment (horizontal).<p>
-       Possible values : taLeftJustify, taRightJustify, taCenter }
-    property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
-    {: Controls the text layout (vertical).<p>
-       Possible values : tlTop, tlCenter, tlBottom }
-    property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
-    {: Color modulation, can be used for fade in/out too.}
-    property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
+
+    property BitmapFont;
+    property Text;
+    property Alignment;
+    property Layout;
+    property ModulateColor;
   end;
 
   {: Position (X, Y and X) is in absolute coordinates. This component converts
      them to screen coordinates and renderes text there. }
   TGLAbsoluteHUDText = class(TGLHUDText)
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+  protected
+    { Protected Declarations }
+    function GetTextPosition(var ARci: TRenderContextInfo): TAffineVector; override;
   end;
 
   {: Position (X and Y) is expected in a [0..1] range (from Screen size)
@@ -170,28 +197,30 @@ type
      the same place, regardless of the currect screen resolution.
      Note: this still does not solve the font scaling problem. }
   TGLResolutionIndependantHUDText = class(TGLHUDText)
+  protected
+    { Protected Declarations }
+    function GetTextPosition(var ARci: TRenderContextInfo): TAffineVector; override;
   public
-    procedure DoRender(var rci: TRenderContextInfo;
-      renderSelf, renderChildren: Boolean); override;
+    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
-uses OpenGLTokens,
+uses
+{$IFDEF GLS_DELPHI}
+  VectorTypes,
+{$ENDIF}
+{$IFDEF GLS_SERVICE_CONTEXT}
+  SyncObjs,
+{$ENDIF}
+  SysUtils,
+  OpenGLTokens,
   GLContext,
   GLState,
-  XOpenGL;
+  GLS_ShaderParameter;
 
-// ------------------
-// ------------------ TGLHUDSprite ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLHUDSprite'}{$ENDIF}
 
 // Create
 //
@@ -202,8 +231,13 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
   Width := 16;
   Height := 16;
+  FRotation := 0;
+  FMirrorU := False;
+  FMirrorV := False;
   FXTiles := 1;
   FYTiles := 1;
+  FModulateColor := TGLColor.CreateInitialized(Self, clrGray80);
+  FModulateColor.OnNotifyChange := OnColorChange;
 end;
 
 // SetXTiles
@@ -230,68 +264,244 @@ begin
   end;
 end;
 
-// DoRender
+procedure TGLHUDSprite.Assign(Source: TPersistent);
+var
+  LSprite: TGLHUDSprite;
+begin
+  if Source is TGLHUDSprite then
+  begin
+    LSprite := TGLHUDSprite(Source);
+    FWidth := LSprite.FWidth;
+    FHeight := LSprite.FHeight;
+    FRotation := LSprite.FRotation;
+    FModulateColor.Assign(LSprite.FModulateColor);
+    FMirrorU := LSprite.FMirrorU;
+    FMirrorV := LSprite.FMirrorV;
+    FXTiles := LSprite.FXTiles;
+    FYTiles := LSprite.FYTiles;
+  end;
+  inherited Assign(Source);
+end;
+
+procedure TGLHUDSprite.BuildMesh;
+var
+  vx, vy, vx1, vy1: Single;
+begin
+  // precalc coordinates
+  vx := -Width * 0.5;
+  vx1 := vx + Width;
+  vy := Height * 0.5;
+  vy1 := vy - Height;
+
+  with FBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType2f);
+      DeclareAttribute(attrColor, GLSLType4f);
+      DeclareAttribute(attrTexCoord0, GLSLType2f);
+      DeclareAttribute(attrNormal, GLSLType3f);
+
+      BeginAssembly(mpTRIANGLES);
+
+      Attribute3f(attrNormal, ZVector);
+      Attribute4f(attrColor, FModulateColor.Color);
+
+      Attribute2f(attrTexCoord0, NullTexPoint);
+      Attribute2f(attrPosition, vx, vy1);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, FXTiles, 0);
+      Attribute2f(attrPosition, vx1, vy1);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, 0, FYTiles);
+      Attribute2f(attrPosition, vx, vy);
+      EmitVertex;
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, FXTiles, 0);
+      Attribute2f(attrPosition, vx1, vy1);
+      EmitVertex;
+
+      Attribute2f(attrTexCoord0, FXTiles, FYTiles);
+      Attribute2f(attrPosition, vx1, vy);
+      EmitVertex;
+
+      EndAssembly;
+      WeldVertices;
+    finally
+      UnLock;
+    end;
+  end;
+
+  inherited;
+end;
+
+destructor TGLHUDSprite.Destroy;
+begin
+  FModulateColor.Destroy;
+  inherited;
+end;
+
+procedure TGLHUDSprite.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+
+  procedure PrepareSelf;
+  var
+    f: Single;
+  begin
+    if ocStructure in Changes then
+    begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
+      begin
+        if not Assigned(FFinishEvent) then
+        begin
+          FFinishEvent := TFinishTaskEvent.Create;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end
+        else if FFinishEvent.WaitFor(0) = wrSignaled then
+        begin
+          FFinishEvent.ResetEvent;
+          AddTaskForServiceContext(BuildMesh, FFinishEvent);
+        end;
+        exit;
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+        BuildMesh;
+    end;
+
+    if ARenderSelf then
+    begin
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      FTransformation.FStates := cAllStatesChanged;
+      FTransformation.FModelMatrix := IdentityHmgMatrix;
+      FTransformation.FViewMatrix := IdentityHmgMatrix;
+
+      FTransformation.FProjectionMatrix := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
+      FTransformation.FProjectionMatrix := MatrixMultiply(
+        CreateScaleMatrix(AffineVectorMake(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1)),
+        FTransformation.FProjectionMatrix);
+      f := ARci.renderDPI / 96;
+      with Position do
+        FTransformation.FProjectionMatrix := MatrixMultiply(
+          CreateTranslationMatrix(
+          AffineVectorMake(X * f - ARci.viewPortSize.cx / 2, ARci.viewPortSize.cy / 2 - Y * f, Z)),
+          FTransformation.FProjectionMatrix);
+      if FRotation <> 0 then
+        FTransformation.FProjectionMatrix := MatrixMultiply(
+          CreateRotationMatrixZ(DegToRad(FRotation)),
+          FTransformation.FProjectionMatrix);
+      FTransformation.FProjectionMatrix := MatrixMultiply(
+        CreateScaleMatrix(AffineVectorMake(Scale.DirectX * f, Scale.DirectY * f, 1)),
+        FTransformation.FProjectionMatrix);
+
+      FBatch.Order := ARci.orderCounter;
+    end;
+  end;
+
+begin
+  PrepareSelf;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
+end;
+
+function TGLHUDSprite.GetAlphaChannel: Single;
+begin
+  Result := FModulateColor.Alpha;
+end;
+
+procedure TGLHUDSprite.OnColorChange(Sender: TObject);
+begin
+  StructureChanged;
+end;
+
+// SetWidth
 //
 
-procedure TGLHUDSprite.DoRender(var rci: TRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
-var
-  vx, vy, vx1, vy1, f: Single;
+procedure TGLHUDSprite.SetWidth(const val: Single);
 begin
-  if rci.ignoreMaterials then
-    Exit;
-  Material.Apply(rci);
-  repeat
-    if AlphaChannel <> 1 then
-    begin
-      if stLighting in rci.GLStates.States then
-        rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel)
-      else
-        with Material.GetActualPrimaryMaterial.FrontProperties.Diffuse do
-          GL.Color4f(Red, Green, Blue, AlphaChannel);
-    end;
-    // Prepare matrices
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
-    if rci.renderDPI = 96 then
-      f := 1
-    else
-      f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
-      rci.viewPortSize.cy * 0.5 - f * Position.Y, Position.Z);
-    if Rotation <> 0 then
-      GL.Rotatef(Rotation, 0, 0, 1);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    rci.GLStates.Disable(stDepthTest);
-    rci.GLStates.DepthWriteMask := False;
-    // precalc coordinates
-    vx := -Width * 0.5 * f;
-    vx1 := vx + Width * f;
-    vy := +Height * 0.5 * f;
-    vy1 := vy - Height * f;
-    // issue quad
-    GL.Begin_(GL_QUADS);
-    GL.Normal3fv(@YVector);
-    xgl.TexCoord2f(0, 0);
-    GL.Vertex2f(vx, vy1);
-    xgl.TexCoord2f(FXTiles, 0);
-    GL.Vertex2f(vx1, vy1);
-    xgl.TexCoord2f(FXTiles, FYTiles);
-    GL.Vertex2f(vx1, vy);
-    xgl.TexCoord2f(0, FYTiles);
-    GL.Vertex2f(vx, vy);
-    GL.End_;
-    // restore state
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
-  until not Material.UnApply(rci);
-  if Count > 0 then
-    Self.RenderChildren(0, Count - 1, rci);
+  if FWidth <> val then
+  begin
+    FWidth := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetHeight
+//
+
+procedure TGLHUDSprite.SetAlphaChannel(const Value: Single);
+begin
+  FModulateColor.Alpha := Value;
+end;
+
+procedure TGLHUDSprite.SetHeight(const val: Single);
+begin
+  if FHeight <> val then
+  begin
+    FHeight := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetRotation
+//
+
+procedure TGLHUDSprite.SetRotation(const val: Single);
+begin
+  if FRotation <> val then
+  begin
+    FRotation := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetMirrorU
+//
+
+procedure TGLHUDSprite.SetMirrorU(const val: Boolean);
+begin
+  FMirrorU := val;
+  NotifyChange(Self);
+end;
+
+// SetMirrorV
+//
+
+procedure TGLHUDSprite.SetMirrorV(const val: Boolean);
+begin
+  FMirrorV := val;
+  NotifyChange(Self);
+end;
+
+procedure TGLHUDSprite.SetModulateColor(const Value: TGLColor);
+begin
+  FModulateColor := Value;
+end;
+
+// SetSize
+//
+
+procedure TGLHUDSprite.SetSize(const AWidth, AHeight: Single);
+begin
+  FWidth := AWidth;
+  FHeight := AHeight;
+  NotifyChange(Self);
+end;
+
+// SetSquareSize
+//
+
+procedure TGLHUDSprite.SetSquareSize(const ASize: Single);
+begin
+  FWidth := ASize;
+  FHeight := ASize;
+  NotifyChange(Self);
 end;
 
 // StoreHeight
@@ -310,9 +520,9 @@ begin
   Result := Abs(Height - 16) > 0.001;
 end;
 
-// ------------------
-// ------------------ TGLHUDText ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLHUDText'}{$ENDIF}
 
 // Create
 //
@@ -320,7 +530,7 @@ end;
 constructor TGLHUDText.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
+  ObjectStyle := ObjectStyle + [osDeferredDraw, osNoVisibilityCulling];
   FModulateColor := TGLColor.CreateInitialized(Self, clrWhite);
 end;
 
@@ -329,47 +539,11 @@ end;
 
 destructor TGLHUDText.Destroy;
 begin
+  FreeBatches;
   FModulateColor.Free;
   BitmapFont := nil;
+  FFinishEvent.Free;
   inherited;
-end;
-
-// Notification
-//
-
-procedure TGLHUDText.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-  if (Operation = opRemove) and (AComponent = FBitmapFont) then
-    BitmapFont := nil;
-  inherited;
-end;
-
-// SetBitmapFont
-//
-
-procedure TGLHUDText.SetBitmapFont(const val: TGLCustomBitmapFont);
-begin
-  if val <> FBitmapFont then
-  begin
-    if Assigned(FBitmapFont) then
-      FBitmapFont.UnRegisterUser(Self);
-    FBitmapFont := val;
-    if Assigned(FBitmapFont) then
-    begin
-      FBitmapFont.RegisterUser(Self);
-      FBitmapFont.FreeNotification(Self);
-    end;
-    StructureChanged;
-  end;
-end;
-
-// SetText
-//
-
-procedure TGLHUDText.SetText(const val: UnicodeString);
-begin
-  FText := val;
-  StructureChanged;
 end;
 
 // SetRotation
@@ -378,85 +552,89 @@ end;
 procedure TGLHUDText.SetRotation(const val: Single);
 begin
   FRotation := val;
-  StructureChanged;
-end;
-
-// SetAlignment
-//
-
-procedure TGLHUDText.SetAlignment(const val: TAlignment);
-begin
-  FAlignment := val;
-  StructureChanged;
-end;
-
-// SetLayout
-//
-
-procedure TGLHUDText.SetLayout(const val: TGLTextLayout);
-begin
-  FLayout := val;
-  StructureChanged;
-end;
-
-// SetModulateColor
-//
-
-procedure TGLHUDText.SetModulateColor(const val: TGLColor);
-begin
-  FModulateColor.Assign(val);
-end;
-
-// RenderTextAtPosition
-//
-
-procedure TGLHUDText.RenderTextAtPosition(const X, Y, Z: Single;
-  var rci: TRenderContextInfo);
-var
-  f: Single;
-begin
-  if Assigned(FBitmapFont) and (Text <> '') then
-  begin
-    rci.GLStates.PolygonMode := pmFill;
-    // Prepare matrices
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(rci.buffer).BaseProjectionMatrix);
-    f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(X * f - rci.viewPortSize.cx / 2,
-      rci.viewPortSize.cy / 2 - Y * f, Z);
-    if FRotation <> 0 then
-      GL.Rotatef(FRotation, 0, 0, 1);
-    GL.Scalef(Scale.DirectX * f, Scale.DirectY * f, 1);
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    rci.GLStates.Disable(stDepthTest);
-    // render text
-    FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
-    // restore state
-    rci.GLStates.Enable(stDepthTest);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
-  end;
+  NotifyChange(Self);
 end;
 
 // DoRender
 //
 
-procedure TGLHUDText.DoRender(var rci: TRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
+procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+
+  procedure PrepareSelf;
+  var
+    I: Integer;
+    f: Single;
+    p: TAffineVector;
+  begin
+    if ocStructure in Changes then
+    begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+      if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
+      begin
+        if not Assigned(FFinishEvent) then
+        begin
+          FFinishEvent := TFinishTaskEvent.Create;
+          AddTaskForServiceContext(DoBuild, FFinishEvent);
+        end
+        else if FFinishEvent.WaitFor(0) = wrSignaled then
+        begin
+          FFinishEvent.ResetEvent;
+          AddTaskForServiceContext(DoBuild, FFinishEvent);
+        end;
+        exit;
+      end
+      else
+{$ENDIF GLS_SERVICE_CONTEXT}
+        DoBuild;
+    end;
+
+    if ARenderSelf then
+    begin
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      FTransformation.FStates := cAllStatesChanged;
+      FTransformation.FModelMatrix := IdentityHmgMatrix;
+      FTransformation.FViewMatrix := IdentityHmgMatrix;
+
+      FTransformation.FProjectionMatrix := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
+      FTransformation.FProjectionMatrix := MatrixMultiply(
+        CreateScaleMatrix(AffineVectorMake(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1)),
+        FTransformation.FProjectionMatrix);
+      f := ARci.renderDPI / 96;
+      p := GetTextPosition(ARci);
+        FTransformation.FProjectionMatrix := MatrixMultiply(
+          CreateTranslationMatrix(
+          AffineVectorMake(p[0] * f - ARci.viewPortSize.cx / 2,
+          ARci.viewPortSize.cy / 2 - p[1] * f, p[2])),
+          FTransformation.FProjectionMatrix);
+      if FRotation <> 0 then
+        FTransformation.FProjectionMatrix := MatrixMultiply(
+          CreateRotationMatrixZ(DegToRad(FRotation)),
+          FTransformation.FProjectionMatrix);
+      FTransformation.FProjectionMatrix := MatrixMultiply(
+        CreateScaleMatrix(AffineVectorMake(Scale.DirectX * f, Scale.DirectY * f, 1)),
+        FTransformation.FProjectionMatrix);
+
+      for I := High(FBatches) downto 0 do
+        FBatches[I].Order := ARci.orderCounter;
+    end;
+  end;
+
 begin
-  RenderTextAtPosition(Position.X, Position.Y, Position.Z, rci);
-  if Count > 0 then
-    Self.RenderChildren(0, Count - 1, rci);
+  PrepareSelf;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
 end;
 
-// ------------------
-// ------------------ TGLResolutionIndependantHUDText ------------------
-// ------------------
+function TGLHUDText.GetTextPosition(var ARci: TRenderContextInfo): TAffineVector;
+begin
+  Result := Position.AsAffineVector;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGION}{$REGION 'TGLResolutionIndependantHUDText'}{$ENDIF}
 
 // Create
 //
@@ -468,45 +646,27 @@ begin
   Position.Y := 0.5;
 end;
 
-// DoRender
-//
-
-procedure TGLResolutionIndependantHUDText.DoRender(
-  var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+function TGLResolutionIndependantHUDText.GetTextPosition(var ARci: TRenderContextInfo): TAffineVector;
 begin
-  RenderTextAtPosition(Position.X * rci.viewPortSize.cx,
-    Position.Y * rci.viewPortSize.cy,
-    Position.Z, rci);
-  if Count > 0 then
-    Self.RenderChildren(0, Count - 1, rci);
+  Result := AffineVectorMake(
+    Position.X * ARci.viewPortSize.cx,
+    Position.Y * ARci.viewPortSize.cy,
+    Position.Z);
 end;
 
-// ------------------
-// ------------------ TGLAbsoluteHUDText ------------------
-// ------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-// DoRender
-//
+{$IFDEF GLS_REGION}{$REGION 'TGLAbsoluteHUDText'}{$ENDIF}
 
-procedure TGLAbsoluteHUDText.DoRender(var rci: TRenderContextInfo;
-  renderSelf, renderChildren: Boolean);
-var
-  Temp: TAffineVector;
+function TGLAbsoluteHUDText.GetTextPosition(var ARci: TRenderContextInfo): TAffineVector;
 begin
-  Temp := TGLSceneBuffer(rci.buffer).WorldToScreen(Self.AbsoluteAffinePosition);
-  Temp[1] := rci.viewPortSize.cy - Temp[1];
-  RenderTextAtPosition(Temp[0], Temp[1], Temp[2], rci);
-  if Count > 0 then
-    Self.RenderChildren(0, Count - 1, rci);
+  Result := TGLSceneBuffer(ARci.buffer).WorldToScreen(Self.AbsoluteAffinePosition);
+  Result[1] := ARci.viewPortSize.cy - Result[1];
 end;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
    // class registrations
   RegisterClasses([TGLHUDText, TGLHUDSprite, TGLResolutionIndependantHUDText,
