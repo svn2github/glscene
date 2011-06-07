@@ -99,7 +99,8 @@ type
     procedure SetModulateColor(const Value: TGLColor);
   protected
     { Protected Declarations }
-    procedure BuildMesh; override; stdcall;
+    procedure BuildMesh; override; {$IFDEF MSWINDOWS} stdcall;{$ENDIF}
+                                        {$IFDEF UNIX} cdecl;{$ENDIF}
     procedure OnColorChange(Sender: TObject);
   public
     { Public Declarations }
