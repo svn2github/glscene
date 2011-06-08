@@ -1,13 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPipelineTransformation<p>
+{ : GLPipelineTransformation<p>
 
-   <b>History : </b><font size=-1><ul>
-    <li>11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
-    <li>16/11/10 - Yar - Added NormalModelMatrix
-    <li>23/08/10 - Yar - Creation
- </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>08/06/11 - Yar - Now matrices becomes as managed reference type
+  <li>11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
+  <li>16/11/10 - Yar - Added NormalModelMatrix
+  <li>23/08/10 - Yar - Creation
+  </ul></font>
 }
 
 unit GLPipelineTransformation;
@@ -17,47 +18,45 @@ interface
 {$I GLScene.inc}
 
 uses
-  VectorGeometry, VectorTypes;
+  VectorGeometry,
+  VectorTypes;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
 
 type
 
-  TGLPipelineTransformationState =
-  (
-    trsModelViewChanged,
-    trsInvModelViewChanged,
-    trsInvModelChanged,
-    trsNormalModelChanged,
-    trsViewProjChanged,
-    trsFrustum
-  );
+  TTransformationChange = (tfcModelViewChanged, tfcInvModelViewChanged,
+    tfcInvModelChanged, tfcNormalModelChanged, tfcViewProjChanged, tfcFrustum);
 
-  TGLPipelineTransformationStates = set of TGLPipelineTransformationState;
+  TTransformationChanges = set of TTransformationChange;
 
 const
-  cAllStatesChanged = [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsViewProjChanged, trsNormalModelChanged, trsFrustum];
+  cAllStatesChanged = [tfcModelViewChanged, tfcInvModelViewChanged,
+    tfcInvModelChanged, tfcViewProjChanged, tfcNormalModelChanged, tfcFrustum];
 
 type
 
+  TManagedMatrix = array of Single;
+
   PTransformationRec = ^TTransformationRec;
+
   TTransformationRec = record
-    FStates: TGLPipelineTransformationStates;
-    FModelMatrix: TMatrix;
-    FViewMatrix: TMatrix;
-    FProjectionMatrix: TMatrix;
-    FInvModelMatrix: TMatrix;
-    FNormalModelMatrix: TAffineMatrix;
-    FModelViewMatrix: TMatrix;
-    FInvModelViewMatrix: TMatrix;
-    FViewProjectionMatrix: TMatrix;
+    FStates: TTransformationChanges;
+    FModelMatrix: TManagedMatrix;
+    FViewMatrix: TManagedMatrix;
+    FProjectionMatrix: TManagedMatrix;
+    FInvModelMatrix: TManagedMatrix;
+    FNormalModelMatrix: TManagedMatrix;
+    FModelViewMatrix: TManagedMatrix;
+    FInvModelViewMatrix: TManagedMatrix;
+    FViewProjectionMatrix: TManagedMatrix;
     FFrustum: TFrustum;
   end;
 
 type
 
-  TOnMatricesPush = procedure() of object;
+  TOnCustomLoadMatrices = procedure() of object;
 
   // TGLTransformation
   //
@@ -65,8 +64,7 @@ type
   private
     FStackPos: Integer;
     FStack: array of TTransformationRec;
-    FLoadMatricesEnabled: Boolean;
-    FOnPush: TOnMatricesPush;
+    FOnCustomLoadMatrices: TOnCustomLoadMatrices;
     FPickingBox: TVector4i;
     function GetModelMatrix: TMatrix;
     function GetViewMatrix: TMatrix;
@@ -82,12 +80,16 @@ type
     procedure SetViewMatrix(const AMatrix: TMatrix);
     procedure SetProjectionMatrix(const AMatrix: TMatrix);
     function GetStackTop: TTransformationRec;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
     procedure SetStackTop(const Value: TTransformationRec);
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
   protected
-    procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure DoMatrcesLoaded; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    property OnPush: TOnMatricesPush read FOnPush write FOnPush;
+    procedure AssignRecord(const ASrc: TTransformationRec;
+      var ADst: TTransformationRec);
+    property OnCustomLoadMatrices: TOnCustomLoadMatrices
+      read FOnCustomLoadMatrices write FOnCustomLoadMatrices;
   public
     constructor Create;
 
@@ -95,11 +97,13 @@ type
     procedure Push(AValue: PTransformationRec = nil);
     procedure Pop;
     procedure ReplaceFromStack;
+    procedure LoadMatrices;
 
     property StackTop: TTransformationRec read GetStackTop write SetStackTop;
     property ModelMatrix: TMatrix read GetModelMatrix write SetModelMatrix;
     property ViewMatrix: TMatrix read GetViewMatrix write SetViewMatrix;
-    property ProjectionMatrix: TMatrix read GetProjectionMatrix write SetProjectionMatrix;
+    property ProjectionMatrix: TMatrix read GetProjectionMatrix
+      write SetProjectionMatrix;
 
     property InvModelMatrix: TMatrix read GetInvModelMatrix;
     property ModelViewMatrix: TMatrix read GetModelViewMatrix;
@@ -108,9 +112,20 @@ type
     property ViewProjectionMatrix: TMatrix read GetViewProjectionMatrix;
     property Frustum: TFrustum read GetFrustum;
 
-    property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
     property PickingBox: TVector4i read FPickingBox write FPickingBox;
   end;
+
+var
+  vIdentityHmgMatrix: TManagedMatrix;
+
+procedure SetMatrix(var ADest: TManagedMatrix; const ASource: TMatrix);
+  overload;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
+procedure SetMatrix(var ADest: TMatrix; const ASource: TManagedMatrix);
+  overload;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
 
 implementation
 
@@ -118,6 +133,72 @@ uses
   OpenGLTokens,
   GLContext,
   GLSLog;
+
+procedure SetMatrix(var ADest: TManagedMatrix; const ASource: TMatrix);
+begin
+  // Break old reference
+  ADest := nil;
+  // Create new one
+  SetLength(ADest, 16);
+  // Assign
+  ADest[0] := ASource[0][0];
+  ADest[1] := ASource[0][1];
+  ADest[2] := ASource[0][2];
+  ADest[3] := ASource[0][3];
+
+  ADest[4] := ASource[1][0];
+  ADest[5] := ASource[1][1];
+  ADest[6] := ASource[1][2];
+  ADest[7] := ASource[1][3];
+
+  ADest[8] := ASource[2][0];
+  ADest[9] := ASource[2][1];
+  ADest[10] := ASource[2][2];
+  ADest[11] := ASource[2][3];
+
+  ADest[12] := ASource[3][0];
+  ADest[13] := ASource[3][1];
+  ADest[14] := ASource[3][2];
+  ADest[15] := ASource[3][3];
+end;
+
+procedure SetMatrix(var ADest: TMatrix; const ASource: TManagedMatrix);
+begin
+  ADest[0][0] := ASource[0];
+  ADest[0][1] := ASource[1];
+  ADest[0][2] := ASource[2];
+  ADest[0][3] := ASource[3];
+
+  ADest[1][0] := ASource[4];
+  ADest[1][1] := ASource[5];
+  ADest[1][2] := ASource[6];
+  ADest[1][3] := ASource[7];
+
+  ADest[2][0] := ASource[8];
+  ADest[2][1] := ASource[9];
+  ADest[2][2] := ASource[10];
+  ADest[2][3] := ASource[11];
+
+  ADest[3][0] := ASource[12];
+  ADest[3][1] := ASource[13];
+  ADest[3][2] := ASource[14];
+  ADest[3][3] := ASource[15];
+end;
+
+procedure TGLTransformation.AssignRecord(const ASrc: TTransformationRec;
+  var ADst: TTransformationRec);
+begin
+  ADst.FModelMatrix := ASrc.FModelMatrix;
+  ADst.FViewMatrix := ASrc.FViewMatrix;
+  ADst.FProjectionMatrix := ASrc.FProjectionMatrix;
+  ADst.FInvModelMatrix := ASrc.FInvModelMatrix;
+  ADst.FNormalModelMatrix := ASrc.FNormalModelMatrix;
+  ADst.FModelViewMatrix := ASrc.FModelViewMatrix;
+  ADst.FInvModelViewMatrix := ASrc.FInvModelViewMatrix;
+  ADst.FViewProjectionMatrix := ASrc.FViewProjectionMatrix;
+  ADst.FFrustum := ASrc.FFrustum;
+  ADst.FStates := ASrc.FStates;
+end;
 
 constructor TGLTransformation.Create;
 begin
@@ -130,15 +211,21 @@ procedure TGLTransformation.IdentityAll;
 begin
   with FStack[FStackPos] do
   begin
-    FModelMatrix := IdentityHmgMatrix;
-    FViewMatrix := IdentityHmgMatrix;
-    FProjectionMatrix := IdentityHmgMatrix;
+//    FModelMatrix := vIdentityHmgMatrix;
+//    FViewMatrix := vIdentityHmgMatrix;
+//    FProjectionMatrix := vIdentityHmgMatrix;
+    SetLength(FModelMatrix, 16);
+    SetMatrix(FModelMatrix, IdentityHmgMatrix);
+    SetLength(FViewMatrix, 16);
+    SetMatrix(FViewMatrix, IdentityHmgMatrix);
+    SetLength(FProjectionMatrix, 16);
+    SetMatrix(FProjectionMatrix, IdentityHmgMatrix);
+    SetLength(FInvModelMatrix, 16);
+    SetLength(FNormalModelMatrix, 16);
+    SetLength(FModelViewMatrix, 16);
+    SetLength(FInvModelViewMatrix, 16);
+    SetLength(FViewProjectionMatrix, 16);
     FStates := cAllStatesChanged;
-  end;
-  if LoadMatricesEnabled then
-  begin
-    LoadModelViewMatrix;
-    LoadProjectionMatrix;
   end;
 end;
 
@@ -148,26 +235,19 @@ var
 begin
   if FStackPos > MAX_MATRIX_STACK_DEPTH then
   begin
-    GLSLogger.LogWarningFmt('Transformation stack overflow, more then %d values',
+    GLSLogger.LogWarningFmt
+      ('Transformation stack overflow, more then %d values',
       [MAX_MATRIX_STACK_DEPTH]);
   end;
   prevPos := FStackPos;
   Inc(FStackPos);
   if High(FStack) < FStackPos then
-    SetLength(FStack, FStackPos+1);
+    SetLength(FStack, FStackPos + 1);
 
   if Assigned(AValue) then
-  begin
-    FStack[FStackPos] := AValue^;
-    if LoadMatricesEnabled then
-    begin
-      LoadModelViewMatrix;
-      LoadProjectionMatrix;
-    end;
-    DoMatrcesLoaded;
-  end
+    AssignRecord(AValue^, FStack[FStackPos])
   else
-    FStack[FStackPos] := FStack[prevPos];
+    AssignRecord(FStack[prevPos], FStack[FStackPos]);
 end;
 
 procedure TGLTransformation.Pop;
@@ -179,193 +259,198 @@ begin
   end;
 
   Dec(FStackPos);
-  if LoadMatricesEnabled then
-  begin
-    LoadModelViewMatrix;
-    LoadProjectionMatrix;
-  end;
 end;
 
 procedure TGLTransformation.ReplaceFromStack;
-var
-  prevPos: Integer;
 begin
   if FStackPos = 0 then
   begin
     GLSLogger.LogError('Transformation stack underflow');
     exit;
   end;
-  prevPos := FStackPos - 1;
-  FStack[FStackPos].FModelMatrix := FStack[prevPos].FModelMatrix;
-  FStack[FStackPos].FViewMatrix:= FStack[prevPos].FViewMatrix;
-  FStack[FStackPos].FProjectionMatrix:= FStack[prevPos].FProjectionMatrix;
-  FStack[FStackPos].FStates := FStack[prevPos].FStates;
-  if LoadMatricesEnabled then
-  begin
-    LoadModelViewMatrix;
-    LoadProjectionMatrix;
-  end;
-end;
-
-procedure TGLTransformation.LoadModelViewMatrix;
-var
-  M: TMatrix;
-begin
-  M := GetModelViewMatrix;
-  with GL do
-  begin
-    if EXT_direct_state_access then
-      MatrixLoadf(GL_MODELVIEW, PGLFloat(@M))
-    else
-      LoadMatrixf(PGLFloat(@M));
-  end;
-end;
-
-procedure TGLTransformation.LoadProjectionMatrix;
-begin
-  with GL do
-  begin
-    if EXT_direct_state_access then
-    begin
-      MatrixLoadf(GL_PROJECTION, PGLFloat(@FStack[FStackPos].FProjectionMatrix))
-    end
-    else
-    begin
-      MatrixMode(GL_PROJECTION);
-      LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
-      MatrixMode(GL_MODELVIEW);
-    end;
-  end;
-end;
-
-function TGLTransformation.GetModelMatrix: TMatrix;
-begin
-  Result := FStack[FStackPos].FModelMatrix;
-end;
-
-function TGLTransformation.GetViewMatrix: TMatrix;
-begin
-  Result := FStack[FStackPos].FViewMatrix;
-end;
-
-function TGLTransformation.GetProjectionMatrix: TMatrix;
-begin
-  Result := FStack[FStackPos].FProjectionMatrix;
-end;
-
-procedure TGLTransformation.SetModelMatrix(const AMatrix: TMatrix);
-begin
-  FStack[FStackPos].FModelMatrix := AMatrix;
-  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
-    [trsModelViewChanged, trsInvModelViewChanged, trsInvModelChanged, trsNormalModelChanged];
-  if LoadMatricesEnabled then
-    LoadModelViewMatrix;
-end;
-
-procedure TGLTransformation.SetViewMatrix(const AMatrix: TMatrix);
-begin
-  FStack[FStackPos].FViewMatrix:= AMatrix;
-  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
-    [trsModelViewChanged, trsInvModelViewChanged, trsViewProjChanged, trsFrustum];
-  if LoadMatricesEnabled then
-    LoadModelViewMatrix;
-end;
-
-function TGLTransformation.GetStackTop: TTransformationRec;
-begin
-  Result := FStack[FStackPos];
-end;
-
-procedure TGLTransformation.SetProjectionMatrix(const AMatrix: TMatrix);
-begin
-  FStack[FStackPos].FProjectionMatrix := AMatrix;
-  FStack[FStackPos].FStates := FStack[FStackPos].FStates +
-    [trsViewProjChanged, trsFrustum];
-  if LoadMatricesEnabled then
-    LoadProjectionMatrix;
+  AssignRecord(FStack[FStackPos - 1], FStack[FStackPos]);
 end;
 
 procedure TGLTransformation.SetStackTop(const Value: TTransformationRec);
 begin
-  FStack[FStackPos] := Value;
-  if LoadMatricesEnabled then
+  AssignRecord(Value, FStack[FStackPos]);
+end;
+
+procedure TGLTransformation.LoadMatrices;
+var
+  M: TMatrix;
+begin
+  if Assigned(FOnCustomLoadMatrices) then
+    FOnCustomLoadMatrices()
+  else
+    with GL do
+    begin
+      M := GetModelViewMatrix;
+      if EXT_direct_state_access then
+      begin
+        MatrixLoadf(GL_MODELVIEW, PGLFloat(@M));
+        MatrixLoadf(GL_PROJECTION,
+          PGLFloat(@FStack[FStackPos].FProjectionMatrix[0]));
+      end
+      else
+      begin
+        LoadMatrixf(PGLFloat(@M));
+        MatrixMode(GL_PROJECTION);
+        LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix[0]));
+        MatrixMode(GL_MODELVIEW);
+      end;
+    end;
+end;
+
+function TGLTransformation.GetModelMatrix: TMatrix;
+begin
+  SetMatrix(Result, FStack[FStackPos].FModelMatrix);
+end;
+
+function TGLTransformation.GetViewMatrix: TMatrix;
+begin
+  SetMatrix(Result, FStack[FStackPos].FViewMatrix);
+end;
+
+function TGLTransformation.GetProjectionMatrix: TMatrix;
+begin
+  SetMatrix(Result, FStack[FStackPos].FProjectionMatrix);
+end;
+
+function TGLTransformation.GetStackTop: TTransformationRec;
+begin
+  AssignRecord(FStack[FStackPos], Result);
+end;
+
+procedure TGLTransformation.SetModelMatrix(const AMatrix: TMatrix);
+begin
+  with FStack[FStackPos] do
   begin
-    LoadModelViewMatrix;
-    LoadProjectionMatrix;
+    SetMatrix(FModelMatrix, AMatrix);
+    FStates := FStates + [tfcModelViewChanged, tfcInvModelViewChanged,
+      tfcInvModelChanged, tfcNormalModelChanged];
+  end;
+end;
+
+procedure TGLTransformation.SetViewMatrix(const AMatrix: TMatrix);
+begin
+  with FStack[FStackPos] do
+  begin
+    SetMatrix(FViewMatrix, AMatrix);
+    FStates := FStates + [tfcModelViewChanged, tfcInvModelViewChanged,
+      tfcViewProjChanged, tfcFrustum];
+  end;
+end;
+
+procedure TGLTransformation.SetProjectionMatrix(const AMatrix: TMatrix);
+begin
+  with FStack[FStackPos] do
+  begin
+    SetMatrix(FProjectionMatrix, AMatrix);
+    FStates := FStates + [tfcViewProjChanged, tfcFrustum];
   end;
 end;
 
 function TGLTransformation.GetModelViewMatrix: TMatrix;
 begin
-  if trsModelViewChanged in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    FStack[FStackPos].FModelViewMatrix :=
-      MatrixMultiply(FStack[FStackPos].FModelMatrix, FStack[FStackPos].FViewMatrix);
-    Exclude(FStack[FStackPos].FStates, trsModelViewChanged);
+    if tfcModelViewChanged in FStates then
+    begin
+      Result := MatrixMultiply(GetModelMatrix, GetViewMatrix);
+      SetMatrix(FModelViewMatrix, Result);
+      Exclude(FStates, tfcModelViewChanged);
+    end
+    else
+      SetMatrix(Result, FModelViewMatrix);
   end;
-  Result := FStack[FStackPos].FModelViewMatrix;
 end;
 
 function TGLTransformation.GetInvModelViewMatrix: TMatrix;
 begin
-  if trsInvModelViewChanged in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    FStack[FStackPos].FInvModelViewMatrix := GetModelViewMatrix;
-    InvertMatrix(FStack[FStackPos].FInvModelViewMatrix);
-    Exclude(FStack[FStackPos].FStates, trsInvModelViewChanged);
+    if tfcInvModelViewChanged in FStates then
+    begin
+      Result := GetModelViewMatrix;
+      InvertMatrix(Result);
+      SetMatrix(FInvModelViewMatrix, Result);
+      Exclude(FStates, tfcInvModelViewChanged);
+    end
+    else
+      SetMatrix(Result, FInvModelViewMatrix);
   end;
-  Result := FStack[FStackPos].FInvModelViewMatrix;
 end;
 
 function TGLTransformation.GetInvModelMatrix: TMatrix;
 begin
-  if trsInvModelChanged in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    FStack[FStackPos].FInvModelMatrix := MatrixInvert(FStack[FStackPos].FModelMatrix);
-    Exclude(FStack[FStackPos].FStates, trsInvModelChanged);
+    if tfcInvModelChanged in FStates then
+    begin
+      Result := MatrixInvert(GetModelMatrix);
+      SetMatrix(FInvModelMatrix, Result);
+      Exclude(FStates, tfcInvModelChanged);
+    end
+    else
+      SetMatrix(Result, FInvModelMatrix);
   end;
-  Result := FStack[FStackPos].FInvModelMatrix;
 end;
 
 function TGLTransformation.GetNormalModelMatrix: TAffineMatrix;
 var
   M: TMatrix;
 begin
-  if trsNormalModelChanged in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    M := FStack[FStackPos].FModelMatrix;
-    NormalizeMatrix(M);
-    SetMatrix(FStack[FStackPos].FNormalModelMatrix, M);
-    Exclude(FStack[FStackPos].FStates, trsNormalModelChanged);
+    if tfcNormalModelChanged in FStates then
+    begin
+      M := GetModelMatrix;
+      NormalizeMatrix(M);
+      SetMatrix(Result, M);
+      SetMatrix(FNormalModelMatrix, M);
+      Exclude(FStates, tfcNormalModelChanged);
+    end
+    else
+    begin
+      SetMatrix(M, FNormalModelMatrix);
+      SetMatrix(Result, M);
+    end;
   end;
-  Result := FStack[FStackPos].FNormalModelMatrix;
 end;
 
 function TGLTransformation.GetViewProjectionMatrix: TMatrix;
 begin
-  if trsViewProjChanged in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    FStack[FStackPos].FViewProjectionMatrix :=
-      MatrixMultiply(FStack[FStackPos].FViewMatrix, FStack[FStackPos].FProjectionMatrix);
-    Exclude(FStack[FStackPos].FStates, trsViewProjChanged);
+    if tfcViewProjChanged in FStates then
+    begin
+      Result := MatrixMultiply(GetViewMatrix, GetProjectionMatrix);
+      SetMatrix(FViewProjectionMatrix, Result);
+      Exclude(FStates, tfcViewProjChanged);
+    end
+    else
+      SetMatrix(Result, FViewProjectionMatrix);
   end;
-  Result := FStack[FStackPos].FViewProjectionMatrix;
-end;
-
-procedure TGLTransformation.DoMatrcesLoaded;
-begin
-  if Assigned(FOnPush) then
-    FOnPush();
 end;
 
 function TGLTransformation.GetFrustum: TFrustum;
 begin
-  if trsFrustum in FStack[FStackPos].FStates then
+  with FStack[FStackPos] do
   begin
-    FStack[FStackPos].FFrustum := ExtractFrustumFromModelViewProjection(GetViewProjectionMatrix);
-    Exclude(FStack[FStackPos].FStates, trsFrustum);
+    if tfcFrustum in FStates then
+    begin
+      FFrustum := ExtractFrustumFromModelViewProjection
+        (GetViewProjectionMatrix);
+      Exclude(FStates, tfcFrustum);
+    end;
+    Result := FFrustum;
   end;
-  Result := FStack[FStackPos].FFrustum;
 end;
+
+initialization
+
+  SetLength(vIdentityHmgMatrix, 16);
+  Move(IdentityHmgMatrix[0], vIdentityHmgMatrix[0], SizeOf(TMatrix));
 
 end.

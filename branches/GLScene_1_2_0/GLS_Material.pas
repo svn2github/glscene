@@ -4922,7 +4922,7 @@ begin
     if Assigned(LEvent) then
       LEvent(Self, ARci);
 
-    TFriendlyTransformation(ARci.PipelineTransformation).OnPush := DoAutoFillUniforms;
+    TFriendlyTransformation(ARci.PipelineTransformation).OnCustomLoadMatrices := DoAutoFillUniforms;
   end;
 end;
 
@@ -5509,7 +5509,7 @@ end;
 
 procedure TGLBaseShaderModel.UnApply(var ARci: TRenderContextInfo);
 begin
-  TFriendlyTransformation(ARci.PipelineTransformation).OnPush := nil;
+  TFriendlyTransformation(ARci.PipelineTransformation).OnCustomLoadMatrices := nil;
 //  if FIsValid and not ARci.GLStates.ForwardContext then
 //    FHandle.EndUseProgramObject;
 end;

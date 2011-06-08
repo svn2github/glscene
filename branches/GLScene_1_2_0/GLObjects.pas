@@ -1514,12 +1514,10 @@ begin
   FCubeSize := 1;
   FEdgeColor := TGLColor.Create(Self);
   FEdgeColor.Initialize(clrWhite);
-  CamInvarianceMode := cimNone;
   FBatch.Mesh := TMeshAtom.Create;
   FBatch.InstancesChain := TInstancesChain.Create;
   FBatch.Material := GetOrCreateDummyCubeMaterial;
   FBatch.Transformation := @FTransformation;
-  FBatch.Changed := True;
   FBatch.Mesh.TagName := ClassName;
   FBatch.PickCallback := DoOnPicked;
 end;
@@ -1534,17 +1532,57 @@ end;
 
 procedure TGLDummyCube.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
+
+  procedure PrepareSelf;
+  begin
+    if ARenderSelf then
+    begin
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
+        FBatch.Order := ARci.orderCounter;
+    end;
+
+    if ARenderChildren then
+      Self.RenderChildren(0, Count - 1, ARci);
+  end;
+
 begin
   if ocStructure in Changes then
   begin
     BuildMesh;
   end;
-  FTransformation := ARci.PipelineTransformation.StackTop;
-  if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
-    FBatch.Order := ARci.orderCounter;
 
-  if ARenderChildren then
-    Self.RenderChildren(0, Count - 1, ARci);
+  if CamInvarianceMode <> cimNone then
+    with ARci.PipelineTransformation do
+    begin
+      Push;
+      try
+        // prepare
+        case CamInvarianceMode of
+          cimPosition:
+            begin
+              ViewMatrix := MatrixMultiply(
+                CreateTranslationMatrix(ARci.cameraPosition),
+                ARci.PipelineTransformation.ViewMatrix);
+            end;
+          cimOrientation:
+            begin
+              // makes the coordinates system more 'intuitive' (Z+ forward)
+              ViewMatrix := CreateScaleMatrix(Vector3fMake(1, -1, -1))
+            end;
+        else
+          Assert(False);
+        end;
+        // Apply local transform
+        ModelMatrix := LocalMatrix^;
+
+        PrepareSelf;
+      finally
+        Pop;
+      end;
+    end
+  else
+    PrepareSelf;
 end;
 
 function TGLDummyCube.RayCastIntersect(const rayStart, rayVector: TVector;
@@ -2081,6 +2119,8 @@ end;
 
 procedure TGLSprite.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
+var
+  M: TMatrix;
 begin
   if ARenderSelf then
   begin
@@ -2088,35 +2128,37 @@ begin
     begin
       BuildMesh;
     end;
-    ARci.PipelineTransformation.ModelViewMatrix;
-    FTransformation := ARci.PipelineTransformation.StackTop;
+
+    ARci.PipelineTransformation.Push;
+    M := ARci.PipelineTransformation.ModelViewMatrix;
     case FAlign of
       alSpherical:
         begin
-          FTransformation.FModelViewMatrix[0, 0] := Scale.X;
-          FTransformation.FModelViewMatrix[0, 1] := 0;
-          FTransformation.FModelViewMatrix[0, 2] := 0;
-          FTransformation.FModelViewMatrix[1, 0] := 0;
-          FTransformation.FModelViewMatrix[1, 1] := Scale.Y;
-          FTransformation.FModelViewMatrix[1, 2] := 0;
-          FTransformation.FModelViewMatrix[2, 0] := 0;
-          FTransformation.FModelViewMatrix[2, 1] := 0;
-          FTransformation.FModelViewMatrix[2, 2] := 1;
-          FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
+          M[0, 0] := Scale.X;
+          M[0, 1] := 0;
+          M[0, 2] := 0;
+          M[1, 0] := 0;
+          M[1, 1] := Scale.Y;
+          M[1, 2] := 0;
+          M[2, 0] := 0;
+          M[2, 1] := 0;
+          M[2, 2] := 1;
         end;
       alCylindrical:
         begin
-          FTransformation.FModelViewMatrix[0, 0] := 1;
-          FTransformation.FModelViewMatrix[0, 1] := 0;
-          FTransformation.FModelViewMatrix[0, 2] := 0;
-          FTransformation.FModelViewMatrix[2, 0] := 0;
-          FTransformation.FModelViewMatrix[2, 1] := 0;
-          FTransformation.FModelViewMatrix[2, 2] := 1;
-          FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
+          M[0, 0] := 1;
+          M[0, 1] := 0;
+          M[0, 2] := 0;
+          M[2, 0] := 0;
+          M[2, 1] := 0;
+          M[2, 2] := 1;
         end;
     end;
-    FTransformation.FModelMatrix := IdentityHmgMatrix;
-    FTransformation.FStates := cAllStatesChanged;
+    ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+    ARci.PipelineTransformation.ViewMatrix := M;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    ARci.PipelineTransformation.Pop;
+
     FBatch.Order := ARci.orderCounter;
   end;
 
@@ -2821,7 +2863,6 @@ destructor TGLNodedLines.Destroy;
 begin
   FNodes.Free;
   FDefaultNodeColor.Free;
-  FBatch.InstancesChain.Destroy;
   FNodeBatch.Mesh.Destroy;
   FNodeBatch.InstancesChain.Destroy;
   inherited Destroy;
@@ -3055,6 +3096,7 @@ procedure TGLLines.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 var
   I: Integer;
+  M: TMatrix;
 begin
   inherited;
 
@@ -3066,9 +3108,10 @@ begin
         with TGLLinesNode(Nodes[I]) do
         begin
           FNodeTransformation := FBatch.Transformation^;
-          FNodeTransformation.FModelMatrix := MatrixMultiply(
-            FNodeTransformation.FModelMatrix,
+          M := MatrixMultiply(
+            PMatrix(@FNodeTransformation.FModelMatrix[0])^,
             CreateTranslationMatrix(AsAffineVector));
+          SetMatrix(FNodeTransformation.FModelMatrix, M);
           FNodeTransformation.FStates := cAllStatesChanged;
         end;
       FNodeBatch.Order := ARci.orderCounter;

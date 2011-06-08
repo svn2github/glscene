@@ -701,7 +701,6 @@ begin
     bSuccess := True;
   finally
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
-    PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
   end;
 end;
 

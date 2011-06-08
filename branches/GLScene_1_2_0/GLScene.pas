@@ -4775,11 +4775,6 @@ begin
   end;
 
   // Apply hierarchical transformation
-  if osDeferredDraw in ObjectStyle then
-    ARci.PipelineTransformation.LoadMatricesEnabled := False
-  else
-    ARci.PipelineTransformation.LoadMatricesEnabled := not ARci.GLStates.ForwardContext;
-
   ARci.PipelineTransformation.Push;
   if ocTransformation in FChanges then
     RebuildMatrix;
@@ -4789,6 +4784,9 @@ begin
       MatrixMultiply(LocalMatrix^, ARci.PipelineTransformation.ModelMatrix)
   else
     ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
+
+  if not (osDeferredDraw in ObjectStyle) then
+    ARci.PipelineTransformation.LoadMatrices;
 
   // Start rendering
   if shouldRenderSelf then
@@ -4800,6 +4798,8 @@ begin
       FGLObjectEffects.RenderPreEffects(ARci);
 
       ARci.PipelineTransformation.ReplaceFromStack;
+      if not (osDeferredDraw in ObjectStyle) then
+        ARci.PipelineTransformation.LoadMatrices;
 
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
@@ -7041,26 +7041,31 @@ end;
 
 procedure TGLLightSource.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
+var
+  M: TMatrix;
 begin
   if ocStructure in Changes then
   begin
     UpdateMaterial;
     BuildMesh;
   end;
-  ARci.PipelineTransformation.ModelViewMatrix;
+
+  ARci.PipelineTransformation.Push;
+  M := ARci.PipelineTransformation.ModelViewMatrix;
+  M[0, 0] := FGlyphScale;
+  M[0, 1] := 0;
+  M[0, 2] := 0;
+  M[1, 0] := 0;
+  M[1, 1] := FGlyphScale;
+  M[1, 2] := 0;
+  M[2, 0] := 0;
+  M[2, 1] := 0;
+  M[2, 2] := 1;
+  ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+  ARci.PipelineTransformation.ViewMatrix := M;
   FTransformation := ARci.PipelineTransformation.StackTop;
-  FTransformation.FModelViewMatrix[0, 0] := FGlyphScale;
-  FTransformation.FModelViewMatrix[0, 1] := 0;
-  FTransformation.FModelViewMatrix[0, 2] := 0;
-  FTransformation.FModelViewMatrix[1, 0] := 0;
-  FTransformation.FModelViewMatrix[1, 1] := FGlyphScale;
-  FTransformation.FModelViewMatrix[1, 2] := 0;
-  FTransformation.FModelViewMatrix[2, 0] := 0;
-  FTransformation.FModelViewMatrix[2, 1] := 0;
-  FTransformation.FModelViewMatrix[2, 2] := 1;
-  FTransformation.FViewMatrix := FTransformation.FModelViewMatrix;
-  FTransformation.FModelMatrix := IdentityHmgMatrix;
-  FTransformation.FStates := cAllStatesChanged;
+  ARci.PipelineTransformation.Pop;
+
   if (csDesigning in ComponentState) or FVisibleAtRunTime then
     FBatch.Order := ARci.orderCounter;
 
@@ -7846,18 +7851,19 @@ begin
           begin
             if FixedFunctionPipeLight then
             begin
-              LoadMatricesEnabled := True;
               RebuildMatrix;
               if LightStyle in [lsParallel, lsParallelSpot] then
               begin
                 ModelMatrix := Parent.AbsoluteMatrix;
                 lPos := Direction.AsVector;
                 NegateVector(lPos);
+                LoadMatrices;
                 GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, @lPos);
               end
               else
               begin
                 ModelMatrix := Parent.AbsoluteMatrix;
+                LoadMatrices;
                 GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
               if LightStyle in [lsSpot, lsParallelSpot] then

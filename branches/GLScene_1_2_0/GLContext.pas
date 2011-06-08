@@ -1446,7 +1446,6 @@ begin
   FGLStates := TGLStateCache.Create;
   FGL := TGLExtensionsAndEntryPoints.Create;
   FTransformation := TGLTransformation.Create;
-  FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);
   FIsPraparationNeed := True;
 end;

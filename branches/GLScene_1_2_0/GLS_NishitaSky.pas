@@ -1314,9 +1314,9 @@ procedure TGLCustomNishitaSky.DoRender(var ARci: TRenderContextInfo;
         BuildMesh;
     end;
     FTransformation := ARci.PipelineTransformation.StackTop;
-    FTransformation.FViewMatrix[3, 0] := 0;
-    FTransformation.FViewMatrix[3, 1] := 0;
-    FTransformation.FViewMatrix[3, 2] := 0;
+    FTransformation.FViewMatrix[12] := 0;
+    FTransformation.FViewMatrix[13] := 0;
+    FTransformation.FViewMatrix[14] := 0;
     FTransformation.FStates := cAllStatesChanged;
     FBatch.Order := ARci.orderCounter;
   end;
@@ -1606,9 +1606,9 @@ initialization
   RegisterClasses([TGLCustomNishitaSky, TGLNishitaSky]);
 
   cIdentityTransformationRec.FStates := cAllStatesChanged;
-  cIdentityTransformationRec.FModelMatrix := IdentityHmgMatrix;
-  cIdentityTransformationRec.FViewMatrix := IdentityHmgMatrix;
-  cIdentityTransformationRec.FProjectionMatrix := IdentityHmgMatrix;
+  SetMatrix(cIdentityTransformationRec.FModelMatrix, IdentityHmgMatrix);
+  SetMatrix(cIdentityTransformationRec.FViewMatrix, IdentityHmgMatrix);
+  SetMatrix(cIdentityTransformationRec.FProjectionMatrix, IdentityHmgMatrix);
 
 end.
 

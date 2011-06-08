@@ -298,7 +298,6 @@ begin
     begin
       // Down flags to backcompat
       GLStates.ForwardContext := False;
-      PipelineTransformation.LoadMatricesEnabled := True;
       FGL.DebugMode := False;
     end;
 
@@ -429,7 +428,6 @@ begin
     if Active then
       Deactivate;
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
-    PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
     if Assigned(vFBConfigs) then
       XFree(vFBConfigs);
   end;
@@ -730,7 +728,6 @@ begin
       begin
         // Down flags to backcompat
         GLStates.ForwardContext := False;
-        PipelineTransformation.LoadMatricesEnabled := True;
         FGL.DebugMode := False;
       end;
 
