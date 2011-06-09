@@ -263,6 +263,8 @@ type
     FTextureBufferBinding: TGLuint;
     FEnablePrimitiveRestart: TGLboolean;
     FPrimitiveRestartIndex: TGLuint;
+    FElementBufferUnified: Boolean;
+    FArrayBufferUnified: Boolean;
 
     // Transformation state
     FViewPort: TVector4i;
@@ -442,6 +444,8 @@ type
     function GetPrimitiveRestartIndex: TGLuint;
     procedure SetEnablePrimitiveRestart(const enabled: TGLboolean);
     procedure SetPrimitiveRestartIndex(const index: TGLuint);
+    procedure SetArrayBufferUnified(const Value: Boolean);
+    procedure SetElementBufferUnified(const Value: Boolean);
     procedure SetTextureBufferBinding(const Value: TGLuint);
     // Transformation state
     procedure SetViewPort(const Value: TVector4i);
@@ -705,6 +709,11 @@ type
     {: The index Value that causes a primitive restart. }
     property PrimitiveRestartIndex: TGLuint read GetPrimitiveRestartIndex write
       SetPrimitiveRestartIndex;
+    {: Bindless graphics state. }
+    property ArrayBufferUnified: Boolean read FArrayBufferUnified
+      write SetArrayBufferUnified;
+    property ElementBufferUnified: Boolean read FElementBufferUnified
+      write SetElementBufferUnified;
     {: The currently bound texture buffer object (TBO). }
     property TextureBufferBinding: TGLuint read FTextureBufferBinding write
       SetTextureBufferBinding;
@@ -1341,6 +1350,8 @@ begin
   // Vertex Array Data state
   FVertexArrayBinding := 0;
   FTextureBufferBinding := 0;
+  FElementBufferUnified := False;
+  FArrayBufferUnified := False;
 
   // Transformation state
   // FViewPort := Rect(0,0,0,0);  // (0, 0, Width, Height)
@@ -1751,6 +1762,18 @@ begin
   end;
 end;
 
+procedure TGLStateCache.SetArrayBufferUnified(const Value: Boolean);
+begin
+  if FArrayBufferUnified <> Value then
+  begin
+    FArrayBufferUnified := Value;
+    if Value then
+      GL.EnableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV)
+    else
+      GL.DisableClientState(GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV);
+  end;
+end;
+
 function TGLStateCache.GetElementBufferBinding: TGLuint;
 begin
   Result := FElementBufferBinding
@@ -1763,6 +1786,18 @@ begin
   begin
     FElementBufferBinding := Value;
     GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, Value);
+  end;
+end;
+
+procedure TGLStateCache.SetElementBufferUnified(const Value: Boolean);
+begin
+  if FElementBufferUnified <> Value then
+  begin
+    FElementBufferUnified := Value;
+    if Value then
+      GL.EnableClientState(GL_ELEMENT_ARRAY_UNIFIED_NV)
+    else
+      GL.DisableClientState(GL_ELEMENT_ARRAY_UNIFIED_NV);
   end;
 end;
 

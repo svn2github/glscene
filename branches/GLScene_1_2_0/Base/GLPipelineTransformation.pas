@@ -78,6 +78,7 @@ type
 
     procedure SetModelMatrix(const AMatrix: TMatrix);
     procedure SetViewMatrix(const AMatrix: TMatrix);
+    procedure SetModelViewMatrix(const AMatrix: TMatrix);
     procedure SetProjectionMatrix(const AMatrix: TMatrix);
     function GetStackTop: TTransformationRec;
 {$IFDEF GLS_INLINE} inline;
@@ -106,7 +107,7 @@ type
       write SetProjectionMatrix;
 
     property InvModelMatrix: TMatrix read GetInvModelMatrix;
-    property ModelViewMatrix: TMatrix read GetModelViewMatrix;
+    property ModelViewMatrix: TMatrix read GetModelViewMatrix write SetModelViewMatrix;
     property NormalModelMatrix: TAffineMatrix read GetNormalModelMatrix;
     property InvModelViewMatrix: TMatrix read GetInvModelViewMatrix;
     property ViewProjectionMatrix: TMatrix read GetViewProjectionMatrix;
@@ -329,6 +330,16 @@ begin
     SetMatrix(FModelMatrix, AMatrix);
     FStates := FStates + [tfcModelViewChanged, tfcInvModelViewChanged,
       tfcInvModelChanged, tfcNormalModelChanged];
+  end;
+end;
+
+procedure TGLTransformation.SetModelViewMatrix(const AMatrix: TMatrix);
+begin
+  with FStack[FStackPos] do
+  begin
+    SetMatrix(FModelMatrix, IdentityHmgMatrix);
+    SetMatrix(FViewMatrix, AMatrix);
+    FStates := cAllStatesChanged;
   end;
 end;
 

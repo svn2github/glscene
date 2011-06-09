@@ -208,16 +208,16 @@ type
     FTextureWidth, FTextureHeight: Integer;
     FTextRows, FTextCols: integer;
     FTextures: TList;
-    FFontBook: TGLTextureFontBook;
-    FFontSampler: TGLTextureSampler;
     FLastPageIndex: Integer;
     FTextureModified: boolean;
-    FFontMaterial: TGLLibMaterialEx;
     function GetGlyphsAlpha: TGLTextureImageAlpha;
     function GetMagFilter: TGLMagFilter;
     function GetMinFilter: TGLMinFilter;
   protected
     { Protected Declarations }
+    FFontBook: TGLTextureFontBook;
+    FFontSampler: TGLTextureSampler;
+    FFontMaterial: TGLLibMaterialEx;
     FChars      : array of TCharInfo;
     FCharsLoaded: boolean;
     procedure ResetCharWidths(w: Integer = -1);
@@ -245,6 +245,7 @@ type
     procedure GetICharTexCoords(var ABatches: TDrawBatchArray;
       chi: Integer; out topLeft, bottomRight: TTexPoint);
     procedure PrepareFontBook; virtual;
+    procedure OnShaderInitialize(Sender: TGLBaseShaderModel); virtual;
 
     {: A single bitmap containing all the characters.<p>
        The transparent color is that of the top left pixel. }
@@ -297,8 +298,8 @@ type
     {: A simpler canvas-style TextOut helper for RenderString.<p>
        The rendering is reversed along Y by default, to allow direct use
        with TGLCanvas }
-    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload;
-    procedure TextOut(var rci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload;
+    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload; deprecated;
+    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload; deprecated;
     function  TextWidth(const text: UnicodeString): Integer;
 
     function  CharacterToTileIndex(aChar: widechar): Integer; virtual;
@@ -686,8 +687,31 @@ constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
 const
   cBitmapFontMaterialName = 'GLScene_BitmapFont_Material';
   cSamplerName = 'GLScene_BitmapFont_Sampler';
+  cFontVertexShader120 =
+    '#version 120'#10#13 +
+    'attribute vec3 Position;'#10#13 +
+    'attribute vec2 TexCoord0;'#10#13 +
+    'attribute vec4 Color;'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'varying vec4 v2f_Color;'#10#13 +
+    'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
+    ' v2f_TexCoord0 = TexCoord0;'#10#13 +
+    ' v2f_Color = Color; }';
+  cFontFragmentShader120 =
+    '#version 120'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'varying vec4 v2f_Color;'#10#13 +
+    'uniform sampler2D Font;'#10#13 +
+    'void main() {'#10#13 +
+    ' vec4 Color = texture2D(Font, v2f_TexCoord0);'#10#13 +
+    ' gl_FragColor = v2f_Color * Color; }'#10#13;
+var
+  LShader: TGLShaderEx;
 begin
   inherited Create(AOwner);
+
   FRanges := TBitmapFontRanges.Create(Self);
   FGlyphs := TGLPicture.Create;
   FGlyphs.OnChange := OnGlyphsChanged;
@@ -697,6 +721,7 @@ begin
   FVSpace := 1;
   FUsers := TList.Create;
   FTextures := TList.Create;
+
   // Create and setup material
   FFontBook := TGLTextureFontBook.Create(GetInternalMaterialLibrary.Components);
   FFontBook.FFont := Self;
@@ -716,8 +741,29 @@ begin
     FixedFunction.Texture.LibTextureName := FFontBook.Name;
     FixedFunction.Texture.LibSamplerName := FFontSampler.Name;
     FixedFunction.Texture.EnvMode := tmModulate;
+    // GLSL 120
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add(cFontVertexShader120);
+    ShaderModel3.LibVertexShaderName := LShader.Name;
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(cFontFragmentShader120);
+    ShaderModel3.LibFragmentShaderName := LShader.Name;
+    OnSM3UniformInitialize := OnShaderInitialize;
+    ShaderModel3.Enabled := True;
   end;
   FTextureModified := true;
+end;
+
+procedure TGLCustomBitmapFont.OnShaderInitialize(Sender: TGLBaseShaderModel);
+begin
+  with Sender do
+  begin
+    Uniforms['ModelViewProjectionMatrix'].AutoSetMethod := cafWorldViewProjectionMatrix;
+    Uniforms['Font'].TextureName := FFontBook.Name;
+    Uniforms['Font'].SamplerName := FFontSampler.Name;
+  end;
 end;
 
 // Destroy
@@ -813,10 +859,13 @@ begin
   end;
 
   FLastPageIndex := -1;
-  SetLength(ABatches, FFontBook.PageCount);
+  if Length(ABatches) = 0 then
+  begin
+    SetLength(ABatches, FFontBook.PageCount);
+    ABatches[0].InstancesChain := TInstancesChain.Create;
+  end;
 
   // Add color as instance
-  ABatches[0].InstancesChain := TInstancesChain.Create;
   with ABatches[0].InstancesChain do
   begin
     Lock;
@@ -1323,25 +1372,35 @@ end;
 // TextOut
 //
 
-procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo;
+procedure TGLCustomBitmapFont.TextOut(var ARci: TRenderContextInfo;
   x, y: Single; const text: UnicodeString; const color: TColorVector);
 var
   v: TVector;
+  LBatches: TDrawBatchArray;
+  I: Integer;
 begin
   v[0] := x;
   v[1] := y;
   v[2] := 0;
   v[3] := 1;
-  RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
+  LBatches := nil;
+  BuildString(LBatches, text, taLeftJustify, tlTop, color, @v, True);
+  for I := 0 to High(LBatches) do
+  begin
+    TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawBatch(ARci, LBatches[I]);
+    LBatches[I].Mesh.Destroy;
+  end;
+  if Length(LBatches) > 0 then
+    LBatches[0].InstancesChain.Destroy;
 end;
 
 // TextOut
 //
 
-procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo;
+procedure TGLCustomBitmapFont.TextOut(var ARci: TRenderContextInfo;
   x, y: Single; const text: UnicodeString; const color: TColor);
 begin
-  TextOut(rci, x, y, text, ConvertWinColor(color));
+  TextOut(ARci, x, y, text, ConvertWinColor(color));
 end;
 
 // TextWidth
@@ -1465,7 +1524,9 @@ begin
       ABatches[FLastPageIndex].Mesh.Lock;
       ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrPosition, GLSLType2f);
       ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrTexCoord0, GLSLType2f);
-    end;
+    end
+    else
+      ABatches[FLastPageIndex].Mesh.Lock;
     ABatches[FLastPageIndex].Mesh.BeginAssembly(mpTRIANGLES);
   end;
 end;
@@ -1608,15 +1669,13 @@ var
   I: Integer;
 begin
   if Assigned(Scene) then
-  begin
     for I := 0 to High(FBatches) do
-    begin
       Scene.RenderManager.UnRegisterBatch(FBatches[I]);
-      FBatches[I].Mesh.Free;
-    end;
-    if Length(FBatches) > 0 then
-      FBatches[0].InstancesChain.Free;
-  end;
+
+  for I := 0 to High(FBatches) do
+    FBatches[I].Mesh.Free;
+  if Length(FBatches) > 0 then
+    FBatches[0].InstancesChain.Free;
   SetLength(FBatches, 0);
 end;
 
@@ -1702,18 +1761,6 @@ procedure TGLFlatText.DoRender(var ARci: TRenderContextInfo;
     end;
   end;
 
-//  if Assigned(FBitmapFont) and (Text <> '') then
-//  begin
-//    rci.GLStates.PolygonMode := pmFill;
-//    if FModulateColor.Alpha <> 1 then
-//    begin
-//      rci.GLStates.Enable(stBlend);
-//      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-//    end;
-//    if ftoTwoSided in FOptions then
-//      rci.GLStates.Disable(stCullFace);
-//    FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
-//  end;
 begin
   PrepareSelf;
 
@@ -1758,10 +1805,13 @@ destructor TGLTextureFontBook.Destroy;
 var
   I: Integer;
 begin
-  FHandle := FPages[0];
-  for I := 1 to High(FPages) do
-    FPages[I].Free;
-  FPages:= nil;
+  if Length(FPages) > 0 then
+  begin
+    FHandle := FPages[0];
+    for I := 1 to High(FPages) do
+      FPages[I].Free;
+    SetLength(FPages, 0);
+  end;
   inherited Destroy;
 end;
 

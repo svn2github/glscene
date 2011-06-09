@@ -47,7 +47,8 @@ uses
   GLTextureFormat,
   Graphics,
   VectorLists,
-  GLCrossPlatform;
+  GLCrossPlatform,
+  GLS_Material;
 
 type
 
@@ -76,6 +77,7 @@ type
     function  StoreRanges: Boolean;
 
     procedure PrepareFontBook; override;
+    procedure OnShaderInitialize(Sender: TGLBaseShaderModel); override;
     function TextureFormat: TGLInternalFormat; override;
 
   public
@@ -186,6 +188,14 @@ procedure TGLSystemBitmapFont.NotifyChange(Sender: TObject);
 begin
   InvalidateUsers;
   inherited;
+end;
+
+procedure TGLSystemBitmapFont.OnShaderInitialize(Sender: TGLBaseShaderModel);
+const
+  cWhiteAlpha: TSwizzleVector = (tswOne, tswOne, tswOne, tswAlpha);
+begin
+  inherited OnShaderInitialize(Sender);
+  Sender.Uniforms['Font'].TextureSwizzle := cWhiteAlpha;
 end;
 
 // LoadWindowsFont

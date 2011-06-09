@@ -351,6 +351,7 @@ procedure TGLHUDSprite.DoRender(var ARci: TRenderContextInfo;
   procedure PrepareSelf;
   var
     f: Single;
+    M: TMatrix;
   begin
     if ocStructure in Changes then
     begin
@@ -376,28 +377,29 @@ procedure TGLHUDSprite.DoRender(var ARci: TRenderContextInfo;
 
     if ARenderSelf then
     begin
-      FTransformation := ARci.PipelineTransformation.StackTop;
-      FTransformation.FStates := cAllStatesChanged;
-      FTransformation.FModelMatrix := IdentityHmgMatrix;
-      FTransformation.FViewMatrix := IdentityHmgMatrix;
-
-      FTransformation.FProjectionMatrix := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
-      FTransformation.FProjectionMatrix := MatrixMultiply(
+      ARci.PipelineTransformation.Push;
+      ARci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
+      ARci.PipelineTransformation.ViewMatrix := IdentityHmgMatrix;
+      M := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
+      M := MatrixMultiply(
         CreateScaleMatrix(AffineVectorMake(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1)),
-        FTransformation.FProjectionMatrix);
+        M);
       f := ARci.renderDPI / 96;
       with Position do
-        FTransformation.FProjectionMatrix := MatrixMultiply(
+        M := MatrixMultiply(
           CreateTranslationMatrix(
           AffineVectorMake(X * f - ARci.viewPortSize.cx / 2, ARci.viewPortSize.cy / 2 - Y * f, Z)),
-          FTransformation.FProjectionMatrix);
+          M);
       if FRotation <> 0 then
-        FTransformation.FProjectionMatrix := MatrixMultiply(
+        M := MatrixMultiply(
           CreateRotationMatrixZ(DegToRad(FRotation)),
-          FTransformation.FProjectionMatrix);
-      FTransformation.FProjectionMatrix := MatrixMultiply(
+          M);
+      M := MatrixMultiply(
         CreateScaleMatrix(AffineVectorMake(Scale.DirectX * f, Scale.DirectY * f, 1)),
-        FTransformation.FProjectionMatrix);
+        M);
+      ARci.PipelineTransformation.ProjectionMatrix := M;
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      ARci.PipelineTransformation.Pop;
 
       FBatch.Order := ARci.orderCounter;
     end;
@@ -566,6 +568,7 @@ procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
     I: Integer;
     f: Single;
     p: TAffineVector;
+    M: TMatrix;
   begin
     if ocStructure in Changes then
     begin
@@ -591,29 +594,29 @@ procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
 
     if ARenderSelf then
     begin
-      FTransformation := ARci.PipelineTransformation.StackTop;
-      FTransformation.FStates := cAllStatesChanged;
-      FTransformation.FModelMatrix := IdentityHmgMatrix;
-      FTransformation.FViewMatrix := IdentityHmgMatrix;
-
-      FTransformation.FProjectionMatrix := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
-      FTransformation.FProjectionMatrix := MatrixMultiply(
+      ARci.PipelineTransformation.Push;
+      ARci.PipelineTransformation.ModelViewMatrix := IdentityHmgMatrix;
+      M := TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix;
+      M := MatrixMultiply(
         CreateScaleMatrix(AffineVectorMake(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1)),
-        FTransformation.FProjectionMatrix);
+        M);
       f := ARci.renderDPI / 96;
       p := GetTextPosition(ARci);
-        FTransformation.FProjectionMatrix := MatrixMultiply(
+        M := MatrixMultiply(
           CreateTranslationMatrix(
           AffineVectorMake(p[0] * f - ARci.viewPortSize.cx / 2,
           ARci.viewPortSize.cy / 2 - p[1] * f, p[2])),
-          FTransformation.FProjectionMatrix);
+          M);
       if FRotation <> 0 then
-        FTransformation.FProjectionMatrix := MatrixMultiply(
+        M := MatrixMultiply(
           CreateRotationMatrixZ(DegToRad(FRotation)),
-          FTransformation.FProjectionMatrix);
-      FTransformation.FProjectionMatrix := MatrixMultiply(
+          M);
+      M := MatrixMultiply(
         CreateScaleMatrix(AffineVectorMake(Scale.DirectX * f, Scale.DirectY * f, 1)),
-        FTransformation.FProjectionMatrix);
+        M);
+      ARci.PipelineTransformation.ProjectionMatrix := M;
+      FTransformation := ARci.PipelineTransformation.StackTop;
+      ARci.PipelineTransformation.Pop;
 
       for I := High(FBatches) downto 0 do
         FBatches[I].Order := ARci.orderCounter;

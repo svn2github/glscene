@@ -218,6 +218,9 @@ type
     property DrawTechnique: TGLAbstractDrawTechnique read GetDrawTechnique;
   end;
 
+var
+  vBindlessGraphicsEnabled: Boolean = True;
+
 function GetOrCreateDummyCubeMaterial: TGLAbstractLibMaterial;
 function GetOrCreatePickingMaterial: TGLAbstractLibMaterial;
 procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
@@ -961,6 +964,10 @@ end;
 
 procedure TGLDrawTechniqueOGL2.DoAfterAABBDrawing(var ARci: TRenderContextInfo);
 begin
+  if ARci.GLStates.CurrentProgram = 0 then
+    GL.DisableClientState(GL_VERTEX_ARRAY)
+  else
+    GL.DisableVertexAttribArray(Ord(attrPosition));
   GetAABBMaterial.UnApply(ARci);
 end;
 
@@ -1003,10 +1010,19 @@ end;
 
 procedure TGLDrawTechniqueOGL2.DoBeforeAABBDrawing
   (var ARci: TRenderContextInfo);
+var
+  L: Integer;
 begin
   ARci.GLStates.ArrayBufferBinding := 0;
   ARci.GLStates.ElementBufferBinding := 0;
+  with GL do
+    for L := 15 downto 0 do
+      DisableVertexAttribArray(L);
   GetAABBMaterial.Apply(ARci);
+  if ARci.GLStates.CurrentProgram = 0 then
+    GL.EnableClientState(GL_VERTEX_ARRAY)
+  else
+    GL.EnableVertexAttribArray(Ord(attrPosition));
 end;
 
 procedure TGLDrawTechniqueOGL2.DoBeforePicking(AnObjectCountGuess: Integer);
@@ -1688,7 +1704,7 @@ begin
   if LVAO.IsSupported then
     LVAO.AllocateHandle;
 
-  if GL.NV_vertex_buffer_unified_memory then
+  if vBindlessGraphicsEnabled and GL.NV_vertex_buffer_unified_memory then
   begin
     if IsDesignTime then
       Offset64 := FArrayBufferAddress
@@ -1705,16 +1721,14 @@ begin
     with GL do
     begin
       // Make draw calls use the GPU address VAO state, not the handle VAO state
-      EnableClientState( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
+      AStates.ArrayBufferUnified := True;
       if LMesh.FHasIndices then
       begin
-        EnableClientState( GL_ELEMENT_ARRAY_UNIFIED_NV );
+        AStates.ElementBufferUnified := True;
         BufferAddressRangeNV(GL_ELEMENT_ARRAY_ADDRESS_NV, 0,
           FElementBufferAddress,
           FElementBufferMap.Sectors[LMesh.FElementSectorIndex].Size );
-      end
-      else
-        DisableClientState( GL_ELEMENT_ARRAY_UNIFIED_NV );
+      end;
 
       if LProgram > 0 then
       begin
@@ -1770,6 +1784,9 @@ begin
       begin
         // Build-in attributes
         begin
+          // Predisable attributes array to avoid conflict
+          for L := 15 downto 0 do
+            DisableVertexAttribArray(L);
           T := 8;
           for A := attrTexCoord7 downto attrTexCoord0 do
           begin
@@ -1792,9 +1809,7 @@ begin
               BufferAddressRangeNV(GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, T,
                 Offsets64[attrTexCoord0],
                 LMesh.FAttributeArrays[attrTexCoord0].DataSize);
-            end
-            else
-              DisableClientState(GL_TEXTURE_COORD_ARRAY);
+            end;
           end;
           // Colors
           if LMesh.FAttributes[attrColor] then
@@ -1804,9 +1819,7 @@ begin
               GLSLTypeEnum(LMesh.FType[attrColor]), 0);
             BufferAddressRangeNV(GL_COLOR_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrColor], LMesh.FAttributeArrays[attrColor].DataSize);
-          end
-          else
-            DisableClientState(GL_COLOR_ARRAY);
+          end;
           // Normals
           if LMesh.FAttributes[attrNormal] and
             (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
@@ -1815,9 +1828,7 @@ begin
             NormalFormatNV(GLSLTypeEnum(LMesh.FType[attrNormal]), 0);
             BufferAddressRangeNV(GL_NORMAL_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrNormal], LMesh.FAttributeArrays[attrNormal].DataSize);
-          end
-          else
-            DisableClientState(GL_NORMAL_ARRAY);
+          end;
           // Positions
           if LMesh.FAttributes[attrPosition] then
           begin
@@ -1826,9 +1837,7 @@ begin
               GLSLTypeEnum(LMesh.FType[attrPosition]), 0);
             BufferAddressRangeNV(GL_VERTEX_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrPosition], LMesh.FAttributeArrays[attrPosition].DataSize);
-          end
-          else
-            DisableClientState(GL_VERTEX_ARRAY);
+          end;
         end;
       end;
     end;
@@ -2013,18 +2022,14 @@ begin
     try
       if ARci.GLStates.CurrentProgram = 0 then
       begin
-        EnableClientState(GL_VERTEX_ARRAY);
         VertexPointer(3, GL_FLOAT, 0, @LPositions[0]);
         DrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, @cAABBIndices[0]);
-        DisableClientState(GL_VERTEX_ARRAY);
       end
       else
       begin
-        EnableVertexAttribArray(Ord(attrPosition));
         VertexAttribPointer(Ord(attrPosition), 3, GL_FLOAT, False, 0,
           @LPositions[0]);
         DrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, @cAABBIndices[0]);
-        DisableVertexAttribArray(Ord(attrPosition));
       end;
     finally
       ARci.PipelineTransformation.Pop;
@@ -2144,6 +2149,10 @@ end;
 
 procedure TGLDrawTechniqueOGL3.DoAfterAABBDrawing(var ARci: TRenderContextInfo);
 begin
+  if ARci.GLStates.CurrentProgram = 0 then
+    GL.DisableClientState(GL_VERTEX_ARRAY)
+  else
+    GL.DisableVertexAttribArray(Ord(attrPosition));
   GetAABBMaterial.UnApply(ARci);
   if ARci.GLStates.ForwardContext then
     FCommonVAO.UnBind;
@@ -2151,15 +2160,24 @@ end;
 
 procedure TGLDrawTechniqueOGL3.DoBeforeAABBDrawing
   (var ARci: TRenderContextInfo);
+var
+  L: Integer;
 begin
   if ARci.GLStates.ForwardContext then
   begin
     FCommonVAO.AllocateHandle;
     FCommonVAO.Bind;
   end;
+  with GL do
+    for L := 15 downto 0 do
+      DisableVertexAttribArray(L);
   ARci.GLStates.ArrayBufferBinding := 0;
   ARci.GLStates.ElementBufferBinding := 0;
   GetAABBMaterial.Apply(ARci);
+  if ARci.GLStates.CurrentProgram = 0 then
+    GL.EnableClientState(GL_VERTEX_ARRAY)
+  else
+    GL.EnableVertexAttribArray(Ord(attrPosition));
 end;
 
 procedure TGLDrawTechniqueOGL3.DrawBatch(var ARci: TRenderContextInfo;
@@ -2598,10 +2616,10 @@ begin
         LDrawTech.DrawBatch(ARci, pBatch^);
       end;
 
-      if GL.NV_vertex_buffer_unified_memory then
+      if vBindlessGraphicsEnabled and GL.NV_vertex_buffer_unified_memory then
       begin
-        GL.DisableClientState( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
-        GL.DisableClientState( GL_ELEMENT_ARRAY_UNIFIED_NV );
+        ARci.GLStates.ArrayBufferUnified := False;
+        ARci.GLStates.ElementBufferUnified := False;
       end;
 
       if ARci.drawState = dsPicking then
