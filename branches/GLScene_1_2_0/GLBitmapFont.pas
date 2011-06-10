@@ -860,26 +860,7 @@ begin
 
   FLastPageIndex := -1;
   if Length(ABatches) = 0 then
-  begin
     SetLength(ABatches, FFontBook.PageCount);
-    ABatches[0].InstancesChain := TInstancesChain.Create;
-  end;
-
-  // Add color as instance
-  with ABatches[0].InstancesChain do
-  begin
-    Lock;
-    try
-      Clear;
-      Attributes[attrColor] := True;
-      AttributesType[attrColor] := GLSLType4f;
-      AttributeLists[attrColor].Add(aColor[0], aColor[1], aColor[2], aColor[3]);
-    finally
-      UnLock;
-    end;
-  end;
-  for I := High(ABatches) downto 1 do
-    ABatches[I].InstancesChain := ABatches[0].InstancesChain;
 
   // precalcs
   if Assigned(aPosition) then
@@ -924,6 +905,7 @@ begin
 
         with ABatches[FLastPageIndex].Mesh do
         begin
+          Attribute4f(attrColor, aColor);
           Attribute2f(attrPosition, vTopLeft[0], vTopLeft[1]);
           Attribute2f(attrTexCoord0, topLeft);
           EmitVertex;
@@ -1524,6 +1506,7 @@ begin
       ABatches[FLastPageIndex].Mesh.Lock;
       ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrPosition, GLSLType2f);
       ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrTexCoord0, GLSLType2f);
+      ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrColor, GLSLType4f);
     end
     else
       ABatches[FLastPageIndex].Mesh.Lock;
@@ -1674,8 +1657,6 @@ begin
 
   for I := 0 to High(FBatches) do
     FBatches[I].Mesh.Free;
-  if Length(FBatches) > 0 then
-    FBatches[0].InstancesChain.Free;
   SetLength(FBatches, 0);
 end;
 

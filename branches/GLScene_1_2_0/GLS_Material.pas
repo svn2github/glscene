@@ -812,7 +812,6 @@ type
     FLibCombinerName: TGLMaterialComponentName;
     FLibAsmProgName: TGLMaterialComponentName;
     FTexProps: array[0..3] of TGLTextureProperties;
-    FTextureMode: TGLTextureMode;
     FLightDir: TLightDir2TexEnvColor;
     FLightSourceIndex: Integer;
     function GetLibCombinerName: string;
@@ -821,7 +820,6 @@ type
     procedure SetLibAsmProgName(const AValue: string);
     function GetTexProps(AIndex: Integer): TGLTextureProperties;
     procedure SetTexProps(AIndex: Integer; AValue: TGLTextureProperties);
-    procedure SetTextureMode(AValue: TGLTextureMode);
     procedure SetLightSourceIndex(AValue: Integer);
   protected
     procedure Loaded; override;
@@ -3730,9 +3728,7 @@ begin
             FLibCombiner.FCommandCache[N].Arg2);
         end;
       end;
-      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ActiveTexture := 0;
-
     end;
   end;
 end;
@@ -3741,7 +3737,6 @@ constructor TGLMultitexturingProperties.Create(AOwner: TPersistent);
 begin
   inherited;
   FEnabled := False;
-  FTextureMode := tmDecal;
   FLightDir := l2eNone;
   FLightSourceIndex := 0;
 end;
@@ -3886,15 +3881,6 @@ procedure TGLMultitexturingProperties.SetTexProps(AIndex: Integer;
   AValue: TGLTextureProperties);
 begin
   FTexProps[AIndex].Assign(AValue);
-end;
-
-procedure TGLMultitexturingProperties.SetTextureMode(AValue: TGLTextureMode);
-begin
-  if AValue <> FTextureMode then
-  begin
-    FTextureMode := AValue;
-    NotifyChange(Self);
-  end;
 end;
 
 procedure TGLMultitexturingProperties.UnApply(var ARci: TRenderContextInfo);

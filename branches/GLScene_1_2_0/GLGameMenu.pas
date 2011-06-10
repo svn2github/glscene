@@ -6,6 +6,7 @@
    Manages a basic game menu UI<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/06/11 - Yar - Transition to indirect rendering objects
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>31/05/10 - Yar - Fixed for Linux x64
@@ -32,8 +33,17 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, GLMaterial, GLBitmapFont, GLCrossPlatform, GLColor,
-  GLRenderContextInfo;
+uses
+  Classes,
+  GLScene,
+  GLMaterial,
+  GLBitmapFont,
+  GLCrossPlatform,
+  GLColor,
+  GLRenderContextInfo,
+  GLPipelineTransformation,
+  GLS_Mesh,
+  GLS_DrawTechnique;
 
 type
 
@@ -47,6 +57,10 @@ type
   TGLGameMenu = class(TGLSceneObject, IGLMaterialLibrarySupported)
   private
     { Private Properties }
+    FBackgroundBatch: TDrawBatch;
+    FTitleBatch: TDrawBatch;
+    FTextBatches: TDrawBatchArray;
+    FTransformation: TTransformationRec;
     FItems: TStrings;
     FSelected: Integer;
     FFont: TGLCustomBitmapFont;
@@ -62,8 +76,15 @@ type
     FMenuTop: integer;
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
+    procedure OnColorChaged(Sender: TObject);
+    function GetBoxBottom: integer;
+    function GetBoxLeft: integer;
+    function GetBoxRight: integer;
+    function GetBoxTop: integer;
+    function GetMenuTop: integer;
   protected
     { Protected Properties }
+    procedure SetScene(const value: TGLScene); override;
     procedure SetMenuScale(AValue: TGLGameMenuScale);
     procedure SetMarginHorz(AValue: Integer);
     procedure SetMarginVert(AValue: Integer);
@@ -84,7 +105,9 @@ type
     procedure SetTitleHeight(AValue: Integer);
 
     procedure ItemsChanged(Sender: TObject);
-
+    procedure BuildMeshes;
+    procedure FreeBatches;
+    procedure RegisterBatches;
   public
     { Public Properties }
     constructor Create(AOwner: TComponent); override;
@@ -92,7 +115,9 @@ type
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
 
     property Enabled[AIndex: Integer]: Boolean read GetEnabled write SetEnabled;
     property SelectedText: string read GetSelectedText;
@@ -133,12 +158,12 @@ type
       FOnSelectedChanged;
 
     // these are the extents of the menu
-    property BoxTop: integer read FBoxTop;
-    property BoxBottom: integer read FBoxBottom;
-    property BoxLeft: integer read FBoxLeft;
-    property BoxRight: integer read FBoxRight;
+    property BoxTop: integer read GetBoxTop;
+    property BoxBottom: integer read GetBoxBottom;
+    property BoxLeft: integer read GetBoxLeft;
+    property BoxRight: integer read GetBoxRight;
     // this is the top of the first menu item
-    property MenuTop: integer read FMenuTop;
+    property MenuTop: integer read GetMenuTop;
 
     //publish other stuff from TGLBaseSceneObject
     property ObjectsSorting;
@@ -158,7 +183,14 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLCanvas, OpenGLTokens, GLContext;
+uses
+  SysUtils,
+  GLContext,
+  GLS_ShaderParameter,
+  GLS_Material,
+  GLState,
+  VectorTypes,
+  VectorGeometry;
 
 // ------------------
 // ------------------ TGLGameMenu ------------------
@@ -168,9 +200,11 @@ uses SysUtils, GLCanvas, OpenGLTokens, GLContext;
 //
 
 constructor TGLGameMenu.Create(AOwner: TComponent);
+const
+  cGameMenuMaterialName = 'GLScene_GameMenu_Material';
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
+  ObjectStyle := ObjectStyle + [osDeferredDraw, osStreamDraw];
   FItems := TStringList.Create;
   TStringList(FItems).OnChange := ItemsChanged;
   FSelected := -1;
@@ -182,6 +216,29 @@ begin
   FInactiveColor := TGLColor.CreateInitialized(Self, clrGray75, NotifyChange);
   FActiveColor := TGLColor.CreateInitialized(Self, clrWhite, NotifyChange);
   FDisabledColor := TGLColor.CreateInitialized(Self, clrGray60, NotifyChange);
+  FBackColor.OnNotifyChange := OnColorChaged;
+  FInactiveColor.OnNotifyChange := OnColorChaged;
+  FActiveColor.OnNotifyChange := OnColorChaged;
+  FDisabledColor.OnNotifyChange := OnColorChaged;
+
+  FBackgroundBatch.Mesh := TMeshAtom.Create;
+  FBackgroundBatch.Mesh.TagName := Format('%s_Background', [ClassName]);
+  FBackgroundBatch.Transformation := @FTransformation;
+  FTitleBatch.Mesh := TMeshAtom.Create;
+  FTitleBatch.Mesh.TagName := Format('%s_Title', [ClassName]);
+  FTitleBatch.Transformation := @FTransformation;
+
+  FBackgroundBatch.Material := GetInternalMaterialLibrary.Materials.GetLibMaterialByName(cGameMenuMaterialName);
+  if FBackgroundBatch.Material = nil then
+  begin
+    FBackgroundBatch.Material := GetInternalMaterialLibrary.Materials.Add;
+    with TGLLibMaterialEx(FBackgroundBatch.Material) do
+    begin
+      Name := cGameMenuMaterialName;
+      FixedFunction.MaterialOptions := [moNoLighting, moIgnoreFog];
+      FixedFunction.BlendingMode := bmTransparency;
+    end;
+  end;
 end;
 
 // Destroy
@@ -196,6 +253,24 @@ begin
   FInactiveColor.Free;
   FActiveColor.Free;
   FDisabledColor.Free;
+  FBackgroundBatch.Mesh.Destroy;
+  FTitleBatch.Mesh.Destroy;
+  FreeBatches;
+end;
+
+procedure TGLGameMenu.FreeBatches;
+var
+  I: Integer;
+begin
+  if Assigned(Scene) then
+    for I := 0 to High(FTextBatches) do
+      Scene.RenderManager.UnRegisterBatch(FTextBatches[I]);
+
+  for I := 0 to High(FTextBatches) do
+    FTextBatches[I].Mesh.Free;
+  if Length(FTextBatches) > 0 then
+    FTextBatches[0].InstancesChain.Free;
+  SetLength(FTextBatches, 0);
 end;
 
 // Notification
@@ -214,106 +289,180 @@ begin
   end;
 end;
 
-// BuildList
-//
-
-procedure TGLGameMenu.BuildList(var rci: TRenderContextInfo);
-var
-  canvas: TGLCanvas;
-  buffer: TGLSceneBuffer;
-  i, w, h, tw, y: Integer;
-  color: TColorVector;
-  libMat: TGLLibMaterial;
+procedure TGLGameMenu.OnColorChaged(Sender: TObject);
 begin
-  if Font = nil then
-    Exit;
-  case MenuScale of
-    gmsNormal:
-      begin
-        buffer := TGLSceneBuffer(rci.buffer);
-        canvas := TGLCanvas.Create(buffer.Width, buffer.Height);
-      end;
-    gms1024x768: canvas := TGLCanvas.Create(1024, 768);
-  else
-    canvas := nil;
-    Assert(False);
-  end;
-  try
-    // determine extents
-    h := FItems.Count * (Font.CharHeight + Spacing) - Spacing + MarginVert * 2;
-    if TitleHeight > 0 then
-      h := h + TitleHeight + Spacing;
-    w := TitleWidth;
-    for i := 0 to FItems.Count - 1 do
+  StructureChanged;
+end;
+
+procedure TGLGameMenu.RegisterBatches;
+var
+  I: Integer;
+begin
+  if Assigned(Scene) then
+  begin
+    for I := 0 to High(FTextBatches) do
     begin
-      tw := Font.TextWidth(FItems[i]);
-      if tw > w then
-        w := tw;
+      Scene.RenderManager.RegisterBatch(FTextBatches[I]);
+      FTextBatches[I].Mesh.TagName := Format('%s_text_part%d', [ClassName, I]);
+      FTextBatches[I].Transformation := @FTransformation;
     end;
-    w := w + 2 * MarginHorz;
+  end;
+end;
 
-    // calculate boundaries for user
-    FBoxLeft := Round(Position.X - w / 2);
-    FBoxTop := Round(Position.Y - h / 2);
-    FBoxRight := Round(Position.X + w / 2);
-    FBoxBottom := Round(Position.Y + h / 2);
+procedure TGLGameMenu.BuildMeshes;
+var
+  i, w, h, tw, y: Integer;
+  color, v: TVector;
+  lens: array of Integer;
+begin
+  // determine extents
+  h := FItems.Count * (Font.CharHeight + Spacing) - Spacing + MarginVert * 2;
+  if TitleHeight > 0 then
+    h := h + TitleHeight + Spacing;
+  w := TitleWidth;
+  SetLength(lens, FItems.Count);
+  for i := 0 to FItems.Count - 1 do
+  begin
+    tw := Font.TextWidth(FItems[i]);
+    lens[i] := tw;
+    if tw > w then
+      w := tw;
+  end;
+  w := w + 2 * MarginHorz;
 
-    // paint back
+  // calculate boundaries for user
+  FBoxLeft := Round(- w / 2);
+  FBoxTop := Round(- h / 2);
+  FBoxRight := Round( w / 2);
+  FBoxBottom := Round(h / 2);
+
+  with FBackgroundBatch.Mesh do
+  begin
+    Lock;
+    try
+      Clear;
+      DeclareAttribute(attrPosition, GLSLType2f);
+      DeclareAttribute(attrColor, GLSLType4f);
+
+      BeginAssembly(mpTRIANGLE_STRIP);
+      Attribute4f(attrColor, BackColor.Color);
+      Attribute2f(attrPosition, FBoxLeft, FBoxTop);
+      EmitVertex;
+      Attribute2f(attrPosition, FBoxLeft, FBoxBottom);
+      EmitVertex;
+      Attribute2f(attrPosition, FBoxRight, FBoxTop);
+      EmitVertex;
+      Attribute2f(attrPosition, FBoxRight, FBoxBottom);
+      EmitVertex;
+      EndAssembly;
+    finally
+      UnLock;
+    end;
+  end;
+
+  y := Round(- h / 2 + MarginVert);
+  if TitleHeight > 0 then
+  begin
+    with FTitleBatch.Mesh do
+    begin
+      Lock;
+      try
+        Clear;
+        DeclareAttribute(attrPosition, GLSLType2f);
+        DeclareAttribute(attrTexCoord0, GLSLType2f);
+
+        BeginAssembly(mpTRIANGLE_STRIP);
+        Attribute2f(attrPosition, - TitleWidth div 2, y + TitleHeight);
+        Attribute2f(attrTexCoord0, 0, 0);
+        EmitVertex;
+        Attribute2f(attrPosition, - TitleWidth div 2, y);
+        Attribute2f(attrTexCoord0, 0, 1);
+        EmitVertex;
+        Attribute2f(attrPosition, TitleWidth div 2, y + TitleHeight);
+        Attribute2f(attrTexCoord0, 1, 0);
+        EmitVertex;
+        Attribute2f(attrPosition, TitleWidth div 2, y);
+        Attribute2f(attrTexCoord0, 1, 1);
+        EmitVertex;
+        EndAssembly;
+      finally
+        UnLock;
+      end;
+    end;
+    y := y + TitleHeight + Spacing;
+    FMenuTop := y;
+  end
+  else
+    FMenuTop := y + Spacing;
+
+  FreeBatches;
+  v[2] := 0;
+  v[3] := 1;
+  for i := 0 to FItems.Count - 1 do
+  begin
+    if not Enabled[i] then
+      color := DisabledColor.Color
+    else if i = Selected then
+      color := ActiveColor.Color
+    else
+      color := InactiveColor.Color;
+    v[0] := - lens[i] div 2;
+    v[1] := y;
+    Font.BuildString(FTextBatches, FItems[i], taLeftJustify, tlTop, color, @v, True);
+    y := y + Font.CharHeight + Spacing;
+  end;
+  RegisterBatches;
+
+  ClearStructureChanged;
+end;
+
+
+procedure TGLGameMenu.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+var
+  I: Integer;
+begin
+  if (ocStructure in Changes) and Assigned(Font) then
+  begin
+    BuildMeshes;
+  end;
+
+  if ARenderSelf then
+  begin
+
+    ARci.PipelineTransformation.Push;
+    ARci.PipelineTransformation.ModelViewMatrix := IdentityHmgMatrix;
+    case MenuScale of
+      gmsNormal:
+        ARci.PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(
+          -Position.X, - Position.X + ARci.viewPortSize.cx,
+          -Position.Y + ARci.viewPortSize.cy, - Position.Y, -1, 1);
+      gms1024x768:
+        ARci.PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(
+          -Position.X, - Position.X + 1024,
+          -Position.Y + 768, - Position.Y, -1, 1);
+    end;
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    ARci.PipelineTransformation.Pop;
+
     if BackColor.Alpha > 0 then
     begin
-      canvas.PenColor := BackColor.AsWinColor;
-      canvas.PenAlpha := BackColor.Alpha;
-      canvas.FillRect(FBoxLeft, FBoxTop, FBoxRight, FBoxBottom);
+      FBackgroundBatch.Order := ARci.orderCounter;
+      Inc(ARci.orderCounter);
     end;
 
-    canvas.StopPrimitive;
-
-    // paint items
-    y := Round(Position.Y - h / 2 + MarginVert);
-    if TitleHeight > 0 then
+    if Assigned(FTitleBatch.Material)
+      and (TitleWidth > 0) and (TitleHeight > 0) then
     begin
-      if (TitleMaterialName <> '') and (MaterialLibrary <> nil) and (TitleWidth
-        > 0) then
-      begin
-        libMat := MaterialLibrary.LibMaterialByName(TitleMaterialName);
-        if libMat <> nil then
-        begin
-          libMat.Apply(rci);
-          repeat
-            GL.Begin_(GL_QUADS);
-            GL.TexCoord2f(0, 0);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y + TitleHeight);
-            GL.TexCoord2f(1, 0);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y + TitleHeight);
-            GL.TexCoord2f(1, 1);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y);
-            GL.TexCoord2f(0, 1);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y);
-            GL.End_;
-          until (not libMat.UnApply(rci));
-        end;
-      end;
-      y := y + TitleHeight + Spacing;
-      FMenuTop := y;
-    end
-    else
-      FMenuTop := y + Spacing;
-
-    for i := 0 to FItems.Count - 1 do
-    begin
-      tw := Font.TextWidth(FItems[i]);
-      if not Enabled[i] then
-        color := DisabledColor.Color
-      else if i = Selected then
-        color := ActiveColor.Color
-      else
-        color := InactiveColor.Color;
-      Font.TextOut(rci, Position.X - tw div 2, y, FItems[i], color);
-      y := y + Font.CharHeight + Spacing;
+      FTitleBatch.Order := ARci.orderCounter;
+      Inc(ARci.orderCounter);
     end;
-  finally
-    canvas.Free;
+
+    for I := High(FTextBatches) downto 0 do
+      FTextBatches[I].Order := ARci.orderCounter;
   end;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
 end;
 
 // SelectNext
@@ -404,6 +553,7 @@ begin
   FFont := AValue;
   if FFont <> nil then
     FFont.FreeNotification(Self);
+  StructureChanged;
 end;
 
 // SetBackColor
@@ -412,6 +562,7 @@ end;
 procedure TGLGameMenu.SetBackColor(AValue: TGLColor);
 begin
   FBackColor.Assign(AValue);
+  StructureChanged;
 end;
 
 // SetInactiveColor
@@ -420,6 +571,7 @@ end;
 procedure TGLGameMenu.SetInactiveColor(AValue: TGLColor);
 begin
   FInactiveColor.Assign(AValue);
+  StructureChanged;
 end;
 
 // SetActiveColor
@@ -428,6 +580,7 @@ end;
 procedure TGLGameMenu.SetActiveColor(AValue: TGLColor);
 begin
   FActiveColor.Assign(AValue);
+  StructureChanged;
 end;
 
 // SetDisabledColor
@@ -436,6 +589,27 @@ end;
 procedure TGLGameMenu.SetDisabledColor(AValue: TGLColor);
 begin
   FDisabledColor.Assign(AValue);
+  StructureChanged;
+end;
+
+function TGLGameMenu.GetBoxBottom: integer;
+begin
+  Result := FBoxBottom + Round(Position.Y);
+end;
+
+function TGLGameMenu.GetBoxLeft: integer;
+begin
+  Result := FBoxLeft + Round(Position.X);
+end;
+
+function TGLGameMenu.GetBoxRight: integer;
+begin
+  Result := FBoxRight + Round(Position.X);
+end;
+
+function TGLGameMenu.GetBoxTop: integer;
+begin
+  Result := FBoxTop + Round(Position.Y);
 end;
 
 // GetEnabled
@@ -466,6 +640,24 @@ end;
 
 // SetSelected
 //
+
+procedure TGLGameMenu.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+    begin
+      Scene.RenderManager.UnRegisterBatch(FBackgroundBatch);
+      Scene.RenderManager.UnRegisterBatch(FTitleBatch);
+    end;
+    if Assigned(value) then
+    begin
+      value.RenderManager.RegisterBatch(FBackgroundBatch);
+      value.RenderManager.RegisterBatch(FTitleBatch);
+    end;
+    inherited;
+  end;
+end;
 
 procedure TGLGameMenu.SetSelected(AValue: Integer);
 begin
@@ -502,7 +694,12 @@ begin
     FMaterialLibrary.RemoveFreeNotification(Self);
   FMaterialLibrary := AValue;
   if FMaterialLibrary <> nil then
+  begin
     FMaterialLibrary.FreeNotification(Self);
+    FTitleBatch.Material := FMaterialLibrary.LibMaterialByName(FTitleMaterialName);
+  end
+  else
+    FTitleBatch.Material := nil;
 end;
 
 // SetTitleMaterialName
@@ -513,7 +710,9 @@ begin
   if FTitleMaterialName <> AValue then
   begin
     FTitleMaterialName := AValue;
-    StructureChanged;
+    if Assigned(FMaterialLibrary) then
+      FTitleBatch.Material := FMaterialLibrary.LibMaterialByName(AValue);
+    NotifyChange(Self);
   end;
 end;
 
@@ -551,21 +750,25 @@ end;
 procedure TGLGameMenu.ItemsChanged(Sender: TObject);
 begin
   SetSelected(FSelected);
-  StructureChanged;
 end;
 
 // MouseMenuSelect
 //
 
 procedure TGLGameMenu.MouseMenuSelect(const X, Y: integer);
+var
+  OldValue: Integer;
 begin
+  OldValue := Selected;
   if (X >= BoxLeft) and (Y >= MenuTop) and
     (X <= BoxRight) and (Y <= BoxBottom) then
   begin
-    Selected := (Y - FMenuTop) div (Font.CharHeight + FSpacing);
+    Selected := (Y - MenuTop) div (Font.CharHeight + FSpacing);
   end
   else
     Selected := -1;
+  if OldValue <> Selected then
+    StructureChanged;
 end;
 
 // GetMaterialLibrary
@@ -574,6 +777,11 @@ end;
 function TGLGameMenu.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
+end;
+
+function TGLGameMenu.GetMenuTop: integer;
+begin
+  Result := FMenuTop + Round(Position.Y);
 end;
 
 // ------------------------------------------------------------------
