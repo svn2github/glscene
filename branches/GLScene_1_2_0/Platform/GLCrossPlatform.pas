@@ -153,21 +153,57 @@ type
   TGLKeyEvent = TKeyEvent;
   TGLKeyPressEvent = TKeyPressEvent;
 
+  TPlatformInfo=record
+    Major :DWORD;
+    Minor :DWORD;
+    Revision:DWORD;
+    Version: string;
+    {$IFDEF MSWINDOWS}
+    PlatformId   :DWORD;
+    {$ENDIF}
+    {$IFDEF Unix}
+    ID:string;
+    CodeName: string;
+    Description:string;
+    {$ENDIF}
+    {$IFDEF Darwin}
+    ProductBuildVersion: string;
+    {$ENDIF}
+  end;
+
 {$IFDEF MSWINDOWS}
-  TMSWindowsVersion =
-  (
-    wvUnknown,
-    wvWin95,
-    wvWin98,
-    wvWin98SE,
-    wvWinNT,
-    wvWinME,
-    wvWin2000,
-    wvWin2003,
-    wvWinXP,
-    wvWinVista,
-    wvWinSeven
-  );
+  TWinVersion =
+    (
+      wvUnknown,
+      wvWin95,
+      wvWin98,
+      wvWinME,
+      wvWinNT3,
+      wvWinNT4,
+      wvWin2000,
+      wvWinXP,
+      wvWin2003,
+      wvWinVista,
+      wvWinSeven,
+      wvWin2008,
+      wvNew);
+{$ENDIF}
+{$IFDEF Unix}
+  TUnixVersion =
+    (
+      uvUnknown,
+      uvLinuxArc,
+      uvLinuxDebian,
+      uvLinuxopenSUSE,
+      uvLinuxFedora,
+      uvLinuxGentoo,
+      uvLinuxMandriva,
+      uvLinuxRedHat,
+      uvLinuxTurboLinux,
+      uvLinuxUbuntu,
+      uvLinuxXandros,
+      uvLinuxOracle,
+      uvAppleMacOSX);
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
@@ -450,10 +486,10 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-{$IFDEF MSWINDOWS}
 uses
-  ShellApi;
-{$ENDIF}
+{$IFDEF MSWINDOWS}ShellApi{$ENDIF}
+{$IFDEF Darwin}XMLRead,DOM,{$ENDIF}
+{$IFDEF UNIX}  LCLProc  {$ENDIF} ;
 
 
 var
@@ -1289,34 +1325,204 @@ begin
   {$ENDIF}
 end;
 
-{$IFDEF MSWINDOWS}
-function GetMSWindowsVersion: TMSWindowsVersion;
+function GetPlatformInfo: TPlatformInfo;
+var
+  {$IFDEF MSWINDOWS}
+  OSVersionInfo : TOSVersionInfo;
+  {$ENDIF}
+  {$IFDEF UNIX}
+    {$IFNDEF DARWIN}
+  ReleseList: TStringList;
+    {$ENDIF}
+  str: String;
+    {$IFDEF DARWIN}
+  Documento: TXMLDocument;
+  Child: TDOMNode;
+  i:integer;
+    {$ENDIF}
+  {$ENDIF}
 begin
-  Result := wvUnknown;
-  if Win32Platform = VER_PLATFORM_WIN32_NT then
-    case Win32MajorVersion of
-      4: Result := wvWinNT;
-      5: case Win32MinorVersion of
-           0: Result := wvWin2000;
-           1: Result := wvWinXP;
-           2: Result := wvWin2003;
-         end;
-      6: case Win32MinorVersion of
-           0: Result := wvWinVista;
-           1: Result := wvWinSeven;
-         end;
-    end
-  else
-    case Win32MinorVersion of // No need to check Major on 9x, it is always 4 type
-      00: Result := wvWin95;
-      10: if Trim(Win32CSDVersion) = 'A' then
-            Result := wvWin98SE
-          else
-            Result := wvWin98;
-      90: Result := wvWinME;
+  {$IFDEF MSWINDOWS}
+  With Result, OSVersionInfo do
+  begin
+    dwOSVersionInfoSize := sizeof(TOSVersionInfo);
+
+    if not GetVersionEx(OSVersionInfo) then Exit;
+
+    Minor := DwMinorVersion;
+    Major := DwMajorVersion;
+    Revision := 0;
+    PlatformId := dwPlatformId;
+    Version :=  InttoStr(DwMajorVersion)+'.'+InttoStr(DwMinorVersion);
+  end;
+  {$ENDIF}
+  {$IFDEF UNIX}
+  {$IFNDEF DARWIN}
+  ReleseList := TStringList.Create;
+
+  with Result,ReleseList do
+  begin
+    if FileExists('/etc/lsb-release')  then
+      LoadFromFile('/etc/lsb-release')
+    else Exit;
+
+    ID := Values['DISTRIB_ID'];
+    Version := Values['DISTRIB_RELEASE'];
+    CodeName := Values['DISTRIB_CODENAME'];
+    Description := Values['DISTRIB_DESCRIPTION'];
+    Destroy;
+  end;
+  {$ENDIF}
+  {$IFDEF Darwin}
+  if FileExists('System/Library/CoreServices/ServerVersion.plist')  then
+    ReadXMLFile(Documento, 'System/Library/CoreServices/ServerVersion.plist');
+  else Exit;
+  Child := Documento.DocumentElement.FirstChild;
+
+  if Assigned(Child) then
+  begin
+    with Child.ChildNodes do
+    try
+      for i := 0 to (Count - 1) do
+      begin
+        if Item[i].FirstChild.NodeValue='ProductBuildVersion' then
+          Result.ProductBuildVersion:=Item[i].NextSibling.FirstChild.NodeValue;
+        if Item[i].FirstChild.NodeValue='ProductName' then
+          Result.ID:=Item[i].NextSibling.FirstChild.NodeValue;
+        if Item[i].FirstChild.NodeValue='ProductVersion' then
+          Result.Version:=Item[i].NextSibling.FirstChild.NodeValue;
+      end;
+    finally
+      Free;
     end;
+  end;
+  {$ENDIF}
+  //Major.Minor.Revision
+  str:=Result.Version;
+  Result.Major:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
+  Utf8Delete(str, 1, Utf8Pos('.', str) );
+
+  //10.04
+  if Utf8Pos('.', str) = 0 then
+  begin
+    Result.Minor:=StrtoInt( Utf8Copy(str, 1, Utf8Length(str)) );
+    Result.Revision:=0;
+  end else
+  //10.6.5
+    begin
+       Result.Minor:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
+       Utf8Delete(str, 1, Utf8Pos('.', str) );
+       Result.Revision:=StrtoInt( Utf8Copy(str, 1, Utf8Length(str)) );
+    end;
+  {$ENDIF}
 end;
+
+
+function GetPlatformVersion : {$IFDEF MSWINDOWS}TWinVersion    {$ENDIF}
+                              {$IFDEF Unix}    TUnixVersion  {$ENDIF};
+{$IFDEF Unix}
+var
+  i: integer;
+const
+VersStr : array[TUnixVersion] of string = (
+  '',
+  'Arc',
+  'Debian',
+  'openSUSE',
+  'Fedora',
+  'Gentoo',
+  'Mandriva',
+  'RedHat',
+  'TurboLinux',
+  'Ubuntu',  // протестировано
+  'Xandros',
+  'Oracle',
+  'Mac OS X' // теоретич. работает
+  );
 {$ENDIF}
+begin
+
+  {$IFDEF MSWINDOWS}
+  Result := wvUnknown;                      // Неизвестная версия ОС
+  with GetPlatformInfo do
+  begin
+        if Version='' then Exit;
+        case Major of
+          0: Result := wvUnknown;
+          1..2: Result := wvUnknown;
+          3:  Result := wvWinNT3;              // Windows NT 3
+          4:  case Minor of
+                0: if PlatformId = VER_PLATFORM_WIN32_NT
+                   then Result := wvWinNT4     // Windows NT 4
+                   else Result := wvWin95;     // Windows 95
+                10: Result := wvWin98;         // Windows 98
+                90: Result := wvWinME;         // Windows ME
+              end;
+          5:  case Minor of
+                0: Result := wvWin2000;         // Windows 2000
+                1: Result := wvWinXP;          // Windows XP
+                2: Result := wvWin2003;        // Windows 2003
+              end;
+          6:  case Minor of
+                0: Result := wvWinVista;         // Windows Vista
+                1: Result := wvWinSeven;          // Windows Seven
+                2: Result := wvWin2008;        // Windows 2008   //возможно
+                3..4: Result := wvNew;
+              end;
+          7:  Result := wvNew;
+        end;
+   end;
+  {$ENDIF}
+  {$IFDEF Unix}
+  Result := uvUnknown;                      // Неизвестная версия ОС
+
+  with GetPlatformInfo do
+  begin
+    if Version='' then Exit; //функция не смогла считать информацию
+    For i:= 0 to Length(VersStr)-1 do
+     if ID=VersStr[TUnixVersion(i)] then
+       Result := TUnixVersion(i);
+  end;
+  {$ENDIF}
+end;
+
+function GetPlatformVersionStr : string;
+const
+  {$IFDEF MSWINDOWS}
+  VersStr : array[TWinVersion] of string = (
+    'Unknown',
+    'Windows 95',
+    'Windows 98',
+    'Windows ME',
+    'Windows NT 3',
+    'Windows NT 4',
+    'Windows 2000',
+    'Windows XP',
+    'Windows 2003',
+    'Windows Vista',
+    'Windows Seven',
+    'Windows 2008',
+    'Windows New');
+  {$ENDIF}
+  {$IFDEF Unix}
+  VersStr : array[TUnixVersion] of string = (
+    'Unknown',
+    'Linux Arc',
+    'Linux Debian',
+    'Linux openSUSE',
+    'Linux Fedora',
+    'Linux Gentoo',
+    'Linux Mandriva',
+    'Linux RedHat',
+    'Linux TurboLinux',
+    'Linux Ubuntu',
+    'Linux Xandros',
+    'Linux Oracle',
+    'Apple MacOSX');
+  {$ENDIF}
+begin
+  Result := VersStr[GetPlatformVersion];
+end;
 
 initialization
   vGLSStartTime := GLSTime;
