@@ -9,6 +9,7 @@
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
   <b>History : </b><font size=-1><ul>
+      <li>14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
       <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
       <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
       <li>10/05/11 - Vince - Add OnMove event
@@ -780,7 +781,7 @@ begin
   FInitialUp := FJoblist.Camera.AbsoluteUp;
 
   // Determine rotation Axis
-  // if Angle equals 0∞
+  // if Angle equals 0–ç
   if FAngle < 0.001 then
     if PreferUpAxis then
       FRotAxis := VectorNormalize(VectorCrossProduct(
@@ -788,7 +789,7 @@ begin
     else
       FRotAxis := Right
   else
-    // if Angle equals 180∞
+    // if Angle equals 180–ç
     if FAngle >Pi - 0.001  then
       if PreferUpAxis then
         FRotAxis := VectorNormalize(VectorCrossProduct(VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
@@ -815,7 +816,7 @@ begin
     tempDir := FInitialDir;
     RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
     FJoblist.Camera.AbsoluteDirection := tempDir;
-    
+
     //Compute Up Vector
     tempUp := FInitialUp;
     RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
@@ -823,6 +824,20 @@ begin
   end
     else
   begin
+    //Compute Position
+    tempPos := FInitialPos;
+    RotateVector(tempPos, Vector3fMake(FRotAxis), FAngle);
+    FJoblist.Camera.AbsolutePosition := VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
+
+    //Compute Direction vector
+    tempDir := FInitialDir;
+    RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle);
+    FJoblist.Camera.AbsoluteDirection := tempDir;
+
+    //Compute Up Vector
+    tempUp := FInitialUp;
+    RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle);
+    FJoblist.Camera.AbsoluteUp := tempUp;
 
     FRunning := false;
   end;
@@ -863,7 +878,7 @@ begin
   FInitialUp := FJoblist.Camera.AbsoluteUp;
 
   // Determine rotation Axis
-  // if Angle equals 0∞
+  // if Angle equals 0–ç
   if FAngle < 0.001 then
     if PreferUpAxis then
       FRotAxis := VectorNormalize(VectorCrossProduct(
@@ -871,7 +886,7 @@ begin
     else
       FRotAxis := Right
   else
-    // if Angle equals 180∞
+    // if Angle equals 180–ç
     if FAngle >Pi - 0.001  then
       if PreferUpAxis then
         FRotAxis := VectorNormalize(VectorCrossProduct(VectorCrossProduct(FFinalPos, FInitialUp), FFinalPos))
@@ -912,8 +927,26 @@ begin
   end
     else
   begin
+    //Compute Position
+    tempPos := FInitialPos;
+    RotateVector(tempPos, Vector3fMake(FRotAxis), FAngle);
+    FJoblist.Camera.AbsolutePosition := VectorAdd(FJoblist.Camera.TargetObject.AbsolutePosition, tempPos);
 
-    FRunning := false;
+    //Compute Direction vector
+    tempDir := FInitialDir;
+    RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle);
+    FJoblist.Camera.AbsoluteDirection := tempDir;
+
+    //Compute Up Vector
+    if FRestoreUpVector then
+      FJoblist.Camera.AbsoluteUp := FInitialUp
+    else
+    begin
+      tempUp := FInitialUp;
+      RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle);
+      FJoblist.Camera.AbsoluteUp := tempUp;
+      FRunning := false;
+    end;
   end;
 end;
 
