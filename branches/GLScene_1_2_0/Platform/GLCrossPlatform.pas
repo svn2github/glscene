@@ -158,53 +158,42 @@ type
     Minor :DWORD;
     Revision:DWORD;
     Version: string;
-    {$IFDEF MSWINDOWS}
     PlatformId   :DWORD;
-    {$ENDIF}
-    {$IFDEF Unix}
     ID:string;
     CodeName: string;
     Description:string;
-    {$ENDIF}
-    {$IFDEF Darwin}
     ProductBuildVersion: string;
-    {$ENDIF}
   end;
 
-{$IFDEF MSWINDOWS}
-  TWinVersion =
+  TPlatformVersion =
     (
-      wvUnknown,
-      wvWin95,
-      wvWin98,
-      wvWinME,
-      wvWinNT3,
-      wvWinNT4,
-      wvWin2000,
-      wvWinXP,
-      wvWin2003,
-      wvWinVista,
-      wvWinSeven,
-      wvWin2008,
-      wvNew);
-{$ENDIF}
-{$IFDEF Unix}
-  TUnixVersion =
-    (
-      uvUnknown,
-      uvLinuxArc,
-      uvLinuxDebian,
-      uvLinuxopenSUSE,
-      uvLinuxFedora,
-      uvLinuxGentoo,
-      uvLinuxMandriva,
-      uvLinuxRedHat,
-      uvLinuxTurboLinux,
-      uvLinuxUbuntu,
-      uvLinuxXandros,
-      uvLinuxOracle,
-      uvAppleMacOSX);
-{$ENDIF}
+      pvUnknown,
+      pvWin95,
+      pvWin98,
+      pvWinME,
+      pvWinNT3,
+      pvWinNT4,
+      pvWin2000,
+      pvWinXP,
+      pvWin2003,
+      pvWinVista,
+      pvWinSeven,
+      pvWin2008,
+      pvWinNew,
+
+      pvLinuxArc,
+      pvLinuxDebian,
+      pvLinuxopenSUSE,
+      pvLinuxFedora,
+      pvLinuxGentoo,
+      pvLinuxMandriva,
+      pvLinuxRedHat,
+      pvLinuxTurboLinux,
+      pvLinuxUbuntu,
+      pvLinuxXandros,
+      pvLinuxOracle,
+      pvAppleMacOSX
+    );
 
 {$IFDEF GLS_DELPHI_5}
   EGLOSError = EWin32Error;
@@ -1399,6 +1388,7 @@ begin
   {$ENDIF}
   //Major.Minor.Revision
   str:=Result.Version;
+  if Version='' then Exit;
   Result.Major:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
   Utf8Delete(str, 1, Utf8Pos('.', str) );
 
@@ -1418,13 +1408,14 @@ begin
 end;
 
 
-function GetPlatformVersion : {$IFDEF MSWINDOWS}TWinVersion    {$ENDIF}
-                              {$IFDEF Unix}    TUnixVersion  {$ENDIF};
+function GetPlatformVersion : TPlatformVersion;
 {$IFDEF Unix}
 var
   i: integer;
 const
-VersStr : array[TUnixVersion] of string = (
+VersStr : array[TPlatformVersion] of string = (
+  '',  '',  '',  '',  '',  '',
+  '',  '',  '',  '',  '',  '',
   '',
   'Arc',
   'Debian',
@@ -1441,55 +1432,51 @@ VersStr : array[TUnixVersion] of string = (
   );
 {$ENDIF}
 begin
-
+  Result := pvUnknown;                      // Неизвестная версия ОС
   {$IFDEF MSWINDOWS}
-  Result := wvUnknown;                      // Неизвестная версия ОС
   with GetPlatformInfo do
   begin
         if Version='' then Exit;
         case Major of
-          0: Result := wvUnknown;
-          1..2: Result := wvUnknown;
-          3:  Result := wvWinNT3;              // Windows NT 3
+          0: Result := pvUnknown;
+          1..2: Result := pvUnknown;
+          3:  Result := pvWinNT3;              // Windows NT 3
           4:  case Minor of
                 0: if PlatformId = VER_PLATFORM_WIN32_NT
-                   then Result := wvWinNT4     // Windows NT 4
-                   else Result := wvWin95;     // Windows 95
-                10: Result := wvWin98;         // Windows 98
-                90: Result := wvWinME;         // Windows ME
+                   then Result := pvWinNT4     // Windows NT 4
+                   else Result := pvWin95;     // Windows 95
+                10: Result := pvWin98;         // Windows 98
+                90: Result := pvWinME;         // Windows ME
               end;
           5:  case Minor of
-                0: Result := wvWin2000;         // Windows 2000
-                1: Result := wvWinXP;          // Windows XP
-                2: Result := wvWin2003;        // Windows 2003
+                0: Result := pvWin2000;         // Windows 2000
+                1: Result := pvWinXP;          // Windows XP
+                2: Result := pvWin2003;        // Windows 2003
               end;
           6:  case Minor of
-                0: Result := wvWinVista;         // Windows Vista
-                1: Result := wvWinSeven;          // Windows Seven
-                2: Result := wvWin2008;        // Windows 2008   //возможно
-                3..4: Result := wvNew;
+                0: Result := pvWinVista;         // Windows Vista
+                1: Result := pvWinSeven;          // Windows Seven
+                2: Result := pvWin2008;        // Windows 2008   //возможно
+                3..4: Result := pvWinNew;
               end;
-          7:  Result := wvNew;
+          7:  Result := pvWinNew;
         end;
    end;
   {$ENDIF}
   {$IFDEF Unix}
-  Result := uvUnknown;                      // Неизвестная версия ОС
-
   with GetPlatformInfo do
   begin
     if Version='' then Exit; //функция не смогла считать информацию
-    For i:= 0 to Length(VersStr)-1 do
-     if ID=VersStr[TUnixVersion(i)] then
-       Result := TUnixVersion(i);
+    For i:= 13 to Length(VersStr)-1 do
+     if ID=VersStr[TPlatformVersion(i)] then
+       Result := TPlatformVersion(i);
   end;
   {$ENDIF}
 end;
 
 function GetPlatformVersionStr : string;
 const
-  {$IFDEF MSWINDOWS}
-  VersStr : array[TWinVersion] of string = (
+  VersStr : array[TPlatformVersion] of string = (
     'Unknown',
     'Windows 95',
     'Windows 98',
@@ -1502,11 +1489,8 @@ const
     'Windows Vista',
     'Windows Seven',
     'Windows 2008',
-    'Windows New');
-  {$ENDIF}
-  {$IFDEF Unix}
-  VersStr : array[TUnixVersion] of string = (
-    'Unknown',
+    'Windows New',
+
     'Linux Arc',
     'Linux Debian',
     'Linux openSUSE',
@@ -1519,7 +1503,6 @@ const
     'Linux Xandros',
     'Linux Oracle',
     'Apple MacOSX');
-  {$ENDIF}
 begin
   Result := VersStr[GetPlatformVersion];
 end;
