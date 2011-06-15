@@ -35,7 +35,8 @@ requires
   designide,
   rtl,
   vcljpg,
-  GR32_BDS2006;
+  GR32_BDS2006,
+  VclSmp;
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
@@ -292,6 +293,7 @@ contains
   GLSMemo in '..\Source\Base\GLSMemo.pas',
   GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
   GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas',
-  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form};
+  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form},
+  GLSceneForm in '..\Source\GLSceneForm.pas';
 
 end.
