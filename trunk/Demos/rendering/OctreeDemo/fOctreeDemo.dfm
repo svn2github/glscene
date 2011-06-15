@@ -1,9 +1,9 @@
 object frmOctreeDemo: TfrmOctreeDemo
   Left = 309
   Top = 207
-  Width = 778
-  Height = 580
   Caption = 'Octree Demo'
+  ClientHeight = 553
+  ClientWidth = 770
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object frmOctreeDemo: TfrmOctreeDemo
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    762
-    542)
+    770
+    553)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -89,17 +89,13 @@ object frmOctreeDemo: TfrmOctreeDemo
       Blend = False
     end
     object GLCube1: TGLCube
-      Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCCCC3E}
-      Material.DepthProperties.DepthTest = False
-      Material.DepthProperties.DepthWrite = False
-      Material.BlendingMode = bmTransparency
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'CommonMaterial'
       CubeSize = {0000A0400000A04000000041}
     end
     object GLSphere1: TGLSphere
-      Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
-      Material.DepthProperties.DepthTest = False
-      Material.DepthProperties.DepthWrite = False
-      Material.BlendingMode = bmTransparency
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'CommonMaterial'
       Position.Coordinates = {0000C0400000C0400000C0400000803F}
       Radius = 2.500000000000000000
     end
@@ -154,5 +150,19 @@ object frmOctreeDemo: TfrmOctreeDemo
       end>
     Left = 16
     Top = 176
+  end
+  object GLMaterialLibrary1: TGLMaterialLibrary
+    Materials = <
+      item
+        Name = 'CommonMaterial'
+        Tag = 0
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCCCC3E}
+        Material.DepthProperties.DepthTest = False
+        Material.DepthProperties.DepthWrite = False
+        Material.BlendingMode = bmTransparency
+        Material.FaceCulling = fcCull
+      end>
+    Left = 16
+    Top = 224
   end
 end

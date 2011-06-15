@@ -7,7 +7,7 @@ uses
   Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, GLCadencer, SpatialPartitioning,
   ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
-  GLState, GLSimpleNavigation;
+  GLState, GLSimpleNavigation, GLMaterial;
 
 const
   cBOX_SIZE = 14.2;
@@ -30,6 +30,7 @@ type
     Button_ResetOctreeSize: TButton;
     GLPlane1: TGLPlane;
     GLSimpleNavigation1: TGLSimpleNavigation;
+    GLMaterialLibrary1: TGLMaterialLibrary;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -144,33 +145,36 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
-    GL.Color3f(r,g,b);
-    rci.GLStates.LineWidth := w;
+    with GL do
+    begin
+      Color3f(r,g,b);
+      rci.GLStates.LineWidth := w;
 
-    GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      Begin_(GL_LINE_STRIP);
+        Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+        Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+        Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+        Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+        Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
 
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-    GL.End_;
+        Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+        Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+        Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+        Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+        Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      End_;
 
-    GL.Begin_(GL_LINES);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      Begin_(GL_LINES);
+        Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+        Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+        Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+        Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-    GL.End_;
+        Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+        Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      End_;
+    end;
   end;
 
   procedure RenderOctreeNode(Node : TSectorNode);
@@ -196,14 +200,13 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 var
   AABB : TAABB;
 begin
-  rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer]);
   rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stColorMaterial);
 
   MakeVector(AABB.min, -cBOX_SIZE, -cBOX_SIZE, -cBOX_SIZE);
   MakeVector(AABB.max,  cBOX_SIZE,  cBOX_SIZE,  cBOX_SIZE);
   RenderAABB(AABB,2, 0,0,0);
   RenderOctreeNode(Octree.RootNode);
-  rci.GLStates.PopAttrib;
 end;
 
 procedure TfrmOctreeDemo.FormMouseWheel(Sender: TObject; Shift: TShiftState;
