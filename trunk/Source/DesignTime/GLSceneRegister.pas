@@ -7,6 +7,7 @@
       IDE experts.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
       <li>04/06/10 - Yar - Added GLSArchiveManager
       <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
@@ -2341,8 +2342,50 @@ begin
 end;
 
 function GetGLSceneVersion: string;
+var
+  Project: IOTAProject;
+  FExePath, FProjectPath, FGLSceneRevision: string;
 begin
-  Result := Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
+  FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
+
+  // will be assigned after project compilation
+  // after each compilation get it from file \.svn\entries in 4-th line
+  // and write to file GLSceneRevision
+  // in both fail (no \.svn\entries или GLSceneRevision) get a version value from GLScene.pas
+  Project := GetActiveProject;
+  FExePath := ExtractFilePath(ParamStr(0));
+  if Assigned(Project) then begin
+    FProjectPath := ExtractFilePath(Project.FileName);
+    with TStringList.Create do try
+      // Load
+      LoadFromFile(FProjectPath + '.svn\entries');
+      if (Count >= 4) and (trim(Strings[3]) <> '') then 
+      begin
+        FGLSceneRevision:= trim(Strings[3]);
+
+        // Save
+        Clear;
+        Add(FGLSceneRevision);
+        SaveToFile(FExePath + 'GLSceneRevision');
+      end;
+    finally
+      Free;
+    end;
+  end else if FileExists(FExePath + 'GLSceneRevision') then 
+  try
+    with TStringList.Create do 
+    try
+      LoadFromFile(FExePath + 'GLSceneRevision');
+      if (Count >= 1) and (trim(Strings[0]) <> '') then
+        FGLSceneRevision:= trim(Strings[0]);
+    finally
+      Free;
+    end;
+  except
+  end;
+
+  // Finally
+  Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
 end;
 
 function GetProjectTargetName: string;

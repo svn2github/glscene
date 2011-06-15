@@ -127,6 +127,7 @@ type
     procedure WebsiteLblClick(Sender: TObject);
   protected
     procedure LoadContributors;
+    function GetSceneVersion: string;
   public
     procedure GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
   end;
@@ -289,7 +290,7 @@ begin
       IntLimitToLabel(TexStackLabel, limTextureStack);
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
     end;
-    VersionLbl.Caption := GLSCENE_VERSION;
+    VersionLbl.Caption := GetSceneVersion;
   finally
     aSceneBuffer.RenderingContext.Deactivate;
   end;
@@ -382,7 +383,6 @@ procedure TInfoForm.LoadContributors;
 // var
 // ContributorsFileName: string;
 begin
-  // В будущем будет загружатся из файла
   // In the future, will be loaded from a file
 
   { ContributorsFileName:=
@@ -393,6 +393,11 @@ begin
     else
     Contributors.Lines.Text:='Cannot find contributors list.';
     Contributors.Lines.Add( ContributorsFileName) }
+end;
+
+function TInfoForm.GetSceneVersion: string;
+begin
+  Result := Copy(GLSCENE_REVISION, 12, 4);
 end;
 
 // ------------------------------------------------------------------------------

@@ -53,7 +53,8 @@ uses
   Classes,
 
   // GLScene
-  GLNavigator, VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates,
+  GLNavigator, VectorGeometry, {$IFDEF GLS_DELPHI}VectorTypes,{$ENDIF}
+  GLScene, GLCrossPlatform, GLCoordinates,
   GLScreen, XCollection;
 
 type
