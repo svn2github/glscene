@@ -9411,6 +9411,7 @@ begin
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
     or (rci.drawState = dsPicking);
+  rci.amalgamating := rci.drawState = dsPicking;
   rci.GLStates.SetGLColorWriting(not rci.ignoreMaterials);
   if Assigned(FInitiateRendering) then
     FInitiateRendering(Self, rci);
