@@ -396,8 +396,25 @@ begin
 end;
 
 function TInfoForm.GetSceneVersion: string;
+var
+  FExePath, FGLSceneRevision: string;
 begin
-  Result := Copy(GLSCENE_REVISION, 12, 4);
+  FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
+  FExePath := ExtractFilePath(ParamStr(0));
+  if FileExists(FExePath + 'GLSceneRevision') then 
+  try
+    with TStringList.Create do 
+    try
+      LoadFromFile(FExePath + 'GLSceneRevision');
+      if (Count >= 1) and (trim(Strings[0]) <> '') then
+        FGLSceneRevision:= trim(Strings[0]);
+    finally
+      Free;
+    end;
+  except
+  end;
+
+  Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
 end;
 
 // ------------------------------------------------------------------------------
