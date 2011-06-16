@@ -1304,18 +1304,22 @@ type
     FUseBuildList: Boolean;
     FOnRender: TDirectRenderEvent;
     FBlend: Boolean;
-
+    FDummyBatch: TDrawBatch;
+    FTransformation: TTransformationRec;
   protected
     { Protected Declarations }
     procedure SetUseBuildList(const val: Boolean);
     function Blended: Boolean; override;
     procedure SetBlend(const val: Boolean);
+    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
+    procedure BuildList(var ARci: TRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
@@ -6547,8 +6551,23 @@ end;
 constructor TGLDirectOpenGL.Create(AOwner: TComponent);
 begin
   inherited;
-  ObjectStyle := ObjectStyle + [osDirectDraw];
+  ObjectStyle := ObjectStyle + [osDeferredDraw];
   FBlend := False;
+  FDummyBatch.Transformation := @FTransformation;
+  FDummyBatch.CustomDraw := BuildList;
+end;
+
+procedure TGLDirectOpenGL.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
+begin
+  if ARenderSelf then
+  begin
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    FDummyBatch.Order := ARci.orderCounter;
+  end;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
 end;
 
 // Assign
@@ -6568,12 +6587,11 @@ end;
 // BuildList
 //
 
-procedure TGLDirectOpenGL.BuildList(var rci: TRenderContextInfo);
+procedure TGLDirectOpenGL.BuildList(var ARci: TRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
-    xgl.MapTexCoordToMain; // single texturing by default
-    OnRender(Self, rci);
+    OnRender(Self, ARci);
   end;
 end;
 
@@ -6617,6 +6635,18 @@ begin
   begin
     FBlend := val;
     StructureChanged;
+  end;
+end;
+
+procedure TGLDirectOpenGL.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FDummyBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FDummyBatch);
+    inherited;
   end;
 end;
 

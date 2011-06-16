@@ -1312,7 +1312,8 @@ begin
     end;
 
     Inc(FRevisionNum);
-    ComputeBoundingBox;
+    if not IsMainThread then
+      ComputeBoundingBox;
     FDLO.NotifyChangesOfData;
     FVAO_BuildIn.NotifyChangesOfData;
     FVAO_Generic.NotifyChangesOfData;

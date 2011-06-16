@@ -40,6 +40,7 @@ const
 type
 
   TPickCallback = procedure of object;
+  TOnCustomDraw = procedure(var ARci: TRenderContextInfo) of object;
 
   PDrawBatch = ^TDrawBatch;
 
@@ -53,6 +54,7 @@ type
     Changed: Boolean;
     Order: Integer;
     PickCallback: TPickCallback;
+    CustomDraw: TOnCustomDraw;
   end;
 
   TDrawBatchArray = array of TDrawBatch;
@@ -100,6 +102,8 @@ type
     { Public Declarations }
     procedure DrawBatch(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
       virtual; abstract;
+    procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); virtual; abstract;
     procedure DrawAABB(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
       virtual; abstract;
   end;
@@ -123,6 +127,8 @@ type
   public
     { Public Declarations }
     procedure DrawBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); override;
+    procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
     procedure DrawAABB(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
@@ -163,6 +169,8 @@ type
 
     procedure DrawBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
+    procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); override;
     procedure DrawAABB(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
   end;
@@ -181,6 +189,8 @@ type
     destructor Destroy; override;
 
     procedure DrawBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); override;
+    procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
   end;
 
@@ -839,6 +849,12 @@ begin
     until not LMaterial.UnApply(ARci);
 
   end;
+end;
+
+procedure TGLDrawTechniqueOGL1.DrawDynamicBatch(var ARci: TRenderContextInfo;
+  const ABatch: TDrawBatch);
+begin
+
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueFFP'}{$ENDIF}
@@ -1726,8 +1742,8 @@ begin
       begin
         AStates.ElementBufferUnified := True;
         BufferAddressRangeNV(GL_ELEMENT_ARRAY_ADDRESS_NV, 0,
-          FElementBufferAddress,
-          FElementBufferMap.Sectors[LMesh.FElementSectorIndex].Size );
+          FElementBufferAddress, FElementBufferMap.Sectors
+          [LMesh.FElementSectorIndex].Size);
       end;
 
       if LProgram > 0 then
@@ -1774,7 +1790,7 @@ begin
               Assert(False, glsErrorEx + glsUnknownType);
             end;
             BufferAddressRangeNV(GL_VERTEX_ATTRIB_ARRAY_ADDRESS_NV, L,
-                Offsets64[A], LMesh.FAttributeArrays[A].DataSize)
+              Offsets64[A], LMesh.FAttributeArrays[A].DataSize)
           end
           else
             DisableVertexAttribArray(L);
@@ -1804,11 +1820,11 @@ begin
             begin
               // Make first texture coordinates same for other, need for multitexturing
               EnableClientState(GL_TEXTURE_COORD_ARRAY);
-              TexCoordFormatNV(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
-                GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0);
+              TexCoordFormatNV(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]
+                ), GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0);
               BufferAddressRangeNV(GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, T,
-                Offsets64[attrTexCoord0],
-                LMesh.FAttributeArrays[attrTexCoord0].DataSize);
+                Offsets64[attrTexCoord0], LMesh.FAttributeArrays[attrTexCoord0]
+                .DataSize);
             end;
           end;
           // Colors
@@ -1827,7 +1843,8 @@ begin
             EnableClientState(GL_NORMAL_ARRAY);
             NormalFormatNV(GLSLTypeEnum(LMesh.FType[attrNormal]), 0);
             BufferAddressRangeNV(GL_NORMAL_ARRAY_ADDRESS_NV, 0,
-              Offsets64[attrNormal], LMesh.FAttributeArrays[attrNormal].DataSize);
+              Offsets64[attrNormal], LMesh.FAttributeArrays[attrNormal]
+              .DataSize);
           end;
           // Positions
           if LMesh.FAttributes[attrPosition] then
@@ -1836,7 +1853,8 @@ begin
             VertexFormatNV(GLSLTypeComponentCount(LMesh.FType[attrPosition]),
               GLSLTypeEnum(LMesh.FType[attrPosition]), 0);
             BufferAddressRangeNV(GL_VERTEX_ARRAY_ADDRESS_NV, 0,
-              Offsets64[attrPosition], LMesh.FAttributeArrays[attrPosition].DataSize);
+              Offsets64[attrPosition], LMesh.FAttributeArrays[attrPosition]
+              .DataSize);
           end;
         end;
       end;
@@ -2132,6 +2150,12 @@ begin
     end;
 end;
 
+procedure TGLDrawTechniqueOGL2.DrawDynamicBatch(var ARci: TRenderContextInfo;
+  const ABatch: TDrawBatch);
+begin
+
+end;
+
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL2'}{$ENDIF}
 {$IFDEF GLS_REGION}{$REGION 'TGLDrawTechniqueOGL3'}{$ENDIF}
 
@@ -2305,6 +2329,231 @@ begin
     finally
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
+    end;
+end;
+
+procedure TGLDrawTechniqueOGL3.DrawDynamicBatch(var ARci: TRenderContextInfo;
+  const ABatch: TDrawBatch);
+var
+  LMesh: TFriendlyMesh;
+  LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
+  glPrimitive: TGLEnum;
+  glType: TGLEnum;
+  A: TAttribLocation;
+  L, LInstanceID, T: Integer;
+  LArrayAddress: Pointer;
+  storeRci: TRenderContextInfo;
+  LCount: Integer;
+begin
+  if not ABatch.Mesh.IsValid then
+    exit;
+
+  LMesh := TFriendlyMesh(ABatch.Mesh);
+  if Assigned(ABatch.InstancesChain) and ABatch.InstancesChain.IsValid then
+  begin
+    LInstanceChain := ABatch.InstancesChain;
+    LInstanceID := LInstanceChain.InstanceCount;
+  end
+  else
+  begin
+    LInstanceChain := nil;
+    LInstanceID := 1;
+  end;
+
+  ARci.GLStates.VertexArrayBinding := 0;
+  ARci.GLStates.ArrayBufferBinding := 0;
+  ARci.GLStates.ElementBufferBinding := 0;
+
+  with ARci.GLStates do
+  begin
+    EnablePrimitiveRestart := LMesh.FHasIndices;
+    PrimitiveRestartIndex := LMesh.FRestartIndex;
+  end;
+
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  storeRci := ARci;
+
+  if Assigned(ABatch.Transformation) then
+    ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
+  with GL do
+    try
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
+
+      if NV_vertex_buffer_unified_memory then
+      begin
+        ARci.GLStates.ArrayBufferUnified := False;
+        ARci.GLStates.ElementBufferUnified := False;
+      end;
+
+      if ARci.GLStates.CurrentProgram > 0 then
+      begin
+        // Setup attribute arrays pointer
+        for A := High(TAttribLocation) downto Low(TAttribLocation) do
+        begin
+          L := Ord(A);
+          if LMesh.FAttributes[A] then
+          begin
+            LArrayAddress := LMesh.FAttributeArrays[A].List;
+            EnableVertexAttribArray(L);
+            case LMesh.FType[A] of
+              GLSLType1F:
+                VertexAttribPointer(L, 1, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType2F:
+                VertexAttribPointer(L, 2, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType3f:
+                VertexAttribPointer(L, 3, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType4F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat2F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat3F:
+                VertexAttribPointer(L, 9, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat4F:
+                VertexAttribPointer(L, 16, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType1I:
+                VertexAttribIPointer(L, 1, GL_INT, 0, LArrayAddress);
+              GLSLType2I:
+                VertexAttribIPointer(L, 2, GL_INT, 0, LArrayAddress);
+              GLSLType3I:
+                VertexAttribIPointer(L, 3, GL_INT, 0, LArrayAddress);
+              GLSLType4I:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType1UI:
+                VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType2UI:
+                VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType3UI:
+                VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType4UI:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+            else
+              Assert(False, glsErrorEx + glsUnknownType);
+            end;
+          end
+          else
+            DisableVertexAttribArray(L);
+        end;
+      end // of Generic attributes
+      else
+      // Build-in attributes
+      begin
+        T := 8;
+        for A := attrTexCoord7 downto attrTexCoord0 do
+        begin
+          Dec(T);
+          ClientActiveTexture(GL_TEXTURE0 + T);
+          if LMesh.FAttributes[A] then
+          begin
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[A]),
+              GLSLTypeEnum(LMesh.FType[A]), 0, LMesh.FAttributeArrays[A].List);
+          end
+          else if LMesh.FAttributes[attrTexCoord0] then
+          begin
+            // Make first texture coordinates same for other, need for multitexturing
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+              GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0,
+              LMesh.FAttributeArrays[attrTexCoord0].List);
+          end
+          else
+            DisableClientState(GL_TEXTURE_COORD_ARRAY);
+        end;
+        // Colors
+        if LMesh.FAttributes[attrColor] then
+        begin
+          EnableClientState(GL_COLOR_ARRAY);
+          ColorPointer(GLSLTypeComponentCount(LMesh.FType[attrColor]),
+            GLSLTypeEnum(LMesh.FType[attrColor]), 0,
+            LMesh.FAttributeArrays[attrColor].List);
+        end
+        else
+          DisableClientState(GL_COLOR_ARRAY);
+        // Normals
+        if LMesh.FAttributes[attrNormal] and
+          (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
+        begin
+          EnableClientState(GL_NORMAL_ARRAY);
+          NormalPointer(GLSLTypeEnum(LMesh.FType[attrNormal]), 0,
+            LMesh.FAttributeArrays[attrNormal].List);
+        end
+        else
+          DisableClientState(GL_NORMAL_ARRAY);
+        // Positions
+        if LMesh.FAttributes[attrPosition] then
+        begin
+          EnableClientState(GL_VERTEX_ARRAY);
+          VertexPointer(GLSLTypeComponentCount(LMesh.FType[attrPosition]),
+            GLSLTypeEnum(LMesh.FType[attrPosition]), 0,
+            LMesh.FAttributeArrays[attrPosition].List);
+        end
+        else
+          DisableClientState(GL_VERTEX_ARRAY);
+      end; // FFP states
+
+      ARci.PipelineTransformation.LoadMatrices;
+
+      if LMesh.FRestartIndex > $FFFF then
+        glType := GL_UNSIGNED_INT
+      else
+        glType := GL_UNSIGNED_SHORT;
+      LArrayAddress := LMesh.FElements.List;
+      LCount := LMesh.FElements.Count;
+
+      repeat
+        // Primitive selection
+        glPrimitive := cPrimitiveType[LMesh.FPrimitive];
+        if (ARci.primitiveMask = cAdjacencyPrimitives) and
+          not(LMesh.FPrimitive in cAdjacencyPrimitives) then
+        begin
+          glPrimitive := GL_TRIANGLES_ADJACENCY;
+          if LMesh.FHasIndices and (LMesh.FAdjacencyElements.Count > 0) then
+          begin
+            LArrayAddress := LMesh.FAdjacencyElements.List;
+            LCount := LMesh.FAdjacencyElements.Count;
+            glType := GL_UNSIGNED_INT;
+          end
+          else
+            continue;
+        end
+        else if not(LMesh.FPrimitive in ARci.primitiveMask) then
+          continue;
+
+        repeat
+          Dec(LInstanceID);
+          if Assigned(LInstanceChain) then
+            ApplyInstance(ARci, LInstanceChain, LInstanceID);
+
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
+          if LMesh.FHasIndices then
+            DrawElements(glPrimitive, LCount, glType, LArrayAddress)
+          else
+          begin
+            MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+              PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+          end;
+
+        until LInstanceID <= 0;
+
+        if not Assigned(LMaterial) then
+          break;
+      until not LMaterial.UnApply(ARci);
+    finally
+      ARci := storeRci;
     end;
 end;
 
@@ -2578,7 +2827,9 @@ begin
     for I := 0 to LList.Count - 1 do
     begin
       pBatch := LList[I];
-      if not Assigned(pBatch^.Mesh) or not pBatch^.Mesh.IsValid then
+      if (not Assigned(pBatch^.Mesh)
+        or not pBatch^.Mesh.IsValid)
+        and not Assigned(pBatch^.CustomDraw) then
         pBatch^.Order := -1;
       if pBatch^.Order > -1 then
       begin
@@ -2606,14 +2857,23 @@ begin
         pBatch := LList[O];
         pBatch.Order := O;
 {$IFDEF GLS_OPENGL_DEBUG}
-        if GL.GREMEDY_string_marker then
+        if GL.GREMEDY_string_marker and Assigned(pBatch.Mesh) then
         begin
           LStr := Format('Drawing of mesh "%s"', [pBatch.Mesh.TagName]);
           GL.StringMarkerGREMEDY(Length(LStr), PGLChar(TGLString(LStr)));
         end;
 {$ENDIF}
-        ARci.Mesh := pBatch^.Mesh;
-        LDrawTech.DrawBatch(ARci, pBatch^);
+        if Assigned(pBatch^.CustomDraw) then
+        begin
+          if Assigned(pBatch^.Transformation) then
+            ARci.PipelineTransformation.StackTop := pBatch^.Transformation^;
+          pBatch^.CustomDraw(ARci);
+        end
+        else
+        begin
+          ARci.Mesh := pBatch^.Mesh;
+          LDrawTech.DrawBatch(ARci, pBatch^);
+        end;
       end;
 
       if vBindlessGraphicsEnabled and GL.NV_vertex_buffer_unified_memory then
