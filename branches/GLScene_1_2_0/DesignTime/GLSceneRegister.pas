@@ -7,6 +7,7 @@
       IDE experts.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
       <li>04/06/10 - Yar - Added GLSArchiveManager
       <li>20/04/10 - Yar - Added GLSLanguage
       <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
@@ -2341,8 +2342,55 @@ begin
 end;
 
 function GetGLSceneVersion: string;
+var
+  LProject: IOTAProject;
+  LExePath, LProjectPath, LSVN, LRevision: string;
 begin
-  Result := Format(GLSCENE_VERSION, [Copy(GLSCENE_REVISION, 12, 4)]);
+  LRevision := Copy(GLSCENE_REVISION, 12, 4);
+
+  // will be assigned after project compilation
+  // after each compilation get it from file \.svn\entries in 4-th line
+  // and write to file GLSceneRevision
+  // in both fail (no \.svn\entries or GLSceneRevision file) get a version value from GLScene.pas
+  LProject := GetActiveProject;
+  LExePath := ExtractFilePath(ParamStr(0));
+  if Assigned(LProject) then
+  begin
+    LProjectPath := ExtractFilePath(LProject.FileName);
+    LSVN := LProjectPath + '.svn\entries';
+    if FileExists(LSVN) then
+      with TStringList.Create do
+      try
+        // Load
+        LoadFromFile(LSVN);
+        if (Count >= 4) and (trim(Strings[3]) <> '') then
+        begin
+          LRevision := trim(Strings[3]);
+
+          // Save
+          Clear;
+          Add(LRevision);
+          SaveToFile(LExePath + 'GLSceneRevision');
+        end;
+      finally
+        Free;
+      end;
+  end
+  else if FileExists(LExePath + 'GLSceneRevision') then
+  try
+    with TStringList.Create do 
+    try
+      LoadFromFile(LExePath + 'GLSceneRevision');
+      if (Count >= 1) and (trim(Strings[0]) <> '') then
+        LRevision := trim(Strings[0]);
+    finally
+      Free;
+    end;
+  except
+  end;
+
+  // Finally
+  Result := Format(GLSCENE_VERSION, [LRevision]);
 end;
 
 function GetProjectTargetName: string;
