@@ -75,6 +75,7 @@ type
     procedure SetFont(value: TFont);
     procedure LoadSystemFont; virtual;
     function  StoreRanges: Boolean;
+    procedure StreamlineRanges;
 
     procedure PrepareFontBook; override;
     procedure OnShaderInitialize(Sender: TGLBaseShaderModel); override;
@@ -186,6 +187,7 @@ end;
 
 procedure TGLSystemBitmapFont.NotifyChange(Sender: TObject);
 begin
+  StreamlineRanges;
   InvalidateUsers;
   inherited;
 end;
@@ -376,6 +378,22 @@ end;
 function TGLSystemBitmapFont.StoreRanges: Boolean;
 begin
   Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> cDefaultLast);
+end;
+
+type
+  TFriendlyRange = class(TBitmapFontRange);
+
+procedure TGLSystemBitmapFont.StreamlineRanges;
+var
+  I, C: Integer;
+begin
+  C := 0;
+  for I := 0 to Ranges.Count - 1 do
+  begin
+    TFriendlyRange(Ranges[I]).FStartGlyphIdx := C;
+    Inc(C, Ranges[I].CharCount);
+    TFriendlyRange(Ranges[I]).FStopGlyphIdx := MaxInteger(C - 1, 0);
+  end;
 end;
 
 procedure TGLSystemBitmapFont.SetList(const AList: TIntegerList);

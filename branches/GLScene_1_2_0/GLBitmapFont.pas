@@ -92,16 +92,13 @@ type
        A range allows mapping ASCII characters to character tiles in a font
        bitmap, tiles are enumerated line then column (raster). }
   TBitmapFontRange = class(TCollectionItem)
-  private
-    { Private Declarations }
-    FStartASCII, FStopASCII: WideChar;
-    FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
-
   protected
     { Protected Declarations }
+    FStartASCII, FStopASCII: WideChar;
+    FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
     procedure SetStartASCII(const val: widechar);
     procedure SetStopASCII(const val: widechar);
-    procedure SetStartGlyphIdx(const val: Integer);
+    procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
 
   public
@@ -220,6 +217,7 @@ type
     FFontMaterial: TGLLibMaterialEx;
     FChars      : array of TCharInfo;
     FCharsLoaded: boolean;
+    FBatches: TDrawBatchArray;
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
 
@@ -298,9 +296,14 @@ type
     {: A simpler canvas-style TextOut helper for RenderString.<p>
        The rendering is reversed along Y by default, to allow direct use
        with TGLCanvas }
-    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload; deprecated;
-    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload; deprecated;
+    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColorVector); overload;
+    procedure TextOut(var ARci: TRenderContextInfo; x, y: Single; const text: UnicodeString; const color: TColor); overload;
     function  TextWidth(const text: UnicodeString): Integer;
+
+    procedure AccumulateText(x, y: Single; const AText: UnicodeString; const AColor: TColorVector); overload;
+    procedure AccumulateText(x, y: Single; const AText: UnicodeString; const AColor: TColor); overload;
+    procedure TextOut(var ARci: TRenderContextInfo); overload;
+    procedure FlushAccumulator;
 
     function  CharacterToTileIndex(aChar: widechar): Integer; virtual;
     function  TileIndexToChar(aIndex: integer): widechar; virtual;
@@ -524,12 +527,14 @@ end;
 // SetStartGlyphIdx
 //
 
-procedure TBitmapFontRange.SetStartGlyphIdx(const val: Integer);
+procedure TBitmapFontRange.SetStartGlyphIdx(val: Integer);
 begin
-  if val >= 0 then
-    FStartGlyphIdx := val
-  else FStartGlyphIdx := 0;
-  NotifyChange;
+  val := MaxInteger(0, val);
+  if val <> FStartGlyphIdx then
+  begin
+    FStartGlyphIdx := val;
+    NotifyChange;
+  end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -780,6 +785,7 @@ begin
   FFontMaterial.Destroy;
   FFontBook.Destroy;
   FFontSampler.Destroy;
+  FlushAccumulator;
 end;
 
 // GetCharWidth
@@ -849,7 +855,7 @@ procedure TGLCustomBitmapFont.BuildString(var ABatches: TDrawBatchArray; const a
     currentChar: widechar;
 
 begin
-  if (aText = '') then
+  if Length(aText) = 0 then
     Exit;
   // prepare texture if necessary
   if FTextureModified then
@@ -1232,123 +1238,59 @@ procedure TGLCustomBitmapFont.RenderString(var ARci: TRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
-
-  function AlignmentAdjustement(p: Integer): Single;
-  var
-    i: Integer;
-  begin
-    i := 0;
-    while (p <= Length(aText)) and (aText[p] <> #13) do
-    begin
-      Inc(p);
-      Inc(i);
-    end;
-    case aAlignment of
-      taLeftJustify: Result := 0;
-      taRightJustify: Result := -CalcStringWidth(Copy(aText, p - i, i))
-    else // taCenter
-      Result := Round(-CalcStringWidth(Copy(aText, p - i, i)) * 0.5);
-    end;
-  end;
-
-  function LayoutAdjustement: Single;
-  var
-    i, n: Integer;
-  begin
-    n := 1;
-    for i := 1 to Length(aText) do
-      if aText[i] = #13 then
-        Inc(n);
-    case TGLTextLayout(aLayout) of
-      tlTop: Result := 0;
-      tlBottom: Result := (n * (CharHeight + VSpace) - VSpace);
-    else // tlCenter
-      Result := Round((n * (CharHeight + VSpace) - VSpace) * 0.5);
-    end;
-  end;
-
-var
-  i, chi: Integer;
-  pch   : PCharInfo;
-  topLeft, bottomRight: TTexPoint;
-  vTopLeft, vBottomRight: TVector;
-  deltaV, spaceDeltaH: Single;
-  currentChar: widechar;
 begin
-  if (aText = '') then
-    Exit;
-  // prepare texture if necessary
-  if FTextureModified then
+end;
+
+procedure TGLCustomBitmapFont.AccumulateText(x, y: Single; const AText: UnicodeString; const AColor: TColorVector);
+var
+  v: TVector;
+begin
+  v[0] := x;
+  v[1] := y;
+  v[2] := 0;
+  v[3] := 1;
+  BuildString(FBatches, AText, taLeftJustify, tlTop, AColor, @v, True);
+end;
+
+procedure TGLCustomBitmapFont.AccumulateText(x, y: Single; const AText: UnicodeString; const AColor: TColor);
+var
+  v: TVector;
+begin
+  v[0] := x;
+  v[1] := y;
+  v[2] := 0;
+  v[3] := 1;
+  BuildString(FBatches, AText, taLeftJustify, tlTop, ConvertWinColor(AColor), @v, True);
+end;
+
+procedure TGLCustomBitmapFont.TextOut(var ARci: TRenderContextInfo);
+var
+  I: Integer;
+  LTfRec: TTransformationRec;
+begin
+  if Length(FBatches) > 0 then
   begin
-    PrepareFontBook;
-    FTextureModified := false;
-  end;
-
-  // precalcs
-  if Assigned(aPosition) then
-    MakePoint(vTopLeft, aPosition[0] + AlignmentAdjustement(1), aPosition[1] + LayoutAdjustement, 0)
-  else
-    MakePoint(vTopLeft, AlignmentAdjustement(1), LayoutAdjustement, 0);
-  deltaV := -(CharHeight + VSpace);
-  if aReverseY then
-    vBottomRight[1] := vTopLeft[1] + CharHeight
-  else
-    vBottomRight[1] := vTopLeft[1] - CharHeight;
-  vBottomRight[2] := 0;
-  vBottomRight[3] := 1;
-  spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
-
-    // start rendering
-  GL.Color4fv(@aColor);
-  GL.Begin_(GL_QUADS);
-  for i := 1 to Length(aText) do
-  begin
-    currentChar := WideChar(aText[i]);
-    case currentChar of
-      #0..#12, #14..#31: ; // ignore
-      #13:
-        begin
-          if Assigned(aPosition) then
-            vTopLeft[0] := aPosition[0] + AlignmentAdjustement(i + 1)
-          else
-            vTopLeft[0] := AlignmentAdjustement(i + 1);
-          vTopLeft[1] := vTopLeft[1] + deltaV;
-          if aReverseY then
-            vBottomRight[1] := vTopLeft[1] + CharHeight
-          else
-            vBottomRight[1] := vTopLeft[1] - CharHeight;
-        end;
-      #32: vTopLeft[0] := vTopLeft[0] + spaceDeltaH;
-    else
-      chi := CharacterToTileIndex(currentChar);
-      if chi < 0 then continue; //not found
-      pch := @FChars[chi];
-      if pch.w > 0 then
-      with GL do
-      begin
-//        GetICharTexCoords(ARci, chi, topLeft, bottomRight);
-        vBottomRight[0] := vTopLeft[0] + pch.w;
-
-        TexCoord2fv(@topLeft);
-        Vertex4fv(@vTopLeft);
-
-        TexCoord2f(topLeft.S, bottomRight.T);
-        Vertex2f(vTopLeft[0], vBottomRight[1]);
-
-        TexCoord2fv(@bottomRight);
-        Vertex4fv(@vBottomRight);
-
-        TexCoord2f(bottomRight.S, topLeft.T);
-        Vertex2f(vBottomRight[0], vTopLeft[1]);
-
-        vTopLeft[0] := vTopLeft[0] + pch.w + HSpace;
-      end;
+    ARci.PipelineTransformation.Push;
+    ARci.PipelineTransformation.ModelViewMatrix := IdentityHmgMatrix;
+    ARci.PipelineTransformation.ProjectionMatrix :=
+      CreateOrthoMatrix(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, -1, 1);
+    LTfRec := ARci.PipelineTransformation.StackTop;
+    for I := 0 to High(FBatches) do
+    begin
+      FBatches[I].Transformation := @LTfRec;
+      TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawDynamicBatch(ARci, FBatches[I]);
     end;
+    ARci.PipelineTransformation.Pop;
   end;
-  GL.End_;
-  // unbind texture
-  ARci.GLStates.TextureBinding[0, ttTexture2d] := 0;
-  ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+end;
+
+procedure TGLCustomBitmapFont.FlushAccumulator;
+var
+  I: Integer;
+begin
+  for I := 0 to High(FBatches) do
+    FBatches[I].Mesh.Free;
+  FBatches := nil;
 end;
 
 // TextOut
@@ -1356,24 +1298,10 @@ end;
 
 procedure TGLCustomBitmapFont.TextOut(var ARci: TRenderContextInfo;
   x, y: Single; const text: UnicodeString; const color: TColorVector);
-var
-  v: TVector;
-  LBatches: TDrawBatchArray;
-  I: Integer;
 begin
-  v[0] := x;
-  v[1] := y;
-  v[2] := 0;
-  v[3] := 1;
-  LBatches := nil;
-  BuildString(LBatches, text, taLeftJustify, tlTop, color, @v, True);
-  for I := 0 to High(LBatches) do
-  begin
-    TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawBatch(ARci, LBatches[I]);
-    LBatches[I].Mesh.Destroy;
-  end;
-  if Length(LBatches) > 0 then
-    LBatches[0].InstancesChain.Destroy;
+  FlushAccumulator;
+  AccumulateText(x, y, text, color);
+  TextOut(ARci);
 end;
 
 // TextOut
