@@ -73,7 +73,7 @@ type
 
     procedure PrepareImage(var ARci: TRenderContextInfo); override;
     function  TextureFormat: Integer; override;
-
+    procedure StreamlineRanges;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -183,6 +183,7 @@ end;
 
 procedure TGLWindowsBitmapFont.NotifyChange(Sender: TObject);
 begin
+  StreamlineRanges;
   FreeTextureHandle;
   InvalidateUsers;
   inherited;
@@ -366,6 +367,22 @@ end;
 function TGLWindowsBitmapFont.StoreRanges: Boolean;
 begin
   Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> cDefaultLast);
+end;
+
+type
+  TFriendlyRange = class(TBitmapFontRange);
+
+procedure TGLWindowsBitmapFont.StreamlineRanges;
+var
+  I, C: Integer;
+begin
+  C := 0;
+  for I := 0 to Ranges.Count - 1 do
+  begin
+    TFriendlyRange(Ranges[I]).FStartGlyphIdx := C;
+    Inc(C, Ranges[I].CharCount);
+    TFriendlyRange(Ranges[I]).FStopGlyphIdx := MaxInteger(C - 1, 0);
+  end;
 end;
 
 procedure TGLWindowsBitmapFont.SetList(const AList: TIntegerList);

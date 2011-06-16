@@ -74,18 +74,14 @@ type
        A range allows mapping ASCII characters to character tiles in a font
        bitmap, tiles are enumerated line then column (raster). }
   TBitmapFontRange = class(TCollectionItem)
-  private
-    { Private Declarations }
-    FStartASCII, FStopASCII: WideChar;
-    FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
-
   protected
     { Protected Declarations }
+    FStartASCII, FStopASCII: WideChar;
+    FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
     procedure SetStartASCII(const val: widechar);
     procedure SetStopASCII(const val: widechar);
-    procedure SetStartGlyphIdx(const val: Integer);
+    procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
-
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
@@ -453,12 +449,14 @@ end;
 // SetStartGlyphIdx
 //
 
-procedure TBitmapFontRange.SetStartGlyphIdx(const val: Integer);
+procedure TBitmapFontRange.SetStartGlyphIdx(val: Integer);
 begin
-  if val >= 0 then
-    FStartGlyphIdx := val
-  else FStartGlyphIdx := 0;
-  NotifyChange;
+  val := MaxInteger(0, val);
+  if val <> FStartGlyphIdx then
+  begin
+    FStartGlyphIdx := val;
+    NotifyChange;
+  end;
 end;
 
 // ------------------
@@ -588,8 +586,13 @@ procedure TBitmapFontRanges.NotifyChange;
 begin
   FCharCount := CalcCharacterCount;
 
-  if Assigned(FOwner) and (FOwner is TGLBaseSceneObject) then
-    TGLBaseSceneObject(FOwner).StructureChanged;
+  if Assigned(FOwner) then
+  begin
+    if FOwner is TGLBaseSceneObject then
+      TGLBaseSceneObject(FOwner).StructureChanged
+    else if FOwner is TGLCustomBitmapFont then
+      TGLCustomBitmapFont(FOwner).NotifyChange(Self);
+  end;
 end;
 
 // CharacterCount
