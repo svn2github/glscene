@@ -4,6 +4,7 @@
 { : GLSDrawTechnique<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>17/06/11 - Yar - Added DrawDynamicBatch
   <li>07/06/11 - Yar - Added Bindless Graphic feature
   <li>29/05/11 - Yar - Added picking: name based for OGL1, color based for other techniques
   <li>25/05/11 - Yar - Added instancing
@@ -100,10 +101,13 @@ type
     procedure DoAfterPicking(const AList: TList); virtual; abstract;
   public
     { Public Declarations }
+    // Draw batch which geometry stored in display list or array buffer
     procedure DrawBatch(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
       virtual; abstract;
+    // Draw batch directly from operative memory
     procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); virtual; abstract;
+    // Draw AABB of batch's mesh
     procedure DrawAABB(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
       virtual; abstract;
   end;
@@ -198,6 +202,8 @@ type
   public
     { Public Declarations }
     procedure DrawBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); override;
+    procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
   end;
 
@@ -753,6 +759,13 @@ begin
             TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[A]),
               GLSLTypeEnum(LMesh.FType[A]), 0, LMesh.FAttributeArrays[A].List);
           end
+          else if LMesh.FAttributes[attrTexCoord0] then
+          begin
+            // Share first texture coordinates with others
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+              GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0, LMesh.FAttributeArrays[attrTexCoord0].List);
+          end
           else
             DisableClientState(GL_TEXTURE_COORD_ARRAY);
           Dec(T);
@@ -853,8 +866,157 @@ end;
 
 procedure TGLDrawTechniqueOGL1.DrawDynamicBatch(var ARci: TRenderContextInfo;
   const ABatch: TDrawBatch);
+var
+  LMesh: TFriendlyMesh;
+  LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
+  glPrimitive: TGLEnum;
+  glType: TGLEnum;
+  A: TAttribLocation;
+  LInstanceID, T: Integer;
+  LArrayAddress: Pointer;
+  storeRci: TRenderContextInfo;
+  LCount: Integer;
 begin
+  if not ABatch.Mesh.IsValid then
+    exit;
 
+  LMesh := TFriendlyMesh(ABatch.Mesh);
+  if Assigned(ABatch.InstancesChain) and ABatch.InstancesChain.IsValid then
+  begin
+    LInstanceChain := ABatch.InstancesChain;
+    LInstanceID := LInstanceChain.InstanceCount;
+  end
+  else
+  begin
+    LInstanceChain := nil;
+    LInstanceID := 1;
+  end;
+
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  storeRci := ARci;
+
+  if Assigned(ABatch.Transformation) then
+    ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
+  with GL do
+    try
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
+
+      if ARB_multisample then
+      begin
+        T := 7;
+        for A := attrTexCoord7 downto attrTexCoord0 do
+        begin
+          ClientActiveTexture(GL_TEXTURE0 + T);
+          if LMesh.FAttributes[A] then
+          begin
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[A]),
+              GLSLTypeEnum(LMesh.FType[A]), 0, LMesh.FAttributeArrays[A].List);
+          end
+          else if LMesh.FAttributes[attrTexCoord0] then
+          begin
+            // Share first texture coordinates with others
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+              GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0, LMesh.FAttributeArrays[attrTexCoord0].List);
+          end
+          else
+            DisableClientState(GL_TEXTURE_COORD_ARRAY);
+          Dec(T);
+        end;
+      end
+      else
+      begin
+        // Only one texture unit avaible
+        if LMesh.FAttributes[attrTexCoord0] then
+        begin
+          EnableClientState(GL_TEXTURE_COORD_ARRAY);
+          TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+            GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0,
+            LMesh.FAttributeArrays[attrTexCoord0].List);
+        end
+        else
+          DisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end;
+      // Colors
+      if LMesh.FAttributes[attrColor] then
+      begin
+        EnableClientState(GL_COLOR_ARRAY);
+        ColorPointer(GLSLTypeComponentCount(LMesh.FType[attrColor]),
+          GLSLTypeEnum(LMesh.FType[attrColor]), 0,
+          LMesh.FAttributeArrays[attrColor].List);
+      end
+      else
+        DisableClientState(GL_COLOR_ARRAY);
+      // Normals
+      if LMesh.FAttributes[attrNormal] and
+        (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
+      begin
+        EnableClientState(GL_NORMAL_ARRAY);
+        NormalPointer(GLSLTypeEnum(LMesh.FType[attrNormal]), 0,
+          LMesh.FAttributeArrays[attrNormal].List);
+      end
+      else
+        DisableClientState(GL_NORMAL_ARRAY);
+      // Positions
+      if LMesh.FAttributes[attrPosition] then
+      begin
+        EnableClientState(GL_VERTEX_ARRAY);
+        VertexPointer(GLSLTypeComponentCount(LMesh.FType[attrPosition]),
+          GLSLTypeEnum(LMesh.FType[attrPosition]), 0,
+          LMesh.FAttributeArrays[attrPosition].List);
+      end
+      else
+        DisableClientState(GL_VERTEX_ARRAY);
+
+      ARci.PipelineTransformation.LoadMatrices;
+
+      if LMesh.FRestartIndex > $FFFF then
+        glType := GL_UNSIGNED_INT
+      else
+        glType := GL_UNSIGNED_SHORT;
+      LArrayAddress := LMesh.FElements.List;
+      LCount := LMesh.FElements.Count;
+
+      repeat
+        glPrimitive := cPrimitiveType[LMesh.FPrimitive];
+
+        repeat
+          Dec(LInstanceID);
+          if Assigned(LInstanceChain) then
+            ApplyInstance(ARci, LInstanceChain, LInstanceID);
+
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
+          if LMesh.FHasIndices then
+            DrawElements(glPrimitive, LCount, glType, LArrayAddress)
+          else
+          begin
+            MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+              PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+          end;
+
+        until LInstanceID <= 0;
+
+        if not Assigned(LMaterial) then
+          break;
+      until not LMaterial.UnApply(ARci);
+    finally
+      ARci := storeRci;
+    end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueFFP'}{$ENDIF}
@@ -2152,8 +2314,205 @@ end;
 
 procedure TGLDrawTechniqueOGL2.DrawDynamicBatch(var ARci: TRenderContextInfo;
   const ABatch: TDrawBatch);
+var
+  LMesh: TFriendlyMesh;
+  LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
+  glPrimitive: TGLEnum;
+  glType: TGLEnum;
+  A: TAttribLocation;
+  L, LInstanceID, T: Integer;
+  LArrayAddress: Pointer;
+  storeRci: TRenderContextInfo;
+  LCount: Integer;
 begin
+  if not ABatch.Mesh.IsValid then
+    exit;
 
+  LMesh := TFriendlyMesh(ABatch.Mesh);
+  if Assigned(ABatch.InstancesChain) and ABatch.InstancesChain.IsValid then
+  begin
+    LInstanceChain := ABatch.InstancesChain;
+    LInstanceID := LInstanceChain.InstanceCount;
+  end
+  else
+  begin
+    LInstanceChain := nil;
+    LInstanceID := 1;
+  end;
+
+  ARci.GLStates.VertexArrayBinding := 0;
+  ARci.GLStates.ArrayBufferBinding := 0;
+  ARci.GLStates.ElementBufferBinding := 0;
+
+  with ARci.GLStates do
+  begin
+    EnablePrimitiveRestart := LMesh.FHasIndices;
+    PrimitiveRestartIndex := LMesh.FRestartIndex;
+  end;
+
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  storeRci := ARci;
+
+  if Assigned(ABatch.Transformation) then
+    ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
+  with GL do
+    try
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
+
+      if ARci.GLStates.CurrentProgram > 0 then
+      begin
+        // Setup generic attribute arrays
+        for A := High(TAttribLocation) downto Low(TAttribLocation) do
+        begin
+          L := Ord(A);
+          if LMesh.FAttributes[A] then
+          begin
+            LArrayAddress := LMesh.FAttributeArrays[A].List;
+            EnableVertexAttribArray(L);
+            case LMesh.FType[A] of
+              GLSLType1F:
+                VertexAttribPointer(L, 1, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType2F:
+                VertexAttribPointer(L, 2, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType3f:
+                VertexAttribPointer(L, 3, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType4F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat2F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat3F:
+                VertexAttribPointer(L, 9, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat4F:
+                VertexAttribPointer(L, 16, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType1I:
+                VertexAttribIPointer(L, 1, GL_INT, 0, LArrayAddress);
+              GLSLType2I:
+                VertexAttribIPointer(L, 2, GL_INT, 0, LArrayAddress);
+              GLSLType3I:
+                VertexAttribIPointer(L, 3, GL_INT, 0, LArrayAddress);
+              GLSLType4I:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType1UI:
+                VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType2UI:
+                VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType3UI:
+                VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType4UI:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+            else
+              Assert(False, glsErrorEx + glsUnknownType);
+            end;
+          end
+          else
+            DisableVertexAttribArray(L);
+        end;
+      end // of Generic attributes
+      else
+      // Build-in attributes
+      begin
+        T := 8;
+        for A := attrTexCoord7 downto attrTexCoord0 do
+        begin
+          Dec(T);
+          ClientActiveTexture(GL_TEXTURE0 + T);
+          if LMesh.FAttributes[A] then
+          begin
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[A]),
+              GLSLTypeEnum(LMesh.FType[A]), 0, LMesh.FAttributeArrays[A].List);
+          end
+          else if LMesh.FAttributes[attrTexCoord0] then
+          begin
+            // Make first texture coordinates same for other, need for multitexturing
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+              GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0,
+              LMesh.FAttributeArrays[attrTexCoord0].List);
+          end
+          else
+            DisableClientState(GL_TEXTURE_COORD_ARRAY);
+        end;
+        // Colors
+        if LMesh.FAttributes[attrColor] then
+        begin
+          EnableClientState(GL_COLOR_ARRAY);
+          ColorPointer(GLSLTypeComponentCount(LMesh.FType[attrColor]),
+            GLSLTypeEnum(LMesh.FType[attrColor]), 0,
+            LMesh.FAttributeArrays[attrColor].List);
+        end
+        else
+          DisableClientState(GL_COLOR_ARRAY);
+        // Normals
+        if LMesh.FAttributes[attrNormal] and
+          (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
+        begin
+          EnableClientState(GL_NORMAL_ARRAY);
+          NormalPointer(GLSLTypeEnum(LMesh.FType[attrNormal]), 0,
+            LMesh.FAttributeArrays[attrNormal].List);
+        end
+        else
+          DisableClientState(GL_NORMAL_ARRAY);
+        // Positions
+        if LMesh.FAttributes[attrPosition] then
+        begin
+          EnableClientState(GL_VERTEX_ARRAY);
+          VertexPointer(GLSLTypeComponentCount(LMesh.FType[attrPosition]),
+            GLSLTypeEnum(LMesh.FType[attrPosition]), 0,
+            LMesh.FAttributeArrays[attrPosition].List);
+        end
+        else
+          DisableClientState(GL_VERTEX_ARRAY);
+      end; // of Build-in attributes
+
+      ARci.PipelineTransformation.LoadMatrices;
+
+      if LMesh.FRestartIndex > $FFFF then
+        glType := GL_UNSIGNED_INT
+      else
+        glType := GL_UNSIGNED_SHORT;
+      LArrayAddress := LMesh.FElements.List;
+      LCount := LMesh.FElements.Count;
+
+      repeat
+        glPrimitive := cPrimitiveType[LMesh.FPrimitive];
+
+        repeat
+          Dec(LInstanceID);
+          if Assigned(LInstanceChain) then
+            ApplyInstance(ARci, LInstanceChain, LInstanceID);
+
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
+          if LMesh.FHasIndices then
+            DrawElements(glPrimitive, LCount, glType, LArrayAddress)
+          else
+          begin
+            MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+              PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+          end;
+
+        until LInstanceID <= 0;
+
+        if not Assigned(LMaterial) then
+          break;
+      until not LMaterial.UnApply(ARci);
+    finally
+      ARci := storeRci;
+    end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL2'}{$ENDIF}
@@ -2361,7 +2720,13 @@ begin
     LInstanceID := 1;
   end;
 
-  ARci.GLStates.VertexArrayBinding := 0;
+  if ARci.GLStates.ForwardContext then
+  begin
+    FCommonVAO.AllocateHandle;
+    FCommonVAO.Bind;
+  end
+  else
+    ARci.GLStates.VertexArrayBinding := 0;
   ARci.GLStates.ArrayBufferBinding := 0;
   ARci.GLStates.ElementBufferBinding := 0;
 
@@ -2554,6 +2919,7 @@ begin
       until not LMaterial.UnApply(ARci);
     finally
       ARci := storeRci;
+      ARci.GLStates.VertexArrayBinding := 0;
     end;
 end;
 
@@ -2704,6 +3070,255 @@ begin
             break;
         until not LMaterial.UnApply(ARci);
       end;
+    finally
+      ARci := storeRci;
+      ARci.GLStates.VertexArrayBinding := 0;
+    end;
+end;
+
+procedure TGLDrawTechniqueOGL4.DrawDynamicBatch(var ARci: TRenderContextInfo;
+  const ABatch: TDrawBatch);
+var
+  LMesh: TFriendlyMesh;
+  LInstanceChain: TInstancesChain;
+  LMaterial: TGLAbstractLibMaterial;
+  glPrimitive: TGLEnum;
+  glType: TGLEnum;
+  A: TAttribLocation;
+  L, LInstanceID, T: Integer;
+  LArrayAddress: Pointer;
+  storeRci: TRenderContextInfo;
+  LCount: Integer;
+begin
+  if not ABatch.Mesh.IsValid then
+    exit;
+
+  LMesh := TFriendlyMesh(ABatch.Mesh);
+  // Choose instances chain
+  if Assigned(ABatch.InstancesChain) and ABatch.InstancesChain.IsValid then
+  begin
+    LInstanceChain := ABatch.InstancesChain;
+    LInstanceID := LInstanceChain.InstanceCount;
+  end
+  else
+  begin
+    LInstanceChain := nil;
+    LInstanceID := 1;
+  end;
+
+  // Reset buffers state
+  if ARci.GLStates.ForwardContext then
+  begin
+    FCommonVAO.AllocateHandle;
+    FCommonVAO.Bind;
+  end
+  else
+    ARci.GLStates.VertexArrayBinding := 0;
+  ARci.GLStates.ArrayBufferBinding := 0;
+  ARci.GLStates.ElementBufferBinding := 0;
+
+  with ARci.GLStates do
+  begin
+    EnablePrimitiveRestart := LMesh.FHasIndices;
+    PrimitiveRestartIndex := LMesh.FRestartIndex;
+  end;
+
+  if ARci.drawState = dsPicking then
+  begin
+    LMaterial := vPickingMaterial;
+  end
+  else
+    LMaterial := ABatch.Material;
+
+  storeRci := ARci;
+
+  if Assigned(ABatch.Transformation) then
+    ARci.PipelineTransformation.StackTop := ABatch.Transformation^;
+  with GL do
+    try
+      if Assigned(LMaterial) then
+        LMaterial.Apply(ARci);
+
+      // Turn off bindless graphics states
+      if NV_vertex_buffer_unified_memory then
+      begin
+        ARci.GLStates.ArrayBufferUnified := False;
+        ARci.GLStates.ElementBufferUnified := False;
+      end;
+
+      if ARci.GLStates.CurrentProgram > 0 then
+      begin
+        // Setup generic attribute arrays
+        for A := High(TAttribLocation) downto Low(TAttribLocation) do
+        begin
+          L := Ord(A);
+          if LMesh.FAttributes[A] then
+          begin
+            LArrayAddress := LMesh.FAttributeArrays[A].List;
+            EnableVertexAttribArray(L);
+            case LMesh.FType[A] of
+              GLSLType1F:
+                VertexAttribPointer(L, 1, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType2F:
+                VertexAttribPointer(L, 2, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType3f:
+                VertexAttribPointer(L, 3, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType4F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat2F:
+                VertexAttribPointer(L, 4, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat3F:
+                VertexAttribPointer(L, 9, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLTypeMat4F:
+                VertexAttribPointer(L, 16, GL_FLOAT, False, 0, LArrayAddress);
+              GLSLType1I:
+                VertexAttribIPointer(L, 1, GL_INT, 0, LArrayAddress);
+              GLSLType2I:
+                VertexAttribIPointer(L, 2, GL_INT, 0, LArrayAddress);
+              GLSLType3I:
+                VertexAttribIPointer(L, 3, GL_INT, 0, LArrayAddress);
+              GLSLType4I:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType1UI:
+                VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType2UI:
+                VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType3UI:
+                VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, LArrayAddress);
+              GLSLType4UI:
+                VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, LArrayAddress);
+            else
+              Assert(False, glsErrorEx + glsUnknownType);
+            end;
+          end
+          else
+            DisableVertexAttribArray(L);
+        end;
+      end // of Generic attributes
+      else
+      // Build-in attributes
+      begin
+        T := 8;
+        for A := attrTexCoord7 downto attrTexCoord0 do
+        begin
+          Dec(T);
+          ClientActiveTexture(GL_TEXTURE0 + T);
+          if LMesh.FAttributes[A] then
+          begin
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[A]),
+              GLSLTypeEnum(LMesh.FType[A]), 0, LMesh.FAttributeArrays[A].List);
+          end
+          else if LMesh.FAttributes[attrTexCoord0] then
+          begin
+            // Make first texture coordinates same for other, need for multitexturing
+            EnableClientState(GL_TEXTURE_COORD_ARRAY);
+            TexCoordPointer(GLSLTypeComponentCount(LMesh.FType[attrTexCoord0]),
+              GLSLTypeEnum(LMesh.FType[attrTexCoord0]), 0,
+              LMesh.FAttributeArrays[attrTexCoord0].List);
+          end
+          else
+            DisableClientState(GL_TEXTURE_COORD_ARRAY);
+        end;
+        // Colors
+        if LMesh.FAttributes[attrColor] then
+        begin
+          EnableClientState(GL_COLOR_ARRAY);
+          ColorPointer(GLSLTypeComponentCount(LMesh.FType[attrColor]),
+            GLSLTypeEnum(LMesh.FType[attrColor]), 0,
+            LMesh.FAttributeArrays[attrColor].List);
+        end
+        else
+          DisableClientState(GL_COLOR_ARRAY);
+        // Normals
+        if LMesh.FAttributes[attrNormal] and
+          (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
+        begin
+          EnableClientState(GL_NORMAL_ARRAY);
+          NormalPointer(GLSLTypeEnum(LMesh.FType[attrNormal]), 0,
+            LMesh.FAttributeArrays[attrNormal].List);
+        end
+        else
+          DisableClientState(GL_NORMAL_ARRAY);
+        // Positions
+        if LMesh.FAttributes[attrPosition] then
+        begin
+          EnableClientState(GL_VERTEX_ARRAY);
+          VertexPointer(GLSLTypeComponentCount(LMesh.FType[attrPosition]),
+            GLSLTypeEnum(LMesh.FType[attrPosition]), 0,
+            LMesh.FAttributeArrays[attrPosition].List);
+        end
+        else
+          DisableClientState(GL_VERTEX_ARRAY);
+      end; // Build-in attributes
+
+      ARci.PipelineTransformation.LoadMatrices;
+
+      if LMesh.FRestartIndex > $FFFF then
+        glType := GL_UNSIGNED_INT
+      else
+        glType := GL_UNSIGNED_SHORT;
+      LArrayAddress := LMesh.FElements.List;
+      LCount := LMesh.FElements.Count;
+
+      repeat
+        // Primitive selection
+        glPrimitive := cPrimitiveType[LMesh.FPrimitive];
+        if ARci.primitiveMask = [mpPATCHES] then
+        begin
+          glPrimitive := GL_PATCHES;
+          if LMesh.FHasIndices and (LMesh.FTrianglesElements.Count > 0) then
+          begin
+            // Replace triangles to patches
+            PatchParameteri(GL_PATCH_VERTICES, 3);
+            LArrayAddress := LMesh.FTrianglesElements.List;
+            LCount := LMesh.FTrianglesElements.Count;
+            glType := GL_UNSIGNED_INT;
+          end
+          else if LMesh.FPrimitive <> mpPATCHES then
+            continue;
+        end
+        else if (ARci.primitiveMask = cAdjacencyPrimitives) and
+          not(LMesh.FPrimitive in cAdjacencyPrimitives) then
+        begin
+          glPrimitive := GL_TRIANGLES_ADJACENCY;
+          if LMesh.FHasIndices and (LMesh.FAdjacencyElements.Count > 0) then
+          begin
+            LArrayAddress := LMesh.FAdjacencyElements.List;
+            LCount := LMesh.FAdjacencyElements.Count;
+            glType := GL_UNSIGNED_INT;
+          end
+          else
+            continue;
+        end
+        else if not(LMesh.FPrimitive in ARci.primitiveMask) then
+          continue;
+
+        repeat
+          Dec(LInstanceID);
+          if Assigned(LInstanceChain) then
+            ApplyInstance(ARci, LInstanceChain, LInstanceID);
+
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
+          if LMesh.FHasIndices then
+            DrawElements(glPrimitive, LCount, glType, LArrayAddress)
+          else
+          begin
+            MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+              PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+          end;
+
+        until LInstanceID <= 0;
+
+        if not Assigned(LMaterial) then
+          break;
+      until not LMaterial.UnApply(ARci);
     finally
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
