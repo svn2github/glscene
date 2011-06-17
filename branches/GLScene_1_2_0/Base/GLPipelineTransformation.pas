@@ -295,6 +295,7 @@ begin
       end
       else
       begin
+        MatrixMode(GL_MODELVIEW);
         LoadMatrixf(PGLFloat(@M));
         MatrixMode(GL_PROJECTION);
         LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix[0]));
