@@ -172,10 +172,12 @@ type
   TGLGuiLayout = class(TGLUpdateableComponent)
   private
     FBitmapFont: TGLCustomBitmapFont;
-    FMaterial: TGLMaterial;
+    FMaterial: TGLLibMaterial;
     FGuiComponents: TGLGuiComponentList;
     FFileName: string;
     FGuiComponentList: TList;
+    function GetMaterial: TGLMaterial;
+    procedure SetMaterial(const Value: TGLMaterial);
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
@@ -199,7 +201,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
   published
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont write FBitmapFont;
-    property Material: TGLMaterial read FMaterial write FMaterial;
+    property Material: TGLMaterial read GetMaterial write SetMaterial;
     property GuiComponents: TGLGuiComponentList read FGuiComponents write
       FGuiComponents;
     property FileName: string read FFileName write SetFileName;
@@ -439,7 +441,7 @@ begin
   FGuiComponentList := TList.Create;
   inherited;
   FGuiComponents := TGLGuiComponentList.Create(Self);
-  FMaterial := TGLMaterial.Create(Self);
+  FMaterial := TGLLibMaterial.Create(nil);
 end;
 
 destructor TGLGuiLayout.Destroy;
@@ -449,6 +451,11 @@ begin
   FGuiComponents.Free;
   inherited;
   FGuiComponentList.Free;
+end;
+
+function TGLGuiLayout.GetMaterial: TGLMaterial;
+begin
+  Result := FMaterial.Material;
 end;
 
 procedure TGLGuiLayout.SetFileName(newName: string);
@@ -462,6 +469,11 @@ begin
       loadFromFile(FFileName);
     end;
   end;
+end;
+
+procedure TGLGuiLayout.SetMaterial(const Value: TGLMaterial);
+begin
+  FMaterial.Material.Assign(Value);
 end;
 
 procedure TGLGuiLayout.LoadFromFile(FN: string);

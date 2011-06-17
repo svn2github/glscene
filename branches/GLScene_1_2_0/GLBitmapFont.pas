@@ -1238,7 +1238,17 @@ procedure TGLCustomBitmapFont.RenderString(var ARci: TRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: Boolean = False);
+var
+  I: Integer;
 begin
+  FlushAccumulator;
+  BuildString(FBatches, AText, aAlignment, aLayout, AColor, aPosition, aReverseY);
+  for I := 0 to High(FBatches) do
+    if Assigned(FBatches[I].Mesh) then
+    begin
+      FBatches[I].Transformation := nil;
+      TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawDynamicBatch(ARci, FBatches[I]);
+    end;
 end;
 
 procedure TGLCustomBitmapFont.AccumulateText(x, y: Single; const AText: UnicodeString; const AColor: TColorVector);
@@ -1276,6 +1286,7 @@ begin
       CreateOrthoMatrix(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, -1, 1);
     LTfRec := ARci.PipelineTransformation.StackTop;
     for I := 0 to High(FBatches) do
+    if Assigned(FBatches[I].Mesh) then
     begin
       FBatches[I].Transformation := @LTfRec;
       TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawDynamicBatch(ARci, FBatches[I]);
