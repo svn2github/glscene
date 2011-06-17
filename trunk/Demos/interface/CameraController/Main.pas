@@ -303,7 +303,7 @@ var
   lNeedToRecalculateZoom: Boolean;
 begin
   GetInput(TButton(Sender));
-  lAngle := ArcCos(VectorAngleCosine(
+  lAngle := Math.ArcCos(VectorAngleCosine(
     VectorNormalize(VectorSubtract(GLSphere1.AbsoluteAffinePosition, GLCamera.AbsoluteAffinePosition)),
     VectorNormalize(VectorSubtract(GLSphere1.AbsoluteAffinePosition, Vector3fMake(DextX, DextY, DextZ))
     )));
@@ -339,7 +339,7 @@ var
   lTime: Single;
 begin
   GetInput(TButton(Sender));
-  lAngle := ArcCos(VectorAngleCosine(
+  lAngle := Math.ArcCos(VectorAngleCosine(
     VectorNormalize(VectorSubtract(GLSphere1.AbsoluteAffinePosition, GLCamera.AbsoluteAffinePosition)),
     VectorNormalize(VectorSubtract(GLSphere1.AbsoluteAffinePosition, Vector3fMake(DextX, DextY, DextZ))
     )));

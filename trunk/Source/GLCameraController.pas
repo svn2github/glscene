@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 
@@ -9,6 +9,8 @@
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
   <b>History : </b><font size=-1><ul>
+
+      <li>17/06/11 - YanP - AdjustScene removed
       <li>14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
       <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
       <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
@@ -182,17 +184,9 @@ type
     //Extended = true -> will test also for Camera.TargetObject
     procedure CheckAssignments(Extended:boolean);
 
-    //after AdjustScene the Camera.DepthofView will be modified
-    //if you want to zoom back in from GUI
-    //you should use something like
-    //  Camera.DepthOfView:=2*Camera.DistanceToTarget+2*camera.TargetObject.BoundingSphereRadius;
     procedure SetOnJobAdded(const Value: TGLCameraJobEvent);
     procedure SetOnJobFinished(const Value: TGLCameraJobEvent);
     procedure SetOnJobStep(const Value: TGLCameraJobEvent);
-  protected
-    //this adjusts camera depth of view after each movement
-    //contains a call to Application.Processmessages for not blocking the app
-    procedure AdjustScene;  
   public
     CameraJobList : TGLCameraJobList;
     //constructor
@@ -329,11 +323,6 @@ begin
     end;
 end;
 
-procedure TGLCameraController.AdjustScene;
-begin
-  Camera.DepthOfView:=2*Camera.DistanceToTarget+2*camera.TargetObject.BoundingSphereRadius;
-  Camera.TransformationChanged;
-end;
 
 procedure TGLCameraController.Step(const deltaTime, newTime: Double);
 var
