@@ -2343,41 +2343,46 @@ end;
 
 function GetGLSceneVersion: string;
 var
-  Project: IOTAProject;
-  FExePath, FProjectPath, FGLSceneRevision: string;
+  LProject: IOTAProject;
+  LExePath, LProjectPath, LSVN, LRevision: string;
 begin
-  FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
+  LRevision := Copy(GLSCENE_REVISION, 12, 4);
 
   // will be assigned after project compilation
   // after each compilation get it from file \.svn\entries in 4-th line
   // and write to file GLSceneRevision
-  // in both fail (no \.svn\entries или GLSceneRevision) get a version value from GLScene.pas
-  Project := GetActiveProject;
-  FExePath := ExtractFilePath(ParamStr(0));
-  if Assigned(Project) then begin
-    FProjectPath := ExtractFilePath(Project.FileName);
-    with TStringList.Create do try
-      // Load
-      LoadFromFile(FProjectPath + '.svn\entries');
-      if (Count >= 4) and (trim(Strings[3]) <> '') then 
-      begin
-        FGLSceneRevision:= trim(Strings[3]);
+  // in both fail (no \.svn\entries or GLSceneRevision file) get a version value from GLScene.pas
+  LProject := GetActiveProject;
+  LExePath := ExtractFilePath(ParamStr(0));
+  if Assigned(LProject) then
+  begin
+    LProjectPath := ExtractFilePath(LProject.FileName);
+    LSVN := LProjectPath + '.svn\entries';
+    if FileExists(LSVN) then
+      with TStringList.Create do
+      try
+        // Load
+        LoadFromFile(LSVN);
+        if (Count >= 4) and (trim(Strings[3]) <> '') then
+        begin
+          LRevision := trim(Strings[3]);
 
-        // Save
-        Clear;
-        Add(FGLSceneRevision);
-        SaveToFile(FExePath + 'GLSceneRevision');
+          // Save
+          Clear;
+          Add(LRevision);
+          SaveToFile(LExePath + 'GLSceneRevision');
+        end;
+      finally
+        Free;
       end;
-    finally
-      Free;
-    end;
-  end else if FileExists(FExePath + 'GLSceneRevision') then 
+  end
+  else if FileExists(LExePath + 'GLSceneRevision') then
   try
     with TStringList.Create do 
     try
-      LoadFromFile(FExePath + 'GLSceneRevision');
+      LoadFromFile(LExePath + 'GLSceneRevision');
       if (Count >= 1) and (trim(Strings[0]) <> '') then
-        FGLSceneRevision:= trim(Strings[0]);
+        LRevision := trim(Strings[0]);
     finally
       Free;
     end;
@@ -2385,7 +2390,7 @@ begin
   end;
 
   // Finally
-  Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
+  Result := Format(GLSCENE_VERSION, [LRevision]);
 end;
 
 function GetProjectTargetName: string;
