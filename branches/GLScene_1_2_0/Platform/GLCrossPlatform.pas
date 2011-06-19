@@ -10,7 +10,7 @@
 
  <b>Historique : </b><font size=-1><ul>
       <li>19/06/11 - Yar - Added IsDirectoryWriteable
-      <li>15/04/11 - AsmRu - Added GetMSWindowsVersion
+      <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
       <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
       <li>04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
                              TAssertErrorProc, GetValueFromStringsIndex and some types
@@ -154,15 +154,15 @@ type
   TGLKeyEvent = TKeyEvent;
   TGLKeyPressEvent = TKeyPressEvent;
 
-  TPlatformInfo=record
-    Major :DWORD;
-    Minor :DWORD;
-    Revision:DWORD;
+  TPlatformInfo = record
+    Major: DWORD;
+    Minor: DWORD;
+    Revision: DWORD;
     Version: string;
     PlatformId   :DWORD;
-    ID:string;
+    ID: string;
     CodeName: string;
-    Description:string;
+    Description: string;
     ProductBuildVersion: string;
   end;
 
@@ -464,6 +464,10 @@ function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
 
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
+
+function GetPlatformInfo: TPlatformInfo;
+function GetPlatformVersion : TPlatformVersion;
+function GetPlatformVersionStr : string;
 
 {: Determine if the directory is writable.<p> }
 function IsDirectoryWriteable(const AName: string): Boolean;
