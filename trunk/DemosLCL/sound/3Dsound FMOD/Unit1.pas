@@ -72,8 +72,7 @@ type
     Panel1: TPanel;
     Button1: TButton;
     btnHowl: TButton;
-    procedure SphereProgress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure SphereProgress(Sender: TObject; const deltaTime, newTime: double);
     procedure TimerTimer(Sender: TObject);
     procedure TrackBarChange(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
@@ -93,74 +92,84 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils;
+uses VectorGeometry, SysUtils, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var s:string;
+var
+  path: UTF8String;
+  p: integer;
 begin
-   s:='..'+pathdelim+'..'+pathdelim+'media'+pathdelim;
-   // Load our sound sample
-   GLSoundLibrary.Samples.AddFile(s+'drumloop.wav','drumloop.wav');
-   GLSoundLibrary.Samples.AddFile(s+'chimes.wav','chimes.wav');
-   GLSoundLibrary.Samples.AddFile(s+'howl.mp3','howl.mp3');
+  path := ExtractFilePath(ParamStrUTF8(0));
+  p := Pos('DemosLCL', path);
+  Delete(path, p + 5, Length(path));
+  path := IncludeTrailingPathDelimiter(path) + 'media';
+  SetCurrentDirUTF8(path);
+  // Load our sound sample
+  GLSoundLibrary.Samples.AddFile('drumloop.wav', 'drumloop.wav');
+  GLSoundLibrary.Samples.AddFile('chimes.wav', 'chimes.wav');
+  GLSoundLibrary.Samples.AddFile('howl.mp3', 'howl.mp3');
 end;
 
-procedure TForm1.SphereProgress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.SphereProgress(Sender: TObject; const deltaTime, newTime: double);
 var
-   alpha : Single;
+  alpha: single;
 begin
-   // Move the red sphere (sound source) along an elliptic path
-   alpha:=60*DegToRad(newTime);
-   TGLSphere(Sender).Position.SetPoint(sin(alpha)*2, 0.5, cos(alpha)*5);
+  // Move the red sphere (sound source) along an elliptic path
+  alpha := 60 * DegToRad(newTime);
+  TGLSphere(Sender).Position.SetPoint(sin(alpha) * 2, 0.5, cos(alpha) * 5);
 end;
 
 procedure TForm1.TrackBarChange(Sender: TObject);
 begin
-   // Rotate the listener around the vertical axis
-   DummyCube.TurnAngle:=TrackBar.Position;
-   Application.ProcessMessages;
+  // Rotate the listener around the vertical axis
+  DummyCube.TurnAngle := TrackBar.Position;
+  Application.ProcessMessages;
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
-   // Move the listener forward/back
-   Mickey.Position.Z:=TrackBar1.Position/10;
-   Application.ProcessMessages;
+  // Move the listener forward/back
+  Mickey.Position.Z := TrackBar1.Position / 10;
+  Application.ProcessMessages;
 end;
 
 procedure TForm1.TimerTimer(Sender: TObject);
 var
-   mngName : String;
+  mngName: string;
 begin
-   // some stats
-   if ActiveSoundManager is TGLSMFMOD then
-      mngName:='FMOD'
-   else mngName:='';
-   if ActiveSoundManager<>nil then
-      Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
-                      [GLSceneViewer.FramesPerSecond, mngName,
-                       ActiveSoundManager.CPUUsagePercent])
-   else Caption:='No active sound manager.';
-   GLSceneViewer.ResetPerformanceMonitor;
+  // some stats
+  if ActiveSoundManager is TGLSMFMOD then
+    mngName := 'FMOD'
+  else
+    mngName := '';
+  if ActiveSoundManager <> nil then
+    Caption := Format('%.2f FPS, %s CPU use : %.2f%%',
+      [GLSceneViewer.FramesPerSecond, mngName,
+      ActiveSoundManager.CPUUsagePercent])
+  else
+    Caption := 'No active sound manager.';
+  GLSceneViewer.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   with TGLBSoundEmitter.Create(Sphere.Behaviours) do begin
-      Source.SoundLibrary:=GLSoundLibrary;
-      Source.SoundName:='chimes.wav';
-      Playing:=True;
-   end;
+  with TGLBSoundEmitter.Create(Sphere.Behaviours) do
+  begin
+    Source.SoundLibrary := GLSoundLibrary;
+    Source.SoundName := 'chimes.wav';
+    Playing := True;
+  end;
 end;
 
 procedure TForm1.btnHowlClick(Sender: TObject);
 begin
-   with TGLBSoundEmitter.Create(Sphere.Behaviours) do begin
-      Source.SoundLibrary:=GLSoundLibrary;
-      Source.SoundName:='howl.mp3';
-      Playing:=True;
-   end;       
+  with TGLBSoundEmitter.Create(Sphere.Behaviours) do
+  begin
+    Source.SoundLibrary := GLSoundLibrary;
+    Source.SoundName := 'howl.mp3';
+    Playing := True;
+  end;
 end;
 
-end.
+end.
+
