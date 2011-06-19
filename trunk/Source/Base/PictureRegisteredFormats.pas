@@ -69,8 +69,10 @@ type
 
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 var
+{$IFNDEF FPC}
   i: integer;
   sl: TStringList;
+{$ENDIF}
   buf: string;
 begin
   Result := nil;
@@ -80,19 +82,19 @@ begin
     buf := Copy(anExtension, 2, MaxInt)
   else
     buf := anExtension;
+  {$IFDEF FPC}
+  Result := TPicture.Create.FindGraphicClassWithFileExt(buf, False);
+  {$ELSE}
   sl := TStringList.Create;
   try
-    {$IFDEF FPC}
-    Result := TPicture.Create.FindGraphicClassWithFileExt(buf, False);
-    {$ELSE}
     HackTPictureRegisteredFormats(sl);
     i := sl.IndexOfName(buf);
     if i >= 0 then
       Result := TGraphicClass(sl.Objects[i]);
-    {$ENDIF}
   finally
     sl.Free;
   end;
+  {$ENDIF}
 end;
 
 type
@@ -111,16 +113,18 @@ type
   {$R-}
 {$endif}
 procedure HackTPictureRegisteredFormats(destList: TStrings);
+{$IFNDEF FPC}
 var
   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats: PAnsiChar;
   iCall: cardinal;
   i: integer;
   list: TList;
   fileFormat: PFileFormat;
+{$ENDIF}
 begin
   {$IFDEF FPC}
   {$MESSAGE WARN 'HackTPictureRegisteredFormats not suppose to get here at all. GraphicClassForExtension must handle this for you.'}
-  destList := nil;
+  destList.Clear;
   {$ELSE}
   {$MESSAGE WARN 'HackTPictureRegisteredFormats will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option'}
 
