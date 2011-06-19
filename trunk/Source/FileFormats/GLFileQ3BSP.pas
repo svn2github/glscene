@@ -8,6 +8,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
       <li>06/06/10 - Yar - Added VectorTypes to uses
       <li>22/01/10 - Yar - Added GLTextureFormat to uses
       <li>31/03/07 - DaStr - Added $I GLScene.inc
@@ -21,7 +22,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   GLVectorFileObjects,
   ApplicationFileIO;
 
@@ -52,6 +54,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+
   Q3BSP,
   VectorGeometry,
   VectorTypes,
@@ -64,7 +67,10 @@ uses
   GLState,
   GLUtils,
   GLMaterial,
-  GLTextureFormat;
+  GLTextureFormat
+  {$IFDEF FPC}
+    ,intfgraphics
+  {$ENDIF} ;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
@@ -140,6 +146,7 @@ var
   facePtr: PBSPFace;
   lightmapLib: TGLMaterialLibrary;
   lightmapBmp: TGLBitmap;
+  {$IFDEF FPC}lightbitInfo : TLazIntfImage; {$ENDIF}
   libMat: TGLLibMaterial;
   bspLightMap: PBSPLightmap;
   plane: THmgPlane;
@@ -180,9 +187,19 @@ begin
             GammaCorrectRGBArray(@bspLightMap.imageBits[0], 128 * 128,
               vQ3BSPLightmapGammaCorrection);
           // convert RAW RGB to BMP
+{$IFDEF FPC}
+            lightbitInfo :=  TLazIntfImage.Create(lightmapBmp.RawImage,true);
+{$ENDIF}
           for y := 0 to 127 do
+{$IFDEF FPC}
             BGR24ToRGB24(@bspLightMap.imageBits[y * 128 * 3],
-              lightmapBmp.ScanLine[127 - y], 128);
+            lightbitInfo.GetDataLineStart(127 - y), 128);
+
+{$ELSE}
+            BGR24ToRGB24(@bspLightMap.imageBits[y * 128 * 3],
+            lightmapBmp.ScanLine[127 - y], 128);
+
+{$ENDIF}
           // spawn lightmap
           libMat := lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
           with libMat.Material.Texture do

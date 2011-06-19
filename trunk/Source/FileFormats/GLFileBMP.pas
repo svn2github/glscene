@@ -14,7 +14,7 @@ unit GLFileBMP;
 
 interface
 
-{.$I GLScene.inc}
+{$I GLScene.inc}
 
 uses
   Classes,
