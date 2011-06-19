@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLCrossPlatform<p>
@@ -9,7 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>15/04/11 - Yar - Added GetMSWindowsVersion
+      <li>19/06/11 - Yar - Added IsDirectoryWriteable
+      <li>15/04/11 - AsmRu - Added GetMSWindowsVersion
       <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
       <li>04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
                              TAssertErrorProc, GetValueFromStringsIndex and some types
@@ -464,16 +465,10 @@ function HalfToFloat(Half: THalfFloat): Single;
 
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
 
-{$IFDEF MSWINDOWS}
-function GetMSWindowsVersion: TMSWindowsVersion;
-{$ENDIF}
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+{: Determine if the directory is writable.<p> }
+function IsDirectoryWriteable(const AName: string): Boolean;
+
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 uses
 {$IFDEF MSWINDOWS}ShellApi{$ENDIF}
@@ -1505,6 +1500,19 @@ const
     'Apple MacOSX');
 begin
   Result := VersStr[GetPlatformVersion];
+end;
+
+function IsDirectoryWriteable(const AName: string): Boolean;
+var
+  LFileName: String;
+  LHandle: THandle;
+begin
+  LFileName := IncludeTrailingPathDelimiter(AName) + 'chk.tmp';
+  LHandle := CreateFile(PChar(LFileName), GENERIC_READ or GENERIC_WRITE, 0, nil,
+    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY or FILE_FLAG_DELETE_ON_CLOSE, 0);
+  Result := LHandle <> INVALID_HANDLE_VALUE;
+  if Result then
+    CloseHandle(LHandle);
 end;
 
 initialization
