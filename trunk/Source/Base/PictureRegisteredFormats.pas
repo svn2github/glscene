@@ -6,7 +6,8 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
+      <li>19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats
       <li>31/05/10 - Yar - Fixes for Linux x64
       <li>25/01/10 - DaStr - Updated warning about a possible crash while using the
@@ -81,10 +82,14 @@ begin
     buf := anExtension;
   sl := TStringList.Create;
   try
+    {$IFDEF FPC}
+    Result := TPicture.Create.FindGraphicClassWithFileExt(buf, False);
+    {$ELSE}
     HackTPictureRegisteredFormats(sl);
     i := sl.IndexOfName(buf);
     if i >= 0 then
       Result := TGraphicClass(sl.Objects[i]);
+    {$ENDIF}
   finally
     sl.Free;
   end;
@@ -108,12 +113,16 @@ type
 procedure HackTPictureRegisteredFormats(destList: TStrings);
 var
   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats: PAnsiChar;
-  iCall: Cardinal;
+  iCall: cardinal;
   i: integer;
   list: TList;
   fileFormat: PFileFormat;
 begin
-  // Warning: This will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option.
+  {$IFDEF FPC}
+  {$MESSAGE WARN 'HackTPictureRegisteredFormats not suppose to get here at all. GraphicClassForExtension must handle this for you.'}
+  destList := nil;
+  {$ELSE}
+  {$MESSAGE WARN 'HackTPictureRegisteredFormats will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option'}
 
   pRegisterFileFormat := PAnsiChar(@TPicture.RegisterFileFormat);
   if pRegisterFileFormat[0] = #$FF then // in case of BPL redirector
@@ -133,6 +142,7 @@ begin
         TObject(fileFormat.GraphicClass));
     end;
   end;
+  {$ENDIF}
 end;
 
 {$ifdef HackTPictureRegisteredFormats_Disable_RangeCheck}
@@ -141,3 +151,4 @@ end;
 {$endif}
 
 end.
+
