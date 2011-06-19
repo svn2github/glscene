@@ -1,6 +1,6 @@
-//
+
 // This unit is part of the GLScene Project, http://glscene.org
-//
+
 {: Utils3DS<p>
 
    Utility functions for the universal 3DS file reader and writer (TFile3DS).
@@ -8,6 +8,7 @@
    they deal actually with the database and chunks.
 
  <b>History :</b><font size=-1><ul>
+      <li>19/06/11 - Yar - Bugfixed undefined result of GetKFSegment (thanks to Johannes Pretorius, Bugtracker ID = 3319394)
       <li>12/06/10 - Yar - Fixes for Linux x64
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>02/11/07 - DaStr - Fixed incorrect positioning when importing 3ds
@@ -47,20 +48,25 @@ function GetViewport(const Source: TFile3DS; var DB: TDatabase3DS): TViewport3DS
 // functions to retrieve/modify data related to materials, lights and objects (meshs)
 procedure AddChild(Parent, Child: PChunk3DS);
 procedure AddChildOrdered(Parent, Child: PChunk3DS);
-function FindChunk(Top: PChunk3DS; Tag: Word): PChunk3DS;
-function FindNextChunk(Local: PChunk3DS; Tag: Word): PChunk3DS;
+function FindChunk(Top: PChunk3DS; Tag: word): PChunk3DS;
+function FindNextChunk(Local: PChunk3DS; Tag: word): PChunk3DS;
 procedure FreeChunkData(var Chunk: PChunk3DS);
-function GetCameraByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TCamera3DS;
-function GetCameraCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetChunkValue(Tag: Word): Integer;
-function GetMaterialByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TMaterial3DS;
-function GetMaterialCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetMeshByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TMesh3DS;
-function GetMeshCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetOmnilightByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TLight3DS;
-function GetSpotlightByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TLight3DS;
-function GetOmnilightCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetSpotlightCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetCameraByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TCamera3DS;
+function GetCameraCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetChunkValue(Tag: word): integer;
+function GetMaterialByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TMaterial3DS;
+function GetMaterialCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetMeshByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TMesh3DS;
+function GetMeshCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetOmnilightByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TLight3DS;
+function GetSpotlightByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TLight3DS;
+function GetOmnilightCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetSpotlightCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 procedure InitChunk(var Chunk: PChunk3DS);
 procedure ReleaseCamera(Camera: PCamera3DS);
 procedure ReleaseChunk(var Chunk: PChunk3DS);
@@ -73,32 +79,46 @@ procedure ReleaseMeshObj(Mesh: PMesh3DS);
 function GetKFSettings(const Source: TFile3DS; var DB: TDatabase3DS): TKFSets3DS;
 
 procedure ReleaseCameraMotion(Camera: PKFCamera3DS);
-procedure GetCameraNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
-function GetCameraNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetCameraMotion(const Source: TFile3DS; CamChunk, TargetChunk: PChunk3DS): TKFCamera3DS;
-function GetCameraMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TKFCamera3DS;
+procedure GetCameraNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
+function GetCameraNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetCameraMotion(const Source: TFile3DS;
+  CamChunk, TargetChunk: PChunk3DS): TKFCamera3DS;
+function GetCameraMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TKFCamera3DS;
 
 procedure ReleaseAmbientLightMotion(Light: PKFAmbient3DS);
-function GetAmbientLightMotion(const Source: TFile3DS; var DB: TDatabase3DS): TKFAmbient3DS;
+function GetAmbientLightMotion(const Source: TFile3DS;
+  var DB: TDatabase3DS): TKFAmbient3DS;
 
-procedure InitObjectMotion(var Obj: TKFMesh3DS; NewNPKeys, NewNRKeys, NewNSKeys, NewNMKeys, NewNHKeys: Cardinal);
+procedure InitObjectMotion(var Obj: TKFMesh3DS;
+  NewNPKeys, NewNRKeys, NewNSKeys, NewNMKeys, NewNHKeys: cardinal);
 procedure ReleaseObjectMotion(Obj: PKFMesh3DS);
-procedure GetObjectNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
-function GetObjectNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
-function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFMesh3DS;
-function GetObjectMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFMesh3DS;
+procedure GetObjectNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
+function GetObjectNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
+function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFMesh3DS;
+function GetObjectMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFMesh3DS;
 
 procedure ReleaseOmnilightMotion(Light: PKFOmni3DS);
-procedure GetOmnilightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
-function GetOmnilightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Cardinal;
-function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFOmni3DS;
-function GetOmnilightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFOmni3DS;
+procedure GetOmnilightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
+function GetOmnilightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
+function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFOmni3DS;
+function GetOmnilightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFOmni3DS;
 
 procedure ReleaseSpotlightMotion(Spot: PKFSpot3DS);
-procedure GetSpotlightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
-function GetSpotlightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Cardinal;
-function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFSpot3DS;
-function GetSpotlightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFSpot3DS;
+procedure GetSpotlightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
+function GetSpotlightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
+function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFSpot3DS;
+function GetSpotlightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFSpot3DS;
 
 // version information
 function GetM3dMagicRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLevel;
@@ -107,14 +127,17 @@ function GetKfRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLev
 function GetDatabaseRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLevel;
 
 // support functions for text output of chunk and database contents
-procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS; IndentLevel: Integer);
-function ChunkTagToString(Tag: Word): string;
-procedure DumpChunk(const Source: TFile3DS; var Strings: TStrings; Chunk: PChunk3DS; IndentLevel: Integer; DumpLevel: TDumpLevel);
-procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: Integer);
+procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS;
+  IndentLevel: integer);
+function ChunkTagToString(Tag: word): string;
+procedure DumpChunk(const Source: TFile3DS; var Strings: TStrings;
+  Chunk: PChunk3DS; IndentLevel: integer; DumpLevel: TDumpLevel);
+procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: integer);
 
 // support functions for chunk handling
 procedure DeleteChunk(var Chunk: PChunk3DS);
-function FindNamedObjectByIndex(Source: TFile3DS; DB: TDatabase3DS; AType: Word; Index: Integer): PChunk3DS;
+function FindNamedObjectByIndex(Source: TFile3DS; DB: TDatabase3DS;
+  AType: word; Index: integer): PChunk3DS;
 
 // error message routines
 procedure ShowError(ErrorMessage: string);
@@ -130,7 +153,7 @@ uses SysUtils,
 type
   E3DSError = class(Exception);
 
-  //----------------- error handling ------------------------------------------------------------------------------------
+//----------------- error handling ------------------------------------------------------------------------------------
 
 procedure ShowError(ErrorMessage: string);
 begin
@@ -148,7 +171,7 @@ end;
 
 function InitMeshSet: TMeshSet3DS;
 
-// initializes a mesh settings structure
+  // initializes a mesh settings structure
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -169,12 +192,10 @@ end;
 
 function GetMeshSet(const Source: TFile3DS; var DB: TDatabase3DS): TMeshSet3DS;
 
-// retrieves the mesh settings from the database
+  // retrieves the mesh settings from the database
 
 var
-  MDataChunk,
-    ColorChunk,
-    Chunk: PChunk3DS;
+  MDataChunk, ColorChunk, Chunk: PChunk3DS;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -304,7 +325,7 @@ end;
 
 function InitAtmosphere: TAtmosphere3DS;
 
-// initializes a atmosphere structure
+  // initializes a atmosphere structure
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -330,14 +351,10 @@ end;
 
 function GetAtmosphere(const Source: TFile3DS; var DB: TDatabase3DS): TAtmosphere3DS;
 
-// retrieves the atmospheric settings from database
+  // retrieves the atmospheric settings from database
 
 var
-  MDataChunk,
-    FogChunk,
-    BgnChunk,
-    ColorChunk,
-    Chunk: PChunk3DS;
+  MDataChunk, FogChunk, BgnChunk, ColorChunk, Chunk: PChunk3DS;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -461,7 +478,7 @@ end;
 
 function InitBackground: TBackground3DS;
 
-// initializes the TBackground3DS structure
+  // initializes the TBackground3DS structure
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -472,15 +489,10 @@ end;
 
 function GetBackground(const Source: TFile3DS; var DB: TDatabase3DS): TBackground3DS;
 
-// retrieves the background settings from the database
+  // retrieves the background settings from the database
 
 var
-  MDataChunk,
-    ColorChunk,
-    TopColor,
-    MidColor,
-    BotColor,
-    Chunk: PChunk3DS;
+  MDataChunk, ColorChunk, TopColor, MidColor, BotColor, Chunk: PChunk3DS;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -641,10 +653,9 @@ end;
 function GetViewportEntry(Source: TFile3DS; Section: PChunk3DS): TViewport3DS;
 
 var
-  Chunk,
-    VLayout: PChunk3DS;
-  PortIndex: Integer;
-  foundV3: Boolean;
+  Chunk, VLayout: PChunk3DS;
+  PortIndex: integer;
+  foundV3: boolean;
 
 begin
   Result := InitViewport;
@@ -662,57 +673,57 @@ begin
       begin
         case Chunk^.Tag of
           VIEWPORT_SIZE:
+          begin
+            Source.ReadChunkData(Chunk);
+            Size.XPos := Chunk^.Data.ViewportSize^.XPos;
+            Size.YPos := Chunk^.Data.ViewportSize^.YPos;
+            Size.Width := Chunk^.Data.ViewportSize^.Width;
+            Size.Height := Chunk^.Data.ViewportSize^.Height;
+            FreeChunkData(Chunk);
+          end;
+          VIEWPORT_DATA_3:
+          begin
+            foundV3 := True;
+            if PortIndex = VLayout^.Data.ViewportLayout^.Top then
             begin
               Source.ReadChunkData(Chunk);
-              Size.XPos := Chunk^.Data.ViewportSize^.XPos;
-              Size.YPos := Chunk^.Data.ViewportSize^.YPos;
-              Size.Width := Chunk^.Data.ViewportSize^.Width;
-              Size.Height := Chunk^.Data.ViewportSize^.Height;
-              FreeChunkData(Chunk);
-            end;
-          VIEWPORT_DATA_3:
-            begin
-              foundV3 := True;
-              if PortIndex = VLayout^.Data.ViewportLayout^.Top then
-              begin
-                Source.ReadChunkData(Chunk);
-                case Chunk^.Data.ViewportData^.View of
-                  1:
-                    AType := vtTopView3DS;
-                  2:
-                    AType := vtBottomView3DS;
-                  3:
-                    AType := vtLeftView3DS;
-                  4:
-                    AType := vtRightView3DS;
-                  5:
-                    AType := vtFrontView3DS;
-                  6:
-                    AType := vtBackView3DS;
-                  7:
-                    AType := vtUserView3DS;
-                  18:
-                    AType := vtSpotlightView3DS;
-                  $FFFF:
-                    AType := vtCameraView3DS;
+              case Chunk^.Data.ViewportData^.View of
+                1:
+                  AType := vtTopView3DS;
+                2:
+                  AType := vtBottomView3DS;
+                3:
+                  AType := vtLeftView3DS;
+                4:
+                  AType := vtRightView3DS;
+                5:
+                  AType := vtFrontView3DS;
+                6:
+                  AType := vtBackView3DS;
+                7:
+                  AType := vtUserView3DS;
+                18:
+                  AType := vtSpotlightView3DS;
+                $FFFF:
+                  AType := vtCameraView3DS;
                 else
                   AType := vtNoView3DS;
-                end;
-
-                Ortho.Zoom := Chunk^.Data.ViewportData^.ZoomFactor;
-                User.Zoom := Chunk^.Data.ViewportData^.ZoomFactor;
-                Ortho.Center.X := Chunk^.Data.ViewportData^.Center.X;
-                User.Center.X := Chunk^.Data.ViewportData^.Center.X;
-                Ortho.Center.Y := Chunk^.Data.ViewportData^.Center.Y;
-                User.Center.y := Chunk^.Data.ViewportData^.Center.Y;
-                Ortho.Center.Z := Chunk^.Data.ViewportData^.Center.Z;
-                User.Center.z := Chunk^.Data.ViewportData^.Center.Z;
-                User.HorAng := Chunk^.Data.ViewportData^.HorizAng;
-                User.VerAng := Chunk^.Data.ViewportData^.VertAng;
-                CameraStr := string(Chunk^.Data.ViewportData^.CamNameStr);
               end;
-              Inc(PortIndex);
+
+              Ortho.Zoom := Chunk^.Data.ViewportData^.ZoomFactor;
+              User.Zoom := Chunk^.Data.ViewportData^.ZoomFactor;
+              Ortho.Center.X := Chunk^.Data.ViewportData^.Center.X;
+              User.Center.X := Chunk^.Data.ViewportData^.Center.X;
+              Ortho.Center.Y := Chunk^.Data.ViewportData^.Center.Y;
+              User.Center.y := Chunk^.Data.ViewportData^.Center.Y;
+              Ortho.Center.Z := Chunk^.Data.ViewportData^.Center.Z;
+              User.Center.z := Chunk^.Data.ViewportData^.Center.Z;
+              User.HorAng := Chunk^.Data.ViewportData^.HorizAng;
+              User.VerAng := Chunk^.Data.ViewportData^.VertAng;
+              CameraStr := string(Chunk^.Data.ViewportData^.CamNameStr);
             end;
+            Inc(PortIndex);
+          end;
           VIEWPORT_DATA:
             if not foundV3 then
             begin
@@ -738,8 +749,8 @@ begin
                     AType := vtSpotlightView3DS;
                   $FFFF:
                     AType := vtCameraView3DS;
-                else
-                  AType := vtNoView3DS;
+                  else
+                    AType := vtNoView3DS;
                 end;
 
                 Ortho.Zoom := Chunk^.Data.ViewportData^.ZoomFactor;
@@ -787,7 +798,7 @@ end;
 
 //----------------- helper funcs for text output ----------------------------------------------------------------------
 
-function ChunkTagToString(Tag: Word): string;
+function ChunkTagToString(Tag: word): string;
 
 begin
   case Tag of
@@ -1456,8 +1467,8 @@ begin
     P_RANGES: Result := 'P_RANGES';
 
     P_PROC_DATA: Result := 'P_PROC_DATA'
-  else
-    Result := 'UNKNOWN_CHUNK';
+    else
+      Result := 'UNKNOWN_CHUNK';
   end;
 end;
 
@@ -1466,27 +1477,28 @@ end;
 const
   IndentString: string = #9#9#9#9#9#9#9#9#9#9#9#9;
 
-function Indent(Level: Integer): string;
+function Indent(Level: integer): string;
 begin
   Result := Copy(IndentString, 1, Level);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS; IndentLevel: Integer);
+procedure ChunkHeaderReport(var Strings: TStrings; Chunk: PChunk3DS;
+  IndentLevel: integer);
 
 var
   OutString: string;
 
 begin
-  OutString := Format('%sChunk %s ($%x), Length is %d ($%3:x)', [Indent(IndentLevel),
-    ChunkTagToString(Chunk^.Tag), Chunk^.Tag, Chunk^.Size]);
+  OutString := Format('%sChunk %s ($%x), Length is %d ($%3:x)',
+    [Indent(IndentLevel), ChunkTagToString(Chunk^.Tag), Chunk^.Tag, Chunk^.Size]);
   Strings.Add(OutString);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: Integer);
+procedure DumpKeyHeader(Strings: TStrings; Key: TKeyHeader3DS; IndentLevel: integer);
 
 var
   Output: string;
@@ -1508,7 +1520,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure DumpChunk(const Source: TFile3DS; var Strings: TStrings; Chunk: PChunk3DS; IndentLevel: Integer; DumpLevel: TDumpLevel);
+procedure DumpChunk(const Source: TFile3DS; var Strings: TStrings;
+  Chunk: PChunk3DS; IndentLevel: integer; DumpLevel: TDumpLevel);
 
 // retrieves the Data for a Chunk from the given Source, formats the Data into
 // one or more lines of text and puts the lines into the given Strings parameter
@@ -1517,7 +1530,7 @@ var
   Child: PChunk3DS;
   Output: string;
   ID: string;
-  I: Integer;
+  I: integer;
 
 begin
   ChunkHeaderReport(Strings, Chunk, IndentLevel);
@@ -1527,922 +1540,997 @@ begin
   begin
     case Chunk^.Tag of
       MESH_VERSION:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sVersion %d', [ID, Chunk^.Data.MeshVersion^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sVersion %d', [ID, Chunk^.Data.MeshVersion^]);
+        Strings.Add(Output);
+      end;
       M3D_VERSION:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sVersion %d', [ID, Chunk^.Data.M3DVersion^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sVersion %d', [ID, Chunk^.Data.M3DVersion^]);
+        Strings.Add(Output);
+      end;
       COLOR_F:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R:  %f, ', [ID, Chunk^.Data.ColorF^.Red]);
-          Output := Output + Format(' G:  %f, ', [Chunk^.Data.ColorF^.Green]);
-          Output := Output + Format(' B:  %f', [Chunk^.Data.ColorF^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R:  %f, ', [ID, Chunk^.Data.ColorF^.Red]);
+        Output := Output + Format(' G:  %f, ', [Chunk^.Data.ColorF^.Green]);
+        Output := Output + Format(' B:  %f', [Chunk^.Data.ColorF^.Blue]);
+        Strings.Add(Output);
+      end;
       LIN_COLOR_F:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R:  %f, ', [ID, Chunk^.Data.LinColorF^.Red]);
-          Output := Output + Format(' G:  %f, ', [Chunk^.Data.LinColorF^.Green]);
-          Output := Output + Format(' B:  %f', [Chunk^.Data.LinColorF^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R:  %f, ', [ID, Chunk^.Data.LinColorF^.Red]);
+        Output := Output + Format(' G:  %f, ', [Chunk^.Data.LinColorF^.Green]);
+        Output := Output + Format(' B:  %f', [Chunk^.Data.LinColorF^.Blue]);
+        Strings.Add(Output);
+      end;
       COLOR_24:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.Color24^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.Color24^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.Color24^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.Color24^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.Color24^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.Color24^.Blue]);
+        Strings.Add(Output);
+      end;
       LIN_COLOR_24:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.LinColor24^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.LinColor24^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.LinColor24^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.LinColor24^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.LinColor24^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.LinColor24^.Blue]);
+        Strings.Add(Output);
+      end;
       INT_PERCENTAGE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sPercentage of %d%%', [ID, Chunk^.Data.IntPercentage^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sPercentage of %d%%', [ID, Chunk^.Data.IntPercentage^]);
+        Strings.Add(Output);
+      end;
       FLOAT_PERCENTAGE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sPercentage of  %f%%', [ID, Chunk^.Data.FloatPercentage^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sPercentage of  %f%%', [ID, Chunk^.Data.FloatPercentage^]);
+        Strings.Add(Output);
+      end;
       MASTER_SCALE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMaster Scale  %f', [ID, Chunk^.Data.MasterScale^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMaster Scale  %f', [ID, Chunk^.Data.MasterScale^]);
+        Strings.Add(Output);
+      end;
       BIT_MAP:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBitmap Name %s', [ID, Chunk^.Data.BitMapName^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBitmap Name %s', [ID, Chunk^.Data.BitMapName^]);
+        Strings.Add(Output);
+      end;
       V_GRADIENT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMidpoint  %f', [ID, Chunk^.Data.VGradient^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMidpoint  %f', [ID, Chunk^.Data.VGradient^]);
+        Strings.Add(Output);
+      end;
       LO_SHADOW_BIAS:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBias of  %f', [ID, Chunk^.Data.LoShadowBias^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBias of  %f', [ID, Chunk^.Data.LoShadowBias^]);
+        Strings.Add(Output);
+      end;
       HI_SHADOW_BIAS:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBias of  %f', [ID, Chunk^.Data.HiShadowBias^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBias of  %f', [ID, Chunk^.Data.HiShadowBias^]);
+        Strings.Add(Output);
+      end;
       RAY_BIAS:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBias of  %f', [ID, Chunk^.Data.RayBias^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBias of  %f', [ID, Chunk^.Data.RayBias^]);
+        Strings.Add(Output);
+      end;
       SHADOW_MAP_SIZE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sSize of %d', [ID, Chunk^.Data.ShadowMapSize^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sSize of %d', [ID, Chunk^.Data.ShadowMapSize^]);
+        Strings.Add(Output);
+      end;
       SHADOW_SAMPLES:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sSize of %d', [ID, Chunk^.Data.ShadowSamples^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sSize of %d', [ID, Chunk^.Data.ShadowSamples^]);
+        Strings.Add(Output);
+      end;
       SHADOW_RANGE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sRange of %d', [ID, Chunk^.Data.ShadowRange^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sRange of %d', [ID, Chunk^.Data.ShadowRange^]);
+        Strings.Add(Output);
+      end;
       SHADOW_FILTER:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sFilter of  %f', [ID, Chunk^.Data.ShadowFilter^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sFilter of  %f', [ID, Chunk^.Data.ShadowFilter^]);
+        Strings.Add(Output);
+      end;
       O_CONSTS:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sPlane at  %f,  %f,  %f', [ID, Chunk^.Data.OConsts^.X, Chunk^.Data.OConsts^.Y, Chunk^.Data.OConsts^.Z]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sPlane at  %f,  %f,  %f',
+          [ID, Chunk^.Data.OConsts^.X, Chunk^.Data.OConsts^.Y, Chunk^.Data.OConsts^.Z]);
+        Strings.Add(Output);
+      end;
       FOG:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sNear plane at  %f', [ID, Chunk^.Data.Fog^.NearPlaneDist]);
-          Strings.Add(Output);
-          Output := Format('%sNear Density of  %f', [ID, Chunk^.Data.Fog^.NearPlaneDensity]);
-          Strings.Add(Output);
-          Output := Format('%sFar plane at  %f', [ID, Chunk^.Data.Fog^.FarPlaneDist]);
-          Strings.Add(Output);
-          Output := Format('%sFar Density of  %f', [ID, Chunk^.Data.Fog^.FarPlaneDensity]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sNear plane at  %f', [ID, Chunk^.Data.Fog^.NearPlaneDist]);
+        Strings.Add(Output);
+        Output := Format('%sNear Density of  %f',
+          [ID, Chunk^.Data.Fog^.NearPlaneDensity]);
+        Strings.Add(Output);
+        Output := Format('%sFar plane at  %f', [ID, Chunk^.Data.Fog^.FarPlaneDist]);
+        Strings.Add(Output);
+        Output := Format('%sFar Density of  %f',
+          [ID, Chunk^.Data.Fog^.FarPlaneDensity]);
+        Strings.Add(Output);
+      end;
       LAYER_FOG:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sFog Z range is  %f to  %f', [ID, Chunk^.Data.LayerFog^.ZMin, Chunk^.Data.LayerFog^.ZMax]);
-          Strings.Add(Output);
-          Output := Format('%sFog Density is  %f', [ID, Chunk^.Data.LayerFog^.Density]);
-          Strings.Add(Output);
-          Output := Format('%sFog type of $%x', [ID, Chunk^.Data.LayerFog^.AType]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sFog Z range is  %f to  %f',
+          [ID, Chunk^.Data.LayerFog^.ZMin, Chunk^.Data.LayerFog^.ZMax]);
+        Strings.Add(Output);
+        Output := Format('%sFog Density is  %f', [ID, Chunk^.Data.LayerFog^.Density]);
+        Strings.Add(Output);
+        Output := Format('%sFog type of $%x', [ID, Chunk^.Data.LayerFog^.AType]);
+        Strings.Add(Output);
+      end;
       DISTANCE_CUE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sNear plane at  %f', [ID, Chunk^.Data.DistanceCue^.NearPlaneDist]);
-          Strings.Add(Output);
-          Output := Format('%sNear Density of  %f', [ID, Chunk^.Data.DistanceCue^.NearPlaneDimming]);
-          Strings.Add(Output);
-          Output := Format('%sFar plane at  %f', [ID, Chunk^.Data.DistanceCue^.FarPlaneDist]);
-          Strings.Add(Output);
-          Output := Format('%sFar Density of  %f', [ID, Chunk^.Data.DistanceCue^.FarPlaneDimming]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sNear plane at  %f',
+          [ID, Chunk^.Data.DistanceCue^.NearPlaneDist]);
+        Strings.Add(Output);
+        Output := Format('%sNear Density of  %f',
+          [ID, Chunk^.Data.DistanceCue^.NearPlaneDimming]);
+        Strings.Add(Output);
+        Output := Format('%sFar plane at  %f',
+          [ID, Chunk^.Data.DistanceCue^.FarPlaneDist]);
+        Strings.Add(Output);
+        Output := Format('%sFar Density of  %f',
+          [ID, Chunk^.Data.DistanceCue^.FarPlaneDimming]);
+        Strings.Add(Output);
+      end;
       VIEW_TOP,
-        VIEW_BOTTOM,
-        VIEW_LEFT,
-        VIEW_RIGHT,
-        VIEW_FRONT,
-        VIEW_BACK:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sTarget at  %f,  %f,  %f', [ID, Chunk^.Data.ViewStandard^.ViewTargetCoord.X,
-            Chunk^.Data.ViewStandard^.ViewTargetCoord.Y,
-              Chunk^.Data.ViewStandard^.ViewTargetCoord.Z]);
-          Strings.Add(Output);
-          Output := Format('%sView Width of  %f', [ID, Chunk^.Data.ViewStandard^.ViewWidth]);
-          Strings.Add(Output);
-        end;
+      VIEW_BOTTOM,
+      VIEW_LEFT,
+      VIEW_RIGHT,
+      VIEW_FRONT,
+      VIEW_BACK:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sTarget at  %f,  %f,  %f',
+          [ID, Chunk^.Data.ViewStandard^.ViewTargetCoord.X,
+          Chunk^.Data.ViewStandard^.ViewTargetCoord.Y,
+          Chunk^.Data.ViewStandard^.ViewTargetCoord.Z]);
+        Strings.Add(Output);
+        Output := Format('%sView Width of  %f',
+          [ID, Chunk^.Data.ViewStandard^.ViewWidth]);
+        Strings.Add(Output);
+      end;
       VIEW_USER:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sTarget at  %f,  %f,  %f', [ID, Chunk^.Data.ViewUser^.ViewTargetCoord.X,
-            Chunk^.Data.ViewUser^.ViewTargetCoord.Y,
-              Chunk^.Data.ViewUser^.ViewTargetCoord.Z]);
-          Strings.Add(Output);
-          Output := Format('%sView Width of  %f', [ID, Chunk^.Data.ViewUser^.ViewWidth]);
-          Strings.Add(Output);
-          Output := Format('%sHorizontal View angle of  %f', [ID, Chunk^.Data.ViewUser^.XYViewAngle]);
-          Strings.Add(Output);
-          Output := Format('%sVertical View angle of  %f', [ID, Chunk^.Data.ViewUser^.YZViewAngle]);
-          Strings.Add(Output);
-          Output := Format('%sBank angle of  %f', [ID, Chunk^.Data.ViewUser^.BankAngle]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sTarget at  %f,  %f,  %f',
+          [ID, Chunk^.Data.ViewUser^.ViewTargetCoord.X,
+          Chunk^.Data.ViewUser^.ViewTargetCoord.Y,
+          Chunk^.Data.ViewUser^.ViewTargetCoord.Z]);
+        Strings.Add(Output);
+        Output := Format('%sView Width of  %f', [ID, Chunk^.Data.ViewUser^.ViewWidth]);
+        Strings.Add(Output);
+        Output := Format('%sHorizontal View angle of  %f',
+          [ID, Chunk^.Data.ViewUser^.XYViewAngle]);
+        Strings.Add(Output);
+        Output := Format('%sVertical View angle of  %f',
+          [ID, Chunk^.Data.ViewUser^.YZViewAngle]);
+        Strings.Add(Output);
+        Output := Format('%sBank angle of  %f', [ID, Chunk^.Data.ViewUser^.BankAngle]);
+        Strings.Add(Output);
+      end;
       VIEW_CAMERA:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sCamera Name %s', [ID, Chunk^.Data.ViewCamera^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sCamera Name %s', [ID, Chunk^.Data.ViewCamera^]);
+        Strings.Add(Output);
+      end;
       NAMED_OBJECT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sName: %s', [ID, Chunk^.Data.NamedObject^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sName: %s', [ID, Chunk^.Data.NamedObject^]);
+        Strings.Add(Output);
+      end;
       POINT_ARRAY:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Vertices', [ID, Chunk^.Data.PointArray^.Vertices]);
-          Strings.Add(Output);
-          if DumpLevel = dlMaximumDump then
-            for I := 0 to Chunk^.Data.PointArray^.Vertices - 1 do
-            begin
-              Output := Format('%sVertex %d at  %f,  %f,  %f', [ID, I, Chunk^.Data.PointArray^.PointList^[I].X,
-                Chunk^.Data.PointArray^.PointList^[I].Y,
-                  Chunk^.Data.PointArray^.PointList^[I].Z]);
-              Strings.Add(Output);
-            end;
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Vertices', [ID, Chunk^.Data.PointArray^.Vertices]);
+        Strings.Add(Output);
+        if DumpLevel = dlMaximumDump then
+          for I := 0 to Chunk^.Data.PointArray^.Vertices - 1 do
+          begin
+            Output := Format('%sVertex %d at  %f,  %f,  %f',
+              [ID, I, Chunk^.Data.PointArray^.PointList^[I].X,
+              Chunk^.Data.PointArray^.PointList^[I].Y,
+              Chunk^.Data.PointArray^.PointList^[I].Z]);
+            Strings.Add(Output);
+          end;
+      end;
       POINT_FLAG_ARRAY:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sFlags: %d', [ID, Chunk^.Data.PointFlagArray^.Flags]);
-          Strings.Add(Output);
-          if DumpLevel = dlMaximumDump then
-            for I := 0 to Chunk^.Data.PointFlagArray^.Flags - 1 do
-            begin
-              Output := Format('%sFlag %d is %d', [ID, I, Chunk^.Data.PointFlagArray^.FlagList^[I]]);
-              Strings.Add(Output);
-            end;
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sFlags: %d', [ID, Chunk^.Data.PointFlagArray^.Flags]);
+        Strings.Add(Output);
+        if DumpLevel = dlMaximumDump then
+          for I := 0 to Chunk^.Data.PointFlagArray^.Flags - 1 do
+          begin
+            Output := Format('%sFlag %d is %d',
+              [ID, I, Chunk^.Data.PointFlagArray^.FlagList^[I]]);
+            Strings.Add(Output);
+          end;
+      end;
       FACE_ARRAY:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Faces', [ID, Chunk^.Data.FaceArray^.Faces]);
-          Strings.Add(Output);
-          if DumpLevel = dlMaximumDump then
-            for I := 0 to Chunk^.Data.FaceArray^.Faces - 1 do
-            begin
-              Output := Format('%sFace %d Vertices %d, %d, %d and flag $%x', [ID, I, Chunk^.Data.FaceArray^.FaceList^[I].V1,
-                Chunk^.Data.FaceArray^.FaceList^[I].V2,
-                  Chunk^.Data.FaceArray^.FaceList^[I].V3,
-                  Chunk^.Data.FaceArray^.FaceList^[I].Flag]);
-              Strings.Add(Output);
-            end;
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Faces', [ID, Chunk^.Data.FaceArray^.Faces]);
+        Strings.Add(Output);
+        if DumpLevel = dlMaximumDump then
+          for I := 0 to Chunk^.Data.FaceArray^.Faces - 1 do
+          begin
+            Output := Format('%sFace %d Vertices %d, %d, %d and flag $%x',
+              [ID, I, Chunk^.Data.FaceArray^.FaceList^[I].V1,
+              Chunk^.Data.FaceArray^.FaceList^[I].V2,
+              Chunk^.Data.FaceArray^.FaceList^[I].V3,
+              Chunk^.Data.FaceArray^.FaceList^[I].Flag]);
+            Strings.Add(Output);
+          end;
+      end;
       MSH_MAT_GROUP:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMaterial Name of %s', [ID, Chunk^.Data.MshMatGroup^.MatNameStr]);
-          Strings.Add(Output);
-          Output := Format('%sAssigned to %d Faces', [ID, Chunk^.Data.MshMatGroup^.Faces]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMaterial Name of %s',
+          [ID, Chunk^.Data.MshMatGroup^.MatNameStr]);
+        Strings.Add(Output);
+        Output := Format('%sAssigned to %d Faces',
+          [ID, Chunk^.Data.MshMatGroup^.Faces]);
+        Strings.Add(Output);
+      end;
       MSH_BOXMAP:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBoxmap consists of the following materials:', [ID]);
+        Strings.Add(Output);
+        for I := 0 to 5 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBoxmap consists of the following materials:', [ID]);
+          Output := Format('%s%s', [ID, Chunk^.Data.MshBoxmap^[I]]);
           Strings.Add(Output);
-          for I := 0 to 5 do
-          begin
-            Output := Format('%s%s', [ID, Chunk^.Data.MshBoxmap^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       TEX_VERTS:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Vertices', [ID, Chunk^.Data.TexVerts^.NumCoords]);
+        Strings.Add(Output);
+        if DumpLevel = dlMaximumDump then
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Vertices', [ID, Chunk^.Data.TexVerts^.NumCoords]);
-          Strings.Add(Output);
-          if DumpLevel = dlMaximumDump then
+          for I := 0 to Chunk^.Data.TexVerts^.NumCoords - 1 do
           begin
-            for I := 0 to Chunk^.Data.TexVerts^.NumCoords - 1 do
-            begin
-              Output := Format('%sVertex %d with tex vert of  %f,  %f', [ID, I, Chunk^.Data.TexVerts^.TextVertList^[I].U,
-                Chunk^.Data.TexVerts^.TextVertList^[I].V]);
-              Strings.Add(Output);
-            end;
+            Output := Format('%sVertex %d with tex vert of  %f,  %f',
+              [ID, I, Chunk^.Data.TexVerts^.TextVertList^[I].U,
+              Chunk^.Data.TexVerts^.TextVertList^[I].V]);
+            Strings.Add(Output);
           end;
         end;
+      end;
       MESH_TEXTURE_INFO:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap Type of %d',
+          [ID, Chunk^.Data.MeshTextureInfo^.MapType]);
+        Strings.Add(Output);
+        Output := Format('%sX Tiling of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.XTiling]);
+        Strings.Add(Output);
+        Output := Format('%sY Tiling of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.YTiling]);
+        Strings.Add(Output);
+        Output := Format('%sIcon position of  %f,  %f,  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.IconPos.X,
+          Chunk^.Data.MeshTextureInfo^.IconPos.Y,
+          Chunk^.Data.MeshTextureInfo^.IconPos.Z]);
+        Strings.Add(Output);
+        I := 0;
+        while I < 12 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap Type of %d', [ID, Chunk^.Data.MeshTextureInfo^.MapType]);
+          Output := Format('%s[%d]  %f [%d]  %f [%d]  %f',
+            [ID, I, Chunk^.Data.MeshTextureInfo^.XMatrix[I], I +
+            1, Chunk^.Data.MeshTextureInfo^.XMatrix[I + 1], I +
+            2, Chunk^.Data.MeshTextureInfo^.XMatrix[I + 2]]);
           Strings.Add(Output);
-          Output := Format('%sX Tiling of  %f', [ID, Chunk^.Data.MeshTextureInfo^.XTiling]);
-          Strings.Add(Output);
-          Output := Format('%sY Tiling of  %f', [ID, Chunk^.Data.MeshTextureInfo^.YTiling]);
-          Strings.Add(Output);
-          Output := Format('%sIcon position of  %f,  %f,  %f', [ID, Chunk^.Data.MeshTextureInfo^.IconPos.X,
-            Chunk^.Data.MeshTextureInfo^.IconPos.Y,
-              Chunk^.Data.MeshTextureInfo^.IconPos.Z]);
-          Strings.Add(Output);
-          I := 0;
-          while I < 12 do
-          begin
-            Output := Format('%s[%d]  %f [%d]  %f [%d]  %f', [ID, I, Chunk^.Data.MeshTextureInfo^.XMatrix[I],
-              I + 1, Chunk^.Data.MeshTextureInfo^.XMatrix[I + 1],
-                I + 2, Chunk^.Data.MeshTextureInfo^.XMatrix[I + 2]]);
-            Strings.Add(Output);
-            Inc(I, 3);
-          end;
-          Output := Format('%sScaling Value of  %f', [ID, Chunk^.Data.MeshTextureInfo^.IconScaling]);
-          Strings.Add(Output);
-          Output := Format('%sPlanar Icon Width of  %f', [ID, Chunk^.Data.MeshTextureInfo^.IconWidth]);
-          Strings.Add(Output);
-          Output := Format('%sPlanar Icon Height of  %f', [ID, Chunk^.Data.MeshTextureInfo^.IconHeight]);
-          Strings.Add(Output);
-          Output := Format('%sCylinder Icon Height of  %f', [ID, Chunk^.Data.MeshTextureInfo^.CylIconHeight]);
-          Strings.Add(Output);
+          Inc(I, 3);
         end;
+        Output := Format('%sScaling Value of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.IconScaling]);
+        Strings.Add(Output);
+        Output := Format('%sPlanar Icon Width of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.IconWidth]);
+        Strings.Add(Output);
+        Output := Format('%sPlanar Icon Height of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.IconHeight]);
+        Strings.Add(Output);
+        Output := Format('%sCylinder Icon Height of  %f',
+          [ID, Chunk^.Data.MeshTextureInfo^.CylIconHeight]);
+        Strings.Add(Output);
+      end;
       MESH_MATRIX:
+      begin
+        Source.ReadChunkData(Chunk);
+        I := 0;
+        while I < 12 do
         begin
-          Source.ReadChunkData(Chunk);
-          I := 0;
-          while I < 12 do
-          begin
-            Output := Format('%s[%d]  %f [%d]  %f [%d]  %f', [ID, I, Chunk^.Data.MeshMatrix^[I],
-              I + 1, Chunk^.Data.MeshMatrix^[I + 1],
-                I + 2, Chunk^.Data.MeshMatrix^[I + 2]]);
-            Strings.Add(Output);
-            Inc(I, 3);
-          end;
+          Output := Format('%s[%d]  %f [%d]  %f [%d]  %f',
+            [ID, I, Chunk^.Data.MeshMatrix^[I], I + 1,
+            Chunk^.Data.MeshMatrix^[I + 1], I + 2, Chunk^.Data.MeshMatrix^[I + 2]]);
+          Strings.Add(Output);
+          Inc(I, 3);
         end;
+      end;
       PROC_NAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sProcedure Name of %s', [ID, Chunk^.Data.ProcName^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sProcedure Name of %s', [ID, Chunk^.Data.ProcName^]);
+        Strings.Add(Output);
+      end;
       MESH_COLOR:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor index of %d', [ID, Chunk^.Data.MeshColor^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor index of %d', [ID, Chunk^.Data.MeshColor^]);
+        Strings.Add(Output);
+      end;
       N_DIRECT_LIGHT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sLight at  %f,  %f,  %f', [ID, Chunk^.Data.NDirectLight^.X,
-            Chunk^.Data.NDirectLight^.Y,
-              Chunk^.Data.NDirectLight^.Z]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sLight at  %f,  %f,  %f',
+          [ID, Chunk^.Data.NDirectLight^.X, Chunk^.Data.NDirectLight^.Y,
+          Chunk^.Data.NDirectLight^.Z]);
+        Strings.Add(Output);
+      end;
       DL_EXCLUDE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sExclude %s', [ID, Chunk^.Data.DLExclude^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sExclude %s', [ID, Chunk^.Data.DLExclude^]);
+        Strings.Add(Output);
+      end;
       DL_OUTER_RANGE,
-        DL_INNER_RANGE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sRange of  %f', [ID, Chunk^.Data.DlOuterRange^]);
-          Strings.Add(Output);
-        end;
+      DL_INNER_RANGE:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sRange of  %f', [ID, Chunk^.Data.DlOuterRange^]);
+        Strings.Add(Output);
+      end;
       DL_MULTIPLIER:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMultiple of  %f', [ID, Chunk^.Data.DlMultiplier^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMultiple of  %f', [ID, Chunk^.Data.DlMultiplier^]);
+        Strings.Add(Output);
+      end;
       DL_SPOT_ROLL:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sRoll angle of  %f', [ID, Chunk^.Data.DlSpotRoll^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sRoll angle of  %f', [ID, Chunk^.Data.DlSpotRoll^]);
+        Strings.Add(Output);
+      end;
       DL_SPOT_ASPECT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sSpot aspect of  %f', [ID, Chunk^.Data.DlSpotAspect^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sSpot aspect of  %f', [ID, Chunk^.Data.DlSpotAspect^]);
+        Strings.Add(Output);
+      end;
       DL_SPOT_PROJECTOR:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sFilename of projector is %s', [ID, Chunk^.Data.DlSpotProjector^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sFilename of projector is %s',
+          [ID, Chunk^.Data.DlSpotProjector^]);
+        Strings.Add(Output);
+      end;
       DL_RAY_BIAS:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sBias of  %f', [ID, Chunk^.Data.DlRayBias^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sBias of  %f', [ID, Chunk^.Data.DlRayBias^]);
+        Strings.Add(Output);
+      end;
       DL_SPOTLIGHT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sTarget at  %f, %f, %f', [ID, Chunk^.Data.DlSpotlight^.SpotlightTarg.X,
-            Chunk^.Data.DlSpotlight^.SpotlightTarg.Y,
-              Chunk^.Data.DlSpotlight^.SpotlightTarg.Z]);
-          Strings.Add(Output);
-          Output := Format('%sHotspot cone of  %f, ', [ID, Chunk^.Data.DlSpotlight^.HotspotAngle]);
-          Output := Output + Format(' Falloff cone of  %f', [Chunk^.Data.DlSpotlight^.FalloffAngle]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sTarget at  %f, %f, %f',
+          [ID, Chunk^.Data.DlSpotlight^.SpotlightTarg.X,
+          Chunk^.Data.DlSpotlight^.SpotlightTarg.Y,
+          Chunk^.Data.DlSpotlight^.SpotlightTarg.Z]);
+        Strings.Add(Output);
+        Output := Format('%sHotspot cone of  %f, ',
+          [ID, Chunk^.Data.DlSpotlight^.HotspotAngle]);
+        Output := Output + Format(' Falloff cone of  %f',
+          [Chunk^.Data.DlSpotlight^.FalloffAngle]);
+        Strings.Add(Output);
+      end;
       DL_LOCAL_SHADOW2:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sShadow bias of  %f', [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowBias]);
-          Strings.Add(Output);
-          Output := Format('%sShadow filter of  %f', [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowFilter]);
-          Strings.Add(Output);
-          Output := Format('%sShadow Map Size of  %f', [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowMapSize]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sShadow bias of  %f',
+          [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowBias]);
+        Strings.Add(Output);
+        Output := Format('%sShadow filter of  %f',
+          [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowFilter]);
+        Strings.Add(Output);
+        Output := Format('%sShadow Map Size of  %f',
+          [ID, Chunk^.Data.DlLocalShadow2^.LocalShadowMapSize]);
+        Strings.Add(Output);
+      end;
       N_CAMERA:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sCamera at  %f,  %f,  %f', [ID, Chunk^.Data.NCamera^.CameraPos.X,
-            Chunk^.Data.NCamera^.CameraPos.Y,
-              Chunk^.Data.NCamera^.CameraPos.Z]);
-          Strings.Add(Output);
-          Output := Format('%sTarget at  %f,  %f,  %f', [ID, Chunk^.Data.NCamera^.TargetPos.X,
-            Chunk^.Data.NCamera^.TargetPos.Y,
-              Chunk^.Data.NCamera^.TargetPos.Z]);
-          Strings.Add(Output);
-          Output := Format('%sBank angle of  %f', [ID, Chunk^.Data.NCamera^.CameraBank]);
-          Output := Output + Format(' and a foc of  %f', [Chunk^.Data.NCamera^.CameraFocalLength]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sCamera at  %f,  %f,  %f',
+          [ID, Chunk^.Data.NCamera^.CameraPos.X, Chunk^.Data.NCamera^.CameraPos.Y,
+          Chunk^.Data.NCamera^.CameraPos.Z]);
+        Strings.Add(Output);
+        Output := Format('%sTarget at  %f,  %f,  %f',
+          [ID, Chunk^.Data.NCamera^.TargetPos.X, Chunk^.Data.NCamera^.TargetPos.Y,
+          Chunk^.Data.NCamera^.TargetPos.Z]);
+        Strings.Add(Output);
+        Output := Format('%sBank angle of  %f', [ID, Chunk^.Data.NCamera^.CameraBank]);
+        Output := Output + Format(' and a foc of  %f',
+          [Chunk^.Data.NCamera^.CameraFocalLength]);
+        Strings.Add(Output);
+      end;
       CAM_RANGES:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sCamera near range is  %f and far range is  %f', [ID, Chunk^.Data.CamRanges^.NearPlane,
-            Chunk^.Data.CamRanges^.FarPlane]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sCamera near range is  %f and far range is  %f',
+          [ID, Chunk^.Data.CamRanges^.NearPlane, Chunk^.Data.CamRanges^.FarPlane]);
+        Strings.Add(Output);
+      end;
       VIEWPORT_LAYOUT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sForm of %d', [ID, Chunk^.Data.ViewportLayout^.Form]);
-          Strings.Add(Output);
-          Output := Format('%sTop of %d', [ID, Chunk^.Data.ViewportLayout^.Top]);
-          Strings.Add(Output);
-          Output := Format('%sReady of %d', [ID, Chunk^.Data.ViewportLayout^.Ready]);
-          Strings.Add(Output);
-          Output := Format('%sWState of %d', [ID, Chunk^.Data.ViewportLayout^.WState]);
-          Strings.Add(Output);
-          Output := Format('%sSwap WS of %d', [ID, Chunk^.Data.ViewportLayout^.SwapWS]);
-          Strings.Add(Output);
-          Output := Format('%sSwap Port of %d', [ID, Chunk^.Data.ViewportLayout^.SwapPort]);
-          Strings.Add(Output);
-          Output := Format('%sSwap Cur of %d', [ID, Chunk^.Data.ViewportLayout^.SwapCur]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sForm of %d', [ID, Chunk^.Data.ViewportLayout^.Form]);
+        Strings.Add(Output);
+        Output := Format('%sTop of %d', [ID, Chunk^.Data.ViewportLayout^.Top]);
+        Strings.Add(Output);
+        Output := Format('%sReady of %d', [ID, Chunk^.Data.ViewportLayout^.Ready]);
+        Strings.Add(Output);
+        Output := Format('%sWState of %d', [ID, Chunk^.Data.ViewportLayout^.WState]);
+        Strings.Add(Output);
+        Output := Format('%sSwap WS of %d', [ID, Chunk^.Data.ViewportLayout^.SwapWS]);
+        Strings.Add(Output);
+        Output := Format('%sSwap Port of %d',
+          [ID, Chunk^.Data.ViewportLayout^.SwapPort]);
+        Strings.Add(Output);
+        Output := Format('%sSwap Cur of %d',
+          [ID, Chunk^.Data.ViewportLayout^.SwapCur]);
+        Strings.Add(Output);
+      end;
       VIEWPORT_SIZE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sWork Area X: %d Y: %d W: %d H: %d', [ID, Chunk^.Data.ViewportSize^.XPos,
-            Chunk^.Data.ViewportSize^.YPos,
-              Chunk^.Data.ViewportSize^.Width,
-              Chunk^.Data.ViewportSize^.Height]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sWork Area X: %d Y: %d W: %d H: %d',
+          [ID, Chunk^.Data.ViewportSize^.XPos, Chunk^.Data.ViewportSize^.YPos,
+          Chunk^.Data.ViewportSize^.Width,
+          Chunk^.Data.ViewportSize^.Height]);
+        Strings.Add(Output);
+      end;
       VIEWPORT_DATA_3,
-        VIEWPORT_DATA:
+      VIEWPORT_DATA:
+      begin
+        Source.ReadChunkData(Chunk);
+        with Chunk^.Data.ViewportData^ do
         begin
-          Source.ReadChunkData(Chunk);
-          with Chunk^.Data.ViewportData^ do
-          begin
-            Output := Format('%sFlags: $%x', [ID, Flags]);
-            Strings.Add(Output);
-            Output := Format('%sAxis Lockouts of $%x', [ID, AxisLockout]);
-            Strings.Add(Output);
-            Output := Format('%sWindow Position of %d, %d', [ID, WinXPos, WinYPos]);
-            Strings.Add(Output);
-            Output := Format('%sWindow Size of %d, %d', [ID, WinWidth, WinHeight]);
-            Strings.Add(Output);
-            Output := Format('%sWindow View of %d', [ID, View]);
-            Strings.Add(Output);
-            Output := Format('%sZoom Factor of  %f', [ID, ZoomFactor]);
-            Strings.Add(Output);
-            Output := Format('%sWorld Center of  %f, %f, %f', [ID, Center.X, Center.Y, Center.Z]);
-            Strings.Add(Output);
-            Output := Format('%sHorizontal Angle of  %f', [ID, HorizAng]);
-            Strings.Add(Output);
-            Output := Format('%sVertical Angle of  %f', [ID, VertAng]);
-            Strings.Add(Output);
-            Output := Format('%sCamera Name of %s', [ID, CamNameStr]);
-            Strings.Add(Output);
-          end;
+          Output := Format('%sFlags: $%x', [ID, Flags]);
+          Strings.Add(Output);
+          Output := Format('%sAxis Lockouts of $%x', [ID, AxisLockout]);
+          Strings.Add(Output);
+          Output := Format('%sWindow Position of %d, %d', [ID, WinXPos, WinYPos]);
+          Strings.Add(Output);
+          Output := Format('%sWindow Size of %d, %d', [ID, WinWidth, WinHeight]);
+          Strings.Add(Output);
+          Output := Format('%sWindow View of %d', [ID, View]);
+          Strings.Add(Output);
+          Output := Format('%sZoom Factor of  %f', [ID, ZoomFactor]);
+          Strings.Add(Output);
+          Output := Format('%sWorld Center of  %f, %f, %f',
+            [ID, Center.X, Center.Y, Center.Z]);
+          Strings.Add(Output);
+          Output := Format('%sHorizontal Angle of  %f', [ID, HorizAng]);
+          Strings.Add(Output);
+          Output := Format('%sVertical Angle of  %f', [ID, VertAng]);
+          Strings.Add(Output);
+          Output := Format('%sCamera Name of %s', [ID, CamNameStr]);
+          Strings.Add(Output);
         end;
+      end;
       XDATA_APPNAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sApplication Name %s', [ID, Chunk^.Data.XDataAppName^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sApplication Name %s', [ID, Chunk^.Data.XDataAppName^]);
+        Strings.Add(Output);
+      end;
       XDATA_STRING:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sString value of %s', [ID, Chunk^.Data.XDataString^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sString value of %s', [ID, Chunk^.Data.XDataString^]);
+        Strings.Add(Output);
+      end;
       MAT_NAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMaterial Name %s', [ID, Chunk^.Data.MatName^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMaterial Name %s', [ID, Chunk^.Data.MatName^]);
+        Strings.Add(Output);
+      end;
       MAT_SHADING:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sShading value of %d', [ID, Chunk^.Data.MatShading^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sShading value of %d', [ID, Chunk^.Data.MatShading^]);
+        Strings.Add(Output);
+      end;
       MAT_ACUBIC:
+      begin
+        Source.ReadChunkData(Chunk);
+        with Chunk^.Data.MatAcubic^ do
         begin
-          Source.ReadChunkData(Chunk);
-          with Chunk^.Data.MatAcubic^ do
-          begin
-            Output := Format('%sShade level of %d', [ID, ShadeLevel]);
-            Strings.Add(Output);
-            Output := Format('%sAntialias level of %d', [ID, AntiAlias]);
-            Strings.Add(Output);
-            Output := Format('%sFlags: %d', [ID, Flags]);
-            Strings.Add(Output);
-            Output := Format('%sMap Size of %d', [ID, MapSize]);
-            Strings.Add(Output);
-            Output := Format('%sFrame skip of %d', [ID, FrameInterval]);
-            Strings.Add(Output);
-          end;
+          Output := Format('%sShade level of %d', [ID, ShadeLevel]);
+          Strings.Add(Output);
+          Output := Format('%sAntialias level of %d', [ID, AntiAlias]);
+          Strings.Add(Output);
+          Output := Format('%sFlags: %d', [ID, Flags]);
+          Strings.Add(Output);
+          Output := Format('%sMap Size of %d', [ID, MapSize]);
+          Strings.Add(Output);
+          Output := Format('%sFrame skip of %d', [ID, FrameInterval]);
+          Strings.Add(Output);
         end;
+      end;
       MAT_MAPNAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap Name %s', [ID, Chunk^.Data.MatMapname^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap Name %s', [ID, Chunk^.Data.MatMapname^]);
+        Strings.Add(Output);
+      end;
       MAT_WIRESIZE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sWire frame Size of  %f', [ID, Chunk^.Data.MatWireSize^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sWire frame Size of  %f', [ID, Chunk^.Data.MatWireSize^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_TILING:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap Flags: ', [ID]);
+        if (Chunk^.Data.MatMapTiling^ = 0) then
+          Output := Output + ' NONE'
+        else
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap Flags: ', [ID]);
-          if (Chunk^.Data.MatMapTiling^ = 0) then
-            Output := Output + ' NONE'
-          else
-          begin
-            if (Chunk^.Data.MatMapTiling^ and TEX_DECAL) <> 0 then
-              Output := Output + ' TEX_DECAL, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_MIRROR) <> 0 then
-              Output := Output + ' TEX_MIRROR, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_UNUSED1) <> 0 then
-              Output := Output + ' TEX_UNUSED1, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_INVERT) <> 0 then
-              Output := Output + ' TEX_INVERT, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_NOWRAP) <> 0 then
-              Output := Output + ' TEX_NOWRAP, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_SAT) <> 0 then
-              Output := Output + ' TEX_SAT, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
-              Output := Output + ' TEX_ALPHA_SOURCE, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_TINT) <> 0 then
-              Output := Output + ' TEX_TINT, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_DONT_USE_ALPHA) <> 0 then
-              Output := Output + ' TEX_DONT_USE_ALPHA, ';
-            if (Chunk^.Data.MatMapTiling^ and TEX_RGB_TINT) <> 0 then
-              Output := Output + ' TEX_RGB_TINT, ';
-            Delete(Output, Length(Output) - 1, 2); // take the last comma out
-          end;
-          Strings.Add(Output);
+          if (Chunk^.Data.MatMapTiling^ and TEX_DECAL) <> 0 then
+            Output := Output + ' TEX_DECAL, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_MIRROR) <> 0 then
+            Output := Output + ' TEX_MIRROR, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_UNUSED1) <> 0 then
+            Output := Output + ' TEX_UNUSED1, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_INVERT) <> 0 then
+            Output := Output + ' TEX_INVERT, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_NOWRAP) <> 0 then
+            Output := Output + ' TEX_NOWRAP, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_SAT) <> 0 then
+            Output := Output + ' TEX_SAT, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
+            Output := Output + ' TEX_ALPHA_SOURCE, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_TINT) <> 0 then
+            Output := Output + ' TEX_TINT, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_DONT_USE_ALPHA) <> 0 then
+            Output := Output + ' TEX_DONT_USE_ALPHA, ';
+          if (Chunk^.Data.MatMapTiling^ and TEX_RGB_TINT) <> 0 then
+            Output := Output + ' TEX_RGB_TINT, ';
+          Delete(Output, Length(Output) - 1, 2); // take the last comma out
         end;
+        Strings.Add(Output);
+      end;
       MAT_MAP_COL1:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapCol1^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapCol1^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.MatMapCol1^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapCol1^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapCol1^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.MatMapCol1^.Blue]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_COL2:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapCol2^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapCol2^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.MatMapCol2^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapCol2^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapCol2^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.MatMapCol2^.Blue]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_RCOL:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapRCol^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapRCol^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.MatMapRCol^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapRCol^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapRCol^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.MatMapRCol^.Blue]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_GCOL:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapGCol^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapGCol^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.MatMapGCol^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapGCol^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapGCol^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.MatMapGCol^.Blue]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_BCOL:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapBCol^.Red]);
-          Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapBCol^.Green]);
-          Output := Output + Format(' B: %d', [Chunk^.Data.MatMapBCol^.Blue]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sColor R: %d, ', [ID, Chunk^.Data.MatMapBCol^.Red]);
+        Output := Output + Format(' G: %d, ', [Chunk^.Data.MatMapBCol^.Green]);
+        Output := Output + Format(' B: %d', [Chunk^.Data.MatMapBCol^.Blue]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_TEXBLUR:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap bluring of  %f', [ID, Chunk^.Data.MatMapTexblur^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap bluring of  %f', [ID, Chunk^.Data.MatMapTexblur^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_USCALE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap U scale of  %f', [ID, Chunk^.Data.MatMapUScale^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap U scale of  %f', [ID, Chunk^.Data.MatMapUScale^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_VSCALE:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap V scale of  %f', [ID, Chunk^.Data.MatMapVScale^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap V scale of  %f', [ID, Chunk^.Data.MatMapVScale^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_UOFFSET:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap U offset of  %f', [ID, Chunk^.Data.MatMapUOffset^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap U offset of  %f', [ID, Chunk^.Data.MatMapUOffset^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_VOFFSET:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap V offset of  %f', [ID, Chunk^.Data.MatMapVOffset^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap V offset of  %f', [ID, Chunk^.Data.MatMapVOffset^]);
+        Strings.Add(Output);
+      end;
       MAT_MAP_ANG:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMap rotation angle of  %f', [ID, Chunk^.Data.MatMapAng^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMap rotation angle of  %f', [ID, Chunk^.Data.MatMapAng^]);
+        Strings.Add(Output);
+      end;
       MAT_BUMP_PERCENT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sPercentage of %d%%', [ID, Chunk^.Data.MatBumpPercent^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sPercentage of %d%%', [ID, Chunk^.Data.MatBumpPercent^]);
+        Strings.Add(Output);
+      end;
       KFHDR:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sRevision level of $%x', [ID, Chunk^.Data.KFHdr^.Revision]);
-          Strings.Add(Output);
-          Output := Format('%sFilename %s', [ID, Chunk^.Data.KFHdr^.FileName]);
-          Strings.Add(Output);
-          Output := Format('%sAnimation length of %d', [ID, Chunk^.Data.KFHdr^.AnimLength]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sRevision level of $%x', [ID, Chunk^.Data.KFHdr^.Revision]);
+        Strings.Add(Output);
+        Output := Format('%sFilename %s', [ID, Chunk^.Data.KFHdr^.FileName]);
+        Strings.Add(Output);
+        Output := Format('%sAnimation length of %d',
+          [ID, Chunk^.Data.KFHdr^.AnimLength]);
+        Strings.Add(Output);
+      end;
       KFSEG:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sSegment starts at %d and ends at %d', [ID, Chunk^.Data.KFSeg^.First, Chunk^.Data.KFSeg^.Last]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sSegment starts at %d and ends at %d',
+          [ID, Chunk^.Data.KFSeg^.First, Chunk^.Data.KFSeg^.Last]);
+        Strings.Add(Output);
+      end;
       KFCURTIME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sCurrent frame is %d', [ID, Chunk^.Data.KFCurtime^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sCurrent frame is %d', [ID, Chunk^.Data.KFCurtime^]);
+        Strings.Add(Output);
+      end;
       NODE_ID:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sNode ID: %d', [ID, Chunk^.Data.KFID^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sNode ID: %d', [ID, Chunk^.Data.KFID^]);
+        Strings.Add(Output);
+      end;
       NODE_HDR:
-        begin
-          Source.ReadChunkData(Chunk);
-          Strings.Add(Format('%sObject Name: %s', [ID, Chunk^.Data.NodeHdr^.ObjNameStr]));
-          //--- Flags 1
-          Strings.Add(Format('%sFlags 1: $%x', [ID, Chunk^.Data.NodeHdr^.Flags1]));
-          if DumpLevel = dlMaximumDump then
-            with Chunk^.Data.NodeHdr^ do
-            begin
-              if (Flags1 and NODE_RENDOB_HIDE) <> 0 then
-                Strings.Add(Format('%sNODE_RENDOB_HIDE', [ID]));
-              if (Flags1 and NODE_OFF) <> 0 then
-                Strings.Add(Format('%sNODE_OFF', [ID]));
-              if (Flags1 and ATKEY1) <> 0 then
-                Strings.Add(Format('%sATKEY1', [ID]));
-              if (Flags1 and ATKEY2) <> 0 then
-                Strings.Add(Format('%sATKEY2', [ID]));
-              if (Flags1 and ATKEY3) <> 0 then
-                Strings.Add(Format('%sATKEY3', [ID]));
-              if (Flags1 and ATKEY4) <> 0 then
-                Strings.Add(Format('%sATKEY4', [ID]));
-              if (Flags1 and ATKEY5) <> 0 then
-                Strings.Add(Format('%sATKEY5', [ID]));
-              if (Flags1 and ATKEYFLAGS) <> 0 then
-                Strings.Add(Format('%sATKEYFLAGS', [ID]));
-              if (Flags1 and MARK_NODE) <> 0 then
-                Strings.Add(Format('%sMARK_NODE', [ID]));
-              if (Flags1 and DISABLE_NODE) <> 0 then
-                Strings.Add(Format('%sDISABLE_NODE', [ID]));
-              if (Flags1 and HIDE_NODE) <> 0 then
-                Strings.Add(Format('%sHIDE_NODE', [ID]));
-              if (Flags1 and FAST_NODE) <> 0 then
-                Strings.Add(Format('%sFAST_NODE', [ID]));
-              if (Flags1 and PRIMARY_NODE) <> 0 then
-                Strings.Add(Format('%sPRIMARY_NODE', [ID]));
-              if (Flags1 and NODE_CALC_PATH) <> 0 then
-                Strings.Add(Format('%sNODE_CALC_PATH', [ID]));
-            end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Strings.Add(Format('%sObject Name: %s',
+          [ID, Chunk^.Data.NodeHdr^.ObjNameStr]));
+        //--- Flags 1
+        Strings.Add(Format('%sFlags 1: $%x', [ID, Chunk^.Data.NodeHdr^.Flags1]));
+        if DumpLevel = dlMaximumDump then
+          with Chunk^.Data.NodeHdr^ do
+          begin
+            if (Flags1 and NODE_RENDOB_HIDE) <> 0 then
+              Strings.Add(Format('%sNODE_RENDOB_HIDE', [ID]));
+            if (Flags1 and NODE_OFF) <> 0 then
+              Strings.Add(Format('%sNODE_OFF', [ID]));
+            if (Flags1 and ATKEY1) <> 0 then
+              Strings.Add(Format('%sATKEY1', [ID]));
+            if (Flags1 and ATKEY2) <> 0 then
+              Strings.Add(Format('%sATKEY2', [ID]));
+            if (Flags1 and ATKEY3) <> 0 then
+              Strings.Add(Format('%sATKEY3', [ID]));
+            if (Flags1 and ATKEY4) <> 0 then
+              Strings.Add(Format('%sATKEY4', [ID]));
+            if (Flags1 and ATKEY5) <> 0 then
+              Strings.Add(Format('%sATKEY5', [ID]));
+            if (Flags1 and ATKEYFLAGS) <> 0 then
+              Strings.Add(Format('%sATKEYFLAGS', [ID]));
+            if (Flags1 and MARK_NODE) <> 0 then
+              Strings.Add(Format('%sMARK_NODE', [ID]));
+            if (Flags1 and DISABLE_NODE) <> 0 then
+              Strings.Add(Format('%sDISABLE_NODE', [ID]));
+            if (Flags1 and HIDE_NODE) <> 0 then
+              Strings.Add(Format('%sHIDE_NODE', [ID]));
+            if (Flags1 and FAST_NODE) <> 0 then
+              Strings.Add(Format('%sFAST_NODE', [ID]));
+            if (Flags1 and PRIMARY_NODE) <> 0 then
+              Strings.Add(Format('%sPRIMARY_NODE', [ID]));
+            if (Flags1 and NODE_CALC_PATH) <> 0 then
+              Strings.Add(Format('%sNODE_CALC_PATH', [ID]));
+          end;
 
-          //--- Flags 2
-          Strings.Add(Format('%sFlags 2: $%x', [ID, Chunk^.Data.NodeHdr^.Flags2]));
-          if DumpLevel = dlMaximumDump then
-            with Chunk^.Data.NodeHdr^ do
-            begin
-              if (Flags2 and NODE_HAS_PATH) <> 0 then
-                Strings.Add(Format('%sNODE_HAS_PATH', [ID]));
-              if (Flags2 and NODE_AUTO_SMOOTH) <> 0 then
-                Strings.Add(Format('%sNODE_AUTO_SMOOTH', [ID]));
-              if (Flags2 and NODE_FROZEN) <> 0 then
-                Strings.Add(Format('%sNODE_FROZEN', [ID]));
-              if (Flags2 and NODE_ANI_HIDDEN) <> 0 then
-                Strings.Add(Format('%sNODE_ANI_HIDDEN', [ID]));
-              if (Flags2 and NODE_MOTION_BLUR) <> 0 then
-                Strings.Add(Format('%sNODE_MOTION_BLUR', [ID]));
-              if (Flags2 and NODE_BLUR_BRANCH) <> 0 then
-                Strings.Add(Format('%sNODE_BLUR_BRANCH', [ID]));
-              if (Flags2 and NODE_MORPH_MTL) <> 0 then
-                Strings.Add(Format('%sNODE_MORPH_MTL', [ID]));
-              if (Flags2 and NODE_MORPH_OB) <> 0 then
-                Strings.Add(Format('%sNODE_MORPH_OB', [ID]));
-            end;
+        //--- Flags 2
+        Strings.Add(Format('%sFlags 2: $%x', [ID, Chunk^.Data.NodeHdr^.Flags2]));
+        if DumpLevel = dlMaximumDump then
+          with Chunk^.Data.NodeHdr^ do
+          begin
+            if (Flags2 and NODE_HAS_PATH) <> 0 then
+              Strings.Add(Format('%sNODE_HAS_PATH', [ID]));
+            if (Flags2 and NODE_AUTO_SMOOTH) <> 0 then
+              Strings.Add(Format('%sNODE_AUTO_SMOOTH', [ID]));
+            if (Flags2 and NODE_FROZEN) <> 0 then
+              Strings.Add(Format('%sNODE_FROZEN', [ID]));
+            if (Flags2 and NODE_ANI_HIDDEN) <> 0 then
+              Strings.Add(Format('%sNODE_ANI_HIDDEN', [ID]));
+            if (Flags2 and NODE_MOTION_BLUR) <> 0 then
+              Strings.Add(Format('%sNODE_MOTION_BLUR', [ID]));
+            if (Flags2 and NODE_BLUR_BRANCH) <> 0 then
+              Strings.Add(Format('%sNODE_BLUR_BRANCH', [ID]));
+            if (Flags2 and NODE_MORPH_MTL) <> 0 then
+              Strings.Add(Format('%sNODE_MORPH_MTL', [ID]));
+            if (Flags2 and NODE_MORPH_OB) <> 0 then
+              Strings.Add(Format('%sNODE_MORPH_OB', [ID]));
+          end;
 
-          if Chunk^.Data.NodeHdr^.ParentIndex = -1 then
-            Strings.Add(Format('%sNo Parent', [ID]))
-          else
-            Strings.Add(Format('%sParent %d', [ID, Chunk^.Data.NodeHdr^.ParentIndex]));
-        end;
+        if Chunk^.Data.NodeHdr^.ParentIndex = -1 then
+          Strings.Add(Format('%sNo Parent', [ID]))
+        else
+          Strings.Add(Format('%sParent %d', [ID, Chunk^.Data.NodeHdr^.ParentIndex]));
+      end;
       INSTANCE_NAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sInstance Name: %s', [ID, Chunk^.Data.InstanceName^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sInstance Name: %s', [ID, Chunk^.Data.InstanceName^]);
+        Strings.Add(Output);
+      end;
       PARENT_NAME:
-        begin
-          Source.ReadChunkData(Chunk);
-          if Chunk^.Data.InstanceName = nil then
-            Strings.Add(Format('%sNo Parent', [ID]))
-          else
-            Strings.Add(Format('%sParent Name: %s', [ID, Chunk^.Data.InstanceName^]));
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        if Chunk^.Data.InstanceName = nil then
+          Strings.Add(Format('%sNo Parent', [ID]))
+        else
+          Strings.Add(Format('%sParent Name: %s', [ID, Chunk^.Data.InstanceName^]));
+      end;
       PIVOT:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sPivot at  %f,  %f,  %f', [ID, Chunk^.Data.Pivot^.X,
-            Chunk^.Data.Pivot^.Y,
-              Chunk^.Data.Pivot^.Z]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sPivot at  %f,  %f,  %f',
+          [ID, Chunk^.Data.Pivot^.X, Chunk^.Data.Pivot^.Y,
+          Chunk^.Data.Pivot^.Z]);
+        Strings.Add(Output);
+      end;
       BOUNDBOX:
         if Assigned(Chunk^.Data.Dummy) then
         begin
-          Output := Format('%sMinimum at  %f,  %f,  %f', [ID, Chunk^.Data.BoundBox^.Min.X,
-            Chunk^.Data.BoundBox^.Min.Y,
-              Chunk^.Data.BoundBox^.Min.Z]);
+          Output := Format('%sMinimum at  %f,  %f,  %f',
+            [ID, Chunk^.Data.BoundBox^.Min.X, Chunk^.Data.BoundBox^.Min.Y,
+            Chunk^.Data.BoundBox^.Min.Z]);
           Strings.Add(Output);
-          Output := Format('%sMaximum at  %f,  %f,  %f', [ID, Chunk^.Data.BoundBox^.Max.X,
-            Chunk^.Data.BoundBox^.Max.Y,
-              Chunk^.Data.BoundBox^.Max.Z]);
+          Output := Format('%sMaximum at  %f,  %f,  %f',
+            [ID, Chunk^.Data.BoundBox^.Max.X, Chunk^.Data.BoundBox^.Max.Y,
+            Chunk^.Data.BoundBox^.Max.Z]);
           Strings.Add(Output);
         end;
       MORPH_SMOOTH:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%sMorph Smoothing Angle of  %f', [ID, Chunk^.Data.MorphSmooth^]);
-          Strings.Add(Output);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%sMorph Smoothing Angle of  %f',
+          [ID, Chunk^.Data.MorphSmooth^]);
+        Strings.Add(Output);
+      end;
       POS_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.PosTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.PosTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.PosTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.PosTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.PosTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.PosTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sObject at  %f,  %f,  %f',
+            [ID, Chunk^.Data.PosTrackTag^.PositionList^[I].X,
+            Chunk^.Data.PosTrackTag^.PositionList^[I].Y,
+            Chunk^.Data.PosTrackTag^.PositionList^[I].Z]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.PosTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.PosTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sObject at  %f,  %f,  %f', [ID, Chunk^.Data.PosTrackTag^.PositionList^[I].X,
-              Chunk^.Data.PosTrackTag^.PositionList^[I].Y,
-                Chunk^.Data.PosTrackTag^.PositionList^[I].Z]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       ROT_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.RotTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.RotTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.RotTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.RotTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.RotTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.RotTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sRotation of  %f',
+            [ID, Chunk^.Data.RotTrackTag^.RotationList^[I].Angle]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.RotTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.RotTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sRotation of  %f', [ID, Chunk^.Data.RotTrackTag^.RotationList^[I].Angle]);
-            Strings.Add(Output);
-            Output := Format('%sAxis of  %f,  %f,  %f', [ID, Chunk^.Data.RotTrackTag^.RotationList^[I].X,
-              Chunk^.Data.RotTrackTag^.RotationList^[I].Y,
-                Chunk^.Data.RotTrackTag^.RotationList^[I].Z]);
-            Strings.Add(Output);
-          end;
+          Output := Format('%sAxis of  %f,  %f,  %f',
+            [ID, Chunk^.Data.RotTrackTag^.RotationList^[I].X,
+            Chunk^.Data.RotTrackTag^.RotationList^[I].Y,
+            Chunk^.Data.RotTrackTag^.RotationList^[I].Z]);
+          Strings.Add(Output);
         end;
+      end;
       SCL_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.ScaleTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.ScaleTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.ScaleTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.ScaleTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.ScaleTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.ScaleTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sScale of  %f,  %f,  %f',
+            [ID, Chunk^.Data.ScaleTrackTag^.ScaleList^[I].X,
+            Chunk^.Data.ScaleTrackTag^.ScaleList^[I].Y,
+            Chunk^.Data.ScaleTrackTag^.ScaleList^[I].Z]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.ScaleTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.ScaleTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sScale of  %f,  %f,  %f', [ID, Chunk^.Data.ScaleTrackTag^.ScaleList^[I].X,
-              Chunk^.Data.ScaleTrackTag^.ScaleList^[I].Y,
-                Chunk^.Data.ScaleTrackTag^.ScaleList^[I].Z]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       FOV_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.FovTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.FovTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.FovTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.FovTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.FovTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.FovTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sCamera FOV of  %f',
+            [ID, Chunk^.Data.FovTrackTag^.FOVAngleList^[I]]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.FovTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.FovTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sCamera FOV of  %f', [ID, Chunk^.Data.FovTrackTag^.FOVAngleList^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       ROLL_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.RollTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.RollTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.RollTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.RollTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.RollTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.RollTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sCamera Roll of  %f',
+            [ID, Chunk^.Data.RollTrackTag^.RollAngleList^[I]]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.RollTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.RollTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sCamera Roll of  %f', [ID, Chunk^.Data.RollTrackTag^.RollAngleList^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       COL_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.ColTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.ColTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.ColTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.ColTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.ColTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.ColTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sColor R:  %f, ',
+            [ID, Chunk^.Data.ColTrackTag^.ColorList^[I].B]);
+          Output := Output + Format(' G:  %f, ',
+            [Chunk^.Data.ColTrackTag^.ColorList^[I].G]);
+          Output := Output + Format(' B:  %f',
+            [Chunk^.Data.ColTrackTag^.ColorList^[I].B]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.ColTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.ColTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sColor R:  %f, ', [ID, Chunk^.Data.ColTrackTag^.ColorList^[I].B]);
-            Output := Output + Format(' G:  %f, ', [Chunk^.Data.ColTrackTag^.ColorList^[I].G]);
-            Output := Output + Format(' B:  %f', [Chunk^.Data.ColTrackTag^.ColorList^[I].B]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       MORPH_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.MorphTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.MorphTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.MorphTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.MorphTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.MorphTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.MorphTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sMorph to %s',
+            [ID, Chunk^.Data.MorphTrackTag^.MorphList^[I]]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.MorphTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.MorphTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sMorph to %s', [ID, Chunk^.Data.MorphTrackTag^.MorphList^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       HOT_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.HotTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.HotTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.HotTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.HotTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.HotTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.HotTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sHotspot angle of  %f',
+            [ID, Chunk^.Data.HotTrackTag^.HotspotAngleList^[I]]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.HotTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.HotTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sHotspot angle of  %f', [ID, Chunk^.Data.HotTrackTag^.HotspotAngleList^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       FALL_TRACK_TAG:
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.FallTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.FallTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.FallTrackTag^.TrackHdr.KeyCount - 1 do
         begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.FallTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.FallTrackTag^.TrackHdr.Flags]);
+          DumpKeyHeader(Strings, Chunk^.Data.FallTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+          Output := Format('%sFalloff Angle of  %f',
+            [ID, Chunk^.Data.FallTrackTag^.FalloffAngleList^[I]]);
           Strings.Add(Output);
-          for I := 0 to Chunk^.Data.FallTrackTag^.TrackHdr.KeyCount - 1 do
-          begin
-            DumpKeyHeader(Strings, Chunk^.Data.FallTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-            Output := Format('%sFalloff Angle of  %f', [ID, Chunk^.Data.FallTrackTag^.FalloffAngleList^[I]]);
-            Strings.Add(Output);
-          end;
         end;
+      end;
       HIDE_TRACK_TAG:
-        begin
-          Source.ReadChunkData(Chunk);
-          Output := Format('%s%d Keys, Flags: $%x', [ID, Chunk^.Data.HideTrackTag^.TrackHdr.KeyCount,
-            Chunk^.Data.HideTrackTag^.TrackHdr.Flags]);
-          Strings.Add(Output);
-          for I := 0 to Chunk^.Data.HideTrackTag^.TrackHdr.KeyCount - 1 do
-            DumpKeyHeader(Strings, Chunk^.Data.HideTrackTag^.KeyHdrList^[I], IndentLevel + 1);
-        end;
+      begin
+        Source.ReadChunkData(Chunk);
+        Output := Format('%s%d Keys, Flags: $%x',
+          [ID, Chunk^.Data.HideTrackTag^.TrackHdr.KeyCount,
+          Chunk^.Data.HideTrackTag^.TrackHdr.Flags]);
+        Strings.Add(Output);
+        for I := 0 to Chunk^.Data.HideTrackTag^.TrackHdr.KeyCount - 1 do
+          DumpKeyHeader(Strings, Chunk^.Data.HideTrackTag^.KeyHdrList^[I],
+            IndentLevel + 1);
+      end;
     end; // end case
   end;
 
@@ -2485,7 +2573,7 @@ procedure AddChildOrdered(Parent, Child: PChunk3DS);
 
 var
   Current, Prev: PChunk3DS;
-  ChildValue: Integer;
+  ChildValue: integer;
 
 begin
   ChildValue := GetChunkValue(Child^.Tag);
@@ -2522,9 +2610,9 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindChunk(Top: PChunk3DS; Tag: Word): PChunk3DS;
+function FindChunk(Top: PChunk3DS; Tag: word): PChunk3DS;
 
-// searchs the given top Chunk and its children for a match
+  // searchs the given top Chunk and its children for a match
 
 var
   Child, Match: PChunk3DS;
@@ -2552,7 +2640,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindNextChunk(Local: PChunk3DS; Tag: Word): PChunk3DS;
+function FindNextChunk(Local: PChunk3DS; Tag: word): PChunk3DS;
 
 var
   Current: PChunk3DS;
@@ -2579,21 +2667,21 @@ begin
     // that need to be free
     case Chunk^.Tag of
       MAT_SXP_TEXT_DATA,
-        MAT_SXP_TEXT2_DATA,
-        MAT_SXP_OPAC_DATA,
-        MAT_SXP_BUMP_DATA,
-        MAT_SXP_SPEC_DATA,
-        MAT_SXP_SHIN_DATA,
-        MAT_SXP_SELFI_DATA,
-        MAT_SXP_TEXT_MASKDATA,
-        MAT_SXP_TEXT2_MASKDATA,
-        MAT_SXP_OPAC_MASKDATA,
-        MAT_SXP_BUMP_MASKDATA,
-        MAT_SXP_SPEC_MASKDATA,
-        MAT_SXP_SHIN_MASKDATA,
-        MAT_SXP_SELFI_MASKDATA,
-        MAT_SXP_REFL_MASKDATA,
-        PROC_DATA:
+      MAT_SXP_TEXT2_DATA,
+      MAT_SXP_OPAC_DATA,
+      MAT_SXP_BUMP_DATA,
+      MAT_SXP_SPEC_DATA,
+      MAT_SXP_SHIN_DATA,
+      MAT_SXP_SELFI_DATA,
+      MAT_SXP_TEXT_MASKDATA,
+      MAT_SXP_TEXT2_MASKDATA,
+      MAT_SXP_OPAC_MASKDATA,
+      MAT_SXP_BUMP_MASKDATA,
+      MAT_SXP_SPEC_MASKDATA,
+      MAT_SXP_SHIN_MASKDATA,
+      MAT_SXP_SELFI_MASKDATA,
+      MAT_SXP_REFL_MASKDATA,
+      PROC_DATA:
         FreeMem(Chunk^.Data.IpasData^.Data);
       POINT_ARRAY:
         FreeMem(Chunk^.Data.PointArray^.PointList);
@@ -2602,10 +2690,10 @@ begin
       FACE_ARRAY:
         Freemem(Chunk^.Data.FaceArray^.FaceList);
       MSH_MAT_GROUP:
-        begin
-          Dispose(Chunk^.Data.MshMatGroup);
-          Chunk^.Data.MshMatGroup := nil;
-        end;
+      begin
+        Dispose(Chunk^.Data.MshMatGroup);
+        Chunk^.Data.MshMatGroup := nil;
+      end;
       SMOOTH_GROUP:
         FreeMem(Chunk^.Data.SmoothGroup^.GroupList);
       TEX_VERTS:
@@ -2613,60 +2701,60 @@ begin
       XDATA_ENTRY:
         FreeMem(Chunk^.Data.XDataEntry^.Data);
       POS_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.PosTrackTag^.KeyHdrList);
-          Freemem(Chunk^.Data.PosTrackTag^.PositionList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.PosTrackTag^.KeyHdrList);
+        Freemem(Chunk^.Data.PosTrackTag^.PositionList);
+      end;
       COL_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.ColTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.ColTrackTag^.ColorList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.ColTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.ColTrackTag^.ColorList);
+      end;
       ROT_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.RotTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.RotTrackTag^.RotationList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.RotTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.RotTrackTag^.RotationList);
+      end;
       SCL_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.ScaleTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.ScaleTrackTag^.ScaleList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.ScaleTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.ScaleTrackTag^.ScaleList);
+      end;
       MORPH_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.MorphTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.MorphTrackTag^.MorphList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.MorphTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.MorphTrackTag^.MorphList);
+      end;
       FOV_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.FovTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.FovTrackTag^.FOVAngleList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.FovTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.FovTrackTag^.FOVAngleList);
+      end;
       ROLL_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.RollTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.RollTrackTag^.RollAngleList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.RollTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.RollTrackTag^.RollAngleList);
+      end;
       HOT_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.HotTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.HotTrackTag^.HotspotAngleList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.HotTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.HotTrackTag^.HotspotAngleList);
+      end;
       FALL_TRACK_TAG:
-        begin
-          FreeMem(Chunk^.Data.FallTrackTag^.KeyHdrList);
-          FreeMem(Chunk^.Data.FallTrackTag^.FalloffAngleList);
-        end;
+      begin
+        FreeMem(Chunk^.Data.FallTrackTag^.KeyHdrList);
+        FreeMem(Chunk^.Data.FallTrackTag^.FalloffAngleList);
+      end;
       KFHDR:
-        begin
-          Dispose(Chunk^.Data.KFHdr);
-          Chunk^.Data.KFHdr := nil;
-        end;
+      begin
+        Dispose(Chunk^.Data.KFHdr);
+        Chunk^.Data.KFHdr := nil;
+      end;
       NODE_HDR:
-        begin
-          Dispose(Chunk^.Data.NodeHdr);
-          Chunk^.Data.NodeHdr := nil;
-        end;
+      begin
+        Dispose(Chunk^.Data.NodeHdr);
+        Chunk^.Data.NodeHdr := nil;
+      end;
       HIDE_TRACK_TAG:
         FreeMem(Chunk^.Data.HideTrackTag^.KeyHdrList);
     end; // case end
@@ -2701,7 +2789,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure InitChunkList(var List: PChunklist3DS; Count: Integer);
+procedure InitChunkList(var List: PChunklist3DS; Count: integer);
 
 begin
   if List = nil then
@@ -2723,9 +2811,9 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function PutGenericNode(TagID: Word; ParentChunk: PChunk3DS): PChunk3DS;
+function PutGenericNode(TagID: word; ParentChunk: PChunk3DS): PChunk3DS;
 
-// put a tag into database as a child of ParentChunk
+  // put a tag into database as a child of ParentChunk
 
 begin
   InitChunk(Result);
@@ -2757,7 +2845,7 @@ end;
 procedure ReleaseChunkList(var List: PChunkList3DS);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   if Assigned(List) then
@@ -2776,8 +2864,8 @@ end;
 
 function CopyChunk(Chunk: PChunk3DS): PChunk3DS;
 
-// copies the structure of Chunk to Result, assigned data of Chunk will not be copied, but
-// moved to Result (actually references will be moved)
+  // copies the structure of Chunk to Result, assigned data of Chunk will not be copied, but
+  // moved to Result (actually references will be moved)
 
 var
   ChildIn: PChunk3DS;
@@ -2816,11 +2904,8 @@ end;
 procedure UpdateMatEntryList(const Source: TFile3DS; var DB: TDatabase3DS);
 
 var
-  Parent,
-    MatName,
-    MatEntry: PChunk3DS;
-  I,
-    MatCount: Integer;
+  Parent, MatName, MatEntry: PChunk3DS;
+  I, MatCount: integer;
 
 begin
   if DB.MatlistDirty then
@@ -2866,9 +2951,8 @@ end;
 procedure UpdateNamedObjectList(Source: TFile3DS; var DB: TDatabase3DS);
 
 var
-  MDataChunk,
-    Current: PChunk3DS;
-  I: Integer;
+  MDataChunk, Current: PChunk3DS;
+  I: integer;
 
 begin
   if DB.ObjListDirty then
@@ -2911,10 +2995,8 @@ end;
 procedure UpdateNodeTagList(Source: TFile3DS; var DB: TDatabase3DS);
 
 var
-  KFDataChunk,
-    Chunk,
-    Current: PChunk3DS;
-  I: Integer;
+  KFDataChunk, Chunk, Current: PChunk3DS;
+  I: integer;
 
 begin
   if DB.NodeListDirty then
@@ -2931,12 +3013,12 @@ begin
       begin
         case Current^.Tag of
           AMBIENT_NODE_TAG,
-            OBJECT_NODE_TAG,
-            CAMERA_NODE_TAG,
-            TARGET_NODE_TAG,
-            LIGHT_NODE_TAG,
-            L_TARGET_NODE_TAG,
-            SPOTLIGHT_NODE_TAG:
+          OBJECT_NODE_TAG,
+          CAMERA_NODE_TAG,
+          TARGET_NODE_TAG,
+          LIGHT_NODE_TAG,
+          L_TARGET_NODE_TAG,
+          SPOTLIGHT_NODE_TAG:
             Inc(I);
         end;
         Current := Current^.Sibling;
@@ -2953,36 +3035,37 @@ begin
     begin
       case Current^.Tag of
         AMBIENT_NODE_TAG,
-          OBJECT_NODE_TAG,
-          CAMERA_NODE_TAG,
-          TARGET_NODE_TAG,
-          LIGHT_NODE_TAG,
-          L_TARGET_NODE_TAG,
-          SPOTLIGHT_NODE_TAG:
+        OBJECT_NODE_TAG,
+        CAMERA_NODE_TAG,
+        TARGET_NODE_TAG,
+        LIGHT_NODE_TAG,
+        L_TARGET_NODE_TAG,
+        SPOTLIGHT_NODE_TAG:
+        begin
+          Chunk := FindNextChunk(Current^.Children, NODE_HDR);
+          if Assigned(Chunk) then
           begin
-            Chunk := FindNextChunk(Current^.Children, NODE_HDR);
+            Source.ReadChunkData(Chunk);
+            DB.NodeList^.List^[I].Chunk := Current;
+            DB.NodeList^.List^[I].NameStr := Chunk^.Data.NodeHdr^.ObjNameStr;
+            FreeChunkData(Chunk);
+          end;
+
+          // Object tags may have an instance name as well, which gets appended to
+          // the object name with a "." seperator
+          if Current^.Tag = OBJECT_NODE_TAG then
+          begin
+            Chunk := FindNextChunk(Current^.Children, INSTANCE_NAME);
             if Assigned(Chunk) then
             begin
               Source.ReadChunkData(Chunk);
-              DB.NodeList^.List^[I].Chunk := Current;
-              DB.NodeList^.List^[I].NameStr := Chunk^.Data.NodeHdr^.ObjNameStr;
+              DB.NodeList^.List^[I].NameStr :=
+                DB.NodeList^.List^[I].NameStr + '.' + string(Chunk^.Data.InstanceName);
               FreeChunkData(Chunk);
             end;
-
-            // Object tags may have an instance name as well, which gets appended to
-            // the object name with a "." seperator
-            if Current^.Tag = OBJECT_NODE_TAG then
-            begin
-              Chunk := FindNextChunk(Current^.Children, INSTANCE_NAME);
-              if Assigned(Chunk) then
-              begin
-                Source.ReadChunkData(Chunk);
-                DB.NodeList^.List^[I].NameStr := DB.NodeList^.List^[I].NameStr + '.' + string(Chunk^.Data.InstanceName);
-                FreeChunkData(Chunk);
-              end;
-            end;
-            Inc(I); // Increment index counter
           end;
+          Inc(I); // Increment index counter
+        end;
       end;
       Current := Current^.Sibling;
     end;
@@ -2993,10 +3076,11 @@ end;
 
 //----------------- other support function ----------------------------------------------------------------------------
 
-function GetGenericNodeCount(const Source: TFile3DS; var DB: TDatabase3DS; Tag: Word): Integer;
+function GetGenericNodeCount(const Source: TFile3DS; var DB: TDatabase3DS;
+  Tag: word): integer;
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   UpdateNodeTagList(Source, DB);
@@ -3009,10 +3093,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetGenericNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; TagID: Word; List: TStringList);
+procedure GetGenericNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  TagID: word; List: TStringList);
 
 var
-  I: Cardinal;
+  I: cardinal;
 
 begin
   UpdateNodeTagList(Source, DB);
@@ -3024,14 +3109,14 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindNamedAndTaggedChunk(const Source: TFile3DS; var DB: TDatabase3DS; Name: string; TagID: Word): PChunk3DS;
+function FindNamedAndTaggedChunk(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string; TagID: word): PChunk3DS;
 
-// Look through the keyframer stuff and find named chunk of the tag type TagID.
-// Has to be a chunk that has a node header: CAMERA_NODE, LIGHT_NODE, , .
+  // Look through the keyframer stuff and find named chunk of the tag type TagID.
+  // Has to be a chunk that has a node header: CAMERA_NODE, LIGHT_NODE, , .
 
 var
-  KfChunk,
-    NodeHdrChunk: PChunk3DS;
+  KfChunk, NodeHdrChunk: PChunk3DS;
 
 begin
   // find Keyframe Chunk
@@ -3059,10 +3144,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindNodeTagByIndexAndType(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal; AType: Word): PChunk3DS;
+function FindNodeTagByIndexAndType(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal; AType: word): PChunk3DS;
 
 var
-  I, Count: Cardinal;
+  I, Count: cardinal;
 
 begin
   Result := nil;
@@ -3082,10 +3168,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindNodeTagByNameAndType(const Source: TFile3DS; DB: TDatabase3DS; Name: string; AType: Word): PChunk3DS;
+function FindNodeTagByNameAndType(const Source: TFile3DS; DB: TDatabase3DS;
+  Name: string; AType: word): PChunk3DS;
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   Result := nil;
@@ -3101,7 +3188,7 @@ end;
 
 //----------------- material handling ---------------------------------------------------------------------------------
 
-function GetMaterialCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetMaterialCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 begin
   UpdateMatEntryList(Source, DB);
@@ -3113,13 +3200,13 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindMatEntryByIndex(Source: TFile3DS; DB: TDatabase3DS; Index: Integer): PChunk3DS;
+function FindMatEntryByIndex(Source: TFile3DS; DB: TDatabase3DS;
+  Index: integer): PChunk3DS;
 
 begin
   if DB.TopChunk = nil then
     ShowError(Error3DS_INVALID_DATABASE);
-  if (DB.TopChunk^.Tag <> MLIBMAGIC) and
-    (DB.TopChunk^.Tag <> M3DMAGIC) and
+  if (DB.TopChunk^.Tag <> MLIBMAGIC) and (DB.TopChunk^.Tag <> M3DMAGIC) and
     (DB.TopChunk^.Tag <> CMAGIC) then
     ShowError(Error3DS_WRONG_DATABASE);
 
@@ -3208,14 +3295,15 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function FindNamedObjectByIndex(Source: TFile3DS; DB: TDatabase3DS; AType: Word; Index: Integer): PChunk3DS;
+function FindNamedObjectByIndex(Source: TFile3DS; DB: TDatabase3DS;
+  AType: word; Index: integer): PChunk3DS;
 
-// searches the database for a named object by index position and object type
-// returns the NAMED_OBJECT chunk if found, nil otherwise
+  // searches the database for a named object by index position and object type
+  // returns the NAMED_OBJECT chunk if found, nil otherwise
 
 var
   Chunk: PChunk3DS;
-  I, Count: Integer;
+  I, Count: integer;
 
 begin
   UpdateNamedObjectList(Source, DB);
@@ -3271,7 +3359,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function ReadPercentageChunk(Source: TFile3DS; Chunk: PChunk3DS): Single;
+function ReadPercentageChunk(Source: TFile3DS; Chunk: PChunk3DS): single;
 
 var
   DataChunk: PChunk3DS;
@@ -3300,7 +3388,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetBitmapChunk(const DataSource: TFile3DS; Chunk: PChunk3DS; var Bitmap: TBitmap3DS);
+procedure GetBitmapChunk(const DataSource: TFile3DS; Chunk: PChunk3DS;
+  var Bitmap: TBitmap3DS);
 
 var
   Current: PChunk3DS;
@@ -3313,131 +3402,131 @@ begin
     begin
       case Current^.Tag of
         INT_PERCENTAGE:
-          begin
-            DataSource.ReadChunkData(Current);
-            Percent := Current^.Data.IntPercentage^ / 100;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Percent := Current^.Data.IntPercentage^ / 100;
+          FreeChunkData(Current);
+        end;
         FLOAT_PERCENTAGE:
-          begin
-            DataSource.ReadChunkData(Current);
-            Percent := Current^.Data.FloatPercentage^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Percent := Current^.Data.FloatPercentage^;
+          FreeChunkData(Current);
+        end;
         MAT_MAPNAME:
-          begin
-            DataSource.ReadChunkData(Current);
-            NameStr := StrPas(Current^.Data.MatMapname);
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          NameStr := StrPas(Current^.Data.MatMapname);
+          FreeChunkData(Current);
+        end;
         MAT_MAP_TILING:
-          begin
-            DataSource.ReadChunkData(Current);
-            if (Current^.Data.MatMapTiling^ and TEX_DECAL) <> 0 then
-              if (Current^.Data.MatMapTiling^ and TEX_NOWRAP) <> 0 then
-                Tiling := ttDecal
-              else
-                Tiling := ttBoth
+        begin
+          DataSource.ReadChunkData(Current);
+          if (Current^.Data.MatMapTiling^ and TEX_DECAL) <> 0 then
+            if (Current^.Data.MatMapTiling^ and TEX_NOWRAP) <> 0 then
+              Tiling := ttDecal
             else
-              tiling := ttTile;
-            IgnoreAlpha := (Current^.Data.MatMapTiling^ and TEX_DONT_USE_ALPHA) <> 0;
-            if (Current^.Data.MatMapTiling^ and TEX_SAT) <> 0 then
-              Filter := ftSummedArea
+              Tiling := ttBoth
+          else
+            tiling := ttTile;
+          IgnoreAlpha := (Current^.Data.MatMapTiling^ and TEX_DONT_USE_ALPHA) <> 0;
+          if (Current^.Data.MatMapTiling^ and TEX_SAT) <> 0 then
+            Filter := ftSummedArea
+          else
+            Filter := ftPyramidal;
+          Mirror := (Current^.Data.MatMapTiling^ and TEX_MIRROR) <> 0;
+          Negative := (Current^.Data.MatMapTiling^ and TEX_INVERT) <> 0;
+          if (Current^.Data.MatMapTiling^ and TEX_TINT) <> 0 then
+            if (Current^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
+              Source := ttAlphaTint
             else
-              Filter := ftPyramidal;
-            Mirror := (Current^.Data.MatMapTiling^ and TEX_MIRROR) <> 0;
-            Negative := (Current^.Data.MatMapTiling^ and TEX_INVERT) <> 0;
-            if (Current^.Data.MatMapTiling^ and TEX_TINT) <> 0 then
-              if (Current^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
-                Source := ttAlphaTint
-              else
-                Source := ttRGBLumaTint
-            else if (Current^.Data.MatMapTiling^ and TEX_RGB_TINT) <> 0 then
-              Source := ttRGBTint
-            else if (Current^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
-              Source := ttAlpha
-            else
-              source := ttRGB;
-            FreeChunkData(Current);
-          end;
+              Source := ttRGBLumaTint
+          else if (Current^.Data.MatMapTiling^ and TEX_RGB_TINT) <> 0 then
+            Source := ttRGBTint
+          else if (Current^.Data.MatMapTiling^ and TEX_ALPHA_SOURCE) <> 0 then
+            Source := ttAlpha
+          else
+            Source := ttRGB;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_USCALE:
-          begin
-            DataSource.ReadChunkData(Current);
-            UScale := Current^.Data.MatMapUScale^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          UScale := Current^.Data.MatMapUScale^;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_VSCALE:
-          begin
-            DataSource.ReadChunkData(Current);
-            VScale := Current^.Data.MatMapVScale^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          VScale := Current^.Data.MatMapVScale^;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_UOFFSET:
-          begin
-            DataSource.ReadChunkData(Current);
-            UOffset := Current^.Data.MatMapUOffset^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          UOffset := Current^.Data.MatMapUOffset^;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_VOFFSET:
-          begin
-            DataSource.ReadChunkData(Current);
-            VOffset := Current^.Data.MatMapVOffset^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          VOffset := Current^.Data.MatMapVOffset^;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_ANG:
-          begin
-            DataSource.ReadChunkData(Current);
-            Rotation := Current^.Data.MatMapAng^;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Rotation := Current^.Data.MatMapAng^;
+          FreeChunkData(Current);
+        end;
         MAT_BUMP_PERCENT:
           ; // value is really stored in TMaterial3DS structure
         MAT_MAP_COL1:
-          begin
-            DataSource.ReadChunkData(Current);
-            Tint1.R := Current^.Data.MatMapCol1^.Red / 255;
-            Tint1.G := Current^.Data.MatMapCol1^.Green / 255;
-            Tint1.B := Current^.Data.MatMapCol1^.Blue / 255;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Tint1.R := Current^.Data.MatMapCol1^.Red / 255;
+          Tint1.G := Current^.Data.MatMapCol1^.Green / 255;
+          Tint1.B := Current^.Data.MatMapCol1^.Blue / 255;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_COL2:
-          begin
-            DataSource.ReadChunkData(Current);
-            Tint2.R := Current^.Data.MatMapCol2^.Red / 255;
-            Tint2.G := Current^.Data.MatMapCol2^.Green / 255;
-            Tint2.B := Current^.Data.MatMapCol2^.Blue / 255;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Tint2.R := Current^.Data.MatMapCol2^.Red / 255;
+          Tint2.G := Current^.Data.MatMapCol2^.Green / 255;
+          Tint2.B := Current^.Data.MatMapCol2^.Blue / 255;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_RCOL:
-          begin
-            DataSource.ReadChunkData(Current);
-            RedTint.R := Current^.Data.MatMapRCol^.Red / 255;
-            RedTint.G := Current^.Data.MatMapRCol^.Green / 255;
-            RedTint.B := Current^.Data.MatMapRCol^.Blue / 255;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          RedTint.R := Current^.Data.MatMapRCol^.Red / 255;
+          RedTint.G := Current^.Data.MatMapRCol^.Green / 255;
+          RedTint.B := Current^.Data.MatMapRCol^.Blue / 255;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_GCOL:
-          begin
-            DataSource.ReadChunkData(Current);
-            GreenTint.R := Current^.Data.MatMapGCol^.Red / 255;
-            GreenTint.G := Current^.Data.MatMapGCol^.Green / 255;
-            GreenTint.B := Current^.Data.MatMapGCol^.Blue / 255;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          GreenTint.R := Current^.Data.MatMapGCol^.Red / 255;
+          GreenTint.G := Current^.Data.MatMapGCol^.Green / 255;
+          GreenTint.B := Current^.Data.MatMapGCol^.Blue / 255;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_BCOL:
-          begin
-            DataSource.ReadChunkData(Current);
-            BlueTint.R := Current^.Data.MatMapBCol^.Red / 255;
-            BlueTint.G := Current^.Data.MatMapBCol^.Green / 255;
-            BlueTint.B := Current^.Data.MatMapBCol^.Blue / 255;
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          BlueTint.R := Current^.Data.MatMapBCol^.Red / 255;
+          BlueTint.G := Current^.Data.MatMapBCol^.Green / 255;
+          BlueTint.B := Current^.Data.MatMapBCol^.Blue / 255;
+          FreeChunkData(Current);
+        end;
         MAT_MAP_TEXBLUR:
-          begin
-            DataSource.ReadChunkData(Current);
-            Blur := Current^.Data.MatMapTexBlur^; // float percents
-            FreeChunkData(Current);
-          end;
+        begin
+          DataSource.ReadChunkData(Current);
+          Blur := Current^.Data.MatMapTexBlur^; // float percents
+          FreeChunkData(Current);
+        end;
       end; // case Current^.Tag of
       Current := Current^.Sibling;
     end; // with Bitmap do
@@ -3449,9 +3538,7 @@ end;
 function ReadMatEntryChunk(Source: TFile3DS; MatEntry: PChunk3DS): TMaterial3DS;
 
 var
-  Current,
-    DataChunk,
-    Color: PChunk3DS;
+  Current, DataChunk, Color: PChunk3DS;
   MatColor: PFColor3DS;
 
 begin
@@ -3467,51 +3554,51 @@ begin
       if (Current^.Tag and $FF00) <> $8000 then // ignore xdata
         case Current^.Tag of
           MAT_NAME:
-            begin
-              Source.ReadChunkData(Current);
-              NameStr := StrPas(Current^.Data.MatName);
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            NameStr := StrPas(Current^.Data.MatName);
+            FreeChunkData(Current);
+          end;
           MAT_AMBIENT,
-            MAT_DIFFUSE,
-            MAT_SPECULAR:
-            begin
-              case Current^.Tag of
-                MAT_DIFFUSE:
-                  MatColor := @Diffuse;
-                MAT_SPECULAR:
-                  MatColor := @Specular;
+          MAT_DIFFUSE,
+          MAT_SPECULAR:
+          begin
+            case Current^.Tag of
+              MAT_DIFFUSE:
+                MatColor := @Diffuse;
+              MAT_SPECULAR:
+                MatColor := @Specular;
               else
                 MatColor := @Ambient; // MAT_AMBIENT
-              end;
-              Color := FindChunk(Current, COLOR_24);
-              if Assigned(color) then
-              begin
-                Source.ReadChunkData(Color);
-                MatColor^.R := Color^.Data.Color24^.Red / 255;
-                MatColor^.G := Color^.Data.Color24^.Green / 255;
-                MatColor^.B := Color^.Data.Color24^.Blue / 255;
-                FreeChunkData(Color);
-              end;
-              Color := FindChunk(Current, COLOR_F);
-              if Assigned(Color) then
-              begin
-                Source.ReadChunkData(Color);
-                MatColor^.R := Color^.Data.ColorF^.Red;
-                MatColor^.G := Color^.Data.ColorF^.Green;
-                MatColor^.B := Color^.Data.ColorF^.Blue;
-                FreeChunkData(Color);
-              end;
-              Color := FindChunk(Current, LIN_COLOR_24);
-              if Assigned(Color) then
-              begin
-                Source.ReadChunkData(Color);
-                MatColor^.R := Color^.Data.LinColor24^.Red / 255;
-                MatColor^.G := Color^.Data.LinColor24^.Green / 255;
-                MatColor^.B := Color^.Data.LinColor24^.Blue / 255;
-                FreeChunkData(Color);
-              end;
             end;
+            Color := FindChunk(Current, COLOR_24);
+            if Assigned(color) then
+            begin
+              Source.ReadChunkData(Color);
+              MatColor^.R := Color^.Data.Color24^.Red / 255;
+              MatColor^.G := Color^.Data.Color24^.Green / 255;
+              MatColor^.B := Color^.Data.Color24^.Blue / 255;
+              FreeChunkData(Color);
+            end;
+            Color := FindChunk(Current, COLOR_F);
+            if Assigned(Color) then
+            begin
+              Source.ReadChunkData(Color);
+              MatColor^.R := Color^.Data.ColorF^.Red;
+              MatColor^.G := Color^.Data.ColorF^.Green;
+              MatColor^.B := Color^.Data.ColorF^.Blue;
+              FreeChunkData(Color);
+            end;
+            Color := FindChunk(Current, LIN_COLOR_24);
+            if Assigned(Color) then
+            begin
+              Source.ReadChunkData(Color);
+              MatColor^.R := Color^.Data.LinColor24^.Red / 255;
+              MatColor^.G := Color^.Data.LinColor24^.Green / 255;
+              MatColor^.B := Color^.Data.LinColor24^.Blue / 255;
+              FreeChunkData(Color);
+            end;
+          end;
           MAT_SHININESS:
             Shininess := ReadPercentageChunk(Source, Current);
           MAT_SHIN2PCT:
@@ -3533,11 +3620,11 @@ begin
           MAT_XPFALLIN:
             Transparency := -Transparency;
           MAT_WIRESIZE:
-            begin
-              Source.ReadChunkData(Current);
-              WireSize := Current^.Data.MatWireSize^;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            WireSize := Current^.Data.MatWireSize^;
+            FreeChunkData(Current);
+          end;
           MAT_USE_XPFALL:
             UseFall := True;
           MAT_USE_REFBLUR:
@@ -3549,11 +3636,11 @@ begin
           MAT_ADDITIVE:
             Additive := True;
           MAT_SHADING:
-            begin
-              Source.ReadChunkData(Current);
-              Shading := TShadeType3DS(Current^.Data.MatShading^);
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Shading := TShadeType3DS(Current^.Data.MatShading^);
+            FreeChunkData(Current);
+          end;
           MAT_FACEMAP:
             FaceMap := True;
           MAT_PHONGSOFT:
@@ -3573,28 +3660,30 @@ begin
           MAT_REFLMAP:
             GetBitmapChunk(Source, Current, Reflect.Map);
           MAT_ACUBIC:
-            begin
-              Source.ReadChunkData(Current);
-              Reflect.UseAuto := True;
-              Reflect.AutoMap.FirstFrame := (Current^.Data.MatAcubic^.Flags and ACubicFirst3DS) <> 0;
-              Reflect.AutoMap.Flat := (Current^.Data.MatAcubic^.Flags and ACubicFlat3DS) <> 0;
-              Reflect.AutoMap.Size := Current^.Data.MatAcubic^.MapSize;
-              Reflect.AutoMap.nthFrame := Current^.Data.MatAcubic^.FrameInterval;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Reflect.UseAuto := True;
+            Reflect.AutoMap.FirstFrame :=
+              (Current^.Data.MatAcubic^.Flags and ACubicFirst3DS) <> 0;
+            Reflect.AutoMap.Flat :=
+              (Current^.Data.MatAcubic^.Flags and ACubicFlat3DS) <> 0;
+            Reflect.AutoMap.Size := Current^.Data.MatAcubic^.MapSize;
+            Reflect.AutoMap.nthFrame := Current^.Data.MatAcubic^.FrameInterval;
+            FreeChunkData(Current);
+          end;
           MAT_REFLMASK:
             GetBitmapChunk(Source, Current, Reflect.Mask);
           MAT_BUMPMAP:
+          begin
+            GetBitmapChunk(Source, Current, Bump.Map);
+            DataChunk := FindChunk(Current, MAT_BUMP_PERCENT);
+            if Assigned(DataChunk) then
             begin
-              GetBitmapChunk(Source, Current, Bump.Map);
-              DataChunk := FindChunk(Current, MAT_BUMP_PERCENT);
-              if Assigned(DataChunk) then
-              begin
-                Source.ReadChunkData(DataChunk);
-                Bump.Map.Percent := DataChunk^.Data.MatBumpPercent^ / 100;
-                FreeChunkData(DataChunk);
-              end;
+              Source.ReadChunkData(DataChunk);
+              Bump.Map.Percent := DataChunk^.Data.MatBumpPercent^ / 100;
+              FreeChunkData(DataChunk);
             end;
+          end;
           MAT_BUMPMASK:
             GetBitmapChunk(Source, Current, Bump.Mask);
           MAT_SPECMAP:
@@ -3610,130 +3699,130 @@ begin
           MAT_SELFIMASK:
             GetBitmapChunk(Source, Current, IllumMap.Mask);
           MAT_SXP_TEXT_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              Texture.Map.DataSize := Current^.Data.IpasData^.Size;
-              Texture.Map.Data := Current^.Data.IpasData^.Data;
-              // avoid releasing the data memory
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Texture.Map.DataSize := Current^.Data.IpasData^.Size;
+            Texture.Map.Data := Current^.Data.IpasData^.Data;
+            // avoid releasing the data memory
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_TEXT_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Texture.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Texture.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Texture.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Texture.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_TEXT2_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              Texture2.Map.DataSize := Current^.Data.IpasData^.Size;
-              Texture2.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Texture2.Map.DataSize := Current^.Data.IpasData^.Size;
+            Texture2.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_TEXT2_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Texture2.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Texture2.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Texture2.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Texture2.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_OPAC_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              Opacity.Map.DataSize := Current^.Data.IpasData^.Size;
-              Opacity.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Opacity.Map.DataSize := Current^.Data.IpasData^.Size;
+            Opacity.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_OPAC_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Opacity.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Opacity.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Opacity.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Opacity.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_REFL_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Reflect.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Reflect.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Reflect.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Reflect.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_BUMP_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              Bump.Map.DataSize := Current^.Data.IpasData^.Size;
-              Bump.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Bump.Map.DataSize := Current^.Data.IpasData^.Size;
+            Bump.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_BUMP_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Bump.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Bump.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Bump.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Bump.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SPEC_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              SpecMap.Map.DataSize := Current^.Data.IpasData^.Size;
-              SpecMap.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            SpecMap.Map.DataSize := Current^.Data.IpasData^.Size;
+            SpecMap.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SPEC_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              Specmap.Mask.DataSize := Current^.Data.IpasData^.Size;
-              Specmap.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Specmap.Mask.DataSize := Current^.Data.IpasData^.Size;
+            Specmap.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SHIN_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              ShinMap.Map.DataSize := Current^.Data.IpasData^.Size;
-              ShinMap.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            ShinMap.Map.DataSize := Current^.Data.IpasData^.Size;
+            ShinMap.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SHIN_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              ShinMap.Mask.DataSize := Current^.Data.IpasData^.Size;
-              ShinMap.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            ShinMap.Mask.DataSize := Current^.Data.IpasData^.Size;
+            ShinMap.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SELFI_DATA:
-            begin
-              Source.ReadChunkData(Current);
-              IllumMap.Map.DataSize := Current^.Data.IpasData^.Size;
-              IllumMap.Map.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            IllumMap.Map.DataSize := Current^.Data.IpasData^.Size;
+            IllumMap.Map.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_SXP_SELFI_MASKDATA:
-            begin
-              Source.ReadChunkData(Current);
-              IllumMap.Mask.DataSize := Current^.Data.IpasData^.Size;
-              IllumMap.Mask.Data := Current^.Data.IpasData^.Data;
-              Current^.Data.IpasData^.Data := nil;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            IllumMap.Mask.DataSize := Current^.Data.IpasData^.Size;
+            IllumMap.Mask.Data := Current^.Data.IpasData^.Data;
+            Current^.Data.IpasData^.Data := nil;
+            FreeChunkData(Current);
+          end;
           MAT_DECAL:
             ; // don't know what do to with it
-        else
-          ShowError(Error3DS_INVALID_CHUNK)
+          else
+            ShowError(Error3DS_INVALID_CHUNK)
         end;
       Current := Current^.Sibling;
     end; // while Assigned(Current) do
@@ -3742,10 +3831,10 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetChunkValue(Tag: Word): Integer;
+function GetChunkValue(Tag: word): integer;
 
-// Computes a chunk weighting used to determine proper chunk order,
-// higher values appear earlier in the parent than lower values
+  // Computes a chunk weighting used to determine proper chunk order,
+  // higher values appear earlier in the parent than lower values
 
 begin
   // only chunks where an explicit order matters are handled
@@ -3819,16 +3908,16 @@ begin
     KFCURTIME:
       Inc(Result, 33);
     TARGET_NODE_TAG,
-      L_TARGET_NODE_TAG,
-      OBJECT_NODE_TAG,
-      CAMERA_NODE_TAG,
-      SPOTLIGHT_NODE_TAG:
+    L_TARGET_NODE_TAG,
+    OBJECT_NODE_TAG,
+    CAMERA_NODE_TAG,
+    SPOTLIGHT_NODE_TAG:
       Inc(Result, 34);
     AMBIENT_NODE_TAG:
       Inc(Result, 35);
     N_TRI_OBJECT,
-      N_CAMERA,
-      N_DIRECT_LIGHT:
+    N_CAMERA,
+    N_DIRECT_LIGHT:
       Inc(Result);
     OBJ_HIDDEN:
       Inc(Result);
@@ -3837,7 +3926,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetMaterialByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TMaterial3DS;
+function GetMaterialByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TMaterial3DS;
 
 var
   Chunk: PChunk3DS;
@@ -3854,12 +3944,12 @@ end;
 
 //----------------- mesh object handling ------------------------------------------------------------------------------
 
-function GetMeshCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetMeshCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
-// returns the number of mesh objects referenced in the chunk list
+  // returns the number of mesh objects referenced in the chunk list
 
 var
-  I: Integer;
+  I: integer;
   Chunk: PChunk3DS;
 
 begin
@@ -3881,10 +3971,10 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetMeshMatCount(Current: PChunk3DS): Integer;
+function GetMeshMatCount(Current: PChunk3DS): integer;
 
-// aids the GetMeshEntryChunk3DS in determining
-// how many materials are defined within the mesh object
+  // aids the GetMeshEntryChunk3DS in determining
+  // how many materials are defined within the mesh object
 
 var
   Chunk: PChunk3DS;
@@ -3901,35 +3991,31 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure RelMeshObjField(var Mesh: TMesh3DS; Field: Integer);
+procedure RelMeshObjField(var Mesh: TMesh3DS; Field: integer);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
-  if ((Field and RelVertexArray3DS) <> 0) and
-    Assigned(Mesh.VertexArray) then
+  if ((Field and RelVertexArray3DS) <> 0) and Assigned(Mesh.VertexArray) then
   begin
     FreeMem(Mesh.VertexArray);
     Mesh.VertexArray := nil;
   end;
 
-  if ((Field and RelTextArray3DS) <> 0) and
-    Assigned(Mesh.TextArray) then
+  if ((Field and RelTextArray3DS) <> 0) and Assigned(Mesh.TextArray) then
   begin
     FreeMem(Mesh.TextArray);
     Mesh.TextArray := nil;
   end;
 
-  if ((Field and RelFaceArray3DS) <> 0) and
-    Assigned(Mesh.FaceArray) then
+  if ((Field and RelFaceArray3DS) <> 0) and Assigned(Mesh.FaceArray) then
   begin
     FreeMem(Mesh.FaceArray);
     Mesh.FaceArray := nil;
   end;
 
-  if ((Field and RelMatArray3DS) <> 0) and
-    Assigned(Mesh.MatArray) then
+  if ((Field and RelMatArray3DS) <> 0) and Assigned(Mesh.MatArray) then
   begin
     for I := 0 to Mesh.NMats - 1 do
     begin
@@ -3945,22 +4031,19 @@ begin
     Mesh.MatArray := nil;
   end;
 
-  if ((Field and RelSmoothArray3DS) <> 0) and
-    Assigned(Mesh.SmoothArray) then
+  if ((Field and RelSmoothArray3DS) <> 0) and Assigned(Mesh.SmoothArray) then
   begin
     FreeMem(Mesh.SmoothArray);
     Mesh.SmoothArray := nil;
   end;
 
-  if ((Field and RelProcData3DS) <> 0) and
-    Assigned(Mesh.ProcData) then
+  if ((Field and RelProcData3DS) <> 0) and Assigned(Mesh.ProcData) then
   begin
     FreeMem(Mesh.ProcData);
     Mesh.ProcData := nil;
   end;
 
-  if ((Field and RelVFlagArray3DS) <> 0) and
-    Assigned(Mesh.VFlagArray) then
+  if ((Field and RelVFlagArray3DS) <> 0) and Assigned(Mesh.VFlagArray) then
   begin
     FreeMem(Mesh.VFlagArray);
     Mesh.VFlagArray := nil;
@@ -3969,10 +4052,10 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure InitMeshObjField(var aMesh: TMesh3DS; Field: Integer);
+procedure InitMeshObjField(var aMesh: TMesh3DS; Field: integer);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   with aMesh do
@@ -4087,7 +4170,7 @@ begin
       begin
         if SmoothArray = nil then
         begin
-          SmoothArray := AllocMem(NFaces * SizeOf(Integer));
+          SmoothArray := AllocMem(NFaces * SizeOf(integer));
           if SmoothArray = nil then
             ShowError(Error3DS_NO_MEM);
 
@@ -4096,7 +4179,7 @@ begin
         end
         else
         begin
-          ReallocMem(SmoothArray, SizeOf(Integer) * NFaces);
+          ReallocMem(SmoothArray, SizeOf(integer) * NFaces);
           if SmoothArray = nil then
             ShowError(Error3DS_NO_MEM);
         end;
@@ -4111,13 +4194,13 @@ begin
       begin
         if ProcData = nil then
         begin
-          ProcData := AllocMem(ProcSize * SizeOf(Byte));
+          ProcData := AllocMem(ProcSize * SizeOf(byte));
           if ProcData = nil then
             ShowError(Error3DS_NO_MEM);
         end
         else
         begin
-          ReallocMem(ProcData, SizeOf(Byte) * ProcSize);
+          ReallocMem(ProcData, SizeOf(byte) * ProcSize);
           if ProcData = nil then
             ShowError(Error3DS_NO_MEM);
         end;
@@ -4132,13 +4215,13 @@ begin
       begin
         if VFlagArray = nil then
         begin
-          VFlagArray := AllocMem(NVertices * SizeOf(Word));
+          VFlagArray := AllocMem(NVertices * SizeOf(word));
           if VFlagArray = nil then
             ShowError(Error3DS_NO_MEM);
         end
         else
         begin
-          ReallocMem(VFlagArray, SizeOf(Word) * NVertices);
+          ReallocMem(VFlagArray, SizeOf(word) * NVertices);
           if VFlagArray = nil then
             ShowError(Error3DS_NO_MEM);
         end;
@@ -4149,7 +4232,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function InitMeshObj(VertexCount, FaceCount, InitFlags: Word): TMesh3DS;
+function InitMeshObj(VertexCount, FaceCount, InitFlags: word): TMesh3DS;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -4203,11 +4286,8 @@ end;
 function GetMeshEntryChunk(const Source: TFile3DS; Chunk: PChunk3DS): TMesh3DS;
 
 var
-  NTriChunk,
-    FaceArrayChunk,
-    DataChunk,
-    Current: PChunk3DS;
-  I: Integer;
+  NTriChunk, FaceArrayChunk, DataChunk, Current: PChunk3DS;
+  I: integer;
 
 begin
   NTriChunk := FindNextChunk(Chunk^.Children, N_TRI_OBJECT);
@@ -4227,125 +4307,125 @@ begin
     begin
       case Current^.Tag of
         POINT_ARRAY:
-          begin
-            Source.ReadChunkData(Current);
-            NVertices := Current^.Data.PointArray^.Vertices;
-            VertexArray := Current^.Data.PointArray^.PointList;
-            // avoid freeing the just allocated memory
-            Current^.Data.PointArray^.PointList := nil;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          NVertices := Current^.Data.PointArray^.Vertices;
+          VertexArray := Current^.Data.PointArray^.PointList;
+          // avoid freeing the just allocated memory
+          Current^.Data.PointArray^.PointList := nil;
+          FreeChunkData(Current);
+        end;
         POINT_FLAG_ARRAY:
-          begin
-            Source.ReadChunkData(Current);
-            NVFlags := Current^.Data.PointFlagArray^.Flags;
-            VFlagArray := Current^.Data.PointFlagArray^.FlagList;
-            Current^.Data.PointFlagArray^.FlagList := nil;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          NVFlags := Current^.Data.PointFlagArray^.Flags;
+          VFlagArray := Current^.Data.PointFlagArray^.FlagList;
+          Current^.Data.PointFlagArray^.FlagList := nil;
+          FreeChunkData(Current);
+        end;
         FACE_ARRAY:
+        begin
+          Source.ReadChunkData(Current);
+          NFaces := Current^.Data.FaceArray^.Faces;
+          FaceArray := Current^.Data.FaceArray^.FaceList;
+          Current^.Data.FaceArray^.FaceList := nil;
+
+          if Assigned(Current^.Children) then
           begin
-            Source.ReadChunkData(Current);
-            NFaces := Current^.Data.FaceArray^.Faces;
-            FaceArray := Current^.Data.FaceArray^.FaceList;
-            Current^.Data.FaceArray^.FaceList := nil;
+            // begin search for MESH_MAT_GROUP and SMOOTH_GROUP
+            FaceArrayChunk := Current;
 
-            if Assigned(Current^.Children) then
+            // create a list of all mesh mat groups
+            DataChunk := FindChunk(FaceArrayChunk, MSH_MAT_GROUP);
+            if Assigned(DataChunk) then
             begin
-              // begin search for MESH_MAT_GROUP and SMOOTH_GROUP
-              FaceArrayChunk := Current;
+              NMats := GetMeshMatCount(DataChunk);
+              MatArray := AllocMem(NMats * SizeOf(TObjMat3DS));
 
-              // create a list of all mesh mat groups
-              DataChunk := FindChunk(FaceArrayChunk, MSH_MAT_GROUP);
-              if Assigned(DataChunk) then
-              begin
-                NMats := GetMeshMatCount(DataChunk);
-                MatArray := AllocMem(NMats * SizeOf(TObjMat3DS));
-
-                for I := 0 to NMats - 1 do
-                begin
-                  Source.ReadChunkData(DataChunk);
-                  MatArray^[I].NameStr := DataChunk^.Data.MshMatGroup^.MatNameStr;
-                  MatArray^[I].NFaces := DataChunk^.Data.MshMatGroup^.Faces;
-                  MatArray^[I].FaceIndex := DataChunk^.Data.MshMatGroup^.FaceList;
-                  DataChunk^.Data.MshMatGroup^.FaceList := nil;
-                  FreeChunkData(DataChunk);
-                  DataChunk := FindNextChunk(DataChunk^.Sibling, MSH_MAT_GROUP);
-                end;
-              end;
-
-              DataChunk := FindNextChunk(FaceArrayChunk^.Children, SMOOTH_GROUP);
-              if Assigned(DataChunk) then
+              for I := 0 to NMats - 1 do
               begin
                 Source.ReadChunkData(DataChunk);
-                SmoothArray := DataChunk^.Data.SmoothGroup^.GroupList;
-                DataChunk^.Data.SmoothGroup^.GroupList := nil;
+                MatArray^[I].NameStr := DataChunk^.Data.MshMatGroup^.MatNameStr;
+                MatArray^[I].NFaces := DataChunk^.Data.MshMatGroup^.Faces;
+                MatArray^[I].FaceIndex := DataChunk^.Data.MshMatGroup^.FaceList;
+                DataChunk^.Data.MshMatGroup^.FaceList := nil;
                 FreeChunkData(DataChunk);
-              end;
-
-              DataChunk := FindNextChunk(FaceArrayChunk^.Children, MSH_BOXMAP);
-              if Assigned(DataChunk) then
-              begin
-                Source.ReadChunkData(DataChunk);
-                for I := 0 to 5 do
-                  BoxMapStr[I] := string(DataChunk^.Data.MshBoxmap^[I]);
-                UseBoxmap := True;
-                FreeChunkData(DataChunk);
+                DataChunk := FindNextChunk(DataChunk^.Sibling, MSH_MAT_GROUP);
               end;
             end;
-            FreeChunkData(Current);
+
+            DataChunk := FindNextChunk(FaceArrayChunk^.Children, SMOOTH_GROUP);
+            if Assigned(DataChunk) then
+            begin
+              Source.ReadChunkData(DataChunk);
+              SmoothArray := DataChunk^.Data.SmoothGroup^.GroupList;
+              DataChunk^.Data.SmoothGroup^.GroupList := nil;
+              FreeChunkData(DataChunk);
+            end;
+
+            DataChunk := FindNextChunk(FaceArrayChunk^.Children, MSH_BOXMAP);
+            if Assigned(DataChunk) then
+            begin
+              Source.ReadChunkData(DataChunk);
+              for I := 0 to 5 do
+                BoxMapStr[I] := string(DataChunk^.Data.MshBoxmap^[I]);
+              UseBoxmap := True;
+              FreeChunkData(DataChunk);
+            end;
           end;
+          FreeChunkData(Current);
+        end;
         TEX_VERTS:
-          begin
-            Source.ReadChunkData(Current);
-            ntextverts := Current^.Data.TexVerts^.NumCoords;
-            TextArray := Current^.Data.TexVerts^.TextVertList;
-            Current^.Data.TexVerts^.TextVertList := nil;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          ntextverts := Current^.Data.TexVerts^.NumCoords;
+          TextArray := Current^.Data.TexVerts^.TextVertList;
+          Current^.Data.TexVerts^.TextVertList := nil;
+          FreeChunkData(Current);
+        end;
         MESH_MATRIX:
-          begin
-            Source.ReadChunkData(Current);
-            LocMatrix := Current^.Data.MeshMatrix^;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          LocMatrix := Current^.Data.MeshMatrix^;
+          FreeChunkData(Current);
+        end;
         MESH_TEXTURE_INFO:
-          begin
-            UseMapInfo := True;
-            Source.ReadChunkData(Current);
-            Map.MapType := Current^.Data.MeshTextureInfo^.MapType;
-            Map.TileX := Current^.Data.MeshTextureInfo^.XTiling;
-            Map.TileY := Current^.Data.MeshTextureInfo^.YTiling;
-            Map.CenX := Current^.Data.MeshTextureInfo^.IconPos.X;
-            Map.CenY := Current^.Data.MeshTextureInfo^.IconPos.Y;
-            Map.CenZ := Current^.Data.MeshTextureInfo^.IconPos.Z;
-            Map.Scale := Current^.Data.MeshTextureInfo^.IconScaling;
-            Map.Matrix := Current^.Data.MeshTextureInfo^.XMatrix;
-            Map.PW := Current^.Data.MeshTextureInfo^.IconWidth;
-            Map.PH := Current^.Data.MeshTextureInfo^.IconHeight;
-            Map.CH := Current^.Data.MeshTextureInfo^.CylIconHeight;
-            FreeChunkData(Current);
-          end;
+        begin
+          UseMapInfo := True;
+          Source.ReadChunkData(Current);
+          Map.MapType := Current^.Data.MeshTextureInfo^.MapType;
+          Map.TileX := Current^.Data.MeshTextureInfo^.XTiling;
+          Map.TileY := Current^.Data.MeshTextureInfo^.YTiling;
+          Map.CenX := Current^.Data.MeshTextureInfo^.IconPos.X;
+          Map.CenY := Current^.Data.MeshTextureInfo^.IconPos.Y;
+          Map.CenZ := Current^.Data.MeshTextureInfo^.IconPos.Z;
+          Map.Scale := Current^.Data.MeshTextureInfo^.IconScaling;
+          Map.Matrix := Current^.Data.MeshTextureInfo^.XMatrix;
+          Map.PW := Current^.Data.MeshTextureInfo^.IconWidth;
+          Map.PH := Current^.Data.MeshTextureInfo^.IconHeight;
+          Map.CH := Current^.Data.MeshTextureInfo^.CylIconHeight;
+          FreeChunkData(Current);
+        end;
         PROC_NAME:
-          begin
-            Source.ReadChunkData(Current);
-            ProcNameStr := string(StrPas(Current^.Data.ProcName));
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          ProcNameStr := string(StrPas(Current^.Data.ProcName));
+          FreeChunkData(Current);
+        end;
         PROC_DATA:
-          begin
-            Source.ReadChunkData(Current);
-            ProcSize := Current^.Data.IpasData^.Size;
-            ProcData := Current^.Data.IpasData^.Data;
-            Current^.Data.IpasData^.Data := nil;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          ProcSize := Current^.Data.IpasData^.Size;
+          ProcData := Current^.Data.IpasData^.Data;
+          Current^.Data.IpasData^.Data := nil;
+          FreeChunkData(Current);
+        end;
         MESH_COLOR:
-          begin
-            Source.ReadChunkData(Current);
-            MeshColor := Current^.Data.MeshColor^;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          MeshColor := Current^.Data.MeshColor^;
+          FreeChunkData(Current);
+        end;
       end;
       Current := Current^.Sibling;
     end;
@@ -4363,13 +4443,14 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetMeshByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TMesh3DS;
+function GetMeshByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TMesh3DS;
 
-// fills a mesh structure from the (index)th mesh reference found in DB
+  // fills a mesh structure from the (index)th mesh reference found in DB
 
 var
   Current: PChunk3DS;
-  I, Count: Integer;
+  I, Count: integer;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -4406,11 +4487,11 @@ end;
 
 //----------------- spot and omni light handling ----------------------------------------------------------------------
 
-function GetOmnilightCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetOmnilightCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 var
   DLite, SpotL: PChunk3DS;
-  I: Integer;
+  I: integer;
 
 begin
   // update the index to named objects if the list has changed recently
@@ -4439,11 +4520,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetSpotlightCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 var
   DLite, SpotL: PChunk3DS;
-  I: Integer;
+  I: integer;
 
 begin
   // update the index to named objects if the list has changed recently
@@ -4538,7 +4619,7 @@ end;
 
 function GetLightEntryChunk(const Source: TFile3DS; Chunk: PChunk3DS): TLight3DS;
 
-// fills out the given Light structure with the Light pointed to by Chunk
+  // fills out the given Light structure with the Light pointed to by Chunk
 
 var
   DLite, SpotChunk, Current: PChunk3DS;
@@ -4575,47 +4656,47 @@ begin
       begin
         case Current^.Tag of
           COLOR_F:
-            begin
-              Source.ReadChunkData(Current);
-              Color.R := Current^.Data.ColorF^.Red;
-              Color.G := Current^.Data.ColorF^.Green;
-              Color.B := Current^.Data.ColorF^.Blue;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Color.R := Current^.Data.ColorF^.Red;
+            Color.G := Current^.Data.ColorF^.Green;
+            Color.B := Current^.Data.ColorF^.Blue;
+            FreeChunkData(Current);
+          end;
           COLOR_24:
-            begin
-              Source.ReadChunkData(Current);
-              Color.R := Current^.Data.Color24^.Red / 255;
-              Color.G := Current^.Data.Color24^.Green / 255;
-              Color.B := Current^.Data.Color24^.Blue / 255;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Color.R := Current^.Data.Color24^.Red / 255;
+            Color.G := Current^.Data.Color24^.Green / 255;
+            Color.B := Current^.Data.Color24^.Blue / 255;
+            FreeChunkData(Current);
+          end;
           DL_MULTIPLIER:
-            begin
-              Source.ReadChunkData(Current);
-              Multiplier := Current^.Data.DlMultiplier^;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Multiplier := Current^.Data.DlMultiplier^;
+            FreeChunkData(Current);
+          end;
           DL_INNER_RANGE:
-            begin
-              Source.ReadChunkData(Current);
-              // assuming since there is a value it is on
-              Attenuation.Inner := Current^.Data.DlInnerRange^;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            // assuming since there is a value it is on
+            Attenuation.Inner := Current^.Data.DlInnerRange^;
+            FreeChunkData(Current);
+          end;
           DL_OUTER_RANGE:
-            begin
-              Source.ReadChunkData(Current);
-              // assuming since there is a value it is on
-              Attenuation.Outer := Current^.Data.DlOuterRange^;
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            // assuming since there is a value it is on
+            Attenuation.Outer := Current^.Data.DlOuterRange^;
+            FreeChunkData(Current);
+          end;
           DL_EXCLUDE:
-            begin
-              Source.ReadChunkData(Current);
-              Exclude.Add(string(Current^.Data.DlExclude^));
-              FreeChunkData(Current);
-            end;
+          begin
+            Source.ReadChunkData(Current);
+            Exclude.Add(string(Current^.Data.DlExclude^));
+            FreeChunkData(Current);
+          end;
           DL_OFF:
             DLOff := True;
           DL_ATTENUATE:
@@ -4639,22 +4720,23 @@ begin
         begin
           case Current^.Tag of
             DL_SPOT_ROLL:
-              begin
-                Source.ReadChunkData(Current);
-                Spot^.Roll := Current^.Data.DlSpotRoll^;
-                FreeChunkData(Current);
-              end;
+            begin
+              Source.ReadChunkData(Current);
+              Spot^.Roll := Current^.Data.DlSpotRoll^;
+              FreeChunkData(Current);
+            end;
             DL_LOCAL_SHADOW:
               Spot^.Shadows.Cast := True;
             DL_LOCAL_SHADOW2:
-              begin
-                Source.ReadChunkData(Current);
-                Spot^.Shadows.Bias := Current^.Data.DlLocalShadow2^.LocalShadowBias;
-                Spot^.Shadows.Filter := Current^.Data.DlLocalShadow2^.LocalShadowFilter;
-                Spot^.Shadows.Mapsize := Current^.Data.DlLocalShadow2^.LocalShadowMapSize;
-                Spot^.Shadows.Local := True;
-                FreeChunkData(Current);
-              end;
+            begin
+              Source.ReadChunkData(Current);
+              Spot^.Shadows.Bias := Current^.Data.DlLocalShadow2^.LocalShadowBias;
+              Spot^.Shadows.Filter := Current^.Data.DlLocalShadow2^.LocalShadowFilter;
+              Spot^.Shadows.Mapsize :=
+                Current^.Data.DlLocalShadow2^.LocalShadowMapSize;
+              Spot^.Shadows.Local := True;
+              FreeChunkData(Current);
+            end;
             DL_SHADOWED:
               Spot^.Shadows.Cast := True;
             DL_SPOT_RECTANGULAR:
@@ -4664,26 +4746,27 @@ begin
             DL_SPOT_OVERSHOOT:
               Spot^.Cone.Overshoot := True;
             DL_SPOT_ASPECT:
-              begin
-                Source.ReadChunkData(Current);
-                Spot^.Aspect := Current^.Data.DlSpotAspect^;
-                FreeChunkData(Current);
-              end;
+            begin
+              Source.ReadChunkData(Current);
+              Spot^.Aspect := Current^.Data.DlSpotAspect^;
+              FreeChunkData(Current);
+            end;
             DL_RAY_BIAS:
-              begin
-                Source.ReadChunkData(Current);
-                Spot^.Shadows.RayBias := Current^.Data.DlRayBias^;
-                FreeChunkData(Current);
-              end;
+            begin
+              Source.ReadChunkData(Current);
+              Spot^.Shadows.RayBias := Current^.Data.DlRayBias^;
+              FreeChunkData(Current);
+            end;
             DL_RAYSHAD:
               Spot^.Shadows.AType := ssUseRayTraceShadow;
             DL_SPOT_PROJECTOR:
-              begin
-                Source.ReadChunkData(Current);
-                Spot^.Projector.BitmapStr := string(StrPas(Current^.Data.DlSpotProjector));
-                Spot^.Projector.Use := True;
-                FreeChunkData(Current);
-              end;
+            begin
+              Source.ReadChunkData(Current);
+              Spot^.Projector.BitmapStr :=
+                string(StrPas(Current^.Data.DlSpotProjector));
+              Spot^.Projector.Use := True;
+              FreeChunkData(Current);
+            end;
           end;
           Current := Current^.Sibling;
         end;
@@ -4693,14 +4776,14 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetOmnilightByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TLight3DS;
+function GetOmnilightByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TLight3DS;
 
-// fills out the omnilight structure from the (index)th mesh reference found in DB
+  // fills out the omnilight structure from the (index)th mesh reference found in DB
 
 var
-  LightChunk,
-    SpotChunk: PChunk3DS;
-  I, Count: Integer;
+  LightChunk, SpotChunk: PChunk3DS;
+  I, Count: integer;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -4741,14 +4824,14 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TLight3DS;
+function GetSpotlightByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TLight3DS;
 
-// fills out the Spot structure from the (index)th spot reference found in DB
+  // fills out the Spot structure from the (index)th spot reference found in DB
 
 var
-  LightChunk,
-    SpotChunk: PChunk3DS;
-  I, Count: Integer;
+  LightChunk, SpotChunk: PChunk3DS;
+  I, Count: integer;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -4817,11 +4900,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetCameraCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetCameraCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 var
   Chunk: PChunk3DS;
-  I: Integer;
+  I: integer;
 
 begin
   UpdateNamedObjectList(Source, DB);
@@ -4877,12 +4960,12 @@ begin
         CAM_SEE_CONE:
           ShowCone := True;
         CAM_RANGES:
-          begin
-            Source.ReadChunkData(Current);
-            Ranges.CamNear := Current^.Data.CamRanges^.NearPlane;
-            Ranges.CamFar := Current^.Data.CamRanges^.FarPlane;
-            FreeChunkData(Current);
-          end;
+        begin
+          Source.ReadChunkData(Current);
+          Ranges.CamNear := Current^.Data.CamRanges^.NearPlane;
+          Ranges.CamFar := Current^.Data.CamRanges^.FarPlane;
+          FreeChunkData(Current);
+        end;
       end;
       Current := Current^.Sibling;
     end;
@@ -4891,11 +4974,12 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetCameraByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TCamera3DS;
+function GetCameraByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TCamera3DS;
 
 var
   Camera: PChunk3DS;
-  I, Count: Integer;
+  I, Count: integer;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -4931,7 +5015,7 @@ end;
 
 function GetKFSeg(TopChunk: PChunk3DS): PChunk3DS;
 
-// all the keyframe information has to go in the appropriate segment KFDATA
+  // all the keyframe information has to go in the appropriate segment KFDATA
 
 begin
   // look for KFDATA
@@ -4971,11 +5055,13 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 function GetKFSegment(const Source: TFile3DS; var DB: TDatabase3DS): TKFSegment3DS;
-
 var
   DataChunk, SegChunk: PChunk3DS;
-
 begin
+  Result.SegBegin := 0;
+  Result.SegEnd := 0;
+  Result.Use := False;
+
   DataChunk := GetKFSeg(DB.TopChunk);
   SegChunk := FindNextChunk(DataChunk^.Children, KFSEG);
 
@@ -5008,10 +5094,11 @@ end;
 
 //----------------- Camera animation ----------------------------------------------------------------------------------
 
-procedure InitCameraMotion(var Camera: TKFCamera3DS; NewNPKeys, NewNFKeys, NewNRKeys, NewNTKeys: Cardinal);
+procedure InitCameraMotion(var Camera: TKFCamera3DS;
+  NewNPKeys, NewNFKeys, NewNRKeys, NewNTKeys: cardinal);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   with Camera do
@@ -5061,7 +5148,7 @@ begin
       for I := 0 to NFKeys - 1 do
         FKeys^[I] := DefKeyHeader3DS;
 
-      FOV := AllocMem(NFKeys * SizeOf(Single));
+      FOV := AllocMem(NFKeys * SizeOf(single));
       for I := 0 to NFKeys - 1 do
         FOV^[I] := 60;
     end;
@@ -5074,7 +5161,7 @@ begin
       for I := 0 to NRKeys - 1 do
         RKeys^[I] := DefKeyHeader3DS;
 
-      Roll := AllocMem(NRKeys * SizeOf(Single));
+      Roll := AllocMem(NRKeys * SizeOf(single));
     end;
 
     if NTKeys <> 0 then
@@ -5126,7 +5213,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetCameraNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
+procedure GetCameraNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
 
 begin
   GetGenericNodeNameList(Source, DB, CAMERA_NODE_TAG, List);
@@ -5134,7 +5222,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetCameraNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetCameraNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 begin
   Result := GetGenericNodeCount(Source, DB, CAMERA_NODE_TAG);
@@ -5144,7 +5232,7 @@ end;
 
 function GetParentName(const Source: TFile3DS; Chunk: PChunk3DS): string;
 
-// get parent name if there is one
+  // get parent name if there is one
 
 var
   NameChunk: PChunk3DS;
@@ -5162,24 +5250,18 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetCameraMotion(const Source: TFile3DS; CamChunk, TargetChunk: PChunk3DS): TKFCamera3DS;
+function GetCameraMotion(const Source: TFile3DS;
+  CamChunk, TargetChunk: PChunk3DS): TKFCamera3DS;
 
-// gets camera keyframe information from chunk
-// CamChunk    : CAMERA_NODE_TAG chunk to extract data from
-// TargetChunk : TARGET_NODE_TAG chunk to extract target data from
-// KFCamera    : Structure to fill in with chunk data
+  // gets camera keyframe information from chunk
+  // CamChunk    : CAMERA_NODE_TAG chunk to extract data from
+  // TargetChunk : TARGET_NODE_TAG chunk to extract target data from
+  // KFCamera    : Structure to fill in with chunk data
 
 var
-  NodeHdrChunk,
-    PosChunk,
-    FovChunk,
-    RollChunk,
-    TargetPosChunk,
-    TargetHdrChunk: PChunk3DS;
-  PosKeys,
-    FovKeys,
-    RollKeys,
-    TargetKeys: Integer;
+  NodeHdrChunk, PosChunk, FovChunk, RollChunk, TargetPosChunk,
+  TargetHdrChunk: PChunk3DS;
+  PosKeys, FovKeys, RollKeys, TargetKeys: integer;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -5239,20 +5321,22 @@ begin
     // header Information
     if Assigned(NodeHdrChunk) then
     begin
-      NameStr := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
+      NameStr := ansistring(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
       Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
       Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
     end;
     // parents
-    ParentStr := AnsiString(GetParentName(Source, NodeHdrChunk));
+    ParentStr := ansistring(GetParentName(Source, NodeHdrChunk));
     TParentStr := GetParentName(Source, TargetHdrChunk);
 
     // target information
     if TargetKeys <> 0 then
     begin
       NTFlag := TargetPosChunk^.Data.PosTrackTag^.TrackHdr.Flags;
-      Move(TargetPosChunk^.Data.PosTrackTag^.KeyHdrList^, TKeys^, TargetKeys * SizeOf(TKeyHeader3DS));
-      Move(TargetPosChunk^.Data.PosTrackTag^.PositionList^, TPos^, TargetKeys * SizeOf(TPoint3DS));
+      Move(TargetPosChunk^.Data.PosTrackTag^.KeyHdrList^, TKeys^,
+        TargetKeys * SizeOf(TKeyHeader3DS));
+      Move(TargetPosChunk^.Data.PosTrackTag^.PositionList^, TPos^,
+        TargetKeys * SizeOf(TPoint3DS));
     end;
     if Assigned(TargetHdrChunk) then
     begin
@@ -5264,7 +5348,8 @@ begin
     if PosKeys <> 0 then
     begin
       NPFlag := PosChunk^.Data.PosTrackTag^.TrackHdr.Flags;
-      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys * SizeOf(TKeyHeader3DS));
+      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys *
+        SizeOf(TKeyHeader3DS));
       Move(PosChunk^.Data.PosTrackTag^.PositionList^, Pos^, PosKeys * SizeOf(TPoint3DS));
     end;
 
@@ -5272,16 +5357,19 @@ begin
     if FOVKeys <> 0 then
     begin
       NFFlag := FOVChunk^.Data.FOVTrackTag^.TrackHdr.Flags;
-      Move(FOVChunk^.Data.FOVTrackTag^.KeyHdrList^, FKeys^, FOVKeys * SizeOf(TKeyHeader3DS));
-      Move(FOVChunk^.Data.FOVTrackTag^.FOVAngleList^, FOV^, FOVKeys * SizeOf(Single));
+      Move(FOVChunk^.Data.FOVTrackTag^.KeyHdrList^, FKeys^, FOVKeys *
+        SizeOf(TKeyHeader3DS));
+      Move(FOVChunk^.Data.FOVTrackTag^.FOVAngleList^, FOV^, FOVKeys * SizeOf(single));
     end;
 
     // roll track information
     if RollKeys <> 0 then
     begin
       NRFlag := RollChunk^.Data.RollTrackTag^.TrackHdr.Flags;
-      Move(RollChunk^.Data.RollTrackTag^.KeyHdrList^, RKeys^, RollKeys * SizeOf(TKeyHeader3DS));
-      Move(RollChunk^.Data.RollTrackTag^.RollangleList^, Roll^, RollKeys * SizeOf(Single));
+      Move(RollChunk^.Data.RollTrackTag^.KeyHdrList^, RKeys^, RollKeys *
+        SizeOf(TKeyHeader3DS));
+      Move(RollChunk^.Data.RollTrackTag^.RollangleList^, Roll^,
+        RollKeys * SizeOf(single));
     end;
 
     // free chunk data
@@ -5302,11 +5390,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetCameraMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Integer): TKFCamera3DS;
+function GetCameraMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: integer): TKFCamera3DS;
 
 var
-  CameraChunk,
-    TargetChunk: PChunk3DS;
+  CameraChunk, TargetChunk: PChunk3DS;
   List: TStringList;
 
 begin
@@ -5331,10 +5419,10 @@ end;
 
 //----------------- Ambient Light animation ---------------------------------------------------------------------------
 
-procedure InitAmbientLightMotion(var Light: TKFAmbient3DS; NewNCKeys: Cardinal);
+procedure InitAmbientLightMotion(var Light: TKFAmbient3DS; NewNCKeys: cardinal);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   with Light do
@@ -5384,23 +5472,23 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetAmbientLightMotionChunk(const Source: TFile3DS; AmbientChunk: PChunk3DS): TKFAmbient3DS;
+function GetAmbientLightMotionChunk(const Source: TFile3DS;
+  AmbientChunk: PChunk3DS): TKFAmbient3DS;
 
-// AmbientChunk : SPOTAMBIENT_NODE_TAG chunk to extract data from
-// TargetChunk  : L_TARGET_NODE_TAG chunk to extract target data from
-// KFSpot       : Structure to fill in with chunk data
-//
-// Gets AmbientLight keyframe information from chunk
-//  L_TARGET
-//   ...
-//  NODE_HDR
-//  APP_DATA
-//  COL_TRACK
+  // AmbientChunk : SPOTAMBIENT_NODE_TAG chunk to extract data from
+  // TargetChunk  : L_TARGET_NODE_TAG chunk to extract target data from
+  // KFSpot       : Structure to fill in with chunk data
+
+  // Gets AmbientLight keyframe information from chunk
+  //  L_TARGET
+  //   ...
+  //  NODE_HDR
+  //  APP_DATA
+  //  COL_TRACK
 
 var
-  NodeHdrChunk,
-    ColChunk: PChunk3DS;
-  ColKeys: Integer;
+  NodeHdrChunk, ColChunk: PChunk3DS;
+  ColKeys: integer;
 
 begin
   if AmbientChunk = nil then
@@ -5438,8 +5526,10 @@ begin
     if ColKeys <> 0 then
     begin
       Result.NCFlag := ColChunk^.Data.ColTrackTag^.TrackHdr.Flags;
-      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, Result.CKeys^, ColKeys * SizeOf(TKeyHeader3DS));
-      Move(ColChunk^.Data.ColTrackTag^.ColorList^, Result.Color^, ColKeys * SizeOf(TFColor3DS));
+      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, Result.CKeys^,
+        ColKeys * SizeOf(TKeyHeader3DS));
+      Move(ColChunk^.Data.ColTrackTag^.ColorList^, Result.Color^,
+        ColKeys * SizeOf(TFColor3DS));
     end;
   end;
 
@@ -5452,9 +5542,10 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetAmbientLightMotion(const Source: TFile3DS; var DB: TDatabase3DS): TKFAmbient3DS;
+function GetAmbientLightMotion(const Source: TFile3DS;
+  var DB: TDatabase3DS): TKFAmbient3DS;
 
-// Ambient Light a special case: only one ambient node per keyframe data Chunk^.
+  // Ambient Light a special case: only one ambient node per keyframe data Chunk^.
 
 var
   KFChunk, Chunk: PChunk3DS;
@@ -5473,14 +5564,13 @@ end;
 
 //----------------- Mesh object animation -----------------------------------------------------------------------------
 
-procedure InitObjectMotion(var Obj: TKFMesh3DS;
-  NewNPKeys, // Number of position keys
+procedure InitObjectMotion(var Obj: TKFMesh3DS; NewNPKeys, // Number of position keys
   NewNRKeys, // Number of rot keys
   NewNSKeys, // Number of scale keys
   NewNMKeys, // Number of morph keys
-  NewNHKeys: Cardinal); // Number of hide keys
+  NewNHKeys: cardinal); // Number of hide keys
 var
-  I: Integer;
+  I: integer;
 
 begin
   with Obj do
@@ -5618,7 +5708,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetObjectNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Integer;
+function GetObjectNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): integer;
 
 begin
   Result := GetGenericNodeCount(Source, DB, OBJECT_NODE_TAG);
@@ -5626,7 +5716,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetObjectNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
+procedure GetObjectNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
 
 begin
   GetGenericNodeNameList(Source, DB, OBJECT_NODE_TAG, List);
@@ -5636,43 +5727,31 @@ end;
 
 function GetObjectMotion(const Source: TFile3DS; MeshChunk: PChunk3DS): TKFMesh3DS;
 
-// Gets mesh keyframe information from chunk
-//
-//  NODE_ID
-//  NODE_HDR
-//  APP_DATA
-//  INSTANCE_NAME
-//  PRESCALE a no-op in 3DS code
-//  POS_TRACK
-//  ROT_TRACK
-//  SCL_TRACK
-//  MORPH_TRACK
-//  MORPH_SMOOTH
-//  HIDE_TRACK
-//
-// This function is really confusing, because instead of loading the MeshChunk and its children, reading the
-// data out and freeing it, the chunk structure is copied, its data is moved to the copy (so MeshChunk is then without
-// any data), the copy is parsed and then it is freed. I don't know why this is so, but I don't want to change
-// the way it works in case this has (or will later have) side effects I don't see yet. ml
+  // Gets mesh keyframe information from chunk
+
+  //  NODE_ID
+  //  NODE_HDR
+  //  APP_DATA
+  //  INSTANCE_NAME
+  //  PRESCALE a no-op in 3DS code
+  //  POS_TRACK
+  //  ROT_TRACK
+  //  SCL_TRACK
+  //  MORPH_TRACK
+  //  MORPH_SMOOTH
+  //  HIDE_TRACK
+
+  // This function is really confusing, because instead of loading the MeshChunk and its children, reading the
+  // data out and freeing it, the chunk structure is copied, its data is moved to the copy (so MeshChunk is then without
+  // any data), the copy is parsed and then it is freed. I don't know why this is so, but I don't want to change
+  // the way it works in case this has (or will later have) side effects I don't see yet. ml
 
 var
-  NodeHdrChunk,
-    InstChunk,
-    PivotChunk,
-    BboxChunk,
-    MsChunk,
-    PosChunk,
-    RotChunk,
-    ScaleChunk,
-    MorphChunk,
-    HideChunk,
-    ObjTag: PChunk3DS;
+  NodeHdrChunk, InstChunk, PivotChunk, BboxChunk, MsChunk,
+  PosChunk, RotChunk, ScaleChunk, MorphChunk, HideChunk,
+  ObjTag: PChunk3DS;
 
-  PosKeys,
-    RotKeys,
-    ScaleKeys,
-    MorphKeys,
-    HideKeys: Integer;
+  PosKeys, RotKeys, ScaleKeys, MorphKeys, HideKeys: integer;
 
   PivotData: PPivot;
   InstData: PInstanceName;
@@ -5792,12 +5871,12 @@ begin
   with Result do
   begin
     //--- header Information
-    NameStr := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
+    NameStr := ansistring(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
 
     //--- get parent name if there is one
-    ParentStr := AnsiString(GetParentName(Source, NodeHdrChunk));
+    ParentStr := ansistring(GetParentName(Source, NodeHdrChunk));
 
     //--- Instance
     if Assigned(InstData) then
@@ -5926,7 +6005,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFMesh3DS;
+function GetObjectMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFMesh3DS;
 
 var
   ObjectChunk: PChunk3DS;
@@ -5941,7 +6021,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetObjectMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFMesh3DS;
+function GetObjectMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFMesh3DS;
 
 var
   Chunk: PChunk3DS;
@@ -5956,10 +6037,10 @@ end;
 
 //----------------- Omni Light animation ------------------------------------------------------------------------------
 
-procedure InitOmnilightMotion(var Light: TKFOmni3DS; NewNPKeys, NewNCKeys: Cardinal);
+procedure InitOmnilightMotion(var Light: TKFOmni3DS; NewNPKeys, NewNCKeys: cardinal);
 
 var
-  I: Integer;
+  I: integer;
 
 begin
   with Light do
@@ -6033,7 +6114,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetOmnilightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Cardinal;
+function GetOmnilightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
 
 begin
   Result := GetGenericNodeCount(Source, DB, LIGHT_NODE_TAG);
@@ -6041,7 +6122,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetOmnilightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
+procedure GetOmnilightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
 
 begin
   GetGenericNodeNameList(Source, DB, LIGHT_NODE_TAG, List);
@@ -6051,24 +6133,21 @@ end;
 
 function GetOmnilightMotion(const Source: TFile3DS; OmniChunk: PChunk3DS): TKFOmni3DS;
 
-// Gets Omnilight keyframe information from chunk
-//
-//  L_TARGET
-//  NODE_ID
-//  NODE_HDR
-//  APP_DATA
-//  POS_TRACK
-//  COL_TRACK
-//  HOT_TRACK
-//  FALL_TRACK
-//  ROLL_TRACK
+  // Gets Omnilight keyframe information from chunk
+
+  //  L_TARGET
+  //  NODE_ID
+  //  NODE_HDR
+  //  APP_DATA
+  //  POS_TRACK
+  //  COL_TRACK
+  //  HOT_TRACK
+  //  FALL_TRACK
+  //  ROLL_TRACK
 
 var
-  NodeHdrChunk,
-    PosChunk,
-    ColChunk: PChunk3DS;
-  PosKeys,
-    ColKeys: Cardinal;
+  NodeHdrChunk, PosChunk, ColChunk: PChunk3DS;
+  PosKeys, ColKeys: cardinal;
 
 begin
   PosKeys := 0;
@@ -6100,16 +6179,17 @@ begin
   with Result do
   begin
     //--- Header Information
-    Name := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
+    Name := ansistring(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
-    Parent := AnsiString(GetParentName(Source, NodeHdrChunk));
+    Parent := ansistring(GetParentName(Source, NodeHdrChunk));
 
     //--- Position Information
     if PosKeys <> 0 then
     begin
       NPFlag := PosChunk^.Data.PosTrackTag^.TrackHdr.Flags;
-      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys * SizeOf(TKeyHeader3DS));
+      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys *
+        SizeOf(TKeyHeader3DS));
       Move(PosChunk^.Data.PosTrackTag^.PositionList^, Pos^, PosKeys * SizeOf(TPoint3DS));
     end;
 
@@ -6117,7 +6197,8 @@ begin
     if ColKeys <> 0 then
     begin
       NCFlag := PosChunk^.Data.ColTrackTag^.TrackHdr.Flags;
-      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, CKeys^, ColKeys * SizeOf(TKeyHeader3DS));
+      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, CKeys^, ColKeys *
+        SizeOf(TKeyHeader3DS));
       Move(ColChunk^.Data.ColTrackTag^.ColorList^, Color^, ColKeys * SizeOf(TFColor3DS));
     end;
 
@@ -6133,7 +6214,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFOmni3DS;
+function GetOmnilightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFOmni3DS;
 
 var
   Chunk: PChunk3DS;
@@ -6148,7 +6230,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetOmnilightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFOmni3DS;
+function GetOmnilightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFOmni3DS;
 
 var
   Chunk: PChunk3DS;
@@ -6161,7 +6244,7 @@ begin
   try
     GetOmnilightNodeNameList(Source, DB, List);
 
-    if Index < Cardinal(List.Count) then
+    if Index < cardinal(List.Count) then
     begin
       Chunk := FindNamedAndTaggedChunk(Source, DB, List[Index], LIGHT_NODE_TAG);
       if Assigned(Chunk) then
@@ -6180,10 +6263,10 @@ procedure InitSpotlightMotion(var Spot: TKFSpot3DS;
   NewNHKeys, //  Number of hot spot angle keys
   NewNFKeys, //  Number of falloff angle keys
   NewNRKeys, //  Number of roll keys
-  NewNTKeys: Cardinal); //  Number of target position keys
+  NewNTKeys: cardinal); //  Number of target position keys
 
 var
-  I: Cardinal;
+  I: cardinal;
 
 begin
   with Spot do
@@ -6258,7 +6341,7 @@ begin
       for I := 0 to NHKeys - 1 do
         HKeys^[I] := DefKeyHeader3DS;
 
-      Hot := AllocMem(NHKeys * SizeOf(Single));
+      Hot := AllocMem(NHKeys * SizeOf(single));
       // default Hot Spot ange 90.0 for now, get real value later (1..174.5)
       for I := 0 to NHKeys - 1 do
         Hot^[I] := 90;
@@ -6273,7 +6356,7 @@ begin
       for I := 0 to NFKeys - 1 do
         FKeys^[I] := DefKeyHeader3DS;
 
-      Fall := AllocMem(NFKeys * SizeOf(Single));
+      Fall := AllocMem(NFKeys * SizeOf(single));
 
       // default falloff ange 90.0 for now, get real value later (1..175)
       for I := 0 to NFKeys - 1 do
@@ -6289,7 +6372,7 @@ begin
       for I := 0 to NRKeys - 1 do
         RKeys^[I] := DefKeyHeader3DS;
 
-      Roll := AllocMem(NRKeys * SizeOf(Single));
+      Roll := AllocMem(NRKeys * SizeOf(single));
       for I := 0 to NRKeys - 1 do
         Roll^[I] := 0;
     end;
@@ -6351,7 +6434,7 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): Cardinal;
+function GetSpotlightNodeCount(const Source: TFile3DS; var DB: TDatabase3DS): cardinal;
 
 begin
   Result := GetGenericNodeCount(Source, DB, SPOTLIGHT_NODE_TAG);
@@ -6359,7 +6442,8 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-procedure GetSpotlightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS; List: TStringList);
+procedure GetSpotlightNodeNameList(const Source: TFile3DS; var DB: TDatabase3DS;
+  List: TStringList);
 
 begin
   GetGenericNodeNameList(Source, DB, SPOTLIGHT_NODE_TAG, List);
@@ -6367,35 +6451,25 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightMotion(const Source: TFile3DS; SpotChunk, TargetChunk: PChunk3DS): TKFSpot3DS;
+function GetSpotlightMotion(const Source: TFile3DS;
+  SpotChunk, TargetChunk: PChunk3DS): TKFSpot3DS;
 
-// gets Spotlight keyframe information from chunk
-//
-// L_TARGET
-//  ...
-// NODE_HDR
-// APP_DATA
-// POS_TRACK
-// COL_TRACK
-// HOT_TRACK
-// FALL_TRACK
-// ROLL_TRACK
+  // gets Spotlight keyframe information from chunk
+
+  // L_TARGET
+  //  ...
+  // NODE_HDR
+  // APP_DATA
+  // POS_TRACK
+  // COL_TRACK
+  // HOT_TRACK
+  // FALL_TRACK
+  // ROLL_TRACK
 
 var
-  NodeHdrChunk,
-    PosChunk,
-    ColChunk,
-    TargetPosChunk,
-    HotChunk,
-    FallChunk,
-    RollChunk,
-    TargetHdrChunk: PChunk3DS;
-  PosKeys,
-    ColKeys,
-    HotKeys,
-    FallKeys,
-    RollKeys,
-    TargetKeys: Cardinal;
+  NodeHdrChunk, PosChunk, ColChunk, TargetPosChunk, HotChunk,
+  FallChunk, RollChunk, TargetHdrChunk: PChunk3DS;
+  PosKeys, ColKeys, HotKeys, FallKeys, RollKeys, TargetKeys: cardinal;
 
 begin
   TargetPosChunk := nil;
@@ -6468,13 +6542,13 @@ begin
   with Result do
   begin
     // header Information
-    Name := AnsiString(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
+    Name := ansistring(NodeHdrChunk^.Data.NodeHdr^.ObjNameStr);
     Flags1 := NodeHdrChunk^.Data.NodeHdr^.Flags1;
     Flags2 := NodeHdrChunk^.Data.NodeHdr^.Flags2;
 
     // get parent name if there is one
-    Parent := AnsiString(GetParentName(Source, NodeHdrChunk));
-    TParent := AnsiString(GetParentName(Source, TargetHdrChunk));
+    Parent := ansistring(GetParentName(Source, NodeHdrChunk));
+    TParent := ansistring(GetParentName(Source, TargetHdrChunk));
 
     if Assigned(TargetHdrChunk) then
     begin
@@ -6491,15 +6565,18 @@ begin
     if TargetKeys <> 0 then
     begin
       NTFlag := TargetPosChunk^.Data.PosTrackTag^.TrackHdr.Flags;
-      Move(TargetPosChunk^.Data.PosTrackTag^.KeyHdrList^, TKeys^, TargetKeys * SizeOf(TKeyHeader3DS));
-      Move(TargetPosChunk^.Data.PosTrackTag^.PositionList^, TPos^, TargetKeys * SizeOf(TPoint3DS));
+      Move(TargetPosChunk^.Data.PosTrackTag^.KeyHdrList^, TKeys^,
+        TargetKeys * SizeOf(TKeyHeader3DS));
+      Move(TargetPosChunk^.Data.PosTrackTag^.PositionList^, TPos^,
+        TargetKeys * SizeOf(TPoint3DS));
     end;
 
     // position information
     if PosKeys <> 0 then
     begin
       NPFlag := PosChunk^.Data.PosTrackTag^.TrackHdr.Flags;
-      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys * SizeOf(TKeyHeader3DS));
+      Move(PosChunk^.Data.PosTrackTag^.KeyHdrList^, PKeys^, PosKeys *
+        SizeOf(TKeyHeader3DS));
       Move(PosChunk^.Data.PosTrackTag^.PositionList^, Pos^, PosKeys * SizeOf(TPoint3DS));
     end;
 
@@ -6507,7 +6584,8 @@ begin
     if ColKeys <> 0 then
     begin
       NCFlag := ColChunk^.Data.ColTrackTag^.TrackHdr.Flags;
-      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, CKeys^, ColKeys * SizeOf(TKeyHeader3DS));
+      Move(ColChunk^.Data.ColTrackTag^.KeyHdrList^, CKeys^, ColKeys *
+        SizeOf(TKeyHeader3DS));
       Move(ColChunk^.Data.ColTrackTag^.ColorList^, Color^, ColKeys * SizeOf(TFColor3DS));
     end;
 
@@ -6515,24 +6593,30 @@ begin
     if HotKeys <> 0 then
     begin
       NHFlag := HotChunk^.Data.HotTrackTag^.TrackHdr.Flags;
-      Move(HotChunk^.Data.HotTrackTag^.KeyHdrList^, HKeys^, HotKeys * SizeOf(TKeyHeader3DS));
-      Move(HotChunk^.Data.HotTrackTag^.HotSpotAngleList^, Hot^, HotKeys * SizeOf(Single));
+      Move(HotChunk^.Data.HotTrackTag^.KeyHdrList^, HKeys^, HotKeys *
+        SizeOf(TKeyHeader3DS));
+      Move(HotChunk^.Data.HotTrackTag^.HotSpotAngleList^, Hot^, HotKeys *
+        SizeOf(single));
     end;
 
     // falloff information
     if FallKeys <> 0 then
     begin
       NFFlag := FallChunk^.Data.FallTrackTag^.TrackHdr.Flags;
-      Move(FallChunk^.Data.FallTrackTag^.KeyHdrList^, FKeys^, FallKeys * SizeOf(TKeyHeader3DS));
-      Move(FallChunk^.Data.FallTrackTag^.FallOffAngleList^, Fall^, FallKeys * SizeOf(Single));
+      Move(FallChunk^.Data.FallTrackTag^.KeyHdrList^, FKeys^, FallKeys *
+        SizeOf(TKeyHeader3DS));
+      Move(FallChunk^.Data.FallTrackTag^.FallOffAngleList^, Fall^,
+        FallKeys * SizeOf(single));
     end;
 
     // roll track Information
     if RollKeys <> 0 then
     begin
       NRFlag := RollChunk^.Data.RollTrackTag^.TrackHdr.Flags;
-      Move(RollChunk^.Data.RollTrackTag^.KeyHdrList^, RKeys^, RollKeys * SizeOf(TKeyHeader3DS));
-      Move(RollChunk^.Data.RollTrackTag^.RollAngleList^, Roll^, RollKeys * SizeOf(Single));
+      Move(RollChunk^.Data.RollTrackTag^.KeyHdrList^, RKeys^, RollKeys *
+        SizeOf(TKeyHeader3DS));
+      Move(RollChunk^.Data.RollTrackTag^.RollAngleList^, Roll^,
+        RollKeys * SizeOf(single));
     end;
   end;
 
@@ -6555,11 +6639,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS; Name: string): TKFSpot3DS;
+function GetSpotlightMotionByName(const Source: TFile3DS; var DB: TDatabase3DS;
+  Name: string): TKFSpot3DS;
 
 var
-  SpotlightChunk,
-    TargetChunk: PChunk3DS;
+  SpotlightChunk, TargetChunk: PChunk3DS;
 
 begin
   FillChar(Result, SizeOf(Result), 0);
@@ -6574,11 +6658,11 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function GetSpotlightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS; Index: Cardinal): TKFSpot3DS;
+function GetSpotlightMotionByIndex(const Source: TFile3DS; var DB: TDatabase3DS;
+  Index: cardinal): TKFSpot3DS;
 
 var
-  SpotChunk,
-    TargetChunk: PChunk3DS;
+  SpotChunk, TargetChunk: PChunk3DS;
   List: TStringList;
 
 begin
@@ -6587,12 +6671,13 @@ begin
   List := TStringList.Create;
   try
     GetSpotlightNodeNameList(Source, DB, List);
-    if Index < Cardinal(List.Count) then
+    if Index < cardinal(List.Count) then
     begin
       SpotChunk := FindNamedAndTaggedChunk(Source, DB, List[Index], SPOTLIGHT_NODE_TAG);
       if Assigned(SpotChunk) then
       begin
-        TargetChunk := FindNamedAndTaggedChunk(Source, DB, List[Index], L_TARGET_NODE_TAG);
+        TargetChunk := FindNamedAndTaggedChunk(Source, DB, List[Index],
+          L_TARGET_NODE_TAG);
         if Assigned(TargetChunk) then
           Result := GetSpotlightMotion(Source, SpotChunk, TargetChunk);
       end;
@@ -6606,7 +6691,7 @@ end;
 
 function GetM3dMagicRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLevel;
 
-// Scans the database for M3D_VERSION chunk and returnes its release
+  // Scans the database for M3D_VERSION chunk and returnes its release
 
 var
   Chunk: PChunk3DS;
@@ -6627,8 +6712,8 @@ begin
           Result := rlRelease2;
         3:
           Result := rlRelease3;
-      else
-        Result := rlReleaseNotKnown;
+        else
+          Result := rlReleaseNotKnown;
       end;
     end;
   end;
@@ -6638,7 +6723,7 @@ end;
 
 function GetMeshRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLevel;
 
-// Scans the database for MESH_VERSION chunk and returnes its release
+  // Scans the database for MESH_VERSION chunk and returnes its release
 
 var
   Chunk: PChunk3DS;
@@ -6659,8 +6744,8 @@ begin
           Result := rlRelease2;
         3:
           Result := rlRelease3;
-      else
-        Result := rlReleaseNotKnown;
+        else
+          Result := rlReleaseNotKnown;
       end;
     end;
   end;
@@ -6670,11 +6755,10 @@ end;
 
 function GetKfRelease(const Source: TFile3DS; var DB: TDatabase3DS): TReleaseLevel;
 
-// Scans the database for KFHDR chunk and returnes its release level
+  // Scans the database for KFHDR chunk and returnes its release level
 
 var
-  KFChunk,
-    Chunk: PChunk3DS;
+  KFChunk, Chunk: PChunk3DS;
 
 begin
   Result := rlReleaseNotKnown;
@@ -6696,8 +6780,8 @@ begin
           Result := rlRelease2;
         3:
           Result := rlRelease3;
-      else
-        Result := rlReleaseNotKnown;
+        else
+          Result := rlReleaseNotKnown;
       end;
     end;
   end;
@@ -6715,8 +6799,8 @@ begin
       Result := GetMeshRelease(Source, DB);
     MLIBMAGIC:
       Result := rlRelease3;
-  else
-    Result := rlReleaseNotKnown;
+    else
+      Result := rlReleaseNotKnown;
   end;
 end;
 
