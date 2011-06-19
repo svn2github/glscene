@@ -2363,10 +2363,10 @@ begin
       try
         // Load
         LoadFromFile(LSVN);
-        if (Count >= 4) and (trim(Strings[3]) <> '') then
+        if (Count >= 4) and (trim(Strings[3]) <> '')
+          and IsDirectoryWriteable(LExePath) then
         begin
           LRevision := trim(Strings[3]);
-
           // Save
           Clear;
           Add(LRevision);
