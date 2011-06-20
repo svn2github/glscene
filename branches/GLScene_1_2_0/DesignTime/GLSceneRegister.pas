@@ -516,6 +516,7 @@ uses
   GLAVIRecorder,
   GLBitmapFont,
   GLS_SystemBitmapFont,
+  GLS_DrawTechnique,
   GLBlur,
   GLBumpmapHDS,
   GLBumpShader,
@@ -2438,6 +2439,7 @@ initialization
 {$ENDIF}
 
   GLCrossPlatform.IsDesignTime := True;
+  GLS_DrawTechnique.vBindlessGraphicsEnabled := False;
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   GLColor.vUseDefaultColorSets := True;
   GLCoordinates.vUseDefaultCoordinateSets := True;
