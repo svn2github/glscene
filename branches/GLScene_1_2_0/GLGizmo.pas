@@ -1,28 +1,29 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGizmo<p>
+{ : GLGizmo<p>
 
-   Invisible component for helping to Move, Rotate and Scale an Object
-   under GLScene (usefull for an Editor).<p>
+  Invisible component for helping to Move, Rotate and Scale an Object
+  under GLScene (usefull for an Editor).<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
-      <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
-                             (thanks Lukasz Sokol)
-      <li>18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
-                             J.Delauney, Degiovani, Marcus Oblak and a bit myself)
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>21/06/11 - Yar - Transition to indirect rendering objects
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
+  <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
+  (thanks Lukasz Sokol)
+  <li>18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
+  J.Delauney, Degiovani, Marcus Oblak and a bit myself)
+  </ul></font>
 }
 //
 // Original Header:
 //
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Unit : GLGizmo  RC 1.0
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Original Author : ???????  (glGizmo In an ODEEditor)
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Modified by     : J.Delauney
 // Web Site        : http://KheopsInteractive.cjb.net
 // EMail           : wmkheops@free.fr
@@ -35,28 +36,28 @@
 // - Added GizmoThickness
 //
 // If you make some changes, please send your new version. Thanks
-//------------------------------------------------------------------------------
-//  Description :
-//        Invisible component for helping to Move, Rotate and Scale an Object
-//        under GLScene (usefull for an Editor)
-//------------------------------------------------------------------------------
-//  Features :
-//    - Interaction When All Gizmo parts are Invisible
-//    - Add "gpMoveGizmo and  gpRotateGizmo" operations and use Like a "Pivot"
-//      or use RootGizmo As "Pivot"
-//    - Add Interactive Camera Movements
-//    - Adding Extended Controls with Keys
-//    - Maybe An Undo Function
-//    - Others Ideas ???
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// Description :
+// Invisible component for helping to Move, Rotate and Scale an Object
+// under GLScene (usefull for an Editor)
+// ------------------------------------------------------------------------------
+// Features :
+// - Interaction When All Gizmo parts are Invisible
+// - Add "gpMoveGizmo and  gpRotateGizmo" operations and use Like a "Pivot"
+// or use RootGizmo As "Pivot"
+// - Add Interactive Camera Movements
+// - Adding Extended Controls with Keys
+// - Maybe An Undo Function
+// - Others Ideas ???
+// ------------------------------------------------------------------------------
 // Bugs Known :
-//    - When you change the BoundingBoxColor and LabelInfosColor
-//      The New Color is not Updated immediately, only after a new Click
-//      (see in UpdateGizmo, SetBoundingBoxColor
-//       and SetLabelInfosColor Procedures)
-//    -  DaStr: Bounding Box is not alway drawn correctly because it does not
-//       use objects' BarryCenter. For Example, if you select Space Text.
-//------------------------------------------------------------------------------
+// - When you change the BoundingBoxColor and LabelInfosColor
+// The New Color is not Updated immediately, only after a new Click
+// (see in UpdateGizmo, SetBoundingBoxColor
+// and SetLabelInfosColor Procedures)
+// -  DaStr: Bounding Box is not alway drawn correctly because it does not
+// use objects' BarryCenter. For Example, if you select Space Text.
+// ------------------------------------------------------------------------------
 
 unit GLGizmo;
 
@@ -66,13 +67,28 @@ interface
 
 uses
   // Standard
-  Classes, SysUtils,
+  Classes,
+  SysUtils,
 
   // GLScene
-  GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
-  GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  PersistentClasses,
+  GLScene,
+  GLColor,
+  GLObjects,
+  VectorGeometry,
+  GLMaterial,
+  GLS_Material,
+  GLStrings,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLViewer,
+  GLVectorFileObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLState
+{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
 
 type
   TGLGizmoUndoCollection = class;
@@ -95,34 +111,37 @@ type
   public
     constructor Create(AOwner: TCollection); override;
     destructor Destroy; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); virtual;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); virtual;
     procedure AssignFromObject(const AObject: TGLCustomSceneObject);
 
     // TODO: create a special type for Matrix.
     property OldMatrix: TMatrix read FOldMatrix write SetOldMatrix;
   published
-    property EffectedObject: TGLCustomSceneObject read FEffectedObject write SetEffectedObject;
-    property OldAutoScaling: TGLCoordinates read FOldAutoScaling write SetOldAutoScaling;
-    property OldLibMaterialName: string read FOldLibMaterialName write FOldLibMaterialName;
+    property EffectedObject: TGLCustomSceneObject read FEffectedObject
+      write SetEffectedObject;
+    property OldAutoScaling: TGLCoordinates read FOldAutoScaling
+      write SetOldAutoScaling;
+    property OldLibMaterialName: string read FOldLibMaterialName
+      write FOldLibMaterialName;
   end;
 
   TGLGizmoUndoCollection = class(TOwnedCollection)
   private
     function GetItems(const Index: Integer): TGLGizmoUndoItem;
-    procedure SetItems(const Index: Integer;
-      const Value: TGLGizmoUndoItem);
+    procedure SetItems(const Index: Integer; const Value: TGLGizmoUndoItem);
   protected
     function GetParent: TGLGizmo;
   public
     procedure Notification(AComponent: TComponent; Operation: TOperation);
     procedure RemoveByObject(const AObject: TGLCustomSceneObject);
     function Add: TGLGizmoUndoItem;
-    property Items[const Index: Integer]: TGLGizmoUndoItem read GetItems write SetItems; default;
+    property Items[const Index: Integer]: TGLGizmoUndoItem read GetItems
+      write SetItems; default;
   end;
 
-
   TGLGizmoElement = (geMove, geRotate, geScale, geAxisLabel, geObjectInfos,
-                     geBoundingBox);
+    geBoundingBox);
   TGLGizmoElements = set of TGLGizmoElement;
 
   TGLGizmoVisibleInfoLabel = (vliName, vliOperation, vliCoords);
@@ -130,17 +149,20 @@ type
 
   TGLGizmoAxis = (gaNone, gaX, gaY, gaZ, gaXY, gaXZ, gaYZ);
 
-  TGLGizmoOperation = (gopMove, gopRotate, gopScale, gopNone,
-                       gpMoveGizmo, gpRotateGizmo);
+  TGLGizmoOperation = (gopMove, gopRotate, gopScale, gopNone, gpMoveGizmo,
+    gpRotateGizmo);
 
-  TGLGizmoAcceptEvent = procedure(Sender: TObject; var obj: TGLBaseSceneObject; var accept: Boolean; var dimensions: TVector) of object;
-  TGLGizmoUpdateEvent = procedure(Sender: TObject; obj: TGLBaseSceneObject; axis: TGLGizmoAxis; Operation: TGLGizmoOperation; var vector: TVector) of object;
+  TGLGizmoAcceptEvent = procedure(Sender: TObject; var obj: TGLBaseSceneObject;
+    var accept: Boolean; var dimensions: TVector) of object;
+  TGLGizmoUpdateEvent = procedure(Sender: TObject; obj: TGLBaseSceneObject;
+    axis: TGLGizmoAxis; Operation: TGLGizmoOperation; var vector: TVector)
+    of object;
 
   TGLGizmoPickMode = (pmGetPickedObjects, pmRayCast);
 
   TGLGizmoRayCastHitData = class(TPersistent)
   public
-    Obj: TGLBaseSceneObject;
+    obj: TGLBaseSceneObject;
     Point: TVector;
   end;
 
@@ -163,16 +185,19 @@ type
     _GZORootAxisLabel: TGLBaseSceneObject;
     _GZORootVisibleInfoLabels: TGLBaseSceneObject;
 
-    _GZOlineX, _GZOlineY, _GZOlineZ, _GZOplaneXY, _GZOplaneXZ, _GZOplaneYZ: TGLLines; // For Move
+    _GZOlineX, _GZOlineY, _GZOlineZ, _GZOplaneXY, _GZOplaneXZ,
+      _GZOplaneYZ: TGLLines; // For Move
     _GZOTorusX, _GZOTorusY, _GZOTorusZ: TGLGizmoPickTorus; // For Rotate
     _GZOCubeX, _GZOCubeY, _GZOCubeZ: TGLGizmoPickCube; // For Scale
 
     _GZOAxisLabelX, _GZOAxisLabelY, _GZOAxisLabelZ: TGLFlatText;
     _GZOVisibleInfoLabels: TGLFlatText;
 
+    FPickingMaterial: TGLLibMaterialEx;
+
     FRootGizmo: TGLBaseSceneObject;
     FSelectedObj: TGLBaseSceneObject;
-    //          FLastOperation,
+    // FLastOperation,
     FOperation: TGLGizmoOperation;
     FSelAxis: TGLGizmoAxis;
 
@@ -203,13 +228,9 @@ type
 
     FExcludeObjectsList: TStrings;
 
-    moving: Boolean;
+    FMoving: Boolean;
     mx, my: Integer;
     rx, ry: Integer;
-
-    dglEnable, dglDisable, dgtEnable, dgtDisable,
-    dgcEnable, dgcDisable, dglaEnable, dglaDisable,
-    dgliEnable, dgliDisable: TGLDirectOpenGL;
 
     lastMousePos: TVector;
     objDimensions: TVector;
@@ -228,32 +249,33 @@ type
     procedure SetRootGizmo(const AValue: TGLBaseSceneObject);
 
     procedure SetGizmoElements(const AValue: TGLGizmoElements);
-    procedure SeTGLGizmoVisibleInfoLabels(const AValue: TGLGizmoVisibleInfoLabels);
+    procedure SeTGLGizmoVisibleInfoLabels(const AValue
+      : TGLGizmoVisibleInfoLabels);
     procedure SetBoundingBoxColor(const AValue: TGLColor);
     procedure SetSelectedColor(const AValue: TGLColor);
     procedure SetVisibleInfoLabelsColor(const AValue: TGLColor);
 
     procedure SetExcludeObjectsList(const AValue: TStrings);
 
-    procedure directGlDisable(Sender: TObject; var rci: TRenderContextInfo);
-    procedure directGlEnable(Sender: TObject; var rci: TRenderContextInfo);
-
     function MouseWorldPos(const X, Y: Integer): TVector;
-    function CheckObjectInExcludeList(const Obj: TGLBaseSceneObject): Boolean;
+    function CheckObjectInExcludeList(const obj: TGLBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
     procedure SetGLGizmoThickness(const Value: Single);
 
-//    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TGLPickList;
+    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer;
+      const guessCount: Integer = 8): TPersistentObjectList;
     procedure ClearInternalRaycastHitData;
     procedure SetViewer(const Value: TGLSceneViewer);
     procedure SetLabelFont(const Value: TGLCustomBitmapFont);
     procedure SetSelectedObj(const Value: TGLBaseSceneObject);
+    procedure SetNoZWrite(const Value: Boolean);
   public
     PickableObjectsWithRayCast: TList;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Loaded; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
 
     procedure ViewerMouseMove(const X, Y: Integer);
     procedure ViewerMouseDown(const X, Y: Integer);
@@ -262,37 +284,44 @@ type
     procedure UpdateGizmo; overload;
     procedure UpdateGizmo(const newDimensions: TVector); overload;
     procedure SetVisible(const AValue: Boolean);
-    function GetPickedObjectPoint(const Obj: TGLBaseSceneObject): TVector;
+    function GetPickedObjectPoint(const obj: TGLBaseSceneObject): TVector;
 
     procedure LooseSelection; virtual;
 
     procedure UndoAdd(const AObject: TGLCustomSceneObject);
     property RootGizmo: TGLBaseSceneObject read FRootGizmo write SetRootGizmo;
 
-    //--------------------------------------------------------------------
+    // --------------------------------------------------------------------
   published
 
     property Viewer: TGLSceneViewer read FViewer write SetViewer;
 
-    property GizmoElements: TGLGizmoElements read FGizmoElements write SetGizmoElements;
+    property GizmoElements: TGLGizmoElements read FGizmoElements
+      write SetGizmoElements;
 
-    property BoundingBoxColor: TGLColor read FBoundingBoxColor write SetBoundingBoxColor;
+    property BoundingBoxColor: TGLColor read FBoundingBoxColor
+      write SetBoundingBoxColor;
     property SelectedColor: TGLColor read FSelectedColor write SetSelectedColor;
 
     property SelAxis: TGLGizmoAxis read FSelAxis write FSelAxis;
     property ForceAxis: Boolean read FForceAxis write FForceAxis;
 
-    property SelectedObj: TGLBaseSceneObject read FSelectedObj write SetSelectedObj;
+    property SelectedObj: TGLBaseSceneObject read FSelectedObj
+      write SetSelectedObj;
 
     property Operation: TGLGizmoOperation read FOperation write FOperation;
-    property ForceOperation: Boolean read FForceOperation write FForceoperation;
-    property ForceUniformScale: Boolean read FForceUniformScale write FForceUniformScale;
+    property ForceOperation: Boolean read FForceOperation write FForceOperation;
+    property ForceUniformScale: Boolean read FForceUniformScale
+      write FForceUniformScale;
 
     property ExcludeObjects: Boolean read FExcludeObjects write FExcludeObjects;
-    property ExcludeObjectsList: TStrings read FExcludeObjectsList write SetExcludeObjectsList;
+    property ExcludeObjectsList: TStrings read FExcludeObjectsList
+      write SetExcludeObjectsList;
 
-    property VisibleInfoLabels: TGLGizmoVisibleInfoLabels read FVisibleVisibleInfoLabels write SeTGLGizmoVisibleInfoLabels;
-    property VisibleInfoLabelsColor: TGLColor read FVisibleInfoLabelsColor write SetVisibleInfoLabelsColor;
+    property VisibleInfoLabels: TGLGizmoVisibleInfoLabels
+      read FVisibleVisibleInfoLabels write SeTGLGizmoVisibleInfoLabels;
+    property VisibleInfoLabelsColor: TGLColor read FVisibleInfoLabelsColor
+      write SetVisibleInfoLabelsColor;
 
     property AutoZoom: Boolean read FAutoZoom write FAutoZoom;
     property AutoZoomFactor: Single read FAutoZoomFactor write FAutoZoomFactor;
@@ -301,56 +330,68 @@ type
     property MoveCoef: Single read FMoveCoef write FMoveCoef;
     property RotationCoef: Single read FRotationCoef write FRotationCoef;
     property ScaleCoef: Single read FScaleCoef write FScaleCoef;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
+    property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
 
-    property GizmoThickness: Single read FGizmoThickness write SeTGLGizmoThickness;
+    property GizmoThickness: Single read FGizmoThickness
+      write SetGLGizmoThickness;
 
-          {: Indicates whether the gizmo is enabled or not.
-             WARNING: When loading/editing (possibly whenever a structureChanged
-             call is made) a model, sometimes the gizmo will trigger a
-             bug if the mouse is inside the glscene Viewer. To prevent that,
-             remember to disable the gizmo before loading, then process windows
-             messages (i.e. application.processMessage) and then enable the gizmo
-             again. }
+    { : Indicates whether the gizmo is enabled or not.
+      WARNING: When loading/editing (possibly whenever a structureChanged
+      call is made) a model, sometimes the gizmo will trigger a
+      bug if the mouse is inside the glscene Viewer. To prevent that,
+      remember to disable the gizmo before loading, then process windows
+      messages (i.e. application.processMessage) and then enable the gizmo
+      again. }
 
-          {: Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
-            use Visible instead if you want to Hide, if you want to Hide but keep enabled
-            see the VisibleGizmo property }
+    { : Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
+      use Visible instead if you want to Hide, if you want to Hide but keep enabled
+      see the VisibleGizmo property }
     property Enabled: Boolean read FEnabled write FEnabled default False;
 
-    property LabelFont: TGLCustomBitmapFont read FLabelFont write SetLabelFont default nil;
+    property LabelFont: TGLCustomBitmapFont read FLabelFont write SetLabelFont
+      default nil;
 
-    property OnBeforeSelect: TGLGizmoAcceptEvent read FOnBeforeSelect write FOnBeforeSelect;
-    property OnSelectionLost: TNotifyEvent read FOnSelectionLost write FOnSelectionLost;
+    property OnBeforeSelect: TGLGizmoAcceptEvent read FOnBeforeSelect
+      write FOnBeforeSelect;
+    property OnSelectionLost: TNotifyEvent read FOnSelectionLost
+      write FOnSelectionLost;
 
-          {: Called before an Update is applied. The "vector" parameter is the difference
-             that will be applied to the object, according to the axis and
-             operation selected. }
-    property OnBeforeUpdate: TGLGizmoUpdateEvent read FOnBeforeUpdate write FOnBeforeUpdate;
-    property PickMode: TGLGizmoPickMode read FPickMode write FPickMode default pmGetPickedObjects;
+    { : Called before an Update is applied. The "vector" parameter is the difference
+      that will be applied to the object, according to the axis and
+      operation selected. }
+    property OnBeforeUpdate: TGLGizmoUpdateEvent read FOnBeforeUpdate
+      write FOnBeforeUpdate;
+    property PickMode: TGLGizmoPickMode read FPickMode write FPickMode
+      default pmGetPickedObjects;
   end;
 
 implementation
 
+uses
+  GLSLog;
+
+type
+  TFriendlyLines = class(TGLLines);
+
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject;
-  const Axis, Origin: TAffineVector; const angle: Single);
+  const axis, Origin: TAffineVector; const angle: Single);
 var
   M, M1, M2, M3: TMatrix;
 begin
   M1 := CreateTranslationMatrix(VectorNegate(Origin));
-  M2 := CreateRotationMatrix(Axis, Angle * PI / 180);
+  M2 := CreateRotationMatrix(axis, angle * PI / 180);
   M3 := CreateTranslationMatrix(Origin);
   M := MatrixMultiply(M1, M2);
   M := MatrixMultiply(M, M3);
   anObject.Matrix := MatrixMultiply(anObject.Matrix, M);
 
-  //Just a workarround to Update angles...
+  // Just a workarround to Update angles...
   anObject.Roll(0);
   anObject.Pitch(0);
   anObject.Turn(0);
 end;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 procedure TGLGizmo.ClearInternalRaycastHitData;
 var
@@ -363,11 +404,11 @@ begin
   FInternalRaycastHitData.Clear;
 end;
 
-constructor TGLGizmo.Create(aOwner: TComponent);
+constructor TGLGizmo.Create(AOwner: TComponent);
 var
   cub: TGLCube;
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   FUndoHistory := TGLGizmoUndoCollection.Create(Self, TGLGizmoUndoItem);
   FPickMode := pmGetPickedObjects;
   PickableObjectsWithRayCast := TList.Create;
@@ -387,26 +428,32 @@ begin
   FVisibleInfoLabelsColorChanged := False;
 
   _GZObaseGizmo := TGLDummyCube.Create(Self);
-  _GZORootHelpers := TGLDummyCube(_GZObaseGizmo.AddNewChild(TGLDummyCube));
-  _GZOBoundingcube := TGLCube(_GZORootHelpers.AddNewChild(TGLCube));
+  _GZOrootHelpers := TGLDummyCube(_GZObaseGizmo.AddNewChild(TGLDummyCube));
+  _GZOBoundingcube := TGLCube(_GZOrootHelpers.AddNewChild(TGLCube));
 
-  _GZORootLines := _GZORootHelpers.AddNewChild(TGLDummyCube);
-  _GZORootTorus := _GZORootHelpers.AddNewChild(TGLDummyCube);
-  _GZORootCubes := _GZORootHelpers.AddNewChild(TGLDummyCube);
-  _GZORootAxisLabel := _GZORootHelpers.AddNewChild(TGLDummyCube);
-  _GZORootVisibleInfoLabels := _GZORootHelpers.AddNewChild(TGLDummyCube);
+  _GZOrootLines := _GZOrootHelpers.AddNewChild(TGLDummyCube);
+  _GZOrootTorus := _GZOrootHelpers.AddNewChild(TGLDummyCube);
+  _GZOrootCubes := _GZOrootHelpers.AddNewChild(TGLDummyCube);
+  _GZORootAxisLabel := _GZOrootHelpers.AddNewChild(TGLDummyCube);
+  _GZORootVisibleInfoLabels := _GZOrootHelpers.AddNewChild(TGLDummyCube);
 
-  dglDisable := TGLDirectOpenGL(_GZORootLines.AddNewChild(TGLDirectOpenGL));
-  dglDisable.OnRender := directGlDisable;
-  dgtDisable := TGLDirectOpenGL(_GZORootTorus.AddNewChild(TGLDirectOpenGL));
-  dgtDisable.OnRender := directGlDisable;
-  dgcDisable := TGLDirectOpenGL(_GZORootCubes.AddNewChild(TGLDirectOpenGL));
-  dgcDisable.OnRender := directGlDisable;
-  dglaDisable := TGLDirectOpenGL(_GZORootAxisLabel.AddNewChild(TGLDirectOpenGL));
-  dglaDisable.OnRender := directGlDisable;
-  dgliDisable := TGLDirectOpenGL(_GZORootVisibleInfoLabels.AddNewChild(TGLDirectOpenGL));
-  dgliDisable.OnRender := directGlDisable;
+  FPickingMaterial := GetInternalMaterialLibrary.Materials.Add;
+  with FPickingMaterial do
+  begin
+    Name := 'GLScene_Gizmo_Picking_Material';
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.LineProperties.Enabled := True;
+    FixedFunction.LineProperties.Width := 3;
+    with FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+  end;
 
+  _GZOBoundingcube.Pickable := False;
   with _GZOBoundingcube.material do
   begin
     FaceCulling := fcNoCull;
@@ -423,20 +470,36 @@ begin
       Ambient.Color := FBoundingBoxColor.Color;
       Emission.Color := FBoundingBoxColor.Color;
     end;
+    with DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
   end;
 
-
-  _GZOlinex := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOlinex do
+  _GZOlineX := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOlineX) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineColor.Color := clrRed;
     LineWidth := 3;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(1, 0, 0);
     AddNode(0.9, 0, -0.1);
-    addNode(1, 0, 0);
-    addNode(0.9, 0, 0.1);
+    AddNode(1, 0, 0);
+    AddNode(0.9, 0, 0.1);
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(1, 0, 0);
@@ -444,20 +507,30 @@ begin
     cub.CubeHeight := 1;
     cub.CubeDepth := 0.1;
     cub.position.SetPoint(0.5, 0, 0);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOliney := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOliney do
+  _GZOlineY := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOlineY) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineColor.Color := clrLime;
     LineWidth := 3;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 1, 0);
     AddNode(0.1, 0.9, 0);
-    addNode(0, 1, 0);
-    addNode(-0.1, 0.9, 0);
+    AddNode(0, 1, 0);
+    AddNode(-0.1, 0.9, 0);
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(0, 1, 0);
@@ -465,20 +538,30 @@ begin
     cub.CubeHeight := 1;
     cub.CubeDepth := 0.1;
     cub.position.SetPoint(0, 0.5, 0);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOlinez := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOlinez do
+  _GZOlineZ := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOlineZ) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineColor.Color := clrBlue;
     LineWidth := 3;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 0, 1);
     AddNode(0.1, 0, 0.9);
-    addNode(0, 0, 1);
-    addNode(-0.1, 0, 0.9);
+    AddNode(0, 0, 1);
+    AddNode(-0.1, 0, 0.9);
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(0, 0, 1);
@@ -486,24 +569,34 @@ begin
     cub.CubeHeight := 1;
     cub.CubeDepth := 0.1;
     cub.position.SetPoint(0, 0, 0.5);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOplaneXY := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOplaneXY do
+  _GZOplaneXY := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOplaneXY) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineWidth := 3;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
-    addNode(0.8, 1, 0);
-    TGLLinesNode(Nodes[0]).Color.color := clrRed;
-    addNode(1, 1, 0);
-    TGLLinesNode(Nodes[1]).Color.color := clrRed;
-    addNode(1, 1, 0);
-    TGLLinesNode(Nodes[2]).Color.color := clrLime;
-    addNode(1, 0.8, 0);
-    TGLLinesNode(Nodes[3]).Color.color := clrLime;
+    AddNode(0.8, 1, 0);
+    TGLLinesNode(Nodes[0]).Color.Color := clrRed;
+    AddNode(1, 1, 0);
+    TGLLinesNode(Nodes[1]).Color.Color := clrRed;
+    AddNode(1, 1, 0);
+    TGLLinesNode(Nodes[2]).Color.Color := clrLime;
+    AddNode(1, 0.8, 0);
+    TGLLinesNode(Nodes[3]).Color.Color := clrLime;
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(1, 0, 0);
@@ -511,24 +604,34 @@ begin
     cub.CubeHeight := 0.2;
     cub.CubeDepth := 0.1;
     cub.position.SetPoint(0.9, 0.9, 0);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOplaneXZ := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOplaneXZ do
+  _GZOplaneXZ := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOplaneXZ) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineWidth := 3;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
-    addNode(1, 0, 0.8);
-    TGLLinesNode(Nodes[0]).Color.color := clrBlue;
-    addNode(1, 0, 1);
-    TGLLinesNode(Nodes[1]).Color.color := clrBlue;
-    addNode(1, 0, 1);
-    TGLLinesNode(Nodes[2]).Color.color := clrRed;
-    addNode(0.8, 0, 1);
-    TGLLinesNode(Nodes[3]).Color.color := clrRed;
+    AddNode(1, 0, 0.8);
+    TGLLinesNode(Nodes[0]).Color.Color := clrBlue;
+    AddNode(1, 0, 1);
+    TGLLinesNode(Nodes[1]).Color.Color := clrBlue;
+    AddNode(1, 0, 1);
+    TGLLinesNode(Nodes[2]).Color.Color := clrRed;
+    AddNode(0.8, 0, 1);
+    TGLLinesNode(Nodes[3]).Color.Color := clrRed;
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(1, 0, 0);
@@ -536,24 +639,34 @@ begin
     cub.CubeHeight := 0.2;
     cub.CubeDepth := 0.2;
     cub.position.SetPoint(0.9, 0, 0.9);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOplaneYZ := TGLLines(_GZORootLines.addnewChild(TGLLines));
-  with _GZOplaneYZ do
+  _GZOplaneYZ := TGLLines(_GZOrootLines.AddNewChild(TGLLines));
+  with TFriendlyLines(_GZOplaneYZ) do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
+    with FMaterialEx.FixedFunction.DepthProperties do
+    begin
+      DepthTest := False;
+      DepthWrite := True;
+      DepthClamp := True;
+      ZFar := 0.0;
+    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
     LineWidth := 3;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
-    addNode(0, 0.8, 1);
-    TGLLinesNode(Nodes[0]).Color.color := clrLime;
-    addNode(0, 1, 1);
-    TGLLinesNode(Nodes[1]).Color.color := clrLime;
-    addNode(0, 1, 1);
-    TGLLinesNode(Nodes[2]).Color.color := clrBlue;
-    addNode(0, 1, 0.8);
-    TGLLinesNode(Nodes[3]).Color.color := clrBlue;
+    AddNode(0, 0.8, 1);
+    TGLLinesNode(Nodes[0]).Color.Color := clrLime;
+    AddNode(0, 1, 1);
+    TGLLinesNode(Nodes[1]).Color.Color := clrLime;
+    AddNode(0, 1, 1);
+    TGLLinesNode(Nodes[2]).Color.Color := clrBlue;
+    AddNode(0, 1, 0.8);
+    TGLLinesNode(Nodes[3]).Color.Color := clrBlue;
     // Raycast pickable object
     cub := TGLGizmoPickCube(AddNewChild(TGLGizmoPickCube));
     cub.Up.SetVector(0, 0, 1);
@@ -561,10 +674,10 @@ begin
     cub.CubeHeight := 0.2;
     cub.CubeDepth := 0.1;
     cub.position.SetPoint(0, 0.9, 0.9);
-    cub.Visible := False;
+    cub.Visible := False; cub.Tag := 777;
   end;
 
-  _GZOTorusX := TGLGizmoPickTorus(_GZORootTorus.addnewChild(TGLGizmoPickTorus));
+  _GZOTorusX := TGLGizmoPickTorus(_GZOrootTorus.AddNewChild(TGLGizmoPickTorus));
   with _GZOTorusX do
   begin
     Rings := 16;
@@ -575,14 +688,21 @@ begin
     TurnAngle := 90;
     with material do
     begin
-      //FaceCulling:= fcNoCull;
       PolygonMode := pmFill;
-      //BackProperties.PolygonMode:= pmFill;
       FrontProperties.Emission.Color := clrBlue;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
-  _GZOTorusY := TGLGizmoPickTorus(_GZORootTorus.addnewChild(TGLGizmoPickTorus));
+  _GZOTorusY := TGLGizmoPickTorus(_GZOrootTorus.AddNewChild(TGLGizmoPickTorus));
   with _GZOTorusY do
   begin
     Rings := 16;
@@ -592,14 +712,21 @@ begin
     PitchAngle := 90;
     with material do
     begin
-      //FaceCulling:= fcNoCull;
       PolygonMode := pmFill;
-      //BackProperties.PolygonMode:= pmFill;
       FrontProperties.Emission.Color := clrRed;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
-  _GZOTorusZ := TGLGizmoPickTorus(_GZORootTorus.addnewChild(TGLGizmoPickTorus));
+  _GZOTorusZ := TGLGizmoPickTorus(_GZOrootTorus.AddNewChild(TGLGizmoPickTorus));
   with _GZOTorusZ do
   begin
     Rings := 16;
@@ -608,66 +735,101 @@ begin
     MinorRadius := 0.03;
     with material do
     begin
-      //FaceCulling:= fcNoCull;
       PolygonMode := pmFill;
-      //BackProperties.PolygonMode:= pmFill;
       FrontProperties.Emission.Color := clrLime;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
-  _GZOCubeX := TGLGizmoPickCube(_GZORootCubes.addnewChild(TGLGizmoPickCube));
+  _GZOCubeX := TGLGizmoPickCube(_GZOrootCubes.AddNewChild(TGLGizmoPickCube));
   with _GZOCubeX do
   begin
     CubeDepth := 0.1;
     CubeHeight := 0.1;
     CubeWidth := 0.1;
-    Position.X := 1.15;
+    position.X := 1.15;
     with material do
     begin
       FaceCulling := fcNoCull;
       PolygonMode := pmFill;
       FrontProperties.Emission.Color := clrRed;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
-  _GZOCubeY := TGLGizmoPickCube(_GZORootCubes.addnewChild(TGLGizmoPickCube));
+  _GZOCubeY := TGLGizmoPickCube(_GZOrootCubes.AddNewChild(TGLGizmoPickCube));
   with _GZOCubeY do
   begin
     CubeDepth := 0.1;
     CubeHeight := 0.1;
     CubeWidth := 0.1;
-    Position.Y := 1.15;
+    position.Y := 1.15;
     with material do
     begin
       FaceCulling := fcNoCull;
       PolygonMode := pmFill;
       FrontProperties.Emission.Color := clrLime;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
-  _GZOCubeZ := TGLGizmoPickCube(_GZORootCubes.addnewChild(TGLGizmoPickCube));
+  _GZOCubeZ := TGLGizmoPickCube(_GZOrootCubes.AddNewChild(TGLGizmoPickCube));
   with _GZOCubeZ do
   begin
     CubeDepth := 0.1;
     CubeHeight := 0.1;
     CubeWidth := 0.1;
-    Position.Z := 1.15;
+    position.Z := 1.15;
     with material do
     begin
       FaceCulling := fcNoCull;
       PolygonMode := pmFill;
       FrontProperties.Emission.Color := clrBlue;
+      with DepthProperties do
+      begin
+        DepthTest := False;
+        DepthWrite := True;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
     end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    CustomPickingMaterial := FPickingMaterial.Name;
   end;
 
   _GZOAxisLabelX := TGLFlatText(_GZORootAxisLabel.AddNewChild(TGLFlatText));
   with _GZOAxisLabelX do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
     ModulateColor.Color := clrRed;
     Alignment := taCenter;
     Layout := tlCenter;
     Options := Options + [ftoTwoSided];
-    Position.X := 1.5;
+    position.X := 1.5;
     Scale.X := 0.02;
     Scale.Y := 0.02;
     Text := 'X';
@@ -676,11 +838,12 @@ begin
   _GZOAxisLabelY := TGLFlatText(_GZORootAxisLabel.AddNewChild(TGLFlatText));
   with _GZOAxisLabelY do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
     ModulateColor.Color := clrLime;
     Alignment := taCenter;
     Layout := tlCenter;
     Options := Options + [ftoTwoSided];
-    Position.Y := 1.5;
+    position.Y := 1.5;
     Scale.X := 0.02;
     Scale.Y := 0.02;
     Text := 'Y';
@@ -689,45 +852,38 @@ begin
   _GZOAxisLabelZ := TGLFlatText(_GZORootAxisLabel.AddNewChild(TGLFlatText));
   with _GZOAxisLabelZ do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
     ModulateColor.Color := clrBlue;
     Alignment := taCenter;
     Layout := tlCenter;
     Options := Options + [ftoTwoSided];
-    Position.Z := 1.5;
+    position.Z := 1.5;
     Scale.X := 0.02;
     Scale.Y := 0.02;
     Text := 'Z';
   end;
 
-  _GZOVisibleInfoLabels := TGLFlatText(_GZORootVisibleInfoLabels.AddNewChild(TGLFlatText));
+  _GZOVisibleInfoLabels :=
+    TGLFlatText(_GZORootVisibleInfoLabels.AddNewChild(TGLFlatText));
   with _GZOVisibleInfoLabels do
   begin
+    ObjectStyle := ObjectStyle + [osStreamDraw];
     ModulateColor.Color := clrYellow;
     Alignment := taCenter;
     Layout := tlCenter;
     Options := Options + [ftoTwoSided];
-    Position.Y := 1.8;
-    Position.X := 0;
+    position.Y := 1.8;
+    position.X := 0;
     Scale.X := 0.01;
     Scale.Y := 0.01;
     Text := '';
   end;
 
-  dglEnable := TGLDirectOpenGL(_GZORootLines.AddNewChild(TGLDirectOpenGL));
-  dglEnable.OnRender := directGlEnable;
-  dgtEnable := TGLDirectOpenGL(_GZORootTorus.AddNewChild(TGLDirectOpenGL));
-  dgtEnable.OnRender := directGlEnable;
-  dgcEnable := TGLDirectOpenGL(_GZORootCubes.AddNewChild(TGLDirectOpenGL));
-  dgcEnable.OnRender := directGlEnable;
-  dglaEnable := TGLDirectOpenGL(_GZORootAxisLabel.AddNewChild(TGLDirectOpenGL));
-  dglaEnable.OnRender := directGlEnable;
-  dgliEnable := TGLDirectOpenGL(_GZORootVisibleInfoLabels.AddNewChild(TGLDirectOpenGL));
-  dgliEnable.OnRender := directGlEnable;
-
   _GZObaseGizmo.Visible := False;
   FGizmoElements := FGizmoElements + [geMove, geRotate, geScale, geAxisLabel,
-                                      geObjectInfos, geBoundingBox];
-  FVisibleVisibleInfoLabels := FVisibleVisibleInfoLabels + [vliName, vliOperation, vliCoords];
+    geObjectInfos, geBoundingBox];
+  FVisibleVisibleInfoLabels := FVisibleVisibleInfoLabels +
+    [vliName, vliOperation, vliCoords];
   AutoZoom := True;
   AutoZoomFactor := 5.0;
   ZoomFactor := 0.35;
@@ -745,8 +901,8 @@ begin
     FRootGizmo.DeleteChildren
   else
   begin
-    _GZOBaseGizmo.DeleteChildren;
-    _GZOBaseGizmo.Free;
+    _GZObaseGizmo.DeleteChildren;
+    _GZObaseGizmo.Free;
   end;
 
   FBoundingBoxColor.Free;
@@ -769,12 +925,12 @@ end;
 
 procedure TGLGizmo.SetGizmoElements(const AValue: TGLGizmoElements);
 begin
-  if aValue <> FGizmoElements then
+  if AValue <> FGizmoElements then
   begin
-    FGizmoElements := aValue;
-    _GZORootLines.Visible := geMove in FGizmoElements;
-    _GZORootTorus.Visible := geRotate in FGizmoElements;
-    _GZORootCubes.Visible := geScale in FGizmoElements;
+    FGizmoElements := AValue;
+    _GZOrootLines.Visible := geMove in FGizmoElements;
+    _GZOrootTorus.Visible := geRotate in FGizmoElements;
+    _GZOrootCubes.Visible := geScale in FGizmoElements;
     _GZORootAxisLabel.Visible := geAxisLabel in FGizmoElements;
     _GZORootVisibleInfoLabels.Visible := geObjectInfos in FGizmoElements;
     _GZOBoundingcube.Visible := geBoundingBox in FGizmoElements;
@@ -825,12 +981,13 @@ begin
   end;
 end;
 
-procedure TGLGizmo.SeTGLGizmoVisibleInfoLabels(const AValue: TGLGizmoVisibleInfoLabels);
+procedure TGLGizmo.SeTGLGizmoVisibleInfoLabels(const AValue
+  : TGLGizmoVisibleInfoLabels);
 begin
   if AValue <> FVisibleVisibleInfoLabels then
   begin
     FVisibleVisibleInfoLabels := AValue;
-    if not (csDesigning in ComponentState) then
+    if not(csDesigning in ComponentState) then
       UpdateGizmo;
   end;
 end;
@@ -847,9 +1004,11 @@ procedure TGLGizmo.SetRootGizmo(const AValue: TGLBaseSceneObject);
 begin
   if FRootGizmo <> AValue then
   begin
-    if FRootGizmo <> nil then FRootGizmo.RemoveFreeNotification(Self);
+    if FRootGizmo <> nil then
+      FRootGizmo.RemoveFreeNotification(Self);
     FRootGizmo := AValue;
-    if FRootGizmo <> nil then FRootGizmo.FreeNotification(Self);
+    if FRootGizmo <> nil then
+      FRootGizmo.FreeNotification(Self);
     _GZObaseGizmo.MoveTo(AValue);
   end;
 end;
@@ -867,9 +1026,9 @@ begin
   if FGizmoThickness <> Value then
   begin
     thk := MaxInteger(1, Round(3 * Value));
-    _GZOlinex.LineWidth := thk;
-    _GZOliney.LineWidth := thk;
-    _GZOlinez.LineWidth := thk;
+    _GZOlineX.LineWidth := thk;
+    _GZOlineY.LineWidth := thk;
+    _GZOlineZ.LineWidth := thk;
     _GZOplaneXY.LineWidth := thk;
     _GZOplaneXZ.LineWidth := thk;
     _GZOplaneYZ.LineWidth := thk;
@@ -901,22 +1060,17 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLGizmo.directGlDisable(Sender: TObject; var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest);
-end;
-
+// ------------------------------------------------------------------------------
 
 procedure TGLGizmo.SetLabelFont(const Value: TGLCustomBitmapFont);
 begin
   if FLabelFont <> Value then
   begin
-    if FLabelFont <> nil then FLabelFont.RemoveFreeNotification(Self);
+    if FLabelFont <> nil then
+      FLabelFont.RemoveFreeNotification(Self);
     FLabelFont := Value;
-    if FLabelFont <> nil then FLabelFont.FreeNotification(Self);
+    if FLabelFont <> nil then
+      FLabelFont.FreeNotification(Self);
 
     _GZOAxisLabelX.BitmapFont := Value;
     _GZOAxisLabelY.BitmapFont := Value;
@@ -925,13 +1079,58 @@ begin
   end;
 end;
 
-procedure TGLGizmo.directGlEnable(Sender: TObject; var rci: TRenderContextInfo);
+procedure TGLGizmo.SetNoZWrite(const Value: Boolean);
+var
+  LDProp: TGLDepthProperties;
 begin
-  if FNoZWrite then
-    rci.GLStates.Enable(stDepthTest);
+  if FNoZWrite <> Value then
+  begin
+    FNoZWrite := Value;
+    LDProp := _GZOBoundingcube.material.DepthProperties;
+
+    if FNoZWrite then
+    begin
+      with LDProp do
+      begin
+        DepthTest := False;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
+    end
+    else
+    begin
+
+      with LDProp do
+      begin
+        DepthTest := True;
+        DepthClamp := False;
+        ZFar := 1.0;
+      end;
+    end;
+
+    TFriendlyLines(_GZOlineX).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    TFriendlyLines(_GZOlineY).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    TFriendlyLines(_GZOlineZ).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    TFriendlyLines(_GZOplaneXY).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    TFriendlyLines(_GZOplaneXZ).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    TFriendlyLines(_GZOplaneYZ).FMaterialEx.FixedFunction.DepthProperties.
+      Assign(LDProp);
+    _GZOTorusX.material.DepthProperties.Assign(LDProp);
+    _GZOTorusY.material.DepthProperties.Assign(LDProp);
+    _GZOTorusZ.material.DepthProperties.Assign(LDProp);
+    _GZOCubeX.material.DepthProperties.Assign(LDProp);
+    _GZOCubeY.material.DepthProperties.Assign(LDProp);
+    _GZOCubeZ.material.DepthProperties.Assign(LDProp);
+    FPickingMaterial.FixedFunction.DepthProperties.Assign(LDProp);
+  end;
 end;
 
-function TGLGizmo.GetPickedObjectPoint(const Obj: TGLBaseSceneObject): TVector;
+function TGLGizmo.GetPickedObjectPoint(const obj: TGLBaseSceneObject): TVector;
 var
   t: Integer;
   r: TGLGizmoRayCastHitData;
@@ -939,20 +1138,20 @@ begin
   for t := 0 to FInternalRaycastHitData.Count - 1 do
   begin
     r := TGLGizmoRayCastHitData(FInternalRaycastHitData[t]);
-    if r.Obj = obj then
+    if r.obj = obj then
     begin
       Result := r.Point;
       Break;
     end;
   end;
 end;
-{
-function TGLGizmo.InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer): TGLPickList;
+
+function TGLGizmo.InternalGetPickedObjects(const x1, y1, x2, y2: Integer;
+  const guessCount: Integer): TPersistentObjectList;
 var
-  t:    Integer;
+  t: Integer;
   rayStart, rayVector, iPoint, iNormal: TVector;
-  o:    TGLBaseSceneObject;
-  dist: Single;
+  o: TGLBaseSceneObject;
   HitData: TGLGizmoRayCastHitData;
 
   procedure AddGizmosToPicklListRecurse(const root: TGLBaseSceneObject);
@@ -961,7 +1160,8 @@ var
   begin
     for u := 0 to root.Count - 1 do
     begin
-      if ((root[u] is TGLGizmoPickTorus) or (root[u] is TGLGizmoPickCube)) then
+      if ((root[u] is TGLGizmoPickTorus) or (root[u] is TGLGizmoPickCube))
+        and (PickableObjectsWithRayCast.IndexOf(root[u]) < 0) then
         PickableObjectsWithRayCast.Add(root[u]);
       AddGizmosToPicklListRecurse(root[u]);
     end;
@@ -970,42 +1170,45 @@ var
 begin
   case FPickMode of
     pmGetPickedObjects:
-    begin
-      Result := Viewer.Buffer.GetPickedObjects(rect(x1, y1, x2, y2), guessCount);
-    end;
+      begin
+        Result := Viewer.Buffer.GetPickedObjects(rect(x1, y1, x2, y2), guessCount);
+      end;
 
     pmRayCast:
-    begin
-      Result := TGLPickList.Create(psMinDepth);
-      ClearInternalRaycastHitData;
-      SetVector(rayStart, Viewer.Camera.AbsolutePosition);
-      SetVector(rayVector, Viewer.Buffer.ScreenToVector(AffineVectorMake((x1 + x2) * 0.5, Viewer.Height - ((y1 + y2) * 0.5), 0)));
-      NormalizeVector(rayVector);
-      // Add gizmos
-      if (RootGizmo <> nil) and (SelectedObj <> nil) then
-        AddGizmosToPicklListRecurse(RootGizmo);
-      // pick
-      for t := 0 to PickableObjectsWithRayCast.Count - 1 do
       begin
-        o := TGLBaseSceneObject(PickableObjectsWithRayCast[t]);
-        if (o.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal)) and
-           (VectorDotProduct(rayVector, iNormal) < 0) then
+        Result := TPersistentObjectList.Create;
+        ClearInternalRaycastHitData;
+        SetVector(rayStart, Viewer.Camera.AbsolutePosition);
+        SetVector(rayVector, Viewer.Buffer.ScreenToVector
+          (AffineVectorMake((x1 + x2) * 0.5,
+          Viewer.Height - ((y1 + y2) * 0.5), 0)));
+        NormalizeVector(rayVector);
+        // Add gizmos
+        if (RootGizmo <> nil) and (SelectedObj <> nil) then
+          AddGizmosToPicklListRecurse(RootGizmo);
+        // pick
+        for t := 0 to PickableObjectsWithRayCast.Count - 1 do
         begin
-          try
-            dist := VectorLength(VectorSubtract(iPoint, rayStart));
-            Result.AddHit(o, nil, dist, 0);
-            HitData := TGLGizmoRayCastHitData.Create;
-            HitData.Obj := o;
-            MakeVector(HitData.Point, iPoint);
-            FInternalRaycastHitData.add(HitData);
-          except
-            //
+          o := TGLBaseSceneObject(PickableObjectsWithRayCast[t]);
+          if (o.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal)) and
+            (VectorDotProduct(rayVector, iNormal) < 0) then
+          begin
+            try
+              HitData := TGLGizmoRayCastHitData.Create;
+              if o.Tag = 777 then
+                o := o.Parent;
+              Result.Add(o);
+              HitData.obj := o;
+              MakeVector(HitData.Point, iPoint);
+              FInternalRaycastHitData.Add(HitData);
+            except
+              //
+            end;
           end;
         end;
       end;
-    end;
 
-    else
+  else
     begin
       Result := nil;
       Assert(False, glsErrorEx + glsUnknownType);
@@ -1013,21 +1216,22 @@ begin
 
   end;
 end;
-}
+
 procedure TGLGizmo.Loaded;
 begin
   inherited;
-  SeTGLGizmoThickness(GizmoThickness);
+  SetGLGizmoThickness(GizmoThickness);
 end;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+
 procedure TGLGizmo.UpdateVisibleInfoLabels;
 var
-  T: string;
+  t: string;
   X, Y, Z: Single;
 begin
   t := '';
-  if not (Assigned(SelectedObj)) then
+  if not(Assigned(SelectedObj)) then
     Exit;
   if vliName in FVisibleVisibleInfoLabels then
     t := SelectedObj.Name;
@@ -1037,11 +1241,14 @@ begin
     if (Operation <> gopNone) then
     begin
       if Length(t) > 0 then
-        T := T + ' - ';
+        t := t + ' - ';
       case Operation of
-        gopMove: T := T + 'Move';
-        gopRotate: T := T + 'Rotate';
-        gopScale: T := T + 'Scale';
+        gopMove:
+          t := t + 'Move';
+        gopRotate:
+          t := t + 'Rotate';
+        gopScale:
+          t := t + 'Scale';
       end;
     end;
   end;
@@ -1051,46 +1258,47 @@ begin
     if (Operation <> gopNone) then
     begin
       if Length(t) > 0 then
-        T := T + ' - ';
+        t := t + ' - ';
       case Operation of
         gopMove:
-        begin
-          X := SelectedObj.Position.X;
-          Y := SelectedObj.Position.Y;
-          Z := SelectedObj.Position.Z;
-          T := T + 'X : ' + Format('%2.3f', [X]);
-          T := T + ' Y : ' + Format('%2.3f', [Y]);
-          T := T + ' Z : ' + Format('%2.3f', [Z]);
-        end;
+          begin
+            X := SelectedObj.position.X;
+            Y := SelectedObj.position.Y;
+            Z := SelectedObj.position.Z;
+            t := t + 'X : ' + Format('%2.3f', [X]);
+            t := t + ' Y : ' + Format('%2.3f', [Y]);
+            t := t + ' Z : ' + Format('%2.3f', [Z]);
+          end;
         gopRotate:
-        begin
-          X := SelectedObj.Rotation.X;
-          Y := SelectedObj.Rotation.Y;
-          Z := SelectedObj.Rotation.Z;
-          T := T + 'X : ' + Format('%2.3f', [X]);
-          T := T + ' Y : ' + Format('%2.3f', [Y]);
-          T := T + ' Z : ' + Format('%2.3f', [Z]);
-        end;
+          begin
+            X := SelectedObj.Rotation.X;
+            Y := SelectedObj.Rotation.Y;
+            Z := SelectedObj.Rotation.Z;
+            t := t + 'X : ' + Format('%2.3f', [X]);
+            t := t + ' Y : ' + Format('%2.3f', [Y]);
+            t := t + ' Z : ' + Format('%2.3f', [Z]);
+          end;
         gopScale:
-        begin
-          X := SelectedObj.Scale.X;
-          Y := SelectedObj.Scale.Y;
-          Z := SelectedObj.Scale.Z;
-          T := T + 'X : ' + Format('%2.3f', [X]);
-          T := T + ' Y : ' + Format('%2.3f', [Y]);
-          T := T + ' Z : ' + Format('%2.3f', [Z]);
-        end;
+          begin
+            X := SelectedObj.Scale.X;
+            Y := SelectedObj.Scale.Y;
+            Z := SelectedObj.Scale.Z;
+            t := t + 'X : ' + Format('%2.3f', [X]);
+            t := t + ' Y : ' + Format('%2.3f', [Y]);
+            t := t + ' Z : ' + Format('%2.3f', [Z]);
+          end;
       end;
     end;
   end;
 
-  _GZOVisibleInfoLabels.Text := T;
+  _GZOVisibleInfoLabels.Text := t;
   _GZOVisibleInfoLabels.StructureChanged;
 end;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
-function TGLGizmo.CheckObjectInExcludeList(const Obj: TGLBaseSceneObject): Boolean;
+function TGLGizmo.CheckObjectInExcludeList
+  (const obj: TGLBaseSceneObject): Boolean;
 var
   I: Integer;
 begin
@@ -1118,28 +1326,37 @@ begin
   begin
     SetVector(v, X, InvertedY, 0);
 
-    case selAxis of
-      gaX: if not Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, SelectedObj.AbsolutePosition[1], Result) then
+    case SelAxis of
+      gaX:
+        if not Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v,
+          SelectedObj.AbsolutePosition[1], Result) then
           MakeVector(Result, X / 5, 0, 0);
 
-      gaY: if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, SelectedObj.AbsolutePosition[0], Result) then
+      gaY:
+        if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v,
+          SelectedObj.AbsolutePosition[0], Result) then
           MakeVector(Result, 0, InvertedY / 5, 0);
 
-      gaZ: if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, SelectedObj.AbsolutePosition[0], Result) then
+      gaZ:
+        if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v,
+          SelectedObj.AbsolutePosition[0], Result) then
           MakeVector(Result, 0, 0, -InvertedY / 5);
 
       gaXY:
-      begin
-        Viewer.Buffer.ScreenVectorIntersectWithPlaneXY(v, SelectedObj.AbsolutePosition[2], Result);
-      end;
+        begin
+          Viewer.Buffer.ScreenVectorIntersectWithPlaneXY(v,
+            SelectedObj.AbsolutePosition[2], Result);
+        end;
       gaXZ:
-      begin
-        Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, SelectedObj.AbsolutePosition[1], Result);
-      end;
+        begin
+          Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v,
+            SelectedObj.AbsolutePosition[1], Result);
+        end;
       gaYZ:
-      begin
-        Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, SelectedObj.AbsolutePosition[0], Result);
-      end;
+        begin
+          Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v,
+            SelectedObj.AbsolutePosition[0], Result);
+        end;
     end;
 
   end
@@ -1149,7 +1366,7 @@ end;
 
 procedure TGLGizmo.ViewerMouseMove(const X, Y: Integer);
 var
-//  pickList: TGLPickList;
+  pickList: TPersistentObjectList;
   mousePos: TVector;
 
   function indexOf(obj: TGLBaseSceneObject): Integer;
@@ -1157,23 +1374,25 @@ var
     I: Integer;
   begin
     Result := -1;
-//    for I := 0 to pickList.Count - 1 do
-//      if pickList.hit[I] = obj then
-//      begin
-//        Result := I;
-//        Break;
-//      end;
+    for I := 0 to pickList.Count - 1 do
+      if pickList[I] = obj then
+      begin
+        Result := I;
+        Break;
+      end;
   end;
 
   function lightLine(const line: TGLLines; const dark: TVector;
-                     const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
+    const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
   var
     PickObj: TGLBaseSceneObject;
   begin
     case FPickMode of
-      pmGetPickedObjects: PickObj := line;
-      pmRayCast: PickObj := line;
-      else
+      pmGetPickedObjects:
+        PickObj := line;
+      pmRayCast:
+        PickObj := line;
+    else
       begin
         PickObj := nil;
         Assert(False, glsErrorEx + glsUnknownType);
@@ -1182,74 +1401,74 @@ var
 
     if indexOf(PickObj) > -1 then
     begin
-      line.LineColor.color := FSelectedColor.Color;
-      if not (FForceOperation) then
+      line.LineColor.Color := FSelectedColor.Color;
+      if not(FForceOperation) then
         if Operation <> gopMove then
           Operation := gopMove;
       line.Options := [];
-      if not (FForceAxis) then
+      if not(FForceAxis) then
         SelAxis := axis;
       Result := True;
     end
     else
     begin
-      line.LineColor.color := dark;
-      if not (FForceOperation) then
+      line.LineColor.Color := dark;
+      if not(FForceOperation) then
         Operation := gopNone;
       if alterStyle then
-        line.options := [loUseNodeColorForLines];
-      if not (FForceAxis) then
-        if selAxis = axis then
+        line.Options := [loUseNodeColorForLines];
+      if not(FForceAxis) then
+        if SelAxis = axis then
           SelAxis := gaNone;
       Result := False;
     end;
   end;
 
   function lightTorus(const Torus: TGLGizmoPickTorus; const dark: TVector;
-                      const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
+    const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
   begin
     if indexOf(Torus) > -1 then
     begin
       Torus.material.FrontProperties.Emission.Color := FSelectedColor.Color;
-      if not (FForceOperation) then
+      if not(FForceOperation) then
         if Operation <> gopRotate then
           Operation := gopRotate;
-      if not (FForceAxis) then
+      if not(FForceAxis) then
         SelAxis := axis;
       Result := True;
     end
     else
     begin
       Torus.material.FrontProperties.Emission.Color := dark;
-      if not (FForceOperation) then
+      if not(FForceOperation) then
         Operation := gopNone;
-      if not (FForceAxis) then
-        if selAxis = axis then
+      if not(FForceAxis) then
+        if SelAxis = axis then
           SelAxis := gaNone;
       Result := False;
     end;
   end;
 
   function lightCube(const Cube: TGLCube; const dark: TVector;
-                     const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
+    const axis: TGLGizmoAxis; alterStyle: Boolean = False): Boolean;
   begin
     if indexOf(Cube) > -1 then
     begin
       Cube.material.FrontProperties.Emission.Color := FSelectedColor.Color;
-      if not (FForceOperation) then
+      if not(FForceOperation) then
         if Operation <> gopScale then
           Operation := gopScale;
-      if not (FForceAxis) then
+      if not(FForceAxis) then
         SelAxis := axis;
       Result := True;
     end
     else
     begin
       Cube.material.FrontProperties.Emission.Color := dark;
-      if not (FForceOperation) then
+      if not(FForceOperation) then
         Operation := gopNone;
-      if not (FForceAxis) then
-        if selAxis = axis then
+      if not(FForceAxis) then
+        if SelAxis = axis then
           SelAxis := gaNone;
       Result := False;
     end;
@@ -1268,33 +1487,33 @@ var
     end;
     case SelAxis of
       gaX:
-      begin
-        MakeVector(vec1, quantizedMousePos[0], 0, 0);
-        makeVector(vec2, quantizedMousePos2[0], 0, 0);
-      end;
+        begin
+          MakeVector(vec1, quantizedMousePos[0], 0, 0);
+          MakeVector(vec2, quantizedMousePos2[0], 0, 0);
+        end;
       gaY:
-      begin
-        MakeVector(vec1, 0, quantizedMousePos[1], 0);
-        makeVector(vec2, 0, quantizedMousePos2[1], 0);
-      end;
+        begin
+          MakeVector(vec1, 0, quantizedMousePos[1], 0);
+          MakeVector(vec2, 0, quantizedMousePos2[1], 0);
+        end;
       gaZ:
-      begin
-        MakeVector(vec1, 0, 0, quantizedMousePos[2]);
-        makeVector(vec2, 0, 0, quantizedMousePos2[2]);
-      end;
-      else
+        begin
+          MakeVector(vec1, 0, 0, quantizedMousePos[2]);
+          MakeVector(vec2, 0, 0, quantizedMousePos2[2]);
+        end;
+    else
       begin
         vec1 := quantizedMousePos;
         vec2 := quantizedMousePos2;
       end;
     end;
     SubtractVector(vec1, vec2);
-    if Assigned(onBeforeUpdate) then
-      OnBeforeUpdate(self, SelectedObj, SelAxis, Operation, vec1);
+    if Assigned(OnBeforeUpdate) then
+      OnBeforeUpdate(Self, SelectedObj, SelAxis, Operation, vec1);
     vec1 := SelectedObj.parent.AbsoluteToLocal(vec1);
-    if (VectorLength(Vec1) > 0) then // prevents NAN problems
+    if (VectorLength(vec1) > 0) then // prevents NAN problems
     begin
-      SelectedObj.Position.Translate(vec1);
+      SelectedObj.position.Translate(vec1);
     end;
   end;
 
@@ -1324,51 +1543,59 @@ var
       ry := Y;
     end;
 
-
     vec1[2] := 0;
     vec1[3] := 0;
-    if Assigned(onBeforeUpdate) then
-      OnBeforeUpdate(self, SelectedObj, SelAxis, Operation, vec1);
+    if Assigned(OnBeforeUpdate) then
+      OnBeforeUpdate(Self, SelectedObj, SelAxis, Operation, vec1);
 
     pmat := SelectedObj.parent.InvAbsoluteMatrix;
     SetVector(pmat[3], NullHmgPoint);
     case SelAxis of
       gaX:
-      begin
-        rotV := VectorTransform(XVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[1]);
-      end;
+        begin
+          rotV := VectorTransform(XVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[1]);
+        end;
       gaY:
-      begin
-        rotV := VectorTransform(YVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[0]);
-      end;
+        begin
+          rotV := VectorTransform(YVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[0]);
+        end;
       gaZ:
-      begin
-        rotV := VectorTransform(ZVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[1]);
-      end;
+        begin
+          rotV := VectorTransform(ZVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[1]);
+        end;
       gaXY:
-      begin
-        rotV := VectorTransform(XVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[1]);
-        rotV := VectorTransform(YVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[0]);
-      end;
+        begin
+          rotV := VectorTransform(XVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[1]);
+          rotV := VectorTransform(YVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[0]);
+        end;
       gaXZ:
-      begin
-        rotV := VectorTransform(XVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[1]);
-        rotV := VectorTransform(ZVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[0]);
-      end;
+        begin
+          rotV := VectorTransform(XVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[1]);
+          rotV := VectorTransform(ZVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[0]);
+        end;
       gaYZ:
-      begin
-        rotV := VectorTransform(YVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[1]);
-        rotV := VectorTransform(ZVector, pmat);
-        RotateAroundArbitraryAxis(SelectedObj, rotV, AffineVectorMake(SelectedObj.Position.AsVector), vec1[0]);
-      end;
+        begin
+          rotV := VectorTransform(YVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[1]);
+          rotV := VectorTransform(ZVector, pmat);
+          RotateAroundArbitraryAxis(SelectedObj, rotV,
+            AffineVectorMake(SelectedObj.position.AsVector), vec1[0]);
+        end;
     end;
   end;
 
@@ -1381,60 +1608,67 @@ var
     for t := 0 to 3 do
     begin
       quantizedMousePos[t] := (Round(mousePos[t] / ScaleCoef)) * FScaleCoef;
-      quantizedMousePos2[t] := (Round(lastMousePos[t] / FScaleCoef)) * FScaleCoef;
+      quantizedMousePos2[t] := (Round(lastMousePos[t] / FScaleCoef)) *
+        FScaleCoef;
     end;
     case SelAxis of
       gaX:
-      begin
-        if FForceUniformScale then
         begin
-          MakeVector(vec1, quantizedMousePos[0], quantizedMousePos[0], quantizedMousePos[0]);
-          makeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[0], quantizedMousePos2[0]);
-        end
-        else
-        begin
-          MakeVector(vec1, quantizedMousePos[0], 0, 0);
-          makeVector(vec2, quantizedMousePos2[0], 0, 0);
-        end;
+          if FForceUniformScale then
+          begin
+            MakeVector(vec1, quantizedMousePos[0], quantizedMousePos[0],
+              quantizedMousePos[0]);
+            MakeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[0],
+              quantizedMousePos2[0]);
+          end
+          else
+          begin
+            MakeVector(vec1, quantizedMousePos[0], 0, 0);
+            MakeVector(vec2, quantizedMousePos2[0], 0, 0);
+          end;
 
-      end;
+        end;
 
       gaY:
-      begin
-        if FForceUniformScale then
         begin
-          MakeVector(vec1, quantizedMousePos[1], quantizedMousePos[1], quantizedMousePos[1]);
-          makeVector(vec2, quantizedMousePos2[1], quantizedMousePos2[1], quantizedMousePos2[1]);
-        end
-        else
-        begin
-          MakeVector(vec1, 0, quantizedMousePos[1], 0);
-          makeVector(vec2, 0, quantizedMousePos2[1], 0);
+          if FForceUniformScale then
+          begin
+            MakeVector(vec1, quantizedMousePos[1], quantizedMousePos[1],
+              quantizedMousePos[1]);
+            MakeVector(vec2, quantizedMousePos2[1], quantizedMousePos2[1],
+              quantizedMousePos2[1]);
+          end
+          else
+          begin
+            MakeVector(vec1, 0, quantizedMousePos[1], 0);
+            MakeVector(vec2, 0, quantizedMousePos2[1], 0);
+          end;
         end;
-      end;
 
       gaZ:
-      begin
-        if FForceUniformScale then
         begin
-          MakeVector(vec1, quantizedMousePos[2], quantizedMousePos[2], quantizedMousePos[2]);
-          makeVector(vec2, quantizedMousePos2[2], quantizedMousePos2[2], quantizedMousePos2[2]);
-        end
-        else
-        begin
-          MakeVector(vec1, 0, 0, quantizedMousePos[2]);
-          makeVector(vec2, 0, 0, quantizedMousePos2[2]);
+          if FForceUniformScale then
+          begin
+            MakeVector(vec1, quantizedMousePos[2], quantizedMousePos[2],
+              quantizedMousePos[2]);
+            MakeVector(vec2, quantizedMousePos2[2], quantizedMousePos2[2],
+              quantizedMousePos2[2]);
+          end
+          else
+          begin
+            MakeVector(vec1, 0, 0, quantizedMousePos[2]);
+            MakeVector(vec2, 0, 0, quantizedMousePos2[2]);
+          end;
         end;
-      end;
-      else
+    else
       begin
         vec1 := quantizedMousePos;
         vec2 := quantizedMousePos2;
       end;
     end;
     SubtractVector(vec1, vec2);
-    if Assigned(onBeforeUpdate) then
-      OnBeforeUpdate(self, SelectedObj, SelAxis, Operation, vec1);
+    if Assigned(OnBeforeUpdate) then
+      OnBeforeUpdate(Self, SelectedObj, SelAxis, Operation, vec1);
     SelectedObj.Scale.Translate(vec1);
     UpdateGizmo;
   end;
@@ -1443,25 +1677,15 @@ begin
   if not Enabled then
     Exit;
 
-  if Assigned(selectedObj) and (SelAxis <> gaNone) and moving then
+  if Assigned(SelectedObj) and (SelAxis <> gaNone) and FMoving then
   begin
     mousePos := MouseWorldPos(X, Y);
 
-    //moving object...
-    if Operation = gopMove then
-    begin
-      // FLastOperation = gopMove;
-      OpeMove(MousePos);
-    end
-    else if Operation = gopRotate then
-    begin
-      // FLastOperation = gopRotate;
-      OpeRotate(X, Y);
-    end
-    else if Operation = gopScale then
-    begin
-      // FLastOperation = gopScale;
-      OpeScale(MousePos);
+    // moving object...
+    case Operation of
+      gopMove: OpeMove(mousePos);
+      gopRotate: OpeRotate(X, Y);
+      gopScale: OpeScale(mousePos);
     end;
 
     UpdateGizmo;
@@ -1472,17 +1696,28 @@ begin
   end;
 
   Assert(FViewer <> nil, 'Viewer not Assigned to gizmo');
-//  picklist := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);//Viewer.buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1), 8);
+  pickList := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);
 
-  if not lightLine(_GZOlinex, clrRed, gaX) and not lightLine(_GZOliney, clrLime, gaY) and not lightLine(_GZOlinez, clrBlue, gaZ) and not lightTorus(_GZOTorusX, clrRed, gaX) and not lightTorus(_GZOTorusY, clrLime, gaY) and not lightTorus(_GZOTorusz, clrBlue, gaZ) and not lightCube(_GZOCubeX, clrRed, gaX) and not lightCube(_GZOCubeY, clrLime, gaY) and not lightCube(_GZOCubeZ, clrBlue, gaZ) and not lightLine(_GZOplaneXY, clrWhite, gaXY, True) and not lightLine(_GZOplaneXZ, clrWhite, gaXZ, True) and not lightLine(_GZOplaneYZ, clrWhite, gaYZ, True) then
+  if not lightLine(_GZOlineX, clrRed, gaX)
+    and not lightLine(_GZOlineY, clrLime, gaY)
+    and not lightLine(_GZOlineZ, clrBlue, gaZ)
+    and not lightTorus(_GZOTorusX, clrRed, gaX)
+    and not lightTorus(_GZOTorusY, clrLime, gaY)
+    and not lightTorus(_GZOTorusZ, clrBlue, gaZ)
+    and not lightCube(_GZOCubeX, clrRed, gaX)
+    and not lightCube(_GZOCubeY, clrLime, gaY)
+    and not lightCube(_GZOCubeZ, clrBlue, gaZ)
+    and not lightLine(_GZOplaneXY, clrWhite, gaXY, True)
+    and not lightLine(_GZOplaneXZ, clrWhite, gaXZ, True)
+    and not lightLine(_GZOplaneYZ, clrWhite, gaYZ, True) then
   begin
-    if not (FForceAxis) then
+    if not(FForceAxis) then
       SelAxis := gaNone;
-    if not (FForceOperation) then
+    if not(FForceOperation) then
       Operation := gopNone;
   end;
 
-//  picklist.Free;
+  pickList.Free;
 
   mx := X;
   my := Y;
@@ -1490,8 +1725,8 @@ end;
 
 procedure TGLGizmo.ViewerMouseDown(const X, Y: Integer);
 var
-//  pick:   TGLPickList;
-  I:      Integer;
+  pick: TPersistentObjectList;
+  I: Integer;
   accept: Boolean;
   dimensions: TVector;
   gotPick: Boolean;
@@ -1505,76 +1740,58 @@ begin
   if not Enabled then
     Exit;
 
-{  pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1);//Viewer.Buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1));
+  pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1);
   gotPick := False;
   accept := False;
 
-  case FPickMode of
-    pmGetPickedObjects:
-    begin
-      //primeiro, ver se é uma das linhas/planos
-      for I := 0 to pick.Count - 1 do
-        if (_GZOrootLines.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1)
-          or (_GZOrootTorus.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1)
-          or (_GZOrootCubes.IndexOfChild(TGLBaseSceneObject(pick.hit[I])) > -1) then
-          gotPick := True;
-    end;
+  try
 
-    pmRayCast:
+    for I := 0 to pick.Count - 1 do
+      if (_GZOrootLines.IndexOfChild(TGLBaseSceneObject(pick[I])) > -1) or
+        (_GZOrootTorus.IndexOfChild(TGLBaseSceneObject(pick[I])) > -1) or
+        (_GZOrootCubes.IndexOfChild(TGLBaseSceneObject(pick[I])) > -1) then
+        gotPick := True;
+
+    if not gotPick then
     begin
       for I := 0 to pick.Count - 1 do
-      begin
-        if (pick.Hit[I] is TGLGizmoPickCube) or (pick.Hit[I] is TGLGizmoPickTorus) then
-          gotPick := True;
-      end;
-    end;
+
+        if (pick[I] <> _GZOBoundingcube) and (pick[I] <> _GZOAxisLabelX) and
+          (pick[I] <> _GZOAxisLabelY) and (pick[I] <> _GZOAxisLabelZ) and
+          (pick[I] <> _GZOVisibleInfoLabels) and
+          not(CheckObjectInExcludeList(TGLBaseSceneObject(pick[I]))) then
+        begin
+          accept := True;
+          pickedObj := TGLBaseSceneObject(pick[I]);
+          dimensions := pickedObj.AxisAlignedDimensions;
+          if Assigned(OnBeforeSelect) then
+            OnBeforeSelect(Self, pickedObj, accept, dimensions);
+
+          Break;
+        end;
+
+      if accept then
+        SetSelectedObj(pickedObj)
+      else
+        SetSelectedObj(nil);
+    end
     else
-    begin
-      Assert(False, glsErrorEx + glsUnknownType);
-    end;
+      UpdateVisibleInfoLabels();
 
+  finally
+    pick.Free;
+    FMoving := True;
+    lastMousePos := MouseWorldPos(X, Y);
   end;
 
-  if not gotPick then
-  begin
-    for I := 0 to pick.Count - 1 do
-
-      if (pick.hit[I] <> _GZOBoundingcube) and
-         (pick.hit[I] <> _GZOAxisLabelX) and
-         (pick.hit[I] <> _GZOAxisLabelY) and
-         (pick.hit[I] <> _GZOAxisLabelZ) and
-         (pick.hit[I] <> _GZOVisibleInfoLabels) and
-          not (CheckObjectInExcludeList(TGLBaseSceneObject(pick.hit[I]))) then
-      begin
-        accept := True;
-        pickedObj := TGLBaseSceneObject(pick.hit[I]);
-        Dimensions := pickedObj.AxisAlignedDimensions;
-        if Assigned(onBeforeSelect) then
-          onBeforeSelect(self, pickedObj, accept, Dimensions);
-
-        Break;
-      end;
-
-    if accept then
-      SetSelectedObj(pickedObj)
-    else
-      SetSelectedObj(nil);
-  end
-  else
-    UpdateVisibleInfoLabels();
-
-  pick.Free;
-
-  moving := True;
-  lastMousePos := MouseWorldPos(X, Y);}
 end;
 
 procedure TGLGizmo.ViewerMouseUp(const X, Y: Integer);
 begin
-  moving := False;
+  FMoving := False;
 end;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 procedure TGLGizmo.UpdateGizmo;
 var
@@ -1586,18 +1803,18 @@ begin
     Exit;
   end;
 
-  _GZObaseGizmo.Position.AsVector := SelectedObj.AbsolutePosition;
+  _GZObaseGizmo.position.AsVector := SelectedObj.AbsolutePosition;
   if geObjectInfos in FGizmoElements then
     UpdateVisibleInfoLabels;
 
-  _GZOBoundingcube.matrix := SelectedObj.absoluteMatrix;
+  _GZOBoundingcube.Matrix := SelectedObj.absoluteMatrix;
   _GZOBoundingcube.position.SetPoint(0, 0, 0);
 
   // We must Update Color Of the BoundingBox And VisibleInfoLabels Here
   // If not Color is not Updated;
 
-  //     if FBoundingBoxColorChanged then
-  //     Begin
+  // if FBoundingBoxColorChanged then
+  // Begin
   with _GZOBoundingcube.material do
   begin
     with FrontProperties do
@@ -1613,26 +1830,30 @@ begin
       Emission.Color := FBoundingBoxColor.Color;
     end;
   end;
-  //      FBoundingBoxColorChanged:=False;
-  //      End;
-  //     If FVisibleInfoLabelsColorChanged then
-  //     Begin
+  // FBoundingBoxColorChanged:=False;
+  // End;
+  // If FVisibleInfoLabelsColorChanged then
+  // Begin
   _GZOVisibleInfoLabels.ModulateColor.Color := FVisibleInfoLabelsColor.Color;
-  //       FVisibleInfoLabelsColorChanged:=False;
-  //     End;
+  // FVisibleInfoLabelsColorChanged:=False;
+  // End;
 
   objDimensions := SelectedObj.AxisAlignedDimensions;
   _GZOBoundingcube.Scale.AsVector := VectorScale(objDimensions, 2);
 
   Assert(Viewer <> nil, 'Viewer not Assigned to gizmo');
 
-  _GZOAxisLabelX.PointTo(Viewer.Camera.Position.AsVector, Viewer.Camera.Up.AsVector);
+  _GZOAxisLabelX.PointTo(Viewer.Camera.position.AsVector,
+    Viewer.Camera.Up.AsVector);
   _GZOAxisLabelX.StructureChanged;
-  _GZOAxisLabelY.PointTo(Viewer.Camera.Position.AsVector, Viewer.Camera.Up.AsVector);
+  _GZOAxisLabelY.PointTo(Viewer.Camera.position.AsVector,
+    Viewer.Camera.Up.AsVector);
   _GZOAxisLabelY.StructureChanged;
-  _GZOAxisLabelZ.PointTo(Viewer.Camera.Position.AsVector, Viewer.Camera.Up.AsVector);
+  _GZOAxisLabelZ.PointTo(Viewer.Camera.position.AsVector,
+    Viewer.Camera.Up.AsVector);
   _GZOAxisLabelZ.StructureChanged;
-  _GZOVisibleInfoLabels.PointTo(Viewer.Camera.Position.AsVector, Viewer.Camera.Up.AsVector);
+  _GZOVisibleInfoLabels.PointTo(Viewer.Camera.position.AsVector,
+    Viewer.Camera.Up.AsVector);
   _GZOVisibleInfoLabels.StructureChanged;
   if FAutoZoom then
     d := Viewer.Camera.distanceTo(SelectedObj) / FAutoZoomFactor
@@ -1641,8 +1862,8 @@ begin
   _GZOrootLines.Scale.AsVector := VectorMake(d, d, d);
   _GZOrootTorus.Scale.AsVector := VectorMake(d, d, d);
   _GZOrootCubes.Scale.AsVector := VectorMake(d, d, d);
-  _GZOrootAxisLabel.Scale.AsVector := VectorMake(d, d, d);
-  _GZOrootVisibleInfoLabels.Scale.AsVector := VectorMake(d, d, d);
+  _GZORootAxisLabel.Scale.AsVector := VectorMake(d, d, d);
+  _GZORootVisibleInfoLabels.Scale.AsVector := VectorMake(d, d, d);
 end;
 
 procedure TGLGizmo.UpdateGizmo(const newDimensions: TVector);
@@ -1655,23 +1876,23 @@ procedure TGLGizmo.LooseSelection;
 begin
   SelectedObj := nil;
   UpdateGizmo;
-  if Assigned(onSelectionLost) then
-    OnSelectionLost(self);
+  if Assigned(OnSelectionLost) then
+    OnSelectionLost(Self);
 end;
 
 procedure TGLGizmo.SetViewer(const Value: TGLSceneViewer);
 begin
   if FViewer <> Value then
   begin
-    if FViewer <> nil then FViewer.RemoveFreeNotification(Self);
+    if FViewer <> nil then
+      FViewer.RemoveFreeNotification(Self);
     FViewer := Value;
-    if FViewer <> nil then FViewer.FreeNotification(Self);
+    if FViewer <> nil then
+      FViewer.FreeNotification(Self);
   end;
 end;
 
-
-procedure TGLGizmo.Notification(AComponent: TComponent;
-  Operation: TOperation);
+procedure TGLGizmo.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   inherited;
   if Operation = opRemove then
@@ -1686,7 +1907,8 @@ begin
     FUndoHistory.Notification(AComponent, Operation);
 end;
 
-procedure TGLGizmoUndoItem.AssignFromObject(const AObject: TGLCustomSceneObject);
+procedure TGLGizmoUndoItem.AssignFromObject(const AObject
+  : TGLCustomSceneObject);
 begin
   SetEffectedObject(AObject);
   SetOldMatrix(AObject.Matrix);
@@ -1694,13 +1916,14 @@ begin
   begin
     FOldAutoScaling.Assign(TGLFreeForm(AObject).AutoScaling);
   end;
-  FOldLibMaterialName := AObject.Material.LibMaterialName;
+  FOldLibMaterialName := AObject.material.LibMaterialName;
 end;
 
 constructor TGLGizmoUndoItem.Create(AOwner: TCollection);
 begin
   inherited;
-  FOldAutoScaling := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
+  FOldAutoScaling := TGLCoordinates.CreateInitialized(Self,
+    NullHmgVector, csPoint);
 end;
 
 destructor TGLGizmoUndoItem.Destroy;
@@ -1714,14 +1937,13 @@ begin
   FEffectedObject.Matrix := FOldMatr;
   if FEffectedObject is TGLFreeForm then
     TGLFreeForm(FEffectedObject).AutoScaling.Assign(FOldAutoScaling);
-  FEffectedObject.Material.LibMaterialName := FOldLibMaterialName;
+  FEffectedObject.material.LibMaterialName := FOldLibMaterialName;
 end;
-
 
 function TGLGizmoUndoItem.GetGizmo: TGLGizmo;
 begin
   if GetParent <> nil then
-    Result := GetPArent.GetParent
+    Result := GetParent.GetParent
   else
     Result := nil;
 end;
@@ -1744,9 +1966,11 @@ end;
 
 procedure TGLGizmoUndoItem.SetEffectedObject(const Value: TGLCustomSceneObject);
 begin
-  if FEffectedObject <> nil then FEffectedObject.RemoveFreeNotification(GetGizmo);
+  if FEffectedObject <> nil then
+    FEffectedObject.RemoveFreeNotification(GetGizmo);
   FEffectedObject := Value;
-  if FEffectedObject <> nil then FEffectedObject.FreeNotification(GetGizmo);
+  if FEffectedObject <> nil then
+    FEffectedObject.FreeNotification(GetGizmo);
 end;
 
 procedure TGLGizmoUndoItem.SetOldAutoScaling(const Value: TGLCoordinates);
@@ -1763,13 +1987,13 @@ end;
 
 function TGLGizmoUndoCollection.Add: TGLGizmoUndoItem;
 begin
-  Result := TGLGizmoUndoItem(inherited Add);
+  Result := TGLGizmoUndoItem( inherited Add);
 end;
 
-function TGLGizmoUndoCollection.GetItems(
-  const Index: Integer): TGLGizmoUndoItem;
+function TGLGizmoUndoCollection.GetItems(const Index: Integer)
+  : TGLGizmoUndoItem;
 begin
-  Result := TGLGizmoUndoItem(inherited GetItem(Index));
+  Result := TGLGizmoUndoItem( inherited GetItem(Index));
 end;
 
 function TGLGizmoUndoCollection.GetParent: TGLGizmo;
@@ -1783,12 +2007,12 @@ var
   I: Integer;
 begin
   if Count <> 0 then
-    for I := 0 to Count  - 1 do
+    for I := 0 to Count - 1 do
       GetItems(I).Notification(AComponent, Operation);
 end;
 
-procedure TGLGizmoUndoCollection.RemoveByObject(
-  const AObject: TGLCustomSceneObject);
+procedure TGLGizmoUndoCollection.RemoveByObject(const AObject
+  : TGLCustomSceneObject);
 var
   I: Integer;
 begin
