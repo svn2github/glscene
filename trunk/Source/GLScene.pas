@@ -4584,6 +4584,7 @@ begin
     //now update new up vector
     RotateVector(upvector,rightvector,DegToRad(-PitchDelta));
     AbsoluteUp := upvector;
+    AbsoluteDirection := VectorSubtract(anObject.AbsolutePosition,AbsolutePosition);
 
   end;
 end;
