@@ -900,7 +900,7 @@ type
     {: Make object-specific geometry description here.<p>
        Subclasses should MAINTAIN OpenGL states (restore the states if
        they were altered). }
-    procedure BuildList(var rci: TRenderContextInfo); virtual;
+    procedure BuildList(var rci: TRenderContextInfo); virtual; deprecated;
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
     function IsUpdating: Boolean;
@@ -2062,6 +2062,7 @@ type
     procedure PickObjects(const rect: TGLRect);
     //: Returns the nearest object at x, y coordinates or nil if there is none
     function GetPickedObject(x, y: Integer): TGLBaseSceneObject;
+    function GetPickedObjects(const rect: TGLRect; const AGuessCount: Integer): TPersistentObjectList;
 
     //: Returns the color of the pixel at x, y in the frame buffer
     function GetPixelColor(x, y: Integer): TColor;
@@ -2525,6 +2526,7 @@ uses
 
 var
   vCounterFrequency: Int64;
+  vPickedObjectsList: TPersistentObjectList = nil;
 {$IFNDEF GLS_MULTITHREAD}
 var
 {$ELSE}
@@ -5263,6 +5265,9 @@ var
 begin
   if FPickable then
   begin
+    if Assigned(vPickedObjectsList) then
+      vPickedObjectsList.Add(Self);
+
     dis := Self.DistanceTo(Scene.CurrentGLCamera);
     if dis < Scene.CurrentBuffer.FPickDistance then
     begin
@@ -9186,6 +9191,21 @@ begin
   Result := FNearestPickedObject;
 end;
 
+// GetPickedObjects
+//
+
+function TGLSceneBuffer.GetPickedObjects(const rect: TGLRect; const AGuessCount: Integer): TPersistentObjectList;
+begin
+  Result := TPersistentObjectList.Create;
+  Result.Capacity := AGuessCount;
+  vPickedObjectsList := Result;
+  try
+    PickObjects(rect);
+  finally
+    vPickedObjectsList := nil;
+  end;
+end;
+
 // GetPixelColor
 //
 
@@ -9293,16 +9313,17 @@ begin
     // setup projection matrix
     if Assigned(APickingRect) then
     begin
-      ProjectionMatrix := CreatePickMatrix(
-        (APickingRect^.Left + APickingRect^.Right) div 2,
-        FViewPort.Height - ((APickingRect^.Top + APickingRect^.Bottom) div 2),
-        Abs(APickingRect^.Right - APickingRect^.Left),
-        Abs(APickingRect^.Bottom - APickingRect^.Top),
-        TVector4i(FViewport));
+      // Commented due to drop down accuracy, Yar
+//      ProjectionMatrix := CreatePickMatrix(
+//        (APickingRect^.Left + APickingRect^.Right) div 2,
+//        FViewPort.Height - ((APickingRect^.Top + APickingRect^.Bottom) div 2),
+//        Abs(APickingRect^.Right - APickingRect^.Left),
+//        Abs(APickingRect^.Bottom - APickingRect^.Top),
+//        TVector4i(FViewport));
       V[0] := APickingRect^.Left;
       V[1] := Height - APickingRect^.Top;
-      V[2] := APickingRect^.Right - APickingRect^.Left;
-      V[3] := APickingRect^.Bottom - APickingRect^.Top;
+      V[2] := APickingRect^.Right - APickingRect^.Left + 1;
+      V[3] := APickingRect^.Bottom - APickingRect^.Top + 1;
       PickingBox := V;
     end;
     FBaseProjectionMatrix := ProjectionMatrix;

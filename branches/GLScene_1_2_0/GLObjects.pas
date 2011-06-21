@@ -183,6 +183,8 @@ type
     procedure SetShowAABB(const Value: Boolean);
     function GetShowAABB: Boolean;
     procedure SetMeshExtras(const Value: TMeshExtras);
+    function GetPickingMaterial: string;
+    procedure SetPickingMaterial(const Value: string);
   protected
     { Protected Declarations }
     FBatch: TDrawBatch;
@@ -200,6 +202,8 @@ type
       write SetMaterialLibrary;
     property LibMaterialName: string read GetLibMaterialName
       write SetLibMaterialName;
+    property CustomPickingMaterial: string read GetPickingMaterial
+      write SetPickingMaterial;
     property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx default False;
     property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
     property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
@@ -241,6 +245,7 @@ type
     property Up;
     property Visible;
     property Pickable;
+    property CustomPickingMaterial;
     property OnProgress;
     property OnPicked;
     property Behaviours;
@@ -559,15 +564,17 @@ type
   //
   { : Base class for line objects.<p>
     Introduces line style properties (width, color...). }
-  TGLLineBase = class(TGLSceneObjectEx)
+  TGLLineBase = class(TGLCustomSceneObjectEx)
   private
     { Private Declarations }
     FLineColor: TGLColor;
     FLinePattern: TGLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
+    FMaterialChanged: Boolean;
   protected
     { Protected Declarations }
+    FMaterialEx: TGLLibMaterialEx;
     procedure UpdateMaterial;
     procedure SetLineColor(const Value: TGLColor);
     procedure SetLinePattern(const Value: TGLushort);
@@ -600,6 +607,28 @@ type
     { : Default width of the lines. }
     property LineWidth: Single read FLineWidth write SetLineWidth
       stored StoreLineWidth;
+
+    property MaterialLibrary;
+    property LibMaterialName;
+    property ObjectsSorting;
+    property VisibilityCulling;
+    property Direction;
+    property PitchAngle;
+    property Position;
+    property RollAngle;
+    property Scale;
+    property ShowAxes;
+    property ShowAABB;
+    property TurnAngle;
+    property Up;
+    property Visible;
+    property Pickable;
+    property CustomPickingMaterial;
+    property OnProgress;
+    property OnPicked;
+    property Behaviours;
+    property Effects;
+    property Hint;
   end;
 
   // TLineNodesAspect
@@ -1276,6 +1305,9 @@ function TGLCustomSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVec
 var
   locRayStart, locRayVector, locPoint, locNormal: TVector;
 begin
+  if ocStructure in Changes then
+    BuildMesh;
+
   SetVector(locRayStart, AbsoluteToLocal(rayStart));
   SetVector(locRayVector, AbsoluteToLocal(rayVector));
 
@@ -1417,6 +1449,14 @@ begin
   Result := FMaterial.Material.MaterialLibrary;
 end;
 
+function TGLCustomSceneObjectEx.GetPickingMaterial: string;
+begin
+  if Assigned(FBatch.PickingMaterial) then
+    Result := FBatch.PickingMaterial.Name
+  else
+    Result := '';
+end;
+
 function TGLCustomSceneObjectEx.GetShowAABB: Boolean;
 begin
   Result := FBatch.ShowAABB;
@@ -1468,6 +1508,27 @@ begin
   begin
     FMeshExtras := Value;
     StructureChanged;
+  end;
+end;
+
+procedure TGLCustomSceneObjectEx.SetPickingMaterial(const Value: string);
+var
+  LMaterial: TGLAbstractLibMaterial;
+begin
+  if Value <> GetPickingMaterial then
+  begin
+    if Assigned(FBatch.PickingMaterial) then
+      FBatch.PickingMaterial.UnregisterUser(Self);
+    LMaterial := nil;
+    if Assigned(MaterialLibrary) then
+    begin
+      if MaterialLibrary is TGLMaterialLibraryEx then
+        LMaterial :=
+          TGLMaterialLibraryEx(MaterialLibrary).Materials.GetLibMaterialByName(Value);
+      if Assigned(LMaterial) then
+        LMaterial.RegisterUser(Self);
+    end;
+    FBatch.PickingMaterial := LMaterial;
   end;
 end;
 
@@ -2637,6 +2698,10 @@ begin
   FLinePattern := $FFFF;
   FAntiAliased := False;
   FLineWidth := 1.0;
+  FMaterialEx := GetInternalMaterialLibrary.Materials.Add;
+  FBatch.Material := FMaterialEx;
+  FMaterialEx.FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+  FMaterialChanged := True;
 end;
 
 // Destroy
@@ -2710,19 +2775,21 @@ end;
 
 procedure TGLLineBase.UpdateMaterial;
 begin
-  if FBatch.Material is TGLLibMaterialEx then
-    with TGLLibMaterialEx(FBatch.Material).FixedFunction do
-    begin
-      MaterialOptions := [moNoLighting];
-      LineProperties.Enabled := True;
-      LineProperties.Smooth := FAntiAliased;
-      LineProperties.Width := FLineWidth;
-      LineProperties.StipplePattern := FLinePattern;
-      if FLinePattern <> $FFFF then
-        LineProperties.StippleFactor := 1
-      else
-        LineProperties.StippleFactor := 0;
-    end;
+  if not (FBatch.Material is TGLLibMaterialEx) then
+    FBatch.Material := FMaterialEx;
+
+  with TGLLibMaterialEx(FBatch.Material).FixedFunction do
+  begin
+    LineProperties.Enabled := True;
+    LineProperties.Smooth := FAntiAliased;
+    LineProperties.Width := FLineWidth;
+    LineProperties.StipplePattern := FLinePattern;
+    if FLinePattern <> $FFFF then
+      LineProperties.StippleFactor := 1
+    else
+      LineProperties.StippleFactor := 0;
+  end;
+  FMaterialChanged := False;
 end;
 
 // SetAntiAliased
@@ -3098,7 +3165,10 @@ var
   I: Integer;
   M: TMatrix;
 begin
-  inherited;
+  inherited DoRender(ARci, ARenderSelf, ARenderChildren);
+
+  if FMaterialChanged then
+    UpdateMaterial;
 
   if (FNodesAspect <> lnaInvisible) and (FBatch.Order > -1) then
   begin

@@ -49,6 +49,7 @@ type
     Mesh: TMeshAtom;
     InstancesChain: TInstancesChain;
     Material: TGLAbstractLibMaterial;
+    PickingMaterial: TGLAbstractLibMaterial;
     Transformation: PTransformationRec;
     ShowAxes: Boolean;
     ShowAABB: Boolean;
@@ -295,7 +296,7 @@ begin
 end;
 
 var
-  vPickingMaterial: TGLAbstractLibMaterial;
+  vDefaultPickingMaterial: TGLAbstractLibMaterial;
 
 function GetOrCreatePickingMaterial: TGLAbstractLibMaterial;
 const
@@ -310,8 +311,10 @@ begin
     begin
       Name := cPickingMaterialName;
       FixedFunction.MaterialOptions := [moNoLighting];
+      FixedFunction.LineProperties.Enabled := True;
+      FixedFunction.LineProperties.Width := 3;
     end;
-    vPickingMaterial := Result;
+    vDefaultPickingMaterial := Result;
   end;
 end;
 
@@ -543,7 +546,7 @@ begin
       end;
     end;
     // Colors
-    if LLink.FAttributes[attrColor] then
+    if LLink.FAttributes[attrColor] and (ARci.drawState <> dsPicking) then
     begin
       DisableClientState(GL_COLOR_ARRAY);
       I := AID;
@@ -823,8 +826,12 @@ begin
       end
       else
       begin
-        MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
-          PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+        if VERSION_1_4 then
+          MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+            PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count)
+        else
+          for T := 0 to LMesh.FRestartVertex.Count - 1 do
+            DrawArrays(glPrimitive, LMesh.FRestartVertex.List[T], LMesh.FStripCounts.List[T]);
       end;
 
       LMesh.FDLO.EndList;
@@ -895,7 +902,7 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -1140,6 +1147,23 @@ begin
   FElementBufferMap.Destroy;
 end;
 
+procedure TGLDrawTechniqueOGL2.DoBeforeAABBDrawing
+  (var ARci: TRenderContextInfo);
+var
+  L: Integer;
+begin
+  ARci.GLStates.ArrayBufferBinding := 0;
+  ARci.GLStates.ElementBufferBinding := 0;
+  with GL do
+    for L := 15 downto 0 do
+      DisableVertexAttribArray(L);
+  GetAABBMaterial.Apply(ARci);
+  if ARci.GLStates.CurrentProgram = 0 then
+    GL.EnableClientState(GL_VERTEX_ARRAY)
+  else
+    GL.EnableVertexAttribArray(Ord(attrPosition));
+end;
+
 procedure TGLDrawTechniqueOGL2.DoAfterAABBDrawing(var ARci: TRenderContextInfo);
 begin
   if ARci.GLStates.CurrentProgram = 0 then
@@ -1147,6 +1171,23 @@ begin
   else
     GL.DisableVertexAttribArray(Ord(attrPosition));
   GetAABBMaterial.UnApply(ARci);
+end;
+
+procedure TGLDrawTechniqueOGL2.DoBeforePicking(AnObjectCountGuess: Integer);
+var
+  storeClearColor: TVector4f;
+begin
+  with CurrentGLContext do
+  begin
+    storeClearColor := GLStates.ColorClearValue;
+    GLStates.ScissorBox := PipelineTransformation.PickingBox;
+    GLStates.Enable(stScissorTest);
+    GLStates.ColorClearValue := clrWhite;
+    GLStates.DepthWriteMask := True;
+    GL.Clear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT);
+    GLStates.Disable(stScissorTest);
+    GLStates.ColorClearValue := storeClearColor;
+  end;
 end;
 
 procedure TGLDrawTechniqueOGL2.DoAfterPicking(const AList: TList);
@@ -1169,7 +1210,6 @@ begin
 
       if GL.GREMEDY_frame_terminator then
         GL.FrameTerminatorGREMEDY;
-
       for I := LPixels - 1 downto 0 do
       begin
         N := LReadBuffer[I] and $FFFFFF;
@@ -1183,40 +1223,6 @@ begin
     finally
       FreeMem(LReadBuffer);
     end;
-  end;
-end;
-
-procedure TGLDrawTechniqueOGL2.DoBeforeAABBDrawing
-  (var ARci: TRenderContextInfo);
-var
-  L: Integer;
-begin
-  ARci.GLStates.ArrayBufferBinding := 0;
-  ARci.GLStates.ElementBufferBinding := 0;
-  with GL do
-    for L := 15 downto 0 do
-      DisableVertexAttribArray(L);
-  GetAABBMaterial.Apply(ARci);
-  if ARci.GLStates.CurrentProgram = 0 then
-    GL.EnableClientState(GL_VERTEX_ARRAY)
-  else
-    GL.EnableVertexAttribArray(Ord(attrPosition));
-end;
-
-procedure TGLDrawTechniqueOGL2.DoBeforePicking(AnObjectCountGuess: Integer);
-var
-  storeClearColor: TVector4f;
-begin
-  with CurrentGLContext do
-  begin
-    storeClearColor := GLStates.ColorClearValue;
-    GLStates.ScissorBox := PipelineTransformation.PickingBox;
-    GLStates.Enable(stScissorTest);
-    GLStates.ColorClearValue := clrWhite;
-    GLStates.DepthWriteMask := True;
-    GL.Clear(GL_DEPTH_BUFFER_BIT or GL_COLOR_BUFFER_BIT);
-    GLStates.Disable(stScissorTest);
-    GLStates.ColorClearValue := storeClearColor;
   end;
 end;
 
@@ -2253,7 +2259,7 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -2353,7 +2359,7 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -2600,7 +2606,10 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    if Assigned(ABatch.PickingMaterial) then
+      LMaterial := ABatch.PickingMaterial
+    else
+      LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -2738,7 +2747,10 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    if Assigned(ABatch.PickingMaterial) then
+      LMaterial := ABatch.PickingMaterial
+    else
+      LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -2963,7 +2975,10 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    if Assigned(ABatch.PickingMaterial) then
+      LMaterial := ABatch.PickingMaterial
+    else
+      LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -3125,7 +3140,10 @@ begin
 
   if ARci.drawState = dsPicking then
   begin
-    LMaterial := vPickingMaterial;
+    if Assigned(ABatch.PickingMaterial) then
+      LMaterial := ABatch.PickingMaterial
+    else
+      LMaterial := vDefaultPickingMaterial;
   end
   else
     LMaterial := ABatch.Material;
@@ -3438,6 +3456,7 @@ begin
     if Length(FDrawOrderArray) < LList.Count then
       SetLength(FDrawOrderArray, LList.Count);
 
+    // Prepare to sorting
     C := 0;
     for I := 0 to LList.Count - 1 do
     begin
