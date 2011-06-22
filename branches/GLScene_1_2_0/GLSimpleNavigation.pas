@@ -9,6 +9,7 @@
     this component on the form.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/06/11 - Yar   - Added OnMouseWheel event
       <li>14/12/10 - DaStr - Fixed compiler hint
       <li>12/12/10 - Yar   - Adapted to using with TGLSceneForm
       <li>01/07/10 - Yar   - Fixed zooming for FPC (by Rustam Asmandiarov aka Predator)
@@ -125,6 +126,7 @@ type
     FKeyCombinations: TGLSimpleNavigationKeyCombinations;
     FRotateTargetSpeed: Single;
     FOnMouseMove: TMouseMoveEvent;
+    FOnMouseWheel: TMouseMoveEvent;
     FSceneForm: Boolean;
     procedure ShowFPS(Sender: TObject);
     procedure ViewerMouseMove(Sender: TObject;
@@ -158,6 +160,7 @@ type
     property KeyCombinations: TGLSimpleNavigationKeyCombinations read FKeyCombinations write SetKeyCombinations;
 
     property OnMouseMove: TMouseMoveEvent read FOnMouseMove write FOnMouseMove;
+    property OnMouseWheel: TMouseMoveEvent read FOnMouseWheel write FOnMouseWheel;
   end;
 
 implementation
@@ -273,6 +276,9 @@ begin
 
   if snoMouseWheelHandled in FOptions then
     Handled := True;
+
+  if Assigned(FOnMouseWheel) then
+    FOnMouseWheel(Sender, Shift, MousePos.X, MousePos.Y);
 end;
 
 procedure TGLSimpleNavigation.ViewerMouseMove(Sender: TObject;
