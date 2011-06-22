@@ -1387,7 +1387,7 @@ begin
   {$ENDIF}
   //Major.Minor.Revision
   str:=Result.Version;
-  if Version='' then Exit;
+  if str='' then Exit;
   Result.Major:=StrtoInt( Utf8Copy(str, 1, Utf8Pos('.',str)-1) );
   Utf8Delete(str, 1, Utf8Pos('.', str) );
 
