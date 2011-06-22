@@ -18,6 +18,7 @@ unit GLS_DrawTechnique;
 interface
 
 {$I GLScene.inc}
+{$DEFINE GLS_OPENGL_DEBUG}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -55,6 +56,7 @@ type
     ShowAABB: Boolean;
     Changed: Boolean;
     Order: Integer;
+    PickFlag: Boolean;
     PickCallback: TPickCallback;
     CustomDraw: TOnCustomDraw;
   end;
@@ -158,7 +160,7 @@ type
 
     procedure AllocateBuffers;
     procedure PlacedInBuffer(AMesh: TMeshAtom);
-    function BindStateHandle(const AStates: TGLStateCache;
+    function BindStateHandle(var ARci: TRenderContextInfo;
       const AMesh: TMeshAtom): Boolean;
 
     procedure DoBeforeAABBDrawing(var ARci: TRenderContextInfo); override;
@@ -630,6 +632,12 @@ begin
 
   if LHits > -1 then
   begin
+    for I := 0 to AList.Count - 1 do
+    begin
+      pBatch := AList[I];
+      pBatch^.PickFlag := Assigned(pBatch.PickCallback);
+    end;
+
     next := 0;
     for I := 0 to LHits - 1 do
     begin
@@ -649,8 +657,11 @@ begin
         end;
       end;
       pBatch := AList[FBuffer[current + 3]];
-      if Assigned(pBatch.PickCallback) then
+      if pBatch.PickFlag then
+      begin
         pBatch.PickCallback();
+        pBatch.PickFlag := False;
+      end;
     end;
   end;
 end;
@@ -1001,19 +1012,16 @@ begin
           if Assigned(LInstanceChain) then
             ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
-          if (ARci.drawState = dsPicking) and
-            (ARci.GLStates.CurrentProgram = 0) then
-          begin
-            DisableClientState(GL_COLOR_ARRAY);
-            Color3ubv(@ABatch.Order);
-          end;
-
-          if LMesh.FHasIndices then
+           if LMesh.FHasIndices then
             DrawElements(glPrimitive, LCount, glType, LArrayAddress)
           else
           begin
-            MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
-              PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+            if VERSION_1_4 then
+              MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
+                PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count)
+            else
+              for T := 0 to LMesh.FRestartVertex.Count - 1 do
+                DrawArrays(glPrimitive, LMesh.FRestartVertex.List[T], LMesh.FStripCounts.List[T]);
           end;
 
         until LInstanceID <= 0;
@@ -1021,12 +1029,13 @@ begin
         if not Assigned(LMaterial) then
           break;
       until not LMaterial.UnApply(ARci);
+
     finally
       ARci := storeRci;
     end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueFFP'}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL1'}{$ENDIF}
 {$IFDEF GLS_REGION}{$REGION 'TPoolMap'}{$ENDIF}
 
 function TPoolMap.AddSector(const AItem: TPoolSector): Integer;
@@ -1198,6 +1207,12 @@ var
   I, N: Integer;
   pBatch: PDrawBatch;
 begin
+  for I := 0 to AList.Count - 1 do
+  begin
+    pBatch := AList[I];
+    pBatch^.PickFlag := Assigned(pBatch.PickCallback);
+  end;
+
   LBox := CurrentGLContext.PipelineTransformation.PickingBox;
   LPixels := LBox[2] * LBox[3];
   if LPixels > 0 then
@@ -1216,8 +1231,11 @@ begin
         if N < AList.Count then
         begin
           pBatch := AList[N];
-          if Assigned(pBatch.PickCallback) then
+          if pBatch.PickFlag then
+          begin
             pBatch.PickCallback();
+            pBatch.PickFlag := False;
+          end;
         end;
       end;
     finally
@@ -1797,7 +1815,7 @@ begin
         end;
       end;
       // Colors
-      if LLink.FAttributes[attrColor] then
+      if LLink.FAttributes[attrColor] and (ARci.drawState <> dsPicking) then
       begin
         DisableClientState(GL_COLOR_ARRAY);
         I := AID;
@@ -1861,7 +1879,7 @@ begin
   end;
 end;
 
-function TGLDrawTechniqueOGL2.BindStateHandle(const AStates: TGLStateCache;
+function TGLDrawTechniqueOGL2.BindStateHandle(var ARci: TRenderContextInfo;
   const AMesh: TMeshAtom): Boolean;
 var
   LMesh: TFriendlyMesh;
@@ -1877,10 +1895,10 @@ var
 begin
   Result := False;
   LMesh := TFriendlyMesh(AMesh);
-  LProgram := CurrentGLContext.GLStates.CurrentProgram;
+  LProgram := ARci.GLStates.CurrentProgram;
   if LProgram > 0 then
     LVAO := LMesh.FVAO_Generic
-  else if AStates.ForwardContext then
+  else if ARci.GLStates.ForwardContext then
     exit
   else
     LVAO := LMesh.FVAO_BuildIn;
@@ -1905,10 +1923,10 @@ begin
     with GL do
     begin
       // Make draw calls use the GPU address VAO state, not the handle VAO state
-      AStates.ArrayBufferUnified := True;
+      ARci.GLStates.ArrayBufferUnified := True;
       if LMesh.FHasIndices then
       begin
-        AStates.ElementBufferUnified := True;
+        ARci.GLStates.ElementBufferUnified := True;
         BufferAddressRangeNV(GL_ELEMENT_ARRAY_ADDRESS_NV, 0,
           FElementBufferAddress, FElementBufferMap.Sectors
           [LMesh.FElementSectorIndex].Size);
@@ -1993,17 +2011,21 @@ begin
               BufferAddressRangeNV(GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, T,
                 Offsets64[attrTexCoord0], LMesh.FAttributeArrays[attrTexCoord0]
                 .DataSize);
-            end;
+            end
+            else
+              DisableClientState(GL_TEXTURE_COORD_ARRAY);
           end;
           // Colors
-          if LMesh.FAttributes[attrColor] then
+          if LMesh.FAttributes[attrColor] and (ARci.drawState <> dsPicking) then
           begin
             EnableClientState(GL_COLOR_ARRAY);
             ColorFormatNV(GLSLTypeComponentCount(LMesh.FType[attrColor]),
               GLSLTypeEnum(LMesh.FType[attrColor]), 0);
             BufferAddressRangeNV(GL_COLOR_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrColor], LMesh.FAttributeArrays[attrColor].DataSize);
-          end;
+          end
+          else
+            DisableClientState(GL_COLOR_ARRAY);
           // Normals
           if LMesh.FAttributes[attrNormal] and
             (GLSLTypeComponentCount(LMesh.FType[attrNormal]) = 3) then
@@ -2013,7 +2035,9 @@ begin
             BufferAddressRangeNV(GL_NORMAL_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrNormal], LMesh.FAttributeArrays[attrNormal]
               .DataSize);
-          end;
+          end
+          else
+            DisableClientState(GL_NORMAL_ARRAY);
           // Positions
           if LMesh.FAttributes[attrPosition] then
           begin
@@ -2023,7 +2047,9 @@ begin
             BufferAddressRangeNV(GL_VERTEX_ARRAY_ADDRESS_NV, 0,
               Offsets64[attrPosition], LMesh.FAttributeArrays[attrPosition]
               .DataSize);
-          end;
+          end
+          else
+            DisableClientState(GL_VERTEX_ARRAY);
         end;
       end;
     end;
@@ -2039,8 +2065,8 @@ begin
         LVAO.Bind;
 
         // Need to direct bind array buffer for correctly VertexAttribPointer set up
-        if AStates.ArrayBufferBinding = FArrayHandle.Handle then
-          GL.BindBuffer(GL_ARRAY_BUFFER, AStates.ArrayBufferBinding)
+        if ARci.GLStates.ArrayBufferBinding = FArrayHandle.Handle then
+          GL.BindBuffer(GL_ARRAY_BUFFER, ARci.GLStates.ArrayBufferBinding)
         else
           FArrayHandle.Bind;
         if LMesh.FHasIndices then
@@ -2167,7 +2193,7 @@ begin
       LVAO.Bind;
   end;
 
-  with AStates do
+  with ARci.GLStates do
   begin
     EnablePrimitiveRestart := LMesh.FHasIndices;
     PrimitiveRestartIndex := LMesh.FRestartIndex;
@@ -2285,20 +2311,20 @@ begin
       if Assigned(LMaterial) then
         LMaterial.Apply(ARci);
 
-      if BindStateHandle(ARci.GLStates, LMesh) then
+      if BindStateHandle(ARci, LMesh) then
         repeat
+
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
 
           repeat
             Dec(LInstanceID);
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
-
-            if (ARci.drawState = dsPicking) and
-              (ARci.GLStates.CurrentProgram = 0) then
-            begin
-              DisableClientState(GL_COLOR_ARRAY);
-              Color3ubv(@ABatch.Order);
-            end;
 
             if LMesh.FHasIndices then
               DrawElements(glPrimitive, LMesh.FElements.Count, glType, LOffset)
@@ -2312,6 +2338,14 @@ begin
           if not Assigned(LMaterial) then
             break;
         until not LMaterial.UnApply(ARci);
+
+        // Restore client state
+        if (ARci.drawState = dsPicking) and LMesh.FAttributes[attrColor] then
+        begin
+          if ARci.GLStates.CurrentProgram = 0 then
+            EnableClientState(GL_COLOR_ARRAY);
+        end;
+
     finally
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
@@ -2488,6 +2522,13 @@ begin
       LArrayAddress := LMesh.FElements.List;
       LCount := LMesh.FElements.Count;
 
+      if (ARci.drawState = dsPicking) and
+        (ARci.GLStates.CurrentProgram = 0) then
+      begin
+        DisableClientState(GL_COLOR_ARRAY);
+        Color3ubv(@ABatch.Order);
+      end;
+
       repeat
         glPrimitive := cPrimitiveType[LMesh.FPrimitive];
 
@@ -2495,13 +2536,6 @@ begin
           Dec(LInstanceID);
           if Assigned(LInstanceChain) then
             ApplyInstance(ARci, LInstanceChain, LInstanceID);
-
-          if (ARci.drawState = dsPicking) and
-            (ARci.GLStates.CurrentProgram = 0) then
-          begin
-            DisableClientState(GL_COLOR_ARRAY);
-            Color3ubv(@ABatch.Order);
-          end;
 
           if LMesh.FHasIndices then
             DrawElements(glPrimitive, LCount, glType, LArrayAddress)
@@ -2516,6 +2550,14 @@ begin
         if not Assigned(LMaterial) then
           break;
       until not LMaterial.UnApply(ARci);
+
+      // Restore client state
+      if (ARci.drawState = dsPicking) and LMesh.FAttributes[attrColor] then
+      begin
+        if ARci.GLStates.CurrentProgram = 0 then
+          EnableClientState(GL_COLOR_ARRAY);
+      end;
+
     finally
       ARci := storeRci;
     end;
@@ -2625,7 +2667,7 @@ begin
 
       ARci.PipelineTransformation.LoadMatrices;
 
-      if BindStateHandle(ARci.GLStates, LMesh) then
+      if BindStateHandle(ARci, LMesh) then
       begin
         if LMesh.FRestartIndex > $FFFF then
           glType := GL_UNSIGNED_INT
@@ -2668,17 +2710,17 @@ begin
             LOffset := Pointer(LShift + FElementBufferMap.Sectors
               [LMesh.FElementSectorIndex].Offset);
 
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
           repeat
             Dec(LInstanceID);
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
-
-            if (ARci.drawState = dsPicking) and
-              (ARci.GLStates.CurrentProgram = 0) then
-            begin
-              DisableClientState(GL_COLOR_ARRAY);
-              Color3ubv(@ABatch.Order);
-            end;
 
             if LMesh.FHasIndices then
               DrawElements(glPrimitive, LCount, glType, LOffset)
@@ -2693,6 +2735,13 @@ begin
           if not Assigned(LMaterial) then
             break;
         until not LMaterial.UnApply(ARci);
+
+        // Restore client state
+        if (ARci.drawState = dsPicking) and LMesh.FAttributes[attrColor] then
+        begin
+          if ARci.GLStates.CurrentProgram = 0 then
+            EnableClientState(GL_COLOR_ARRAY);
+        end;
       end;
     finally
       ARci := storeRci;
@@ -2904,17 +2953,21 @@ begin
         else if not(LMesh.FPrimitive in ARci.primitiveMask) then
           continue;
 
+        if ARci.drawState = dsPicking then
+        begin
+          if ARci.GLStates.CurrentProgram = 0 then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end
+          else
+            Assert(False);
+        end;
+
         repeat
           Dec(LInstanceID);
           if Assigned(LInstanceChain) then
             ApplyInstance(ARci, LInstanceChain, LInstanceID);
-
-          if (ARci.drawState = dsPicking) and
-            (ARci.GLStates.CurrentProgram = 0) then
-          begin
-            DisableClientState(GL_COLOR_ARRAY);
-            Color3ubv(@ABatch.Order);
-          end;
 
           if LMesh.FHasIndices then
             DrawElements(glPrimitive, LCount, glType, LArrayAddress)
@@ -2929,6 +2982,13 @@ begin
         if not Assigned(LMaterial) then
           break;
       until not LMaterial.UnApply(ARci);
+
+      // Restore client state
+      if (ARci.drawState = dsPicking) and LMesh.FAttributes[attrColor] then
+      begin
+        if ARci.GLStates.CurrentProgram = 0 then
+          EnableClientState(GL_COLOR_ARRAY);
+      end;
     finally
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
@@ -2994,7 +3054,7 @@ begin
 
       ARci.PipelineTransformation.LoadMatrices;
 
-      if BindStateHandle(ARci.GLStates, LMesh) then
+      if BindStateHandle(ARci, LMesh) then
       begin
 
         if LMesh.FRestartIndex > $FFFF then
@@ -3059,17 +3119,17 @@ begin
             LOffset := Pointer(LShift + FElementBufferMap.Sectors
               [LMesh.FElementSectorIndex].Offset);
 
+          if (ARci.drawState = dsPicking) and
+            (ARci.GLStates.CurrentProgram = 0) then
+          begin
+            DisableClientState(GL_COLOR_ARRAY);
+            Color3ubv(@ABatch.Order);
+          end;
+
           repeat
             Dec(LInstanceID);
             if Assigned(LInstanceChain) then
               ApplyInstance(ARci, LInstanceChain, LInstanceID);
-
-            if (ARci.drawState = dsPicking) and
-              (ARci.GLStates.CurrentProgram = 0) then
-            begin
-              DisableClientState(GL_COLOR_ARRAY);
-              Color3ubv(@ABatch.Order);
-            end;
 
             if LMesh.FHasIndices then
               DrawElements(glPrimitive, LCount, glType, LOffset)
@@ -3084,6 +3144,13 @@ begin
           if not Assigned(LMaterial) then
             break;
         until not LMaterial.UnApply(ARci);
+
+        // Restore client state
+        if (ARci.drawState = dsPicking) and LMesh.FAttributes[attrColor] then
+        begin
+          if ARci.GLStates.CurrentProgram = 0 then
+            EnableClientState(GL_COLOR_ARRAY);
+        end;
       end;
     finally
       ARci := storeRci;
