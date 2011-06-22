@@ -470,7 +470,9 @@ function GetPlatformVersion : TPlatformVersion;
 function GetPlatformVersionStr : string;
 
 {: Determine if the directory is writable.<p> }
+{$IFDEF MSWINDOWS}
 function IsDirectoryWriteable(const AName: string): Boolean;
+{$ENDIF}
 
 implementation
 
@@ -1506,6 +1508,7 @@ begin
   Result := VersStr[GetPlatformVersion];
 end;
 
+{$IFDEF MSWINDOWS}
 function IsDirectoryWriteable(const AName: string): Boolean;
 var
   LFileName: String;
@@ -1518,6 +1521,7 @@ begin
   if Result then
     CloseHandle(LHandle);
 end;
+{$ENDIF}
 
 initialization
   vGLSStartTime := GLSTime;
