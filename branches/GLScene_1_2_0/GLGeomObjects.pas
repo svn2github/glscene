@@ -621,11 +621,19 @@ var
   cosCache, sinCache: array of Single;
   i, j: Integer;
   Rstep, R: Single;
+  Start, Stop, Ex: Single;
 begin
   SetLength(cosCache, FSlices + 1);
   SetLength(sinCache, FSlices + 1);
-  PrepareSinCosCache(sinCache, cosCache,
-    FStartAngle, FStartAngle + FSweepAngle);
+  Start := FStartAngle;
+  Stop :=  FStartAngle + FSweepAngle;
+  if Start > Stop then
+  begin
+    Ex := Stop;
+    Stop := Start;
+    Start := Ex;
+  end;
+  PrepareSinCosCache(sinCache, cosCache, Start, Stop);
 
   Rstep := (FOuterRadius - FInnerRadius) / FLoops;
   with FBatch.Mesh do
@@ -657,6 +665,7 @@ begin
           Attribute3f(attrPosition, cosCache[i] * R, sinCache[i] * R, 0);
           EmitVertex;
         end;
+        RestartStrip;
       end;
       EndAssembly;
       ApplyExtras;
