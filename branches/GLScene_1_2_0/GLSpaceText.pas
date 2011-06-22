@@ -12,6 +12,7 @@
   Also extents are valid only when SpaceText has one line. <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>22/06/11 - Yar - Transition to indirect rendering objects
   <li>25/03/11 - Yar - Fixed issue with unsharable virtual handle of font entry
   <li>22/09/10 - Yar - Added unicode support (Delphi 2009 & up only)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -33,9 +34,9 @@
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
   <li>19/10/06 - LC - Added TGLSpaceText.Assign. Bugtracker ID=1576445 (thanks Zapology)
   <li>16/09/06 - NC - TGLVirtualHandle update (thx Lionel Reynaud)
-  <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
-  <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)
-  <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
+  <li>03/06/02 - EG - VirtualHandle notification fix (Sren Mhlbauer)
+  <li>07/03/02 - EG - GetFontBase fix (Sren Mhlbauer)
+  <li>30/01/02 - EG - Text Alignment (Sren Mhlbauer),
   TFontManager now GLContext compliant (RenderToBitmap ok!)
   <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
   <li>12/12/01 - EG - Creation (split from GLScene.pas)
@@ -47,14 +48,28 @@ interface
 
 {$I GLScene.inc}
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
+{$MESSAGE Warn 'TGLSpaceText is deprecated'}
 
 uses
   // VCL
-  Windows, Messages, Dialogs, Classes, Graphics, Controls,
+  Windows,
+  Messages,
+  Dialogs,
+  Classes,
+  Graphics,
+  Controls,
 
   // GLScene
-  GLScene, OpenGLTokens, GLTexture, GLContext, VectorGeometry, GLStrings,
-  GLRenderContextInfo, GLState;
+  GLScene,
+  OpenGLTokens,
+  GLContext,
+  VectorGeometry,
+  GLStrings,
+  GLRenderContextInfo,
+  GLPipelineTransformation,
+  GLState,
+  GLS_DrawTechnique,
+  GLObjects;
 
 type
 
@@ -116,7 +131,7 @@ type
   // TGLSpaceText
   //
   { : Renders a text in 3D. }
-  TGLSpaceText = class(TGLSceneObject)
+  TGLSpaceText = class(TGLCustomSceneObjectEx)
   private
     { Private Declarations }
     FFont: TFont;
@@ -139,13 +154,15 @@ type
     procedure SetAspectRatio(const Value: Single);
     procedure SetOblique(const Value: Single);
     procedure SetTextHeight(const Value: Single);
+    procedure OnDirectDraw(var ARci: TRenderContextInfo);
   protected
     { Protected Declarations }
     FTextFontEntry: PFontEntry;
-    FontChanged: Boolean;
+    FFontChanged: Boolean;
     procedure OnFontChange(sender: TObject);
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
+    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -153,7 +170,6 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
@@ -190,6 +206,29 @@ type
     property TextHeight: Single read FTextHeight write SetTextHeight;
     property Oblique: Single read FOblique write SetOblique;
     property Adjust: TGLTextAdjust read FAdjust write SetAdjust;
+
+    // Scene object properties
+    property Material;
+    property MaterialLibrary;
+    property LibMaterialName;
+    property ObjectsSorting;
+    property VisibilityCulling;
+    property Direction;
+    property PitchAngle;
+    property Position;
+    property RollAngle;
+    property Scale;
+    property ShowAxes;
+    property ShowAABB;
+    property TurnAngle;
+    property Up;
+    property Visible;
+    property Pickable;
+    property OnProgress;
+    property OnPicked;
+    property Behaviours;
+    property Effects;
+    property Hint;
   end;
 
   // TFontManager
@@ -336,13 +375,15 @@ begin
   inherited Create(AOwner);
   FFont := TFont.Create;
   FFont.Name := 'Arial';
-  FontChanged := True;
+  FFontChanged := True;
   CharacterRange := stcrDefault;
   FFont.OnChange := OnFontChange;
   FAdjust := TGLTextAdjust.Create;
   FAdjust.OnChange := OnFontChange;
   FLines := TStringList.Create;
   FLines.OnChange := DoOnLinesChange;
+  FBatch.CustomDraw := OnDirectDraw;
+  FBatch.Transformation := @FTransformation;
 end;
 
 // Destroy
@@ -444,100 +485,6 @@ begin
   end;
 end;
 
-// BuildList
-//
-
-procedure TGLSpaceText.BuildList(var rci: TRenderContextInfo);
-var
-  textL, maxUnder, maxHeight: Single;
-  charScale: Single;
-  i, j, k, c: Integer;
-  glBase: TGLuint;
-  dirtyLine, cleanLine: WideString;
-begin
-  if Length(GetText) > 0 then
-  begin
-    GL.PushMatrix;
-
-    // FAspectRatio ignore
-    if FAspectRatio <> 0 then
-      GL.Scalef(FAspectRatio, 1, 1);
-    if FOblique <> 0 then
-      GL.Rotatef(FOblique, 0, 0, 1);
-
-    glBase := FTextFontEntry^.FVirtualHandle.handle;
-    case FCharacterRange of
-      stcrAlphaNum:
-        GL.ListBase(TGLuint(Integer(glBase) - 32));
-      stcrNumbers:
-        GL.ListBase(TGLuint(Integer(glBase) - Integer('0')));
-    else
-      GL.ListBase(glBase);
-    end;
-
-    rci.GLStates.PushAttrib([sttPolygon]);
-    for i := 0 to FLines.Count - 1 do
-    begin
-      GL.PushMatrix;
-
-      TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
-      if (FAdjust.Horz <> haLeft) or (FAdjust.Vert <> vaBaseLine) or
-        (FTextHeight <> 0) then
-      begin
-        if FTextHeight <> 0 then
-        begin
-          charScale := FTextHeight / maxHeight;
-          GL.Scalef(charScale, charScale, 1);
-        end;
-        case FAdjust.Horz of
-          haLeft:
-            ; // nothing
-          haCenter:
-            GL.Translatef(-textL * 0.5, 0, 0);
-          haRight:
-            GL.Translatef(-textL, 0, 0);
-        end;
-        case FAdjust.Vert of
-          vaBaseLine:
-            ; // nothing;
-          vaBottom:
-            GL.Translatef(0, abs(maxUnder), 0);
-          vaCenter:
-            GL.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
-          vaTop:
-            GL.Translatef(0, -maxHeight, 0);
-        end;
-      end;
-
-      GL.Translatef(0, -i * (maxHeight + FAspectRatio), 0);
-      if FCharacterRange = stcrWide then
-      begin
-        dirtyLine := FLines.Strings[i];
-        SetLength(cleanLine, Length(dirtyLine));
-        k := 1;
-        for j := 1 to Length(dirtyLine) do
-        begin
-          c := Integer(dirtyLine[j]);
-          if (c >= FTextFontEntry^.firstChar) and
-            (c <= FTextFontEntry^.lastChar) then
-          begin
-            cleanLine[k] := dirtyLine[j];
-            Inc(k);
-          end;
-        end;
-        if k > 1 then
-          GL.CallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
-      end
-      else
-        GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
-          PGLChar(TGLString(FLines.Strings[i])));
-      GL.PopMatrix;
-    end;
-    rci.GLStates.PopAttrib();
-    GL.PopMatrix;
-  end;
-end;
-
 // GetFirstAndLastChar
 //
 
@@ -567,6 +514,100 @@ begin
   end;
 end;
 
+procedure TGLSpaceText.OnDirectDraw(var ARci: TRenderContextInfo);
+var
+  textL, maxUnder, maxHeight: Single;
+  charScale: Single;
+  i, j, k, c: Integer;
+  glBase: TGLuint;
+  dirtyLine, cleanLine: WideString;
+begin
+  Material.Apply(ARci);
+  ARci.PipelineTransformation.StackTop := FTransformation;
+  ARci.PipelineTransformation.LoadMatrices;
+
+  repeat
+    with GL do
+    begin
+      // FAspectRatio ignore
+      if FAspectRatio <> 0 then
+        Scalef(FAspectRatio, 1, 1);
+      if FOblique <> 0 then
+        Rotatef(FOblique, 0, 0, 1);
+
+      glBase := FTextFontEntry^.FVirtualHandle.handle;
+      case FCharacterRange of
+        stcrAlphaNum:
+          ListBase(TGLuint(Integer(glBase) - 32));
+        stcrNumbers:
+          ListBase(TGLuint(Integer(glBase) - Integer('0')));
+      else
+        ListBase(glBase);
+      end;
+
+      ARci.GLStates.PushAttrib([sttPolygon]);
+      for i := 0 to FLines.Count - 1 do
+      begin
+        PushMatrix;
+
+        TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
+        if (FAdjust.Horz <> haLeft) or (FAdjust.Vert <> vaBaseLine) or
+          (FTextHeight <> 0) then
+        begin
+          if FTextHeight <> 0 then
+          begin
+            charScale := FTextHeight / maxHeight;
+            Scalef(charScale, charScale, 1);
+          end;
+          case FAdjust.Horz of
+            haLeft:
+              ; // nothing
+            haCenter:
+              Translatef(-textL * 0.5, 0, 0);
+            haRight:
+              Translatef(-textL, 0, 0);
+          end;
+          case FAdjust.Vert of
+            vaBaseLine:
+              ; // nothing;
+            vaBottom:
+              Translatef(0, abs(maxUnder), 0);
+            vaCenter:
+              Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
+            vaTop:
+              Translatef(0, -maxHeight, 0);
+          end;
+        end;
+
+        Translatef(0, -i * (maxHeight + FAspectRatio), 0);
+        if FCharacterRange = stcrWide then
+        begin
+          dirtyLine := FLines.Strings[i];
+          SetLength(cleanLine, Length(dirtyLine));
+          k := 1;
+          for j := 1 to Length(dirtyLine) do
+          begin
+            c := Integer(dirtyLine[j]);
+            if (c >= FTextFontEntry^.firstChar) and
+              (c <= FTextFontEntry^.lastChar) then
+            begin
+              cleanLine[k] := dirtyLine[j];
+              Inc(k);
+            end;
+          end;
+          if k > 1 then
+            CallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
+        end
+        else
+          CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
+            PGLChar(TGLString(FLines.Strings[i])));
+        PopMatrix;
+      end;
+      ARci.GLStates.PopAttrib();
+    end;
+  until not Material.UnApply(ARci);
+end;
+
 // DoRender
 //
 
@@ -575,11 +616,12 @@ procedure TGLSpaceText.DoRender(var ARci: TRenderContextInfo;
 var
   firstChar, lastChar: Integer;
 begin
-  if GetText <> '' then
+  if FLines.Count > 0 then
   begin
     if Assigned(FTextFontEntry) then
       FTextFontEntry^.FVirtualHandle.AllocateHandle;
-    if FontChanged or (Assigned(FTextFontEntry) and
+
+    if FFontChanged or (Assigned(FTextFontEntry) and
       (FTextFontEntry^.FVirtualHandle.IsDataNeedUpdate)) then
       with FFont do
       begin
@@ -587,11 +629,19 @@ begin
         GetFirstAndLastChar(firstChar, lastChar);
         FTextFontEntry := FontManager.GetFontBase(Name, Style, FExtrusion,
           FAllowedDeviation, firstChar, lastChar, Self);
-        FontChanged := False;
+        FFontChanged := False;
         FTextFontEntry^.FVirtualHandle.NotifyDataUpdated;
       end;
   end;
-  inherited;
+
+  if ARenderSelf and (FLines.Count > 0) then
+  begin
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    FBatch.Order := ARci.orderCounter;
+  end;
+
+  if ARenderChildren then
+    RenderChildren(0, Count - 1, ARci);
 end;
 
 // SetExtrusion
@@ -648,7 +698,7 @@ end;
 
 procedure TGLSpaceText.OnFontChange(sender: TObject);
 begin
-  FontChanged := True;
+  FFontChanged := True;
   StructureChanged;
 end;
 
@@ -721,6 +771,18 @@ begin
   end;
 end;
 
+procedure TGLSpaceText.SetScene(const value: TGLScene);
+begin
+  if value <> Scene then
+  begin
+    if Assigned(Scene) then
+      Scene.RenderManager.UnRegisterBatch(FBatch);
+    if Assigned(value) then
+      value.RenderManager.RegisterBatch(FBatch);
+    inherited;
+  end;
+end;
+
 // SetTextHeight
 //
 
@@ -739,7 +801,7 @@ end;
 procedure TGLSpaceText.NotifyFontChanged;
 begin
   FTextFontEntry := nil;
-  FontChanged := True;
+  FFontChanged := True;
 end;
 
 // NotifyChange
@@ -1032,15 +1094,16 @@ end;
 // -------------------------------------------------------------
 initialization
 
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
+  // -------------------------------------------------------------
 
-vFontManagerMsgID := RegisterWindowMessage(cFontManagerMsg);
-RegisterClass(TGLSpaceText);
+  vFontManagerMsgID := RegisterWindowMessage(cFontManagerMsg);
+  RegisterClass(TGLSpaceText);
 
 finalization
 
-ReleaseFontManager;
+  ReleaseFontManager;
 
 end.
+
