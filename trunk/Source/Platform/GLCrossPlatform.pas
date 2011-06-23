@@ -470,9 +470,8 @@ function GetPlatformVersion : TPlatformVersion;
 function GetPlatformVersionStr : string;
 
 {: Determine if the directory is writable.<p> }
-{$IFDEF MSWINDOWS}
 function IsDirectoryWriteable(const AName: string): Boolean;
-{$ENDIF}
+
 
 implementation
 
@@ -1508,20 +1507,25 @@ begin
   Result := VersStr[GetPlatformVersion];
 end;
 
-{$IFDEF MSWINDOWS}
 function IsDirectoryWriteable(const AName: string): Boolean;
 var
   LFileName: String;
+{$IFDEF MSWINDOWS}
   LHandle: THandle;
+{$ENDIF}
 begin
   LFileName := IncludeTrailingPathDelimiter(AName) + 'chk.tmp';
+{$IFDEF MSWINDOWS}
   LHandle := CreateFile(PChar(LFileName), GENERIC_READ or GENERIC_WRITE, 0, nil,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY or FILE_FLAG_DELETE_ON_CLOSE, 0);
   Result := LHandle <> INVALID_HANDLE_VALUE;
   if Result then
     CloseHandle(LHandle);
-end;
+{$ELSE}
+  Result := fpAccess(PChar(LFileName), W_OK) <> 0;
 {$ENDIF}
+end;
+
 
 initialization
   vGLSStartTime := GLSTime;
