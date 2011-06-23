@@ -86,7 +86,7 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF UNIX}
-  Unix,
+  Unix, BaseUnix,
 {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
   xlib,
