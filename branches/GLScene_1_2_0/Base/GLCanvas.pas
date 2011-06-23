@@ -301,6 +301,7 @@ procedure TGLCanvas.BackupOpenGLStates;
 begin
   with CurrentGLContext.GLStates do
   begin
+    CurrentProgram := 0;
     Disable(stLighting);
     Disable(stFog);
     Disable(stCullFace);
