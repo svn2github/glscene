@@ -13,6 +13,7 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>23/06/11 - Yar - Transition to indirect rendering objects
       <li>24/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>31/05/10 - Yar - Fixed warnings
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -51,16 +52,12 @@
 //   Web Site        : http://GLScene.ru
 //   EMail           : Predator_Rust@_#_antispam_#_@mail.ru
 //   Date            : 07/10/2009
-// - Полностью переделан код для удобства работы с обьектами
-// - Получившейся код менее совместим с предедущим но более функционален
-// Известные баги
-//  1) GLLines
-//   Альфаканал нода не действует до тех пор пока
-//   не назначить альфаканал в свойстве    lineColor.Alpha
-//   (см GLObjects->procedure TGLLineBase.SetupLineStyle)
-//  2) В режыме рейкаста массовое выделение будет тормозить из за
-//  cканирования лучем, тогда как в GetPickedobj можно задать область рамки
-//  3) Does not work in lazarus
+// - Р®м®® а¦°жҐҐмЎ­ лЇ¤ е¬ї еЇЎг  бў®  пўјж«Іб­Ё
+// - Р®мґ·йЈёжЄ± лЇ¤ н¦­жҐ пЈ¬жІІй¬  а±Ґе¦¤й¬ о® вЇ«жҐ о«¶йЇ­б¬ҐнЌЉ// Й§г¦±ојҐ вЎЈиЌЉ//  1) GLLines
+//   kб« оЎ« оЇ¤аЎ­еЎ¤жЄ±гґҐ е® жµ аЇ° аЇЄНЉ//   оҐ оЎ§оЎ·йіј б¬јб« оЎ« вЎ±гЇ©гҐ    lineColor.Alpha
+//   (мЎ‡LObjects->procedure TGLLineBase.SetupLineStyle)
+//  2) В ж§»нҐ жЄЄбІІаЎ¬бІ±пЈ®еЎўе¦«ж®ЁеЎЎе¦І п±¬пЁЁ й§ и Ќ
+//  cлЎ­й±®гЎ­йї мґ·ж¬¬ п¤¤аЎЄбЄ вЎ‡etPickedobj нЇ¦о® иЎ¤біј пў«бІІ б­ЄиЌЉ//  3) Does not work in lazarus
 //------------------------------------------------------------------------------
 
 unit GLGizmoEx;
@@ -77,7 +74,7 @@ uses
   OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GeometryBB, VectorTypes, GLCanvas,
-  PersistentClasses, GLScreen, GLState, GLSelection;
+  PersistentClasses, GLScreen, GLState, GLS_Material;
 
 type
   TGLGizmoExObjectCollection = class;
@@ -153,9 +150,9 @@ type
     property ItemIndex: Integer read FItemIndex write FItemIndex;
     function Undo: TGLGizmoExActionHistoryItem;
     function Redo: TGLGizmoExActionHistoryItem;
-    procedure AddObjects(objs: TGLPickList);
+    procedure AddObjects(objs: TPersistentObjectList);
     procedure AddObject(obj: TObject);
-    procedure RemoveObjects(objs: TGLPickList);
+    procedure RemoveObjects(objs: TPersistentObjectList);
     property MaxCount: Integer read FItemsMaxCount write FItemsMaxCount;
     property Items[const Index: Integer]: TGLGizmoExActionHistoryItem read GetItems write SetItems; default;
     property GizmoTmpRoot: TGLBaseSceneObject read FGizmoTmpRoot write FGizmoTmpRoot;
@@ -178,86 +175,64 @@ type
   TGLGizmoExOperationMode = (gomNone, gomSelect, gomMove, gomRotate, gomScale);
 
 
-  TGLGizmoExAcceptEvent = procedure(Sender: TObject; var objs: TGLPickList) of object;
+  TGLGizmoExAcceptEvent = procedure(Sender: TObject; var objs: TPersistentObjectList) of object;
   TGLGizmoExAxisSelected = procedure(Sender: TObject; var Axis: TGLGizmoExAxis) of object;
   TGLGizmoExPickMode = (pmGetPickedObjects, pmRayCast);
 
-  //Элементы
+  // Gizmo elements
 
   TGLGizmoExUIFrustrum = class(TGLFrustrum)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUISphere = class(TGLSphere)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUIDisk = class(TGLDisk)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUITorus = class(TGLTorus)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
-  TGLGizmoExUIPolyGon = class(TGLPolyGon)
-  private
-    FNoZWrite: Boolean;
+  TGLGizmoExUIPolygon = class(TGLPolygon)
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUIArrowLine = class(TGLArrowLine)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUILines = class(TGLLines)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoExUIFlatText = class(TGLFlatText)
-  private
-    FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
   TGLGizmoEx = class(TComponent)
   private
+    FMaterialOfLines: TGLLibMaterialEx;
+    FMaterialRed: TGLLibMaterialEx;
+    FMaterialLime: TGLLibMaterialEx;
+    FMaterialBlue: TGLLibMaterialEx;
+    FMaterialYellow: TGLLibMaterialEx;
+    FMaterialInvisible: TGLLibMaterialEx;
+    FMaterialForPicking: TGLLibMaterialEx;
+    FMaterialRotation1: TGLLibMaterialEx;
+    FMaterialRotation2: TGLLibMaterialEx;
+
     FUIBaseGizmo: TGLBaseSceneObject;
 
     FUIRootHelpers: TGLBaseSceneObject;
@@ -342,7 +317,7 @@ type
     FSelectionRec: TGLGizmoExSelRec;
     FCanAddObjToSelectionList: Boolean;
     FCanRemoveObjFromSelectionList: Boolean;
-    FSelectedObjects: TGLPickList;
+    FSelectedObjects: TPersistentObjectList;
     FAntiAliasedLines: Boolean;
 
     FShowAxisLabel: Boolean;
@@ -357,7 +332,7 @@ type
 
     fcursorPos: TGLPoint;
     flastcursorPos: TGLPoint;
-    fchangerate: TAffineVector;   //сумарный угол вращения - масштабированая
+    FChangeRate: TAffineVector;   //нЎ°ој© дЇ« г± ж®Ё - нЎ±бўЁпЈ оЎї
     FEnableLoopCursorMoving: Boolean;
 
     lastMousePos: TVector;
@@ -401,10 +376,10 @@ type
     procedure UpdateVisibleInfoLabels;
     procedure SetGLGizmoExThickness(const Value: Single);
 
-    procedure ActivatingElements(PickList: TGLPickList);
+    procedure ActivatingElements(PickList: TPersistentObjectList);
     procedure InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure InternalRender(Sender: TObject; var rci: TRenderContextInfo);
-    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TGLPickList;
+    function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TPersistentObjectList;
     procedure SetViewer(const Value: TGLSceneViewer);
     procedure SetLabelFont(const Value: TGLCustomBitmapFont);
     procedure SetSelectedObj(const Value: TGLBaseSceneObject);
@@ -424,15 +399,15 @@ type
     procedure SetSelAxis(aValue: TGLGizmoExAxis);
     procedure SetPickMode(APickMode: TGLGizmoExPickMode);
 
-    procedure AssignPickList(aList: TGLPickList; RemoveObj: Boolean = False);
+    procedure AssignPickList(aList: TPersistentObjectList; RemoveObj: Boolean = False);
     procedure AddObjToSelectionList(Obj: TGLBaseSceneObject);
     procedure RemoveObjFromSelectionList(Obj: TGLBaseSceneObject);
     procedure MultiSelMouseDown(X, Y: Integer);
     procedure MultiSelMouseUp(X, Y: Integer);
     procedure MultiSelMouseMove(X, Y: Integer);
 
-    function GetPickList: TGLPickList;
-    procedure SetPickList(aValue: TGLPickList);
+    function GetPickList: TPersistentObjectList;
+    procedure SetPickList(aValue: TPersistentObjectList);
     property SelAxis: TGLGizmoExAxis read FSelAxis write SetSelAxis;
     property Operation: TGLGizmoExOperation read FOperation write SetOperation;
     procedure ClearSelection;
@@ -476,7 +451,7 @@ type
     property SelectionRegionColor: TGLColor read FSelectionRegionColor write SetSelectionRegionColor;
 
     property SelectedObj: TGLBaseSceneObject read GetSelectedObj write SetSelectedObj;
-    property SelectedObjects: TGLPickList read GetPickList write SetPickList;
+    property SelectedObjects: TPersistentObjectList read GetPickList write SetPickList;
 
     property OperationMode: TGLGizmoExOperationMode read FOperationMode write SetOperationMode default gomSelect;
 
@@ -512,7 +487,7 @@ type
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
 
-    {: Для того что бы отключить гизмо и при этом сделать невидимым используйте свойство
+    {: Е« п¤® оЎЎ піЄмї·йіј д©§н® иЎЇиЎЅп¬ е¦«біј о¦ўйҐЁнј¬ йІЇп¬јиґ©еЎ±гЇ©г®Ќ
         OperationMode=gomNone}
     property Enabled: Boolean read FEnabled write FEnabled default True;
 
@@ -569,7 +544,7 @@ begin
 end;
 
 //-------------------------------------------------------------------
-//                 Математические функции для Канвы
+//                 Н ж­ йёҐл©Ґ о«¶йЁ е¬ї Л оЈ»
 //-------------------------------------------------------------------
 
 function Det(const a, b, c, d: real): real;
@@ -577,7 +552,7 @@ begin
   Det := a * d - b * c;
 end;
 
-//Поиск расстаяния между точками
+//Р®йІЄ бІ±вЂ­йї н¦¦еі пёЄб­Ё
 function Dist(const P1, P2: TPoint): real;
 begin
   Result := Sqrt(Sqr(P1.X - P2.X) + Sqr(P1.Y - P2.Y));
@@ -589,29 +564,27 @@ begin
     (abs(p1.Y - p.Y) + abs(p2.Y - p.Y) = abs(p2.Y - p1.Y));
 end;
 
-//Поиск пересечения между прямыми, причем все что не касается будет false
-function IsLinetoLine(p11, p12, p21, p22: TPoint; var p: Tpoint): Boolean;  // координаты второго отрезка
-var
+//Р®йІЄ а¦°жІҐж®Ё н¦¦еі а±їнј¬и¬ а±Ёж¬ гІҐ оЎ­еЎЄбІ жі± вґ¤жІ false
+function IsLinetoLine(p11, p12, p21, p22: TPoint; var p: Tpoint): Boolean;  // лЇ®е©­бі» гі®п¤® пі°жЁЄНЉvar
   Z, ca, cb, ua, ub: Single;
 begin
-  //функция конфертирована с сайта
-  //http://doc-for-prog.narod.ru/topics/math/crossing.html
+  //о«¶йї лЇ­ж±Ій±®гЎ­аЎ± бЄІНЉ  //http://doc-for-prog.narod.ru/topics/math/crossing.html
 
-  // знаменатель
+  // и® н¦­біҐмјЌ
   Z := (p12.Y - p11.Y) * (p21.X - p22.X) - (p21.Y - p22.Y) * (p12.X - p11.X);
-  // числитель 1
+  // йІ«йіҐмј 1
   Ca := (p12.Y - p11.Y) * (p21.X - p11.X) - (p21.Y - p11.Y) * (p12.X - p11.X);
-  // числитель 2
+  // йІ«йіҐмј 2
   Cb := (p21.Y - p11.Y) * (p21.X - p22.X) - (p21.Y - p22.Y) * (p21.X - p11.X);
 
-  // если числители и знаменатель = 0, прямые совпадают
+  // жІ«иЎ·йІ«йіҐмЁ иЎ§оЎ¬ж® ж¬ј = 0, а±їнјҐ пЈЇбҐ 
   if (Z = 0) and (Ca = 0) and (Cb = 0) then
   begin
     Result := False;
     Exit;
   end
   else
-  // если знаменатель = 0, прямые параллельны
+  // жІ«иЎ§оЎ¬ж® ж¬ј = 0, а±їнјҐ аЎ°б¬«ж¬јо»Ќ
   if Z = 0 then
   begin
     Result := False;
@@ -621,31 +594,30 @@ begin
   Ua := Ca / Z;
   Ub := Cb / Z;
 
-  // если 0<=Ua<=1 и 0<=Ub<=1, точка пересечения в пределах отрезков
+  // жІ«и °<=Ua<=1 и °<=Ub<=1, пёЄаЎЇж±ҐжёҐо©ї вЎЇжҐҐмЎµ пі°жЁЄпўЌ
   if (0 <= Ua) and (Ua <= 1) and (0 <= Ub) and (Ub <= 1) then
   begin
     p.X := round(p11.X + (p12.X - p11.X) * Ub);
     p.Y := round(p11.Y + (p12.Y - p11.Y) * Ub);
     Result := True;
   end
-  // иначе точка пересечения за пределами отрезков
+  // й® еЎІпёЄаЎЇж±ҐжёҐо©ї и  а±Ґе¦«б­Ё пі°жЁЄпўЌ
   else
     Result := False;
 end;
 
-//функция пересечения прямой и окружности
-function IsLinetoCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
+//о«¶йї а¦°жІҐж®Ё а±їнЇ© иЎ®л±із®®иЌЉfunction IsLinetoCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
 var
   d, K, b: Single;
 begin
 
   K := (LP1.Y - LP2.Y) / (LP1.X - LP2.X);
   b := LP1.Y - K * LP1.X;
-  //находим дискременант квадратного уравнения
+  //оЎµпҐЁмЎ¤йІЄж­ҐоЎ­ лЈ е± оЇЈоЎібЈ­ж®Ё
 
   d := (power((2 * K * b - 2 * CC.X - 2 * CC.Y * K), 2) - (4 + 4 * K * K) * (b * b - cr * cr + CC.X * CC.X + CC.Y * CC.Y - 2 * CC.Y * b));
-  //если он равен 0, уравнение не имеет решения
-  //Прямая и окружность не пересекаются
+  //жІ«иЎ®нЎ°бЈҐн °, бЈ­ж®ЁеЎ­еЎЁн¦Ґ ж№Ґо©ї
+  //Р°нЎї иЎ®л±із®® оҐ а¦°жІҐлЎѕ
   if (d < 0) then
   begin
     Result := -1;
@@ -653,12 +625,11 @@ begin
     PIL2 := point(0, 0);
     Exit;
   end;
-  //иначе находим корни квадратного уравнения
+  //й® еЎ­б¶®е©¬ лЇ°оЁ лЈ е± оЇЈоЎібЈ­ж®Ё
 
   PIL1.X := round((-(2 * K * b - 2 * CC.X - 2 * CC.Y * K) - sqrt(d)) / (2 + 2 * K * K));
   PIL2.X := round((-(2 * K * b - 2 * CC.X - 2 * CC.Y * K) + sqrt(d)) / (2 + 2 * K * K));
-  //если абсциссы точек совпадают, то пересечение только в одной точке
-  //Прямая и окружность имеют точку касания
+  //жІ«иЎ вІ¶йІ± пёҐкЎ±пЈЇбҐ , оЎЇж±ҐжёҐо©Ґ п¬јл® вЎ®е®®йЎІпёЄеЌЉ  //Р°нЎї иЎ®л±із®® й­Ґ пёЄ лЎ±б®Ё
   if (PIL1.X = PIL2.X) then
   begin
     Result := 0;
@@ -667,7 +638,7 @@ begin
 
     Exit;
   end;
-  //иначе находим ординаты точек пересечения
+  //й® еЎ­б¶®е©¬ п±¤й®  пёҐкЎЇж±ҐжёҐо©ї
   PIL1.Y := round(K * PIL1.X + b);
   PIL2.Y := round(K * PIL2.X + b);
   Result := 1;
@@ -701,123 +672,53 @@ end;
 
 constructor TGLGizmoExUIArrowLine.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
+  Pickable := False;
 end;
-
-procedure TGLGizmoExUIArrowLine.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
-end;
-
 
 constructor TGLGizmoExUIDisk.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUIDisk.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 constructor TGLGizmoExUISphere.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUISphere.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 constructor TGLGizmoExUIPolyGon.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUIPolyGon.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 constructor TGLGizmoExUIFrustrum.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUIFrustrum.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 constructor TGLGizmoExUITorus.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUITorus.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 constructor TGLGizmoExUILines.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUILines.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
+  Pickable := False;
 end;
 
 constructor TGLGizmoExUIFlatText.Create(AOwner: TComponent);
 begin
-  FNoZWrite := True;
   inherited;
-end;
-
-procedure TGLGizmoExUIFlatText.BuildList(var rci: TRenderContextInfo);
-begin
-  if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
-  else
-    rci.GLStates.Enable(stDepthTest);
-  inherited;
+  ObjectStyle := ObjectStyle + [osStreamDraw];
+  Pickable := False;
 end;
 
 //------------------------------------------------------------------------------
@@ -843,6 +744,106 @@ begin
   FVisibleInfoLabelsColor.Color := clrYellow;
   FVisibleInfoLabelsColorChanged := False;
 
+  // Materials
+  FMaterialOfLines := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialOfLines do
+  begin
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.LineProperties.Enabled := True;
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialRed := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialRed do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Color := clrRed;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialLime := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialLime do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Color := clrLime;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialBlue := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialBlue do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Color := clrBlue;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialYellow := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialYellow do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Color := clrYellow;
+    FixedFunction.FrontProperties.Diffuse.Alpha := 0.01;
+    FixedFunction.FaceCulling := fcNoCull;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialInvisible := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialInvisible do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Alpha := 0.0;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialForPicking := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialForPicking do
+  begin
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialRotation1 := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialRotation1 do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Alpha := 0.0;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
+  FMaterialRotation2 := GetInternalMaterialLibrary.Materials.Add;
+  with FMaterialRotation2 do
+  begin
+    FixedFunction.FrontProperties.Diffuse.Alpha := 0.0;
+    FixedFunction.MaterialOptions := [moIgnoreFog, moNoLighting];
+    FixedFunction.BlendingMode := bmTransparency;
+    FixedFunction.DepthProperties.DepthTest := False;
+    FixedFunction.DepthProperties.DepthClamp := True;
+    FixedFunction.DepthProperties.ZFar := 0.0;
+  end;
+
   FUIBaseGizmo := TGLDummyCube.Create(Self);
 
   //BoundingBoxes...
@@ -855,7 +856,7 @@ begin
   FInterfaceRender := TGLDirectOpenGL(FUIBaseGizmo.AddNewChild(TGLDirectOpenGL));
   FInterfaceRender.OnRender := InterfaceRender;
 
-  FSelectedObjects := TGLPickList.Create(psMinDepth);
+  FSelectedObjects := TPersistentObjectList.Create;
 
   //For None
   FUIRootSelect := FUIRootHelpers.AddNewChild(TGLDummyCube); // for None
@@ -868,8 +869,9 @@ begin
   FUISelectLineX := TGLGizmoExUILines(FUIRootSelect.addnewChild(TGLGizmoExUILines));
   with FUISelectLineX do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(1, 0, 0);
@@ -881,8 +883,9 @@ begin
   FUISelectLineY := TGLGizmoExUILines(FUIRootSelect.addnewChild(TGLGizmoExUILines));
   with FUISelectLineY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrLime;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 1, 0);
@@ -894,8 +897,9 @@ begin
   FUISelectLineZ := TGLGizmoExUILines(FUIRootSelect.addnewChild(TGLGizmoExUILines));
   with FUISelectLineZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrBlue;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 0, 1);
@@ -905,14 +909,15 @@ begin
   end;
 
 
-  //For movement
+  // For movement
 
 
   FUIMovementLineX := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineX do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0.2, 0, 0);
     AddNode(1, 0, 0);
@@ -920,10 +925,9 @@ begin
     FUIICMovementLineX := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineX do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       Up.SetVector(1, 0, 0);
       Height := 0.8;
       ApexHeight := 8;
@@ -934,9 +938,8 @@ begin
     FUIMovementArrowX := TGLGizmoExUIArrowLine(addnewChild(TGLGizmoExUIArrowLine));
     with FUIMovementArrowX do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrRed;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialRed.Name;
 
       TurnAngle := 90;
       Height := 0.3;
@@ -955,17 +958,17 @@ begin
   FUIMovementLineY := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrLime;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0.2, 0);
     AddNode(0, 1, 0);
     FUIMovementArrowY := TGLGizmoExUIArrowLine(addnewChild(TGLGizmoExUIArrowLine));
     with FUIMovementArrowY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrLime;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialLime.Name;
 
       PitchAngle := 90;
       Height := 0.3;
@@ -983,9 +986,10 @@ begin
     FUIICMovementLineY := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       Up.SetVector(0, 1, 0);
       Height := 0.8;
       ApexHeight := 8;
@@ -998,17 +1002,17 @@ begin
   FUIMovementLineZ := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrBlue;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0.2);
     AddNode(0, 0, 1);
     FUIMovementArrowZ := TGLGizmoExUIArrowLine(addnewChild(TGLGizmoExUIArrowLine));
     with FUIMovementArrowZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrBlue;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialBlue.Name;
 
       RollAngle := 90;
       Height := 0.3;
@@ -1026,9 +1030,10 @@ begin
     FUIICMovementLineZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       Up.SetVector(0, 0, 1);
       Height := 0.8;
       ApexHeight := 8;
@@ -1041,7 +1046,8 @@ begin
   FUIMovementLineXY := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineXY do
   begin
-    LineWidth := 1;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
@@ -1057,10 +1063,10 @@ begin
     FUIMovementPlaneXY := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIMovementPlaneXY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0.01;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialYellow.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       addNode(0.01, 0.39, 0);
       addNode(0.39, 0.39, 0);
       addNode(0.39, 0.01, 0);
@@ -1070,22 +1076,24 @@ begin
     FUIICMovementLineXY := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineXY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       Up.SetVector(1, 0, 0);
       Height := 0.35;
       ApexHeight := 8;
       BaseDepth := 0.1;
       BaseWidth := 0.35;
-      position.SetPoint(0.25, 0.25, 0);
+      Position.SetPoint(0.25, 0.25, 0);
     end;
   end;
 
   FUIMovementLineXZ := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineXZ do
   begin
-    LineWidth := 1;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
@@ -1100,10 +1108,10 @@ begin
     FUIMovementPlaneXZ := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIMovementPlaneXZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0.01;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialYellow.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       addNode(0.39, 0, 0.01);
       addNode(0.39, 0, 0.39);
       addNode(0.01, 0, 0.39);
@@ -1113,9 +1121,10 @@ begin
     FUIICMovementLineXZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineXZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       pitchAngle := 90;
       Height := 0.35;
       ApexHeight := 8;
@@ -1128,7 +1137,8 @@ begin
   FUIMovementLineYZ := TGLGizmoExUILines(FUIRootMovement.addnewChild(TGLGizmoExUILines));
   with FUIMovementLineYZ do
   begin
-    LineWidth := 1;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     NodesAspect := lnaInvisible;
     SplineMode := lsmSegments;
@@ -1143,10 +1153,10 @@ begin
     FUIMovementPlaneYZ := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIMovementPlaneYZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0.01;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialYellow.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       addNode(0, 0.01, 0.39);
       addNode(0, 0.39, 0.39);
       addNode(0, 0.39, 0);
@@ -1156,9 +1166,10 @@ begin
     FUIICMovementLineYZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICMovementLineYZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
+
       Up.SetVector(0, 0, 1);
       Height := 0.35;
       ApexHeight := 8;
@@ -1170,27 +1181,23 @@ begin
 
   //Rotate
 
-
   FUIRotateLineXY := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineXY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrGray50;
     SplineMode := lsmCubicSpline;
     NodesAspect := lnaInvisible;
-    LineWidth := 1;
     Nodes.AddXYArc(1, 1, 0, 360, 24, AffineVectorMake(0, 0, 0));
     FUIRotateDiskXY := TGLGizmoExUIDisk(addnewChild(TGLGizmoExUIDisk));
     with FUIRotateDiskXY do
     begin
       OuterRadius := 1;
       Slices := 18;
-      with Material do
-      begin
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clrGray50;
-        FrontProperties.Diffuse.Alpha := 0;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
     end;
     FUIICRotateSphereXY := TGLGizmoExUISphere(addnewChild(TGLGizmoExUISphere));
     with FUIICRotateSphereXY do
@@ -1199,23 +1206,20 @@ begin
       Stop := 180;
       Slices := 18;
       TurnAngle := -90;
-      with Material do
-      begin
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clryellow;
-        FrontProperties.Diffuse.Alpha := 0;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
     end;
   end;
 
   FUIRotateLineXZ := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineXZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrGray75;
     SplineMode := lsmCubicSpline;
     NodesAspect := lnaInvisible;
-    LineWidth := 1;
     Nodes.AddXYArc(1.3, 1.3, 0, 360, 24, AffineVectorMake(0, 0, 0));
     FUIICRotateTorusXZ := TGLGizmoExUITorus(addnewChild(TGLGizmoExUITorus));
     with FUIICRotateTorusXZ do
@@ -1224,25 +1228,22 @@ begin
       Sides := 0;
       MajorRadius := 1.3;
       MinorRadius := 0.07;
-      with material do
-      begin
-        FaceCulling := fcNoCull;
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clrYellow;
-        FrontProperties.Diffuse.Alpha := 0;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
     end;
   end;
 
   FUIRotateLineX := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineX do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
-    //Для исправления проблем с прозрачностью
-    lineColor.Alpha := 0.1;
-    Nodecolor.Color := clrred;
-    Nodecolor.Alpha := 0.1;
+    //Е« йІЇбЈ«ж®Ё а±®в¬ҐмЎ± а±®и± оЇ±
+    LineColor.Alpha := 0.1;
+    DefaultNodeColor.Color := clrRed;
+    DefaultNodeColor.Alpha := 0.1;
     TurnAngle := 90;
     SplineMode := lsmCubicSpline;
     NodesAspect := lnaInvisible;
@@ -1257,8 +1258,9 @@ begin
   FUIRotateLineArrowX := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineArrowX do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0.4, 0, 0);
@@ -1272,14 +1274,9 @@ begin
     sweepangle := 10;
     StartAngle := 0;
     TurnAngle := 90;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrred;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation1.Name;
+    Pickable := False;
   end;
 
   FUIRotateDiskX2 := TGLGizmoExUIDisk(FUIRootRotate.addnewChild(TGLGizmoExUIDisk));
@@ -1290,14 +1287,9 @@ begin
     sweepangle := 10;
     StartAngle := 0;
     TurnAngle := 90;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrred;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation2.Name;
+    Pickable := False;
   end;
 
   FUIICRotateTorusX := TGLGizmoExUITorus(FUIRootRotate.addnewChild(TGLGizmoExUITorus));
@@ -1308,28 +1300,24 @@ begin
     MajorRadius := 1;
     MinorRadius := 0.07;
     TurnAngle := 90;
-    with material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrYellow;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialYellow.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   FUIRotateLineY := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
-    //Для исправления проблем с прозрачностью
+    //Е« йІЇбЈ«ж®Ё а±®в¬ҐмЎ± а±®и± оЇ±
     lineColor.Alpha := 0.1;
-    Nodecolor.Color := clrLime;
-    Nodecolor.Alpha := 0.1;
+    DefaultNodeColor.Color := clrLime;
+    DefaultNodeColor.Alpha := 0.1;
 
     SplineMode := lsmCubicSpline;
     NodesAspect := lnaInvisible;
-    LineWidth := 1;
     Nodes.AddXYArc(1, 1, 0, 360, 24, AffineVectorMake(0, 0, 0));
     PitchAngle := 90;
     for I := 0 to 24 do
@@ -1341,8 +1329,9 @@ begin
   FUIRotateLineArrowY := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineArrowY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrLime;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 0.4, 0);
@@ -1356,14 +1345,9 @@ begin
     sweepangle := 20;
     startangle := 0;
     PitchAngle := 90;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrLime;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation1.Name;
+    Pickable := False;
   end;
 
   FUIRotateDiskY2 := TGLGizmoExUIDisk(FUIRootRotate.addnewChild(TGLGizmoExUIDisk));
@@ -1374,14 +1358,9 @@ begin
     sweepangle := 20;
     startangle := 0;
     PitchAngle := 90;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrLime;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation2.Name;
+    Pickable := False;
   end;
 
   FUIICRotateTorusY := TGLGizmoExUITorus(FUIRootRotate.addnewChild(TGLGizmoExUITorus));
@@ -1392,28 +1371,24 @@ begin
     MajorRadius := 1;
     MinorRadius := 0.07;
     PitchAngle := 90;
-    with material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrYellow;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialInvisible.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   FUIRotateLineZ := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
-    //Для исправления проблем с прозрачностью
+    //Е« йІЇбЈ«ж®Ё а±®в¬ҐмЎ± а±®и± оЇ±
     lineColor.Alpha := 0.1;
-    Nodecolor.Color := clrBlue;
-    Nodecolor.Alpha := 0.1;
+    DefaultNodeColor.Color := clrBlue;
+    DefaultNodeColor.Alpha := 0.1;
 
     SplineMode := lsmCubicSpline;
     NodesAspect := lnaInvisible;
-    LineWidth := 1;
     Nodes.AddXYArc(1, 1, 0, 360, 24, AffineVectorMake(0, 0, 0));
     for I := 0 to 24 do
     begin
@@ -1424,8 +1399,9 @@ begin
   FUIRotateLineArrowZ := TGLGizmoExUILines(FUIRootRotate.addnewChild(TGLGizmoExUILines));
   with FUIRotateLineArrowZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrBlue;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 0, 0.4);
@@ -1438,15 +1414,9 @@ begin
     Slices := 18;
     SweepAngle := 10;
     StartAngle := 0;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrBlue;
-      BackProperties.Diffuse.Color := clrBlue;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation1.Name;
+    Pickable := False;
   end;
 
   FUIRotateDiskZ2 := TGLGizmoExUIDisk(FUIRootRotate.addnewChild(TGLGizmoExUIDisk));
@@ -1456,14 +1426,9 @@ begin
     Slices := 18;
     SweepAngle := 10;
     StartAngle := 0;
-    with Material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrBlue;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRotation2.Name;
+    Pickable := False;
   end;
 
   FUIICRotateTorusZ := TGLGizmoExUITorus(FUIRootRotate.addnewChild(TGLGizmoExUITorus));
@@ -1473,14 +1438,9 @@ begin
     Sides := 0;
     MajorRadius := 1;
     MinorRadius := 0.07;
-    with material do
-    begin
-      FaceCulling := fcNoCull;
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrYellow;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialInvisible.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   FUIRootRotateAxisLabel := FUIRootRotate.AddNewChild(TGLDummyCube);
@@ -1530,8 +1490,9 @@ begin
   FUIScaleLineX := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineX do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(1, 0, 0);
@@ -1539,24 +1500,24 @@ begin
     FUIICScaleLineX := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineX do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       Up.SetVector(1, 0, 0);
       Height := 0.5;
       ApexHeight := 8;
       BaseDepth := 0.15;
       BaseWidth := 0.15;
-      position.SetPoint(0.8, 0, 0);
+      Position.SetPoint(0.8, 0, 0);
     end;
   end;
 
   FUIScaleLineY := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrLime;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 1, 0);
@@ -1564,10 +1525,9 @@ begin
     FUIICScaleLineY := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       Up.SetVector(0, 1, 0);
       Height := 0.5;
       ApexHeight := 8;
@@ -1580,8 +1540,9 @@ begin
   FUIScaleLineZ := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     LineColor.Color := clrBlue;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0, 0);
     AddNode(0, 0, 1);
@@ -1589,10 +1550,9 @@ begin
     FUIICScaleLineZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       Up.SetVector(0, 0, 1);
       Height := 0.5;
       ApexHeight := 8;
@@ -1605,10 +1565,11 @@ begin
   FUIScaleLineXY := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineXY do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     SplineMode := lsmSegments;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0.7, 0);
     AddNode(0.35, 0.35, 0);
@@ -1629,13 +1590,8 @@ begin
     FUIScalePlaneXY := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIScalePlaneXY do
     begin
-      with Material do
-      begin
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clrYellow;
-        FrontProperties.Diffuse.Alpha := 0.01;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialYellow.Name;
       AddNode(0, 0.7, 0);
       AddNode(0.35, 0.35, 0);
       AddNode(0.7, 0, 0);
@@ -1647,10 +1603,9 @@ begin
     FUIICScaleLineXY := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineXY do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       rollAngle := 45;
       turnAngle := 45;
       Height := 0.8;
@@ -1664,10 +1619,11 @@ begin
   FUIScaleLineXZ := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineXZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     SplineMode := lsmSegments;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0.7, 0, 0);
     AddNode(0.35, 0, 0.35);
@@ -1688,13 +1644,9 @@ begin
     FUIScalePlaneXZ := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIScalePlaneXZ do
     begin
-      with Material do
-      begin
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clrYellow;
-        FrontProperties.Diffuse.Alpha := 0;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       AddNode(0.7, 0, 0);
       AddNode(0.35, 0, 0.35);
       AddNode(0, 0, 0.7);
@@ -1706,10 +1658,9 @@ begin
     FUIICScaleLineXZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineXZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       turnAngle := -45;
       pitchAngle := 90;
       Height := 0.8;
@@ -1723,10 +1674,11 @@ begin
   FUIScaleLineYZ := TGLGizmoExUILines(FUIRootScale.addnewChild(TGLGizmoExUILines));
   with FUIScaleLineYZ do
   begin
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialOfLines.Name;
     Options := [loUseNodeColorForLines];
     SplineMode := lsmSegments;
     LineColor.Color := clrRed;
-    LineWidth := 1;
     NodesAspect := lnaInvisible;
     AddNode(0, 0.7, 0);
     AddNode(0, 0.35, 0.35);
@@ -1748,13 +1700,9 @@ begin
     FUIScalePlaneYZ := TGLGizmoExUIPolyGon(addnewChild(TGLGizmoExUIPolyGon));
     with FUIScalePlaneYZ do
     begin
-      with Material do
-      begin
-        MaterialOptions := [moNoLighting];
-        BlendingMode := bmTransparency;
-        FrontProperties.Diffuse.Color := clrYellow;
-        FrontProperties.Diffuse.Alpha := 0;
-      end;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       AddNode(0, 0.7, 0);
       AddNode(0, 0.35, 0.35);
       AddNode(0, 0, 0.7);
@@ -1766,10 +1714,9 @@ begin
     FUIICScaleLineYZ := TGLGizmoExUIFrustrum(AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineYZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       pitchAngle := 45;
       Height := 0.8;
       ApexHeight := 8;
@@ -1782,13 +1729,9 @@ begin
   FUIScalePlaneXYZ := TGLGizmoExUIPolyGon(FUIRootScale.addnewChild(TGLGizmoExUIPolyGon));
   with FUIScalePlaneXYZ do
   begin
-    with Material do
-    begin
-      MaterialOptions := [moNoLighting];
-      BlendingMode := bmTransparency;
-      FrontProperties.Diffuse.Color := clrYellow;
-      FrontProperties.Diffuse.Alpha := 0;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialInvisible.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
     AddNode(0.5, 0, 0);
     AddNode(0, 0.5, 0);
     AddNode(0, 0, 0.5);
@@ -1797,10 +1740,9 @@ begin
     FUIICScaleLineXYZ := TGLGizmoExUIFrustrum(FUIRootScale.AddNewChild(TGLGizmoExUIFrustrum));
     with FUIICScaleLineXYZ do
     begin
-      Material.MaterialOptions := [moNoLighting];
-      Material.BlendingMode := bmTransparency;
-      Material.FrontProperties.Diffuse.Color := clrYellow;
-      Material.FrontProperties.Diffuse.Alpha := 0;
+      MaterialLibrary := GetInternalMaterialLibrary;
+      LibMaterialName := FMaterialInvisible.Name;
+      CustomPickingMaterial := FMaterialForPicking.Name;
       turnAngle := -45;
       rollAngle := 35;
       Height := 0.5;
@@ -1818,11 +1760,9 @@ begin
     Stacks := 2;
     Radius := 0.04;
     Position.X := 1;
-    with material do
-    begin
-      MaterialOptions := [moNoLighting];
-      FrontProperties.Diffuse.Color := clrRed;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialRed.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   FUIScaleArrowY := TGLGizmoExUISphere(FUIRootScale.addnewChild(TGLGizmoExUISphere));
@@ -1832,15 +1772,9 @@ begin
     Stacks := 2;
     Radius := 0.04;
     Position.Y := 1;
-    with material do
-    begin
-      //FaceCulling := fcNoCull;
-      // FrontProperties.PolygonMode := pmFill;
-      // BackProperties.PolygonMode := pmFill;
-      MaterialOptions := [moNoLighting];
-      FrontProperties.Diffuse.Color := clrLime;
-      //FrontProperties.Emission.Color := clrLime;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialLime.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   FUIScaleArrowZ := TGLGizmoExUISphere(FUIRootScale.addnewChild(TGLGizmoExUISphere));
@@ -1850,15 +1784,9 @@ begin
     Stacks := 2;
     Radius := 0.04;
     Position.Z := 1;
-    with material do
-    begin
-      // FaceCulling := fcNoCull;
-      //FrontProperties.PolygonMode := pmFill;
-      //BackProperties.PolygonMode := pmFill;
-      MaterialOptions := [moNoLighting];
-      FrontProperties.Diffuse.Color := clrBlue;
-      //FrontProperties.Emission.Color := clrBlue;
-    end;
+    MaterialLibrary := GetInternalMaterialLibrary;
+    LibMaterialName := FMaterialBlue.Name;
+    CustomPickingMaterial := FMaterialForPicking.Name;
   end;
 
   //For Axis
@@ -2050,12 +1978,12 @@ begin
     FShowBoundingBox := AValue;
 end;
 
-function TGLGizmoEx.GetPickList: TGLPickList;
+function TGLGizmoEx.GetPickList: TPersistentObjectList;
 begin
   Result := FSelectedObjects;
 end;
 
-procedure TGLGizmoEx.SetPickList(aValue: TGLPickList);
+procedure TGLGizmoEx.SetPickList(aValue: TPersistentObjectList);
 var
   I: Integer;
 begin
@@ -2065,7 +1993,7 @@ begin
       FSelectedObjects.Clear;
       for I := 0 to aValue.Count - 1 do
         with aValue do
-          FSelectedObjects.AddHit(hit[I], SubObjects[I], NearDistance[I], FarDistance[I]);
+          FSelectedObjects.Add(Items[I]);
       UpdateGizmo();
     end
     else
@@ -2074,12 +2002,12 @@ end;
 
 procedure TGLGizmoEx.SetSelectedObj(const Value: TGLBaseSceneObject);
 begin
-  if FSelectedObjects.FindObject(Value) <> -1 then
+  if FSelectedObjects.IndexOf(Value) <> -1 then
     Exit;
   if (FSelectedObjects.Count - 1 >= 0) or (Value = nil) then
     ClearSelection;
   if Value <> nil then
-    FSelectedObjects.AddHit(Value, nil, 0, 0);
+    FSelectedObjects.Add(Value);
   UpdateGizmo();
 end;
 
@@ -2090,25 +2018,25 @@ begin
     Result := nil
   else
   if FSelectedObjects.Count - 1 >= 0 then
-    Result := TGLBaseSceneObject(FSelectedObjects.Hit[0]);
+    Result := TGLBaseSceneObject(FSelectedObjects[0]);
 end;
 
 procedure TGLGizmoEx.AddObjToSelectionList(Obj: TGLBaseSceneObject);
 begin
-  if (Obj <> nil) and (FSelectedObjects.FindObject(Obj) = -1) then
-    FSelectedObjects.AddHit(Obj, nil, 0, 0);
+  if (Obj <> nil) and (FSelectedObjects.IndexOf(Obj) = -1) then
+    FSelectedObjects.Add(Obj);
 end;
 
 procedure TGLGizmoEx.RemoveObjFromSelectionList(Obj: TGLBaseSceneObject);
 var
   I: Integer;
 begin
-  I := FSelectedObjects.FindObject(Obj);
+  I := FSelectedObjects.IndexOf(Obj);
   if I <> -1 then
     FSelectedObjects.Delete(I);
 end;
 
-procedure TGLGizmoEx.AssignPickList(aList: TGLPickList; RemoveObj: Boolean = False);
+procedure TGLGizmoEx.AssignPickList(aList: TPersistentObjectList; RemoveObj: Boolean = False);
 
   function WithOutGizmoElements(obj: TGLBasesceneobject): Boolean;
   begin
@@ -2124,15 +2052,15 @@ var
 begin
   for I := 0 to aList.Count - 1 do
     with aList do
-      if WithOutGizmoElements(TGLBaseSceneObject(Hit[I])) then
+      if WithOutGizmoElements(TGLBaseSceneObject(Items[I])) then
         if not RemoveObj then
         begin
-          if (Hit[I] <> nil) and (FSelectedObjects.FindObject(Hit[I]) = -1) then
-            FSelectedObjects.AddHit(Hit[I], SubObjects[I], NearDistance[I], FarDistance[I]);
+          if (Items[I] <> nil) and (FSelectedObjects.IndexOf(Items[I]) = -1) then
+            FSelectedObjects.Add(Items[I]);
         end
         else
-        if (Hit[I] <> nil) and (FSelectedObjects.FindObject(Hit[I]) <> -1) then
-          FSelectedObjects.Delete(FSelectedObjects.FindObject(Hit[I]));
+        if (Items[I] <> nil) and (FSelectedObjects.IndexOf(Items[I]) <> -1) then
+          FSelectedObjects.Delete(FSelectedObjects.IndexOf(Items[I]));
 end;
 
 
@@ -2153,9 +2081,9 @@ begin
   if (not Enabled) or (RootGizmo = nil) or (RootObjects = nil) then
     Exit;
 
-  //здесь происходит отображение на канве прямых и коружностей
-  //в зависимости от режыма
-  //жалко GLCanvas очень ограничен ато бы развернулся...
+  //иҐҐ а±®йІµпҐЁ пі®в± з¦­йҐ о  лЎ­гҐ а±їнјµ иЎЄп±із®®ж©Ќ
+  //вЎ§бЈЁй­®иЎ® ж§»н Ќ
+  //зЎ«л® GLCanvas пёҐој п¤°б®Ёж­ бі® в» бЁўж±­мІї...
   if FShowMultiSelecting then
   begin
     glc := TGLCanvas.Create(Viewer.Width, Viewer.Height);
@@ -2179,14 +2107,13 @@ begin
             else
               cLine(glc, FSelectionRec[I], fcursorPos);
 
-          //glc.PenWidth толщина прямоугольника
-          //необходимо что бы показать пользователю
-          //что начало фигуры состыловалась с концом :)
-          //Сервис мутерфукер! \m/
-          //суть этого куска кода в том что когда курсор находится
-          //поблизости от начала массива рисуется квадратик
-          //показывающий пользователю что он правильно тычит
-          //это зделано что бы пользователь не раздражался постоянному протыкиванию
+          //glc.PenWidth п¬№й®  а±їнЇідЇ«о©ЄНЉ          //о¦®в¶®е©¬оЎ·оЎЎ аЇЄбЁ  аЇ«иЇўбіҐмѕЌ
+          //оЎ­бё м® й¤і пІІмЇўб¬   лЇ­п¬ :)
+          //ТҐг©± нґІж±ґл¦°! \m/
+          // п¤® лґ±л  лЇ¤аЎў п¬ оЎЄп¤¤аЎЄп° оЎµпҐЁ
+          //аЇЎм©§пІІиЎ® оЎ·б¬  нЎ±йЈ  йІіжі± лЈ е± йЄЌ
+          //аЇЄбЁ»гЎѕй© аЇ«иЇўбіҐмѕ оЎ®нЎЇбЈЁмЅ­оЎІйІЌ
+          //оЎ§е¦«б®® оЎЎ аЇ«иЇўбіҐмј оҐ бЁ¤б§ мІї аЇ±-оЇ¬ а±®л©ўб®Ё
           if High(FSelectionRec) > 0 then
             with FSelectionRec[Low(FSelectionRec)] do
               if IsInRange(CurPosX, X + 2, X - 2) and IsInRange(CurPosY, Y + 2, Y - 2) then
@@ -2195,9 +2122,9 @@ begin
         end;
         gsrLasso:
         begin
-          //суть этого куска кода в том что рисутеся масив лайнов
-          //в котором рисутеся дополнительный лайн образованный точками
-          //начала и конца массива
+          // п¤® лґ±л  лЇ¤аЎў п¬ оЎ°йІіжІї нЎ±йў мЎ©оЇў
+          //вЎЄпі®п¬ йІіжІї еЇЇп¬­йіҐмЅ­йЎ«бЄ­ пў°бЁ®гЎ­ој© пёЄб­Ё
+          //оЎ·б¬  иЎЄп®¶аЎ¬бІ±йЈ 
           for I := Low(FSelectionRec) to High(FSelectionRec) do
             if I <> High(FSelectionRec) then
               cLine(glc, FSelectionRec[I], FSelectionRec[I + 1])
@@ -2246,54 +2173,6 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
     end;
   end;
 
-  //Тест#12 Результат положытелен, но вычесления ведутся в 2д
-  //Это не приемлемо, данное направление замарожено до лучших времен
-  //
-  procedure ShowText(const Text: UnicodeString; Position: Tvector; Scale: TVector; Color: Tvector);
-  var
-    FLayout: TGLTextLayout;
-    FAlignment: TAlignment;
-    wm:   TMatrix;
-    I, J: Integer;
-  begin
-    if not Assigned(FLabelFont) and (Text = '') then
-      Exit;
-    rci.GLStates.Enable(stDepthTest);
-    FLayout := GLCrossPlatform.tlCenter;
-    FAlignment := taCenter;
-
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    wm := rci.PipelineTransformation.ViewMatrix;
-
-    TransposeMatrix(wm);
-
-    for I := 0 to 2 do
-      for J := 0 to 2 do
-        if I = J then
-          wm[I, J] := 1
-        else
-          wm[I, J] := 0;
-    GL.LoadMatrixf(@wm);
-
-    rci.GLStates.PolygonMode := pmFill;
-    GL.Scalef(Scale[0], Scale[1], Scale[2]);
-    GL.Translatef(Position[0], Position[1], Position[2]);
-
-
-    if Color[3] <> 1 then
-    begin
-      rci.GLStates.Enable(stBlend);
-      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    end;
-    rci.GLStates.Disable(stDepthTest);
-    rci.GLStates.Disable(stCullFace);
-
-    FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
-    GL.PopMatrix;
-
-  end;
-
 var
   I: Integer;
 begin
@@ -2302,6 +2181,9 @@ begin
 
   if FShowBoundingBox and (FSelectedObjects.Count - 1 >= 0) then
   begin
+    rci.PipelineTransformation.ModelViewMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.LoadMatrices;
+
     rci.GLStates.Disable(stLighting);
     if FAntiAliasedLines then
       rci.GLStates.Enable(stLineSmooth);
@@ -2311,16 +2193,11 @@ begin
     else
       rci.GLStates.LineWidth := 1;
 
-    GL.ColorMaterial(GL_FRONT, GL_EMISSION);
-    rci.GLStates.Enable(stColorMaterial);
-
     GL.Color4fv(@FBoundingBoxColor.Color);
 
     for I := 0 to FSelectedObjects.Count - 1 do
-      ShowBoundingBox(TGLBaseSceneObject(FSelectedObjects.Hit[I]));
-
+      ShowBoundingBox(TGLBaseSceneObject(FSelectedObjects.Items[I]));
   end;
-  rci.GLStates.Disable(stColorMaterial);
 end;
 
 procedure TGLGizmoEx.SetReferenceCoordSystem(aValue: TGLGizmoExReferenceCoordinateSystem);
@@ -2352,32 +2229,7 @@ begin
   if FAntiAliasedLines <> aValue then
   begin
     FAntiAliasedLines := aValue;
-    FUISelectLineX.AntiAliased := aValue;
-    FUISelectLineY.AntiAliased := aValue;
-    FUISelectLineZ.AntiAliased := aValue;
-
-    FUIMovementLineX.AntiAliased := aValue;
-    FUIMovementLineY.AntiAliased := aValue;
-    FUIMovementLineZ.AntiAliased := aValue;
-    FUIMovementLineXY.AntiAliased := aValue;
-    FUIMovementLineXZ.AntiAliased := aValue;
-    FUIMovementLineYZ.AntiAliased := aValue;
-
-    FUIRotateLineX.AntiAliased := aValue;
-    FUIRotateLineY.AntiAliased := aValue;
-    FUIRotateLineZ.AntiAliased := aValue;
-    FUIrotateLineXY.AntiAliased := aValue;
-    FUIRotateLineXZ.AntiAliased := aValue;
-    FUIRotateLineArrowX.AntiAliased := aValue;
-    FUIRotateLineArrowY.AntiAliased := aValue;
-    FUIRotateLineArrowZ.AntiAliased := aValue;
-
-    FUIScaleLineX.AntiAliased := aValue;
-    FUIScaleLineY.AntiAliased := aValue;
-    FUIScaleLineZ.AntiAliased := aValue;
-    FUIScaleLineXY.AntiAliased := aValue;
-    FUIScaleLineXZ.AntiAliased := aValue;
-    FUIScaleLineYZ.AntiAliased := aValue;
+    FMaterialOfLines.FixedFunction.LineProperties.Smooth := aValue;
   end;
 end;
 
@@ -2400,19 +2252,13 @@ begin
   Disk2Angle := 0;
   if aAngle = 0 then
   begin
-    fchangerate := NullVector;
+    FChangeRate := NullVector;
     FUIRotateDiskX.SweepAngle := 0;
     FUIRotateDiskY.SweepAngle := 0;
     FUIRotateDiskZ.SweepAngle := 0;
-    FUIRotateDiskX.Material.FrontProperties.Diffuse.Alpha := 0;
-    FUIRotateDiskY.Material.FrontProperties.Diffuse.Alpha := 0;
-    FUIRotateDiskZ.Material.FrontProperties.Diffuse.Alpha := 0;
     FUIRotateDiskX2.SweepAngle := 0;
     FUIRotateDiskY2.SweepAngle := 0;
     FUIRotateDiskZ2.SweepAngle := 0;
-    FUIRotateDiskX2.Material.FrontProperties.Diffuse.Alpha := 0;
-    FUIRotateDiskY2.Material.FrontProperties.Diffuse.Alpha := 0;
-    FUIRotateDiskZ2.Material.FrontProperties.Diffuse.Alpha := 0;
   end
   else
   if (abs(aAngle) > 0) and (abs(aAngle) <= 360) then
@@ -2468,26 +2314,28 @@ begin
     gaX:
     begin
       FUIRotateDiskX.SweepAngle := Disk1Angle;
-      FUIRotateDiskX.Material.FrontProperties.Diffuse.Alpha := Disk1alpha;
       FUIRotateDiskX2.SweepAngle := Disk2Angle;
-      FUIRotateDiskX2.Material.FrontProperties.Diffuse.Alpha := Disk2alpha;
+      FMaterialRotation1.FixedFunction.FrontProperties.Diffuse.Color := clrRed;
+      FMaterialRotation2.FixedFunction.FrontProperties.Diffuse.Color := clrRed;
     end;
     gaY:
     begin
       FUIRotateDiskY.SweepAngle := Disk1Angle;
-      FUIRotateDiskY.Material.FrontProperties.Diffuse.Alpha := Disk1alpha;
       FUIRotateDiskY2.SweepAngle := Disk2Angle;
-      FUIRotateDiskY2.Material.FrontProperties.Diffuse.Alpha := Disk2alpha;
+      FMaterialRotation1.FixedFunction.FrontProperties.Diffuse.Color := clrLime;
+      FMaterialRotation2.FixedFunction.FrontProperties.Diffuse.Color := clrLime;
     end;
     gaZ:
     begin
       FUIRotateDiskZ.SweepAngle := Disk1Angle;
-      FUIRotateDiskZ.Material.FrontProperties.Diffuse.Alpha := Disk1alpha;
       FUIRotateDiskZ2.SweepAngle := Disk2Angle;
-      FUIRotateDiskZ2.Material.FrontProperties.Diffuse.Alpha := Disk2alpha;
+      FMaterialRotation1.FixedFunction.FrontProperties.Diffuse.Color := clrBlue;
+      FMaterialRotation2.FixedFunction.FrontProperties.Diffuse.Color := clrBlue;
     end;
   end;
 
+  FMaterialRotation1.FixedFunction.FrontProperties.Diffuse.Alpha := Disk1alpha;
+  FMaterialRotation2.FixedFunction.FrontProperties.Diffuse.Alpha := Disk2alpha;
 end;
 
 procedure TGLGizmoEx.SetBoundingBoxColor(const AValue: TGLColor);
@@ -2569,87 +2417,35 @@ end;
 
 procedure TGLGizmoEx.SetNoZWrite(const Value: Boolean);
 begin
-  if fNoZWrite <> Value then
+  if FNoZWrite <> Value then
   begin
-    fNoZWrite := Value;
+    FNoZWrite := Value;
 
-    //For Select
-    FUISelectLineX.NoZWrite := Value;
-    FUISelectLineY.NoZWrite := Value;
-    FUISelectLineZ.NoZWrite := Value;
+    if Value then
+    begin
+      with FMaterialOfLines.FixedFunction.DepthProperties do
+      begin
+        DepthTest := False;
+        DepthClamp := True;
+        ZFar := 0.0;
+      end;
+    end
+    else
+    begin
+      with FMaterialOfLines.FixedFunction.DepthProperties do
+      begin
+        DepthTest := True;
+        DepthClamp := False;
+        ZFar := 1.0;
+      end;
+    end;
 
-    //For Move
-    FUIMovementLineX.NoZWrite := Value;
-    FUIMovementLineY.NoZWrite := Value;
-    FUIMovementLineZ.NoZWrite := Value;
-    FUIMovementLineXY.NoZWrite := Value;
-    FUIMovementLineXZ.NoZWrite := Value;
-    FUIMovementLineYZ.NoZWrite := Value;
-    FUIMovementArrowX.NoZWrite := Value;
-    FUIMovementArrowY.NoZWrite := Value;
-    FUIMovementArrowZ.NoZWrite := Value;
-    FUIMovementPlaneXY.NoZWrite := Value;
-    FUIMovementPlaneXZ.NoZWrite := Value;
-    FUIMovementPlaneYZ.NoZWrite := Value;
-    FUIICMovementLineX.NoZWrite := Value;
-    FUIICMovementLineY.NoZWrite := Value;
-    FUIICMovementLineZ.NoZWrite := Value;
-    FUIICMovementLineXY.NoZWrite := Value;
-    FUIICMovementLineXZ.NoZWrite := Value;
-    FUIICMovementLineYZ.NoZWrite := Value;
-
-    //ForRotate
-    FUIRotateLineX.NoZWrite := Value;
-    FUIRotateLineY.NoZWrite := Value;
-    FUIRotateLineZ.NoZWrite := Value;
-    FUIRotateLineXY.NoZWrite := Value;
-    FUIRotateLineXZ.NoZWrite := Value;
-    FUIICRotateTorusX.NoZWrite := Value;
-    FUIICRotateTorusY.NoZWrite := Value;
-    FUIICRotateTorusZ.NoZWrite := Value;
-    FUIICRotateTorusXZ.NoZWrite := Value;
-    FUIRotateDiskXY.NoZWrite := Value;
-    FUIRotateDiskX.NoZWrite := Value;
-    FUIRotateDiskY.NoZWrite := Value;
-    FUIRotateDiskZ.NoZWrite := Value;
-    FUIRotateDiskX2.NoZWrite := Value;
-    FUIRotateDiskY2.NoZWrite := Value;
-    FUIRotateDiskZ2.NoZWrite := Value;
-    FUIICRotateSphereXY.NoZWrite := Value;
-    FUIRotateLineArrowX.NoZWrite := Value;
-    FUIRotateLineArrowY.NoZWrite := Value;
-    FUIRotateLineArrowZ.NoZWrite := Value;
-    FUIRotateAxisLabelX.NoZWrite := Value;
-    FUIRotateAxisLabelY.NoZWrite := Value;
-    FUIRotateAxisLabelZ.NoZWrite := Value;
-
-    //ForScale
-    FUIScaleArrowX.NoZWrite := Value;
-    FUIScaleArrowY.NoZWrite := Value;
-    FUIScaleArrowZ.NoZWrite := Value;
-    FUIScaleLineX.NoZWrite := Value;
-    FUIScaleLineY.NoZWrite := Value;
-    FUIScaleLineZ.NoZWrite := Value;
-    FUIScaleLineXY.NoZWrite := Value;
-    FUIScaleLineYZ.NoZWrite := Value;
-    FUIScaleLineXZ.NoZWrite := Value;
-    FUIICScaleLineX.NoZWrite := Value;
-    FUIICScaleLineY.NoZWrite := Value;
-    FUIICScaleLineZ.NoZWrite := Value;
-    FUIICScaleLineXY.NoZWrite := Value;
-    FUIICScaleLineXZ.NoZWrite := Value;
-    FUIICScaleLineYZ.NoZWrite := Value;
-    FUIICScaleLineXYZ.NoZWrite := Value;
-    FUIScalePlaneXY.NoZWrite := Value;
-    FUIScalePlaneXZ.NoZWrite := Value;
-    FUIScalePlaneYZ.NoZWrite := Value;
-    FUIScalePlaneXYZ.NoZWrite := Value;
-
-
-    FUIAxisLabelX.NoZWrite := Value;
-    FUIAxisLabelY.NoZWrite := Value;
-    FUIAxisLabelZ.NoZWrite := Value;
-    FUIVisibleInfoLabels.NoZWrite := Value;
+    FMaterialRed.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
+    FMaterialLime.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
+    FMaterialBlue.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
+    FMaterialYellow.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
+    FMaterialInvisible.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
+    FMaterialForPicking.FixedFunction.DepthProperties.Assign(FMaterialOfLines.FixedFunction.DepthProperties);
   end;
 end;
 
@@ -2670,7 +2466,7 @@ end;
 
 procedure TGLGizmoEx.MultiSelMouseDown(X, Y: Integer);
 begin
-  //устанавливаются координаты отсчета
+  //б® г¬ЁгЎѕ лЇ®е©­бі» пі±жі 
   flastcursorPos := Point(X, Y);
   fcursorPos := point(X, Y);
 
@@ -2683,16 +2479,13 @@ end;
 
 procedure TGLGizmoEx.MultiSelMouseMove(X, Y: Integer);
 begin
-  //тут происходит самое интересное
+  // а±®йІµпҐЁ б­®еЎЁоіҐжІ­пҐЌ
 
-  //суть условия в том что какие быто нибыло расчеты начнутся в том случае
-  //если будет нажата кнопка мыши не будет рендерится канва
-  //и расстояние от начала нажатия кнопки мышы будет больше 10и
-  //старт расчетов множественного выбора
-
+  // мЇўйї вЎІп¬ оЎЄб«ЁеЎЎоЎ­йў»м® бІ·жі» оЎ·оґІ вЎІп¬ мґ·бҐЌ
+  //жІ«иЎЎе¦І оЎ¦бі  л®®а«  нјёиЎ­еЎЎе¦І ж®¤ж±Ё лЎ­г Ќ
+  //иЎ°бІ±-йҐ пІ оЎ·б¬  оЎ¦біЁ л®®а«Ё нјё вґ¤жІ вЇ«е ±0иЌЉ  //б±І бІ·жі®вЎ¬оЇ¦жІІг¦­оЇЈоЎўвЇ°НЉ
   if Moving and not FShowMultiSelecting and
-    //растояние между двумя точками что бы отсчет сразу не стартовал
-    (Dist(point(X, Y), flastcursorPos) > 10) then
+    //бІІ-йҐ н¦¦еі еЈінї пёЄб­Ё оЎЎ пі±жІ бЁі оҐ б±ІпЈ лЌЉ    (Dist(point(X, Y), flastcursorPos) > 10) then
   begin
     FShowMultiSelecting := True;
     if fSelectionRegion = gsrFence then
@@ -2705,10 +2498,9 @@ begin
   if FShowMultiSelecting then
   begin
     fcursorPos := point(X, Y);
-    //при перемещении мыши каждые 20 создается лайн
-    if (fSelectionRegion = gsrLasso) and
-      //растяние между двумя точками
-      //что бы выглядело как в 3DStudioMaxe
+    //а±Ё а¦°ж­Ґж®ЁиЎ¬иЎЄб§¤е І0 пЁ¤б¦І мЎ©нЌЉ    if (fSelectionRegion = gsrLasso) and
+      //бІІо©Ґ н¦¦еі еЈінї пёЄб­Ё
+      //оЎЎ гјЈнЂ¤ж¬® лЎЄ в іDStudioMaxe
       (Dist(point(X, Y), flastcursorPos) > 20) then
     begin
       flastcursorPos := point(X, Y);
@@ -2720,7 +2512,7 @@ end;
 
 procedure TGLGizmoEx.MultiSelMouseUp(X, Y: Integer);
 
-  procedure SelectAssignMode(pick: TGLPickList);
+  procedure SelectAssignMode(pick: TPersistentObjectList);
   begin
     if not FCanRemoveObjFromSelectionList and not FCanAddObjtoSelectionList then
       AssignPickList(pick)
@@ -2734,7 +2526,7 @@ procedure TGLGizmoEx.MultiSelMouseUp(X, Y: Integer);
 
 var
   I, J:   Integer;
-  pick:   TGLPickList;
+  pick:   TPersistentObjectList;
   p1, p2: TGLPoint;
   Line:   TGLGizmoExSelRec;
   LastCurPosX, LastCurPosY, CurPosX, CurPosY: Single;
@@ -2782,12 +2574,12 @@ begin
 
   if (fSelectionRegion = gsrFence) and (high(FSelectionRec) > 0) then
     with FSelectionRec[Low(FSelectionRec)] do
-      //проверяем на нахождение рядом с точкой
-      //, для того что бы не тыкать и не искать центр
+      //а±®г¦°ж¬ о  оЎµп§¤ж®ЁеЎ°еЇ¬  пёЄп©Ќ
+      //, е¬ї п¤® оЎЎ оҐ лЎІ иЎ­еЎЁлЎІ ж®І
       if IsInRange(CurPosX, X + 2, X - 2) and IsInRange(CurPosY, Y + 2, Y - 2) then
       begin
         FShowMultiSelecting := False;
-        //соеденяем начало и конец, логически.
+        //п¦¤ж®їж¬ оЎ·б¬® иЎЄп®Ґ, мЇЈйёҐлЁ®
         SetLength(FSelectionRec, Length(FSelectionRec) + 1);
         FSelectionRec[high(FSelectionRec)] := point(X, Y);
 
@@ -2820,7 +2612,7 @@ begin
           end;
         if Assigned(onSelect) then
           onSelect(self, FSelectedObjects);
-        //после всех действий обнуляем массив
+        //аЇ±мҐ гІҐ е¦©г©© пў­нЂҐмЎ¬бІ±йўЌ
         SetLength(line, 0);
         SetLength(FSelectionRec, 0);
       end;
@@ -3015,12 +2807,11 @@ begin
   end;
 end;
 
-function TGLGizmoEx.InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer): TGLPickList;
+function TGLGizmoEx.InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer): TPersistentObjectList;
 
-  procedure AddObjectToPicklList(const root: TGLBaseSceneObject; PickList: TGLPickList; X, Y: Integer);
+  procedure AddObjectToPicklList(const root: TGLBaseSceneObject; PickList: TPersistentObjectList; X, Y: Integer);
   var
     t:    Integer;
-    dist: Single;
     rayStart, rayVector, iPoint, iNormal: TVector;
   begin
     SetVector(rayStart, Viewer.Camera.AbsolutePosition);
@@ -3031,11 +2822,8 @@ function TGLGizmoEx.InternalGetPickedObjects(const x1, y1, x2, y2: Integer; cons
       begin
         if (root[t].RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal)) and
           (VectorDotProduct(rayVector, iNormal) < 0) then
-          if PickList.FindObject(root[t]) = -1 then
-          begin
-            dist := VectorLength(VectorSubtract(iPoint, rayStart));
-            PickList.AddHit(root[t], nil, dist, 0);
-          end;
+          if PickList.IndexOf(root[t]) = -1 then
+            PickList.Add(root[t]);
         AddObjectToPicklList(root[t], PickList, X, Y);
       end;
   end;
@@ -3052,14 +2840,14 @@ begin
 
     pmRayCast:
     begin
-      Result := TGLPickList.Create(psMinDepth);
+      Result := TPersistentObjectList.Create;
       maxX := MaxInteger(x1, x2);
       maxY := MaxInteger(Y1, Y2);
       minX := MinInteger(x1, x2);
       minY := MinInteger(Y1, Y2);
       for J := minY to maxY do
         for I := minX to maxX do
-          //разргрузка, что бы приложение не подвысало :)
+          //бЁ°д±іи« , оЎЎ а±ЁмЇ¦ж®ЁеЎ­еЎЇпҐўб¬® :)
           if (I mod 4 = 0) or (J mod 4 = 0) then
             AddObjectToPicklList(RootObjects, Result, I, J);
       AddObjectToPicklList(RootGizmo, Result, round((x1 + x2) * 0.5), round((y1 + y2) * 0.5));
@@ -3222,7 +3010,7 @@ begin
   end;
 end;
 
-procedure TGLGizmoEx.ActivatingElements(PickList: TGLPickList);
+procedure TGLGizmoEx.ActivatingElements(PickList: TPersistentObjectList);
 
   procedure ActlightRotateLine(const line: TGLLines; const dark: TVector);
   var
@@ -3402,7 +3190,7 @@ begin
 
       if FUIRootMovement.Visible then
       begin
-        if hit[I] = FUIICMovementLineXY then
+        if Items[I] = FUIICMovementLineXY then
         begin
           AssingOpertion(gopMove, gaXY);
           ActlightObject(FUIMovementPlaneXY);
@@ -3414,7 +3202,7 @@ begin
           Break;
         end;
 
-        if hit[I] = FUIICMovementLineXZ then
+        if Items[I] = FUIICMovementLineXZ then
         begin
           AssingOpertion(gopMove, gaXZ);
           Actlightobject(FUIMovementPlaneXZ);
@@ -3425,7 +3213,8 @@ begin
           ActlightText(FUIAxisLabelZ);
           Break;
         end;
-        if hit[I] = FUIICMovementLineYZ then
+
+        if Items[I] = FUIICMovementLineYZ then
         begin
           AssingOpertion(gopMove, gaYZ);
           Actlightobject(FUIMovementPlaneYZ);
@@ -3436,21 +3225,24 @@ begin
           ActlightText(FUIAxisLabelZ);
           Break;
         end;
-        if hit[I] = FUIICMovementLineX then
+
+        if Items[I] = FUIICMovementLineX then
         begin
           AssingOpertion(gopMove, gaX);
           ActlightLine(FUIMovementLineX);
           ActlightText(FUIAxisLabelX);
           Break;
         end;
-        if hit[I] = FUIICMovementLineY then
+
+        if Items[I] = FUIICMovementLineY then
         begin
           AssingOpertion(gopMove, gaY);
           ActlightLine(FUIMovementLineY);
           ActlightText(FUIAxisLabelY);
           Break;
         end;
-        if hit[I] = FUIICMovementLineZ then
+
+        if Items[I] = FUIICMovementLineZ then
         begin
           AssingOpertion(gopMove, gaZ);
           ActlightLine(FUIMovementLineZ);
@@ -3461,7 +3253,7 @@ begin
 
       if FUIRootRotate.Visible then
       begin
-        if hit[I] = FUIICRotateTorusX then
+        if Items[I] = FUIICRotateTorusX then
         begin
           AssingOpertion(gopRotate, gaX);
           ActlightRotateLine(FUIRotateLineX, clrgray50);
@@ -3469,7 +3261,8 @@ begin
           DeActlightTextRotate(FUIRotateAxisLabelX, clrRed);
           Break;
         end;
-        if hit[I] = FUIICRotateTorusY then
+
+        if Items[I] = FUIICRotateTorusY then
         begin
           AssingOpertion(gopRotate, gaY);
           ActlightRotateLine(FUIRotateLineY, clrgray50);
@@ -3478,7 +3271,7 @@ begin
           Break;
         end;
 
-        if hit[I] = FUIICRotateTorusZ then
+        if Items[I] = FUIICRotateTorusZ then
         begin
           AssingOpertion(gopRotate, gaZ);
           ActlightRotateLine(FUIRotateLineZ, clrgray50);
@@ -3487,7 +3280,7 @@ begin
           Break;
         end;
 
-        if hit[I] = FUIICRotateSphereXY then
+        if Items[I] = FUIICRotateSphereXY then
         begin
           AssingOpertion(gopRotate, gaXY);
           ActlightObject(FUIRotateDiskXY);
@@ -3495,10 +3288,9 @@ begin
           DeActlightTextRotate(FUIRotateAxisLabelY, clrLime);
           ActlightRotateArrowLine(FUIRotateLineArrowX, clrRed);
           ActlightRotateArrowLine(FUIRotateLineArrowY, clrLime);
-          Break;
         end;
 
-        if hit[I] = FUIICRotateTorusXZ then
+        if Items[I] = FUIICRotateTorusXZ then
         begin
           AssingOpertion(gopRotate, gaXZ);
           ActlightLine(FUIRotateLineXZ);
@@ -3506,34 +3298,33 @@ begin
           DeActlightTextRotate(FUIRotateAxisLabelZ, clrBlue);
           ActlightRotateArrowLine(FUIRotateLineArrowX, clrRed);
           ActlightRotateArrowLine(FUIRotateLineArrowZ, clrBlue);
-          Break;
         end;
       end;
 
       if FUIRootScale.Visible then
       begin
-        if hit[I] = FUIICScaleLineX then
+        if Items[I] = FUIICScaleLineX then
         begin
           AssingOpertion(gopScale, gaX);
           ActlightLine(FUIScaleLineX);
           ActlightText(FUIAxisLabelX);
           Break;
         end;
-        if hit[I] = FUIICScaleLineY then
+        if Items[I] = FUIICScaleLineY then
         begin
           AssingOpertion(gopScale, gaY);
           ActlightLine(FUIScaleLineY);
           ActlightText(FUIAxisLabelY);
           Break;
         end;
-        if hit[I] = FUIICScaleLineZ then
+        if Items[I] = FUIICScaleLineZ then
         begin
           AssingOpertion(gopScale, gaZ);
           ActlightLine(FUIScaleLineZ);
           ActlightText(FUIAxisLabelZ);
           Break;
         end;
-        if hit[I] = FUIICScaleLineXY then
+        if Items[I] = FUIICScaleLineXY then
         begin
           AssingOpertion(gopScale, gaXY);
           Actlightobject(FUIScalePlaneXY);
@@ -3542,7 +3333,7 @@ begin
           ActlightText(FUIAxisLabelY);
           Break;
         end;
-        if hit[I] = FUIICScaleLineXZ then
+        if Items[I] = FUIICScaleLineXZ then
         begin
           AssingOpertion(gopScale, gaXZ);
           Actlightobject(FUIScalePlaneXZ);
@@ -3551,7 +3342,7 @@ begin
           ActlightText(FUIAxisLabelZ);
           Break;
         end;
-        if hit[I] = FUIICScaleLineYZ then
+        if Items[I] = FUIICScaleLineYZ then
         begin
           AssingOpertion(gopScale, gaYZ);
           Actlightobject(FUIScalePlaneYZ);
@@ -3560,7 +3351,7 @@ begin
           ActlightText(FUIAxisLabelZ);
           Break;
         end;
-        if hit[I] = FUIICScaleLineXYZ then
+        if Items[I] = FUIICScaleLineXYZ then
         begin
           AssingOpertion(gopScale, gaXYZ);
           Actlightobject(FUIScalePlaneXYZ);
@@ -3581,7 +3372,7 @@ end;
 
 procedure TGLGizmoEx.ViewerMouseMove(const X, Y: Integer);
 var
-  pickList:  TGLPickList;
+  pickList:  TPersistentObjectList;
   mousePos:  TVector;
   includeCh: Boolean;
 
@@ -3592,7 +3383,7 @@ var
     begin
       if parent = rootobjects then
         Exit;
-      Result := FSelectedObjects.FindObject(parent) = -1;
+      Result := FSelectedObjects.IndexOf(parent) = -1;
     end;
   end;
 
@@ -3634,33 +3425,33 @@ var
     end;
     SubtractVector(vec1, vec2);
 
-    //Контроль улетания обьекта в бесконечность
+    //Л®оі°п¬ј м¦Іб®Ё пўјж«ІаЎў в¦±лЇ­жё­пІІ
     if (VectorLength(Vec1) > 5) then
       Exit;// prevents NAN problems
 
     case SelAxis of
-      gaX: fchangerate[0] := fchangerate[0] + vec1[0];
-      gaY: fchangerate[1] := fchangerate[1] + vec1[1];
-      gaZ: fchangerate[2] := fchangerate[2] + vec1[2];
+      gaX: FChangeRate[0] := FChangeRate[0] + vec1[0];
+      gaY: FChangeRate[1] := FChangeRate[1] + vec1[1];
+      gaZ: FChangeRate[2] := FChangeRate[2] + vec1[2];
       gaXY:
       begin
-        fchangerate[0] := fchangerate[0] + vec1[0];
-        fchangerate[1] := fchangerate[1] + vec1[1];
+        FChangeRate[0] := FChangeRate[0] + vec1[0];
+        FChangeRate[1] := FChangeRate[1] + vec1[1];
       end;
       gaYZ:
       begin
-        fchangerate[2] := fchangerate[2] + vec1[2];
-        fchangerate[1] := fchangerate[1] + vec1[1];
+        FChangeRate[2] := FChangeRate[2] + vec1[2];
+        FChangeRate[1] := FChangeRate[1] + vec1[1];
       end;
       gaXZ:
       begin
-        fchangerate[0] := fchangerate[0] + vec1[0];
-        fchangerate[2] := fchangerate[2] + vec1[2];
+        FChangeRate[0] := FChangeRate[0] + vec1[0];
+        FChangeRate[2] := FChangeRate[2] + vec1[2];
       end;
     end;
 
     for I := 0 to FSelectedObjects.Count - 1 do
-      with TGLBaseSceneObject(FSelectedObjects.Hit[I]) do
+      with TGLBaseSceneObject(FSelectedObjects.Items[I]) do
       begin
 
         IncludeCh := True;
@@ -3709,14 +3500,16 @@ var
       my := Y;
     end;
 
-
-    vec1[2] := 0;
+    if Abs(vec1[0]) > Abs(vec1[1]) then
+      vec1[2] := vec1[0]
+    else
+      vec1[2] := vec1[1];
     vec1[3] := 0;
 
     case SelAxis of
-      gaX: fchangerate[1] := fchangerate[1] + vec1[1];
-      gaY: fchangerate[0] := fchangerate[0] + vec1[0];
-      gaZ: fchangerate[1] := fchangerate[1] + vec1[1];
+      gaX: FChangeRate[1] := FChangeRate[1] + vec1[1];
+      gaY: FChangeRate[0] := FChangeRate[0] + vec1[0];
+      gaZ: FChangeRate[1] := FChangeRate[1] + vec1[1];
     end;
 
     for I := 0 to FSelectedObjects.Count - 1 do
@@ -3725,17 +3518,17 @@ var
 
         case Ord(FReferenceCoordSystem) of
           0: v := FUIRootHelpers.AbsolutePosition;
-          1: v := TGLBaseSceneObject(Hit[I]).AbsolutePosition;
+          1: v := TGLBaseSceneObject(Items[I]).AbsolutePosition;
         end;
 
         IncludeCh := True;
 
         if not CanChangeWithChildren
-          and (TGLBaseSceneObject(Hit[I]).parent <> RootObjects)
+          and (TGLBaseSceneObject(Items[I]).parent <> RootObjects)
           and (FSelectedObjects.Count - 1 > 0) then
-          IncludeCh := FindParent(TGLBaseSceneObject(Hit[I]).parent);
+          IncludeCh := FindParent(TGLBaseSceneObject(Items[I]).Parent);
 
-        pmat := TGLBaseSceneObject(Hit[I]).parent.InvAbsoluteMatrix;
+        pmat := TGLBaseSceneObject(Items[I]).Parent.InvAbsoluteMatrix;
         SetVector(pmat[3], NullHmgPoint);
 
         if IncludeCh then
@@ -3743,39 +3536,31 @@ var
             gaX:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
-
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[1]);
             end;
             gaY:
             begin
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
             gaZ:
             begin
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[1]);
             end;
             gaXY:
             begin
-              rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
-              rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
+              rotV := AffineVectorMake(VectorSubtract(Viewer.Camera.AbsolutePosition, v));
+              rotV := VectorCrossProduct(rotV, Viewer.Camera.AbsoluteAffineUp);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[1]);
+              rotV := AffineVectorMake(VectorSubtract(Viewer.Camera.AbsolutePosition, v));
+              rotV := VectorCrossProduct(rotV, AffineVectorMake(Viewer.Camera.AbsoluteRight));
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[0]);
             end;
             gaXZ:
             begin
-              rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
-              rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
-            end;
-            gaYZ:
-            begin
-              rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[1]);
-              rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1[0]);
+              rotV := AffineVectorMake(VectorSubtract(Viewer.Camera.AbsolutePosition, v));
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Items[I]), rotV, AffineVectorMake(v), vec1[2]);
             end;
           end;
       end;
@@ -3805,24 +3590,24 @@ var
       gaY:
       begin
         MakeVector(vec1, 0, quantizedMousePos[1], 0);
-        makeVector(vec2, 0, quantizedMousePos2[1], 0);
+        MakeVector(vec2, 0, quantizedMousePos2[1], 0);
       end;
       gaZ:
       begin
         MakeVector(vec1, 0, 0, quantizedMousePos[2]);
-        makeVector(vec2, 0, 0, quantizedMousePos2[2]);
+        MakeVector(vec2, 0, 0, quantizedMousePos2[2]);
       end;
 
       gaXY:
       begin
         MakeVector(vec1, quantizedMousePos[0], quantizedMousePos[1], 0);
-        makeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[1], 0);
+        MakeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[1], 0);
       end;
 
       gaXYZ:
       begin
         MakeVector(vec1, quantizedMousePos[0], quantizedMousePos[1], quantizedMousePos[2]);
-        makeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[1], quantizedMousePos2[2]);
+        MakeVector(vec2, quantizedMousePos2[0], quantizedMousePos2[1], quantizedMousePos2[2]);
       end
 
       else
@@ -3838,30 +3623,30 @@ var
       Exit;// prevents NAN problems
 
     case SelAxis of
-      gaX: fchangerate[0] := fchangerate[0] + vec1[0];
-      gaY: fchangerate[1] := fchangerate[1] + vec1[1];
-      gaZ: fchangerate[2] := fchangerate[2] + vec1[2];
+      gaX: FChangeRate[0] := FChangeRate[0] + vec1[0];
+      gaY: FChangeRate[1] := FChangeRate[1] + vec1[1];
+      gaZ: FChangeRate[2] := FChangeRate[2] + vec1[2];
       gaXY:
       begin
-        fchangerate[0] := fchangerate[0] + vec1[0];
-        fchangerate[1] := fchangerate[1] + vec1[1];
+        FChangeRate[0] := FChangeRate[0] + vec1[0];
+        FChangeRate[1] := FChangeRate[1] + vec1[1];
       end;
       gaYZ:
       begin
-        fchangerate[2] := fchangerate[2] + vec1[2];
-        fchangerate[1] := fchangerate[1] + vec1[1];
+        FChangeRate[2] := FChangeRate[2] + vec1[2];
+        FChangeRate[1] := FChangeRate[1] + vec1[1];
       end;
       gaXZ:
       begin
-        fchangerate[0] := fchangerate[0] + vec1[0];
-        fchangerate[2] := fchangerate[2] + vec1[2];
+        FChangeRate[0] := FChangeRate[0] + vec1[0];
+        FChangeRate[2] := FChangeRate[2] + vec1[2];
       end;
       gaXYZ:
-        fchangerate := VectorAdd(fchangerate, AffineVectorMake(vec1));
+        FChangeRate := VectorAdd(FChangeRate, AffineVectorMake(vec1));
     end;
 
     for t := 0 to FSelectedObjects.Count - 1 do
-      with TGLBaseSceneObject(FSelectedObjects.Hit[t]) do
+      with TGLBaseSceneObject(FSelectedObjects.Items[t]) do
       begin
         IncludeCh := True;
 
@@ -3892,8 +3677,8 @@ var
   {$ENDIF}
   begin
   {$IFDEF MSWINDOWS}
-    //Процедура для перевода курсора из начала в конец
-    //без потерь операций над обьектом
+    //Р°п·Ґеґ°аЎ¤мї а¦°жЈ®е  лґ°п±  й§ оЎ·б¬  вЎЄп®Ґ
+    //в¦§ аЇІж±ј п°Ґб·ЁйЎ­б¤ пўјж«Іп¬Ќ
     GetWindowRect(GetDesktopWindow, R);
     GetWindowRect(viewer.Handle, VR);
     GLGetCursorPos(cp);
@@ -3906,7 +3691,7 @@ var
       else
       begin
         lastMousePos := MouseWorldPos(X, r.Top + 3 - vr.Top);
-        //введено что бы обьект не дергался
+        //гЈҐе¦­оЎ·оЎЎ пўјж«І оҐ е¦°дЎ«
         mousepos := lastMousePos;
       end;
     end;
@@ -3957,7 +3742,7 @@ begin
   if not FShowMultiSelecting then
   begin
 
-    if (FSelectedObjects.Count - 1 >= 0) and (SelAxis <> gaNone) and moving then
+    if (FSelectedObjects.Count > 0) and (SelAxis <> gaNone) and moving then
     begin
       mousePos := MouseWorldPos(X, Y);
       //moving object...
@@ -3971,10 +3756,10 @@ begin
           LoopCursorMoving;
         OpeRotate(X, Y);
         if (SelAxis = gax) or (SelAxis = gaz) then
-          SetAngleDisk(fchangerate[1])
+          SetAngleDisk(FChangeRate[1])
         else
         if SelAxis = gaY then
-          SetAngleDisk(fchangerate[0]);
+          SetAngleDisk(FChangeRate[0]);
 
       end
       else if Operation = gopScale then
@@ -3992,7 +3777,7 @@ begin
     end;
 
     Assert(FViewer <> nil, 'Viewer not Assigned to gizmo');
-    picklist := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);//Viewer.buffer.GetPickedObjects(rect(x-1, y-1, x+1, y+1), 8);
+    picklist := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);
     ActivatingElements(picklist);
     picklist.Free;
   end;
@@ -4026,7 +3811,7 @@ procedure TGLGizmoEx.ViewerMouseDown(const X, Y: Integer);
   end;
 
 var
-  pick: TGLPickList;
+  pick: TPersistentObjectList;
   I:    Integer;
   gotPick: Boolean;
 begin
@@ -4043,34 +3828,30 @@ begin
   gotPick := False;
 
   for I := 0 to pick.Count - 1 do
-    if (pick.Hit[I] is TGLGizmoExUIDisk) or
-      (pick.Hit[I] is TGLGizmoExUISphere) or
-      (pick.Hit[I] is TGLGizmoExUIPolyGon) or
-      (pick.Hit[I] is TGLGizmoExuITorus) or
-      (pick.Hit[I] is TGLGizmoExUIFrustrum) or
-      (pick.Hit[I] is TGLGizmoExUIArrowLine) or
-      (pick.Hit[I] is TGLGizmoExUIFlatText) or
-      (pick.Hit[I] is TGLGizmoExUILines) then
+    if (pick.Items[I] is TGLGizmoExUIDisk) or
+      (pick.Items[I] is TGLGizmoExUISphere) or
+      (pick.Items[I] is TGLGizmoExUIPolyGon) or
+      (pick.Items[I] is TGLGizmoExuITorus) or
+      (pick.Items[I] is TGLGizmoExUIFrustrum) or
+      (pick.Items[I] is TGLGizmoExUIArrowLine) then
     begin
       gotPick := True;
-      case fOperation of
-        gopRotate:
+      if fOperation = gopRotate then
+      begin
+        if (pick.Items[I] = FUIICRotateTorusX) then
         begin
-          if (pick.Hit[I] = FUIICRotateTorusX) then
-          begin
-            SetInitialDiskPostition(FUIICRotateTorusX, FUIRotateDiskx);
-            SetInitialDiskPostition(FUIICRotateTorusX, FUIRotateDiskx2);
-          end;
-          if (pick.Hit[I] = FUIICRotateTorusY) then
-          begin
-            SetInitialDiskPostition(FUIICRotateTorusY, FUIRotateDiskY);
-            SetInitialDiskPostition(FUIICRotateTorusY, FUIRotateDiskY2);
-          end;
-          if (pick.Hit[I] = FUIICRotateTorusZ) then
-          begin
-            SetInitialDiskPostition(FUIICRotateTorusZ, FUIRotateDiskZ);
-            SetInitialDiskPostition(FUIICRotateTorusZ, FUIRotateDiskZ2);
-          end;
+          SetInitialDiskPostition(FUIICRotateTorusX, FUIRotateDiskx);
+          SetInitialDiskPostition(FUIICRotateTorusX, FUIRotateDiskx2);
+        end;
+        if (pick.Items[I] = FUIICRotateTorusY) then
+        begin
+          SetInitialDiskPostition(FUIICRotateTorusY, FUIRotateDiskY);
+          SetInitialDiskPostition(FUIICRotateTorusY, FUIRotateDiskY2);
+        end;
+        if (pick.Items[I] = FUIICRotateTorusZ) then
+        begin
+          SetInitialDiskPostition(FUIICRotateTorusZ, FUIRotateDiskZ);
+          SetInitialDiskPostition(FUIICRotateTorusZ, FUIRotateDiskZ2);
         end;
       end;
     end;
@@ -4079,16 +3860,16 @@ begin
   begin
     for I := 0 to pick.Count - 1 do
 
-      if (pick.Hit[I] <> FInterfaceRender) and
-        (pick.Hit[I] <> FInternalRender) and not (pick.Hit[I] is TGLGizmoExUISphere)
-        and not (pick.Hit[I] is TGLGizmoExUIPolyGon)
-        and not (pick.Hit[I] is TGLGizmoExuITorus)
-        and not (pick.Hit[I] is TGLGizmoExUIFrustrum)
-        and not (pick.Hit[I] is TGLGizmoExUIArrowLine)
-        and not (pick.Hit[I] is TGLGizmoExUILines)
-        and not (pick.Hit[I] is TGLGizmoExUIFlatText)
-        and not (CheckObjectInExcludeList(TGLBaseSceneObject(pick.hit[I])))
-        and not (CheckClassNameInExcludeList(TGLBaseSceneObject(pick.hit[I]))) then
+      if (pick.Items[I] <> FInterfaceRender) and
+        (pick.Items[I] <> FInternalRender) and not (pick.Items[I] is TGLGizmoExUISphere)
+        and not (pick.Items[I] is TGLGizmoExUIPolyGon)
+        and not (pick.Items[I] is TGLGizmoExuITorus)
+        and not (pick.Items[I] is TGLGizmoExUIFrustrum)
+        and not (pick.Items[I] is TGLGizmoExUIArrowLine)
+        and not (pick.Items[I] is TGLGizmoExUILines)
+        and not (pick.Items[I] is TGLGizmoExUIFlatText)
+        and not (CheckObjectInExcludeList(TGLBaseSceneObject(pick.Items[I])))
+        and not (CheckClassNameInExcludeList(TGLBaseSceneObject(pick.Items[I]))) then
       begin
 
         //Clear list
@@ -4096,14 +3877,14 @@ begin
           ClearSelection
         else
         if (pick.Count - 1 >= 0) and
-          (FSelectedObjects.FindObject(pick.Hit[I]) = -1) then
+          (FSelectedObjects.IndexOf(pick.Items[I]) = -1) then
           if not FCanAddObjToSelectionList and not FCanRemoveObjFromSelectionList then
             ClearSelection;
 
         if not FCanRemoveObjFromSelectionList then
-          AddObjToSelectionList(TGLBaseSceneObject(pick.Hit[I]))
+          AddObjToSelectionList(TGLBaseSceneObject(pick.Items[I]))
         else
-          RemoveObjFromSelectionList(TGLBaseSceneObject(pick.Hit[I]));
+          RemoveObjFromSelectionList(TGLBaseSceneObject(pick.Items[I]));
 
         if Assigned(onSelect) then
           onSelect(self, FSelectedObjects);
@@ -4128,7 +3909,7 @@ end;
 
 procedure TGLGizmoEx.ViewerMouseUp(const X, Y: Integer);
 var
-  pick: TGLPickList;
+  pick: TPersistentObjectList;
 begin
 
   if (not Enabled) or (RootGizmo = nil) or (RootObjects = nil) then
@@ -4139,13 +3920,13 @@ begin
   case fOperation of
     gopRotate: SetAngleDisk(0);
   end;
-  fchangerate := NullVector;
+  FChangeRate := NullVector;
 
   //MassSelection+\-add mass selected obj
   if operation = gopNone then
   begin
     pick := InternalGetPickedObjects(X - 1, Y - 1, X + 1, Y + 1, 8);
-    //очистка списка если кликнули в пустоту
+    //пёЁл  а©±л  жІ«иЎЄм©Єоґ«иЎў аґ±піі
     if not FCanAddObjToSelectionList and not FCanRemoveObjFromSelectionList and (pick.Count = 0) then
       ClearSelection;
 
@@ -4187,9 +3968,9 @@ begin
       OnUpdate(self);
 
     v := VectorMake(0, 0, 0);
-    //устанавливаем гизмо в нужную позицию!
+    //б® г¬ЁгЎҐмЎЈйЁ¬оЎў оґ¦оґѕ аЇ§й·Ё!
     for  I := 0 to FSelectedObjects.Count - 1 do
-      VectorAdd(v, TGLBaseSceneObject(FSelectedObjects.Hit[I]).AbsolutePosition, v);
+      VectorAdd(v, TGLBaseSceneObject(FSelectedObjects.Items[I]).AbsolutePosition, v);
 
     if FSelectedObjects.Count = 1 then
       I := 1
@@ -4207,8 +3988,8 @@ begin
 
     1:
     begin
-      FUIRootHelpers.AbsoluteDirection := TGLBaseSceneObject(FSelectedObjects.Hit[0]).AbsoluteDirection;
-      FUIRootHelpers.AbsoluteUp := TGLBaseSceneObject(FSelectedObjects.Hit[0]).AbsoluteUp;
+      FUIRootHelpers.AbsoluteDirection := TGLBaseSceneObject(FSelectedObjects.Items[0]).AbsoluteDirection;
+      FUIRootHelpers.AbsoluteUp := TGLBaseSceneObject(FSelectedObjects.Items[0]).AbsoluteUp;
     end;
   end;
 
@@ -4336,7 +4117,7 @@ begin
   FSelectedObjects.Clear;
 
   for I := 0 to Result.GizmoObjectCollection.Count - 1 do
-    FSelectedObjects.AddHit(Result.GizmoObjectCollection.Items[I].EffectedObject, nil, 0, 0);
+    FSelectedObjects.Add(Result.GizmoObjectCollection.Items[I].EffectedObject);
 
   UpdateGizmo;
 end;
@@ -4352,7 +4133,7 @@ begin
 
   for I := 0 to Result.GizmoObjectCollection.Count - 1 do
     if not Result.GizmoObjectCollection.Items[I].FReturnObject then
-      FSelectedObjects.AddHit(Result.GizmoObjectCollection.Items[I].EffectedObject, nil, 0, 0);
+      FSelectedObjects.Add(Result.GizmoObjectCollection.Items[I].EffectedObject);
 
   UpdateGizmo;
 end;
@@ -4539,7 +4320,7 @@ end;
 function TGLGizmoExActionHistoryCollection.Add: TGLGizmoExActionHistoryItem;
 begin
   Result := nil;
-  //Если был использован ундо затираем предедущие записи
+  //Ж±мЁ вј« йІЇп¬јиЇўб­ оҐ® иЎІй± ж¬ а±Ґе¦¤йҐ иЎЇйІЁ
   if FItemIndex = Count - 1 then
   begin
     Result := TGLGizmoExActionHistoryItem(inherited Add);
@@ -4552,8 +4333,7 @@ begin
     Result := Items[FItemIndex];
     FItemIndex := FItemIndex + 1;
   end;
-  //Стираем элементы если количествой записей превышено потолка
-  if Count - 1 > MaxCount then
+  //ТІй± ж¬ м¦¬ж®І жІ«иЎЄп¬ЁжІІгЇ© иЎЇйІҐйЎЇжЈ»ж®® аЇІп¬ЄНЉ  if Count - 1 > MaxCount then
   begin
     Delete(0);
     FItemIndex := Count - 1;
@@ -4603,14 +4383,14 @@ begin
   Result.GizmoObjectCollection.DoUndo;
 end;
 
-procedure TGLGizmoExActionHistoryCollection.AddObjects(objs: TGLPickList);
+procedure TGLGizmoExActionHistoryCollection.AddObjects(objs: TPersistentObjectList);
 var
   I: Integer;
 begin
   with Add do
   begin
     for I := 0 to objs.Count - 1 do
-      GizmoObjectCollection.Add.AssignFromObject(TGLBaseSceneObject(objs.Hit[I]));
+      GizmoObjectCollection.Add.AssignFromObject(TGLBaseSceneObject(objs.Items[I]));
   end;
 
 end;
@@ -4622,7 +4402,7 @@ begin
   Add.FObject := obj;
 end;
 
-procedure TGLGizmoExActionHistoryCollection.RemoveObjects(objs: TGLPickList);
+procedure TGLGizmoExActionHistoryCollection.RemoveObjects(objs: TPersistentObjectList);
 var
   I: Integer;
 begin
@@ -4631,11 +4411,11 @@ begin
 
   with Add do
     for I := 0 to objs.Count - 1 do
-      if objs.Hit[I] <> nil then
+      if objs.Items[I] <> nil then
         with GizmoObjectCollection.Add do
         begin
           GizmoTmpRoot := self.GizmoTmpRoot;
-          AssignFromObject(TGLBaseSceneObject(objs.Hit[I]), True);
+          AssignFromObject(TGLBaseSceneObject(objs.Items[I]), True);
         end;
 
   objs.Clear;
