@@ -327,7 +327,7 @@ type
     FCanChangeWithChildren: Boolean;
 
 
-    moving: Boolean;
+    FMoving: Boolean;
     mx, my: Integer;
 
     fcursorPos: TGLPoint;
@@ -845,16 +845,20 @@ begin
   end;
 
   FUIBaseGizmo := TGLDummyCube.Create(Self);
+  FUIBaseGizmo.Pickable := False;
 
   //BoundingBoxes...
   FInternalRender := TGLDirectOpenGL(FUIBaseGizmo.AddNewChild(TGLDirectOpenGL));
   FInternalRender.OnRender := InternalRender;
+  FInternalRender.Pickable := False;
 
   FUIRootHelpers := TGLDummyCube(FUIBaseGizmo.AddNewChild(TGLDummyCube));
+  FUIRootHelpers.Pickable := False;
 
   //Canvas...
   FInterfaceRender := TGLDirectOpenGL(FUIBaseGizmo.AddNewChild(TGLDirectOpenGL));
   FInterfaceRender.OnRender := InterfaceRender;
+  FInterfaceRender.Pickable := False;
 
   FSelectedObjects := TPersistentObjectList.Create;
 
@@ -865,6 +869,13 @@ begin
   FUIRootScale := FUIRootHelpers.AddNewChild(TGLDummyCube);
   FUIRootAxisLabel := FUIRootHelpers.AddNewChild(TGLDummyCube);
   FUIRootVisibleInfoLabels := FUIRootHelpers.AddNewChild(TGLDummyCube);
+
+  FUIRootSelect.Pickable := False;
+  FUIRootMovement.Pickable := False;
+  FUIRootRotate.Pickable := False;
+  FUIRootScale.Pickable := False;
+  FUIRootAxisLabel.Pickable := False;
+  FUIRootVisibleInfoLabels.Pickable := False;
 
   FUISelectLineX := TGLGizmoExUILines(FUIRootSelect.addnewChild(TGLGizmoExUILines));
   with FUISelectLineX do
@@ -2095,10 +2106,14 @@ begin
     CurPosY := fcursorPos.Y;
     with glc do
       case FSelectionRegion of
-        gsrRectangular: FrameRect(LastCurPosX, LastCurPosY, CurPosX, CurPosY);
-        gsrCircular: Ellipse(LastCurPosX, LastCurPosY,
+        gsrRectangular:
+          FrameRect(LastCurPosX, LastCurPosY, CurPosX, CurPosY);
+
+        gsrCircular:
+          Ellipse(LastCurPosX, LastCurPosY,
             MaxFloat(abs(CurPosX - LastCurPosX),
             abs(CurPosY - LastCurPosY)));
+
         gsrFence:
         begin
           for I := Low(FSelectionRec) to High(FSelectionRec) do
@@ -2181,7 +2196,7 @@ begin
 
   if FShowBoundingBox and (FSelectedObjects.Count - 1 >= 0) then
   begin
-    rci.PipelineTransformation.ModelViewMatrix := IdentityHmgMatrix;
+    rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
     rci.PipelineTransformation.LoadMatrices;
 
     rci.GLStates.Disable(stLighting);
@@ -2484,7 +2499,7 @@ begin
   // 쯢鿠⡲ﬠ᫨塡颻쮠Ჷ泻  ⡲ﬠ촷᥍
   //沫衡妲 ᳠ 뮮ૠ ���衭塡妲 殤汨 롭㠍
   //衰Ჱ-饠ﲠᬠ ᳨ 뮮૨ ��� ⴤ沠⯫報0荊  //ᱲ Ჷ泮⡬沲㦭⯰͊
-  if Moving and not FShowMultiSelecting and
+  if FMoving and not FShowMultiSelecting and
     //Ჲ-饠���峠壳���︪᭨  ﳱ沠ᨳ ᱲ덊    (Dist(point(X, Y), flastcursorPos) > 10) then
   begin
     FShowMultiSelecting := True;
@@ -3742,7 +3757,7 @@ begin
   if not FShowMultiSelecting then
   begin
 
-    if (FSelectedObjects.Count > 0) and (SelAxis <> gaNone) and moving then
+    if (FSelectedObjects.Count > 0) and (SelAxis <> gaNone) and FMoving then
     begin
       mousePos := MouseWorldPos(X, Y);
       //moving object...
@@ -3899,7 +3914,7 @@ begin
 
   pick.Free;
 
-  moving := True;
+  FMoving := True;
   lastMousePos := MouseWorldPos(X, Y);
 
   if EnableMultiSelection then
@@ -3915,7 +3930,7 @@ begin
   if (not Enabled) or (RootGizmo = nil) or (RootObjects = nil) then
     Exit;
 
-  moving := False;
+  FMoving := False;
 
   case fOperation of
     gopRotate: SetAngleDisk(0);
@@ -4034,7 +4049,7 @@ begin
     FUIRootRotate.Scale.AsVector := VectorMake(d, d, d);
   end;
 
-  if not moving and FUIRootScale.Visible then
+  if not FMoving and FUIRootScale.Visible then
     FUIRootScale.Scale.AsVector := VectorMake(d, d, d);
 
   if FUIRootVisibleInfoLabels.Visible then
