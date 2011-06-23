@@ -4747,9 +4747,6 @@ begin
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
 {$ENDIF}
-  if (ARci.drawState = dsPicking) and (not FPickable) then
-    exit;
-
   // visibility culling determination
   if ARci.visibilityCulling in [vcObjectBased, vcHierarchical] then
   begin
