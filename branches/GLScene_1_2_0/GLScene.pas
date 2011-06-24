@@ -597,11 +597,14 @@ type
     function GetAbsoluteMatrix: TMatrix;
     procedure SetAbsoluteMatrix(const Value: TMatrix);
     procedure SetBBChanges(const Value: TObjectBBChanges);
+    function GetStatic: Boolean;
+    procedure SetStatic(const Value: Boolean);
   protected
     { Protected Declarations }
     procedure Loaded; override;
     procedure SetScene(const Value: TGLScene); virtual;
-    procedure DoOnPicked; virtual;
+    procedure DoOnPicked; dynamic;
+    procedure DoShowAxes; dynamic;
 
     procedure DefineProperties(Filer: TFiler); override;
     procedure WriteBehaviours(stream: TStream);
@@ -959,6 +962,7 @@ type
     property RollAngle: Single read GetRollAngle write SetRollAngle;
     property TurnAngle: Single read GetTurnAngle write SetTurnAngle;
 
+    property Static: Boolean read GetStatic write SetStatic default True;
     property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
 
     property Changes: TObjectChanges read FChanges;
@@ -1502,6 +1506,7 @@ type
     procedure SetLightStyle(const val: TLightStyle);
     procedure SetScene(const value: TGLScene); override;
     procedure OnShaderInitialize(Sender: TGLBaseShaderModel);
+    procedure OnShaderSetting(Sender: TGLBaseShaderModel; var ARci: TRenderContextInfo);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1974,6 +1979,9 @@ type
 
     // Cameras
     FCamera: TGLCamera;
+    FDesignCamera: TGLCamera;
+    FOldX, FOldY: Integer;
+    FLeave: Boolean;
 
     // Freezing
     FFreezeBuffer: Pointer;
@@ -2503,13 +2511,12 @@ procedure InvokeInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 
 function GetCurrentRenderingObject: TGLBaseSceneObject;
 
-  //------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------
-  //------------------------------------------------------------------------------
+var
+  vGLSceneViewerMode: TGLSceneViewerMode = svmDisabled;
+  vResetDesignView: Boolean = True;
+
 implementation
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
+
 {$IFDEF GLS_DELPHI_OR_CPPB}
 {$R GLSceneRunTime.dcr}
 {$ENDIF}
@@ -4138,6 +4145,11 @@ begin
   Result := FRotation.Z;
 end;
 
+function TGLBaseSceneObject.GetStatic: Boolean;
+begin
+  Result := not (osStreamDraw in ObjectStyle);
+end;
+
 // PointTo
 //
 
@@ -4175,6 +4187,10 @@ begin
   TransformationChanged
 end;
 
+procedure TGLBaseSceneObject.DoShowAxes;
+begin
+end;
+
 // SetShowAxes
 //
 
@@ -4183,8 +4199,17 @@ begin
   if FShowAxes <> AValue then
   begin
     FShowAxes := AValue;
+    DoShowAxes;
     NotifyChange(Self);
   end;
+end;
+
+procedure TGLBaseSceneObject.SetStatic(const Value: Boolean);
+begin
+  if Value then
+    ObjectStyle := ObjectStyle - [osStreamDraw]
+  else
+    ObjectStyle := ObjectStyle + [osStreamDraw];
 end;
 
 // SetScaling
@@ -7036,6 +7061,7 @@ begin
     LShader.Source.Add(cLightFragmentShader120);
     ShaderModel3.LibFragmentShaderName := LShader.Name;
     OnSM3UniformInitialize := OnShaderInitialize;
+    OnSM3UniformSetting := OnShaderSetting;
     ShaderModel3.Enabled := True;
     // GLSL 330
     LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
@@ -7047,12 +7073,14 @@ begin
     LShader.Source.Add(cLightFragmentShader330);
     ShaderModel4.LibFragmentShaderName := LShader.Name;
     OnSM4UniformInitialize := OnShaderInitialize;
+    OnSM4UniformSetting := OnShaderSetting;
     ShaderModel4.Enabled := True;
   end;
 
   FBatch.Transformation := @FTransformation;
   FBatch.Changed := True;
   FBatch.Mesh.TagName := ClassName;
+  FBatch.PickCallback := DoOnPicked;
 end;
 
 // Destroy
@@ -7175,11 +7203,13 @@ end;
 
 procedure TGLLightSource.OnShaderInitialize(Sender: TGLBaseShaderModel);
 begin
-  with Sender do
-  begin
-    Uniforms['ModelViewProjectionMatrix'].AutoSetMethod := cafWorldViewProjectionMatrix;
-    Uniforms['Diffuse'].AutoSetMethod := cafMaterialFrontFaceDiffuse;
-  end;
+  Sender.Uniforms['ModelViewProjectionMatrix'].AutoSetMethod := cafWorldViewProjectionMatrix;
+end;
+
+procedure TGLLightSource.OnShaderSetting(Sender: TGLBaseShaderModel;
+  var ARci: TRenderContextInfo);
+begin
+  Sender.Uniforms['Diffuse'].vec4 := Diffuse.Color;
 end;
 
 // SetShining
@@ -8143,6 +8173,13 @@ begin
   FContextOptions := [roDoubleBuffer, roRenderToWindow];
 
   ResetPerformanceMonitor;
+
+  if vGLSceneViewerMode <> svmDisabled then
+  begin
+    FDesignCamera := TGLCamera.Create(nil);
+    FDesignCamera.FDesign := True;
+    FLeave := True;
+  end;
 end;
 
 // Destroy
@@ -8155,6 +8192,7 @@ begin
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
   FFogEnvironment.Free;
+  FDesignCamera.Free;
   inherited Destroy;
 end;
 
@@ -9292,8 +9330,43 @@ end;
 //
 
 procedure TGLSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
+var
+  lRight: TVector;
 begin
-  // Nothing
+  if Assigned(FDesignCamera) then
+  begin
+    if FLeave then
+    begin
+      FOldX := X;
+      FOldY := Y;
+      FLeave := False;
+      exit;
+    end;
+
+    if (vGLSceneViewerMode = svmNavigation) and (ssRight in Shift) then
+    with FDesignCamera do
+    begin
+      if ssShift in Shift then
+      begin
+        MoveInEyeSpace(0.01*(FOldY - Y), 0.01*(FOldX - X), 0);
+      end
+      else if ssCtrl in Shift then
+      begin
+        MoveInEyeSpace(0, 0.01*(FOldX - X), 0.01*(FOldY - Y));
+      end
+      else if Assigned(FCamera) then
+      begin
+        Direction.Rotate(FCamera.Up.AsVector, 0.005*(X - FOldX));
+        lRight := VectorCrossProduct(FCamera.Up.AsVector, Direction.AsVector);
+        NormalizeVector(lRight);
+        Direction.Rotate(lRight, 0.005*(FOldY - Y));
+        Up.DirectVector := VectorCrossProduct(Direction.AsVector, lRight);
+      end
+    end;
+
+    FOldX := X;
+    FOldY := Y;
+  end;
 end;
 
 // PrepareRenderingMatrices
@@ -9303,6 +9376,8 @@ procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle;
   resolution: Integer; APickingRect: PGLRect = nil);
 var
   V: TVector4i;
+  lCamera: TGLCamera;
+
 begin
   with RenderingContext.PipelineTransformation do
   begin
@@ -9310,13 +9385,13 @@ begin
     // setup projection matrix
     if Assigned(APickingRect) then
     begin
-      // Commented due to drop down accuracy, Yar
-//      ProjectionMatrix := CreatePickMatrix(
-//        (APickingRect^.Left + APickingRect^.Right) div 2,
-//        FViewPort.Height - ((APickingRect^.Top + APickingRect^.Bottom) div 2),
-//        Abs(APickingRect^.Right - APickingRect^.Left),
-//        Abs(APickingRect^.Bottom - APickingRect^.Top),
-//        TVector4i(FViewport));
+      // Commented due to drop down accuracy when pick lines, Yar
+(*      ProjectionMatrix := CreatePickMatrix(
+        (APickingRect^.Left + APickingRect^.Right) div 2,
+        FViewPort.Height - ((APickingRect^.Top + APickingRect^.Bottom) div 2),
+        Abs(APickingRect^.Right - APickingRect^.Left),
+        Abs(APickingRect^.Bottom - APickingRect^.Top),
+        TVector4i(FViewport));    *)
       V[0] := APickingRect^.Left;
       V[1] := Height - APickingRect^.Top;
       V[2] := APickingRect^.Right - APickingRect^.Left + 1;
@@ -9325,20 +9400,61 @@ begin
     end;
     FBaseProjectionMatrix := ProjectionMatrix;
 
-    if Assigned(FCamera) then
+    if Assigned(FDesignCamera) then
     begin
-      FCamera.Scene.FCurrentGLCamera := FCamera;
+      lCamera := FDesignCamera;
+      // Reset design camera state
+      if vResetDesignView then
+      begin
+        FDesignCamera.Assign(FCamera);
+        vResetDesignView := False;
+      end;
+      // Apply viewer interation mode
+      if Owner is TWinControl then
+        with TWinControl(Owner) do
+        begin
+          case vGLSceneViewerMode of
+            svmDisabled:
+              begin
+                lCamera := FCamera;
+              end;
+
+            svmDefault:
+              begin
+                ControlStyle := ControlStyle - [csDesignInteractive];
+              end;
+            svmNavigation:
+              begin
+                ControlStyle := ControlStyle + [csDesignInteractive];
+              end;
+            svmGizmo:
+              begin
+                ControlStyle := ControlStyle + [csDesignInteractive];
+              end;
+          end;
+        end;
+    end
+    else
+      lCamera := FCamera;
+
+
+    if Assigned(lCamera) then
+    begin
       // apply camera perpective
-      FCamera.ApplyPerspective(
+      lCamera.ApplyPerspective(
         aViewport,
         FViewPort.Width,
         FViewPort.Height,
         resolution);
       // setup model view matrix
       // apply camera transformation (viewpoint)
-      FCamera.Apply;
-      FCameraAbsolutePosition := FCamera.AbsolutePosition;
+      lCamera.Apply;
+      FCameraAbsolutePosition := lCamera.AbsolutePosition;
     end;
+
+    if Assigned(FCamera) then
+      FCamera.Scene.FCurrentGLCamera := FCamera;
+
   end;
 end;
 
@@ -9626,6 +9742,7 @@ begin
       FCamera := ACamera;
       FCamera.TransformationChanged;
     end;
+    vResetDesignView := True;
     NotifyChange(Self);
   end;
 end;
