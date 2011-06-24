@@ -738,10 +738,10 @@ begin
   with GL do
   begin
     LMesh := TFriendlyMesh(ABatch.Mesh);
-    LMesh.FDLO.AllocateHandle;
+    LMesh.GetDLO.AllocateHandle;
     if LMesh.FRevisionNum <> LMesh.FBufferRevision then
     begin
-      LMesh.FDLO.NotifyChangesOfData;
+      LMesh.GetDLO.NotifyChangesOfData;
       LMesh.FBufferRevision := LMesh.FRevisionNum;
     end;
 
@@ -757,9 +757,9 @@ begin
     end;
 
     // Upload geometry
-    if LMesh.FDLO.IsDataNeedUpdate then
+    if LMesh.GetDLO.IsDataNeedUpdate then
     begin
-      LMesh.FDLO.NewList(GL_COMPILE);
+      LMesh.GetDLO.NewList(GL_COMPILE);
       // Texture coordinates
       if ARB_multisample then
       begin
@@ -845,8 +845,8 @@ begin
             DrawArrays(glPrimitive, LMesh.FRestartVertex.List[T], LMesh.FStripCounts.List[T]);
       end;
 
-      LMesh.FDLO.EndList;
-      LMesh.FDLO.NotifyDataUpdated;
+      LMesh.GetDLO.EndList;
+      LMesh.GetDLO.NotifyDataUpdated;
     end;
 
     if Assigned(ABatch.Transformation) then
@@ -871,7 +871,7 @@ begin
         if Assigned(LInstanceChain) then
           ApplyInstance(ARci, LInstanceChain, LInstanceID);
 
-        LMesh.FDLO.CallList;
+        LMesh.GetDLO.CallList;
 
       until LInstanceID <= 0;
 
@@ -1897,11 +1897,11 @@ begin
   LMesh := TFriendlyMesh(AMesh);
   LProgram := ARci.GLStates.CurrentProgram;
   if LProgram > 0 then
-    LVAO := LMesh.FVAO_Generic
+    LVAO := LMesh.GetVAO_Generic
   else if ARci.GLStates.ForwardContext then
     exit
   else
-    LVAO := LMesh.FVAO_BuildIn;
+    LVAO := LMesh.GetVAO_BuildIn;
 
   if LVAO.IsSupported then
     LVAO.AllocateHandle;
