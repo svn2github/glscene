@@ -178,8 +178,6 @@ type
     FMeshExtras: TMeshExtras;
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
-    function GetShowAxes: Boolean;
-    procedure SetShowAxesEx(AValue: Boolean);
     procedure SetShowAABB(const Value: Boolean);
     function GetShowAABB: Boolean;
     procedure SetMeshExtras(const Value: TMeshExtras);
@@ -196,6 +194,7 @@ type
     procedure SetScene(const value: TGLScene); override;
     procedure SelectMaterial;
     procedure Loaded; override;
+    procedure DoShowAxes; override;
     procedure ApplyExtras;
 
     property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary
@@ -204,7 +203,6 @@ type
       write SetLibMaterialName;
     property CustomPickingMaterial: string read GetPickingMaterial
       write SetPickingMaterial;
-    property ShowAxes: Boolean read GetShowAxes write SetShowAxesEx default False;
     property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
     property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
   public
@@ -239,6 +237,7 @@ type
     property Position;
     property RollAngle;
     property Scale;
+    property Static;
     property ShowAxes;
     property ShowAABB;
     property TurnAngle;
@@ -1234,8 +1233,9 @@ var
   LAABB: TAABB;
 begin
   LAABB := FBatch.Mesh.AABB;
-  V3 := VectorAdd(VectorAbs(LAABB.min), VectorAbs(LAABB.max));
-  ScaleVector(V3, 0.5);
+  V3[0] := MaxFloat(Abs(LAABB.min[0]), Abs(LAABB.max[0]));
+  V3[1] := MaxFloat(Abs(LAABB.min[1]), Abs(LAABB.max[1]));
+  V3[2] := MaxFloat(Abs(LAABB.min[2]), Abs(LAABB.max[2]));
   Result := VectorMake(V3);
 end;
 
@@ -1346,9 +1346,9 @@ begin
   FBatch.ShowAABB := Value;
 end;
 
-procedure TGLCustomSceneObjectEx.SetShowAxesEx(AValue: Boolean);
+procedure TGLCustomSceneObjectEx.DoShowAxes;
 begin
-  FBatch.ShowAxes := AValue;
+  FBatch.ShowAxes := ShowAxes;
 end;
 
 procedure TGLCustomSceneObjectEx.ApplyExtras;
@@ -1460,11 +1460,6 @@ end;
 function TGLCustomSceneObjectEx.GetShowAABB: Boolean;
 begin
   Result := FBatch.ShowAABB;
-end;
-
-function TGLCustomSceneObjectEx.GetShowAxes: Boolean;
-begin
-  Result := FBatch.ShowAxes;
 end;
 
 procedure TGLCustomSceneObjectEx.SetLibMaterialName(const Value: string);
