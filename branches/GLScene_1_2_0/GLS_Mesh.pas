@@ -128,6 +128,9 @@ type
   private
     { Private Declarations }
     FAABB: TAABB;
+    FDLO: TGLListHandle;
+    FVAO_BuildIn: TGLVertexArrayHandle;
+    FVAO_Generic: TGLVertexArrayHandle;
     function GetAttributes(Attribs: TAttribLocation): Boolean;
     function GetAttributesType(Attribs: TAttribLocation): TGLSLDataType;
     procedure SetAttributes(Attribs: TAttribLocation; const Value: Boolean);
@@ -164,9 +167,6 @@ type
     FRestartVertex: TIntegerList;
     FStripCounts: TIntegerList;
 
-    FDLO: TGLListHandle;
-    FVAO_BuildIn: TGLVertexArrayHandle;
-    FVAO_Generic: TGLVertexArrayHandle;
     FBufferRevision: Integer;
     FArraySectorIndex: Integer;
     FElementSectorIndex: Integer;
@@ -177,6 +177,9 @@ type
       AType: TGLSLDataType): Boolean; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure ComputeBoundingBox;
     procedure DoOnPrepare(Sender: TGLContext);
+    function GetDLO: TGLListHandle;
+    function GetVAO_BuildIn: TGLVertexArrayHandle;
+    function GetVAO_Generic: TGLVertexArrayHandle;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -820,8 +823,7 @@ begin
   FArraySectorIndex := -1;
   FElementSectorIndex := -1;
   FTagName := 'Nameless';
-  FDLO := TGLListHandle.Create;
-  FDLO.OnPrapare := DoOnPrepare;
+
   FVAO_BuildIn := TGLVertexArrayHandle.Create;
   FVAO_BuildIn.OnPrapare := DoOnPrepare;
   FVAO_Generic := TGLVertexArrayHandle.Create;
@@ -848,11 +850,49 @@ begin
   inherited;
 end;
 
-procedure TMeshAtom.DoOnPrepare(Sender: TGLContext);
+function TMeshAtom.GetDLO: TGLListHandle;
 begin
-  if (FDLO.Handle = 0)
-    and (FVAO_BuildIn.Handle = 0)
-    and (FVAO_Generic.Handle = 0) then
+  if not Assigned(FDLO) then
+  begin
+    FDLO := TGLListHandle.Create;
+    FDLO.OnPrapare := DoOnPrepare;
+  end;
+  Result := FDLO;
+end;
+
+function TMeshAtom.GetVAO_BuildIn: TGLVertexArrayHandle;
+begin
+  if not Assigned(FVAO_BuildIn) then
+  begin
+    FVAO_BuildIn := TGLVertexArrayHandle.Create;
+    FVAO_BuildIn.OnPrapare := DoOnPrepare;
+  end;
+  Result := FVAO_BuildIn;
+end;
+
+function TMeshAtom.GetVAO_Generic: TGLVertexArrayHandle;
+begin
+  if not Assigned(FVAO_Generic) then
+  begin
+    FVAO_Generic := TGLVertexArrayHandle.Create;
+    FVAO_Generic.OnPrapare := DoOnPrepare;
+  end;
+  Result := FVAO_Generic;
+end;
+
+procedure TMeshAtom.DoOnPrepare(Sender: TGLContext);
+
+  function IsHandleNull(AHandle: TGLContextHandle): Boolean;
+  begin
+    Result := not Assigned(AHandle);
+    if not Result then
+      Result := AHandle.Handle = 0;
+  end;
+
+begin
+  if IsHandleNull(FDLO)
+    and IsHandleNull(FVAO_BuildIn)
+    and IsHandleNull(FVAO_Generic) then
   begin
     FBufferRevision := -1;
     FArraySectorIndex := -1;
@@ -1314,9 +1354,13 @@ begin
     Inc(FRevisionNum);
     if not IsMainThread then
       ComputeBoundingBox;
-    FDLO.NotifyChangesOfData;
-    FVAO_BuildIn.NotifyChangesOfData;
-    FVAO_Generic.NotifyChangesOfData;
+
+    if Assigned(FDLO) then
+      FDLO.NotifyChangesOfData;
+    if Assigned(FVAO_BuildIn) then
+      FVAO_BuildIn.NotifyChangesOfData;
+    if Assigned(FVAO_Generic) then
+      FVAO_Generic.NotifyChangesOfData;
   end;
 end;
 
@@ -2367,27 +2411,38 @@ begin
     // Lets make element list with position based welded vertices
     LElements := T4ByteList.Create;
     try
-      LElements.Assign(FTrianglesElements);
-      for I := 1 to LElements.Count - 1 do
+      for I := 1 to FTrianglesElements.Count - 1 do
       begin
-        BD := LElements[I];
+        BD := FTrianglesElements[I];
         ii := BD.UInt.Value;
         for J := 0 to I - 1 do
         begin
-          BD := LElements[J];
+          BD := FTrianglesElements[J];
           jj := BD.UInt.Value;
           if ii = jj then
             continue;
           if sameVertex(ii, jj) then
           begin
-            LElements[I] := BD;
+            FTrianglesElements[I] := BD;
             break;
           end;
         end;
       end;
 
+      // Remove degenerate triangles
+      triangleNum := 0;
+      for I := 0 to FTrianglesElements.Count div 3 - 1 do
+      begin
+        vertexIndex :=  @FTrianglesElements.List[I * 3];
+        if (vertexIndex[0] = vertexIndex[1])
+          or (vertexIndex[0] = vertexIndex[2])
+          or (vertexIndex[1] = vertexIndex[2]) then
+          continue;
+        LElements.Add(vertexIndex[0], vertexIndex[1], vertexIndex[2]);
+        Inc(triangleNum);
+      end;
+
       // Initialize edge information as if all triangles are fully disconnected.
-      triangleNum := LElements.Count div 3;
       SetLength(edgeInfo, triangleNum);
       for I := 0 to triangleNum - 1 do
       begin
@@ -3252,7 +3307,7 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TMeshAtom'}{$ENDIF}
 
-{ T4ByteListToAffineVectorList }
+{$IFDEF GLS_REGION}{$REGION 'T4ByteListToVectorList'}{$ENDIF}
 
 function T4ByteListToVectorList.Count: Integer;
 begin
@@ -3375,6 +3430,8 @@ begin
     GLSLTypeMat4F: ;
   end;
 end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 
