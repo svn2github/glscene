@@ -191,7 +191,6 @@ type
     procedure BuildMesh; virtual; stdcall;
     function GetLibMaterialName: string; virtual;
     procedure SetLibMaterialName(const Value: string); virtual;
-    procedure SetScene(const value: TGLScene); override;
     procedure SelectMaterial;
     procedure Loaded; override;
     procedure DoShowAxes; override;
@@ -281,7 +280,6 @@ type
     procedure SetCubeSize(const val: TGLFloat);
     procedure SetEdgeColor(const val: TGLColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
-    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -702,7 +700,6 @@ type
     function StoreNodeSize: Boolean;
 
     procedure BuildNodeMesh;
-    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1329,18 +1326,6 @@ begin
   end;
 end;
 
-procedure TGLCustomSceneObjectEx.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FBatch);
-    inherited;
-  end;
-end;
-
 procedure TGLCustomSceneObjectEx.SetShowAABB(const Value: Boolean);
 begin
   FBatch.ShowAABB := Value;
@@ -1425,7 +1410,7 @@ procedure TGLCustomSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderS
     if ARenderSelf then
     begin
       FTransformation := ARci.PipelineTransformation.StackTop;
-      FBatch.Order := ARci.orderCounter;
+      ARci.drawList.Add(@FBatch);
     end;
   end;
 
@@ -1595,7 +1580,7 @@ procedure TGLDummyCube.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
     begin
       FTransformation := ARci.PipelineTransformation.StackTop;
       if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
-        FBatch.Order := ARci.orderCounter;
+        ARci.drawList.Add(@FBatch);
     end;
 
     if ARenderChildren then
@@ -1663,18 +1648,6 @@ begin
     FEdgeColor.Assign(val);
     StructureChanged;
   end;
-end;
-
-procedure TGLDummyCube.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FBatch);
-  end;
-  inherited;
 end;
 
 procedure TGLDummyCube.SetVisibleAtRunTime(const val: Boolean);
@@ -2215,7 +2188,7 @@ begin
     FTransformation := ARci.PipelineTransformation.StackTop;
     ARci.PipelineTransformation.Pop;
 
-    FBatch.Order := ARci.orderCounter;
+    ARci.drawList.Add(@FBatch);
   end;
 
   if ARenderChildren then
@@ -2986,19 +2959,6 @@ begin
   StructureChanged;
 end;
 
-procedure TGLNodedLines.SetScene(const Value: TGLScene);
-begin
-  if Value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FNodeBatch);
-    if Assigned(Value) then
-      Value.RenderManager.RegisterBatch(FNodeBatch);
-
-    inherited SetScene(Value);
-  end;
-end;
-
 // StoreNodeSize
 //
 
@@ -3165,7 +3125,7 @@ begin
   if FMaterialChanged then
     UpdateMaterial;
 
-  if (FNodesAspect <> lnaInvisible) and (FBatch.Order > -1) then
+  if (FNodesAspect <> lnaInvisible) and ARenderSelf then
   begin
     if Nodes.Count > 0 then
     begin
@@ -3179,8 +3139,7 @@ begin
           SetMatrix(FNodeTransformation.FModelMatrix, M);
           FNodeTransformation.FStates := cAllStatesChanged;
         end;
-      FNodeBatch.Order := ARci.orderCounter;
-      Inc(ARci.orderCounter);
+      ARci.drawList.Add(@FNodeBatch);
     end;
   end;
 end;

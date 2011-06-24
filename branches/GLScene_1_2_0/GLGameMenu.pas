@@ -84,7 +84,6 @@ type
     function GetMenuTop: integer;
   protected
     { Protected Properties }
-    procedure SetScene(const value: TGLScene); override;
     procedure SetMenuScale(AValue: TGLGameMenuScale);
     procedure SetMarginHorz(AValue: Integer);
     procedure SetMarginVert(AValue: Integer);
@@ -107,7 +106,6 @@ type
     procedure ItemsChanged(Sender: TObject);
     procedure BuildMeshes;
     procedure FreeBatches;
-    procedure RegisterBatches;
   public
     { Public Properties }
     constructor Create(AOwner: TComponent); override;
@@ -262,10 +260,6 @@ procedure TGLGameMenu.FreeBatches;
 var
   I: Integer;
 begin
-  if Assigned(Scene) then
-    for I := 0 to High(FTextBatches) do
-      Scene.RenderManager.UnRegisterBatch(FTextBatches[I]);
-
   for I := 0 to High(FTextBatches) do
     FTextBatches[I].Mesh.Free;
   if Length(FTextBatches) > 0 then
@@ -292,21 +286,6 @@ end;
 procedure TGLGameMenu.OnColorChaged(Sender: TObject);
 begin
   StructureChanged;
-end;
-
-procedure TGLGameMenu.RegisterBatches;
-var
-  I: Integer;
-begin
-  if Assigned(Scene) then
-  begin
-    for I := 0 to High(FTextBatches) do
-    begin
-      Scene.RenderManager.RegisterBatch(FTextBatches[I]);
-      FTextBatches[I].Mesh.TagName := Format('%s_text_part%d', [ClassName, I]);
-      FTextBatches[I].Transformation := @FTransformation;
-    end;
-  end;
 end;
 
 procedure TGLGameMenu.BuildMeshes;
@@ -411,7 +390,6 @@ begin
     Font.BuildString(FTextBatches, FItems[i], taLeftJustify, tlTop, color, @v, True);
     y := y + Font.CharHeight + Spacing;
   end;
-  RegisterBatches;
 
   ClearStructureChanged;
 end;
@@ -445,20 +423,14 @@ begin
     ARci.PipelineTransformation.Pop;
 
     if BackColor.Alpha > 0 then
-    begin
-      FBackgroundBatch.Order := ARci.orderCounter;
-      Inc(ARci.orderCounter);
-    end;
+      ARci.drawList.Add(@FBackgroundBatch);
 
     if Assigned(FTitleBatch.Material)
       and (TitleWidth > 0) and (TitleHeight > 0) then
-    begin
-      FTitleBatch.Order := ARci.orderCounter;
-      Inc(ARci.orderCounter);
-    end;
+      ARci.drawList.Add(@FTitleBatch);
 
     for I := High(FTextBatches) downto 0 do
-      FTextBatches[I].Order := ARci.orderCounter;
+      ARci.drawList.Add(@FTextBatches[I]);
   end;
 
   if ARenderChildren then
@@ -640,24 +612,6 @@ end;
 
 // SetSelected
 //
-
-procedure TGLGameMenu.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-    begin
-      Scene.RenderManager.UnRegisterBatch(FBackgroundBatch);
-      Scene.RenderManager.UnRegisterBatch(FTitleBatch);
-    end;
-    if Assigned(value) then
-    begin
-      value.RenderManager.RegisterBatch(FBackgroundBatch);
-      value.RenderManager.RegisterBatch(FTitleBatch);
-    end;
-    inherited;
-  end;
-end;
 
 procedure TGLGameMenu.SetSelected(AValue: Integer);
 begin

@@ -22,6 +22,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  Classes,
   PersistentClasses, VectorGeometry, GLState,
   GLPipelineTransformation, GLColor;
 
@@ -114,7 +115,7 @@ type
     afterRenderEffects: TPersistentObjectList;
     currentMaterialLevel: TGLMaterialLevel;
     primitiveMask: TGLMeshPrimitives;
-    orderCounter: Integer;
+    drawList: TList;
     mesh: TObject;
   end;
   PRenderContextInfo = ^TRenderContextInfo;

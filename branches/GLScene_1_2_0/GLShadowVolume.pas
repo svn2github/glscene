@@ -48,7 +48,9 @@ uses
   PersistentClasses,
   GeometryBB,
   GLColor,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  GLPipelineTransformation,
+  GLS_DrawTechnique;
 
 type
 
@@ -259,7 +261,11 @@ type
     FOptions: TGLShadowVolumeOptions;
     FMode: TGLShadowVolumeMode;
     FDarkeningColor: TGLColor;
-
+    FPart1: TDrawBatch;
+    FPart2: TDrawBatch;
+    FTransformation: TTransformationRec;
+    FOpaques: TList;
+    FOpaqueCapping: TList;
   protected
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -271,7 +277,8 @@ type
     procedure SetOptions(const val: TGLShadowVolumeOptions);
     procedure SetMode(const val: TGLShadowVolumeMode);
     procedure SetDarkeningColor(const val: TGLColor);
-
+    procedure TurnOffLights(var ARci: TRenderContextInfo);
+    procedure DrawShadow(var ARci: TRenderContextInfo);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -637,7 +644,7 @@ end;
 constructor TGLShadowVolume.Create(AOwner: Tcomponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle := ObjectStyle - [osDirectDraw] + [osNoVisibilityCulling];
+  ObjectStyle := ObjectStyle + [osDeferredDraw, osNoVisibilityCulling];
   FActive := True;
   FLights := TGLShadowVolumeCasters.Create(self, TGLShadowVolumeLight);
   FOccluders := TGLShadowVolumeCasters.Create(self, TGLShadowVolumeOccluder);
@@ -645,6 +652,10 @@ begin
   FMode := svmAccurate;
   FOptions := [svoCacheSilhouettes, svoScissorClips];
   FDarkeningColor := TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
+  FPart1.CustomDraw := TurnOffLights;
+  FPart2.CustomDraw := DrawShadow;
+  FOpaques := TList.Create;
+  FOpaqueCapping := TList.Create;
 end;
 
 // Destroy
@@ -656,6 +667,8 @@ begin
   FDarkeningColor.Free;
   FLights.Free;
   FOccluders.Free;
+  FOpaques.Free;
+  FOpaqueCapping.Free;
 end;
 
 // Notification
@@ -764,77 +777,41 @@ begin
   FDarkeningColor.Assign(val);
 end;
 
-// DoRender
-//
-
-procedure TGLShadowVolume.DoRender(var ARci: TRenderContextInfo;
-  ARenderSelf, ARenderChildren: Boolean);
-
-// Function that determines if an object is "recursively visible". It halts when
-// * it finds an invisible ancestor (=> invisible)
-// * it finds the root (=> visible)
-// * it finds the shadow volume as an ancestor (=> visible)
-//
-// This does _not_ mean that the object is actually visible on the screen
-
-function DirectHierarchicalVisibility(obj: TGLBaseSceneObject): boolean;
-  var
-    p: TGLBaseSceneObject;
-  begin
-    if not Assigned(obj) then
-    begin
-      Result := True;
-      exit;
-    end;
-    if not obj.Visible then
-    begin
-      Result := False;
-      Exit;
-    end;
-    p := obj.Parent;
-    while Assigned(p) and (p <> obj) and (p <> Self) do
-    begin
-      if not p.Visible then
-      begin
-        Result := False;
-        Exit;
-      end;
-      p := p.Parent;
-    end;
-    Result := True;
-  end;
-
+procedure TGLShadowVolume.TurnOffLights(var ARci: TRenderContextInfo);
 var
-  i, k: Integer;
+  I: Integer;
   lightSource: TGLLightSource;
   lightCaster: TGLShadowVolumeLight;
-  sil: TGLSilhouette;
-  lightID: Cardinal;
-  obj: TGLBaseSceneObject;
-  caster: TGLShadowVolumeCaster;
-  opaques, opaqueCapping: TList;
+begin
+  with ARci.GLStates do
+  begin
+    // first turn off all the shadow casting lights diffuse and specular
+    for I := 0 to Lights.Count - 1 do
+    begin
+      lightCaster := TGLShadowVolumeLight(Lights[i]);
+      lightSource := lightCaster.LightSource;
+      if Assigned(lightSource) and lightSource.Shining then
+      begin
+        LightDiffuse[lightSource.LightID] := NullHmgVector;
+        LightSpecular[lightSource.LightID] := NullHmgVector;
+      end;
+    end;
+  end;
+end;
+
+procedure TGLShadowVolume.DrawShadow(var ARci: TRenderContextInfo);
+var
+  i, k: Integer;
   silParams: TGLSilhouetteParameters;
+  sil: TGLSilhouette;
+  lightSource: TGLLightSource;
+  lightCaster: TGLShadowVolumeLight;
+  obj: TGLBaseSceneObject;
   worldAABB: TAABB;
   pWorldAABB: PAABB;
   PM: TMatrix;
+  lightID: Integer;
 begin
-  if not Active then
-  begin
-    inherited;
-    Exit;
-  end;
-  if FRendering then
-    Exit;
-  if not (ARenderSelf or ARenderChildren) then
-    Exit;
-  ClearStructureChanged;
-  if ((csDesigning in ComponentState) and not (svoDesignVisible in Options))
-    or (Mode = svmOff)
-    or (ARci.drawState = dsPicking) then
-  begin
-    inherited;
-    Exit;
-  end;
   if svoWorldScissorClip in Options then
   begin
     // compute shadow receiving world AABB in absolute coordinates
@@ -844,69 +821,11 @@ begin
   end
   else
     pWorldAABB := nil;
-  opaques := TList.Create;
-  opaqueCapping := TList.Create;
-  FRendering := True;
-  try
-    // collect visible casters
-    for i := 0 to Occluders.Count - 1 do
-    begin
-      caster := Occluders[i];
-      obj := caster.Caster;
-      if Assigned(obj)
-        and
-        // Determine when to render this object or not
-      (
-        (Caster.CastingMode = scmAlways) or
-        ((Caster.CastingMode = scmVisible) and obj.Visible) or
-        ((Caster.CastingMode = scmRecursivelyVisible) and
-        DirectHierarchicalVisibility(obj)) or
-        ((Caster.CastingMode = scmParentRecursivelyVisible) and
-        DirectHierarchicalVisibility(obj.Parent)) or
-        ((Caster.CastingMode = scmParentVisible) and (not Assigned(obj.Parent)
-          or
-        obj.Parent.Visible))
-        )
-        and ((caster.EffectiveRadius <= 0)
-        or (obj.DistanceTo(ARci.cameraPosition) < caster.EffectiveRadius)) then
-      begin
-        opaques.Add(obj);
-        opaqueCapping.Add(Pointer(PtrUInt(ord((caster.Capping = svcAlways)
-          or ((caster.Capping = svcDefault)
-          and (Capping = svcAlways))))));
-      end
-      else
-      begin
-        opaques.Add(nil);
-        opaqueCapping.Add(nil);
-      end;
-    end;
 
+  try
     // render the shadow volumes
     with ARci.GLStates do
     begin
-
-      if Mode = svmAccurate then
-      begin
-        // first turn off all the shadow casting lights diffuse and specular
-        for i := 0 to Lights.Count - 1 do
-        begin
-          lightCaster := TGLShadowVolumeLight(Lights[i]);
-          lightSource := lightCaster.LightSource;
-          if Assigned(lightSource) and (lightSource.Shining) then
-          begin
-            lightID := lightSource.LightID;
-            LightDiffuse[lightID] := NullHmgVector;
-            LightSpecular[lightID] := NullHmgVector;
-          end;
-        end;
-      end;
-      // render shadow receivers with ambient lighting
-
-      // DanB - not sure why this doesn't render properly with these statements
-      // where they were originally (after the RenderChildren call).
-
-      Self.RenderChildren(0, Count - 1, ARci);
 
       ARci.ignoreBlendingRequests := True;
       ARci.ignoreDepthRequests := True;
@@ -923,6 +842,14 @@ begin
         ArrayBufferBinding := 0;
         ElementBufferBinding := 0;
       end;
+      if GL.NV_vertex_buffer_unified_memory then
+      begin
+        ArrayBufferUnified := False;
+        ElementBufferUnified := False;
+      end;
+      for I := 15 downto 0 do
+        GL.DisableVertexAttribArray(I);
+      ARci.GLStates.CurrentProgram := 0;
 
       // turn off *all* lights
       for i := 0 to TGLScene(ARci.scene).Lights.Count - 1 do
@@ -933,7 +860,7 @@ begin
       end;
 
       GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
-      ARci.PipelineTransformation.Push;
+      ARci.PipelineTransformation.StackTop := FTransformation;
 
       // render contribution of all shadow casting lights
       for i := 0 to Lights.Count - 1 do
@@ -985,9 +912,9 @@ begin
         SetPolygonOffset(1, 1);
 
         // for all opaque shadow casters
-        for k := 0 to opaques.Count - 1 do
+        for k := 0 to FOpaques.Count - 1 do
         begin
-          obj := TGLBaseSceneObject(opaques[k]);
+          obj := TGLBaseSceneObject(FOpaques[k]);
           if obj = nil then
             Continue;
 
@@ -1009,7 +936,10 @@ begin
               ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
               GL.VertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
-              if Boolean(PtrUInt(opaqueCapping[k])) then
+              if GL.GREMEDY_frame_terminator then
+                GL.FrameTerminatorGREMEDY();
+
+              if Assigned(FOpaqueCapping[k]) then
               begin
                 // z-fail
                 if GL.EXT_compiled_vertex_array then
@@ -1093,30 +1023,30 @@ begin
           Self.RenderChildren(0, Count - 1, ARci);
         end
         else
-        begin
+        with GL do begin
           SetStencilFunc(cfNotEqual, 0, 255);
 
-          DepthFunc := cfAlways;
+          ARci.GLStates.DepthFunc := cfAlways;
           SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
-          GL.PushMatrix;
-          GL.LoadIdentity;
-          GL.MatrixMode(GL_PROJECTION);
-          GL.PushMatrix;
+          PushMatrix;
+          LoadIdentity;
+          MatrixMode(GL_PROJECTION);
+          PushMatrix;
           PM := CreateOrthoMatrix(0, 1, 1, 0, -1, 1);
-          GL.LoadMatrixf(PGLFloat(@PM));
+          LoadMatrixf(PGLFloat(@PM));
 
-          GL.Color4fv(FDarkeningColor.AsAddress);
-          GL.Begin_(GL_QUADS);
-          GL.Vertex2f(0, 0);
-          GL.Vertex2f(0, 1);
-          GL.Vertex2f(1, 1);
-          GL.Vertex2f(1, 0);
-          GL.End_;
+          Color4fv(FDarkeningColor.AsAddress);
+          Begin_(GL_QUADS);
+          Vertex2f(0, 0);
+          Vertex2f(0, 1);
+          Vertex2f(1, 1);
+          Vertex2f(1, 0);
+          End_;
 
-          GL.PopMatrix;
-          GL.MatrixMode(GL_MODELVIEW);
-          GL.PopMatrix;
+          PopMatrix;
+          MatrixMode(GL_MODELVIEW);
+          PopMatrix;
 
           SetBlendFunc(bfSrcAlpha, bfOne);
         end;
@@ -1125,7 +1055,6 @@ begin
         LightEnabling[lightID] := False;
         LightAmbient[lightID] := lightSource.Ambient.Color;
       end; // for i
-      ARci.PipelineTransformation.Pop;
 
       // restore OpenGL state
       GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
@@ -1136,9 +1065,106 @@ begin
       ARci.ignoreDepthRequests := False;
     end; // of with
   finally
+
+  end;
+
+end;
+
+// DoRender
+//
+
+procedure TGLShadowVolume.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+
+// Function that determines if an object is "recursively visible". It halts when
+// * it finds an invisible ancestor (=> invisible)
+// * it finds the root (=> visible)
+// * it finds the shadow volume as an ancestor (=> visible)
+//
+// This does _not_ mean that the object is actually visible on the screen
+
+function DirectHierarchicalVisibility(obj: TGLBaseSceneObject): boolean;
+  var
+    p: TGLBaseSceneObject;
+  begin
+    if not Assigned(obj) then
+    begin
+      Result := True;
+      exit;
+    end;
+    if not obj.Visible then
+    begin
+      Result := False;
+      Exit;
+    end;
+    p := obj.Parent;
+    while Assigned(p) and (p <> obj) and (p <> Self) do
+    begin
+      if not p.Visible then
+      begin
+        Result := False;
+        Exit;
+      end;
+      p := p.Parent;
+    end;
+    Result := True;
+  end;
+
+var
+  i: Integer;
+  obj: TGLBaseSceneObject;
+  caster: TGLShadowVolumeCaster;
+begin
+  if Active and ARenderSelf
+    and ((csDesigning in ComponentState) and (svoDesignVisible in Options))
+    and (Mode <> svmOff) and (ARci.drawState <> dsPicking)
+    and not FRendering then
+  begin
+    // Collect shadow casters
+    FOpaques.Count := 0;
+    FOpaqueCapping.Count := 0;
+
+    for i := 0 to Occluders.Count - 1 do
+    begin
+      caster := Occluders[i];
+      obj := caster.Caster;
+      if Assigned(obj)
+        and
+        // Determine when to render this object or not
+        (
+          (Caster.CastingMode = scmAlways) or
+          ((Caster.CastingMode = scmVisible) and obj.Visible) or
+          ((Caster.CastingMode = scmRecursivelyVisible) and
+          DirectHierarchicalVisibility(obj)) or
+          ((Caster.CastingMode = scmParentRecursivelyVisible) and
+          DirectHierarchicalVisibility(obj.Parent)) or
+          ((Caster.CastingMode = scmParentVisible) and (not Assigned(obj.Parent)
+            or
+          obj.Parent.Visible))
+        )
+        and ((caster.EffectiveRadius <= 0)
+        or (obj.DistanceTo(ARci.cameraPosition) < caster.EffectiveRadius)) then
+      begin
+        FOpaques.Add(obj);
+        FOpaqueCapping.Add(Pointer(PtrUInt(ord((caster.Capping = svcAlways)
+          or ((caster.Capping = svcDefault)
+          and (Capping = svcAlways))))));
+      end
+      else
+      begin
+        FOpaques.Add(nil);
+        FOpaqueCapping.Add(nil);
+      end;
+    end;
+
+    // turn off lights
+    if Mode = svmAccurate then
+      ARci.drawList.Add(@FPart1);
+    // render shadow receivers with ambient lighting
+    FRendering := True;
+    Self.RenderChildren(0, Count - 1, ARci);
     FRendering := False;
-    opaques.Free;
-    opaqueCapping.Free;
+    ARci.drawList.Add(@FPart2);
   end;
 end;
 

@@ -137,7 +137,6 @@ type
     procedure MakeGPUOpticalDepth(var ARci: TRenderContextInfo);
     procedure MakeGPUMieRayleighBuffer(var ARci: TRenderContextInfo);
     procedure BuildMesh; stdcall;
-    procedure SetScene(const value: TGLScene); override;
     procedure Loaded; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
@@ -1318,7 +1317,7 @@ procedure TGLCustomNishitaSky.DoRender(var ARci: TRenderContextInfo;
     FTransformation.FViewMatrix[13] := 0;
     FTransformation.FViewMatrix[14] := 0;
     FTransformation.FStates := cAllStatesChanged;
-    FBatch.Order := ARci.orderCounter;
+    ARci.drawList.Add(@FBatch);
   end;
 
 var
@@ -1427,22 +1426,6 @@ begin
     Oclock := sky.FOclock;
     FFastUpdate := sky.FFastUpdate;
   end;
-end;
-
-procedure TGLCustomNishitaSky.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-    begin
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    end;
-    if Assigned(value) then
-    begin
-      value.RenderManager.RegisterBatch(FBatch);
-    end;
-  end;
-  inherited;
 end;
 
 procedure TGLCustomNishitaSky.SetSun(const Value: TGLLightSource);

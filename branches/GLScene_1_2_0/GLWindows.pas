@@ -100,7 +100,6 @@ type
     procedure SetNoZWrite(const val: Boolean);
 
     procedure OnDirectDraw(var ARci: TRenderContextInfo);
-    procedure SetScene(const value: TGLScene); override;
   public
     procedure BlockRender;
     procedure UnBlockRender;
@@ -115,7 +114,7 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren:
+    procedure DoRender(var ARci: TRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
     procedure InternalRender(var rci: TRenderContextInfo); virtual;
     property GUIRedraw: Boolean read FGUIRedraw write SetGUIRedraw;
@@ -852,18 +851,6 @@ begin
   end;
 end;
 
-procedure TGLBaseComponent.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FDummyBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FDummyBatch);
-    inherited;
-  end;
-end;
-
 // SetAlphaChannel
 //
 
@@ -1137,7 +1124,7 @@ begin
   FReBuildGui := False;
 end;
 
-procedure TGLBaseComponent.DoRender(var rci: TRenderContextInfo; renderSelf,
+procedure TGLBaseComponent.DoRender(var ARci: TRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -1157,12 +1144,12 @@ begin
     if RenderSelf then
       if FGuiLayout <> nil then
       begin
-        FDummyBatch.Order := rci.orderCounter;
+        ARci.drawList.Add(@FDummyBatch);
       end;
 
   if renderChildren then
     if Count > 0 then
-      Self.RenderChildren(0, Count - 1, rci);
+      Self.RenderChildren(0, Count - 1, ARci);
   Dec(RenderingCount);
 end;
 

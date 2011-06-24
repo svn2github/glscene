@@ -401,7 +401,7 @@ procedure TGLHUDSprite.DoRender(var ARci: TRenderContextInfo;
       FTransformation := ARci.PipelineTransformation.StackTop;
       ARci.PipelineTransformation.Pop;
 
-      FBatch.Order := ARci.orderCounter;
+      ARci.drawList.Add(@FBatch);
     end;
   end;
 
@@ -619,7 +619,7 @@ procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
       ARci.PipelineTransformation.Pop;
 
       for I := High(FBatches) downto 0 do
-        FBatches[I].Order := ARci.orderCounter;
+        ARci.drawList.Add(@FBatches[I]);
     end;
   end;
 

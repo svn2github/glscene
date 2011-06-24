@@ -231,7 +231,6 @@ type
     procedure SetLinesStyle(const val: TXYZGridLinesStyle);
     procedure SetLinesSmoothing(const val: Boolean);
     procedure BuildMesh; virtual; stdcall;
-    procedure SetScene(const value: TGLScene); override;
     procedure UpdateMaterial;
     procedure Loaded; override;
   public
@@ -448,9 +447,9 @@ end;
 procedure TGLHeightField.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 begin
-  inherited DoRender(ARci, ARenderSelf, ARenderChildren);
   if not (XSamplingScale.IsValid and YSamplingScale.IsValid) then
-    FBatch.Order := -1;
+    ARenderSelf := False;
+  inherited DoRender(ARci, ARenderSelf, ARenderChildren);
 end;
 
 // Assign
@@ -810,7 +809,8 @@ procedure TGLXYZGrid.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARender
         BuildMesh;
     end;
     FTransformation := ARci.PipelineTransformation.StackTop;
-    FBatch.Order := ARci.orderCounter;
+
+    ARci.drawList.Add(@FBatch);
   end;
 
 begin
@@ -908,18 +908,6 @@ begin
     FParts := val;
     StructureChanged;
   end;
-end;
-
-procedure TGLXYZGrid.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FBatch);
-  end;
-  inherited;
 end;
 
 // SetLinesStyle

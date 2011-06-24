@@ -1315,7 +1315,6 @@ type
     procedure SetUseBuildList(const val: Boolean);
     function Blended: Boolean; override;
     procedure SetBlend(const val: Boolean);
-    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1504,7 +1503,6 @@ type
     procedure SetSpotExponent(AValue: Single);
     procedure SetSpotCutOff(const val: Single);
     procedure SetLightStyle(const val: TLightStyle);
-    procedure SetScene(const value: TGLScene); override;
     procedure OnShaderInitialize(Sender: TGLBaseShaderModel);
     procedure OnShaderSetting(Sender: TGLBaseShaderModel; var ARci: TRenderContextInfo);
   public
@@ -4766,7 +4764,6 @@ var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
 begin
-  Inc(ARci.orderCounter);
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
@@ -6590,7 +6587,7 @@ begin
   if ARenderSelf then
   begin
     FTransformation := ARci.PipelineTransformation.StackTop;
-    FDummyBatch.Order := ARci.orderCounter;
+    ARci.drawList.Add(@FDummyBatch);
   end;
 
   if ARenderChildren then
@@ -6662,18 +6659,6 @@ begin
   begin
     FBlend := val;
     StructureChanged;
-  end;
-end;
-
-procedure TGLDirectOpenGL.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FDummyBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FDummyBatch);
-    inherited;
   end;
 end;
 
@@ -7127,7 +7112,7 @@ begin
   ARci.PipelineTransformation.Pop;
 
   if (csDesigning in ComponentState) or FVisibleAtRunTime then
-    FBatch.Order := ARci.orderCounter;
+    ARci.drawList.Add(@FBatch);
 
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
@@ -7214,18 +7199,6 @@ end;
 
 // SetShining
 //
-
-procedure TGLLightSource.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FBatch);
-  end;
-  inherited;
-end;
 
 procedure TGLLightSource.SetShining(AValue: Boolean);
 begin
@@ -9631,7 +9604,7 @@ begin
   LRci.drawState := drawState;
   LRci.sceneAmbientColor := FAmbientColor.Color;
   LRci.primitiveMask := cAllMeshPrimitive;
-  LRci.orderCounter := 0;
+  LRci.drawList := aScene.RenderManager.DrawList;
   with FCamera do
   begin
     LRci.cameraPosition := FCameraAbsolutePosition;
@@ -9679,9 +9652,9 @@ begin
 
   if baseObject = nil then
     baseObject := aScene.Objects;
-  aScene.RenderManager.ResetOrders;
   baseObject.Render(LRci);
-  aScene.RenderManager.DrawOrderedAll(LRci);
+  aScene.RenderManager.DrawAll(LRci);
+  aScene.RenderManager.DrawList.Count := 0;
 
   LRci.GLStates.SetGLColorWriting(True);
   with FAfterRenderEffects do

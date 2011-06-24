@@ -162,7 +162,6 @@ type
     procedure OnFontChange(sender: TObject);
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
-    procedure SetScene(const value: TGLScene); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -637,7 +636,7 @@ begin
   if ARenderSelf and (FLines.Count > 0) then
   begin
     FTransformation := ARci.PipelineTransformation.StackTop;
-    FBatch.Order := ARci.orderCounter;
+    ARci.drawList.Add(@FBatch);
   end;
 
   if ARenderChildren then
@@ -768,18 +767,6 @@ begin
   begin
     FOblique := Value;
     StructureChanged;
-  end;
-end;
-
-procedure TGLSpaceText.SetScene(const value: TGLScene);
-begin
-  if value <> Scene then
-  begin
-    if Assigned(Scene) then
-      Scene.RenderManager.UnRegisterBatch(FBatch);
-    if Assigned(value) then
-      value.RenderManager.RegisterBatch(FBatch);
-    inherited;
   end;
 end;
 

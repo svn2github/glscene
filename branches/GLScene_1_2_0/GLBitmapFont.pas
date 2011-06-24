@@ -355,7 +355,6 @@ type
     FBatches: TDrawBatchArray;
     FTransformation: TTransformationRec;
     FFinishEvent: TFinishTaskEvent;
-    procedure RegisterBatches;
     procedure DoBuild; virtual; stdcall;
     procedure FreeBatches;
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
@@ -1441,6 +1440,7 @@ begin
     if not Assigned(ABatches[FLastPageIndex].Mesh) then
     begin
       ABatches[FLastPageIndex].Mesh := TMeshAtom.Create;
+      ABatches[FLastPageIndex].Mesh.TagName := Format('BitmapText%d', [FLastPageIndex]);
       ABatches[FLastPageIndex].Material := FFontMaterial;
       ABatches[FLastPageIndex].Mesh.Lock;
       ABatches[FLastPageIndex].Mesh.DeclareAttribute(attrPosition, GLSLType2f);
@@ -1557,28 +1557,12 @@ begin
   FModulateColor.Assign(val);
 end;
 
-procedure TGLAbstractText.RegisterBatches;
-var
-  I: Integer;
-begin
-  if Assigned(Scene) then
-  begin
-    for I := 0 to High(FBatches) do
-    begin
-      Scene.RenderManager.RegisterBatch(FBatches[I]);
-      FBatches[I].Mesh.TagName := Format('%s_part%d', [ClassName, I]);
-      FBatches[I].Transformation := @FTransformation;
-    end;
-  end;
-end;
-
 procedure TGLAbstractText.DoBuild;
 begin
   FreeBatches;
   if Assigned(FBitmapFont) and (Text <> '') then
   begin
     FBitmapFont.BuildString(FBatches, Text, FAlignment, FLayout, FModulateColor.Color);
-    RegisterBatches;
   end;
   ClearStructureChanged;
 
@@ -1590,11 +1574,7 @@ procedure TGLAbstractText.FreeBatches;
 var
   I: Integer;
 begin
-  if Assigned(Scene) then
-    for I := 0 to High(FBatches) do
-      Scene.RenderManager.UnRegisterBatch(FBatches[I]);
-
-  for I := 0 to High(FBatches) do
+  for I := High(FBatches) downto 0 do
     FBatches[I].Mesh.Free;
   SetLength(FBatches, 0);
 end;
@@ -1677,7 +1657,7 @@ procedure TGLFlatText.DoRender(var ARci: TRenderContextInfo;
     begin
       FTransformation := ARci.PipelineTransformation.StackTop;
       for I := High(FBatches) downto 0 do
-        FBatches[I].Order := ARci.orderCounter;
+        ARci.drawList.Add(@FBatches[I]);
     end;
   end;
 
