@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Added CharToWideChar()
       <li>19/06/11 - Yar - Added IsDirectoryWriteable
       <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
       <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
@@ -472,6 +473,7 @@ function GetPlatformVersionStr : string;
 {: Determine if the directory is writable.<p> }
 function IsDirectoryWriteable(const AName: string): Boolean;
 
+function CharToWideChar(const AChar: Char): WideChar;
 
 implementation
 
@@ -1526,6 +1528,21 @@ begin
 {$ENDIF}
 end;
 
+
+function CharToWideChar(const AChar: Char): WideChar;
+{$IFDEF MSWINDOWS}
+var
+  lResult: PWideChar;
+begin
+  GetMem(lResult, 2);
+  MultiByteToWideChar(CP_ACP, 0, @AChar, 1, lResult, 2);
+  Result := lResult^;
+  FreeMem(lResult, 2);
+{$ELSE}
+begin
+  Assert(False, 'Not implemented!');
+{$ENDIF}
+end;
 
 initialization
   vGLSStartTime := GLSTime;
