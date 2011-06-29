@@ -6,8 +6,10 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
+      <li>30/06/11 - DaStr - TGLBaseMesh.BarycenterAbsolutePosition() now uses caching 
       <li>23/02/11 - Yar - Added extent caching to TMeshObject
-      <li>03/12/10 - Yar - Added mesh visibility checking in TMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
+      <li>03/12/10 - Yar - Added mesh visibility checking in
+                            TMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>23/07/10 - Yar - Bugfixed TSkeleton.WriteToFiler (thanks E-Cone)
       <li>11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
@@ -1347,6 +1349,8 @@ type
     FMaterialLibrary: TGLMaterialLibrary;
     FLightmapLibrary: TGLMaterialLibrary;
     FAxisAlignedDimensionsCache: TVector;
+    FBaryCenterOffsetChanged: Boolean;
+    FBaryCenterOffset: TVector;    
     FUseMeshMaterials: Boolean;
     FOverlaySkeleton: Boolean;
     FIgnoreMissingTextures: Boolean;
@@ -7314,6 +7318,7 @@ begin
   FUseMeshMaterials := True;
   FAutoCentering := [];
   FAxisAlignedDimensionsCache[0] := -1;
+  FBaryCenterOffsetChanged := True;  
   FAutoScaling := TGLCoordinates.CreateInitialized(Self, XYZWHmgVector,
     csPoint);
 end;
@@ -7342,8 +7347,8 @@ begin
     FNormalsOrientation := TGLBaseMesh(Source).FNormalsOrientation;
     FMaterialLibrary := TGLBaseMesh(Source).FMaterialLibrary;
     FLightmapLibrary := TGLBaseMesh(Source).FLightmapLibrary;
-    FAxisAlignedDimensionsCache :=
-      TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
+    FAxisAlignedDimensionsCache :=  TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
+    FBaryCenterOffset := TGLBaseMesh(Source).FBaryCenterOffset;
     FUseMeshMaterials := TGLBaseMesh(Source).FUseMeshMaterials;
     FOverlaySkeleton := TGLBaseMesh(Source).FOverlaySkeleton;
     FIgnoreMissingTextures := TGLBaseMesh(Source).FIgnoreMissingTextures;
@@ -7655,23 +7660,26 @@ end;
 
 // BarycenterAbsolutePosition
 //
-
 function TGLBaseMesh.BarycenterAbsolutePosition: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  MeshObjects.GetExtents(dMin, dMax);
-  Result[0] := (dMax[0] + dMin[0]) / 2;
-  Result[1] := (dMax[1] + dMin[1]) / 2;
-  Result[2] := (dMax[2] + dMin[2]) / 2;
-  Result[3] := 1;
+  if FBaryCenterOffsetChanged then
+  begin
+    MeshObjects.GetExtents(dMin, dMax);
 
-  Result := LocalToAbsolute(Result);
+    FBaryCenterOffset[0] := (dMin[0] + dMax[0]) / 2;
+    FBaryCenterOffset[1] := (dMin[1] + dMax[1]) / 2;
+    FBaryCenterOffset[2] := (dMin[2] + dMax[2]) / 2;
+    FBaryCenterOffset[3] := 0;
+    FBaryCenterOffsetChanged := False;
+  end;
+
+  Result := LocalToAbsolute(VectorAdd(Position.DirectVector, FBaryCenterOffset));
 end;
 
 // DestroyHandle
 //
-
 procedure TGLBaseMesh.DestroyHandle;
 begin
   if Assigned(FMaterialLibrary) then
@@ -7867,6 +7875,7 @@ end;
 procedure TGLBaseMesh.StructureChanged;
 begin
   FAxisAlignedDimensionsCache[0] := -1;
+  FBaryCenterOffsetChanged := True;  
   DropMaterialLibraryCache;
   MeshObjects.Prepare;
   inherited;
@@ -7997,6 +8006,7 @@ end;
 constructor TGLFreeForm.Create(AOwner: TComponent);
 begin
   inherited;
+//  ObjectStyle := [osDirectDraw];
   FUseMeshMaterials := True;
 end;
 
