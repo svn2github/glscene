@@ -6,6 +6,7 @@
    Coordinate related classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
       <li>05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thnaks C4)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses
       <li>05/10/08 - DanB - Created, from GLMisc.pas
@@ -49,8 +50,9 @@ type
 			procedure SetAsAffineVector(const value : TAffineVector);
       function GetAsAffineVector : TAffineVector;
       function GetAsPoint2D : TVector2f;
-			procedure SetCoordinate(index : Integer; const aValue : TGLFloat);
       function GetAsString : String;
+			procedure SetCoordinate(const AIndex : Integer; const aValue : TGLFloat);
+      function GetCoordinate(const AIndex: Integer): TGLFloat;
 
 		protected
 			{ Protected Declarations }
@@ -131,6 +133,8 @@ type
       property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate;
       property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate;
 			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
+
+      property Coordinate[const AIndex: Integer]: TGLFloat read GetCoordinate write SetCoordinate; default;
 
          {: The coordinates, in-between brackets, separated by semi-colons. }
          property AsString : String read GetAsString;
@@ -624,10 +628,17 @@ end;
 
 // SetCoordinate
 //
-procedure TGLCustomCoordinates.SetCoordinate(index : Integer; const aValue : TGLFloat);
+procedure TGLCustomCoordinates.SetCoordinate(const AIndex: Integer; const aValue : TGLFloat);
 begin
-	FCoords[index]:=aValue;
+	FCoords[AIndex]:=aValue;
 	NotifyChange(Self);
+end;
+
+// GetCoordinate
+//
+function TGLCustomCoordinates.GetCoordinate(const AIndex: Integer): TGLFloat;
+begin
+  Result := FCoords[AIndex];
 end;
 
 // GetAsString
