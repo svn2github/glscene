@@ -9,6 +9,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Added ability to assign meshes
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>04/03/10 - DanB - Now uses CharInSet
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -37,8 +38,8 @@
                            renamed TMBAGLOBJVectorFile to TGLOBJVectorFile
    </ul><p>
 
-   (c) 2000 Marian Aldenhvel<br>
-       Hainstraà ¥ 8<br>
+   (c) 2000 Marian Aldenhövel<br>
+       Hainstraße 8<br>
        53121 Bonn<br>
        info@MBA-Software.de<p>
 
@@ -71,12 +72,12 @@ unit GLFileOBJ;
 interface
 
 uses
-  BaseClasses,
   GLCrossPlatform,
   Classes,
   SysUtils,
   ApplicationFileIO,
-
+  PersistentClasses,
+  
   VectorGeometry,
   GLScene,
   GLVectorFileObjects,
@@ -240,13 +241,17 @@ type
     FCurrentVertexCount: integer;
     FShowNormals: boolean;
     procedure PolygonComplete; { Current polygon completed. Adds FCurrentVertexCount
-    to FPolygonVertices and sets the variable to 0 }
+                                 to FPolygonVertices and sets the variable to 0 }
 
     procedure SetMode(aMode: TOBJFGMode);
 
   public
+    procedure Assign(Source: TPersistent); override;
     constructor CreateOwned(aOwner: TFaceGroups); override;
     destructor Destroy; override;
+
+    procedure WriteToFiler(writer: TVirtualWriter); override;
+    procedure ReadFromFiler(reader: TVirtualReader); override;    
 
     procedure Add(VertexIdx, NormalIdx, TexCoordIdx: Integer);
     procedure BuildList(var mrci: TRenderContextInfo); override;
@@ -1277,6 +1282,7 @@ begin
 
   OldDecimalSeparator := GetDecimalSeparator;
   SetDecimalSeparator('.');
+    
   { Better not call anything that wants the system-locale intact
     from this block }
   try
@@ -1374,6 +1380,70 @@ begin
   end;
 end;
 
+procedure TOBJFGVertexNormalTexIndexList.Assign(Source: TPersistent);
+begin
+  if Source is TOBJFGVertexNormalTexIndexList then
+  begin
+    FMode := TOBJFGVertexNormalTexIndexList(Source).FMode;
+    FName := TOBJFGVertexNormalTexIndexList(Source).FName;
+    FCurrentVertexCount := TOBJFGVertexNormalTexIndexList(Source).FCurrentVertexCount;
+    FShowNormals := TOBJFGVertexNormalTexIndexList(Source).FShowNormals;
+
+    if TOBJFGVertexNormalTexIndexList(Source).FPolygonVertices = nil then
+      FreeAndNil(FPolygonVertices)
+    else
+    begin
+      if FPolygonVertices = nil then
+        TIntegerList.Create;
+      FPolygonVertices.Assign(TOBJFGVertexNormalTexIndexList(Source).FPolygonVertices);
+    end;  
+  end
+  else
+    inherited;
+end;
+
+procedure TOBJFGVertexNormalTexIndexList.ReadFromFiler(
+  reader: TVirtualReader);
+var
+  archiveVersion: Integer;
+begin
+  inherited ReadFromFiler(reader);
+  archiveVersion := reader.ReadInteger;
+  if archiveVersion = 0 then
+  begin
+    FMode := TOBJFGMode(reader.ReadInteger);
+    FName := reader.ReadString;
+    FCurrentVertexCount := reader.ReadInteger;
+    FShowNormals := reader.ReadBoolean;
+
+    if FMode = objfgmmPolygons then
+    begin
+      FPolygonVertices := TIntegerList.Create;
+      FPolygonVertices.ReadFromFiler(reader);
+    end;  
+  end
+  else
+    RaiseFilerException(archiveVersion);
+end;
+
+procedure TOBJFGVertexNormalTexIndexList.WriteToFiler(
+  writer: TVirtualWriter);
+begin
+  inherited WriteToFiler(writer);
+  with writer do
+  begin
+    WriteInteger(0); // Archive Version 0
+
+    writer.WriteInteger(Ord(FMode));
+    writer.WriteString(FName);
+    writer.WriteInteger(FCurrentVertexCount);
+    writer.WriteBoolean(FShowNormals);
+
+    if FPolygonVertices <> nil then
+      FPolygonVertices.WriteToFiler(writer);
+  end;
+end;
+
 initialization
 
   { Register this Fileformat-Handler with GLScene }
@@ -1382,3 +1452,4 @@ initialization
   RegisterClass(TOBJFGVertexNormalTexIndexList);
 
 end.
+
