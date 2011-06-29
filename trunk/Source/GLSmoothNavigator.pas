@@ -15,6 +15,9 @@
 
 
    <b>History : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Converted many procedures to functions
+                             Bugfixed Assign() in some places
+                             Added "Cutoff" property instead of fixed EPS values
       <li>02/06/11 - DaStr - DeltaTime is now Double, like in Cadencer
                              Added CustomAnimatedItems
       <li>28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
@@ -53,13 +56,12 @@ uses
   Classes,
 
   // GLScene
-  GLNavigator, VectorGeometry, {$IFDEF GLS_DELPHI}VectorTypes,{$ENDIF}
-  GLScene, GLCrossPlatform, GLCoordinates,
+  GLNavigator, VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates,
   GLScreen, XCollection;
 
 type
 
-	{: TGLNavigatorAdjustDistanceParameters includes a basic set of parameters
+  {: TGLNavigatorAdjustDistanceParameters includes a basic set of parameters
      that control the smoothness of movement.<p>
   }
   TGLNavigatorAbstractParameters = class(TPersistent)
@@ -67,6 +69,8 @@ type
     FOwner: TPersistent;
     FInertia: Single;
     FSpeed: Single;
+    FCutoff: Single;
+    function StoreCutoff: Boolean;
   protected
     function StoreInertia: Boolean; virtual;
     function StoreSpeed: Boolean; virtual;
@@ -79,11 +83,12 @@ type
   published
     property Inertia: Single read FInertia write FInertia stored StoreInertia;
     property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
+    property Cutoff: Single read FCutoff write FCutoff stored StoreCutoff; 
   end;
 
   TGLSmoothNavigator = class;
 
-	{: TGLNavigatorSmoothChangeItem includes a basic set of parameters
+  {: TGLNavigatorSmoothChangeItem includes a basic set of parameters
      that control the smoothness of movement.<p>
   }
   TGLNavigatorSmoothChangeItem = class(TXCollectionItem)
@@ -105,6 +110,7 @@ type
     constructor Create(aOwner: TXCollection); override;
     procedure Assign(Source: TPersistent); override;
     procedure ScaleParameters(const Value: Single); virtual;
+    procedure ResetTargetValue(); virtual; abstract;
   published
     property Inertia: Single read FInertia write FInertia stored StoreInertia;
     property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
@@ -117,8 +123,7 @@ type
   TGLNavigatorSmoothChangeSingleGetEvent = function(const ASender: TGLNavigatorSmoothChangeSingle): Single of object;
   TGLNavigatorSmoothChangeSingleSetEvent = procedure(const ASender: TGLNavigatorSmoothChangeSingle; const AValue: Single) of object;
 
-	{: Smoothly change any Single value, so it will become TargetValue in the end.<p>
-  }
+  {: Smoothly change any Single value, so it will become TargetValue in the end.<p> }
   TGLNavigatorSmoothChangeSingle = class(TGLNavigatorSmoothChangeItem)
   private
     FTargetValue: Single;
@@ -128,6 +133,7 @@ type
     class function FriendlyName: string; override;
     function Proceed(ADeltaTime: Double): Boolean; override;
     procedure Assign(Source: TPersistent); override;
+    procedure ResetTargetValue(); override;    
   published
     property TargetValue: Single read FTargetValue write FTargetValue;
     property OnGetCurrentValue: TGLNavigatorSmoothChangeSingleGetEvent read FOnGetCurrentValue write FOnGetCurrentValue;
@@ -138,8 +144,7 @@ type
   TGLNavigatorSmoothChangeVectorGetEvent = function(const ASender: TGLNavigatorSmoothChangeVector): TVector of object;
   TGLNavigatorSmoothChangeVectorSetEvent = procedure(const ASender: TGLNavigatorSmoothChangeVector; const AValue: TVector) of object;
 
-	{: Smoothly change any Vector4f value, so it will become TargetValue in the end.<p>
-  }
+  {: Smoothly change any Vector4f value, so it will become TargetValue in the end.<p> }
   TGLNavigatorSmoothChangeVector = class(TGLNavigatorSmoothChangeItem)
   private
     FTargetValue: TGLCoordinates;
@@ -152,6 +157,7 @@ type
     procedure Assign(Source: TPersistent); override;
     constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
+    procedure ResetTargetValue(); override;
   published
     property TargetValue: TGLCoordinates read FTargetValue write SetTargetValue;
     property OnGetCurrentValue: TGLNavigatorSmoothChangeVectorGetEvent read FOnGetCurrentValue write FOnGetCurrentValue;
@@ -175,7 +181,7 @@ type
             SetItems; default;
   end;
 
-	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
+  {: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
        affect how the AdjustDisanceTo[...] methods work<p>
   }
   TGLNavigatorAdjustDistanceParameters = class(TGLNavigatorAbstractParameters)
@@ -193,7 +199,7 @@ type
     property ImpulseSpeed: Single read FImpulseSpeed write FImpulseSpeed stored StoreImpulseSpeed;
   end;
 
-	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
+  {: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that
        affect how the AdjustDisanceTo[...]Ex methods work<p>
 
      You need to set the TargetObject and desired distance to it,
@@ -216,7 +222,7 @@ type
     property SpeedLimit: Single read FSpeedLimit write FSpeedLimit stored StoreSpeedLimit;
   end;
 
-	{: TGLNavigatorInertiaParameters is wrapper for all parameters that affect the
+  {: TGLNavigatorInertiaParameters is wrapper for all parameters that affect the
        smoothness of movement<p>
   }
   TGLNavigatorInertiaParameters = class(TPersistent)
@@ -304,12 +310,14 @@ type
     FTurnSpeed  : Single;
     FInertia          : Single;
     FMaxAngle         : Single;
+    FCutoff: Double;
 
     function StoreInertia: Boolean;
     function StoreMaxAngle: Boolean;
     function StorePitchSpeed: Boolean;
     function StoreTurnSpeed: Boolean;
     procedure SetTargetObject(const Value: TGLBaseSceneObject);
+    function StoreCutoff: Boolean;
   protected
     function GetOwner: TPersistent; override;
   public
@@ -322,35 +330,19 @@ type
     property PitchSpeed: Single read FPitchSpeed write FPitchSpeed stored StorePitchSpeed;
     property TurnSpeed: Single read FTurnSpeed write FTurnSpeed stored StoreTurnSpeed;
     property TargetObject: TGLBaseSceneObject read FTargetObject write SetTargetObject;
+    property Cutoff: Double read FCutoff write FCutoff stored StoreCutoff;    
   end;
 
 
-	// TGLSmoothNavigator
-	//
-	{: TGLSmoothNavigator is the component for moving a TGLBaseSceneObject, and all
+  // TGLSmoothNavigator
+  //
+  {: TGLSmoothNavigator is the component for moving a TGLBaseSceneObject, and all
        classes based on it, this includes all the objects from the Scene Editor.<p>
 
-	   The four calls to get you started are
-      <ul>
-  	 <li>TurnHorisontal : it turns left and right.
-	   <li>TurnVertical : it turns up and down.
-	   <li>MoveForward :	moves back and forth.
-     <li>FlyForward : moves back and forth in the movingobject's direction
-      </ul>
-	   The three properties to get you started is
-      <ul>
-	   <li>MovingObject : The Object that you are moving.
-	   <li>UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
-   	                    it's more like Descent.
-	   <li>AngleLock : Allows you to block the Vertical angles. Should only be used in
-			               conjunction with UseVirtualUp.
-	   <li>MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
-                                   (no tilt and flying)
-	   <li>InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
-                      rotating beyond 90 degrees, will make steering seem inverted,
-                      so we "invert" back to normal.
-      </ul>
-   }
+     It uses complex smoothing algorithms, most of which are FPS-dependant.
+     Make sure your limit your FPS and set MaxExpectedDeltaTime to a value
+     that is aproximatly 5 times less than your usual deltatime.
+  }
   TGLSmoothNavigator = class(TGLNavigator)
   private
     FMaxExpectedDeltaTime: Double;
@@ -372,14 +364,14 @@ type
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    //: Constructors-destructors
+    //: Constructors-destructors.
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    //: From TGLNavigator
+    //: From TGLNavigator. Probably, should not be public.
     procedure SetObject(Value: TGLBaseSceneObject); override;
 
-    //: InertiaParams
+    //: Uses InertiaParams.
     procedure TurnHorizontal(Angle: Single; ADeltaTime: Double); virtual;
     procedure TurnVertical(Angle: Single; ADeltaTime: Double); virtual;
     procedure FlyForward(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
@@ -387,22 +379,22 @@ type
     procedure StrafeHorizontal(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
     procedure StrafeVertical(const Plus, Minus: Boolean; ADeltaTime: Double; const Accelerate: Boolean = False); virtual;
 
-    //: MoveAroundParams
-    procedure MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double); virtual;
-    procedure MoveObjectAround(const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double); virtual;
+    //: Uses MoveAroundParams. Returns True, if object was actually moved.
+    function MoveAroundTarget(const PitchDelta, TurnDelta : Single; const ADeltaTime: Double): Boolean; virtual;
+    function MoveObjectAround(const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta : Single; ADeltaTime: Double): Boolean; virtual;
 
-    //: AdjustDistanceParams
-    procedure AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double); virtual;
-    procedure AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double); virtual;
+    //: Uses AdjustDistanceParams.
+    function AdjustDistanceToPoint(const  APoint: TVector; const DistanceRatio : Single; ADeltaTime: Double): Boolean; virtual;
+    function AdjustDistanceToTarget(const DistanceRatio : Single; const ADeltaTime: Double): Boolean; virtual;
 
-    //: AdjustDistanceParamsEx
-    procedure AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double); virtual;
-    procedure AdjustDistanceToTargetEx(const ADeltaTime: Double); virtual;
+    //: Uses AdjustDistanceParamsEx.
+    function AdjustDistanceToPointEx(const  APoint: TVector; ADeltaTime: Double): Boolean; virtual;
+    function AdjustDistanceToTargetEx(const ADeltaTime: Double): Boolean; virtual;
 
-    //: CustomAnimatedItems.
+    //: Uses CustomAnimatedItems.
     procedure AnimateCustomItems(const ADeltaTime: Double); virtual;
 
-    //: GeneralParams
+    //: Uses GeneralParams.
       {: In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
     procedure AutoScaleParameters(const FPS: Single); virtual;
@@ -418,9 +410,9 @@ type
   end;
 
 
-	// TGLSmoothUserInterface
-	//
-	{: TGLSmoothUserInterface is the component which reads the userinput and transform it into action.<p>
+  // TGLSmoothUserInterface
+  //
+  {: TGLSmoothUserInterface is the component which reads the userinput and transform it into action.<p>
       <ul>
 	   <li>Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
@@ -757,19 +749,22 @@ begin
     end;
 end;
 
-procedure TGLSmoothNavigator.MoveAroundTarget(const PitchDelta, TurnDelta: Single;
-  const ADeltaTime: Double);
+function TGLSmoothNavigator.MoveAroundTarget(const PitchDelta, TurnDelta: Single;
+  const ADeltaTime: Double): Boolean;
 begin
-  MoveObjectAround(FMoveAroundParams.FTargetObject, PitchDelta, TurnDelta, ADeltaTime);
+  Result := MoveObjectAround(FMoveAroundParams.FTargetObject, PitchDelta, TurnDelta, ADeltaTime);
 end;
 
-procedure TGLSmoothNavigator.MoveObjectAround(
+function TGLSmoothNavigator.MoveObjectAround(
   const AObject: TGLBaseSceneObject; PitchDelta, TurnDelta: Single;
-  ADeltaTime: Double);
+  ADeltaTime: Double): Boolean;
 var
   FinalPitch: Single;
   FinalTurn:  Single;
+
+  lUp: TVector;
 begin
+  Result := False;
   FinalPitch := 0;
   FinalTurn := 0;
   with FMoveAroundParams do
@@ -789,14 +784,23 @@ begin
       ADeltaTime := ADeltaTime - FMaxExpectedDeltatime;
     end;
 
-  if (Abs(FinalPitch) > EPS) or (Abs(FinalTurn) > EPS) then
-    MovingObject.MoveObjectAround(AObject, FinalPitch, FinalTurn);
+    if UseVirtualUp then
+      lUp := VirtualUp.AsVector
+    else
+      lUp := MovingObject.AbsoluteUp;
+
+    if (Abs(FinalPitch) > FCutOff) or (Abs(FinalTurn) > FCutOff) then
+    begin
+      MovingObject.AbsolutePosition := VectorGeometry.MoveObjectAround(
+        MovingObject.AbsolutePosition, lUp, AObject.AbsolutePosition, FinalPitch, FinalTurn);
+      Result := True;  
+    end;
   end;
 end;
 
 
-procedure TGLSmoothNavigator.AdjustDistanceToPoint(const APoint: TVector;
-  const DistanceRatio: Single; ADeltaTime: Double);
+function TGLSmoothNavigator.AdjustDistanceToPoint(const APoint: TVector;
+  const DistanceRatio: Single; ADeltaTime: Double): Boolean;
 
   // Based on TGLCamera.AdjustDistanceToTarget
   procedure DoAdjustDistanceToPoint(const DistanceRatio: Single);
@@ -809,6 +813,7 @@ procedure TGLSmoothNavigator.AdjustDistanceToPoint(const APoint: TVector;
     if Assigned(MovingObject.Parent) then
        vect := MovingObject.Parent.AbsoluteToLocal(vect);
     MovingObject.Position.AsVector := vect;
+    Result := True;
   end;
 
 var
@@ -827,21 +832,23 @@ begin
       FinalDistanceRatio := FinalDistanceRatio + FOldDistanceRatio / FMaxExpectedDeltaTime;
     end;
 
-    if Abs(FinalDistanceRatio) > EPS2 then
+    if Abs(FinalDistanceRatio) > FCutoff then
     begin
       if FinalDistanceRatio > 0 then
         DoAdjustDistanceToPoint(1 / (1 + FinalDistanceRatio))
       else
         DoAdjustDistanceToPoint(1 * (1 - FinalDistanceRatio))
-    end;
+    end
+    else
+      Result := False;
   end;
 end;
 
-procedure TGLSmoothNavigator.AdjustDistanceToTarget(const DistanceRatio: Single;
-  const ADeltaTime: Double);
+function TGLSmoothNavigator.AdjustDistanceToTarget(const DistanceRatio: Single;
+  const ADeltaTime: Double): Boolean;
 begin
   Assert(FMoveAroundParams.FTargetObject <> nil);
-  AdjustDistanceToPoint(FMoveAroundParams.FTargetObject.AbsolutePosition,
+  Result := AdjustDistanceToPoint(FMoveAroundParams.FTargetObject.AbsolutePosition,
                         DistanceRatio, ADeltaTime);
 end;
 
@@ -851,8 +858,8 @@ begin
   FAdjustDistanceParams.Assign(Value);
 end;
 
-procedure TGLSmoothNavigator.AdjustDistanceToPointEx(const APoint: TVector;
-  ADeltaTime: Double);
+function TGLSmoothNavigator.AdjustDistanceToPointEx(const APoint: TVector;
+  ADeltaTime: Double): Boolean;
 
 var
   lAbsolutePosition: TVector;
@@ -867,6 +874,7 @@ var
     NormalizeVector(vect);
     ScaleVector(vect, DistanceValue);
     MovingObject.AbsolutePosition := VectorAdd(lAbsolutePosition, vect);
+    Result := True;
   end;
 
 begin
@@ -885,17 +893,19 @@ begin
     end;
     
     lTempCurrentDistance :=  ClampValue(lTempCurrentDistance, -FSpeedLimit * ADeltaTime, FSpeedLimit * ADeltaTime);
-  end;
 
-  if Abs(lTempCurrentDistance) > EPS2 then
-    DoAdjustDistanceToPoint(lTempCurrentDistance);
+    if Abs(lTempCurrentDistance) > FCutoff then
+      DoAdjustDistanceToPoint(lTempCurrentDistance)
+    else
+      Result := False;
+  end;
 end;
 
-procedure TGLSmoothNavigator.AdjustDistanceToTargetEx(
-  const ADeltaTime: Double);
+function TGLSmoothNavigator.AdjustDistanceToTargetEx(
+  const ADeltaTime: Double): Boolean;
 begin
   Assert(FMoveAroundParams.FTargetObject <> nil);
-  AdjustDistanceToPointEx(FMoveAroundParams.FTargetObject.AbsolutePosition,
+  Result := AdjustDistanceToPointEx(FMoveAroundParams.FTargetObject.AbsolutePosition,
                           ADeltaTime);
 end;
 
@@ -1200,6 +1210,8 @@ begin
     FInertia :=  TGLNavigatorMoveAroundParameters(Source).FInertia;
     FPitchSpeed :=  TGLNavigatorMoveAroundParameters(Source).FPitchSpeed;
     FTurnSpeed :=  TGLNavigatorMoveAroundParameters(Source).FTurnSpeed;
+    FCutoff :=  TGLNavigatorMoveAroundParameters(Source).FCutoff;
+    SetTargetObject(TGLNavigatorMoveAroundParameters(Source).FTargetObject);
   end
   else
     inherited; //die
@@ -1212,6 +1224,7 @@ begin
   FTurnSpeed  := 500;
   FInertia    := 65;
   FMaxAngle   := 1.5;
+  FCutoff     := EPS2;
 end;
 
 function TGLNavigatorMoveAroundParameters.GetOwner: TPersistent;
@@ -1248,6 +1261,11 @@ begin
       FTargetObject.FreeNotification(TGLSmoothNavigator(FOwner));
 end;
 
+function TGLNavigatorMoveAroundParameters.StoreCutoff: Boolean;
+begin
+  Result := Abs(FCutoff - EPS2) > EPS8;
+end;
+
 function TGLNavigatorMoveAroundParameters.StoreInertia: Boolean;
 begin
   Result := Abs(FInertia - 65) > EPS;
@@ -1278,12 +1296,11 @@ end;
 
 procedure TGLNavigatorAdjustDistanceParameters.Assign(Source: TPersistent);
 begin
+  inherited Assign(Source);
   if Source is TGLNavigatorAdjustDistanceParameters then
   begin
     FImpulseSpeed := TGLNavigatorAdjustDistanceParameters(Source).FImpulseSpeed;
-  end
-  else
-    inherited; //to the pit of doom ;)
+  end;
 end;
 
 constructor TGLNavigatorAdjustDistanceParameters.Create(
@@ -1315,6 +1332,7 @@ begin
   begin
     FInertia := TGLNavigatorAbstractParameters(Source).FInertia;
     FSpeed :=   TGLNavigatorAbstractParameters(Source).FSpeed;
+    FCutoff :=  TGLNavigatorAbstractParameters(Source).FCutoff;
   end
   else
     inherited; //to the pit of doom ;)
@@ -1326,6 +1344,7 @@ begin
   FOwner := AOwner;
   FInertia := 100;
   FSpeed := 0.005;
+  FCutoff := EPS;
 end;
 
 function TGLNavigatorAbstractParameters.GetOwner: TPersistent;
@@ -1342,6 +1361,11 @@ begin
     FInertia := FInertia / VectorGeometry.Power(2, Value)
   else
     FInertia := FInertia * VectorGeometry.Power(2, 1 / Value);
+end;
+
+function TGLNavigatorAbstractParameters.StoreCutoff: Boolean;
+begin
+  Result := Abs(FCutoff - EPS) > EPS2;
 end;
 
 function TGLNavigatorAbstractParameters.StoreInertia: Boolean;
@@ -1362,6 +1386,7 @@ begin
   if Source is TGLNavigatorAdjustDistanceParametersEx then
   begin
     FTargetDistance := TGLNavigatorAdjustDistanceParametersEx(Source).FTargetDistance;
+    FSpeedLimit := TGLNavigatorAdjustDistanceParametersEx(Source).FSpeedLimit;
   end
   else
     inherited;
@@ -1401,13 +1426,16 @@ end;
 
 procedure TGLNavigatorSmoothChangeItem.Assign(Source: TPersistent);
 begin
+  inherited Assign(Source);
+
   if Source is TGLNavigatorSmoothChangeItem then
   begin
-    FInertia := TGLNavigatorAbstractParameters(Source).FInertia;
-    FSpeed :=   TGLNavigatorAbstractParameters(Source).FSpeed;
-  end
-  else
-    inherited; //to the pit of doom ;)
+    FInertia :=    TGLNavigatorSmoothChangeItem(Source).FInertia;
+    FSpeed :=      TGLNavigatorSmoothChangeItem(Source).FSpeed;
+    FSpeedLimit := TGLNavigatorSmoothChangeItem(Source).FSpeedLimit;
+    FCutoff :=     TGLNavigatorSmoothChangeItem(Source).FCutoff;
+    FEnabled :=    TGLNavigatorSmoothChangeItem(Source).FEnabled;
+  end;
 end;
 
 constructor TGLNavigatorSmoothChangeItem.Create(aOwner: TXCollection);
@@ -1496,12 +1524,14 @@ end;
 
 procedure TGLNavigatorSmoothChangeSingle.Assign(Source: TPersistent);
 begin
-  if Source is TGLNavigatorSmoothChangeSingle then
+  inherited Assign(Source);
+  
+  if Source is TGLNavigatorSmoothChangeVector then
   begin
     FTargetValue := TGLNavigatorSmoothChangeSingle(Source).TargetValue;
-  end
-  else
-    inherited; //to the pit of doom ;)
+    FOnGetCurrentValue := TGLNavigatorSmoothChangeSingle(Source).FOnGetCurrentValue;
+    FOnSetCurrentValue := TGLNavigatorSmoothChangeSingle(Source).FOnSetCurrentValue;
+  end;
 end;
 
 class function TGLNavigatorSmoothChangeSingle.FriendlyName: string;
@@ -1545,16 +1575,23 @@ begin
   end;  
 end;
 
+procedure TGLNavigatorSmoothChangeSingle.ResetTargetValue;
+begin
+  FTargetValue := FOnGetCurrentValue(Self);
+end;
+
 { TGLNavigatorSmoothChangeVector }
 
 procedure TGLNavigatorSmoothChangeVector.Assign(Source: TPersistent);
 begin
+  inherited Assign(Source);
+  
   if Source is TGLNavigatorSmoothChangeVector then
   begin
     FTargetValue.Assign(TGLNavigatorSmoothChangeVector(Source).TargetValue);
-  end
-  else
-    inherited; //to the pit of doom ;)
+    FOnGetCurrentValue := TGLNavigatorSmoothChangeVector(Source).FOnGetCurrentValue;
+    FOnSetCurrentValue := TGLNavigatorSmoothChangeVector(Source).FOnSetCurrentValue;
+  end;
 end;
 
 constructor TGLNavigatorSmoothChangeVector.Create(aOwner: TXCollection);
@@ -1585,9 +1622,13 @@ var
   var
     vect: TVector;
   begin
-    vect := VectorAdd(
-      lAbsolutePosition,
-      VectorScale(VectorNormalize(VectorSubtract(FTargetValue.DirectVector, lAbsolutePosition)), lTotalDistanceToTravelThisTime));
+    vect := VectorScale(VectorNormalize(VectorSubtract(FTargetValue.DirectVector, lAbsolutePosition)), lTotalDistanceToTravelThisTime);
+    AddVector(vect, lAbsolutePosition);
+
+    // Did we go too far?
+    if VectorDistance(vect, FTargetValue.DirectVector) > VectorDistance(lAbsolutePosition, FTargetValue.DirectVector) then
+      vect := FTargetValue.DirectVector;
+
     FOnSetCurrentValue(Self, vect);
     Result := True;
   end;
@@ -1617,6 +1658,11 @@ begin
 
   if Abs(lTotalDistanceToTravelThisTime) > FCutoff then
     DoAdjustDistanceToPoint();
+end;
+
+procedure TGLNavigatorSmoothChangeVector.ResetTargetValue;
+begin
+  FTargetValue.DirectVector := FOnGetCurrentValue(Self);
 end;
 
 procedure TGLNavigatorSmoothChangeVector.SetTargetValue(
