@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -119,8 +120,8 @@ type
     destructor Destroy; override;
 
     function Add: TBitmapFontRange; overload;
-    function Add(startASCII, stopASCII: widechar): TBitmapFontRange; overload;
-    function Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
+    function Add(const startASCII, stopASCII: WideChar): TBitmapFontRange; overload;
+    function Add(const startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
     function FindItemID(ID: Integer): TBitmapFontRange;
     property Items[index: Integer]: TBitmapFontRange read GetItems write SetItems; default;
 
@@ -515,7 +516,7 @@ end;
 // Add
 //
 
-function TBitmapFontRanges.Add(startASCII, stopASCII: widechar): TBitmapFontRange;
+function TBitmapFontRanges.Add(const startASCII, stopASCII: WideChar): TBitmapFontRange;
 begin
   Result := Add;
   Result.StartASCII := startASCII;
@@ -525,9 +526,9 @@ end;
 // Add
 //
 
-function TBitmapFontRanges.Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange;
+function TBitmapFontRanges.Add(const startASCII, stopASCII: AnsiChar): TBitmapFontRange;
 begin
-  Result := Add(WideChar(startASCII), WideChar(stopASCII));
+  Result := Add(CharToWideChar(startASCII), CharToWideChar(stopASCII));
 end;
 
 // FindItemID
