@@ -13,7 +13,9 @@
                              Camera is now a TGLBaseSceneObject
                              Added CameraTarget property
                              Most procedures now use "const" parameters
-                             Restructured TGLCameraJob: published some properties, deleted others 
+                             Restructured TGLCameraJob: published some properties, deleted others
+                             Added basic Notification
+                             Removed Cadencer dependancy 
       <li>14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
       <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
       <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
@@ -49,7 +51,7 @@ unit GLCameraController;
 interface
 
 uses
-  GLScene, Classes, SysUtils, Contnrs, GLCadencer, VectorGeometry,
+  GLScene, Classes, SysUtils, Contnrs, VectorGeometry,
   GLSmoothNavigator {$IFNDEF GLS_DELPHI},VectorTypes{$ENDIF};
 
 type
@@ -209,16 +211,18 @@ type
 
   TGLCameraController = class(TComponent)
   private
-    //private variables - explained at the respective properties
+    // Objects.
+    FCameraJobList : TGLCameraJobList;
     FCamera: TGLBaseSceneObject;
     FCameraTarget: TGLBaseSceneObject;
-    FCadencer: TGLCadencer;
+
+    // Events.
     FOnJobAdded: TGLCameraJobEvent;
     FOnJobFinished: TGLCameraJobEvent;
     FOnJobStep: TGLCameraJobEvent;
 
     //fields used by SafeOrbitAndZoomToPos
-    FsoSafeDist,FsoTimeToSafePlacement,FsoTimeToOrbit,FsoTimeToZoomBackIn:double;
+    FsoSafeDist, FsoTimeToSafePlacement, FsoTimeToOrbit, FsoTimeToZoomBackIn:double;
 
     //private methods
     //used to test whether camera and cadencer are assigned
@@ -233,9 +237,11 @@ type
     procedure SetOnJobFinished(const Value: TGLCameraJobEvent);
     procedure SetOnJobStep(const Value: TGLCameraJobEvent);
     procedure SetCamera(const Value: TGLBaseSceneObject);
+    procedure SetCameraTarget(const Value: TGLBaseSceneObject);
+  protected
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
-    CameraJobList : TGLCameraJobList;
-    //constructor
+    // Constructor.
     constructor Create(AOwner:TComponent); override;
     destructor Destroy; override;
 
@@ -282,17 +288,16 @@ type
     //here it is
     procedure StopMovement;
 
-    //<alled by the cadencer to animate the camera
+    // Called by the cadencer to animate the camera
     procedure Step(const deltaTime, newTime: Double);
+
+    property CameraJobList: TGLCameraJobList read FCameraJobList;
   published
-    // Assign a TGLCamera instance to this.
+    // Assign a Moving object (usually a TGLCamera).
     property Camera: TGLBaseSceneObject read FCamera write SetCamera;
 
-    // Assign a TGLCamera instance to this.
-    property CameraTarget: TGLBaseSceneObject read FCameraTarget write FCameraTarget;
-
-    // Assign a TGLCadencer instance to this.
-    property Cadencer:TGLCadencer read FCadencer write FCadencer;
+    // Assign a target, around which Moving object should rotate(usually TGLCamera.TargetObject).
+    property CameraTarget: TGLBaseSceneObject read FCameraTarget write SetCameraTarget;
 
     //specifies whether user should be able interract with the GLSceneViewer
     //it is set to false while the camera is moving and
@@ -332,8 +337,8 @@ constructor TGLCameraController.Create(AOwner:TComponent);
 begin
   inherited;
   //create the job list container
-  CameraJobList := TGLCameraJobList.Create(Self);
-  CameraJobList.OwnsObjects := true;
+  FCameraJobList := TGLCameraJobList.Create(Self);
+  FCameraJobList.OwnsObjects := true;
 
   //initialize values
   soSafeDistance:=10;
@@ -345,7 +350,7 @@ end;
 destructor TGLCameraController.Destroy;
 begin
   //delete job list and all jobs inside
-  CameraJobList.Free;
+  FCameraJobList.Free;
   inherited;
 end;
 
@@ -357,11 +362,7 @@ begin
   begin
     Raise EGLCameraController.CreateFmt('%s (%s) needs to have a Camera assigned',[Self.Name, Self.ClassName]);
   end;
-  /// Check cadencer assignament
-  if not Assigned(FCadencer) then
-  begin
-    Raise EGLCameraController.CreateFmt('%s (%s) needs to have a Cadencer assigned',[Self.Name, Self.ClassName]);
-  end;
+
   if Extended then
     /// Check camera;TargetObject assignment
     if not Assigned(FCameraTarget) then
@@ -375,9 +376,9 @@ var
   CurrentJob : TGLCameraJob;
 begin
 
-  if CameraJobList.Count > 0 then
+  if FCameraJobList.Count > 0 then
   begin
-    CurrentJob := CameraJobList.First;
+    CurrentJob := FCameraJobList.First;
 
     if CurrentJob.FInit then
     begin
@@ -404,7 +405,7 @@ begin
 
     if not CurrentJob.FRunning then
     begin
-      CameraJobList.Remove(CurrentJob);
+      FCameraJobList.Remove(CurrentJob);
 
       // Notify job
       if Assigned(FOnJobFinished) then
@@ -419,7 +420,7 @@ end;
 
 function TGLCameraController.MoveToPos(x,y,z, time:double): TGLMoveToPosJob;
 begin
-  Result := TGLMoveToPosJob.Create(CameraJobList);
+  Result := TGLMoveToPosJob.Create(FCameraJobList);
 
   Result.X := x;
   Result.Y := y;
@@ -430,7 +431,7 @@ end;
 
 function TGLCameraController.ZoomToDistance(Distance, Time:double): TGLZoomToDistanceJob;
 begin
-  Result := TGLZoomToDistanceJob.Create(CameraJobList);
+  Result := TGLZoomToDistanceJob.Create(FCameraJobList);
   Result.Distance := Distance;
   Result.Time := Time;
 end;
@@ -438,9 +439,9 @@ end;
 
 function TGLCameraController.OrbitToPos(x,y,z,time:double): TGLOrbitToPosJob;
 begin
-  Result := TGLOrbitToPosJob.Create(CameraJobList);
+  Result := TGLOrbitToPosJob.Create(FCameraJobList);
   Result.FTargetPosition := PointMake(x, y, z);
-  Result.FCameraUpVector := CameraJobList.FController.FCamera.AbsoluteUp;
+  Result.FCameraUpVector := FCameraJobList.FController.FCamera.AbsoluteUp;
   Result.FTime := time;
 end;
 
@@ -449,22 +450,22 @@ function TGLCameraController.OrbitToPosSmooth(const ATargetPosition: TVector; co
   const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const AFNeedToRecalculateZoom: Boolean;
   const ACameraUpVector: PVector = nil): TGLSmoothOrbitToPos;
 begin
-  Result := TGLSmoothOrbitToPos.Create(CameraJobList);
+  Result := TGLSmoothOrbitToPos.Create(FCameraJobList);
 
   Result.FTargetPosition := ATargetPosition;
   Result.FTime := ATime;
   Result.FSmoothNavigator := ASmoothNavigator;
-  Result.FShouldBeMatrix := CameraJobList.FController.FCamera.Matrix;
+  Result.FShouldBeMatrix := FCameraJobList.FController.FCamera.Matrix;
   Result.FNeedToRecalculateZoom := AFNeedToRecalculateZoom;
   if ACameraUpVector = nil then
-    Result.FCameraUpVector := CameraJobList.FController.FCamera.AbsoluteUp
+    Result.FCameraUpVector := FCameraJobList.FController.FCamera.AbsoluteUp
   else
     Result.FCameraUpVector := ACameraUpVector^;
 end;
 
 function TGLCameraController.OrbitToPosAdvanced(x,y,z,time:double; PreferUpAxis: Boolean = True): TGLOrbitToPosAdvJob;
 begin
-  Result := TGLOrbitToPosAdvJob.Create(CameraJobList);
+  Result := TGLOrbitToPosAdvJob.Create(FCameraJobList);
 
   Result.X := x;
   Result.Y := y;
@@ -476,7 +477,7 @@ end;
 function TGLCameraController.OrbitToPosAdvancedSmooth(const x,y,z, time: double;
   const ASmoothNavigator: TGLNavigatorSmoothChangeVector; const PreferUpAxis: Boolean = True): TGLSmoothOrbitToPosAdvJob;
 begin
-  Result := TGLSmoothOrbitToPosAdvJob.Create(CameraJobList);
+  Result := TGLSmoothOrbitToPosAdvJob.Create(FCameraJobList);
 
   Result.X := x;
   Result.Y := y;
@@ -501,7 +502,7 @@ end;
 
 procedure TGLCameraController.StopMovement;
 begin
-  CameraJobList.Clear;
+  FCameraJobList.Clear;
 end;
 
 
@@ -522,9 +523,33 @@ end;
 
 procedure TGLCameraController.SetCamera(const Value: TGLBaseSceneObject);
 begin
+  if FCamera <> nil then FCamera.RemoveFreeNotification(Self);
   FCamera := Value;
+  if FCamera <> nil then FCamera.FreeNotification(Self);
+  
   if (FCamera is TGLCamera) and (FCameraTarget = nil) then
-    FCameraTarget := TGLCamera(FCamera).TargetObject;
+    SetCameraTarget(TGLCamera(FCamera).TargetObject);
+end;
+
+procedure TGLCameraController.SetCameraTarget(
+  const Value: TGLBaseSceneObject);
+begin
+  if FCameraTarget <> nil then FCameraTarget.RemoveFreeNotification(Self);
+  FCameraTarget := Value;
+  if FCameraTarget <> nil then FCameraTarget.FreeNotification(Self);
+end;
+
+procedure TGLCameraController.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited;
+  if Operation = opRemove then
+  begin
+    if AComponent = FCamera then
+      FCamera := nil
+    else if AComponent = FCameraTarget then
+      FCameraTarget := nil;
+  end;
 end;
 
 { TGLCameraJobList }
