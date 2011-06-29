@@ -31,7 +31,13 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>11/05/11 - Yar - Added ClampInteger
+      <li>10/06/11 - DaStr - Added some Vector2f routines
+                             Overloaded some procedures to accept both 3f and 4f vectors
+                             Marked some methods as inline
+                             Added SignStrict, MoveObjectAround(), GetSafeTurnAngle(),
+                             RectanglesIntersect(), RectangleContains(),
+                             AngleBetweenVectors(), ShiftObjectFromCenter()  
+      <li>11/05/11 - Yar - Added ClampInteger        
       <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
@@ -305,6 +311,8 @@ type
 
    PAffinePtrVector = ^TAffinePtrVector;
    TAffinePtrVector = TVector3p;
+
+   PVector2f = ^TVector2f;
 
    // some simplified names
    PVector = ^TVector;
@@ -719,6 +727,11 @@ procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVe
                          dest : PAffineVectorArray); overload;
 
 //: Returns V1-V2
+function VectorSubtract(const V1, V2 : TVector2f) : TVector2f; overload;
+//: Subtracts V2 from V1, result is placed in V1
+procedure SubtractVector(var V1 : TVector2f; const V2 : TVector2f); overload;
+
+//: Returns V1-V2
 function VectorSubtract(const V1, V2 : TAffineVector) : TAffineVector; overload;
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
@@ -856,6 +869,8 @@ function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionD
 function VectorLength(const x, y : Single) : Single; overload;
 {: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z). }
 function VectorLength(const x, y, z : Single) : Single; overload;
+//: Calculates the length of a vector following the equation sqrt(x*x+y*y).
+function VectorLength(const v : TVector2f) : Single; overload;
 //: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z).
 function VectorLength(const v : TAffineVector) : Single; overload;
 //: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z+w*w).
@@ -879,9 +894,14 @@ function VectorNorm(const v : TVector) : Single; overload;
 function VectorNorm(var V: array of Single) : Single; overload;
 
 //: Transforms a vector to unit length
+procedure NormalizeVector(var v : TVector2f); overload;
+//: Returns the vector transformed to unit length
+//: Transforms a vector to unit length
 procedure NormalizeVector(var v : TAffineVector); overload;
 //: Transforms a vector to unit length
 procedure NormalizeVector(var v : TVector); overload;
+//: Returns the vector transformed to unit length
+function VectorNormalize(const v : TVector2f) : TVector2f; overload;
 //: Returns the vector transformed to unit length
 function VectorNormalize(const v : TAffineVector) : TAffineVector; overload;
 //: Returns the vector transformed to unit length (w component dropped)
@@ -892,7 +912,11 @@ procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer); overload
 
 {: Calculates the cosine of the angle between Vector1 and Vector2.<p>
    Result = DotProduct(V1, V2) / (Length(V1) * Length(V2)) }
-function VectorAngleCosine(const V1, V2: TAffineVector) : Single;
+function VectorAngleCosine(const V1, V2: TAffineVector) : Single; overload;
+
+{: Calculates the cosine of the angle between Vector1 and Vector2.<p>
+   Result = DotProduct(V1, V2) / (Length(V1) * Length(V2)) }
+function VectorAngleCosine(const V1, V2: TVector) : Single; overload;
 
 //: Negates the vector
 function VectorNegate(const v : TAffineVector) : TAffineVector; overload;
@@ -906,6 +930,8 @@ procedure NegateVector(var V : TVector); overload;
 procedure NegateVector(var V : array of Single); overload;
 
 //: Scales given vector by a factor
+procedure ScaleVector(var v : TVector2f; factor : Single); overload;
+//: Scales given vector by a factor
 procedure ScaleVector(var v : TAffineVector; factor : Single); overload;
 {: Scales given vector by another vector.<p>
    v[x]:=v[x]*factor[x], v[y]:=v[y]*factor[y] etc. }
@@ -915,6 +941,9 @@ procedure ScaleVector(var v : TVector; factor : Single); overload;
 {: Scales given vector by another vector.<p>
    v[x]:=v[x]*factor[x], v[y]:=v[y]*factor[y] etc. }
 procedure ScaleVector(var v : TVector; const factor : TVector); overload;
+
+//: Returns a vector scaled by a factor
+function VectorScale(const v : TVector2f; factor : Single) : TVector2f; overload;
 //: Returns a vector scaled by a factor
 function VectorScale(const v : TAffineVector; factor : Single) : TAffineVector; overload;
 //: Scales a vector by a factor and places result in vr
@@ -939,15 +968,15 @@ function VectorDivide(const v: TVector; const divider : TVector): TVector; overl
 function VectorDivide(const v: TAffineVector; const divider : TAffineVector): TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //: True if all components are equal.
-function TexpointEquals(const p1, p2: TTexpoint): Boolean;
+function TexpointEquals(const p1, p2: TTexpoint): Boolean; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if all components are equal.
-function RectEquals(const Rect1, Rect2: TRect): Boolean;
+function RectEquals(const Rect1, Rect2: TRect): Boolean; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if all components are equal.
-function VectorEquals(const V1, V2: TVector) : Boolean; overload;
+function VectorEquals(const V1, V2: TVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if all components are equal.
-function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload;
+function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if X, Y and Z components are equal.
-function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload;
+function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if x=y=z=0, w ignored
 function VectorIsNull(const v : TVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: True if x=y=z=0, w ignored
@@ -998,11 +1027,11 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 //: Vector components are replaced by their Abs() value. }
 procedure AbsVector(var v : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Vector components are replaced by their Abs() value. }
-procedure AbsVector(var v : TAffineVector); overload;
+procedure AbsVector(var v : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Returns a vector with components replaced by their Abs value. }
-function VectorAbs(const v : TVector) : TVector; overload;
+function VectorAbs(const v : TVector) : TVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 //: Returns a vector with components replaced by their Abs value. }
-function VectorAbs(const v : TAffineVector) : TAffineVector; overload;
+function VectorAbs(const v : TAffineVector) : TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 //------------------------------------------------------------------------------
 // Matrix functions
@@ -1350,6 +1379,7 @@ function ScaleAndRound(i : Integer; var s : Single) : Integer;
 
 {: Returns the sign of the x value using the (-1, 0, +1) convention }
 function Sign(x : Single) : Integer;
+function SignStrict(x : Single) : Integer;
 
 {: Returns True if x is in [a; b] }
 function IsInRange(const x, a, b : Single) : Boolean; overload;
@@ -1579,6 +1609,17 @@ function RayCastBoxIntersect(
   const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
   intersectPoint : PAffineVector = nil) : Boolean;
 
+// Some 2d intersection functions.
+
+{: Determine if 2 rectanges intersect. }
+function RectanglesIntersect(const ACenterOfRect1, ACenterOfRect2,
+  ASizeOfRect1, ASizeOfRect2: TVector2f): Boolean;
+
+{: Determine if BigRect completely contains SmallRect. }
+function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
+  ASizeOfBigRect1, ASizeOfSmallRect2: TVector2f; const AEps: Single = 0.0): Boolean;
+
+
 {: Computes the visible radius of a sphere in a perspective projection.<p>
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
@@ -1631,6 +1672,34 @@ function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMat
    If this is not the case, the function will not work correctly! }
 function BarycentricCoordinates(const v1, v2, v3, p: TAffineVector; var u, v: single): boolean;
 
+{: Calculates angles for the Camera.MoveAroundTarget(pitch, turn) procedure.
+   Initially from then GLCameraColtroller unit, requires AOriginalUpVector to contain only -1, 0 or 1.
+   Result contains pitch and turn angles. }
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f; overload;
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f; overload;
+
+{: Extracted from Camera.MoveAroundTarget(pitch, turn). }
+function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
+  pitchDelta, turnDelta: Single): TVector;
+
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single; overload;
+function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single; overload;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TVector;
+ const ACenter: TVector; const ADistance: Single; const AFromCenterSpot: Boolean): TVector; overload;
+function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
+ const ACenter: TAffineVector; const ADistance: Single; const AFromCenterSpot: Boolean): TAffineVector; overload;
+ 
 const
    cPI       : Single =  3.141592654;
    cPIdiv180 : Single =  0.017453292;
@@ -1839,7 +1908,7 @@ begin
 	Result[0]:=x;
 	Result[1]:=y;
 	Result[2]:=z;
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // PointMake (affine)
@@ -1849,7 +1918,7 @@ begin
 	Result[0]:=v[0];
 	Result[1]:=v[1];
 	Result[2]:=v[2];
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // PointMake (hmg)
@@ -1859,7 +1928,7 @@ begin
 	Result[0]:=v[0];
 	Result[1]:=v[1];
 	Result[2]:=v[2];
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // SetVector
@@ -2522,9 +2591,30 @@ begin
 {$endif}
 end;
 
+// VectorSubtract (func, 2f)
+//
+function VectorSubtract(const V1, V2 : TVector2f) : TVector2f;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+{$else}
+begin
+   Result[0]:=v1[0]-v2[0];
+   Result[1]:=v1[1]-v2[1];
+{$endif}
+end;
+
 // VectorSubtract (proc, affine)
 //
-procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2549,7 +2639,7 @@ end;
 
 // VectorSubtract (proc, affine-hmg)
 //
-procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector); overload;
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2577,7 +2667,7 @@ end;
 
 // VectorSubtract
 //
-procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector); overload;
+procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2749,6 +2839,26 @@ begin
    v1[0]:=v1[0]-v2[0];
    v1[1]:=v1[1]-v2[1];
    v1[2]:=v1[2]-v2[2];
+{$endif}
+end;
+
+// SubtractVector (2f)
+//
+procedure SubtractVector(var V1 : TVector2f; const V2 : TVector2f);
+// EAX contains address of V1
+// EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+         FLD  DWORD PTR [EAX]
+         FSUB DWORD PTR [EDX]
+         FSTP DWORD PTR [EAX]
+         FLD  DWORD PTR [EAX+4]
+         FSUB DWORD PTR [EDX+4]
+         FSTP DWORD PTR [EAX+4]
+{$else}
+begin
+   v1[0]:=v1[0]-v2[0];
+   v1[1]:=v1[1]-v2[1];
 {$endif}
 end;
 
@@ -3886,6 +3996,25 @@ end;
 
 // VectorLength
 //
+function VectorLength(const v : TVector2f) : Single;
+// EAX contains address of V
+// result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+       FLD  DWORD PTR [EAX]
+       FMUL ST, ST
+       FLD  DWORD PTR [EAX+4]
+       FMUL ST, ST
+       FADDP
+       FSQRT
+{$else}
+begin
+   Result:=Sqrt(VectorNorm(v[0], v[1]));
+{$endif}
+end;
+
+// VectorLength
+//
 function VectorLength(const v : TAffineVector) : Single;
 // EAX contains address of V
 // result is passed in ST(0)
@@ -4002,6 +4131,48 @@ begin
 {$endif}
 end;
 
+// NormalizeVector (2f)
+//
+procedure NormalizeVector(var v : TVector2f);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      test vSIMD, 1
+@@FPU:
+    mov   ecx, eax
+    FLD  DWORD PTR [ECX]
+    FMUL ST, ST
+    FLD  DWORD PTR [ECX+4]
+    FMUL ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD  ST
+    FMUL DWORD PTR [ECX]
+    FSTP DWORD PTR [ECX]
+    FLD  ST
+    FMUL DWORD PTR [ECX+4]
+    FSTP DWORD PTR [ECX+4]
+{$else}
+var
+  invLen : Single;
+  vn : single;
+begin
+  vn:=VectorNorm(v);
+  if vn>0 then begin
+    invLen:=RSqrt(vn);
+    v[0]:=v[0]*invLen;
+    v[1]:=v[1]*invLen;
+    end;
+{$endif}
+end;
+
 // NormalizeVector (affine)
 //
 procedure NormalizeVector(var v : TAffineVector);
@@ -4073,6 +4244,23 @@ begin
     v[2]:=v[2]*invLen;
     end;
 {$endif}
+end;
+
+// VectorNormalize
+//
+function VectorNormalize(const v : TVector2f) : TVector2f;
+var
+  invLen : Single;
+  vn : single;
+begin
+  vn:=VectorNorm(v[0], v[1]);
+  if vn=0 then
+    Result := v
+  else begin
+    invLen:=RSqrt(vn);
+    result[0]:=v[0]*invLen;
+    result[1]:=v[1]*invLen;
+    end;
 end;
 
 // VectorNormalize
@@ -4430,6 +4618,48 @@ begin
 {$endif}
 end;
 
+// VectorAngleCosine
+//
+function VectorAngleCosine(const V1, V2: TVector): Single;
+// EAX contains address of Vector1
+// EDX contains address of Vector2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD DWORD PTR [EAX]           // V1[0]
+      FLD ST                        // double V1[0]
+      FMUL ST, ST                   // V1[0]^2 (prep. for divisor)
+      FLD DWORD PTR [EDX]           // V2[0]
+      FMUL ST(2), ST                // ST(2):=V1[0] * V2[0]
+      FMUL ST, ST                   // V2[0]^2 (prep. for divisor)
+      FLD DWORD PTR [EAX + 4]       // V1[1]
+      FLD ST                        // double V1[1]
+      FMUL ST, ST                   // ST(0):=V1[1]^2
+      FADDP ST(3), ST               // ST(2):=V1[0]^2 + V1[1] *  * 2
+      FLD DWORD PTR [EDX + 4]       // V2[1]
+      FMUL ST(1), ST                // ST(1):=V1[1] * V2[1]
+      FMUL ST, ST                   // ST(0):=V2[1]^2
+      FADDP ST(2), ST               // ST(1):=V2[0]^2 + V2[1]^2
+      FADDP ST(3), ST               // ST(2):=V1[0] * V2[0] + V1[1] * V2[1]
+      FLD DWORD PTR [EAX + 8]       // load V2[1]
+      FLD ST                        // same calcs go here
+      FMUL ST, ST                   // (compare above)
+      FADDP ST(3), ST
+      FLD DWORD PTR [EDX + 8]
+      FMUL ST(1), ST
+      FMUL ST, ST
+      FADDP ST(2), ST
+      FADDP ST(3), ST
+      FMULP                         // ST(0):=(V1[0]^2 + V1[1]^2 + V1[2]) *
+                                    //          (V2[0]^2 + V2[1]^2 + V2[2])
+      FSQRT                         // sqrt(ST(0))
+      FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
+  // the result is expected in ST(0), if it's invalid, an error is raised
+{$else}
+begin
+   Result:=VectorDotProduct(V1, V2)/(VectorLength(V1)*VectorLength(V2));
+{$endif}
+end;
+
 // VectorNegate (affine)
 //
 function VectorNegate(const v : TAffineVector) : TAffineVector;
@@ -4555,6 +4785,24 @@ begin
 {$endif}
 end;
 
+// ScaleVector (2f)
+//
+procedure ScaleVector(var v : TVector2f; factor: Single);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EAX]
+      FLD  DWORD PTR [EAX+4]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EAX+4]
+{$else}
+begin
+   v[0]:=v[0]*factor;
+   v[1]:=v[1]*factor;
+{$endif}
+end;
+
 // ScaleVector (affine)
 //
 procedure ScaleVector(var v : TAffineVector; factor: Single);
@@ -4643,6 +4891,24 @@ begin
    v[1]:=v[1]*factor[1];
    v[2]:=v[2]*factor[2];
    v[3]:=v[3]*factor[3];
+end;
+
+// VectorScale (2f)
+//
+function VectorScale(const v : TVector2f; factor : Single) : TVector2f;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EDX]
+      FLD  DWORD PTR [EAX+4]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EDX+4]
+{$else}
+begin
+   Result[0]:=v[0]*factor;
+   Result[1]:=v[1]*factor;
+{$endif}
 end;
 
 // VectorScale (affine)
@@ -8076,6 +8342,16 @@ begin
    else Result:=0;
 end;
 
+// SignStrict
+//
+function SignStrict(x : Single) : Integer;
+begin
+   if x<0 then
+      Result:=-1
+   else
+      Result:=1
+end;
+
 // ScaleAndRound
 //
 function ScaleAndRound(i : Integer; var s : Single) : Integer;
@@ -9693,12 +9969,6 @@ function SphereVisibleRadius(distance, radius : Single) : Single;
 var
    d2, r2, ir, tr : Single;
 begin
-   {  irҠ+ rҠ= dҍ
-      rҠ+ trҠ= vrҍ
-      vrҠ+ dҠ= (ir+tr)Ҡ= irҠ+ 2.ir.tr + trҍ
-
-      irҠ+ 2.ir.tr + trҠ= dҠ+ rҠ+ trҍ
-      2.ir.tr = dҠ+ rҠ- irҠ }
    d2:=distance*distance;
    r2:=radius*radius;
    ir:=Sqrt(d2-r2);
@@ -11069,6 +11339,276 @@ begin
             (SourceVector[1] <= ComparedNumber) and
             (SourceVector[2] <= ComparedNumber) and
             (SourceVector[3] <= ComparedNumber);
+end;
+
+{: Determine if 2 rectanges intersect. }
+function RectanglesIntersect(const ACenterOfRect1, ACenterOfRect2, ASizeOfRect1, ASizeOfRect2: TVector2f): Boolean;
+begin
+  Result := (Abs(ACenterOfRect1[0] - ACenterOfRect2[0]) < (ASizeOfRect1[0] + ASizeOfRect2[0]) / 2) and
+            (Abs(ACenterOfRect1[1] - ACenterOfRect2[1]) < (ASizeOfRect1[1] + ASizeOfRect2[1]) / 2);
+end;
+
+{: Determine if BigRect completely contains SmallRect. }
+function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
+ ASizeOfBigRect1, ASizeOfSmallRect2: TVector2f; const AEps: Single = 0.0): Boolean;
+begin
+  Result := (Abs(ACenterOfBigRect1[0] - ACenterOfSmallRect2[0]) + ASizeOfSmallRect2[0] / 2 - ASizeOfBigRect1[0] / 2 < AEps) and
+            (Abs(ACenterOfBigRect1[1] - ACenterOfSmallRect2[1]) + ASizeOfSmallRect2[1] / 2 - ASizeOfBigRect1[1] / 2 < AEps);
+end;
+
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f;
+var
+  pitchangle0,pitchangle1,turnangle0,turnangle1,
+  pitchangledif,turnangledif,
+  dx0,dy0,dz0,dx1,dy1,dz1:double;
+  sign:shortint;
+begin
+  //determine relative positions to determine the lines which form the angles
+  //distances from initial camera pos to target object
+  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
+  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
+  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
+
+  //distances from final camera pos to target object
+  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
+  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
+  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
+
+  //just to make sure we don't get division by 0 exceptions
+  if dx0=0 then dx0:=0.001;
+  if dy0=0 then dy0:=0.001;
+  if dz0=0 then dz0:=0.001;
+  if dx1=0 then dx1:=0.001;
+  if dy1=0 then dy1:=0.001;
+  if dz1=0 then dz1:=0.001;
+
+
+  //determine "pitch" and "turn" angles for the initial and  final camera position
+  //the formulas differ depending on the camera.Up vector
+  //I tested all quadrants for all possible integer FJoblist.Camera.Up directions
+  if abs(AOriginalUpVector[2])=1 then  //Z=1/-1
+  begin
+    sign:= round(AOriginalUpVector[2]/abs(AOriginalUpVector[2]));
+    pitchangle0:=arctan(dz0/sqrt(sqr(dx0)+sqr(dy0)));
+    pitchangle1:=arctan(dz1/sqrt(sqr(dx1)+sqr(dy1)));
+    turnangle0:=arctan(dy0/dx0);
+    if (dx0<0) and (dy0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dy1/dx1);
+    if (dx1<0) and (dy1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[1])=1 then  //Y=1/-1
+  begin
+    sign:= round(AOriginalUpVector[1]/abs(AOriginalUpVector[1]));
+    pitchangle0:=arctan(dy0/sqrt(sqr(dx0)+sqr(dz0)));
+    pitchangle1:=arctan(dy1/sqrt(sqr(dx1)+sqr(dz1)));
+    turnangle0:=-arctan(dz0/dx0);
+    if (dx0<0) and (dz0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dz0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=-arctan(dz1/dx1);
+    if (dx1<0) and (dz1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dz1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[0])=1 then //X=1/-1
+  begin
+    sign:= round(AOriginalUpVector[0]/abs(AOriginalUpVector[0]));
+    pitchangle0:=arctan(dx0/sqrt(sqr(dz0)+sqr(dy0)));
+    pitchangle1:=arctan(dx1/sqrt(sqr(dz1)+sqr(dy1)));
+    turnangle0:=arctan(dz0/dy0);
+    if (dz0>0) and (dy0>0) then turnangle0:=-(pi-turnangle0)
+    else  if (dz0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dz1/dy1);
+    if (dz1>0) and (dy1>0) then turnangle1:=-(pi-turnangle1)
+    else  if (dz1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else
+  begin
+    Raise Exception.Create('The Camera.Up vector may contain only -1, 0 or 1');
+  end;
+
+  //determine pitch and turn angle differences
+  pitchangledif:=sign*(pitchangle1-pitchangle0);
+  turnangledif:=sign*(turnangle1-turnangle0);
+
+  if abs(turnangledif)>pi then
+    turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
+
+  // Determine rotation speeds
+  Result[0] := RadToDeg(-pitchangledif);
+  Result[1] := RadToDeg(turnangledif);
+end;
+
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f;
+var
+  pitchangle0,pitchangle1,turnangle0,turnangle1,
+  pitchangledif,turnangledif,
+  dx0,dy0,dz0,dx1,dy1,dz1:double;
+  sign:shortint;
+begin
+  //determine relative positions to determine the lines which form the angles
+  //distances from initial camera pos to target object
+  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
+  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
+  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
+
+  //distances from final camera pos to target object
+  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
+  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
+  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
+
+  //just to make sure we don't get division by 0 exceptions
+  if dx0=0 then dx0:=0.001;
+  if dy0=0 then dy0:=0.001;
+  if dz0=0 then dz0:=0.001;
+  if dx1=0 then dx1:=0.001;
+  if dy1=0 then dy1:=0.001;
+  if dz1=0 then dz1:=0.001;
+
+
+  //determine "pitch" and "turn" angles for the initial and  final camera position
+  //the formulas differ depending on the camera.Up vector
+  //I tested all quadrants for all possible integer FJoblist.Camera.Up directions
+  if abs(AOriginalUpVector[2])=1 then  //Z=1/-1
+  begin
+    sign:= round(AOriginalUpVector[2]/abs(AOriginalUpVector[2]));
+    pitchangle0:=arctan(dz0/sqrt(sqr(dx0)+sqr(dy0)));
+    pitchangle1:=arctan(dz1/sqrt(sqr(dx1)+sqr(dy1)));
+    turnangle0:=arctan(dy0/dx0);
+    if (dx0<0) and (dy0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dy1/dx1);
+    if (dx1<0) and (dy1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[1])=1 then  //Y=1/-1
+  begin
+    sign:= round(AOriginalUpVector[1]/abs(AOriginalUpVector[1]));
+    pitchangle0:=arctan(dy0/sqrt(sqr(dx0)+sqr(dz0)));
+    pitchangle1:=arctan(dy1/sqrt(sqr(dx1)+sqr(dz1)));
+    turnangle0:=-arctan(dz0/dx0);
+    if (dx0<0) and (dz0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dz0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=-arctan(dz1/dx1);
+    if (dx1<0) and (dz1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dz1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[0])=1 then //X=1/-1
+  begin
+    sign:= round(AOriginalUpVector[0]/abs(AOriginalUpVector[0]));
+    pitchangle0:=arctan(dx0/sqrt(sqr(dz0)+sqr(dy0)));
+    pitchangle1:=arctan(dx1/sqrt(sqr(dz1)+sqr(dy1)));
+    turnangle0:=arctan(dz0/dy0);
+    if (dz0>0) and (dy0>0) then turnangle0:=-(pi-turnangle0)
+    else  if (dz0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dz1/dy1);
+    if (dz1>0) and (dy1>0) then turnangle1:=-(pi-turnangle1)
+    else  if (dz1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else
+  begin
+    Raise Exception.Create('The Camera.Up vector may contain only -1, 0 or 1');
+  end;
+
+  //determine pitch and turn angle differences
+  pitchangledif:=sign*(pitchangle1-pitchangle0);
+  turnangledif:=sign*(turnangle1-turnangle0);
+
+  if abs(turnangledif)>pi then
+    turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
+
+  // Determine rotation speeds
+  Result[0] := RadToDeg(-pitchangledif);
+  Result[1] := RadToDeg(turnangledif);
+end;
+
+function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
+  pitchDelta, turnDelta: Single): TVector;
+var
+  originalT2C, normalT2C, normalCameraRight: TVector;
+  pitchNow, dist: Single;
+begin
+    // normalT2C points away from the direction the camera is looking
+    originalT2C := VectorSubtract(AMovingObjectPosition,
+      ATargetPosition);
+    SetVector(normalT2C, originalT2C);
+    dist := VectorLength(normalT2C);
+    NormalizeVector(normalT2C);
+    // normalRight points to the camera's right
+    // the camera is pitching around this axis.
+    normalCameraRight := VectorCrossProduct(AMovingObjectUp, normalT2C);
+    if VectorLength(normalCameraRight) < 0.001 then
+      SetVector(normalCameraRight, XVector) // arbitrary vector
+    else
+      NormalizeVector(normalCameraRight);
+    // calculate the current pitch.
+    // 0 is looking down and PI is looking up
+    pitchNow := ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
+    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI -
+      0.025);
+    // create a new vector pointing up and then rotate it down
+    // into the new position
+    SetVector(normalT2C, AMovingObjectUp);
+    RotateVector(normalT2C, normalCameraRight, -pitchNow);
+    RotateVector(normalT2C, AMovingObjectUp, -DegToRad(turnDelta));
+    ScaleVector(normalT2C, dist);
+    Result := VectorAdd(AMovingObjectPosition, VectorSubtract(normalT2C,
+      originalT2C));
+end;
+
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single;
+begin
+  Result := ArcCos(VectorAngleCosine(
+    VectorNormalize(VectorSubtract(A, ACenterPoint)),
+    VectorNormalize(VectorSubtract(B, ACenterPoint))));
+end;
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single;
+begin
+  Result := ArcCos(VectorAngleCosine(
+    VectorNormalize(VectorSubtract(A, ACenterPoint)),
+    VectorNormalize(VectorSubtract(B, ACenterPoint))));
+end;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TVector;
+ const ACenter: TVector; const ADistance: Single; const AFromCenterSpot: Boolean): TVector;
+var
+  lDirection: TVector;
+begin
+  lDirection := VectorNormalize(VectorSubtract(AOriginalPosition, ACenter));
+  if AFromCenterSpot then
+    Result := VectorAdd(ACenter, VectorScale(lDirection, ADistance))
+  else
+    Result := VectorAdd(AOriginalPosition, VectorScale(lDirection, ADistance))
+end;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
+ const ACenter: TAffineVector; const ADistance: Single; const AFromCenterSpot: Boolean): TAffineVector;
+var
+  lDirection: TAffineVector;
+begin
+  lDirection := VectorNormalize(VectorSubtract(AOriginalPosition, ACenter));
+  if AFromCenterSpot then
+    Result := VectorAdd(ACenter, VectorScale(lDirection, ADistance))
+  else
+    Result := VectorAdd(AOriginalPosition, VectorScale(lDirection, ADistance))
 end;
 
 //--------------------------------------------------------------
