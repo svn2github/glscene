@@ -6,6 +6,7 @@
   3DStudio 3DS vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Properly fixed range check bug  
       <li>15/12/10 - YP - Disable and re-enable range-check only if needed
       <li>14/12/10 - DaStr - Added a work-around for a range-check bug
                              Bugfixed a case when material texture was turned on
@@ -2215,7 +2216,7 @@ begin
                   // copy current index for faster access
                   CurrentIndex := FaceRec[Vertex];
                   // already been touched?
-                  if IsVertexMarked(Marker, CurrentIndex) then
+                  if IsVertexMarked(Marker, CurrentIndex) and (CurrentVertexCount < High(FaceRec[Vertex])) then
                   begin
                     // already touched vertex must be duplicated
                     DuplicateVertex(CurrentIndex);
@@ -2257,16 +2258,17 @@ begin
                   if IsVertexMarked(Marker, currentIndex) then
                   begin
                     // check smoothing group
-                    if SmoothingGroup = 0 then
+                    if (SmoothingGroup = 0) then
                     begin
-                      // no smoothing then just duplicate vertex
-                      DuplicateVertex(CurrentIndex);
-                    {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
-                      FaceRec[Vertex] := CurrentVertexCount - 1;
-                    {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
-                      mesh.Normals[CurrentVertexCount - 1] := Normal;
-                      // mark new vertex also as touched
-                      MarkVertex(Marker, CurrentVertexCount - 1);
+                      if (CurrentVertexCount < High(FaceRec[Vertex])) then
+                      begin
+                        // no smoothing then just duplicate vertex
+                        DuplicateVertex(CurrentIndex);
+                        FaceRec[Vertex] := CurrentVertexCount - 1;
+                        mesh.Normals[CurrentVertexCount - 1] := Normal;
+                        // mark new vertex also as touched
+                        MarkVertex(Marker, CurrentVertexCount - 1);
+                      end;
                     end
                     else
                     begin
@@ -2274,21 +2276,22 @@ begin
                       // a (duplicated) vertex for this smoothing group
                       TargetVertex :=
                         GetSmoothIndex(CurrentIndex, SmoothingGroup, SmoothIndices);
-                      if TargetVertex < 0 then
+                      if (TargetVertex < 0) then
                       begin
-                        // vertex has not yet been duplicated for this smoothing
-                        // group, so do it now
-                        DuplicateVertex(CurrentIndex);
-                      {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
-                        FaceRec[Vertex] := CurrentVertexCount - 1;
-                      {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
-                        mesh.Normals[CurrentVertexCount - 1] := Normal;
-                        StoreSmoothIndex(CurrentIndex, SmoothingGroup,
-                          CurrentVertexCount - 1, SmoothIndices);
-                        StoreSmoothIndex(CurrentVertexCount - 1,
-                          SmoothingGroup, CurrentVertexCount - 1, SmoothIndices);
-                        // mark new vertex also as touched
-                        MarkVertex(Marker, CurrentVertexCount - 1);
+                        if (CurrentVertexCount < High(FaceRec[Vertex])) then
+                        begin
+                          // vertex has not yet been duplicated for this smoothing
+                          // group, so do it now
+                          DuplicateVertex(CurrentIndex);
+                          FaceRec[Vertex] := CurrentVertexCount - 1;
+                          mesh.Normals[CurrentVertexCount - 1] := Normal;
+                          StoreSmoothIndex(CurrentIndex, SmoothingGroup,
+                            CurrentVertexCount - 1, SmoothIndices);
+                          StoreSmoothIndex(CurrentVertexCount - 1,
+                            SmoothingGroup, CurrentVertexCount - 1, SmoothIndices);
+                          // mark new vertex also as touched
+                          MarkVertex(Marker, CurrentVertexCount - 1);
+                        end;  
                       end
                       else
                       begin
@@ -2297,9 +2300,7 @@ begin
                         mesh.Normals[TargetVertex] :=
                           VectorAdd(mesh.Normals[TargetVertex], Normal);
                         // ...and tell which new vertex has to be used from now on
-                      {$IfOpt R+} {$Define RangeCheck3DS} {$Else} {$Undef RangeCheck3DS} {$EndIf} {$R-} // DaStr: Bug here!!!
                         FaceRec[Vertex] := TargetVertex;
-                      {$IfDef RangeCheck3DS} {$R+} {$Undef RangeCheck3DS} {$EndIf}
                       end;
                     end;
                   end
