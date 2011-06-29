@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Bugfixed VisibilityCulling in vcObjectBased mode
       <li>04/05/11 - Vince - Fix picking problems with Ortho2D Camera
       <li>21/11/10 - Yar - Added design time navigation
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
@@ -4862,7 +4863,7 @@ begin
     if ARci.visibilityCulling = vcObjectBased then
     begin
       shouldRenderSelf := (osNoVisibilityCulling in ObjectStyle)
-        or (not IsVolumeClipped(AbsolutePosition,
+        or (not IsVolumeClipped(BarycenterAbsolutePosition,
         BoundingSphereRadius,
         ARci.rcci.frustum));
       shouldRenderChildren := Assigned(FChildren);
