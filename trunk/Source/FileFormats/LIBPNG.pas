@@ -4,6 +4,7 @@
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Fixed compiler crash for Delphi7
       <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
       <li>01/04/10 - Yar - Bugfix when Delphi not use optimization (thanks Lampogolovii)
       <li>15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
@@ -1435,42 +1436,46 @@ function _png_check_cHRM_fixed(png_ptr: png_structp;
   white_x, white_y, red_x, red_y, green_x, green_y, blue_x, blue_y:
   png_fixed_point): integer; cdecl;
 var
-  ret: integer;
-  xy, yx: UInt64;
+  xy, yx: png_fixed_point;
 begin
   if png_ptr = nil then
   begin
     Result := 0;
     exit;
-  end;
-  ret := 1;
+  end
+  else
+    Result := 1;
 
   if (white_x < 0) or (white_y <= 0) or (red_x < 0) or (red_y < 0) or
     (green_x < 0) or (green_y < 0) or (blue_x < 0) or (blue_y < 0) then
   begin
     _png_warning(png_ptr,
       'Ignoring attempt to set negative chromaticity value');
-    ret := 0;
+    Result := 0;
   end;
+
   if white_x > 100000 - white_y then
   begin
     _png_warning(png_ptr, 'Invalid cHRM white point');
-    ret := 0;
+    Result := 0;
   end;
+
   if red_x > 100000 - red_y then
   begin
     _png_warning(png_ptr, 'Invalid cHRM red point');
-    ret := 0;
+    Result := 0;
   end;
+
   if green_x > 100000 - green_y then
   begin
     _png_warning(png_ptr, 'Invalid cHRM green point');
-    ret := 0;
+    Result := 0;
   end;
+
   if blue_x > 100000 - blue_y then
   begin
     _png_warning(png_ptr, 'Invalid cHRM blue point');
-    ret := 0;
+    Result := 0;
   end;
 
   xy := (green_x - red_x) * (blue_y - red_y);
@@ -1480,10 +1485,8 @@ begin
   begin
     _png_warning(png_ptr,
       'Ignoring attempt to set cHRM RGB triangle with zero area');
-    ret := 0;
+    Result := 0;
   end;
-
-  Result := ret;
 end;
 
 procedure _png_check_IHDR(png_ptr: png_structp; Width: png_uint_32;
