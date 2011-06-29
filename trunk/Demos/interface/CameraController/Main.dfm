@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 138
   Top = 176
+  Width = 1070
+  Height = 629
   Caption = 'CameraController Demo'
-  ClientHeight = 602
-  ClientWidth = 1062
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -302,7 +302,7 @@ object Form1: TForm1
       Left = 327
       Top = 9
       Width = 114
-      Height = 304
+      Height = 320
       TabOrder = 9
       object Label20: TLabel
         Left = 4
@@ -461,6 +461,14 @@ object Form1: TForm1
         Height = 17
         Caption = 'Prefer up axis'
         TabOrder = 2
+      end
+      object cbMoveParent: TCheckBox
+        Left = 9
+        Top = 295
+        Width = 97
+        Height = 17
+        Caption = 'Move Parent'
+        TabOrder = 3
       end
     end
     object btSmoothOrbit: TButton
@@ -633,53 +641,56 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    VisibilityCulling = vcHierarchical
     Left = 8
     Top = 40
-    object GLDummyCube1: TGLDummyCube
-      ShowAxes = True
-      Up.Coordinates = {000000000000803F0000008000000000}
-      CubeSize = 4.000000000000000000
-      object GLSphere1: TGLSphere
-        Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'transparent blue'
-        Radius = 2.000000000000000000
-        Slices = 32
-        Stacks = 32
+    object dcMovingParent: TGLDummyCube
+      CubeSize = 1.000000000000000000
+      object GLCamera: TGLCamera
+        DepthOfView = 500.000000000000000000
+        FocalLength = 120.000000000000000000
+        NearPlaneBias = 0.100000001490116100
+        TargetObject = dcSphere
+        Position.Coordinates = {0000204100002041000020410000803F}
+        object GLLightSource1: TGLLightSource
+          ConstAttenuation = 1.000000000000000000
+          SpotCutOff = 180.000000000000000000
+        end
       end
-      object GLCylinder1: TGLCylinder
-        Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'opaque green'
-        ObjectsSorting = osNone
-        Direction.Coordinates = {00000000FFFFFF3ED7B35D3F00000000}
-        PitchAngle = 30.000000000000000000
-        Up.Coordinates = {00000000D7B35D3FFFFFFFBE00000000}
-        BottomRadius = 0.200000002980232200
-        Height = 4.199999809265137000
-        TopRadius = 0.050000000745058060
-      end
-      object GLSphere2: TGLSphere
-        Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'opaque green'
-        Position.Coordinates = {6666E63F00000000000000000000803F}
-        Radius = 0.300000011920929000
-      end
-      object GLSphere3: TGLSphere
-        Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'opaque red'
-        Position.Coordinates = {000000006666E63F000000000000803F}
-        Radius = 0.300000011920929000
-      end
-    end
-    object GLCamera: TGLCamera
-      DepthOfView = 500.000000000000000000
-      FocalLength = 120.000000000000000000
-      NearPlaneBias = 0.100000001490116100
-      TargetObject = GLDummyCube1
-      Position.Coordinates = {0000204100002041000020410000803F}
-      object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        SpotCutOff = 180.000000000000000000
+      object dcSphere: TGLDummyCube
+        ObjectsSorting = osRenderBlendedLast
+        ShowAxes = True
+        Up.Coordinates = {000000000000803F0000008000000000}
+        CubeSize = 4.000000000000000000
+        object GLSphere1: TGLSphere
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'transparent blue'
+          Radius = 2.000000000000000000
+          Slices = 32
+          Stacks = 32
+        end
+        object GLCylinder1: TGLCylinder
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'opaque green'
+          ObjectsSorting = osNone
+          Direction.Coordinates = {00000000FFFFFF3ED7B35D3F00000000}
+          PitchAngle = 30.000000000000000000
+          Up.Coordinates = {00000000D7B35D3FFFFFFFBE00000000}
+          BottomRadius = 0.200000002980232200
+          Height = 4.199999809265137000
+          TopRadius = 0.050000000745058060
+        end
+        object GLSphere2: TGLSphere
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'opaque green'
+          Position.Coordinates = {6666E63F00000000000000000000803F}
+          Radius = 0.300000011920929000
+        end
+        object GLSphere3: TGLSphere
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'opaque red'
+          Position.Coordinates = {000000006666E63F000000000000803F}
+          Radius = 0.300000011920929000
+        end
       end
     end
     object dcDebugGUI: TGLDummyCube
@@ -702,12 +713,12 @@ object Form1: TForm1
         Position.Coordinates = {000000000000F0C1000000000000803F}
         LineColor.Color = {E9E8683E8786063FD2D1513F0000803F}
         XSamplingScale.Min = -150.000000000000000000
-        XSamplingScale.max = 150.000000000000000000
-        XSamplingScale.step = 5.000000000000000000
-        YSamplingScale.step = 0.100000001490116100
+        XSamplingScale.Max = 150.000000000000000000
+        XSamplingScale.Step = 5.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
         ZSamplingScale.Min = -150.000000000000000000
-        ZSamplingScale.max = 150.000000000000000000
-        ZSamplingScale.step = 5.000000000000000000
+        ZSamplingScale.Max = 150.000000000000000000
+        ZSamplingScale.Step = 5.000000000000000000
         Parts = [gpX, gpZ]
       end
       object GLPlane1: TGLPlane
@@ -727,20 +738,20 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'transparent blue'
-        Tag = 0
         Material.FrontProperties.Diffuse.Color = {FBFAFA3EF7F6F63E0000803F9A99193F}
         Material.BlendingMode = bmTransparency
+        Tag = 0
       end
       item
         Name = 'opaque green'
-        Tag = 0
         Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
+        Tag = 0
       end
       item
         Name = 'opaque red'
-        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
+        Tag = 0
       end>
     Left = 40
     Top = 40
