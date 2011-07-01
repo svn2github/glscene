@@ -473,7 +473,7 @@ function GetPlatformVersionStr : string;
 {: Determine if the directory is writable.<p> }
 function IsDirectoryWriteable(const AName: string): Boolean;
 
-function CharToWideChar(const AChar: Char): WideChar;
+function CharToWideChar(const AChar: AnsiChar): WideChar;
 
 implementation
 
@@ -1529,7 +1529,7 @@ begin
 end;
 
 
-function CharToWideChar(const AChar: Char): WideChar;
+function CharToWideChar(const AChar: AnsiChar): WideChar;
 {$IFDEF MSWINDOWS}
 var
   lResult: PWideChar;
