@@ -6,6 +6,8 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/07/11 - DaStr - Added an experimental TGLVBOSimpleTerrainRenderer (thanks DungeoLords)
+                             Reformated code
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/08/10 - Yar - Return missing part of code in BuildList
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -50,7 +52,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, GLHeightData, GLMaterial, VectorGeometry, GLContext,
+uses
+  // VCL.
+  Classes, Graphics,
+
+  // GLScene.
+  GLScene, GLHeightData, GLMaterial, VectorGeometry, GLContext,
   GLROAMPatch, VectorLists, GLRenderContextInfo;
 
 const
@@ -58,7 +65,7 @@ const
 
 type
 
-  TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
+  TGetTerrainBoundsEvent = procedure(var l, t, r, b: Single) of object;
   TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;
     const patches: TList) of object;
   THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo;
@@ -86,11 +93,11 @@ type
   private
     { Private Declarations }
     FHeightDataSource: THeightDataSource;
-    FTileSize: integer;
-    FQualityDistance, FinvTileSize: single;
-    FLastTriangleCount: integer;
-    FTilesPerTexture: single;
-    FMaxCLODTriangles, FCLODPrecision: integer;
+    FTileSize: Integer;
+    FQualityDistance, FinvTileSize: Single;
+    FLastTriangleCount: Integer;
+    FTilesPerTexture: Single;
+    FMaxCLODTriangles, FCLODPrecision: Integer;
     FBufferVertices: TAffineVectorList;
     FBufferTexPoints: TTexPointList;
     FBufferVertexIndices: TIntegerList;
@@ -101,7 +108,7 @@ type
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
 
     FQualityStyle: TTerrainHighResStyle;
-    FOcclusionFrameSkip: integer;
+    FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TTerrainOcclusionTesselate;
 
   protected
@@ -112,17 +119,17 @@ type
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
-      canAllocate: boolean = True): THeightData; overload;
-    function HashedTile(const xLeft, yTop: integer;
-      canAllocate: boolean = True): THeightData; overload;
+      canAllocate: Boolean = True): THeightData; overload;
+    function HashedTile(const xLeft, yTop: Integer;
+      canAllocate: Boolean = True): THeightData; overload;
 
-    procedure SetHeightDataSource(const val: THeightDataSource);
-    procedure SetTileSize(const val: integer);
-    procedure SetTilesPerTexture(const val: single);
-    procedure SetCLODPrecision(const val: integer);
-    procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
-    procedure SetQualityStyle(const val: TTerrainHighResStyle);
-    procedure SetOcclusionFrameSkip(val: integer);
+    procedure SetHeightDataSource(const Val: THeightDataSource);
+    procedure SetTileSize(const Val: Integer);
+    procedure SetTilesPerTexture(const Val: Single);
+    procedure SetCLODPrecision(const Val: Integer);
+    procedure SetMaterialLibrary(const Val: TGLMaterialLibrary);
+    procedure SetQualityStyle(const Val: TTerrainHighResStyle);
+    procedure SetOcclusionFrameSkip(Val: Integer);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DestroyHandle; override;
@@ -130,8 +137,7 @@ type
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
     function GetPreparedPatch(const tilePos, eyePos: TAffineVector;
-      texFactor: single;
-      hdList: TList): TGLROAMPatch;
+      texFactor: Single; hdList: TList): TGLROAMPatch;
 
   public
     { Public Declarations }
@@ -145,16 +151,16 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil;
-      intersectNormal: PVector = nil): boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+      override;
 
          {: Interpolates height for the given point.<p>
             Expects a point expressed in absolute coordinates. }
-    function InterpolatedHeight(const p: TVector): single; overload; virtual;
-    function InterpolatedHeight(const p: TAffineVector): single; overload;
+    function InterpolatedHeight(const p: TVector): Single; overload; virtual;
+    function InterpolatedHeight(const p: TAffineVector): Single; overload;
     {: Triangle count for the last render. }
-    property LastTriangleCount: integer read FLastTriangleCount;
-    function HashedTileCount: integer;
+    property LastTriangleCount: Integer read FLastTriangleCount;
+    function HashedTileCount: Integer;
 
   published
     { Published Declarations }
@@ -163,10 +169,9 @@ type
       read FHeightDataSource write SetHeightDataSource;
          {: Size of the terrain tiles.<p>
             Must be a power of two. }
-    property TileSize: integer read FTileSize write SetTileSize default 16;
+    property TileSize: Integer read FTileSize write SetTileSize default 16;
     {: Number of tiles required for a full texture map. }
-    property TilesPerTexture: single read FTilesPerTexture
-      write SetTilesPerTexture;
+    property TilesPerTexture: Single read FTilesPerTexture write SetTilesPerTexture;
          {: Link to the material library holding terrain materials.<p>
             If unspecified, and for all terrain tiles with unspecified material,
             the terrain renderer's material is used. }
@@ -179,7 +184,7 @@ type
             expressed in absolute coordinates units.<p>
             All tiles closer than this distance are rendered according to
             QualityStyle and with a static resolution. }
-    property QualityDistance: single read FQualityDistance write FQualityDistance;
+    property QualityDistance: Single read FQualityDistance write FQualityDistance;
          {: Determines how high-res tiles (closer than QualityDistance) are rendered.<p>
             hrsFullGeometry (default value) means that the high-res tiles are rendered
             with full-geometry, and no LOD of any kind, while hrsTesselated means
@@ -191,14 +196,14 @@ type
          {: Maximum number of CLOD triangles per scene.<p>
             Triangles in high-resolution tiles (closer than QualityDistance) do
             not count toward this limit. }
-    property MaxCLODTriangles: integer read FMaxCLODTriangles
+    property MaxCLODTriangles: Integer read FMaxCLODTriangles
       write FMaxCLODTriangles default 65536;
          {: Precision of CLOD tiles.<p>
             The lower the value, the higher the precision and triangle count.
             Large values will result in coarse terrain.<br>
             high-resolution tiles (closer than QualityDistance) ignore this setting. }
-    property CLODPrecision: integer read FCLODPrecision
-      write SetCLODPrecision default 100;
+    property CLODPrecision: Integer
+      read FCLODPrecision write SetCLODPrecision default 100;
          {: Numbers of frames to skip for a tile when occlusion testing found it invisible.<p>
             Occlusion testing can help reduce CPU, T&L and fillrate requirements
             when tiles are occluded, either by the terrain itself (tiles behind
@@ -213,8 +218,8 @@ type
             coherency optimization, and as such, shouldn't be used for static
             rendering (ie. leave value to its default of zero).<br>
             This optimization requires the hardware to support GL_NV_occlusion_query. }
-    property OcclusionFrameSkip: integer
-      read FOcclusionFrameSkip write SetOcclusionFrameSkip default 0;
+    property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
+      write SetOcclusionFrameSkip default 0;
          {: Determines if and how occlusion testing affects tesselation.<p>
             Turning off tesselation of tiles determined invisible can improve
             performance, however, it may result in glitches since the tesselation
@@ -253,6 +258,44 @@ type
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
   end;
 
+  {: A fast an simple way to render terrain.
+    Might give a preformance boost if you need to render all terrain at once.
+    DaStr: 3 things trouble me:
+    1) Normal TGLTerrainRenderer might still be faster in most cases.
+    2) VBO or non-VBO should be a Global GLScene setting, not a component-specific extension.
+    3) Accepts only bitmaps as input map type
+
+    So consider this component experimental, which may be deleted at any time.
+  }
+  TGLVBOSimpleTerrainRenderer = class(TGLSceneObject)
+  private
+    FNeedToFreeMemory: Boolean;
+    FVBOBuilt: Boolean;
+    HMap: array of array of Byte;
+    HMSize: Integer;
+
+    FBufferVertices: TAffineVectorList;
+    FNormals: TAffineVectorList;
+    FTexCoords: TAffineVectorList;
+    FBufferVertexIndices: TIntegerList;
+
+    FVBOElementArrayHandle: TGLVBOElementArrayHandle;
+    vId, nid, tid: TGLVBOArrayBufferHandle;
+    procedure CreateAndFillTStripBuff(var Posi, Scale: TAffineVector);
+
+  public
+    procedure LoadHMap(const AFileName: string);
+
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    property NeedToFreeMemory: Boolean read FNeedToFreeMemory write FNeedToFreeMemory;
+
+    property BufferVertices: TAffineVectorList read FBufferVertices;
+    property BufferVertexIndices: TIntegerList read FBufferVertexIndices;
+  end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -265,7 +308,7 @@ uses SysUtils, OpenGLTokens, XOpenGL, GLUtils {$IFDEF GLS_DELPHI}, VectorTypes{$
 
 // HashKey
 
-function HashKey(const xLeft, yTop: integer): integer;
+function HashKey(const xLeft, yTop: Integer): Integer;
 begin
   Result := (xLeft + (xLeft shr 8) + (xLeft shr 16) + (yTop shl 1) +
     (yTop shr 9) + (yTop shr 17)) and cTilesHashSize;
@@ -280,11 +323,11 @@ end;
 
 constructor TGLTerrainRenderer.Create(AOwner: TComponent);
 var
-  i: integer;
+  I: Integer;
 begin
   inherited Create(AOwner);
-  for i := 0 to cTilesHashSize do
-    FTilesHash[i] := TList.Create;
+  for I := 0 to cTilesHashSize do
+    FTilesHash[I] := TList.Create;
   ObjectStyle := ObjectStyle + [osDirectDraw];
   FTileSize := 16;
   FinvTileSize := 1 / 16;
@@ -303,16 +346,16 @@ end;
 
 destructor TGLTerrainRenderer.Destroy;
 var
-  i: integer;
+  I: Integer;
 begin
   FBufferVertices.Free;
   FBufferTexPoints.Free;
   FBufferVertexIndices.Free;
   ReleaseAllTiles;
-  for i := 0 to cTilesHashSize do
+  for I := 0 to cTilesHashSize do
   begin
-    FTilesHash[i].Free;
-    FTilesHash[i] := nil;
+    FTilesHash[I].Free;
+    FTilesHash[I] := nil;
   end;
   inherited Destroy;
 end;
@@ -344,29 +387,29 @@ end;
 // RayCastIntersect
 
 function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil;
-  intersectNormal: PVector = nil): boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   p1, d, p2, p3: TVector;
-  step, i, h, minH, maxH, p1height: single;
-  startedAbove: boolean;
-  failSafe: integer;
+  step, I, h, minH, maxH, p1height: Single;
+  startedAbove:  Boolean;
+  failSafe:      Integer;
   AbsX, AbsY, AbsZ: TVector;
 begin
   Result := False;
   if Assigned(HeightDataSource) then
   begin
     step := (Scale.X + Scale.Y); //Initial step size guess
-    i := step;
+    I := step;
     d := VectorNormalize(rayVector);
     AbsZ := VectorNormalize(LocalToAbsolute(ZHMGVector));
-    startedAbove := ((InterpolatedHeight(rayStart) - VectorDotProduct(rayStart, AbsZ)) < 0);
+    startedAbove := ((InterpolatedHeight(rayStart) -
+      VectorDotProduct(rayStart, AbsZ)) < 0);
     maxH := Scale.Z * 256;
     minH := -Scale.Z * 256;
     failSafe := 0;
     while True do
     begin
-      p1 := VectorCombine(rayStart, d, 1, i);
+      p1 := VectorCombine(rayStart, d, 1, I);
       h := InterpolatedHeight(p1);
       p1height := VectorDotProduct(AbsZ, p1);
       if Abs(h - p1height) < 0.1 then
@@ -379,17 +422,17 @@ begin
         if startedAbove then
         begin
           if h < p1height then
-            i := i + step;
+            I := I + step;
           if (h - p1height) > 0 then
           begin
             step := step * 0.5;
-            i := i - step;
+            I := I - step;
           end;
         end
         else
         begin
           if h > p1height then
-            i := i + step;
+            I := I + step;
         end;
       end;
       Inc(failSafe);
@@ -437,15 +480,15 @@ end;
 
 procedure TGLTerrainRenderer.ReleaseAllTiles;
 var
-  i, k: integer;
-  hd: THeightData;
+  I, K: Integer;
+  hd:   THeightData;
 begin
-  for i := 0 to cTilesHashSize do
-    with FTilesHash[i] do
+  for I := 0 to cTilesHashSize do
+    with FTilesHash[I] do
     begin
-      for k := Count - 1 downto 0 do
+      for K := Count - 1 downto 0 do
       begin
-        hd := THeightData(List^[k]);
+        hd := THeightData(List^[K]);
         OnTileDestroyed(hd);
         hd.OnDestroy := nil;
         hd.Release;
@@ -475,7 +518,7 @@ end;
 
 // InterpolatedHeight (hmg)
 
-function TGLTerrainRenderer.InterpolatedHeight(const p: TVector): single;
+function TGLTerrainRenderer.InterpolatedHeight(const p: TVector): Single;
 var
   pLocal: TVector;
 begin
@@ -491,7 +534,7 @@ end;
 
 // InterpolatedHeight (affine)
 
-function TGLTerrainRenderer.InterpolatedHeight(const p: TAffineVector): single;
+function TGLTerrainRenderer.InterpolatedHeight(const p: TAffineVector): Single;
 begin
   Result := InterpolatedHeight(PointMake(p));
 end;
@@ -502,22 +545,22 @@ procedure TGLTerrainRenderer.BuildList(var rci: TRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
   tilePos, absTilePos, observer: TAffineVector;
-  deltaX, nbX, iX: integer;
-  deltaY, nbY, iY: integer;
-  n, rpIdxDelta, accumCount: integer;
-  f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist: single;
+  deltaX, nbX, iX: Integer;
+  deltaY, nbY, iY: Integer;
+  n, rpIdxDelta, accumCount: Integer;
+  f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist: Single;
   patch, prevPatch: TGLROAMPatch;
   patchList, rowList, prevRow, buf: TList;
   postRenderPatchList, postRenderHeightDataList: TList;
   rcci: TRenderContextClippingInfo;
   currentMaterialName: string;
-  maxTilePosX, maxTilePosY, minTilePosX, minTilePosY: single;
-  t_l, t_t, t_r, t_b: single;
+  maxTilePosX, maxTilePosY, minTilePosX, minTilePosY: Single;
+  t_l, t_t, t_r, t_b: Single;
 
   procedure ApplyMaterial(const materialName: string);
   begin
     if (MaterialLibrary = nil) or (currentMaterialName = materialName) then
-      exit;
+      Exit;
     // flush whatever is in progress
     TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
     // unapply current
@@ -593,7 +636,7 @@ begin
   end;
   // if max is less than min, we have nothing to render
   if (maxTilePosX < minTilePosX) or (maxTilePosY < minTilePosY) then
-    exit;
+    Exit;
 
   nbX := Round((maxTilePosX - minTilePosX) / TileSize);
   nbY := Round((maxTilePosY - minTilePosY) / TileSize);
@@ -607,7 +650,7 @@ begin
     qDist := -1;
 
   SetROAMTrianglesCapacity(MaxCLODTriangles);
-  n := MaxInteger(MaxCLODTriangles * 2, integer(Sqr(TileSize + 1) * 2));
+  n := MaxInteger(MaxCLODTriangles * 2, Integer(Sqr(TileSize + 1) * 2));
   FBufferVertices.Capacity := n;
   FBufferTexPoints.Capacity := n;
 
@@ -761,9 +804,8 @@ begin
       patch := TGLROAMPatch(patchList[n]);
       if Assigned(patch) then
       begin
-        if (patch.LastOcclusionTestPassed)
-          or (patch.OcclusionCounter <= 0)
-          or (OcclusionTesselate = totTesselateAlways) then
+        if (patch.LastOcclusionTestPassed) or
+          (patch.OcclusionCounter <= 0) or (OcclusionTesselate = totTesselateAlways) then
           patch.SafeTesselate;
       end;
     end;
@@ -829,42 +871,41 @@ begin
   HeightDataSource.Data.UnLockList;
 end;
 
-// MarkAllTilesAsUnused
 
+// MarkAllTilesAsUnused
 procedure TGLTerrainRenderer.MarkAllTilesAsUnused;
 var
-  i, j, zero: integer;
-  pList: PPointerList;
+  I, J, zero: Integer;
+  pList:      PPointerList;
 begin
   if not (tmClearUsedFlags in TileManagement) then
-    exit;  //Tile cache management option
-  for i := 0 to cTilesHashSize do
-    with FTilesHash[i] do
+    Exit;  //Tile cache management option
+  for I := 0 to cTilesHashSize do
+    with FTilesHash[I] do
     begin
       pList := List;
       zero := 0;
-      for j := Count - 1 downto 0 do
-        THeightData(pList^[j]).Tag := zero;
+      for J := Count - 1 downto 0 do
+        THeightData(pList^[J]).Tag := zero;
     end;
 end;
 
 // ReleaseAllUnusedTiles
-
 procedure TGLTerrainRenderer.ReleaseAllUnusedTiles;
 var
-  i, j: integer;
+  I, J: Integer;
   hashList: TList;
   hd: THeightData;
 begin
-  for i := 0 to cTilesHashSize do
+  for I := 0 to cTilesHashSize do
   begin
-    hashList := FTilesHash[i];
-    for j := hashList.Count - 1 downto 0 do
+    hashList := FTilesHash[I];
+    for J := hashList.Count - 1 downto 0 do
     begin
-      hd := THeightData(hashList.List^[j]);
+      hd := THeightData(hashList.List^[J]);
       if hd.Tag = 0 then
       begin
-        hashList.Delete(j);
+        hashList.Delete(J);
         OnTileDestroyed(hd);
         hd.OnDestroy := nil;
         hd.Release;
@@ -875,16 +916,16 @@ end;
 
 //HashedTileCount
 
-function TGLTerrainRenderer.HashedTileCount: integer;
+function TGLTerrainRenderer.HashedTileCount: Integer;
 var
-  i: integer;
+  I:   Integer;
   hashList: TList;
-  cnt: integer;
+  cnt: Integer;
 begin
   cnt := 0;
-  for i := 0 to cTilesHashSize do
+  for I := 0 to cTilesHashSize do
   begin
-    hashList := FTilesHash[i]; //get the number of tiles in each list
+    hashList := FTilesHash[I]; //get the number of tiles in each list
     cnt := cnt + hashList.Count; //Add the current list's count to the total
   end;
   Result := cnt;
@@ -896,10 +937,10 @@ end;
 procedure TGLTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
   hd: THeightData;
-  canAllocate: boolean;
+  canAllocate: Boolean;
 begin
   if not (tmMarkUsedTiles in TileManagement) then
-    exit;  //Mark used tiles option
+    Exit;  //Mark used tiles option
   canAllocate := tmAllocateNewTiles in TileManagement;
   //Allocate tile if not in the list
   hd := HashedTile(tilePos, canAllocate);
@@ -910,9 +951,9 @@ end;
 // HashedTile
 
 function TGLTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: Boolean = True): THeightData;
 var
-  xLeft, yTop: integer;
+  xLeft, yTop: Integer;
 begin
   xLeft := Round(tilePos[0] * FinvTileSize - 0.5) * (TileSize);
   yTop := Round(tilePos[1] * FinvTileSize - 0.5) * (TileSize);
@@ -921,20 +962,20 @@ end;
 
 // HashedTile
 
-function TGLTerrainRenderer.HashedTile(const xLeft, yTop: integer;
-  canAllocate: boolean = True): THeightData;
+function TGLTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
+  canAllocate: Boolean = True): THeightData;
 var
-  i: integer;
-  hd: THeightData;
+  I:     Integer;
+  hd:    THeightData;
   hashList: TList;
   pList: PPointerList;
 begin
   // is the tile already in our list?
   hashList := FTilesHash[HashKey(xLeft, yTop)];
   pList := hashList.List;
-  for i := hashList.Count - 1 downto 0 do
+  for I := hashList.Count - 1 downto 0 do
   begin
-    hd := THeightData(pList^[i]);
+    hd := THeightData(pList^[I]);
     if (hd.XLeft = xLeft) and (hd.YTop = yTop) then
     begin
       if hd.DontUse then
@@ -966,13 +1007,12 @@ end;
 // GetPreparedPatch
 
 function TGLTerrainRenderer.GetPreparedPatch(const tilePos, eyePos: TAffineVector;
-  texFactor: single;
-  hdList: TList): TGLROAMPatch;
+  texFactor: Single; hdList: TList): TGLROAMPatch;
 var
-  tile: THeightData;
+  tile:  THeightData;
   patch: TGLROAMPatch;
-  xLeft, yTop: integer;
-  canAllocate: boolean;
+  xLeft, yTop: Integer;
+  canAllocate: Boolean;
 begin
   canAllocate := tmAllocateNewTiles in TileManagement;
   xLeft := Round(tilePos[0] * FinvTileSize - 0.5) * TileSize;
@@ -980,7 +1020,7 @@ begin
   tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
   if not assigned(tile) then
-    exit;
+    Exit;
 
   if (tmClearUsedFlags in TileManagement) //Tile cache management option
   then
@@ -1032,9 +1072,9 @@ end;
 
 // SetHeightDataSource
 
-procedure TGLTerrainRenderer.SetHeightDataSource(const val: THeightDataSource);
+procedure TGLTerrainRenderer.SetHeightDataSource(const Val: THeightDataSource);
 begin
-  if FHeightDataSource <> val then
+  if FHeightDataSource <> Val then
   begin
     if Assigned(FHeightDataSource) then
     begin
@@ -1042,7 +1082,7 @@ begin
       ReleaseAllTiles;
       FHeightDataSource.Clear;
     end;
-    FHeightDataSource := val;
+    FHeightDataSource := Val;
     if Assigned(FHeightDataSource) then
       FHeightDataSource.FreeNotification(Self);
     StructureChanged;
@@ -1051,14 +1091,14 @@ end;
 
 // SetTileSize
 
-procedure TGLTerrainRenderer.SetTileSize(const val: integer);
+procedure TGLTerrainRenderer.SetTileSize(const Val: Integer);
 begin
-  if val <> FTileSize then
+  if Val <> FTileSize then
   begin
-    if val < 8 then
+    if Val < 8 then
       FTileSize := 8
     else
-      FTileSize := RoundUpToPowerOf2(val);
+      FTileSize := RoundUpToPowerOf2(Val);
     FinvTileSize := 1 / FTileSize;
     ReleaseAllTiles;
     StructureChanged;
@@ -1067,34 +1107,34 @@ end;
 
 // SetTilesPerTexture
 
-procedure TGLTerrainRenderer.SetTilesPerTexture(const val: single);
+procedure TGLTerrainRenderer.SetTilesPerTexture(const Val: Single);
 begin
-  if val <> FTilesPerTexture then
+  if Val <> FTilesPerTexture then
   begin
-    FTilesPerTexture := val;
+    FTilesPerTexture := Val;
     StructureChanged;
   end;
 end;
 
 // SetCLODPrecision
 
-procedure TGLTerrainRenderer.SetCLODPrecision(const val: integer);
+procedure TGLTerrainRenderer.SetCLODPrecision(const Val: Integer);
 var
-  i, k: integer;
-  hd: THeightData;
+  I, K: Integer;
+  hd:   THeightData;
 begin
-  if val <> FCLODPrecision then
+  if Val <> FCLODPrecision then
   begin
-    FCLODPrecision := val;
+    FCLODPrecision := Val;
     if FCLODPrecision < 1 then
       FCLODPrecision := 1;
     // drop all ROAM data (CLOD has changed, rebuild required)
-    for i := 0 to cTilesHashSize do
-      with FTilesHash[i] do
+    for I := 0 to cTilesHashSize do
+      with FTilesHash[I] do
       begin
-        for k := Count - 1 downto 0 do
+        for K := Count - 1 downto 0 do
         begin
-          hd := THeightData(List^[k]);
+          hd := THeightData(List^[K]);
           if Assigned(hd.ObjectTag) then
           begin
             (hd.ObjectTag as TGLROAMPatch).Free;
@@ -1108,50 +1148,245 @@ end;
 
 // SetMaterialLibrary
 
-procedure TGLTerrainRenderer.SetMaterialLibrary(const val: TGLMaterialLibrary);
+procedure TGLTerrainRenderer.SetMaterialLibrary(const Val: TGLMaterialLibrary);
 begin
-  if val <> FMaterialLibrary then
+  if Val <> FMaterialLibrary then
   begin
-    FMaterialLibrary := val;
+    FMaterialLibrary := Val;
     StructureChanged;
   end;
 end;
 
 // SetQualityStyle
 
-procedure TGLTerrainRenderer.SetQualityStyle(const val: TTerrainHighResStyle);
+procedure TGLTerrainRenderer.SetQualityStyle(const Val: TTerrainHighResStyle);
 begin
-  if val <> FQualityStyle then
+  if Val <> FQualityStyle then
   begin
-    FQualityStyle := val;
+    FQualityStyle := Val;
     StructureChanged;
   end;
 end;
 
 // SetOcclusionFrameSkip
 
-procedure TGLTerrainRenderer.SetOcclusionFrameSkip(val: integer);
+procedure TGLTerrainRenderer.SetOcclusionFrameSkip(Val: Integer);
 var
-  i, k: integer;
-  hd: THeightData;
+  I, K: Integer;
+  hd:   THeightData;
 begin
-  if val < 0 then
-    val := 0;
-  if FOcclusionFrameSkip <> val then
+  if Val < 0 then
+    Val := 0;
+  if FOcclusionFrameSkip <> Val then
   begin
-    FOcclusionFrameSkip := val;
-    for i := 0 to cTilesHashSize do
-      with FTilesHash[i] do
+    FOcclusionFrameSkip := Val;
+    for I := 0 to cTilesHashSize do
+      with FTilesHash[I] do
       begin
-        for k := Count - 1 downto 0 do
+        for K := Count - 1 downto 0 do
         begin
-          hd := THeightData(List^[k]);
+          hd := THeightData(List^[K]);
           if hd.ObjectTag <> nil then
             TGLROAMPatch(hd.ObjectTag).OcclusionSkip := OcclusionFrameSkip;
         end;
       end;
     NotifyChange(Self);
   end;
+end;
+
+
+constructor TGLVBOSimpleTerrainRenderer.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+destructor TGLVBOSimpleTerrainRenderer.Destroy;
+begin
+  if not FNeedToFreeMemory then
+  begin
+    FBufferVertices.Free;
+    FNormals.Free;
+    FTexCoords.Free;
+    FBufferVertexIndices.Free;
+  end;
+
+  vID.Free;
+  nId.Free;
+  tId.Free;
+  FVBOElementArrayHandle.Free;
+  inherited;
+end;
+
+procedure TGLVBOSimpleTerrainRenderer.LoadHMap(const AFileName: string);
+var
+  bmp:  TBitmap;
+  I, J: Integer;
+  p:    PByteArray;
+  bpp:  Byte;
+
+  c: Integer;
+  scal, posi: TAffineVector;
+begin
+  FVBOBuilt := False;
+
+  bmp := TBitmap.Create;
+  bmp.LoadFromFile(AFileName);
+  case bmp.PixelFormat of
+    pf24bit: bpp := 3;
+    pf32bit: bpp := 4;
+    else
+      bpp := 1;
+  end;
+  // HMSize:=min(bmp.Width,bmp.Height); :
+  if bmp.Width < bmp.Height then
+    HMSize := bmp.Width
+  else
+    HMSize := bmp.Height;
+
+  SetLength(hMap, HMSize, HMSize);
+  for I := 0 to HMSize - 1 do
+  begin
+    p := bmp.ScanLine[I];
+    for J := 0 to HMSize - 1 do
+      hMap[I, J] := p[J * bpp];
+  end;
+  bmp.Free;
+
+  c := HMSize div 2;
+
+  setvector(posi, -c, 0, -c);
+  setvector(scal, 1, 0.2, 1);
+
+  CreateAndFillTStripBuff(posi, scal);
+end;
+
+procedure TGLVBOSimpleTerrainRenderer.CreateAndFillTStripBuff(var Posi: TVector3f;
+  var Scale: TVector3f);
+var
+  I, J:    Integer;
+  v, t, n: TAffineVector;
+  i1, i2:  Integer;
+  v1, v2, v3: TAffineVector;
+begin
+  FBufferVertices := TAffineVectorList.Create;
+  FTexCoords := TAffineVectorList.Create;
+  FNormals := TAffineVectorList.Create;
+  FBufferVertexIndices := TIntegerList.Create;
+
+  for I := 0 to HMSize - 1 do
+  begin
+    for J := 0 to HMSize - 1 do
+    begin
+      v[0] := J + Posi[0];
+      v[1] := HMap[I, J] + Posi[1];
+      v[2] := I + Posi[2];
+      v := VectorScale(v, Scale);
+      t[0] := J / HMSize;
+      t[1] := I / HMSize;
+      t[2] := 0;
+      FBufferVertices.Add(v);
+      FTexCoords.Add(t);
+      i1 := I * HMSize + J;
+      i2 := (I + 1) * (HMSize) + J;
+      if I < HMSize - 1 then
+        FBufferVertexIndices.Add(i1, i2);
+    end;
+    i1 := FBufferVertexIndices[FBufferVertexIndices.Count - 1];
+    i2 := (I + 1) * (HMSize);
+    FBufferVertexIndices.Add(i1, i2);
+  end;
+  FNormals.Count := FBufferVertices.Count;
+  for I := 0 to FBufferVertexIndices.Count - 4 do
+  begin
+    v1 := FBufferVertices[FBufferVertexIndices[I]];
+    v2 := FBufferVertices[FBufferVertexIndices[I + 1]];
+    v3 := FBufferVertices[FBufferVertexIndices[I + 2]];
+    n := CalcPlaneNormal(v2, v3, v1);
+    FNormals[FBufferVertexIndices[I]] := n;
+  end;
+
+
+{  vId:=TGLVBOArrayBufferHandle.CreateFromData(Vertexes.List,sizeof(GLFLoat)*3*Vertexes.Count,GL_STATIC_DRAW);
+
+  if FNormals.Count>0 then
+  begin
+    nid:=TGLVBOArrayBufferHandle.CreateFromData( FNormals.List,sizeof(GLFLoat)*3*FNormals.Count,GL_STATIC_DRAW);
+  end;
+
+  if FTexCoords.Count>0 then
+  begin
+  tid:=TGLVBOArrayBufferHandle.CreateFromData(FTexCoords.List,sizeof(GLFLoat)*3*FTexCoords.Count, GL_STATIC_DRAW);
+  end;
+
+  if Indices.Count>0 then begin
+   FVBOElementArrayHandle:=TGLVBOElementArrayHandle.CreateFromData(Indices.list,sizeof(GLUint)*Indices.Count,GL_STATIC_DRAW)
+  end;}
+end;
+
+procedure TGLVBOSimpleTerrainRenderer.BuildList(var rci: TRenderContextInfo);
+begin
+  if FVBOBuilt = False then
+  begin
+    vId := TGLVBOArrayBufferHandle.CreateFromData(FBufferVertices.List,
+      sizeof(GLFLoat) * 3 * FBufferVertices.Count, GL_STATIC_DRAW);
+    FVBOElementArrayHandle := TGLVBOElementArrayHandle.CreateFromData(
+      FBufferVertexIndices.list, sizeof(GLUint) * FBufferVertexIndices.Count, GL_STATIC_DRAW);
+
+    if FNormals.Count > 0 then
+    begin
+      nid := TGLVBOArrayBufferHandle.CreateFromData(
+        FNormals.List, sizeof(GLFLoat) * 3 * FNormals.Count, GL_STATIC_DRAW);
+    end;
+
+    if FTexCoords.Count > 0 then
+    begin
+      tid := TGLVBOArrayBufferHandle.CreateFromData(FTexCoords.List, sizeof(
+        GLFLoat) * 3 * FTexCoords.Count, GL_STATIC_DRAW);
+    end;
+
+    if FNeedToFreeMemory then
+    begin
+      FBufferVertices.Free;
+      FNormals.Free;
+      FTexCoords.Free;
+    end;
+
+    FVBOBuilt := True;
+  end;
+
+
+  if assigned(nId) then
+  begin
+    gl.EnableClientState(GL_NORMAL_ARRAY);
+    gl.BindBuffer(GL_ARRAY_BUFFER, nId.Handle);
+    gl.NormalPointer(GL_FLOAT, 0, nil);
+  end;
+
+  if assigned(tId) then
+  begin
+    gl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+    gl.BindBuffer(GL_ARRAY_BUFFER, tId.Handle);
+    gl.TexCoordPointer(3, GL_FLOAT, 0, nil);
+  end;
+
+  gl.EnableClientState(GL_VERTEX_ARRAY);
+  gl.BindBuffer(GL_ARRAY_BUFFER, vId.Handle);
+  gl.VertexPointer(3, GL_FLOAT, 0, nil);
+
+
+  gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, FVBOElementArrayHandle.Handle);
+
+  gl.DrawElements(GL_TRIANGLE_STRIP, FBufferVertexIndices.Count - 1,
+    GL_UNSIGNED_INT, nil);
+
+  gl.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+  gl.DisableClientState(GL_VERTEX_ARRAY);
+  if assigned(nId) then
+    gl.DisableClientState(GL_NORMAL_ARRAY);
+  if assigned(tId) then
+    gl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
 end;
 
 // ------------------------------------------------------------------
@@ -1166,3 +1401,4 @@ initialization
   RegisterClass(TGLTerrainRenderer);
 
 end.
+
