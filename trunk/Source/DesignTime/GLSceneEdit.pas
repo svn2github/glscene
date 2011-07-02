@@ -1388,7 +1388,6 @@ procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S:
     R: TReader;
   begin
     // catch GetClipboardStream exceptions that can easilly occured
-    Result := false;
     try
       S := GetClipboardStream;
       try
