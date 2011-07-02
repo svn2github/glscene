@@ -6,6 +6,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/07/11 - DaStr - Removed TAABB.Revision
       <li>20/04/08 - DaStr - Added a NullBoundingBox constant and
                               BoundingBoxesAreEqual() function (thanks Pascal)
       <li>19/09/07 - DaStr - Added OffsetBB(Point) procedures
@@ -44,7 +45,6 @@ type
    {: Structure for storing Axis Aligned Bounding Boxes }
    TAABB = record
       min, max : TAffineVector;
-      revision: LongWord;
    end;
    PAABB = ^TAABB;
 

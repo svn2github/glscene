@@ -6,7 +6,8 @@
  Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
-      <li>30/06/11 - DaStr - TGLBaseMesh.BarycenterAbsolutePosition() now uses caching 
+      <li>02/07/11 - DaStr - Replaced TAABB.Revision with TMeshObject.FExtentCacheRevision
+      <li>30/06/11 - DaStr - TGLBaseMesh.BarycenterAbsolutePosition() now uses caching
       <li>23/02/11 - Yar - Added extent caching to TMeshObject
       <li>03/12/10 - Yar - Added mesh visibility checking in
                             TMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
@@ -690,6 +691,7 @@ type
   private
     { Private Declarations }
     FOwner: TMeshObjectList;
+    FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
     FLightMapTexCoords: TAffineVectorList; // reserved for 2D surface needs
     FColors: TVectorList;
@@ -4079,10 +4081,10 @@ end;
 
 procedure TMeshObject.GetExtents(out min, max: TAffineVector);
 begin
-  if FVertices.Revision <> FExtentCache.revision then
+  if FVertices.Revision <> FExtentCacheRevision then
   begin
     FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
-    FExtentCache.revision := FVertices.Revision;
+    FExtentCacheRevision := FVertices.Revision;
   end;
   min := FExtentCache.min;
   max := FExtentCache.max;
@@ -4090,10 +4092,10 @@ end;
 
 procedure TMeshObject.GetExtents(out aabb: TAABB);
 begin
-  if FVertices.Revision <> FExtentCache.revision then
+  if FVertices.Revision <> FExtentCacheRevision then
   begin
     FVertices.GetExtents(FExtentCache.min, FExtentCache.max);
-    FExtentCache.revision := FVertices.Revision;
+    FExtentCacheRevision := FVertices.Revision;
   end;
   aabb := FExtentCache;
 end;
