@@ -7848,7 +7848,9 @@ begin
         PrepareBuildList(rci);
       Material.Apply(rci);
       repeat
-        if (osDirectDraw in ObjectStyle) or rci.amalgamating then
+        if (osDirectDraw in ObjectStyle)
+          or rci.amalgamating
+          or UseMeshMaterials then
           BuildList(rci)
         else
           rci.GLStates.CallList(GetHandle(rci));
