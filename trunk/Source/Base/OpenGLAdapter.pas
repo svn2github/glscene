@@ -4603,6 +4603,7 @@ begin
     begin
       DebugMessageCallback(DebugCallBack, nil);
       DebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, FDebugIds, True);
+      Enable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
     end
     else if AMDX_debug_output then
     begin
