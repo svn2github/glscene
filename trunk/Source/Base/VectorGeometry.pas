@@ -1188,11 +1188,15 @@ function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Si
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single; overload;
 
 {: Computes closest point on a segment (a segment is a limited line).}
-function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector; overload;
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TVector) : TVector; overload;
+
 {: Computes algebraic distance between segment and line (a segment is a limited line).}
 function PointSegmentDistance(const point, segmentStart, segmentStop : TAffineVector) : single;
+
 {: Computes closest point on a line.}
 function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
+
 {: Computes algebraic distance between point and line.}
 function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : Single;
 
@@ -6888,6 +6892,23 @@ var
 begin
    pb:=PointLineClosestPoint(point, linePoint, lineDirection);
    Result:=VectorDistance(point, pb);
+end;
+
+// PointSegmentClosestPoint
+//
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TVector) : TVector;
+var
+   w, lineDirection : TVector;
+   c1, c2, b : Single;
+begin
+   lineDirection:=VectorSubtract(segmentStop, segmentStart);
+   w:=VectorSubtract(point, segmentStart);
+
+   c1:=VectorDotProduct(w, lineDirection);
+   c2:=VectorDotProduct(lineDirection, lineDirection);
+   b:=ClampValue(c1/c2, 0, 1);
+
+   VectorAdd(segmentStart, VectorScale(lineDirection, b), Result);
 end;
 
 // PointSegmentClosestPoint
