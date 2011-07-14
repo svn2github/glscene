@@ -6,6 +6,7 @@
    Object with support for complex polygons.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
       <li>04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/11/09 - DaStr - Improved Unix compatibility
@@ -476,8 +477,11 @@ end;
 
 destructor TMultiPolygonBase.Destroy;
 begin
-  FOutline.Clean;
-  FreeAndNil(FOutline);
+  if FOutline <> nil then
+  begin
+    FOutline.Clean;
+    FreeAndNil(FOutline);
+  end;  
   FContours.Free;
   inherited;
 end;
