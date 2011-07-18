@@ -436,7 +436,8 @@ type
   TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
-    roNoSwapBuffers, roNoDepthBufferClear, roForwardContext);
+    roNoSwapBuffers, roNoDepthBufferClear, roDebugContext,
+    roForwardContext, roOpenGL_ES2_Context);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -2264,7 +2265,7 @@ type
     {: Context options allows to setup specifics of the rendering context.<p>
        Not all contexts support all options. }
     property ContextOptions: TContextOptions read FContextOptions write
-      SetContextOptions default [roDoubleBuffer, roRenderToWindow];
+      SetContextOptions default [roDoubleBuffer, roRenderToWindow, roDebugContext];
     {: Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
       SetAccumBufferBits default 0;
@@ -7996,7 +7997,7 @@ begin
   FFogEnable := False;
   FAfterRenderEffects := TPersistentObjectList.Create;
 
-  FContextOptions := [roDoubleBuffer, roRenderToWindow];
+  FContextOptions := [roDoubleBuffer, roRenderToWindow, roDebugContext];
 
   ResetPerformanceMonitor;
 end;
@@ -8042,6 +8043,10 @@ begin
     locOptions := locOptions + [rcoDoubleBuffered];
   if roStereo in ContextOptions then
     locOptions := locOptions + [rcoStereo];
+  if roDebugContext in ContextOptions then
+    locOptions := locOptions + [rcoDebug];
+  if roOpenGL_ES2_Context in ContextOptions then
+    locOptions := locOptions + [rcoOGL_ES];
   if roNoColorBuffer in ContextOptions then
     locColorBits := 0
   else

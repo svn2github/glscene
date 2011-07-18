@@ -2742,6 +2742,9 @@ const
   WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = $0002;
   ERROR_INVALID_VERSION_ARB = $2095;
 
+  // EXT #400 WGL_EXT_create_context_es2_profile
+  WGL_CONTEXT_ES2_PROFILE_BIT_EXT = $0004;
+
   // ARB Extension #56 - GLX_ARB_create_context
   // see also GLX_ARB_create_context_profile (ARB #75)
   GLX_CONTEXT_MAJOR_VERSION_ARB = $2091;

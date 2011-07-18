@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/07/11 - Yar - Added ability of creating OpenGL ES 2.0 profile context
       <li>03/12/10 - Yar - Fixed window tracking (thanks to Gabriel Corneanu)
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens. Improved context creation.
@@ -579,7 +580,6 @@ begin
 
   if not FLegacyContextsOnly then
   begin
-    GLStates.ForwardContext := False;
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
@@ -590,7 +590,7 @@ begin
         PropagateSharedContext;
       end;
     end;
-    FGL.DebugMode := True; //rcoDebug in Options;
+    FGL.DebugMode := False;
     FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
@@ -599,6 +599,14 @@ begin
       GLStates.MultisampleFilterHint := hintNicest
     else
       GLStates.MultisampleFilterHint := hintDontCare;
+
+    if rcoDebug in Options then
+      GLSLogger.LogWarning('Driver not support creating of debug context');
+    if rcoOGL_ES in Options then
+      GLSLogger.LogWarning('Driver not support creating of OpenGL ES 2.0 context');
+    if GLStates.ForwardContext then
+      GLSLogger.LogWarning('Driver not support creating of forward context');
+    GLStates.ForwardContext := False;
   end
   else
     GLSLogger.LogInfo('Temporary rendering context created');
@@ -606,9 +614,10 @@ end;
 
 procedure TGLWin32Context.CreateNewContext(aDC: HDC);
 var
-  bSuccess: Boolean;
+  bSuccess, bOES: Boolean;
 begin
   bSuccess := False;
+  bOES := False;
 
   try
     ClearIAttribs;
@@ -648,9 +657,23 @@ begin
       else
         Abort;
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
+      if rcoOGL_ES in Options then
+        GLSLogger.LogWarning('OpenGL ES 2.0 context incompatible with Forward context - flag ignored');
+    end
+    else if rcoOGL_ES in Options then
+    begin
+      if FGL.W_EXT_create_context_es2_profile then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+        AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
+        bOES := True;
+      end
+      else
+        GLSLogger.LogError('Driver not support creating of OpenGL ES 2.0 context');
     end;
 
-//    if rcoDebug in Options then
+    if rcoDebug in Options then
 {$IFDEF GLS_LOGGING}
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
@@ -698,6 +721,8 @@ begin
 
     if GLStates.ForwardContext then
       GLSLogger.LogInfo('Forward core context seccussfuly created');
+    if bOES then
+      GLSLogger.LogInfo('OpenGL ES 2.0 context seccussfuly created');
     bSuccess := True;
   finally
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;

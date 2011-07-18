@@ -123,7 +123,7 @@ type
 
   // TGLRCOptions
   //
-  TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug);
+  TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
   TGLRCOptions = set of TGLRCOption;
 
 
