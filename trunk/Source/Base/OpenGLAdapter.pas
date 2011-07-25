@@ -2810,8 +2810,6 @@ type
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-    EGetError: PFNEGLGETERROR;
-
 {$IFDEF GLS_REGIONS}
  {$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
