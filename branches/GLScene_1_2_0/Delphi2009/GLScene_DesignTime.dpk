@@ -1,0 +1,53 @@
+package GLScene_DesignTime;
+
+{$R *.res}
+{$R '..\GLScene_1_2_0\DesignTime\GLSceneObjects.dcr'}
+{$R '..\GLScene_1_2_0\DesignTime\GLSceneVCL.dcr'}
+{$R '..\GLScene_1_2_0\DesignTime\nonGLSceneVCL.dcr'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'GLScene - OpenGL 3D library DesignTime'}
+{$LIBSUFFIX '2009'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  GLScene_RunTime,
+  vcl,
+  xmlrtl,
+  vclactnband,
+  vclx,
+  VclSmp;
+
+contains
+  FXCollectionEditor in '..\GLScene_1_2_0\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  GLSceneEdit in '..\GLScene_1_2_0\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
+  GLSceneRegister in '..\GLScene_1_2_0\DesignTime\GLSceneRegister.pas',
+  RegisterXCollection in '..\GLScene_1_2_0\DesignTime\RegisterXCollection.pas',
+  FShaderMemo in '..\GLScene_1_2_0\DesignTime\FShaderMemo.pas' {GLShaderEditor},
+  GLSceneFormDesign in '..\GLScene_1_2_0\DesignTime\GLSceneFormDesign.pas',
+  FGUILayoutEditor in '..\GLScene_1_2_0\DesignTime\FGUILayoutEditor.pas' {layouts_form},
+  GLSceneToolbar in '..\GLScene_1_2_0\DesignTime\GLSceneToolbar.pas';
+
+end.
