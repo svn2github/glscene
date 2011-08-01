@@ -153,7 +153,8 @@ uses
   GLSLog;
 
 resourcestring
-  cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';
+  cForwardContextFailed = 'Can not create forward compatible context: #%X, %s';
+  cBackwardContextFailed = 'Can not create backward compatible context: #%X, %s';
   cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
     'on - down to software';
 
@@ -674,12 +675,10 @@ begin
     end;
 
     if rcoDebug in Options then
-{$IFDEF GLS_LOGGING}
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
       FGL.DebugMode := True;
     end;
-{$ENDIF}
 
     FRC := 0;
     if Assigned(FShareContext) then
@@ -699,7 +698,12 @@ begin
       FRC := FGL.WCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        GLSLogger.LogError(cForwardContextFailed);
+        if GLStates.ForwardContext then
+          GLSLogger.LogErrorFmt(cForwardContextFailed,
+            [GetLastError, SysErrorMessage(GetLastError)])
+        else
+          GLSLogger.LogErrorFmt(cBackwardContextFailed,
+            [GetLastError, SysErrorMessage(GetLastError)]);
         Abort;
       end;
     end;
@@ -707,8 +711,11 @@ begin
     FDC := aDC;
 
     if not wglMakeCurrent(FDC, FRC) then
-      raise EGLContext.Create(Format(cContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]));
+    begin
+      GLSLogger.LogErrorFmt(cContextActivationFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]);
+      Abort;
+    end;
 
     FGL.Initialize;
     MakeGLCurrent;
@@ -1142,7 +1149,8 @@ begin
 
   if FRC <> 0 then
     if not wglDeleteContext(FRC) then
-      raise EGLContext.Create(cDeleteContextFailed);
+      GLSLogger.LogErrorFmt(cDeleteContextFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]);
 
   FRC := 0;
   FDC := 0;
@@ -1155,8 +1163,11 @@ end;
 procedure TGLWin32Context.DoActivate;
 begin
   if not wglMakeCurrent(FDC, FRC) then
-    raise EGLContext.Create(Format(cContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]));
+  begin
+    GLSLogger.LogErrorFmt(cContextActivationFailed,
+      [GetLastError, SysErrorMessage(GetLastError)]);
+    Abort;
+  end;
 
   if not FGL.IsInitialized then
     FGL.Initialize(CurrentGLContext = nil);
@@ -1168,7 +1179,11 @@ end;
 procedure TGLWin32Context.DoDeactivate;
 begin
   if not wglMakeCurrent(0, 0) then
-    raise Exception.Create(cContextDeactivationFailed);
+  begin
+    GLSLogger.LogErrorFmt(cContextDeactivationFailed,
+      [GetLastError, SysErrorMessage(GetLastError)]);
+    Abort;
+  end;
 end;
 
 // IsValid
