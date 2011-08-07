@@ -4,6 +4,7 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
       <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
       <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
       <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
@@ -2742,6 +2743,9 @@ const
   WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = $0002;
   ERROR_INVALID_VERSION_ARB = $2095;
 
+  // EXT #400 WGL_EXT_create_context_es2_profile
+  WGL_CONTEXT_ES2_PROFILE_BIT_EXT = $0004;
+
   // ARB Extension #56 - GLX_ARB_create_context
   // see also GLX_ARB_create_context_profile (ARB #75)
   GLX_CONTEXT_MAJOR_VERSION_ARB = $2091;
@@ -4370,6 +4374,132 @@ const
   GL_TEXTURE_SRGB_DECODE_EXT = $8A48;
   GL_DECODE_EXT = $8A49;
   GL_SKIP_DECODE_EXT = $8A4A;
+
+  // GL_NV_path_rendering (#XXX)
+  GL_CLOSE_PATH_NV                                    = $00;
+  GL_MOVE_TO_NV                                       = $02;
+  GL_RELATIVE_MOVE_TO_NV                              = $03;
+  GL_LINE_TO_NV                                       = $04;
+  GL_RELATIVE_LINE_TO_NV                              = $05;
+  GL_HORIZONTAL_LINE_TO_NV                            = $06;
+  GL_RELATIVE_HORIZONTAL_LINE_TO_NV                   = $07;
+  GL_VERTICAL_LINE_TO_NV                              = $08;
+  GL_RELATIVE_VERTICAL_LINE_TO_NV                     = $09;
+  GL_QUADRATIC_CURVE_TO_NV                            = $0A;
+  GL_RELATIVE_QUADRATIC_CURVE_TO_NV                   = $0B;
+  GL_CUBIC_CURVE_TO_NV                                = $0C;
+  GL_RELATIVE_CUBIC_CURVE_TO_NV                       = $0D;
+  GL_SMOOTH_QUADRATIC_CURVE_TO_NV                     = $0E;
+  GL_RELATIVE_SMOOTH_QUADRATIC_CURVE_TO_NV            = $0F;
+  GL_SMOOTH_CUBIC_CURVE_TO_NV                         = $10;
+  GL_RELATIVE_SMOOTH_CUBIC_CURVE_TO_NV                = $11;
+  GL_SMALL_CCW_ARC_TO_NV                              = $12;
+  GL_RELATIVE_SMALL_CCW_ARC_TO_NV                     = $13;
+  GL_SMALL_CW_ARC_TO_NV                               = $14;
+  GL_RELATIVE_SMALL_CW_ARC_TO_NV                      = $15;
+  GL_LARGE_CCW_ARC_TO_NV                              = $16;
+  GL_RELATIVE_LARGE_CCW_ARC_TO_NV                     = $17;
+  GL_LARGE_CW_ARC_TO_NV                               = $18;
+  GL_RELATIVE_LARGE_CW_ARC_TO_NV                      = $19;
+  GL_CIRCULAR_CCW_ARC_TO_NV                           = $F8;
+  GL_CIRCULAR_CW_ARC_TO_NV                            = $FA;
+  GL_CIRCULAR_TANGENT_ARC_TO_NV                       = $FC;
+  GL_ARC_TO_NV                                        = $FE;
+  GL_RELATIVE_ARC_TO_NV                               = $FF;
+  GL_PATH_FORMAT_SVG_NV                               = $9070;
+  GL_PATH_FORMAT_PS_NV                                = $9071;
+  GL_STANDARD_FONT_NAME_NV                            = $9072;
+  GL_SYSTEM_FONT_NAME_NV                              = $9073;
+  GL_FILE_NAME_NV                                     = $9074;
+  GL_PATH_STROKE_WIDTH_NV                             = $9075;
+  GL_PATH_END_CAPS_NV                                 = $9076;
+  GL_PATH_INITIAL_END_CAP_NV                          = $9077;
+  GL_PATH_TERMINAL_END_CAP_NV                         = $9078;
+  GL_PATH_JOIN_STYLE_NV                               = $9079;
+  GL_PATH_MITER_LIMIT_NV                              = $907A;
+  GL_PATH_DASH_CAPS_NV                                = $907B;
+  GL_PATH_INITIAL_DASH_CAP_NV                         = $907C;
+  GL_PATH_TERMINAL_DASH_CAP_NV                        = $907D;
+  GL_PATH_DASH_OFFSET_NV                              = $907E;
+  GL_PATH_CLIENT_LENGTH_NV                            = $907F;
+  GL_PATH_FILL_MODE_NV                                = $9080;
+  GL_PATH_FILL_MASK_NV                                = $9081;
+  GL_PATH_FILL_COVER_MODE_NV                          = $9082;
+  GL_PATH_STROKE_COVER_MODE_NV                        = $9083;
+  GL_PATH_STROKE_MASK_NV                              = $9084;
+  GL_PATH_SAMPLE_QUALITY_NV                           = $9085;
+  GL_COUNT_UP_NV                                      = $9088;
+  GL_COUNT_DOWN_NV                                    = $9089;
+  GL_PATH_OBJECT_BOUNDING_BOX_NV                      = $908A;
+  GL_CONVEX_HULL_NV                                   = $908B;
+  GL_BOUNDING_BOX_NV                                  = $908D;
+  GL_TRANSLATE_X_NV                                   = $908E;
+  GL_TRANSLATE_Y_NV                                   = $908F;
+  GL_TRANSLATE_2D_NV                                  = $9090;
+  GL_TRANSLATE_3D_NV                                  = $9091;
+  GL_AFFINE_2D_NV                                     = $9092;
+  GL_AFFINE_3D_NV                                     = $9094;
+  GL_TRANSPOSE_AFFINE_2D_NV                           = $9096;
+  GL_TRANSPOSE_AFFINE_3D_NV                           = $9098;
+  GL_UTF8_NV                                          = $909A;
+  GL_UTF16_NV                                         = $909B;
+  GL_BOUNDING_BOX_OF_BOUNDING_BOXES_NV                = $909C;
+  GL_PATH_COMMAND_COUNT_NV                            = $909D;
+  GL_PATH_COORD_COUNT_NV                              = $909E;
+  GL_PATH_DASH_ARRAY_COUNT_NV                         = $909F;
+  GL_PATH_COMPUTED_LENGTH_NV                          = $90A0;
+  GL_PATH_FILL_BOUNDING_BOX_NV                        = $90A1;
+  GL_PATH_STROKE_BOUNDING_BOX_NV                      = $90A2;
+  GL_SQUARE_NV                                        = $90A3;
+  GL_ROUND_NV                                         = $90A4;
+  GL_TRIANGULAR_NV                                    = $90A5;
+  GL_BEVEL_NV                                         = $90A6;
+  GL_MITER_REVERT_NV                                  = $90A7;
+  GL_MITER_TRUNCATE_NV                                = $90A8;
+  GL_SKIP_MISSING_GLYPH_NV                            = $90A9;
+  GL_USE_MISSING_GLYPH_NV                             = $90AA;
+  GL_PATH_DASH_OFFSET_RESET_NV                        = $90B4;
+  GL_MOVE_TO_RESETS_NV                                = $90B5;
+  GL_MOVE_TO_CONTINUES_NV                             = $90B6;
+  GL_BOLD_BIT_NV                                      = $01;
+  GL_ITALIC_BIT_NV                                    = $02;
+  GL_PATH_ERROR_POSITION_NV                           = $90AB;
+  GL_PATH_FOG_GEN_MODE_NV                             = $90AC;
+  GL_GLYPH_WIDTH_BIT_NV                               = $01;
+  GL_GLYPH_HEIGHT_BIT_NV                              = $02;
+  GL_GLYPH_HORIZONTAL_BEARING_X_BIT_NV                = $04;
+  GL_GLYPH_HORIZONTAL_BEARING_Y_BIT_NV                = $08;
+  GL_GLYPH_HORIZONTAL_BEARING_ADVANCE_BIT_NV          = $10;
+  GL_GLYPH_VERTICAL_BEARING_X_BIT_NV                  = $20;
+  GL_GLYPH_VERTICAL_BEARING_Y_BIT_NV                  = $40;
+  GL_GLYPH_VERTICAL_BEARING_ADVANCE_BIT_NV            = $80;
+  GL_GLYPH_HAS_KERNING_NV                             = $100;
+  GL_FONT_X_MIN_BOUNDS_NV                             = $00010000;
+  GL_FONT_Y_MIN_BOUNDS_NV                             = $00020000;
+  GL_FONT_X_MAX_BOUNDS_NV                             = $00040000;
+  GL_FONT_Y_MAX_BOUNDS_NV                             = $00080000;
+  GL_FONT_UNITS_PER_EM_NV                             = $00100000;
+  GL_FONT_ASCENDER_NV                                 = $00200000;
+  GL_FONT_DESCENDER_NV                                = $00400000;
+  GL_FONT_HEIGHT_NV                                   = $00800000;
+  GL_FONT_MAX_ADVANCE_WIDTH_NV                        = $01000000;
+  GL_FONT_MAX_ADVANCE_HEIGHT_NV                       = $02000000;
+  GL_FONT_UNDERLINE_POSITION_NV                       = $04000000;
+  GL_FONT_UNDERLINE_THICKNESS_NV                      = $08000000;
+  GL_FONT_HAS_KERNING_NV                              = $10000000;
+  GL_ACCUM_ADJACENT_PAIRS_NV                          = $90AD;
+  GL_ADJACENT_PAIRS_NV                                = $90AE;
+  GL_FIRST_TO_REST_NV                                 = $90AF;
+  GL_PATH_GEN_MODE_NV                                 = $90B0;
+  GL_PATH_GEN_COEFF_NV                                = $90B1;
+  GL_PATH_GEN_COLOR_FORMAT_NV                         = $90B2;
+  GL_PATH_GEN_COMPONENTS_NV                           = $90B3;
+  GL_PATH_STENCIL_FUNC_NV                             = $90B7;
+  GL_PATH_STENCIL_REF_NV                              = $90B8;
+  GL_PATH_STENCIL_VALUE_MASK_NV                       = $90B9;
+  GL_PATH_STENCIL_DEPTH_OFFSET_FACTOR_NV              = $90BD;
+  GL_PATH_STENCIL_DEPTH_OFFSET_UNITS_NV               = $90BE;
+  GL_PATH_COVER_DEPTH_FUNC_NV                         = $90BF;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -6897,7 +7027,58 @@ const
   PFNGLVERTEXATTRIBFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLVERTEXATTRIBIFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLGETINTEGERUI64I_VNVPROC = procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PGNGLGETBUFFERPARAMETERUI64VNV = procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_NV_path_rendering
+  PFNGLGENPATHSNVPROC = function (range: GLsizei): GLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEPATHSNVPROC = procedure(path: GLuint; range: GLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPATHNVPROC = function(path: GLuint): GLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHCOMMANDSNVPROC = procedure(path: GLuint; numCommands: GLsizei; commands: PGLubyte; numCoords: GLsizei; coordType: GLenum; coords: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHCOORDSNVPROC = procedure(path: GLuint; numCoords: GLsizei; coordType: GLenum; coords: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHSUBCOMMANDSNVPROC = procedure(path: GLuint; commandStart: GLsizei; commandsToDelete: GLsizei; numCommands: GLsizei; commands: PGLubyte; numCoords: GLsizei; coordType: GLenum; coords: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHSUBCOORDSNVPROC = procedure(path: GLuint; coordStart: GLsizei; numCoords: GLsizei; coordType: GLenum; coords: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHSTRINGNVPROC = procedure(path: GLuint; format: GLenum; length: GLsizei; pathString: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHGLYPHSNVPROC = procedure(firstPathName: GLuint; fontTarget: GLenum; fontName: PGLvoid; fontStyle: GLbitfield; numGlyphs: GLsizei; _type: GLenum; charcodes: PGLvoid; handleMissingGlyphs: GLenum; pathParameterTemplate: GLuint; emScale: GLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHGLYPHRANGENVPROC = procedure(firstPathName: GLuint; fontTarget: GLenum; fontName: PGLChar; fontStyle: GLbitfield; firstGlyph: GLuint; numGlyphs: GLsizei; handleMissingGlyphs: GLenum; pathParameterTemplate: GLuint; emScale: GLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTPATHSNVPROC = procedure (resultPath: GLuint; numPaths: GLsizei; paths: PGLuint; weights: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYPATHNVPROC = procedure (resultPath: GLuint; srcPath: GLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLINTERPOLATEPATHSNVPROC = procedure (resultPath: GLuint; pathA: GLuint; pathB: GLuint; weight: GLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTRANSFORMPATHNVPROC = procedure ( resultPath: GLuint; srcPath: GLuint; transformType: GLenum; transformValues: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHPARAMETERIVNVPROC = procedure (path: GLuint; pname: GLenum; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHPARAMETERINVPROC = procedure (path: GLuint; pname: GLenum; value: GLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHPARAMETERFVNVPROC = procedure (path: GLuint; pname: GLenum; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHPARAMETERFNVPROC = procedure (path: GLuint; pname: GLenum; value: GLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHDASHARRAYNVPROC = procedure (path: GLuint; dashCount: GLsizei; dashArray: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHSTENCILFUNCNVPROC = procedure (func: GLenum; ref: GLint; mask: GLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHSTENCILDEPTHOFFSETNVPROC = procedure (factor: GLfloat; units: GLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILFILLPATHNVPROC = procedure (path: GLuint; fillMode: GLenum; mask: GLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILSTROKEPATHNVPROC = procedure(path: GLuint; reference: GLint; mask: GLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILFILLPATHINSTANCEDNVPROC = procedure (numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; fillMode: GLenum; mask: GLuint; transformType: GLenum; transformValues: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILSTROKEPATHINSTANCEDNVPROC = procedure (numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; reference: GLint; mask: GLuint; transformType: GLenum; transformValues: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHCOVERDEPTHFUNCNVPROC = procedure (func: GLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHCOLORGENNVPROC = procedure (color: GLenum; genMode: GLenum; colorFormat: GLenum; coeffs: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHTEXGENNVPROC = procedure (texCoordSet: GLenum; genMode: GLenum; components: GLint; coeffs: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATHFOGGENNVPROC = procedure (genMode: GLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOVERFILLPATHNVPROC = procedure (path: GLuint; coverMode: GLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOVERSTROKEPATHNVPROC = procedure (path: GLuint; coverMode: GLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOVERFILLPATHINSTANCEDNVPROC = procedure (numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; coverMode: GLenum; transformType: GLenum; transformValues: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOVERSTROKEPATHINSTANCEDNVPROC = procedure (numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; coverMode: GLenum; transformType: GLenum; transformValues: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHPARAMETERIVNVPROC = procedure (path: GLuint; pname: GLenum; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHPARAMETERFVNVPROC = procedure (path: GLuint; pname: GLenum; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHCOMMANDSNVPROC = procedure (path: GLuint; commands: PGLubyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHCOORDSNVPROC = procedure (path: GLuint; coords: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHDASHARRAYNVPROC = procedure (path: GLuint; dashArray: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHMETRICSNVPROC = procedure (metricQueryMask: GLbitfield; numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; stride: GLsizei; metrics: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHMETRICRANGENVPROC = procedure (metricQueryMask: GLbitfield; firstPathName: GLuint; numPaths: GLsizei; stride: GLsizei; metrics: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHSPACINGNVPROC = procedure (pathListMode: GLenum; numPaths: GLsizei; pathNameType: GLenum; paths: PGLvoid; pathBase: GLuint; advanceScale: GLfloat; kerningScale: GLfloat; transformType: GLenum; returnedSpacing: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHCOLORGENIVNVPROC = procedure (color: GLenum; pname: GLenum; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHCOLORGENFVNVPROC = procedure (color: GLenum; pname: GLenum; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHTEXGENIVNVPROC = procedure (texCoordSet: GLenum; pname: GLenum; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHTEXGENFVNVPROC = procedure (texCoordSet: GLenum; pname: GLenum; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPOINTINFILLPATHNVPROC = function (path: GLuint; mask: GLuint; x: GLfloat; y: GLfloat): GLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPOINTINSTROKEPATHNVPROC = function (path: GLuint; x: GLfloat; y: GLfloat): GLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPATHLENGTHNVPROC = function (path: GLuint; startSegment: GLsizei; numSegments: GLsizei): GLfloat;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTALONGPATHNVPROC = function (path: GLuint; startSegment: GLsizei; numSegments: GLsizei; distance: GLfloat; x: PGLfloat; y: PGLfloat; tangentX: PGLfloat; tangentY: PGLfloat): GLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
 
 implementation
 

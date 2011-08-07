@@ -3,6 +3,8 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>31/07/11 - Yar - Added GL_NV_Path_rendering
+  <li>18/07/11 - Yar - Added WGL_EXT_create_context_es2_profile
   <li>06/06/11 - Yar - Added GL_NV_vertex_buffer_unified_memory, GL_NV_shader_buffer_load
   <li>11/03/11 - Yar - Added GL_EXT_texture_sRGB_decode, GL_ARB_separate_shader_objects, EXT_direct_state_access
   <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
@@ -148,7 +150,7 @@ type
     SGIS_texture_border_clamp, SGIS_texture_color_mask, SGIS_texture_edge_clamp,
     SGIS_texture_lod, SGIX_depth_texture, SGIX_shadow, SGIX_shadow_ambient,
     AMD_vertex_shader_tessellator, WIN_swap_hint, ATI_meminfo, NVX_gpu_memory_info,
-    NV_vdpau_interop,
+    NV_vdpau_interop, NV_path_rendering,
 
     // Graphics Remedy's Extensions
     GREMEDY_frame_terminator, GREMEDY_string_marker: boolean;
@@ -2556,7 +2558,58 @@ type
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 {$ENDIF LINUX}
+
 {$IFDEF GLS_REGIONS}{$ENDREGION 'Interrop'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Path rendering'}{$ENDIF}
+   GenPathsNV: PFNGLGENPATHSNVPROC;
+   DeletePathsNV: PFNGLDELETEPATHSNVPROC;
+   IsPathNV: PFNGLISPATHNVPROC;
+   PathCommandsNV: PFNGLPATHCOMMANDSNVPROC;
+   PathCoordsNV: PFNGLPATHCOORDSNVPROC;
+   PathSubCommandsNV: PFNGLPATHSUBCOMMANDSNVPROC;
+   PathSubCoordsNV: PFNGLPATHSUBCOORDSNVPROC;
+   PathStringNV: PFNGLPATHSTRINGNVPROC;
+   PathGlyphsNV: PFNGLPATHGLYPHSNVPROC;
+   PathGlyphRangeNV: PFNGLPATHGLYPHRANGENVPROC;
+   WeightPathsNV: PFNGLWEIGHTPATHSNVPROC;
+   CopyPathNV: PFNGLCOPYPATHNVPROC;
+   InterpolatePathsNV: PFNGLINTERPOLATEPATHSNVPROC;
+   PathParameterivNV: PFNGLPATHPARAMETERIVNVPROC;
+   PathParameteriNV: PFNGLPATHPARAMETERINVPROC;
+   PathParameterfvNV: PFNGLPATHPARAMETERFVNVPROC;
+   PathParameterfNV: PFNGLPATHPARAMETERFNVPROC;
+   PathDashArrayNV: PFNGLPATHDASHARRAYNVPROC;
+   PathStencilFuncNV: PFNGLPATHSTENCILFUNCNVPROC;
+   StencilFillPathNV: PFNGLSTENCILFILLPATHNVPROC;
+   StencilStrokePathNV: PFNGLSTENCILSTROKEPATHNVPROC;
+   StencilFillPathInstancedNV: PFNGLSTENCILFILLPATHINSTANCEDNVPROC;
+   StencilStrokePathInstancedNV: PFNGLSTENCILSTROKEPATHINSTANCEDNVPROC;
+   PathColorGenNV: PFNGLPATHCOLORGENNVPROC;
+   PathTexGenNV: PFNGLPATHTEXGENNVPROC;
+   PathFogGenNV: PFNGLPATHFOGGENNVPROC;
+   CoverFillPathNV: PFNGLCOVERFILLPATHNVPROC;
+   CoverStrokePathNV: PFNGLCOVERSTROKEPATHNVPROC;
+   CoverFillPathInstancedNV: PFNGLCOVERFILLPATHINSTANCEDNVPROC;
+   CoverStrokePathInstancedNV: PFNGLCOVERSTROKEPATHINSTANCEDNVPROC;
+   GetPathParameterivNV: PFNGLGETPATHPARAMETERIVNVPROC;
+   GetPathParameterfvNV: PFNGLGETPATHPARAMETERFVNVPROC;
+   GetPathCommandsNV: PFNGLGETPATHCOMMANDSNVPROC;
+   GetPathCoordsNV: PFNGLGETPATHCOORDSNVPROC;
+   GetPathDashArrayNV: PFNGLGETPATHDASHARRAYNVPROC;
+   GetPathMetricsNV: PFNGLGETPATHMETRICSNVPROC;
+   GetPathMetricRangeNV: PFNGLGETPATHMETRICRANGENVPROC;
+   GetPathSpacingNV: PFNGLGETPATHSPACINGNVPROC;
+   GetPathColorGenivNV: PFNGLGETPATHCOLORGENIVNVPROC;
+   GetPathColorGenfvNV: PFNGLGETPATHCOLORGENFVNVPROC;
+   GetPathTexGenivNV: PFNGLGETPATHTEXGENIVNVPROC;
+   GetPathTexGenfvNV: PFNGLGETPATHTEXGENFVNVPROC;
+   IsPointInFillPathNV: PFNGLISPOINTINFILLPATHNVPROC;
+   IsPointInStrokePathNV: PFNGLISPOINTINSTROKEPATHNVPROC;
+   GetPathLengthNV: PFNGLGETPATHLENGTHNVPROC;
+   PointAlongPathNV: PFNGLPOINTALONGPATHNVPROC;
+   PathStencilDepthOffsetNV: PFNGLPATHSTENCILDEPTHOFFSETNVPROC;
+   PathCoverDepthFuncNV: PFNGLPATHCOVERDEPTHFUNCNVPROC;
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}
 {$REGION 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'}
 {$ENDIF}
@@ -2574,7 +2627,8 @@ type
 
     // Vendor/EXT WGL extension checks
     W_ATI_pixel_format_float, W_EXT_framebuffer_sRGB,
-    W_EXT_pixel_format_packed_float, W_EXT_swap_control, W_NV_gpu_affinity: boolean;
+    W_EXT_pixel_format_packed_float, W_EXT_swap_control, W_NV_gpu_affinity,
+    W_EXT_create_context_es2_profile: boolean;
 
     // WGL_buffer_region (ARB #4)
     WCreateBufferRegionARB: PFNWGLCREATEBUFFERREGIONARBPROC;
@@ -3405,7 +3459,7 @@ begin
   ReadAGLImplementationProperties;
 {$ENDIF}
   GetString := GetAddress('GetString');
-  GetStringi := GetAddress('GetStringi'); 
+  GetStringi := GetAddress('GetStringi');
   GetIntegerv := GetAddress('GetIntegerv');
   GetError := GetAddress('GetError');
   // determine OpenGL versions supported
@@ -3682,6 +3736,7 @@ begin
   ATI_meminfo := CheckExtension('GL_ATI_meminfo');
   NVX_gpu_memory_info := CheckExtension('GL_NVX_gpu_memory_info');
   NV_vdpau_interop := CheckExtension('GL_NV_vdpau_interop');
+  NV_path_rendering := CheckExtension('GL_NV_path_rendering');
 
   GREMEDY_frame_terminator := CheckExtension('GL_GREMEDY_frame_terminator');
   GREMEDY_string_marker := CheckExtension('GL_GREMEDY_string_marker');
@@ -4652,11 +4707,61 @@ begin
   VDPAUUnmapSurfacesNV := GetAddressNoSuffixes('VDPAUUnmapSurfacesNV');
 {$ENDIF LINUX}
 
+  GenPathsNV := GetAddressNoSuffixes('GenPathsNV');
+  DeletePathsNV := GetAddressNoSuffixes('DeletePathsNV');
+  IsPathNV := GetAddressNoSuffixes('IsPathNV');
+  PathCommandsNV := GetAddressNoSuffixes('PathCommandsNV');
+  PathCoordsNV := GetAddressNoSuffixes('PathCoordsNV');
+  PathSubCommandsNV := GetAddressNoSuffixes('PathSubCommandsNV');
+  PathSubCoordsNV := GetAddressNoSuffixes('PathSubCoordsNV');
+  PathStringNV := GetAddressNoSuffixes('PathStringNV');
+  PathGlyphsNV := GetAddressNoSuffixes('PathGlyphsNV');
+  PathGlyphRangeNV := GetAddressNoSuffixes('PathGlyphRangeNV');
+  WeightPathsNV := GetAddressNoSuffixes('WeightPathsNV');
+  CopyPathNV := GetAddressNoSuffixes('CopyPathNV');
+  InterpolatePathsNV := GetAddressNoSuffixes('InterpolatePathsNV');
+  PathParameterivNV := GetAddressNoSuffixes('PathParameterivNV');
+  PathParameteriNV := GetAddressNoSuffixes('PathParameteriNV');
+  PathParameterfvNV := GetAddressNoSuffixes('PathParameterfvNV');
+  PathParameterfNV := GetAddressNoSuffixes('PathParameterfNV');
+  PathDashArrayNV := GetAddressNoSuffixes('PathDashArrayNV');
+  PathStencilFuncNV := GetAddressNoSuffixes('PathStencilFuncNV');
+  StencilFillPathNV := GetAddressNoSuffixes('StencilFillPathNV');
+  StencilStrokePathNV := GetAddressNoSuffixes('StencilStrokePathNV');
+  StencilFillPathInstancedNV := GetAddressNoSuffixes('StencilFillPathInstancedNV');
+  StencilStrokePathInstancedNV := GetAddressNoSuffixes('StencilStrokePathInstancedNV');
+  PathColorGenNV := GetAddressNoSuffixes('PathColorGenNV');
+  PathTexGenNV := GetAddressNoSuffixes('PathTexGenNV');
+  PathFogGenNV := GetAddressNoSuffixes('PathFogGenNV');
+  CoverFillPathNV := GetAddressNoSuffixes('CoverFillPathNV');
+  CoverStrokePathNV := GetAddressNoSuffixes('CoverStrokePathNV');
+  CoverFillPathInstancedNV := GetAddressNoSuffixes('CoverFillPathInstancedNV');
+  CoverStrokePathInstancedNV := GetAddressNoSuffixes('CoverStrokePathInstancedNV');
+  GetPathParameterivNV := GetAddressNoSuffixes('GetPathParameterivNV');
+  GetPathParameterfvNV := GetAddressNoSuffixes('GetPathParameterfvNV');
+  GetPathCommandsNV := GetAddressNoSuffixes('GetPathCommandsNV');
+  GetPathCoordsNV := GetAddressNoSuffixes('GetPathCoordsNV');
+  GetPathDashArrayNV := GetAddressNoSuffixes('GetPathDashArrayNV');
+  GetPathMetricsNV := GetAddressNoSuffixes('GetPathMetricsNV');
+  GetPathMetricRangeNV := GetAddressNoSuffixes('GetPathMetricRangeNV');
+  GetPathSpacingNV := GetAddressNoSuffixes('GetPathSpacingNV');
+  GetPathColorGenivNV := GetAddressNoSuffixes('GetPathColorGenivNV');
+  GetPathColorGenfvNV := GetAddressNoSuffixes('GetPathColorGenfvNV');
+  GetPathTexGenivNV := GetAddressNoSuffixes('GetPathTexGenivNV');
+  GetPathTexGenfvNV := GetAddressNoSuffixes('GetPathTexGenfvNV');
+  IsPointInFillPathNV := GetAddressNoSuffixes('IsPointInFillPathNV');
+  IsPointInStrokePathNV := GetAddressNoSuffixes('IsPointInStrokePathNV');
+  GetPathLengthNV := GetAddressNoSuffixes('GetPathLengthNV');
+  PointAlongPathNV := GetAddressNoSuffixes('PointAlongPathNV');
+  PathStencilDepthOffsetNV := GetAddressNoSuffixes('PathStencilDepthOffsetNV');
+  PathCoverDepthFuncNV := GetAddressNoSuffixes('PathCoverDepthFuncNV');
+
   if FDebug then
     if ARB_debug_output then
     begin
       DebugMessageCallback(DebugCallBack, nil);
       DebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, FDebugIds, True);
+      Enable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
     end
     else if AMDX_debug_output then
     begin
@@ -4921,6 +5026,7 @@ begin
   ATI_meminfo := False;
   NVX_gpu_memory_info := False;
   NV_vdpau_interop := False;
+  NV_path_rendering := False;
 
   GREMEDY_frame_terminator := False;
   GREMEDY_string_marker := False;
@@ -5863,6 +5969,55 @@ begin
   DebugMessageCallback := GetCapAddress();
   GetDebugMessageLog := GetCapAddress();
 
+  GenPathsNV := GetCapAddress();
+  DeletePathsNV := GetCapAddress();
+  IsPathNV := GetCapAddress();
+  PathCommandsNV := GetCapAddress();
+  PathCoordsNV := GetCapAddress();
+  PathSubCommandsNV := GetCapAddress();
+  PathSubCoordsNV := GetCapAddress();
+  PathStringNV := GetCapAddress();
+  PathGlyphsNV := GetCapAddress();
+  PathGlyphRangeNV := GetCapAddress();
+  WeightPathsNV := GetCapAddress();
+  CopyPathNV := GetCapAddress();
+  InterpolatePathsNV := GetCapAddress();
+  PathParameterivNV := GetCapAddress();
+  PathParameteriNV := GetCapAddress();
+  PathParameterfvNV := GetCapAddress();
+  PathParameterfNV := GetCapAddress();
+  PathDashArrayNV := GetCapAddress();
+  PathStencilFuncNV := GetCapAddress();
+  StencilFillPathNV := GetCapAddress();
+  StencilStrokePathNV := GetCapAddress();
+  StencilFillPathInstancedNV := GetCapAddress();
+  StencilStrokePathInstancedNV := GetCapAddress();
+  PathColorGenNV := GetCapAddress();
+  PathTexGenNV := GetCapAddress();
+  PathFogGenNV := GetCapAddress();
+  CoverFillPathNV := GetCapAddress();
+  CoverStrokePathNV := GetCapAddress();
+  CoverFillPathInstancedNV := GetCapAddress();
+  CoverStrokePathInstancedNV := GetCapAddress();
+  GetPathParameterivNV := GetCapAddress();
+  GetPathParameterfvNV := GetCapAddress();
+  GetPathCommandsNV := GetCapAddress();
+  GetPathCoordsNV := GetCapAddress();
+  GetPathDashArrayNV := GetCapAddress();
+  GetPathMetricsNV := GetCapAddress();
+  GetPathMetricRangeNV := GetCapAddress();
+  GetPathSpacingNV := GetCapAddress();
+  GetPathColorGenivNV := GetCapAddress();
+  GetPathColorGenfvNV := GetCapAddress();
+  GetPathTexGenivNV := GetCapAddress();
+  GetPathTexGenfvNV := GetCapAddress();
+  IsPointInFillPathNV := GetCapAddress();
+  IsPointInStrokePathNV := GetCapAddress();
+  GetPathLengthNV := GetCapAddress();
+  PointAlongPathNV := GetCapAddress();
+  PathStencilDepthOffsetNV := GetCapAddress();
+  PathCoverDepthFuncNV := GetCapAddress();
+
   FInitialized := False;
 end;
 
@@ -5894,6 +6049,7 @@ begin
   W_EXT_pixel_format_packed_float := CheckExtension('WGL_EXT_pixel_format_packed_float');
   W_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
   W_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
+  W_EXT_create_context_es2_profile := CheckExtension('WGL_EXT_create_context_es2_profile');
 end;
 
 // ReadWGLExtensions
