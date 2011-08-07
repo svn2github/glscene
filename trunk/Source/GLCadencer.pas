@@ -6,6 +6,7 @@
  Cadencing composant for GLScene (ease Progress processing)<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>07/08/11 - Yar - Added OnTotalProgress event, which happens after all iterations with fixed delta time (thanks Controller)
       <li>06/02/11 - Predator - Improved TGLCadencer for Lazarus
       <li>29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
       <li>21/11/09 - DaStr - Bugfixed FSubscribedCadenceableComponents
@@ -101,7 +102,7 @@ type
     FCurrentTime: Double;
     FOriginTime: Double;
     FMaxDeltaTime, FMinDeltaTime, FFixedDeltaTime: Double;
-    FOnProgress: TGLProgressEvent;
+  	FOnProgress, FOnTotalProgress : TGLProgressEvent;
     FProgressing: Integer;
     procedure SetCurrentTime(const Value: Double);
 
@@ -213,6 +214,8 @@ type
 
     {: Happens AFTER scene was progressed. }
     property OnProgress: TGLProgressEvent read FOnProgress write FOnProgress;
+    {: Happens AFTER all iterations with fixed delta time. }
+    property OnTotalProgress : TGLProgressEvent read FOnTotalProgress write FOnTotalProgress;
   end;
 
   // TGLCustomCadencedComponent
@@ -811,6 +814,7 @@ end;
 procedure TGLCadencer.Progress;
 var
   deltaTime, newTime, totalDelta: Double;
+  fullTotalDelta, firstLastTime : Double;
   i: Integer;
   pt: TProgressTimes;
 begin
@@ -856,6 +860,8 @@ begin
             end;
           end;
           totalDelta := deltaTime;
+          fullTotalDelta := totalDelta;
+          firstLastTime := lastTime;
           if FixedDeltaTime > 0 then
             deltaTime := FixedDeltaTime;
           while totalDelta >= deltaTime do
@@ -886,6 +892,9 @@ begin
               Break;
             totalDelta := totalDelta - deltaTime;
           end;
+          if Assigned(FOnTotalProgress)
+            and (not (csDesigning in ComponentState)) then
+            FOnTotalProgress(Self, fullTotalDelta, firstLastTime);
         end;
       end;
     end;
