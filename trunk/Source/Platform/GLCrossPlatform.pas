@@ -855,7 +855,7 @@ begin
   begin
     if Assigned(vProjectTargetName) then
     begin
-      path :=  vProjectTargetName;
+      path :=  vProjectTargetName();
       if Length(path) = 0 then
         path := vLastProjectTargetName
       else
@@ -1113,7 +1113,7 @@ begin
   begin
     if Assigned(vProjectTargetName) then
     begin
-      path :=  vProjectTargetName;
+      path :=  vProjectTargetName();
       if Length(path) = 0 then
         path := vLastProjectTargetName
       else

@@ -238,8 +238,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils,
-  Contnrs;
+  SysUtils;
 
 const
   cFontManagerMsg = 'GLScene FontManagerMessage';

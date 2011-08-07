@@ -64,7 +64,7 @@ type
     FXCollection: TXCollection;
     updatingListView: boolean;
     procedure PrepareListView;
-    procedure PrepareXCollectionItemPopup(parent: TMenuItem);
+    procedure PrepareXCollectionItemPopup(AParent: TMenuItem);
     procedure OnAddXCollectionItemClick(Sender: TObject);
     procedure OnNameChanged(Sender: TObject);
     procedure OnXCollectionDestroyed(Sender: TObject);
@@ -240,7 +240,7 @@ end;
 
 // PrepareXCollectionItemPopup
 
-procedure TXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
+procedure TXCollectionEditor.PrepareXCollectionItemPopup(AParent: TMenuItem);
 var
   i: integer;
   list: TList;
@@ -249,7 +249,7 @@ var
 begin
   list := GetXCollectionItemClassesList(FXCollection.ItemsClass);
   try
-    parent.Clear;
+    AParent.Clear;
     for i := 0 to list.Count - 1 do
     begin
       XCollectionItemClass := TXCollectionItemClass(list[i]);
@@ -258,7 +258,7 @@ begin
       mi.OnClick := OnAddXCollectionItemClick;
       mi.Tag := integer(XCollectionItemClass);
       mi.Enabled := Assigned(FXCollection) and FXCollection.CanAdd(XCollectionItemClass);
-      parent.Add(mi);
+      AParent.Add(mi);
     end;
   finally
     list.Free;

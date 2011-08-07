@@ -23,7 +23,7 @@ interface
 
 uses
    Classes, GLSceneRegisterLCL, GLStrings,
-   GLWideBitmapFont, GLSpaceText,
+   GLSpaceText,
    GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut, LResources;
 
 procedure Register;
@@ -33,8 +33,7 @@ implementation
 procedure Register;
 begin
    RegisterComponents('GLScene',
-                      [TGLSMWaveOut,
-                       TGLWideBitmapFont
+                      [TGLSMWaveOut
                         ]);
 
    RegisterComponents('GLScene Utils',

@@ -1315,7 +1315,6 @@ implementation
 // ------------------------------------------------------------------
 uses
   Controls,
-  BaseClasses,
   GLStrings;
 
 resourcestring
