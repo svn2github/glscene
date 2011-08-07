@@ -1,11 +1,15 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: glwin32context.cbackwardcontextfailed
+msgid "Can not create backward compatible context: #%X, %s"
+msgstr ""
+
 #: glwin32context.cfailhwrc
 msgid "Unable to create rendering context with hardware acceleration - down to software"
 msgstr ""
 
 #: glwin32context.cforwardcontextfailed
-msgid "Can not create OpenGL 3.x Forward Context"
+msgid "Can not create forward compatible context: #%X, %s"
 msgstr ""
 
