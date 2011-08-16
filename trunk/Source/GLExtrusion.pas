@@ -857,6 +857,7 @@ begin
   if Source is TGLPipeNode then
   begin
     RadiusFactor := TGLPipeNode(Source).FRadiusFactor;
+    Color.DirectColor := TGLPipeNode(Source).Color.DirectColor;
     TexCoordT := TGLPipeNode(Source).FTexCoordT;
   end;
   inherited;
