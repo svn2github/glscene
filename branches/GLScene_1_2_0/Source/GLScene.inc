@@ -74,6 +74,10 @@
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}
 
+// Activate OpenGL ES
+{.$DEFINE EGL_SUPPORT}
+
+
 //
 // Platform Detection
 //
