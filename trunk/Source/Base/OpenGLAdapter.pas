@@ -3,6 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>21/08/11 - Yar - Added OpenGL ES
   <li>31/07/11 - Yar - Added GL_NV_Path_rendering
   <li>18/07/11 - Yar - Added WGL_EXT_create_context_es2_profile
   <li>06/06/11 - Yar - Added GL_NV_vertex_buffer_unified_memory, GL_NV_shader_buffer_load
@@ -68,6 +69,10 @@ type
 {$IFDEF DARWIN}
     procedure ReadAGLExtensions;
     procedure ReadAGLImplementationProperties;
+{$ENDIF}
+{$IFDEF EGL_SUPPORT}
+    procedure ReadEGLExtensions;
+    procedure ReadEGLImplementationProperties;
 {$ENDIF}
     function GetAddress(ProcName: string): Pointer;
     function GetAddressNoSuffixes(ProcName: string): Pointer;
@@ -2888,9 +2893,164 @@ type
     AErrorString : function(code: TGLenum): PGLChar; cdecl;
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'EGL function/procedure'}{$ENDIF}
+{$IFDEF EGL_SUPPORT}
+    OES_depth24,
+    OES_depth32,
+    OES_depth_texture,
+    OES_element_index_uint,
+    OES_fbo_render_mipmap,
+    OES_get_program_binary,
+    OES_mapbuffer,
+    OES_packed_depth_stencil,
+    OES_rgb8_rgba8,
+    OES_standard_derivatives,
+    OES_texture_3D,
+    OES_texture_float,
+    OES_texture_float_linear,
+    OES_texture_half_float,
+    OES_texture_half_float_linear,
+    OES_texture_npot,
+    OES_vertex_array_object,
+    OES_vertex_half_float: Boolean;
 
-{$IFDEF GLS_REGIONS}
- {$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
+    EGetError : function:EGLint;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetDisplay : function(display_id:EGLNativeDisplayType):EGLDisplay;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EInitialize : function(dpy:EGLDisplay; major:pEGLint; minor:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ETerminate : function(dpy:EGLDisplay):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EQueryString : function(dpy:EGLDisplay; name:EGLint):pchar;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetConfigs : function(dpy:EGLDisplay; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EChooseConfig : function(dpy:EGLDisplay; attrib_list:pEGLint; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetConfigAttrib : function(dpy:EGLDisplay; config:EGLConfig; attribute:EGLint; value:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECreateWindowSurface : function(dpy:EGLDisplay; config:EGLConfig; win:EGLNativeWindowType; attrib_list:pEGLint):EGLSurface;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECreatePbufferSurface : function(dpy:EGLDisplay; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECreatePixmapSurface : function(dpy:EGLDisplay; config:EGLConfig; pixmap:EGLNativePixmapType; attrib_list:pEGLint):EGLSurface;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EDestroySurface : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EQuerySurface : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EBindAPI : function(api:EGLenum):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EQueryAPI : function:EGLenum;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EWaitClient : function:EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EReleaseThread : function:EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECreatePbufferFromClientBuffer : function(dpy:EGLDisplay; buftype:EGLenum; buffer:EGLClientBuffer; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ESurfaceAttrib : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:EGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EBindTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EReleaseTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ESwapInterval : function(dpy:EGLDisplay; interval:EGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECreateContext : function(dpy:EGLDisplay; config:EGLConfig; share_context:EGLContext; attrib_list:pEGLint):EGLContext;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EDestroyContext : function(dpy:EGLDisplay; ctx:EGLContext):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EMakeCurrent : function(dpy:EGLDisplay; draw:EGLSurface; read:EGLSurface; ctx:EGLContext):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetCurrentContext : function:EGLContext;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetCurrentSurface : function(readdraw:EGLint):EGLSurface;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EGetCurrentDisplay : function:EGLDisplay;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EQueryContext : function(dpy:EGLDisplay; ctx:EGLContext; attribute:EGLint; value:pEGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EWaitGL : function:EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    EWaitNative : function(engine:EGLint):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ESwapBuffers : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+    ECopyBuffers : function(dpy:EGLDisplay; surface:EGLSurface; target:EGLNativePixmapType):EGLBoolean;
+{$IFDEF MSWINDOWS} stdcall;
+{$ENDIF}{$IFDEF UNIX} cdecl;
+{$ENDIF}
+
+{$ENDIF EGL_SUPPORT}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+{$IFDEF GLS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
     // locate functions and procedures for
@@ -3186,11 +3346,26 @@ const
 var
   GLHandle: HINST;
   GLUHandle: HINST;
+{$IFDEF EGL_SUPPORT}
+  EGLHandle: HINST;
+  EGL2Handle: HINST;
+{$ENDIF}
 
 function GLGetProcAddress(ProcName: PGLChar): Pointer;
 begin
+{$IFNDEF EGL_SUPPORT}
   Result := wglGetProcAddress(ProcName);
+{$ELSE}
+  Result := GetProcAddress(EGL2Handle, ProcName);
+{$ENDIF}
 end;
+
+{$IFDEF EGL_SUPPORT}
+function EGLGetProcAddress(ProcName: PGLChar): Pointer;
+begin
+  Result := GetProcAddress(EGLHandle, ProcName);
+end;
+{$ENDIF}
 
 {$ENDIF}
 // ************** UNIX specific ********************
@@ -3202,9 +3377,17 @@ const
 var
   GLHandle: TLibHandle = 0; // Pointer;
   GLUHandle: TLibHandle = 0; // Pointer;
+{$IFDEF EGL_SUPPORT}
+  EGLHandle: TLibHandle = 0;
+  EGL2Handle: TLibHandle = 0;
+{$ENDIF}
+
 {$IFDEF DARWIN}
   AGLHandle: TLibHandle = 0;
   dlHandle: TLibHandle = 0;
+  {$IFDEF EGL_SUPPORT}
+  EGL2Handle: TLibHandle = 0;
+  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF DARWIN}
@@ -3212,25 +3395,26 @@ function NSIsSymbolNameDefined(s: PChar): Bool; cdecl; external libdl;
 function NSLookupAndBindSymbol(s: PChar): PtrInt; cdecl; external libdl;
 function NSAddressOfSymbol(Lib: pointer): PtrInt; cdecl; external libdl;
 
-Function GetProcAddress(Lib : TlibHandle; ProcName : AnsiString) : Pointer;
-var fname: PChar;
-    symbol: PtrInt;
+function GetProcAddress(Lib : TlibHandle; ProcName : AnsiString) : Pointer;
+var
+  fname: PChar;
+  symbol: PtrInt;
 begin
-                fname := PChar('_' + ProcName);
-                if not NSIsSymbolNameDefined(fname) then
-                   exit(nil);
+  fname := PChar('_' + ProcName);
+  if not NSIsSymbolNameDefined(fname) then
+    exit(nil);
 
-                symbol := NSLookupAndBindSymbol(fname);
-                if symbol <> 0 then
-                    symbol := NSAddressOfSymbol(Pointer(symbol));
+  symbol := NSLookupAndBindSymbol(fname);
+  if symbol <> 0 then
+    symbol := NSAddressOfSymbol(Pointer(symbol));
 
-                Result := Pointer(symbol);
-
+  Result := Pointer(symbol);
 end;
 {$ENDIF}
 
 function GLGetProcAddress(ProcName: PGLChar): Pointer;
 begin
+{$IFNDEF EGL_SUPPORT}
   {$IFDEF SUPPORT_GLX}
   if @glXGetProcAddress <> nil then
     Result := glXGetProcAddress(ProcName);
@@ -3245,6 +3429,9 @@ begin
     exit;
   {$ENDIF}
   Result := GetProcAddress(GLHandle, ProcName);
+{$ELSE}
+  Result := GetProcAddress(EGL2Handle, ProcName);
+{$ENDIF}
 end;
 
 {$IFDEF DARWIN}
@@ -3252,8 +3439,18 @@ function AGLGetProcAddress(ProcName: PGLChar): Pointer;
 begin
   Result := GetProcAddress(AGLHandle, ProcName);
 end;
+{$ELSE}
+
+{$IFDEF EGL_SUPPORT}
+function EGLGetProcAddress(ProcName: PGLChar): Pointer;
+begin
+  Result := GetProcAddress(EGLHandle, ProcName);
+end;
 {$ENDIF}
-{$ENDIF}
+
+{$ENDIF DARWIN}
+
+{$ENDIF UNIX}
 
 function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
 begin
@@ -3333,7 +3530,12 @@ begin
             vName := glPrefix + ProcName + 'ATI';
             Result := GLGetProcAddress(PGLChar(TGLString(vName)));
             if Result = nil then
-              Result := @glCap;
+            begin
+              vName := glPrefix + ProcName + 'OES';
+              Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+              if Result = nil then
+                Result := @glCap;
+            end;
           end;
         end;
       end;
@@ -3457,6 +3659,10 @@ begin
 {$IFDEF DARWIN}
   ReadAGLExtensions;
   ReadAGLImplementationProperties;
+{$ENDIF}
+{$IFDEF EGL_SUPPORT}
+  ReadEGLExtensions;
+  ReadEGLImplementationProperties;
 {$ENDIF}
   GetString := GetAddress('GetString');
   GetStringi := GetAddress('GetStringi');
@@ -6402,6 +6608,72 @@ begin
 end;
 {$ENDIF}
 
+{$IFDEF EGL_SUPPORT}
+procedure TGLExtensionsAndEntryPoints.ReadEGLImplementationProperties;
+var
+  MajorVersion, MinorVersion: integer;
+begin
+  if Assigned(GetString) then
+    FBuffer := string(GetString(GL_EXTENSIONS))
+  else
+    FBuffer := '';
+
+  OES_depth24 := CheckExtension('GL_OES_depth24');
+  OES_depth32 := CheckExtension('GL_OES_depth32');
+  OES_depth_texture := CheckExtension('GL_OES_depth_texture');
+  OES_element_index_uint := CheckExtension('GL_OES_element_index_uint');
+  OES_fbo_render_mipmap := CheckExtension('GL_OES_fbo_render_mipmap');
+  OES_get_program_binary := CheckExtension('GL_OES_get_program_binary');
+  OES_mapbuffer := CheckExtension('GL_OES_mapbuffer');
+  OES_packed_depth_stencil := CheckExtension('GL_OES_packed_depth_stencil');
+  OES_rgb8_rgba8 := CheckExtension('GL_OES_rgb8_rgba8');
+  OES_standard_derivatives := CheckExtension('GL_OES_standard_derivatives');
+  OES_texture_3D := CheckExtension('GL_OES_texture_3D');
+  OES_texture_float := CheckExtension('GL_OES_texture_float');
+  OES_texture_float_linear := CheckExtension('GL_OES_texture_float_linear');
+  OES_texture_half_float := CheckExtension('GL_OES_texture_half_float');
+  OES_texture_half_float_linear := CheckExtension('GL_OES_texture_half_float_linear');
+  OES_texture_npot := CheckExtension('GL_OES_texture_npot');
+  OES_vertex_array_object := CheckExtension('GL_OES_vertex_array_object');
+  OES_vertex_half_float := CheckExtension('GL_OES_vertex_half_float');
+end;
+
+procedure TGLExtensionsAndEntryPoints.ReadEGLExtensions;
+begin
+  EGetError := EGLGetProcAddress('eglGetError');
+  EGetDisplay := EGLGetProcAddress('eglGetDisplay');
+  EInitialize := EGLGetProcAddress('eglInitialize');
+  ETerminate := EGLGetProcAddress('eglTerminate');
+  EQueryString := EGLGetProcAddress('eglQueryString');
+  EGetConfigs := EGLGetProcAddress('eglGetConfigs');
+  EChooseConfig := EGLGetProcAddress('eglChooseConfig');
+  EGetConfigAttrib := EGLGetProcAddress('eglGetConfigAttrib');
+  ECreatePixmapSurface := EGLGetProcAddress('eglCreatePixmapSurface');
+  EDestroySurface := EGLGetProcAddress('eglDestroySurface');
+  EQuerySurface := EGLGetProcAddress('eglQuerySurface');
+  EBindAPI := EGLGetProcAddress('eglBindAPI');
+  EQueryAPI := EGLGetProcAddress('eglQueryAPI');
+  EWaitClient := EGLGetProcAddress('eglWaitClient');
+  EReleaseThread := EGLGetProcAddress('eglReleaseThread');
+  ECreatePbufferFromClientBuffer := EGLGetProcAddress('eglCreatePbufferFromClientBuffer');
+  ESurfaceAttrib := EGLGetProcAddress('eglSurfaceAttrib');
+  EBindTexImage := EGLGetProcAddress('eglBindTexImage');
+  EReleaseTexImage := EGLGetProcAddress('eglReleaseTexImage');
+  ESwapInterval := EGLGetProcAddress('eglSwapInterval');
+  ECreateContext := EGLGetProcAddress('eglCreateContext');
+  EDestroyContext := EGLGetProcAddress('eglDestroyContext');
+  EMakeCurrent := EGLGetProcAddress('eglMakeCurrent');
+  EGetCurrentContext := EGLGetProcAddress('eglGetCurrentContext');
+  EGetCurrentSurface := EGLGetProcAddress('eglGetCurrentSurface');
+  EGetCurrentDisplay := EGLGetProcAddress('eglGetCurrentDisplay');
+  EQueryContext := EGLGetProcAddress('eglQueryContext');
+  EWaitGL := EGLGetProcAddress('eglWaitGL');
+  EWaitNative := EGLGetProcAddress('eglWaitNative');
+  ESwapBuffers := EGLGetProcAddress('eglSwapBuffers');
+  ECopyBuffers := EGLGetProcAddress('eglCopyBuffers');
+end;
+{$ENDIF}
+
 // TrimAndSplitVersionString
 //
 procedure TrimAndSplitVersionString(buffer: string; var max, min: integer);
@@ -6458,10 +6730,21 @@ end;
 
 function InitOpenGL: boolean;
 begin
+{$IFNDEF EGL_SUPPORT}
   if (GLHandle = INVALID_MODULEHANDLE) or (GLUHandle = INVALID_MODULEHANDLE) then
     Result := InitOpenGLFromLibrary(opengl32, glu32)
   else
     Result := True;
+{$ELSE}
+  CloseOpenGL;
+  Result := True;
+{$IFNDEF DARWIN}
+  EGLHandle := LoadLibrary(PChar(libEGL));
+  Result := EGLHandle <> INVALID_MODULEHANDLE;
+{$ENDIF}
+  EGL2Handle := LoadLibrary(PChar(libGLES2));
+  Result := Result and (EGL2Handle <> INVALID_MODULEHANDLE);
+{$ENDIF}
 end;
 
 // InitOpenGLFromLibrary
@@ -6492,7 +6775,7 @@ end;
 
 function IsOpenGLInitialized: boolean;
 begin
-  Result := (GLHandle <> INVALID_MODULEHANDLE);
+  Result :={$IFNDEF EGL_SUPPORT}(GLHandle <> INVALID_MODULEHANDLE){$ELSE}(EGL2Handle <> INVALID_MODULEHANDLE){$ENDIF};
 end;
 
 // CloseOpenGL
@@ -6500,6 +6783,7 @@ end;
 
 procedure CloseOpenGL;
 begin
+{$IFNDEF EGL_SUPPORT}
   if GLHandle <> INVALID_MODULEHANDLE then
   begin
     FreeLibrary(GLHandle);
@@ -6524,6 +6808,21 @@ begin
     dlHandle := INVALID_MODULEHANDLE;
   end;
   {$ENDIF}
+
+{$ELSE}
+  {$IFNDEF DARWIN}
+  if EGLHandle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(EGLHandle);
+    EGLHandle := INVALID_MODULEHANDLE;
+  end;
+  {$ENDIF}
+  if EGL2Handle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(EGL2Handle);
+    EGL2Handle := INVALID_MODULEHANDLE;
+  end;
+{$ENDIF}
 end;
 
 // UnloadOpenGL
