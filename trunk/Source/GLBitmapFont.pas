@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
       <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
@@ -75,14 +76,24 @@ type
        A range allows mapping ASCII characters to character tiles in a font
        bitmap, tiles are enumerated line then column (raster). }
   TBitmapFontRange = class(TCollectionItem)
+  private
+    function GetStartASCII: WideString;
+    function GetStopASCII: WideString;
   protected
     { Protected Declarations }
     FStartASCII, FStopASCII: WideChar;
     FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
-    procedure SetStartASCII(const val: widechar);
-    procedure SetStopASCII(const val: widechar);
+    procedure SetStartASCII(const val: WideString);
+    procedure SetStopASCII(const val: WideString);
     procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
+{$IFDEF GLS_DELPHI_7_DOWN}
+{    procedure DefineProperties(Filer: TFiler); override;
+    procedure WriteStartASCII(AStream: TStream);
+    procedure ReadStartASCII(AStream: TStream);
+    procedure WriteStopASCII(AStream: TStream);
+    procedure ReadStopASCII(AStream: TStream);}
+{$ENDIF}
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
@@ -92,8 +103,8 @@ type
     procedure NotifyChange;
   published
     { Published Declarations }
-    property StartASCII: widechar read FStartASCII write SetStartASCII;
-    property StopASCII: widechar read FStopASCII write SetStopASCII;
+    property StartASCII: WideString read GetStartASCII write SetStartASCII;
+    property StopASCII: WideString read GetStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
     property StopGlyphIdx: Integer read FStopGlyphIdx;
     property CharCount: integer read FCharCount;
@@ -416,17 +427,91 @@ end;
 function TBitmapFontRange.GetDisplayName: string;
 begin
   Result := Format('ASCII [#%d, #%d] -> Glyphs [%d, %d]',
-                  [Integer(StartASCII), Integer(StopASCII), StartGlyphIdx, StopGlyphIdx]);
+                  [Integer(FStartASCII), Integer(FStopASCII), StartGlyphIdx, StopGlyphIdx]);
+end;
+
+{$IFDEF GLS_DELPHI_7_DOWN}
+ (*
+procedure TBitmapFontRange.DefineProperties(Filer: TFiler);
+begin
+  Filer.DefineBinaryProperty('StartASCII',
+    ReadStartASCII, WriteStartASCII, True);
+  Filer.DefineBinaryProperty('StopASCII',
+    ReadStopASCII, WriteStopASCII, True);
+end;
+
+procedure TBitmapFontRange.WriteStartASCII(AStream: TStream);
+var
+  LWriter: TWriter;
+begin
+  LWriter := TWriter.Create(AStream, 256);
+  try
+    LWriter.WriteWideString(FStartASCII);
+  finally
+    LWriter.Free;
+  end;
+end;
+
+procedure TBitmapFontRange.ReadStartASCII(AStream: TStream);
+var
+  LReader: TReader;
+  str: WideString;
+begin
+  LReader := TReader.Create(AStream, 256);
+  try
+    str := LReader.ReadWideString;
+    SetStartASCII(str[1]);
+  finally
+    LReader.Free;
+  end;
+end;
+
+procedure TBitmapFontRange.WriteStopASCII(AStream: TStream);
+var
+  LWriter: TWriter;
+begin
+  LWriter := TWriter.Create(AStream, 256);
+  try
+    LWriter.WriteWideString(FStopASCII);
+  finally
+    LWriter.Free;
+  end;
+end;
+
+procedure TBitmapFontRange.ReadStopASCII(AStream: TStream);
+var
+  LReader: TReader;
+  str: WideString;
+begin
+  LReader := TReader.Create(AStream, 256);
+  try
+    str := LReader.ReadWideString;
+    SetStopASCII(str[1]);
+  finally
+    LReader.Free;
+  end;
+end;
+*)
+{$ENDIF}
+
+function TBitmapFontRange.GetStartASCII: WideString;
+begin
+  Result := FStartASCII;
+end;
+
+function TBitmapFontRange.GetStopASCII: WideString;
+begin
+  Result := FStopASCII;
 end;
 
 // SetStartASCII
 //
 
-procedure TBitmapFontRange.SetStartASCII(const val: widechar);
+procedure TBitmapFontRange.SetStartASCII(const val: WideString);
 begin
-  if val <> FStartASCII then
+  if (Length(val)>0) and (val[1] <> FStartASCII) then
   begin
-    FStartASCII := val;
+    FStartASCII := val[1];
     if FStartASCII > FStopASCII then
       FStopASCII := FStartASCII;
     NotifyChange;
@@ -436,11 +521,11 @@ end;
 // SetStopASCII
 //
 
-procedure TBitmapFontRange.SetStopASCII(const val: widechar);
+procedure TBitmapFontRange.SetStopASCII(const val: WideString);
 begin
-  if FStopASCII <> val then
+  if (Length(val)>0) and (FStopASCII <> val[1]) then
   begin
-    FStopASCII := val;
+    FStopASCII := val[1];
     if FStopASCII < FStartASCII then
       FStartASCII := FStopASCII;
     NotifyChange;
@@ -550,9 +635,9 @@ begin
   for i := 0 to Count - 1 do
     with Items[i] do
     begin
-      if (aChar >= StartASCII) and (aChar <= StopASCII) then
+      if (aChar >= FStartASCII) and (aChar <= FStopASCII) then
       begin
-        Result := StartGlyphIdx + Integer(aChar) - Integer(StartASCII);
+        Result := StartGlyphIdx + Integer(aChar) - Integer(FStartASCII);
         Break;
       end;
     end;
@@ -568,7 +653,7 @@ begin
     begin
       if (aIndex >= StartGlyphIdx) and (aIndex <= StopGlyphIdx) then
       begin
-        Result := widechar(aIndex - StartGlyphIdx + Integer(StartASCII));
+        Result := widechar(aIndex - StartGlyphIdx + Integer(FStartASCII));
         Break;
       end;
     end;
@@ -606,7 +691,7 @@ begin
   Result := 0;
   for i := 0 to Count - 1 do
     with Items[i] do
-      Inc(Result, Integer(StopASCII) - Integer(StartASCII) + 1);
+      Inc(Result, Integer(FStopASCII) - Integer(FStartASCII) + 1);
 end;
 
 // ------------------
@@ -1486,6 +1571,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------

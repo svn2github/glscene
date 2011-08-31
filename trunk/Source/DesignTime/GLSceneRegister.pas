@@ -124,6 +124,20 @@ uses
 
 type
 
+{$IFDEF GLS_DELPHI_7_DOWN}
+
+  // TWideCharProperty
+  //
+  TWideCharProperty = class(TPropertyEditor)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    function GetValue: string; override;
+    procedure SetValue(const Value: string); override;
+  end;
+
+{$ENDIF}
+
   // TGLLibMaterialNameProperty
   //
   TGLLibMaterialNameProperty = class(TStringProperty)
@@ -676,6 +690,41 @@ begin
     vObjectManager := TObjectManager.Create(nil);
   Result := vObjectManager;
 end;
+
+{$IFDEF GLS_DELPHI_7_DOWN}
+
+function TWideCharProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paAutoUpdate];
+end;
+
+function TWideCharProperty.GetValue: string;
+begin
+  Result := Format('#%d', [GetOrdValue]);
+end;
+
+procedure TWideCharProperty.SetValue(const Value: string);
+var
+  n, e: Integer;
+begin
+  if Length(Value) > 0 then
+  begin
+    if Value[1] = '#' then
+    begin
+      Val(Copy(Value, 2, MaxInt), n, e);
+      if e <> 0 then
+        exit;
+      n := ClampInteger(n, 0, $FFFF);
+      SetOrdValue(n);
+    end
+    else
+    begin
+      SetOrdValue(Ord(Value[1]));
+    end;
+  end;
+end;
+
+{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
 
@@ -2285,6 +2334,10 @@ begin
   RegisterComponentEditor(TGLSArchiveManager, TGLSArchiveManagerEditor);
 
   GLRegisterPropertiesInCategories;
+
+{$IFDEF GLS_DELPHI_7_DOWN}
+  RegisterPropertyEditor(TypeInfo(WideChar), nil, '', TWideCharProperty);
+{$ENDIF}
 
   RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
   RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);

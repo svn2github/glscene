@@ -366,7 +366,7 @@ end;
 
 function TGLWindowsBitmapFont.StoreRanges: Boolean;
 begin
-  Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII <> ' ') or (Ranges[0].StopASCII <> cDefaultLast);
+  Result := (Ranges.Count <> 1) or (Ranges[0].StartASCII[1] <> ' ') or (Ranges[0].StopASCII[1] <> cDefaultLast);
 end;
 
 type
@@ -393,7 +393,7 @@ begin
   //add existing ranges
   for I := 0 to Ranges.Count - 1 do
     with Ranges.Items[I] do
-      AList.AddSerie(integer(StartASCII), 1, CharCount);
+      AList.AddSerie(integer(StartASCII[1]), 1, CharCount);
 
   AList.SortAndRemoveDuplicates;
 
