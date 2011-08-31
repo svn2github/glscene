@@ -87,13 +87,6 @@ type
     procedure SetStopASCII(const val: WideString);
     procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
-{$IFDEF GLS_DELPHI_7_DOWN}
-{    procedure DefineProperties(Filer: TFiler); override;
-    procedure WriteStartASCII(AStream: TStream);
-    procedure ReadStartASCII(AStream: TStream);
-    procedure WriteStopASCII(AStream: TStream);
-    procedure ReadStopASCII(AStream: TStream);}
-{$ENDIF}
   public
     { Public Declarations }
     constructor Create(Collection: TCollection); override;
@@ -429,70 +422,6 @@ begin
   Result := Format('ASCII [#%d, #%d] -> Glyphs [%d, %d]',
                   [Integer(FStartASCII), Integer(FStopASCII), StartGlyphIdx, StopGlyphIdx]);
 end;
-
-{$IFDEF GLS_DELPHI_7_DOWN}
- (*
-procedure TBitmapFontRange.DefineProperties(Filer: TFiler);
-begin
-  Filer.DefineBinaryProperty('StartASCII',
-    ReadStartASCII, WriteStartASCII, True);
-  Filer.DefineBinaryProperty('StopASCII',
-    ReadStopASCII, WriteStopASCII, True);
-end;
-
-procedure TBitmapFontRange.WriteStartASCII(AStream: TStream);
-var
-  LWriter: TWriter;
-begin
-  LWriter := TWriter.Create(AStream, 256);
-  try
-    LWriter.WriteWideString(FStartASCII);
-  finally
-    LWriter.Free;
-  end;
-end;
-
-procedure TBitmapFontRange.ReadStartASCII(AStream: TStream);
-var
-  LReader: TReader;
-  str: WideString;
-begin
-  LReader := TReader.Create(AStream, 256);
-  try
-    str := LReader.ReadWideString;
-    SetStartASCII(str[1]);
-  finally
-    LReader.Free;
-  end;
-end;
-
-procedure TBitmapFontRange.WriteStopASCII(AStream: TStream);
-var
-  LWriter: TWriter;
-begin
-  LWriter := TWriter.Create(AStream, 256);
-  try
-    LWriter.WriteWideString(FStopASCII);
-  finally
-    LWriter.Free;
-  end;
-end;
-
-procedure TBitmapFontRange.ReadStopASCII(AStream: TStream);
-var
-  LReader: TReader;
-  str: WideString;
-begin
-  LReader := TReader.Create(AStream, 256);
-  try
-    str := LReader.ReadWideString;
-    SetStopASCII(str[1]);
-  finally
-    LReader.Free;
-  end;
-end;
-*)
-{$ENDIF}
 
 function TBitmapFontRange.GetStartASCII: WideString;
 begin
