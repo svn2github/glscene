@@ -400,7 +400,8 @@ end;
 procedure TGLCustomGLSLShader.DoFinalize;
 begin
   inherited;
-  FGLSLProg.NotifyChangesOfData;
+  if Assigned(FGLSLProg) then
+    FGLSLProg.NotifyChangesOfData;
 end;
 
 function TGLCustomGLSLShader.GetGLSLProg: TGLProgramHandle;
@@ -440,9 +441,9 @@ end;
 
 destructor TGLCustomGLSLShader.Destroy;
 begin
-  FGLSLProg.Free;
-  FParam.Free;
-  FActiveVarying.Free;
+  FreeAndNil(FGLSLProg);
+  FreeAndNil(FParam);
+  FreeAndNil(FActiveVarying);
   inherited;
 end;
 
