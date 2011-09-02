@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/09/11 - Yar - Added csPerspectiveKeepFOV to TGLCamera.CameraStyle (thanks benok1)
       <li>30/06/11 - DaStr - Bugfixed VisibilityCulling in vcObjectBased mode
       <li>04/05/11 - Vince - Fix picking problems with Ortho2D Camera
       <li>21/11/10 - Yar - Added design time navigation
@@ -1537,7 +1538,9 @@ type
   // TGLCameraStyle
   //
   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D, csCustom,
-    csInfinitePerspective);
+    csInfinitePerspective, csPerspectiveKeepFOV);
+
+  TGLCameraKeepFOVMode = (ckmHorizontalFOV, ckmVerticalFOV);
 
   // TOnCustomPerspective
   //
@@ -1562,10 +1565,12 @@ type
     FTargetObject: TGLBaseSceneObject;
     FLastDirection: TVector; // Not persistent
     FCameraStyle: TGLCameraStyle;
+    FKeepFOVMode: TGLCameraKeepFOVMode;
     FSceneScale: Single;
     FDeferredApply: TNotifyEvent;
     FOnCustomPerspective: TOnCustomPerspective;
     FDesign: Boolean;
+    FFOVY, FFOVX: Double;
 
   protected
     { Protected Declarations }
@@ -1575,6 +1580,7 @@ type
     procedure SetDepthOfView(AValue: Single);
     procedure SetFocalLength(AValue: Single);
     procedure SetCameraStyle(const val: TGLCameraStyle);
+    procedure SetKeepFOVMode(const val: TGLCameraKeepFOVMode);
     procedure SetSceneScale(value: Single);
     function StoreSceneScale: Boolean;
     procedure SetNearPlaneBias(value: Single);
@@ -1714,10 +1720,20 @@ type
        <li>csOrthogonal, for orthogonal (or isometric) projection.
        <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
           (in x or y) represents 1 pixel.
+       <li>csInfinitePerspective, for perspective view without depth limit.
+       <li>csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
        <li>csCustom, setup is deferred to the OnCustomPerspective event.
        </ul> }
     property CameraStyle: TGLCameraStyle read FCameraStyle write SetCameraStyle
       default csPerspective;
+
+    {: Keep camera angle mode. <p>
+       When CameraStyle is csKeepCamAnglePerspective, select which camera angle you want to keep.
+       <li>kaHeight, for Keep Height oriented camera angle
+       <li>kaWidth,  for Keep Width oriented camera angle
+       }
+    property KeepFOVMode: TGLCameraKeepFOVMode read FKeepFOVMode
+      write SetKeepFOVMode default ckmHorizontalFOV;
 
     {: Custom perspective event.<p>
        This event allows you to specify your custom perpective, either
@@ -5808,6 +5824,8 @@ begin
   FCameraStyle := csPerspective;
   FSceneScale := 1;
   FDesign := False;
+  FFOVY := -1;
+  FKeepFOVMode := ckmHorizontalFOV;
 end;
 
 // destroy
@@ -5837,6 +5855,7 @@ begin
       SetSceneScale(cam.SceneScale);
       SetNearPlaneBias(cam.NearPlaneBias);
       SetScene(cam.Scene);
+      SetKeepFOVMode(cam.FKeepFOVMode);
 
       if Parent <> nil then
       begin
@@ -5946,9 +5965,16 @@ procedure TGLCamera.ApplyPerspective(const AViewport: TRectangle;
 var
   vLeft, vRight, vBottom, vTop, vFar: Single;
   MaxDim, Ratio, f: Double;
+  xmax, ymax: Double;
   mat: TMatrix;
 const
   cEpsilon: Single = 1e-4;
+
+  function IsPerspective(CamStyle: TGLCameraStyle): Boolean;
+  begin
+    Result := CamStyle in [csPerspective, csInfinitePerspective, csPerspectiveKeepFOV];
+  end;
+
 begin
   if (AWidth <= 0) or (AHeight <= 0) then
     Exit;
@@ -5987,7 +6013,7 @@ begin
     // Note: viewport.top is actually bottom, because the window (and viewport) origin
     // in OGL is the lower left corner
 
-    if CameraStyle in [csPerspective, csInfinitePerspective] then
+    if IsPerspective(CameraStyle) then
       f := FNearPlaneBias / (AWidth * FSceneScale)
     else
       f := 100 * FNearPlaneBias / (focalLength * AWidth * FSceneScale);
@@ -6003,7 +6029,7 @@ begin
     Ratio := (AWidth - 2 * AViewport.Left) * f;
     vLeft := -Ratio * AWidth / (2 * MaxDim);
 
-    if CameraStyle in [csPerspective, csInfinitePerspective] then
+    if IsPerspective(CameraStyle) then
       f := FNearPlaneBias / (AHeight * FSceneScale)
     else
       f := 100 * FNearPlaneBias / (focalLength * AHeight * FSceneScale);
@@ -6024,8 +6050,34 @@ begin
       csPerspective:
         begin
           mat := CreateMatrixFromFrustum(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
-          with CurrentGLContext.PipelineTransformation do
-            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+        end;
+      csPerspectiveKeepFOV:
+        begin
+          if FFOVY < 0 then // Need Update FOV
+          begin
+            FFOVY := ArcTan2(vTop - vBottom, 2 * FNearPlane) * 2;
+            FFOVX := ArcTan2(vRight - vLeft, 2 * FNearPlane) * 2;
+          end;
+
+          case FKeepFOVMode of
+            ckmVerticalFOV:
+            begin
+              ymax := FNearPlane * tan(FFOVY / 2);
+              xmax := ymax * AWidth / AHeight;
+            end;
+            ckmHorizontalFOV:
+            begin
+              xmax := FNearPlane * tan(FFOVX / 2);
+              ymax := xmax * AHeight / AWidth;
+            end;
+            else
+            begin
+              xmax := 0;
+              ymax := 0;
+              Assert(False, 'Unknown keep camera angle mode');
+            end;
+          end;
+          mat := CreateMatrixFromFrustum(-xmax, xmax, -ymax, ymax, FNearPlane, vFar);
         end;
       csInfinitePerspective:
         begin
@@ -6038,18 +6090,18 @@ begin
           mat[2][3] := -1;
           mat[3][2] := FNearPlane * (cEpsilon - 2);
           mat[3][3] := 0;
-          with CurrentGLContext.PipelineTransformation do
-            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
         end;
       csOrthogonal:
         begin
           mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
-          with CurrentGLContext.PipelineTransformation do
-            ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
         end;
     else
       Assert(False);
     end;
+
+    with CurrentGLContext.PipelineTransformation do
+      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+
     FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
   end;
 end;
@@ -6435,6 +6487,7 @@ begin
   if FDepthOfView <> AValue then
   begin
     FDepthOfView := AValue;
+    FFOVY := - 1;
     if not (csLoading in ComponentState) then
       TransformationChanged;
   end;
@@ -6450,6 +6503,7 @@ begin
   if FFocalLength <> AValue then
   begin
     FFocalLength := AValue;
+    FFOVY := - 1;
     if not (csLoading in ComponentState) then
       TransformationChanged;
   end;
@@ -6483,7 +6537,22 @@ begin
   if FCameraStyle <> val then
   begin
     FCameraStyle := val;
+    FFOVY := -1;
     NotifyChange(Self);
+  end;
+end;
+
+// SetKeepCamAngleMode
+//
+
+procedure TGLCamera.SetKeepFOVMode(const val: TGLCameraKeepFOVMode);
+begin
+  if FKeepFOVMode <> val then
+  begin
+    FKeepFOVMode := val;
+    FFOVY := -1;
+    if FCameraStyle = csPerspectiveKeepFOV then
+      NotifyChange(Self);
   end;
 end;
 
@@ -6497,6 +6566,7 @@ begin
   if FSceneScale <> value then
   begin
     FSceneScale := value;
+    FFOVY := -1;
     NotifyChange(Self);
   end;
 end;
@@ -6519,6 +6589,7 @@ begin
   if FNearPlaneBias <> value then
   begin
     FNearPlaneBias := value;
+    FFOVY := -1;
     NotifyChange(Self);
   end;
 end;
