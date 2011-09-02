@@ -19,7 +19,8 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, Classes, Controls, GLTeapot,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, StdCtrls,
+  ExtCtrls, VectorGeometry, GLCadencer;
 
 type
   TForm1 = class(TForm)
@@ -29,6 +30,9 @@ type
     Teapot1: TGLTeapot;
     GLLightSource1: TGLLightSource;
     DummyCube1: TGLDummyCube;
+    RadioGroup1: TRadioGroup;
+    RadioGroup2: TRadioGroup;
+    GLCadencer1: TGLCadencer;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 	 procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -36,9 +40,16 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure RadioGroup1Click(Sender: TObject);
+    procedure RadioGroup2Click(Sender: TObject);
+    procedure GLCamera1CustomPerspective(const viewport: TRectangle; width,
+      height, DPI: Integer; var viewPortRadius: Single);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Déclarations privées }
-	 mdx, mdy : Integer;
+	 mdx, mdy: Integer;
+   a: Double;
   public
 	 { Déclarations publiques }
   end;
@@ -50,7 +61,7 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, Math;
+uses Math, GLContext;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -106,6 +117,39 @@ begin
       '1' : RotateAbsolute(  0,  0,-15);
       '3' : RotateAbsolute(  0,  0,+15);
 	end;
+end;
+
+procedure TForm1.RadioGroup1Click(Sender: TObject);
+begin
+  case RadioGroup1.ItemIndex of
+    0: GLCamera1.CameraStyle := csPerspective;
+    1: GLCamera1.CameraStyle := csInfinitePerspective;
+    2: GLCamera1.CameraStyle := csPerspectiveKeepFOV;
+    3: GLCamera1.CameraStyle := csCustom;
+  end;
+end;
+
+procedure TForm1.RadioGroup2Click(Sender: TObject);
+begin
+  GLCamera1.KeepFOVMode := TGLCameraKeepFOVMode(RadioGroup2.ItemIndex);
+end;
+
+procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle;
+  width, height, DPI: Integer; var viewPortRadius: Single);
+var
+  Mat: TMatrix;
+begin
+  Mat :=  CreatePerspectiveMatrix(GLCamera1.GetFieldOfView(Width)/4,
+    Width / Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
+  Mat := MatrixMultiply(Mat, CreateRotationMatrixZ(a));
+  CurrentGLContext.PipelineTransformation.ProjectionMatrix := Mat;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+  a := Pi * sin(newTime) / 18;
+  GLSceneViewer1.Invalidate;
 end;
 
 end.
