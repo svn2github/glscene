@@ -150,7 +150,8 @@ uses
   Messages,
   GLCrossPlatform,
   GLState,
-  GLSLog;
+  GLSLog,
+  VectorGeometry;
 
 resourcestring
   cForwardContextFailed = 'Can not create forward compatible context: #%X, %s';
@@ -229,7 +230,7 @@ begin
   if vTrackingCount = 0 then
     Exit;
   k := 0;
-  for i := 0 to vTrackingCount - 1 do
+  for i := 0 to MinInteger(vTrackingCount, Length(vTrackedHwnd)) - 1 do
   begin
     if vTrackedHwnd[i] <> h then
     begin
