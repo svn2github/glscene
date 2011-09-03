@@ -1161,10 +1161,10 @@ var
    node : TVerletNode;
    list : PPointerList;
 begin
-   list:=Owner.Nodes.List;
+   list:=@Owner.Nodes.List;
    if cctNode in Owner.CollisionConstraintTypes then
      for i:=0 to Owner.Nodes.Count-1 do begin
-        node:=TVerletNode(list[i]);
+        node:=TVerletNode(list^[i]);
         if not node.NailedDown then
            SatisfyConstraintForNode(node, iteration, maxIterations);
      end;//}
@@ -1320,11 +1320,9 @@ procedure TVerletGlobalForce.AddForce;
 var
    i : Integer;
    node : TVerletNode;
-   list : PPointerList;
 begin
-   list:=Owner.Nodes.List;
    for i:=0 to Owner.Nodes.Count-1 do begin
-      node:=TVerletNode(list[i]);
+      node:=TVerletNode(Owner.Nodes.List[i]);
       if not node.NailedDown then
          AddForceToNode(node);
    end;
