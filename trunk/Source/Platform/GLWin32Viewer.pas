@@ -41,12 +41,13 @@ interface
 uses
   // VCL
   Windows,
-  Graphics,
-  Forms,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics, VCL.Forms, VCL.Controls,
+{$ELSE}
+  Graphics, Forms, Controls,
+{$ENDIF}
   Messages,
   Classes,
-  Controls,
-
   // GLScene
   GLScene,
   GLContext;

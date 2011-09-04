@@ -18,7 +18,13 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
+  Windows,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ImgList, VCL.Controls,
+{$ELSE}
+  Forms, ComCtrls, StdCtrls, ImgList, Controls,
+{$ENDIF}
+  FRTrackBarEdit,  FRColorEditor,
   Classes, GLTexture, GLMaterial, GLState;
 
 type
@@ -60,7 +66,11 @@ implementation
 {$R *.dfm}
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics;
+{$ELSE}
   Graphics;
+{$ENDIF}
 
 constructor TRFaceEditor.Create(AOwner : TComponent);
 begin

@@ -31,7 +31,13 @@ interface
 {$IFNDEF MSWINDOWS}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows, Classes, Controls, Forms, Extctrls, Graphics,
+  Windows, Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics,
+{$ELSE}
+  Controls, Forms, Extctrls, Graphics,
+{$ENDIF}
+
   GLSVfw, GLScene, GLViewer;
 
 type
@@ -159,7 +165,13 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils, Dialogs, Messages, GLGraphics;
+uses
+  SysUtils, Messages, GLGraphics,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs;
+{$ELSE}
+  Dialogs;
+{$ENDIF}
 
 // DIB support rountines for AVI output
 

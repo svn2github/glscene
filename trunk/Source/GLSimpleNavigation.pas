@@ -49,14 +49,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+  // System
   Classes,
+  SysUtils,
+  TypInfo,
+  // VCL
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.Controls, VCL.ExtCtrls,
+{$ELSE}
   Forms,
   Controls,
   ExtCtrls,
-  SysUtils,
-  TypInfo,
-
+{$ENDIF}
   // GLSñene
   GLSceneForm,
   VectorGeometry,

@@ -18,8 +18,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLViewer,
-    GLMaterial;
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+{$ELSE}
+  Forms, StdCtrls, Buttons, Controls,
+{$ENDIF}
+  FRMaterialPreview,  Classes, GLViewer,
+  GLMaterial;
 
 type
   TLibMaterialPicker = class(TForm)

@@ -16,7 +16,12 @@ interface
 {$i GLScene.inc}
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin, VCL.ExtCtrls, VCL.Buttons,
+  VCL.Graphics, VCL.Controls,
+{$ELSE}
   Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls,
+{$ENDIF}
   Classes;
 
 type

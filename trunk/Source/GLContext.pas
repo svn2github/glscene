@@ -85,16 +85,25 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
+  {$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
+  {$ENDIF}
   Classes,
-  Forms,
   SysUtils,
-{$IFDEF FPC}
+
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Consts,
+  VCL.Forms,
+  {$ELSE}
+  Forms,
+  {$IFDEF FPC},
   LCLVersion,
   LCLType,
-{$ENDIF}
+  {$ELSE}
+  Consts,
+  {$ENDIF}
+  {$ENDIF}
+
   SyncObjs,
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
@@ -1314,7 +1323,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls,
+{$ELSE}
   Controls,
+{$ENDIF}
   GLStrings;
 
 resourcestring

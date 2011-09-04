@@ -18,7 +18,12 @@ interface
 {$i GLScene.inc}
 
 uses
-  Forms, StdCtrls, ComCtrls, Classes, Controls;
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls,
+{$ELSE}
+  Forms, StdCtrls, ComCtrls, Controls,
+{$ENDIF}
+  Classes;
 
 type
   TRTrackBarEdit = class(TFrame)

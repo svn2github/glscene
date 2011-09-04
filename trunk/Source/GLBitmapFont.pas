@@ -60,7 +60,12 @@ unit GLBitmapFont;
 interface
 
 uses
-  Classes, Graphics,
+  Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
+  Graphics,
+{$ENDIF}
   GLScene, VectorGeometry, GLContext, GLCrossPlatform,
   GLTexture, GLState, GLUtils, GLGraphics, GLColor, BaseClasses,
   GLRenderContextInfo, GLTextureFormat;

@@ -19,7 +19,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  Forms, Dialogs, StdCtrls, Controls, Buttons, Classes, PlugInManager;
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.Dialogs, VCL.StdCtrls, VCL.Controls, VCL.Buttons,
+{$ELSE}
+  Forms, Dialogs, StdCtrls, Controls, Buttons,
+{$ENDIF}
+  Classes, PlugInManager;
 
 type
   TPlugInManagerPropForm = class(TForm)

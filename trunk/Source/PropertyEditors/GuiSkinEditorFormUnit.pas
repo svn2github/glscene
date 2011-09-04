@@ -29,10 +29,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows,
-    GLHUDObjects,
-  GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus, GLCrossPlatform,
+  Windows, Messages, SysUtils, Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
+  VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls, VCL.Menus,
+{$ELSE}
+  Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ComCtrls, ExtCtrls, Menus,
+{$ENDIF}
+
+  GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
+  GLWin32Viewer, GLGui, GLGraphics, GLUtils,  GLCrossPlatform,
   GLCoordinates, BaseClasses, GLMaterial;
 
 type

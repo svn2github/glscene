@@ -49,8 +49,13 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
+  Windows, Messages, Classes,
   // VCL
-  Windows, Messages, Dialogs, Classes, Graphics, Controls,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs, VCL.Graphics, VCL.Controls,
+{$ELSE}
+  Dialogs, Graphics, Controls,
+{$ENDIF}
 
   // GLScene
   GLScene, OpenGLTokens, GLTexture, GLContext, VectorGeometry, GLStrings,

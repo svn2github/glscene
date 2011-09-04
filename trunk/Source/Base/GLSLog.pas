@@ -40,7 +40,7 @@ uses
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
-  Classes, SysUtils, Dialogs, GLCrossPlatform, SyncObjs
+  Classes, SysUtils, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
 {$IFDEF LINUX} , Process {$ENDIF};
 

@@ -26,7 +26,14 @@ interface
 {$i GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
-uses Windows, Classes, Controls, Forms, Extctrls;
+uses
+  Windows, Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls, VCL.Forms, VCL.Extctrls;
+{$ELSE}
+  Controls, Forms, Extctrls;
+{$ENDIF}
+
 
 type
 
@@ -167,7 +174,13 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils, Registry, Dialogs, Messages;
+uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs,
+{$ELSE}
+  Dialogs,
+{$ENDIF}
+  SysUtils, Registry, Messages;
 
 // GetSystemDirectory
 //

@@ -92,14 +92,22 @@ uses
 {$ENDIF}
   Classes,
   PersistentClasses,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
   Graphics,
+{$ENDIF}
   ApplicationFileIO,
   SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
 {$IFDEF GLS_PngImage_SUPPORT}
-  PngImage,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Imaging.Pngimage,
+{$ELSE}
+  Pngimage,
+{$ENDIF}
 {$ENDIF}
 {$IFDEF FPC}
   fpimage,
@@ -2751,7 +2759,12 @@ var
   i, j: Integer;
   SourceScan: PRGBLine;
   DestScan: PGLPixel32Array;
-  AlphaScan: pngimage.pByteArray;
+  AlphaScan:
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Imaging.Pngimage.pByteArray;
+{$ELSE}
+  pByteArray;
+{$ENDIF}
   Pixel: Integer;
 begin
 {$IFDEF GLS_PngImage_RESIZENEAREST}

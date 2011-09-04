@@ -22,7 +22,12 @@ interface
 {$i GLScene.inc}
 
 uses
-  Classes, Forms, StdCtrls, Controls,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, Vcl.Controls,
+{$ELSE}
+  Forms, StdCtrls, ComCtrls, Controls,
+{$ENDIF}
+  Classes,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
   GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
   GLCrossPlatform, BaseClasses, GLMaterial;
@@ -84,7 +89,11 @@ implementation
 
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics;
+{$ELSE}
   Graphics;
+{$ENDIF}
 
 var
   MX, MY: Integer;

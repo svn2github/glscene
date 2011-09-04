@@ -126,7 +126,13 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses Forms, SysUtils;
+uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms,
+{$ELSE}
+  Forms,
+{$ENDIF}
+  SysUtils;
 
 type TLowResMode = packed record
                      Width : Word;

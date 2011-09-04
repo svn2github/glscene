@@ -21,16 +21,16 @@ interface
 
 uses
   Windows,
-  Forms,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.Controls, VCL.Buttons,
+{$ELSE}
+  Forms, ComCtrls, StdCtrls, Controls, Buttons,
+{$ENDIF}
   FRMaterialPreview,
   FRColorEditor,
-  ComCtrls,
   FRFaceEditor,
-  StdCtrls,
-  Controls,
   Classes,
   GLTexture,
-  Buttons,
   TypInfo,
   FRTextureEdit,
   GLViewer,

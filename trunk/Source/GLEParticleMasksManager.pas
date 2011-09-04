@@ -46,10 +46,17 @@ unit GLEParticleMasksManager;
 
 interface
 
-uses
-  // VCL
-  SysUtils, Classes, Graphics,
+{$I GLScene.inc}
 
+uses
+  // System
+  SysUtils, Classes,
+  // VCL
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
+  Graphics,
+{$ENDIF}
   // GLScene
   GLTexture, GLMaterial, GLScene, VectorGeometry, VectorTypes,
   GLParticleFX, GLCrossPlatform, GLCoordinates;

@@ -29,7 +29,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, Graphics, Controls, Menus, GLCrossPlatform, GLScene
+  Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics, VCL.Controls, VCL.Menus,
+{$ELSE}
+  Graphics, Controls, Menus,
+{$ENDIF}
+
+  GLCrossPlatform, GLScene
 {$IFDEF FPC}
   ,LResources
 {$ENDIF};

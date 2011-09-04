@@ -601,13 +601,11 @@ end;
 function TCgProgram.ParamByName(const name : String) : TCgParameter;
 var
   i : Integer;
-  list : PPointerList;
 begin
   Result := nil;
-  list := FParams.List;
   for i:=0 to FParams.Count-1 do begin
-    if TCgParameter(list[i]).Name=name then begin
-      Result := TCgParameter(list[i]);
+    if TCgParameter(FParams.Items[i]).Name=name then begin
+      Result := TCgParameter(FParams.Items[i]);
       Exit;
     end;
   end;

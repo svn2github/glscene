@@ -18,8 +18,14 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
-  Classes, VectorGeometry, Graphics, SysUtils, GLColor;
+  Windows,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls,
+  VCL.Dialogs, VCL.Controls, VCL.Graphics,
+{$ELSE}
+  Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs, Controls, Graphics,
+{$ENDIF}
+  Classes, VectorGeometry, FRTrackBarEdit, SysUtils, GLColor;
 
 type
 

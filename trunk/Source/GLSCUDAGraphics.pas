@@ -967,10 +967,13 @@ begin
     end;
 
     // Enable engagement attributes array
-    with CurrentGLcontext.GLStates do
+    with GL do
     begin
       for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
-        EnableVertexAttribArray[I] := EnabledLocations[I];
+        if EnabledLocations[I] then
+          EnableVertexAttribArray(I)
+        else
+          DisableVertexAttribArray(I);
     end;
 
     FVAO.UnBind;

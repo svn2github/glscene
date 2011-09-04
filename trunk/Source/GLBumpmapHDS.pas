@@ -38,13 +38,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  Classes,
   GLHeightData,
   GLGraphics,
   VectorGeometry,
   GLTexture,
-  Dialogs,
-  Forms,
   SyncObjs,
   GLMaterial;
 
@@ -122,7 +121,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils,
+uses
+  SysUtils,
   OpenGLTokens,
   GLUtils{$IFDEF GLS_DELPHI},
   VectorTypes{$ENDIF};

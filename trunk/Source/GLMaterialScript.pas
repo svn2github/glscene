@@ -48,10 +48,17 @@ unit GLMaterialScript;
 
 interface
 
-uses
-  // VCL
-  SysUtils, Classes, StdCtrls,
+{$I GLScene.inc}
 
+uses
+  // System
+  SysUtils, Classes,
+  // VCL
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.StdCtrls,
+{$ELSE}
+  StdCtrls,
+{$ENDIF}
   // GLScene
   GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
   GLMaterial, GLState;

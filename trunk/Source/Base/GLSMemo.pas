@@ -20,8 +20,15 @@ uses
 {$ENDIF}
   GLCrossPlatform,
 
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
+  VCL.StdCtrls, VCL.ExtCtrls;
+{$ELSE}
+  Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls;
+{$ENDIF}
+
 
 type
 
@@ -853,7 +860,12 @@ procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
 
 implementation
 
-uses ClipBrd;
+uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.ClipBrd;
+{$ELSE}
+  ClipBrd;
+{$ENDIF}
 
 const
   cmDelete = VK_DELETE;

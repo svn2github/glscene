@@ -352,8 +352,15 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
+
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+  VCL.Controls,
+  {$ELSE}
   Graphics,
   Controls,
+  {$ENDIF}
+
 {$IFDEF FPC}
   LCLType,
 {$ENDIF}

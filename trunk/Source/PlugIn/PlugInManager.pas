@@ -93,7 +93,15 @@ type
 
 implementation
 
-uses Dialogs, Forms, PlugInManagerPropEditor;
+uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs,
+  VCL.Forms,
+{$ELSE}
+  Dialogs,
+  Forms,
+{$ENDIF}
+  PlugInManagerPropEditor;
 
 // ----------------- TPlugInList ------------------------------------------------
 

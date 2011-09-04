@@ -74,9 +74,14 @@ interface
 {$I GLScene.inc}
 
 uses
+  // System
+  Classes, SysUtils, TypInfo,
   // VCL
-  Classes, SysUtils, Graphics, TypInfo,
-
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
+  Graphics,
+{$ENDIF}
   // GLScene
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
   PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,

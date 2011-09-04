@@ -15,8 +15,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons, GLSLParameter, GLTextureFormat;
+  SysUtils, Variants, Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics, VCL.Controls, VCL.Forms,
+  VCL.Dialogs, VCL.StdCtrls, VCL.ExtCtrls, VCL.Buttons,
+{$ELSE}
+  Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, Buttons,
+{$ENDIF}
+  GLSLParameter, GLTextureFormat;
 
 type
   TShaderUniformEditor = class(TForm)

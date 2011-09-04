@@ -30,18 +30,22 @@ unit GLUtils;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   // VCL
   Classes,
   SysUtils,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+  VCL.Controls,
+  {$ELSE}
   Graphics,
   Controls,
-
+{$ENDIF}
   // GLScene
   VectorGeometry,
   GLCrossPlatform;
-
-{$I GLScene.inc}
 
 type
   EGLUtilsException = class(Exception);
@@ -122,12 +126,15 @@ implementation
 //------------------------------------------------------
 
 uses
-{$IFDEF GLS_EXPERIMENTAL}
-  GL3xMesh,
-{$ENDIF GLS_EXPERIMENTAL}
   ApplicationFileIO,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs,
+  VCL.ExtDlgs;
+{$ELSE}
   Dialogs,
   ExtDlgs;
+{$ENDIF}
+
 
 var
   vSqrt255: TSqrt255Array;

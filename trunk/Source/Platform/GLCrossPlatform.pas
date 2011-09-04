@@ -94,17 +94,28 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
+
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Consts,
+  VCL.Graphics,
+  VCL.Controls,
+  VCL.Forms,
+  VCL.Dialogs
+  {$ELSE}
+  {$IFDEF FPC},
+  LCLVersion,
+  LCLType,
+  FileUtil,
+  {$ELSE}
+  Consts,
+  {$ENDIF}
   Graphics,
   Controls,
   Forms,
   Dialogs
-{$IFDEF FPC},
-  LCLVersion,
-  LCLType,
-  FileUtil
-{$ELSE}
-  ,Consts
-{$ENDIF}
+  {$ENDIF}
+
+
 {$IFNDEF GLS_COMPILER_5_DOWN},
   StrUtils,
   Types
@@ -113,10 +124,10 @@ uses
 
 {$IFNDEF FPC}
 const
-  fpc_version = 0;
-  fpc_release = 0;
-  fpc_patch = 0;
-  lcl_release = 0;
+  FPC_VERSION = 0;
+  FPC_RELEASE = 0;
+  FPC_PATCH = 0;
+  LCL_RELEASE = 0;
 {$ENDIF}
 
 type

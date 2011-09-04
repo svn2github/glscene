@@ -42,7 +42,11 @@ interface
 
 uses
   Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
   Graphics,
+{$ENDIF}
   VectorGeometry,
   GLColor,
   GLCrossPlatform,

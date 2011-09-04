@@ -24,7 +24,14 @@ interface
 
 uses
   // GLScene
-  Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
+  Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
+  Graphics,
+{$ENDIF}
+  VectorTypes, VectorGeometry,
+  GLCrossPlatform,
   PersistentClasses, BaseClasses;
 
 type
@@ -382,7 +389,13 @@ var
 
 implementation
 
-uses SysUtils, Dialogs;
+uses
+  SysUtils,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs;
+{$ELSE}
+  Dialogs;
+{$ENDIF}
 
 var
 	vColorManager : TGLColorManager;

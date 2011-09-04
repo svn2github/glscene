@@ -146,7 +146,11 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms,
+{$ELSE}
   Forms,
+{$ENDIF}
   Messages,
   GLCrossPlatform,
   GLState,

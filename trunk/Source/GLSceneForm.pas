@@ -31,8 +31,14 @@ uses
 {$IFEND}
 {$ENDIF}
   Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls,
+  VCL.Forms,
+{$ELSE}
   Controls,
   Forms,
+{$ENDIF}
+
   GLScene,
   GLContext,
   GLCrossPlatform,
