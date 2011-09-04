@@ -1,7 +1,8 @@
-package GLS_Computing_DesignTime;
+package GLSS_BASS;
 
 {$R *.res}
-{$R '..\Source\ComputeAPIs\GLSceneVCLCUDA.dcr'}
+{$R *.otares}
+{$R '..\Source\SoundAPIs\GLSceneVCLBass.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,20 +27,16 @@ package GLS_Computing_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene - Computing DesignTime'}
+{$DESCRIPTION 'GLScene - BASS Manager'}
 {$LIBSUFFIX 'XE2'}
-{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
-  designide,
   vcl,
-  GLS_Computing_RunTime,
-  GLScene_DesignTime;
+  GLScene_RunTime;
 
 contains
-  GLSCUDAEditor in '..\Source\DesignTime\GLSCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLSComputingRegister in '..\Source\DesignTime\GLSComputingRegister.pas';
+  GLSMBASS in '..\Source\GLSMBASS.pas',
+  Bass in '..\Source\SoundAPIs\Bass.pas';
 
 end.
