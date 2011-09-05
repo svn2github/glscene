@@ -80,6 +80,10 @@
 //
 // Platform Detection
 //
+{$IFDEF WIN64}
+  {$DEFINE GLS_NO_ASM}
+  {$DEFINE GEOMETRY_NO_ASM}
+{$ENDIF}
 
 {$IFNDEF MSWINDOWS}
   {$IFDEF WIN32}

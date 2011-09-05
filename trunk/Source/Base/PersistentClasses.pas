@@ -185,7 +185,7 @@ type
 
   TPersistentObjectClass = class of TPersistentObject;
 
-  TPointerObjectList = array[0..MaxInt shr 3] of TObject;
+  TPointerObjectList = array[0..MaxInt div (2*SizeOf(Pointer))] of TObject;
   PPointerObjectList = ^TPointerObjectList;
   TObjectListSortCompare = function(item1, item2: TObject): Integer;
 

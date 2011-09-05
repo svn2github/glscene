@@ -3654,8 +3654,8 @@ begin
    if VectorEquals(v1, v2) then begin
       Result:=v1;
    end else begin
-      q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
-      q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
+      q1:=QuaternionFromEuler(VectorGeometry.RadToDeg(v1[0]), VectorGeometry.RadToDeg(v1[1]), VectorGeometry.RadToDeg(v1[2]), eulZYX);
+      q2:=QuaternionFromEuler(VectorGeometry.RadToDeg(v2[0]), VectorGeometry.RadToDeg(v2[1]), VectorGeometry.RadToDeg(v2[2]), eulZYX);
       qr:=QuaternionSlerp(q1, q2, t);
       m:=QuaternionToMatrix(qr);
       MatrixDecompose(m, tran);
@@ -5446,7 +5446,7 @@ procedure RotateVectorAroundY(var v : TAffineVector; alpha : Single);
 var
    c, s, v0 : Single;
 begin
-   SinCos(alpha, s, c);
+   VectorGeometry.SinCos(alpha, s, c);
    v0:=v[0];
    v[0]:=c*v0+s*v[2];
    v[2]:=c*v[2]-s*v0;
@@ -5458,7 +5458,7 @@ function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   VectorGeometry.SinCos(alpha, s, c);
    Result[0]:=v[0];
    Result[1]:=c*v[1]+s*v[2];
    Result[2]:=c*v[2]-s*v[1];
@@ -5470,7 +5470,7 @@ function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   VectorGeometry.SinCos(alpha, s, c);
    Result[1]:=v[1];
    Result[0]:=c*v[0]+s*v[2];
    Result[2]:=c*v[2]-s*v[0];
@@ -5482,7 +5482,7 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   VectorGeometry.SinCos(alpha, s, c);
    vr[1]:=v[1];
    vr[0]:=c*v[0]+s*v[2];
    vr[2]:=c*v[2]-s*v[0];
@@ -5494,7 +5494,7 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   VectorGeometry.SinCos(alpha, s, c);
    Result[0]:=c*v[0]+s*v[1];
    Result[1]:=c*v[1]-s*v[0];
    Result[2]:=v[2];
@@ -5650,7 +5650,7 @@ function CreateRotationMatrixX(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   VectorGeometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixX(s, c);
 end;
 
@@ -5673,7 +5673,7 @@ function CreateRotationMatrixY(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   VectorGeometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixY(s, c);
 end;
 
@@ -5696,7 +5696,7 @@ function CreateRotationMatrixZ(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   VectorGeometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixZ(s, c);
 end;
 
@@ -5707,7 +5707,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   SinCos(angle, sine, cosine);
+   VectorGeometry.SinCos(angle, sine, cosine);
    one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -5746,7 +5746,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   SinCos(Angle, Sine, Cosine);
+   VectorGeometry.SinCos(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6538,10 +6538,10 @@ begin
   // now, get the rotations out, as described in the gem
   Tran[ttRotateY]:=VectorGeometry.ArcSin(-row0[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=ArcTan2(row1[Z], row2[Z]);
-    Tran[ttRotateZ]:=ArcTan2(row0[Y], row0[X]);
+    Tran[ttRotateX]:= VectorGeometry.ArcTan2(row1[Z], row2[Z]);
+    Tran[ttRotateZ]:= VectorGeometry.ArcTan2(row0[Y], row0[X]);
   end else begin
-    tran[ttRotateX]:=ArcTan2(row1[X], row1[Y]);
+    tran[ttRotateX]:= VectorGeometry.ArcTan2(row1[X], row1[Y]);
     tran[ttRotateZ]:=0;
   end;
   // All done!
@@ -6598,7 +6598,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * Tan(DegToRad(FOV) * 0.5);
+  y:= ZNear * VectorGeometry.Tan(VectorGeometry.DegToRad(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -7260,7 +7260,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   SinCos(DegToRad(angle*cOneDotFive), s, c);
+   VectorGeometry.SinCos(VectorGeometry.DegToRad(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart[0]:=axis[0]*f;
@@ -7599,7 +7599,7 @@ procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP TBYTE PTR [EDX]    // cosine
    FSTP TBYTE PTR [EAX]    // sine
 {$else}
@@ -7618,7 +7618,7 @@ procedure SinCos(const Theta: Double; out Sin, Cos: Double);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP QWORD PTR [EDX]    // cosine
    FSTP QWORD PTR [EAX]    // sine
 {$else}
@@ -7641,7 +7641,7 @@ procedure SinCos(const Theta: Single; out Sin, Cos: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP DWORD PTR [EDX]    // cosine
    FSTP DWORD PTR [EAX]    // sine
 {$else}
@@ -7665,7 +7665,7 @@ procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP TBYTE PTR [EDX]    // cosine
    FMUL radius
@@ -7689,7 +7689,7 @@ procedure SinCos(const theta, radius : Double; out Sin, Cos: Double);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP QWORD PTR [EDX]    // cosine
    FMUL radius
@@ -7712,7 +7712,7 @@ procedure SinCos(const theta, radius : Single; out Sin, Cos: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP DWORD PTR [EDX]    // cosine
    FMUL radius
@@ -7744,7 +7744,7 @@ begin
       // Fast computation (approx 5.5x)
       alpha:=2*Sqr(Sin(d*0.5));
       beta:=Sin(d);
-      SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
+      VectorGeometry.SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
       for i:=Low(s) to High(s)-1 do begin
          // Make use of the incremental formulae:
          // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
@@ -7756,7 +7756,7 @@ begin
       // Slower, but maintains precision when steps are small
       startAngle:=startAngle*cPIdiv180;
       for i:=Low(s) to High(s) do
-         SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+         VectorGeometry.SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
    end;
 end;
 
@@ -7764,7 +7764,7 @@ end;
 //
 function ArcCos(const x : Extended): Extended;
 begin
-   Result:=ArcTan2(Sqrt(1 - Sqr(X)), X);
+   Result:= VectorGeometry.ArcTan2(Sqrt(1 - Sqr(X)), X);
 end;
 
 // ArcCos (Single)
@@ -7796,7 +7796,7 @@ end;
 //
 function ArcSin(const x : Extended) : Extended;
 begin
-   Result:=ArcTan2(X, Sqrt(1 - Sqr(X)))
+   Result:= VectorGeometry.ArcTan2(X, Sqrt(1 - Sqr(X)))
 end;
 
 // ArcSin (Single)
@@ -8167,7 +8167,7 @@ begin
    p[2]:=2*Random-1;
    t:=2*PI*Random;
    w:=Sqrt(1-p[2]*p[2]);
-   SinCos(t, w, p[1], p[0]);
+   VectorGeometry.SinCos(t, w, p[1], p[0]);
 end;
 
 // RoundInt (single)
@@ -11487,8 +11487,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result[0] := RadToDeg(-pitchangledif);
-  Result[1] := RadToDeg(turnangledif);
+  Result[0] := VectorGeometry.RadToDeg(-pitchangledif);
+  Result[1] := VectorGeometry.RadToDeg(turnangledif);
 end;
 
 function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
@@ -11571,8 +11571,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result[0] := RadToDeg(-pitchangledif);
-  Result[1] := RadToDeg(turnangledif);
+  Result[0] := VectorGeometry.RadToDeg(-pitchangledif);
+  Result[1] := VectorGeometry.RadToDeg(turnangledif);
 end;
 
 function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
@@ -11597,13 +11597,13 @@ begin
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
     pitchNow := VectorGeometry.ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI -
+    pitchNow := ClampValue(pitchNow + VectorGeometry.DegToRad(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
     // into the new position
     SetVector(normalT2C, AMovingObjectUp);
     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-    RotateVector(normalT2C, AMovingObjectUp, -DegToRad(turnDelta));
+    RotateVector(normalT2C, AMovingObjectUp, -VectorGeometry.DegToRad(turnDelta));
     ScaleVector(normalT2C, dist);
     Result := VectorAdd(AMovingObjectPosition, VectorSubtract(normalT2C,
       originalT2C));

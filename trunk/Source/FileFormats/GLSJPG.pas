@@ -705,10 +705,12 @@ function __ftol: Integer;
 var
   f: double;
 begin
+{$IFNDEF GLS_NO_ASM}
   asm
     lea    eax, f             //  BC++ passes floats on the FPU stack
     fstp  qword ptr [eax]     //  Delphi passes floats on the CPU stack
   end;
+{$ENDIF}
   Result := Trunc(f);
 end;
 

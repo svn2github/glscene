@@ -41,30 +41,30 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      String64 = string[64];
 
      PWordList = ^TWordList;
-     TWordList = array[0..MaxInt shr 2] of Word;
+     TWordList = array[0..MaxInt div (2*SizeOf(Word))] of Word;
 
      PIntegerArray = ^TIntegerArray;
-     TIntegerArray = array[0..MaxInt shr 3] of Integer;
+     TIntegerArray = array[0..MaxInt div (2*SizeOf(Integer))] of Integer;
 
      PCardinalArray = ^TCardinalArray;
-     TCardinalArray = array[0..MaxInt shr 3] of Cardinal;
+     TCardinalArray = array[0..MaxInt div (2*SizeOf(Cardinal))] of Cardinal;
 
      PSingleList = ^TSingleList;
-     TSingleList = array[0..MaxInt shr 3] of Single;
+     TSingleList = array[0..MaxInt div (2*SizeOf(Single))] of Single;
 
      PPoint3DS = ^TPoint3DS;                     // 3D point structure
      TPoint3DS = record
        X, Y, Z : Single;
      end;
      PPointList = ^TPointList;
-     TPointList = array[0..MaxInt shr 4] of TPoint3DS;
+     TPointList = array[0..MaxInt div (2*SizeOf(TPoint3DS))] of TPoint3DS;
 
      PFColor3DS = ^TFColor3DS;                   // RGB Color components
      TFColor3DS = record
        R, G, B: Single;
      end;
      PFColorList = ^TFColorList;
-     TFColorList = array[0..MaxInt shr 4] of TFColor3DS;
+     TFColorList = array[0..MaxInt div (2*SizeOf(TFColor3DS))] of TFColor3DS;
 
      PFace3DS = ^TFace3DS;                       // Face List element
      TFace3DS = packed record
@@ -73,14 +73,14 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        False: (FaceRec: array[0..3] of Word);
      end;
      PFaceList = ^TFaceList;
-     TFaceList = array[0..MaxInt shr 8] of TFace3DS;
+     TFaceList = array[0..MaxInt div (2*SizeOf(TFace3DS))] of TFace3DS;
 
      PTexVert3DS = ^TTexVert3DS;                 // Texture assignment coordinate
      TTexVert3DS = record
        U, V: Single;
      end;
      PTexVertList = ^TTexVertList;
-     TTexVertList = array[0..MaxInt shr 4] of TTexVert3DS;
+     TTexVertList = array[0..MaxInt div (2*SizeOf(TTexVert3DS))] of TTexVert3DS;
 
      PTrackHeader3DS = ^TTrackHeader3DS;         // Global track settings
      TTrackHeader3DS = record
@@ -100,7 +100,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        EaseFrom: Single;                         // Flagged with $10
      end;
      PKeyHeaderList = ^TKeyHeaderList;
-     TKeyHeaderList = array[0..MaxInt shr 8] of TKeyHeader3DS;
+     TKeyHeaderList = array[0..MaxInt div (2*SizeOf(TKeyHeader3DS))] of TKeyHeader3DS;
 
      PKFRotKey3DS = ^TKFRotKey3DS;               // Rotation key
      TKFRotKey3DS = record
@@ -108,13 +108,13 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        X, Y, Z: Single;                          // Rotation axis vector
      end;
      PKFRotKeyList = ^TKFRotKeyList;
-     TKFRotKeyList = array[0..MaxInt shr 8] of TKFRotKey3DS;
+     TKFRotKeyList = array[0..MaxInt div (2*SizeOf(TKFRotKey3DS))] of TKFRotKey3DS;
 
      PKFMorphKey3DS = ^TKFMorphKey3DS;           // Object Morph key
      TKFMorphKey3DS = String;                    // Name of Target Morph object
 
      PKFMorphKeyList = ^TKFMorphKeyList;
-     TKFMorphKeyList = array[0..MaxInt shr 4] of TKFMorphKey3DS;
+     TKFMorphKeyList = array[0..MaxInt div (2*SizeOf(TKFMorphKey3DS))] of TKFMorphKey3DS;
 
      PChunk3DS = ^TChunk3DS;                     // internal database representation of file information
 
@@ -124,7 +124,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        Chunk: PChunk3DS;                         // corresponding pos
      end;
      PChunkList = ^TChunkList;
-     TChunkList = array[0..MaxInt shr 4] of TChunkListEntry3DS;
+     TChunkList = array[0..MaxInt div (2*SizeOf(TChunkListEntry3DS))] of TChunkListEntry3DS;
 
      PChunkList3DS = ^TChunkList3DS;             // list of cross references
      TChunkList3DS = record
@@ -445,7 +445,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      end;
 
      PObjMatList = ^TObjMatList;
-     TObjMatList = array[0..MaxInt shr 4] of TObjMat3DS;
+     TObjMatList = array[0..MaxInt div (2*SizeOf(TObjMat3DS))] of TObjMat3DS;
 
      // Mesh object definition
      PMesh3DS = ^TMesh3DS;

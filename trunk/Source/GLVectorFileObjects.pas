@@ -995,9 +995,9 @@ type
     Weight: Single;
   end;
 
-  TVertexBoneWeightArray = array[0..MaxInt shr 4] of TVertexBoneWeight;
+  TVertexBoneWeightArray = array[0..MaxInt div (2*SizeOf(TVertexBoneWeight))] of TVertexBoneWeight;
   PVertexBoneWeightArray = ^TVertexBoneWeightArray;
-  TVerticesBoneWeights = array[0..MaxInt shr 3] of PVertexBoneWeightArray;
+  TVerticesBoneWeights = array[0..MaxInt div (2*SizeOf(PVertexBoneWeightArray))] of PVertexBoneWeightArray;
   PVerticesBoneWeights = ^TVerticesBoneWeights;
   TVertexBoneWeightDynArray = array of TVertexBoneWeight;
 

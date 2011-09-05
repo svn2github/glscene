@@ -905,9 +905,11 @@ begin
   else
     Assert(False);
   end;
+{$IFNDEF GLS_NO_ASM}
   // clear fpu exception flag
   asm fclex
   end;
+{$ENDIF}
   StructureChanged;
 end;
 

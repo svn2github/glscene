@@ -69,14 +69,14 @@ uses SysUtils, Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
 {$IFDEF FPC}, IntfGraphics {$ENDIF};
 
 type
-  TByteArray = array [0 .. MaxInt shr 1] of Byte;
-  TByteRaster = array [0 .. MaxInt shr 3] of PByteArray;
+  TByteArray = array [0 .. MaxInt div (2*SizeOf(Byte))] of Byte;
+  TByteRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PByteArray;
   PByteRaster = ^TByteRaster;
-  TSmallintArray = array [0 .. MaxInt shr 2] of SmallInt;
+  TSmallintArray = array [0 .. MaxInt div (2*SizeOf(SmallInt))] of SmallInt;
   PSmallIntArray = ^TSmallintArray;
-  TSmallIntRaster = array [0 .. MaxInt shr 3] of PSmallIntArray;
+  TSmallIntRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PSmallIntArray;
   PSmallIntRaster = ^TSmallIntRaster;
-  TSingleRaster = array [0 .. MaxInt shr 3] of PSingleArray;
+  TSingleRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PSingleArray;
   PSingleRaster = ^TSingleRaster;
 
   THeightData = class;
