@@ -366,8 +366,8 @@ begin
 end;
 
 procedure TInfoForm.LoadContributors;
-var
-  ContributorsFileName: string;
+//var
+//  ContributorsFileName: string;
 begin
   //В будущем будет загружатся из файла
   //In the future, will be loaded from a file
