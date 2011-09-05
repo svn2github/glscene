@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source;../Source/DesignTime;../Source/PropertyEditors;../Source/Experimental"/>
-        <OtherUnitFiles Value="../Source;../Source/DesignTime;../Source/PropertyEditors;../Source/Platform;../Source/Experimental"/>
+        <IncludeFiles Value="../Source;../Source/DesignTime;../Source/PropertyEditors"/>
+        <OtherUnitFiles Value="../Source;../Source/DesignTime;../Source/PropertyEditors;../Source/Platform;../Source/Base"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
         <SrcPath Value="../Lazarus"/>
       </SearchPaths>
