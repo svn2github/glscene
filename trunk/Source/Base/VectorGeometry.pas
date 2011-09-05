@@ -1292,14 +1292,18 @@ function NormalizeAngle(angle : Single) : Single;
 function NormalizeDegAngle(angle : Single) : Single;
 
 //: Calculates sine and cosine from the given angle Theta
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCos(const Theta: Extended; out Sin, Cos: Extended); overload;
+{$ENDIF}
 //: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Double; out Sin, Cos: Double); overload;
 //: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Single; out Sin, Cos: Single); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended); overload;
+{$ENDIF}
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Double); overload;
@@ -1407,10 +1411,14 @@ function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overlo
 function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
 function MinFloat(const v1, v2 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MinFloat(const v1, v2 : Extended) : Extended; overload;
+{$ENDIF}
 function MinFloat(const v1, v2, v3 : Single) : Single; overload;
 function MinFloat(const v1, v2, v3 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MinFloat(const v1, v2, v3 : Extended) : Extended; overload;
+{$ENDIF}
 {: Returns the maximum value of the array. }
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
@@ -1419,10 +1427,14 @@ function MaxFloat(const v : array of Single) : Single; overload;
 {: Returns the maximum of given values. }
 function MaxFloat(const v1, v2 : Single) : Single; overload;
 function MaxFloat(const v1, v2 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2 : Extended) : Extended; overload;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 function MinInteger(const v1, v2 : Integer) : Integer; overload;
 function MinInteger(const v1, v2 : Cardinal) : Cardinal; overload;
@@ -7577,6 +7589,7 @@ begin
       Result:=Result+c360;
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // SinCos (Extended)
 //
 procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
@@ -7594,6 +7607,7 @@ begin
    Math.SinCos(Theta, Sin, Cos);
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // SinCos (Double)
 //
@@ -7641,6 +7655,7 @@ begin
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // SinCos (Extended w radius)
 //
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
@@ -7663,6 +7678,7 @@ begin
    Sin:=s*radius; Cos:=c*radius;
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // SinCos (Double w radius)
 //
@@ -8524,6 +8540,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MinFloat (extended 2)
 //
 function MinFloat(const v1, v2 : Extended) : Extended;
@@ -8541,6 +8558,7 @@ asm
    ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MinFloat
 //
@@ -8602,6 +8620,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MinFloat
 //
 function MinFloat(const v1, v2, v3 : Extended) : Extended;
@@ -8631,6 +8650,7 @@ asm
    ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat (single)
 //
@@ -8723,6 +8743,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Extended) : Extended;
@@ -8740,6 +8761,7 @@ asm
    ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat
 //
@@ -8801,6 +8823,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Extended) : Extended;
@@ -8830,6 +8853,7 @@ asm
    ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MinInteger (2 int)
 //

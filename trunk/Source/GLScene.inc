@@ -105,10 +105,15 @@
   {$TYPEINFO ON}
   {$INLINE ON}
   {$H+} // Enable long strings.
+  {$IFDEF FPC_HAS_TYPE_EXTENDED}
+    {$DEFINE GLS_PLATFORM_HAS_EXTENDED}
+  {$ENDIF}
 {$ENDIF}
 
 // If it's not FPC, determine if C++ builder, or Delphi
 {$IFNDEF FPC}
+   // There no extended type on all non-x86 platforms.
+  {$DEFINE GLS_PLATFORM_HAS_EXTENDED}
   {$DEFINE GLS_DELPHI_OR_CPPB}
   {$IFDEF BCB}
     {$DEFINE GLS_CPPB}

@@ -96,7 +96,7 @@ uses
   VCL.Forms,
   {$ELSE}
   Forms,
-  {$IFDEF FPC},
+  {$IFDEF FPC}
   LCLVersion,
   LCLType,
   {$ELSE}

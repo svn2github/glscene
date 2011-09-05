@@ -102,7 +102,7 @@ uses
   VCL.Forms,
   VCL.Dialogs
   {$ELSE}
-  {$IFDEF FPC},
+  {$IFDEF FPC}
   LCLVersion,
   LCLType,
   FileUtil,
@@ -306,7 +306,7 @@ const
   E_NOINTERFACE = Windows.E_NOINTERFACE;
 {$ENDIF}
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   glpf8Bit = pf8bit;
   glpf24bit = pf24bit;
   glpf32Bit = pf32bit;
