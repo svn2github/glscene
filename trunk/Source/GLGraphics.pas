@@ -2759,11 +2759,10 @@ var
   i, j: Integer;
   SourceScan: PRGBLine;
   DestScan: PGLPixel32Array;
-  AlphaScan:
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Imaging.Pngimage.pByteArray;
+  AlphaScan: VCL.Imaging.Pngimage.pByteArray;
 {$ELSE}
-  pByteArray;
+  AlphaScan: Pngimage.pByteArray;
 {$ENDIF}
   Pixel: Integer;
 begin
