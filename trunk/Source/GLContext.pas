@@ -1975,7 +1975,8 @@ begin
   for i := 0 to FHandles.Count-1 do
     Dispose(RCItem(i));
   FHandles.Free;
-  GLContextManager.FHandles.Remove(Self);
+  if Assigned(GLContextManager) then
+    GLContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
 
