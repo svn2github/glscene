@@ -17,6 +17,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
       <li>08/12/04 - MF - Fixed AV error reported by DanB
@@ -458,6 +459,8 @@ type
     {: CreateNewNode creates a new node of the TSectorNode subclass that this
     structure requires }
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; virtual;
+
+    procedure Clear;
 
     constructor Create; override;
     destructor Destroy; override;
@@ -1517,6 +1520,13 @@ begin
   end;
 end;
 
+procedure TSectoredSpacePartition.Clear;
+begin
+  inherited Clear;
+  if Assigned(FRootNode) then
+    FRootNode.Clear;
+end;
+
 constructor TSectoredSpacePartition.Create;
 begin
   FLeafThreshold := cOctree_LEAF_TRHESHOLD;
@@ -1537,8 +1547,8 @@ end;
 
 destructor TSectoredSpacePartition.Destroy;
 begin
+  inherited Destroy;
   FRootNode.Free;
-  inherited;
 end;
 
 function TSectoredSpacePartition.GetAABB: TAABB;
