@@ -6,6 +6,7 @@
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>
+  <li>07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)
   <li>09/04/11 - Yar - Added AlphaGammaBrightCorrection
   <li>08/04/11 - Yar - Complete Build2DMipmap
   <li>07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
@@ -2982,7 +2983,7 @@ begin
   tempW := ASrcWidth;
   tempH := ASrcHeight;
   size := 0;
-  for level := 0 to High(ADst) do
+  for level := 0 to High(ADst) + 1 do
   begin
     Inc(size, tempW * tempH * SizeOf(TIntermediateFormat));
     Div2(tempW);
