@@ -10,7 +10,7 @@ uses
   BaseClasses, PersistentClasses;
 
 const
-  MAX_OBJECT_STACK_DEPTH = 2048;
+  MAX_OBJECT_STACK_DEPTH = 512;
 
 type
 
@@ -346,4 +346,4 @@ end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-end.
+end.
