@@ -1980,6 +1980,7 @@ type
     FRenderDPI: Integer;
     FFogEnvironment: TGLFogEnvironment;
     FAccumBufferBits: Integer;
+    FLayer: TGLContextLayer;
 
     // Cameras
     FCamera: TGLCamera;
@@ -2006,6 +2007,7 @@ type
     FAfterRender: TNotifyEvent;
     FInitiateRendering: TDirectRenderEvent;
     FWrapUpRendering: TDirectRenderEvent;
+    procedure SetLayer(const Value: TGLContextLayer);
 
   protected
     { Protected Declarations }
@@ -2052,12 +2054,12 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    procedure CreateRC(deviceHandle: HWND; memoryContext: Boolean;
-      BufferCount: integer = 1);
+    procedure CreateRC(AWindowHandle: HWND; memoryContext: Boolean;
+      BufferCount: integer = 1); overload;
     procedure ClearBuffers;
     procedure DestroyRC;
     function RCInstantiated: Boolean;
-    procedure Resize(newWidth, newHeight: Integer);
+    procedure Resize(newLeft, newTop, newWidth, newHeight: Integer);
     //: Indicates hardware acceleration support
     function Acceleration: TGLContextAcceleration;
 
@@ -2119,7 +2121,7 @@ type
        When possible, use this function instead of RenderToBitmap, it won't
        request a redraw and will be significantly faster.<p>
        The returned TGLBitmap32 should be freed by calling code. }
-    function CreateSnapShot: TGLBitmap32;
+    function CreateSnapShot: TGLImage;
     {: Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
     function CreateSnapShotBitmap: TGLBitmap;
     procedure CopyToTexture(aTexture: TGLTexture); overload;
@@ -2270,7 +2272,9 @@ type
     {: The camera from which the scene is rendered.<p>
        A camera is an object you can add and define in a TGLScene component. }
     property Camera: TGLCamera read FCamera write SetCamera;
-
+    {: Specifies the layer plane that the rendering context is bound to. }
+    property Layer: TGLContextLayer read FLayer write SetLayer
+      default clMainPlane;
   published
     { Published Declarations }
     {: Fog environment options.<p>
@@ -2292,7 +2296,6 @@ type
     {: Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
       SetAccumBufferBits default 0;
-
     {: DepthTest enabling.<p>
        When DepthTest is enabled, objects closer to the camera will hide
        farther ones (via use of Z-Buffering).<br>
@@ -8073,6 +8076,7 @@ begin
   FColorDepth := cdDefault;
   FShadeModel := smDefault;
   FFogEnable := False;
+  FLayer := clMainPlane;
   FAfterRenderEffects := TPersistentObjectList.Create;
 
   FContextOptions := [roDoubleBuffer, roRenderToWindow, roDebugContext];
@@ -8151,16 +8155,14 @@ begin
     AccumBits := AccumBufferBits;
     AuxBuffers := 0;
     AntiAliasing := Self.AntiAliasing;
+    Layer := Self.Layer;
     GLStates.ForwardContext := roForwardContext in ContextOptions;
     PrepareGLContext;
   end;
 end;
 
-// CreateRC
-//
-
-procedure TGLSceneBuffer.CreateRC(deviceHandle: HWND; memoryContext:
-  Boolean; BufferCount: integer);
+procedure TGLSceneBuffer.CreateRC(AWindowHandle: HWND; memoryContext:
+  Boolean; BufferCount: Integer);
 begin
   DestroyRC;
   FRendering := True;
@@ -8179,10 +8181,10 @@ begin
     begin
       try
         if memoryContext then
-          CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height,
+          CreateMemoryContext(AWindowHandle, FViewPort.Width, FViewPort.Height,
             BufferCount)
         else
-          CreateContext(deviceHandle);
+          CreateContext(AWindowHandle);
       except
         FreeAndNil(FRenderingContext);
         raise;
@@ -8199,7 +8201,7 @@ begin
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
       FRenderingContext.GLStates.ViewPort :=
-        Vector4iMake(0, 0, FViewPort.Width, FViewPort.Height);
+        Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
       // set up initial context states
       SetupRenderingContext(FRenderingContext);
       FRenderingContext.GLStates.ColorClearValue :=
@@ -8239,12 +8241,14 @@ end;
 // Resize
 //
 
-procedure TGLSceneBuffer.Resize(newWidth, newHeight: Integer);
+procedure TGLSceneBuffer.Resize(newLeft, newTop, newWidth, newHeight: Integer);
 begin
   if newWidth < 1 then
     newWidth := 1;
   if newHeight < 1 then
     newHeight := 1;
+  FViewPort.Left := newLeft;
+  FViewPort.Top := newTop;
   FViewPort.Width := newWidth;
   FViewPort.Height := newHeight;
   if Assigned(FRenderingContext) then
@@ -8253,7 +8257,7 @@ begin
     try
       // Part of workaround for MS OpenGL "black borders" bug
       FRenderingContext.GLStates.ViewPort :=
-        Vector4iMake(0, 0, FViewPort.Width, FViewPort.Height);
+        Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
     finally
       FRenderingContext.Deactivate;
     end;
@@ -9619,8 +9623,14 @@ begin
   end;
 end;
 
-// SetLighting
-//
+procedure TGLSceneBuffer.SetLayer(const Value: TGLContextLayer);
+begin
+  if FLayer <> Value then
+  begin
+    FLayer := Value;
+    DoStructuralChange;
+  end;
+end;
 
 procedure TGLSceneBuffer.SetLighting(aValue: Boolean);
 begin
@@ -10113,7 +10123,7 @@ begin
   if FBuffer.RenderingContext = nil then
   begin
     FBuffer.SetViewPort(0, 0, Width, Height);
-    FBuffer.CreateRC(0, True, FBufferCount);
+    FBuffer.CreateRC(HWND(0), True, FBufferCount);
   end;
 end;
 

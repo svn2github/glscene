@@ -135,6 +135,7 @@ type
   TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
   TGLRCOptions = set of TGLRCOption;
 
+  TGLContextLayer = (clUnderlay2, clUnderlay1, clMainPlane, clOverlay1, clOverlay2);
 
   TFinishTaskEvent = class(TEvent)
   public
@@ -151,7 +152,6 @@ type
   TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList < TServiceContextTask > ;
 {$ENDIF GLS_SERVICE_CONTEXT}
-
 
   TGLContext = class;
   TGLContextManager = class;
@@ -206,20 +206,6 @@ type
     FActivationCount: Integer;
     FOwnedHandlesCount: Integer;
     FIsPraparationNeed: Boolean;
-  protected
-    { Protected Declarations }
-    FGL: TGLExtensionsAndEntryPoints;
-    FXGL: TAbstractMultitextureCoordinator;
-    FGLStates: TGLStateCache;
-    FTransformation: TGLTransformation;
-    FAcceleration: TGLContextAcceleration;
-{$IFNDEF GLS_MULTITHREAD}
-    FSharedContexts: TList;
-{$ELSE}
-    FSharedContexts: TThreadList;
-    FLock: TCriticalSection;
-{$ENDIF}
-
     procedure SetColorBits(const aColorBits: Integer);
     procedure SetAlphaBits(const aAlphaBits: Integer);
     procedure SetDepthBits(const val: Integer);
@@ -231,9 +217,24 @@ type
     procedure SetAcceleration(const val: TGLContextAcceleration);
     function GetActive: Boolean;
     procedure SetActive(const aActive: Boolean);
+    procedure SetLayer(const Value: TGLContextLayer);
+  protected
+    { Protected Declarations }
+    FGL: TGLExtensionsAndEntryPoints;
+    FXGL: TAbstractMultitextureCoordinator;
+    FGLStates: TGLStateCache;
+    FTransformation: TGLTransformation;
+    FAcceleration: TGLContextAcceleration;
+    FLayer: TGLContextLayer;
+{$IFNDEF GLS_MULTITHREAD}
+    FSharedContexts: TList;
+{$ELSE}
+    FSharedContexts: TThreadList;
+    FLock: TCriticalSection;
+{$ENDIF}
     procedure PropagateSharedContext;
 
-    procedure DoCreateContext(outputDevice: HWND); virtual; abstract;
+    procedure DoCreateContext(ADeviceHandle: HDC); virtual; abstract;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer = 1); virtual; abstract;
     function DoShareLists(aContext: TGLContext): Boolean; virtual; abstract;
@@ -273,6 +274,8 @@ type
        Ignored if not hardware supported, currently based on ARB_multisample. }
     property AntiAliasing: TGLAntiAliasing read FAntiAliasing write
       SetAntiAliasing;
+    {: Specifies the layer plane that the rendering context is bound to. }
+    property Layer: TGLContextLayer read FLayer write SetLayer;
     {: Rendering context options. }
     property Options: TGLRCOptions read FOptions write SetOptions;
     {: Allows reading and defining the activity for the context.<p>
@@ -290,7 +293,7 @@ type
 
     {: Creates the context.<p>
        This method must be invoked before the context can be used. }
-    procedure CreateContext(outputDevice: HWND);
+    procedure CreateContext(ADeviceHandle: HDC); overload;
     {: Creates an in-memory context.<p>
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
@@ -500,7 +503,7 @@ type
     property Target: TGLTextureTarget read FTarget write SetTarget;
   end;
 
-  // TGLTextureHandle
+  // TGLSamplerHandle
   //
   {: Manages a handle to a sampler. }
   TGLSamplerHandle = class(TGLContextHandle)
@@ -1255,7 +1258,7 @@ type
 
     {: Returns an appropriate, ready-to use context.<p>
        The returned context should be freed by caller. }
-    function CreateContext: TGLContext;
+    function CreateContext(AClass: TGLContextClass = nil): TGLContext;
 
     {: Returns the number of TGLContext object.<p>
        This is *not* the number of OpenGL rendering contexts! }
@@ -1445,6 +1448,7 @@ begin
   FStencilBits := 0;
   FAccumBits := 0;
   FAuxBuffers := 0;
+  FLayer := clMainPlane;
   FOptions := [];
 {$IFNDEF GLS_MULTITHREAD}
   FSharedContexts := TList.Create;
@@ -1511,6 +1515,14 @@ begin
     raise EGLContext.Create(cCannotAlterAnActiveContext)
   else
     FDepthBits := val;
+end;
+
+procedure TGLContext.SetLayer(const Value: TGLContextLayer);
+begin
+  if Active then
+    raise EGLContext.Create(cCannotAlterAnActiveContext)
+  else
+    FLayer := Value;
 end;
 
 // SetStencilBits
@@ -1605,11 +1617,11 @@ end;
 // CreateContext
 //
 
-procedure TGLContext.CreateContext(outputDevice: HWND);
+procedure TGLContext.CreateContext(ADeviceHandle: HDC);
 begin
   if IsValid then
     raise EGLContext.Create(cContextAlreadyCreated);
-  DoCreateContext(outputDevice);
+  DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
 
@@ -4501,11 +4513,16 @@ end;
 // CreateContext
 //
 
-function TGLContextManager.CreateContext: TGLContext;
+function TGLContextManager.CreateContext(AClass: TGLContextClass): TGLContext;
 begin
-  if Assigned(vContextClasses) and (vContextClasses.Count > 0) then
+  if Assigned(AClass) then
   begin
-    Result := TGLContextClass(vContextClasses[0]).Create;
+    Result := AClass.Create;
+    Result.FManager := Self;
+  end
+  else if Assigned(vContextClasses) and (vContextClasses.Count > 0) then
+  begin
+    Result := TGLContextClass(vContextClasses.Last).Create;
     Result.FManager := Self;
   end
   else

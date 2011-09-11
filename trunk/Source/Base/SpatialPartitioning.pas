@@ -460,7 +460,7 @@ type
     structure requires }
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; virtual;
 
-    procedure Clear;
+    procedure Clear; override;
 
     constructor Create; override;
     destructor Destroy; override;

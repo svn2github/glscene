@@ -245,7 +245,7 @@ begin
   inherited CreateWnd;
   // initialize and activate the OpenGL rendering context
   // need to do this only once per window creation as we have a private DC
-  FBuffer.Resize(Self.Width, Self.Height);
+  FBuffer.Resize(0, 0, Self.Width, Self.Height);
   FOwnDC := GetDC(Handle);
   FBuffer.CreateRC(FOwnDC, false);
 end;
@@ -301,7 +301,7 @@ procedure TGLSceneForm.WMSize(var Message: TWMSize);
 begin
   inherited;
   if Assigned(FBuffer) then
-    FBuffer.Resize(Message.Width, Message.Height);
+    FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
 // WMPaint
@@ -389,7 +389,7 @@ procedure TGLSceneForm.LMSize(var Message: TLMSize);
 begin
   inherited;
   if Assigned(FBuffer) then
-    FBuffer.Resize(Message.Width, Message.Height);
+    FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
 procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);

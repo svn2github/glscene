@@ -4542,6 +4542,11 @@ const
   GL_PATH_STENCIL_DEPTH_OFFSET_UNITS_NV               = $90BE;
   GL_PATH_COVER_DEPTH_FUNC_NV                         = $90BF;
 
+  // WGL_NV_DX_interop (EXT #407)
+  WGL_ACCESS_READ_ONLY_NV                             = $0000;
+  WGL_ACCESS_READ_WRITE_NV                            = $0001;
+  WGL_ACCESS_WRITE_DISCARD_NV                         = $0002;
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
@@ -6022,6 +6027,16 @@ const
   PFNWGLENUMGPUSFROMAFFINITYDCNVPROC = function(hAffinityDC: HDC; iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean; stdcall;
   PFNWGLDELETEDCNVPROC = function(hdc: HDC): Boolean; stdcall;
 
+  // WGL_NV_DX_interop (EXT #407)
+  PFNWGLDXSETRESOURCESHAREHANDLEPROC = function (dxObject: Pointer; shareHandle: THandle): BOOL; stdcall;
+  PFNWGLDXOPENDEVICEPROC = function(dxDevice: Pointer): THandle; stdcall;
+  PFNWGLDXCLOSEDEVICEPROC = function(hDevice: THandle): BOOL; stdcall;
+  PFNWGLDXREGISTEROBJECTPROC = function(hDevice: THandle; dxObject: Pointer;
+                                name: GLuint; atype: GLuint; access: GLuint): THandle; stdcall;
+  PFNWGLDXUNREGISTEROBJECTPROC = function(hDevice: THandle; hObject: THandle): BOOL; stdcall;
+  PFNWGLDXOBJECTACCESSPROC = function(hObject: THandle; access: GLenum): BOOL; stdcall;
+  PFNWGLDXLOCKOBJECTSPROC = function(hDevice: THandle; count: GLint; hObjects: PHandle): BOOL; stdcall;
+  PFNWGLDXUNLOCKOBJECTSNVPROC = function (hDevice: THandle; count: GLint; hObjects: PHandle): BOOL; stdcall;
   {$ENDIF}
 
   {$IFDEF SUPPORT_GLX}

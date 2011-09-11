@@ -77,7 +77,7 @@ type
     function Last: TGLCameraJob;
   end;
 
-  TGLCameraJob = class
+  TGLCameraJob = class(TObject)
   private
     FJoblist : TGLCameraJobList;
   protected
@@ -96,7 +96,7 @@ type
     procedure Abort;
     procedure Step; virtual; abstract;
     procedure Init; virtual; abstract;
-  published
+
     property Running: Boolean read FRunning write FRunning;
     property ElapsedTime: Double read FElapsedTime write FElapsedTime;
     property StartTime: Double read FStartTime write FStartTime;
@@ -154,7 +154,6 @@ type
     property CameraUpVector: TVector read FCameraUpVector;
     property TargetPosition: TVector read FTargetPosition;
     property FinalPos: TVector read FFinalPos;
-  published
     property Time: Double read FTime;
   end;
 
@@ -167,7 +166,6 @@ type
   public
     constructor Create(const AJoblist : TGLCameraJobList); override;
     procedure Step; override;
-  published
     property CutoffAngle: Single read FCutoffAngle write FCutoffAngle;
     property NeedToRecalculateZoom: Boolean read FNeedToRecalculateZoom write FNeedToRecalculateZoom;
   end;

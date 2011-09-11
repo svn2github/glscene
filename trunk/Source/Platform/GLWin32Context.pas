@@ -6,6 +6,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/09/11 - Yar - Added layers support (not tested because need Quadro or FireFX VGA)
       <li>18/07/11 - Yar - Added ability of creating OpenGL ES 2.0 profile context
       <li>03/12/10 - Yar - Fixed window tracking (thanks to Gabriel Corneanu)
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
@@ -69,14 +70,49 @@ uses
   OpenGLAdapter,
   GLContext;
 
+{$IFDEF FPC}
+const
+  WGL_SWAP_MAIN_PLANE = $00000001;
+  WGL_SWAP_OVERLAY1 = $00000002;
+  WGL_SWAP_OVERLAY2 = $00000004;
+  WGL_SWAP_OVERLAY3 = $00000008;
+  WGL_SWAP_OVERLAY4 = $00000010;
+  WGL_SWAP_OVERLAY5 = $00000020;
+  WGL_SWAP_OVERLAY6 = $00000040;
+  WGL_SWAP_OVERLAY7 = $00000080;
+  WGL_SWAP_OVERLAY8 = $00000100;
+  WGL_SWAP_OVERLAY9 = $00000200;
+  WGL_SWAP_OVERLAY10 = $00000400;
+  WGL_SWAP_OVERLAY11 = $00000800;
+  WGL_SWAP_OVERLAY12 = $00001000;
+  WGL_SWAP_OVERLAY13 = $00002000;
+  WGL_SWAP_OVERLAY14 = $00004000;
+  WGL_SWAP_OVERLAY15 = $00008000;
+  WGL_SWAP_UNDERLAY1 = $00010000;
+  WGL_SWAP_UNDERLAY2 = $00020000;
+  WGL_SWAP_UNDERLAY3 = $00040000;
+  WGL_SWAP_UNDERLAY4 = $00080000;
+  WGL_SWAP_UNDERLAY5 = $00100000;
+  WGL_SWAP_UNDERLAY6 = $00200000;
+  WGL_SWAP_UNDERLAY7 = $00400000;
+  WGL_SWAP_UNDERLAY8 = $00800000;
+  WGL_SWAP_UNDERLAY9 = $01000000;
+  WGL_SWAP_UNDERLAY10 = $02000000;
+  WGL_SWAP_UNDERLAY11 = $04000000;
+  WGL_SWAP_UNDERLAY12 = $08000000;
+  WGL_SWAP_UNDERLAY13 = $10000000;
+  WGL_SWAP_UNDERLAY14 = $20000000;
+  WGL_SWAP_UNDERLAY15 = $40000000;
+{$ENDIF}
+
 type
 
   // TGLWin32Context
   //
   {: A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)
-  private
-    { Private Declarations }
+  protected
+    { Protected Declarations }
     FDC: HDC;
     FRC: HGLRC;
     FShareContext: TGLWin32Context;
@@ -84,12 +120,12 @@ type
     FiAttribs: packed array of Integer;
     FfAttribs: packed array of Single;
     FLegacyContextsOnly: Boolean;
+    FSwapBufferSupported: Boolean;
 
     procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
-    procedure CreateOldContext(aDC: HDC);
-    procedure CreateNewContext(aDC: HDC);
-  protected
-    { Protected Declarations }
+    procedure CreateOldContext(aDC: HDC); dynamic;
+    procedure CreateNewContext(aDC: HDC); dynamic;
+
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
     procedure ChangeIAttrib(attrib, newValue: Integer);
@@ -101,7 +137,7 @@ type
 
     procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
       PInteger; var nNumFormats: Integer; BufferCount: integer = 1);
-    procedure DoCreateContext(outputDevice: HWND); override;
+    procedure DoCreateContext(ADeviceHandle: HDC); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
       Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
@@ -127,6 +163,20 @@ type
     property DC: HDC read FDC;
     property RC: HGLRC read FRC;
   end;
+
+
+resourcestring
+  cForwardContextFailed = 'Can not create forward compatible context: #%X, %s';
+  cBackwardContextFailed = 'Can not create backward compatible context: #%X, %s';
+  cFailHWRC = 'Unable to create rendering context with hardware acceleration - down to software';
+  glsTmpRC_Created = 'Temporary rendering context created';
+  glsDriverNotSupportFRC = 'Driver not support creating of forward context';
+  glsDriverNotSupportOESRC = 'Driver not support creating of OpenGL ES 2.0 context';
+  glsDriverNotSupportDebugRC = 'Driver not support creating of debug context';
+  glsOESvsForwardRC = 'OpenGL ES 2.0 context incompatible with Forward context - flag ignored';
+  glsFRC_created = 'Forward core context seccussfuly created';
+  glsOESRC_created = 'OpenGL ES 2.0 context seccussfuly created';
+  glsPBufferRC_created = 'Backward compatible core PBuffer context successfully created';
 
 function CreateTempWnd: HWND;
 
@@ -156,12 +206,6 @@ uses
   GLState,
   GLSLog,
   VectorGeometry;
-
-resourcestring
-  cForwardContextFailed = 'Can not create forward compatible context: #%X, %s';
-  cBackwardContextFailed = 'Can not create backward compatible context: #%X, %s';
-  cFailHWRC = 'Unable to create rendering context with hardware accelerati' +
-    'on - down to software';
 
 var
   vTrackingCount: Integer;
@@ -439,7 +483,8 @@ end;
 
 procedure TGLWin32Context.DestructionEarlyWarning(sender: TObject);
 begin
-  DestroyContext;
+  if IsValid then
+    DestroyContext;
 end;
 
 // ChooseWGLFormat
@@ -575,7 +620,19 @@ end;
 
 procedure TGLWin32Context.CreateOldContext(aDC: HDC);
 begin
-  FRC := wglCreateContext(aDC);
+  if not FLegacyContextsOnly then
+  begin
+    case Layer of
+      clUnderlay2: FRC := wglCreateLayerContext(aDC, -2);
+      clUnderlay1: FRC := wglCreateLayerContext(aDC, -1);
+      clMainPlane: FRC := wglCreateContext(aDC);
+      clOverlay1: FRC := wglCreateLayerContext(aDC, 1);
+      clOverlay2: FRC := wglCreateLayerContext(aDC, 2);
+    end;
+  end
+  else
+    FRC := wglCreateContext(aDC);
+
   if FRC = 0 then
     RaiseLastOSError;
   FDC := aDC;
@@ -607,15 +664,15 @@ begin
       GLStates.MultisampleFilterHint := hintDontCare;
 
     if rcoDebug in Options then
-      GLSLogger.LogWarning('Driver not support creating of debug context');
+      GLSLogger.LogWarning(glsDriverNotSupportDebugRC);
     if rcoOGL_ES in Options then
-      GLSLogger.LogWarning('Driver not support creating of OpenGL ES 2.0 context');
+      GLSLogger.LogWarning(glsDriverNotSupportOESRC);
     if GLStates.ForwardContext then
-      GLSLogger.LogWarning('Driver not support creating of forward context');
+      GLSLogger.LogWarning(glsDriverNotSupportFRC);
     GLStates.ForwardContext := False;
   end
   else
-    GLSLogger.LogInfo('Temporary rendering context created');
+    GLSLogger.LogInfo(glsTmpRC_Created);
 end;
 
 procedure TGLWin32Context.CreateNewContext(aDC: HDC);
@@ -630,7 +687,12 @@ begin
     // Initialize forward context
     if GLStates.ForwardContext then
     begin
-      if FGL.VERSION_4_1 then
+      if FGL.VERSION_4_2 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+      end
+      else if FGL.VERSION_4_1 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
@@ -664,7 +726,7 @@ begin
         Abort;
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
       if rcoOGL_ES in Options then
-        GLSLogger.LogWarning('OpenGL ES 2.0 context incompatible with Forward context - flag ignored');
+        GLSLogger.LogWarning(glsOESvsForwardRC);
     end
     else if rcoOGL_ES in Options then
     begin
@@ -676,13 +738,20 @@ begin
         bOES := True;
       end
       else
-        GLSLogger.LogError('Driver not support creating of OpenGL ES 2.0 context');
+        GLSLogger.LogError(glsDriverNotSupportOESRC);
     end;
 
     if rcoDebug in Options then
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
       FGL.DebugMode := True;
+    end;
+
+    case Layer of
+      clUnderlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
+      clUnderlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
+      clOverlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
+      clOverlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
     end;
 
     FRC := 0;
@@ -732,9 +801,9 @@ begin
       GLStates.MultisampleFilterHint := hintDontCare;
 
     if GLStates.ForwardContext then
-      GLSLogger.LogInfo('Forward core context seccussfuly created');
+      GLSLogger.LogInfo(glsFRC_created);
     if bOES then
-      GLSLogger.LogInfo('OpenGL ES 2.0 context seccussfuly created');
+      GLSLogger.LogInfo(glsOESRC_created);
     bSuccess := True;
   finally
     GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
@@ -745,17 +814,18 @@ end;
 // DoCreateContext
 //
 
-procedure TGLWin32Context.DoCreateContext(outputDevice: HWND);
+procedure TGLWin32Context.DoCreateContext(ADeviceHandle: HDC);
 const
   cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
   cBoolToInt: array[False..True] of Integer = (GL_FALSE, GL_TRUE);
+  cLayerToSet: array[TGLContextLayer] of Byte = (32, 16, 0, 1, 2);
 var
   pfDescriptor: TPixelFormatDescriptor;
   pixelFormat, nbFormats, softwarePixelFormat: Integer;
   aType: DWORD;
   iFormats: array[0..31] of Integer;
   tempWnd: HWND;
-  tempDC, outputDC: HDC;
+  tempDC: HDC;
   localDC: HDC;
   localRC: HGLRC;
   sharedRC: TGLWin32Context;
@@ -772,7 +842,7 @@ var
       nSize := SizeOf(localPFD);
       nVersion := 1;
     end;
-    DescribePixelFormat(outputDC, pixelFormat, SizeOf(localPFD), localPFD);
+    DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(localPFD), localPFD);
     Result := ((localPFD.dwFlags and PFD_GENERIC_FORMAT) = 0);
   end;
 
@@ -780,13 +850,11 @@ var
   i, iAttrib, iValue: Integer;
 begin
 {$IFDEF FPC}
-  DoGetHandles(outputDevice, HDC(outputDC));
-{$ELSE}
-  outputDC := HDC(outputDevice);
+  DoGetHandles(HWND(ADeviceHandle), ADeviceHandle);
 {$ENDIF}
 
   if vUseWindowTrackingHook and not FLegacyContextsOnly then
-    TrackWindow(WindowFromDC(outputDC), DestructionEarlyWarning);
+    TrackWindow(WindowFromDC(ADeviceHandle), DestructionEarlyWarning);
 
   // Just in case it didn't happen already.
   if not InitOpenGL then
@@ -799,7 +867,7 @@ begin
     nSize := SizeOf(PFDescriptor);
     nVersion := 1;
     dwFlags := PFD_SUPPORT_OPENGL;
-    aType := GetObjectType(outputDC);
+    aType := GetObjectType(ADeviceHandle);
     if aType = 0 then
       RaiseLastOSError;
     if aType in cMemoryDCs then
@@ -817,7 +885,15 @@ begin
     cAccumBits := AccumBits;
     cAlphaBits := AlphaBits;
     cAuxBuffers := AuxBuffers;
-    iLayerType := PFD_MAIN_PLANE;
+    case Layer of
+      clUnderlay2, clUnderlay1: iLayerType := Byte(PFD_UNDERLAY_PLANE);
+      clMainPlane: iLayerType := PFD_MAIN_PLANE;
+      clOverlay1, clOverlay2: iLayerType := PFD_OVERLAY_PLANE;
+    end;
+    bReserved := cLayerToSet[Layer];
+    if Layer <> clMainPlane then
+      dwFlags := dwFlags or PFD_SWAP_LAYER_BUFFERS;
+
   end;
   pixelFormat := 0;
 
@@ -847,7 +923,7 @@ begin
             AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in
               Options]);
 
-            ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
+            ChooseWGLFormat(ADeviceHandle, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
               if FGL.W_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then
@@ -858,7 +934,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FGL.WGetPixelFormatAttribivARB(outputDC, pixelFormat, 0, 1,
+                  FGL.WGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0, 1,
                     @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     Break;
@@ -866,9 +942,9 @@ begin
               end
               else
                 pixelFormat := iFormats[0];
-              if GetPixelFormat(outputDC) <> pixelFormat then
+              if GetPixelFormat(ADeviceHandle) <> pixelFormat then
               begin
-                if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
+                if not SetPixelFormat(ADeviceHandle, pixelFormat, @PFDescriptor) then
                   RaiseLastOSError;
               end;
             end;
@@ -893,7 +969,7 @@ begin
   if pixelFormat = 0 then
   begin
     // Legacy pixel format selection
-    pixelFormat := ChoosePixelFormat(outputDC, @PFDescriptor);
+    pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
     if (not (aType in cMemoryDCs)) and (not
       CurrentPixelFormatIsHardwareAccelerated) then
     begin
@@ -906,14 +982,14 @@ begin
     begin
       // Failed on default params, try with 16 bits depth buffer
       PFDescriptor.cDepthBits := 16;
-      pixelFormat := ChoosePixelFormat(outputDC, @PFDescriptor);
+      pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
       if not CurrentPixelFormatIsHardwareAccelerated then
         pixelFormat := 0;
       if pixelFormat = 0 then
       begin
         // Failed, try with 16 bits color buffer
         PFDescriptor.cColorBits := 16;
-        pixelFormat := ChoosePixelFormat(outputDC, @PFDescriptor);
+        pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
       end;
       if not CurrentPixelFormatIsHardwareAccelerated then
       begin
@@ -925,17 +1001,22 @@ begin
     end;
   end;
 
-  if GetPixelFormat(outputDC) <> pixelFormat then
+  if GetPixelFormat(ADeviceHandle) <> pixelFormat then
   begin
-    if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
+    if not SetPixelFormat(ADeviceHandle, pixelFormat, @PFDescriptor) then
       RaiseLastOSError;
   end;
 
   // Check the properties we just set.
-  DescribePixelFormat(outputDC, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+  DescribePixelFormat(ADeviceHandle, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
   with PFDescriptor do
+  begin
     if (dwFlags and PFD_NEED_PALETTE) <> 0 then
-      SetupPalette(outputDC, PFDescriptor);
+      SetupPalette(ADeviceHandle, PFDescriptor);
+    FSwapBufferSupported := (dwFlags and PFD_SWAP_LAYER_BUFFERS) <> 0;
+    if bReserved = 0 then
+      FLayer := clMainPlane;
+  end;
 
   if not FLegacyContextsOnly then
   begin
@@ -950,9 +1031,9 @@ begin
   if not FLegacyContextsOnly
     and FGL.W_ARB_create_context
     and (FAcceleration = chaHardware) then
-    CreateNewContext(outputDC)
+    CreateNewContext(ADeviceHandle)
   else
-    CreateOldContext(outputDC);
+    CreateOldContext(ADeviceHandle);
 
   if not FLegacyContextsOnly then
   begin
@@ -1006,10 +1087,12 @@ var
   tempWnd: HWND;
   shareRC: TGLWin32Context;
   pfDescriptor: TPixelFormatDescriptor;
+  bOES: Boolean;
 begin
   localHPBuffer := 0;
   localDC := 0;
   localRC := 0;
+  bOES := False;
   // the WGL mechanism is a little awkward: we first create a dummy context
   // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
   // our stuff, etc.
@@ -1041,9 +1124,103 @@ begin
             if localDC = 0 then
               raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
-              localRC := wglCreateContext(localDC);
-              if localRC = 0 then
-                raise EPBuffer.Create('Unabled to create pbuffer''s RC.');
+              if FGL.W_ARB_create_context then
+              begin
+                // Modern creation style
+                ClearIAttribs;
+                // Initialize forward context
+                if GLStates.ForwardContext then
+                begin
+                  if FGL.VERSION_4_2 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+                  end
+                  else if FGL.VERSION_4_1 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+                  end
+                  else if FGL.VERSION_4_0 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+                  end
+                  else if FGL.VERSION_3_3 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+                  end
+                  else if FGL.VERSION_3_2 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+                  end
+                  else if FGL.VERSION_3_1 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+                  end
+                  else if FGL.VERSION_3_0 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+                  end
+                  else
+                    Abort;
+                  AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
+                  if rcoOGL_ES in Options then
+                    GLSLogger.LogWarning(glsOESvsForwardRC);
+                end
+                else if rcoOGL_ES in Options then
+                begin
+                  if FGL.W_EXT_create_context_es2_profile then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+                    AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
+                  end
+                  else
+                    GLSLogger.LogError(glsDriverNotSupportOESRC);
+                end;
+
+                if rcoDebug in Options then
+                begin
+                  AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
+                  FGL.DebugMode := True;
+                end;
+
+                case Layer of
+                  clUnderlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -2);
+                  clUnderlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, -1);
+                  clOverlay1: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 1);
+                  clOverlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
+                end;
+
+                localRC := FGL.WCreateContextAttribsARB(localDC, 0, @FiAttribs[0]);
+                if localRC = 0 then
+                begin
+                  if GLStates.ForwardContext then
+                    GLSLogger.LogErrorFmt(cForwardContextFailed,
+                      [GetLastError, SysErrorMessage(GetLastError)])
+                  else
+                    GLSLogger.LogErrorFmt(cBackwardContextFailed,
+                      [GetLastError, SysErrorMessage(GetLastError)]);
+                  Abort;
+                end;
+              end
+              else
+              begin
+                // Old creation style
+                localRC := wglCreateContext(localDC);
+                if localRC = 0 then
+                begin
+                  GLSLogger.LogErrorFmt(cBackwardContextFailed,
+                    [GetLastError, SysErrorMessage(GetLastError)]);
+                  Abort;
+                end;
+              end;
+
             except
               FGL.WReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
@@ -1117,7 +1294,12 @@ begin
 
   Deactivate;
 
-  GLSLogger.LogInfo('Backward compatible core PBuffer context successfully created');
+  if GLStates.ForwardContext then
+    GLSLogger.LogInfo('PBuffer ' + glsFRC_created);
+  if bOES then
+    GLSLogger.LogInfo('PBuffer ' + glsOESRC_created);
+  if not (GLStates.ForwardContext or bOES) then
+    GLSLogger.LogInfo(glsPBufferRC_created);
 end;
 
 // DoShareLists
@@ -1205,7 +1387,18 @@ end;
 procedure TGLWin32Context.SwapBuffers;
 begin
   if (FDC <> 0) and (rcoDoubleBuffered in Options) then
-    Windows.SwapBuffers(FDC);
+    if FSwapBufferSupported then
+    begin
+      case Layer of
+        clUnderlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY2);
+        clUnderlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY1);
+        clMainPlane: Windows.SwapBuffers(FDC);
+        clOverlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY1);
+        clOverlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY2);
+      end;
+    end
+    else
+      Windows.SwapBuffers(FDC);
 end;
 
 // RenderOutputDevice

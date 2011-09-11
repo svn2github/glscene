@@ -361,7 +361,7 @@ begin
   inherited CreateWnd;
   // initialize and activate the OpenGL rendering context
   // need to do this only once per window creation as we have a private DC
-  FBuffer.Resize(Self.Width, Self.Height);
+  FBuffer.Resize(0, 0, Self.Width, Self.Height);
   FOwnDC := GetDC(Handle);
   FBuffer.CreateRC(FOwnDC, False);
 end;
@@ -397,7 +397,7 @@ end;
 procedure TGLSceneViewer.WMSize(var Message: TWMSize);
 begin
   inherited;
-  FBuffer.Resize(Message.Width, Message.Height);
+  FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
 // WMPaint

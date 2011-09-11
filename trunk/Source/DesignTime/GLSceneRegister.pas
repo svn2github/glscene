@@ -625,6 +625,9 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLViewer,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  GLScene.FMX.Viewer,
+{$ENDIF}
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,
@@ -2281,10 +2284,13 @@ begin
   RegisterComponents('GLScene',
     [TGLScene,
     TGLSceneViewer, TGLMemoryViewer,
+{$IFDEF GLS_DELPHI_XE2_UP}
+    TGLSceneViewport,
+{$ENDIF}
       TGLMaterialLibrary, TGLMaterialLibraryEx,
       TGLCadencer,
       TGLGuiLayout,
-      TGLBitmapFont, TGLWindowsBitmapFont, 
+      TGLBitmapFont, TGLWindowsBitmapFont,
       TGLScriptLibrary,
       TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer

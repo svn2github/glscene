@@ -76,7 +76,7 @@ type
     { Private Declarations }
     FFormIsOwned: Boolean;
     FForm: TForm;
-    FOwnDC: Cardinal;
+    FOwnDC: HWND;
     FScreenDepth: TGLScreenDepth;
     FActive: Boolean;
     FSwitchedResolution: Boolean;
@@ -166,7 +166,7 @@ type
     function FramesPerSecondText(decimals: Integer = 1): String;
     procedure ResetPerformanceMonitor;
 
-    property RenderDC: Cardinal read FOwnDC;
+    property RenderDC: HWND read FOwnDC;
   published
     { Public Declarations }
     property Form: TForm read FForm write SetForm;
@@ -502,7 +502,7 @@ begin
     // Show;
   end;
 
-  Buffer.Resize(Width, Height);
+  Buffer.Resize(0, 0, Width, Height);
   FOwnDC := GetDC(FForm.Handle);
   Buffer.CreateRC(FOwnDC, False);
   // Linux Unicode

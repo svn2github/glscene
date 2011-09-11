@@ -3,6 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>08/09/11 - Yar - Added WGL_NV_DX_interop
   <li>21/08/11 - Yar - Added OpenGL ES
   <li>31/07/11 - Yar - Added GL_NV_Path_rendering
   <li>18/07/11 - Yar - Added WGL_EXT_create_context_es2_profile
@@ -84,7 +85,7 @@ type
     // supported version checks
     VERSION_1_0, VERSION_1_1, VERSION_1_2, VERSION_1_3, VERSION_1_4,
     VERSION_1_5, VERSION_2_0, VERSION_2_1, VERSION_3_0, VERSION_3_1,
-    VERSION_3_2, VERSION_3_3, VERSION_4_0, VERSION_4_1: boolean;
+    VERSION_3_2, VERSION_3_3, VERSION_4_0, VERSION_4_1, VERSION_4_2: boolean;
 
     // ARB approved OpenGL extension checks
     ARB_blend_func_extended, ARB_color_buffer_float, ARB_compatibility,
@@ -2633,7 +2634,7 @@ type
     // Vendor/EXT WGL extension checks
     W_ATI_pixel_format_float, W_EXT_framebuffer_sRGB,
     W_EXT_pixel_format_packed_float, W_EXT_swap_control, W_NV_gpu_affinity,
-    W_EXT_create_context_es2_profile: boolean;
+    W_EXT_create_context_es2_profile, W_NV_DX_interop: boolean;
 
     // WGL_buffer_region (ARB #4)
     WCreateBufferRegionARB: PFNWGLCREATEBUFFERREGIONARBPROC;
@@ -2673,6 +2674,17 @@ type
     WCreateAffinityDCNV: PFNWGLCREATEAFFINITYDCNVPROC;
     WEnumGpusFromAffinityDCNV: PFNWGLENUMGPUSFROMAFFINITYDCNVPROC;
     WDeleteDCNV: PFNWGLDELETEDCNVPROC;
+
+    // WGL_NV_DX_interop (EXT #407)
+    WDXSetResourceShareHandleNV: PFNWGLDXSETRESOURCESHAREHANDLEPROC;
+    WDXOpenDeviceNV: PFNWGLDXOPENDEVICEPROC;
+    WDXCloseDeviceNV: PFNWGLDXCLOSEDEVICEPROC;
+    WDXRegisterObjectNV: PFNWGLDXREGISTEROBJECTPROC;
+    WDXUnregisterObjectNV: PFNWGLDXUNREGISTEROBJECTPROC;
+    WDXObjectAccessNV: PFNWGLDXOBJECTACCESSPROC;
+    WDXLockObjectsNV: PFNWGLDXLOCKOBJECTSPROC;
+    WDXUnlockObjectsNV: PFNWGLDXUNLOCKOBJECTSNVPROC;
+
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}
@@ -3685,6 +3697,7 @@ begin
   VERSION_3_3 := IsVersionMet(3, 3, MajorVersion, MinorVersion);
   VERSION_4_0 := IsVersionMet(4, 0, MajorVersion, MinorVersion);
   VERSION_4_1 := IsVersionMet(4, 1, MajorVersion, MinorVersion);
+  VERSION_4_2 := IsVersionMet(4, 2, MajorVersion, MinorVersion);
 
   if vNotInformed then
   begin
@@ -6255,6 +6268,7 @@ begin
   W_EXT_pixel_format_packed_float := CheckExtension('WGL_EXT_pixel_format_packed_float');
   W_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
   W_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
+  W_NV_DX_interop := CheckExtension('WGL_NV_DX_interop');
   W_EXT_create_context_es2_profile := CheckExtension('WGL_EXT_create_context_es2_profile');
 end;
 
@@ -6322,6 +6336,16 @@ begin
   WCreateAffinityDCNV := GLGetProcAddress('wglCreateAffinityDCNV');
   WEnumGpusFromAffinityDCNV := GLGetProcAddress('wglEnumGpusFromAffinityDCNV');
   WDeleteDCNV := GLGetProcAddress('wglDeleteDCNV');
+
+  // WGL_NV_DX_interop
+  WDXSetResourceShareHandleNV := GLGetProcAddress('wglDXSetResourceShareHandleNV');
+  WDXOpenDeviceNV := GLGetProcAddress('wglDXOpenDeviceNV');
+  WDXCloseDeviceNV := GLGetProcAddress('wglDXCloseDeviceNV');
+  WDXRegisterObjectNV := GLGetProcAddress('wglDXRegisterObjectNV');
+  WDXUnregisterObjectNV := GLGetProcAddress('wglDXUnregisterObjectNV');
+  WDXObjectAccessNV := GLGetProcAddress('wglDXObjectAccessNV');
+  WDXLockObjectsNV := GLGetProcAddress('wglDXLockObjectsNV');
+  WDXUnlockObjectsNV := GLGetProcAddress('wglDXUnlockObjectsNV');
 end;
 
 {$ENDIF}
