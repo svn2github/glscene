@@ -13,9 +13,9 @@ package GLScene_RunTime;
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION OFF}
-{$OVERFLOWCHECKS ON}
-{$RANGECHECKS ON}
-{$REFERENCEINFO OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
 {$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
@@ -34,7 +34,8 @@ requires
   vcl,
   rtl,
   vclimg,
-  xmlrtl;
+  xmlrtl,
+  fmx;
 
 contains
   GLScene in '..\Source\GLScene.pas',
@@ -292,6 +293,7 @@ contains
   GLSMemo in '..\Source\Base\GLSMemo.pas',
   GLSceneForm in '..\Source\GLSceneForm.pas',
   GLFileBMP in '..\Source\FileFormats\GLFileBMP.pas',
-  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas';
+  GLFileTGA in '..\Source\FileFormats\GLFileTGA.pas',
+  GLScene.FMX.Viewer in '..\Source\Platform\GLScene.FMX.Viewer.pas';
 
 end.
