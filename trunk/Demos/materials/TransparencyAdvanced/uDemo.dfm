@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 304
+  Top = 111
+  Width = 816
+  Height = 678
   Caption = 'Form1'
-  ClientHeight = 640
-  ClientWidth = 800
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -169,13 +169,14 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Transparent'
+        Tag = 0
         Material.DepthProperties.DepthCompareFunction = cfAlways
         Material.BlendingMode = bmCustom
         Material.MaterialOptions = [moNoLighting]
-        Tag = 0
       end
       item
         Name = 'Surround'
+        Tag = 0
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
@@ -185,21 +186,21 @@ object Form1: TForm1
         Material.Texture.TextureWrapS = twMirrorRepeat
         Material.Texture.TextureWrapR = twMirrorRepeat
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {000080400000803F0000803F00000000}
       end
       item
         Name = 'ColorLayers'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.Depth = 6
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'DepthLayers'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.Depth = 6
         Material.Texture.Image.ColorFormat = 6408
@@ -208,7 +209,6 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfExtended
         Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Final'

@@ -137,7 +137,7 @@ end;
 procedure TForm1.GLCustomHDSStartPreparingData(heightData: THeightData);
 var
    y, x : Integer;
-   rasterLine : GLHeightData.PByteArray;
+   rasterLine : PByteArray;
    oldType : THeightDataType;
    b : Byte;
    d, dy : Single;

@@ -9,13 +9,14 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
-  Hierarchy.exe JoystickDemo.exe Manual.exe Megacube.exe Particles.exe Pick.exe \
-  Pong.exe ScreensaverDemo.scr Torque.exe Whirlwind.exe Formula.exe Mushroom.exe \
+PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe Hierarchy.exe \
+  JoystickDemo.exe Manual.exe Megacube.exe Particles.exe Pick.exe Pong.exe \
+  ScreensaverDemo.scr Torque.exe Whirlwind.exe Formula.exe Mushroom.exe \
   Transparency.exe Actor.exe sphere.exe nutsnbolts.exe pawn.exe fxy.exe \
   heightfield.exe actortwocam.exe bendingcyl.exe fire.exe cursor.exe portal.exe \
   expolygon.exe keymap.exe objmove.exe splines.exe customquad.exe PathControl.exe \
-  Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe
+  Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe \
+  oit.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -139,4 +140,8 @@ bmpfont.exe: interface\bmpfont\bmpfont.dpr
 
 boom.exe: specialsFX\boom\boom.dpr
   $(DCC)
+
+oit.exe: materials\TransparencyAdvanced\oit.dpr
+  $(DCC)
+
 

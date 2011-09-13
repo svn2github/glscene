@@ -14,7 +14,8 @@ PROJECTS = candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe \
   tentacles.exe pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe \
   meshhit.exe mirror.exe canvas.exe spiral.exe fullscreen.exe megaglasscube.exe \
   events.exe octreedemo.exe boxedin.exe skeletal.exe meshexplosion.exe hfpick.exe \
-  fontcolor.exe synthterr.exe multipass.exe shadowplane.exe points.exe
+  fontcolor.exe synthterr.exe multipass.exe shadowplane.exe points.exe \
+  ShadowmappingFBO.exe R2T.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -119,6 +120,12 @@ shadowplane.exe: specialsFX\shadowplane\shadowplane.dpr
   $(DCC)
 
 points.exe: graph\points\points.dpr
+  $(DCC)
+
+ShadowmappingFBO.exe: specialsFX\ShadowmappingFBO\ShadowmappingFBO.dpr
+  $(DCC)
+
+R2T.exe: rendering\RenderToTexture\R2T.dpr
   $(DCC)
 
 

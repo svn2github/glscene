@@ -17,7 +17,7 @@ type
     GLCadencer1: TGLCadencer;
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCamera1: TGLCamera;
-    GLSLShader1: TGLSLShader;
+    GLSLShader1: TGLSLShader;              
     CustomRederer: TGLDirectOpenGL;
     LayeredFrameBuffer: TGLFBORenderer;
     GLLightSource1: TGLLightSource;

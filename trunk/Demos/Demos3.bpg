@@ -11,7 +11,7 @@ BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
   shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
-  subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe \
+  subdivide.exe machine.exe simple.exe CgSimple.exe CgTexture.exe \
   multimaterial.exe ducky.exe fog.exe shadedterrain.exe waterplane.exe beer.exe \
   FPSMovement.exe matscript.exe smoking.exe
 #------------------------------------------------------------------------------
@@ -54,9 +54,6 @@ machine.exe: physics\machine\machine.dpr
 simple.exe: physics\simple\simple.dpr
   $(DCC)
 
-Project1.exe: sound\3Dsound\Project1.dpr
-  $(DCC)
-
 CgSimple.exe: cgshaders\simple\CgSimple.dpr
   $(DCC)
 
@@ -89,4 +86,5 @@ matscript.exe: materials\MaterialScript\matscript.dpr
 
 smoking.exe: bench\smoking\smoking.dpr
   $(DCC)
+
 
