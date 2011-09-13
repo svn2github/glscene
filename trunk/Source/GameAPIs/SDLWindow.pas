@@ -213,7 +213,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses OpenGLAdapter, GLContext, SyncObjs;
+uses OpenGLAdapter, GLContext, SyncObjs, VectorGeometry;
 
 var
   vSDLCS: TCriticalSection;
@@ -527,8 +527,12 @@ end;
 // ResizeGLWindow
 //
 procedure TSDLWindow.ResizeGLWindow;
+var
+  RC: TGLContext;
 begin
-  GL.Viewport(0, 0, Width, Height);
+  RC := CurrentGLContext;
+  if Assigned(RC) then
+    RC.GLStates.ViewPort := Vector4iMake(0, 0, Width, Height);
 end;
 
 // SetActive

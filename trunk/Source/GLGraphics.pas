@@ -1131,7 +1131,7 @@ begin
     ReallocMem(FData, size);
     Move(img.fData^, fData^, size);
   end
-  else
+  else if Source <> nil then
     inherited; // raise AssingError
 end;
 

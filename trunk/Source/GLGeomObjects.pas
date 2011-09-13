@@ -2133,7 +2133,6 @@ end;
 procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
-  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     with GL do
@@ -2207,45 +2206,6 @@ begin
         Theta := Theta1;
       end;
       MeshIndex := FRings + 1;
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-        begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-
-        Begin_(GL_TRIANGLES);
-        for i := FRings - 1 downto 0 do
-          for j := FSides - 1 downto 0 do
-          begin
-            pVertex := @FMesh[i][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i + 1][j];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-
-            pVertex := @FMesh[i][j + 1];
-            EmitVertex(pVertex, TanLoc, BinLoc);
-          end;
-        End_;
-      end;
     end;
 
     if toStartDisk in FParts then
@@ -2292,31 +2252,6 @@ begin
       Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
       Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
       Vertex.TexCoord := Vector2fMake(1, 1);
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
-        begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-        Begin_(GL_TRIANGLE_FAN);
-        pVertex := @Vertex;
-        EmitVertex(pVertex, TanLoc, BinLoc);
-        for j := 0 to FSides do
-        begin
-          pVertex := @FMesh[MeshIndex][j];
-          EmitVertex(pVertex, TanLoc, BinLoc);
-        end;
-        End_;
-      end;
-
       MeshIndex := MeshIndex + 1;
     end;
 
@@ -2364,31 +2299,81 @@ begin
       Vertex.Tangent := FMesh[MeshIndex][0].Tangent;
       Vertex.Binormal := FMesh[MeshIndex][0].Binormal;
       Vertex.TexCoord := Vector2fMake(0, 0);
-      with GL do
-      begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    end;
+  end;
+
+  with GL do
+  begin
+    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    begin
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+        PGLChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+        PGLChar(BinormalAttributeName));
+    end
+    else
+    begin
+      TanLoc := -1;
+      BinLoc := TanLoc;
+    end;
+
+    MeshIndex := 0;
+
+    if toSides in FParts then
+    begin
+      Begin_(GL_TRIANGLES);
+      for i := FRings - 1 downto 0 do
+        for j := FSides - 1 downto 0 do
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
-        end
-        else
-        begin
-          TanLoc := -1;
-          BinLoc := TanLoc;
-        end;
-        Begin_(GL_TRIANGLE_FAN);
-        pVertex := @Vertex;
-        EmitVertex(pVertex, TanLoc, BinLoc);
-        for j := FSides downto 0 do
-        begin
-          pVertex := @FMesh[MeshIndex][j];
+          pVertex := @FMesh[i][j];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[i][j + 1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[i + 1][j];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[i + 1][j + 1];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[i + 1][j];
+          EmitVertex(pVertex, TanLoc, BinLoc);
+
+          pVertex := @FMesh[i][j + 1];
           EmitVertex(pVertex, TanLoc, BinLoc);
         end;
-        End_;
-      end;
+      End_;
+      MeshIndex := FRings + 1;
     end;
+
+    if toStartDisk in FParts then
+    begin
+      Begin_(GL_TRIANGLE_FAN);
+      pVertex := @Vertex;
+      EmitVertex(pVertex, TanLoc, BinLoc);
+      for j := 0 to FSides do
+      begin
+        pVertex := @FMesh[MeshIndex][j];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+      end;
+      End_;
+      MeshIndex := MeshIndex + 1;
+    end;
+
+    if toStopDisk in FParts then
+    begin
+      Begin_(GL_TRIANGLE_FAN);
+      pVertex := @Vertex;
+      EmitVertex(pVertex, TanLoc, BinLoc);
+      for j := FSides downto 0 do
+      begin
+        pVertex := @FMesh[MeshIndex][j];
+        EmitVertex(pVertex, TanLoc, BinLoc);
+      end;
+      End_;
+    end;
+
   end;
 end;
 

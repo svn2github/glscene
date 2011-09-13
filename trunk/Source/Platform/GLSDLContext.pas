@@ -104,7 +104,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure DoCreateContext(outputDevice: HWND); override;
+    procedure DoCreateContext(outputDevice: HDC); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
@@ -256,7 +256,7 @@ begin
   begin
     Self.Width := FSDLWin.Width;
     Self.Height := FSDLWin.Height;
-    Buffer.Resize(FSDLWin.Width, FSDLWin.Height);
+    Buffer.Resize(0, 0, FSDLWin.Width, FSDLWin.Height);
   end;
   if Assigned(FOnResize) then
     FOnResize(Self);
@@ -315,7 +315,7 @@ end;
 // DoCreateContext
 //
 
-procedure TGLSDLContext.DoCreateContext(outputDevice: HWND);
+procedure TGLSDLContext.DoCreateContext(outputDevice: HDC);
 var
   sdlOpt: TSDLWindowOptions;
 begin
@@ -346,9 +346,6 @@ begin
 
   FGL.Initialize;
   MakeGLCurrent;
-
-  xgl().MapTexCoordToNull;
-  xgl().MapTexCoordToMain;
 end;
 
 // DoCreateMemoryContext
