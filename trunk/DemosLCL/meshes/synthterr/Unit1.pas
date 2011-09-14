@@ -33,7 +33,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLLCLViewer, VectorGeometry,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
@@ -75,7 +75,7 @@ implementation
 
 {$R *.lfm}
 
-uses GLKeyboard;
+uses GLKeyboard, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -137,7 +137,7 @@ end;
 procedure TForm1.GLCustomHDSStartPreparingData(heightData: THeightData);
 var
    y, x : Integer;
-   rasterLine : GLHeightData.PByteArray;
+   rasterLine : PByteArray;
    oldType : THeightDataType;
    b : Byte;
    d, dy : Single;
@@ -254,4 +254,4 @@ begin
       Y:=TerrainRenderer1.InterpolatedHeight(AsVector)+FCamHeight;
 end;
 
-end.
+end.

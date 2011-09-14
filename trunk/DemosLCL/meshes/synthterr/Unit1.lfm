@@ -105,4 +105,4 @@ object Form1: TForm1
     left = 56
     top = 16
   end
-end
+end
