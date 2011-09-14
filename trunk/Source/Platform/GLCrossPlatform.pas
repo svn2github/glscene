@@ -370,6 +370,7 @@ function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
 procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
+function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
 
 procedure RaiseLastOSError;
 
@@ -1553,6 +1554,12 @@ begin
 begin
   Assert(False, 'Not implemented!');
 {$ENDIF}
+end;
+
+function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
+begin
+  Result := (P.X >= Rect.Left) and (P.X < Rect.Right) and (P.Y >= Rect.Top)
+    and (P.Y < Rect.Bottom);
 end;
 
 initialization

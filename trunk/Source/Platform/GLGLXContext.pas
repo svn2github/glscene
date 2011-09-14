@@ -73,9 +73,9 @@ type
        and return the display + window }
     procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual;
       abstract;
-    procedure GetHandles(outputDevice: HWND);
-    procedure DoCreateContext(outputDevice: HWND); override;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
+    procedure GetHandles(AWindowHandle: HWND);
+    procedure DoCreateContext(ADeviceHandle: HDC); override;
+    procedure DoCreateMemoryContext(ADeviceHandle: HWND; width, height:
       Integer; BufferCount: integer = 1); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
@@ -594,15 +594,15 @@ begin
   DestroyContext;
 end;
 
-procedure TGLGLXContext.GetHandles(outputDevice: HWND);
+procedure TGLGLXContext.GetHandles(AWindowHandle: HWND);
 begin
-  DoGetHandles(outputDevice, FCurXWindow);
+  DoGetHandles(AWindowHandle, FCurXWindow);
 end;
 
 // DoCreateContext
 //
 
-procedure TGLGLXContext.DoCreateContext(outputDevice: HWND);
+procedure TGLGLXContext.DoCreateContext(ADeviceHandle: HDC);
 var
   tempWnd: TWindow;
 begin
@@ -627,7 +627,7 @@ begin
   DestroyTmpWnd(tempWnd);
   GLSLogger.LogInfo('Temporary rendering context destroyed');
 
-  GetHandles(outputDevice);
+  GetHandles(HWND(ADeviceHandle));
   FDC := CurXWindow; //FDC - TWindow
 
   FAcceleration := chaHardware;
@@ -648,7 +648,7 @@ end;
 // DoCreateMemoryContext
 //
 
-procedure TGLGLXContext.DoCreateMemoryContext(outputDevice: HWND; width,
+procedure TGLGLXContext.DoCreateMemoryContext(ADeviceHandle: HWND; width,
   height: Integer; BufferCount: integer);
 var
   TempW, TempH: Integer;
