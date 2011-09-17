@@ -80,7 +80,6 @@ type
     FRC: HGLRC;
     FShareContext: TGLWin32Context;
     FHPBUFFER: Integer;
-    FiAttribs: packed array of Integer;
     FfAttribs: packed array of Single;
     FLegacyContextsOnly: Boolean;
 
@@ -89,10 +88,6 @@ type
     procedure CreateNewContext(aDC: HDC);
   protected
     { Protected Declarations }
-    procedure ClearIAttribs;
-    procedure AddIAttrib(attrib, value: Integer);
-    procedure ChangeIAttrib(attrib, newValue: Integer);
-    procedure DropIAttrib(attrib: Integer);
     procedure ClearFAttribs;
     procedure AddFAttrib(attrib, value: Single);
 
@@ -121,7 +116,7 @@ type
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
 
-    function RenderOutputDevice: Integer; override;
+    function RenderOutputDevice: HDC; override;
 
     property DC: HDC read FDC;
     property RC: HGLRC read FRC;
@@ -334,74 +329,6 @@ begin
   end
   else
     RaiseLastOSError;
-end;
-
-// ClearIAttribs
-//
-
-procedure TGLWin32Context.ClearIAttribs;
-begin
-  SetLength(FiAttribs, 1);
-  FiAttribs[0] := 0;
-end;
-
-// AddIAttrib
-//
-
-procedure TGLWin32Context.AddIAttrib(attrib, value: Integer);
-var
-  n: Integer;
-begin
-  n := Length(FiAttribs);
-  SetLength(FiAttribs, n + 2);
-  FiAttribs[n - 1] := attrib;
-  FiAttribs[n] := value;
-  FiAttribs[n + 1] := 0;
-end;
-
-// ChangeIAttrib
-//
-
-procedure TGLWin32Context.ChangeIAttrib(attrib, newValue: Integer);
-var
-  i: Integer;
-begin
-  i := 0;
-  while i < Length(FiAttribs) do
-  begin
-    if FiAttribs[i] = attrib then
-    begin
-      FiAttribs[i + 1] := newValue;
-      Exit;
-    end;
-    Inc(i, 2);
-  end;
-  AddIAttrib(attrib, newValue);
-end;
-
-// DropIAttrib
-//
-
-procedure TGLWin32Context.DropIAttrib(attrib: Integer);
-var
-  i: Integer;
-begin
-  i := 0;
-  while i < Length(FiAttribs) do
-  begin
-    if FiAttribs[i] = attrib then
-    begin
-      Inc(i, 2);
-      while i < Length(FiAttribs) do
-      begin
-        FiAttribs[i - 2] := FiAttribs[i];
-        Inc(i);
-      end;
-      SetLength(FiAttribs, Length(FiAttribs) - 2);
-      Exit;
-    end;
-    Inc(i, 2);
-  end;
 end;
 
 // ClearFAttribs
@@ -1167,7 +1094,7 @@ end;
 // RenderOutputDevice
 //
 
-function TGLWin32Context.RenderOutputDevice: Integer;
+function TGLWin32Context.RenderOutputDevice: HDC;
 begin
   Result := FDC;
 end;

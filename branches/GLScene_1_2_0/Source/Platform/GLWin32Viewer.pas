@@ -210,7 +210,11 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+{$IFDEF GLS_OPENGL_ES}
+  GLScene.Context.OES,
+{$ELSE}
   GLWin32Context,
+{$ENDIF}
   SysUtils,
   GLViewer;
 

@@ -24,18 +24,32 @@ uses
 
   // Operation System
 {$IFDEF MSWINDOWS}
-  Windows, GLWin32Context, LMessages, LCLVersion,
+  Windows,
+{$IFDEF GLS_OPENGL_ES}
+  GLScene.Context.OES,
+{$ELSE}
+  GLWin32Context,
+{$ENDIF}
+  LMessages, LCLVersion,
 {$ENDIF}
 
 {$IFDEF UNIX}
 {$IFDEF LINUX}
+{$IFDEF GLS_OPENGL_ES}
+  GLScene.Context.OES,
+{$ELSE}
   GLGLXContext,
+{$ENDIF}
 {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
   x, xlib, xutil,
 {$ENDIF}
 {$IFDEF Darwin}
+{$IFDEF GLS_OPENGL_ES}
+  GLScene.Context.OES;
+{$ELSE}
   GLCarbonContext;
+{$ENDIF}
 {$ENDIF}
 {$IFDEF BSD}
 {$MESSAGE Warn 'Needs to be implemented'}

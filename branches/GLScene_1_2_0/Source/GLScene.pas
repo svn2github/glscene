@@ -8360,7 +8360,7 @@ var
 begin
   if not Assigned(context) then
     Exit;
-
+{$IFNDEF GLS_OPENGL_ES}
   if not (roForwardContext in ContextOptions) then
   begin
     GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
@@ -8393,6 +8393,7 @@ begin
     end;
     ResetAllGLTextureMatrix;
   end;
+{$ENDIF}
 end;
 
 // GetLimit

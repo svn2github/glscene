@@ -356,7 +356,7 @@ type
 
 {$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF EGL_SUPPORT}
+{$IFDEF GLS_OPENGL_ES}
 type
   PEGLConfig  = ^EGLConfig;
   PEGLint  = ^EGLint;
@@ -383,13 +383,14 @@ type
      EGLNativePixmapType = pointer;
 {$ENDIF WINDOWS}
 {$ENDIF LINUX}
+
      EGLBoolean = dword;
      EGLenum = dword;
      EGLContext = pointer;
      EGLDisplay = pointer;
      EGLSurface = pointer;
      EGLClientBuffer = pointer;
-{$ENDIF EGL_SUPPORT}
+{$ENDIF GLS_OPENGL_ES}
 
 const
 
@@ -4542,6 +4543,11 @@ const
   GL_PATH_STENCIL_DEPTH_OFFSET_UNITS_NV               = $90BE;
   GL_PATH_COVER_DEPTH_FUNC_NV                         = $90BF;
 
+  // WGL_NV_DX_interop (EXT #407)
+  WGL_ACCESS_READ_ONLY_NV                             = $0000;
+  WGL_ACCESS_READ_WRITE_NV                            = $0001;
+  WGL_ACCESS_WRITE_DISCARD_NV                         = $0002;
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
@@ -5226,15 +5232,10 @@ const
 {$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL ES constants'} {$ENDIF}
-{$IFDEF EGL_SUPPORT}
+{$IFDEF GLS_OPENGL_ES}
   { EGL Versioning  }
 
 const
-   EGL_VERSION_1_0 = 1;
-   EGL_VERSION_1_1 = 1;
-   EGL_VERSION_1_2 = 1;
-   EGL_VERSION_1_3 = 1;
-   EGL_VERSION_1_4 = 1;
 {: EGL Enumerants. Bitmasks and other exceptional cases aside, most
  * enums are assigned unique values starting at 0x3000. }
 { EGL aliases  }
@@ -5537,7 +5538,7 @@ const
    EGL_IMAGE_PRESERVED_KHR = $30D2;
    EGL_KHR_image_pixmap = 1;
 // Interfaces defined by EGL_KHR_image above
-{$ENDIF EGL_SUPPORT}
+{$ENDIF GLS_OPENGL_ES}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
   type
@@ -6021,6 +6022,17 @@ const
   PFNWGLCREATEAFFINITYDCNVPROC = function(hGpuList: PHGPUNV): HDC; stdcall;
   PFNWGLENUMGPUSFROMAFFINITYDCNVPROC = function(hAffinityDC: HDC; iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean; stdcall;
   PFNWGLDELETEDCNVPROC = function(hdc: HDC): Boolean; stdcall;
+
+  // WGL_NV_DX_interop (EXT #407)
+  PFNWGLDXSETRESOURCESHAREHANDLEPROC = function (dxObject: Pointer; shareHandle: THandle): BOOL; stdcall;
+  PFNWGLDXOPENDEVICEPROC = function(dxDevice: Pointer): THandle; stdcall;
+  PFNWGLDXCLOSEDEVICEPROC = function(hDevice: THandle): BOOL; stdcall;
+  PFNWGLDXREGISTEROBJECTPROC = function(hDevice: THandle; dxObject: Pointer;
+                                name: GLuint; atype: GLuint; access: GLuint): THandle; stdcall;
+  PFNWGLDXUNREGISTEROBJECTPROC = function(hDevice: THandle; hObject: THandle): BOOL; stdcall;
+  PFNWGLDXOBJECTACCESSPROC = function(hObject: THandle; access: GLenum): BOOL; stdcall;
+  PFNWGLDXLOCKOBJECTSPROC = function(hDevice: THandle; count: GLint; hObjects: PHandle): BOOL; stdcall;
+  PFNWGLDXUNLOCKOBJECTSNVPROC = function (hDevice: THandle; count: GLint; hObjects: PHandle): BOOL; stdcall;
 
   {$ENDIF}
 
@@ -7439,7 +7451,7 @@ const
 
 implementation
 
-{$IFDEF EGL_SUPPORT}
+{$IFDEF GLS_OPENGL_ES}
 function EGL_DEFAULT_DISPLAY : EGLNativeDisplayType;
 begin
   EGL_DEFAULT_DISPLAY := EGLNativeDisplayType(0);
@@ -7474,6 +7486,6 @@ function EGL_NO_IMAGE_KHR : EGLImageKHR;
 begin
   EGL_NO_IMAGE_KHR := EGLImageKHR(0);
 end;
-{$ENDIF EGL_SUPPORT}
+{$ENDIF GLS_OPENGL_ES}
 
 end.

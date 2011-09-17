@@ -62,20 +62,20 @@
 {$DEFINE GLS_LOGGING}
 
 // Activate OpenGL debug mode
-{.$DEFINE GLS_OPENGL_DEBUG}
+{$DEFINE GLS_OPENGL_DEBUG}
 
 // Activate Multithread support
 {.$DEFINE GLS_MULTITHREAD}
 
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
 // This work only on windows platform and with modern compiler (D2009 and FPC}
-{$DEFINE GLS_SERVICE_CONTEXT}
+{.DEFINE GLS_SERVICE_CONTEXT}
 
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}
 
 // Activate OpenGL ES
-{.$DEFINE EGL_SUPPORT}
+{$DEFINE GLS_OPENGL_ES}
 
 
 //

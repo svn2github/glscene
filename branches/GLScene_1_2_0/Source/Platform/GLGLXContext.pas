@@ -49,7 +49,6 @@ type
     FShareContext: TGLGLXContext;
     FHPBUFFER: GLXPBuffer;
     FCurXWindow: HWND;
-    FiAttribs: packed array of Integer;
     FFBConfigs: PGLXFBConfigArray;
     FNewTypeContext: boolean;
     procedure ChooseGLXFormat;
@@ -61,12 +60,6 @@ type
     function _glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable; ctx: GLXContext):boolean;
   protected
     { Protected Declarations }
-    procedure ClearIAttribs;
-    procedure FreeIAttribs;
-    procedure AddIAttrib(attrib, value: Integer);
-    procedure ChangeIAttrib(attrib, newValue: Integer);
-    procedure DropIAttrib(attrib: Integer);
-
     procedure DestructionEarlyWarning(sender: TObject);
 
     {: DoGetHandles must be implemented in child classes,
@@ -93,7 +86,7 @@ type
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
 
-    function RenderOutputDevice: Integer; override;
+    function RenderOutputDevice: Pointer; override;
   end;
   {$ENDIF}
   // ------------------------------------------------------------------
@@ -113,67 +106,6 @@ resourcestring
   // ------------------
   // ------------------ TGLGLXContext ------------------
   // ------------------
-
-procedure TGLGLXContext.ClearIAttribs;
-begin
-  SetLength(FiAttribs, 1);
-  FiAttribs[0] := 0;
-end;
-
-procedure TGLGLXContext.FreeIAttribs;
-begin
-  SetLength(FiAttribs, 0);
-end;
-
-procedure TGLGLXContext.AddIAttrib(attrib, value: Integer);
-var
-  n: Integer;
-begin
-  n := Length(FiAttribs);
-  SetLength(FiAttribs, n + 2);
-  FiAttribs[n - 1] := attrib;
-  FiAttribs[n] := value;
-  FiAttribs[n + 1] := 0;
-end;
-
-procedure TGLGLXContext.ChangeIAttrib(attrib, newValue: Integer);
-var
-  i: Integer;
-begin
-  i := 0;
-  while i < Length(FiAttribs) do
-  begin
-    if FiAttribs[i] = attrib then
-    begin
-      FiAttribs[i + 1] := newValue;
-      Exit;
-    end;
-    Inc(i, 2);
-  end;
-  AddIAttrib(attrib, newValue);
-end;
-
-procedure TGLGLXContext.DropIAttrib(attrib: Integer);
-var
-  i: Integer;
-begin
-  i := 0;
-  while i < Length(FiAttribs) do
-  begin
-    if FiAttribs[i] = attrib then
-    begin
-      Inc(i, 2);
-      while i < Length(FiAttribs) do
-      begin
-        FiAttribs[i - 2] := FiAttribs[i];
-        Inc(i);
-      end;
-      SetLength(FiAttribs, Length(FiAttribs) - 2);
-      Exit;
-    end;
-    Inc(i, 2);
-  end;
-end;
 
 // Create Temp Window And GLContext 1.1
 //
@@ -864,7 +796,7 @@ begin
     glXSwapBuffers(FDisplay, FDC);
 end;
 
-function TGLGLXContext.RenderOutputDevice: Integer;
+function TGLGLXContext.RenderOutputDevice: HDC;
 begin
   Result := 0;
 end;

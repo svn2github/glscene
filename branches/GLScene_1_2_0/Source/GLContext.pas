@@ -199,6 +199,7 @@ type
     FIsPraparationNeed: Boolean;
   protected
     { Protected Declarations }
+    FiAttribs: packed array of Integer;
     FGL: TGLExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TGLStateCache;
@@ -211,6 +212,11 @@ type
     FSharedContexts: TThreadList;
     FLock: TCriticalSection;
 {$ENDIF}
+    procedure ClearIAttribs;
+    procedure FreeIAttribs;
+    procedure AddIAttrib(attrib, value: Integer);
+    procedure ChangeIAttrib(attrib, newValue: Integer);
+    procedure DropIAttrib(attrib: Integer);
 
     procedure SetColorBits(const aColorBits: Integer);
     procedure SetAlphaBits(const aAlphaBits: Integer);
@@ -321,7 +327,7 @@ type
     function FindCompatibleContext: TGLContext;
     procedure DestroyAllHandles;
 
-    function RenderOutputDevice: Integer; virtual; abstract;
+    function RenderOutputDevice: HDC; virtual; abstract;
     {: Access to OpenGL command and extension. }
     property GL: TGLExtensionsAndEntryPoints read FGL;
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
@@ -1921,6 +1927,75 @@ begin
   if FXGL = nil then
     FXGL := vMultitextureCoordinatorClass.Create(Self);
   Result := FXGL;
+end;
+
+procedure TGLContext.ClearIAttribs;
+begin
+  SetLength(FiAttribs, 1);
+{$IFDEF GLS_OPENGL_ES}
+  FiAttribs[0] := EGL_NONE;
+{$ELSE}
+  FiAttribs[0] := 0;
+{$ENDIF}
+end;
+
+procedure TGLContext.FreeIAttribs;
+begin
+  SetLength(FiAttribs, 0);
+end;
+
+procedure TGLContext.AddIAttrib(attrib, value: Integer);
+var
+  n: Integer;
+begin
+  n := Length(FiAttribs);
+  SetLength(FiAttribs, n + 2);
+  FiAttribs[n - 1] := attrib;
+  FiAttribs[n] := value;
+{$IFDEF GLS_OPENGL_ES}
+  FiAttribs[n + 1] := EGL_NONE;
+{$ELSE}
+  FiAttribs[n + 1] := 0;
+{$ENDIF}
+end;
+
+procedure TGLContext.ChangeIAttrib(attrib, newValue: Integer);
+var
+  i: Integer;
+begin
+  i := 0;
+  while i < Length(FiAttribs) do
+  begin
+    if FiAttribs[i] = attrib then
+    begin
+      FiAttribs[i + 1] := newValue;
+      Exit;
+    end;
+    Inc(i, 2);
+  end;
+  AddIAttrib(attrib, newValue);
+end;
+
+procedure TGLContext.DropIAttrib(attrib: Integer);
+var
+  i: Integer;
+begin
+  i := 0;
+  while i < Length(FiAttribs) do
+  begin
+    if FiAttribs[i] = attrib then
+    begin
+      Inc(i, 2);
+      while i < Length(FiAttribs) do
+      begin
+        FiAttribs[i - 2] := FiAttribs[i];
+        Inc(i);
+      end;
+      SetLength(FiAttribs, Length(FiAttribs) - 2);
+      Exit;
+    end;
+    Inc(i, 2);
+  end;
 end;
 
 // ------------------
