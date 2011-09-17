@@ -62,7 +62,7 @@
 {$DEFINE GLS_LOGGING}
 
 // Activate OpenGL debug mode
-{$DEFINE GLS_OPENGL_DEBUG}
+{.$DEFINE GLS_OPENGL_DEBUG}
 
 // Activate Multithread support
 {.$DEFINE GLS_MULTITHREAD}
@@ -75,7 +75,7 @@
 {.$DEFINE GLS_X11_SUPPORT}
 
 // Activate OpenGL ES
-{$DEFINE GLS_OPENGL_ES}
+{.$DEFINE GLS_OPENGL_ES}
 
 
 //
