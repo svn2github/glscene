@@ -61,7 +61,7 @@ type
          procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual;
            abstract;
          procedure GetHandles(outputDevice: HWND);
-         procedure DoCreateContext(outputDevice : HWND); override;
+         procedure DoCreateContext(ADeviceHandle: HDC); override;
          procedure DoCreateMemoryContext(outputDevice : HWND;width, height : Integer; BufferCount : integer); override;
          function  DoShareLists(aContext : TGLContext): Boolean;  override;
          procedure DoDestroyContext; override;
@@ -456,9 +456,9 @@ begin
   {$ENDIF}
 end;
 
-procedure TGLCarbonContext.DoCreateContext(outputDevice: HWND);
+procedure TGLCarbonContext.DoCreateContext(ADeviceHandle: HDC);
 var
-  DC: TCarbonDeviceContext absolute outputDevice;
+  DC: TCarbonDeviceContext absolute ADeviceHandle;
 begin
   // Just in case it didn't happen already.
   if not InitOpenGL then
@@ -473,7 +473,7 @@ begin
   FWindow := nil;
   GLSLogger.LogInfo('GLCarbonContext: Temporary rendering context destroyed');
 
-  if not (CheckDC(outputDevice, 'DoCreateContext') or (DC is TCarbonControlContext)) then
+  if not (CheckDC(ADeviceHandle, 'DoCreateContext') or (DC is TCarbonControlContext)) then
   begin
     raise EGLContext.Create('Creating context failed: invalid device context!');
     GLSLogger.LogInfo('GLCarbonContext:Creating context failed: invalid device context!');
