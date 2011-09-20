@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSkydome<p>
@@ -36,7 +36,7 @@
       <li>14/01/01 - EG - Creation
  </ul></font>
 }
-unit GLSkydome;
+unit GLScene.Objects.Skydome;
 
 interface
 
@@ -47,14 +47,14 @@ uses
   Classes,
   Graphics,
 
-  // GLSCene
-  GLScene,
-  VectorGeometry,
-  GLGraphics,
-  GLCrossPlatform,
-  VectorTypes,
-  GLColor,
-  GLRenderContextInfo;
+  // GLScene.Core
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Graphics,
+  GLScene.Platform,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info;
 
 type
 
@@ -328,10 +328,10 @@ implementation
 
 uses
   SysUtils,
-  OpenGLTokens,
-  GLContext,
-  GLStarRecord,
-  GLState;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.StarRecord,
+  GLScene.Base.GLStateMachine;
 
 // ------------------
 // ------------------ TSkyDomeBand ------------------
@@ -385,7 +385,7 @@ end;
 
 function TSkyDomeBand.GetDisplayName: string;
 begin
-  Result := Format('%d: %.1f° - %.1f°', [Index, StartAngle, StopAngle]);
+  Result := Format('%d: %.1f� - %.1f�', [Index, StartAngle, StopAngle]);
 end;
 
 // SetStartAngle
@@ -1401,7 +1401,7 @@ var
 begin
   ts := DegToRad(90 - SunElevation);
   SetVector(sunPos, sin(ts), 0, cos(ts));
-  // prepare sin/cos LUT, with a higher sampling around 0Ѝ
+  // prepare sin/cos LUT, with a higher sampling around 0?
   n := Slices div 2;
   steps := 2 * n + 1;
   GetMem(sinTable, steps * SizeOf(Single));

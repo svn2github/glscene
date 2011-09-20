@@ -19,12 +19,12 @@
       <li>07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
 }
 
-unit GLTimeEventsMgr;
+unit GLScene.TimeEvents.Manager;
 
 interface
 
 uses
-  GLCadencer, SysUtils, Classes, BaseClasses;
+  GLScene.Cadencer, SysUtils, Classes, GLScene.Base.Classes;
 
 type
 

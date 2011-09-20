@@ -15,12 +15,12 @@
    </ul><p>
 }
 
-unit GLCompositeImage;
+unit GLScene.Image.Composite;
 
 interface
 
 uses
-  Classes, OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
+  Classes, GLScene.Base.OpenGL.Tokens, GLScene.Graphics, GLScene.Texture, GLScene.Texture.Format;
 
 type
 
@@ -65,7 +65,7 @@ type
 implementation
 
 uses
-  GLContext;
+  GLScene.Base.Context;
 
 // ------------------
 // ------------------ TGLCompositeImage ------------------

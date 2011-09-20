@@ -13,14 +13,14 @@
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
-unit VRMLParser;
+unit GLScene.File.VRML.Parser;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, VectorTypes, VectorLists;
+  Classes, SysUtils, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists;
 
 type
   TVRMLNode = class
@@ -174,7 +174,7 @@ type
 
 implementation
 
-uses GLUtils;
+uses GLScene.Utils;
 
 function CreateVRMLTokenList(Text : String) : TStringList;
 const

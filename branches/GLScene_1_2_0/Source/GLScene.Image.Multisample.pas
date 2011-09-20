@@ -14,7 +14,7 @@
       <li>16/05/10 - Yar - Creation (thanks to C4)
    </ul></font>
 }
-unit GLMultisampleImage;
+unit GLScene.Image.Multisample;
 
 interface
 
@@ -22,11 +22,11 @@ interface
 
 uses
   Classes,
-  OpenGLTokens,
-  GLContext,
-  GLTexture,
-  GLGraphics,
-  GLTextureFormat;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Texture,
+  GLScene.Graphics,
+  GLScene.Texture.Format;
 
 type
 

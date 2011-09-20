@@ -44,7 +44,7 @@
   If anyone feels responsible: it would be fine to have a method ImportFromFile (dxf?) in
   the TGLContour and TGLMultiPolygonBase objects...
 }
-unit GLMultiPolygon;
+unit GLScene.Objects.MultiPolygon;
 
 interface
 
@@ -52,20 +52,20 @@ interface
 
 uses
   Classes,
-  OpenGLTokens,
-  OpenGLAdapter,
-  Spline,
-  VectorGeometry,
-  VectorLists,
-  PersistentClasses,
-  GLScene,
-  GLObjects,
-  GLGeomObjects,
-  GLNodes,
-  BaseClasses,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLS_Mesh;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Spline,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.PersistentClasses,
+  GLScene.Core,
+  GLScene.Objects,
+  GLScene.ObjectsEx,
+  GLScene.Nodes,
+  GLScene.Base.Classes,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Mesh;
 
 type
 
@@ -238,10 +238,10 @@ implementation
 
 uses
   SysUtils,
-  GLContext,
-  GLState,
-  GLS_ShaderParameter
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Shader.Parameter
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
   { page oriented pointer array, with persistent pointer target memory.

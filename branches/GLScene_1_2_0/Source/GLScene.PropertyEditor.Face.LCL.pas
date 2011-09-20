@@ -6,7 +6,7 @@
 
    </ul></font>
 }
-unit FRFaceEditorLCL;
+unit GLScene.PropertyEditor.Face.LCL;
 
 interface
 
@@ -14,9 +14,9 @@ interface
 
 uses
   LResources,
-  Forms, ComCtrls, FRTrackBarEditLCL,
-  StdCtrls, FRColorEditorLCL, Controls,  Classes,
-  GLTexture, GLMaterial;
+  Forms, ComCtrls, GLScene.PropertyEditor.TrackBar.LCL,
+  StdCtrls, GLScene.PropertyEditor.Color.LCL, Controls,  Classes,
+  GLScene.Texture, GLScene.Material;
 
 type
   TRFaceEditor = class(TFrame)

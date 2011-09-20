@@ -29,14 +29,14 @@
     <li>04/07/01 - EG - Creation
   </ul>
 }
-unit VectorTypes;
+unit GLScene.Base.Vector.Types;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  GLCrossPlatform;
+  GLScene.Platform;
 
 type
   TVector2d = array[0..1] of double;

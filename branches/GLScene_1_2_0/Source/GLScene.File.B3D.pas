@@ -8,17 +8,17 @@
      <li>22/12/05 - Mathx - Added to the GLScene Project.
  </ul></font>
 }
-unit GLFileB3D;
+unit GLScene.File.B3D;
 
 interface
 
 uses
   Classes,
   SysUtils,
-  GLVectorFileObjects,
-  ApplicationFileIO,
-  FileB3D,
-  TypesB3D;
+  GLScene.Vector.FileObjects,
+  GLScene.Base.FileIO,
+  GLScene.File.B3D.Base,
+  GLScene.File.B3D.Types;
 
 type
   TGLB3DVectorFile = class(TVectorFile)
@@ -30,12 +30,12 @@ type
 implementation
 
 uses
-  GLTexture,
-  GLTextureFormat,
-  GLMaterial,
-  VectorTypes,
-  VectorGeometry,
-  VectorLists;
+  GLScene.Texture,
+  GLScene.Texture.Format,
+  GLScene.Material,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists;
 
 //------------------------------ TGLB3DVectorFile ------------------------------
 // Capabilities

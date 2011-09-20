@@ -20,7 +20,7 @@
       <li>09/11/09 - DaStr - Initial version (contributed to GLScene)
    </ul></font>
 }
-unit GLFBO;
+unit GLScene.Base.FrameBuffer;
 
 interface
 
@@ -28,14 +28,14 @@ interface
 
 uses
   SysUtils,
-  OpenGLTokens,
-  GLScene,
-  GLContext,
-  GLState,
-  GLTexture,
-  GLColor,
-  GLRenderContextInfo,
-  GLMultisampleImage;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Core,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Texture,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Image.Multisample;
 
 const
   MaxColorAttachments = 32;
@@ -167,10 +167,10 @@ type
 implementation
 
 uses
-  GLGraphics,
-  GLTextureFormat,
-  GLSLog
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Base.Log
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 { TGLRenderbuffer }
 

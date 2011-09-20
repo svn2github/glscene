@@ -13,7 +13,7 @@
   </ul></font>
 }
 
-unit GLS_DrawTechnique;
+unit GLScene.DrawTechnique;
 
 interface
 
@@ -26,15 +26,15 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-  BaseClasses,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLContext,
-  GLState,
-  GLS_Mesh,
-  GLMaterial;
+  GLScene.Base.Classes,
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Mesh,
+  GLScene.Material;
 
 const
   VBO_STATIC_POOL_SIZE: Cardinal = 16 * 1024 * 1024;
@@ -237,14 +237,14 @@ procedure AxesBuildMesh(AMesh: TMeshAtom; AnAxisLen: Single);
 implementation
 
 uses
-  GLS_Material,
-  GLColor,
-  GLStrings,
-  VectorGeometry,
-  VectorTypes,
-  VectorLists,
-  GLS_ShaderParameter,
-  GLSLog;
+  GLScene.MaterialEx,
+  GLScene.Base.Color,
+  GLScene.Base.Strings,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Lists,
+  GLScene.Shader.Parameter,
+  GLScene.Base.Log;
 
 const
   cPrimitiveType: array [mpTRIANGLES .. mpPATCHES] of GLenum = (GL_TRIANGLES,

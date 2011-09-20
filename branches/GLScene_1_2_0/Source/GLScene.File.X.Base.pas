@@ -10,7 +10,7 @@
       <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
    </ul></font>
 }
-unit FileX;
+unit GLScene.File.X.Base;
 
 interface
 
@@ -20,8 +20,8 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  VectorTypes, VectorGeometry, VectorLists, PersistentClasses, GLUtils;
+  // GLScene.Core
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.PersistentClasses, GLScene.Utils;
 
 type
   TDXNode = class;

@@ -35,13 +35,13 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // *****************************************************************************
 
-unit GLS_CL;
+unit GLScene.CL;
 
 interface
 
 uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-  GLS_CL_Platform;
+  GLScene.CL.Platform;
 
 {$I cl.inc}
 

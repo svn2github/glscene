@@ -20,14 +20,14 @@
     <li>05/04/00 - Egg - Creation
   </ul></font>
 }
-unit GLBehaviours;
+unit GLScene.Behaviours;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, VectorGeometry, XCollection, BaseClasses,
-  GLCoordinates;
+uses Classes, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.XCollection, GLScene.Base.Classes,
+  GLScene.Base.Coordinates;
 
 type
 
@@ -218,7 +218,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // GetInertia
 

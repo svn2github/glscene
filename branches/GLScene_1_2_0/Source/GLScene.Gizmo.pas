@@ -59,7 +59,7 @@
 // use objects' BarryCenter. For Example, if you select Space Text.
 // ------------------------------------------------------------------------------
 
-unit GLGizmo;
+unit GLScene.Gizmo;
 
 interface
 
@@ -70,25 +70,25 @@ uses
   Classes,
   SysUtils,
 
-  // GLScene
-  PersistentClasses,
-  GLScene,
-  GLColor,
-  GLObjects,
-  VectorGeometry,
-  GLMaterial,
-  GLS_Material,
-  GLStrings,
-  GLGeomObjects,
-  GLBitmapFont,
-  GLViewer,
-  GLVectorFileObjects,
-  GLCrossPlatform,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLState
+  // GLScene.Core
+  GLScene.Base.PersistentClasses,
+  GLScene.Core,
+  GLScene.Base.Color,
+  GLScene.Objects,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Base.Strings,
+  GLScene.ObjectsEx,
+  GLScene.BitmapFont,
+  GLScene.Viewer,
+  GLScene.Vector.FileObjects,
+  GLScene.Platform,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine
 {$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.Vector.Types{$ENDIF};
 
 type
   TGLGizmoUndoCollection = class;
@@ -368,7 +368,7 @@ type
 implementation
 
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 type
   TFriendlyLines = class(TGLLines);

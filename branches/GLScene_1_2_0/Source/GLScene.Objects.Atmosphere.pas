@@ -60,7 +60,7 @@
                                       Donated to GLScene
 }
 
-unit GLAtmosphere;
+unit GLScene.Objects.Atmosphere;
 
 interface
 
@@ -70,10 +70,10 @@ uses
   // VCL
   SysUtils, Classes,
 
-  // GLScene
-  GLScene, GLObjects, GLCadencer, OpenGLTokens, VectorGeometry,
-  GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState, GLCrossPlatform
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  // GLScene.Core
+  GLScene.Core, GLScene.Objects, GLScene.Cadencer, GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Geometry,
+  GLScene.Base.Context, GLScene.Base.Strings, GLScene.Base.Color, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine, GLScene.Platform
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
    EGLAtmosphereException = class(Exception);

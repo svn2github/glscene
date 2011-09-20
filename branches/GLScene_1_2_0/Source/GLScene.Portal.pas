@@ -14,14 +14,14 @@
       <li>13/08/00 - Egg - Creation
 	</ul></font>
 }
-unit GLPortal;
+unit GLScene.Portal;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLVectorFileObjects, GLScene, GLMaterial, VectorGeometry,
-     GLRenderContextInfo;
+uses Classes, GLScene.Vector.FileObjects, GLScene.Core, GLScene.Material, GLScene.Base.Vector.Geometry,
+     GLScene.Base.Context.Info;
 
 type
 

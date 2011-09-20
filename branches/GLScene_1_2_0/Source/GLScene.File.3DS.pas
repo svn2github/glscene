@@ -43,7 +43,7 @@
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
   </ul></font>
 }
-unit GLFile3DS;
+unit GLScene.File.3DS;
 
 interface
 
@@ -53,11 +53,11 @@ uses
   // VCL
   Classes, SysUtils, Math,
 
-  // GLScene
-  GLScene, GLObjects, GLVectorFileObjects, GLTexture, ApplicationFileIO,
-  VectorGeometry, File3DS, Types3DS, OpenGLTokens, GLContext, PersistentClasses,
-  GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, VectorTypes, VectorLists,
-  GLRenderContextInfo, GLMaterial;
+  // GLScene.Core
+  GLScene.Core, GLScene.Objects, GLScene.Vector.FileObjects, GLScene.Texture, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Geometry, GLScene.File.3DS.Base, GLScene.File.3DS.Types, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Base.PersistentClasses,
+  GLScene.Base.Strings, GLScene.File.3DS.SceneObjects, GLScene.Platform, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists,
+  GLScene.Base.Context.Info, GLScene.Material;
 
 type
 

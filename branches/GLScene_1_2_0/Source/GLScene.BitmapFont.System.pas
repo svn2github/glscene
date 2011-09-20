@@ -26,7 +26,7 @@
       <li>12/08/02 - JAJ - Made into a standalone unit...
  </ul></font>
 }
-unit GLS_SystemBitmapFont;
+unit GLScene.BitmapFont.System;
 
 interface
 
@@ -39,16 +39,16 @@ uses
 {$IFDEF FPC}
   LCLIntf, LCLType, Types, LCLProc,
 {$ENDIF}
-  GLBitmapFont,
-  GLRenderContextInfo,
+  GLScene.BitmapFont,
+  GLScene.Base.Context.Info,
   Classes,
-  GLScene,
-  GLTexture,
-  GLTextureFormat,
+  GLScene.Core,
+  GLScene.Texture,
+  GLScene.Texture.Format,
   Graphics,
-  VectorLists,
-  GLCrossPlatform,
-  GLS_Material;
+  GLScene.Base.Vector.Lists,
+  GLScene.Platform,
+  GLScene.MaterialEx;
 
 type
 
@@ -117,11 +117,11 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLUtils,
+  GLScene.Utils,
   SysUtils,
-  {$IFDEF GLS_DELPHI}VectorTypes,{$ENDIF}
-  VectorGeometry,
-  ApplicationFileIO;
+  {$IFDEF GLS_DELPHI}GLScene.Base.Vector.Types,{$ENDIF}
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.FileIO;
 
 const
   cDefaultLast = '}';

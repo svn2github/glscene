@@ -23,17 +23,17 @@
    </ul></font>
 }
 
-unit GLS_Material;
+unit GLScene.MaterialEx;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLRenderContextInfo, BaseClasses, GLContext, VectorTypes,
-  GLMaterial, GLTexture, GLColor, GLCoordinates, VectorGeometry, GLGraphics,
-  PersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
-  GLTextureCombiners, OpenGLTokens, GLS_ShaderParameter;
+  Classes, SysUtils, GLScene.Base.Context.Info, GLScene.Base.Classes, GLScene.Base.Context, GLScene.Base.Vector.Types,
+  GLScene.Material, GLScene.Texture, GLScene.Base.Color, GLScene.Base.Coordinates, GLScene.Base.Vector.Geometry, GLScene.Graphics,
+  GLScene.Base.PersistentClasses, GLScene.Platform, GLScene.Base.GLStateMachine, GLScene.Texture.Format, GLScene.Base.XCollection,
+  GLScene.Texture.Combiners, GLScene.Base.OpenGL.Tokens, GLScene.Shader.Parameter;
 
 const
   cInternalShader = 'InternalShader';
@@ -1444,8 +1444,8 @@ uses
 {$IFDEF FPC}
   LCLType, LResources,
 {$ENDIF}
-  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils,
-  GLS_Mesh, GLPipelineTransformation;
+  GLScene.Base.Log, GLScene.Base.FileIO, GLScene.Base.Strings, GLScene.Image.Utils, GLScene.Utils,
+  GLScene.Mesh, GLScene.Base.Transformation;
 
 
 resourcestring

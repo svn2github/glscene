@@ -7,12 +7,12 @@
   <li>24/02/11 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDADataAccess;
+unit GLScene.CUDA.DataAccess;
 
 interface
 
 uses
-  GLCrossPlatform;
+  GLScene.Platform;
 
 type
 
@@ -66,7 +66,7 @@ resourcestring
 implementation
 
 uses
-  SysUtils, GLSLog;
+  SysUtils, GLScene.Base.Log;
 
 threadvar
   vElementAccessAddress: PByte;

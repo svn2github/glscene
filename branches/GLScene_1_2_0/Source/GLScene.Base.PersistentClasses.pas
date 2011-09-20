@@ -39,7 +39,7 @@
       <li>15/03/01 - EG - Creation
  </ul></font><p>
 }
-unit PersistentClasses;
+unit GLScene.Base.PersistentClasses;
 
 interface
 {$I GLScene.inc}
@@ -47,7 +47,7 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform;
+  GLScene.Platform;
 
 type
 
@@ -470,7 +470,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses ApplicationFileIO;
+uses GLScene.Base.FileIO;
 
 resourcestring
   cInvalidFileSignature = 'Invalid file signature';

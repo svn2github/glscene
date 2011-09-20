@@ -15,15 +15,15 @@
       <li>30/01/03 - EG - Creation
    </ul><p>
 }
-unit GLFileQ3BSP;
+unit GLScene.File.Q3BSP;
 
 interface
 
 {$I GLScene.inc}
 
 uses Classes,
-  GLVectorFileObjects,
-  ApplicationFileIO;
+  GLScene.Vector.FileObjects,
+  GLScene.Base.FileIO;
 
 type
 
@@ -52,19 +52,19 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  Q3BSP,
-  VectorGeometry,
-  VectorTypes,
-  VectorLists,
+  GLScene.File.Q3BSP.Types,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Lists,
   SysUtils,
-  GLBSP,
-  GLTexture,
-  GLGraphics,
-  GLCrossPlatform,
-  GLState,
-  GLUtils,
-  GLMaterial,
-  GLTextureFormat;
+  GLScene.BSP,
+  GLScene.Texture,
+  GLScene.Graphics,
+  GLScene.Platform,
+  GLScene.Base.GLStateMachine,
+  GLScene.Utils,
+  GLScene.Material,
+  GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------

@@ -19,15 +19,15 @@
                             the multipass demo.
    </ul></font>
 }
-unit GLHiddenLineShader;
+unit GLScene.Shader.HiddenLine;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLMaterial, OpenGLTokens, GLCrossPlatform, GLScene, GLColor,
-  BaseClasses, GLRenderContextInfo, GLState;
+  Classes, GLScene.Material, GLScene.Base.OpenGL.Tokens, GLScene.Platform, GLScene, GLScene.Base.Color,
+  GLScene.Base.Classes, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine;
 
 type
   TGLLineSettings = class(TGLUpdateAbleObject)
@@ -120,7 +120,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  GLContext;
+  GLScene.Base.Context;
 // ------------------
 // ------------------ TGLLineSettings ------------------
 // ------------------

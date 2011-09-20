@@ -15,14 +15,14 @@
       <li>20/02/05 - EG - Creation
    </ul></font>
 }
-unit GLLinePFX;
+unit GLScene.PFX.Line;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, PersistentClasses, VectorGeometry, GLParticleFX, GLTexture,
-     GLColor, GLRenderContextInfo;
+uses Classes, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Fx.Particle, GLScene.Texture,
+     GLScene.Base.Color, GLScene.Base.Context.Info;
 
 type
 
@@ -100,7 +100,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLLinePFXManager ------------------

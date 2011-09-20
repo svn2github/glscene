@@ -11,15 +11,15 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRFaceEditor;
+unit GLScene.PropertyEditor.Face.VCL;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
-  Classes, GLTexture, GLMaterial, GLState;
+  Windows, Forms, ComCtrls, GLScene.PropertyEditor.TrackBar.VCL, StdCtrls, GLScene.PropertyEditor.Color.VCL, ImgList, Controls,
+  Classes, GLScene.Texture, GLScene.Material, GLScene.Base.GLStateMachine;
 
 type
   TRFaceEditor = class(TFrame)

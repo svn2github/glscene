@@ -24,7 +24,7 @@
       <li>02/09/03 - MRQZZZ - Creation
    </ul></font>
 }
-unit GLSkyBox;
+unit GLScene.Objects.SkyBox;
 
 interface
 
@@ -32,13 +32,13 @@ interface
 
 uses
   Classes,
-  GLScene,
-  GLMaterial,
-  VectorGeometry,
-  OpenGLTokens,
+  GLScene.Core,
+  GLScene.Material,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
   XOpenGL,
-  GLRenderContextInfo
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.Context.Info
+{$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
 
@@ -125,8 +125,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLContext,
-  GLState;
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine;
 
 // ------------------
 // ------------------ TGLSkyBox ------------------

@@ -12,7 +12,7 @@
       <li>29/01/03 - JaJ - Submitted to GLScene.
 	</ul></font>
 }
-unit GLPerlinBase;
+unit GLScene.Base.Perlin;
 
 interface
 
@@ -46,7 +46,7 @@ Function ExponateCrap(root, exponant : Integer) : Integer;
 implementation
 
 uses
-  GLCrossPlatform;
+  GLScene.Platform;
 
 Function ExponateCrap(root, exponant : Integer) : Integer;
 Var

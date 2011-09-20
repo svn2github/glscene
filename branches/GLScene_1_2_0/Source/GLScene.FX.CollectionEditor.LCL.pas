@@ -13,14 +13,14 @@
     <li>06/04/00 - Egg - Creation
   </ul></font>
 }
-unit FXCollectionEditorLCL;
+unit GLScene.FX.CollectionEditor.LCL;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  LResources, Forms, XCollection, Controls, Classes, ActnList,
+  LResources, Forms, GLScene.Base.XCollection, Controls, Classes, ActnList,
   Menus, ComCtrls;
 
 type
@@ -85,7 +85,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, GLBehaviours, GLScene, Dialogs, PropEdits;
+  SysUtils, GLScene.Behaviours, GLScene, Dialogs, PropEdits;
 
 resourcestring
   cXCollectionEditor = 'XCollection editor';

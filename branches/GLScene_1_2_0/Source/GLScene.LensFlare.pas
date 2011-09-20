@@ -43,16 +43,16 @@
    eMail   : peirick@onlinehome.de<br>
    Homepage: http://www.TobSoft.de
 }
-unit GLLensFlare;
+unit GLScene.LensFlare;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, VectorGeometry, GLObjects, OpenGLTokens,
-  GLContext, GLColor, BaseClasses, GLRenderContextInfo, GLState,
-  GLTextureFormat;
+  Classes, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Objects, GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context, GLScene.Base.Color, GLScene.Base.Classes, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine,
+  GLScene.Texture.Format;
 
 type
 
@@ -247,7 +247,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses GLScene.Utils {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLFlareGradient ------------------

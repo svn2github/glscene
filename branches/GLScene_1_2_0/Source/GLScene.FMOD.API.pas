@@ -37,7 +37,7 @@
   {$ENDIF}
 {$ENDIF}
 
-unit fmod;
+unit GLScene.FMOD.API;
 
 interface
 
@@ -47,7 +47,7 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  fmodtypes;
+  GLScene.FMOD.Types;
 
 {
   Disable warning for unsafe types in Delphi 7

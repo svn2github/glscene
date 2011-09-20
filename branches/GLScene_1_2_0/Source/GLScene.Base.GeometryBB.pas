@@ -26,14 +26,14 @@
 	    <li>31/03/01 - EG - Original Unit by Jacques Tur
 	</ul></font>
 }
-unit GeometryBB;
+unit GLScene.Base.GeometryBB;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  VectorGeometry;
+  GLScene.Base.Vector.Geometry;
 
 type
 
@@ -217,7 +217,7 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
-uses SysUtils, VectorTypes;
+uses SysUtils, GLScene.Base.Vector.Types;
 //------------------------------------------------------------------------------
 //----------------- BB functions -------------------------------------------
 //------------------------------------------------------------------------------

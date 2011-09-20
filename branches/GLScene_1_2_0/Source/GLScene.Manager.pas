@@ -12,7 +12,7 @@
       <li>05/10/08 - DanB - Created from GLTexture.pas split
    </ul></font>
 }
-unit GLManager;
+unit GLScene.Manager;
 
 interface
 

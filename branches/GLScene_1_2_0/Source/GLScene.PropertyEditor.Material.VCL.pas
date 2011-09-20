@@ -13,7 +13,7 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FMaterialEditorForm;
+unit GLScene.PropertyEditor.Material.VCL;
 
 interface
 
@@ -22,20 +22,20 @@ interface
 uses
   Windows,
   Forms,
-  FRMaterialPreview,
-  FRColorEditor,
+  GLScene.PropertyEditor.MaterialPreview.VCL,
+  GLScene.PropertyEditor.Color.VCL,
   ComCtrls,
-  FRFaceEditor,
+  GLScene.PropertyEditor.Face.VCL,
   StdCtrls,
   Controls,
   Classes,
-  GLTexture,
+  GLScene.Texture,
   Buttons,
   TypInfo,
-  FRTextureEdit,
-  GLViewer,
-  GLMaterial,
-  GLState;
+  GLScene.PropertyEditor.Texture.VCL,
+  GLScene.Viewer,
+  GLScene.Material,
+  GLScene.Base.GLStateMachine;
 
 type
   TMaterialEditorForm = class(TForm)

@@ -11,15 +11,15 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRColorEditor;
+unit GLScene.PropertyEditor.Color.VCL;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
-  Classes, VectorGeometry, Graphics, SysUtils, GLColor;
+  Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, GLScene.PropertyEditor.TrackBar.VCL, Dialogs, Controls,
+  Classes, GLScene.Base.Vector.Geometry, Graphics, SysUtils, GLScene.Base.Color;
 
 type
 
@@ -78,7 +78,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLTexture, GLCrossPlatform, VectorTypes;
+  GLScene.Texture, GLScene.Platform, GLScene.Base.Vector.Types;
 
 
 const

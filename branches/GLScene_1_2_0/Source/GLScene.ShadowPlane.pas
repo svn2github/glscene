@@ -26,7 +26,7 @@
       <li>23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
    </ul></font>
 }
-unit GLShadowPlane;
+unit GLScene.ShadowPlane;
 
 interface
 
@@ -34,14 +34,14 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  GLObjects,
-  GLCrossPlatform,
-  GLColor,
-  GLRenderContextInfo,
-  GLState,
-  GLTextureFormat;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Objects,
+  GLScene.Platform,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine,
+  GLScene.Texture.Format;
 
 type
 
@@ -140,7 +140,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-uses OpenGLTokens, GLContext;
+uses GLScene.Base.OpenGL.Tokens, GLScene.Base.Context;
 // ------------------
 // ------------------ TGLShadowPlane ------------------
 // ------------------

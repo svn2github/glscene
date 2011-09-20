@@ -31,7 +31,7 @@
   <li>21/07/03 - EG - Creation from GLObjects split
   </ul></font>
 }
-unit GLGeomObjects;
+unit GLScene.ObjectsEx;
 
 {$I GLScene.inc}
 
@@ -39,23 +39,23 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLContext,
-  GLObjects,
-  GLSilhouette,
-  VectorTypes,
-  GeometryBB,
-  GLPipelineTransformation,
-  GLRenderContextInfo,
-  GLNodes,
-  GLCoordinates,
-  GLMaterial,
-  GLS_Material,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Context,
+  GLScene.Objects,
+  GLScene.Silhouette,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.GeometryBB,
+  GLScene.Base.Transformation,
+  GLScene.Base.Context.Info,
+  GLScene.Nodes,
+  GLScene.Base.Coordinates,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -595,10 +595,10 @@ type
 implementation
 
 uses
-  Polynomials,
-  GLColor,
-  GLS_ShaderParameter,
-  GLState;
+  GLScene.Base.Polynomials,
+  GLScene.Base.Color,
+  GLScene.Shader.Parameter,
+  GLScene.Base.GLStateMachine;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLDisk'}{$ENDIF}
 

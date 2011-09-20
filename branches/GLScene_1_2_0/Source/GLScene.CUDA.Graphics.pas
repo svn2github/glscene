@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSCUDAGraphics<p>
@@ -10,7 +10,7 @@
    </ul></font><p>
 }
 
-unit GLSCUDAGraphics;
+unit GLScene.CUDA.Graphics;
 
 interface
 
@@ -18,19 +18,19 @@ interface
 
 uses
   Classes,
-  GLCrossPlatform,
-  GLS_CUDA_API,
-  GLSCUDA,
-  OpenGLTokens,
-  GLContext,
-  GLState,
-  GLScene,
-  GLGraphics,
-  GLMaterial,
-  GLTexture,
-  GLSLShader,
+  GLScene.Platform,
+  GLScene.CUDA.API,
+  GLScene.CUDA,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Core,
+  GLScene.Graphics,
+  GLScene.Material,
+  GLScene.Texture,
+  GLScene.Shader.GLSL.Components,
   GLSLParameter,
-  GLRenderContextInfo;
+  GLScene.Base.Context.Info;
 
 type
 
@@ -265,9 +265,9 @@ implementation
 
 uses
   SysUtils,
-  GLStrings,
-  GLTextureFormat,
-  GLSLog;
+  GLScene.Base.Strings,
+  GLScene.Texture.Format,
+  GLScene.Base.Log;
 
 resourcestring
   cudasFailToBindArrayToTex = 'Unable to bind CUDA array to OpenGL unmaped t' +

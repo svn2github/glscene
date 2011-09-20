@@ -44,17 +44,17 @@
  </ul></font>
 }
 
-unit GLWindows;
+unit GLScene.GUI.Windows;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, GLScene, GLHUDObjects,
-  GLMaterial, OpenGLTokens, GLContext, GLBitmapFont, GLS_SystemBitmapFont,
-  VectorGeometry, GLS_DrawTechnique,
-  GLGui, GLCrossPlatform, GLColor, GLRenderContextInfo, BaseClasses;
+  SysUtils, Classes, GLScene.Core, GLScene.Objects.HUD,
+  GLScene.Material, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.BitmapFont, GLScene.BitmapFont.System,
+  GLScene.Base.Vector.Geometry, GLScene.DrawTechnique,
+  GLScene.GUI, GLScene.Platform, GLScene.Base.Color, GLScene.Base.Context.Info, GLScene.Base.Classes;
 
 type
 
@@ -666,7 +666,7 @@ function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
 
 implementation
 
-uses GLObjects, GLState, GLUtils, Math;
+uses GLScene.Objects, GLScene.Base.GLStateMachine, GLScene.Utils, Math;
 
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;

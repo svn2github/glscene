@@ -16,13 +16,13 @@
       <li>15/04/04 - EG - Creation
    </ul></font>
 }
-unit GLPerlinPFX;
+unit GLScene.PFX.Perlin;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLParticleFX, GLGraphics, GLCrossPlatform;
+uses Classes, GLScene.Fx.Particle, GLScene.Graphics, GLScene.Platform;
 
 type
 
@@ -107,7 +107,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses PerlinNoise, OpenGLTokens, VectorGeometry;
+uses GLScene.Base.PerlinNoise, GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Geometry;
 
 // ------------------
 // ------------------ TGLPerlinPFXManager ------------------

@@ -100,7 +100,7 @@
 
 
 }
-unit GLCustomShader;
+unit GLScene.Shader.Custom;
 
 interface
 
@@ -110,10 +110,10 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  VectorGeometry, VectorTypes, GLTexture, GLCadencer, OpenGLTokens, GLScene,
-  GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
-  VectorLists, GLTextureFormat, GLS_ShaderParameter;
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types, GLScene.Texture, GLScene.Cadencer, GLScene.Base.OpenGL.Tokens, GLScene,
+  GLScene.Base.Strings, GLScene.Platform, GLScene.Base.Context, GLScene.Base.Context.Info, GLScene.Material,
+  GLScene.Base.Vector.Lists, GLScene.Texture.Format, GLScene.Shader.Parameter;
 
 const
   glsShaderMaxLightSources = 8;
@@ -404,7 +404,7 @@ procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 implementation
 
 uses
-  GLState;
+  GLScene.Base.GLStateMachine;
 
 procedure GetActiveLightsList(const ALightIDs: TIntegerList);
 var

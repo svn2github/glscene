@@ -58,7 +58,7 @@
   </ul></font>
 }
 
-unit GLNGDManager;
+unit GLScene.NGD.Manager;
 
 interface
 
@@ -68,15 +68,15 @@ interface
 {$ENDIF}
 
 uses
-  NewtonImport, NewtonImport_JointLibrary // Newton
-  , VectorGeometry // PVector TVector TMatrix PMatrix NullHmgVector...
-  , VectorLists // TaffineVectorList for Tree
+  GLScene.Newton.Import, GLScene.Newton.Import.JointLibrary // Newton
+  , GLScene.Base.Vector.Geometry // PVector TVector TMatrix PMatrix NullHmgVector...
+  , GLScene.Base.Vector.Lists // TaffineVectorList for Tree
   , Classes // TComponent Tlist TWriter TReader TPersistent
-  , XCollection, SysUtils // TXCollection file function
-  , BaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
-  , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
+  , GLScene.Base.XCollection, SysUtils // TXCollection file function
+  , GLScene.Base.Classes, GLScene, GLScene.Manager, GLScene.Platform, GLScene.Base.Coordinates //
+  , GLScene.Objects, GLScene.ObjectsEx, GLScene.Vector.FileObjects // cube cone freeform...
   , Math // Samevalue isZero to compare single
-  , GLColor, GeometryBB; // For show debug
+  , GLScene.Base.Color, GLScene.Base.GeometryBB; // For show debug
 
 type
 

@@ -11,12 +11,12 @@
     16/10/08 - UweR - Compatibility fix for Delphi 2009
     14/05/2003 - SG - Creation
 }
-unit FileNMF;
+unit GLScene.File.NMF.Base;
 
 interface
 
 uses
-  Classes, VectorGeometry;
+  Classes, GLScene.Base.Vector.Geometry;
 
 const
   NMF_HEADER_TAG   = 'NMF ';

@@ -11,11 +11,11 @@
                            bits from Jan Horn's loader 
 	</ul></font>
 }
-unit Q3BSP;
+unit GLScene.File.Q3BSP.Types;
 
 interface
 
-uses Classes, VectorTypes;
+uses Classes, GLScene.Base.Vector.Types;
 
 const FACE_POLYGON = 1;
 const MAX_TEXTURES = 1000;

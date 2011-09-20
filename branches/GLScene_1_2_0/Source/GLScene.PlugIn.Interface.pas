@@ -15,7 +15,7 @@
 }
 
 
-unit PlugInIntf;
+unit GLScene.PlugIn.Interface;
 
 interface
 

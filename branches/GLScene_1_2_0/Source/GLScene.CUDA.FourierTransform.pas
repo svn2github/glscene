@@ -44,13 +44,13 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_FourierTransform;
+unit GLScene.CUDA.FourierTransform;
 
 interface
 
 uses
 {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME;
+  GLScene.Base.Vector.Types, GLScene.CUDA.API, GLScene.CUDA.Runtime;
 
 {$I cuda.inc}
 
@@ -240,7 +240,7 @@ function Get_CUDA_FFT_Error_String(AError: TcufftResult): string;
 implementation
 
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 resourcestring
   cudasFFTFuncRetErr = '%s return error: %s';

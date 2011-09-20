@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLSGenerics;
+unit GLScene.Base.Generics;
 
 interface
 
@@ -23,7 +23,7 @@ uses
   SysUtils,
   Classes,
   SyncObjs,
-  GLCrossPlatform;
+  GLScene.Platform;
 
 const
   MaxListSize = Maxint div 16;

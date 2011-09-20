@@ -14,14 +14,14 @@
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDACompiler;
+unit GLScene.CUDA.Compiler;
 
 interface
 
 {$I cuda.inc}
 
 uses
-  Classes, Forms, GLSCUDAParser;
+  Classes, Forms, GLScene.CUDA.Parser;
 
 type
   TGLSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);
@@ -135,7 +135,7 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}Windows, {$ENDIF}
-  SysUtils, Dialogs, ApplicationFileIO, GLSLog,
+  SysUtils, Dialogs, GLScene.Base.FileIO, GLScene.Base.Log,
   ShellAPI,
 {$IFNDEF FPC}
   TlHelp32

@@ -17,13 +17,13 @@
   </ul></font>
 }
 
-unit GLBaseMeshSilhouette;
+unit GLScene.Mesh.Silhouette;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, VectorLists, GLVectorFileObjects, GLSilhouette;
+uses Classes, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Vector.FileObjects, GLScene.Silhouette;
 
 type
   // TFaceGroupConnectivity

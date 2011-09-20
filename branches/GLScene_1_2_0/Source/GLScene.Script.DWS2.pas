@@ -5,13 +5,13 @@
       <li>04/11/2004 - SG - Creation
    </ul></font>
 }
-unit GLScriptDWS2;
+unit GLScene.Script.DWS2;
 
 interface
 
 uses
-  Classes, SysUtils, XCollection, GLScriptBase, dws2Comp, dws2Exprs,
-  dws2Symbols, GLManager;
+  Classes, SysUtils, GLScene.Base.XCollection, GLScene.Base.Script, dws2Comp, dws2Exprs,
+  dws2Symbols, GLScene.Manager;
 
 type
   // TGLDelphiWebScriptII

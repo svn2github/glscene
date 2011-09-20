@@ -8,7 +8,7 @@
   </ul></font><p>
 }
 
-unit GLSCUDAContext;
+unit GLScene.CUDA.Context;
 
 interface
 
@@ -17,12 +17,12 @@ interface
 uses
   Classes,
   SysUtils,
-  BaseClasses,
-  GLS_CUDA_API,
-  GLS_CUDA_RunTime,
-  GLS_CL_Platform,
-  GLContext,
-  GLSGenerics;
+  GLScene.Base.Classes,
+  GLScene.CUDA.API,
+  GLScene.CUDA.Runtime,
+  GLScene.CL_Platform,
+  GLScene.Base.Context,
+  GLScene.Base.Generics;
 
 type
 
@@ -219,7 +219,7 @@ type
 implementation
 
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 resourcestring
   cudasInvalidContextReg = 'Invalid context registration.';

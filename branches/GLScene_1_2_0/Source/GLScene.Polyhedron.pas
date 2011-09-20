@@ -1,4 +1,4 @@
-unit GLPolyhedron;
+unit GLScene.Polyhedron;
 
 interface
 

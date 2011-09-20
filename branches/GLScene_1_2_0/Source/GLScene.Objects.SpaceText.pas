@@ -42,7 +42,7 @@
   <li>12/12/01 - EG - Creation (split from GLScene.pas)
   </ul></font>
 }
-unit GLSpaceText;
+unit GLScene.Objects.SpaceText;
 
 interface
 
@@ -59,17 +59,17 @@ uses
   Graphics,
   Controls,
 
-  // GLScene
-  GLScene,
-  OpenGLTokens,
-  GLContext,
-  VectorGeometry,
-  GLStrings,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLState,
-  GLS_DrawTechnique,
-  GLObjects;
+  // GLScene.Core
+  GLScene.Core,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Strings,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.Base.GLStateMachine,
+  GLScene.DrawTechnique,
+  GLScene.Objects;
 
 type
 

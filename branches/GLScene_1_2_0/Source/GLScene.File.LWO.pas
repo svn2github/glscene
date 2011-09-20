@@ -18,15 +18,15 @@
 
    Original code: "Brian Johns" <brianjohns1@hotmail.com>
 }
-unit GLFileLWO;
+unit GLScene.File.LWO;
 
 interface
 
 {$I GLScene.inc}
 
 uses Classes,
-  GLVectorFileObjects,
-  LWObjects;
+  GLScene.Vector.FileObjects,
+  GLScene.File.LWO.Types;
 
 type
   TGLLWOVectorFile = class(TVectorFile)
@@ -45,10 +45,10 @@ type
 implementation
 
 uses SysUtils,
-  VectorGeometry,
-  GLTexture,
-  GLMaterial,
-  VectorTypes;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Texture,
+  GLScene.Material,
+  GLScene.Base.Vector.Types;
 
 type
   PVector3f = ^TVector3f;

@@ -14,7 +14,7 @@
    </ul></font>
 }
 
-unit HDRImage;
+unit GLScene.Image.HDR;
 
 interface
 
@@ -24,10 +24,10 @@ uses
 {$IFDEF MSWINDOWS}Windows,
 {$ENDIF}Classes,
   SysUtils,
-  GLCrossPlatform,
-  VectorGeometry,
-  GLGraphics,
-  OpenGLTokens;
+  GLScene.Platform,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Graphics,
+  GLScene.Base.OpenGL.Tokens;
 
 type
 
@@ -43,8 +43,8 @@ implementation
 uses
 {$IFDEF FPC}graphtype,
 {$ENDIF}
-  GLFileHDR,
-  GLTextureFormat;
+  GLScene.File.HDR,
+  GLScene.Texture.Format;
 
 // ------------------
 // ------------------ THDRImage ------------------

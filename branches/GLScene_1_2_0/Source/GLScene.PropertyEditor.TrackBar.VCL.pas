@@ -11,7 +11,7 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRTrackBarEdit;
+unit GLScene.PropertyEditor.TrackBar.VCL;
 
 interface
 

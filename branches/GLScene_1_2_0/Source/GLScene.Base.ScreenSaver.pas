@@ -19,7 +19,7 @@
 	NB : The password stuff does NOT work under NT, dll references I found in
 			Tom's sample simply did not exist under my NT4...
 }
-unit ScreenSaver;
+unit GLScene.Base.ScreenSaver;
 
 interface
 

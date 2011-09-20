@@ -13,13 +13,13 @@
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
-unit GLFileWAV;
+unit GLScene.File.WAV;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, ApplicationFileIO, GLSoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
+uses Classes, GLScene.Base.FileIO, GLScene.Sound.FileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
 
 type
 

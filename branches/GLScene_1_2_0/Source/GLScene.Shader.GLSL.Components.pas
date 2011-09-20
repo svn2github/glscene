@@ -63,7 +63,7 @@
                                     (Handle was freed, but not nil'ed)
 
 }
-unit GLSLShader;
+unit GLScene.Shader.GLSL.Components;
 
 interface
 
@@ -73,9 +73,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  VectorGeometry, VectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat, GLS_ShaderParameter;
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types, GLScene.Texture, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Shader.Custom,
+  GLScene.Base.Context.Info, GLScene.Texture.Format, GLScene.Shader.Parameter;
 
 type
   TGLSLShaderParameter = class;
@@ -217,7 +217,7 @@ type
 implementation
 
 uses
-  GLState;
+  GLScene.Base.GLStateMachine;
 
 { TGLCustomGLSLShader }
 

@@ -8,14 +8,14 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit RGBE;
+unit GLScene.File.RGBE;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, VectorTypes, VectorGeometry, GLCrossPlatform;
+  Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Platform;
 
 procedure float2rgbe(var rgbe: TVector4b; const red, green, blue: Single);
 procedure rgbe2float(var red, green, blue: Single; const rgbe: TVector4b);

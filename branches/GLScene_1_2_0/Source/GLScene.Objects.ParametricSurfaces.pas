@@ -35,23 +35,23 @@
       <li>18/07/03 - SG - Creation.
    </ul></font>
 }
-unit GLParametricSurfaces;
+unit GLScene.Objects.ParametricSurfaces;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLVectorFileObjects,
-  CurvesAndSurfaces,
-  VectorGeometry,
-  VectorLists,
-  PersistentClasses,
-  GLTexture,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLState,
-  GLRenderContextInfo;
+  GLScene.Vector.FileObjects,
+  GLScene.Base.CurvesAndSurfaces,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.PersistentClasses,
+  GLScene.Texture,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Context.Info;
 
 type
 
@@ -192,7 +192,7 @@ implementation
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 uses
-  GLContext;
+  GLScene.Base.Context;
 // ------------------
 // ------------------ TMOParametricSurface ------------------
 // ------------------

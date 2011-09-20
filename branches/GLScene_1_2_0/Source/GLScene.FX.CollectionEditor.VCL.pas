@@ -15,14 +15,14 @@
 		<li>06/04/00 - Egg - Creation
 	</ul></font>
 }
-unit FXCollectionEditor;
+unit GLScene.FX.CollectionEditor.VCL;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Windows, Forms, XCollection, Messages, ImgList, Controls, Classes, ActnList,
+  Windows, Forms, GLScene.Base.XCollection, Messages, ImgList, Controls, Classes, ActnList,
   Menus, ComCtrls, ToolWin,
   {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};
 
@@ -92,7 +92,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SysUtils, GLBehaviours, GLScene, Dialogs, GLS_Material;
+  SysUtils, GLScene.Behaviours, GLScene, Dialogs, GLScene.MaterialEx;
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';

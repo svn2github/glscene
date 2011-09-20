@@ -25,13 +25,13 @@
       <li>24/02/05 - EG - Creation
    </ul></font>
 }
-unit PictureRegisteredFormats;
+unit GLScene.Base.PictureRegisteredFormats;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, Graphics, GLCrossPlatform;
+uses Classes, Graphics, GLScene.Platform;
 
 {$ifdef GLS_DELPHI_5} {$define PRF_HACK_PASSES}  {$endif}// Delphi 5
 {$ifdef GLS_DELPHI_6} {$define PRF_HACK_PASSES}  {$endif}// Delphi 6

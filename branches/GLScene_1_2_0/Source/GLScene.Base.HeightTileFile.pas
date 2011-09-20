@@ -22,7 +22,7 @@
       <li>21/12/01 - Egg - Creation
    </ul></font>
 }
-unit HeightTileFile;
+unit GLScene.Base.HeightTileFile;
 
 interface
 
@@ -167,7 +167,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLCrossPlatform, SysUtils, ApplicationFileIO;
+uses GLScene.Platform, SysUtils, GLScene.Base.FileIO;
 
 const
    cFileVersion = 'HTF100';

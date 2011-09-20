@@ -22,19 +22,19 @@
   </ul></font>
 }
 
-unit GLSpatialPartitioning;
+unit GLScene.SpatialPartitioning;
 
 interface
 
 uses
-  GLViewer,
-  SpatialPartitioning,
-  GLScene,
-  VectorGeometry,
-  OpenGLTokens,
-  GeometryBB,
-  GLRenderContextInfo,
-  GLState;
+  GLScene.Viewer,
+  GLScene.Base.SpatialPartitioning,
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.GeometryBB,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   {: Object for holding glscene objects in a spatial partitioning }
@@ -66,8 +66,8 @@ procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
 implementation
 
 uses
-  VectorTypes,
-  GLContext;
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Context;
 
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB);
 begin

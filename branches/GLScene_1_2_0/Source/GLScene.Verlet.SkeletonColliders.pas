@@ -8,13 +8,13 @@
      <li>08/10/03 - SG - Creation.
    </ul></font>
 }
-unit GLVerletSkeletonColliders;
+unit GLScene.Verlet.SkeletonColliders;
 
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,
-  VerletClasses;
+  Classes, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Vector.FileObjects,
+  GLScene.Base.Verlet.Classes;
 
 type
   
@@ -91,7 +91,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 // ------------------
 // ------------------ Global methods ------------------
 // ------------------

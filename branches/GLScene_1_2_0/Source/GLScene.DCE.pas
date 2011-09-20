@@ -43,15 +43,15 @@
   </ul></font>
 }
 
-unit GLDCE;
+unit GLScene.DCE;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObjects,
-   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
-   GLTerrainRenderer, GLCoordinates, BaseClasses, GLManager;
+uses Classes, GLScene.Core, GLScene.Base.XCollection, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Vector.FileObjects,
+   GLScene.Platform, GLScene.DCE.Misc, GLScene.Collision.Ellipse,
+   GLScene.Objects.Terrain, GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Manager;
 
 type
   {Only csEllipsoid can have dynamic behaviour}
@@ -258,7 +258,7 @@ function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overlo
 
 implementation
 
-uses SysUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 
 function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;

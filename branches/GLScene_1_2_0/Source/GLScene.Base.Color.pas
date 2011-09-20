@@ -16,16 +16,16 @@
                           (separated from GLTexture.pas and GLCrossPlatform.pas)
   </ul>
 }
-unit GLColor;
+unit GLScene.Base.Color;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  // GLScene
-  Classes, VectorTypes, VectorGeometry, Graphics, GLCrossPlatform,
-  PersistentClasses, BaseClasses;
+  // GLScene.Core
+  Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, Graphics, GLScene.Platform,
+  GLScene.Base.PersistentClasses, GLScene.Base.Classes;
 
 type
   PColorVector = ^TColorVector;

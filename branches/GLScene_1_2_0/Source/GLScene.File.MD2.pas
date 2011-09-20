@@ -11,14 +11,14 @@
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
-unit GLFileMD2;
+unit GLScene.File.MD2;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, FileMD2, TypesMD2;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.File.MD2.Base, GLScene.File.MD2.Types;
 
 type
    // TGLMD2VectorFile

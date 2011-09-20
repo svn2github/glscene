@@ -21,12 +21,12 @@
       <li>29/07/03 - SG - Creation
    </ul></font>
 }
-unit GLMultiMaterialShader;
+unit GLScene.Shader.MultiMaterial;
 
 interface
 
 uses
-   Classes, GLMaterial, GLRenderContextInfo, GLState;
+   Classes, GLScene.Material, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine;
 
 type
    TGLMultiMaterialShader = class(TGLShader)

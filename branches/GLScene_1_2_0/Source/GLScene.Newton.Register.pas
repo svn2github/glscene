@@ -11,12 +11,12 @@
   </ul></font>
 }
 
-unit GLNewtonRegister;
+unit GLScene.Newton.Register;
 
 interface
 
 uses
-  Classes, GLNGDManager;
+  Classes, GLScene.NGD.Manager;
 
 procedure register;
 

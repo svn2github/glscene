@@ -7,15 +7,15 @@
       <li>11/11/2004 - SG - Creation
    </ul></font>
 }
-unit GLScriptPython;
+unit GLScene.Script.Python;
 
 interface
 
 uses
   Classes, SysUtils,
 
-  // GLScene
-  XCollection, GLScriptBase, GLManager,
+  // GLScene.Core
+  GLScene.Base.XCollection, GLScene.Base.Script, GLScene.Manager,
 
   // Python
   PythonEngine;

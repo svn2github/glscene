@@ -16,7 +16,7 @@
       <li>21/11/02 - EG - Creation
  </ul></font>
 }
-unit ApplicationFileIO;
+unit GLScene.Base.FileIO;
 
 interface
 
@@ -25,7 +25,7 @@ interface
 uses
   Classes,
   SysUtils,
-  BaseClasses
+  GLScene.Base.Classes
 {$IFDEF FPC}
   ,
   LResources
@@ -173,7 +173,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 var
   vAFIO: TApplicationFileIO = nil;

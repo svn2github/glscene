@@ -44,14 +44,14 @@
    NOTA : multi-materials terrain support is not yet optimized to minimize
           texture switches (in case of resued tile textures).
 }
-unit GLTerrainRenderer;
+unit GLScene.Objects.Terrain;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, GLHeightData, GLMaterial, VectorGeometry, GLContext,
-  GLROAMPatch, VectorLists, GLRenderContextInfo;
+uses Classes, GLScene.Core, GLScene.HeightData, GLScene.Material, GLScene.Base.Vector.Geometry, GLScene.Base.Context,
+  GLScene.ROAMPatch, GLScene.Base.Vector.Lists, GLScene.Base.Context.Info;
 
 const
   cTilesHashSize = 255;
@@ -261,7 +261,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, XOpenGL, GLUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils, GLScene.Base.OpenGL.Tokens, XOpenGL, GLScene.Utils {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // HashKey
 

@@ -6,7 +6,7 @@
       <li>27/04/2004 - SG - Creation
    </ul></font>
 }
-unit dws2VectorGeometry;
+unit DWS2.GLScene.Vector.Geometry;
 
 interface
 
@@ -26,7 +26,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, VectorGeometry;
+  dws2Functions, GLScene.Base.Vector.Geometry;
 
 type
   TVectorMakeFunction = class(TInternalFunction)

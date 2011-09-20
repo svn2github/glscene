@@ -11,13 +11,13 @@
       <li>30/01/03 - Egg - Creation
 	</ul></font>
 }
-unit FileOCT;
+unit GLScene.File.OCT.Base;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, VectorLists;
+uses Classes, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists;
 
 type
 
@@ -98,7 +98,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, MeshUtils;
+uses SysUtils, GLScene.Mesh.Utils;
 
 // ------------------
 // ------------------ TOCTFile ------------------

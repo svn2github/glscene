@@ -9,12 +9,12 @@
       <li>04/11/2004 - SG - Creation
    </ul></font>
 }
-unit GLScriptBase;
+unit GLScene.Base.Script;
 
 interface
 
 uses
-  Classes, XCollection;
+  Classes, GLScene.Base.XCollection;
 
 type
   TGLScriptState = ( ssUncompiled,    // The script has yet to be compiled.

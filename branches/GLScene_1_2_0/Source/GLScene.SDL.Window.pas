@@ -26,13 +26,13 @@
 	   <li>11/12/01 - Egg - Creation
 	</ul></font>
 }
-unit SDLWindow;
+unit GLScene.SDL.Window;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, SysUtils, SDL;
+uses Classes, SysUtils, GLScene.SDL;
 
 type
 
@@ -205,7 +205,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses OpenGL1x, SyncObjs;
+uses GLScene.Base.OpenGL.Tokens, SyncObjs;
 
 var
    vSDLCS : TCriticalSection;

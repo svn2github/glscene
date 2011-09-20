@@ -21,16 +21,16 @@
       <li>28/05/04 - SG - Creation.
    </ul></font>
 }
-unit GLCelShader;
+unit GLScene.Shader.Cel;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLTexture, GLContext, GLGraphics, GLUtils,
-  VectorGeometry, OpenGLTokens, GLColor, GLRenderContextInfo,
-  GLMaterial, GLState, GLTextureFormat;
+  Classes, SysUtils, GLScene.Texture, GLScene.Base.Context, GLScene.Graphics, GLScene.Utils,
+  GLScene.Base.Vector.Geometry, GLScene.Base.OpenGL.Tokens, GLScene.Base.Color, GLScene.Base.Context.Info,
+  GLScene.Material, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 type
   // TGLCelShaderOption

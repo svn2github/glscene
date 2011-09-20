@@ -20,12 +20,12 @@
   </ul></font>
 }
 
-unit GLODERagdoll;
+unit GLScene.ODE.Ragdoll;
 
 interface
 
-uses GLRagdoll, ODEImport, GLScene, GLObjects, VectorGeometry, ODEGL, GLTexture,
-  GLVectorFileObjects;
+uses GLScene.Ragdoll, GLScene.ODE.Import, GLScene.Core, GLScene.Objects, GLScene.Base.Vector.Geometry, GLScene.ODE.GL, GLScene.Texture,
+  GLScene.Vector.FileObjects;
 
 const
      cMaxContacts = 4;

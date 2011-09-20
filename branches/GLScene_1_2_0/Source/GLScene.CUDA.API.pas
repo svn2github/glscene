@@ -46,7 +46,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_API;
+unit GLScene.CUDA.API;
 
 interface
 
@@ -54,8 +54,8 @@ interface
 
 uses
 {$IFDEF MSWINDOWS}Windows,{$ENDIF}
-  GLCrossPlatform,
-  GLS_CL_Platform;
+  GLScene.Platform,
+  GLScene.CL_Platform;
 
 const
   CUDAAPIDLL = 'nvcuda.dll';
@@ -1426,7 +1426,7 @@ function Get_CUDA_API_Error_String(AError: TCUresult): string;
 implementation
 
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 resourcestring
   cudasFuncRetErr = '%s return error: %s';

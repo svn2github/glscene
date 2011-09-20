@@ -35,7 +35,7 @@
 *      2005.07.25  informing me about the zlib 1.2.3 update                  *
 *****************************************************************************}
 
-unit GLSZLibExApi;
+unit GLScene.ZLIB.API;
 
 interface
 
@@ -262,7 +262,7 @@ implementation
 
 Uses
   {$IFDEF GLS_LOGGING}
-  GLSLog,
+  GLScene.Base.Log,
   {$ENDIF}
   {$IFDEF MSWINDOWS}
   Windows;

@@ -5,14 +5,14 @@
       <li>27/04/2004 - SG - Creation
    </ul></font>
 }
-unit dws2Classes;
+unit DWS2.Classes;
 
 interface
 
 uses
   Classes, SysUtils,
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc;
+  dws2Functions, DWS2.HelperFunc;
 
 type
   Tdws2ClassesUnit = class(Tdws2UnitComponent)

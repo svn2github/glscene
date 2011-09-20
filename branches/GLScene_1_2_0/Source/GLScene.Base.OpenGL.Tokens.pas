@@ -11,14 +11,14 @@
       <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
    </ul></font>
 }
-unit OpenGLTokens;
+unit GLScene.Base.OpenGL.Tokens;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  VectorTypes,
+  GLScene.Base.Vector.Types,
   SysUtils,
 {$IFDEF MSWINDOWS}
   Windows

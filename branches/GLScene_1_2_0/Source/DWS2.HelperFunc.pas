@@ -6,7 +6,7 @@
       <li>27/04/2004 - SG - Creation
    </ul></font>
 }
-unit dws2HelperFunc;
+unit DWS2.HelperFunc;
 
 interface
 

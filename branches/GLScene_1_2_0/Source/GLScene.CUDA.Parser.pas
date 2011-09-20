@@ -12,12 +12,12 @@
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
 }
-unit GLSCUDAParser;
+unit GLScene.CUDA.Parser;
 
 interface
 
 uses
-  Classes, GLS_CUDA_RUNTIME;
+  Classes, GLScene.CUDA.Runtime;
 
 type
 
@@ -137,7 +137,7 @@ type
 implementation
 
 uses
-  GLStrings, SysUtils;
+  GLScene.Base.Strings, SysUtils;
 
 const
   WordDelimiters: set of AnsiChar = [#0..#255] - ['a'..'z','A'..'Z','1'..'9','0','_'];

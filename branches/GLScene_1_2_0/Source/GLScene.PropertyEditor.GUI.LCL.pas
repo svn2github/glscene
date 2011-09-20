@@ -9,7 +9,7 @@
       <li>26/08/10 - Yar - Fixed ImageWndProc (thnaks Predator)
    </ul></font>
 }
-unit GuiSkinEditorFormUnitLCL;
+unit GLScene.PropertyEditor.GUI.LCL;
 
 interface
 
@@ -17,9 +17,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
-  GLViewer, GLGui, GLGraphics, GLUtils, Menus, GLCrossPlatform,
-  GLCoordinates, BaseClasses, GLMaterial;
+  StdCtrls, ComCtrls, ExtCtrls, GLScene.Texture, GLScene.Core, GLScene.Objects, GLScene.GUI.Windows, GLScene.Objects.HUD,
+  GLScene.Viewer, GLScene.GUI, GLScene.Graphics, GLScene.Utils, Menus, GLScene.Platform,
+  GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Material;
 
 type
   TGUISkinEditor = class(TForm)

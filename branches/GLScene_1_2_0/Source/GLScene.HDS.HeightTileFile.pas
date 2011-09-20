@@ -18,13 +18,13 @@
       <li>29/01/03 - EG - Creation
 	</ul></font>
 }
-unit GLHeightTileFileHDS;
+unit GLScene.HDS.HeightTileFile;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLHeightData, HeightTileFile;
+uses Classes, GLScene.HeightData, GLScene.Base.HeightTileFile;
 
 type
 

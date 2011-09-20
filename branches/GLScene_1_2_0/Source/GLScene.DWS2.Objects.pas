@@ -7,13 +7,13 @@
       <li>06/04/2004 - SG - Creation
    </ul></font>
 }
-unit GLDWS2Objects;
+unit GLScene.DWS2.Objects;
 
 interface
 
 uses
   Classes, SysUtils, dws2Comp, dws2Exprs, dws2Symbols,
-  GLScene, XCollection, GLScriptDWS2, BaseClasses, GLManager;
+  GLScene.Core, GLScene.Base.XCollection, GLScene.Script.DWS2, GLScene.Base.Classes, GLScene.Manager;
 
 type
   // TGLDWS2ActiveBehaviour

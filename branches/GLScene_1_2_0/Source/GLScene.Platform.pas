@@ -1,4 +1,4 @@
-п»ї//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLCrossPlatform<p>
@@ -72,7 +72,7 @@
       <li>31/08/01 - EG - Creation
  </ul></font>
 }
-unit GLCrossPlatform;
+unit GLScene.Platform;
 
 interface
 
@@ -1424,14 +1424,14 @@ VersStr : array[TPlatformVersion] of string = (
   'Mandriva',
   'RedHat',
   'TurboLinux',
-  'Ubuntu',  // РїСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅРѕ
+  'Ubuntu',  // протестировано
   'Xandros',
   'Oracle',
-  'Mac OS X' // С‚РµРѕСЂРµС‚РёС‡. СЂР°Р±РѕС‚Р°РµС‚
+  'Mac OS X' // теоретич. работает
   );
 {$ENDIF}
 begin
-  Result := pvUnknown;                      // РќРµРёР·РІРµСЃС‚РЅР°СЏ РІРµСЂСЃРёСЏ РћРЎ
+  Result := pvUnknown;                      // Неизвестная версия ОС
   {$IFDEF MSWINDOWS}
   with GetPlatformInfo do
   begin
@@ -1455,7 +1455,7 @@ begin
           6:  case Minor of
                 0: Result := pvWinVista;         // Windows Vista
                 1: Result := pvWinSeven;          // Windows Seven
-                2: Result := pvWin2008;        // Windows 2008   //РІРѕР·РјРѕР¶РЅРѕ
+                2: Result := pvWin2008;        // Windows 2008   //возможно
                 3..4: Result := pvWinNew;
               end;
           7:  Result := pvWinNew;
@@ -1465,7 +1465,7 @@ begin
   {$IFDEF Unix}
   with GetPlatformInfo do
   begin
-    if Version='' then Exit; //С„СѓРЅРєС†РёСЏ РЅРµ СЃРјРѕРіР»Р° СЃС‡РёС‚Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ
+    if Version='' then Exit; //функция не смогла считать информацию
     For i:= 13 to Length(VersStr)-1 do
      if ID=VersStr[TPlatformVersion(i)] then
        Result := TPlatformVersion(i);

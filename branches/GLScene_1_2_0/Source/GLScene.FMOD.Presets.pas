@@ -18,12 +18,12 @@
   ln -s libfmod-3.75.so libfmod.so.
 }
 
-unit fmodpresets;
+unit GLScene.FMOD.Presets;
 
 interface
 
 uses
-  fmodtypes;
+  GLScene.FMOD.Types;
 
 {$IFDEF VER140}
 {$DEFINE COMPILER6_UP}

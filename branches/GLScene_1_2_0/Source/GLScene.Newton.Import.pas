@@ -32,7 +32,7 @@
 {                                                                               }
 {*******************************************************************************}
 
-unit NewtonImport;
+unit GLScene.Newton.Import;
 
 {$I delphinewton.inc}
 
@@ -1219,4 +1219,4 @@ procedure NewtonMeshGetFacePointIndices (const mesh : PNewtonMesh; const face : 
 implementation
 
 end.
-
+

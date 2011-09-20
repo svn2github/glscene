@@ -32,7 +32,7 @@
      <li>12/12/01 - EG - Creation (split from GLScene.pas)
  </ul></font>
 }
-unit GLWin32Viewer;
+unit GLScene.Viewer.VCL;
 
 interface
 
@@ -47,9 +47,9 @@ uses
   Classes,
   Controls,
 
-  // GLScene
-  GLScene,
-  GLContext;
+  // GLScene.Core
+  GLScene.Core,
+  GLScene.Base.Context;
 
 type
 
@@ -213,10 +213,10 @@ uses
 {$IFDEF GLS_OPENGL_ES}
   GLScene.Context.OES,
 {$ELSE}
-  GLWin32Context,
+  GLScene.Context.Windows,
 {$ENDIF}
   SysUtils,
-  GLViewer;
+  GLScene.Viewer;
 
 // ------------------
 // ------------------ TGLSceneViewer ------------------

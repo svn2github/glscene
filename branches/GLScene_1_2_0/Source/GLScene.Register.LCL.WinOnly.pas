@@ -15,16 +15,16 @@
    </ul></font>
 }
 
-unit GLSceneRegisterWinOnlyLCL;
+unit GLScene.Register.LCL.WinOnly;
 
 {$IFNDEF MSWINDOWS}{$Message Error 'Unit not supported'}{$ENDIF}
 
 interface
 
 uses
-   Classes, GLSceneRegisterLCL, GLStrings,
-   GLWideBitmapFont, GLSpaceText,
-   GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut, LResources;
+   Classes, GLScene.Register.LCL, GLScene.Base.Strings,
+   GLWideBitmapFont, GLScene.Objects.SpaceText,
+   GLScene.AVIRecorder, GLScene.Base.Joystick, GLScene.Base.ScreenSaver, GLScene.WaveOut, LResources;
 
 procedure Register;
 

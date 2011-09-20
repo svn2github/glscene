@@ -10,7 +10,7 @@
       <li>27/02/10 - Yar - Creation
   </ul><p>
 }
-unit GLFileJPEG;
+unit GLScene.File.JPEG;
 
 interface
 
@@ -18,8 +18,8 @@ interface
 
 uses
   Classes, SysUtils,
-  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  ApplicationFileIO;
+  GLScene.Platform, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Graphics, GLScene.Texture.Format,
+  GLScene.Base.FileIO;
 
 type
 
@@ -56,9 +56,9 @@ type
 implementation
 
 uses
-  GLSLog,
+  GLScene.Base.Log,
 {$IFNDEF FPC}
-  GLSJPG,
+  GLScene.LIBJPEG,
 {$ELSE}
   FPReadJPEG,
   fpimage,
@@ -77,7 +77,7 @@ uses
   jdatasrc,
   jmemmgr,
 {$ENDIF}
-  VectorGeometry;
+  GLScene.Base.Vector.Geometry;
 
 // ------------------
 // ------------------ TGLJPEGImage ------------------

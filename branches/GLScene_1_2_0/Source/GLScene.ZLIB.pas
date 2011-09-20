@@ -97,7 +97,7 @@
 *      2010.04.20  prototyping and assisting with the TZ*Buffer classes      *
 *****************************************************************************}
 
-unit GLSZLibEx;
+unit GLScene.ZLIB;
 
 interface
 
@@ -105,7 +105,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes, GLCrossPlatform, GLSZLibExApi;
+  SysUtils, Classes, GLScene.Platform, GLScene.ZLIB.API;
 
 type
 

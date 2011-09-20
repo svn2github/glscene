@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLSceneToolbar;
+unit GLScene.Toolbar;
 
 interface
 
@@ -26,8 +26,8 @@ uses
   ExtCtrls,
   ActnList,
   ToolsAPI,
-  GLScene,
-  GLSGenerics;
+  GLScene.Core,
+  GLScene.Base.Generics;
 
 const
   cGLSceneViewerToolbar = 'GLSceneViewerToolbar';

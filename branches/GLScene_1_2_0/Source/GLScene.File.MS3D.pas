@@ -28,7 +28,7 @@
     <li>03/06/03 - EG - Added header, now self-registers
  </ul></font>
 }
-unit GLFileMS3D;
+unit GLScene.File.MS3D;
 
 interface
 
@@ -37,13 +37,13 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  GLVectorFileObjects,
-  VectorTypes,
-  GLMaterial,
-  VectorGeometry,
-  VectorLists,
-  ApplicationFileIO;
+  GLScene.Platform,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Types,
+  GLScene.Material,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.FileIO;
 
 type
   // TGLMS3DVectorFile
@@ -60,8 +60,8 @@ type
 implementation
 
 uses
-  TypesMS3D,
-  GLTexture;
+  GLScene.File.MS3D.Types,
+  GLScene.Texture;
 
 { TGLMS3DVectorFile }
 

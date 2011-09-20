@@ -18,14 +18,14 @@
                            some cleanup & optimizations
 	</ul></font>
 }
-unit FileMD2;
+unit GLScene.File.MD2.Base;
 
 interface
 
 {$R-}
 {$I GLScene.inc}
 
-uses Classes, TypesMD2, GLCrossPlatform;
+uses Classes, GLScene.File.MD2.Types, GLScene.Platform;
 
 type
   // TFileMD2
@@ -59,7 +59,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, VectorGeometry, VectorTypes;
+uses SysUtils, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types;
 
 // ------------------
 // ------------------ TFileMD2 ------------------

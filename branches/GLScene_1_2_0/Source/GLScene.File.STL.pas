@@ -14,11 +14,11 @@
                           ASCII STL support (Adem)
    </ul><p>
 }
-unit GLFileSTL;
+unit GLScene.File.STL;
 
 interface
 
-uses Classes, GLVectorFileObjects, ApplicationFileIO, GLCrossPlatform;
+uses Classes, GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Platform;
 
 type
 
@@ -47,7 +47,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses TypesSTL, VectorGeometry, VectorLists, SysUtils, GLUtils;
+uses GLScene.File.STL.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, SysUtils, GLScene.Utils;
 
 const
   cSOLID_LABEL       = 'SOLID';

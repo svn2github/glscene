@@ -184,16 +184,16 @@
                           fixed class registrations and formats unregistration
  </ul></font>
 }
-unit GLVectorFileObjects;
+unit GLScene.Vector.FileObjects;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, OpenGLTokens, VectorGeometry, SysUtils, GLTexture,
-  GLMaterial, GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
-  ApplicationFileIO, GLSilhouette, GLContext, GLColor, GLRenderContextInfo,
-  GLCoordinates, BaseClasses, GLTextureFormat;
+uses Classes, GLScene.Core, GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Geometry, SysUtils, GLScene.Texture,
+  GLScene.Material, GLScene.Objects.Mesh, GLScene.Base.Vector.Lists, GLScene.Base.PersistentClasses, GLScene.Base.Octree, GLScene.Base.GeometryBB,
+  GLScene.Base.FileIO, GLScene.Silhouette, GLScene.Base.Context, GLScene.Base.Color, GLScene.Base.Context.Info,
+  GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Texture.Format;
 
 type
 
@@ -1966,9 +1966,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
-  GLBaseMeshSilhouette
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses GLScene.Base.Strings, XOpenGL, GLScene.Platform, GLScene.Mesh.Utils, GLScene.Base.GLStateMachine, GLScene.Utils,
+  GLScene.Mesh.Silhouette
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 var
   vVectorFileFormats: TVectorFileFormatsList;

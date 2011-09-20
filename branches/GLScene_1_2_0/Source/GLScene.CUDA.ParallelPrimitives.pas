@@ -18,12 +18,12 @@
 // the root directory of this source distribution.
 // -------------------------------------------------------------
 
-unit GLS_CUDA_ParallelPrimitives;
+unit GLScene.CUDA.ParallelPrimitives;
 
 interface
 
 uses
-  GLS_CL_Platform;
+  GLScene.CL_Platform;
 
 {$I cuda.inc}
 

@@ -10,14 +10,14 @@
   </ul></font><p>
 }
 
-unit GLSCUDAFFTPlan;
+unit GLScene.CUDA.FFTPlan;
 
 interface
 
 uses
   Classes, SysUtils,
-  GLSCUDAContext,
-  GLSCUDA, GLS_CUDA_API, GLS_CUDA_FourierTransform;
+  GLScene.CUDA.Context,
+  GLScene.CUDA, GLScene.CUDA.API, GLScene.CUDA.FourierTransform;
 
 type
 
@@ -75,7 +75,7 @@ type
 implementation
 
 uses
-  GLSLog, GLStrings;
+  GLScene.Base.Log, GLScene.Base.Strings;
 
 resourcestring
   cudasRequireFreeThread = 'CUFFT functions require context-free thread';

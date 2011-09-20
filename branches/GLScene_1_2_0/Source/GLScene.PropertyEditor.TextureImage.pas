@@ -8,14 +8,14 @@
       <li>24/07/03 - EG - Creation
    </ul></font>
 }
-unit GLTextureImageEditors;
+unit GLScene.PropertyEditor.TextureImage;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Classes, GLTexture, GLProcTextures;
+  Classes, GLScene.Texture, GLScene.Texture.Procedural;
 
 
 type
@@ -82,7 +82,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  SysUtils, GLCrossPlatform, GLUtils;
+  SysUtils, GLScene.Platform, GLScene.Utils;
 
 var
    vTIEClass, vTIEEditor : TList;

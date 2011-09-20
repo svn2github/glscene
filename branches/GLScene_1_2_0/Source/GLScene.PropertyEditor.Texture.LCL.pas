@@ -9,7 +9,7 @@
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
 
-unit FRTextureEditLCL;
+unit GLScene.PropertyEditor.Texture.LCL;
 
 interface
 
@@ -17,7 +17,7 @@ interface
 
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, TypInfo,
-  GLTexture, GLGraphics, lresources;
+  GLScene.Texture, GLScene.Graphics, lresources;
 
 type
 
@@ -75,7 +75,7 @@ implementation
 
 
 uses
-  SysUtils, GLTextureImageEditors, GLTextureFormat;
+  SysUtils, GLScene.PropertyEditor.TextureImage, GLScene.Texture.Format;
 
 // Create
 

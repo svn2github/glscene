@@ -44,7 +44,7 @@
     <li>15/01/01 - EG - Creation
  </ul></font>
 }
-unit GLBitmapFont;
+unit GLScene.BitmapFont;
 
 {$I GLScene.inc}
 
@@ -60,24 +60,24 @@ interface
 uses
   Classes,
   Graphics,
-  GLScene,
-  VectorGeometry,
-  GLContext,
-  GLCrossPlatform,
-  GLState,
-  GLUtils,
-  GLGraphics,
-  GLColor,
-  BaseClasses,
-  GLTexture,
-  GLMaterial,
-  GLS_Material,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLS_Mesh,
-  GLS_DrawTechnique,
-  GLTextureFormat,
-  XCollection;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Context,
+  GLScene.Platform,
+  GLScene.Base.GLStateMachine,
+  GLScene.Utils,
+  GLScene.Graphics,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Texture,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.Mesh,
+  GLScene.DrawTechnique,
+  GLScene.Texture.Format,
+  GLScene.Base.XCollection;
 
 type
   TGLCustomBitmapFont = class;
@@ -433,14 +433,14 @@ implementation
 
 uses
 {$IFDEF GLS_DELPHI}
-  VectorTypes,
+  GLScene.Base.Vector.Types,
 {$ENDIF}
 {$IFDEF GLS_SERVICE_CONTEXT}
   SyncObjs,
 {$ENDIF}
   SysUtils,
-  OpenGLTokens,
-  GLS_ShaderParameter;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Shader.Parameter;
 
 {$IFDEF GLS_REGION}{$REGION 'TBitmapFontRange'}{$ENDIF}
 

@@ -24,7 +24,7 @@
 
 
 }
-unit GLFileASE;
+unit GLScene.File.ASE;
 
 interface
 
@@ -32,9 +32,9 @@ interface
 
 uses
   Classes, SysUtils,
-  GLVectorFileObjects, ApplicationFileIO,
-  VectorTypes, VectorGeometry, VectorLists,
-  GLCrossPlatform, GLTexture, GLMaterial;
+  GLScene.Vector.FileObjects, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists,
+  GLScene.Platform, GLScene.Texture, GLScene.Material;
 
 const
   GL_ASE_MAX_TEXURE_CHANNELS = 12; // maximum texture channels

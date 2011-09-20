@@ -30,7 +30,7 @@
   Rewrite of TGLMesh.CalcNormals (smaller & faster)
   </ul></font>
 }
-unit GLMesh;
+unit GLScene.Objects.Mesh;
 
 interface
 
@@ -38,15 +38,15 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLState,
-  GLColor,
-  BaseClasses,
-  GLRenderContextInfo,
-  VectorTypes;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Vector.Types;
 
 type
   TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
@@ -240,9 +240,9 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils,
-  GLStrings,
+  GLScene.Base.Strings,
   XOpenGL,
-  GLContext;
+  GLScene.Base.Context;
 
 // ----------------- TVertexList ------------------------------------------------
 

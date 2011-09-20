@@ -208,7 +208,7 @@
           TGLMaterial.Apply
    </ul></font>
 }
-unit GLTexture;
+unit GLScene.Texture;
 
 interface
 
@@ -219,18 +219,18 @@ uses
   Classes,
   SysUtils,
 
-  // GLScene
-  GLCrossPlatform,
-  BaseClasses,
-  OpenGLTokens,
-  VectorGeometry,
-  GLGraphics,
-  GLContext,
-  GLState,
-  GLColor,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLTextureFormat;
+  // GLScene.Core
+  GLScene.Platform,
+  GLScene.Base.Classes,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Graphics,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Color,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Texture.Format;
 
 const
   cDefaultNormalMapScale = 0.125;
@@ -1034,13 +1034,13 @@ implementation
 // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
 
 uses
-  GLScene,
-  GLStrings,
+  GLScene.Core,
+  GLScene.Base.Strings,
   XOpenGL,
-  ApplicationFileIO,
-  PictureRegisteredFormats,
-  GLUtils
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.FileIO,
+  GLScene.Base.PictureRegisteredFormats,
+  GLScene.Utils
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

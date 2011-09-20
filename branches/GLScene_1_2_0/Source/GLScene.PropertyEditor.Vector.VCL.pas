@@ -9,7 +9,7 @@
       <li>?/?/? -  - Creation
    </ul></font>
 }
-unit FVectorEditor;
+unit GLScene.PropertyEditor.Vector.VCL;
 
 interface
 
@@ -81,7 +81,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, VectorGeometry, GLUtils, VectorTypes; 
+  SysUtils, GLScene.Base.Vector.Geometry, GLScene.Utils, GLScene.Base.Vector.Types; 
 
 var
 	vVectorEditorForm : TVectorEditorForm;

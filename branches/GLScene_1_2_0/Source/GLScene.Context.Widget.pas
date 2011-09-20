@@ -1,4 +1,4 @@
-п»ї{: GLWidgetContext<p>
+{: GLWidgetContext<p>
 
    Widget specific Context.<p>
    GLWidgetContext replaces old GLLinGTKContext.<p>
@@ -12,7 +12,7 @@
                            (Created by Rustam Asmandiarov aka Predator)
    </ul></font>
 }
-unit GLWidgetContext;
+unit GLScene.Context.Widget;
 
 interface
 
@@ -20,7 +20,7 @@ interface
 
 uses
   Classes, SysUtils, LCLType,
-  GLCrossPlatform, GLContext,{$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
+  GLScene.Platform, GLScene.Base.Context,{$IFDEF GLS_LOGGING}GLScene.Base.Log,{$ENDIF}
 
   // Operation System
 {$IFDEF MSWINDOWS}
@@ -28,7 +28,7 @@ uses
 {$IFDEF GLS_OPENGL_ES}
   GLScene.Context.OES,
 {$ELSE}
-  GLWin32Context,
+  GLScene.Context.Windows,
 {$ENDIF}
   LMessages, LCLVersion,
 {$ENDIF}
@@ -38,7 +38,7 @@ uses
 {$IFDEF GLS_OPENGL_ES}
   GLScene.Context.OES,
 {$ELSE}
-  GLGLXContext,
+  GLScene.Context.XServer,
 {$ENDIF}
 {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
@@ -214,8 +214,8 @@ end;    *)
 
 {$IF  DEFINED(LCLwin32) or DEFINED(LCLwin64)}
 //Need to debug Viewer because there is a black square
-//РќРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РѕС‚Р»Р°РґРєРё Viewera С‚Р°Рє РєР°Рє РїРѕСЏРІР»СЏРµС‚СЃСЏ С‡РµСЂРЅС‹Р№ РєРІР°РґСЂР°С‚
-//Р—Р°РёРјСЃС‚РІРѕРІР°РЅРѕ РёР· TOpenGLControl
+//Необходимо для отладки Viewera так как появляется черный квадрат
+//Заимствовано из TOpenGLControl
 
 function GlWindowProc(Window: HWnd; Msg: UInt; WParam: Windows.WParam;
   LParam: Windows.LParam): LResult; stdcall;

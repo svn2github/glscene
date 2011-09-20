@@ -43,7 +43,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_Runtime;
+unit GLScene.CUDA.Runtime;
 
 interface
 
@@ -51,10 +51,10 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  GLCrossPlatform,
-  GLS_CL_Platform,
-  GLS_CUDA_API,
-  OpenGLTokens;
+  GLScene.Platform,
+  GLScene.CL_Platform,
+  GLScene.CUDA.API,
+  GLScene.Base.OpenGL.Tokens;
 
 {$I cuda.inc}
 
@@ -876,7 +876,7 @@ function IsCUDARTInitialized: Boolean;
 implementation
 
 uses
-  GLSLog;
+  GLScene.Base.Log;
 
 function cudaGetLastErrorString: string;
 begin

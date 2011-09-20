@@ -10,13 +10,13 @@
   <li>28/07/01 -  EG   - Initial version
   </ul></font>
 }
-unit PlugInManager;
+unit GLScene.PlugIn.Manager;
 
 interface
 
 {$I GLScene.inc}
 
-uses Windows, Classes, PlugInIntf, SysUtils;
+uses Windows, Classes, GLScene.PlugIn.Interface, SysUtils;
 
 type
   PPlugInEntry = ^TPlugInEntry;
@@ -93,7 +93,7 @@ type
 
 implementation
 
-uses Dialogs, Forms, PlugInManagerPropEditor;
+uses Dialogs, Forms, GLScene.PropertyEditor.PlugIn;
 
 // ----------------- TPlugInList ------------------------------------------------
 

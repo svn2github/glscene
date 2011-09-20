@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-unit Const3DS;
+unit GLScene.File.3DS.Const;
 
 // All 3DS constant definitions used by the various routines (mainly in Utils3DS.pas). About one thousand
 // defined constants herein. The guys at Autodesk must be crazy...
@@ -12,7 +12,7 @@ unit Const3DS;
 
 interface
 
-uses Types3DS;
+uses GLScene.File.3DS.Types;
 
 resourcestring
   // error messages

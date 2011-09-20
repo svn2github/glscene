@@ -21,16 +21,16 @@
    </ul>
 }
 
-unit GLVerletClothify;
+unit GLScene.Verlet.Clothify;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes,  GLVectorFileObjects, VerletClasses, VectorTypes, VectorLists,
-  VectorGeometry, GLTexture, OpenGLTokens, SysUtils, GLRenderContextInfo,
-  GLState;
+  Classes,  GLScene.Vector.FileObjects, GLScene.Base.Verlet.Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists,
+  GLScene.Base.Vector.Geometry, GLScene.Texture, GLScene.Base.OpenGL.Tokens, SysUtils, GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   {: Class that represents a face. This structure is not used for rendering, but
@@ -177,7 +177,7 @@ type
 implementation
 
 uses
-  GLContext;
+  GLScene.Base.Context;
 
 { TFaceExtractor }
 

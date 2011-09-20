@@ -22,16 +22,16 @@
       <li>24/03/04 - SG - Initial.
    </ul></font><p>
 }
-unit GLImposter;
+unit GLScene.Imposter;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, GLContext, VectorTypes, VectorGeometry,
-  PersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
-  GLRenderContextInfo, GLCoordinates, BaseClasses, GLState, GLTextureFormat;
+  Classes, GLScene.Core, GLScene.Base.Context, GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry,
+  GLScene.Base.PersistentClasses, GLScene.Platform, GLScene.Graphics, GLScene.Base.Color,
+  GLScene.Base.Context.Info, GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 type
   // TImposterOptions
@@ -468,7 +468,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLUtils;
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Utils;
 
 const
   cReferenceToPos: array[Low(TImposterReference)..High(TImposterReference)] of

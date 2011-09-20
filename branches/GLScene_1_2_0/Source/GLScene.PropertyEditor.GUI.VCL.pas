@@ -22,7 +22,7 @@
       <li>?/?/? -  - Creation
    </ul></font>
 }
-unit GuiSkinEditorFormUnit;
+unit GLScene.PropertyEditor.GUI.VCL;
 
 interface
 
@@ -30,10 +30,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows,
-    GLHUDObjects,
-  GLWin32Viewer, GLGui, GLGraphics, GLUtils, Menus, GLCrossPlatform,
-  GLCoordinates, BaseClasses, GLMaterial;
+  StdCtrls, ComCtrls, ExtCtrls, GLScene.Texture, GLScene.Core, GLScene.Objects, GLScene.GUI.Windows,
+    GLScene.Objects.HUD,
+  GLScene.Viewer.VCL, GLScene.GUI, GLScene.Graphics, GLScene.Utils, Menus, GLScene.Platform,
+  GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Material;
 
 type
   TGUISkinEditor = class(TForm)

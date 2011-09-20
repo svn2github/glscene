@@ -11,11 +11,11 @@
       <li>05/10/08 - DanB - Created, from GLMisc.pas
 	</ul></font>
 }
-unit GLCoordinates;
+unit GLScene.Base.Coordinates;
 
 interface
 
-uses Classes, VectorGeometry, VectorTypes, OpenGLTokens, BaseClasses, GLCrossPlatform;
+uses Classes, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types, GLScene.Base.OpenGL.Tokens, GLScene.Base.Classes, GLScene.Platform;
 
 {$I GLScene.inc}
 

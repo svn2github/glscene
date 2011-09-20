@@ -6,15 +6,15 @@
 
    </ul></font>
 }
-unit FRColorEditorLCL;
+unit GLScene.PropertyEditor.Color.LCL;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEditLCL, Dialogs, Controls,
-  Classes, VectorGeometry, Graphics, SysUtils, GLColor,lresources;
+  Forms, StdCtrls, ComCtrls, ExtCtrls, GLScene.PropertyEditor.TrackBar.LCL, Dialogs, Controls,
+  Classes, GLScene.Base.Vector.Geometry, Graphics, SysUtils, GLScene.Base.Color,lresources;
 
 type
 
@@ -72,7 +72,7 @@ implementation
 
 
 uses
-  GLTexture, GLCrossPlatform;
+  GLScene.Texture, GLScene.Platform;
 
 
 const

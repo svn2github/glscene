@@ -15,11 +15,11 @@
     <li>20/05/00 - RoC - Created, based on the C source code from Eric
  </ul></font>
 }
-unit Spline;
+unit GLScene.Base.Spline;
 
 interface
 
-uses VectorGeometry;
+uses GLScene.Base.Vector.Geometry;
 
 {$I GLScene.inc}
 
@@ -142,7 +142,7 @@ type
 implementation
 
 {$IFDEF GLS_DELPHI_2009_UP}
-uses VectorTypes;
+uses GLScene.Base.Vector.Types;
 {$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TCubicSpline'}{$ENDIF}

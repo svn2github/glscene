@@ -12,14 +12,14 @@
   </ul></font>
 
 }
-unit PlugInManagerPropEditor;
+unit GLScene.PropertyEditor.PlugIn;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Forms, Dialogs, StdCtrls, Controls, Buttons, Classes, PlugInManager;
+  Forms, Dialogs, StdCtrls, Controls, Buttons, Classes, GLScene.PlugIn.Manager;
 
 type
   TPlugInManagerPropForm = class(TForm)
@@ -57,7 +57,7 @@ var
 
 implementation
 
-uses PlugInIntf, SysUtils;
+uses GLScene.PlugIn.Interface, SysUtils;
 
 {$R *.DFM}
 // ------------------------------------------------------------------------------

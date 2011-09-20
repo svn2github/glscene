@@ -16,7 +16,7 @@
    </ul></font><p>
 }
 
-unit GLS_NishitaSky;
+unit GLScene.Objects.NishitaSky;
 
 interface
 
@@ -28,23 +28,23 @@ uses
   SysUtils,
   Classes,
 
-  // GLScene
-  GLScene,
-  GLCadencer,
-  OpenGLTokens,
-  VectorGeometry,
-  VectorTypes,
-  GLState,
-  GLContext,
-  GLTexture,
-  GLGraphics,
-  GLTextureFormat,
-  GLS_Mesh,
-  GLS_DrawTechnique,
-  GLMaterial,
-  GLS_Material,
-  GLRenderContextInfo,
-  GLPipelineTransformation;
+  // GLScene.Core
+  GLScene.Core,
+  GLScene.Cadencer,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Context,
+  GLScene.Texture,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Mesh,
+  GLScene.DrawTechnique,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation;
 
 type
 
@@ -198,11 +198,11 @@ implementation
 
 uses
 {$IFDEF NISHITA_SKY_DEBUG_MODE}
-  GLFileDDS,
+  GLScene.File.DDS,
 {$ENDIF}
-  GLSLog,
-  GLS_ShaderParameter,
-  GLColor
+  GLScene.Base.Log,
+  GLScene.Shader.Parameter,
+  GLScene.Base.Color
 {$IFDEF GLS_SERVICE_CONTEXT}
   ,SyncObjs
 {$ENDIF GLS_SERVICE_CONTEXT}

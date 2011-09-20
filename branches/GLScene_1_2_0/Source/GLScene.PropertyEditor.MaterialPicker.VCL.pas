@@ -11,15 +11,15 @@
       <li>14/02/00 - Egg - Creation
     </ul></font>
 }
-unit FLibMaterialPicker;
+unit GLScene.PropertyEditor.MaterialPicker.VCL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLViewer,
-    GLMaterial;
+  Forms, StdCtrls, Buttons, GLScene.PropertyEditor.MaterialPreview.VCL, Controls, Classes, GLScene.Viewer,
+    GLScene.Material;
 
 type
   TLibMaterialPicker = class(TForm)

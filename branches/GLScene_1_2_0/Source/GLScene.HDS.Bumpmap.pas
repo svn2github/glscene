@@ -32,21 +32,21 @@
       <li>20/02/04 - EG - Creation
  </ul></font>
 }
-unit GLBumpmapHDS;
+unit GLScene.HDS.Bumpmap;
 
 interface
 
 {$I GLScene.inc}
 
 uses Classes,
-  GLHeightData,
-  GLGraphics,
-  VectorGeometry,
-  GLTexture,
+  GLScene.HeightData,
+  GLScene.Graphics,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Texture,
   Dialogs,
   Forms,
   SyncObjs,
-  GLMaterial;
+  GLScene.Material;
 
 type
   TGLBumpmapHDS = class;
@@ -123,9 +123,9 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils,
-  OpenGLTokens,
-  GLUtils{$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Utils{$IFDEF GLS_DELPHI},
+  GLScene.Base.Vector.Types{$ENDIF};
 
 const
   cDefaultBumpScale = 0.01;

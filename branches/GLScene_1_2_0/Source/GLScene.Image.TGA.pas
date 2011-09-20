@@ -18,13 +18,13 @@
 	   <li>21/11/02 - Egg - Creation
 	</ul></font>
 }
-unit TGA;
+unit GLScene.Image.TGA;
 
 interface
 
 {$i GLScene.inc}
 
-uses Classes, SysUtils, GLCrossPlatform;
+uses Classes, SysUtils, GLScene.Platform;
 
 type
 
@@ -64,7 +64,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLGraphics
+  GLScene.Graphics
 {$IFDEF FPC}
   ,GraphType, LCLType
 {$ENDIF}

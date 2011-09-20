@@ -10,7 +10,7 @@
    </ul><p>
 }
 
-unit GLFileBMP;
+unit GLScene.File.BMP;
 
 interface
 
@@ -19,12 +19,12 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  ApplicationFileIO;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Base.FileIO;
 
 type
 

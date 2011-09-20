@@ -25,7 +25,7 @@
       <li>03/08/00 - Egg - Creation, partly based Silicon Commander code
 	</ul></font>
 }
-unit GLKeyboard;
+unit GLScene.Keyboard;
 
 interface
 

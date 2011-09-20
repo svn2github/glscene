@@ -27,7 +27,7 @@
    (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
 }
-unit Utils3DS;
+unit GLScene.File.3DS.Utils;
 
 interface
 
@@ -35,8 +35,8 @@ interface
 {$R-}
 
 uses Classes,
-  File3DS,
-  Types3DS;
+  GLScene.File.3DS.Base,
+  GLScene.File.3DS.Types;
 
 // functions to retrieve global settings of a specific 3DS database
 function GetAtmosphere(const Source: TFile3DS; var DB: TDatabase3DS): TAtmosphere3DS;
@@ -125,7 +125,7 @@ procedure ShowErrorFormatted(ErrorMessage: string; const Args: array of const);
 implementation
 
 uses SysUtils,
-  Const3DS;
+  GLScene.File.3DS.Const;
 
 type
   E3DSError = class(Exception);

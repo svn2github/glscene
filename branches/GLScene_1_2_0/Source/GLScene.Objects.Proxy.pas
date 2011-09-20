@@ -48,7 +48,7 @@
       <li>06/12/03 - EG - Creation from GLScene.pas split
    </ul></font>
 }
-unit GLProxyObjects;
+unit GLScene.Objects.Proxy;
 
 interface
 
@@ -59,15 +59,15 @@ uses
   Classes,
   SysUtils,
 
-  // GLScene
-  GLScene,
-  VectorGeometry,
-  GLTexture,
-  GLVectorFileObjects,
-  GLStrings,
-  GLRenderContextInfo,
-  BaseClasses,
-  GLMaterial;
+  // GLScene.Core
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Texture,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Strings,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Classes,
+  GLScene.Material;
 
 type
   EGLProxyException = class(Exception);
@@ -304,10 +304,10 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  OpenGLTokens,
-  GLContext
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context
 {$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLColorProxy ------------------

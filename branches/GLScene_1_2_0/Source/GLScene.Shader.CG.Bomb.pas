@@ -32,7 +32,7 @@
 
 }
 
-unit GLCgBombShader;
+unit GLScene.Shader.CG.Bomb;
 
 interface
 
@@ -42,12 +42,12 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLTexture, GLCadencer, GLContext, OpenGLTokens, GLStrings, GLMaterial,
-  GLRenderContextInfo, GLTextureFormat,
+  // GLScene.Core
+  GLScene.Texture, GLScene.Cadencer, GLScene.Base.Context, GLScene.Base.OpenGL.Tokens, GLScene.Base.Strings, GLScene.Material,
+  GLScene.Base.Context.Info, GLScene.Texture.Format,
 
-  // CG Shaders
-  CgGL, GLCgShader;
+  // GLScene.Shader.CG Shaders
+  GLScene.Shader.CG.GL, GLScene.Shader.CG.Components;
 
 type
   EGLCgBombShaderException = class(EGLCGShaderException);

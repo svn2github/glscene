@@ -37,7 +37,7 @@
           v1.1    17 February  '2007  Made design-time compatible
 }
 
-unit GLMaterialMultiProxy;
+unit GLScene.Material.MultiProxy;
 
 interface
 
@@ -47,9 +47,9 @@ uses
   // VCL
   Classes,
 
-  // GLScene
-  GLScene, VectorGeometry, GLTexture, GLMaterial, GLSilhouette, GLStrings,
-  GLCrossPlatform, PersistentClasses, GLRenderContextInfo, BaseClasses;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Texture, GLScene.Material, GLScene.Silhouette, GLScene.Base.Strings,
+  GLScene.Platform, GLScene.Base.PersistentClasses, GLScene.Base.Context.Info, GLScene.Base.Classes;
 
 type
 
@@ -194,7 +194,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, GLContext {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils, GLScene.Base.Context {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLMaterialMultiProxyMaster ------------------

@@ -22,21 +22,21 @@
       <li>24/01/02 -  EG   - Initial version
 }
 
-unit GLViewer;
+unit GLScene.Viewer;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLContext,
-  {$IFDEF GLS_DELPHI_OR_CPPB} GLWin32Viewer; {$ENDIF}
-  {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
+  GLScene.Base.Context,
+  {$IFDEF GLS_DELPHI_OR_CPPB} GLScene.Viewer.VCL; {$ENDIF}
+  {$IFDEF FPC}                GLScene.Viewer.LCL;   {$ENDIF}
 type
 {$IFDEF FPC}
-  TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
+  TGLSceneViewer = GLScene.Viewer.LCL.TGLSceneViewer;
 {$ELSE}
-  TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
+  TGLSceneViewer = GLScene.Viewer.VCL.TGLSceneViewer;
 {$ENDIF FPC}
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
@@ -44,7 +44,7 @@ procedure SetupVSync(const AVSyncMode : TVSyncMode);
 implementation
 
 uses
-  OpenGLTokens, OpenGLAdapter;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter;
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 {$IFDEF MSWINDOWS}

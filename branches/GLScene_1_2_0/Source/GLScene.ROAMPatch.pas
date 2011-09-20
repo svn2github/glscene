@@ -26,13 +26,13 @@
       <li>10/09/01 - EG - Creation
   </ul></font>
 }
-unit GLROAMPatch;
+unit GLScene.ROAMPatch;
 
 interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext, SysUtils;
+uses GLScene.Base.Vector.Geometry, GLScene.HeightData, GLScene.Base.Vector.Lists, GLScene.Platform, GLScene.Base.Context, SysUtils;
 
 type
 
@@ -177,7 +177,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGLTokens, XOpenGL;
+uses GLScene.Base.OpenGL.Tokens, XOpenGL;
 
 var
   FVBOVertHandle, FVBOTexHandle: TGLVBOArrayBufferHandle;

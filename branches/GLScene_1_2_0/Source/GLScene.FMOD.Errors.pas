@@ -19,12 +19,12 @@
 }
 { =============================================================================================== }
 
-unit fmoderrors;
+unit GLScene.FMOD.Errors;
 
 interface
 
 uses
-  fmodtypes;
+  GLScene.FMOD.Types;
 
 {
   Disable warning for unsafe types in Delphi 7

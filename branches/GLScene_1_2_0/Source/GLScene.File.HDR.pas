@@ -15,7 +15,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileHDR;
+unit GLScene.File.HDR;
 
 {$I GLScene.inc}
 
@@ -24,12 +24,12 @@ interface
 uses
   Classes,
   SysUtils,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  ApplicationFileIO,
-  GLCrossPlatform;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Base.FileIO,
+  GLScene.Platform;
 
 type
 
@@ -64,9 +64,9 @@ type
 implementation
 
 uses
-  RGBE,
-  VectorTypes,
-  VectorGeometry;
+  GLScene.File.RGBE,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Geometry;
 
 // ------------------
 // ------------------ TGLHDRImage ------------------

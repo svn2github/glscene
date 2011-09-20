@@ -16,7 +16,7 @@
       <li>16/05/03 - EG - Creation
    </ul></font>
 }
-unit GLTexCombineShader;
+unit GLScene.Shader.TextureCombiner;
 
 interface
 
@@ -24,10 +24,10 @@ interface
 
 uses
   Classes,
-  GLTexture,
-  GLMaterial,
-  GLRenderContextInfo,
-  GLTextureCombiners;
+  GLScene.Texture,
+  GLScene.Material,
+  GLScene.Base.Context.Info,
+  GLScene.Texture.Combiners;
 
 type
 
@@ -93,11 +93,11 @@ implementation
 
 uses
   SysUtils,
-  OpenGLTokens,
+  GLScene.Base.OpenGL.Tokens,
   XOpenGL,
-  GLContext,
-  GLCrossPlatform,
-  GLUtils;
+  GLScene.Base.Context,
+  GLScene.Platform,
+  GLScene.Utils;
 
 // ------------------
 // ------------------ TGLTexCombineShader ------------------

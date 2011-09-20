@@ -30,12 +30,12 @@
 
   Tobias Peirick
 }
-unit GLProcTextures;
+unit GLScene.Texture.Procedural;
 
 interface
 
-uses Classes, GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform, SysUtils,
-  GLTextureFormat;
+uses Classes, GLScene.Texture, GLScene.Graphics, GLScene.Base.OpenGL.Tokens, GLScene.Platform, SysUtils,
+  GLScene.Texture.Format;
 
 const
   GRADIENT_TABLE_SIZE = 256;
@@ -99,7 +99,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses VectorGeometry;
+uses GLScene.Base.Vector.Geometry;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
 { PERM array Borrowed from Darwyn Peachey.

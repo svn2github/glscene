@@ -119,16 +119,16 @@
   </ul>
 }
 
-unit GLODEManager;
+unit GLScene.ODE.Manager;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, ODEGL, ODEImport, GLScene, VectorGeometry, GLTexture, OpenGLTokens,
-  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists,
-  GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
+  Classes, GLScene.ODE.GL, GLScene.ODE.Import, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Texture, GLScene.Base.OpenGL.Tokens,
+  XOpenGL, SysUtils, GLScene.Objects, GLScene.Base.XCollection, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Lists,
+  GLScene.Base.Color, GLScene.Base.Coordinates, GLScene.Base.Context.Info, GLScene.Manager, GLScene.Base.GLStateMachine;
 
 type
 
@@ -1231,7 +1231,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  GLContext;
+  GLScene.Base.Context;
 
 // nearCallBack
 //

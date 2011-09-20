@@ -21,13 +21,13 @@
       <li>04/06/00 - Egg - Creation
 	</ul></font>
 }
-unit GLSoundFileObjects;
+unit GLScene.Sound.FileObjects;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes,{$IFDEF MSWINDOWS}MMSystem,{$ENDIF}ApplicationFileIO, GLCrossPlatform;
+uses Classes,{$IFDEF MSWINDOWS}MMSystem,{$ENDIF}GLScene.Base.FileIO, GLScene.Platform;
 
 type
 

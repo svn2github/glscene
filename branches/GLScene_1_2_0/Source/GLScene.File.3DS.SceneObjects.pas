@@ -13,7 +13,7 @@
       <li>06/04/08 - DaStr - Initial version (by Lexer)
   </ul></font>
 }
-unit GLFile3DSSceneObjects;
+unit GLScene.File.3DS.SceneObjects;
 
 interface
 
@@ -25,19 +25,19 @@ uses
   SysUtils,
   Math,
 
-  // GLScene
-  VectorGeometry,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLContext,
-  GLScene,
-  GLVectorFileObjects,
-  VectorTypes,
-  PersistentClasses,
-  GLCrossPlatform,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLState;
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Context,
+  GLScene.Core,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.PersistentClasses,
+  GLScene.Platform,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   TGLFile3DSLight = class(TGLLightSource)

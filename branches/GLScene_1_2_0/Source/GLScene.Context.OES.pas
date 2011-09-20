@@ -24,8 +24,8 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-  OpenGLTokens,
-  GLContext;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context;
 
 type
 
@@ -70,9 +70,9 @@ implementation
 {$IFDEF GLS_OPENGL_ES}
 
 uses
-  OpenGLAdapter,
-  GLCrossPlatform,
-  GLSLog;
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Platform,
+  GLScene.Base.Log;
 
 // ------------------
 // ------------------ TGLOESContext ------------------

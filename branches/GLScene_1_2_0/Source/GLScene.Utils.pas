@@ -26,7 +26,7 @@
       <li>05/09/03 - EG - Creation from GLMisc split
    </ul></font>
 }
-unit GLUtils;
+unit GLScene.Utils;
 
 interface
 
@@ -37,9 +37,9 @@ uses
   Graphics,
   Controls,
 
-  // GLScene
-  VectorGeometry,
-  GLCrossPlatform;
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry,
+  GLScene.Platform;
 
 {$I GLScene.inc}
 
@@ -125,7 +125,7 @@ uses
 {$IFDEF GLS_EXPERIMENTAL}
   GL3xMesh,
 {$ENDIF GLS_EXPERIMENTAL}
-  ApplicationFileIO,
+  GLScene.Base.FileIO,
   Dialogs,
   ExtDlgs;
 

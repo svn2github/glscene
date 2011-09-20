@@ -43,7 +43,7 @@
                                        Donated to GLScene
 }
 
-unit GLSimpleNavigation;
+unit GLScene.SimpleNavigation;
 
 interface
 
@@ -59,12 +59,12 @@ uses
   TypInfo,
 
   // GLSñene
-  GLSceneForm,
-  VectorGeometry,
-  GLScene,
-  GLViewer,
-  GLStrings,
-  GLCrossPlatform;
+  GLScene.VCL.Form,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Core,
+  GLScene.Viewer,
+  GLScene.Base.Strings,
+  GLScene.Platform;
 
 type
   TGLSimpleNavigationOption = (

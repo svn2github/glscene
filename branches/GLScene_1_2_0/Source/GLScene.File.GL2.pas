@@ -13,13 +13,13 @@
 	   <li>25/03/03 - SG - Creation.
 	</ul></font>
 }
-unit GLFileGL2;
+unit GLScene.File.GL2;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, GLMaterial, VectorGeometry,
-  FileGL2, VectorTypes, VectorLists;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Material, GLScene.Base.Vector.Geometry,
+  GLScene.File.GL2.Base, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists;
 
 type
 

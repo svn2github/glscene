@@ -45,14 +45,14 @@
       <li>21/06/02 - EG - Creation (original code by Mattias Fagerlund)
    </ul>
 }
-unit VerletClasses;
+unit GLScene.Base.Verlet.Classes;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLCrossPlatform, VectorGeometry, SysUtils, VectorLists, SpatialPartitioning,
-  GeometryBB;
+uses Classes, GLScene.Platform, GLScene.Base.Vector.Geometry, SysUtils, GLScene.Base.Vector.Lists, GLScene.Base.SpatialPartitioning,
+  GLScene.Base.GeometryBB;
 
 const
    G_DRAG = 0.0001;
@@ -858,7 +858,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 // ------------------
 // ------------------ TVerletNode ------------------
 // ------------------

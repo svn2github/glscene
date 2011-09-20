@@ -23,14 +23,14 @@
 	   <li>18/08/01 - EG - Creation
 	</ul></font>
 }
-unit MeshUtils;
+unit GLScene.Mesh.Utils;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, PersistentClasses, VectorLists, VectorGeometry, VectorTypes;
+  Classes, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Lists, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -192,7 +192,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLCrossPlatform, SysUtils;
+uses GLScene.Platform, SysUtils;
 
 var
    v0to255reciproquals : array of Single;

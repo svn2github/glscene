@@ -9,13 +9,13 @@
     21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
     28/02/03 - SG - Creation
 }
-unit GLFileMD3;
+unit GLScene.File.MD3;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMaterial, ApplicationFileIO,
-  VectorGeometry, FileMD3;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Material, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Geometry, GLScene.File.MD3.Base;
 
 type
 

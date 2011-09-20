@@ -16,7 +16,7 @@
                           (Created by Rustam Asmandiarov aka Predator)
   </ul></font>
 }
-unit GLSLanguage;
+unit GLScene.Language;
 
 interface
 
@@ -141,14 +141,14 @@ implementation
 
 uses
   {$IFDEF GLS_LOGGING}
-  GLSLog,
+  GLScene.Base.Log,
   {$ENDIF}
   {$IFDEF FPC}
   FileUtil, LConvEncoding,
   {$ENDIF}
   IniFiles,
   SysUtils,
-  GLCrossPlatform;
+  GLScene.Platform;
 
 
 { TLanguage }

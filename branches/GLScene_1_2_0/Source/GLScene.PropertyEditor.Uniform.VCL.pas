@@ -8,7 +8,7 @@
   </ul>
 }
 
-unit FRUniformEditor;
+unit GLScene.PropertyEditor.Uniform.VCL;
 
 interface
 
@@ -16,7 +16,7 @@ interface
 
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons, GLS_ShaderParameter, GLTextureFormat;
+  Dialogs, StdCtrls, ExtCtrls, Buttons, GLScene.Shader.Parameter, GLScene.Texture.Format;
 
 type
   TShaderUniformEditor = class(TForm)
@@ -64,7 +64,7 @@ implementation
 {$R *.dfm}
 
 uses
-  VectorGeometry;
+  GLScene.Base.Vector.Geometry;
 
 var
   vShaderUniformEditor: TShaderUniformEditor;

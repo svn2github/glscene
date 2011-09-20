@@ -18,7 +18,7 @@
       v1.2  30 March       '2007  TGLCustomGLSLPostBlurShaderSceneObject removed
                                   Shader now supports GL_TEXTURE_RECTANGLE_ARB
 }
-unit GLSLPostBlurShader;
+unit GLScene.Shader.GLSL.PostBlur;
 
 interface
 
@@ -28,9 +28,9 @@ uses
   // VCL
   Classes,
 
-  // GLScene
-  GLTexture, GLScene, VectorGeometry, GLContext,
-  GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Context,
+  GLScene.Shader.GLSL.Components, GLScene.Shader.Custom, GLScene.Base.Context.Info, GLScene.Texture.Format;
 
 type
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -59,7 +59,7 @@ type
 implementation
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 { TGLCustomGLSLPostBlurShader }
 

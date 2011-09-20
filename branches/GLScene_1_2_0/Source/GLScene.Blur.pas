@@ -28,7 +28,7 @@
         <li>11/06/04 - Mrqzzz - Creation
    </ul></font>
 }
-unit GLBlur;
+unit GLScene.Blur;
 
 interface
 
@@ -38,10 +38,10 @@ uses
   // VCL
   Classes, SysUtils, Graphics,
 
-  // GLScene
-  GLScene, VectorGeometry, GLObjects, GLBitmapFont, GLTexture, GLMaterial,
-  GLHudObjects, GLColor, GLGraphics, GLContext, OpenGLTokens,
-  BaseClasses, GLRenderContextInfo;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Objects, GLScene.BitmapFont, GLScene.Texture, GLScene.Material,
+  GLScene.Objects.HUD, GLScene.Base.Color, GLScene.Graphics, GLScene.Base.Context, GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Classes, GLScene.Base.Context.Info;
 
 type
 
@@ -176,7 +176,7 @@ type
 
 implementation
 
-uses XOpenGL, GLState, GLTextureFormat;
+uses XOpenGL, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 const
   EPS = 0.001;

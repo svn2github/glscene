@@ -15,7 +15,7 @@
   <li>01/04/00 - EG - Re-Creation, minor changes over Carlos's code
   </ul></font>
 }
-unit AsyncTimer;
+unit GLScene.AsyncTimer;
 
 interface
 
@@ -72,7 +72,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLCrossPlatform;
+uses SysUtils, GLScene.Platform;
 
 type
 

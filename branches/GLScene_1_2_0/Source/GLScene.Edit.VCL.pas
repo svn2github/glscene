@@ -49,15 +49,15 @@
   <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
   </ul></font>
 }
-unit GLSceneEdit;
+unit GLScene.Edit.VCL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  XCollection,
-  GLScene,
+  GLScene.Base.XCollection,
+  GLScene.Core,
   Classes,
   SysUtils,
   Registry,
@@ -263,11 +263,11 @@ implementation
 {$R *.dfm}
 
 uses
-  GLViewer,
-  GLSceneRegister,
-  GLStrings,
-  Info,
-  GLCrossPlatform,
+  GLScene.Viewer,
+  GLScene.Register.VCL,
+  GLScene.Base.Strings,
+  GLScene.Info.VCL,
+  GLScene.Platform,
   ClipBrd;
 
 resourcestring

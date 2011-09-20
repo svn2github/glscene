@@ -11,12 +11,12 @@
 	   <li>25/03/03 - SG - Creation
 	</ul></font>
 }
-unit FileGL2;
+unit GLScene.File.GL2.Base;
 
 interface
 
 uses
-  Classes,VectorTypes,SysUtils,VectorGeometry;
+  Classes,GLScene.Base.Vector.Types,SysUtils,GLScene.Base.Vector.Geometry;
 
 type
   TGLMHeader = record

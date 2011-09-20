@@ -21,7 +21,7 @@
 //
 // (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
-unit Types3DS;
+unit GLScene.File.3DS.Types;
 
 {$ALIGN ON}
 {$MINENUMSIZE 4}

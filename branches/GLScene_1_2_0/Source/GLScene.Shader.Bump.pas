@@ -58,7 +58,7 @@
       <li>22/06/04 - SG - Creation.
    </ul></font>
 }
-unit GLBumpShader;
+unit GLScene.Shader.Bump;
 
 interface
 
@@ -67,17 +67,17 @@ interface
 uses
   Classes,
   SysUtils,
-  GLMaterial,
-  GLGraphics,
-  GLUtils,
-  VectorGeometry,
-  OpenGLTokens,
-  GLContext,
-  VectorLists,
-  GLColor,
-  GLRenderContextInfo,
-  GLState,
-  GLTextureFormat;
+  GLScene.Material,
+  GLScene.Graphics,
+  GLScene.Utils,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine,
+  GLScene.Texture.Format;
 
 type
   TBumpMethod = (bmDot3TexCombiner, bmBasicARBFP);

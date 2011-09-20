@@ -8,7 +8,7 @@
   </ul></font>
 }
 
-unit LIBFREETYPE;
+unit GLScene.LIBFREETYPE;
 
 interface
 
@@ -16,7 +16,7 @@ interface
 
 uses
 {$IFDEF GLS_LOGGING}
-  GLSLog,
+  GLScene.Base.Log,
 {$ENDIF}
 {$IFDEF MSWINDOWS}
   Windows,
@@ -25,7 +25,7 @@ uses
   x,
   dynlibs,
 {$ENDIF}
-  GLCrossPlatform;
+  GLScene.Platform;
 
 type
   FT_Encoding = array[0..3] of char;

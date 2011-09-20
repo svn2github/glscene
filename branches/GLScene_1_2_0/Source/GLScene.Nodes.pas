@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLNodes<p>
@@ -8,7 +8,7 @@
  <b>History : </b><font size=-1><ul>
       <li>26/05/11 - Yar - Transition to indirect rendering objects
       <li>01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
-      <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks ցlexx)
+      <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks ?lexx)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>26/11/09 - DaStr - Improved Lazarus compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
@@ -18,21 +18,21 @@
       <li>05/10/08 - DanB - Created from GLMisc.pas split
    </ul></font>
 }
-unit GLNodes;
+unit GLScene.Nodes;
 
 interface
 
 uses
   Classes,
-  VectorGeometry,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLContext,
-  BaseClasses,
-  GLCoordinates,
-  Spline,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Context,
+  GLScene.Base.Classes,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Spline,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 {$I GLScene.inc}
 
@@ -153,10 +153,10 @@ implementation
 
 uses
   SysUtils,
-  GLState,
-  GLS_ShaderParameter
+  GLScene.Base.GLStateMachine,
+  GLScene.Shader.Parameter
 {$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLNode ------------------

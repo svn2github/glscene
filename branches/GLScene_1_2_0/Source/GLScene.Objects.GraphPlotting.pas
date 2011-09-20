@@ -31,7 +31,7 @@
   <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
   </ul></font>
 }
-unit GLGraph;
+unit GLScene.Objects.GraphPlotting;
 
 interface
 
@@ -39,19 +39,19 @@ interface
 
 uses
   Classes,
-  GLContext,
-  GLScene,
-  VectorGeometry,
-  GLMaterial,
-  GLS_Material,
-  GLObjects,
-  VectorLists,
-  GLColor,
-  BaseClasses,
-  GLPipelineTransformation,
-  GLRenderContextInfo,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Base.Context,
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Objects,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Transformation,
+  GLScene.Base.Context.Info,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -282,12 +282,12 @@ uses
 {$ENDIF}
   SysUtils,
 {$IFDEF GLS_DELPHI}
-  VectorTypes,
+  GLScene.Base.Vector.Types,
 {$ENDIF}
-  OpenGLTokens,
-  GLS_ShaderParameter,
-  GLState,
-  GLSLog;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Shader.Parameter,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Log;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSamplingScale'}{$ENDIF}
 

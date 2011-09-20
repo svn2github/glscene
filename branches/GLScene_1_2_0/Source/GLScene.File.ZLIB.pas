@@ -10,14 +10,14 @@
   </ul><p>
 }
 
-unit GLFileZLIB;
+unit GLScene.File.ZLIB;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  Classes, SysUtils, GLSArchiveManager, GLSZLibEx;
+  Classes, SysUtils, GLScene.Archive.Manager, GLScene.ZLIB;
 
 const
    SIGN = 'ZLIB'; //Signature for compressed zlib.

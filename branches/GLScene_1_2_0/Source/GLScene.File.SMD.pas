@@ -15,13 +15,13 @@
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
-unit GLFileSMD;
+unit GLScene.File.SMD;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLTexture, ApplicationFileIO,
-  VectorTypes, VectorGeometry, GLMaterial;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Texture, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Material;
 
 type
    // TGLSMDVectorFile
@@ -49,7 +49,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils;
+uses GLScene.Utils;
 
 // ------------------
 // ------------------ TGLSMDVectorFile ------------------

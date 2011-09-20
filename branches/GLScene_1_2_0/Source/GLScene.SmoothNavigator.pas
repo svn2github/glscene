@@ -39,7 +39,7 @@
                                     Contributed to GLScene
 }
 
-unit GLSmoothNavigator;
+unit GLScene.SmoothNavigator;
 
 interface
 
@@ -49,8 +49,8 @@ uses
   // VCL
   Classes,
 
-  // GLScene
-  GLNavigator, VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen;
+  // GLScene.Core
+  GLScene.Navigator, GLScene.Base.Vector.Geometry, GLScene, GLScene.Platform, GLScene.Base.Coordinates, GLScene.Screen;
 
 type
 	{: TGLNavigatorAdjustDistanceParameters is wrapper for all parameters that

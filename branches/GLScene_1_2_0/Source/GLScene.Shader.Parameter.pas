@@ -7,7 +7,7 @@
     <li>14/03/11 - Yar - Creation
   </ul>
 }
-unit GLS_ShaderParameter;
+unit GLScene.Shader.Parameter;
 
 interface
 
@@ -16,7 +16,7 @@ interface
 
 uses
   Classes,
-  OpenGLTokens, VectorTypes, GLTextureFormat, GLRenderContextInfo;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Types, GLScene.Texture.Format, GLScene.Base.Context.Info;
 
 type
 

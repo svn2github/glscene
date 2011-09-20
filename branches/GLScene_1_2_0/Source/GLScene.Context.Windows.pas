@@ -52,7 +52,7 @@
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
 }
-unit GLWin32Context;
+unit GLScene.Context.Windows;
 
 interface
 
@@ -64,9 +64,9 @@ uses
   Windows,
   Classes,
   SysUtils,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLContext;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Context;
 
 type
 
@@ -142,9 +142,9 @@ implementation
 uses
   Forms,
   Messages,
-  GLCrossPlatform,
-  GLState,
-  GLSLog;
+  GLScene.Platform,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Log;
 
 resourcestring
   cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';

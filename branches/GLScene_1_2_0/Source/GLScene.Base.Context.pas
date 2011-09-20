@@ -78,7 +78,7 @@
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
 }
-unit GLContext;
+unit GLScene.Base.Context;
 
 interface
 
@@ -97,17 +97,17 @@ uses
 {$ENDIF}
   SyncObjs,
 {$IFDEF GLS_SERVICE_CONTEXT}
-  GLSGenerics,
+  GLScene.Base.Generics,
 {$ENDIF}
-  GLCrossPlatform,
-  OpenGLTokens,
-  OpenGLAdapter,
-  VectorGeometry,
-  VectorTypes,
-  GLState,
-  GLPipelineTransformation,
-  GLTextureFormat,
-  GLSLog;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Transformation,
+  GLScene.Texture.Format,
+  GLScene.Base.Log;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -1323,8 +1323,8 @@ implementation
 // ------------------------------------------------------------------
 uses
   Controls,
-  BaseClasses,
-  GLStrings;
+  GLScene.Base.Classes,
+  GLScene.Base.Strings;
 
 resourcestring
   cCannotAlterAnActiveContext = 'Cannot alter an active context';

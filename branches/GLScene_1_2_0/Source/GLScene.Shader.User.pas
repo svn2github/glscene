@@ -11,12 +11,12 @@
       <li>05/08/03 - SG - Creation
    </ul></font>
 }
-unit GLUserShader;
+unit GLScene.Shader.User;
 
 interface
 
 uses
-  Classes, GLMaterial, GLRenderContextInfo;
+  Classes, GLScene.Material, GLScene.Base.Context.Info;
 
 type
   TOnDoApplyEvent = procedure (Sender : TObject; var rci : TRenderContextInfo) of Object;

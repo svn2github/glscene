@@ -13,14 +13,14 @@
       <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
 	</ul></font>
 }
-unit GLSMWaveOut;
+unit GLScene.WaveOut;
 
 interface
 
 {$I GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
-uses Classes, GLSound, MMSystem, GLSoundFileObjects;
+uses Classes, GLScene.Sound, MMSystem, GLScene.Sound.FileObjects;
 
 type
 

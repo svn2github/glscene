@@ -9,13 +9,13 @@
                           by Eric Grange.
 	</ul></font>
 }
-unit GLFileNurbs;
+unit GLScene.File.Nurbs;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, VectorGeometry, VectorLists, ApplicationFileIO,
-  GLParametricSurfaces, GLUtils;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.FileIO,
+  GLScene.Objects.ParametricSurfaces, GLScene.Utils;
 
 type
 

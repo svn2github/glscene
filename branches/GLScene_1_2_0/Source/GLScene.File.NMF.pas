@@ -11,13 +11,13 @@
     20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
     16/05/2003 - SG - Creation
 }
-unit GLFileNMF;
+unit GLScene.File.NMF;
 
 interface
 
 uses
-  Classes, GLVectorFileObjects, VectorGeometry, VectorLists, ApplicationFileIO,
-  FileNMF;
+  Classes, GLScene.Vector.FileObjects, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.FileIO,
+  GLScene.File.NMF.Base;
 
 type
   TGLNMFVectorFile = class (TVectorFile)

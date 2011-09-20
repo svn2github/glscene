@@ -29,7 +29,7 @@
    </ul></font>
 }
 
-unit GlFileX;
+unit GLScene.File.X;
 
 interface
 
@@ -39,12 +39,12 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLVectorFileObjects, ApplicationFileIO, VectorGeometry, GLTexture,
-  VectorLists, GLMaterial,
+  // GLScene.Core
+  GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Base.Vector.Geometry, GLScene.Texture,
+  GLScene.Base.Vector.Lists, GLScene.Material,
 
   // Misc
-  FileX;
+  GLScene.File.X.Base;
 
 type
   TGLXVectorFile = class (TVectorFile)

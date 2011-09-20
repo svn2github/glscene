@@ -30,7 +30,7 @@
   Unit contains some text file related utilities and logging class
 }
 
-unit GLSLog;
+unit GLScene.Base.Log;
 
 interface
 
@@ -40,7 +40,7 @@ uses
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
-  Classes, SysUtils, Dialogs, GLCrossPlatform, SyncObjs
+  Classes, SysUtils, Dialogs, GLScene.Platform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
 {$IFDEF LINUX} , Process {$ENDIF};
 
@@ -563,4 +563,4 @@ finalization
 
   GLSLogger.Shutdown;
 
-end.
+end.

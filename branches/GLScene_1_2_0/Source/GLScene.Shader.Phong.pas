@@ -17,7 +17,7 @@
       <li>11/10/04 - SG - Creation.
    </ul></font>
 }
-unit GLPhongShader;
+unit GLScene.Shader.Phong;
 
 interface
 
@@ -27,9 +27,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLTexture, VectorGeometry, VectorLists, OpenGLTokens, GLContext,
-  GLAsmShader, GLRenderContextInfo, GLCustomShader, GLState;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context,
+  GLScene.Shader.Asm, GLScene.Base.Context.Info, GLScene.Shader.Custom, GLScene.Base.GLStateMachine;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)

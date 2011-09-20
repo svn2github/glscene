@@ -11,7 +11,7 @@
     ODE formats and GLScene formats
 }
 
-unit dynodegl;
+unit GLScene.ODE.Utility;
 
 interface
 
@@ -26,8 +26,8 @@ interface
 }
 
 uses
-  OpenGLTokens, GLContext, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
-  GLObjects, GLVerletClothify, GLVectorFileObjects;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Base.Vector.Geometry, GLScene.ODE.Import, GLScene, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists,
+  GLScene.Objects, GLScene.Verlet.Clothify, GLScene.Vector.FileObjects;
 
   procedure DrawBox(Sides : TdVector3);
   procedure setTransform (pos : TdVector3; R : TdMatrix3);

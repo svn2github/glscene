@@ -22,14 +22,14 @@
       <li>30/01/03 - EG - Creation
 	</ul></font>
 }
-unit GLBSP;
+unit GLScene.BSP;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLVectorFileObjects, GLMaterial, GLCrossPlatform, VectorGeometry,
-   VectorLists, GLColor, GLRenderContextInfo;
+uses Classes, GLScene.Vector.FileObjects, GLScene.Material, GLScene.Platform, GLScene.Base.Vector.Geometry,
+   GLScene.Base.Vector.Lists, GLScene.Base.Color, GLScene.Base.Context.Info;
 
 type
 
@@ -211,7 +211,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, VectorTypes;
+uses SysUtils, GLScene.Base.Vector.Types;
 
 const
    cOwnTriangleEpsilon = 1e-5;

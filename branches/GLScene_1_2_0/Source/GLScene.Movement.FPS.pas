@@ -21,16 +21,16 @@
       <li>09/06/04 - Mathx - Creation
 	</ul></font>
 }
-unit GLFPSMovement;
+unit GLScene.Movement.FPS;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-     Classes, Graphics, VectorGeometry, GLScene, GLVectorFileObjects,
-     VectorLists, XCollection, GLGeomObjects,
-     GLNavigator, GLRenderContextInfo, BaseClasses, GLManager, GLState;
+     Classes, Graphics, GLScene.Base.Vector.Geometry, GLScene, GLScene.Vector.FileObjects,
+     GLScene.Base.Vector.Lists, GLScene.Base.XCollection, GLScene.ObjectsEx,
+     GLScene.Navigator, GLScene.Base.Context.Info, GLScene.Base.Classes, GLScene.Manager, GLScene.Base.GLStateMachine;
 
 type
      TContactPoint = record
@@ -201,7 +201,7 @@ function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overl
 
 implementation
 
-uses SysUtils, OpenGLTokens, GLContext, GLCrossPlatform;
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Platform;
 
 function GetFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 var

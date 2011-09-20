@@ -15,7 +15,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileO3TC;
+unit GLScene.File.O3TC;
 
 interface
 
@@ -24,12 +24,12 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  ApplicationFileIO;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Base.FileIO;
 
 type
 
@@ -52,7 +52,7 @@ type
 implementation
 
 uses
-  VectorGeometry;
+  GLScene.Base.Vector.Geometry;
 
 const
   O3_TC_RGB_S3TC_DXT1 = 1;

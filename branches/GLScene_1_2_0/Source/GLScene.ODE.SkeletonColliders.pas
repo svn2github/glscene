@@ -15,12 +15,12 @@
       <li>04/12/03 - SG - Creation.
    </ul></font>
 }
-unit GLODESkeletonColliders;
+unit GLScene.ODE.SkeletonColliders;
 
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects, ODEImport;
+  Classes, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Vector.FileObjects, GLScene.ODE.Import;
 
 type
   

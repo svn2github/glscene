@@ -9,12 +9,12 @@
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
-unit GLFileTIN;
+unit GLScene.File.TIN;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, VectorGeometry;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Base.Vector.Geometry;
 
 type
    // TGLTINVectorFile
@@ -37,7 +37,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses GLUtils, VectorTypes;
+uses GLScene.Utils, GLScene.Base.Vector.Types;
 // ------------------
 // ------------------ TGLTINVectorFile ------------------
 // ------------------

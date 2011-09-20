@@ -14,7 +14,7 @@
   </ul></font>
 }
 
-unit ImageUtils;
+unit GLScene.Image.Utils;
 
 // DONE: ConvertImage
 // TODO: Complite InfToXXX
@@ -37,10 +37,10 @@ interface
 uses
   SysUtils,
   Classes,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLTextureFormat,
-  VectorGeometry;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Texture.Format,
+  GLScene.Base.Vector.Geometry;
 
 var
   vImageScaleFilterWidth: Integer = 5; // Relative sample radius for filtering

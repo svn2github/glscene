@@ -19,13 +19,13 @@
     <li>04/06/00 - EG - Creation
  </ul></font>
 }
-unit GLSound;
+unit GLScene.Sound;
 
 interface
 
 uses
-  Classes, GLSoundFileObjects, GLScene, XCollection, VectorGeometry,
-  GLCadencer, BaseClasses;
+  Classes, GLScene.Sound.FileObjects, GLScene.Core, GLScene.Base.XCollection, GLScene.Base.Vector.Geometry,
+  GLScene.Cadencer, GLScene.Base.Classes;
 
 {$I GLScene.inc}
 
@@ -542,7 +542,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLCrossPlatform, GLUtils;
+uses SysUtils, GLScene.Platform, GLScene.Utils;
 
 var
   vActiveSoundManager: TGLSoundManager;

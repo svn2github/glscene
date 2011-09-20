@@ -10,7 +10,7 @@
       <li>19/03/10 - Yar - Creation
 	</ul></font>
 }
-unit GLSCUDAEditor;
+unit GLScene.CUDA.Editor;
 
 interface
 
@@ -25,7 +25,7 @@ uses
   {$ELSE}
   propedits, componenteditors,
   {$ENDIF}
-  GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics;
+  GLScene.CUDA, GLScene.CUDA.FFTPlan, GLScene.CUDA.Graphics;
 
 type
   TGLSCUDAEditorForm = class(TForm)

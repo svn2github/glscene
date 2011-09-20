@@ -12,7 +12,7 @@
                                                          (BugTracekrID=1681585)
 	</ul></font>
 }
-unit SDL;
+unit GLScene.SDL;
 {******************************************************************************}
 {                                                                              }
 {       Borland Delphi SDL - Simple DirectMedia Layer                          }

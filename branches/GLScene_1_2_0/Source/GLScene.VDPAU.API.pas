@@ -35,7 +35,7 @@
 // * OTHER DEALINGS IN THE SOFTWARE.
 // }
 
-unit GLS_VDPAU_API;
+unit GLScene.VDPAU.API;
 
 {$I GLScene.inc}
 {$IFDEF FPC}

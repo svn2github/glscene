@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLS_CL_GL<p>
@@ -34,11 +34,11 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // ****************************************************************************/
 
-unit GLS_CL_GL;
+unit GLScene.CL.GL;
 
 interface
 
-uses GLS_CL, GLS_CL_Platform, OpenGLTokens;
+uses GLScene.CL, GLScene.CL.Platform, GLScene.Base.OpenGL.Tokens;
 
 {$I cl.inc}
 

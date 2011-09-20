@@ -8,7 +8,7 @@
     </ul></font>
 }
 
-unit FLibMaterialPickerLCL;
+unit GLScene.PropertyEditor.MaterialPicker.LCL;
 
 interface
 
@@ -17,9 +17,9 @@ interface
 uses
   lresources, LCLIntf,
   Controls, Classes, Forms, StdCtrls, Buttons, Dialogs, Graphics,
-  GLViewer, GLMaterial, GLScene, GLObjects, GLTexture,
-  GLHUDObjects, GLTeapot, GLGeomObjects, GLColor,
-  GLCoordinates;
+  GLScene.Viewer, GLScene.Material, GLScene.Core, GLScene.Objects, GLScene.Texture,
+  GLScene.Objects.HUD, GLScene.Objects.Teapot, GLScene.ObjectsEx, GLScene.Base.Color,
+  GLScene.Base.Coordinates;
 
 type
 

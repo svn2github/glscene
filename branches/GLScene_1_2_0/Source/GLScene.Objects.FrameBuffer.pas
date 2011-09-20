@@ -23,15 +23,15 @@
   <li>09/11/09 - DaStr - Initial version (contributed to GLScene)
   </ul></font>
 }
-unit GLFBORenderer;
+unit GLScene.Objects.FrameBuffer;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, VectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
-  GLMaterial, GLRenderContextInfo, GLState, GLSLog;
+  Classes, GLScene.Base.Vector.Geometry, GLScene, GLScene.Texture, GLScene.Base.Context, GLScene.Base.FrameBuffer, GLScene.Base.Color,
+  GLScene.Material, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine, GLScene.Base.Log;
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -222,9 +222,9 @@ implementation
 
 uses
   SysUtils,
-  OpenGLTokens,
-  {$IFDEF GLS_DELPHI} VectorTypes, {$ENDIF}
-  GLMultisampleImage;
+  GLScene.Base.OpenGL.Tokens,
+  {$IFDEF GLS_DELPHI} GLScene.Base.Vector.Types, {$ENDIF}
+  GLScene.Image.Multisample;
 
 { TGLFBORenderer }
 

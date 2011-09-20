@@ -19,7 +19,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileDDS;
+unit GLScene.File.DDS;
 
 interface
 
@@ -28,13 +28,13 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  RGBE,
-  ApplicationFileIO;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.File.RGBE,
+  GLScene.Base.FileIO;
 
 type
 
@@ -75,9 +75,9 @@ var
 implementation
 
 uses
-  DXTC,
-  VectorGeometry,
-  GLStrings;
+  GLScene.File.DXTC,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Strings;
 
 // ------------------
 // ------------------ TGLDDSImage ------------------

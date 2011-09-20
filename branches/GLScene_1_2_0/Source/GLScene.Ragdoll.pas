@@ -10,12 +10,12 @@
   </ul></font>
 }
 
-unit GLRagdoll;
+unit GLScene.Ragdoll;
 
 interface
 
-uses GLScene, PersistentClasses, VectorGeometry, GLVectorFileObjects,
-  VectorLists, GLObjects;
+uses GLScene.Core, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Lists, GLScene.Objects;
 
 type
   TGLRagdoll = class;
@@ -129,7 +129,7 @@ type
 implementation
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 { TRagdollBoneList }
 

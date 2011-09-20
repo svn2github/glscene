@@ -11,7 +11,7 @@
   </ul></font>
 }
 
-unit LIBPNG;
+unit GLScene.LIBPNG;
 
 interface
 
@@ -29,12 +29,12 @@ uses
   dynlibs,
 {$ENDIF}
 {$IFDEF GLS_LOGGING}
-  GLSLog,
+  GLScene.Base.Log,
 {$ENDIF}
 {$IFDEF FPC}
-  GLSZLibExAPI,
+  GLScene.ZLIB.API,
 {$ENDIF}
-  Classes, SysUtils, VectorGeometry, GLCrossPlatform;
+  Classes, SysUtils, GLScene.Base.Vector.Geometry, GLScene.Platform;
 
 const
 {$IFDEF MSWINDOWS}

@@ -19,7 +19,7 @@
    </ul></font>
 }
 
-unit GLTrail;
+unit GLScene.Objects.Trail;
 
 interface
 
@@ -29,9 +29,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLScene, VectorTypes, MeshUtils, VectorGeometry, GLVectorFileObjects,
-  GLMesh, GLObjects, GLMaterial, GLStrings, BaseClasses;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Vector.Types, GLScene.Mesh.Utils, GLScene.Base.Vector.Geometry, GLScene.Vector.FileObjects,
+  GLScene.Objects.Mesh, GLScene.Objects, GLScene.Material, GLScene.Base.Strings, GLScene.Base.Classes;
 
 
 const cMaxVerts = 2000;

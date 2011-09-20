@@ -52,7 +52,7 @@
       v1.2    16 February  '2007  Updated to the latest CVS version of GLScene
 
 }
-unit GLSLDiffuseSpecularShader;
+unit GLScene.Shader.GLSL.DiffuseSpecular;
 
 interface
 
@@ -62,9 +62,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLTexture, GLScene, VectorGeometry, OpenGLTokens, GLStrings, GLCustomShader,
-  GLSLShader, GLColor, GLRenderContextInfo, GLMaterial;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.OpenGL.Tokens, GLScene.Base.Strings, GLScene.Shader.Custom,
+  GLScene.Shader.GLSL.Components, GLScene.Base.Color, GLScene.Base.Context.Info, GLScene.Material;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);

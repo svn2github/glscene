@@ -16,13 +16,13 @@
       <li>21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?
 	</ul></font>
 }
-unit GLMeshBuilder;
+unit GLScene.Mesh.Builder;
 
 interface
 
 Uses
-  SysUtils, Classes, GLScene, GLVectorFileObjects,
-  VectorTypes, VectorGeometry, VectorLists;
+  SysUtils, Classes, GLScene.Core, GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists;
 
 Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
 Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);

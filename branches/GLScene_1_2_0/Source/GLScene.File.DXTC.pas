@@ -17,7 +17,7 @@
       <li>01/09/04 - SG - Creation
    </ul></font>
 }
-unit DXTC;
+unit GLScene.File.DXTC;
 
 interface
 
@@ -25,7 +25,7 @@ interface
 {$Z4}  // Minimum enum size = dword
 
 uses
-   SysUtils, GLCrossPlatform, OpenGLTokens, GLTextureFormat;
+   SysUtils, GLScene.Platform, GLScene.Base.OpenGL.Tokens, GLScene.Texture.Format;
 
 const
    DDSD_CAPS        = $00000001;

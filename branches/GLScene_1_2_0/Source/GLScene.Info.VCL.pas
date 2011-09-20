@@ -26,14 +26,14 @@
   <li>17/04/00 - EG - Creation of header, minor layout changes
   </ul></font>
 }
-unit Info;
+unit GLScene.Info.VCL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls,
+  Windows, Forms, GLScene.Core, Classes, Controls, Buttons, StdCtrls, ComCtrls,
   CommCtrl, ExtCtrls, Graphics, Menus, jpeg;
 
 type
@@ -135,7 +135,7 @@ type
 implementation
 
 uses
-  OpenGLTokens, OpenGLAdapter, GLContext, SysUtils, GLCrossPlatform;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, GLScene.Base.Context, SysUtils, GLScene.Platform;
 
 {$R *.dfm}
 {$R Info.res}

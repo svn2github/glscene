@@ -67,15 +67,15 @@
    //------------------------  z:=1-(fp/d-1)/(fp/np-1); //old FtoZ
    //------------------------------------------------------------------------
 
-unit GLzBuffer;
+unit GLScene.ZBuffer;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, SysUtils, GLScene, VectorGeometry, GLGraphics,
-  GLObjects, GLContext, GLViewer, GLColor,
-  GLRenderContextInfo, GLState, GLTextureFormat;
+uses Classes, SysUtils, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Graphics,
+  GLScene.Objects, GLScene.Base.Context, GLScene.Viewer, GLScene.Base.Color,
+  GLScene.Base.Context.Info, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 type
   EZBufferException = class(Exception);
@@ -235,7 +235,7 @@ type
 
 implementation
 
-uses OpenGLTokens, XOpenGL {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses GLScene.Base.OpenGL.Tokens, XOpenGL {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 constructor TGLzBuffer.Create;
 begin

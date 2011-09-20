@@ -31,7 +31,7 @@
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
   </ul></font>
 }
-unit GLShadowVolume;
+unit GLScene.ShadowVolume;
 
 interface
 
@@ -39,18 +39,18 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  OpenGLTokens,
-  GLContext,
-  GLSilhouette,
-  GLCrossPlatform,
-  PersistentClasses,
-  GeometryBB,
-  GLColor,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLS_DrawTechnique;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Silhouette,
+  GLScene.Platform,
+  GLScene.Base.PersistentClasses,
+  GLScene.Base.GeometryBB,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.DrawTechnique;
 
 type
 
@@ -332,10 +332,10 @@ implementation
 
 uses
   SysUtils,
-  VectorLists,
-  GLState
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.GLStateMachine
 {$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------

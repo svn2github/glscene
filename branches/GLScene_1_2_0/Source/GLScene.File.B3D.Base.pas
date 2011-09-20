@@ -11,7 +11,7 @@
       <li>22/12/05 - Mathx - Added to the GLScene Project.
 	</ul></font>
 }
-unit FileB3D;
+unit GLScene.File.B3D.Base;
 
 interface
 
@@ -19,7 +19,7 @@ interface
 {$R-}
 
 uses
-  Classes, TypesB3D, VectorGeometry, VectorTypes, VectorLists;
+  Classes, GLScene.File.B3D.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists;
 
 type
   TB3DMaterial = class

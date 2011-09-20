@@ -51,7 +51,7 @@
   <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
   </ul></font>
 }
-unit GLSceneEditLCL;
+unit GLScene.Edit.LCL;
 
 interface
 
@@ -61,7 +61,7 @@ uses
   {$IFDEF MSWINDOWS}
   Registry,
   {$ENDIF}
-  XCollection, GLScene, Classes, SysUtils,
+  GLScene.Base.XCollection, GLScene, Classes, SysUtils,
   Controls,  Forms, ComCtrls,
   Dialogs, Menus, ActnList, ExtCtrls, StdCtrls,
   propedits, componenteditors, lclintf, lresources
@@ -239,7 +239,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLViewer, GLSceneRegisterLCL, GLStrings, InfoLCL, OpenGL1x, GLCrossPlatform,
+  GLScene.Viewer, GLScene.Register.LCL, GLScene.Base.Strings, GLScene.Info.LCL, OpenGL1x, GLScene.Platform,
   ClipBrd;
 
 

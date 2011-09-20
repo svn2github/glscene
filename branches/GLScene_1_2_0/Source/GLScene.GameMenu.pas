@@ -27,7 +27,7 @@
       <li>03/03/05 - EG - Creation
    </ul></font>
 }
-unit GLGameMenu;
+unit GLScene.GameMenu;
 
 interface
 
@@ -35,15 +35,15 @@ interface
 
 uses
   Classes,
-  GLScene,
-  GLMaterial,
-  GLBitmapFont,
-  GLCrossPlatform,
-  GLColor,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Core,
+  GLScene.Material,
+  GLScene.BitmapFont,
+  GLScene.Platform,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -183,12 +183,12 @@ implementation
 
 uses
   SysUtils,
-  GLContext,
-  GLS_ShaderParameter,
-  GLS_Material,
-  GLState,
-  VectorTypes,
-  VectorGeometry;
+  GLScene.Base.Context,
+  GLScene.Shader.Parameter,
+  GLScene.MaterialEx,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Geometry;
 
 // ------------------
 // ------------------ TGLGameMenu ------------------

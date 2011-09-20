@@ -38,14 +38,14 @@
       <li>13/04/00 - EG - Creation
  </ul></font>
 }
-unit GLCadencer;
+unit GLScene.Cadencer;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLScene, Classes, GLCrossPlatform, BaseClasses, Forms
+  GLScene.Core, Classes, GLScene.Platform, GLScene.Base.Classes, Forms
 {$IFDEF FPC}
   , lmessages, SyncObjs
 {$ELSE}

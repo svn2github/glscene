@@ -55,7 +55,7 @@
     <li>20/07/00 - EG - Creation
  </ul></font>
 }
-unit VectorLists;
+unit GLScene.Base.Vector.Lists;
 
 interface
 
@@ -64,7 +64,7 @@ interface
 uses
   Classes, SysUtils,
 
-  VectorTypes, VectorGeometry, PersistentClasses, GLCrossPlatform;
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.PersistentClasses, GLScene.Platform;
 
 type
   // TBaseListOption

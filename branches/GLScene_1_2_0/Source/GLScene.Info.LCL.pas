@@ -5,7 +5,7 @@
       <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
 	</ul></font>
 }
-unit InfoLCL;
+unit GLScene.Info.LCL;
 
 interface
 
@@ -14,7 +14,7 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-  lresources, Forms, GLScene, Classes,  Controls, Buttons, StdCtrls,
+  lresources, Forms, GLScene.Core, Classes,  Controls, Buttons, StdCtrls,
   ComCtrls, ExtCtrls, Graphics, Menus;
 
 
@@ -116,8 +116,8 @@ type
 implementation
 
 uses
-  {$IFDEF Linux}xlib,{$ENDIF}OpenGLTokens, OpenGLAdapter, GLContext,
-  SysUtils, GLCrossPlatform
+  {$IFDEF Linux}xlib,{$ENDIF}GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, GLScene.Base.Context,
+  SysUtils, GLScene.Platform
   //,FileUtil, LCLIntf
   ;
 

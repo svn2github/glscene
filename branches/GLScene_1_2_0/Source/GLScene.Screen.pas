@@ -25,7 +25,7 @@
       <li>06/02/00 - EG - Javadocisation, added "default"s to properties
    </ul></font>
 }
-unit GLScreen;
+unit GLScene.Screen;
 
 // GLScreen    - This units contains routines to interact with the screen/desktop.
 // Version     - 0.0.8
@@ -40,7 +40,7 @@ uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
    {$IFDEF GLS_X11_SUPPORT} x,xlib,xf86vmode,{$ENDIF}
    {$IFDEF FPC} LCLVersion, {$ENDIF}
-   Classes, VectorGeometry, GLCrossPlatform;
+   Classes, GLScene.Base.Vector.Geometry, GLScene.Platform;
 
 const
    MaxVideoModes = 200;

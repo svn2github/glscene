@@ -14,7 +14,7 @@
   <li>01/04/10 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDA;
+unit GLScene.CUDA;
 
 interface
 
@@ -23,23 +23,23 @@ interface
 uses
   Classes,
   SysUtils,
-  // GLScene
-  PersistentClasses,
-  BaseClasses,
-  GLCrossPlatform,
-  GLContext,
-  VectorGeometry,
-  VectorTypes,
-  VectorLists,
-  GLGraphics,
-  GLS_CL_Platform,
-  GLS_CUDA_API,
-  GLS_CUDA_RUNTIME,
-  GLSCUDAParser,
-  GLS_CUDA_FourierTransform,
-  GLSCUDACompiler,
-  GLSCUDAContext,
-  GLSCUDADataAccess;
+  // GLScene.Core
+  GLScene.Base.PersistentClasses,
+  GLScene.Base.Classes,
+  GLScene.Platform,
+  GLScene.Base.Context,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Lists,
+  GLScene.Graphics,
+  GLScene.CL_Platform,
+  GLScene.CUDA.API,
+  GLScene.CUDA.Runtime,
+  GLScene.CUDA.Parser,
+  GLScene.CUDA.FourierTransform,
+  GLScene.CUDA.Compiler,
+  GLScene.CUDA.Context,
+  GLScene.CUDA.DataAccess;
 
 type
 
@@ -520,9 +520,9 @@ resourcestring
 implementation
 
 uses
-  GLStrings,
-  GLUtils,
-  GLSLog;
+  GLScene.Base.Strings,
+  GLScene.Utils,
+  GLScene.Base.Log;
 
 const
   cAddressMode: array [TCuAddresMode] of TCUaddress_mode =

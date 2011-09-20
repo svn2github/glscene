@@ -14,12 +14,12 @@
       <li>07/02/04 - OT - Creation (Osman Turan)
 	</ul></font>
 }
-unit TypesMDC;
+unit GLScene.File.MDC.Types;
 
 interface
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 const
   MDCFILE_IDENTITY = 'IDPC';

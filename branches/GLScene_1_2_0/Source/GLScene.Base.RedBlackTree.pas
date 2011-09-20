@@ -37,7 +37,7 @@
    </ul></font><p>
 }
 
-unit GLSRedBlackTree;
+unit GLScene.Base.RedBlackTree;
 
 interface
 
@@ -47,7 +47,7 @@ uses
 {$IFDEF FPC}
   LCLVersion,
 {$ENDIF}
-  Classes, GLCrossPlatform;
+  Classes, GLScene.Platform;
 
 type
 

@@ -108,7 +108,7 @@
 // 11-Jan-03 - Alexey Barkovoy:
 //   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
 
-unit cg;
+unit GLScene.Shader.CG;
 
 interface
 

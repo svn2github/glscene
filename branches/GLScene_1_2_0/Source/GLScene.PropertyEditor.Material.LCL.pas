@@ -6,7 +6,7 @@
       <li>08/06/10 - Yar - Bugfixed asignment edition result to material
    </ul></font>
 }
-unit FMaterialEditorFormLCL;
+unit GLScene.PropertyEditor.Material.LCL;
 
 interface
 
@@ -15,13 +15,13 @@ interface
 
 uses
 
-  FRTrackBarEditLCL, Forms,
-  FRColorEditorLCL, ComCtrls, FRFaceEditorLCL, StdCtrls, Controls,
+  GLScene.PropertyEditor.TrackBar.LCL, Forms,
+  GLScene.PropertyEditor.Color.LCL, ComCtrls, GLScene.PropertyEditor.Face.LCL, StdCtrls, Controls,
   Graphics,
-  Classes, Buttons, TypInfo, FRTextureEditLCL,
-  GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
-  GLGeomObjects, GLColor, GLLCLViewer, GLCoordinates,
-  GLCrossPlatform, GLMaterial, GLState,
+  Classes, Buttons, TypInfo, GLScene.PropertyEditor.Texture.LCL,
+  GLScene.Core, GLScene.Objects, GLScene.Texture, GLScene.Objects.HUD, GLScene.Objects.Teapot,
+  GLScene.ObjectsEx, GLScene.Base.Color, GLScene.Viewer.LCL, GLScene.Base.Coordinates,
+  GLScene.Platform, GLScene.Material, GLScene.Base.GLStateMachine,
   LResources;
 
 type

@@ -338,7 +338,7 @@
                            TGLBaseSceneObject.CoordinateChanged
    </ul></font>
 }
-unit GLScene;
+unit GLScene.Core;
 
 interface
 
@@ -358,29 +358,29 @@ uses
   LResources,
 {$ENDIF}
 
-  // GLScene
-  OpenGLTokens,
-  GLContext,
-  VectorGeometry,
-  XCollection,
-  GLSilhouette,
-  PersistentClasses,
-  GLState,
-  GLPipelineTransformation,
-  GLGraphics,
-  GeometryBB,
-  GLCrossPlatform,
-  VectorLists,
-  GLTexture,
-  GLColor,
-  BaseClasses,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLMaterial,
-  GLS_Material,
-  GLTextureFormat,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  // GLScene.Core
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.XCollection,
+  GLScene.Silhouette,
+  GLScene.Base.PersistentClasses,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Transformation,
+  GLScene.Graphics,
+  GLScene.Base.GeometryBB,
+  GLScene.Platform,
+  GLScene.Base.Vector.Lists,
+  GLScene.Texture,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Texture.Format,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -2520,14 +2520,14 @@ implementation
 {$ENDIF}
 
 uses
-  GLSLog,
-  GLStrings,
+  GLScene.Base.Log,
+  GLScene.Base.Strings,
   XOpenGL,
-  VectorTypes,
-  ApplicationFileIO,
-  GLS_ShaderParameter,
-  GLFileDDS,
-  GLUtils;
+  GLScene.Base.Vector.Types,
+  GLScene.Base.FileIO,
+  GLScene.Shader.Parameter,
+  GLScene.File.DDS,
+  GLScene.Utils;
 
 var
   vCounterFrequency: Int64;

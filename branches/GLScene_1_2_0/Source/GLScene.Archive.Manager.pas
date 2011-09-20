@@ -8,14 +8,14 @@
   </ul></font>
 }
 
-unit GLSArchiveManager;
+unit GLScene.Archive.Manager;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  Classes, SysUtils, PersistentClasses, ApplicationFileIO;
+  Classes, SysUtils, GLScene.Base.PersistentClasses, GLScene.Base.FileIO;
 
 Type
 
@@ -258,7 +258,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 Uses
-  GLStrings;
+  GLScene.Base.Strings;
 
 var
   vArchiveFileFormats: TArchiveFileFormatsList;

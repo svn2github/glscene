@@ -26,7 +26,7 @@
 	</ul></font>
 
 }
-unit GLVfsPAK;
+unit GLScene.VfsPAK;
 
 {$I GLScene.inc}
 // Activate support for LZRW1 compression. This line could be moved to GLScene.inc file.
@@ -35,7 +35,7 @@ unit GLVfsPAK;
 
 interface
 
-uses Classes, Contnrs, SysUtils, ApplicationFileIO
+uses Classes, Contnrs, SysUtils, GLScene.Base.FileIO
 {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
 
 const

@@ -20,7 +20,7 @@
   </ul></font>
 }
 
-unit OpenGLAdapter;
+unit GLScene.Base.OpenGL.Adapter;
 
 interface
 
@@ -43,9 +43,9 @@ uses
 {$IFDEF DARWIN}
   MacOSAll,
 {$ENDIF}
-  OpenGLTokens,
-  VectorGeometry,
-  VectorTypes,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
   SysUtils;
 
 type
@@ -3348,7 +3348,7 @@ uses
 {$IFDEF FPC}
   Math,
 {$ENDIF}
-  GLSLog;
+  GLScene.Base.Log;
 
 resourcestring
   rstrOpenGLError = 'OpenGL error - %s';

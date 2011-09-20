@@ -1,4 +1,4 @@
-UNIT ODEImport;
+unit GLScene.ODE.Import;
 {*************************************************************************
  *                                                                       *
  * Open Dynamics Engine, Copyright (C) 2001,2002 Russell L. Smith.       *
@@ -1706,7 +1706,7 @@ var
 implementation
 
 uses
-  GLSModuleLoader;
+  GLScene.ODE.ModuleLoader;
 
 
 { TBodyList }

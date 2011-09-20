@@ -31,13 +31,13 @@
 	</ul></font>
 
 }
-unit Polynomials;
+unit GLScene.Base.Polynomials;
 
 interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry;
+uses GLScene.Base.Vector.Geometry;
 
 type
    TDoubleArray = array of Double;

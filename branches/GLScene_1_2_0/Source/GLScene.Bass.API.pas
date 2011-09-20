@@ -22,7 +22,7 @@
   ----------------
   Copy BASS.PAS to the \LIB subdirectory of your Delphi path or your project dir
 }
-unit Bass;
+unit GLScene.Bass.API;
 
 interface
 

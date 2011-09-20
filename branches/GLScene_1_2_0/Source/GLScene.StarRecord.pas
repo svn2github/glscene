@@ -6,11 +6,11 @@
 	   <li>05/07/03 - EG - Creation
 	</ul></font>
 }
-unit GLStarRecord;
+unit GLScene.StarRecord;
 
 interface
 
-uses VectorGeometry;
+uses GLScene.Base.Vector.Geometry;
 
 type
    TGLStarRecord = packed record
@@ -34,7 +34,7 @@ function StarRecordColor(const starRecord : TGLStarRecord; bias : Single) : TVec
 implementation
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

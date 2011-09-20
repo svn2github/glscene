@@ -35,7 +35,7 @@
       <li>15/01/01 - EG - Creation
  </ul></font>
 }
-unit GLHUDObjects;
+unit GLScene.Objects.HUD;
 
 interface
 
@@ -43,16 +43,16 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  GLObjects,
-  GLBitmapFont,
-  GLCrossPlatform,
-  GLColor,
-  GLRenderContextInfo,
-  GLPipelineTransformation,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Objects,
+  GLScene.BitmapFont,
+  GLScene.Platform,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Transformation,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -209,16 +209,16 @@ implementation
 
 uses
 {$IFDEF GLS_DELPHI}
-  VectorTypes,
+  GLScene.Base.Vector.Types,
 {$ENDIF}
 {$IFDEF GLS_SERVICE_CONTEXT}
   SyncObjs,
 {$ENDIF}
   SysUtils,
-  OpenGLTokens,
-  GLContext,
-  GLState,
-  GLS_ShaderParameter;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine,
+  GLScene.Shader.Parameter;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLHUDSprite'}{$ENDIF}
 

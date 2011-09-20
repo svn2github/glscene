@@ -38,15 +38,15 @@
     Rebuild tree after property change.
     Default: True
 }
-unit GLTree;
+unit GLScene.Objects.Tree;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   Classes, SysUtils, GLScene, GLMaterial, VectorGeometry, VectorLists,
-   OpenGLTokens, GLVectorFileObjects, ApplicationFileIO, GLRenderContextInfo;
+   Classes, SysUtils, GLScene.Core, GLScene.Material, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists,
+   GLScene.Base.OpenGL.Tokens, GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Base.Context.Info;
 
 type
    TGLTree = class;
@@ -314,7 +314,7 @@ implementation
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-uses XOpenGL, GLContext {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses XOpenGL, GLScene.Base.Context {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves

@@ -16,7 +16,7 @@
       <li>16/05/03 - EG - Creation
    </ul></font>
 }
-unit GLTextureCombiners;
+unit GLScene.Texture.Combiners;
 
 interface
 
@@ -74,8 +74,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  OpenGLTokens,
-  GLContext;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context;
 
 var
   vActiveUnit: Integer;

@@ -151,7 +151,7 @@
                           Added homogeneous vector consts, VectorSpacing
    </ul>
 }
-unit VectorGeometry;
+unit GLScene.Base.Vector.Geometry;
 
 // This unit contains many needed types, functions and procedures for
 // quaternion, vector and matrix arithmetics. It is specifically designed
@@ -197,7 +197,7 @@ unit VectorGeometry;
 
 interface
 
-uses GLCrossPlatform, VectorTypes;
+uses GLScene.Platform, GLScene.Base.Vector.Types;
 
 const
    cMaxArray = (MaxInt shr 4);

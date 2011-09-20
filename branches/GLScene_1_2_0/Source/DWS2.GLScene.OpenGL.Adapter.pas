@@ -11,7 +11,7 @@
       <li>21/09/2004 - SG - Creation
    </ul></font>
 }
-unit dws2OpenGLAdapter;
+unit DWS2.GLScene.OpenGL.Adapter;
 
 interface
 
@@ -40,7 +40,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, OpenGLTokens, OpenGLAdapter, GLContext, VectorGeometry;
+  dws2Functions, GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, GLScene.Base.Context, GLScene.Base.Vector.Geometry;
 
 type
   TglPushAttrib = class(TInternalFunction)

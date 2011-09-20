@@ -38,7 +38,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *)
 
-unit openal;
+unit GLScene.OpenAL.API;
 
 {$IFDEF FPC}
  // Added by bero

@@ -44,7 +44,7 @@
 
 }
 
-unit GLMaterialScript;
+unit GLScene.Material.Script;
 
 interface
 
@@ -52,9 +52,9 @@ uses
   // VCL
   SysUtils, Classes, StdCtrls,
 
-  // GLScene
-  GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
-  GLMaterial, GLState;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Texture.Format, GLScene.Graphics, GLScene.Utils, GLScene.Base.Color, GLScene.Base.Coordinates,
+  GLScene.Material, GLScene.Base.GLStateMachine;
 
 type
   TGLShaderItem = class(TCollectionItem)

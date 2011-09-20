@@ -55,7 +55,7 @@
 // DONE: remove stTexture1D, 2D, etc from TGLState if possible, since they are
 //       per texture-unit + also deprecated in OpenGL 3+
 
-unit GLState;
+unit GLScene.Base.GLStateMachine;
 
 interface
 
@@ -64,13 +64,13 @@ interface
 
 uses
   Classes,
-  GLCrossPlatform,
-  VectorTypes,
-  VectorGeometry,
+  GLScene.Platform,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Geometry,
   SysUtils,
-  OpenGLTokens,
-  GLTextureFormat,
-  GLSLog;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Texture.Format,
+  GLScene.Base.Log;
 
 const
   GLS_VERTEX_ATTR_NUM = 16;
@@ -1272,7 +1272,7 @@ implementation
 //------------------------------------------------------
 
 uses
-  GLContext, GLColor;
+  GLScene.Base.Context, GLScene.Base.Color;
 
 resourcestring
   glsStateCashInsideList = 'State cash can not work inside display list';

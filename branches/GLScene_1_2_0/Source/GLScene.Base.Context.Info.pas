@@ -15,7 +15,7 @@
       <li>05/10/08 - DanB - Created from GLTexture.pas split
    </ul></font>
 }
-unit GLRenderContextInfo;
+unit GLScene.Base.Context.Info;
 
 interface
 
@@ -23,8 +23,8 @@ interface
 
 uses
   Classes,
-  PersistentClasses, VectorGeometry, GLState,
-  GLPipelineTransformation, GLColor;
+  GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Base.GLStateMachine,
+  GLScene.Base.Transformation, GLScene.Base.Color;
 
 type
 

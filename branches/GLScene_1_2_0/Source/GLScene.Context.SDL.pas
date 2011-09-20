@@ -19,7 +19,7 @@
       <li>12/12/01 - EG - Creation
    </ul></font>
 }
-unit GLSDLContext;
+unit GLScene.Context.SDL;
 
 interface
 
@@ -32,10 +32,10 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-  GLContext,
-  SDLWindow,
-  GLScene,
-  SDL;
+  GLScene.Base.Context,
+  GLScene.SDL.Window,
+  GLScene.Core,
+  GLScene.SDL;
 
 type
 
@@ -135,8 +135,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  OpenGLAdapter,
-  GLCrossPlatform,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Platform,
   XOpenGL;
 
 procedure Register;

@@ -15,7 +15,7 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRMaterialPreview;
+unit GLScene.PropertyEditor.MaterialPreview.VCL;
 
 interface
 
@@ -23,9 +23,9 @@ interface
 
 uses
   Classes, Forms, StdCtrls, Controls,
-  GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
-  GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLMaterial;
+  GLScene.Core, GLScene.Objects, GLScene.Texture, GLScene.Objects.HUD, GLScene.Viewer, GLScene.Objects.Teapot,
+  GLScene.ObjectsEx, GLScene.Base.Color, GLScene.Viewer.VCL, GLScene.Base.Coordinates,
+  GLScene.Platform, GLScene.Base.Classes, GLScene.Material;
 
 
 type

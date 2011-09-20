@@ -30,13 +30,13 @@
 	   <li>09/06/00 - EG - Creation
 	</ul></font>
 }
-unit GLSMFMOD;
+unit GLScene.FMOD;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLSound, GLScene;
+uses Classes, GLScene.Sound, GLScene.Core;
 
 type
 
@@ -89,7 +89,7 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, {$IFNDEF FPC}FMod{$ELSE}FModdyn{$ENDIF}, fmodtypes, fmodpresets, VectorGeometry;
+uses SysUtils, {$IFNDEF FPC}GLScene.FMOD.API{$ELSE}GLScene.FMOD.Import{$ENDIF}, GLScene.FMOD.Types, GLScene.FMOD.Presets, GLScene.Base.Vector.Geometry;
 
 type
    TFMODInfo =  record

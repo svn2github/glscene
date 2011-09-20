@@ -31,13 +31,13 @@
              For license details, refer to http://www.mozilla.org
              Lightwave3D is a registered trademark of Newtek Incorporated.
 -------------------------------------------------------------------------------}
-unit LWObjects;
+unit GLScene.File.LWO.Types;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry;
+uses Classes, GLScene.Base.Vector.Geometry;
 
 type
 
@@ -629,7 +629,7 @@ type
 
 implementation
 
-uses SysUtils, ApplicationFileIO;
+uses SysUtils, GLScene.Base.FileIO;
 
 type
   PWord = ^Word;

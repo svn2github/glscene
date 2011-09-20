@@ -10,11 +10,11 @@
     09/03/04 - SG - Small structure fixes (Osman Turan)
     28/02/03 - SG - Creation
 }
-unit FileMD3;
+unit GLScene.File.MD3.Base;
 
 interface
 
-uses Classes, VectorTypes;
+uses Classes, GLScene.Base.Vector.Types;
 
 type
   // Quake3 MD3 structure types

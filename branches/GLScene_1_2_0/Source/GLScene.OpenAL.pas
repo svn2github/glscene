@@ -23,14 +23,14 @@
       <li>??/??/03 - Mrqzz - Creation
 	</ul></font>
 }
-unit GLSMOpenAL;
+unit GLScene.OpenAL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   Classes, GLSound, GLScene, SysUtils, GLSoundFileObjects;
+   Classes, GLScene.Sound, GLScene.Core, SysUtils, GLScene.Sound.FileObjects;
 
 type
 
@@ -78,7 +78,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses Forms, VectorGeometry, Dialogs, OpenAL{al, alut, alTypes};
+uses Forms, GLScene.Base.Vector.Geometry, Dialogs, GLScene.OpenAL.API{al, alut, alTypes};
 
 procedure Register;
 begin

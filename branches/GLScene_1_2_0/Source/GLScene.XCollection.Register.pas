@@ -13,14 +13,14 @@
       <li>16/04/00 - Egg - Creation
 	</ul></font>
 }
-unit RegisterXCollection;
+unit GLScene.XCollection.Register;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  Classes, XCollection,
+  Classes, GLScene.Base.XCollection,
   {$IFDEF FPC}
      componenteditors, propedits
   {$ELSE}
@@ -48,7 +48,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses {$IFNDEF FPC}FXCollectionEditor{$ELSE}FXCollectionEditorLCL{$ENDIF};
+uses {$IFNDEF FPC}GLScene.FX.CollectionEditor.VCL{$ELSE}GLScene.FX.CollectionEditor.LCL{$ENDIF};
 
 
 procedure Register;

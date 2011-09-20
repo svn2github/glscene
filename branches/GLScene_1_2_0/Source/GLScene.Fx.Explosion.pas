@@ -26,15 +26,15 @@
   so if you'll need the mesh after exploding it, you'll have to save the
   MeshObjects property of the mesh, OR load it again.
 }
-unit GLExplosionFx;
+unit GLScene.Fx.Explosion;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  OpenGLTokens, VectorGeometry, GLScene, GLVectorFileObjects, VectorTypes,
-  VectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Geometry, GLScene, GLScene.Vector.FileObjects, GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Lists, GLScene.Base.XCollection, GLScene.Base.Coordinates, GLScene.Base.Context.Info;
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -82,7 +82,7 @@ type
 implementation
 
 uses
-  GLContext, GLState;
+  GLScene.Base.Context, GLScene.Base.GLStateMachine;
 
 { TGLBExplosionFx }
 

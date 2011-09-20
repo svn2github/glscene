@@ -22,7 +22,7 @@
       v1.1    31 October   '2006  TGLCustomAsmShader.DoUnApply() Fix
                                   TGLAsmShader has more stuff in the published section
 }
-unit GLAsmShader;
+unit GLScene.Shader.Asm;
 
 interface
 
@@ -33,14 +33,14 @@ uses
   Classes,
   SysUtils,
 
-  // GLScene
-  VectorGeometry,
-  VectorTypes,
-  GLTexture,
-  OpenGLTokens,
-  GLContext,
-  GLCustomShader,
-  GLRenderContextInfo;
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Texture,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Shader.Custom,
+  GLScene.Base.Context.Info;
 
 type
   TGLCustomAsmShader = class;

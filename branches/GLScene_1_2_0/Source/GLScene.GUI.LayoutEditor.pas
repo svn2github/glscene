@@ -1,4 +1,4 @@
-unit FGUILayoutEditor;
+unit GLScene.GUI.LayoutEditor;
 
 interface
 
@@ -20,9 +20,9 @@ uses
   ExtDlgs,
   StdCtrls,
   ExtCtrls,
-  GLCrossPlatform,
-  BaseClasses,
-  GLGui,
+  GLScene.Platform,
+  GLScene.Base.Classes,
+  GLScene.GUI,
   Spin,
   Grids
 {$IFDEF MSWINDOWS}, ShellApi{$ENDIF}
@@ -107,7 +107,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLUtils;
+  GLScene.Utils;
 
 var
   vGUILayoutEditor: Tlayouts_form;

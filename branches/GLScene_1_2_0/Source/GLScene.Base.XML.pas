@@ -8,7 +8,7 @@
  </ul></font>
 }
 
-unit GLSCrossXML;
+unit GLScene.Base.XML;
 
 interface
 

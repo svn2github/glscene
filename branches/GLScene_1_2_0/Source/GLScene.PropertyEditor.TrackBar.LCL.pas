@@ -6,7 +6,7 @@
 
    </ul></font>
 }
-unit FRTrackBarEditLCL;
+unit GLScene.PropertyEditor.TrackBar.LCL;
 
 interface
 

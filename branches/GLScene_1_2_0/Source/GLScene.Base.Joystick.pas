@@ -14,7 +14,7 @@
 	   <li>20/03/00 - Egg - Creation from GLScene's TGLJoystick
 	</ul></font>
 }
-unit Joystick;
+unit GLScene.Base.Joystick;
 
 interface
 

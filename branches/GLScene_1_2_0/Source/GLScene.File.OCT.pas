@@ -14,13 +14,13 @@
       <li>02/02/03 - EG     - Creation
    </ul><p>
 }
-unit GLFileOCT;
+unit GLScene.File.OCT;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLVectorFileObjects, VectorGeometry, ApplicationFileIO, FileOCT;
+uses Classes, GLScene.Vector.FileObjects, GLScene.Base.Vector.Geometry, GLScene.Base.FileIO, GLScene.File.OCT.Base;
 
 type
 
@@ -49,8 +49,8 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, GLTexture, GLMaterial, GLGraphics, GLCrossPlatform, GLState,
-  GLUtils, GLTextureFormat;
+  SysUtils, GLScene.Texture, GLScene.Material, GLScene.Graphics, GLScene.Platform, GLScene.Base.GLStateMachine,
+  GLScene.Utils, GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TGLOCTVectorFile ------------------

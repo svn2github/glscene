@@ -18,14 +18,14 @@
       <li>10/07/03 - SG - Creation
    </ul></font>
 }
-unit CurvesAndSurfaces;
+unit GLScene.Base.CurvesAndSurfaces;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  VectorGeometry, VectorLists;
+  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists;
 
 type
   TBSplineContinuity = (bscUniformNonPeriodic, bscUniformPeriodic);

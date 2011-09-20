@@ -11,15 +11,15 @@
   </ul></font>
 }
 
-unit GLPipelineTransformation;
+unit GLScene.Base.Transformation;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  VectorGeometry,
-  VectorTypes;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
@@ -131,9 +131,9 @@ procedure SetMatrix(var ADest: TMatrix; const ASource: TManagedMatrix);
 implementation
 
 uses
-  OpenGLTokens,
-  GLContext,
-  GLSLog;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Log;
 
 procedure SetMatrix(var ADest: TManagedMatrix; const ASource: TMatrix);
 begin

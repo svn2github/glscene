@@ -44,7 +44,7 @@
     <li>30/07/03 - SG - Creation.
   </ul>
 }
-unit GLODECustomColliders;
+unit GLScene.ODE.CustomColliders;
 
 interface
 
@@ -55,22 +55,22 @@ uses
   Classes,
   SysUtils,
 
-  // GLscene
-  GLODEManager,
-  ODEGL,
-  ODEImport,
-  VectorGeometry,
-  VectorLists,
-  GLScene,
-  GLTerrainRenderer,
-  GLGraph,
-  XCollection,
-  OpenGLTokens,
-  GLContext,
-  GLTexture,
-  GLColor,
-  GLRenderContextInfo,
-  GLState;
+  // GLScene.Core
+  GLScene.ODE.Manager,
+  GLScene.ODE.GL,
+  GLScene.ODE.Import,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists,
+  GLScene.Core,
+  GLScene.Objects.Terrain,
+  GLScene.Objects.GraphPlotting,
+  GLScene.Base.XCollection,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Texture,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   TContactPoint = class

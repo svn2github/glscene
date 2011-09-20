@@ -17,14 +17,14 @@
       <li>09/01/04 - EG - Creation
    </ul></font>
 }
-unit GLTilePlane;
+unit GLScene.Objects.TilePlane;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, VectorGeometry, OpenGLTokens, GLContext, GLMaterial, GLObjects,
-   GLCrossPlatform, PersistentClasses, VectorLists, GLRenderContextInfo;
+uses Classes, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Material, GLScene.Objects,
+   GLScene.Platform, GLScene.Base.PersistentClasses, GLScene.Base.Vector.Lists, GLScene.Base.Context.Info;
 
 type
 

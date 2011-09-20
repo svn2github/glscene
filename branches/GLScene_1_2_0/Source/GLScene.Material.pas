@@ -41,14 +41,14 @@
                             Textures + materials are no longer so tightly bound
    </ul></font>
 }
-unit GLMaterial;
+unit GLScene.Material;
 
 interface
 
 uses
-  Classes, SysUtils, GLRenderContextInfo, BaseClasses, OpenGLTokens, GLContext,
-  GLTexture, GLColor, GLCoordinates, VectorGeometry, PersistentClasses,
-  GLCrossPlatform, GLState, GLTextureFormat;
+  Classes, SysUtils, GLScene.Base.Context.Info, GLScene.Base.Classes, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context,
+  GLScene.Texture, GLScene.Base.Color, GLScene.Base.Coordinates, GLScene.Base.Vector.Geometry, GLScene.Base.PersistentClasses,
+  GLScene.Platform, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
@@ -836,7 +836,7 @@ type
 
 implementation
 
-uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils, GLSLog;
+uses GLScene.Base.Strings, XOpenGL, GLScene.Base.FileIO, GLScene.Graphics, GLScene.Utils, GLScene.Base.Log;
 
 resourcestring
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';

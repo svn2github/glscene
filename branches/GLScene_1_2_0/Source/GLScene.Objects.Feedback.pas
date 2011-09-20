@@ -27,7 +27,7 @@
    </ul></font>
 
 }
-unit GLFeedback;
+unit GLScene.Objects.Feedback;
 
 interface
 
@@ -36,14 +36,14 @@ interface
 uses
   Classes,
   SysUtils,
-  VectorGeometry,
-  VectorLists,
-  GLScene,
-  GLVectorFileObjects,
-  GLTexture,
-  GLRenderContextInfo,
-  GLContext,
-  GLState;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Lists,
+  GLScene.Core,
+  GLScene.Vector.FileObjects,
+  GLScene.Texture,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Context,
+  GLScene.Base.GLStateMachine;
 
 type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
@@ -114,9 +114,9 @@ implementation
 // ----------------------------------------------------------------------
 
 uses
-  OpenGLTokens,
-  MeshUtils
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Mesh.Utils
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // ----------
 // ---------- TGLFeedback ----------

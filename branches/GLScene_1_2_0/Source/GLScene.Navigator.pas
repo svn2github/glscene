@@ -30,7 +30,7 @@
       <li>09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
 	</ul></font>
 }
-unit GLNavigator;
+unit GLScene.Navigator;
 
 interface
 
@@ -40,9 +40,9 @@ uses
   // VCL
   SysUtils, Classes,
 
-  // GLScene
-  VectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry, GLScene, GLScene.Platform, GLScene.Base.Coordinates, GLScene.Screen
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
 

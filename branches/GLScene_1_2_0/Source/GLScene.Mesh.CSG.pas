@@ -21,7 +21,7 @@
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
  </ul></font>
 }
-unit GLMeshCSG;
+unit GLScene.Mesh.CSG;
 
 interface
 
@@ -30,11 +30,11 @@ interface
 uses
   SysUtils,
   Classes,
-  GLScene,
-  GLVectorFileObjects,
-  VectorGeometry,
-  GLBSP,
-  VectorLists;
+  GLScene.Core,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Geometry,
+  GLScene.BSP,
+  GLScene.Base.Vector.Lists;
 
 type
   TCSGOperation = (CSG_Union, CSG_Subtraction, CSG_Intersection);
@@ -44,7 +44,7 @@ procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: 
 implementation
 
 uses Math,
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 const
   cOwnTriangleEpsilon = 1e-5;

@@ -21,13 +21,13 @@
       <li>10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
 }
-unit GLSilhouette;
+unit GLScene.Silhouette;
 
 interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry, VectorLists, GLCrossPlatform;
+uses Classes, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Platform;
 
 type
    // TGLSilhouetteStyle

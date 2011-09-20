@@ -34,7 +34,7 @@
       <li>19/01/02 - EG - Creation
  </ul></font>
 }
-unit GLCanvas;
+unit GLScene.Canvas;
 
 interface
 
@@ -43,10 +43,10 @@ interface
 uses
   Classes,
   Graphics,
-  VectorGeometry,
-  GLColor,
-  GLCrossPlatform,
-  GLState;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Color,
+  GLScene.Platform,
+  GLScene.Base.GLStateMachine;
 
 type
 
@@ -233,9 +233,9 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  OpenGLTokens,
-  GLContext,
-  VectorTypes;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Vector.Types;
 
 const
   cNoPrimitive = MaxInt;

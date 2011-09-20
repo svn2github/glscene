@@ -12,12 +12,12 @@
       <li>19/03/10 - Yar - Creation
 	</ul></font>
 }
-unit GLSComputingRegister;
+unit GLScene.Register.Computing;
 
 interface
 
 uses
-  Classes, SysUtils, GLSceneRegister,
+  Classes, SysUtils, GLScene.Register.VCL,
   {$IFNDEF FPC}
   DesignIntf, DesignEditors, STREDIT, ToolsAPI
   {$ELSE}
@@ -82,14 +82,14 @@ type
 implementation
 
 uses
-  GLS_CUDA_RUNTIME,
-  GLSCUDAEditor,
-  GLSCUDAContext,
-  GLSCUDA,
-  GLSCUDACompiler,
-  GLSCUDAFFTPlan,
-  GLSCUDAGraphics,
-  GLSCUDAParser;
+  GLScene.CUDA.Runtime,
+  GLScene.CUDA.Editor,
+  GLScene.CUDA.Context,
+  GLScene.CUDA,
+  GLScene.CUDA.Compiler,
+  GLScene.CUDA.FFTPlan,
+  GLScene.CUDA.Graphics,
+  GLScene.CUDA.Parser;
 
 procedure Register;
 begin

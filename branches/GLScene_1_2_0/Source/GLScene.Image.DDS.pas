@@ -22,7 +22,7 @@
    </ul><p>
 }
 
-unit DDSImage;
+unit GLScene.Image.DDS;
 
 interface
 
@@ -33,11 +33,11 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  VectorGeometry,
-  GLGraphics,
-  OpenGLTokens,
-  GLContext;
+  GLScene.Platform,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Graphics,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context;
 
 type
 
@@ -56,9 +56,9 @@ uses
 {$IFDEF FPC}graphtype,
   LCLType,
 {$ENDIF}
-  DXTC,
-  GLFileDDS,
-  GLTextureFormat;
+  GLScene.File.DXTC,
+  GLScene.File.DDS,
+  GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TDDSImage ------------------

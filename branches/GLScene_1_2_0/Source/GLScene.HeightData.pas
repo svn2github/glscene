@@ -59,13 +59,13 @@
   <li>11/02/01 - EG - Creation
   </ul></font>
 }
-unit GLHeightData;
+unit GLScene.HeightData;
 
 interface
 
 {$I GLScene.inc}
 
-uses SysUtils, Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
+uses SysUtils, Classes, GLScene.Base.Vector.Geometry, GLScene.Platform, GLScene.Material, GLScene.Base.Classes
 {$IFDEF FPC}, IntfGraphics {$ENDIF};
 
 type
@@ -656,7 +656,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses ApplicationFileIO, GLUtils
+uses GLScene.Base.FileIO, GLScene.Utils
 {$IFDEF MSWINDOWS}
     , Windows // for CreateMonochromeBitmap
 {$ENDIF}

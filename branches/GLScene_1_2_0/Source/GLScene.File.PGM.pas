@@ -8,7 +8,7 @@
   <li>04/02/10 - Yar - Creation
   </ul><p>
 }
-unit GLFilePGM;
+unit GLScene.File.PGM;
 
 {$I GLScene.inc}
 
@@ -16,8 +16,8 @@ interface
 
 uses
   Classes, SysUtils,
-  OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  ApplicationFileIO;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Graphics, GLScene.Texture.Format,
+  GLScene.Base.FileIO;
 
 type
 
@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  GLS_CUDA_Utility;
+  GLScene.CUDA.Utility;
 
 resourcestring
   cCUTILFailed = 'Can not initialize cutil32.dll';

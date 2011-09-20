@@ -25,14 +25,14 @@
                             in the multipass demo.
    </ul></font>
 }
-unit GLOutlineShader;
+unit GLScene.Shader.Outline;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLMaterial, GLCrossPlatform, GLColor, GLRenderContextInfo;
+  Classes, GLScene.Material, GLScene.Platform, GLScene.Base.Color, GLScene.Base.Context.Info;
 
 type
 
@@ -76,7 +76,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGLTokens, GLContext, GLState, GLTextureFormat;
+uses GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TGLOutlineShader ------------------

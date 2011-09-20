@@ -29,7 +29,7 @@
 
 }
 
-unit GLTextureSharingShader;
+unit GLScene.Shader.TextureSharing;
 
 interface
 
@@ -37,10 +37,10 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLScene, VectorGeometry, GlColor, GLMaterial, GLStrings,
-  GLVectorFileObjects, XOpenGL, GLState, PersistentClasses,
-  {Needed for Delphi 5} GlCrossPlatform, GLCoordinates, GLRenderContextInfo;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Color, GLScene.Material, GLScene.Base.Strings,
+  GLScene.Vector.FileObjects, XOpenGL, GLScene.Base.GLStateMachine, GLScene.Base.PersistentClasses,
+  {Needed for Delphi 5} GLScene.Platform, GLScene.Base.Coordinates, GLScene.Base.Context.Info;
 
 type
   TGLTextureSharingShader = class;

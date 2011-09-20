@@ -64,7 +64,7 @@
       <li>18/06/02 - EG - Creation
    </ul></font>
 }
-unit GLCgShader;
+unit GLScene.Shader.CG.Components;
 
 interface
 
@@ -72,13 +72,13 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  VectorGeometry, VectorLists, VectorTypes, GLTexture, GLStrings,
-  GLCadencer, OpenGLTokens, GLCrossPlatform, GLContext, BaseClasses,
-  GLRenderContextInfo, GLMaterial, GLTextureFormat,
+  // GLScene.Core
+  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.Vector.Types, GLScene.Texture, GLScene.Base.Strings,
+  GLScene.Cadencer, GLScene.Base.OpenGL.Tokens, GLScene.Platform, GLScene.Base.Context, GLScene.Base.Classes,
+  GLScene.Base.Context.Info, GLScene.Material, GLScene.Texture.Format,
 
-  // CG
-  Cg, CgGL;
+  // GLScene.Shader.CG
+  GLScene.Shader.CG, GLScene.Shader.CG.GL;
 
 {$Include GLScene.inc}
 

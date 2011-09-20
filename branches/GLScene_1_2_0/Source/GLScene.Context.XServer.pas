@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLGLXContext<p>
@@ -20,7 +20,7 @@
       <li>14/01/05 - CU - Creation
    </ul></font>
 }
-unit GLGLXContext;
+unit GLScene.Context.XServer;
 
 interface
 
@@ -28,7 +28,7 @@ interface
 {$IFDEF SUPPORT_GLX}
 uses
   Classes, SysUtils, LCLType,
-  GLCrossPlatform, GLContext, OpenGLTokens, OpenGLAdapter,
+  GLScene.Platform, GLScene.Base.Context, GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter,
   x, xlib, xutil;
 
 type
@@ -98,7 +98,7 @@ implementation
 // -----------------------------------------------------------------
 {$IFDEF SUPPORT_GLX}
 uses
-  GLState, GLSLog;
+  GLScene.Base.GLStateMachine, GLScene.Base.Log;
 
 resourcestring
   cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';

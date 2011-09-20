@@ -19,14 +19,14 @@
 	    <li>23/05/00 - Egg - Creation
 	</ul></font>
 }
-unit GLCollision;
+unit GLScene.Collision;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObjects,
-   GeometryBB, GLCrossPlatform, GLManager;
+uses Classes, GLScene.Core, GLScene.Base.XCollection, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Vector.FileObjects,
+   GLScene.Base.GeometryBB, GLScene.Platform, GLScene.Manager;
 
 type
 
@@ -159,7 +159,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 const
    cEpsilon : Single = 1e-6;

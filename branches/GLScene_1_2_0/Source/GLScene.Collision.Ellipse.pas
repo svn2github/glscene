@@ -13,13 +13,13 @@
     <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
-unit GLEllipseCollision;
+unit GLScene.Collision.Ellipse;
 
 interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry, Octree, VectorLists {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses GLScene.Base.Vector.Geometry, GLScene.Base.Octree, GLScene.Base.Vector.Lists {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
   TECPlane = class

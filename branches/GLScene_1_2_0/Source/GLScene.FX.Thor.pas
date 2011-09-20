@@ -23,15 +23,15 @@
     <li>09/03/01 - René Lindsay - unit created
   </ul></font>
 }
-unit GLThorFX;
+unit GLScene.FX.Thor;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, XCollection, VectorGeometry,
-    GLCadencer, GLColor, BaseClasses, GLCoordinates, GLRenderContextInfo,
-    GLManager, GLState, GLTextureFormat;
+uses Classes, GLScene.Core, GLScene.Base.XCollection, GLScene.Base.Vector.Geometry,
+    GLScene.Cadencer, GLScene.Base.Color, GLScene.Base.Classes, GLScene.Base.Coordinates, GLScene.Base.Context.Info,
+    GLScene.Manager, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
 
 type
   PThorpoint = ^TThorpoint;
@@ -145,7 +145,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext, VectorLists {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Base.Vector.Lists {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 
 // ------------------

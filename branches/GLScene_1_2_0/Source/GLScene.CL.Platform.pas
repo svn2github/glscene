@@ -1,4 +1,4 @@
-﻿{ : GLS_CL_Platform<p>
+{ : GLS_CL_Platform<p>
 
   Conversion of OpenCL header file: cl_platform.h to Delphi,
   from http://www.khronos.org/registry/cl/.<p>
@@ -30,7 +30,7 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // ****************************************************************************/
 
-unit GLS_CL_Platform;
+unit GLScene.CL.Platform;
 
 interface
 

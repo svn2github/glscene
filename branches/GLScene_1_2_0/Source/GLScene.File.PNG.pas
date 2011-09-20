@@ -12,7 +12,7 @@
         <li>05/03/10 - Yar - Creation
    </ul><p>
 }
-unit GLFilePNG;
+unit GLScene.File.PNG;
 
 interface
 
@@ -21,13 +21,13 @@ interface
 uses
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  ApplicationFileIO,
-  GLSLog;
+  GLScene.Platform,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Graphics,
+  GLScene.Texture.Format,
+  GLScene.Base.FileIO,
+  GLScene.Base.Log;
 
 type
 
@@ -52,7 +52,7 @@ type
 implementation
 
 uses
-  LIBPNG;
+  GLScene.LIBPNG;
 
 resourcestring
   sLIBPNGerror = 'LIBPNG error';

@@ -10,13 +10,13 @@
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
-unit GLFileMP3;
+unit GLScene.File.MP3;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, ApplicationFileIO, GLSoundFileObjects;
+uses Classes, GLScene.Base.FileIO, GLScene.Sound.FileObjects;
 
 type
 

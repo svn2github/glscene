@@ -17,14 +17,14 @@
       <li>10/03/03 - Matt  - Creation
 	</ul></font>
 }
-unit TypesMS3D;
+unit GLScene.File.MS3D.Types;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, VectorTypes, GLColor;
+  Classes, GLScene.Base.Vector.Types, GLScene.Base.Color;
 
 const
   MAX_MS3D_VERTICES  = 8192;

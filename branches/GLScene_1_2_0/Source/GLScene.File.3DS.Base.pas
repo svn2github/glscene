@@ -26,7 +26,7 @@
   Dipl. Ing. Mike Lischke (public@lischke-online.de)
   Igor T. (GWin), (georgwin@chat.ru)
 }
-unit File3DS;
+unit GLScene.File.3DS.Base;
 
 interface
 
@@ -35,7 +35,7 @@ interface
 {$MINENUMSIZE 4}
 {$RANGECHECKS OFF}
 
-uses Classes, Types3DS, GLCrossPlatform;
+uses Classes, GLScene.File.3DS.Types, GLScene.Platform;
 
 type
   TFile3DS = class;
@@ -257,7 +257,7 @@ type
 
 implementation
 
-uses Const3DS, Utils3DS, SysUtils, ApplicationFileIO;
+uses GLScene.File.3DS.Const, GLScene.File.3DS.Utils, SysUtils, GLScene.Base.FileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin

@@ -15,7 +15,7 @@
       <li>21/07/03 - EG - Creation from GLObjects split
    </ul></font>
 }
-unit GLTeapot;
+unit GLScene.Objects.Teapot;
 
 interface
 
@@ -23,14 +23,14 @@ interface
 
 uses
   Classes,
-  GLScene,
-  GLObjects,
-  VectorGeometry,
-  OpenGLTokens,
-  GLContext,
-  GLRenderContextInfo
+  GLScene.Core,
+  GLScene.Objects,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Context.Info
 {$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLScene.Base.Vector.Types{$ENDIF};
 
 type
 
@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  GLState, GLS_ShaderParameter, GLS_Mesh;
+  GLScene.Base.GLStateMachine, GLScene.Shader.Parameter, GLScene.Mesh;
 
 constructor TGLTeapot.Create(AOwner: TComponent);
 begin

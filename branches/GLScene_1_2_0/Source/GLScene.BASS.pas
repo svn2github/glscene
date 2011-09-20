@@ -26,14 +26,14 @@
 	   <li>13/01/01 - EG - Creation (compat BASS 0.8)
 	</ul></font>
 }
-unit GLSMBASS;
+unit GLScene.BASS;
 
 interface
 
 {$I GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF UNIX}
 
-uses Classes, GLSound, GLScene {$IFDEF FPC} ,Controls{$ENDIF};
+uses Classes, GLScene.Sound, GLScene.Core {$IFDEF FPC} ,Controls{$ENDIF};
 
 type
 
@@ -89,7 +89,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses Forms, SysUtils, Bass, VectorGeometry, Dialogs;
+uses Forms, SysUtils, GLScene.Bass.API, GLScene.Base.Vector.Geometry, Dialogs;
 
 type
    TBASSInfo =  record

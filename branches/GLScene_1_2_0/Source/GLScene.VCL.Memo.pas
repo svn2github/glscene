@@ -8,7 +8,7 @@
  </ul></font>
 }
 
-unit GLSMemo;
+unit GLScene.VCL.Memo;
 
 interface
 
@@ -18,7 +18,7 @@ uses
 {$IFNDEF FPC}
   Windows, Messages,
 {$ENDIF}
-  GLCrossPlatform,
+  GLScene.Platform,
 
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls;

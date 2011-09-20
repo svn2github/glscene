@@ -1,4 +1,4 @@
-unit GLSVfw;
+unit GLScene.Vfw;
 
 interface
 

@@ -10,7 +10,7 @@
 // TODO: decide how load templates from external file,
 //       update it without package recompilation
 
-unit FShaderMemo;
+unit GLScene.Shader.Memo;
 
 interface
 
@@ -30,7 +30,7 @@ uses
   ToolWin,
   ImgList,
   StdCtrls,
-  GLSMemo,
+  GLScene.VCL.Memo,
   Menus, ExtCtrls;
 
 type

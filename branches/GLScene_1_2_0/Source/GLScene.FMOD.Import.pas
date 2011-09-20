@@ -23,7 +23,7 @@
 }
 { =============================================================================================== }
 
-unit fmoddyn;
+unit GLScene.FMOD.Import;
 
 {
   Disable assertions by changing the following compiler directive to OFF.
@@ -43,7 +43,7 @@ uses
 {$IFDEF FPC}
   LCLType,
 {$ENDIF}
-  fmodtypes;
+  GLScene.FMOD.Types;
 
 {
   Disable warning for unsafe types in Delphi 7

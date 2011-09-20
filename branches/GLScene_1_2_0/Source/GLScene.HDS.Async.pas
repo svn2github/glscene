@@ -29,13 +29,13 @@
 	</ul></font>
 }
 
-unit GLAsyncHDS;
+unit GLScene.HDS.Async;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLHeightData, GLCrossPlatform;
+uses Classes, GLScene.HeightData, GLScene.Platform;
 
 type
   TGLAsyncHDS = class;

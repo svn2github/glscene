@@ -22,13 +22,13 @@
 	</ul></font>
 }
 
-unit GLTexturedHDS;
+unit GLScene.HDS.Textured;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, GLCrossPlatform, GLHeightData, GLMaterial;
+uses Classes, GLScene.Platform, GLScene.HeightData, GLScene.Material;
 
 type
 	TGLTexturedHDS = class (THeightDataSource)

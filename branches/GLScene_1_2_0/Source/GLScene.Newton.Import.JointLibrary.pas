@@ -30,7 +30,7 @@
 {                                                                               }
 {*******************************************************************************}
 
-unit NewtonImport_JointLibrary;
+unit GLScene.Newton.Import.JointLibrary;
 
 {$I delphinewton.inc}
 
@@ -67,7 +67,7 @@ uses
   GPCMacOSAll,
 {$ENDIF}
   Classes,
-  NewtonImport;
+  GLScene.Newton.Import;
 
 const
 {$IFDEF WIN32}
@@ -199,4 +199,4 @@ procedure DGRaycastVehicleInitNormalizeTireLongitudinalForce( car : PNewtonUserJ
 
 implementation
 
-end.
+end.

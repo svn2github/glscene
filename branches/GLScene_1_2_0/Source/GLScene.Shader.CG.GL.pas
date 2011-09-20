@@ -107,7 +107,7 @@
 // 11-Jan-03 - Alexey Barkovoy:
 //   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
 
-unit cgGL;
+unit GLScene.Shader.CG.GL;
 
 {$Include GLScene.inc}
 {$ifdef GLS_DELPHI_6}
@@ -117,7 +117,7 @@ unit cgGL;
 interface
 
 uses
-  OpenGLTokens, cg
+  GLScene.Base.OpenGL.Tokens, GLScene.Shader.CG
   {$IFNDEF COMPILER6_UP}{$IFDEF MSWINDOWS} ,Windows{$ENDIF}{$ENDIF}
   ;
 

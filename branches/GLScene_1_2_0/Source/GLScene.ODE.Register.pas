@@ -5,12 +5,12 @@
 
     18/06/03 - SG - Creation.
 }
-unit GLODERegister;
+unit GLScene.ODE.Register;
 
 interface
 
 uses
-  Classes, GLODEManager;
+  Classes, GLScene.ODE.Manager;
 
 procedure Register;
 

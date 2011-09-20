@@ -11,14 +11,14 @@
       <li>06/03/04 - MF - Creation
    </ul>
 }
-unit VerletHairClasses;
+unit GLScene.Base.Verlet.HairClasses;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, VerletClasses, VectorTypes, VectorLists, VectorGeometry;
+  Classes, SysUtils, GLScene.Base.Verlet.Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Lists, GLScene.Base.Vector.Geometry;
 
 type
   TVHStiffness = (vhsFull, vhsSkip1Node, vhsSkip2Node, vhsSkip3Node,

@@ -42,7 +42,7 @@ Original Header:
 
 }
 
-unit GLEParticleMasksManager;
+unit GLScene.ParticleManager.Masks;
 
 interface
 
@@ -50,9 +50,9 @@ uses
   // VCL
   SysUtils, Classes, Graphics,
 
-  // GLScene
-  GLTexture, GLMaterial, GLScene, VectorGeometry, VectorTypes,
-  GLParticleFX, GLCrossPlatform, GLCoordinates;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Material, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types,
+  GLScene.Fx.Particle, GLScene.Platform, GLScene.Base.Coordinates;
 
 type
 

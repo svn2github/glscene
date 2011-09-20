@@ -24,14 +24,14 @@
      <li>16/04/00 - EG - Creation from GLScene split
   </ul></font>
 }
-unit XCollection;
+unit GLScene.Base.XCollection;
 
 {.$DEFINE DEBUG_XCOLLECTION}
 
 interface
 
-uses Classes, SysUtils, GLCrossPlatform,
- PersistentClasses{$IFDEF DEBUG_XCOLLECTION}, typinfo {$ENDIF};
+uses Classes, SysUtils, GLScene.Platform,
+ GLScene.Base.PersistentClasses{$IFDEF DEBUG_GLScene.Base.XCollection}, typinfo {$ENDIF};
 
 {$i GLScene.inc}
 

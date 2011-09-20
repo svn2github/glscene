@@ -23,7 +23,7 @@
       <li>24/02/01 - NelC - Creation and initial code
 	</ul></font>
 }
-unit GLAVIRecorder;
+unit GLScene.AVIRecorder;
 
 interface
 
@@ -32,7 +32,7 @@ interface
 
 uses
   Windows, Classes, Controls, Forms, Extctrls, Graphics,
-  GLSVfw, GLScene, GLViewer;
+  GLScene.Vfw, GLScene.Core, GLScene.Viewer;
 
 type
    TAVICompressor = (acDefault, acShowDialog, acDivX);
@@ -159,7 +159,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils, Dialogs, Messages, GLGraphics;
+uses SysUtils, Dialogs, Messages, GLScene.Graphics;
 
 // DIB support rountines for AVI output
 

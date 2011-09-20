@@ -30,15 +30,15 @@
         <li>10/09/03 - Domin - Creation
    </ul><p>
 }
-unit GLFileLMTS;
+unit GLScene.File.LMTS;
 
 interface
 
 {$I GLScene.inc}
 
 uses Graphics, Classes, SysUtils,
-     GLVectorFileObjects, ApplicationFileIO, VectorLists, VectorGeometry,
-     GLTexture, PersistentClasses, GLGraphics, GLMaterial;
+     GLScene.Vector.FileObjects, GLScene.Base.FileIO, GLScene.Base.Vector.Lists, GLScene.Base.Vector.Geometry,
+     GLScene.Texture, GLScene.Base.PersistentClasses, GLScene.Graphics, GLScene.Material;
 
 const
     C_LMTS_ID = $53544D4C;
@@ -119,7 +119,7 @@ type
 implementation
 
 uses
-  GLTextureFormat;
+  GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TGLLMTSVectorFile ------------------

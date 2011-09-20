@@ -6,7 +6,7 @@
 
    </ul></font>
 }
-unit FVectorEditorLCL;
+unit GLScene.PropertyEditor.Vector.LCL;
 
 interface
 
@@ -74,7 +74,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, VectorGeometry, GLUtils; 
+  SysUtils, GLScene.Base.Vector.Geometry, GLScene.Utils; 
 
 var
 	vVectorEditorForm : TVectorEditorForm;

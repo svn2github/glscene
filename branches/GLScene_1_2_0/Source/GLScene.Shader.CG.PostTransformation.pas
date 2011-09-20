@@ -13,7 +13,7 @@
       <li>04/11/06 - DaStr - Creation (based on demo by Rick)
 
 }
-unit CGPostTransformationShader;
+unit GLScene.Shader.CG.PostTransformation;
 
 interface
 
@@ -23,12 +23,12 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLTexture,  GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat,
+  // GLScene.Core
+  GLScene.Texture,  GLScene.Cadencer, GLScene.Base.Context, GLScene.Base.OpenGL.Tokens, GLScene, GLScene.Shader.Custom,
+  GLScene.Base.Context.Info, GLScene.Texture.Format,
 
-  // CG Shaders
-  Cg, CgGL, GLCgShader;
+  // GLScene.Shader.CG Shaders
+  GLScene.Shader.CG, GLScene.Shader.CG.GL, GLScene.Shader.CG.Components;
 
 type
 

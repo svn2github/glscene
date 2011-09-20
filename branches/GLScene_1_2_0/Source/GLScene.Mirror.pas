@@ -28,7 +28,7 @@
       <li>07/12/01 - EG - Creation
    </ul></font>
 }
-unit GLMirror;
+unit GLScene.Mirror;
 
 interface
 
@@ -36,14 +36,14 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  OpenGLAdapter,
-  OpenGLTokens,
-  GLContext,
-  GLMaterial,
-  GLColor,
-  GLRenderContextInfo;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Material,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info;
 
 type
 
@@ -159,8 +159,8 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.GLStateMachine
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // ------------------
 // ------------------ TGLMirror ------------------

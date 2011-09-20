@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLSceneForm;
+unit GLScene.VCL.Form;
 
 interface
 
@@ -33,10 +33,10 @@ uses
   Classes,
   Controls,
   Forms,
-  GLScene,
-  GLContext,
-  GLCrossPlatform,
-  GLScreen;
+  GLScene.Core,
+  GLScene.Base.Context,
+  GLScene.Platform,
+  GLScene.Screen;
 
 type
 
@@ -196,7 +196,7 @@ procedure GLRegisterWSComponent(aControl: TComponentClass);
 implementation
 
 uses
-  GLViewer;
+  GLScene.Viewer;
 
 constructor TGLSceneForm.Create(AOwner: TComponent);
 begin

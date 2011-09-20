@@ -15,7 +15,7 @@
       <li>26/08/02 - EG - Added missing header, added glsUnknownExtension
 	</ul></font>
 }
-unit GLStrings;
+unit GLScene.Base.Strings;
 
 interface
 

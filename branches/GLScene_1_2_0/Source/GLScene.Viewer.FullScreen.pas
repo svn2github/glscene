@@ -31,14 +31,14 @@
       <li>24/07/03 - EG - Creation from GLWin32Viewer split
 	</ul></font>
 }
-unit GLFullScreenViewer;
+unit GLScene.Viewer.FullScreen;
 
 interface
 
 {$i GLScene.inc}
 
 uses Forms, Classes, Controls, Menus, Messages
-     ,GLViewer, GLScene, GLContext
+     ,GLScene.Viewer, GLScene.Core, GLScene.Base.Context
      {$IFDEF FPC}
      ,LcLtype, LCLIntf
      {$ENDIF}
@@ -220,7 +220,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
+uses GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, SysUtils, GLScene.Platform, GLScene.Screen
   {$IFDEF FPC}
     {$ifdef Linux}
       {$IFDEF LCLGTK2}
@@ -232,25 +232,25 @@ uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
     {$ENDIF}
     {$IF DEFINED(LCLWIN32) or DEFINED(LCLWIN64)}
       {$ifndef CONTEXT_INCLUDED}
-      ,GLWidgetContext
+      ,GLScene.Context.Widget
       {$define CONTEXT_INCLUDED}
       {$endif}
     {$IFEND}
 
     {$IF DEFINED(LCLGTK) or DEFINED(LCLGTK2)}
       {$ifndef CONTEXT_INCLUDED}
-      ,GLWidgetContext
+      ,GLScene.Context.Widget
       {$define CONTEXT_INCLUDED}
       {$endif}
     {$IFEND}
     {$ifdef LCLCARBON}
-    ,GLCarbonContext
+    ,GLScene.Context.Carbon
     {$endif}
     {$ifdef LCLQT}
       {$error unimplemented QT context}
     {$endif}
   {$ELSE}
-  ,GLWin32Context
+  ,GLScene.Context.Windows
   {$ENDIF}
        ;
 const

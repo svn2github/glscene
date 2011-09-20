@@ -30,13 +30,13 @@ PS. The RayCastShadowHeight function returns the height of the shadow at a point
 on the terrain. This, and the LightVector may come in handy for implementing shadow volumes?
 }
 
-unit GLShadowHDS;
+unit GLScene.HDS.Shadow;
 
 interface
 
 uses
-  Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture,
-  Dialogs, Forms, VectorTypes, GLCoordinates, GLMaterial;
+  Classes, GLScene.HeightData, GLScene.Graphics, GLScene.Base.Vector.Geometry, GLScene.Texture,
+  Dialogs, Forms, GLScene.Base.Vector.Types, GLScene.Base.Coordinates, GLScene.Material;
 
 type
    TGLShadowHDS = class;
@@ -129,7 +129,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, VectorLists;
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Lists;
 
 // Create
 //

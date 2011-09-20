@@ -22,15 +22,15 @@
    </ul></font>
 }
 
-unit GLDynamicTexture;
+unit GLScene.Texture.Dynamic;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, OpenGLTOkens, GLContext, GLTexture, GLTextureFormat,
-  GLGraphics, GLCrossPlatform;
+  Classes, SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context, GLScene.Texture, GLScene.Texture.Format,
+  GLScene.Graphics, GLScene.Platform;
 
 type
   // TGLDynamicTextureImage
@@ -98,7 +98,7 @@ type
 implementation
 
 uses
-  VectorGeometry;
+  GLScene.Base.Vector.Geometry;
 
 { TGLDynamicTextureImage }
 

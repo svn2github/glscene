@@ -41,7 +41,7 @@
    The shader can't be changed between rendering each seperate object..
 }
 
-unit GLSLProjectedTextures;
+unit GLScene.Texture.Projected.GLSL;
 
 interface
 
@@ -49,16 +49,16 @@ interface
 
 uses
   Classes,
-  GLCrossPlatform,
-  GLScene,
-  GLTexture,
-  VectorGeometry,
-  GLContext,
+  GLScene.Platform,
+  GLScene.Core,
+  GLScene.Texture,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Context,
   sysutils,
-  GLColor,
-  GLRenderContextInfo,
-  GLTextureFormat
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Texture.Format
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
   TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);

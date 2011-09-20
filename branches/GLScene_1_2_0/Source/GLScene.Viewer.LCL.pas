@@ -24,7 +24,7 @@
       <li>04/06/04 -  EG   - Created from GLWin32Viewer
   </ul></font>
 }
-unit GLLCLViewer;
+unit GLScene.Viewer.LCL;
 
 interface
 
@@ -34,8 +34,8 @@ uses
   {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   Messages, Graphics, Forms, Classes, Controls, Menus, LMessages, LCLType,
 
-  // GLScene
-  GLScene, GLContext;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Context;
 
 type
 
@@ -192,23 +192,23 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, LCLIntf, GLViewer
+uses SysUtils, LCLIntf, GLScene.Viewer
        {$if DEFINED(LCLWIN32) or DEFINED(LCLWIN64)}
          {$ifndef CONTEXT_INCLUDED}
-  , GLWidgetContext
+  , GLScene.Context.Widget
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
 
        {$if DEFINED(LCLGTK) or DEFINED(LCLGTK2)}
          {$ifndef CONTEXT_INCLUDED}
-  , GLWidgetContext
+  , GLScene.Context.Widget
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
        {$ifdef LCLCARBON}
          {$ifndef CONTEXT_INCLUDED}
-  , GLWidgetContext
+  , GLScene.Context.Widget
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}

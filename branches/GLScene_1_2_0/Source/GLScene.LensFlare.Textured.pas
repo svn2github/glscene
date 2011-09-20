@@ -15,7 +15,7 @@
       <li>25/09/03 - EG - Creation from GLLensFlare split
  </ul></font><p>
 }
-unit GLTexLensFlare;
+unit GLScene.LensFlare.Textured;
 
 interface
 
@@ -23,16 +23,16 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  GLObjects,
-  GLTexture,
-  OpenGLTokens,
-  GLContext,
-  GLRenderContextInfo,
-  BaseClasses,
-  GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Objects,
+  GLScene.Texture,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Context.Info,
+  GLScene.Base.Classes,
+  GLScene.Base.GLStateMachine
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
 

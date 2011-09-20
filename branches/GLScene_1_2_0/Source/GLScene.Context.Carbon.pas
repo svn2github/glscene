@@ -10,7 +10,7 @@
       <li>14/11/08 - Creation
    </ul></font>
 }
-unit GLCarbonContext;
+unit GLScene.Context.Carbon;
 
 {$i ../GLScene.inc}
 
@@ -18,8 +18,8 @@ interface
 
 uses
   MacOSAll,
-  Classes, SysUtils,LCLType,  GLCrossPlatform, GLContext, LCLProc, Forms, Controls,
-  OpenGLAdapter, OpenGLTokens, CarbonDef, CarbonCanvas, CarbonProc, CarbonPrivate;
+  Classes, SysUtils,LCLType,  GLScene.Platform, GLScene.Base.Context, LCLProc, Forms, Controls,
+  GLScene.Base.OpenGL.Adapter, GLScene.Base.OpenGL.Tokens, CarbonDef, CarbonCanvas, CarbonProc, CarbonPrivate;
 
 type
    // TGLCarbonContext
@@ -87,7 +87,7 @@ implementation
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
 uses
-  GLState, GLSLog;
+  GLScene.Base.GLStateMachine, GLScene.Base.Log;
 
 
 

@@ -80,7 +80,7 @@
       <li>19/08/00 - EG - Creation
  </ul></font>
 }
-unit GLGraphics;
+unit GLScene.Graphics;
 
 interface
 
@@ -91,9 +91,9 @@ uses
   Windows,
 {$ENDIF}
   Classes,
-  PersistentClasses,
+  GLScene.Base.PersistentClasses,
   Graphics,
-  ApplicationFileIO,
+  GLScene.Base.FileIO,
   SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
@@ -106,13 +106,13 @@ uses
   intfgraphics,
   GraphType,
 {$ENDIF}
-  OpenGLTokens,
-  GLContext,
-  ImageUtils,
-  GLUtils,
-  GLCrossPlatform,
-  GLColor,
-  GLTextureFormat;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Image.Utils,
+  GLScene.Utils,
+  GLScene.Platform,
+  GLScene.Base.Color,
+  GLScene.Texture.Format;
 
 type
 
@@ -494,9 +494,9 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  VectorGeometry,
-  GLStrings,
-  GLSLog,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Strings,
+  GLScene.Base.Log,
   SyncObjs;
 
 resourcestring

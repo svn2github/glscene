@@ -21,14 +21,14 @@
       <li>24/03/08 - DaStr - Initial version
    </ul></font>
 }
-unit GLSceneRegisterLCL;
+unit GLScene.Register.LCL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLObjectManager, ComponentEditors, PropEdits, LResources, LCLType,
+  Classes, GLScene.Manager.Objects, ComponentEditors, PropEdits, LResources, LCLType,
   LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource, Laz_XMLCfg,
   Forms;
 
@@ -51,73 +51,73 @@ implementation
 
 uses
   SysUtils, Dialogs, Graphics,
-  // GLScene units
-  VectorGeometry, GLScene, GLViewer, GLFullScreenViewer, BaseClasses,
-  GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
-  GLCadencer, GLTextureImageEditors, GLColor, GLCrossPlatform, GLMaterialEx,
-  // GLScene - basic geometry
-  GLObjects, GLGeomObjects, GLPolyhedron,
-  // GLScene - advanced geometry
-  GLAnimatedSprite, GLExtrusion, GLMultiPolygon,
-  // GLScene - mesh
-  GLVectorFileObjects, GLMesh, GLTilePlane, GLPortal,
-  // GLScene - terrain
-  GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS, GLBumpmapHDS, GLPerlin,
-  GLTexturedHDS, GLAsyncHDS, GLShadowHDS,
-  // GLScene - graph plotting
-  GLBitmapFont, GLGraph, GLWindowsFont,
+  // GLScene.Core units
+  GLScene.Base.Vector.Geometry, GLScene, GLScene.Viewer, GLScene.Viewer.FullScreen, GLScene.Base.Classes,
+  GLScene.Base.Strings, GLScene.Base.Coordinates, GLScene.Texture, GLScene.Material, GLScene.Screen,
+  GLScene.Cadencer, GLScene.PropertyEditor.TextureImage, GLScene.Base.Color, GLScene.Platform, GLMaterialEx,
+  // GLScene.Core - basic geometry
+  GLScene.Objects, GLScene.ObjectsEx, GLScene.Polyhedron,
+  // GLScene.Core - advanced geometry
+  GLScene.Objects.AnimatedSprite, GLScene.Objects.Extrusion, GLScene.Objects.MultiPolygon,
+  // GLScene.Core - mesh
+  GLScene.Vector.FileObjects, GLScene.Objects.Mesh, GLScene.Objects.TilePlane, GLScene.Portal,
+  // GLScene.Core - terrain
+  GLScene.Objects.Terrain, GLScene.HeightData, GLScene.HDS.HeightTileFile, GLScene.HDS.Bumpmap, GLScene.Perlin,
+  GLScene.HDS.Textured, GLScene.HDS.Async, GLScene.HDS.Shadow,
+  // GLScene.Core - graph plotting
+  GLScene.BitmapFont, GLScene.Objects.GraphPlotting, GLWindowsFont,
 
-  // GLScene - particles
-  GLParticles, GLParticleFX, GLPerlinPFX, GLLinePFX, GLFireFX, GLThorFX,
-  GLEParticleMasksManager,
-  // GLScene - environment
-  GLSkydome, GLSkyBox, GLAtmosphere,
-  // GLScene - hud
-  GLHUDObjects, GLGameMenu,
-  GLConsole,
-  // GLScene - gui
-  GLWindows, GLGui,
-  // GLScene - special
-  GLLensFlare, GLTexLensFlare, GLMirror, GLShadowPlane, GLShadowVolume,
-  GLzBuffer, GLSLProjectedTextures, GLProjectedTextures, GLBlur,
-  GLTrail, GLPostEffects,
-  // GLScene - doodad
-  GLTeapot, GLTree, GLWaterPlane,
-  // GLScene - proxy
-  GLProxyObjects, GLMultiProxy, GLMaterialMultiProxy,
-  // GLScene - shaders
-  GLTexCombineShader, GLPhongShader, GLUserShader, GLSLShader,
-  GLHiddenLineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
-  GLBumpShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLSLPostBlurShader,
-  GLAsmShader, GLShaderCombiner, GLTextureSharingShader,
-  // GLScene - other
-  GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
-  GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
-  GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
-  GLCameraController, GLGizmo, GLGizmoEx, GLFBORenderer,
-  GLSoundFileObjects, GLSound, GLCompositeImage, GLSLog, GLSLanguage,
-  GLSArchiveManager,
+  // GLScene.Core - particles
+  GLScene.Particles, GLScene.Fx.Particle, GLScene.PFX.Perlin, GLScene.PFX.Line, GLScene.Fx.Fire, GLScene.FX.Thor,
+  GLScene.ParticleManager.Masks,
+  // GLScene.Core - environment
+  GLScene.Objects.Skydome, GLScene.Objects.SkyBox, GLScene.Objects.Atmosphere,
+  // GLScene.Core - hud
+  GLScene.Objects.HUD, GLScene.GameMenu,
+  GLScene.GUI.Console,
+  // GLScene.Core - gui
+  GLScene.GUI.Windows, GLScene.GUI,
+  // GLScene.Core - special
+  GLScene.LensFlare, GLScene.LensFlare.Textured, GLScene.Mirror, GLScene.ShadowPlane, GLScene.ShadowVolume,
+  GLScene.ZBuffer, GLScene.Texture.Projected.GLSL, GLScene.Texture.Projected, GLScene.Blur,
+  GLScene.Objects.Trail, GLScene.PostEffects,
+  // GLScene.Core - doodad
+  GLScene.Objects.Teapot, GLScene.Objects.Tree, GLScene.Objects.WaterPlane,
+  // GLScene.Core - proxy
+  GLScene.Objects.Proxy, GLScene.Objects.MultiProxy, GLScene.Material.MultiProxy,
+  // GLScene.Core - shaders
+  GLScene.Shader.TextureCombiner, GLScene.Shader.Phong, GLScene.Shader.User, GLScene.Shader.GLSL.Components,
+  GLScene.Shader.HiddenLine, GLScene.Shader.Cel, GLScene.Shader.Outline, GLScene.Shader.MultiMaterial,
+  GLScene.Shader.Bump, GLScene.Shader.GLSL.DiffuseSpecular, GLScene.Shader.GLSL.Bump, GLScene.Shader.GLSL.PostBlur,
+  GLScene.Shader.Asm, GLScene.Shader.Combiner, GLScene.Shader.TextureSharing,
+  // GLScene.Core - other
+  GLScene.Imposter, GLScene.Objects.Feedback, GLScene.Collision, GLScene.Base.Script, GLScene.AsyncTimer, GLScene.DCE,
+  GLScene.Movement.FPS, GLScene.Material.Script, GLScene.Navigator, GLScene.SmoothNavigator,
+  GLScene.TimeEvents.Manager, GLScene.Base.FileIO, GLScene.VfsPAK, GLScene.SimpleNavigation,
+  GLScene.CameraController, GLScene.Gizmo, GLScene.GizmoEx, GLScene.Objects.FrameBuffer,
+  GLScene.Sound.FileObjects, GLScene.Sound, GLScene.Image.Composite, GLScene.Base.Log, GLScene.Language,
+  GLScene.Archive.Manager,
 
   // Image file formats
-  DDSImage, HDRImage, O3TCImage,
+  GLScene.Image.DDS, GLScene.Image.HDR, GLScene.Image.O3TC,
 
   // Vector file formats
-  GLFile3DS, GLFileASE, GLFileB3D, GLFileGL2, GLFileGTS, GLFileLMTS,
-  GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMS3D, GLFileNMF,
-  GLFileNurbs, GLFileOBJ, GLFilePLY, GLFileSMD, GLFileSTL,
-  GLFileTIN, GLFileVRML, GlFileX,
+  GLScene.File.3DS, GLScene.File.ASE, GLScene.File.B3D, GLScene.File.GL2, GLScene.File.GTS, GLScene.File.LMTS,
+  GLScene.File.LWO, GLScene.File.MD2, GLScene.File.MD3, GLScene.File.MD5, GLScene.File.MDC, GLScene.File.MS3D, GLScene.File.NMF,
+  GLScene.File.Nurbs, GLScene.File.OBJ, GLScene.File.PLY, GLScene.File.SMD, GLScene.File.STL,
+  GLScene.File.TIN, GLScene.File.VRML, GLScene.File.X,
 
   // Sound file formats
-  GLFileWAV, GLFileMP3,
+  GLScene.File.WAV, GLScene.File.MP3,
 
   // Raster file format
-  GLFileDDS, GLFileO3TC, GLFileHDR, GLFileBMP, GLFileTGA,
+  GLScene.File.DDS, GLScene.File.O3TC, GLScene.File.HDR, GLScene.File.BMP, GLScene.File.TGA,
 
   // Property editor forms
-  GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,
-  FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
-  FRColorEditorLCL, FRTrackBarEditLCL, FRUniformEditor, FGUILayoutEditor,
-  GLUtils;
+  GLScene.Edit.LCL, GLScene.PropertyEditor.Vector.LCL, GLScene.PropertyEditor.Material.LCL, GLScene.PropertyEditor.MaterialPreview.LCL,
+  GLScene.PropertyEditor.MaterialPicker.LCL, GLScene.PropertyEditor.Texture.LCL, GLScene.PropertyEditor.Face.LCL,
+  GLScene.PropertyEditor.Color.LCL, GLScene.PropertyEditor.TrackBar.LCL, GLScene.PropertyEditor.Uniform.VCL, GLScene.GUI.LayoutEditor,
+  GLScene.Utils;
 
 var
   vObjectManager: TObjectManager;

@@ -22,14 +22,14 @@
  </ul></font>
 }
 
-unit GLObjectManager;
+unit GLScene.Manager.Objects;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, Graphics, Controls, Menus, GLCrossPlatform, GLScene
+  Classes, Graphics, Controls, Menus, GLScene.Platform, GLScene.Core
 {$IFDEF FPC}
   ,LResources
 {$ENDIF};

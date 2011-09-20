@@ -15,13 +15,13 @@
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
-unit GLFileVRML;
+unit GLScene.File.VRML;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMaterial, ApplicationFileIO,
-  VectorTypes, VectorGeometry, VectorLists, VRMLParser, MeshUtils;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Material, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.File.VRML.Parser, GLScene.Mesh.Utils;
 
 type
 

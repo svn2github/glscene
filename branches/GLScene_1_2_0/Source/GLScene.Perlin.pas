@@ -17,15 +17,15 @@
   <li>29/01/03 - JaJ - Submitted to GLScene.
   </ul></font>
 }
-unit GLPerlin;
+unit GLScene.Perlin;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, VectorGeometry, GLPerlinBase, GLHeightData,
-  GLCrossPlatform;
+  Classes, SysUtils, GLScene.Base.Vector.Geometry, GLScene.Base.Perlin, GLScene.HeightData,
+  GLScene.Platform;
 
 Type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear, pi_Smoothed,

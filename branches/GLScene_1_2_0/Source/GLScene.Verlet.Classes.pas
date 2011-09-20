@@ -12,12 +12,12 @@
       <li>06/03/04 - MF - Creation
    </ul>
 }
-unit GLVerletClasses;
+unit GLScene.Verlet.Classes;
 
 interface
 
 uses
-  VerletClasses, VectorGeometry, GLScene, GLObjects;
+  GLScene.Base.Verlet.Classes, GLScene.Base.Vector.Geometry, GLScene, GLScene.Objects;
 
 type
   // TGLVerletNode
@@ -44,7 +44,7 @@ type
 implementation
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 begin

@@ -38,7 +38,7 @@
     </ul></font>                                                
 
 }
-unit GLPostEffects;
+unit GLScene.PostEffects;
 
 interface
 
@@ -48,9 +48,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLScene, GLTexture, OpenGLTokens, GLGraphics, GLStrings, GLCustomShader, GLContext,
-  VectorGeometry, GLRenderContextInfo, GLMaterial, GLTextureFormat;
+  // GLScene.Core
+  GLScene.Core, GLScene.Texture, GLScene.Base.OpenGL.Tokens, GLScene.Graphics, GLScene.Base.Strings, GLScene.Shader.Custom, GLScene.Base.Context,
+  GLScene.Base.Vector.Geometry, GLScene.Base.Context.Info, GLScene.Material, GLScene.Texture.Format;
 
 type
   EGLPostShaderHolderException = class(Exception);

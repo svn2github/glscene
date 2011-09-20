@@ -1,4 +1,4 @@
-﻿//
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLExtrusion<p>
@@ -45,7 +45,7 @@
        All extrusion objects use actually the same kind of "parts",
        one common type should do.
 }
-unit GLExtrusion;
+unit GLScene.Objects.Extrusion;
 
 interface
 
@@ -53,18 +53,18 @@ interface
 
 uses
   Classes,
-  OpenGLTokens,
-  GLContext,
-  GLObjects,
-  GLScene,
-  GLMultiPolygon,
-  GLColor,
-  VectorGeometry,
-  GLRenderContextInfo,
-  GLNodes,
-  GLS_Mesh,
-  GLState,
-  VectorTypes;
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Objects,
+  GLScene.Core,
+  GLScene.Objects.MultiPolygon,
+  GLScene.Base.Color,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Context.Info,
+  GLScene.Nodes,
+  GLScene.Mesh,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Vector.Types;
 
 type
 
@@ -140,7 +140,7 @@ type
        screws, to nails to stairs etc. }
     property YOffsetPerTurn: Single read FYOffsetPerTurn write
       SetYOffsetPerTurn;
-    {: Number of slices per turn (360Щ. }
+    {: Number of slices per turn (360�. }
     property Slices: Integer read FSlices write SetSlices default 16;
 
     property Normals: TNormalSmoothing read FNormals write SetNormals default
@@ -347,9 +347,9 @@ implementation
 
 uses
   SysUtils,
-  Spline,
-  VectorLists,
-  GLS_ShaderParameter;
+  GLScene.Base.Spline,
+  GLScene.Base.Vector.Lists,
+  GLScene.Shader.Parameter;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------

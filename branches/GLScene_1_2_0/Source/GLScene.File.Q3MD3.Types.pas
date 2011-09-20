@@ -12,13 +12,13 @@
     01/04/03 - Mrqzzz - "LEGS_" animations read from .CFG fixed
     17/02/03 - SG - Creation
 }
-unit Q3MD3;
+unit GLScene.File.Q3MD3.Types;
 
 interface
 
 uses
-  Classes,SysUtils,ApplicationFileIO,VectorGeometry,GLVectorFileObjects,
-  VectorLists,GLMaterial,FileMD3;
+  Classes,SysUtils,GLScene.Base.FileIO,GLScene.Base.Vector.Geometry,GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Lists,GLScene.Material,GLScene.File.MD3.Base;
 
 type
   // This class is used to extract the tag transform information

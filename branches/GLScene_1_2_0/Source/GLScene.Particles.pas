@@ -21,7 +21,7 @@
     <li>16/04/00 - EG - Creation
  </ul></font>
 }
-unit GLParticles;
+unit GLScene.Particles;
 
 interface
 
@@ -29,14 +29,14 @@ interface
 
 uses
   Classes,
-  GLScene,
-  VectorGeometry,
-  OpenGLTokens,
-  GLContext,
-  GLColor,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLState;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   TGLParticleEvent = procedure(Sender: TObject; particle: TGLBaseSceneObject) of object;

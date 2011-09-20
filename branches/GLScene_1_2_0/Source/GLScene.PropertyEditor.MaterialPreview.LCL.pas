@@ -12,7 +12,7 @@
 // Возникли проблемы с GLSceneViewer и TFrame (при передаче буферу хэндла),
 // по этому его пришлось заменить на MemoryViewer
 
-unit FRMaterialPreviewLCL;
+unit GLScene.PropertyEditor.MaterialPreview.LCL;
 
 interface
 
@@ -20,9 +20,9 @@ interface
 
 uses lresources,
   Classes, Forms, StdCtrls, Controls, ExtCtrls,
-  GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
-  GLGeomObjects, GLColor, GLCoordinates,
-  GLCrossPlatform, GLMaterial,GLgraphics, LCLIntf;
+  GLScene.Core, GLScene.Objects, GLScene.Texture, GLScene.Objects.HUD, GLScene.Objects.Teapot,
+  GLScene.ObjectsEx, GLScene.Base.Color, GLScene.Base.Coordinates,
+  GLScene.Platform, GLScene.Material,GLScene.Graphics, LCLIntf;
 
 
 type

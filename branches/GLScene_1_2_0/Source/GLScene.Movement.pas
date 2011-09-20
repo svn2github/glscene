@@ -34,7 +34,7 @@
       <li>24/08/00 - RoC - TGLMovement and relative class added
    </ul></font>
 }
-unit GLMovement;
+unit GLScene.Movement;
 
 interface
 
@@ -44,9 +44,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLScene, VectorGeometry, XCollection, OpenGLTokens, Spline, GLObjects,
-  GLCrossPlatform, GLStrings, BaseClasses;
+  // GLScene.Core
+  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.XCollection, GLScene.Base.OpenGL.Tokens, GLScene.Base.Spline, GLScene.Objects,
+  GLScene.Platform, GLScene.Base.Strings, GLScene.Base.Classes;
 
 type
 
@@ -351,7 +351,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 //----------------------------- TGLPathNode ------------------------------------
 constructor TGLPathNode.Create(Collection: TCollection);
 begin

@@ -25,14 +25,14 @@
       <li>13/07/04 - SG - Creation
     </ul></font>
 }
-unit GLAnimatedSprite;
+unit GLScene.Objects.AnimatedSprite;
 
 interface
 
 uses
-  Classes, SysUtils, GLScene, VectorGeometry, OpenGLTokens, GLMaterial,
-  PersistentClasses, XCollection, GLCrossPlatform, GLRenderContextInfo,
-  BaseClasses, GLContext, GLState;
+  Classes, SysUtils, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.OpenGL.Tokens, GLScene.Material,
+  GLScene.Base.PersistentClasses, GLScene.Base.XCollection, GLScene.Platform, GLScene.Base.Context.Info,
+  GLScene.Base.Classes, GLScene.Base.Context, GLScene.Base.GLStateMachine;
 
 type
   TSpriteAnimFrame = class;

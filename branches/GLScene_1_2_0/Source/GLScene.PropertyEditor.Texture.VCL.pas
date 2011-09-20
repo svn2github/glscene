@@ -19,7 +19,7 @@
   </ul></font>
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
-unit FRTextureEdit;
+unit GLScene.PropertyEditor.Texture.VCL;
 
 interface
 
@@ -27,7 +27,7 @@ interface
 
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, TypInfo,
-  GLGraphics, GLTextureFormat, GLTexture;
+  GLScene.Graphics, GLScene.Texture.Format, GLScene.Texture;
 
 type
   TRTextureEdit = class(TFrame)
@@ -83,7 +83,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SysUtils, GLState, GLTextureImageEditors;
+  SysUtils, GLScene.Base.GLStateMachine, GLScene.PropertyEditor.TextureImage;
 
 // Create
 //

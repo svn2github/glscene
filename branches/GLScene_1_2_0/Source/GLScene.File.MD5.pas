@@ -13,13 +13,13 @@
       <li>01/06/04 - SG - Initial
    </ul></font>
 }
-unit GLFileMD5;
+unit GLScene.File.MD5;
 
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLUtils, ApplicationFileIO,
-  VectorTypes, VectorGeometry, VectorLists;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Utils, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists;
 
 type
 

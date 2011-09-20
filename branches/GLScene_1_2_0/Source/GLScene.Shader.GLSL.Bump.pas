@@ -74,7 +74,7 @@
 
 
 }
-unit GLSLBumpShader;
+unit GLScene.Shader.GLSL.Bump;
 
 interface
 
@@ -84,10 +84,10 @@ uses
   // VCL
   Classes, SysUtils,
   
-  // GLScene
-  GLTexture, GLScene, VectorGeometry, VectorTypes, GLCadencer, GLStrings,
-  OpenGLTokens, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
-  GLMaterial;
+  // GLScene.Core
+  GLScene.Texture, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types, GLScene.Cadencer, GLScene.Base.Strings,
+  GLScene.Base.OpenGL.Tokens, GLScene.Shader.GLSL.Components, GLScene.Shader.Custom, GLScene.Base.Color, GLScene.Base.Context.Info,
+  GLScene.Material;
 
 type
   EGLSLBumpShaderException = class(EGLSLShaderException);

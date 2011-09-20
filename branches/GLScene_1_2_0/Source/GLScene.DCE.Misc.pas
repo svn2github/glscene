@@ -12,15 +12,15 @@
     <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
-unit GLDCEMisc;
+unit GLScene.DCE.Misc;
 
 interface
 
 {$I GLScene.inc}
 
-uses GLVectorFileObjects, GLEllipseCollision, VectorGeometry, VectorLists,
-  GLScene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses GLScene.Vector.FileObjects, GLScene.Collision.Ellipse, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists,
+  GLScene.Core, GLScene.Objects.Terrain,GLScene.Objects.Proxy, GLScene.Objects.MultiProxy
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 //Calculate and set the collision range
 procedure ECSetCollisionRange(var MovePack: TECMovePack);

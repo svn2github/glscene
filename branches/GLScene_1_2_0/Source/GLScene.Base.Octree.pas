@@ -25,13 +25,13 @@
 	   <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
 	</ul></font>
 }
-unit Octree;
+unit GLScene.Base.Octree;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorTypes, VectorGeometry, VectorLists, GeometryBB;
+uses Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.GeometryBB;
 
 type
 

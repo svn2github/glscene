@@ -20,16 +20,16 @@
 
     Contributed to GLScene.<p>
 }
-unit GLGLUTesselation;
+unit GLScene.GLUTesselation;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLVectorFileObjects,
-  VectorLists,
-  VectorGeometry;
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.Vector.Geometry;
 
 {: Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TGLBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
@@ -38,9 +38,9 @@ implementation
 
 uses
   SysUtils,
-  OpenGLAdapter,
-  OpenGLTokens,
-  VectorTypes;
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Vector.Types;
 
 var
   TessMesh: TMeshObject;

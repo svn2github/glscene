@@ -63,7 +63,7 @@
                   Midterm-goal: Import what Poser 4 exports and display it
                                 correctly in an GLScene.<br>
 }
-unit GLFileOBJ;
+unit GLScene.File.OBJ;
 
 {$I GLScene.inc}
 {.$DEFINE STATS}{ Define to display statistics after loading. }
@@ -71,20 +71,20 @@ unit GLFileOBJ;
 interface
 
 uses
-  BaseClasses,
-  GLCrossPlatform,
+  GLScene.Base.Classes,
+  GLScene.Platform,
   Classes,
   SysUtils,
-  ApplicationFileIO,
+  GLScene.Base.FileIO,
 
-  VectorGeometry,
-  GLScene,
-  GLVectorFileObjects,
-  VectorLists,
-  GLTexture,
-  GLColor,
-  GLRenderContextInfo,
-  GLMaterial;
+  GLScene.Base.Vector.Geometry,
+  GLScene.Core,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.Vector.Lists,
+  GLScene.Texture,
+  GLScene.Base.Color,
+  GLScene.Base.Context.Info,
+  GLScene.Material;
 
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
@@ -168,15 +168,15 @@ implementation
 
 uses
 {$IFDEF GLS_DELPHI_2009_UP}
-  VectorTypes,
+  GLScene.Base.Vector.Types,
 {$ENDIF}
-  GLStrings,
-  OpenGLTokens,
+  GLScene.Base.Strings,
+  GLScene.Base.OpenGL.Tokens,
   XOpenGL,
-  GLContext,
-  MeshUtils,
-  GLUtils,
-  GLSLog;
+  GLScene.Base.Context,
+  GLScene.Mesh.Utils,
+  GLScene.Utils,
+  GLScene.Base.Log;
 
 // StreamEOF
 //

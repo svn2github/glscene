@@ -4,7 +4,7 @@
                                                          (BugTracekrID=1681585)
 
 }
-unit GLSModuleLoader;
+unit GLScene.ODE.ModuleLoader;
 {******************************************************************}
 {                                                                  }
 {       Project JEDI                                               }

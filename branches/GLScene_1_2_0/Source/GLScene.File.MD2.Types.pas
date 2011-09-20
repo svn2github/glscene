@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-unit TypesMD2;
+unit GLScene.File.MD2.Types;
 
 { 25.08.2003 - PhP - dropped TTrivert_t & TDalias_t, cleaned code & degibbered declarations }
 
 interface
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 
 const
   MAX_MD2_TRIANGLES = 4096;

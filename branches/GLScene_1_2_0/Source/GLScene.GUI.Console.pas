@@ -68,7 +68,7 @@
                                    Code ready to be donated to GLScene
 }
 
-unit GLConsole;
+unit GLScene.GUI.Console;
 
 interface
 
@@ -78,10 +78,10 @@ uses
   // VCL
   Classes, SysUtils, Graphics, TypInfo,
 
-  // GLScene
-  GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
-  PersistentClasses, GLContext, GLTexture, GLS_Material, GLUtils, GLStrings,
-  GLCrossPlatform, GLMaterial{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  // GLScene.Core
+  GLScene.Core, GLScene.Objects, GLScene.Objects.HUD, GLScene.Viewer, GLScene.BitmapFont,
+  GLScene.Base.PersistentClasses, GLScene.Base.Context, GLScene.Texture, GLScene.MaterialEx, GLScene.Utils, GLScene.Base.Strings,
+  GLScene.Platform, GLScene.Material{$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 const
   CONSOLE_MAX_COMMANDS = 120;
@@ -438,7 +438,7 @@ type
 implementation
 
 uses
-  GLColor;
+  GLScene.Base.Color;
 
 const
   STR_NO_DUPLICATE_NAMES_ALLOWED = 'Duplicate names not allowed!';

@@ -62,28 +62,28 @@
       <li>08/09/01 - EG - Creation (GLParticleFX.omm)
    </ul></font>
 }
-unit GLParticleFX;
+unit GLScene.Fx.Particle;
 
 interface
 
 {$I GLScene.inc}
 
 uses Classes,
-  PersistentClasses,
-  GLScene,
-  VectorGeometry,
-  XCollection,
-  GLMaterial,
-  GLCadencer,
-  VectorLists,
-  GLGraphics,
-  GLContext,
-  GLColor,
-  BaseClasses,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLManager,
-  GLTextureFormat;
+  GLScene.Base.PersistentClasses,
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.XCollection,
+  GLScene.Material,
+  GLScene.Cadencer,
+  GLScene.Base.Vector.Lists,
+  GLScene.Graphics,
+  GLScene.Base.Context,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info,
+  GLScene.Manager,
+  GLScene.Texture.Format;
 
 const
   cPFXNbRegions = 128; // number of distance regions
@@ -948,10 +948,10 @@ implementation
 
 uses
   SysUtils,
-  OpenGLTokens,
-  GLCrossPlatform,
-  GLState
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Platform,
+  GLScene.Base.GLStateMachine
+  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 // GetOrCreateSourcePFX
 //

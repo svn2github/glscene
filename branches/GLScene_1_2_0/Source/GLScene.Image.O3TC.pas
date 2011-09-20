@@ -14,7 +14,7 @@
    </ul></font>
 }
 
-unit O3TCImage;
+unit GLScene.Image.O3TC;
 
 interface
 
@@ -26,10 +26,10 @@ uses
 {$ENDIF}
   Classes,
   SysUtils,
-  GLCrossPlatform,
-  VectorGeometry,
-  GLGraphics,
-  OpenGLTokens;
+  GLScene.Platform,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Graphics,
+  GLScene.Base.OpenGL.Tokens;
 
 type
 
@@ -45,8 +45,8 @@ implementation
 uses
 {$IFDEF FPC}graphtype,
 {$ENDIF}
-  GLFileO3TC,
-  GLTextureFormat;
+  GLScene.File.O3TC,
+  GLScene.Texture.Format;
 
 // ------------------
 // ------------------ TO3TCImage ------------------

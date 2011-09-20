@@ -39,11 +39,11 @@
 // methods and properties are explained in the interface section (through comments)
 // additional comments might apear in implementation section where needed
 
-unit GLCameraController;
+unit GLScene.CameraController;
 
 interface
 
-uses GLScene, Classes, GLCadencer;
+uses GLScene.Core, Classes, GLScene.Cadencer;
 
 type
 
@@ -127,8 +127,8 @@ type
 implementation
 
 uses
-  SysUtils, Forms, VectorGeometry
-  {$IFNDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  SysUtils, Forms, GLScene.Base.Vector.Geometry
+  {$IFNDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 //---TGLCameraMover
 

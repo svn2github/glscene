@@ -12,12 +12,12 @@
         <li>21/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLTextureFormat;
+unit GLScene.Texture.Format;
 
 interface
 
 uses
-  OpenGLTokens;
+  GLScene.Base.OpenGL.Tokens;
 
 type
 
@@ -274,8 +274,8 @@ function IsTargetSupportMipmap(const glTarget: TGLEnum): Boolean; overload;
 implementation
 
 uses
-  GLContext,
-  GLStrings;
+  GLScene.Base.Context,
+  GLScene.Base.Strings;
 
 type
 

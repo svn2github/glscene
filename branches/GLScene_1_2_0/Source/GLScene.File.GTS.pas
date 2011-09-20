@@ -11,14 +11,14 @@
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
-unit GLFileGTS;
+unit GLScene.File.GTS;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorFileObjects, ApplicationFileIO;
+  Classes, GLScene.Vector.FileObjects, GLScene.Base.FileIO;
 
 type
    // TGLGTSVectorFile
@@ -49,7 +49,7 @@ uses
 {$IFDEF Unicode}
   Sysutils,
 {$ENDIF}
-  GLUtils;
+  GLScene.Utils;
 
 // ------------------
 // ------------------ TGLGTSVectorFile ------------------

@@ -60,7 +60,7 @@
 //  c롭鱮㡭鿠촷欬 襤ࡪ᪠⡇etPickedobj ���衤᳼ Ჲ ᭪荊//  3) Does not work in lazarus
 //------------------------------------------------------------------------------
 
-unit GLGizmoEx;
+unit GLScene.GizmoEx;
 
 interface
 
@@ -70,11 +70,11 @@ uses
   // Standard
   {$IFDEF MSWINDOWS}Windows,{$ENDIF} Classes, SysUtils,
 
-  // GLScene
-  OpenGL1x, GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
-  GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GeometryBB, VectorTypes, GLCanvas,
-  PersistentClasses, GLScreen, GLState, GLS_Material;
+  // GLScene.Core
+  OpenGL1x, GLScene.Core, GLScene.Base.Color, GLScene.Objects, GLScene.Base.Vector.Geometry, GLScene.Material, GLScene.Base.Strings,
+  GLScene.ObjectsEx, GLScene.BitmapFont, GLScene.Viewer, GLScene.Vector.FileObjects, GLScene.Platform,
+  GLScene.Base.Coordinates, GLScene.Base.Context.Info, GLScene.Base.GeometryBB, GLScene.Base.Vector.Types, GLScene.Canvas,
+  GLScene.Base.PersistentClasses, GLScene.Screen, GLScene.Base.GLStateMachine, GLScene.MaterialEx;
 
 type
   TGLGizmoExObjectCollection = class;
@@ -524,7 +524,7 @@ type
 implementation
 
 uses
-  OpenGLTokens, GLContext;
+  GLScene.Base.OpenGL.Tokens, GLScene.Base.Context;
 
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject; const Axis, Origin: TAffineVector; const angle: Single);
 var

@@ -16,13 +16,13 @@
    Darwin Peachey's chapter in "Texturing & Modeling: A Procedural Approach"
    Further bugs are mine :)
 }
-unit PerlinNoise;
+unit GLScene.Base.PerlinNoise;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry;
+uses Classes, GLScene.Base.Vector.Geometry;
 
 const
    cPERLIN_TABLE_SIZE = 256; // must be a power of two
@@ -61,7 +61,7 @@ type
 implementation
 
 uses
-  VectorTypes;
+  GLScene.Base.Vector.Types;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

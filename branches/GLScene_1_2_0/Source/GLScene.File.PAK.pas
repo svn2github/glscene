@@ -9,14 +9,14 @@
   </ul><p>
 }
 
-unit GLFilePAK;
+unit GLScene.File.PAK;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  Classes, SysUtils, GLSArchiveManager;
+  Classes, SysUtils, GLScene.Archive.Manager;
 
 const
    SIGN = 'PACK';

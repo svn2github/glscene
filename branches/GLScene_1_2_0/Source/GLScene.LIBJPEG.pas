@@ -8,7 +8,7 @@
   </ul></font>
 }
 
-unit GLSJPG;
+unit GLScene.LIBJPEG;
 
 interface
 
@@ -16,7 +16,7 @@ interface
 {$Z4}  // Minimum enum size = dword
 
 uses
-  GLCrossPlatform, SysUtils, Classes;
+  GLScene.Platform, SysUtils, Classes;
 
 type
   TJPGColorDepth = (jpgAuto, jpgGray, jpg8Bit, jpg24Bit);

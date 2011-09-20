@@ -31,14 +31,14 @@
   </ul></font>
 }
 
-unit SpatialPartitioning;
+unit GLScene.Base.SpatialPartitioning;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, VectorTypes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses,
+  Classes, GLScene.Base.Vector.Types, GLScene.Base.Vector.Geometry, SysUtils, GLScene.Base.GeometryBB, GLScene.Base.PersistentClasses,
   Math;
 
 const

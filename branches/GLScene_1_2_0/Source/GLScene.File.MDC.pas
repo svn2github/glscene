@@ -22,15 +22,15 @@
       <li>07/02/04 - OT - Creation (Osman Turan)
 	</ul></font>
 }
-unit GLFileMDC;
+unit GLScene.File.MDC;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMaterial, ApplicationFileIO,
-  VectorGeometry, TypesMDC;
+  Classes, SysUtils, GLScene.Vector.FileObjects, GLScene.Material, GLScene.Base.FileIO,
+  GLScene.Base.Vector.Geometry, GLScene.File.MDC.Types;
 
 type
 

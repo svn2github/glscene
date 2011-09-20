@@ -11,7 +11,7 @@
  </ul></font>
 }
 
-unit GLS_Mesh;
+unit GLScene.Mesh;
 
 interface
 
@@ -19,16 +19,16 @@ interface
 
 uses
   Classes,
-  GLCrossPlatform,
-  VectorGeometry,
-  VectorTypes,
-  VectorLists,
-  OpenGLTokens,
-  GLContext,
-  GLS_ShaderParameter,
-  GLState,
-  GeometryBB,
-  GLPipelineTransformation,
+  GLScene.Platform,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Context,
+  GLScene.Shader.Parameter,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.GeometryBB,
+  GLScene.Base.Transformation,
   SyncObjs;
 
 type
@@ -368,11 +368,11 @@ uses
   LCLType,
 {$ENDIF}
 {$IFNDEF GLS_DELPHI_2007_DOWN}
-  GLSRedBlackTree,
+  GLScene.Base.RedBlackTree,
 {$ENDIF}
   SysUtils,
-  GLSLog,
-  GLStrings;
+  GLScene.Base.Log,
+  GLScene.Base.Strings;
 
 {$IFDEF GLS_DELPHI_2007_DOWN}
 {$I OldDelphiSpike.inc}

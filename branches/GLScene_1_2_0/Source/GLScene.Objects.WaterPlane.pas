@@ -21,15 +21,15 @@
    http://users.hol.gr/~sternas/<br>
    Sternas Stefanos 2003
 }
-unit GLWaterPlane;
+unit GLScene.Objects.WaterPlane;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, GLScene,
-   OpenGLTokens, VectorLists, GLCrossPlatform, PersistentClasses,
-   BaseClasses, GLRenderContextInfo {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses Classes, GLScene.Base.Vector.Geometry, GLScene,
+   GLScene.Base.OpenGL.Tokens, GLScene.Base.Vector.Lists, GLScene.Platform, GLScene.Base.PersistentClasses,
+   GLScene.Base.Classes, GLScene.Base.Context.Info {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 type
 
@@ -142,7 +142,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 uses
-  GLContext;
+  GLScene.Base.Context;
 
 // Create
 //

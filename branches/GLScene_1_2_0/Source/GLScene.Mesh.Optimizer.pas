@@ -7,11 +7,11 @@
       <li>03/06/03 - EG - Creation
 	</ul></font>
 }
-unit GLMeshOptimizer;
+unit GLScene.Mesh.Optimizer;
 
 interface
 
-uses Classes,Sysutils,VectorGeometry, GLVectorFileObjects;
+uses Classes,Sysutils,GLScene.Base.Vector.Geometry, GLScene.Vector.FileObjects;
 
 type
 
@@ -40,7 +40,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses PersistentClasses, VectorLists, MeshUtils;
+uses GLScene.Base.PersistentClasses, GLScene.Base.Vector.Lists, GLScene.Mesh.Utils;
 
 // OptimizeMesh (list, default options)
 //

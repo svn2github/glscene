@@ -14,12 +14,12 @@
       <li>28/07/03 - SG - Creation
    </ul></font>
 }
-unit BumpMapping;
+unit GLScene.BumpMapping;
 
 interface
 
 uses
-  VectorGeometry, VectorLists, GLCrossPlatform, VectorTypes;
+  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Platform, GLScene.Base.Vector.Types;
 
 type
   TNormalMapSpace = (nmsObject, nmsTangent);

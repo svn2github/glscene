@@ -9,12 +9,12 @@
       <li>24/11/03 - EG - Creation
    </ul></font>
 }
-unit GLMultiProxy;
+unit GLScene.Objects.MultiProxy;
 
 interface
 
-uses Classes, GLScene, VectorGeometry, GLSilhouette,
-     GLRenderContextInfo, BaseClasses, VectorTypes;
+uses Classes, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Silhouette,
+     GLScene.Base.Context.Info, GLScene.Base.Classes, GLScene.Base.Vector.Types;
 
 type
 
@@ -152,7 +152,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, OpenGLTokens, GLContext;
+uses SysUtils, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context;
 
 // ------------------
 // ------------------ TGLMultiProxyMaster ------------------

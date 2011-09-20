@@ -9,14 +9,14 @@
    </ul></font>
 }
 
-unit BaseClasses;
+unit GLScene.Base.Classes;
 
 interface
 
 uses
   Classes,
-  PersistentClasses,
-  GLCrossPlatform;
+  GLScene.Base.PersistentClasses,
+  GLScene.Platform;
 
 type
 
@@ -108,8 +108,8 @@ implementation
 
 uses
   SysUtils,
-  GLStrings,
-  GLSLog;
+  GLScene.Base.Strings,
+  GLScene.Base.Log;
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
 //---------------------- TGLUpdateAbleObject -----------------------------------------

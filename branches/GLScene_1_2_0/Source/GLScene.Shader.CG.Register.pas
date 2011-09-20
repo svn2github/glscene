@@ -11,7 +11,7 @@
       <li>23/02/07 - DaStr - Initial version
 
 }
-unit GLCgRegister;
+unit GLScene.Shader.CG.Register;
 
 interface
 
@@ -26,15 +26,15 @@ uses
     {$ELSE}
       DsgnIntf,
     {$ENDIF}
-    GLSceneRegister,
+    GLScene.Register.VCL,
   {$ELSE FPC}
-    propedits, GLSceneRegisterLCL,
+    propedits, GLScene.Register.LCL,
   {$ENDIF FPC}
-  // GLScene
-  GLMaterial,
+  // GLScene.Core
+  GLScene.Material,
 
-  // CG
-  Cg, CgGL, GLCgShader, GLCgBombShader;
+  // GLScene.Shader.CG
+  GLScene.Shader.CG, GLScene.Shader.CG.GL, GLScene.Shader.CG.Components, GLScene.Shader.CG.Bomb;
 
 procedure Register;
 

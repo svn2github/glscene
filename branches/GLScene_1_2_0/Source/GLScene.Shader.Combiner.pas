@@ -18,7 +18,7 @@
     Previous version history:
       v1.0  02 November    '2006  Creation
 }
-unit GLShaderCombiner;
+unit GLScene.Shader.Combiner;
 
 interface
 
@@ -28,8 +28,8 @@ uses
   //VCL
   Classes,
 
-  //GLScene
-  GLMaterial, GLScene, VectorGeometry, GLStrings, GLRenderContextInfo;
+  //GLScene.Core
+  GLScene.Material, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Strings, GLScene.Base.Context.Info;
 
 type
   {: MP - multipass, SP-singlepass, AP - anypass (single or multi)

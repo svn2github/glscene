@@ -23,7 +23,7 @@
       <li>01/06/02 - JAJ - Base Unit built..
  </ul></font>
 }
-unit GLGui;
+unit GLScene.GUI;
 
 interface
 
@@ -33,9 +33,9 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
-  GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
-  PersistentClasses, VectorGeometry, GLCoordinates, BaseClasses;
+  // GLScene.Core
+  GLScene.Core, GLScene.BitmapFont, GLScene.Material, GLScene.Platform, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context,
+  GLScene.Base.PersistentClasses, GLScene.Base.Vector.Geometry, GLScene.Base.Coordinates, GLScene.Base.Classes;
 
 type
 

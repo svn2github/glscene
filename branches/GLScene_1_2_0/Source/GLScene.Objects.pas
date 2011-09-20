@@ -139,7 +139,7 @@
   TVertexList.AddVertex, "default"s to properties
   </ul></font>
 }
-unit GLObjects;
+unit GLScene.Objects;
 
 interface
 
@@ -147,27 +147,27 @@ interface
 
 uses
   Classes,
-  VectorGeometry,
-  VectorTypes,
-  GeometryBB,
-  GLScene,
-  OpenGLAdapter,
-  OpenGLTokens,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types,
+  GLScene.Base.GeometryBB,
+  GLScene.Core,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.OpenGL.Tokens,
   SysUtils,
-  VectorLists,
-  BaseClasses,
-  GLCrossPlatform,
-  GLContext,
-  GLSilhouette,
-  GLColor,
-  GLPipelineTransformation,
-  GLRenderContextInfo,
-  GLNodes,
-  GLCoordinates,
-  GLMaterial,
-  GLS_Material,
-  GLS_Mesh,
-  GLS_DrawTechnique;
+  GLScene.Base.Vector.Lists,
+  GLScene.Base.Classes,
+  GLScene.Platform,
+  GLScene.Base.Context,
+  GLScene.Silhouette,
+  GLScene.Base.Color,
+  GLScene.Base.Transformation,
+  GLScene.Base.Context.Info,
+  GLScene.Nodes,
+  GLScene.Base.Coordinates,
+  GLScene.Material,
+  GLScene.MaterialEx,
+  GLScene.Mesh,
+  GLScene.DrawTechnique;
 
 type
 
@@ -967,9 +967,9 @@ uses
 {$IFDEF GLS_SERVICE_CONTEXT}
   SyncObjs,
 {$ENDIF}
-  Spline,
-  GLState,
-  GLS_ShaderParameter;
+  GLScene.Base.Spline,
+  GLScene.Base.GLStateMachine,
+  GLScene.Shader.Parameter;
 
 {$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
 

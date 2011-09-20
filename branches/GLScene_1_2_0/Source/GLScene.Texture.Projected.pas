@@ -17,7 +17,7 @@
       <li>01/10/04 - SG - Initial (by Matheus Degiovani)
    </ul></font>
 }
-unit GLProjectedTextures;
+unit GLScene.Texture.Projected;
 
 interface
 
@@ -25,13 +25,13 @@ interface
 
 uses
   Classes,
-  GLScene,
-  GLTexture,
-  OpenGLTokens,
-  VectorGeometry,
+  GLScene.Core,
+  GLScene.Texture,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Vector.Geometry,
   XOpenGL,
-  GLRenderContextInfo,
-  GLState;
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   {: Possible styles of texture projection. Possible values:<ul>
@@ -163,7 +163,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 uses
-  GLContext;
+  GLScene.Base.Context;
 // ------------------
 // ------------------ TGLTextureEmitter ------------------
 // ------------------
