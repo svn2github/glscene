@@ -189,6 +189,9 @@ type
     property OnMouseWheelDown;
     property OnMouseWheelUp;
 
+    property OnKeyDown;
+    property OnKeyUp;
+
     property OnContextPopup;
     property TabStop;
     property TabOrder;
