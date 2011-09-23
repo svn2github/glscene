@@ -1036,7 +1036,6 @@ implementation
 uses
   GLScene.Core,
   GLScene.Base.Strings,
-  XOpenGL,
   GLScene.Base.FileIO,
   GLScene.Base.PictureRegisteredFormats,
   GLScene.Utils
@@ -3203,12 +3202,12 @@ begin
       rci.GLStates.ActiveTextureEnvironmentMode := cTextureMode[FTextureMode];
       rci.GLStates.ActiveTextureEnvironmentColor := FEnvColor.Color;
       ApplyMappingMode;
-      xgl.MapTexCoordToMain;
+//      xgl.MapTexCoordToMain;
     end;
   end
   else if not rci.GLStates.ForwardContext then
   begin // default
-    xgl.MapTexCoordToMain;
+//    xgl.MapTexCoordToMain;
   end;
 end;
 
@@ -4067,8 +4066,8 @@ begin
           units := units or (1 shl Items[i].TextureIndex);
     end;
   end;
-  if units > 0 then
-    xgl.MapTexCoordToArbitraryAdd(units);
+//  if units > 0 then
+//    xgl.MapTexCoordToArbitraryAdd(units);
 end;
 
 // UnApply

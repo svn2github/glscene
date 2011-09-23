@@ -36,7 +36,7 @@ requires
   GLScene_DesignTime;
 
 contains
-  GLSCUDAEditor in '..\Source\DesignTime\GLSCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLSComputingRegister in '..\Source\DesignTime\GLSComputingRegister.pas';
+  GLScene.CUDA.Editor in '..\Source\DesignTime\GLScene.CUDA.Editor.pas' {GLSCUDAEditorForm},
+  GLScene.Register.Computing in '..\Source\DesignTime\GLScene.Register.Computing.pas';
 
 end.

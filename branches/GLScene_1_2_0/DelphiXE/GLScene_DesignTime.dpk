@@ -1,9 +1,9 @@
 package GLScene_DesignTime;
 
 {$R *.res}
-{$R '..\Source\DesignTime\GLSceneObjects.dcr'}
-{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
-{$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
+{$R '..\Source\GLSceneObjects.dcr'}
+{$R '..\Source\GLSceneVCL.dcr'}
+{$R '..\Source\nonGLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -39,14 +39,14 @@ requires
   VclSmp;
 
 contains
-  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
-  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
-  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
-  GLSceneFormDesign in '..\Source\DesignTime\GLSceneFormDesign.pas',
-  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form},
-  GLSceneToolbar in '..\Source\DesignTime\GLSceneToolbar.pas';
+  GLScene.FX.CollectionEditor.VCL in '..\Source\GLScene.FX.CollectionEditor.VCL.pas' {XCollectionEditor},
+  GLScene.Edit.VCL in '..\Source\GLScene.Edit.VCL.pas' {GLSceneEditorForm},
+  GLScene.Register.VCL in '..\Source\GLScene.Register.VCL.pas',
+  GLScene.XCollection.Register in '..\Source\GLScene.XCollection.Register.pas',
+  GLScene.Shader.Memo in '..\Source\GLScene.Shader.Memo.pas',
+  GLScene.Form.Design in '..\Source\GLScene.Form.Design.pas',
+  GLScene.GUI.LayoutEditor in '..\Source\GLScene.GUI.LayoutEditor.pas' {layouts_form},
+  GLScene.Toolbar in '..\Source\GLScene.Toolbar.pas';
 
 end.
 

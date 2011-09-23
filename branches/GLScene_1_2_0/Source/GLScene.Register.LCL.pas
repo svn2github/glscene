@@ -102,16 +102,16 @@ uses
   GLScene.Image.DDS, GLScene.Image.HDR, GLScene.Image.O3TC,
 
   // Vector file formats
-  GLScene.File.3DS, GLScene.File.ASE, GLScene.File.B3D, GLScene.File.GL2, GLScene.File.GTS, GLScene.File.LMTS,
-  GLScene.File.LWO, GLScene.File.MD2, GLScene.File.MD3, GLScene.File.MD5, GLScene.File.MDC, GLScene.File.MS3D, GLScene.File.NMF,
-  GLScene.File.Nurbs, GLScene.File.OBJ, GLScene.File.PLY, GLScene.File.SMD, GLScene.File.STL,
-  GLScene.File.TIN, GLScene.File.VRML, GLScene.File.X,
+  GLScene.Files.3DS, GLScene.Files.ASE, GLScene.Files.B3D, GLScene.Files.GL2, GLScene.Files.GTS, GLScene.Files.LMTS,
+  GLScene.Files.LWO, GLScene.Files.MD2, GLScene.Files.MD3, GLScene.Files.MD5, GLScene.Files.MDC, GLScene.Files.MS3D, GLScene.Files.NMF,
+  GLScene.Files.Nurbs, GLScene.Files.OBJ, GLScene.Files.PLY, GLScene.Files.SMD, GLScene.Files.STL,
+  GLScene.Files.TIN, GLScene.Files.VRML, GLScene.Files.X,
 
   // Sound file formats
-  GLScene.File.WAV, GLScene.File.MP3,
+  GLScene.Files.WAV, GLScene.Files.MP3,
 
   // Raster file format
-  GLScene.File.DDS, GLScene.File.O3TC, GLScene.File.HDR, GLScene.File.BMP, GLScene.File.TGA,
+  GLScene.Files.DDS, GLScene.Files.O3TC, GLScene.Files.HDR, GLScene.Files.BMP, GLScene.Files.TGA,
 
   // Property editor forms
   GLScene.Edit.LCL, GLScene.PropertyEditor.Vector.LCL, GLScene.PropertyEditor.Material.LCL, GLScene.PropertyEditor.MaterialPreview.LCL,

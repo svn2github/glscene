@@ -33,13 +33,13 @@ requires
   rtl;
 
 contains
-  GLODEManager in '..\Source\GLODEManager.pas',
-  dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
-  GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
-  GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
-  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
-  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
-  GLODERagdoll in '..\Source\GLODERagdoll.pas';
+  GLScene.ODE.Manager in '..\Source\GLScene.ODE.Manager.pas',
+  GLScene.ODE.Utility in '..\Source\PhysicsAPIs\GLScene.ODE.Utility.pas',
+  GLScene.ODE.Register in '..\Source\DesignTime\GLScene.ODE.Register.pas',
+  GLScene.ODE.CustomColliders in '..\Source\GLScene.ODE.CustomColliders.pas',
+  GLScene.ODE.SkeletonColliders in '..\Source\GLScene.ODE.SkeletonColliders.pas',
+  GLScene.ODE.Import in '..\Source\PhysicsAPIs\GLScene.ODE.Import.pas',
+  GLScene.ODE.GL in '..\Source\PhysicsAPIs\GLScene.ODE.GL.pas',
+  GLScene.ODE.Ragdoll in '..\Source\GLScene.ODE.Ragdoll.pas';
 
 end.

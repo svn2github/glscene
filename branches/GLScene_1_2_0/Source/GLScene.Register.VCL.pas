@@ -510,7 +510,7 @@ uses
   GLScene.PropertyEditor.Material.VCL,
   GLScene.PropertyEditor.Vector.VCL,
   GLScene.Objects.AnimatedSprite,
-  GLScene.Shader.Asm,
+  GLScene.Shader.Assm,
   GLScene.HDS.Async,
   GLScene.Objects.Atmosphere,
   GLScene.AVIRecorder,
@@ -625,41 +625,41 @@ uses
   GLScene.Image.DDS,
   GLScene.Image.TGA,
   // Vector file formats
-  GLScene.File.3DS,
-  GLScene.File.ASE,
-  GLScene.File.B3D,
-  GLScene.File.GL2,
-  GLScene.File.GTS,
-  GLScene.File.LMTS,
-  GLScene.File.LWO,
-  GLScene.File.MD2,
-  GLScene.File.MD3,
-  GLScene.File.MD5,
-  GLScene.File.MDC,
-  GLScene.File.MS3D,
-  GLScene.File.NMF,
-  GLScene.File.Nurbs,
-  GLScene.File.OBJ,
-  GLScene.File.OCT,
-  GLScene.File.PLY,
-  GLScene.File.Q3BSP,
-  GLScene.File.SMD,
-  GLScene.File.STL,
-  GLScene.File.TIN,
-  GLScene.File.VRML,
+  GLScene.Files._3DS,
+  GLScene.Files.ASE,
+  GLScene.Files.B3D,
+  GLScene.Files.GL2,
+  GLScene.Files.GTS,
+  GLScene.Files.LMTS,
+  GLScene.Files.LWO,
+  GLScene.Files.MD2,
+  GLScene.Files.MD3,
+  GLScene.Files.MD5,
+  GLScene.Files.MDC,
+  GLScene.Files.MS3D,
+  GLScene.Files.NMF,
+  GLScene.Files.Nurbs,
+  GLScene.Files.OBJ,
+  GLScene.Files.OCT,
+  GLScene.Files.PLY,
+  GLScene.Files.Q3BSP,
+  GLScene.Files.SMD,
+  GLScene.Files.STL,
+  GLScene.Files.TIN,
+  GLScene.Files.VRML,
 
   // Sound file formats
-  GLScene.File.WAV,
-  GLScene.File.MP3,
+  GLScene.Files.WAV,
+  GLScene.Files.MP3,
 
   // Raster file format
-  GLScene.File.DDS,
-  GLScene.File.O3TC,
-  GLScene.File.HDR,
-  GLScene.File.JPEG,
-  GLScene.File.PNG,
-  GLScene.File.BMP,
-  GLScene.File.TGA,
+  GLScene.Files.DDS,
+  GLScene.Files.O3TC,
+  GLScene.Files.HDR,
+  GLScene.Files.JPEG,
+  GLScene.Files.PNG,
+  GLScene.Files.BMP,
+  GLScene.Files.TGA,
 
   GLScene.Sound,
   GLScene.Sound.FileObjects,
@@ -1244,7 +1244,7 @@ end;
 
 procedure TGLMaterialProperty.Edit;
 begin
-  if FMaterialEditorForm.MaterialEditorForm.Execute(TGLMaterial(GetOrdValue)) then
+  if GLScene.PropertyEditor.Material.VCL.MaterialEditorForm.Execute(TGLMaterial(GetOrdValue)) then
     Modified;
 end;
 
@@ -2438,11 +2438,11 @@ initialization
     'SVN version');
 {$ENDIF}
 
-  GLCrossPlatform.IsDesignTime := True;
-  GLS_DrawTechnique.vBindlessGraphicsEnabled := False;
-  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
-  GLColor.vUseDefaultColorSets := True;
-  GLCoordinates.vUseDefaultCoordinateSets := True;
+  GLScene.Platform.IsDesignTime := True;
+  GLScene.DrawTechnique.vBindlessGraphicsEnabled := False;
+  GLScene.Platform.vProjectTargetName := GetProjectTargetName;
+  GLScene.Base.Color.vUseDefaultColorSets := True;
+  GLScene.Base.Coordinates.vUseDefaultCoordinateSets := True;
   ReadVideoModes;
 
   with ObjectManager do

@@ -29,7 +29,7 @@ uses
 
   // GLScene.Core
   GLScene.Texture, GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Lists, GLScene.Base.OpenGL.Tokens, GLScene.Base.Context,
-  GLScene.Shader.Asm, GLScene.Base.Context.Info, GLScene.Shader.Custom, GLScene.Base.GLStateMachine;
+  GLScene.Shader.Assm, GLScene.Base.Context.Info, GLScene.Shader.Custom, GLScene.Base.GLStateMachine;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)

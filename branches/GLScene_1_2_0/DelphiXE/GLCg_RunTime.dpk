@@ -33,10 +33,10 @@ requires
   GLScene_RunTime;
 
 contains
-  cgGL in '..\Source\CgShaders\cgGL.pas',
-  cg in '..\Source\CgShaders\cg.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas',
-  CGPostTransformationShader in '..\Source\CgShaders\CGPostTransformationShader.pas';
+  GLScene.Shader.CG.GL in '..\Source\CgShaders\GLScene.Shader.CG.GL.pas',
+  GLScene.Shader.CG in '..\Source\CgShaders\cg.pas',
+  GLScene.Shader.CG.Components in '..\Source\CgShaders\GLScene.Shader.CG.Components.pas',
+  GLScene.Shader.CG.Bomb in '..\Source\CgShaders\GLScene.Shader.CG.Bomb.pas',
+  GLScene.Shader.CG.PostTransformation in '..\Source\CgShaders\GLScene.Shader.CG.PostTransformation.pas';
 
 end.

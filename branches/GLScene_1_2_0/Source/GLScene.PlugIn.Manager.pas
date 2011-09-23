@@ -16,7 +16,7 @@ interface
 
 {$I GLScene.inc}
 
-uses Windows, Classes, GLScene.PlugIn.Interface, SysUtils;
+uses Windows, Classes, GLScene.PlugIn.Types, SysUtils;
 
 type
   PPlugInEntry = ^TPlugInEntry;

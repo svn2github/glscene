@@ -403,21 +403,21 @@ end;
 //
 function TGLCustomCoordinates.VectorLength : TGLFloat;
 begin
-   Result:=VectorGeometry.VectorLength(FCoords);
+   Result:=GLScene.Base.Vector.Geometry.VectorLength(FCoords);
 end;
 
 // VectorNorm
 //
 function TGLCustomCoordinates.VectorNorm : TGLFloat;
 begin
-   Result:=VectorGeometry.VectorNorm(FCoords);
+   Result:=GLScene.Base.Vector.Geometry.VectorNorm(FCoords);
 end;
 
 // MaxXYZ
 //
 function TGLCustomCoordinates.MaxXYZ : Single;
 begin
-   Result:=VectorGeometry.MaxXYZComponent(FCoords);
+   Result:=GLScene.Base.Vector.Geometry.MaxXYZComponent(FCoords);
 end;
 
 // Equals
@@ -432,7 +432,7 @@ end;
 procedure TGLCustomCoordinates.SetVector(const x, y: Single; z : Single = 0);
 begin
   Assert(FStyle = csVector, csVectorHelp);
-  VectorGeometry.SetVector(FCoords, x, y, z);
+  GLScene.Base.Vector.Geometry.SetVector(FCoords, x, y, z);
   NotifyChange(Self);
 end;
 
@@ -441,7 +441,7 @@ end;
 procedure TGLCustomCoordinates.SetVector(const v : TAffineVector);
 begin
   Assert(FStyle = csVector, csVectorHelp);
-  VectorGeometry.SetVector(FCoords, v);
+  GLScene.Base.Vector.Geometry.SetVector(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -450,7 +450,7 @@ end;
 procedure TGLCustomCoordinates.SetVector(const v : TVector);
 begin
   Assert(FStyle = csVector, csVectorHelp);
-  VectorGeometry.SetVector(FCoords, v);
+  GLScene.Base.Vector.Geometry.SetVector(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -459,7 +459,7 @@ end;
 procedure TGLCustomCoordinates.SetVector(const x, y, z, w : Single);
 begin
   Assert(FStyle = csVector, csVectorHelp);
-  VectorGeometry.SetVector(FCoords, x, y, z, w);
+  GLScene.Base.Vector.Geometry.SetVector(FCoords, x, y, z, w);
   NotifyChange(Self);
 end;
 
@@ -491,7 +491,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint(const x, y, z : Single);
 begin
   Assert(FStyle = csPoint, csPointHelp);
-  VectorGeometry.MakePoint(FCoords, x, y, z);
+  GLScene.Base.Vector.Geometry.MakePoint(FCoords, x, y, z);
   NotifyChange(Self);
 end;
 
@@ -500,7 +500,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint(const v : TAffineVector);
 begin
   Assert(FStyle = csPoint, csPointHelp);
-  VectorGeometry.MakePoint(FCoords, v);
+  GLScene.Base.Vector.Geometry.MakePoint(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -509,7 +509,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint(const v : TVector);
 begin
   Assert(FStyle = csPoint, csPointHelp);
-  VectorGeometry.MakePoint(FCoords, v);
+  GLScene.Base.Vector.Geometry.MakePoint(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -518,7 +518,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint2D(const x, y : Single);
 begin
   Assert(FStyle = csPoint2D, csPoint2DHelp);
-  VectorGeometry.MakeVector(FCoords, x, y, 0);
+  GLScene.Base.Vector.Geometry.MakeVector(FCoords, x, y, 0);
   NotifyChange(Self);
 end;
 
@@ -527,7 +527,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint2D(const v : TAffineVector);
 begin
   Assert(FStyle = csPoint2D, csPoint2DHelp);
-  VectorGeometry.MakeVector(FCoords, v);
+  GLScene.Base.Vector.Geometry.MakeVector(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -536,7 +536,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint2D(const v : TVector);
 begin
   Assert(FStyle = csPoint2D, csPoint2DHelp);
-  VectorGeometry.MakeVector(FCoords, v);
+  GLScene.Base.Vector.Geometry.MakeVector(FCoords, v);
   NotifyChange(Self);
 end;
 
@@ -545,7 +545,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint2D(const v : TVector2f);
 begin
   Assert(FStyle = csPoint2D, csPoint2DHelp);
-  VectorGeometry.MakeVector(FCoords, v[0], v[1], 0);
+  GLScene.Base.Vector.Geometry.MakeVector(FCoords, v[0], v[1], 0);
   NotifyChange(Self);
 end;
 
@@ -611,7 +611,7 @@ end;
 //
 function TGLCustomCoordinates.GetAsAffineVector : TAffineVector;
 begin
-   VectorGeometry.SetVector(Result, FCoords);
+   GLScene.Base.Vector.Geometry.SetVector(Result, FCoords);
 end;
 
 // GetAsPoint2D

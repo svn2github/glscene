@@ -45,7 +45,7 @@ implementation
 uses
 {$IFDEF FPC}graphtype,
 {$ENDIF}
-  GLScene.File.O3TC,
+  GLScene.Files.O3TC,
   GLScene.Texture.Format;
 
 // ------------------

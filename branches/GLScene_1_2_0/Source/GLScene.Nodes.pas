@@ -223,7 +223,7 @@ end;
 
 procedure TGLNode.SetAsAffineVector(const value: TAffineVector);
 begin
-  VectorGeometry.SetVector(FCoords, value);
+  GLScene.Base.Vector.Geometry.SetVector(FCoords, value);
   (Collection as TGLNodes).NotifyChange;
 end;
 
@@ -232,7 +232,7 @@ end;
 
 function TGLNode.GetAsAffineVector: TAffineVector;
 begin
-  VectorGeometry.SetVector(Result, FCoords);
+  GLScene.Base.Vector.Geometry.SetVector(Result, FCoords);
 end;
 
 // SetCoordinate

@@ -165,8 +165,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses XOpenGL;
-
 // ------------------
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------
@@ -599,10 +597,10 @@ type
 
    procedure IssueQuad(col, row : Integer);
    begin
-      xgl.TexCoord2f(col, row);      GL.Vertex2f(col, row);
-      xgl.TexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
-      xgl.TexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
-      xgl.TexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
+      gl.TexCoord2f(col, row);      GL.Vertex2f(col, row);
+      gl.TexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
+      gl.TexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
+      gl.TexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
    end;
 
 var

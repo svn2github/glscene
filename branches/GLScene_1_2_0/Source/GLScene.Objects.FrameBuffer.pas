@@ -30,8 +30,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene.Base.Vector.Geometry, GLScene, GLScene.Texture, GLScene.Base.Context, GLScene.Base.FrameBuffer, GLScene.Base.Color,
-  GLScene.Material, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine, GLScene.Base.Log;
+  Classes,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Core,
+  GLScene.Texture,
+  GLScene.Base.Context,
+  GLScene.Base.FrameBuffer,
+  GLScene.Base.Color,
+  GLScene.Material,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.Log;
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -79,7 +88,7 @@ type
     FPostGenerateMipmap: Boolean;
     FMaxSize: Integer;
     FMaxAttachment: Integer;
-    FStoreCamera: array[0..2] of TVector;
+    FStoreCamera: array [0 .. 2] of TVector;
     // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
@@ -197,9 +206,11 @@ type
       write SetStencilPrecision default spDefault;
 
     { : called before rendering to the FBO }
-    property BeforeRender: TDirectRenderEvent read FBeforeRender write FBeforeRender;
+    property BeforeRender: TDirectRenderEvent read FBeforeRender
+      write FBeforeRender;
     { : called after the rendering to the FBO }
-    property AfterRender: TDirectRenderEvent read FAfterRender write FAfterRender;
+    property AfterRender: TDirectRenderEvent read FAfterRender
+      write FAfterRender;
     { : Called before the FBO is initialized
       the FBO is bound before calling this event }
     property PreInitialize: TNotifyEvent read FPreInitialize
@@ -223,7 +234,7 @@ implementation
 uses
   SysUtils,
   GLScene.Base.OpenGL.Tokens,
-  {$IFDEF GLS_DELPHI} GLScene.Base.Vector.Types, {$ENDIF}
+{$IFDEF GLS_DELPHI} GLScene.Base.Vector.Types, {$ENDIF}
   GLScene.Image.Multisample;
 
 { TGLFBORenderer }
@@ -331,7 +342,7 @@ end;
 procedure TGLFBORenderer.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
-  if not (csDesigning in ComponentState) then
+  if not(csDesigning in ComponentState) then
     RenderToFBO(ARci);
 
   if (not Assigned(FRootObject)) and (TargetVisibility = tvDefault) and
@@ -371,14 +382,11 @@ end;
 procedure TGLFBORenderer.Initialize;
 const
   cDrawBuffers: array [0 .. 15] of GLenum = (GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-    GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4,
-    GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6,
-    GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8,
-    GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT10,
-    GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
-    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14,
-    GL_COLOR_ATTACHMENT15);
+    GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
+    GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6,
+    GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8, GL_COLOR_ATTACHMENT9,
+    GL_COLOR_ATTACHMENT10, GL_COLOR_ATTACHMENT11, GL_COLOR_ATTACHMENT12,
+    GL_COLOR_ATTACHMENT13, GL_COLOR_ATTACHMENT14, GL_COLOR_ATTACHMENT15);
 var
   colorTex: TGLTexture;
   depthTex: TGLTexture;
@@ -397,7 +405,8 @@ begin
   if Height > FMaxSize then
   begin
     FHeight := FMaxSize;
-    GLSLogger.LogWarningFmt('%s.Height out of GL_MAX_RENDERBUFFER_SIZE', [Name]);
+    GLSLogger.LogWarningFmt
+      ('%s.Height out of GL_MAX_RENDERBUFFER_SIZE', [Name]);
   end;
 
   FFbo.Width := Width;
@@ -576,25 +585,25 @@ var
   s: string;
 begin
   if (ARci.drawState = dsPicking) and not PickableTarget then
-    Exit;
+    exit;
 
   if not TGLFramebufferHandle.IsSupported then
   begin
     GLSLogger.LogError('Framebuffer not supported - deactivated');
     Active := False;
-    Exit;
+    exit;
   end;
 
   // prevent recursion
   if FRendering then
-    Exit;
+    exit;
 
   FRendering := True;
   if ocStructure in Changes then
   begin
     Initialize;
     if not Active then
-      Exit;
+      exit;
   end;
 
   ApplyCamera(ARci);
@@ -607,7 +616,7 @@ begin
     begin
       GLSLogger.LogErrorFmt('Framebuffer error: %s. Deactivated', [s]);
       Active := False;
-      Exit;
+      exit;
     end;
 
     DoBeforeRender(ARci);
@@ -742,7 +751,8 @@ begin
   Result := FMaterialLibrary;
 end;
 
-procedure TGLFBORenderer.SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary);
+procedure TGLFBORenderer.SetMaterialLibrary(const Value
+  : TGLAbstractMaterialLibrary);
 begin
   if FMaterialLibrary <> Value then
   begin

@@ -1,23 +1,23 @@
-{: GLHiddenLineShader<p>
+{ : GLHiddenLineShader<p>
 
-   A shader that renders hidden (back-faced) lines differently from visible
-   (front) lines. Polygon offset is used to displace fragments depths a little
-   so that there is no z-fighting in rendering the same geometry multiple times.<p>
+  A shader that renders hidden (back-faced) lines differently from visible
+  (front) lines. Polygon offset is used to displace fragments depths a little
+  so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>06/06/07 - DaStr - Added $I GLScene.inc
-                             Added GLColor to uses (BugtrackerID = 1732211)
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>25/09/04 - NelC - Fixed bug of disabled blend (thx Carlos)
-      <li>05/02/04 - NelC - Fixed memory leak in TGLHiddenLineShader.Destroy (thx Achim Hammes)
-      <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
-      <li>05/12/03 - NelC - Added ForceMaterial
-      <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
-                            the multipass demo.
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>05/03/10 - DanB - More state added to TGLStateCache
+  <li>06/06/07 - DaStr - Added $I GLScene.inc
+  Added GLColor to uses (BugtrackerID = 1732211)
+  <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
+  <li>25/09/04 - NelC - Fixed bug of disabled blend (thx Carlos)
+  <li>05/02/04 - NelC - Fixed memory leak in TGLHiddenLineShader.Destroy (thx Achim Hammes)
+  <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
+  <li>05/12/03 - NelC - Added ForceMaterial
+  <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
+  the multipass demo.
+  </ul></font>
 }
 unit GLScene.Shader.HiddenLine;
 
@@ -26,8 +26,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene.Material, GLScene.Base.OpenGL.Tokens, GLScene.Platform, GLScene, GLScene.Base.Color,
-  GLScene.Base.Classes, GLScene.Base.Context.Info, GLScene.Base.GLStateMachine;
+  Classes,
+  GLScene.Material,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Platform,
+  GLScene.Core,
+  GLScene.Base.Color,
+  GLScene.Base.Classes,
+  GLScene.Base.Context.Info,
+  GLScene.Base.GLStateMachine;
 
 type
   TGLLineSettings = class(TGLUpdateAbleObject)
@@ -41,8 +48,8 @@ type
 
     procedure SetPattern(const value: TGLushort);
     procedure SetColor(const v: TGLColor);
-    procedure SetWidth(const Value: Single);
-    procedure SetForceMaterial(v: boolean);
+    procedure SetWidth(const value: Single);
+    procedure SetForceMaterial(v: Boolean);
 
   public
     { Public Declarations }
@@ -56,8 +63,8 @@ type
     property Width: Single read FWidth write SetWidth;
     property Color: TGLColor read FColor write SetColor;
     property Pattern: TGLushort read FPattern write SetPattern default $FFFF;
-    {: Set ForceMaterial to true to enforce the application of the line settings
-       for objects that sets their own color, line width and pattern. }
+    { : Set ForceMaterial to true to enforce the application of the line settings
+      for objects that sets their own color, line width and pattern. }
     property ForceMaterial: Boolean read FForceMaterial write SetForceMaterial
       default false;
   end;
@@ -77,10 +84,10 @@ type
     FLighting: Boolean;
     FShadeModel: TGLShadeModel;
 
-    procedure SetlineSmooth(v: boolean);
-    procedure SetSolid(v: boolean);
+    procedure SetlineSmooth(v: Boolean);
+    procedure SetSolid(v: Boolean);
     procedure SetBackgroundColor(AColor: TGLColor);
-    procedure SetLighting(v: boolean);
+    procedure SetLighting(v: Boolean);
     procedure SetShadeModel(const val: TGLShadeModel);
 
   protected
@@ -96,18 +103,18 @@ type
     { Published Declarations }
     property FrontLine: TGLLineSettings read FFrontLine write FFrontLine;
     property BackLine: TGLLineSettings read FBackLine write FBackLine;
-    {: Line smoothing control }
-    property LineSmooth: Boolean read FlineSmooth write SetlineSmooth default
-      false;
-    {: Solid controls if you can see through the front-line wireframe. }
+    { : Line smoothing control }
+    property LineSmooth: Boolean read FLineSmooth write SetlineSmooth
+      default false;
+    { : Solid controls if you can see through the front-line wireframe. }
     property Solid: Boolean read FSolid write SetSolid default false;
-    {: Color used for solid fill. }
-    property BackgroundColor: TGLColor read FBackgroundColor write
-      SetBackgroundColor;
-    {: When Solid is True, determines if lighting or background color is used. }
+    { : Color used for solid fill. }
+    property BackgroundColor: TGLColor read FBackGroundColor
+      write SetBackgroundColor;
+    { : When Solid is True, determines if lighting or background color is used. }
     property SurfaceLit: Boolean read FLighting write SetLighting default true;
-    {: Shade model.<p>
-       Default is "Smooth".<p> }
+    { : Shade model.<p>
+      Default is "Smooth".<p> }
     property ShadeModel: TGLShadeModel read FShadeModel write SetShadeModel
       default smDefault;
   end;
@@ -116,6 +123,7 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -154,8 +162,8 @@ procedure TGLLineSettings.SetPattern(const value: TGLushort);
 begin
   if FPattern <> value then
   begin
-    FPattern := Value;
-    NotifyChange(self);
+    FPattern := value;
+    NotifyChange(Self);
   end;
 end;
 
@@ -171,14 +179,14 @@ end;
 // SetWidth
 //
 
-procedure TGLLineSettings.SetWidth(const Value: Single);
+procedure TGLLineSettings.SetWidth(const value: Single);
 begin
-  FWidth := Value;
+  FWidth := value;
   NotifyChange(Self);
 end;
 
 var
-  IgnoreMatSave: boolean;
+  IgnoreMatSave: Boolean;
 
   // Apply
   //
@@ -215,12 +223,12 @@ end;
 // SetForceMaterial
 //
 
-procedure TGLLineSettings.SetForceMaterial(v: boolean);
+procedure TGLLineSettings.SetForceMaterial(v: Boolean);
 begin
   if FForceMaterial <> v then
   begin
     FForceMaterial := v;
-    NotifyChange(self);
+    NotifyChange(Self);
   end;
 end;
 
@@ -234,14 +242,14 @@ end;
 constructor TGLHiddenLineShader.Create(AOwner: TComponent);
 begin
   inherited;
-  FFrontLine := TGLLineSettings.Create(self);
-  FBackLine := TGLLineSettings.Create(self);
+  FFrontLine := TGLLineSettings.Create(Self);
+  FBackLine := TGLLineSettings.Create(Self);
   FSolid := false;
 
-  FBackgroundColor := TGLColor.Create(Self);
-  FBackgroundColor.Initialize(clrBtnFace);
+  FBackGroundColor := TGLColor.Create(Self);
+  FBackGroundColor.Initialize(clrBtnFace);
 
-  FLineSmooth := False;
+  FLineSmooth := false;
   FLighting := true;
   FShadeModel := smDefault;
 end;
@@ -253,19 +261,19 @@ destructor TGLHiddenLineShader.Destroy;
 begin
   FFrontLine.Free;
   FBackLine.Free;
-  FBackgroundColor.Free;
+  FBackGroundColor.Free;
   inherited;
 end;
 
 // DoApply
 //
 
-procedure TGLHiddenLineShader.DoApply(var rci: TRenderContextInfo; Sender:
-  TObject);
+procedure TGLHiddenLineShader.DoApply(var rci: TRenderContextInfo;
+  Sender: TObject);
 begin
   FPassCount := 1;
 
-  if solid then
+  if Solid then
     with rci.GLStates do
     begin
       // draw filled front faces in first pass
@@ -275,14 +283,16 @@ begin
       if FLighting then
       begin
         case ShadeModel of
-          smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
-          smFlat: GL.ShadeModel(GL_FLAT);
+          smDefault, smSmooth:
+            GL.ShadeModel(GL_SMOOTH);
+          smFlat:
+            GL.ShadeModel(GL_FLAT);
         end
       end
       else
       begin
         Disable(stLighting);
-        GL.Color4fv(FBackgroundColor.AsAddress); // use background color
+        GL.Color4fv(FBackGroundColor.AsAddress); // use background color
       end;
       // enable and adjust polygon offset
       Enable(stPolygonOffsetFill);
@@ -321,8 +331,8 @@ function TGLHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
       else
         Disable(stLineSmooth);
 
-      if LineSmooth or (FBackLine.FColor.Alpha < 1)
-        or (FFrontLine.FColor.Alpha < 1) then
+      if LineSmooth or (FBackLine.FColor.Alpha < 1) or
+        (FFrontLine.FColor.Alpha < 1) then
       begin
         Enable(stBlend);
         SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
@@ -335,7 +345,8 @@ function TGLHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
 begin
   case FPassCount of
     1:
-      with rci.GLStates do begin
+      with rci.GLStates do
+      begin
         // draw front line in 2nd pass
         FPassCount := 2;
 
@@ -344,18 +355,18 @@ begin
 
         SetLineSmoothBlend;
 
-        if solid and FLighting then
+        if Solid and FLighting then
           Disable(stLighting);
 
         PolygonMode := pmLines;
         CullFaceMode := cmBack;
 
-        if solid then
+        if Solid then
           rci.GLStates.Disable(stPolygonOffsetFill)
         else
           rci.GLStates.Disable(stPolygonOffsetLine);
 
-        Result := True;
+        Result := true;
       end;
     2:
       begin
@@ -364,8 +375,8 @@ begin
         Result := false;
       end;
   else
-    Assert(False);
-    Result := False;
+    Assert(false);
+    Result := false;
   end;
 end;
 
@@ -374,43 +385,43 @@ end;
 
 procedure TGLHiddenLineShader.SetBackgroundColor(AColor: TGLColor);
 begin
-  FBackgroundColor.Color := AColor.Color;
+  FBackGroundColor.Color := AColor.Color;
   NotifyChange(Self);
 end;
 
 // SetlineSmooth
 //
 
-procedure TGLHiddenLineShader.SetlineSmooth(v: boolean);
+procedure TGLHiddenLineShader.SetlineSmooth(v: Boolean);
 begin
-  if FlineSmooth <> v then
+  if FLineSmooth <> v then
   begin
-    FlineSmooth := v;
-    NotifyChange(self);
+    FLineSmooth := v;
+    NotifyChange(Self);
   end;
 end;
 
 // SetLighting
 //
 
-procedure TGLHiddenLineShader.SetLighting(v: boolean);
+procedure TGLHiddenLineShader.SetLighting(v: Boolean);
 begin
   if FLighting <> v then
   begin
     FLighting := v;
-    NotifyChange(self);
+    NotifyChange(Self);
   end;
 end;
 
 // SetSolid
 //
 
-procedure TGLHiddenLineShader.SetSolid(v: boolean);
+procedure TGLHiddenLineShader.SetSolid(v: Boolean);
 begin
   if FSolid <> v then
   begin
     FSolid := v;
-    NotifyChange(self);
+    NotifyChange(Self);
   end;
 end;
 
@@ -427,4 +438,3 @@ begin
 end;
 
 end.
-

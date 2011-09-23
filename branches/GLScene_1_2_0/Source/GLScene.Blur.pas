@@ -1,32 +1,32 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBlur<p>
+{ : GLBlur<p>
 
- Applies a blur effect over the viewport.<p>
+  Applies a blur effect over the viewport.<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>05/03/10 - DanB - More state added to TGLStateCache
-        <li>30/01/08 - Mrqzzz - Several changes to GLBlur. Added Advenced Blur. Looks good now :)
-        <li>06/06/07 - DaStr  - Added GLColor to uses (BugtrackerID = 1732211)
-        <li>06/04/07 - DaStr  - Fixed TGLMotionBlur.InitializeObject -
-                                 component can only be disabled in run-time
-        <li>03/04/07 - DaStr  - Optimized TGLMotionBlur.DoRender - now component
-                                 checks for supported extensions only once
-        <li>25/03/07 - DaStr  - Renamed parameters in some methods
-                                (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-        <li>22/03/07 - DaStr  - Added checks to TGLMotionBlur for supported extensions
-                                TGLMotionBlur is not rendered when picking now
-        <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
-        <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
-                                TGLBlur - default values added to all properties,
-                                Made some cosmetic and alignment changes
-        <li>20/02/07 - DaStr  - TGLMotionBlur added (based on ToxBlur by Dave Gravel)
-                                Added some default values to TGLBlur
-        <li>11/06/04 - Mrqzzz - Creation
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>05/03/10 - DanB - More state added to TGLStateCache
+  <li>30/01/08 - Mrqzzz - Several changes to GLBlur. Added Advenced Blur. Looks good now :)
+  <li>06/06/07 - DaStr  - Added GLColor to uses (BugtrackerID = 1732211)
+  <li>06/04/07 - DaStr  - Fixed TGLMotionBlur.InitializeObject -
+  component can only be disabled in run-time
+  <li>03/04/07 - DaStr  - Optimized TGLMotionBlur.DoRender - now component
+  checks for supported extensions only once
+  <li>25/03/07 - DaStr  - Renamed parameters in some methods
+  (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+  <li>22/03/07 - DaStr  - Added checks to TGLMotionBlur for supported extensions
+  TGLMotionBlur is not rendered when picking now
+  <li>25/02/07 - DaStr  - Added DesignTime check in TGLMotionBlur.DoRender
+  <li>23/02/07 - DaStr  - TGLMotionBlur.StoreIntensity bugfixed
+  TGLBlur - default values added to all properties,
+  Made some cosmetic and alignment changes
+  <li>20/02/07 - DaStr  - TGLMotionBlur added (based on ToxBlur by Dave Gravel)
+  Added some default values to TGLBlur
+  <li>11/06/04 - Mrqzzz - Creation
+  </ul></font>
 }
 unit GLScene.Blur;
 
@@ -36,22 +36,38 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils, Graphics,
+  Classes,
+  SysUtils,
+  Graphics,
 
   // GLScene.Core
-  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Objects, GLScene.BitmapFont, GLScene.Texture, GLScene.Material,
-  GLScene.Objects.HUD, GLScene.Base.Color, GLScene.Graphics, GLScene.Base.Context, GLScene.Base.OpenGL.Tokens,
-  GLScene.Base.Classes, GLScene.Base.Context.Info;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Objects,
+  GLScene.BitmapFont,
+  GLScene.Texture,
+  GLScene.Material,
+  GLScene.Objects.HUD,
+  GLScene.Base.Color,
+  GLScene.Graphics,
+  GLScene.Base.Context,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.Classes,
+  GLScene.Base.Context.Info;
 
 type
 
-  TGLBlurPreset = (pNone, pGlossy, pBeastView, pOceanDepth, pDream, pOverBlur, pAdvancedBlur);
+  TGLBlurPreset = (pNone, pGlossy, pBeastView, pOceanDepth, pDream, pOverBlur,
+    pAdvancedBlur);
   TGLBlurkind = (bNone, bSimple, bAdvanced);
+
   TRGBPixel = record
     R, G, B: TGLubyte;
   end;
+
   TRGBPixelBuffer = array of TRGBPixel;
-  TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TGLBitmap32; var DoBlur: boolean) of object;
+  TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject;
+    BMP32: TGLBitmap32; var DoBlur: boolean) of object;
 
   EGLMotionBlurException = class(Exception);
 
@@ -70,34 +86,35 @@ type
     FPreset: TGLBlurPreset;
     FTargetObject: TGLbaseSceneObject;
     FOnAdvancedBlurImagePrepareEvent: TGLAdvancedBlurImagePrepareEvent;
-    FBlur: TGLBlurKind;
+    FBlur: TGLBlurkind;
     Pixelbuffer: TRGBPixelBuffer;
-    FAdvancedBlurPasses: integer;
+    FAdvancedBlurPasses: Integer;
     FOnAfterTargetRender: TNotifyEvent;
     FOnBeforeTargetRender: TNotifyEvent;
-    FAdvancedBlurAmp: single;
+    FAdvancedBlurAmp: Single;
     FBlurSelf: boolean;
     FAdvancedBlurLowClamp: byte;
     FAdvancedBlurHiClamp: byte;
     FRenderBackgroundColor: TColor;
-    procedure DoMemView(baseObject: TGLBaseSceneObject);
+    procedure DoMemView(baseObject: TGLbaseSceneObject);
     procedure SetRenderHeight(const Value: Integer);
     procedure SetRenderWidth(const Value: Integer);
     procedure UpdateImageSettings;
     procedure SetPreset(const Value: TGLBlurPreset);
 
-    function StoreBlurBottom: Boolean;
-    function StoreBlurDeltaTime: Boolean;
-    function StoreBlurRight: Boolean;
-    function StoreBlurTop: Boolean;
-    function StoreBlurLeft: Boolean;
+    function StoreBlurBottom: boolean;
+    function StoreBlurDeltaTime: boolean;
+    function StoreBlurRight: boolean;
+    function StoreBlurTop: boolean;
+    function StoreBlurLeft: boolean;
     procedure SetTargetObject(const Value: TGLbaseSceneObject);
-    procedure SetOnAdvancedBlurImagePrepareEvent(const Value: TGLAdvancedBlurImagePrepareEvent);
-    procedure SetBlur(const Value: TGLBlurKind);
-    procedure SetAdvancedBlurPasses(const Value: integer);
+    procedure SetOnAdvancedBlurImagePrepareEvent(const Value
+      : TGLAdvancedBlurImagePrepareEvent);
+    procedure SetBlur(const Value: TGLBlurkind);
+    procedure SetAdvancedBlurPasses(const Value: Integer);
     procedure SetOnAfterTargetRender(const Value: TNotifyEvent);
     procedure SetOnBeforeTargetRender(const Value: TNotifyEvent);
-    procedure SetAdvancedBlurAmp(const Value: single);
+    procedure SetAdvancedBlurAmp(const Value: Single);
     procedure SetBlurSelf(const Value: boolean);
     procedure SetAdvancedBlurLowClamp(const Value: byte);
     procedure SetAdvancedBlurHiClamp(const Value: byte);
@@ -108,31 +125,48 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
     procedure DoRender(var ARci: TRenderContextInfo;
-      ARenderSelf, ARenderChildren: Boolean); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+      ARenderSelf, ARenderChildren: boolean); override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
   published
-    property Blur: TGLBlurKind read FBlur write SetBlur;
-    property BlurDeltaTime: Double read FBlurDeltaTime write FBlurDeltaTime stored StoreBlurDeltaTime;
-    property BlurLeft: Single read FBlurLeft write FBlurLeft stored StoreBlurLeft;
+    property Blur: TGLBlurkind read FBlur write SetBlur;
+    property BlurDeltaTime: Double read FBlurDeltaTime write FBlurDeltaTime
+      stored StoreBlurDeltaTime;
+    property BlurLeft: Single read FBlurLeft write FBlurLeft
+      stored StoreBlurLeft;
     property BlurTop: Single read FBlurTop write FBlurTop stored StoreBlurTop;
-    property BlurRight: Single read FBlurRight write FBlurRight stored StoreBlurRight;
-    property BlurBottom: Single read FBlurBottom write FBlurBottom stored StoreBlurBottom;
-    property RenderWidth: Integer read FRenderWidth write SetRenderWidth default 256;
-    property RenderHeight: Integer read FRenderHeight write SetRenderHeight default 256;
+    property BlurRight: Single read FBlurRight write FBlurRight
+      stored StoreBlurRight;
+    property BlurBottom: Single read FBlurBottom write FBlurBottom
+      stored StoreBlurBottom;
+    property RenderWidth: Integer read FRenderWidth write SetRenderWidth
+      default 256;
+    property RenderHeight: Integer read FRenderHeight write SetRenderHeight
+      default 256;
     property Preset: TGLBlurPreset read FPreset write SetPreset stored false;
-    property TargetObject: TGLbaseSceneObject read FTargetObject write SetTargetObject;
-    property AdvancedBlurPasses: integer read FAdvancedBlurPasses write SetAdvancedBlurPasses;
-    property AdvancedBlurAmp: single read FAdvancedBlurAmp write SetAdvancedBlurAmp;
-    property AdvancedBlurLowClamp: byte read FAdvancedBlurLowClamp write SetAdvancedBlurLowClamp;
-    property AdvancedBlurHiClamp: byte read FAdvancedBlurHiClamp write SetAdvancedBlurHiClamp;
+    property TargetObject: TGLbaseSceneObject read FTargetObject
+      write SetTargetObject;
+    property AdvancedBlurPasses: Integer read FAdvancedBlurPasses
+      write SetAdvancedBlurPasses;
+    property AdvancedBlurAmp: Single read FAdvancedBlurAmp
+      write SetAdvancedBlurAmp;
+    property AdvancedBlurLowClamp: byte read FAdvancedBlurLowClamp
+      write SetAdvancedBlurLowClamp;
+    property AdvancedBlurHiClamp: byte read FAdvancedBlurHiClamp
+      write SetAdvancedBlurHiClamp;
     property BlurSelf: boolean read FBlurSelf write SetBlurSelf;
-    property RenderBackgroundColor: TColor read FRenderBackgroundColor write SetRenderBackgroundColor;
-    property OnAdvancedBlurImagePrepareEvent: TGLAdvancedBlurImagePrepareEvent read FOnAdvancedBlurImagePrepareEvent write SetOnAdvancedBlurImagePrepareEvent;
-    property OnBeforeTargetRender: TNotifyEvent read FOnBeforeTargetRender write SetOnBeforeTargetRender;
-    property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
+    property RenderBackgroundColor: TColor read FRenderBackgroundColor
+      write SetRenderBackgroundColor;
+    property OnAdvancedBlurImagePrepareEvent: TGLAdvancedBlurImagePrepareEvent
+      read FOnAdvancedBlurImagePrepareEvent
+      write SetOnAdvancedBlurImagePrepareEvent;
+    property OnBeforeTargetRender: TNotifyEvent read FOnBeforeTargetRender
+      write SetOnBeforeTargetRender;
+    property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender
+      write SetOnAfterTargetRender;
   end;
 
-  {:
+  { :
     This component blurs everything thatis rendered BEFORE it. So if you want part
     of your scene blured, the other not blured, make sure that the other part is
     rendered after this component. It is fast and does not require shaders.
@@ -152,21 +186,24 @@ type
   TGLMotionBlur = class(TGLCustomSceneObject, IGLInitializable)
   private
     FIntensity: Single;
-    function StoreIntensity: Boolean;
+    function StoreIntensity: boolean;
   protected
     procedure DoOnAddedToParent; override;
-    procedure InitializeObject(ASender: TObject; const ARci: TRenderContextInfo); virtual;
+    procedure InitializeObject(ASender: TObject;
+      const ARci: TRenderContextInfo); virtual;
   public
-    {: This function is only valid AFTER OpenGL has been initialized. }
-    function SupportsRequiredExtensions: Boolean;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
-    constructor Create(aOwner: TComponent); override;
+    { : This function is only valid AFTER OpenGL has been initialized. }
+    function SupportsRequiredExtensions: boolean;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: boolean); override;
+    constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
-    //: The more the intensity, the more blur you have.
-    property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
+    // : The more the intensity, the more blur you have.
+    property Intensity: Single read FIntensity write FIntensity
+      stored StoreIntensity;
 
-    //: From TGLBaseSceneObject.
+    // : From TGLBaseSceneObject.
     property Visible;
     property OnProgress;
     property Behaviours;
@@ -176,7 +213,9 @@ type
 
 implementation
 
-uses XOpenGL, GLScene.Base.GLStateMachine, GLScene.Texture.Format;
+uses
+  GLScene.Base.GLStateMachine,
+  GLScene.Texture.Format;
 
 const
   EPS = 0.001;
@@ -193,7 +232,7 @@ begin
   FRenderWidth := 256;
   FViewer := TGLMemoryViewer.Create(Self);
   FPreset := pNone;
-  Material.Texture.Disabled := False;
+  Material.Texture.Disabled := false;
   FAdvancedBlurPasses := 1;
   FAdvancedBlurAmp := 1.1;
   FBlurSelf := true;
@@ -216,7 +255,7 @@ begin
     with TGLBlankImage(Material.Texture.Image) do
     begin
       Width := RenderWidth;
-      Height := Renderheight;
+      Height := RenderHeight;
     end
   else if Material.Texture.Image is TGLPersistentImage then
   begin
@@ -230,7 +269,7 @@ begin
   with FViewer do
   begin
     Width := RenderWidth;
-    Height := Renderheight;
+    Height := RenderHeight;
   end;
 
   SetLength(Pixelbuffer, RenderWidth * RenderHeight);
@@ -239,7 +278,7 @@ end;
 procedure TGLBlur.DoProgress(const progressTime: TProgressTimes);
 begin
   inherited;
-  if self.Visible and (progressTime.newTime - OldTime > FBlurDeltaTime) then
+  if Self.Visible and (progressTime.newTime - OldTime > FBlurDeltaTime) then
   begin
     OldTime := progressTime.newTime;
     if TargetObject <> nil then
@@ -248,31 +287,31 @@ begin
 
 end;
 
-procedure TGLBlur.DoMemView(baseObject: TGLBaseSceneObject);
+procedure TGLBlur.DoMemView(baseObject: TGLbaseSceneObject);
 var
-  OldFocalLength: single;
-  refsiz: single;
+  OldFocalLength: Single;
+  refsiz: Single;
   BMP: TGLBitmap32;
-  x, y: integer;
+  x, y: Integer;
   line: PGLPixel32Array;
   by: Integer;
   bp: Integer;
-  DoBlur: Boolean;
+  DoBlur: boolean;
 
-  procedure ApplyBlur(const passes: integer);
+  procedure ApplyBlur(const passes: Integer);
   var
-    t: integer;
-    x, y: integer;
+    t: Integer;
+    x, y: Integer;
     lin, linu, lind, linuu, lindd: PGLPixel32Array;
-    r, g, b: single;
+    R, G, B: Single;
     ir, ig, ib: Smallint;
 
     procedure ApplyBlurClampAndSetPixel;
     begin
       // 0.1111 = 1/7 (where 7 is the times each pixel is summed with neighbours or self)
-      ir := round(r * FAdvancedBlurAmp * 0.1111);
-      ig := round(g * FAdvancedBlurAmp * 0.1111);
-      ib := round(b * FAdvancedBlurAmp * 0.1111);
+      ir := round(R * FAdvancedBlurAmp * 0.1111);
+      ig := round(G * FAdvancedBlurAmp * 0.1111);
+      ib := round(B * FAdvancedBlurAmp * 0.1111);
 
       // Hi Clamp
       if ir > FAdvancedBlurHiClamp then
@@ -282,9 +321,9 @@ var
       if ib > FAdvancedBlurHiClamp then
         ib := FAdvancedBlurHiClamp;
 
-      lin^[x].r := ir;
-      lin^[x].g := ig;
-      lin^[x].b := ib;
+      lin^[x].R := ir;
+      lin^[x].G := ig;
+      lin^[x].B := ib;
     end;
 
   begin
@@ -301,35 +340,50 @@ var
         by := y * BMP.Height;
         // X = 0 PART:
         x := 0;
-        r := lin^[x].r + lin^[x + 1].r + lin^[x + 2].r + linu^[x].r + lind^[x].r + linuu^[x].r + lindd^[x].r;
-        g := lin^[x].g + lin^[x + 1].g + lin^[x + 2].g + linu^[x].g + lind^[x].g + linuu^[x].g + lindd^[x].g;
-        b := lin^[x].b + lin^[x + 1].b + lin^[x + 2].b + linu^[x].b + lind^[x].b + linuu^[x].b + lindd^[x].b;
+        R := lin^[x].R + lin^[x + 1].R + lin^[x + 2].R + linu^[x].R + lind^[x].R
+          + linuu^[x].R + lindd^[x].R;
+        G := lin^[x].G + lin^[x + 1].G + lin^[x + 2].G + linu^[x].G + lind^[x].G
+          + linuu^[x].G + lindd^[x].G;
+        B := lin^[x].B + lin^[x + 1].B + lin^[x + 2].B + linu^[x].B + lind^[x].B
+          + linuu^[x].B + lindd^[x].B;
         ApplyBlurClampAndSetPixel;
         // X = 1 PART:
         x := 1;
-        r := lin^[x].r + lin^[x + 1].r + lin^[x - 1].r + lin^[x + 2].r + linu^[x].r + lind^[x].r + linuu^[x].r + lindd^[x].r;
-        g := lin^[x].g + lin^[x + 1].g + lin^[x - 1].g + lin^[x + 2].g + linu^[x].g + lind^[x].g + linuu^[x].g + lindd^[x].g;
-        b := lin^[x].b + lin^[x + 1].b + lin^[x - 1].b + lin^[x + 2].b + linu^[x].b + lind^[x].b + linuu^[x].b + lindd^[x].b;
+        R := lin^[x].R + lin^[x + 1].R + lin^[x - 1].R + lin^[x + 2].R +
+          linu^[x].R + lind^[x].R + linuu^[x].R + lindd^[x].R;
+        G := lin^[x].G + lin^[x + 1].G + lin^[x - 1].G + lin^[x + 2].G +
+          linu^[x].G + lind^[x].G + linuu^[x].G + lindd^[x].G;
+        B := lin^[x].B + lin^[x + 1].B + lin^[x - 1].B + lin^[x + 2].B +
+          linu^[x].B + lind^[x].B + linuu^[x].B + lindd^[x].B;
         ApplyBlurClampAndSetPixel;
         // ALL X IN MIDDLE PART:
         for x := 2 to BMP.Width - 3 do
         begin
-          r := lin^[x].r + lin^[x + 1].r + lin^[x - 1].r + lin^[x + 2].r + lin^[x - 2].r + linu^[x].r + lind^[x].r + linuu^[x].r + lindd^[x].r;
-          g := lin^[x].g + lin^[x + 1].g + lin^[x - 1].g + lin^[x + 2].g + lin^[x - 2].g + linu^[x].g + lind^[x].g + linuu^[x].g + lindd^[x].g;
-          b := lin^[x].b + lin^[x + 1].b + lin^[x - 1].b + lin^[x + 2].b + lin^[x - 2].b + linu^[x].b + lind^[x].b + linuu^[x].b + lindd^[x].b;
+          R := lin^[x].R + lin^[x + 1].R + lin^[x - 1].R + lin^[x + 2].R +
+            lin^[x - 2].R + linu^[x].R + lind^[x].R + linuu^[x].R + lindd^[x].R;
+          G := lin^[x].G + lin^[x + 1].G + lin^[x - 1].G + lin^[x + 2].G +
+            lin^[x - 2].G + linu^[x].G + lind^[x].G + linuu^[x].G + lindd^[x].G;
+          B := lin^[x].B + lin^[x + 1].B + lin^[x - 1].B + lin^[x + 2].B +
+            lin^[x - 2].B + linu^[x].B + lind^[x].B + linuu^[x].B + lindd^[x].B;
           ApplyBlurClampAndSetPixel;
         end;
-        //X = NEXT TO LAST PART:
+        // X = NEXT TO LAST PART:
         x := BMP.Width - 2;
-        r := lin^[x].r + lin^[x + 1].r + lin^[x - 1].r + lin^[x - 2].r + linu^[x].r + lind^[x].r + linuu^[x].r + lindd^[x].r;
-        g := lin^[x].g + lin^[x + 1].g + lin^[x - 1].g + lin^[x - 2].g + linu^[x].g + lind^[x].g + linuu^[x].g + lindd^[x].g;
-        b := lin^[x].b + lin^[x + 1].b + lin^[x - 1].b + lin^[x - 2].b + linu^[x].b + lind^[x].b + linuu^[x].b + lindd^[x].b;
+        R := lin^[x].R + lin^[x + 1].R + lin^[x - 1].R + lin^[x - 2].R +
+          linu^[x].R + lind^[x].R + linuu^[x].R + lindd^[x].R;
+        G := lin^[x].G + lin^[x + 1].G + lin^[x - 1].G + lin^[x - 2].G +
+          linu^[x].G + lind^[x].G + linuu^[x].G + lindd^[x].G;
+        B := lin^[x].B + lin^[x + 1].B + lin^[x - 1].B + lin^[x - 2].B +
+          linu^[x].B + lind^[x].B + linuu^[x].B + lindd^[x].B;
         ApplyBlurClampAndSetPixel;
-        //X = LAST PART:
+        // X = LAST PART:
         x := BMP.Width - 1;
-        r := lin^[x].r + lin^[x - 1].r + lin^[x - 2].r + linu^[x].r + lind^[x].r + linuu^[x].r + lindd^[x].r;
-        g := lin^[x].g + lin^[x - 1].g + lin^[x - 2].g + linu^[x].g + lind^[x].g + linuu^[x].g + lindd^[x].g;
-        b := lin^[x].b + lin^[x - 1].b + lin^[x - 2].b + linu^[x].b + lind^[x].b + linuu^[x].b + lindd^[x].b;
+        R := lin^[x].R + lin^[x - 1].R + lin^[x - 2].R + linu^[x].R + lind^[x].R
+          + linuu^[x].R + lindd^[x].R;
+        G := lin^[x].G + lin^[x - 1].G + lin^[x - 2].G + linu^[x].G + lind^[x].G
+          + linuu^[x].G + lindd^[x].G;
+        B := lin^[x].B + lin^[x - 1].B + lin^[x - 2].B + linu^[x].B + lind^[x].B
+          + linuu^[x].B + lindd^[x].B;
         ApplyBlurClampAndSetPixel;
       end;
     end;
@@ -343,18 +397,19 @@ begin
   begin
     FDoingMemView := true;
 
-    //Scene.RenderScene(FViewer.Buffer,FViewer.Width,FViewer.Height,dsRendering,baseObject);
+    // Scene.RenderScene(FViewer.Buffer,FViewer.Width,FViewer.Height,dsRendering,baseObject);
     FViewer.Camera.BeginUpdate;
 
     OldFocalLength := FViewer.Camera.FocalLength;
 
     // CALCULATE SCALED FOCAL LENGTH FOR VIEWER
-    if SCene.CurrentBuffer.Width > SCene.CurrentBuffer.height then
+    if Scene.CurrentBuffer.Width > Scene.CurrentBuffer.Height then
       refsiz := Scene.CurrentBuffer.Width
     else
-      refsiz := Scene.CurrentBuffer.height;
+      refsiz := Scene.CurrentBuffer.Height;
 
-    FViewer.Camera.FocalLength := FViewer.Camera.FocalLength * FViewer.Buffer.Width / refsiz;
+    FViewer.Camera.FocalLength := FViewer.Camera.FocalLength *
+      FViewer.Buffer.Width / refsiz;
 
     if FViewer.Buffer.BackgroundColor <> FRenderBackgroundColor then
       FViewer.Buffer.BackgroundColor := FRenderBackgroundColor;
@@ -368,30 +423,31 @@ begin
         bSimple:
           begin
             if Assigned(FOnBeforeTargetRender) then
-              FOnBeforeTargetRender(self);
+              FOnBeforeTargetRender(Self);
             // RENDER
             FViewer.Render(baseObject);
             // Copy to texture (unfortunatelly, after this, the bitmap cannot be red back from the hardware.. i think)
             FViewer.CopyToTexture(Material.Texture);
             if Assigned(FOnAfterTargetRender) then
-              FOnAfterTargetRender(self);
+              FOnAfterTargetRender(Self);
           end;
         bAdvanced:
           begin
             if Assigned(FOnBeforeTargetRender) then
-              FOnBeforeTargetRender(self);
+              FOnBeforeTargetRender(Self);
 
             // RENDER
             FViewer.Render(baseObject);
             // Read pixels from buffer. This is slow, but ok with reasonably small render size.
             FViewer.Buffer.RenderingContext.Activate;
             try
-              GL.ReadPixels(0, 0, FViewer.Buffer.Width, FViewer.Buffer.Height, GL_RGB, GL_UNSIGNED_BYTE, Pixelbuffer);
+              GL.ReadPixels(0, 0, FViewer.Buffer.Width, FViewer.Buffer.Height,
+                GL_RGB, GL_UNSIGNED_BYTE, Pixelbuffer);
             except
               FViewer.Buffer.RenderingContext.Deactivate;
             end;
             if Assigned(FOnAfterTargetRender) then
-              FOnAfterTargetRender(self);
+              FOnAfterTargetRender(Self);
 
             BMP := Material.Texture.Image.GetBitmap32;
             BMP.Narrow;
@@ -404,30 +460,30 @@ begin
               for x := 0 to RenderWidth - 1 do
               begin
                 bp := x + by;
-                line^[x].r := Pixelbuffer[bp].R;
-                line^[x].g := Pixelbuffer[bp].G;
-                line^[x].b := Pixelbuffer[bp].B;
+                line^[x].R := Pixelbuffer[bp].R;
+                line^[x].G := Pixelbuffer[bp].G;
+                line^[x].B := Pixelbuffer[bp].B;
 
                 // Low clamp
-                if line^[x].r < FAdvancedBlurLowClamp then
-                  line^[x].r := 0;
-                if line^[x].g < FAdvancedBlurLowClamp then
-                  line^[x].g := 0;
-                if line^[x].b < FAdvancedBlurLowClamp then
-                  line^[x].b := 0;
+                if line^[x].R < FAdvancedBlurLowClamp then
+                  line^[x].R := 0;
+                if line^[x].G < FAdvancedBlurLowClamp then
+                  line^[x].G := 0;
+                if line^[x].B < FAdvancedBlurLowClamp then
+                  line^[x].B := 0;
               end;
             end;
 
             DoBlur := true;
             if Assigned(FOnAdvancedBlurImagePrepareEvent) then
             begin
-              FOnAdvancedBlurImagePrepareEvent(self, BMP, DoBlur);
+              FOnAdvancedBlurImagePrepareEvent(Self, BMP, DoBlur);
             end;
 
             if DoBlur then
               ApplyBlur(FAdvancedBlurPasses);
 
-            Material.Texture.Image.NotifyChange(self);
+            Material.Texture.Image.NotifyChange(Self);
 
           end;
       end;
@@ -439,14 +495,14 @@ begin
   end;
 end;
 
-{$WARNINGS Off} //Suppress "unsafe" warning
+{$WARNINGS Off} // Suppress "unsafe" warning
 
 procedure TGLBlur.DoRender(var ARci: TRenderContextInfo;
-  ARenderSelf, ARenderChildren: Boolean);
+  ARenderSelf, ARenderChildren: boolean);
 var
   vx, vy, vx1, vy1, f: Single;
-  offsx, offsy: single;
-  MaxMeasure: integer;
+  offsx, offsy: Single;
+  MaxMeasure: Integer;
 begin
   if FDoingMemView and (FBlurSelf = false) then
     Exit;
@@ -454,7 +510,7 @@ begin
   begin
     if Count > 0 then
       Self.RenderChildren(0, Count - 1, ARci);
-    exit;
+    Exit;
   end;
   if ARci.ignoreMaterials then
     Exit;
@@ -467,7 +523,7 @@ begin
     // Prepare matrices
     GL.MatrixMode(GL_MODELVIEW);
     GL.PushMatrix;
-    GL.LoadMatrixf(@TGLSceneBuffer(ARci.buffer).BaseProjectionMatrix);
+    GL.LoadMatrixf(@TGLSceneBuffer(ARci.Buffer).BaseProjectionMatrix);
     if ARci.renderDPI = 96 then
       f := 1
     else
@@ -483,7 +539,7 @@ begin
     GL.PushMatrix;
     GL.LoadIdentity;
     ARci.GLStates.Disable(stDepthTest);
-    ARci.GLStates.DepthWriteMask := False;
+    ARci.GLStates.DepthWriteMask := false;
 
     // calculate offsets in order to keep the quad a square centered in the view
     if ARci.viewPortSize.cx > ARci.viewPortSize.cy then
@@ -556,13 +612,13 @@ begin
   FRenderBackgroundColor := Value;
 end;
 
-procedure TGLBlur.SetRenderHeight(const Value: integer);
+procedure TGLBlur.SetRenderHeight(const Value: Integer);
 begin
   FRenderHeight := Value;
   UpdateImageSettings;
 end;
 
-procedure TGLBlur.SetRenderWidth(const Value: integer);
+procedure TGLBlur.SetRenderWidth(const Value: Integer);
 begin
   FRenderWidth := Value;
   UpdateImageSettings;
@@ -573,7 +629,7 @@ begin
   FTargetObject := Value;
 end;
 
-procedure TGLBlur.SetAdvancedBlurAmp(const Value: single);
+procedure TGLBlur.SetAdvancedBlurAmp(const Value: Single);
 begin
   FAdvancedBlurAmp := Value;
 end;
@@ -588,17 +644,17 @@ begin
   FAdvancedBlurLowClamp := Value;
 end;
 
-procedure TGLBlur.SetAdvancedBlurPasses(const Value: integer);
+procedure TGLBlur.SetAdvancedBlurPasses(const Value: Integer);
 begin
   FAdvancedBlurPasses := Value;
 end;
 
-procedure TGLBlur.SetBlur(const Value: TGLBlurKind);
+procedure TGLBlur.SetBlur(const Value: TGLBlurkind);
 begin
   if FBlur <> Value then
   begin
     case Value of
-      bnone:
+      bNone:
         begin
           // do Nothing
         end;
@@ -621,7 +677,8 @@ begin
   FBlurSelf := Value;
 end;
 
-procedure TGLBlur.SetOnAdvancedBlurImagePrepareEvent(const Value: TGLAdvancedBlurImagePrepareEvent);
+procedure TGLBlur.SetOnAdvancedBlurImagePrepareEvent
+  (const Value: TGLAdvancedBlurImagePrepareEvent);
 begin
   FOnAdvancedBlurImagePrepareEvent := Value;
 end;
@@ -724,27 +781,27 @@ begin
 
 end;
 
-function TGLBlur.StoreBlurBottom: Boolean;
+function TGLBlur.StoreBlurBottom: boolean;
 begin
   Result := Abs(FBlurBottom - 0.01) > EPS;
 end;
 
-function TGLBlur.StoreBlurDeltaTime: Boolean;
+function TGLBlur.StoreBlurDeltaTime: boolean;
 begin
   Result := Abs(FBlurDeltaTime - 0.02) > EPS;
 end;
 
-function TGLBlur.StoreBlurLeft: Boolean;
+function TGLBlur.StoreBlurLeft: boolean;
 begin
   Result := Abs(FBlurLeft - 0.01) > EPS;
 end;
 
-function TGLBlur.StoreBlurRight: Boolean;
+function TGLBlur.StoreBlurRight: boolean;
 begin
   Result := Abs(FBlurRight - 0.01) > EPS;
 end;
 
-function TGLBlur.StoreBlurTop: Boolean;
+function TGLBlur.StoreBlurTop: boolean;
 begin
   Result := Abs(FBlurTop - 0.01) > EPS;
 end;
@@ -760,12 +817,12 @@ begin
   end;
 end;
 
-constructor TGLMotionBlur.Create(aOwner: TComponent);
+constructor TGLMotionBlur.Create(AOwner: TComponent);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   Material.FrontProperties.Diffuse.Initialize(clrBlack);
   Material.MaterialOptions := [moNoLighting, moIgnoreFog];
-  Material.Texture.Disabled := False;
+  Material.Texture.Disabled := false;
   Material.BlendingMode := bmTransparency;
   FIntensity := 0.975;
 end;
@@ -778,48 +835,50 @@ begin
     Scene.InitializableObjects.Add(Self);
 end;
 
-procedure TGLMotionBlur.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+procedure TGLMotionBlur.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: boolean);
 begin
-  if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
+  if not(ARci.ignoreMaterials or (csDesigning in ComponentState) or
     (ARci.drawState = dsPicking)) then
-  with ARci.GLStates do
-  begin
-    ARci.ignoreDepthRequests := True;
-    Material.Apply(ARci);
-    ActiveTextureEnabled[ttTextureRect] := True;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    GL.Ortho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
-    GL.LoadIdentity;
-    Disable(stDepthTest);
-    DepthWriteMask := False;
+    with ARci.GLStates do
+    begin
+      ARci.ignoreDepthRequests := true;
+      Material.Apply(ARci);
+      ActiveTextureEnabled[ttTextureRect] := true;
+      GL.MatrixMode(GL_PROJECTION);
+      GL.PushMatrix;
+      GL.LoadIdentity;
+      GL.Ortho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
+      GL.MatrixMode(GL_MODELVIEW);
+      GL.PushMatrix;
+      GL.LoadIdentity;
+      Disable(stDepthTest);
+      DepthWriteMask := false;
 
-    GL.Begin_(GL_QUADS);
-    GL.TexCoord2f(0.0, ARci.viewPortSize.cy);
-    GL.Vertex2f(0, 0);
-    GL.TexCoord2f(0.0, 0.0);
-    GL.Vertex2f(0, ARci.viewPortSize.cy);
-    GL.TexCoord2f(ARci.viewPortSize.cx, 0.0);
-    GL.Vertex2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
-    GL.TexCoord2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
-    GL.Vertex2f(ARci.viewPortSize.cx, 0);
-    GL.End_;
+      GL.Begin_(GL_QUADS);
+      GL.TexCoord2f(0.0, ARci.viewPortSize.cy);
+      GL.Vertex2f(0, 0);
+      GL.TexCoord2f(0.0, 0.0);
+      GL.Vertex2f(0, ARci.viewPortSize.cy);
+      GL.TexCoord2f(ARci.viewPortSize.cx, 0.0);
+      GL.Vertex2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+      GL.TexCoord2f(ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+      GL.Vertex2f(ARci.viewPortSize.cx, 0);
+      GL.End_;
 
-    GL.PopMatrix;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    ActiveTextureEnabled[ttTextureRect] := False;
-    Material.UnApply(ARci);
-    ARci.ignoreDepthRequests := False;
+      GL.PopMatrix;
+      GL.MatrixMode(GL_PROJECTION);
+      GL.PopMatrix;
+      GL.MatrixMode(GL_MODELVIEW);
+      ActiveTextureEnabled[ttTextureRect] := false;
+      Material.UnApply(ARci);
+      ARci.ignoreDepthRequests := false;
 
-    GL.CopyTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, 0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0);
+      GL.CopyTexImage2D(GL_TEXTURE_RECTANGLE, 0, GL_RGB, 0, 0,
+        ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0);
 
-    Material.FrontProperties.Diffuse.Alpha := FIntensity;
-  end;
+      Material.FrontProperties.Diffuse.Alpha := FIntensity;
+    end;
 
   if Count <> 0 then
     Self.RenderChildren(0, Count - 1, ARci);
@@ -829,33 +888,33 @@ procedure TGLMotionBlur.InitializeObject(ASender: TObject;
   const ARci: TRenderContextInfo);
 begin
   // If extension is not supported, silently disable this component.
-  if not (csDesigning in ComponentState) then
+  if not(csDesigning in ComponentState) then
     if not SupportsRequiredExtensions then
-      Visible := False;
+      Visible := false;
 end;
 
-function TGLMotionBlur.StoreIntensity: Boolean;
+function TGLMotionBlur.StoreIntensity: boolean;
 begin
   Result := Abs(FIntensity - 0.975) > EPS;
 end;
 
-function TGLMotionBlur.SupportsRequiredExtensions: Boolean;
+function TGLMotionBlur.SupportsRequiredExtensions: boolean;
 begin
-  Result :=
-    GL.ARB_texture_rectangle or GL.EXT_texture_rectangle or GL.NV_texture_rectangle;
+  Result := GL.ARB_texture_rectangle or GL.EXT_texture_rectangle or
+    GL.NV_texture_rectangle;
 end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
-     // class registrations
-  RegisterClass(TGLBlur);
-  RegisterClass(TGLMotionBlur);
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+// class registrations
+RegisterClass(TGLBlur);
+RegisterClass(TGLMotionBlur);
 
 end.
-

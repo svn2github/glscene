@@ -1,28 +1,28 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSkyBox<p>
+{ : GLSkyBox<p>
 
-   A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
-   for use as a skybox always centered on the camera.<p>
+  A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
+  for use as a skybox always centered on the camera.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>26/03/09 - DanB - Skybox is now a TGLCameraInvariantObject
-      <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
-                            of Scene.CurrentGLCamera
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>21/01/07 - DaStr - Added IGLMaterialLibrarySupported support
-      <li>12/04/04 - EG - Added Style property, multipass support
-      <li>27/11/03 - EG - Cleanup and fixes
-      <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
-      <li>02/09/03 - MRQZZZ - Creation
-   </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>05/03/10 - DanB - More state added to TGLStateCache
+  <li>26/03/09 - DanB - Skybox is now a TGLCameraInvariantObject
+  <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
+  of Scene.CurrentGLCamera
+  <li>30/03/07 - DaStr - Added $I GLScene.inc
+  <li>28/03/07 - DaStr - Renamed parameters in some methods
+  (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+  <li>21/01/07 - DaStr - Added IGLMaterialLibrarySupported support
+  <li>12/04/04 - EG - Added Style property, multipass support
+  <li>27/11/03 - EG - Cleanup and fixes
+  <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
+  <li>02/09/03 - MRQZZZ - Creation
+  </ul></font>
 }
 unit GLScene.Objects.SkyBox;
 
@@ -36,9 +36,9 @@ uses
   GLScene.Material,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.OpenGL.Tokens,
-  XOpenGL,
   GLScene.Base.Context.Info
-{$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
+{$IFDEF GLS_DELPHI},
+  GLScene.Base.Vector.Types{$ENDIF};
 
 type
 
@@ -64,7 +64,7 @@ type
     FCloudsPlaneSize: Single;
     FStyle: TGLSkyBoxStyle;
 
-    //implementing IGLMaterialLibrarySupported
+    // implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     { Protected Declarations }
@@ -76,9 +76,9 @@ type
     procedure SetMatNameRight(const Value: string);
     procedure SetMatNameTop(const Value: string);
     procedure SetMatNameClouds(const Value: string);
-    procedure SetCloudsPlaneOffset(const Value: single);
-    procedure SetCloudsPlaneSize(const Value: single);
-    procedure SetStyle(const value: TGLSkyBoxStyle);
+    procedure SetCloudsPlaneOffset(const Value: Single);
+    procedure SetCloudsPlaneSize(const Value: Single);
+    procedure SetStyle(const Value: TGLSkyBoxStyle);
 
   public
     { Public Declarations }
@@ -87,32 +87,32 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var ARci: TRenderCOntextInfo); override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation);
-      override;
+    procedure BuildList(var ARci: TRenderContextInfo); override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
 
   published
     { Published Declarations }
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
-      SetMaterialLibrary;
-    property MatNameTop: TGLLibMaterialName read FMatNameTop write
-      SetMatNameTop;
-    property MatNameBottom: TGLLibMaterialName read FMatNameBottom write
-      SetMatNameBottom;
-    property MatNameLeft: TGLLibMaterialName read FMatNameLeft write
-      SetMatNameLeft;
-    property MatNameRight: TGLLibMaterialName read FMatNameRight write
-      SetMatNameRight;
-    property MatNameFront: TGLLibMaterialName read FMatNameFront write
-      SetMatNameFront;
-    property MatNameBack: TGLLibMaterialName read FMatNameBack write
-      SetMatNameBack;
-    property MatNameClouds: TGLLibMaterialName read FMatNameClouds write
-      SetMatNameClouds;
-    property CloudsPlaneOffset: Single read FCloudsPlaneOffset write
-      SetCloudsPlaneOffset;
-    property CloudsPlaneSize: Single read FCloudsPlaneSize write
-      SetCloudsPlaneSize;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
+      write SetMaterialLibrary;
+    property MatNameTop: TGLLibMaterialName read FMatNameTop
+      write SetMatNameTop;
+    property MatNameBottom: TGLLibMaterialName read FMatNameBottom
+      write SetMatNameBottom;
+    property MatNameLeft: TGLLibMaterialName read FMatNameLeft
+      write SetMatNameLeft;
+    property MatNameRight: TGLLibMaterialName read FMatNameRight
+      write SetMatNameRight;
+    property MatNameFront: TGLLibMaterialName read FMatNameFront
+      write SetMatNameFront;
+    property MatNameBack: TGLLibMaterialName read FMatNameBack
+      write SetMatNameBack;
+    property MatNameClouds: TGLLibMaterialName read FMatNameClouds
+      write SetMatNameClouds;
+    property CloudsPlaneOffset: Single read FCloudsPlaneOffset
+      write SetCloudsPlaneOffset;
+    property CloudsPlaneSize: Single read FCloudsPlaneSize
+      write SetCloudsPlaneSize;
     property Style: TGLSkyBoxStyle read FStyle write FStyle default sbsFull;
   end;
 
@@ -120,6 +120,7 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -141,9 +142,9 @@ begin
   CamInvarianceMode := cimPosition;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
   FCloudsPlaneOffset := 0.2;
-    // this should be set far enough to avoid near plane clipping
+  // this should be set far enough to avoid near plane clipping
   FCloudsPlaneSize := 32;
-    // the bigger, the more this extends the clouds cap to the horizon
+  // the bigger, the more this extends the clouds cap to the horizon
 end;
 
 // Destroy
@@ -175,22 +176,22 @@ end;
 // DoRender
 //
 
-procedure TGLSkyBox.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
-  ARenderChildren: Boolean);
+procedure TGLSkyBox.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
 begin
   // We want children of the sky box to appear far away too
   // (note: simply not writing to depth buffer may not make this not work,
-  //  child objects may need the depth buffer to render themselves properly,
-  //  this may require depth buffer cleared after that. - DanB)
-  Arci.GLStates.DepthWriteMask := False;
-  Arci.ignoreDepthRequests := true;
+  // child objects may need the depth buffer to render themselves properly,
+  // this may require depth buffer cleared after that. - DanB)
+  ARci.GLStates.DepthWriteMask := False;
+  ARci.ignoreDepthRequests := true;
   inherited;
-  Arci.ignoreDepthRequests := False;
+  ARci.ignoreDepthRequests := False;
 end;
 // DoRender
 //
 
-procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo);
+procedure TGLSkyBox.BuildList(var ARci: TRenderContextInfo);
 var
   f, cps, cof1: Single;
   oldStates: TGLStates;
@@ -213,7 +214,8 @@ begin
 
   try
     case Style of
-      sbsFull: ;
+      sbsFull:
+        ;
       sbsTopHalf, sbsTopHalfClamped:
         begin
           GL.Translatef(0, 0.5, 0);
@@ -238,23 +240,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, -1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, -1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, -1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, -1);
         if Style = sbsTopHalfClamped then
         begin
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -1, -1);
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -3, -1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -3, -1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -1, -1);
         end;
         GL.End_;
@@ -267,23 +269,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(1, 1, 1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(-1, 1, 1);
         if Style = sbsTopHalfClamped then
         begin
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -1, 1);
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -3, 1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -3, 1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -1, 1);
         end;
         GL.End_;
@@ -296,13 +298,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, 1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, 1, -1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, 1, -1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, 1);
         GL.End_;
       until not libMat.UnApply(ARci);
@@ -314,13 +316,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, -1, -1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, -1, -1);
         GL.End_;
       until not libMat.UnApply(ARci);
@@ -332,23 +334,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(-1, 1, 1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(-1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(-1, -1, -1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(-1, 1, -1);
         if Style = sbsTopHalfClamped then
         begin
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -1, 1);
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(-1, -3, 1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -3, -1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(-1, -1, -1);
         end;
         GL.End_;
@@ -361,23 +363,23 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0.002, 0.998);
+        GL.TexCoord2f(0.002, 0.998);
         GL.Vertex3f(1, 1, -1);
-        xgl.TexCoord2f(0.002, 0.002);
+        GL.TexCoord2f(0.002, 0.002);
         GL.Vertex3f(1, -1, -1);
-        xgl.TexCoord2f(0.998, 0.002);
+        GL.TexCoord2f(0.998, 0.002);
         GL.Vertex3f(1, -1, 1);
-        xgl.TexCoord2f(0.998, 0.998);
+        GL.TexCoord2f(0.998, 0.998);
         GL.Vertex3f(1, 1, 1);
         if Style = sbsTopHalfClamped then
         begin
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -1, -1);
-          xgl.TexCoord2f(0.002, 0.002);
+          GL.TexCoord2f(0.002, 0.002);
           GL.Vertex3f(1, -3, -1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -3, 1);
-          xgl.TexCoord2f(0.998, 0.002);
+          GL.TexCoord2f(0.998, 0.002);
           GL.Vertex3f(1, -1, 1);
         end;
         GL.End_;
@@ -394,13 +396,13 @@ begin
       libMat.Apply(ARci);
       repeat
         GL.Begin_(GL_QUADS);
-        xgl.TexCoord2f(0, 1);
+        GL.TexCoord2f(0, 1);
         GL.Vertex3f(-cps, cof1, cps);
-        xgl.TexCoord2f(0, 0);
+        GL.TexCoord2f(0, 0);
         GL.Vertex3f(-cps, cof1, -cps);
-        xgl.TexCoord2f(1, 0);
+        GL.TexCoord2f(1, 0);
         GL.Vertex3f(cps, cof1, -cps);
-        xgl.TexCoord2f(1, 1);
+        GL.TexCoord2f(1, 1);
         GL.Vertex3f(cps, cof1, cps);
         GL.End_;
       until not libMat.UnApply(ARci);
@@ -419,13 +421,13 @@ begin
   end;
 end;
 
-procedure TGLSkyBox.SetCloudsPlaneOffset(const Value: single);
+procedure TGLSkyBox.SetCloudsPlaneOffset(const Value: Single);
 begin
   FCloudsPlaneOffset := Value;
   StructureChanged;
 end;
 
-procedure TGLSkyBox.SetCloudsPlaneSize(const Value: single);
+procedure TGLSkyBox.SetCloudsPlaneSize(const Value: Single);
 begin
   FCloudsPlaneSize := Value;
   StructureChanged;
@@ -434,18 +436,18 @@ end;
 // SetStyle
 //
 
-procedure TGLSkyBox.SetStyle(const value: TGLSkyBoxStyle);
+procedure TGLSkyBox.SetStyle(const Value: TGLSkyBoxStyle);
 begin
-  FStyle := value;
+  FStyle := Value;
   StructureChanged;
 end;
 
 // SetMaterialLibrary
 //
 
-procedure TGLSkyBox.SetMaterialLibrary(const value: TGLMaterialLibrary);
+procedure TGLSkyBox.SetMaterialLibrary(const Value: TGLMaterialLibrary);
 begin
-  FMaterialLibrary := value;
+  FMaterialLibrary := Value;
   StructureChanged;
 end;
 
@@ -495,11 +497,11 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
-  RegisterClass(TGLSkyBox);
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+RegisterClass(TGLSkyBox);
 
 end.
-

@@ -39,52 +39,26 @@ object MaterialEditorForm: TMaterialEditorForm
     TabOrder = 0
     object TSFront: TTabSheet
       Caption = 'Front'
-      inline FEFront: TRFaceEditor
-        Left = 0
-        Top = 0
-        Width = 305
-        Height = 186
-        AutoSize = True
-        TabOrder = 0
-        inherited ImageList: TImageList
-          Top = 0
-        end
-      end
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TSBack: TTabSheet
       Caption = 'Back'
       ImageIndex = 1
-      inline FEBack: TRFaceEditor
-        Left = 0
-        Top = 0
-        Width = 305
-        Height = 186
-        AutoSize = True
-        TabOrder = 0
-      end
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TSTexture: TTabSheet
       Caption = 'Texture'
       ImageIndex = 2
-      inline RTextureEdit: TRTextureEdit
-        Left = 0
-        Top = 0
-        Width = 305
-        Height = 186
-        Align = alClient
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        DesignSize = (
-          305
-          186)
-        inherited SBEditImage: TSpeedButton
-          Left = 287
-        end
-        inherited CBImageClass: TComboBox
-          Width = 213
-        end
-      end
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object GroupBox1: TGroupBox
@@ -94,39 +68,6 @@ object MaterialEditorForm: TMaterialEditorForm
     Height = 241
     Caption = 'Material Preview'
     TabOrder = 1
-    inline MPPreview: TRMaterialPreview
-      Left = 16
-      Top = 22
-      Width = 202
-      Height = 203
-      AutoSize = True
-      TabOrder = 0
-      inherited GLScene1: TGLScene
-        inherited World: TGLDummyCube
-          inherited Cube: TGLCube
-            Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
-            Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
-          end
-          inherited Teapot: TGLTeapot
-            Scale.Coordinates = {00000040000000400000004000000000}
-          end
-        end
-        inherited Light: TGLDummyCube
-          Position.Coordinates = {0000000000004040000020410000803F}
-          inherited LightSource: TGLLightSource
-            Position.Coordinates = {0000000000004040000020410000803F}
-            Specular.Color = {0000803F0000803F0000803F0000803F}
-          end
-          inherited FireSphere: TGLSphere
-            Material.FrontProperties.Ambient.Color = {A3A2223FCDCC4C3ECDCC4C3E0000803F}
-            Material.FrontProperties.Emission.Color = {D3D2523FA1A0203F000000000000803F}
-          end
-        end
-        inherited Camera: TGLCamera
-          Position.Coordinates = {0000000000000000000020410000803F}
-        end
-      end
-    end
   end
   object BBOk: TBitBtn
     Left = 376
@@ -135,8 +76,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Height = 25
     Caption = 'OK'
     Default = True
-    ModalResult = 1
-    TabOrder = 2
+    DoubleBuffered = True
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -154,15 +94,21 @@ object MaterialEditorForm: TMaterialEditorForm
       3338F38F000033333333333333A223333333333333338F830000333333333333
       333A333333333333333338330000333333333333333333333333333333333333
       0000}
+    ModalResult = 1
     NumGlyphs = 2
+    ParentDoubleBuffered = False
+    TabOrder = 2
   end
   object BBCancel: TBitBtn
     Left = 472
     Top = 256
     Width = 83
     Height = 25
-    TabOrder = 3
+    DoubleBuffered = True
     Kind = bkCancel
+    NumGlyphs = 2
+    ParentDoubleBuffered = False
+    TabOrder = 3
   end
   object CBBlending: TComboBox
     Left = 88
@@ -170,7 +116,6 @@ object MaterialEditorForm: TMaterialEditorForm
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 4
     OnChange = OnMaterialChanged
   end
@@ -180,7 +125,6 @@ object MaterialEditorForm: TMaterialEditorForm
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 5
     OnChange = OnMaterialChanged
   end

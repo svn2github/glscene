@@ -836,7 +836,7 @@ type
 
 implementation
 
-uses GLScene.Base.Strings, XOpenGL, GLScene.Base.FileIO, GLScene.Graphics, GLScene.Utils, GLScene.Base.Log;
+uses GLScene.Base.Strings, GLScene.Base.FileIO, GLScene.Graphics, GLScene.Utils, GLScene.Base.Log;
 
 resourcestring
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';
@@ -2270,7 +2270,7 @@ procedure TGLLibMaterial.Apply(var ARci: TRenderContextInfo);
 var
   multitextured: Boolean;
 begin
-  xgl.BeginUpdate;
+//  xgl.BeginUpdate;
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
@@ -2284,8 +2284,8 @@ begin
   end
   else
     ARci.GLStates.CurrentProgram := 0;
-  if (Texture2Name <> '') and GL.ARB_multitexture and (not
-    xgl.SecondTextureUnitForbidden) then
+  if (Texture2Name <> '') and GL.ARB_multitexture {and (not
+    xgl.SecondTextureUnitForbidden)} then
   begin
     if not Assigned(libMatTexture2) then
     begin
@@ -2321,16 +2321,16 @@ begin
     else
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
-    if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
-      tmmUser) then
-      if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-        xgl.MapTexCoordToDual
-      else
-        xgl.MapTexCoordToMain
-    else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-      xgl.MapTexCoordToSecond
-    else
-      xgl.MapTexCoordToMain;
+//    if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
+//      tmmUser) then
+//      if libMatTexture2.Material.Texture.MappingMode = tmmUser then
+//        xgl.MapTexCoordToDual
+//      else
+//        xgl.MapTexCoordToMain
+//    else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
+//      xgl.MapTexCoordToSecond
+//    else
+//      xgl.MapTexCoordToMain;
 
   end;
  
@@ -2340,7 +2340,7 @@ begin
       ssLowLevel: Shader.Apply(ARci, Self);
     end;
   end;
-  xgl.EndUpdate;
+//  xgl.EndUpdate;
 end;
 
 // UnApply
@@ -2363,12 +2363,12 @@ begin
 
   if not Result then
   begin
-    if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
-      xgl.SecondTextureUnitForbidden) then
+    if Assigned(libMatTexture2) and GL.ARB_multitexture {and (not
+      xgl.SecondTextureUnitForbidden)} then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not
         libMatTexture2.TextureMatrixIsIdentity));
-      xgl.MapTexCoordToMain;
+//      xgl.MapTexCoordToMain;
     end;
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then

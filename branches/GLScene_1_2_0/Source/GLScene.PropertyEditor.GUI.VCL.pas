@@ -1,26 +1,26 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GuiSkinEditorFormUnit<p>
+{ : GuiSkinEditorFormUnit<p>
 
-   Editor for Gui skin.<p>
+  Editor for Gui skin.<p>
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>05/10/08 - DanB - removed Kylix support, changed uses clause
-      <li>07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
-                              (thanks Nicoara Adrian)
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>18/02/07 - DaStr - Fixed range check error.
-      <li>22/02/05 - Mathx - Fixed Delphi 5 support.
-      <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
-      <li>03/10/05 - adirex - XP styles and panels problem<br>
-      <li>24/01/05 - adirex - Focus rect for selection<br>
-                     Huge editor enchancements. Too many to write them all :)
-      <li>03/07/04 - LR - Make change for Linux
-      <li>?/?/? -  - Creation
-   </ul></font>
+  <b>Historique : </b><font size=-1><ul>
+  <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+  <li>04/03/10 - DanB - Now uses CharInSet
+  <li>05/10/08 - DanB - removed Kylix support, changed uses clause
+  <li>07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
+  (thanks Nicoara Adrian)
+  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+  <li>18/02/07 - DaStr - Fixed range check error.
+  <li>22/02/05 - Mathx - Fixed Delphi 5 support.
+  <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
+  <li>03/10/05 - adirex - XP styles and panels problem<br>
+  <li>24/01/05 - adirex - Focus rect for selection<br>
+  Huge editor enchancements. Too many to write them all :)
+  <li>03/07/04 - LR - Make change for Linux
+  <li>?/?/? -  - Creation
+  </ul></font>
 }
 unit GLScene.PropertyEditor.GUI.VCL;
 
@@ -29,11 +29,31 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, GLScene.Texture, GLScene.Core, GLScene.Objects, GLScene.GUI.Windows,
-    GLScene.Objects.HUD,
-  GLScene.Viewer.VCL, GLScene.GUI, GLScene.Graphics, GLScene.Utils, Menus, GLScene.Platform,
-  GLScene.Base.Coordinates, GLScene.Base.Classes, GLScene.Material;
+  Windows,
+  Messages,
+  SysUtils,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ComCtrls,
+  ExtCtrls,
+  GLScene.Texture,
+  GLScene.Core,
+  GLScene.Objects,
+  GLScene.GUI.Windows,
+  GLScene.Objects.HUD,
+  GLScene.Viewer.VCL,
+  GLScene.GUI,
+  GLScene.Graphics,
+  GLScene.Utils,
+  Menus,
+  GLScene.Platform,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Classes,
+  GLScene.Material;
 
 type
   TGUISkinEditor = class(TForm)
@@ -118,8 +138,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure imgFullMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure imgFullMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure imgFullMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
     procedure lbElementsKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure CheckBox1Click(Sender: TObject);
@@ -138,16 +158,15 @@ type
     procedure mnuAllBottomClick(Sender: TObject);
     procedure imgPreviewMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure imgPreviewMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure imgPreviewMouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
   private
     FOriginalWndProc: TWndMethod;
 
     FFocusRect: TRect;
     VisibleRect: TRect;
     PreviewMousePoint: TPoint;
-    PreviewWidth,
-      PreviewHeight: Integer;
+    PreviewWidth, PreviewHeight: Integer;
     FullMousePoint: TPoint;
 
     MouseDown: Boolean;
@@ -171,7 +190,7 @@ type
     Height: Integer;
     function Edit(GuiComponent: TGLGuiElementList): Boolean;
     procedure Render;
-    procedure SetMax(Scrollbar: TScrollbar; Val: Integer);
+    procedure SetMax(Scrollbar: TScrollBar; Val: Integer);
   end;
 
 var
@@ -194,7 +213,7 @@ end;
 
 procedure TGUISkinEditor.FormCreate(Sender: TObject);
 begin
-  //override original WndProc to capture image mouse leave message
+  // override original WndProc to capture image mouse leave message
   FOriginalWndProc := imgFull.WindowProc;
   imgFull.WindowProc := ImageWndProc;
 
@@ -209,8 +228,8 @@ begin
   DoubleBuffered := True;
   FullMousePoint := Point(-1, -1);
 
-  //this Delphi bug shows all panels transparent
-  //the code below is to avoid this bug in XP
+  // this Delphi bug shows all panels transparent
+  // the code below is to avoid this bug in XP
 {$IFDEF GLS_DELPHI_7_UP}
   panElements.ParentBackground := False;
   panElements.ParentBackground := True;
@@ -244,20 +263,20 @@ var
 
 begin
   TheGuiComponent := GuiComponent;
-  GuiLayout := (GuiComponent.GetOwner as TGLGuiComponent).Owner.GetOwner as
-    TGLGuiLayout;
+  GuiLayout := (GuiComponent.GetOwner as TGLGuiComponent)
+    .Owner.GetOwner as TGLGuiLayout;
   Mat := GuiLayout.Material;
   GLPanel1.Visible := True;
   GLPanel1.GuiLayout := GuiLayout;
   GLPanel1.GuiLayoutName := (GuiComponent.GetOwner as TGLGuiComponent).Name;
   Zoom := 1.0;
 
-  if (Assigned(mat.MaterialLibrary)
-    and (mat.MaterialLibrary is TGLMaterialLibrary)
-    and (Mat.LibMaterialName <> '')) then
+  if (Assigned(Mat.MaterialLibrary) and
+    (Mat.MaterialLibrary is TGLMaterialLibrary) and
+    (Mat.LibMaterialName <> '')) then
   begin
-    mat :=
-      TGLMaterialLibrary(mat.MaterialLibrary).Materials.GetLibMaterialByName(Mat.LibMaterialName).Material;
+    Mat := TGLMaterialLibrary(Mat.MaterialLibrary)
+      .Materials.GetLibMaterialByName(Mat.LibMaterialName).Material;
   end;
   Width := Mat.Texture.Image.Width;
   Height := Mat.Texture.Image.Height;
@@ -266,11 +285,11 @@ begin
 
   GLPanel1.GuiLayout.Material.Assign(Mat);
 
-  Tex.Assign(mat.Texture);
-  imgPreview.Picture.Bitmap.Canvas.StretchDraw(imgPreview.ClientRect, (Tex.Image
-    as TGLPersistentImage).Picture.Graphic);
+  Tex.Assign(Mat.Texture);
+  imgPreview.Picture.Bitmap.Canvas.StretchDraw(imgPreview.ClientRect,
+    (Tex.Image as TGLPersistentImage).Picture.Graphic);
   PreviewWidth := (Tex.Image as TGLPersistentImage).Picture.Width;
-  Previewheight := (Tex.Image as TGLPersistentImage).Picture.Height;
+  PreviewHeight := (Tex.Image as TGLPersistentImage).Picture.Height;
 
   lbElements.Clear;
   for XC := 0 to TheGuiComponent.Count - 1 do
@@ -308,7 +327,7 @@ begin
   if Abs(Zoom - 0.5) > 0.001 then
     Zoom := Zoom - 0.5;
   Label2.Caption := FormatFloat('####0.0', Zoom);
-  //  panel3.Invalidate;
+  // panel3.Invalidate;
 
 {$IFDEF MSWINDOWS}
   sbarVertical.PageSize := Round(256 / Zoom);
@@ -319,7 +338,7 @@ end;
 
 procedure TGUISkinEditor.Render;
 var
-  BitMap: TBitmap;
+  Bitmap: TBitmap;
   Image: TGLBitmap32;
 begin
   if CheckBox1.Checked then
@@ -330,37 +349,31 @@ begin
     GLPanel1.Top := 1 - sbarVertical.position;
 
     GLMemoryViewer1.Render;
-    Image := GLMemoryViewer1.Buffer.CreateSnapShot;
-    ;
+    Image := GLMemoryViewer1.Buffer.CreateSnapShot;;
     Bitmap := Image.Create32BitsBitmap;
     try
       imgFull.Canvas.Brush.Color := clBlack;
       imgFull.Canvas.FillRect(imgFull.Canvas.ClipRect);
-      imgFull.Canvas.StretchDraw(Rect(0, 0, Round(((Tex.Image as
-        TGLPersistentImage).Width) * Zoom), Round(((Tex.Image as
-        TGLPersistentImage).Height) * Zoom)), Bitmap); {}
+      imgFull.Canvas.StretchDraw
+        (Rect(0, 0, Round(((Tex.Image as TGLPersistentImage).Width) * Zoom),
+        Round(((Tex.Image as TGLPersistentImage).Height) * Zoom)), Bitmap); { }
     finally
       Bitmap.Free;
       Image.Free;
     end;
 
-    //    imgFull.Canvas.StretchDraw(Rect(Round((1-sbarHorizontal.position)*Zoom),Round((1-sbarVertical.position)*Zoom),Round((1-sbarHorizontal.position+(Tex.Image as TGLPersistentImage).Width)*Zoom),Round((1-sbarVertical.position+(Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}
+    // imgFull.Canvas.StretchDraw(Rect(Round((1-sbarHorizontal.position)*Zoom),Round((1-sbarVertical.position)*Zoom),Round((1-sbarHorizontal.position+(Tex.Image as TGLPersistentImage).Width)*Zoom),Round((1-sbarVertical.position+(Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}
   end
   else
   begin
     imgFull.Canvas.Brush.Color := clBlack;
     imgFull.Canvas.FillRect(imgFull.Canvas.ClipRect);
-    imgFull.Canvas.StretchDraw(
-      Rect(
-      Round((1 - sbarHorizontal.position) * Zoom),
+    imgFull.Canvas.StretchDraw(Rect(Round((1 - sbarHorizontal.position) * Zoom),
       Round((1 - sbarVertical.position) * Zoom),
-      Round((1 - sbarHorizontal.position + (Tex.Image as
-        TGLPersistentImage).Width) * Zoom),
-      Round((1 - sbarVertical.position + (Tex.Image as
-        TGLPersistentImage).Height) * Zoom)
-      ),
-      (Tex.Image as TGLPersistentImage).Picture.Graphic
-      );
+      Round((1 - sbarHorizontal.position + (Tex.Image as TGLPersistentImage)
+      .Width) * Zoom), Round((1 - sbarVertical.position +
+      (Tex.Image as TGLPersistentImage).Height) * Zoom)),
+      (Tex.Image as TGLPersistentImage).Picture.Graphic);
 
     if Assigned(SelectedElement) then
     begin
@@ -369,18 +382,16 @@ begin
       imgFull.Canvas.Pen.Style := psSolid;
       imgFull.Canvas.Pen.Mode := pmXor;
 
-      imgFull.Canvas.Rectangle(
-        Rect(Round((1 - sbarHorizontal.position + SelectedElement.TopLeft.X) *
-          Zoom),
-        Round((1 - sbarVertical.position + SelectedElement.TopLeft.Y) * Zoom),
-        Round((1 - sbarHorizontal.position + SelectedElement.BottomRight.X) *
-          Zoom),
-        Round((1 - sbarVertical.position + SelectedElement.BottomRight.Y) * Zoom)
-        )
-        );
+      imgFull.Canvas.Rectangle
+        (Rect(Round((1 - sbarHorizontal.position + SelectedElement.TopLeft.X) *
+        Zoom), Round((1 - sbarVertical.position + SelectedElement.TopLeft.Y) *
+        Zoom), Round((1 - sbarHorizontal.position +
+        SelectedElement.BottomRight.X) * Zoom),
+        Round((1 - sbarVertical.position + SelectedElement.BottomRight.Y) *
+        Zoom)));
     end;
 
-    //rectangle the part that is visible in the preview
+    // rectangle the part that is visible in the preview
     imgPreview.Canvas.DrawFocusRect(VisibleRect);
     if (PreviewWidth = 0) or (PreviewHeight = 0) then
     begin
@@ -389,40 +400,38 @@ begin
     end;
     if Zoom = 0 then
       Zoom := 0.5;
-    //    {$R-}
-    VisibleRect := Rect(
-      Round(sbarHorizontal.Position / PreviewWidth * imgPreview.Width),
-      Round(sbarVertical.Position / PreviewHeight * imgPreview.Height),
-      Round((sbarHorizontal.Position + (imgFull.Width - 1) / Zoom) / PreviewWidth
-        * imgPreview.Width),
-      Round((sbarVertical.Position + (imgFull.Height - 1) / Zoom) / PreviewHeight
-        * imgPreview.Height)
-      );
+    // {$R-}
+    VisibleRect := Rect(Round(sbarHorizontal.position / PreviewWidth *
+      imgPreview.Width), Round(sbarVertical.position / PreviewHeight *
+      imgPreview.Height), Round((sbarHorizontal.position + (imgFull.Width - 1) /
+      Zoom) / PreviewWidth * imgPreview.Width),
+      Round((sbarVertical.position + (imgFull.Height - 1) / Zoom) /
+      PreviewHeight * imgPreview.Height));
     imgPreview.Canvas.DrawFocusRect(VisibleRect);
   end;
 
   DrawCrossair(FullMousePoint);
 end;
 
-procedure TGUISkinEditor.SetMax(Scrollbar: TScrollbar; Val: Integer);
+procedure TGUISkinEditor.SetMax(Scrollbar: TScrollBar; Val: Integer);
 begin
 {$IFDEF MSWINDOWS}
-  if Scrollbar.Position + Scrollbar.PageSize >= val then
+  if Scrollbar.position + Scrollbar.PageSize >= Val then
   begin
-    Scrollbar.Position := val - Scrollbar.PageSize + 1;
+    Scrollbar.position := Val - Scrollbar.PageSize + 1;
   end;
 {$ENDIF}
-  Scrollbar.Max := val;
+  Scrollbar.Max := Val;
 end;
 
 procedure TGUISkinEditor.ScrollBarScroll(Sender: TObject;
   ScrollCode: TScrollCode; var ScrollPos: Integer);
 begin
 {$IFDEF MSWINDOWS}
-  if ScrollPos + (Sender as TScrollBar).PageSize > (Sender as TScrollBar).Max
-    then
-    ScrollPos := (Sender as TScrollBar).Max - (Sender as TScrollBar).PageSize +
-      1;
+  if ScrollPos + (Sender as TScrollBar).PageSize >
+    (Sender as TScrollBar).Max then
+    ScrollPos := (Sender as TScrollBar).Max - (Sender as TScrollBar)
+      .PageSize + 1;
 {$ENDIF}
 end;
 
@@ -435,7 +444,7 @@ procedure TGUISkinEditor.WidthEditChange(Sender: TObject);
 var
   Val: Integer;
 begin
-  val := StrToIntDef(WidthEdit.Text, 0);
+  Val := StrToIntDef(WidthEdit.Text, 0);
   if Val > 0 then
   begin
     Width := Val;
@@ -458,7 +467,7 @@ procedure TGUISkinEditor.HeightEditChange(Sender: TObject);
 var
   Val: Integer;
 begin
-  val := StrToIntDef(HeightEdit.Text, 0);
+  Val := StrToIntDef(HeightEdit.Text, 0);
   if Val > 0 then
   begin
     Height := Val;
@@ -481,8 +490,8 @@ procedure TGUISkinEditor.btnAddClick(Sender: TObject);
 var
   PopupPoint: TPoint;
 begin
-  PopupPoint := btnAdd.Parent.ClientToScreen(Point(btnAdd.Left, btnAdd.Top +
-    btnAdd.Height));
+  PopupPoint := btnAdd.Parent.ClientToScreen
+    (Point(btnAdd.Left, btnAdd.Top + btnAdd.Height));
   popElements.Popup(PopupPoint.X, PopupPoint.Y);
 end;
 
@@ -511,7 +520,7 @@ begin
       inc(Count);
     until lbElements.Items.IndexOf(S) = -1;
 
-    lbElements.Items[lbElements.Itemindex] := S;
+    lbElements.Items[lbElements.ItemIndex] := S;
 
     Render;
   end;
@@ -521,8 +530,8 @@ procedure TGUISkinEditor.btnDeleteClick(Sender: TObject);
 var
   Index: Integer;
 begin
-  if (lbElements.ItemIndex >= 0) and (lbElements.ItemIndex <
-    lbElements.Items.Count) then
+  if (lbElements.ItemIndex >= 0) and
+    (lbElements.ItemIndex < lbElements.Items.Count) then
   begin
     Index := lbElements.ItemIndex;
 
@@ -542,11 +551,11 @@ begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.imgFullMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGUISkinEditor.imgFullMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   if SelectedElement = nil then
-    exit;
+    Exit;
 
   if Button = TMouseButton(mbLeft) then
   begin
@@ -555,23 +564,23 @@ begin
     if not CheckBox1.Checked then
       if Assigned(SelectedElement) then
       begin
-        SelectedElement.TopLeft.X := (sbarHorizontal.Position - 1) + Int(x /
-          Zoom);
-        SelectedElement.TopLeft.Y := (sbarVertical.Position - 1) + Int(y /
-          Zoom);
+        SelectedElement.TopLeft.X := (sbarHorizontal.position - 1) +
+          Int(X / Zoom);
+        SelectedElement.TopLeft.Y := (sbarVertical.position - 1) +
+          Int(Y / Zoom);
       end;
   end;
-  FFocusRect.TopLeft := Point(Round(Round(X / Zoom - 0.5) * Zoom), Round(Round(Y
-    / Zoom - 0.5) * Zoom));
+  FFocusRect.TopLeft := Point(Round(Round(X / Zoom - 0.5) * Zoom),
+    Round(Round(Y / Zoom - 0.5) * Zoom));
   FFocusRect.BottomRight := FFocusRect.TopLeft;
   DrawImageFocusRect(FFocusRect);
 end;
 
-procedure TGUISkinEditor.imgFullMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TGUISkinEditor.imgFullMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
   if SelectedElement = nil then
-    exit;
+    Exit;
 
   if Button = TMouseButton(mbLeft) then
   begin
@@ -579,10 +588,10 @@ begin
     if not CheckBox1.Checked then
       if Assigned(SelectedElement) then
       begin
-        SelectedElement.BottomRight.X := (sbarHorizontal.Position) + Int(x /
-          Zoom);
-        SelectedElement.BottomRight.Y := (sbarVertical.Position) + Int(y /
-          Zoom);
+        SelectedElement.BottomRight.X := (sbarHorizontal.position) +
+          Int(X / Zoom);
+        SelectedElement.BottomRight.Y := (sbarVertical.position) +
+          Int(Y / Zoom);
         Render;
       end;
   end;
@@ -592,8 +601,8 @@ begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.imgFullMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+procedure TGUISkinEditor.imgFullMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
 begin
   DrawCrossair(FullMousePoint);
   FullMousePoint := Point(X, Y);
@@ -609,40 +618,40 @@ begin
       DrawImageFocusRect(FFocusRect);
 
       StatusBar.Panels[0].Text := 'X : ' + FormatFloat('###0',
-        Round(sbarHorizontal.Position + (x - 1) / Zoom));
+        Round(sbarHorizontal.position + (X - 1) / Zoom));
       StatusBar.Panels[1].Text := 'Y : ' + FormatFloat('###0',
-        Round(sbarVertical.Position + (y - 1) / Zoom));
+        Round(sbarVertical.position + (Y - 1) / Zoom));
       StatusBar.Panels[2].Text := 'dx : ' + FormatFloat('###0',
-        Round(sbarHorizontal.Position + (x - 1) / Zoom -
+        Round(sbarHorizontal.position + (X - 1) / Zoom -
         SelectedElement.TopLeft.X));
       StatusBar.Panels[3].Text := 'dy : ' + FormatFloat('###0',
-        Round(sbarVertical.Position + (y - 1) / Zoom -
+        Round(sbarVertical.position + (Y - 1) / Zoom -
         SelectedElement.TopLeft.Y));
     end;
   end
   else
   begin
     StatusBar.Panels[0].Text := 'X : ' + FormatFloat('###0',
-      Trunc(sbarHorizontal.Position + (x - 1) / Zoom));
+      Trunc(sbarHorizontal.position + (X - 1) / Zoom));
     StatusBar.Panels[1].Text := 'Y : ' + FormatFloat('###0',
-      Trunc(sbarVertical.Position + (y - 1) / Zoom));
+      Trunc(sbarVertical.position + (Y - 1) / Zoom));
   end;
 end;
 
 procedure TGUISkinEditor.lbElementsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if key = glKey_LEFT then
+  if Key = glKey_LEFT then
   begin
     if lbElements.ItemIndex > 0 then
       lbElements.ItemIndex := lbElements.ItemIndex - 1;
-    key := glKey_CANCEL;
+    Key := glKey_CANCEL;
   end;
-  if key = glKey_RIGHT then
+  if Key = glKey_RIGHT then
   begin
     if lbElements.ItemIndex + 1 < lbElements.Items.Count then
       lbElements.ItemIndex := lbElements.ItemIndex + 1;
-    key := glKey_CANCEL;
+    Key := glKey_CANCEL;
   end;
 
 end;
@@ -660,10 +669,10 @@ var
 begin
   if Assigned(SelectedElement) then
   begin
-    res := GLUtils.StrToFloatDef(ScaleXEdit.Text, 0);
+    res := GLScene.Utils.StrToFloatDef(ScaleXEdit.Text, 0);
     if res > 0 then
     begin
-      SelectedElement.Scale.X := Res;
+      SelectedElement.Scale.X := res;
       GLPanel1.ReBuildGui := True;
       GLPanel1.GUIRedraw := True;
       Render;
@@ -677,10 +686,10 @@ var
 begin
   if Assigned(SelectedElement) then
   begin
-    res := GLUtils.StrToFloatDef(ScaleYEdit.Text, 0);
+    res := GLScene.Utils.StrToFloatDef(ScaleYEdit.Text, 0);
     if res > 0 then
     begin
-      SelectedElement.Scale.Y := Res;
+      SelectedElement.Scale.Y := res;
       GLPanel1.ReBuildGui := True;
       GLPanel1.GUIRedraw := True;
       Render;
@@ -696,10 +705,10 @@ begin
   begin
     GLPanel1.BlockRender;
     try
-      res := GLUtils.StrToFloatDef(LeftEdit.Text, -1);
+      res := GLScene.Utils.StrToFloatDef(LeftEdit.Text, -1);
       if res >= 0 then
       begin
-        SelectedElement.TopLeft.X := Res;
+        SelectedElement.TopLeft.X := res;
       end;
     finally
       GLPanel1.UnBlockRender;
@@ -718,10 +727,10 @@ begin
   begin
     GLPanel1.BlockRender;
     try
-      res := GLUtils.StrToFloatDef(TopEdit.Text, -1);
+      res := GLScene.Utils.StrToFloatDef(TopEdit.Text, -1);
       if res >= 0 then
       begin
-        SelectedElement.TopLeft.Y := Res;
+        SelectedElement.TopLeft.Y := res;
       end;
     finally
       GLPanel1.UnBlockRender;
@@ -740,10 +749,10 @@ begin
   begin
     GLPanel1.BlockRender;
     try
-      res := GLUtils.StrToFloatDef(RightEdit.Text, -1);
+      res := GLScene.Utils.StrToFloatDef(RightEdit.Text, -1);
       if res >= 0 then
       begin
-        SelectedElement.BottomRight.X := Res;
+        SelectedElement.BottomRight.X := res;
       end;
     finally
       GLPanel1.UnBlockRender;
@@ -762,10 +771,10 @@ begin
   begin
     GLPanel1.BlockRender;
     try
-      res := GLUtils.StrToFloatDef(BottomEdit.Text, -1);
+      res := GLScene.Utils.StrToFloatDef(BottomEdit.Text, -1);
       if res >= 0 then
       begin
-        SelectedElement.BottomRight.Y := Res;
+        SelectedElement.BottomRight.Y := res;
       end;
     finally
       GLPanel1.UnBlockRender;
@@ -788,7 +797,7 @@ end;
 
 procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
 begin
-  if (Key > #32) and not CharInSet(Key, ['0'..'9',
+  if (Key > #32) and not CharInSet(Key, ['0' .. '9',
 {$IFDEF GLS_DELPHI_XE_UP}
     FormatSettings.
 {$ENDIF}
@@ -817,8 +826,8 @@ end;
 
 procedure TGUISkinEditor.UpdateRegionEdits;
 begin
-  if (lbElements.ItemIndex >= 0) and (lbElements.ItemIndex <
-    lbElements.Items.Count) then
+  if (lbElements.ItemIndex >= 0) and
+    (lbElements.ItemIndex < lbElements.Items.Count) then
   begin
     SelectedElement := TheGuiComponent.Items[lbElements.ItemIndex];
     ComboBox1.ItemIndex := Integer(SelectedElement.Align);
@@ -909,7 +918,7 @@ procedure TGUISkinEditor.AddElement(Index: Integer);
 var
   S: string;
   Count: Integer;
-  NewElement: TGLGuiElement;
+  NewElement: TGLGUIElement;
 begin
   Count := 1;
   repeat
@@ -917,7 +926,7 @@ begin
     inc(Count);
   until lbElements.Items.IndexOf(S) = -1;
 
-  NewElement := TheGuiComponent.Add as TGLGuiElement;
+  NewElement := TheGuiComponent.Add as TGLGUIElement;
   NewElement.Name := S;
   NewElement.Align := TGUIAlignments(Index);
   NewElement.BottomRight.SetPoint2D(0, 0);
@@ -978,22 +987,20 @@ begin
   begin
     if imgPreview.Cursor <> crDefault then
     begin
-      sbarVertical.Position := sbarVertical.Position + Round((Y -
-        PreviewMousePoint.Y) * PreviewWidth / imgPreview.Width);
-      sbarHorizontal.Position := sbarHorizontal.Position + Round((X -
-        PreviewMousePoint.X) * PreviewHeight / imgPreview.Height);
+      sbarVertical.position := sbarVertical.position +
+        Round((Y - PreviewMousePoint.Y) * PreviewWidth / imgPreview.Width);
+      sbarHorizontal.position := sbarHorizontal.position +
+        Round((X - PreviewMousePoint.X) * PreviewHeight / imgPreview.Height);
     end;
 
     PreviewMousePoint := Point(X, Y);
 
-    VisibleRect := Rect(
-      Round(sbarHorizontal.Position / PreviewWidth * imgPreview.Width),
-      Round(sbarVertical.Position / PreviewHeight * imgPreview.Height),
-      Round((sbarHorizontal.Position + (imgFull.Width - 1) / Zoom) / PreviewWidth
-        * imgPreview.Width),
-      Round((sbarVertical.Position + (imgFull.Height - 1) / Zoom) / PreviewHeight
-        * imgPreview.Height)
-      );
+    VisibleRect := Rect(Round(sbarHorizontal.position / PreviewWidth *
+      imgPreview.Width), Round(sbarVertical.position / PreviewHeight *
+      imgPreview.Height), Round((sbarHorizontal.position + (imgFull.Width - 1) /
+      Zoom) / PreviewWidth * imgPreview.Width),
+      Round((sbarVertical.position + (imgFull.Height - 1) / Zoom) /
+      PreviewHeight * imgPreview.Height));
   end;
 end;
 
@@ -1025,4 +1032,3 @@ begin
 end;
 
 end.
-

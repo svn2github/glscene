@@ -772,7 +772,7 @@ begin
       M);
   if FRotation <> 0 then
     M := MatrixMultiply(
-      CreateRotationMatrixZ(VectorGeometry.DegToRad(FRotation)),
+      CreateRotationMatrixZ(GLScene.Base.Vector.Geometry.DegToRad(FRotation)),
       M);
   ARci.PipelineTransformation.ProjectionMatrix := M;
   ARci.PipelineTransformation.LoadMatrices;

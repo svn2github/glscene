@@ -81,14 +81,14 @@ type
     FCount: Integer;
     FCapacity: Integer;
     FGrowthDelta: Integer;
-    FBufferItem: PByteArray;
+    FBufferItem: GLScene.Base.Vector.Geometry.PByteArray;
     FOptions: TBaseListOptions;
     FRevision: LongWord;
     FTagString: string;
   protected
     { Protected Declarations }
     //: The base list pointer (untyped)
-    FBaseList: VectorGeometry.PByteArray;
+    FBaseList: GLScene.Base.Vector.Geometry.PByteArray;
     //: Must be defined by all subclasses in their constructor(s)
     FItemSize: Integer;
 
@@ -97,7 +97,7 @@ type
            Resizes the array pointed by FBaseList, adjust the subclass's
            typed pointer accordingly if any. }
     procedure SetCapacity(NewCapacity: Integer); virtual;
-    function BufferItem: PByteArray;
+    function BufferItem: GLScene.Base.Vector.Geometry.PByteArray;
     function GetSetCountResetsMemory: Boolean;
     procedure SetSetCountResetsMemory(const Val: Boolean);
 
@@ -1055,7 +1055,7 @@ end;
 
 // BufferItem
 //
-function TBaseList.BufferItem: PByteArray;
+function TBaseList.BufferItem: GLScene.Base.Vector.Geometry.PByteArray;
 begin
   if not Assigned(FBufferItem) then
     GetMem(FBufferItem, FItemSize);

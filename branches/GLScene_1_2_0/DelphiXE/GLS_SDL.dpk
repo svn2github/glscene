@@ -33,8 +33,8 @@ requires
   GLScene_RunTime;
 
 contains
-  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  SDL in '..\Source\GameAPIs\sdl.pas';
+  GLScene.Context.SDL in '..\Source\Platform\GLScene.Context.SDL.pas',
+  GLScene.SDL.Window in '..\Source\GameAPIs\GLScene.SDL.Window.pas',
+  GLScene.SDL in '..\Source\GameAPIs\sdl.pas';
 
 end.

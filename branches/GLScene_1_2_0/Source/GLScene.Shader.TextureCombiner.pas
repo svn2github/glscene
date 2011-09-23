@@ -94,7 +94,6 @@ implementation
 uses
   SysUtils,
   GLScene.Base.OpenGL.Tokens,
-  XOpenGL,
   GLScene.Base.Context,
   GLScene.Platform,
   GLScene.Utils;
@@ -292,8 +291,8 @@ begin
             end;
           end;
         end;
-        if units > 0 then
-          xgl.MapTexCoordToArbitraryAdd(units);
+//        if units > 0 then
+//          xgl.MapTexCoordToArbitraryAdd(units);
       end;
 
       if Length(FCommandCache) = 0 then

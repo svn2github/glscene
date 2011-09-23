@@ -56,8 +56,8 @@ uses
 {$IFDEF FPC}graphtype,
   LCLType,
 {$ENDIF}
-  GLScene.File.DXTC,
-  GLScene.File.DDS,
+  GLScene.Files.DXTC,
+  GLScene.Files.DDS,
   GLScene.Texture.Format;
 
 // ------------------

@@ -227,7 +227,7 @@ begin
          buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Minimum Cut', IntToStr(MinCut));
          MinCut := StrToIntDef(buf, 0);
          buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Noise Sharpness', FloatToStr(NoiseSharpness));
-         NoiseSharpness := GLUtils.StrToFloatDef(buf, 0.9);
+         NoiseSharpness := GLScene.Utils.StrToFloatDef(buf, 0.9);
          buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Random Seed', IntToStr(NoiseRandSeed));
          NoiseRandSeed := StrToIntDef(buf, 0);
          RandSeed := NoiseRandSeed;

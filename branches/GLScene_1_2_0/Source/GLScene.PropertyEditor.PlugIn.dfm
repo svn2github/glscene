@@ -200,7 +200,6 @@ object PlugInManagerPropForm: TPlugInManagerPropForm
     Top = 40
     Width = 313
     Height = 193
-    ItemHeight = 16
     MultiSelect = True
     Sorted = True
     TabOrder = 0
@@ -238,7 +237,6 @@ object PlugInManagerPropForm: TPlugInManagerPropForm
     Style = csDropDownList
     Ctl3D = True
     Enabled = False
-    ItemHeight = 16
     ParentCtl3D = False
     TabOrder = 2
     OnChange = ServiceBoxChange
@@ -250,7 +248,6 @@ object PlugInManagerPropForm: TPlugInManagerPropForm
     Height = 24
     Style = csDropDownList
     Enabled = False
-    ItemHeight = 16
     TabOrder = 3
   end
   object OpenDialog: TOpenDialog

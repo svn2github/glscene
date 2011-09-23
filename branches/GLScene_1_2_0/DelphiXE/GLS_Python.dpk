@@ -34,6 +34,6 @@ requires
   Python_d7;
 
 contains
-  GLScriptPython in '..\Source\GLScriptPython.pas';
+  GLScene.Script.Python in '..\Source\GLScene.Script.Python.pas';
 
 end.

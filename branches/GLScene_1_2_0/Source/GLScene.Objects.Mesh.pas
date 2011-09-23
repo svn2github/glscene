@@ -241,7 +241,6 @@ implementation
 
 uses SysUtils,
   GLScene.Base.Strings,
-  XOpenGL,
   GLScene.Base.Context;
 
 // ----------------- TVertexList ------------------------------------------------
@@ -688,8 +687,8 @@ begin
   GL.EnableClientState(GL_NORMAL_ARRAY);
   GL.NormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstNormal);
-  xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-  xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
+  GL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+  GL.TexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
 

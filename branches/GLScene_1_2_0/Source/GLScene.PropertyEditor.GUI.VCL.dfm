@@ -1,9 +1,9 @@
 object GUISkinEditor: TGUISkinEditor
   Left = 262
   Top = 321
-  Width = 780
-  Height = 398
   Caption = 'Skin Editor'
+  ClientHeight = 360
+  ClientWidth = 764
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -383,7 +383,6 @@ object GUISkinEditor: TGUISkinEditor
       Width = 81
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 3
       OnChange = ComboBox1Change
       Items.Strings = (
@@ -468,14 +467,15 @@ object GUISkinEditor: TGUISkinEditor
     Left = 324
     Top = 12
     object HUDSprite1: TGLHUDSprite
+      Width = 512.000000000000000000
+      Height = 512.000000000000000000
+      AlphaChannel = 1.000000000000000000
       Material.FrontProperties.Ambient.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       Material.FrontProperties.Emission.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       Material.FrontProperties.Specular.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       Position.Coordinates = {0000804300008043000000000000803F}
       Visible = False
-      Width = 512.000000000000000000
-      Height = 512.000000000000000000
     end
     object GLPanel1: TGLPanel
       Autosize = False

@@ -57,7 +57,7 @@ var
 
 implementation
 
-uses GLScene.PlugIn.Interface, SysUtils;
+uses GLScene.PlugIn.Types, SysUtils;
 
 {$R *.DFM}
 // ------------------------------------------------------------------------------

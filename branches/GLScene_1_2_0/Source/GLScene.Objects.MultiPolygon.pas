@@ -258,7 +258,7 @@ type
     FPageSize: Integer; // number of entries per page
     FArrSize: Integer; // size of one page
     FUsedEntries: Integer; // used entries in actual page
-    FAktArray: VectorGeometry.PByteArray; // pointer to actual page
+    FAktArray: GLScene.Base.Vector.Geometry.PByteArray; // pointer to actual page
     procedure CreatePage; // create new page
   public
     constructor Create(APageSize, AEntrySize: Integer);

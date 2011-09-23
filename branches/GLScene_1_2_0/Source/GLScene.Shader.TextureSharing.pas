@@ -1,31 +1,31 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTextureSharingShader (originally GlProxMultiMatShader)<p>
-    <p>
-    This shader allows to apply multiple textures, gathering them from existing materials.
-    This allows saving resources, since you can reference the textures of any material in
-    any materialLibrary.
-    Note that actually the component references a Material (not a texture) but
-    it uses that material's texture. The referenced material settings will be ignored,
-    but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
-    Instead the local material settings (listed in the collection) will be used.
-    </p>
+{ : GLTextureSharingShader (originally GlProxMultiMatShader)<p>
+  <p>
+  This shader allows to apply multiple textures, gathering them from existing materials.
+  This allows saving resources, since you can reference the textures of any material in
+  any materialLibrary.
+  Note that actually the component references a Material (not a texture) but
+  it uses that material's texture. The referenced material settings will be ignored,
+  but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
+  Instead the local material settings (listed in the collection) will be used.
+  </p>
 
   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Fixed light state changes
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
-                              (BugTracker ID = 1938988).
-                             TGLTextureSharingShaderMaterial.GetTextureSharingShader()
-                              is now more safe
-      <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
-                               Delphi 5 compatibility (thanks Pascal)
-      <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
-      <li>17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
-      <li>14/03/08 - Pascal - Initial version (contributed to GLScene)
+  <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+  <li>23/08/10 - Yar - Fixed light state changes
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>05/03/10 - DanB - More state added to TGLStateCache
+  <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
+  (BugTracker ID = 1938988).
+  TGLTextureSharingShaderMaterial.GetTextureSharingShader()
+  is now more safe
+  <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
+  Delphi 5 compatibility (thanks Pascal)
+  <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
+  <li>17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
+  <li>14/03/08 - Pascal - Initial version (contributed to GLScene)
 
 }
 
@@ -35,17 +35,27 @@ interface
 
 uses
   // VCL
-  Classes, SysUtils,
+  Classes,
+  SysUtils,
 
   // GLScene.Core
-  GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Base.Color, GLScene.Material, GLScene.Base.Strings,
-  GLScene.Vector.FileObjects, XOpenGL, GLScene.Base.GLStateMachine, GLScene.Base.PersistentClasses,
-  {Needed for Delphi 5} GLScene.Platform, GLScene.Base.Coordinates, GLScene.Base.Context.Info;
+  GLScene.Core,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Color,
+  GLScene.Material,
+  GLScene.Base.Strings,
+  GLScene.Vector.FileObjects,
+  GLScene.Base.GLStateMachine,
+  GLScene.Base.PersistentClasses, {Needed for Delphi 5}
+  GLScene.Platform,
+  GLScene.Base.Coordinates,
+  GLScene.Base.Context.Info;
 
 type
   TGLTextureSharingShader = class;
 
-  TGLTextureSharingShaderMaterial = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TGLTextureSharingShaderMaterial = class(TGLInterfacedCollectionItem,
+    IGLMaterialLibrarySupported)
   private
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;
@@ -101,25 +111,30 @@ type
 
     property TexOffset: TGLCoordinates2 read FTexOffset write SetTexOffset;
     property TexScale: TGLCoordinates2 read FTexScale write SetTexScale;
-    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode;
+    property BlendingMode: TBlendingMode read FBlendingMode
+      write SetBlendingMode;
     property Emission: TGLColor read FEmission write SetEmission;
     property Ambient: TGLColor read FAmbient write SetAmbient;
     property Diffuse: TGLColor read FDiffuse write SetDiffuse;
     property Specular: TGLColor read FSpecular write SetSpecular;
     property Shininess: TShininess read FShininess write SetShininess;
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-    property LibMaterialName: TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
+      write SetMaterialLibrary;
+    property LibMaterialName: TGLLibMaterialName read FLibMaterialName
+      write SetLibMaterialName;
   end;
 
   TGLTextureSharingShaderMaterials = class(TOwnedCollection)
   protected
     function GetItems(const AIndex: Integer): TGLTextureSharingShaderMaterial;
-    procedure SetItems(const AIndex: Integer; const Value: TGLTextureSharingShaderMaterial);
+    procedure SetItems(const AIndex: Integer;
+      const Value: TGLTextureSharingShaderMaterial);
     function GetParent: TGLTextureSharingShader;
   public
     function Add: TGLTextureSharingShaderMaterial;
     constructor Create(AOwner: TGLTextureSharingShader);
-    property Items[const AIndex: Integer]: TGLTextureSharingShaderMaterial read GetItems write SetItems; default;
+    property Items[const AIndex: Integer]: TGLTextureSharingShaderMaterial
+      read GetItems write SetItems; default;
   end;
 
   TGLTextureSharingShader = class(TGLShader)
@@ -130,17 +145,19 @@ type
   protected
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function AddLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
-    function FindLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
+    function AddLibMaterial(const ALibMaterial: TGLLibMaterial)
+      : TGLTextureSharingShaderMaterial;
+    function FindLibMaterial(const ALibMaterial: TGLLibMaterial)
+      : TGLTextureSharingShaderMaterial;
   published
-    property Materials: TGLTextureSharingShaderMaterials read FMaterials write SetMaterials;
+    property Materials: TGLTextureSharingShaderMaterials read FMaterials
+      write SetMaterials;
   end;
-
-
 
 implementation
 
@@ -150,21 +167,22 @@ procedure TGLTextureSharingShaderMaterial.Apply(var rci: TRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
-  xgl.BeginUpdate;
+//  xgl.BeginUpdate;
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
-      ssHighLevel: FLibMaterial.Shader.Apply(rci, FLibMaterial);
-      ssReplace:
-      begin
+      ssHighLevel:
         FLibMaterial.Shader.Apply(rci, FLibMaterial);
-        Exit;
-      end;
+      ssReplace:
+        begin
+          FLibMaterial.Shader.Apply(rci, FLibMaterial);
+          Exit;
+        end;
     end;
   end;
   if not FLibMaterial.Material.Texture.Disabled then
   begin
-    if not (GetTextureMatrixIsUnitary) then
+    if not(GetTextureMatrixIsUnitary) then
     begin
       rci.GLStates.SetGLTextureMatrix(TextureMatrix);
     end;
@@ -175,28 +193,30 @@ begin
 
   if stLighting in rci.GLStates.States then
   begin
-    rci.GLStates.SetGLMaterialColors(cmFront,
-      Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, Shininess);
-    rci.GLStates.PolygonMode :=FLibMaterial.Material.PolygonMode;
+    rci.GLStates.SetGLMaterialColors(cmFront, Emission.Color, Ambient.Color,
+      Diffuse.Color, Specular.Color, Shininess);
+    rci.GLStates.PolygonMode := FLibMaterial.Material.PolygonMode;
   end
   else
     FLibMaterial.Material.FrontProperties.ApplyNoLighting(rci, cmFront);
   if (stCullFace in rci.GLStates.States) then
   begin
     case FLibMaterial.Material.FaceCulling of
-      fcBufferDefault: if not rci.bufferFaceCull then
+      fcBufferDefault:
+        if not rci.bufferFaceCull then
         begin
           rci.GLStates.Disable(stCullFace);
           FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
         end;
-      fcCull: ; // nothing to do
+      fcCull:
+        ; // nothing to do
       fcNoCull:
-      begin
-        rci.GLStates.Disable(stCullFace);
-        FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
-      end;
-      else
-        Assert(False);
+        begin
+          rci.GLStates.Disable(stCullFace);
+          FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
+        end;
+    else
+      Assert(False);
     end;
   end
   else
@@ -204,16 +224,18 @@ begin
     // currently NOT culling
     case FLibMaterial.Material.FaceCulling of
       fcBufferDefault:
-      begin
-        if rci.bufferFaceCull then
-          rci.GLStates.Enable(stCullFace)
-        else
-          FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
-      end;
-      fcCull: rci.GLStates.Enable(stCullFace);
-      fcNoCull: FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
-      else
-        Assert(False);
+        begin
+          if rci.bufferFaceCull then
+            rci.GLStates.Enable(stCullFace)
+          else
+            FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
+        end;
+      fcCull:
+        rci.GLStates.Enable(stCullFace);
+      fcNoCull:
+        FLibMaterial.Material.BackProperties.Apply(rci, cmBack);
+    else
+      Assert(False);
     end;
   end;
 
@@ -221,42 +243,42 @@ begin
   if not rci.ignoreBlendingRequests then
     case BlendingMode of
       bmOpaque:
-      begin
-        rci.GLStates.Disable(stBlend);
-        rci.GLStates.Disable(stAlphaTest);
-      end;
+        begin
+          rci.GLStates.Disable(stBlend);
+          rci.GLStates.Disable(stAlphaTest);
+        end;
       bmTransparency:
-      begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-      end;
+        begin
+          rci.GLStates.Enable(stBlend);
+          rci.GLStates.Enable(stAlphaTest);
+          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        end;
       bmAdditive:
-      begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-      end;
+        begin
+          rci.GLStates.Enable(stBlend);
+          rci.GLStates.Enable(stAlphaTest);
+          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        end;
       bmAlphaTest50:
-      begin
-        rci.GLStates.Disable(stBlend);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfGEqual, 0.5);
-      end;
+        begin
+          rci.GLStates.Disable(stBlend);
+          rci.GLStates.Enable(stAlphaTest);
+          rci.GLStates.SetGLAlphaFunction(cfGEqual, 0.5);
+        end;
       bmAlphaTest100:
-      begin
-        rci.GLStates.Disable(stBlend);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfGEqual, 1.0);
-      end;
+        begin
+          rci.GLStates.Disable(stBlend);
+          rci.GLStates.Enable(stAlphaTest);
+          rci.GLStates.SetGLAlphaFunction(cfGEqual, 1.0);
+        end;
       bmModulate:
-      begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetBlendFunc(bfDstColor, bfZero);
-      end;
-      else
-        Assert(False);
+        begin
+          rci.GLStates.Enable(stBlend);
+          rci.GLStates.Enable(stAlphaTest);
+          rci.GLStates.SetBlendFunc(bfDstColor, bfZero);
+        end;
+    else
+      Assert(False);
     end;
   // Fog switch
   if moIgnoreFog in FLibMaterial.Material.MaterialOptions then
@@ -275,20 +297,21 @@ begin
   end
   else
   begin
-    if Assigned(FLibMaterial.Material.Texture) and not FLibMaterial.Material.TextureEx.IsTextureEnabled(0) then
+    if Assigned(FLibMaterial.Material.Texture) and
+      not FLibMaterial.Material.TextureEx.IsTextureEnabled(0) then
       FLibMaterial.Material.Texture.Apply(rci)
-    else
-    if FLibMaterial.Material.TextureEx.Count > 0 then
+    else if FLibMaterial.Material.TextureEx.Count > 0 then
       FLibMaterial.Material.TextureEx.Apply(rci);
   end;
 
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
-      ssLowLevel: FLibMaterial.Shader.Apply(rci, FLibMaterial);
+      ssLowLevel:
+        FLibMaterial.Shader.Apply(rci, FLibMaterial);
     end;
   end;
-  xgl.EndUpdate;
+//  xgl.EndUpdate;
 end;
 
 procedure TGLTextureSharingShaderMaterial.coordNotifychange(Sender: TObject);
@@ -309,7 +332,8 @@ begin
   FEmission := TGLColor.Create(Self);
   FEmission.OnNotifyChange := OtherNotifychange;
 
-  FTexOffset := TGLCoordinates2.CreateInitialized(Self, NullHmgVector, csPoint2d);
+  FTexOffset := TGLCoordinates2.CreateInitialized(Self, NullHmgVector,
+    csPoint2d);
   FTexOffset.OnNotifyChange := coordNotifychange;
 
   FTexScale := TGLCoordinates2.CreateInitialized(Self, XYZHmgVector, csPoint2d);
@@ -328,7 +352,6 @@ begin
   inherited;
 end;
 
-
 function TGLTextureSharingShaderMaterial.GetDisplayName: string;
 var
   st: string;
@@ -340,7 +363,8 @@ begin
   Result := '[' + st + '.' + Self.LibMaterialName + ']';
 end;
 
-function TGLTextureSharingShaderMaterial.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+function TGLTextureSharingShaderMaterial.GetMaterialLibrary
+  : TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
@@ -349,11 +373,13 @@ function TGLTextureSharingShaderMaterial.GetTextureMatrix: TMatrix;
 begin
   if FNeedToUpdateTextureMatrix then
   begin
-    if not (TexOffset.Equals(NullHmgVector) and TexScale.Equals(XYZHmgVector)) then
+    if not(TexOffset.Equals(NullHmgVector) and
+      TexScale.Equals(XYZHmgVector)) then
     begin
       FTextureMatrixIsUnitary := False;
-      FTextureMatrix := CreateScaleAndTranslationMatrix(TexScale.AsVector, TexOffset.AsVector)
-    end  
+      FTextureMatrix := CreateScaleAndTranslationMatrix(TexScale.AsVector,
+        TexOffset.AsVector)
+    end
     else
       FTextureMatrixIsUnitary := True;
     FNeedToUpdateTextureMatrix := False;
@@ -368,7 +394,8 @@ begin
   Result := FTextureMatrixIsUnitary;
 end;
 
-function TGLTextureSharingShaderMaterial.GetTextureSharingShader: TGLTextureSharingShader;
+function TGLTextureSharingShaderMaterial.GetTextureSharingShader
+  : TGLTextureSharingShader;
 begin
   if Collection is TGLTextureSharingShaderMaterials then
     Result := TGLTextureSharingShaderMaterials(Collection).GetParent
@@ -386,7 +413,8 @@ begin
   FAmbient.Assign(Value);
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetBlendingMode(const Value: TBlendingMode);
+procedure TGLTextureSharingShaderMaterial.SetBlendingMode
+  (const Value: TBlendingMode);
 begin
   FBlendingMode := Value;
 end;
@@ -401,7 +429,8 @@ begin
   FEmission.Assign(Value);
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetLibMaterialName(const Value: TGLLibMaterialName);
+procedure TGLTextureSharingShaderMaterial.SetLibMaterialName
+  (const Value: TGLLibMaterialName);
 begin
   FLibMaterialName := Value;
   if (FLibMaterialName = '') or (FMaterialLibrary = nil) then
@@ -410,29 +439,31 @@ begin
     SetLibMaterial(FMaterialLibrary.LibMaterialByName(FLibMaterialName));
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetLibMaterial(const Value: TGLLibMaterial);
+procedure TGLTextureSharingShaderMaterial.SetLibMaterial
+  (const Value: TGLLibMaterial);
 begin
   FLibMaterial := Value;
   if FLibMaterial <> nil then
   begin
     FLibMaterialName := FLibMaterial.DisplayName;
-    FMaterialLibrary := TGLMaterialLibrary(TGLLibMaterials(Value.Collection).Owner);
-    if not (csloading in GetTextureSharingShader.ComponentState) then
+    FMaterialLibrary := TGLMaterialLibrary
+      (TGLLibMaterials(Value.Collection).Owner);
+    if not(csloading in GetTextureSharingShader.ComponentState) then
     begin
       FTexOffset.Assign(FLibMaterial.TextureOffset);
       FTexScale.Assign(FLibMaterial.TextureScale);
       FBlendingMode := FLibMaterial.Material.BlendingMode;
-      fEmission.Assign(FLibMaterial.Material.FrontProperties.Emission);
-      fAmbient.Assign(FLibMaterial.Material.FrontProperties.Ambient);
-      fDiffuse.Assign(FLibMaterial.Material.FrontProperties.Diffuse);
-      fSpecular.Assign(FLibMaterial.Material.FrontProperties.Specular);
-      fShininess := FLibMaterial.Material.FrontProperties.Shininess;
+      FEmission.Assign(FLibMaterial.Material.FrontProperties.Emission);
+      FAmbient.Assign(FLibMaterial.Material.FrontProperties.Ambient);
+      FDiffuse.Assign(FLibMaterial.Material.FrontProperties.Diffuse);
+      FSpecular.Assign(FLibMaterial.Material.FrontProperties.Specular);
+      FShininess := FLibMaterial.Material.FrontProperties.Shininess;
     end;
   end;
 end;
 
-
-procedure TGLTextureSharingShaderMaterial.SetMaterialLibrary(const Value: TGLMaterialLibrary);
+procedure TGLTextureSharingShaderMaterial.SetMaterialLibrary
+  (const Value: TGLMaterialLibrary);
 begin
   FMaterialLibrary := Value;
   if (FLibMaterialName = '') or (FMaterialLibrary = nil) then
@@ -451,13 +482,15 @@ begin
   FSpecular.Assign(Value);
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetTexOffset(const Value: TGLCoordinates2);
+procedure TGLTextureSharingShaderMaterial.SetTexOffset
+  (const Value: TGLCoordinates2);
 begin
   FTexOffset.Assign(Value);
   FNeedToUpdateTextureMatrix := True;
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetTexScale(const Value: TGLCoordinates2);
+procedure TGLTextureSharingShaderMaterial.SetTexScale
+  (const Value: TGLCoordinates2);
 begin
   FTexScale.Assign(Value);
   FNeedToUpdateTextureMatrix := True;
@@ -471,19 +504,20 @@ begin
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
-      ssLowLevel: FLibMaterial.Shader.UnApply(rci);
-      ssReplace:
-      begin
+      ssLowLevel:
         FLibMaterial.Shader.UnApply(rci);
-        Exit;
-      end;
+      ssReplace:
+        begin
+          FLibMaterial.Shader.UnApply(rci);
+          Exit;
+        end;
     end;
   end;
 
   FLibMaterial.Material.UnApply(rci);
 
   if not FLibMaterial.Material.Texture.Disabled then
-    if not (GetTextureMatrixIsUnitary) then
+    if not(GetTextureMatrixIsUnitary) then
     begin
       rci.GLStates.ResetGLTextureMatrix;
     end;
@@ -491,14 +525,16 @@ begin
   if Assigned(FLibMaterial.Shader) then
   begin
     case FLibMaterial.Shader.ShaderStyle of
-      ssHighLevel: FLibMaterial.Shader.UnApply(rci);
+      ssHighLevel:
+        FLibMaterial.Shader.UnApply(rci);
     end;
   end;
 end;
 
 { TGLTextureSharingShader }
 
-function TGLTextureSharingShader.AddLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
+function TGLTextureSharingShader.AddLibMaterial(const ALibMaterial
+  : TGLLibMaterial): TGLTextureSharingShaderMaterial;
 begin
   Result := FMaterials.Add;
   Result.SetLibMaterial(ALibMaterial);
@@ -517,7 +553,8 @@ begin
   inherited;
 end;
 
-procedure TGLTextureSharingShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLTextureSharingShader.DoApply(var rci: TRenderContextInfo;
+  Sender: TObject);
 begin
   if Materials.Count > 0 then
   begin
@@ -528,7 +565,8 @@ begin
   end;
 end;
 
-function TGLTextureSharingShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLTextureSharingShader.DoUnApply(var rci: TRenderContextInfo)
+  : Boolean;
 begin
   Result := False;
   if Materials.Count > 0 then
@@ -550,7 +588,8 @@ begin
   end;
 end;
 
-function TGLTextureSharingShader.FindLibMaterial(const ALibMaterial: TGLLibMaterial): TGLTextureSharingShaderMaterial;
+function TGLTextureSharingShader.FindLibMaterial(const ALibMaterial
+  : TGLLibMaterial): TGLTextureSharingShaderMaterial;
 var
   I: Integer;
 begin
@@ -563,7 +602,8 @@ begin
     end;
 end;
 
-procedure TGLTextureSharingShader.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLTextureSharingShader.Notification(AComponent: TComponent;
+  Operation: TOperation);
 var
   I: Integer;
 begin
@@ -581,7 +621,8 @@ begin
   end;
 end;
 
-procedure TGLTextureSharingShader.SetMaterials(const Value: TGLTextureSharingShaderMaterials);
+procedure TGLTextureSharingShader.SetMaterials(const Value
+  : TGLTextureSharingShaderMaterials);
 begin
   FMaterials.Assign(Value);
 end;
@@ -590,17 +631,19 @@ end;
 
 function TGLTextureSharingShaderMaterials.Add: TGLTextureSharingShaderMaterial;
 begin
-  Result := (inherited Add) as TGLTextureSharingShaderMaterial;
+  Result := ( inherited Add) as TGLTextureSharingShaderMaterial;
 end;
 
-constructor TGLTextureSharingShaderMaterials.Create(AOwner: TGLTextureSharingShader);
+constructor TGLTextureSharingShaderMaterials.Create
+  (AOwner: TGLTextureSharingShader);
 begin
   inherited Create(AOwner, TGLTextureSharingShaderMaterial);
 end;
 
-function TGLTextureSharingShaderMaterials.GetItems(const AIndex: Integer): TGLTextureSharingShaderMaterial;
+function TGLTextureSharingShaderMaterials.GetItems(const AIndex: Integer)
+  : TGLTextureSharingShaderMaterial;
 begin
-  Result := (inherited Items[AIndex]) as TGLTextureSharingShaderMaterial;
+  Result := ( inherited Items[AIndex]) as TGLTextureSharingShaderMaterial;
 end;
 
 function TGLTextureSharingShaderMaterials.GetParent: TGLTextureSharingShader;
@@ -608,14 +651,15 @@ begin
   Result := TGLTextureSharingShader(GetOwner);
 end;
 
-procedure TGLTextureSharingShaderMaterials.SetItems(const AIndex: Integer; const Value: TGLTextureSharingShaderMaterial);
+procedure TGLTextureSharingShaderMaterials.SetItems(const AIndex: Integer;
+  const Value: TGLTextureSharingShaderMaterial);
 begin
   inherited Items[AIndex] := Value;
 end;
 
-
 initialization
-  RegisterClasses([TGLTextureSharingShader, TGLTextureSharingShaderMaterials,
-                   TGLTextureSharingShaderMaterial]);
+
+RegisterClasses([TGLTextureSharingShader, TGLTextureSharingShaderMaterials,
+  TGLTextureSharingShaderMaterial]);
 
 end.

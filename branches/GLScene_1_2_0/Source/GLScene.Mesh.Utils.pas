@@ -1515,7 +1515,7 @@ begin
   boundaryList[b0].edge := 2;
   boundaryList[b0].next[0] := b2;
   boundaryList[b0].next[1] := boundaryList[b2].next[0];
-  boundaryList[b0].maxSqArea := MeshUtils.polygonArea(b0);
+  boundaryList[b0].maxSqArea := GLScene.Mesh.Utils.polygonArea(b0);
 
   boundaryList[bp].next[1] := b2;
 
@@ -1579,12 +1579,12 @@ begin
     boundaryList[i + 1].next[1] := 1;
     boundaryList[i + 1].active := 1;
 
-    boundaryList[0].maxSqArea := MeshUtils.polygonArea(0);
+    boundaryList[0].maxSqArea := GLScene.Mesh.Utils.polygonArea(0);
     maxMaxSqArea := boundaryList[0].maxSqArea;
 
     for i := 1 to count - 1 do
     begin
-      boundaryList[i].maxSqArea := MeshUtils.polygonArea(i);
+      boundaryList[i].maxSqArea := GLScene.Mesh.Utils.polygonArea(i);
       if boundaryList[i].maxSqArea > maxMaxSqArea then
         maxMaxSqArea := boundaryList[i].maxSqArea;
     end;

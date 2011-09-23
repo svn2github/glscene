@@ -29,7 +29,6 @@ uses
   GLScene.Texture,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Vector.Geometry,
-  XOpenGL,
   GLScene.Base.Context.Info,
   GLScene.Base.GLStateMachine;
 

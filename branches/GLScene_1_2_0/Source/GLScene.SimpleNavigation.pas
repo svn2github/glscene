@@ -59,7 +59,7 @@ uses
   TypInfo,
 
   // GLSñene
-  GLScene.VCL.Form,
+  GLScene.Form.VCL,
   GLScene.Base.Vector.Geometry,
   GLScene.Core,
   GLScene.Viewer,

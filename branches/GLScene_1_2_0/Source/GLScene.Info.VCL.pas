@@ -33,8 +33,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Forms, GLScene.Core, Classes, Controls, Buttons, StdCtrls, ComCtrls,
-  CommCtrl, ExtCtrls, Graphics, Menus, jpeg;
+  Windows,
+  Forms,
+  GLScene.Core,
+  Classes,
+  Controls,
+  Buttons,
+  StdCtrls,
+  ComCtrls,
+  CommCtrl,
+  ExtCtrls,
+  Graphics,
+  Menus,
+  jpeg;
 
 type
 
@@ -135,7 +146,11 @@ type
 implementation
 
 uses
-  GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, GLScene.Base.Context, SysUtils, GLScene.Platform;
+  SysUtils,
+  GLScene.Base.OpenGL.Tokens,
+  GLScene.Base.OpenGL.Adapter,
+  GLScene.Base.Context,
+  GLScene.Platform;
 
 {$R *.dfm}
 {$R Info.res}
@@ -401,18 +416,18 @@ var
 begin
   FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
   FExePath := ExtractFilePath(ParamStr(0));
-  if FileExists(FExePath + 'GLSceneRevision') then 
-  try
-    with TStringList.Create do 
+  if FileExists(FExePath + 'GLSceneRevision') then
     try
-      LoadFromFile(FExePath + 'GLSceneRevision');
-      if (Count >= 1) and (trim(Strings[0]) <> '') then
-        FGLSceneRevision:= trim(Strings[0]);
-    finally
-      Free;
+      with TStringList.Create do
+        try
+          LoadFromFile(FExePath + 'GLSceneRevision');
+          if (Count >= 1) and (trim(Strings[0]) <> '') then
+            FGLSceneRevision := trim(Strings[0]);
+        finally
+          Free;
+        end;
+    except
     end;
-  except
-  end;
 
   Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
 end;

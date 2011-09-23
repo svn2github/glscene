@@ -235,7 +235,7 @@ type
 
 implementation
 
-uses GLScene.Base.OpenGL.Tokens, XOpenGL {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
+uses GLScene.Base.OpenGL.Tokens {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
 
 constructor TGLzBuffer.Create;
 begin

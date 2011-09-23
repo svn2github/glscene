@@ -43,7 +43,7 @@ implementation
 uses
 {$IFDEF FPC}graphtype,
 {$ENDIF}
-  GLScene.File.HDR,
+  GLScene.Files.HDR,
   GLScene.Texture.Format;
 
 // ------------------

@@ -2726,6 +2726,10 @@ object InfoForm: TInfoForm
     end
     object TabSheet2: TTabSheet
       Caption = 'About'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object WebsiteLbl: TLabel
         Left = 57
         Top = 274
@@ -2778,6 +2782,10 @@ object InfoForm: TInfoForm
     end
     object TabSheet3: TTabSheet
       Caption = 'Contributors'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Contributors: TMemo
         Left = 0
         Top = 0
@@ -2847,6 +2855,10 @@ object InfoForm: TInfoForm
     end
     object TabSheet4: TTabSheet
       Caption = 'Information'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBox1: TScrollBox
         Left = 0
         Top = 0
@@ -3570,6 +3582,10 @@ object InfoForm: TInfoForm
     object TabSheet5: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Extensions: TListBox
         Left = 0
         Top = 0

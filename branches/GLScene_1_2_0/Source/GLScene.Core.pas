@@ -2522,11 +2522,10 @@ implementation
 uses
   GLScene.Base.Log,
   GLScene.Base.Strings,
-  XOpenGL,
   GLScene.Base.Vector.Types,
   GLScene.Base.FileIO,
   GLScene.Shader.Parameter,
-  GLScene.File.DDS,
+  GLScene.Files.DDS,
   GLScene.Utils;
 
 var
@@ -9442,11 +9441,11 @@ begin
   with RenderingContext.GLStates do
   begin
     PrepareRenderingMatrices(aViewPort, resolution);
-    if not ForwardContext then
-    begin
-      xgl.MapTexCoordToNull; // force XGL rebind
-      xgl.MapTexCoordToMain;
-    end;
+//    if not ForwardContext then
+//    begin
+//      xgl.MapTexCoordToNull; // force XGL rebind
+//      xgl.MapTexCoordToMain;
+//    end;
 
     if Assigned(FViewerBeforeRender) and (drawState <> dsPrinting) then
       FViewerBeforeRender(Self);

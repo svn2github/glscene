@@ -258,15 +258,21 @@ object VectorEditorForm: TVectorEditorForm
     Top = 72
     Width = 75
     Height = 25
-    TabOrder = 3
+    DoubleBuffered = True
     Kind = bkOK
+    NumGlyphs = 2
+    ParentDoubleBuffered = False
+    TabOrder = 3
   end
   object BBcancel: TBitBtn
     Left = 184
     Top = 104
     Width = 75
     Height = 25
-    TabOrder = 4
+    DoubleBuffered = True
     Kind = bkCancel
+    NumGlyphs = 2
+    ParentDoubleBuffered = False
+    TabOrder = 4
   end
 end

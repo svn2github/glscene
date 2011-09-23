@@ -1,46 +1,46 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialScript<p>
+{ : GLMaterialScript<p>
 
-   Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
+  Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>22/01/10 - Yar   - Added GLTextureFormat to uses
-      <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-                              to GLGraphics.pas (BugTracker ID = 1923844)
-      <li>02/04/07 - DaStr - TGLMaterialScripter is now notified of
-                               DebugMemo's and MaterialLibrary's destruction
-                             TGLShaderItems and TGLMaterialLibraryItems now
-                               descent from TOwnedCollection
-                             Removed unused stuff from "uses" section
-                             Alligned and formated the "interface" section
-      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
-	</ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>22/01/10 - Yar   - Added GLTextureFormat to uses
+  <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+  to GLGraphics.pas (BugTracker ID = 1923844)
+  <li>02/04/07 - DaStr - TGLMaterialScripter is now notified of
+  DebugMemo's and MaterialLibrary's destruction
+  TGLShaderItems and TGLMaterialLibraryItems now
+  descent from TOwnedCollection
+  Removed unused stuff from "uses" section
+  Alligned and formated the "interface" section
+  <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+  <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
+  </ul></font>
 }
 {
-   Author : Kenneth Poulter (aka SpiriT aka Difacane)
-   Base : none, apart from glscene materiallibrary
+  Author : Kenneth Poulter (aka SpiriT aka Difacane)
+  Base : none, apart from glscene materiallibrary
 
-   History :
-   26/06/2004 - KP - started basic script idea using repeat statements
-   26/06/2004 - KP - script is now half functional and method proved to be effective
-   27/06/2004 - KP - finished script, but not dynamic, error handling needs some work
-   28/06/2004 - KP - cleaned it all up, nearly ready for realease
-   29/06/2004 - KP - Converted to a component class, ready for release
-   29/06/2004 - KP - Updated strtofloat to strtofloatdef and replaced "," with ";"
-   29/06/2004 - KP - Added MaterialLibraries and Shaders for use
-   06/07/2004 - KP - Added Append and Overwrite
-   
-   Future notes :
-   Implementation of variables
-   Implementation of constants
+  History :
+  26/06/2004 - KP - started basic script idea using repeat statements
+  26/06/2004 - KP - script is now half functional and method proved to be effective
+  27/06/2004 - KP - finished script, but not dynamic, error handling needs some work
+  28/06/2004 - KP - cleaned it all up, nearly ready for realease
+  29/06/2004 - KP - Converted to a component class, ready for release
+  29/06/2004 - KP - Updated strtofloat to strtofloatdef and replaced "," with ";"
+  29/06/2004 - KP - Added MaterialLibraries and Shaders for use
+  06/07/2004 - KP - Added Append and Overwrite
 
-   This source falls under the GNU GPL license, unless stated otherwise by the author(Kenneth Poulter).
+  Future notes :
+  Implementation of variables
+  Implementation of constants
 
-   Additions are welcome
+  This source falls under the GNU GPL license, unless stated otherwise by the author(Kenneth Poulter).
+
+  Additions are welcome
 
 }
 
@@ -50,11 +50,19 @@ interface
 
 uses
   // VCL
-  SysUtils, Classes, StdCtrls,
+  SysUtils,
+  Classes,
+  StdCtrls,
 
   // GLScene.Core
-  GLScene.Texture, GLScene.Texture.Format, GLScene.Graphics, GLScene.Utils, GLScene.Base.Color, GLScene.Base.Coordinates,
-  GLScene.Material, GLScene.Base.GLStateMachine;
+  GLScene.Texture,
+  GLScene.Texture.Format,
+  GLScene.Graphics,
+  GLScene.Utils,
+  GLScene.Base.Color,
+  GLScene.Base.Coordinates,
+  GLScene.Material,
+  GLScene.Base.GLStateMachine;
 
 type
   TGLShaderItem = class(TCollectionItem)
@@ -90,7 +98,8 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent);
-    property Items[Index: Integer]: TGLShaderItem read GetItems write SetItems; default;
+    property Items[Index: Integer]: TGLShaderItem read GetItems
+      write SetItems; default;
 
   end;
 
@@ -114,7 +123,8 @@ type
 
   published
     { Published Declarations }
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
+      write SetMaterialLibrary;
     property Name: string read FName write SetName;
   end;
 
@@ -127,10 +137,10 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent);
-    property Items[Index: Integer]: TGLMaterialLibraryItem read GetItems write SetItems; default;
+    property Items[Index: Integer]: TGLMaterialLibraryItem read GetItems
+      write SetItems; default;
 
   end;
-
 
   TGLMaterialScripter = class(TComponent)
   private
@@ -232,7 +242,8 @@ type
 
   protected
     { Protected declarations }
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure Notification(AComponent: TComponent;
+      Operation: TOperation); override;
 
   public
     { Public declarations }
@@ -245,11 +256,14 @@ type
   published
     { Published declarations }
     property Script: TStrings read FScript write SetScript;
-    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
+      write SetMaterialLibrary;
     property Shaders: TGLShaderItems read FShaderItems write SeTGLShaderItems;
-    property MaterialLibraries: TGLMaterialLibraryItems read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
+    property MaterialLibraries: TGLMaterialLibraryItems
+      read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
     property AppendToMaterialLibrary: Boolean read FAppend write SetAppend;
-    property OverwriteToMaterialLibrary: Boolean read FOverwrite write SetOverwrite;
+    property OverwriteToMaterialLibrary: Boolean read FOverwrite
+      write SetOverwrite;
 
   end;
 
@@ -259,8 +273,8 @@ procedure TGLShaderItem.SetShader(const Value: TGLShader);
 begin
   if assigned(Value) then
   begin
-     FShader := Value;
-     FName := FShader.Name;
+    FShader := Value;
+    FName := FShader.Name;
   end;
 end;
 
@@ -268,15 +282,15 @@ procedure TGLShaderItem.Assign(Source: TPersistent);
 begin
   if Source is TGLShaderItem then
   begin
-     FShader := TGLShaderItem(Source).FShader;
+    FShader := TGLShaderItem(Source).FShader;
   end;
   inherited Destroy;
 end;
 
 constructor TGLShaderItem.Create(Collection: TCollection);
 begin
-   inherited Create(Collection);
-   FName := 'Shader';
+  inherited Create(Collection);
+  FName := 'Shader';
 end;
 
 destructor TGLShaderItem.Destroy;
@@ -284,35 +298,34 @@ begin
   inherited Destroy;
 end;
 
-function TGLShaderItem.GetDisplayName : String;
+function TGLShaderItem.GetDisplayName: String;
 begin
-   if FName = '' then
-   Result:='Shader'
-   else
-   Result := FName;
+  if FName = '' then
+    Result := 'Shader'
+  else
+    Result := FName;
 end;
 
 { TGLShaderItems }
 
 constructor TGLShaderItems.Create(AOwner: TPersistent);
 begin
-   inherited Create(AOwner, TGLShaderItem);
+  inherited Create(AOwner, TGLShaderItem);
 end;
 
 function TGLShaderItems.GetItems(index: Integer): TGLShaderItem;
 begin
-   Result:=TGLShaderItem(inherited Items[index]);
+  Result := TGLShaderItem( inherited Items[index]);
 end;
 
-
-procedure TGLShaderItems.SetItems(index: Integer; const val: TGLShaderItem);
+procedure TGLShaderItems.SetItems(index: Integer; const Val: TGLShaderItem);
 begin
-   inherited Items[index]:=val;
+  inherited Items[index] := Val;
 end;
 
 procedure TGLMaterialScripter.SeTGLShaderItems(const Value: TGLShaderItems);
 begin
-   FShaderItems.Assign(Value);
+  FShaderItems.Assign(Value);
 end;
 
 procedure TGLShaderItem.SetName(const Value: String);
@@ -323,128 +336,143 @@ end;
 procedure TGLMaterialScripter.CompileScript;
 begin
 
-   done := false;
-   NewMat := nil;
-   count := 0;
-   infini := 0;
-   tmpcoords := nil;
-   tmpcoords4 := nil;
-   tmpcolor := nil;
-   tmpstr := '';
+  done := false;
+  NewMat := nil;
+  Count := 0;
+  infini := 0;
+  tmpcoords := nil;
+  tmpcoords4 := nil;
+  tmpcolor := nil;
+  tmpstr := '';
 
-   repeat
+  repeat
 
-      inc(count);
+    inc(Count);
 
-      if pos('{',FScript.Strings[count]) > 0 then
-      begin
+    if pos('{', FScript.Strings[Count]) > 0 then
+    begin
 
-         if substrexists('material') then ZMaterial;
+      if SubstrExists('material') then
+        ZMaterial;
 
-      end;
-      checkerror;
+    end;
+    CheckError;
 
-   until checkrepeatdone;
+  until CheckRepeatDone;
 
 end;
 
-procedure TGLMaterialScripter.SetMaterialLibrary(
-  const Value: TGLMaterialLibrary);
+procedure TGLMaterialScripter.SetMaterialLibrary(const Value
+  : TGLMaterialLibrary);
 begin
-  if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
+  if FMaterialLibrary <> nil then
+    FMaterialLibrary.RemoveFreeNotification(Self);
   FMaterialLibrary := Value;
-  if FMaterialLibrary <> nil then FMaterialLibrary.FreeNotification(Self);
+  if FMaterialLibrary <> nil then
+    FMaterialLibrary.FreeNotification(Self);
 end;
 
 procedure TGLMaterialScripter.SetMemo(const Value: TMemo);
 begin
-  if FMemo <> nil then FMemo.RemoveFreeNotification(Self);
+  if FMemo <> nil then
+    FMemo.RemoveFreeNotification(Self);
   FMemo := Value;
-  if FMemo <> nil then FMemo.FreeNotification(Self);
+  if FMemo <> nil then
+    FMemo.FreeNotification(Self);
 end;
 
 procedure TGLMaterialScripter.SetScript(const Value: TStrings);
 begin
-  if assigned(value) then
-  FScript.Assign(Value);
+  if assigned(Value) then
+    FScript.Assign(Value);
 end;
 
 procedure TGLMaterialScripter.CheckError;
 begin
-   if count >= FScript.Count then done := true;
-   if done then raise exception.Create('User Error : No closing "}"');
-   inc(infini);
-   if infini > 1280000 then
-   begin
-      raise exception.Create('Internal Error : Infinate Loop');
-      done := true;
-      exit;
-   end;
+  if Count >= FScript.Count then
+    done := true;
+  if done then
+    raise exception.Create('User Error : No closing "}"');
+  inc(infini);
+  if infini > 1280000 then
+  begin
+    raise exception.Create('Internal Error : Infinate Loop');
+    done := true;
+    exit;
+  end;
 end;
 
-function TGLMaterialScripter.CheckRepeatDone: boolean;
+function TGLMaterialScripter.CheckRepeatDone: Boolean;
 begin
-   checkrepeatdone := false;
-   if pos('}',FScript.Strings[count]) > 0 then
-   begin
-      checkrepeatdone := true;
-      inc(count);
-   end;
+  CheckRepeatDone := false;
+  if pos('}', FScript.Strings[Count]) > 0 then
+  begin
+    CheckRepeatDone := true;
+    inc(Count);
+  end;
 
-   if done then checkrepeatdone := true;
+  if done then
+    CheckRepeatDone := true;
 end;
 
-function TGLMaterialScripter.ClassExists(arguement: string): boolean;
-var temp : string;
-    i : word;
+function TGLMaterialScripter.ClassExists(arguement: string): Boolean;
+var
+  temp: string;
+  i: word;
 begin
 
-   classexists := false;
-   if (pos(uppercase(arguement), uppercase(FScript.Strings[count])) > 0) and // check if there is an arguement
-      (pos('=', FScript.Strings[count]) > pos(uppercase(arguement), uppercase(FScript.Strings[count])))and // check if it is before '='
-      (pos('=', FScript.Strings[count]) > 0) then // check if there even is a '='
+  ClassExists := false;
+  if (pos(uppercase(arguement), uppercase(FScript.Strings[Count])) > 0) and
+  // check if there is an arguement
+    (pos('=', FScript.Strings[Count]) > pos(uppercase(arguement),
+    uppercase(FScript.Strings[Count]))) and // check if it is before '='
+    (pos('=', FScript.Strings[Count]) > 0) then // check if there even is a '='
+  begin
+
+    temp := FScript.Strings[Count];
+    for i := 0 to length(temp) do
+      if pos(' ', temp) = 1 then
+        delete(temp, 1, 1);
+
+    if pos(uppercase(arguement), uppercase(temp)) = 1 then
+      if (temp[length(arguement) + 1] = ' ') or
+        (temp[length(arguement) + 1] = '=') then
       begin
-
-         temp := FScript.Strings[count];
-         for i := 0 to length(temp) do
-            if pos(' ', temp) = 1 then
-            delete(temp,1,1);
-
-         if pos(uppercase(arguement),uppercase(temp)) = 1 then
-         if (temp[length(arguement) + 1] = ' ') or (temp[length(arguement) + 1] = '=') then
-         begin
-            classexists := true;
-            if assigned(FMemo) then Fmemo.Lines.Add('Stage is at : ' + arguement);
-         end;
+        ClassExists := true;
+        if assigned(FMemo) then
+          FMemo.Lines.Add('Stage is at : ' + arguement);
       end;
+  end;
 
 end;
-function TGLMaterialScripter.SubstrExists(substr: string): boolean;
+
+function TGLMaterialScripter.SubstrExists(substr: string): Boolean;
 begin
-   if pos(uppercase(substr),uppercase(FScript.Strings[count])) > 0 then result := true
-   else
-   result := false;
+  if pos(uppercase(substr), uppercase(FScript.Strings[Count])) > 0 then
+    Result := true
+  else
+    Result := false;
 end;
-
 
 constructor TGLMaterialScripter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FScript := TStringList.Create;
-  FShaderItems:=TGLShaderItems.Create(Self);
-  FMaterialLibraryItems:=TGLMaterialLibraryItems.Create(Self);
+  FShaderItems := TGLShaderItems.Create(Self);
+  FMaterialLibraryItems := TGLMaterialLibraryItems.Create(Self);
   FAppend := true;
   FOverwrite := false;
 end;
 
-function TGLMaterialScripter.DeleteSpaces(value: string): string;
-var i : byte;
+function TGLMaterialScripter.DeleteSpaces(Value: string): string;
+var
+  i: byte;
 begin
-   result := value;
+  Result := Value;
 
-   for i := 0 to length(result) do
-   if pos(' ',result) > 0 then
-   delete(result,pos(' ',result), 1);
+  for i := 0 to length(Result) do
+    if pos(' ', Result) > 0 then
+      delete(Result, pos(' ', Result), 1);
 end;
 
 destructor TGLMaterialScripter.Destroy;
@@ -456,765 +484,867 @@ begin
 end;
 
 procedure TGLMaterialScripter.ExtractColors;
-var val : string;
+var
+  Val: string;
 begin
-   val := Extractvalue;
-   if pos('(',val) > 0 then
-   begin
-      tmpcolor.Alpha := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
-      delete(val,1,pos(';',val));
-      tmpcolor.Red := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
-      delete(val,1,pos(';',val));
-      tmpcolor.Green := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
-      delete(val,1,pos(';',val));
-      tmpcolor.Blue := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
-   end;
+  Val := ExtractValue;
+  if pos('(', Val) > 0 then
+  begin
+    tmpcolor.Alpha := GLScene.Utils.StrToFloatDef(copy(Val, pos('(', Val) + 1,
+      pos(';', Val) - 2));
+    delete(Val, 1, pos(';', Val));
+    tmpcolor.Red := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(';', Val) - 1));
+    delete(Val, 1, pos(';', Val));
+    tmpcolor.Green := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(';', Val) - 1));
+    delete(Val, 1, pos(';', Val));
+    tmpcolor.Blue := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(')', Val) - 1));
+  end;
 end;
 
 procedure TGLMaterialScripter.ExtractCoords3;
-var val : string;
+var
+  Val: string;
 begin
-   val := Extractvalue;
-   if pos('(',val) > 0 then
-   begin
-      tmpcoords.X := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
-      delete(val,1,pos(';',val));
-      tmpcoords.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
-      delete(val,1,pos(';',val));
-      tmpcoords.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
-   end;
+  Val := ExtractValue;
+  if pos('(', Val) > 0 then
+  begin
+    tmpcoords.X := GLScene.Utils.StrToFloatDef(copy(Val, pos('(', Val) + 1,
+      pos(';', Val) - 2));
+    delete(Val, 1, pos(';', Val));
+    tmpcoords.Y := GLScene.Utils.StrToFloatDef(copy(Val, 1, pos(';', Val) - 1));
+    delete(Val, 1, pos(';', Val));
+    tmpcoords.Z := GLScene.Utils.StrToFloatDef(copy(Val, 1, pos(')', Val) - 1));
+  end;
 end;
 
 procedure TGLMaterialScripter.ExtractCoords4;
-var val : string;
+var
+  Val: string;
 begin
-   val := Extractvalue;
-   if pos('(',val) > 0 then
-   begin
-      tmpcoords4.W := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
-      delete(val,1,pos(';',val));
-      tmpcoords4.X := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
-      delete(val,1,pos(';',val));
-      tmpcoords4.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
-      delete(val,1,pos(';',val));
-      tmpcoords4.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
-   end;
+  Val := ExtractValue;
+  if pos('(', Val) > 0 then
+  begin
+    tmpcoords4.W := GLScene.Utils.StrToFloatDef(copy(Val, pos('(', Val) + 1,
+      pos(';', Val) - 2));
+    delete(Val, 1, pos(';', Val));
+    tmpcoords4.X := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(';', Val) - 1));
+    delete(Val, 1, pos(';', Val));
+    tmpcoords4.Y := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(';', Val) - 1));
+    delete(Val, 1, pos(';', Val));
+    tmpcoords4.Z := GLScene.Utils.StrToFloatDef
+      (copy(Val, 1, pos(')', Val) - 1));
+  end;
 end;
 
 function TGLMaterialScripter.ExtractValue: string;
 begin
-   extractvalue := copy(FScript.Strings[count], pos('=',FScript.Strings[count]) + 1, length(FScript.Strings[count]) - pos('=',FScript.Strings[count]));
+  ExtractValue := copy(FScript.Strings[Count], pos('=', FScript.Strings[Count])
+    + 1, length(FScript.Strings[Count]) - pos('=', FScript.Strings[Count]));
 end;
+
 procedure TGLMaterialScripter.XPersistantImage;
 begin
-   if classexists('file') then
-   begin
-      if (extractvalue <> '') and (fileexists(extractvalue)) then
-      begin
-         with NewMat.Material.Texture.Image as TGLPersistentImage do
-            LoadFromFile(extractvalue);
-         NewMat.Material.Texture.Disabled := false;
-         if assigned(FMemo) then FMemo.Lines.Add('File loaded : ' + extractvalue);
-      end;
-   end;
+  if ClassExists('file') then
+  begin
+    if (ExtractValue <> '') and (fileexists(ExtractValue)) then
+    begin
+      with NewMat.Material.Texture.Image as TGLPersistentImage do
+        LoadFromFile(ExtractValue);
+      NewMat.Material.Texture.Disabled := false;
+      if assigned(FMemo) then
+        FMemo.Lines.Add('File loaded : ' + ExtractValue);
+    end;
+  end;
 end;
+
 procedure TGLMaterialScripter.XBlankImage;
 begin
-   if classexists('file') then
-   begin
-      if (extractvalue <> '') and (fileexists(extractvalue)) then
-      begin
-         with NewMat.Material.Texture.Image as TGLBlankImage do // heres the difference
-            LoadFromFile(extractvalue);
-         NewMat.Material.Texture.Disabled := false;
-         if assigned(FMemo) then FMemo.Lines.Add('File loaded : ' + extractvalue);
-      end;
-   end;
+  if ClassExists('file') then
+  begin
+    if (ExtractValue <> '') and (fileexists(ExtractValue)) then
+    begin
+      with NewMat.Material.Texture.Image as TGLBlankImage do
+      // heres the difference
+        LoadFromFile(ExtractValue);
+      NewMat.Material.Texture.Disabled := false;
+      if assigned(FMemo) then
+        FMemo.Lines.Add('File loaded : ' + ExtractValue);
+    end;
+  end;
 end;
 
 procedure TGLMaterialScripter.XPictureFileName;
 begin
-   if classexists('picturefilename') then
-      with NewMat.Material.Texture.Image as TGLPicFileImage do
-         if fileexists(extractvalue) then
-         begin
-            picturefilename := extractvalue;
-            NewMat.Material.Texture.Disabled := false;
-         end;
+  if ClassExists('picturefilename') then
+    with NewMat.Material.Texture.Image as TGLPicFileImage do
+      if fileexists(ExtractValue) then
+      begin
+        picturefilename := ExtractValue;
+        NewMat.Material.Texture.Disabled := false;
+      end;
 end;
 
 procedure TGLMaterialScripter.XPictureNX;
 begin
-   if classexists('picturenx') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNX].LoadFromFile(extractvalue);
+  if ClassExists('picturenx') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtNX].LoadFromFile(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XPictureNY;
 begin
-   if classexists('pictureny') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNY].LoadFromFile(extractvalue);
+  if ClassExists('pictureny') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtNY].LoadFromFile(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XPictureNZ;
 begin
-   if classexists('picturenz') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNZ].LoadFromFile(extractvalue);
+  if ClassExists('picturenz') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtNZ].LoadFromFile(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XPicturePX;
 begin
-   if classexists('picturepx') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPX].LoadFromFile(extractvalue);
+  if ClassExists('picturepx') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtPX].LoadFromFile(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XPicturePY;
 begin
-   if classexists('picturepy') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPY].LoadFromFile(extractvalue);
+  if ClassExists('picturepy') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtPY].LoadFromFile(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XPicturePZ;
 begin
-   if classexists('picturepz') then
-      if fileexists(extractvalue) then
-         with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPZ].LoadFromFile(extractvalue);
+  if ClassExists('picturepz') then
+    if fileexists(ExtractValue) then
+      with NewMat.Material.Texture.Image as TGLCubeMapImage do
+        Picture[cmtPZ].LoadFromFile(ExtractValue);
 end;
 
-function TGLMaterialScripter.ValueExists(value: string): boolean;
+function TGLMaterialScripter.ValueExists(Value: string): Boolean;
 begin
-   if uppercase(tmpstr) = uppercase(value) then result := true
-   else
-   result := false;
+  if uppercase(tmpstr) = uppercase(Value) then
+    Result := true
+  else
+    Result := false;
 end;
 
 procedure TGLMaterialScripter.XMaterialLibrary;
-var i : word;
+var
+  i: word;
 begin
-   if classexists('materiallibrary') then
-   if MaterialLibraries.count > 0 then
+  if ClassExists('materiallibrary') then
+    if MaterialLibraries.Count > 0 then
       for i := 0 to MaterialLibraries.Count - 1 do
-         if assigned(MaterialLibraries.Items[i].MaterialLibrary) then
-            if uppercase(MaterialLibraries.Items[i].MaterialLibrary.Name) = uppercase(extractvalue) then
-            NewMat.Material.MaterialLibrary := MaterialLibraries.Items[i].MaterialLibrary;
+        if assigned(MaterialLibraries.Items[i].MaterialLibrary) then
+          if uppercase(MaterialLibraries.Items[i].MaterialLibrary.Name)
+            = uppercase(ExtractValue) then
+            NewMat.Material.MaterialLibrary := MaterialLibraries.Items[i]
+              .MaterialLibrary;
 end;
 
 procedure TGLMaterialScripter.XShader;
-var i : word;
+var
+  i: word;
 begin
-   if classexists('shader') then
-   if Shaders.count > 0 then
+  if ClassExists('shader') then
+    if Shaders.Count > 0 then
       for i := 0 to Shaders.Count - 1 do
-         if assigned(Shaders.Items[i].Shader) then
-            if uppercase(Shaders.Items[i].Shader.Name) = uppercase(extractvalue) then
+        if assigned(Shaders.Items[i].Shader) then
+          if uppercase(Shaders.Items[i].Shader.Name)
+            = uppercase(ExtractValue) then
             NewMat.Shader := Shaders.Items[i].Shader;
 end;
 
 procedure TGLMaterialScripter.ZMaterial;
-var i : byte;
-    exists : boolean;
+var
+  i: byte;
+  exists: Boolean;
 begin
 
-   if assigned(FMaterialLibrary) then
-   begin
-      NewMat := FMaterialLibrary.Materials.Add;
-      repeat
+  if assigned(FMaterialLibrary) then
+  begin
+    NewMat := FMaterialLibrary.Materials.Add;
+    repeat
 
-         inc(count);
-         XMaterial;
-         if pos('{',FScript.Strings[count]) > 0 then
-         for i := 0 to 2 do // need repair : something went wrong, and now we have to check 3 times over :/
-         begin
-            XTexture;
-            XBackProperties;
-            XFrontProperties;
-         end;
-         checkerror;
+      inc(Count);
+      XMaterial;
+      if pos('{', FScript.Strings[Count]) > 0 then
+        for i := 0 to 2 do
+        // need repair : something went wrong, and now we have to check 3 times over :/
+        begin
+          XTexture;
+          XBackProperties;
+          XFrontProperties;
+        end;
+      CheckError;
 
-      until checkrepeatdone;
+    until CheckRepeatDone;
 
-      // now we use append and overwrite settings to find out what is what
+    // now we use append and overwrite settings to find out what is what
 
-      tmpstr := NewMat.Name;
-      delete(tmpstr,1,3); // removes the "TAG" not to confuse the system
+    tmpstr := NewMat.Name;
+    delete(tmpstr, 1, 3); // removes the "TAG" not to confuse the system
 
-      exists := false;
-      if FMaterialLibrary.Materials.Count > 0 then
+    exists := false;
+    if FMaterialLibrary.Materials.Count > 0 then
       for i := 0 to FMaterialLibrary.Materials.Count - 1 do
-      if tmpstr = FMaterialLibrary.Materials.Items[i].Name then
-         exists := true;
+        if tmpstr = FMaterialLibrary.Materials.Items[i].Name then
+          exists := true;
 
-      if Exists then // does exist
+    if exists then // does exist
+    begin
+      if FOverwrite then
       begin
-         if FOverwrite then
-         begin
-            FMaterialLibrary.Materials.Delete(FMaterialLibrary.LibMaterialByName(tmpstr).Index);
-            NewMat.Name := tmpstr;
-         end
-         else
-         if FAppend then
-         begin
-            NewMat.Free;
-         end;
+        FMaterialLibrary.Materials.delete
+          (FMaterialLibrary.LibMaterialByName(tmpstr).Index);
+        NewMat.Name := tmpstr;
       end
-      else           // doesn't exist
+      else if FAppend then
       begin
-         NewMat.Name := tmpstr;
-         if not FAppend then
-         NewMat.Free;
+        NewMat.Free;
       end;
+    end
+    else // doesn't exist
+    begin
+      NewMat.Name := tmpstr;
+      if not FAppend then
+        NewMat.Free;
+    end;
 
-   end;
+  end;
 
 end;
 
-///////////////////////////
+/// ////////////////////////
 // extraction procedures //
-///////////////////////////
+/// ////////////////////////
 
 procedure TGLMaterialScripter.XBackAmbient;
 begin
-   if classexists('ambient') then
-   begin
-      tmpcolor := NewMat.Material.BackProperties.Ambient;
-      extractcolors;
-      NewMat.Material.BackProperties.Ambient := tmpcolor;
-   end;
+  if ClassExists('ambient') then
+  begin
+    tmpcolor := NewMat.Material.BackProperties.Ambient;
+    ExtractColors;
+    NewMat.Material.BackProperties.Ambient := tmpcolor;
+  end;
 end;
 
 procedure TGLMaterialScripter.XBackDiffuse;
 begin
-   if classexists('diffuse') then
-   begin
-      tmpcolor := NewMat.Material.BackProperties.Diffuse;
-      extractcolors;
-      NewMat.Material.BackProperties.Diffuse := tmpcolor;
-   end;
+  if ClassExists('diffuse') then
+  begin
+    tmpcolor := NewMat.Material.BackProperties.Diffuse;
+    ExtractColors;
+    NewMat.Material.BackProperties.Diffuse := tmpcolor;
+  end;
 
 end;
 
 procedure TGLMaterialScripter.XBackEmission;
 begin
-   if classexists('emission') then
-   begin
-      tmpcolor := NewMat.Material.BackProperties.Emission;
-      extractcolors;
-      NewMat.Material.BackProperties.Emission := tmpcolor;
-   end;
+  if ClassExists('emission') then
+  begin
+    tmpcolor := NewMat.Material.BackProperties.Emission;
+    ExtractColors;
+    NewMat.Material.BackProperties.Emission := tmpcolor;
+  end;
 end;
-
 
 procedure TGLMaterialScripter.XBackShininess;
 begin
-   if classexists('shininess') then
-   if extractvalue <> '' then
-      NewMat.Material.BackProperties.Shininess := strtoint(extractvalue);
+  if ClassExists('shininess') then
+    if ExtractValue <> '' then
+      NewMat.Material.BackProperties.Shininess := strtoint(ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XBackSpecular;
 begin
-   if classexists('specular') then
-   begin
-      tmpcolor := NewMat.Material.BackProperties.Specular;
-      extractcolors;
-      NewMat.Material.BackProperties.Specular := tmpcolor;
-   end;
+  if ClassExists('specular') then
+  begin
+    tmpcolor := NewMat.Material.BackProperties.Specular;
+    ExtractColors;
+    NewMat.Material.BackProperties.Specular := tmpcolor;
+  end;
 end;
 
 procedure TGLMaterialScripter.XBlendingMode;
 begin
-   if classexists('blendingmode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('bmOpaque') then Newmat.Material.BlendingMode := bmOpaque;
-      if valueexists('bmTransparency') then Newmat.Material.BlendingMode := bmTransparency;
-      if valueexists('bmAdditive') then Newmat.Material.BlendingMode := bmAdditive;
-      if valueexists('bmAlphaTest100') then Newmat.Material.BlendingMode := bmAlphaTest100;
-      if valueexists('bmAlphaTest50') then Newmat.Material.BlendingMode := bmAlphaTest50;
-   end;
+  if ClassExists('blendingmode') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('bmOpaque') then
+      NewMat.Material.BlendingMode := bmOpaque;
+    if ValueExists('bmTransparency') then
+      NewMat.Material.BlendingMode := bmTransparency;
+    if ValueExists('bmAdditive') then
+      NewMat.Material.BlendingMode := bmAdditive;
+    if ValueExists('bmAlphaTest100') then
+      NewMat.Material.BlendingMode := bmAlphaTest100;
+    if ValueExists('bmAlphaTest50') then
+      NewMat.Material.BlendingMode := bmAlphaTest50;
+  end;
 end;
 
 procedure TGLMaterialScripter.XPolygonMode;
 begin
-   if classexists('polygonmode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('pmFill') then Newmat.Material.PolygonMode := pmFill;
-      if valueexists('pmLines') then Newmat.Material.PolygonMode := pmLines;
-      if valueexists('pmPoints') then Newmat.Material.PolygonMode := pmPoints;
-   end;
+  if ClassExists('polygonmode') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('pmFill') then
+      NewMat.Material.PolygonMode := pmFill;
+    if ValueExists('pmLines') then
+      NewMat.Material.PolygonMode := pmLines;
+    if ValueExists('pmPoints') then
+      NewMat.Material.PolygonMode := pmPoints;
+  end;
 end;
 
 procedure TGLMaterialScripter.XCompression;
 begin
-   if classexists('compression') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tcDefault') then Newmat.Material.Texture.Compression := tcDefault;
-      if valueexists('tcHighQuality') then Newmat.Material.Texture.Compression := tcHighQuality;
-      if valueexists('tcHighSpeed') then Newmat.Material.Texture.Compression := tcHighSpeed;
-      if valueexists('tcNone') then Newmat.Material.Texture.Compression := tcNone;
-      if valueexists('tcStandard') then Newmat.Material.Texture.Compression := tcStandard;
-   end;
+  if ClassExists('compression') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tcDefault') then
+      NewMat.Material.Texture.Compression := tcDefault;
+    if ValueExists('tcHighQuality') then
+      NewMat.Material.Texture.Compression := tcHighQuality;
+    if ValueExists('tcHighSpeed') then
+      NewMat.Material.Texture.Compression := tcHighSpeed;
+    if ValueExists('tcNone') then
+      NewMat.Material.Texture.Compression := tcNone;
+    if ValueExists('tcStandard') then
+      NewMat.Material.Texture.Compression := tcStandard;
+  end;
 end;
 
 procedure TGLMaterialScripter.XEnvColor;
 begin
-   if classexists('envcolor') then
-   begin
-      tmpcolor := NewMat.Material.Texture.EnvColor;
-      extractcolors;
-      NewMat.Material.Texture.EnvColor := tmpcolor;
-   end;
+  if ClassExists('envcolor') then
+  begin
+    tmpcolor := NewMat.Material.Texture.EnvColor;
+    ExtractColors;
+    NewMat.Material.Texture.EnvColor := tmpcolor;
+  end;
 end;
 
 procedure TGLMaterialScripter.XFacingCulling;
 begin
-   if classexists('faceculling') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('fcBufferDefault') then Newmat.Material.FaceCulling := fcBufferDefault;
-      if valueexists('fcCull') then Newmat.Material.FaceCulling := fcCull;
-      if valueexists('fcNoCull') then Newmat.Material.FaceCulling := fcNoCull;
-   end;
+  if ClassExists('faceculling') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('fcBufferDefault') then
+      NewMat.Material.FaceCulling := fcBufferDefault;
+    if ValueExists('fcCull') then
+      NewMat.Material.FaceCulling := fcCull;
+    if ValueExists('fcNoCull') then
+      NewMat.Material.FaceCulling := fcNoCull;
+  end;
 end;
 
 procedure TGLMaterialScripter.XFilteringQuality;
 begin
-   if classexists('filteringquality') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tfIsotropic') then Newmat.Material.Texture.FilteringQuality := tfIsotropic;
-      if valueexists('tfAnisotropic') then Newmat.Material.Texture.FilteringQuality := tfAnisotropic;
-   end;
+  if ClassExists('filteringquality') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tfIsotropic') then
+      NewMat.Material.Texture.FilteringQuality := tfIsotropic;
+    if ValueExists('tfAnisotropic') then
+      NewMat.Material.Texture.FilteringQuality := tfAnisotropic;
+  end;
 end;
 
-
-procedure TGLMaterialScripter.XfrontAmbient;
+procedure TGLMaterialScripter.XFrontAmbient;
 begin
-   if classexists('ambient') then
-   begin
-      tmpcolor := NewMat.Material.frontProperties.Ambient;
-      extractcolors;
-      NewMat.Material.frontProperties.Ambient := tmpcolor;
-   end;
+  if ClassExists('ambient') then
+  begin
+    tmpcolor := NewMat.Material.frontProperties.Ambient;
+    ExtractColors;
+    NewMat.Material.frontProperties.Ambient := tmpcolor;
+  end;
 end;
 
-procedure TGLMaterialScripter.XfrontDiffuse;
+procedure TGLMaterialScripter.XFrontDiffuse;
 begin
-   if classexists('diffuse') then
-   begin
-      tmpcolor := NewMat.Material.frontProperties.Diffuse;
-      extractcolors;
-      NewMat.Material.frontProperties.Diffuse := tmpcolor;
-   end;
+  if ClassExists('diffuse') then
+  begin
+    tmpcolor := NewMat.Material.frontProperties.Diffuse;
+    ExtractColors;
+    NewMat.Material.frontProperties.Diffuse := tmpcolor;
+  end;
 
 end;
 
-procedure TGLMaterialScripter.XfrontEmission;
+procedure TGLMaterialScripter.XFrontEmission;
 begin
-   if classexists('emission') then
-   begin
-      tmpcolor := NewMat.Material.frontProperties.Emission;
-      extractcolors;
-      NewMat.Material.frontProperties.Emission := tmpcolor;
-   end;
+  if ClassExists('emission') then
+  begin
+    tmpcolor := NewMat.Material.frontProperties.Emission;
+    ExtractColors;
+    NewMat.Material.frontProperties.Emission := tmpcolor;
+  end;
 end;
 
-procedure TGLMaterialScripter.XfrontShininess;
+procedure TGLMaterialScripter.XFrontShininess;
 begin
-   if classexists('shininess') then
-   if extractvalue <> '' then
-      NewMat.Material.frontProperties.Shininess := strtoint(extractvalue);
+  if ClassExists('shininess') then
+    if ExtractValue <> '' then
+      NewMat.Material.frontProperties.Shininess := strtoint(ExtractValue);
 end;
 
-procedure TGLMaterialScripter.XfrontSpecular;
+procedure TGLMaterialScripter.XFrontSpecular;
 begin
-   if classexists('specular') then
-   begin
-      tmpcolor := NewMat.Material.frontProperties.Specular;
-      extractcolors;
-      NewMat.Material.frontProperties.Specular := tmpcolor;
-   end;
+  if ClassExists('specular') then
+  begin
+    tmpcolor := NewMat.Material.frontProperties.Specular;
+    ExtractColors;
+    NewMat.Material.frontProperties.Specular := tmpcolor;
+  end;
 end;
-
 
 procedure TGLMaterialScripter.XImageAlpha;
 begin
-   if classexists('imagealpha') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tiaDefault') then Newmat.Material.Texture.ImageAlpha := tiaDefault;
-      if valueexists('tiaInverseLuminance') then Newmat.Material.Texture.ImageAlpha := tiaInverseLuminance;
-      if valueexists('tiaInverseLuminanceSqrt') then Newmat.Material.Texture.ImageAlpha := tiaInverseLuminanceSqrt;
-      if valueexists('tiaLuminance') then Newmat.Material.Texture.ImageAlpha := tiaLuminance;
-      if valueexists('tiaLuminanceSqrt') then Newmat.Material.Texture.ImageAlpha := tiaLuminanceSqrt;
-      if valueexists('tiaOpaque') then Newmat.Material.Texture.ImageAlpha := tiaOpaque;
-      if valueexists('tiaSuperBlackTransparent') then Newmat.Material.Texture.ImageAlpha := tiaSuperBlackTransparent;
-      if valueexists('tiaTopLeftPointColorTransparent') then Newmat.Material.Texture.ImageAlpha := tiaTopLeftPointColorTransparent;
-      if valueexists('tiaAlphaFromIntensity') then Newmat.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
-   end;
+  if ClassExists('imagealpha') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tiaDefault') then
+      NewMat.Material.Texture.ImageAlpha := tiaDefault;
+    if ValueExists('tiaInverseLuminance') then
+      NewMat.Material.Texture.ImageAlpha := tiaInverseLuminance;
+    if ValueExists('tiaInverseLuminanceSqrt') then
+      NewMat.Material.Texture.ImageAlpha := tiaInverseLuminanceSqrt;
+    if ValueExists('tiaLuminance') then
+      NewMat.Material.Texture.ImageAlpha := tiaLuminance;
+    if ValueExists('tiaLuminanceSqrt') then
+      NewMat.Material.Texture.ImageAlpha := tiaLuminanceSqrt;
+    if ValueExists('tiaOpaque') then
+      NewMat.Material.Texture.ImageAlpha := tiaOpaque;
+    if ValueExists('tiaSuperBlackTransparent') then
+      NewMat.Material.Texture.ImageAlpha := tiaSuperBlackTransparent;
+    if ValueExists('tiaTopLeftPointColorTransparent') then
+      NewMat.Material.Texture.ImageAlpha := tiaTopLeftPointColorTransparent;
+    if ValueExists('tiaAlphaFromIntensity') then
+      NewMat.Material.Texture.ImageAlpha := tiaAlphaFromIntensity;
+  end;
 end;
 
 procedure TGLMaterialScripter.XImageBrightness;
 begin
-   if classexists('imagebrightness') then
-   if extractvalue <> '' then
-      NewMat.Material.Texture.ImageBrightness := GLUtils.StrToFloatDef(extractvalue);
+  if ClassExists('imagebrightness') then
+    if ExtractValue <> '' then
+      NewMat.Material.Texture.ImageBrightness :=
+        GLScene.Utils.StrToFloatDef(ExtractValue);
 end;
-
 
 procedure TGLMaterialScripter.XImageGamma;
 begin
-   if classexists('imagegamma') then
-   if extractvalue <> '' then
-      NewMat.Material.Texture.ImageGamma := GLUtils.StrToFloatDef(extractvalue);
+  if ClassExists('imagegamma') then
+    if ExtractValue <> '' then
+      NewMat.Material.Texture.ImageGamma := GLScene.Utils.StrToFloatDef
+        (ExtractValue);
 end;
 
 procedure TGLMaterialScripter.XLibMaterialName;
 begin
-   if classexists('libmaterialname') then NewMat.Material.LibMaterialName := extractvalue;
+  if ClassExists('libmaterialname') then
+    NewMat.Material.LibMaterialName := ExtractValue;
 end;
 
 procedure TGLMaterialScripter.XMagFilter;
 begin
-   if classexists('magfilter') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('maLinear') then Newmat.Material.Texture.MagFilter := maLinear;
-      if valueexists('maNearest') then Newmat.Material.Texture.MagFilter := maNearest;
-   end;
+  if ClassExists('magfilter') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('maLinear') then
+      NewMat.Material.Texture.MagFilter := maLinear;
+    if ValueExists('maNearest') then
+      NewMat.Material.Texture.MagFilter := maNearest;
+  end;
 end;
 
 procedure TGLMaterialScripter.XMappingMode;
 begin
-   if classexists('mappingmode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tmmUser') then Newmat.Material.Texture.MappingMode := tmmUser;
-      if valueexists('tmmCubeMapCamera') then Newmat.Material.Texture.MappingMode := tmmCubeMapCamera;
-      if valueexists('tmmCubeMapLight0') then Newmat.Material.Texture.MappingMode := tmmCubeMapLight0;
-      if valueexists('tmmCubeMapNormal') then Newmat.Material.Texture.MappingMode := tmmCubeMapNormal;
-      if valueexists('tmmCubeMapReflection') then Newmat.Material.Texture.MappingMode := tmmCubeMapReflection;
-      if valueexists('tmmEyeLinear') then Newmat.Material.Texture.MappingMode := tmmEyeLinear;
-      if valueexists('tmmObjectLinear') then Newmat.Material.Texture.MappingMode := tmmObjectLinear;
-      if valueexists('tmmSphere') then Newmat.Material.Texture.MappingMode := tmmSphere;
-   end;
+  if ClassExists('mappingmode') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tmmUser') then
+      NewMat.Material.Texture.MappingMode := tmmUser;
+    if ValueExists('tmmCubeMapCamera') then
+      NewMat.Material.Texture.MappingMode := tmmCubeMapCamera;
+    if ValueExists('tmmCubeMapLight0') then
+      NewMat.Material.Texture.MappingMode := tmmCubeMapLight0;
+    if ValueExists('tmmCubeMapNormal') then
+      NewMat.Material.Texture.MappingMode := tmmCubeMapNormal;
+    if ValueExists('tmmCubeMapReflection') then
+      NewMat.Material.Texture.MappingMode := tmmCubeMapReflection;
+    if ValueExists('tmmEyeLinear') then
+      NewMat.Material.Texture.MappingMode := tmmEyeLinear;
+    if ValueExists('tmmObjectLinear') then
+      NewMat.Material.Texture.MappingMode := tmmObjectLinear;
+    if ValueExists('tmmSphere') then
+      NewMat.Material.Texture.MappingMode := tmmSphere;
+  end;
 end;
 
 procedure TGLMaterialScripter.XMappingSCoordinates;
 begin
-   if classexists('mappingscoordinates') then
-   begin
-      tmpcoords4 := NewMat.Material.Texture.MappingSCoordinates;
-      extractcoords4;
-      NewMat.Material.Texture.MappingSCoordinates := tmpcoords4;
-   end;
+  if ClassExists('mappingscoordinates') then
+  begin
+    tmpcoords4 := NewMat.Material.Texture.MappingSCoordinates;
+    ExtractCoords4;
+    NewMat.Material.Texture.MappingSCoordinates := tmpcoords4;
+  end;
 end;
 
 procedure TGLMaterialScripter.XMappingTCoordinates;
 begin
-   if classexists('mappingtcoordinates') then
-   begin
-      tmpcoords4 := NewMat.Material.Texture.MappingTCoordinates;
-      extractcoords4;
-      NewMat.Material.Texture.MappingTCoordinates := tmpcoords4;
-   end;
+  if ClassExists('mappingtcoordinates') then
+  begin
+    tmpcoords4 := NewMat.Material.Texture.MappingTCoordinates;
+    ExtractCoords4;
+    NewMat.Material.Texture.MappingTCoordinates := tmpcoords4;
+  end;
 end;
 
-
 procedure TGLMaterialScripter.XMaterialOptions;
-var a,b : boolean;
+var
+  a, b: Boolean;
 begin
-   if classexists('materialoptions') then
-   begin
+  if ClassExists('materialoptions') then
+  begin
+    a := false;
+    b := false;
+    tmpstr := ExtractValue;
+    if uppercase(copy(tmpstr, pos('[', tmpstr) + 1, pos(',', tmpstr) - 2))
+      = uppercase('true') then
+      a := true
+    else if uppercase(copy(tmpstr, pos('[', tmpstr) + 1, pos(',', tmpstr) - 2))
+      = uppercase('false') then
       a := false;
+
+    delete(tmpstr, 1, pos(',', tmpstr));
+
+    if uppercase(copy(tmpstr, 1, pos(']', tmpstr) - 1)) = uppercase('true') then
+      b := true
+    else if uppercase(copy(tmpstr, 1, pos(']', tmpstr) - 1))
+      = uppercase('false') then
       b := false;
-      tmpstr := extractvalue;
-      if uppercase(copy(tmpstr, pos('[',tmpstr) + 1, pos(',',tmpstr) - 2)) = uppercase('true') then a := true
-      else
-      if uppercase(copy(tmpstr, pos('[',tmpstr) + 1, pos(',',tmpstr) - 2)) = uppercase('false') then a := false;
 
-      delete(tmpstr,1,pos(',',tmpstr));
+    if a then
+      NewMat.Material.MaterialOptions := NewMat.Material.MaterialOptions +
+        [moIgnoreFog];
+    if b then
+      NewMat.Material.MaterialOptions := NewMat.Material.MaterialOptions +
+        [moNoLighting];
 
-      if uppercase(copy(tmpstr, 1, pos(']',tmpstr) - 1)) = uppercase('true') then b := true
-      else
-      if uppercase(copy(tmpstr, 1, pos(']',tmpstr) - 1)) = uppercase('false') then b := false;
-
-      if a then NewMat.Material.MaterialOptions := NewMat.Material.MaterialOptions + [moIgnoreFog];
-      if b then NewMat.Material.MaterialOptions := NewMat.Material.MaterialOptions + [moNoLighting];
-
-   end;
+  end;
 end;
 
 procedure TGLMaterialScripter.XMinFilter;
 begin
-   if classexists('minfilter') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('miLinearMipmapLinear') then Newmat.Material.Texture.MinFilter := miLinearMipmapLinear;
-      if valueexists('miLinearMipmapNearest') then Newmat.Material.Texture.MinFilter := miLinearMipmapNearest;
-      if valueexists('miNearest') then Newmat.Material.Texture.MinFilter := miNearest;
-      if valueexists('miNearestMipmapLinear') then Newmat.Material.Texture.MinFilter := miNearestMipmapLinear;
-      if valueexists('miNearestMipmapNearest') then Newmat.Material.Texture.MinFilter := miNearestMipmapNearest;
-      if valueexists('miLinear') then Newmat.Material.Texture.MinFilter := miLinear;
-   end;
+  if ClassExists('minfilter') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('miLinearMipmapLinear') then
+      NewMat.Material.Texture.MinFilter := miLinearMipmapLinear;
+    if ValueExists('miLinearMipmapNearest') then
+      NewMat.Material.Texture.MinFilter := miLinearMipmapNearest;
+    if ValueExists('miNearest') then
+      NewMat.Material.Texture.MinFilter := miNearest;
+    if ValueExists('miNearestMipmapLinear') then
+      NewMat.Material.Texture.MinFilter := miNearestMipmapLinear;
+    if ValueExists('miNearestMipmapNearest') then
+      NewMat.Material.Texture.MinFilter := miNearestMipmapNearest;
+    if ValueExists('miLinear') then
+      NewMat.Material.Texture.MinFilter := miLinear;
+  end;
 end;
 
 procedure TGLMaterialScripter.XName;
 begin
-   if classexists('name') then NewMat.Name := 'TAG' + Extractvalue; // we gonna use for appending and such, quick fix style
+  if ClassExists('name') then
+    NewMat.Name := 'TAG' + ExtractValue;
+  // we gonna use for appending and such, quick fix style
 end;
 
 procedure TGLMaterialScripter.XNormalMapScale;
 begin
-   if classexists('normalmapscale') then
-   if extractvalue <> '' then
-      NewMat.Material.Texture.NormalMapScale := GLUtils.StrToFloatDef(extractvalue);
+  if ClassExists('normalmapscale') then
+    if ExtractValue <> '' then
+      NewMat.Material.Texture.NormalMapScale :=
+        GLScene.Utils.StrToFloatDef(ExtractValue);
 end;
-
 
 procedure TGLMaterialScripter.XTexture2Name;
 begin
-   if classexists('texture2name') then NewMat.Texture2Name := ExtractValue;
+  if ClassExists('texture2name') then
+    NewMat.Texture2Name := ExtractValue;
 end;
 
 procedure TGLMaterialScripter.XTextureFormat;
 begin
-   if classexists('textureformat') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tfDefault') then Newmat.Material.Texture.TextureFormat := tfDefault;
-      if valueexists('tfIntensity') then Newmat.Material.Texture.TextureFormat := tfIntensity;
-      if valueexists('tfLuminance') then Newmat.Material.Texture.TextureFormat := tfLuminance;
-      if valueexists('tfLuminanceAlpha') then Newmat.Material.Texture.TextureFormat := tfLuminanceAlpha;
-      if valueexists('tfNormalMap') then Newmat.Material.Texture.TextureFormat := tfNormalMap;
-      if valueexists('tfRGB') then Newmat.Material.Texture.TextureFormat := tfRGB;
-      if valueexists('tfRGB16') then Newmat.Material.Texture.TextureFormat := tfRGB16;
-      if valueexists('tfRGBA') then Newmat.Material.Texture.TextureFormat := tfRGBA;
-      if valueexists('tfRGBA16') then Newmat.Material.Texture.TextureFormat := tfRGBA16;
-      if valueexists('tfAlpha') then Newmat.Material.Texture.TextureFormat := tfAlpha;
-   end;
+  if ClassExists('textureformat') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tfDefault') then
+      NewMat.Material.Texture.TextureFormat := tfDefault;
+    if ValueExists('tfIntensity') then
+      NewMat.Material.Texture.TextureFormat := tfIntensity;
+    if ValueExists('tfLuminance') then
+      NewMat.Material.Texture.TextureFormat := tfLuminance;
+    if ValueExists('tfLuminanceAlpha') then
+      NewMat.Material.Texture.TextureFormat := tfLuminanceAlpha;
+    if ValueExists('tfNormalMap') then
+      NewMat.Material.Texture.TextureFormat := tfNormalMap;
+    if ValueExists('tfRGB') then
+      NewMat.Material.Texture.TextureFormat := tfRGB;
+    if ValueExists('tfRGB16') then
+      NewMat.Material.Texture.TextureFormat := tfRGB16;
+    if ValueExists('tfRGBA') then
+      NewMat.Material.Texture.TextureFormat := tfRGBA;
+    if ValueExists('tfRGBA16') then
+      NewMat.Material.Texture.TextureFormat := tfRGBA16;
+    if ValueExists('tfAlpha') then
+      NewMat.Material.Texture.TextureFormat := tfAlpha;
+  end;
 end;
 
 procedure TGLMaterialScripter.XTextureMode;
 begin
-   if classexists('texturemode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('tmDecal') then Newmat.Material.Texture.TextureMode := tmDecal;
-      if valueexists('tmModulate') then Newmat.Material.Texture.TextureMode := tmModulate;
-      if valueexists('tmReplace') then Newmat.Material.Texture.TextureMode := tmReplace;
-      if valueexists('tmBlend') then Newmat.Material.Texture.TextureMode := tmBlend;
-   end;
+  if ClassExists('texturemode') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('tmDecal') then
+      NewMat.Material.Texture.TextureMode := tmDecal;
+    if ValueExists('tmModulate') then
+      NewMat.Material.Texture.TextureMode := tmModulate;
+    if ValueExists('tmReplace') then
+      NewMat.Material.Texture.TextureMode := tmReplace;
+    if ValueExists('tmBlend') then
+      NewMat.Material.Texture.TextureMode := tmBlend;
+  end;
 end;
 
 procedure TGLMaterialScripter.XTextureOffset;
 begin
-   if classexists('textureoffset') then // i hate this, delphi doesn't allow var object reference for procs
-   begin
-      tmpcoords := Newmat.TextureOffset;
-      extractcoords3;
-      Newmat.TextureOffset := tmpcoords;
-   end;
+  if ClassExists('textureoffset') then
+  // i hate this, delphi doesn't allow var object reference for procs
+  begin
+    tmpcoords := NewMat.TextureOffset;
+    ExtractCoords3;
+    NewMat.TextureOffset := tmpcoords;
+  end;
 end;
 
 procedure TGLMaterialScripter.XTextureScale;
 begin
-   if classexists('texturescale') then
-   begin
-      tmpcoords := Newmat.TextureScale;
-      extractcoords3;
-      NewMat.TextureScale := tmpcoords;
-   end;
+  if ClassExists('texturescale') then
+  begin
+    tmpcoords := NewMat.TextureScale;
+    ExtractCoords3;
+    NewMat.TextureScale := tmpcoords;
+  end;
 end;
 
 procedure TGLMaterialScripter.XTextureWrap;
 begin
-   if classexists('texturewrap') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('twBoth') then Newmat.Material.Texture.TextureWrap := twBoth;
-      if valueexists('twHorizontal') then Newmat.Material.Texture.TextureWrap := twHorizontal;
-      if valueexists('twNone') then Newmat.Material.Texture.TextureWrap := twNone;
-      if valueexists('twVertical') then Newmat.Material.Texture.TextureWrap := twVertical;
-   end;
+  if ClassExists('texturewrap') then
+  begin
+    tmpstr := ExtractValue;
+    if ValueExists('twBoth') then
+      NewMat.Material.Texture.TextureWrap := twBoth;
+    if ValueExists('twHorizontal') then
+      NewMat.Material.Texture.TextureWrap := twHorizontal;
+    if ValueExists('twNone') then
+      NewMat.Material.Texture.TextureWrap := twNone;
+    if ValueExists('twVertical') then
+      NewMat.Material.Texture.TextureWrap := twVertical;
+  end;
 end;
 
-///////////////////////////////////////
+/// ////////////////////////////////////
 // sub routines : substr{arguements} //
-///////////////////////////////////////
+/// ////////////////////////////////////
 
 procedure TGLMaterialScripter.XTexture;
 begin
-   if substrexists('texture') then
-   begin
-      if assigned(FMemo) then FMemo.Lines.Add('texture');
-      repeat
+  if SubstrExists('texture') then
+  begin
+    if assigned(FMemo) then
+      FMemo.Lines.Add('texture');
+    repeat
 
-         inc(count);
-         XCompression;
-         XEnvColor;
-         XFilteringQuality;
-         XImageAlpha;
-         XImageBrightness;
-         XImageClass;
-         XImageGamma;
-         XMagFilter;
-         XMappingMode;
-         XMappingSCoordinates;
-         XMappingTCoordinates;
-         XMinFilter;
-         XNormalMapScale;
-         XTextureFormat;
-         XTextureMode;
-         XTextureWrap;
+      inc(Count);
+      XCompression;
+      XEnvColor;
+      XFilteringQuality;
+      XImageAlpha;
+      XImageBrightness;
+      XImageClass;
+      XImageGamma;
+      XMagFilter;
+      XMappingMode;
+      XMappingSCoordinates;
+      XMappingTCoordinates;
+      XMinFilter;
+      XNormalMapScale;
+      XTextureFormat;
+      XTextureMode;
+      XTextureWrap;
 
-         checkerror;
-      until checkrepeatdone;
-   end;
+      CheckError;
+    until CheckRepeatDone;
+  end;
 end;
 
 procedure TGLMaterialScripter.XMaterial;
 begin
-   XName;
-   XShader;
-   XTexture2Name;
-   XTextureOffset;
-   XTextureScale;
-   XMaterialOptions;
-   XLibMaterialName;
-   XBlendingMode;
-   XPolygonMode;
-   XFacingCulling;
-   XMaterialLibrary;
+  XName;
+  XShader;
+  XTexture2Name;
+  XTextureOffset;
+  XTextureScale;
+  XMaterialOptions;
+  XLibMaterialName;
+  XBlendingMode;
+  XPolygonMode;
+  XFacingCulling;
+  XMaterialLibrary;
 end;
 
-
-procedure TGLMaterialScripter.XfrontProperties;
+procedure TGLMaterialScripter.XFrontProperties;
 begin
 
-   if substrexists('frontProperties') then
-   begin
-      if assigned(FMemo) then FMemo.Lines.Add('frontproperties');
+  if SubstrExists('frontProperties') then
+  begin
+    if assigned(FMemo) then
+      FMemo.Lines.Add('frontproperties');
 
-      repeat
+    repeat
 
-         inc(count);
+      inc(Count);
 
-         XfrontAmbient;
-         XfrontDiffuse;
-         XfrontEmission;
-         XfrontShininess;
-         XfrontSpecular;
+      XFrontAmbient;
+      XFrontDiffuse;
+      XFrontEmission;
+      XFrontShininess;
+      XFrontSpecular;
 
-         checkerror;
+      CheckError;
 
-      until checkrepeatdone;
-   end;
+    until CheckRepeatDone;
+  end;
 end;
 
-procedure TGLMaterialScripter.XImageClass; // reckon this will be most difficult to get right
+procedure TGLMaterialScripter.XImageClass;
+// reckon this will be most difficult to get right
 begin
-   if classexists('imageclassname') then
-   begin
+  if ClassExists('imageclassname') then
+  begin
 
-      tmpstr := extractvalue;
-      tmpstr := deletespaces(tmpstr);
+    tmpstr := ExtractValue;
+    tmpstr := DeleteSpaces(tmpstr);
 
-      if valueexists('persistentimage{') then // loadfromfile
+    if ValueExists('persistentimage{') then // loadfromfile
       repeat
-         inc(count);
-         Newmat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
-         XPersistantImage;
-         checkerror;
-      until checkrepeatdone;
+        inc(Count);
+        NewMat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
+        XPersistantImage;
+        CheckError;
+      until CheckRepeatDone;
 
-      if valueexists('blankimage{') then // loadfromfile
+    if ValueExists('blankimage{') then // loadfromfile
       repeat
-         inc(count);
-         Newmat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;
-         XBlankImage;
-         checkerror;
-      until checkrepeatdone;
+        inc(Count);
+        NewMat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;
+        XBlankImage;
+        CheckError;
+      until CheckRepeatDone;
 
-      if valueexists('picfileimage{') then //picturefilename
+    if ValueExists('picfileimage{') then // picturefilename
       repeat
-         inc(count);
-         Newmat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
-         XPictureFilename;
-         checkerror;
-      until checkrepeatdone;
+        inc(Count);
+        NewMat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
+        XPictureFileName;
+        CheckError;
+      until CheckRepeatDone;
 
-      if valueexists('cubemapimage{') then  // px, nx, py, ny, pz, nz
+    if ValueExists('cubemapimage{') then // px, nx, py, ny, pz, nz
       repeat
-         inc(count);
-         Newmat.Material.Texture.ImageClassName := TGLCubeMapImage.ClassName;
-         XPicturePX;
-         XPictureNX;
-         XPicturePY;
-         XPictureNY;
-         XPicturePZ;
-         XPictureNZ;
-         NewMat.Material.Texture.Disabled := false;
-         checkerror;
-      until checkrepeatdone;
+        inc(Count);
+        NewMat.Material.Texture.ImageClassName := TGLCubeMapImage.ClassName;
+        XPicturePX;
+        XPictureNX;
+        XPicturePY;
+        XPictureNY;
+        XPicturePZ;
+        XPictureNZ;
+        NewMat.Material.Texture.Disabled := false;
+        CheckError;
+      until CheckRepeatDone;
 
-      // procedural noise not supported by GLTexture yet
-   end;
+    // procedural noise not supported by GLTexture yet
+  end;
 end;
 
 procedure TGLMaterialScripter.XBackProperties;
 begin
 
-   if substrexists('BackProperties') then
-   begin
-      if assigned(FMemo) then FMemo.Lines.Add('backproperties');
+  if SubstrExists('BackProperties') then
+  begin
+    if assigned(FMemo) then
+      FMemo.Lines.Add('backproperties');
 
-      repeat
+    repeat
 
-         inc(count);
+      inc(Count);
 
-         XBackAmbient;
-         XBackDiffuse;
-         XBackEmission;
-         XBackShininess;
-         XBackSpecular;
+      XBackAmbient;
+      XBackDiffuse;
+      XBackEmission;
+      XBackShininess;
+      XBackSpecular;
 
-         checkerror;
+      CheckError;
 
-      until checkrepeatdone;
-   end;
+    until CheckRepeatDone;
+  end;
 end;
-
 
 { TGLMaterialLibraryItems }
 
 constructor TGLMaterialLibraryItems.Create(AOwner: TPersistent);
 begin
-   inherited Create(AOwner, TGLMaterialLibraryItem);
+  inherited Create(AOwner, TGLMaterialLibraryItem);
 end;
 
-function TGLMaterialLibraryItems.GetItems(index: Integer): TGLMaterialLibraryItem;
+function TGLMaterialLibraryItems.GetItems(index: Integer)
+  : TGLMaterialLibraryItem;
 begin
-   Result:=TGLMaterialLibraryItem(inherited Items[index]);
+  Result := TGLMaterialLibraryItem( inherited Items[index]);
 
 end;
 
 procedure TGLMaterialLibraryItems.SetItems(index: Integer;
-  const val: TGLMaterialLibraryItem);
+  const Val: TGLMaterialLibraryItem);
 begin
-   inherited Items[index]:=val;
+  inherited Items[index] := Val;
 end;
 
 { TGLMaterialLibraryItem }
@@ -1223,15 +1353,15 @@ procedure TGLMaterialLibraryItem.Assign(Source: TPersistent);
 begin
   if Source is TGLMaterialLibraryItem then
   begin
-     FMaterialLibrary := TGLMaterialLibraryItem(Source).FMaterialLibrary;
+    FMaterialLibrary := TGLMaterialLibraryItem(Source).FMaterialLibrary;
   end;
   inherited Destroy;
 end;
 
 constructor TGLMaterialLibraryItem.Create(Collection: TCollection);
 begin
-   inherited Create(Collection);
-   FName := 'MaterialLibrary';
+  inherited Create(Collection);
+  FName := 'MaterialLibrary';
 end;
 
 destructor TGLMaterialLibraryItem.Destroy;
@@ -1241,39 +1371,39 @@ end;
 
 function TGLMaterialLibraryItem.GetDisplayName: String;
 begin
-   if FName = '' then
-   Result:='MaterialLibrary'
-   else
-   Result := FName;
+  if FName = '' then
+    Result := 'MaterialLibrary'
+  else
+    Result := FName;
 end;
 
-procedure TGLMaterialLibraryItem.SetMaterialLibrary(
-  const Value: TGLMaterialLibrary);
+procedure TGLMaterialLibraryItem.SetMaterialLibrary
+  (const Value: TGLMaterialLibrary);
 begin
   if assigned(Value) then
   begin
-     FMaterialLibrary := Value;
-     FName := FMaterialLibrary.Name;
+    FMaterialLibrary := Value;
+    FName := FMaterialLibrary.Name;
   end;
 end;
 
 procedure TGLMaterialLibraryItem.SetName(const Value: String);
 begin
-   FName := Value;
+  FName := Value;
 end;
 
-procedure TGLMaterialScripter.SeTGLMaterialLibraryItems(
-  const Value: TGLMaterialLibraryItems);
+procedure TGLMaterialScripter.SeTGLMaterialLibraryItems
+  (const Value: TGLMaterialLibraryItems);
 begin
-   FMaterialLibraryItems.Assign(Value);
+  FMaterialLibraryItems.Assign(Value);
 end;
 
-procedure TGLMaterialScripter.SetAppend(const Value: boolean);
+procedure TGLMaterialScripter.SetAppend(const Value: Boolean);
 begin
   FAppend := Value;
 end;
 
-procedure TGLMaterialScripter.SetOverwrite(const Value: boolean);
+procedure TGLMaterialScripter.SetOverwrite(const Value: Boolean);
 begin
   FOverwrite := Value;
 end;

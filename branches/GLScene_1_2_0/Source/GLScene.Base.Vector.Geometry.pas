@@ -1,4 +1,4 @@
-// This unit is part of the GLScene Project, http://glscene.org
+﻿// This unit is part of the GLScene Project, http://glscene.org
 //
 {: VectorGeometry<p>
 
@@ -3795,7 +3795,7 @@ end;
 //
 function InterpolateTan(const Start, Stop, Delta: Single): Single;
 begin
-  Result := (Stop - Start) * VectorGeometry.Tan(Delta * Pi / 4) + Start;
+  Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Tan(Delta * Pi / 4) + Start;
 end;
 
 // InterpolatePower
@@ -3803,9 +3803,9 @@ end;
 function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
 begin
   if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
-    Result := (Stop - Start) * VectorGeometry.Power(Delta, Round(DistortionDegree)) + Start
+    Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Power(Delta, Round(DistortionDegree)) + Start
   else
-    Result := (Stop - Start) * VectorGeometry.Power(Delta, DistortionDegree) + Start;
+    Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Power(Delta, DistortionDegree) + Start;
 end;
 
 // MatrixLerp
@@ -6248,7 +6248,7 @@ begin
   end;
 
   // now, get the rotations out, as described in the gem
-  Tran[ttRotateY]:=VectorGeometry.ArcSin(-row0[Z]);
+  Tran[ttRotateY]:=GLScene.Base.Vector.Geometry.ArcSin(-row0[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
     Tran[ttRotateX]:=ArcTan2(row1[Z], row2[Z]);
     Tran[ttRotateZ]:=ArcTan2(row0[Y], row0[X]);
@@ -9237,7 +9237,7 @@ begin
    SetVector(Result, sqrt((M[X, X]-cost) / cost1),
                      sqrt((M[Y, Y]-cost) / cost1),
                      sqrt((M[Z, Z]-cost) / cost1),
-                     VectorGeometry.arccos(cost));
+                     GLScene.Base.Vector.Geometry.arccos(cost));
 
    sint:=2 * Sqrt(1 - cost * cost); // This is actually 2 Sin(t)
 
@@ -9285,7 +9285,7 @@ begin
       beta:=1 - t
    else begin
       // normal case
-      theta:=VectorGeometry.arccos(cost);
+      theta:=GLScene.Base.Vector.Geometry.arccos(cost);
       phi:=theta + Spin * Pi;
       sint:=sin(theta);
       beta:=sin(theta - t * phi) / sint;
@@ -9330,7 +9330,7 @@ begin
    end;
    // calculate coefficients
    if ((1.0-cosom)>EPSILON2) then begin // standard case (slerp)
-      omega:=VectorGeometry.ArcCos(cosom);
+      omega:=GLScene.Base.Vector.Geometry.ArcCos(cosom);
       sinom:=1/Sin(omega);
       scale0:=Sin((1.0-t)*omega)*sinom;
       scale1:=Sin(t*omega)*sinom;
