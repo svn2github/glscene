@@ -9,6 +9,7 @@
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
    <b>History : </b><font size=-1><ul>
+      <li>16/10/11 - Yar - Fixes for depth-stencil texture
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>16/05/10 - Yar - Added multisampling support (thanks C4)
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -406,7 +407,10 @@ begin
       TGLBlankImage(FDepthTexture.Image).Width := Width;
       TGLBlankImage(FDepthTexture.Image).Height := Height;
     end;
-    TGLBlankImage(FDepthTexture.Image).ColorFormat := GL_DEPTH_COMPONENT;
+    if FDepthTexture.TextureFormatEx = tfDEPTH24_STENCIL8 then
+      TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8)
+    else
+      TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE);
     // Depth texture mipmaping
     if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
       FTextureMipmap := FTextureMipmap or (1 shl MaxColorAttachments);
@@ -418,6 +422,14 @@ begin
     FDepthTexture.Handle,
     FLevel,
     FLayer);
+
+  if FDepthTexture.TextureFormatEx = tfDEPTH24_STENCIL8 then
+    AttachTexture(
+      GL_STENCIL_ATTACHMENT,
+      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      FDepthTexture.Handle,
+      FLevel,
+      FLayer);
 end;
 
 procedure TGLFrameBuffer.DetachDepthTexture;
@@ -434,13 +446,42 @@ begin
 end;
 
 procedure TGLFrameBuffer.AttachStencilBuffer(StencilBuffer: TGLStencilRBO);
+
+  procedure AttachStencilRB;
+  begin
+    // forces initialization
+    StencilBuffer.Bind;
+    StencilBuffer.Unbind;
+    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+      GL_RENDERBUFFER_EXT, StencilBuffer.Handle);
+  end;
+
+var
+  sp: TGLStencilPrecision;
 begin
   Bind;
-  // forces initialization
-  StencilBuffer.Bind;
-  StencilBuffer.Unbind;
-  GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
-    GL_RENDERBUFFER, StencilBuffer.Handle);
+  AttachStencilRB;
+
+  // if default format didn't work, try something else
+  // crude, but might work
+  if (Status = fsUnsupported)
+    and (StencilBuffer.StencilPrecision = spDefault) then
+  begin
+    // try the other formats
+    // best quality first
+    for sp := high(sp) downto low(sp) do
+    begin
+      if sp = spDefault then
+        Continue;
+
+      StencilBuffer.StencilPrecision := sp;
+
+      AttachStencilRB;
+
+      if not (Status = fsUnsupported) then
+        Break;
+    end;
+  end;
   Status;
   Unbind;
 end;
