@@ -413,7 +413,7 @@ begin
       TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE);
     // Depth texture mipmaping
     if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
-      FTextureMipmap := FTextureMipmap or (1 shl MaxColorAttachments);
+      FTextureMipmap := FTextureMipmap or Cardinal(1 shl MaxColorAttachments);
   end;
 
   AttachTexture(
