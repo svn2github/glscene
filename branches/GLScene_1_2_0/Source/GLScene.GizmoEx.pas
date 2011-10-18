@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLGizmoEx<p>
@@ -70,8 +70,8 @@ uses
   // Standard
   {$IFDEF MSWINDOWS}Windows,{$ENDIF} Classes, SysUtils,
 
-  // GLScene.Core
-  OpenGL1x, GLScene.Core, GLScene.Base.Color, GLScene.Objects, GLScene.Base.Vector.Geometry, GLScene.Material, GLScene.Base.Strings,
+  // GLScene
+  GLScene.Core, GLScene.Base.Color, GLScene.Objects, GLScene.Base.Vector.Geometry, GLScene.Material, GLScene.Base.Strings,
   GLScene.ObjectsEx, GLScene.BitmapFont, GLScene.Viewer, GLScene.Vector.FileObjects, GLScene.Platform,
   GLScene.Base.Coordinates, GLScene.Base.Context.Info, GLScene.Base.GeometryBB, GLScene.Base.Vector.Types, GLScene.Canvas,
   GLScene.Base.PersistentClasses, GLScene.Screen, GLScene.Base.GLStateMachine, GLScene.MaterialEx;
@@ -566,6 +566,7 @@ end;
 
 //Ю鲪 র沥殨 ���峠౿���謠౨欠㲥 塪Რ泱 ⴤ沠false
 function IsLinetoLine(p11, p12, p21, p22: TPoint; var p: Tpoint): Boolean;  // 믮婭᳻ 㳮冷 ﳰ横͊var
+var
   Z, ca, cb, ua, ub: Single;
 begin
   //鿠믭汲鱮㡭ࡱ ᪲͊  //http://doc-for-prog.narod.ru/topics/math/crossing.html
@@ -606,7 +607,7 @@ begin
     Result := False;
 end;
 
-//鿠র沥殨 ౿��� 衮뱳箮荊function IsLinetoCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
+function IsLinetoCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
 var
   d, K, b: Single;
 begin
@@ -2500,7 +2501,7 @@ begin
   //沫衡妲 ᳠ 뮮ૠ ���衭塡妲 殤汨 롭㠍
   //衰Ჱ-饠ﲠᬠ ᳨ 뮮૨ ��� ⴤ沠⯫報0荊  //ᱲ Ჷ泮⡬沲㦭⯰͊
   if FMoving and not FShowMultiSelecting and
-    //Ჲ-饠���峠壳���︪᭨  ﳱ沠ᨳ ᱲ덊    (Dist(point(X, Y), flastcursorPos) > 10) then
+    (Dist(point(X, Y), flastcursorPos) > 10) then
   begin
     FShowMultiSelecting := True;
     if fSelectionRegion = gsrFence then
@@ -2513,7 +2514,7 @@ begin
   if FShowMultiSelecting then
   begin
     fcursorPos := point(X, Y);
-    //౨ র步殨衬衪᧤堲0 﨤ᦲ 졩퍊    if (fSelectionRegion = gsrLasso) and
+    if (fSelectionRegion = gsrLasso) and
       //Ჲ ���峠壳���︪᭨
       // 㼣퀤欮 롪 ⠳DStudioMaxe
       (Dist(point(X, Y), flastcursorPos) > 20) then

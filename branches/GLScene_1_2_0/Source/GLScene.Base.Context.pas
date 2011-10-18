@@ -85,16 +85,27 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
+  {$IFDEF MSWINDOWS}
   Windows,
-{$ENDIF}
+  {$ENDIF}
+  // System
   Classes,
-  Forms,
   SysUtils,
-{$IFDEF FPC}
+
+  // VCL
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Consts,
+  VCL.Forms,
+  {$ELSE}
+  Forms,
+  {$IFDEF FPC}
   LCLVersion,
   LCLType,
-{$ENDIF}
+  {$ELSE}
+  Consts,
+  {$ENDIF}
+  {$ENDIF}
+
   SyncObjs,
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLScene.Base.Generics,
@@ -123,9 +134,12 @@ type
 
   // TGLRCOptions
   //
-  TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug);
+  TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
   TGLRCOptions = set of TGLRCOption;
 
+  // TGLContextLayer
+  //
+  TGLContextLayer = (clUnderlay2, clUnderlay1, clMainPlane, clOverlay1, clOverlay2);
 
   TFinishTaskEvent = class(TEvent)
   public
@@ -205,6 +219,7 @@ type
     FGLStates: TGLStateCache;
     FTransformation: TGLTransformation;
     FAcceleration: TGLContextAcceleration;
+    FLayer: TGLContextLayer;
     FPassSwap: Boolean;
 {$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
@@ -227,6 +242,7 @@ type
     procedure SetOptions(const aOptions: TGLRCOptions);
     procedure SetAntiAliasing(const val: TGLAntiAliasing);
     procedure SetAcceleration(const val: TGLContextAcceleration);
+    procedure SetLayer(const Value: TGLContextLayer);
     function GetActive: Boolean;
     procedure SetActive(const aActive: Boolean);
     procedure PropagateSharedContext;
@@ -271,6 +287,8 @@ type
        Ignored if not hardware supported, currently based on ARB_multisample. }
     property AntiAliasing: TGLAntiAliasing read FAntiAliasing write
       SetAntiAliasing;
+    {: Specifies the layer plane that the rendering context is bound to. }
+    property Layer: TGLContextLayer read FLayer write SetLayer;
     {: Rendering context options. }
     property Options: TGLRCOptions read FOptions write SetOptions;
     {: Allows reading and defining the activity for the context.<p>
@@ -499,7 +517,7 @@ type
     property Target: TGLTextureTarget read FTarget write SetTarget;
   end;
 
-  // TGLTextureHandle
+  // TGLSamplerHandle
   //
   {: Manages a handle to a sampler. }
   TGLSamplerHandle = class(TGLContextHandle)
@@ -1322,7 +1340,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls,
+{$ELSE}
   Controls,
+{$ENDIF}
   GLScene.Base.Classes,
   GLScene.Base.Strings;
 
@@ -1442,6 +1464,7 @@ begin
   FAccumBits := 0;
   FAuxBuffers := 0;
   FOptions := [];
+  FLayer := clMainPlane;
 {$IFNDEF GLS_MULTITHREAD}
   FSharedContexts := TList.Create;
 {$ELSE}
@@ -1573,6 +1596,18 @@ begin
   else
     FAcceleration := val;
 end;
+
+// SetLayer
+//
+
+procedure TGLContext.SetLayer(const Value: TGLContextLayer);
+begin
+  if Active then
+    raise EGLContext.Create(cCannotAlterAnActiveContext)
+  else
+    FLayer := Value;
+end;
+
 
 // GetActive
 //
@@ -2039,7 +2074,8 @@ begin
   for i := 0 to FHandles.Count-1 do
     Dispose(RCItem(i));
   FHandles.Free;
-  GLContextManager.FHandles.Remove(Self);
+  if Assigned(GLContextManager) then
+    GLContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
 
