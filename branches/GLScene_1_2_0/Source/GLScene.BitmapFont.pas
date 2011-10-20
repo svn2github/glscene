@@ -6,6 +6,8 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
+      <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -58,8 +60,15 @@ unit GLScene.BitmapFont;
 interface
 
 uses
+  // System
   Classes,
+  // VCL
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+{$ELSE}
   Graphics,
+{$ENDIF}
+  // GLScene
   GLScene.Core,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.Context,
@@ -92,12 +101,16 @@ type
        A range allows mapping ASCII characters to character tiles in a font
        bitmap, tiles are enumerated line then column (raster). }
   TBitmapFontRange = class(TCollectionItem)
+  private
+    { Private Declarations }
+    function GetStartASCII: WideString;
+    function GetStopASCII: WideString;
   protected
     { Protected Declarations }
     FStartASCII, FStopASCII: WideChar;
     FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
-    procedure SetStartASCII(const val: widechar);
-    procedure SetStopASCII(const val: widechar);
+    procedure SetStartASCII(const val: WideString);
+    procedure SetStopASCII(const val: WideString);
     procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
 
@@ -110,8 +123,8 @@ type
     procedure NotifyChange;
   published
     { Published Declarations }
-    property StartASCII: widechar read FStartASCII write SetStartASCII;
-    property StopASCII: widechar read FStopASCII write SetStopASCII;
+    property StartASCII: WideString read GetStartASCII write SetStartASCII;
+    property StopASCII: WideString read GetStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
     property StopGlyphIdx: Integer read FStopGlyphIdx;
     property CharCount: integer read FCharCount;
@@ -138,8 +151,8 @@ type
     destructor Destroy; override;
 
     function Add: TBitmapFontRange; overload;
-    function Add(startASCII, stopASCII: widechar): TBitmapFontRange; overload;
-    function Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
+    function Add(const startASCII, stopASCII: WideChar): TBitmapFontRange; overload;
+    function Add(const startASCII, stopASCII: AnsiChar): TBitmapFontRange; overload;
     function FindItemID(ID: Integer): TBitmapFontRange;
     property Items[index: Integer]: TBitmapFontRange read GetItems write SetItems; default;
 
@@ -471,8 +484,9 @@ begin
     FStopASCII := TBitmapFontRange(Source).FStopASCII;
     FStartGlyphIdx := TBitmapFontRange(Source).FStartGlyphIdx;
     NotifyChange;
-  end;
-  inherited;
+  end
+  else
+    inherited;
 end;
 
 // NotifyChange
@@ -492,17 +506,33 @@ end;
 function TBitmapFontRange.GetDisplayName: string;
 begin
   Result := Format('ASCII [#%d, #%d] -> Glyphs [%d, %d]',
-                  [Integer(StartASCII), Integer(StopASCII), StartGlyphIdx, StopGlyphIdx]);
+                  [Integer(FStartASCII), Integer(FStopASCII), StartGlyphIdx, StopGlyphIdx]);
 end;
 
-// SetStartASCII
+// GetStartASCII
 //
 
-procedure TBitmapFontRange.SetStartASCII(const val: widechar);
+function TBitmapFontRange.GetStartASCII: WideString;
 begin
-  if val <> FStartASCII then
+  Result := FStartASCII;
+end;
+
+// GetStopASCII
+//
+
+function TBitmapFontRange.GetStopASCII: WideString;
+begin
+  Result := FStopASCII;
+end;
+
+// SetStopASCII
+//
+
+procedure TBitmapFontRange.SetStartASCII(const val: WideString);
+begin
+  if (Length(val)>0) and (val[1] <> FStartASCII) then
   begin
-    FStartASCII := val;
+    FStartASCII := val[1];
     if FStartASCII > FStopASCII then
       FStopASCII := FStartASCII;
     NotifyChange;
@@ -512,11 +542,11 @@ end;
 // SetStopASCII
 //
 
-procedure TBitmapFontRange.SetStopASCII(const val: widechar);
+procedure TBitmapFontRange.SetStopASCII(const val: WideString);
 begin
-  if FStopASCII <> val then
+  if (Length(val)>0) and (FStopASCII <> val[1]) then
   begin
-    FStopASCII := val;
+    FStopASCII := val[1];
     if FStopASCII < FStartASCII then
       FStartASCII := FStopASCII;
     NotifyChange;
@@ -535,6 +565,7 @@ begin
     NotifyChange;
   end;
 end;
+
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -592,7 +623,7 @@ end;
 // Add
 //
 
-function TBitmapFontRanges.Add(startASCII, stopASCII: widechar): TBitmapFontRange;
+function TBitmapFontRanges.Add(const startASCII, stopASCII: widechar): TBitmapFontRange;
 begin
   Result := Add;
   Result.StartASCII := startASCII;
@@ -602,9 +633,9 @@ end;
 // Add
 //
 
-function TBitmapFontRanges.Add(startASCII, stopASCII: AnsiChar): TBitmapFontRange;
+function TBitmapFontRanges.Add(const startASCII, stopASCII: AnsiChar): TBitmapFontRange;
 begin
-  Result := Add(WideChar(startASCII), WideChar(stopASCII));
+  Result := Add(CharToWideChar(startASCII), CharToWideChar(stopASCII));
 end;
 
 // FindItemID
@@ -626,9 +657,9 @@ begin
   for i := 0 to Count - 1 do
     with Items[i] do
     begin
-      if (aChar >= StartASCII) and (aChar <= StopASCII) then
+      if (aChar >= FStartASCII) and (aChar <= FStopASCII) then
       begin
-        Result := StartGlyphIdx + Integer(aChar) - Integer(StartASCII);
+        Result := StartGlyphIdx + Integer(aChar) - Integer(FStartASCII);
         Break;
       end;
     end;
@@ -644,7 +675,7 @@ begin
     begin
       if (aIndex >= StartGlyphIdx) and (aIndex <= StopGlyphIdx) then
       begin
-        Result := widechar(aIndex - StartGlyphIdx + Integer(StartASCII));
+        Result := widechar(aIndex - StartGlyphIdx + Integer(FStartASCII));
         Break;
       end;
     end;
@@ -677,7 +708,7 @@ begin
   Result := 0;
   for i := 0 to Count - 1 do
     with Items[i] do
-      Inc(Result, Integer(StopASCII) - Integer(StartASCII) + 1);
+      Inc(Result, Integer(FStopASCII) - Integer(FStartASCII) + 1);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -756,7 +787,7 @@ begin
     ShaderModel3.LibFragmentShaderName := LShader.Name;
     OnSM3UniformInitialize := OnShaderInitialize;
     ShaderModel3.Enabled := True;
-  end;
+end;
   FTextureModified := true;
 end;
 
@@ -1617,10 +1648,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLFlatText'}{$ENDIF}
-
 // DoRender
 //
 
@@ -1657,7 +1684,10 @@ procedure TGLFlatText.DoRender(var ARci: TRenderContextInfo;
     begin
       FTransformation := ARci.PipelineTransformation.StackTop;
       for I := High(FBatches) downto 0 do
+      begin
         ARci.drawList.Add(@FBatches[I]);
+        FBatches[I].Transformation := @FTransformation;
+      end;
     end;
   end;
 

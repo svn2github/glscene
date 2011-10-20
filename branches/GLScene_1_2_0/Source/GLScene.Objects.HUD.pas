@@ -619,7 +619,10 @@ procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
       ARci.PipelineTransformation.Pop;
 
       for I := High(FBatches) downto 0 do
+      begin
+        FBatches[I].Transformation := @FTransformation;
         ARci.drawList.Add(@FBatches[I]);
+      end;
     end;
   end;
 

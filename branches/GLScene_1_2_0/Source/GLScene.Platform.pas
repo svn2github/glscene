@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>30/06/11 - DaStr - Added CharToWideChar()
       <li>19/06/11 - Yar - Added IsDirectoryWriteable
       <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
       <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
@@ -86,29 +87,40 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF UNIX}
-  Unix,
+  Unix, BaseUnix,
 {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
   xlib,
 {$ENDIF}
   Classes,
   SysUtils,
+
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Consts,
+  VCL.Graphics,
+  VCL.Controls,
+  VCL.Forms,
+  VCL.Dialogs
+  {$ELSE}
+  {$IFDEF FPC}
+  LCLVersion,
+  LCLType,
+  FileUtil,
+  {$ELSE}
+  Consts,
+  {$ENDIF}
   Graphics,
   Controls,
   Forms,
   Dialogs
-{$IFDEF FPC},
-  LCLVersion,
-  LCLType,
-  FileUtil
-{$ELSE}
-  ,Consts
-{$ENDIF}
+  {$ENDIF}
+
 {$IFNDEF GLS_COMPILER_5_DOWN},
   StrUtils,
   Types
   {$ENDIF}
   ;
+
 
 {$IFNDEF FPC}
 const
@@ -358,6 +370,7 @@ function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
 procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
+function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
 
 procedure RaiseLastOSError;
 
@@ -471,6 +484,8 @@ function GetPlatformVersionStr : string;
 
 {: Determine if the directory is writable.<p> }
 function IsDirectoryWriteable(const AName: string): Boolean;
+
+function CharToWideChar(const AChar: AnsiChar): WideChar;
 
 implementation
 
@@ -852,7 +867,7 @@ begin
   begin
     if Assigned(vProjectTargetName) then
     begin
-      path :=  vProjectTargetName;
+      path :=  vProjectTargetName();
       if Length(path) = 0 then
         path := vLastProjectTargetName
       else
@@ -1110,7 +1125,7 @@ begin
   begin
     if Assigned(vProjectTargetName) then
     begin
-      path :=  vProjectTargetName;
+      path :=  vProjectTargetName();
       if Length(path) = 0 then
         path := vLastProjectTargetName
       else
@@ -1509,14 +1524,43 @@ end;
 function IsDirectoryWriteable(const AName: string): Boolean;
 var
   LFileName: String;
+{$IFNDEF FPC}
   LHandle: THandle;
+{$ENDIF}
 begin
   LFileName := IncludeTrailingPathDelimiter(AName) + 'chk.tmp';
+{$IFNDEF FPC}
   LHandle := CreateFile(PChar(LFileName), GENERIC_READ or GENERIC_WRITE, 0, nil,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY or FILE_FLAG_DELETE_ON_CLOSE, 0);
   Result := LHandle <> INVALID_HANDLE_VALUE;
   if Result then
     CloseHandle(LHandle);
+{$ELSE}
+  Result := fpAccess(PChar(LFileName), W_OK) <> 0;
+{$ENDIF}
+end;
+
+
+function CharToWideChar(const AChar: AnsiChar): WideChar;
+{$IFDEF MSWINDOWS}
+var
+  lResult: PWideChar;
+begin
+  GetMem(lResult, 2);
+  MultiByteToWideChar(CP_ACP, 0, @AChar, 1, lResult, 2);
+  Result := lResult^;
+  FreeMem(lResult, 2);
+{$ELSE}
+begin
+  Assert(False, 'Not implemented!');
+  Result := WideChar(AChar);
+{$ENDIF}
+end;
+
+function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
+begin
+  Result := (P.X >= Rect.Left) and (P.X < Rect.Right) and (P.Y >= Rect.Top)
+    and (P.Y < Rect.Bottom);
 end;
 
 initialization
