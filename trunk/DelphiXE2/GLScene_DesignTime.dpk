@@ -1,6 +1,7 @@
 package GLScene_DesignTime;
 
 {$R *.res}
+{$R *.otares}
 {$R '..\Source\DesignTime\GLSceneObjects.dcr'}
 {$R '..\Source\DesignTime\GLSceneVCL.dcr'}
 {$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
@@ -15,10 +16,10 @@ package GLScene_DesignTime;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
-{$OVERFLOWCHECKS ON}
-{$RANGECHECKS ON}
-{$REFERENCEINFO OFF}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
 {$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
