@@ -2611,13 +2611,7 @@ begin
       inner := ColorInner.Color
     else
     begin
-      lifeColorsLookupList :=
-{$IFDEF GLS_DELPHI_XE2_UP}
-      @FLifeColorsLookup.List[0];
-{$ELSE}
-      FLifeColorsLookup.List;
-{$ENDIF}
-
+      lifeColorsLookupList := @FLifeColorsLookup.List[0];
       if n > 0 then
       begin
         k := -1;
