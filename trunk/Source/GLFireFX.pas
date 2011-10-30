@@ -793,7 +793,6 @@ var
   distList: TSingleList;
   objList: TList;
   fp: PFireParticle;
-  FHandle: Integer;
 begin
   if Manager = nil then
     Exit;
@@ -828,13 +827,6 @@ begin
     end;
     QuickSortLists(0, N - 1, distList, objList);
 
-    FHandle := GL.GenLists(1);
-    try
-      rci.GLStates.NewList(FHandle, GL_COMPILE);
-      Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
-      rci.GLStates.EndList;
-
-      GL.PushMatrix;
       lastTr := NullVector;
       SetVector(innerColor, Manager.FInnerColor.Color);
       for i := n - 1 downto 0 do
@@ -844,12 +836,8 @@ begin
         SetVector(lastTr, fp^.Position);
         innerColor[3] := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
         GL.Color4fv(@innerColor);
-        rci.GLStates.CallList(FHandle);
+        Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
       end;
-      GL.PopMatrix;
-    finally
-      GL.DeleteLists(FHandle, 1);
-    end;
 
     objList.Free;
     distList.Free;
