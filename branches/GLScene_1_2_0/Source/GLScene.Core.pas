@@ -4864,14 +4864,7 @@ begin
       if not (osDeferredDraw in ObjectStyle) then
         ARci.PipelineTransformation.LoadMatrices;
 
-      if osIgnoreDepthBuffer in ObjectStyle then
-      begin
-        ARci.GLStates.Disable(stDepthTest);
-        DoRender(ARci, True, shouldRenderChildren);
-        ARci.GLStates.Enable(stDepthTest);
-      end
-      else
-        DoRender(ARci, True, shouldRenderChildren);
+      DoRender(ARci, True, shouldRenderChildren);
 
       FGLObjectEffects.RenderPostEffects(ARci);
       ARci.PipelineTransformation.Pop;

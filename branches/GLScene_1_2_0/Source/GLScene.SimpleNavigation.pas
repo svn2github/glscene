@@ -414,13 +414,11 @@ begin
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
     TForm(FForm).OnMouseWheel := ViewerMouseWheel;
     FForm.FreeNotification(Self);
-{$IFDEF GLS_MULTITHREAD}
     if FForm is TGLSceneForm then
     begin
       FSceneForm := True;
       TForm(FForm).OnMouseMove := ViewerMouseMove;
     end;
-{$ENDIF}
   end;
 end;
 

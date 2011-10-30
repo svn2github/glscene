@@ -5325,7 +5325,8 @@ end;
 
 procedure TGLBaseShaderModel.NotifyChange(Sender: TObject);
 begin
-  FHandle.NotifyChangesOfData;
+  if not(Sender is TGLAbstractShaderUniform) then
+    FHandle.NotifyChangesOfData;
   inherited;
 end;
 

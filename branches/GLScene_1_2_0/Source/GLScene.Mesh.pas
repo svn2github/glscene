@@ -131,6 +131,7 @@ type
     FDLO: TGLListHandle;
     FVAO_BuildIn: TGLVertexArrayHandle;
     FVAO_Generic: TGLVertexArrayHandle;
+    FOwner: TComponent;
     function GetAttributes(Attribs: TAttribLocation): Boolean;
     function GetAttributesType(Attribs: TAttribLocation): TGLSLDataType;
     procedure SetAttributes(Attribs: TAttribLocation; const Value: Boolean);
@@ -139,6 +140,7 @@ type
     procedure SetElements(const Value: T4ByteList);
     function GetValid: Boolean;
     procedure SetPrimitive(const Value: TGLMeshPrimitive);
+    procedure SetOwner(const Value: TComponent);
   protected
     { Protected Declarations }
 {$IFDEF GLS_MULTITHREAD}
@@ -299,6 +301,7 @@ type
 
     property TagName: string read FTagName write FTagName;
     property TagInteger: Integer read FTagInteger write FTagInteger;
+    property Owner: TComponent read FOwner write SetOwner;
     property RestartStripIndex: TGLuint read FRestartIndex;
 
     {: This property returns the points defining the axis-
@@ -990,6 +993,11 @@ begin
 
   FElements := Value;
   FValid := False;
+end;
+
+procedure TMeshAtom.SetOwner(const Value: TComponent);
+begin
+  FOwner := Value;
 end;
 
 procedure TMeshAtom.SetPrimitive(const Value: TGLMeshPrimitive);

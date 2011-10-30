@@ -1250,6 +1250,7 @@ begin
   ObjectStyle := ObjectStyle + [osDeferredDraw];
   FBatch.Mesh := TMeshAtom.Create;
   FBatch.Transformation := @FTransformation;
+  FBatch.Mesh.Owner := Self;
   FBatch.Mesh.TagName := ClassName;
   FBatch.Material := FMaterial;
   FBatch.PickCallback := DoOnPicked;
