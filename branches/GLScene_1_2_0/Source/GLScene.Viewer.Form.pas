@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { : GLSceneForm<p>
@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLScene.Form.VCL;
+unit GLScene.Viewer.Form;
 
 interface
 

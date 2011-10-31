@@ -43,10 +43,10 @@ contains
   GLScene.Edit.VCL in '..\Source\GLScene.Edit.VCL.pas' {GLSceneEditorForm},
   GLScene.Register.VCL in '..\Source\GLScene.Register.VCL.pas',
   GLScene.XCollection.Register in '..\Source\GLScene.XCollection.Register.pas',
-  GLScene.Shader.Memo in '..\Source\GLScene.Shader.Memo.pas',
-  GLScene.Form.Design in '..\Source\GLScene.Form.Design.pas',
   GLScene.GUI.LayoutEditor in '..\Source\GLScene.GUI.LayoutEditor.pas' {layouts_form},
-  GLScene.Toolbar in '..\Source\GLScene.Toolbar.pas';
+  GLScene.Toolbar in '..\Source\GLScene.Toolbar.pas',
+  GLScene.Viewer.Form.Design in '..\Source\GLScene.Viewer.Form.Design.pas',
+  GLScene.Shader.Memo in '..\Source\GLScene.Shader.Memo.pas' {GLShaderEditor};
 
 end.
 

@@ -1,7 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneFormDesign<p>
+{: GLScene.Viewer.Form.Design<p>
 
    <b>History : </b><font size=-1><ul>
     <li>03/04/11 - Yar - Added three project wizard for Delphi
@@ -10,7 +10,7 @@
  </ul></font>
 }
 
-unit GLScene.Form.Design;
+unit GLScene.Viewer.Form.Design;
 
 interface
 
@@ -370,13 +370,13 @@ procedure Register;
 implementation
 
 {$IFDEF GLS_DELPHI_OR_CPPB}
-{$R *.res}
+{$R GLScene.Form.Design.res}
 {$ENDIF}
 
 uses
   SysUtils,
   GLScene.Platform,
-  GLScene.Form.VCL,
+  GLScene.Viewer.Form,
   GLScene.Core,
   GLScene.Cadencer,
 {$IFDEF GLS_DELPHI_OR_CPPB}
@@ -567,7 +567,7 @@ const
     '' + LineEnding +
     'uses' + LineEnding +
     '  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,' + LineEnding +
-    '  GLScene, GLSceneForm;' + LineEnding +
+    '  GLScene.Core, GLScene.Form.VCL;' + LineEnding +
     '' + LineEnding +
     'type' + LineEnding +
     '  T%1:s = class(TGLSceneForm)' + LineEnding +
@@ -613,7 +613,7 @@ const
     '' + LineEnding +
     'uses' + LineEnding +
     '  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,' + LineEnding +
-    '  GLScene, GLSceneForm, GLCadencer;' + LineEnding +
+    '  GLScene.Core, GLScene.Viewer.Form, GLScene.Cadencer;' + LineEnding +
     '' + LineEnding +
     'type' + LineEnding +
     '  T%1:s = class(TGLSceneForm)' + LineEnding +
@@ -699,9 +699,9 @@ const
     '' + LineEnding +
     'uses' + LineEnding +
     '  Windows, Messages, Classes, SysUtils, Forms, Controls, Graphics,' + LineEnding +
-    '  Dialogs, GLScene, GLSceneForm, GLCadencer, GLMaterial, GLObjects, ' + LineEnding +
-    '  GLHUDObjects, GLWindowsFont, GLSkydome, GLGeomObjects, GLShadowPlane,' + LineEnding +
-    '  GLLCLViewer, BaseClasses, GLFilePNG;' + LineEnding +
+    '  Dialogs, GLScene.Core, GLScene.Viewer.Form, GLScene.Cadencer, GLScene.Material, GLScene.Objects, ' + LineEnding +
+    '  GLScene.Objects.HUD, GLScene.BitmapFont.System, GLScene.Objects.Skydome, GLScene.ObjectsEx, GLScene.ShadowPlane,' + LineEnding +
+    '  GLScene.Base.Classes, GLScene.Files.PNG;' + LineEnding +
 
     '' + LineEnding +
     'type' + LineEnding +
@@ -723,7 +723,7 @@ const
     '    GLInterfaceText1: TGLHUDText;' + LineEnding +
     '    GLSkyDome1: TGLSkyDome;' + LineEnding +
     '    GLWorldObject3: TGLSphere;' + LineEnding +
-    '    GLWindowsBitmapFont1: TGLWindowsBitmapFont;' + LineEnding +
+    '    GLWindowsBitmapFont1: TGLSystemBitmapFont;' + LineEnding +
     '    GLMaterialLibrary1: TGLMaterialLibrary;' + LineEnding +
     '    procedure GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: Double);' + LineEnding +
     '  private' + LineEnding +
@@ -1334,7 +1334,7 @@ const
     '    Left = 74' + LineEnding +
     '    Top = 88' + LineEnding +
     '  end' + LineEnding +
-    '  object GLWindowsBitmapFont1: TGLWindowsBitmapFont' + LineEnding +
+    '  object GLWindowsBitmapFont1: TGLSystemBitmapFont' + LineEnding +
     '    Font.Charset = DEFAULT_CHARSET' + LineEnding +
     '    Font.Color = clWhite' + LineEnding +
     '    Font.Height = -32' + LineEnding +
@@ -2094,7 +2094,7 @@ function TGLSceneBaseFileDescriptor.GetInterfaceUsesSection: string;
 begin
    Result:=
     ' Classes, SysUtils, Forms, Controls, Graphics,  Dialogs,' + LineEnding +
-    '  GLSceneForm;' ;
+    ' GLScene.Viewer.Form;' ;
 end;
 
 function TGLSceneBaseFileDescriptor.GetInterfaceSource(
@@ -2180,7 +2180,7 @@ function TGLSceneSimpleFileDescriptor.GetInterfaceUsesSection: string;
 begin
    Result:=
     ' Classes, SysUtils, Forms, Controls, Graphics,  Dialogs,' + LineEnding +
-    '  GLSceneForm, GLScene, GLObjects, GLCadencer;' ;
+    '  GLScene.Viewer.Form, GLScene.Core, GLScene.Objects, GLScene.Cadencer;' ;
 end;
 
 function TGLSceneSimpleFileDescriptor.GetInterfaceSource(
@@ -2310,8 +2310,8 @@ function TGLSceneExtendedFileDescriptor.GetInterfaceUsesSection: string;
 begin
    Result:=
     ' Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, GLScene,' + LineEnding +
-    '  GLSceneForm, GLCadencer, GLMaterial, GLObjects, GLHUDObjects, GLWindowsFont,' + LineEnding +
-    '  GLSkydome, GLGeomObjects, GLShadowPlane, GLLCLViewer, BaseClasses, GLFilePNG;' + LineEnding;
+    ' GLScene.Viewer.Form, GLScene.Cadencer, GLScene.Material, GLScene.Objects, GLScene.Objects.HUD, GLScene.BitmapFont.System,' + LineEnding +
+    ' GLScene.Objects.Skydome, GLScene.ObjectsEx, GLScene.ShadowPlane, GLScene.Viewer.LCL, GLScene.Base.Classes, GLScene.Files.PNG;' + LineEnding;
 
 end;
 
@@ -2340,7 +2340,7 @@ begin
             '    GLLightSource1: TGLLightSource;' + LineEnding +
             '    GLSkyDome1: TGLSkyDome;' + LineEnding +
             '    GLWorldObject3: TGLSphere;' + LineEnding +
-            '    GLWindowsBitmapFont1: TGLWindowsBitmapFont;' + LineEnding +
+            '    GLWindowsBitmapFont1: TGLSystemBitmapFont;' + LineEnding +
             '    GLWorld: TGLDummyCube;' + LineEnding +
             '    GLMaterialLibrary1: TGLMaterialLibrary;' + LineEnding +
             '    GLScene1: TGLScene;' + LineEnding +
@@ -2793,7 +2793,7 @@ begin
     '    left = 74' + LineEnding +
     '    top = 88' + LineEnding +
     '  end' + LineEnding +
-    '  object GLWindowsBitmapFont1: TGLWindowsBitmapFont' + LineEnding +
+    '  object GLWindowsBitmapFont1: TGLSystemBitmapFont' + LineEnding +
     '    Font.CharSet = DEFAULT_CHARSET' + LineEnding +
     '    Font.Color = clWhite' + LineEnding +
     '    Font.Height = -32' + LineEnding +

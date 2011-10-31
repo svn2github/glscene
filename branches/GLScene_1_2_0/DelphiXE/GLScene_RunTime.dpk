@@ -282,7 +282,6 @@ contains
   GLScene.Base.Log in '..\Source\GLScene.Base.Log.pas',
   GLScene.PropertyEditor.Uniform.VCL in '..\Source\GLScene.PropertyEditor.Uniform.VCL.pas',
   GLScene.VCL.Memo in '..\Source\GLScene.VCL.Memo.pas',
-  GLScene.Form.VCL in '..\Source\GLScene.Form.VCL.pas',
   GLScene.Files.BMP in '..\Source\GLScene.Files.BMP.pas',
   GLScene.Files.TGA in '..\Source\GLScene.Files.TGA.pas',
   GLScene.Base.RedBlackTree in '..\Source\GLScene.Base.RedBlackTree.pas',
@@ -290,6 +289,7 @@ contains
   GLScene.DrawTechnique in '..\Source\GLScene.DrawTechnique.pas',
   GLScene.MaterialEx in '..\Source\GLScene.MaterialEx.pas',
   GLScene.Mesh in '..\Source\GLScene.Mesh.pas',
-  GLScene.Objects.NishitaSky in '..\Source\GLScene.Objects.NishitaSky.pas';
+  GLScene.Objects.NishitaSky in '..\Source\GLScene.Objects.NishitaSky.pas',
+  GLScene.Viewer.Form in '..\Source\GLScene.Viewer.Form.pas';
 
 end.
