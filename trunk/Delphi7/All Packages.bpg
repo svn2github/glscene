@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = GLScene7.bpl GLCg7.bpl GLS_ODE7.bpl GLSS_OpenAL7.bpl GLSS_BASS7.bpl \
-  GLSS_FMOD7.bpl GLS_DWS7.bpl GLS_Python7.bpl
+  GLSS_FMOD7.bpl GLS_DWS7.bpl GLS_Python7.bpl GLS_SDL7.bpl
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -37,6 +37,9 @@ GLSS_BASS7.bpl: GLSS_BASS7.dpk
   $(DCC)
 
 GLSS_FMOD7.bpl: GLSS_FMOD7.dpk
+  $(DCC)
+
+GLS_SDL7.bpl: GLS_SDL7.dpk
   $(DCC)
 
 
