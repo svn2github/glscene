@@ -42,7 +42,7 @@
   <li>12/12/01 - EG - Creation (split from GLScene.pas)
   </ul></font>
 }
-unit GLScene.Objects.SpaceText;
+unit GLScene.Objects.SpaceText.Windows;
 
 interface
 
