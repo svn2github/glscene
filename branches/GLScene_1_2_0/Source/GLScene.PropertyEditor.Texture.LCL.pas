@@ -73,6 +73,7 @@ type
 
 implementation
 
+{$R GLScene.PropertyEditor.Texture.LCL.lfm}
 
 uses
   SysUtils, GLScene.PropertyEditor.TextureImage, GLScene.Texture.Format;
@@ -222,11 +223,6 @@ begin
   EditGLTextureImage(FTexture.Image);
   DoOnChange;
 end;
-
-
-initialization
-
-  {$I FRTextureEditLCL.lrs}
 
 end.
 

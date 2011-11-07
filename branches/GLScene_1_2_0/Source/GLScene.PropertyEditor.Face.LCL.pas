@@ -54,6 +54,7 @@ type
 
 implementation
 
+{$R GLScene.PropertyEditor.Face.LCL.lfm}
 
 uses
   Graphics;
@@ -140,12 +141,6 @@ begin
    OnColorChange(Self);
    TBEShininessTrackBarChange(Self);
 end;
-
-
-initialization
-
-  {$I FRFaceEditorLCL.lrs}
-
 
 end.
 

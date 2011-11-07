@@ -24,6 +24,7 @@ interface
 
 uses
   Classes,
+  GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.OpenGL.Adapter,
@@ -154,9 +155,7 @@ implementation
 uses
   SysUtils,
   GLScene.Base.GLStateMachine,
-  GLScene.Shader.Parameter
-{$IFDEF GLS_DELPHI},
-  GLScene.Base.Vector.Types{$ENDIF};
+  GLScene.Shader.Parameter;
 
 // ------------------
 // ------------------ TGLNode ------------------

@@ -83,9 +83,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$R GLScene.FX.CollectionEditor.LCL.lfm}
 
 uses
-  SysUtils, GLScene.Behaviours, GLScene, Dialogs, PropEdits;
+  SysUtils, GLScene.Behaviours, GLScene.Core, Dialogs, PropEdits;
 
 resourcestring
   cXCollectionEditor = 'XCollection editor';
@@ -348,8 +349,6 @@ begin
 end;
 
 initialization
-
-  {$i FXCollectionEditorLCL.lrs}
 
 finalization
   ReleaseXCollectionEditor;

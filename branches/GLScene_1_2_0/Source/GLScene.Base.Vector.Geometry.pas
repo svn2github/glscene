@@ -3801,9 +3801,12 @@ end;
 // InterpolatePower
 //
 function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
+var
+  intDegree: Integer;
 begin
-  if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
-    Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Power(Delta, Round(DistortionDegree)) + Start
+  intDegree := Round(DistortionDegree);
+  if (intDegree <> DistortionDegree) and (Delta < 0) then
+    Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Power(Delta, intDegree) + Start
   else
     Result := (Stop - Start) * GLScene.Base.Vector.Geometry.Power(Delta, DistortionDegree) + Start;
 end;

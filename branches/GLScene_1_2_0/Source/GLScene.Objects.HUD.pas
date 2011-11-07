@@ -215,7 +215,6 @@ uses
   SyncObjs,
 {$ENDIF}
   SysUtils,
-  GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,
   GLScene.Base.GLStateMachine,
   GLScene.Shader.Parameter;

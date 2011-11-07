@@ -71,7 +71,6 @@ unit GLScene.Files.OBJ;
 interface
 
 uses
-  GLScene.Base.Classes,
   GLScene.Platform,
   Classes,
   SysUtils,
@@ -170,7 +169,6 @@ uses
 {$IFDEF GLS_DELPHI_2009_UP}
   GLScene.Base.Vector.Types,
 {$ENDIF}
-  GLScene.Base.Strings,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,
   GLScene.Mesh.Utils,

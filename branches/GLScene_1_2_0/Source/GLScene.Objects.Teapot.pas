@@ -25,12 +25,11 @@ uses
   Classes,
   GLScene.Core,
   GLScene.Objects,
+  GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,
-  GLScene.Base.Context.Info
-{$IFDEF GLS_DELPHI},
-  GLScene.Base.Vector.Types{$ENDIF};
+  GLScene.Base.Context.Info;
 
 type
 

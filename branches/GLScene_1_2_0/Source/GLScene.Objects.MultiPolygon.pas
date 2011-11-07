@@ -55,6 +55,7 @@ uses
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.OpenGL.Adapter,
   GLScene.Base.Spline,
+  GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.Vector.Lists,
   GLScene.Base.PersistentClasses,
@@ -240,8 +241,7 @@ uses
   SysUtils,
   GLScene.Base.Context,
   GLScene.Base.GLStateMachine,
-  GLScene.Shader.Parameter
-  {$IFDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
+  GLScene.Shader.Parameter;
 
 type
   { page oriented pointer array, with persistent pointer target memory.

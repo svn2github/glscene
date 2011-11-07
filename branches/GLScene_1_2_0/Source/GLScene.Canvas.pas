@@ -234,8 +234,7 @@ implementation
 
 uses
   GLScene.Base.OpenGL.Tokens,
-  GLScene.Base.Context,
-  GLScene.Base.Vector.Types;
+  GLScene.Base.Context;
 
 const
   cNoPrimitive = MaxInt;

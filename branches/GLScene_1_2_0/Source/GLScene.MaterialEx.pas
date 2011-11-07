@@ -4890,7 +4890,7 @@ end;
 
 destructor TGLBaseShaderModel.Destroy;
 begin
-  FHandle.Destroy;
+  FreeAndNil(FHandle);
   LibVertexShaderName := '';
   LibFragmentShaderName := '';
   LibGeometryShaderName := '';
@@ -5325,7 +5325,7 @@ end;
 
 procedure TGLBaseShaderModel.NotifyChange(Sender: TObject);
 begin
-  if not(Sender is TGLAbstractShaderUniform) then
+  if not(Sender is TGLAbstractShaderUniform) and Assigned(FHandle) then
     FHandle.NotifyChangesOfData;
   inherited;
 end;

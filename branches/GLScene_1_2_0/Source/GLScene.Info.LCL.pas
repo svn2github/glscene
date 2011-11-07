@@ -115,6 +115,8 @@ type
 
 implementation
 
+{$R GLScene.Info.LCL.lfm}
+
 uses
   {$IFDEF Linux}xlib,{$ENDIF}GLScene.Base.OpenGL.Tokens, GLScene.Base.OpenGL.Adapter, GLScene.Base.Context,
   SysUtils, GLScene.Platform
@@ -391,7 +393,7 @@ initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-  {$i InfoLCL.lrs}
+
 
    RegisterInfoForm(ShowInfoForm);
 

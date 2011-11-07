@@ -61,7 +61,7 @@ uses
   {$IFDEF MSWINDOWS}
   Registry,
   {$ENDIF}
-  GLScene.Base.XCollection, GLScene, Classes, SysUtils,
+  GLScene.Base.XCollection, GLScene.Core, Classes, SysUtils,
   Controls,  Forms, ComCtrls,
   Dialogs, Menus, ActnList, ExtCtrls, StdCtrls,
   propedits, componenteditors, lclintf, lresources
@@ -237,9 +237,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$R GLScene.Edit.LCL.lfm}
 
 uses
-  GLScene.Viewer, GLScene.Register.LCL, GLScene.Base.Strings, GLScene.Info.LCL, OpenGL1x, GLScene.Platform,
+  GLScene.Viewer, GLScene.Register.LCL, GLScene.Base.Strings, GLScene.Info.LCL,
+  GLScene.Platform,
   ClipBrd;
 
 
@@ -1539,8 +1541,6 @@ begin
 end;
 
 initialization
-
-  {$I GLSceneEditLCL.lrs}
 
 finalization
   ReleaseGLSceneEditorForm;

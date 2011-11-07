@@ -75,6 +75,8 @@ procedure ReleaseLibMaterialPicker;
 
 implementation
 
+{$R GLScene.PropertyEditor.MaterialPicker.LCL.lfm}
+
 
 var
   vLibMaterialPicker: TLibMaterialPicker;
@@ -227,8 +229,6 @@ begin
 end;
 
 initialization
-
-  {$I FLibMaterialPickerLCL.lrs}
 
 finalization
   ReleaseLibMaterialPicker;

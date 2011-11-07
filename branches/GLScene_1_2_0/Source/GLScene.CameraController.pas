@@ -127,8 +127,10 @@ type
 implementation
 
 uses
-  SysUtils, Forms, GLScene.Base.Vector.Geometry
-  {$IFNDEF GLS_DELPHI}, GLScene.Base.Vector.Types{$ENDIF};
+  SysUtils,
+  Forms,
+  GLScene.Base.Vector.Geometry,
+  GLScene.Base.Vector.Types;
 
 //---TGLCameraMover
 

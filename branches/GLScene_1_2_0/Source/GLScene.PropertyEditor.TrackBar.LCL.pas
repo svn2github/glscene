@@ -38,6 +38,7 @@ type
 
 implementation
 
+{$R GLScene.PropertyEditor.TrackBar.LCL.lfm}
 
 uses
   SysUtils; 
@@ -103,11 +104,6 @@ function TRTrackBarEdit.GetValueMin : Integer;
 begin
    Result:=TrackBar.Min;
 end;
-
-initialization
-
-  {$I FRTrackBarEditLCL.lrs}
-
 
 end.
 

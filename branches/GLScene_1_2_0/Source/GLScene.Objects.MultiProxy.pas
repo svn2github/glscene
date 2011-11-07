@@ -13,8 +13,13 @@ unit GLScene.Objects.MultiProxy;
 
 interface
 
-uses Classes, GLScene.Core, GLScene.Base.Vector.Geometry, GLScene.Silhouette,
-     GLScene.Base.Context.Info, GLScene.Base.Classes, GLScene.Base.Vector.Types;
+uses
+    Classes,
+    GLScene.Core,
+    GLScene.Base.Vector.Geometry,
+    GLScene.Silhouette,
+    GLScene.Base.Context.Info,
+    GLScene.Base.Classes;
 
 type
 

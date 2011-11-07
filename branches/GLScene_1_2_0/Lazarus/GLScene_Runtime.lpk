@@ -1,0 +1,1009 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="4">
+    <PathDelim Value="\"/>
+    <Name Value="GLScene_Runtime"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="E:\GLScene SVN\glscene\branches\GLScene_1_2_0\Source\"/>
+        <OtherUnitFiles Value="E:\GLScene SVN\glscene\branches\GLScene_1_2_0\Source\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+          <CStyleOperator Value="False"/>
+          <IncludeAssertionCode Value="True"/>
+          <AllowLabel Value="False"/>
+          <StaticKeyword Value="True"/>
+          <UseAnsiStrings Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <Checks>
+          <OverflowChecks Value="True"/>
+        </Checks>
+      </CodeGeneration>
+      <Other>
+        <CompilerMessages>
+          <UseMsgFile Value="True"/>
+        </CompilerMessages>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Major="1" Minor="2"/>
+    <Files Count="238">
+      <Item1>
+        <Filename Value="..\Source\GLScene.AsyncTimer.pas"/>
+        <UnitName Value="GLScene.AsyncTimer"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\Source\GLScene.AVIRecorder.pas"/>
+        <UnitName Value="GLScene.AVIRecorder"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\Source\GLScene.Base.Classes.pas"/>
+        <UnitName Value="GLScene.Base.Classes"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\Source\GLScene.Base.Color.pas"/>
+        <UnitName Value="GLScene.Base.Color"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\Source\GLScene.Base.Context.pas"/>
+        <UnitName Value="GLScene.Base.Context"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\Source\GLScene.Base.Context.Info.pas"/>
+        <UnitName Value="GLScene.Base.Context.Info"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\Source\GLScene.Base.Coordinates.pas"/>
+        <UnitName Value="GLScene.Base.Coordinates"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\Source\GLScene.Base.Coordinates.Geometry.pas"/>
+        <UnitName Value="GLScene.Base.Coordinates.Geometry"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\Source\GLScene.Base.CurvesAndSurfaces.pas"/>
+        <UnitName Value="GLScene.Base.CurvesAndSurfaces"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\Source\GLScene.Base.FileIO.pas"/>
+        <UnitName Value="GLScene.Base.FileIO"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\Source\GLScene.Base.FrameBuffer.pas"/>
+        <UnitName Value="GLScene.Base.FrameBuffer"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\Source\GLScene.Base.Generics.pas"/>
+        <UnitName Value="GLScene.Base.Generics"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\Source\GLScene.Base.GeometryBB.pas"/>
+        <UnitName Value="GLScene.Base.GeometryBB"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\Source\GLScene.Base.GLStateMachine.pas"/>
+        <UnitName Value="GLScene.Base.GLStateMachine"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\Source\GLScene.Base.HeightTileFile.pas"/>
+        <UnitName Value="GLScene.Base.HeightTileFile"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\Source\GLScene.Base.Log.pas"/>
+        <UnitName Value="GLScene.Base.Log"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\Source\GLScene.Base.Octree.pas"/>
+        <UnitName Value="GLScene.Base.Octree"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\Source\GLScene.Base.OpenGL.Adapter.pas"/>
+        <UnitName Value="GLScene.Base.OpenGL.Adapter"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\Source\GLScene.Base.OpenGL.Tokens.pas"/>
+        <UnitName Value="GLScene.Base.OpenGL.Tokens"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\Source\GLScene.Base.Perlin.pas"/>
+        <UnitName Value="GLScene.Base.Perlin"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\Source\GLScene.Base.PerlinNoise.pas"/>
+        <UnitName Value="GLScene.Base.PerlinNoise"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\Source\GLScene.Base.PersistentClasses.pas"/>
+        <UnitName Value="GLScene.Base.PersistentClasses"/>
+      </Item22>
+      <Item23>
+        <Filename Value="..\Source\GLScene.Base.PictureRegisteredFormats.pas"/>
+        <UnitName Value="GLScene.Base.PictureRegisteredFormats"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\Source\GLScene.Base.Polynomials.pas"/>
+        <UnitName Value="GLScene.Base.Polynomials"/>
+      </Item24>
+      <Item25>
+        <Filename Value="..\Source\GLScene.Base.RedBlackTree.pas"/>
+        <UnitName Value="GLScene.Base.RedBlackTree"/>
+      </Item25>
+      <Item26>
+        <Filename Value="..\Source\GLScene.Base.ScreenSaver.pas"/>
+        <UnitName Value="GLScene.Base.ScreenSaver"/>
+      </Item26>
+      <Item27>
+        <Filename Value="..\Source\GLScene.Base.Script.pas"/>
+        <UnitName Value="GLScene.Base.Script"/>
+      </Item27>
+      <Item28>
+        <Filename Value="..\Source\GLScene.Base.SpatialPartitioning.pas"/>
+        <UnitName Value="GLScene.Base.SpatialPartitioning"/>
+      </Item28>
+      <Item29>
+        <Filename Value="..\Source\GLScene.Base.Spline.pas"/>
+        <UnitName Value="GLScene.Base.Spline"/>
+      </Item29>
+      <Item30>
+        <Filename Value="..\Source\GLScene.Base.Strings.pas"/>
+        <UnitName Value="GLScene.Base.Strings"/>
+      </Item30>
+      <Item31>
+        <Filename Value="..\Source\GLScene.Base.Transformation.pas"/>
+        <UnitName Value="GLScene.Base.Transformation"/>
+      </Item31>
+      <Item32>
+        <Filename Value="..\Source\GLScene.Base.Vector.Geometry.pas"/>
+        <UnitName Value="GLScene.Base.Vector.Geometry"/>
+      </Item32>
+      <Item33>
+        <Filename Value="..\Source\GLScene.Base.Vector.Lists.pas"/>
+        <UnitName Value="GLScene.Base.Vector.Lists"/>
+      </Item33>
+      <Item34>
+        <Filename Value="..\Source\GLScene.Base.Vector.Types.pas"/>
+        <UnitName Value="GLScene.Base.Vector.Types"/>
+      </Item34>
+      <Item35>
+        <Filename Value="..\Source\GLScene.Base.Verlet.Classes.pas"/>
+        <UnitName Value="GLScene.Base.Verlet.Classes"/>
+      </Item35>
+      <Item36>
+        <Filename Value="..\Source\GLScene.Base.Verlet.HairClasses.pas"/>
+        <UnitName Value="GLScene.Base.Verlet.HairClasses"/>
+      </Item36>
+      <Item37>
+        <Filename Value="..\Source\GLScene.Base.XCollection.pas"/>
+        <UnitName Value="GLScene.Base.XCollection"/>
+      </Item37>
+      <Item38>
+        <Filename Value="..\Source\GLScene.Base.XML.pas"/>
+        <UnitName Value="GLScene.Base.XML"/>
+      </Item38>
+      <Item39>
+        <Filename Value="..\Source\GLScene.Behaviours.pas"/>
+        <UnitName Value="GLScene.Behaviours"/>
+      </Item39>
+      <Item40>
+        <Filename Value="..\Source\GLScene.BitmapFont.pas"/>
+        <UnitName Value="GLScene.BitmapFont"/>
+      </Item40>
+      <Item41>
+        <Filename Value="..\Source\GLScene.BitmapFont.System.pas"/>
+        <UnitName Value="GLScene.BitmapFont.System"/>
+      </Item41>
+      <Item42>
+        <Filename Value="..\Source\GLScene.Blur.pas"/>
+        <UnitName Value="GLScene.Blur"/>
+      </Item42>
+      <Item43>
+        <Filename Value="..\Source\GLScene.BSP.pas"/>
+        <UnitName Value="GLScene.BSP"/>
+      </Item43>
+      <Item44>
+        <Filename Value="..\Source\GLScene.BumpMapping.pas"/>
+        <UnitName Value="GLScene.BumpMapping"/>
+      </Item44>
+      <Item45>
+        <Filename Value="..\Source\GLScene.Cadencer.pas"/>
+        <UnitName Value="GLScene.Cadencer"/>
+      </Item45>
+      <Item46>
+        <Filename Value="..\Source\GLScene.CameraController.pas"/>
+        <UnitName Value="GLScene.CameraController"/>
+      </Item46>
+      <Item47>
+        <Filename Value="..\Source\GLScene.Canvas.pas"/>
+        <UnitName Value="GLScene.Canvas"/>
+      </Item47>
+      <Item48>
+        <Filename Value="..\Source\GLScene.Collision.pas"/>
+        <UnitName Value="GLScene.Collision"/>
+      </Item48>
+      <Item49>
+        <Filename Value="..\Source\GLScene.Collision.Ellipse.pas"/>
+        <UnitName Value="GLScene.Collision.Ellipse"/>
+      </Item49>
+      <Item50>
+        <Filename Value="..\Source\GLScene.Context.Windows.pas"/>
+        <UnitName Value="GLScene.Context.Windows"/>
+      </Item50>
+      <Item51>
+        <Filename Value="..\Source\GLScene.Core.pas"/>
+        <UnitName Value="GLScene.Core"/>
+      </Item51>
+      <Item52>
+        <Filename Value="..\Source\GLScene.DCE.pas"/>
+        <UnitName Value="GLScene.DCE"/>
+      </Item52>
+      <Item53>
+        <Filename Value="..\Source\GLScene.DCE.Misc.pas"/>
+        <UnitName Value="GLScene.DCE.Misc"/>
+      </Item53>
+      <Item54>
+        <Filename Value="..\Source\GLScene.DrawTechnique.pas"/>
+        <UnitName Value="GLScene.DrawTechnique"/>
+      </Item54>
+      <Item55>
+        <Filename Value="..\Source\GLScene.Files._3DS.pas"/>
+        <UnitName Value="GLScene.Files._3DS"/>
+      </Item55>
+      <Item56>
+        <Filename Value="..\Source\GLScene.Files._3DS.Base.pas"/>
+        <UnitName Value="GLScene.Files._3DS.Base"/>
+      </Item56>
+      <Item57>
+        <Filename Value="..\Source\GLScene.Files._3DS.Consts.pas"/>
+        <UnitName Value="GLScene.Files._3DS.Consts"/>
+      </Item57>
+      <Item58>
+        <Filename Value="..\Source\GLScene.Files._3DS.SceneObjects.pas"/>
+        <UnitName Value="GLScene.Files._3DS.SceneObjects"/>
+      </Item58>
+      <Item59>
+        <Filename Value="..\Source\GLScene.Files._3DS.Types.pas"/>
+        <UnitName Value="GLScene.Files._3DS.Types"/>
+      </Item59>
+      <Item60>
+        <Filename Value="..\Source\GLScene.Files._3DS.Utils.pas"/>
+        <UnitName Value="GLScene.Files._3DS.Utils"/>
+      </Item60>
+      <Item61>
+        <Filename Value="..\Source\GLScene.Files.ASE.pas"/>
+        <UnitName Value="GLScene.Files.ASE"/>
+      </Item61>
+      <Item62>
+        <Filename Value="..\Source\GLScene.Files.B3D.pas"/>
+        <UnitName Value="GLScene.Files.B3D"/>
+      </Item62>
+      <Item63>
+        <Filename Value="..\Source\GLScene.Files.B3D.Base.pas"/>
+        <UnitName Value="GLScene.Files.B3D.Base"/>
+      </Item63>
+      <Item64>
+        <Filename Value="..\Source\GLScene.Files.B3D.Types.pas"/>
+        <UnitName Value="GLScene.Files.B3D.Types"/>
+      </Item64>
+      <Item65>
+        <Filename Value="..\Source\GLScene.Files.BMP.pas"/>
+        <UnitName Value="GLScene.Files.BMP"/>
+      </Item65>
+      <Item66>
+        <Filename Value="..\Source\GLScene.Files.DDS.pas"/>
+        <UnitName Value="GLScene.Files.DDS"/>
+      </Item66>
+      <Item67>
+        <Filename Value="..\Source\GLScene.Files.DXTC.pas"/>
+        <UnitName Value="GLScene.Files.DXTC"/>
+      </Item67>
+      <Item68>
+        <Filename Value="..\Source\GLScene.Files.GL2.pas"/>
+        <UnitName Value="GLScene.Files.GL2"/>
+      </Item68>
+      <Item69>
+        <Filename Value="..\Source\GLScene.Files.GL2.Base.pas"/>
+        <UnitName Value="GLScene.Files.GL2.Base"/>
+      </Item69>
+      <Item70>
+        <Filename Value="..\Source\GLScene.Files.GTS.pas"/>
+        <UnitName Value="GLScene.Files.GTS"/>
+      </Item70>
+      <Item71>
+        <Filename Value="..\Source\GLScene.Files.HDR.pas"/>
+        <UnitName Value="GLScene.Files.HDR"/>
+      </Item71>
+      <Item72>
+        <Filename Value="..\Source\GLScene.Files.JPEG.pas"/>
+        <UnitName Value="GLScene.Files.JPEG"/>
+      </Item72>
+      <Item73>
+        <Filename Value="..\Source\GLScene.Files.LMTS.pas"/>
+        <UnitName Value="GLScene.Files.LMTS"/>
+      </Item73>
+      <Item74>
+        <Filename Value="..\Source\GLScene.Files.LWO.pas"/>
+        <UnitName Value="GLScene.Files.LWO"/>
+      </Item74>
+      <Item75>
+        <Filename Value="..\Source\GLScene.Files.LWO.Types.pas"/>
+        <UnitName Value="GLScene.Files.LWO.Types"/>
+      </Item75>
+      <Item76>
+        <Filename Value="..\Source\GLScene.Files.MD2.pas"/>
+        <UnitName Value="GLScene.Files.MD2"/>
+      </Item76>
+      <Item77>
+        <Filename Value="..\Source\GLScene.Files.MD2.Base.pas"/>
+        <UnitName Value="GLScene.Files.MD2.Base"/>
+      </Item77>
+      <Item78>
+        <Filename Value="..\Source\GLScene.Files.MD2.Types.pas"/>
+        <UnitName Value="GLScene.Files.MD2.Types"/>
+      </Item78>
+      <Item79>
+        <Filename Value="..\Source\GLScene.Files.MD3.pas"/>
+        <UnitName Value="GLScene.Files.MD3"/>
+      </Item79>
+      <Item80>
+        <Filename Value="..\Source\GLScene.Files.MD3.Base.pas"/>
+        <UnitName Value="GLScene.Files.MD3.Base"/>
+      </Item80>
+      <Item81>
+        <Filename Value="..\Source\GLScene.Files.MD5.pas"/>
+        <UnitName Value="GLScene.Files.MD5"/>
+      </Item81>
+      <Item82>
+        <Filename Value="..\Source\GLScene.Files.MDC.pas"/>
+        <UnitName Value="GLScene.Files.MDC"/>
+      </Item82>
+      <Item83>
+        <Filename Value="..\Source\GLScene.Files.MDC.Types.pas"/>
+        <UnitName Value="GLScene.Files.MDC.Types"/>
+      </Item83>
+      <Item84>
+        <Filename Value="..\Source\GLScene.Files.MP3.pas"/>
+        <UnitName Value="GLScene.Files.MP3"/>
+      </Item84>
+      <Item85>
+        <Filename Value="..\Source\GLScene.Files.MS3D.pas"/>
+        <UnitName Value="GLScene.Files.MS3D"/>
+      </Item85>
+      <Item86>
+        <Filename Value="..\Source\GLScene.Files.MS3D.Types.pas"/>
+        <UnitName Value="GLScene.Files.MS3D.Types"/>
+      </Item86>
+      <Item87>
+        <Filename Value="..\Source\GLScene.Files.NMF.pas"/>
+        <UnitName Value="GLScene.Files.NMF"/>
+      </Item87>
+      <Item88>
+        <Filename Value="..\Source\GLScene.Files.NMF.Base.pas"/>
+        <UnitName Value="GLScene.Files.NMF.Base"/>
+      </Item88>
+      <Item89>
+        <Filename Value="..\Source\GLScene.Files.Nurbs.pas"/>
+        <UnitName Value="GLScene.Files.Nurbs"/>
+      </Item89>
+      <Item90>
+        <Filename Value="..\Source\GLScene.Files.O3TC.pas"/>
+        <UnitName Value="GLScene.Files.O3TC"/>
+      </Item90>
+      <Item91>
+        <Filename Value="..\Source\GLScene.Files.OBJ.pas"/>
+        <UnitName Value="GLScene.Files.OBJ"/>
+      </Item91>
+      <Item92>
+        <Filename Value="..\Source\GLScene.Files.PLY.pas"/>
+        <UnitName Value="GLScene.Files.PLY"/>
+      </Item92>
+      <Item93>
+        <Filename Value="..\Source\GLScene.Files.PNG.pas"/>
+        <UnitName Value="GLScene.Files.PNG"/>
+      </Item93>
+      <Item94>
+        <Filename Value="..\Source\GLScene.Files.Q3MD3.Types.pas"/>
+        <UnitName Value="GLScene.Files.Q3MD3.Types"/>
+      </Item94>
+      <Item95>
+        <Filename Value="..\Source\GLScene.Files.RGBE.pas"/>
+        <UnitName Value="GLScene.Files.RGBE"/>
+      </Item95>
+      <Item96>
+        <Filename Value="..\Source\GLScene.Files.SMD.pas"/>
+        <UnitName Value="GLScene.Files.SMD"/>
+      </Item96>
+      <Item97>
+        <Filename Value="..\Source\GLScene.Files.STL.pas"/>
+        <UnitName Value="GLScene.Files.STL"/>
+      </Item97>
+      <Item98>
+        <Filename Value="..\Source\GLScene.Files.STL.Types.pas"/>
+        <UnitName Value="GLScene.Files.STL.Types"/>
+      </Item98>
+      <Item99>
+        <Filename Value="..\Source\GLScene.Files.TGA.pas"/>
+        <UnitName Value="GLScene.Files.TGA"/>
+      </Item99>
+      <Item100>
+        <Filename Value="..\Source\GLScene.Files.TIN.pas"/>
+        <UnitName Value="GLScene.Files.TIN"/>
+      </Item100>
+      <Item101>
+        <Filename Value="..\Source\GLScene.Files.VRML.pas"/>
+        <UnitName Value="GLScene.Files.VRML"/>
+      </Item101>
+      <Item102>
+        <Filename Value="..\Source\GLScene.Files.VRML.Parser.pas"/>
+        <UnitName Value="GLScene.Files.VRML.Parser"/>
+      </Item102>
+      <Item103>
+        <Filename Value="..\Source\GLScene.Files.WAV.pas"/>
+        <UnitName Value="GLScene.Files.WAV"/>
+      </Item103>
+      <Item104>
+        <Filename Value="..\Source\GLScene.Fx.Explosion.pas"/>
+        <UnitName Value="GLScene.Fx.Explosion"/>
+      </Item104>
+      <Item105>
+        <Filename Value="..\Source\GLScene.Fx.Fire.pas"/>
+        <UnitName Value="GLScene.Fx.Fire"/>
+      </Item105>
+      <Item106>
+        <Filename Value="..\Source\GLScene.Fx.Particle.pas"/>
+        <UnitName Value="GLScene.Fx.Particle"/>
+      </Item106>
+      <Item107>
+        <Filename Value="..\Source\GLScene.FX.Thor.pas"/>
+        <UnitName Value="GLScene.FX.Thor"/>
+      </Item107>
+      <Item108>
+        <Filename Value="..\Source\GLScene.GameMenu.pas"/>
+        <UnitName Value="GLScene.GameMenu"/>
+      </Item108>
+      <Item109>
+        <Filename Value="..\Source\GLScene.Gizmo.pas"/>
+        <UnitName Value="GLScene.Gizmo"/>
+      </Item109>
+      <Item110>
+        <Filename Value="..\Source\GLScene.GLUTesselation.pas"/>
+        <UnitName Value="GLScene.GLUTesselation"/>
+      </Item110>
+      <Item111>
+        <Filename Value="..\Source\GLScene.Graphics.pas"/>
+        <UnitName Value="GLScene.Graphics"/>
+      </Item111>
+      <Item112>
+        <Filename Value="..\Source\GLScene.GUI.pas"/>
+        <UnitName Value="GLScene.GUI"/>
+      </Item112>
+      <Item113>
+        <Filename Value="..\Source\GLScene.GUI.Console.pas"/>
+        <UnitName Value="GLScene.GUI.Console"/>
+      </Item113>
+      <Item114>
+        <Filename Value="..\Source\GLScene.GUI.Windows.pas"/>
+        <UnitName Value="GLScene.GUI.Windows"/>
+      </Item114>
+      <Item115>
+        <Filename Value="..\Source\GLScene.HDS.Async.pas"/>
+        <UnitName Value="GLScene.HDS.Async"/>
+      </Item115>
+      <Item116>
+        <Filename Value="..\Source\GLScene.HDS.Bumpmap.pas"/>
+        <UnitName Value="GLScene.HDS.Bumpmap"/>
+      </Item116>
+      <Item117>
+        <Filename Value="..\Source\GLScene.HDS.HeightTileFile.pas"/>
+        <UnitName Value="GLScene.HDS.HeightTileFile"/>
+      </Item117>
+      <Item118>
+        <Filename Value="..\Source\GLScene.HDS.Shadow.pas"/>
+        <UnitName Value="GLScene.HDS.Shadow"/>
+      </Item118>
+      <Item119>
+        <Filename Value="..\Source\GLScene.HDS.Textured.pas"/>
+        <UnitName Value="GLScene.HDS.Textured"/>
+      </Item119>
+      <Item120>
+        <Filename Value="..\Source\GLScene.HeightData.pas"/>
+        <UnitName Value="GLScene.HeightData"/>
+      </Item120>
+      <Item121>
+        <Filename Value="..\Source\GLScene.Image.Composite.pas"/>
+        <UnitName Value="GLScene.Image.Composite"/>
+      </Item121>
+      <Item122>
+        <Filename Value="..\Source\GLScene.Image.DDS.pas"/>
+        <UnitName Value="GLScene.Image.DDS"/>
+      </Item122>
+      <Item123>
+        <Filename Value="..\Source\GLScene.Image.HDR.pas"/>
+        <UnitName Value="GLScene.Image.HDR"/>
+      </Item123>
+      <Item124>
+        <Filename Value="..\Source\GLScene.Image.Multisample.pas"/>
+        <UnitName Value="GLScene.Image.Multisample"/>
+      </Item124>
+      <Item125>
+        <Filename Value="..\Source\GLScene.Image.O3TC.pas"/>
+        <UnitName Value="GLScene.Image.O3TC"/>
+      </Item125>
+      <Item126>
+        <Filename Value="..\Source\GLScene.Image.TGA.pas"/>
+        <UnitName Value="GLScene.Image.TGA"/>
+      </Item126>
+      <Item127>
+        <Filename Value="..\Source\GLScene.Image.Utils.pas"/>
+        <UnitName Value="GLScene.Image.Utils"/>
+      </Item127>
+      <Item128>
+        <Filename Value="..\Source\GLScene.Imposter.pas"/>
+        <UnitName Value="GLScene.Imposter"/>
+      </Item128>
+      <Item129>
+        <Filename Value="..\Source\GLScene.Info.LCL.pas"/>
+        <UnitName Value="GLScene.Info.LCL"/>
+      </Item129>
+      <Item130>
+        <Filename Value="..\Source\GLScene.Keyboard.pas"/>
+        <UnitName Value="GLScene.Keyboard"/>
+      </Item130>
+      <Item131>
+        <Filename Value="..\Source\GLScene.Language.pas"/>
+        <UnitName Value="GLScene.Language"/>
+      </Item131>
+      <Item132>
+        <Filename Value="..\Source\GLScene.LensFlare.pas"/>
+        <UnitName Value="GLScene.LensFlare"/>
+      </Item132>
+      <Item133>
+        <Filename Value="..\Source\GLScene.LensFlare.Textured.pas"/>
+        <UnitName Value="GLScene.LensFlare.Textured"/>
+      </Item133>
+      <Item134>
+        <Filename Value="..\Source\GLScene.LIBJPEG.pas"/>
+        <UnitName Value="GLScene.LIBJPEG"/>
+      </Item134>
+      <Item135>
+        <Filename Value="..\Source\GLScene.LIBPNG.pas"/>
+        <UnitName Value="GLScene.LIBPNG"/>
+      </Item135>
+      <Item136>
+        <Filename Value="..\Source\GLScene.Manager.pas"/>
+        <UnitName Value="GLScene.Manager"/>
+      </Item136>
+      <Item137>
+        <Filename Value="..\Source\GLScene.Material.pas"/>
+        <UnitName Value="GLScene.Material"/>
+      </Item137>
+      <Item138>
+        <Filename Value="..\Source\GLScene.Material.MultiProxy.pas"/>
+        <UnitName Value="GLScene.Material.MultiProxy"/>
+      </Item138>
+      <Item139>
+        <Filename Value="..\Source\GLScene.Material.Script.pas"/>
+        <UnitName Value="GLScene.Material.Script"/>
+      </Item139>
+      <Item140>
+        <Filename Value="..\Source\GLScene.MaterialEx.pas"/>
+        <UnitName Value="GLScene.MaterialEx"/>
+      </Item140>
+      <Item141>
+        <Filename Value="..\Source\GLScene.Mesh.pas"/>
+        <UnitName Value="GLScene.Mesh"/>
+      </Item141>
+      <Item142>
+        <Filename Value="..\Source\GLScene.Mesh.Builder.pas"/>
+        <UnitName Value="GLScene.Mesh.Builder"/>
+      </Item142>
+      <Item143>
+        <Filename Value="..\Source\GLScene.Mesh.CSG.pas"/>
+        <UnitName Value="GLScene.Mesh.CSG"/>
+      </Item143>
+      <Item144>
+        <Filename Value="..\Source\GLScene.Mesh.Optimizer.pas"/>
+        <UnitName Value="GLScene.Mesh.Optimizer"/>
+      </Item144>
+      <Item145>
+        <Filename Value="..\Source\GLScene.Mesh.Silhouette.pas"/>
+        <UnitName Value="GLScene.Mesh.Silhouette"/>
+      </Item145>
+      <Item146>
+        <Filename Value="..\Source\GLScene.Mesh.Utils.pas"/>
+        <UnitName Value="GLScene.Mesh.Utils"/>
+      </Item146>
+      <Item147>
+        <Filename Value="..\Source\GLScene.Mirror.pas"/>
+        <UnitName Value="GLScene.Mirror"/>
+      </Item147>
+      <Item148>
+        <Filename Value="..\Source\GLScene.Movement.pas"/>
+        <UnitName Value="GLScene.Movement"/>
+      </Item148>
+      <Item149>
+        <Filename Value="..\Source\GLScene.Movement.FPS.pas"/>
+        <UnitName Value="GLScene.Movement.FPS"/>
+      </Item149>
+      <Item150>
+        <Filename Value="..\Source\GLScene.Navigator.pas"/>
+        <UnitName Value="GLScene.Navigator"/>
+      </Item150>
+      <Item151>
+        <Filename Value="..\Source\GLScene.Nodes.pas"/>
+        <UnitName Value="GLScene.Nodes"/>
+      </Item151>
+      <Item152>
+        <Filename Value="..\Source\GLScene.Objects.pas"/>
+        <UnitName Value="GLScene.Objects"/>
+      </Item152>
+      <Item153>
+        <Filename Value="..\Source\GLScene.Objects.AnimatedSprite.pas"/>
+        <UnitName Value="GLScene.Objects.AnimatedSprite"/>
+      </Item153>
+      <Item154>
+        <Filename Value="..\Source\GLScene.Objects.Atmosphere.pas"/>
+        <UnitName Value="GLScene.Objects.Atmosphere"/>
+      </Item154>
+      <Item155>
+        <Filename Value="..\Source\GLScene.Objects.Extrusion.pas"/>
+        <UnitName Value="GLScene.Objects.Extrusion"/>
+      </Item155>
+      <Item156>
+        <Filename Value="..\Source\GLScene.Objects.Feedback.pas"/>
+        <UnitName Value="GLScene.Objects.Feedback"/>
+      </Item156>
+      <Item157>
+        <Filename Value="..\Source\GLScene.Objects.FrameBuffer.pas"/>
+        <UnitName Value="GLScene.Objects.FrameBuffer"/>
+      </Item157>
+      <Item158>
+        <Filename Value="..\Source\GLScene.Objects.GraphPlotting.pas"/>
+        <UnitName Value="GLScene.Objects.GraphPlotting"/>
+      </Item158>
+      <Item159>
+        <Filename Value="..\Source\GLScene.Objects.HUD.pas"/>
+        <UnitName Value="GLScene.Objects.HUD"/>
+      </Item159>
+      <Item160>
+        <Filename Value="..\Source\GLScene.Objects.Mesh.pas"/>
+        <UnitName Value="GLScene.Objects.Mesh"/>
+      </Item160>
+      <Item161>
+        <Filename Value="..\Source\GLScene.Objects.MultiPolygon.pas"/>
+        <UnitName Value="GLScene.Objects.MultiPolygon"/>
+      </Item161>
+      <Item162>
+        <Filename Value="..\Source\GLScene.Objects.MultiProxy.pas"/>
+        <UnitName Value="GLScene.Objects.MultiProxy"/>
+      </Item162>
+      <Item163>
+        <Filename Value="..\Source\GLScene.Objects.NishitaSky.pas"/>
+        <UnitName Value="GLScene.Objects.NishitaSky"/>
+      </Item163>
+      <Item164>
+        <Filename Value="..\Source\GLScene.Objects.ParametricSurfaces.pas"/>
+        <UnitName Value="GLScene.Objects.ParametricSurfaces"/>
+      </Item164>
+      <Item165>
+        <Filename Value="..\Source\GLScene.Objects.Proxy.pas"/>
+        <UnitName Value="GLScene.Objects.Proxy"/>
+      </Item165>
+      <Item166>
+        <Filename Value="..\Source\GLScene.Objects.SkyBox.pas"/>
+        <UnitName Value="GLScene.Objects.SkyBox"/>
+      </Item166>
+      <Item167>
+        <Filename Value="..\Source\GLScene.Objects.Skydome.pas"/>
+        <UnitName Value="GLScene.Objects.Skydome"/>
+      </Item167>
+      <Item168>
+        <Filename Value="..\Source\GLScene.Objects.Teapot.pas"/>
+        <UnitName Value="GLScene.Objects.Teapot"/>
+      </Item168>
+      <Item169>
+        <Filename Value="..\Source\GLScene.Objects.Terrain.pas"/>
+        <UnitName Value="GLScene.Objects.Terrain"/>
+      </Item169>
+      <Item170>
+        <Filename Value="..\Source\GLScene.Objects.TilePlane.pas"/>
+        <UnitName Value="GLScene.Objects.TilePlane"/>
+      </Item170>
+      <Item171>
+        <Filename Value="..\Source\GLScene.Objects.Trail.pas"/>
+        <UnitName Value="GLScene.Objects.Trail"/>
+      </Item171>
+      <Item172>
+        <Filename Value="..\Source\GLScene.Objects.Tree.pas"/>
+        <UnitName Value="GLScene.Objects.Tree"/>
+      </Item172>
+      <Item173>
+        <Filename Value="..\Source\GLScene.Objects.WaterPlane.pas"/>
+        <UnitName Value="GLScene.Objects.WaterPlane"/>
+      </Item173>
+      <Item174>
+        <Filename Value="..\Source\GLScene.ObjectsEx.pas"/>
+        <UnitName Value="GLScene.ObjectsEx"/>
+      </Item174>
+      <Item175>
+        <Filename Value="..\Source\GLScene.ParticleManager.Masks.pas"/>
+        <UnitName Value="GLScene.ParticleManager.Masks"/>
+      </Item175>
+      <Item176>
+        <Filename Value="..\Source\GLScene.Particles.pas"/>
+        <UnitName Value="GLScene.Particles"/>
+      </Item176>
+      <Item177>
+        <Filename Value="..\Source\GLScene.Perlin.pas"/>
+        <UnitName Value="GLScene.Perlin"/>
+      </Item177>
+      <Item178>
+        <Filename Value="..\Source\GLScene.PFX.Line.pas"/>
+        <UnitName Value="GLScene.PFX.Line"/>
+      </Item178>
+      <Item179>
+        <Filename Value="..\Source\GLScene.PFX.Perlin.pas"/>
+        <UnitName Value="GLScene.PFX.Perlin"/>
+      </Item179>
+      <Item180>
+        <Filename Value="..\Source\GLScene.Platform.pas"/>
+        <UnitName Value="GLScene.Platform"/>
+      </Item180>
+      <Item181>
+        <Filename Value="..\Source\GLScene.PlugIn.Manager.pas"/>
+        <UnitName Value="GLScene.PlugIn.Manager"/>
+      </Item181>
+      <Item182>
+        <Filename Value="..\Source\GLScene.PlugIn.Types.pas"/>
+        <UnitName Value="GLScene.PlugIn.Types"/>
+      </Item182>
+      <Item183>
+        <Filename Value="..\Source\GLScene.Portal.pas"/>
+        <UnitName Value="GLScene.Portal"/>
+      </Item183>
+      <Item184>
+        <Filename Value="..\Source\GLScene.PostEffects.pas"/>
+        <UnitName Value="GLScene.PostEffects"/>
+      </Item184>
+      <Item185>
+        <Filename Value="..\Source\GLScene.Ragdoll.pas"/>
+        <UnitName Value="GLScene.Ragdoll"/>
+      </Item185>
+      <Item186>
+        <Filename Value="..\Source\GLScene.ROAMPatch.pas"/>
+        <UnitName Value="GLScene.ROAMPatch"/>
+      </Item186>
+      <Item187>
+        <Filename Value="..\Source\GLScene.Screen.pas"/>
+        <UnitName Value="GLScene.Screen"/>
+      </Item187>
+      <Item188>
+        <Filename Value="..\Source\GLScene.Shader.Assm.pas"/>
+        <UnitName Value="GLScene.Shader.Assm"/>
+      </Item188>
+      <Item189>
+        <Filename Value="..\Source\GLScene.Shader.Bump.pas"/>
+        <UnitName Value="GLScene.Shader.Bump"/>
+      </Item189>
+      <Item190>
+        <Filename Value="..\Source\GLScene.Shader.Cel.pas"/>
+        <UnitName Value="GLScene.Shader.Cel"/>
+      </Item190>
+      <Item191>
+        <Filename Value="..\Source\GLScene.Shader.Combiner.pas"/>
+        <UnitName Value="GLScene.Shader.Combiner"/>
+      </Item191>
+      <Item192>
+        <Filename Value="..\Source\GLScene.Shader.Custom.pas"/>
+        <UnitName Value="GLScene.Shader.Custom"/>
+      </Item192>
+      <Item193>
+        <Filename Value="..\Source\GLScene.Shader.GLSL.Bump.pas"/>
+        <UnitName Value="GLScene.Shader.GLSL.Bump"/>
+      </Item193>
+      <Item194>
+        <Filename Value="..\Source\GLScene.Shader.GLSL.Components.pas"/>
+        <UnitName Value="GLScene.Shader.GLSL.Components"/>
+      </Item194>
+      <Item195>
+        <Filename Value="..\Source\GLScene.Shader.GLSL.DiffuseSpecular.pas"/>
+        <UnitName Value="GLScene.Shader.GLSL.DiffuseSpecular"/>
+      </Item195>
+      <Item196>
+        <Filename Value="..\Source\GLScene.Shader.GLSL.PostBlur.pas"/>
+        <UnitName Value="GLScene.Shader.GLSL.PostBlur"/>
+      </Item196>
+      <Item197>
+        <Filename Value="..\Source\GLScene.Shader.HiddenLine.pas"/>
+        <UnitName Value="GLScene.Shader.HiddenLine"/>
+      </Item197>
+      <Item198>
+        <Filename Value="..\Source\GLScene.Shader.MultiMaterial.pas"/>
+        <UnitName Value="GLScene.Shader.MultiMaterial"/>
+      </Item198>
+      <Item199>
+        <Filename Value="..\Source\GLScene.Shader.Outline.pas"/>
+        <UnitName Value="GLScene.Shader.Outline"/>
+      </Item199>
+      <Item200>
+        <Filename Value="..\Source\GLScene.Shader.Parameter.pas"/>
+        <UnitName Value="GLScene.Shader.Parameter"/>
+      </Item200>
+      <Item201>
+        <Filename Value="..\Source\GLScene.Shader.Phong.pas"/>
+        <UnitName Value="GLScene.Shader.Phong"/>
+      </Item201>
+      <Item202>
+        <Filename Value="..\Source\GLScene.Shader.TextureCombiner.pas"/>
+        <UnitName Value="GLScene.Shader.TextureCombiner"/>
+      </Item202>
+      <Item203>
+        <Filename Value="..\Source\GLScene.Shader.TextureSharing.pas"/>
+        <UnitName Value="GLScene.Shader.TextureSharing"/>
+      </Item203>
+      <Item204>
+        <Filename Value="..\Source\GLScene.Shader.User.pas"/>
+        <UnitName Value="GLScene.Shader.User"/>
+      </Item204>
+      <Item205>
+        <Filename Value="..\Source\GLScene.ShadowPlane.pas"/>
+        <UnitName Value="GLScene.ShadowPlane"/>
+      </Item205>
+      <Item206>
+        <Filename Value="..\Source\GLScene.ShadowVolume.pas"/>
+        <UnitName Value="GLScene.ShadowVolume"/>
+      </Item206>
+      <Item207>
+        <Filename Value="..\Source\GLScene.Silhouette.pas"/>
+        <UnitName Value="GLScene.Silhouette"/>
+      </Item207>
+      <Item208>
+        <Filename Value="..\Source\GLScene.SimpleNavigation.pas"/>
+        <UnitName Value="GLScene.SimpleNavigation"/>
+      </Item208>
+      <Item209>
+        <Filename Value="..\Source\GLScene.SmoothNavigator.pas"/>
+        <UnitName Value="GLScene.SmoothNavigator"/>
+      </Item209>
+      <Item210>
+        <Filename Value="..\Source\GLScene.Sound.pas"/>
+        <UnitName Value="GLScene.Sound"/>
+      </Item210>
+      <Item211>
+        <Filename Value="..\Source\GLScene.Sound.FileObjects.pas"/>
+        <UnitName Value="GLScene.Sound.FileObjects"/>
+      </Item211>
+      <Item212>
+        <Filename Value="..\Source\GLScene.SpatialPartitioning.pas"/>
+        <UnitName Value="GLScene.SpatialPartitioning"/>
+      </Item212>
+      <Item213>
+        <Filename Value="..\Source\GLScene.StarRecord.pas"/>
+        <UnitName Value="GLScene.StarRecord"/>
+      </Item213>
+      <Item214>
+        <Filename Value="..\Source\GLScene.Texture.pas"/>
+        <UnitName Value="GLScene.Texture"/>
+      </Item214>
+      <Item215>
+        <Filename Value="..\Source\GLScene.Texture.Combiners.pas"/>
+        <UnitName Value="GLScene.Texture.Combiners"/>
+      </Item215>
+      <Item216>
+        <Filename Value="..\Source\GLScene.Texture.Dynamic.pas"/>
+        <UnitName Value="GLScene.Texture.Dynamic"/>
+      </Item216>
+      <Item217>
+        <Filename Value="..\Source\GLScene.Texture.Format.pas"/>
+        <UnitName Value="GLScene.Texture.Format"/>
+      </Item217>
+      <Item218>
+        <Filename Value="..\Source\GLScene.Texture.Procedural.pas"/>
+        <UnitName Value="GLScene.Texture.Procedural"/>
+      </Item218>
+      <Item219>
+        <Filename Value="..\Source\GLScene.Texture.Projected.pas"/>
+        <UnitName Value="GLScene.Texture.Projected"/>
+      </Item219>
+      <Item220>
+        <Filename Value="..\Source\GLScene.Texture.Projected.GLSL.pas"/>
+        <UnitName Value="GLScene.Texture.Projected.GLSL"/>
+      </Item220>
+      <Item221>
+        <Filename Value="..\Source\GLScene.TimeEvents.Manager.pas"/>
+        <UnitName Value="GLScene.TimeEvents.Manager"/>
+      </Item221>
+      <Item222>
+        <Filename Value="..\Source\GLScene.Utils.pas"/>
+        <UnitName Value="GLScene.Utils"/>
+      </Item222>
+      <Item223>
+        <Filename Value="..\Source\GLScene.Vector.FileObjects.pas"/>
+        <UnitName Value="GLScene.Vector.FileObjects"/>
+      </Item223>
+      <Item224>
+        <Filename Value="..\Source\GLScene.Verlet.Classes.pas"/>
+        <UnitName Value="GLScene.Verlet.Classes"/>
+      </Item224>
+      <Item225>
+        <Filename Value="..\Source\GLScene.Verlet.Clothify.pas"/>
+        <UnitName Value="GLScene.Verlet.Clothify"/>
+      </Item225>
+      <Item226>
+        <Filename Value="..\Source\GLScene.Verlet.SkeletonColliders.pas"/>
+        <UnitName Value="GLScene.Verlet.SkeletonColliders"/>
+      </Item226>
+      <Item227>
+        <Filename Value="..\Source\GLScene.VfsPAK.pas"/>
+        <UnitName Value="GLScene.VfsPAK"/>
+      </Item227>
+      <Item228>
+        <Filename Value="..\Source\GLScene.Vfw.pas"/>
+        <UnitName Value="GLScene.Vfw"/>
+      </Item228>
+      <Item229>
+        <Filename Value="..\Source\GLScene.Viewer.pas"/>
+        <UnitName Value="GLScene.Viewer"/>
+      </Item229>
+      <Item230>
+        <Filename Value="..\Source\GLScene.Viewer.Form.pas"/>
+        <UnitName Value="GLScene.Viewer.Form"/>
+      </Item230>
+      <Item231>
+        <Filename Value="..\Source\GLScene.Viewer.FullScreen.pas"/>
+        <UnitName Value="GLScene.Viewer.FullScreen"/>
+      </Item231>
+      <Item232>
+        <Filename Value="..\Source\GLScene.Viewer.LCL.pas"/>
+        <UnitName Value="GLScene.Viewer.LCL"/>
+      </Item232>
+      <Item233>
+        <Filename Value="..\Source\GLScene.WaveOut.pas"/>
+        <UnitName Value="GLScene.WaveOut"/>
+      </Item233>
+      <Item234>
+        <Filename Value="..\Source\GLScene.ZBuffer.pas"/>
+        <UnitName Value="GLScene.ZBuffer"/>
+      </Item234>
+      <Item235>
+        <Filename Value="..\Source\GLScene.ZLIB.pas"/>
+        <UnitName Value="GLScene.ZLIB"/>
+      </Item235>
+      <Item236>
+        <Filename Value="..\Source\GLScene.ZLIB.API.pas"/>
+        <UnitName Value="GLScene.ZLIB.API"/>
+      </Item236>
+      <Item237>
+        <Filename Value="..\Source\GLScene.inc"/>
+        <Type Value="Include"/>
+      </Item237>
+      <Item238>
+        <Filename Value="..\Source\GLScene.Archive.Manager.pas"/>
+        <UnitName Value="GLScene.Archive.Manager"/>
+      </Item238>
+    </Files>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

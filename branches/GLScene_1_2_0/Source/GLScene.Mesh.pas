@@ -16,6 +16,7 @@ unit GLScene.Mesh;
 interface
 
 {$I GLScene.inc}
+{$M-}
 
 uses
   Classes,

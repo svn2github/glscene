@@ -63,7 +63,6 @@ uses
   GLScene.Base.Vector.Geometry,
   GLScene.Files._3DS.Base,
   GLScene.Files._3DS.Types,
-  GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,
   GLScene.Base.PersistentClasses,
   GLScene.Base.Strings,

@@ -41,6 +41,7 @@ uses
   Classes,
   GLScene.Base.Context,
   GLScene.Core,
+  GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Geometry,
   GLScene.Material,
   GLScene.MaterialEx,
@@ -281,9 +282,6 @@ uses
   SyncObjs,
 {$ENDIF}
   SysUtils,
-{$IFDEF GLS_DELPHI}
-  GLScene.Base.Vector.Types,
-{$ENDIF}
   GLScene.Base.OpenGL.Tokens,
   GLScene.Shader.Parameter,
   GLScene.Base.GLStateMachine,

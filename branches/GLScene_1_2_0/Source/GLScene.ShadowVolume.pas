@@ -40,6 +40,7 @@ interface
 uses
   Classes,
   GLScene.Core,
+  GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,
@@ -333,9 +334,7 @@ implementation
 uses
   SysUtils,
   GLScene.Base.Vector.Lists,
-  GLScene.Base.GLStateMachine
-{$IFDEF GLS_DELPHI},
-  GLScene.Base.Vector.Types{$ENDIF};
+  GLScene.Base.GLStateMachine;
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------

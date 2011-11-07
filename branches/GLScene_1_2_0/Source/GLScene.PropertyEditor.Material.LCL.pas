@@ -10,7 +10,6 @@ unit GLScene.PropertyEditor.Material.LCL;
 
 interface
 
-{$MODE DELPHI}
 {$i GLScene.inc}
 
 uses
@@ -75,6 +74,8 @@ function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
 implementation
+
+{$R GLScene.PropertyEditor.Material.LCL.lfm}
 
 var
   vMaterialEditorForm: TMaterialEditorForm;
@@ -238,8 +239,6 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-  {$i FMaterialEditorFormLCL.lrs}
 
 finalization
 
