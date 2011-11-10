@@ -31,6 +31,12 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/06/11 - DaStr - Added some Vector2f routines
+                       Overloaded some procedures to accept both 3f and 4f vectors
+                       Marked some methods as inline
+                       Added SignStrict, MoveObjectAround(), GetSafeTurnAngle(),
+                       RectanglesIntersect(), RectangleContains(),
+                       AngleBetweenVectors(), ShiftObjectFromCenter()
       <li>11/05/11 - Yar - Added ClampValue for Integer
       <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
@@ -208,6 +214,12 @@ const
 // *experimental* and incomplete
 {.$define GEOMETRY_NO_ASM}
 
+{$IFNDEF GEOMETRY_NO_ASM}
+{$IFDEF GLS_INLINE}
+{$DEFINE GLS_INLINE_VICE_ASM}
+{$ENDIF}
+{$ENDIF}
+
 type
    // data types needed for 3D graphics calculation,
    // included are 'C like' aliases for each type (to be
@@ -305,6 +317,8 @@ type
 
    PAffinePtrVector = ^TAffinePtrVector;
    TAffinePtrVector = TVector3p;
+
+   PVector2f = ^TVector2f;
 
    // some simplified names
    PVector = ^TVector;
@@ -477,53 +491,53 @@ const
 // Vector functions
 //------------------------------------------------------------------------------
 
-function TexPointMake(const s, t : Single) : TTexPoint; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-function AffineVectorMake(const v : TVector) : TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetAffineVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TAffineVector; const vSrc : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TAffineVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TAffineDblVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TAffineDblVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function PointMake(const x, y, z: Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function PointMake(const v : TAffineVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function PointMake(const v : TVector) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TVector; const x, y, z : Single; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TVector; const av : TAffineVector; w : Single = 0); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure SetVector(out v : TVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakePoint(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(out v : TAffineVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure MakeVector(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure RstVector(var v : TAffineVector); overload;
-procedure RstVector(var v : TVector); overload;
+function TexPointMake(const s, t : Single) : TTexPoint; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function AffineVectorMake(const v : TVector) : TAffineVector; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetAffineVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const x, y, z : Single); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const vSrc : TVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TAffineVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TAffineDblVector; const vSrc : TAffineVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TAffineDblVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function PointMake(const x, y, z: Single) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function PointMake(const v : TAffineVector) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function PointMake(const v : TVector) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const x, y, z : Single; w : Single = 0); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const av : TAffineVector; w : Single = 0); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure SetVector(out v : TVector; const vSrc : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakePoint(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakeVector(out v : TAffineVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const x, y, z: Single); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const av : TAffineVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure MakeVector(out v : TVector; const av : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure RstVector(var v : TAffineVector); overload; {$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
+procedure RstVector(var v : TVector); overload; {$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
 
 //2
-function VectorEquals(const V1, V2: TVector2f): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector2i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector2d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector2s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector2b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2f): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2i): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2d): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2s): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector2b): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //3
 //function VectorEquals(const V1, V2: TVector3f): Boolean; overload; //declared further
-function VectorEquals(const V1, V2: TVector3i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector3d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector3s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector3b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3i): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3d): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3s): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector3b): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //4
 //function VectorEquals(const V1, V2: TVector4f): Boolean; overload; //declared further
-function VectorEquals(const V1, V2: TVector4i): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector4d): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector4s): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorEquals(const V1, V2: TVector4b): Boolean; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4i): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4d): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4s): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorEquals(const V1, V2: TVector4b): Boolean; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //3x3
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean; overload;
@@ -541,61 +555,61 @@ function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean; overload;
 
 
   //2x
-function Vector2fMake(const X, Y: Single): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2iMake(const X, Y: Longint): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2sMake(const X, Y: Smallint): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2dMake(const X, Y: Double): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2bMake(const X, Y: Byte): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2fMake(const X, Y: Single): TVector2f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2iMake(const X, Y: Longint): TVector2i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2sMake(const X, Y: Smallint): TVector2s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2dMake(const X, Y: Double): TVector2d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2bMake(const X, Y: Byte): TVector2b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector2fMake(const Vector: TVector3f): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2iMake(const Vector: TVector3i): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2sMake(const Vector: TVector3s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2dMake(const Vector: TVector3d): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2bMake(const Vector: TVector3b): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2fMake(const Vector: TVector3f): TVector2f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2iMake(const Vector: TVector3i): TVector2i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2sMake(const Vector: TVector3s): TVector2s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2dMake(const Vector: TVector3d): TVector2d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2bMake(const Vector: TVector3b): TVector2b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector2fMake(const Vector: TVector4f): TVector2f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2iMake(const Vector: TVector4i): TVector2i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2sMake(const Vector: TVector4s): TVector2s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2dMake(const Vector: TVector4d): TVector2d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector2bMake(const Vector: TVector4b): TVector2b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector2fMake(const Vector: TVector4f): TVector2f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2iMake(const Vector: TVector4i): TVector2i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2sMake(const Vector: TVector4s): TVector2s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2dMake(const Vector: TVector4d): TVector2d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector2bMake(const Vector: TVector4b): TVector2b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
   //3x
-function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3fMake(const Vector: TVector2f; const Z: Single = 0): TVector3f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3iMake(const Vector: TVector2i; const Z: Longint = 0): TVector3i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3sMake(const Vector: TVector2s; const Z: Smallint = 0): TVector3s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3dMake(const Vector: TVector2d; const Z: Double = 0): TVector3d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3bMake(const Vector: TVector2b; const Z: Byte = 0): TVector3b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector3fMake(const Vector: TVector4f): TVector3f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3iMake(const Vector: TVector4i): TVector3i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3sMake(const Vector: TVector4s): TVector3s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3dMake(const Vector: TVector4d): TVector3d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector3bMake(const Vector: TVector4b): TVector3b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector3fMake(const Vector: TVector4f): TVector3f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3iMake(const Vector: TVector4i): TVector3i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3sMake(const Vector: TVector4s): TVector3s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3dMake(const Vector: TVector4d): TVector3d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector3bMake(const Vector: TVector4b): TVector3b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
   //4x
-function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4fMake(const X: Single;   const Y: Single = 0;   const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4iMake(const X: Longint;  const Y: Longint = 0;  const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4sMake(const X: Smallint; const Y: Smallint = 0; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4dMake(const X: Double;   const Y: Double = 0;   const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4bMake(const X: Byte;     const Y: Byte = 0;     const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4fMake(const Vector: TVector3f; const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4iMake(const Vector: TVector3i; const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4sMake(const Vector: TVector3s; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4dMake(const Vector: TVector3d; const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4bMake(const Vector: TVector3b; const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Vector4fMake(const Vector: TVector2f; const Z: Single = 0;   const W: Single = 0): TVector4f; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4iMake(const Vector: TVector2i; const Z: Longint = 0;  const W: Longint = 0): TVector4i; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4sMake(const Vector: TVector2s; const Z: Smallint = 0; const W: Smallint = 0): TVector4s; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4dMake(const Vector: TVector2d; const Z: Double = 0;   const W: Double = 0): TVector4d; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;     const W: Byte = 0): TVector4b; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //: Vector comparison functions:
       //ComparedVector
@@ -685,9 +699,9 @@ procedure VectorAdd(const v1, v2 : TAffineVector; vr : PAffineVector); overload;
 function VectorAdd(const v1, v2 : TVector) : TVector; overload;
 procedure VectorAdd(const v1, v2 : TVector; var vr : TVector); overload;
 //: Sums up f to each component of the vector
-function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Sums up f to each component of the vector
-function VectorAdd(const v : TVector; const f : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorAdd(const v : TVector; const f : Single) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector); overload;
 //: Adds V2 to V1, result is placed in V1
@@ -695,15 +709,15 @@ procedure AddVector(var v1 : TAffineVector; const v2 : TVector); overload;
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var v1 : TVector; const v2 : TVector); overload;
 //: Sums up f to each component of the vector
-procedure AddVector(var v : TAffineVector; const f : Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure AddVector(var v : TAffineVector; const f : Single); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Sums up f to each component of the vector
-procedure AddVector(var v : TVector; const f : Single); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure AddVector(var v : TVector; const f : Single); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //: Adds V2 to V1, result is placed in V1. W coordinate is always 1.
-procedure AddPoint(var v1 : TVector; const v2 : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure AddPoint(var v1 : TVector; const v2 : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //: Returns the sum of two homogeneous vectors. W coordinate is always 1.
-function PointAdd(var v1 : TVector; const v2 : TVector): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function PointAdd(var v1 : TVector; const v2 : TVector): TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 
 //: Adds delta to nb texpoints in src and places result in dest
@@ -719,6 +733,11 @@ procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVe
                          dest : PAffineVectorArray); overload;
 
 //: Returns V1-V2
+function VectorSubtract(const V1, V2 : TVector2f) : TVector2f; overload;
+//: Subtracts V2 from V1, result is placed in V1
+procedure SubtractVector(var V1 : TVector2f; const V2 : TVector2f); overload;
+
+//: Returns V1-V2
 function VectorSubtract(const V1, V2 : TAffineVector) : TAffineVector; overload;
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
@@ -732,8 +751,8 @@ function VectorSubtract(const V1, V2 : TVector) : TVector; overload;
 procedure VectorSubtract(const v1, v2 : TVector; var result : TVector); overload;
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TVector; var result : TAffineVector); overload;
-function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorSubtract(const v1 : TVector; delta : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorSubtract(const v1 : TVector; delta : Single) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Subtracts V2 from V1, result is placed in V1
 procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector); overload;
 //: Subtracts V2 from V1, result is placed in V1
@@ -743,29 +762,29 @@ procedure SubtractVector(var V1 : TVector; const V2 : TVector); overload;
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single); overload;
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); overload;
 //: Makes a linear combination of two texpoints
-function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of three vectors and return the result
-function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TVector; const v : TVector; var f : Single); overload;
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TVector; const v : TAffineVector; var f : Single); overload;
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and return the result
-function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single): TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and place result in vr
-procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of two vectors and place result in vr
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of two vectors and place result in vr, F1=1.0
 procedure VectorCombine(const V1, V2: TVector; const F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of three vectors and return the result
-function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of three vectors and return the result
 procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single; var vr : TVector); overload;
 
@@ -800,9 +819,9 @@ procedure VectorCrossProduct(const v1, v2 : TVector; var vr : TAffineVector); ov
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
 
 //: Calculates linear interpolation between start and stop at point t
-function Lerp(const start, stop, t : Single) : Single;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function Lerp(const start, stop, t : Single) : Single;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Calculates angular interpolation between start and stop at point t
-function AngleLerp(start, stop, t : Single) : Single;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function AngleLerp(start, stop, t : Single) : Single;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 {: This is used for interpolating between 2 matrices. The result
    is used to reposition the model parts each frame. }
 function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
@@ -812,15 +831,15 @@ function MatrixLerp(const m1, m2: TMatrix; const Delta: Single): TMatrix;
 function DistanceBetweenAngles(angle1, angle2 : Single) : Single;
 
 //: Calculates linear interpolation between texpoint1 and texpoint2 at point t
-function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Calculates linear interpolation between vector1 and vector2 at point t
 function VectorLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
 procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineVector); overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t
-function VectorLerp(const v1, v2 : TVector; t : Single) : TVector; overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorLerp(const v1, v2 : TVector; t : Single) : TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
-procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 function VectorAngleLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
 function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineVector; overload;
@@ -856,6 +875,8 @@ function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionD
 function VectorLength(const x, y : Single) : Single; overload;
 {: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z). }
 function VectorLength(const x, y, z : Single) : Single; overload;
+//: Calculates the length of a vector following the equation sqrt(x*x+y*y).
+function VectorLength(const v : TVector2f) : Single; overload;
 //: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z).
 function VectorLength(const v : TAffineVector) : Single; overload;
 //: Calculates the length of a vector following the equation sqrt(x*x+y*y+z*z+w*w).
@@ -879,9 +900,14 @@ function VectorNorm(const v : TVector) : Single; overload;
 function VectorNorm(var V: array of Single) : Single; overload;
 
 //: Transforms a vector to unit length
+procedure NormalizeVector(var v : TVector2f); overload;
+//: Returns the vector transformed to unit length
+//: Transforms a vector to unit length
 procedure NormalizeVector(var v : TAffineVector); overload;
 //: Transforms a vector to unit length
 procedure NormalizeVector(var v : TVector); overload;
+//: Returns the vector transformed to unit length
+function VectorNormalize(const v : TVector2f) : TVector2f; overload;
 //: Returns the vector transformed to unit length
 function VectorNormalize(const v : TAffineVector) : TAffineVector; overload;
 //: Returns the vector transformed to unit length (w component dropped)
@@ -892,7 +918,11 @@ procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer); overload
 
 {: Calculates the cosine of the angle between Vector1 and Vector2.<p>
    Result = DotProduct(V1, V2) / (Length(V1) * Length(V2)) }
-function VectorAngleCosine(const V1, V2: TAffineVector) : Single;
+function VectorAngleCosine(const V1, V2: TAffineVector) : Single; overload;
+
+{: Calculates the cosine of the angle between Vector1 and Vector2.<p>
+   Result = DotProduct(V1, V2) / (Length(V1) * Length(V2)) }
+function VectorAngleCosine(const V1, V2: TVector) : Single; overload;
 
 //: Negates the vector
 function VectorNegate(const v : TAffineVector) : TAffineVector; overload;
@@ -906,6 +936,8 @@ procedure NegateVector(var V : TVector); overload;
 procedure NegateVector(var V : array of Single); overload;
 
 //: Scales given vector by a factor
+procedure ScaleVector(var v : TVector2f; factor : Single); overload;
+//: Scales given vector by a factor
 procedure ScaleVector(var v : TAffineVector; factor : Single); overload;
 {: Scales given vector by another vector.<p>
    v[x]:=v[x]*factor[x], v[y]:=v[y]*factor[y] etc. }
@@ -915,6 +947,9 @@ procedure ScaleVector(var v : TVector; factor : Single); overload;
 {: Scales given vector by another vector.<p>
    v[x]:=v[x]*factor[x], v[y]:=v[y]*factor[y] etc. }
 procedure ScaleVector(var v : TVector; const factor : TVector); overload;
+
+//: Returns a vector scaled by a factor
+function VectorScale(const v : TVector2f; factor : Single) : TVector2f; overload;
 //: Returns a vector scaled by a factor
 function VectorScale(const v : TAffineVector; factor : Single) : TAffineVector; overload;
 //: Scales a vector by a factor and places result in vr
@@ -932,26 +967,26 @@ function VectorScale(const v : TVector; const Factor : TVector): TVector; overlo
 
 {: Divides given vector by another vector.<p>
    v[x]:=v[x]/divider[x], v[y]:=v[y]/divider[y] etc. }
-procedure DivideVector(var v : TVector; const divider : TVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-procedure DivideVector(var v : TAffineVector; const divider : TAffineVector); overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure DivideVector(var v : TVector; const divider : TVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+procedure DivideVector(var v : TAffineVector; const divider : TAffineVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
-function VectorDivide(const v: TVector; const divider : TVector): TVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-function VectorDivide(const v: TAffineVector; const divider : TAffineVector): TAffineVector; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorDivide(const v: TVector; const divider : TVector): TVector; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function VectorDivide(const v: TAffineVector; const divider : TAffineVector): TAffineVector; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //: True if all components are equal.
-function TexpointEquals(const p1, p2: TTexpoint): Boolean;
+function TexpointEquals(const p1, p2: TTexpoint): Boolean; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: True if all components are equal.
-function RectEquals(const Rect1, Rect2: TRect): Boolean;
+function RectEquals(const Rect1, Rect2: TRect): Boolean; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: True if all components are equal.
-function VectorEquals(const V1, V2: TVector) : Boolean; overload;
+function VectorEquals(const V1, V2: TVector) : Boolean; overload; {$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
 //: True if all components are equal.
-function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload;
+function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload; {$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
 //: True if X, Y and Z components are equal.
-function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload;
+function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload; {$IFDEF GLS_INLINE_VICE_ASM_VICE_ASM}inline;{$ENDIF}
 //: True if x=y=z=0, w ignored
-function VectorIsNull(const v : TVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorIsNull(const v : TVector) : Boolean; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: True if x=y=z=0, w ignored
-function VectorIsNull(const v : TAffineVector) : Boolean; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+function VectorIsNull(const v : TAffineVector) : Boolean; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 {: Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y]), also know as "Norm1".<p> }
 function VectorSpacing(const v1, v2 : TTexPoint): Single; overload;
@@ -996,13 +1031,13 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineVector; overload;
 
 //: Vector components are replaced by their Abs() value. }
-procedure AbsVector(var v : TVector); overload;{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure AbsVector(var v : TVector); overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Vector components are replaced by their Abs() value. }
-procedure AbsVector(var v : TAffineVector); overload;
+procedure AbsVector(var v : TAffineVector); overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Returns a vector with components replaced by their Abs value. }
-function VectorAbs(const v : TVector) : TVector; overload;
+function VectorAbs(const v : TVector) : TVector; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Returns a vector with components replaced by their Abs value. }
-function VectorAbs(const v : TAffineVector) : TAffineVector; overload;
+function VectorAbs(const v : TAffineVector) : TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 //------------------------------------------------------------------------------
 // Matrix functions
@@ -1153,7 +1188,8 @@ function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Si
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single; overload;
 
 {: Computes closest point on a segment (a segment is a limited line).}
-function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector; overload;
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TVector) : TVector; overload;
 {: Computes algebraic distance between segment and line (a segment is a limited line).}
 function PointSegmentDistance(const point, segmentStart, segmentStop : TAffineVector) : single;
 {: Computes closest point on a line.}
@@ -1253,14 +1289,18 @@ function NormalizeAngle(angle : Single) : Single;
 function NormalizeDegAngle(angle : Single) : Single;
 
 //: Calculates sine and cosine from the given angle Theta
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCos(const Theta: Extended; out Sin, Cos: Extended); overload;
+{$ENDIF}
 //: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Double; out Sin, Cos: Double); overload;
 //: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Single; out Sin, Cos: Single); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended); overload;
+{$ENDIF}
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Double); overload;
@@ -1286,6 +1326,7 @@ function  Tan(const X : Extended) : Extended; overload;
 function  Tan(const X : Single) : Single; overload;
 function  CoTan(const X : Extended) : Extended; overload;
 function  CoTan(const X : Single) : Single; overload;
+
 
 //------------------------------------------------------------------------------
 // Hyperbolic Trigonometric functions
@@ -1350,6 +1391,7 @@ function ScaleAndRound(i : Integer; var s : Single) : Integer;
 
 {: Returns the sign of the x value using the (-1, 0, +1) convention }
 function Sign(x : Single) : Integer;
+function SignStrict(x : Single) : Integer;
 
 {: Returns True if x is in [a; b] }
 function IsInRange(const x, a, b : Single) : Boolean; overload;
@@ -1367,22 +1409,32 @@ function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overlo
 function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
 function MinFloat(const v1, v2 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MinFloat(const v1, v2 : Extended) : Extended; overload;
+{$ENDIF}
 function MinFloat(const v1, v2, v3 : Single) : Single; overload;
 function MinFloat(const v1, v2, v3 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MinFloat(const v1, v2, v3 : Extended) : Extended; overload;
+{$ENDIF}
 {: Returns the maximum value of the array. }
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v : array of Single) : Single; overload;
 {: Returns the maximum of given values. }
 function MaxFloat(const v1, v2 : Single) : Single; overload;
 function MaxFloat(const v1, v2 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2 : Extended) : Extended; overload;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 function MinInteger(const v1, v2 : Integer) : Integer; overload;
 function MinInteger(const v1, v2 : Cardinal) : Cardinal; overload;
@@ -1579,6 +1631,16 @@ function RayCastBoxIntersect(
   const rayStart, rayVector, aMinExtent, aMaxExtent : TAffineVector;
   intersectPoint : PAffineVector = nil) : Boolean;
 
+// Some 2d intersection functions.
+
+{: Determine if 2 rectanges intersect. }
+function RectanglesIntersect(const ACenterOfRect1, ACenterOfRect2,
+  ASizeOfRect1, ASizeOfRect2: TVector2f): Boolean;
+
+{: Determine if BigRect completely contains SmallRect. }
+function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
+  ASizeOfBigRect1, ASizeOfSmallRect2: TVector2f; const AEps: Single = 0.0): Boolean;
+
 {: Computes the visible radius of a sphere in a perspective projection.<p>
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
@@ -1630,6 +1692,34 @@ function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMat
    NOTE: This function assumes that the point lies on the plane defined by the triangle.
    If this is not the case, the function will not work correctly! }
 function BarycentricCoordinates(const v1, v2, v3, p: TAffineVector; var u, v: single): boolean;
+
+{: Calculates angles for the Camera.MoveAroundTarget(pitch, turn) procedure.
+   Initially from then GLCameraColtroller unit, requires AOriginalUpVector to contain only -1, 0 or 1.
+   Result contains pitch and turn angles. }
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f; overload;
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f; overload;
+
+{: Extracted from Camera.MoveAroundTarget(pitch, turn). }
+function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
+  pitchDelta, turnDelta: Single): TVector;
+
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single; overload;
+function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single; overload;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TVector;
+ const ACenter: TVector; const ADistance: Single; const AFromCenterSpot: Boolean): TVector; overload;
+function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
+ const ACenter: TAffineVector; const ADistance: Single; const AFromCenterSpot: Boolean): TAffineVector; overload;
 
 const
    cPI       : Single =  3.141592654;
@@ -2522,6 +2612,8 @@ begin
 {$endif}
 end;
 
+
+
 // VectorSubtract (proc, affine)
 //
 procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
@@ -2544,6 +2636,27 @@ begin
    result[0]:=v1[0]-v2[0];
    result[1]:=v1[1]-v2[1];
    result[2]:=v1[2]-v2[2];
+{$endif}
+end;
+
+// VectorSubtract (func, 2f)
+//
+function VectorSubtract(const V1, V2 : TVector2f) : TVector2f;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+{$else}
+begin
+   Result[0]:=v1[0]-v2[0];
+   Result[1]:=v1[1]-v2[1];
 {$endif}
 end;
 
@@ -2749,6 +2862,26 @@ begin
    v1[0]:=v1[0]-v2[0];
    v1[1]:=v1[1]-v2[1];
    v1[2]:=v1[2]-v2[2];
+{$endif}
+end;
+
+// SubtractVector (2f)
+//
+procedure SubtractVector(var V1 : TVector2f; const V2 : TVector2f);
+// EAX contains address of V1
+// EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+         FLD  DWORD PTR [EAX]
+         FSUB DWORD PTR [EDX]
+         FSTP DWORD PTR [EAX]
+         FLD  DWORD PTR [EAX+4]
+         FSUB DWORD PTR [EDX+4]
+         FSTP DWORD PTR [EAX+4]
+{$else}
+begin
+   v1[0]:=v1[0]-v2[0];
+   v1[1]:=v1[1]-v2[1];
 {$endif}
 end;
 
@@ -3522,8 +3655,8 @@ begin
    if VectorEquals(v1, v2) then begin
       Result:=v1;
    end else begin
-      q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
-      q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
+      q1:=QuaternionFromEuler(GLScene.Base.Vector.Geometry.RadToDeg(v1[0]), GLScene.Base.Vector.Geometry.RadToDeg(v1[1]), GLScene.Base.Vector.Geometry.RadToDeg(v1[2]), eulZYX);
+      q2:=QuaternionFromEuler(GLScene.Base.Vector.Geometry.RadToDeg(v2[0]), GLScene.Base.Vector.Geometry.RadToDeg(v2[1]), GLScene.Base.Vector.Geometry.RadToDeg(v2[2]), eulZYX);
       qr:=QuaternionSlerp(q1, q2, t);
       m:=QuaternionToMatrix(qr);
       MatrixDecompose(m, tran);
@@ -3850,6 +3983,25 @@ begin
 {$endif}
 end;
 
+// VectorLength
+//
+function VectorLength(const v : TVector2f) : Single;
+// EAX contains address of V
+// result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+       FLD  DWORD PTR [EAX]
+       FMUL ST, ST
+       FLD  DWORD PTR [EAX+4]
+       FMUL ST, ST
+       FADDP
+       FSQRT
+{$else}
+begin
+   Result:=Sqrt(VectorNorm(v[0], v[1]));
+{$endif}
+end;
+
 // VectorLength  (x, y)
 //
 function VectorLength(const x, y : Single) : Single;
@@ -4005,6 +4157,48 @@ begin
 {$endif}
 end;
 
+// NormalizeVector (2f)
+//
+procedure NormalizeVector(var v : TVector2f);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      test vSIMD, 1
+@@FPU:
+    mov   ecx, eax
+    FLD  DWORD PTR [ECX]
+    FMUL ST, ST
+    FLD  DWORD PTR [ECX+4]
+    FMUL ST, ST
+    FADD
+		FLDZ
+		FCOMP
+		FNSTSW AX
+		sahf
+		jz @@result
+		FSQRT
+		FLD1
+		FDIVR
+@@result:
+    FLD  ST
+    FMUL DWORD PTR [ECX]
+    FSTP DWORD PTR [ECX]
+    FLD  ST
+    FMUL DWORD PTR [ECX+4]
+    FSTP DWORD PTR [ECX+4]
+{$else}
+var
+  invLen : Single;
+  vn : single;
+begin
+  vn:=VectorNorm(v);
+  if vn>0 then begin
+    invLen:=RSqrt(vn);
+    v[0]:=v[0]*invLen;
+    v[1]:=v[1]*invLen;
+    end;
+{$endif}
+end;
+
 // NormalizeVector (affine)
 //
 procedure NormalizeVector(var v : TAffineVector);
@@ -4076,6 +4270,23 @@ begin
     v[2]:=v[2]*invLen;
     end;
 {$endif}
+end;
+
+// VectorNormalize
+//
+function VectorNormalize(const v : TVector2f) : TVector2f;
+var
+  invLen : Single;
+  vn : single;
+begin
+  vn:=VectorNorm(v[0], v[1]);
+  if vn=0 then
+    Result := v
+  else begin
+    invLen:=RSqrt(vn);
+    result[0]:=v[0]*invLen;
+    result[1]:=v[1]*invLen;
+    end;
 end;
 
 // VectorNormalize
@@ -4433,6 +4644,48 @@ begin
 {$endif}
 end;
 
+// VectorAngleCosine
+//
+function VectorAngleCosine(const V1, V2: TVector): Single;
+// EAX contains address of Vector1
+// EDX contains address of Vector2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD DWORD PTR [EAX]           // V1[0]
+      FLD ST                        // double V1[0]
+      FMUL ST, ST                   // V1[0]^2 (prep. for divisor)
+      FLD DWORD PTR [EDX]           // V2[0]
+      FMUL ST(2), ST                // ST(2):=V1[0] * V2[0]
+      FMUL ST, ST                   // V2[0]^2 (prep. for divisor)
+      FLD DWORD PTR [EAX + 4]       // V1[1]
+      FLD ST                        // double V1[1]
+      FMUL ST, ST                   // ST(0):=V1[1]^2
+      FADDP ST(3), ST               // ST(2):=V1[0]^2 + V1[1] *  * 2
+      FLD DWORD PTR [EDX + 4]       // V2[1]
+      FMUL ST(1), ST                // ST(1):=V1[1] * V2[1]
+      FMUL ST, ST                   // ST(0):=V2[1]^2
+      FADDP ST(2), ST               // ST(1):=V2[0]^2 + V2[1]^2
+      FADDP ST(3), ST               // ST(2):=V1[0] * V2[0] + V1[1] * V2[1]
+      FLD DWORD PTR [EAX + 8]       // load V2[1]
+      FLD ST                        // same calcs go here
+      FMUL ST, ST                   // (compare above)
+      FADDP ST(3), ST
+      FLD DWORD PTR [EDX + 8]
+      FMUL ST(1), ST
+      FMUL ST, ST
+      FADDP ST(2), ST
+      FADDP ST(3), ST
+      FMULP                         // ST(0):=(V1[0]^2 + V1[1]^2 + V1[2]) *
+                                    //          (V2[0]^2 + V2[1]^2 + V2[2])
+      FSQRT                         // sqrt(ST(0))
+      FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
+  // the result is expected in ST(0), if it's invalid, an error is raised
+{$else}
+begin
+   Result:=VectorDotProduct(V1, V2)/(VectorLength(V1)*VectorLength(V2));
+{$endif}
+end;
+
 // VectorNegate (affine)
 //
 function VectorNegate(const v : TAffineVector) : TAffineVector;
@@ -4558,6 +4811,24 @@ begin
 {$endif}
 end;
 
+// ScaleVector (2f)
+//
+procedure ScaleVector(var v : TVector2f; factor: Single);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EAX]
+      FLD  DWORD PTR [EAX+4]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EAX+4]
+{$else}
+begin
+   v[0]:=v[0]*factor;
+   v[1]:=v[1]*factor;
+{$endif}
+end;
+
 // ScaleVector (affine)
 //
 procedure ScaleVector(var v : TAffineVector; factor: Single);
@@ -4646,6 +4917,24 @@ begin
    v[1]:=v[1]*factor[1];
    v[2]:=v[2]*factor[2];
    v[3]:=v[3]*factor[3];
+end;
+
+// VectorScale (2f)
+//
+function VectorScale(const v : TVector2f; factor : Single) : TVector2f;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EDX]
+      FLD  DWORD PTR [EAX+4]
+      FMUL DWORD PTR [EBP+8]
+      FSTP DWORD PTR [EDX+4]
+{$else}
+begin
+   Result[0]:=v[0]*factor;
+   Result[1]:=v[1]*factor;
+{$endif}
 end;
 
 // VectorScale (affine)
@@ -5161,7 +5450,7 @@ procedure RotateVectorAroundY(var v : TAffineVector; alpha : Single);
 var
    c, s, v0 : Single;
 begin
-   SinCos(alpha, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(alpha, s, c);
    v0:=v[0];
    v[0]:=c*v0+s*v[2];
    v[2]:=c*v[2]-s*v0;
@@ -5173,7 +5462,7 @@ function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(alpha, s, c);
    Result[0]:=v[0];
    Result[1]:=c*v[1]+s*v[2];
    Result[2]:=c*v[2]-s*v[1];
@@ -5185,7 +5474,7 @@ function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(alpha, s, c);
    Result[1]:=v[1];
    Result[0]:=c*v[0]+s*v[2];
    Result[2]:=c*v[2]-s*v[0];
@@ -5197,7 +5486,7 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(alpha, s, c);
    vr[1]:=v[1];
    vr[0]:=c*v[0]+s*v[2];
    vr[2]:=c*v[2]-s*v[0];
@@ -5209,7 +5498,7 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   SinCos(alpha, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(alpha, s, c);
    Result[0]:=c*v[0]+s*v[1];
    Result[1]:=c*v[1]-s*v[0];
    Result[2]:=v[2];
@@ -5365,7 +5654,7 @@ function CreateRotationMatrixX(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixX(s, c);
 end;
 
@@ -5388,7 +5677,7 @@ function CreateRotationMatrixY(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixY(s, c);
 end;
 
@@ -5411,7 +5700,7 @@ function CreateRotationMatrixZ(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   SinCos(angle, s, c);
+   GLScene.Base.Vector.Geometry.SinCos(angle, s, c);
    Result:=CreateRotationMatrixZ(s, c);
 end;
 
@@ -5422,7 +5711,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   SinCos(angle, sine, cosine);
+   GLScene.Base.Vector.Geometry.SinCos(angle, sine, cosine);
    one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -5461,7 +5750,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   SinCos(Angle, Sine, Cosine);
+   GLScene.Base.Vector.Geometry.SinCos(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6253,10 +6542,10 @@ begin
   // now, get the rotations out, as described in the gem
   Tran[ttRotateY]:=GLScene.Base.Vector.Geometry.ArcSin(-row0[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=ArcTan2(row1[Z], row2[Z]);
-    Tran[ttRotateZ]:=ArcTan2(row0[Y], row0[X]);
+    Tran[ttRotateX]:=GLScene.Base.Vector.Geometry.ArcTan2(row1[Z], row2[Z]);
+    Tran[ttRotateZ]:=GLScene.Base.Vector.Geometry.ArcTan2(row0[Y], row0[X]);
   end else begin
-    tran[ttRotateX]:=ArcTan2(row1[X], row1[Y]);
+    tran[ttRotateX]:=GLScene.Base.Vector.Geometry.ArcTan2(row1[X], row1[Y]);
     tran[ttRotateZ]:=0;
   end;
   // All done!
@@ -6313,7 +6602,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * Tan(DegToRad(FOV) * 0.5);
+  y:= ZNear * GLScene.Base.Vector.Geometry.Tan(DegToRad(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -6619,6 +6908,23 @@ var
 begin
    pb:=PointLineClosestPoint(point, linePoint, lineDirection);
    Result:=VectorDistance(point, pb);
+end;
+
+// PointSegmentClosestPoint
+//
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TVector) : TVector;
+var
+   w, lineDirection : TVector;
+   c1, c2, b : Single;
+begin
+   lineDirection:=VectorSubtract(segmentStop, segmentStart);
+   w:=VectorSubtract(point, segmentStart);
+
+   c1:=VectorDotProduct(w, lineDirection);
+   c2:=VectorDotProduct(lineDirection, lineDirection);
+   b:=ClampValue(c1/c2, 0, 1);
+
+   VectorAdd(segmentStart, VectorScale(lineDirection, b), Result);
 end;
 
 // PointSegmentClosestPoint
@@ -6958,7 +7264,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   SinCos(DegToRad(angle*cOneDotFive), s, c);
+   GLScene.Base.Vector.Geometry.SinCos(DegToRad(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart[0]:=axis[0]*f;
@@ -7287,6 +7593,7 @@ begin
       Result:=Result+c360;
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // SinCos (Extended)
 //
 procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
@@ -7296,7 +7603,7 @@ procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP TBYTE PTR [EDX]    // cosine
    FSTP TBYTE PTR [EAX]    // sine
 {$else}
@@ -7304,6 +7611,7 @@ begin
    Math.SinCos(Theta, Sin, Cos);
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // SinCos (Double)
 //
@@ -7351,6 +7659,7 @@ begin
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // SinCos (Extended w radius)
 //
 procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
@@ -7360,7 +7669,7 @@ procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP TBYTE PTR [EDX]    // cosine
    FMUL radius
@@ -7373,6 +7682,7 @@ begin
    Sin:=s*radius; Cos:=c*radius;
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // SinCos (Double w radius)
 //
@@ -7458,13 +7768,13 @@ end;
 //
 function ArcCos(const x : Extended): Extended;
 begin
-   Result:=ArcTan2(Sqrt(1 - Sqr(X)), X);
+   Result:=GLScene.Base.Vector.Geometry.ArcTan2(Sqrt(1 - Sqr(X)), X);
 end;
 
 // ArcCos (Single)
 //
 function ArcCos(const x : Single): Single;
-// Result:=ArcTan2(Sqrt(c1 - X * X), X);
+// Result:=GLScene.Base.Vector.Geometry.ArcTan2(Sqrt(c1 - X * X), X);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
@@ -7490,13 +7800,13 @@ end;
 //
 function ArcSin(const x : Extended) : Extended;
 begin
-   Result:=ArcTan2(X, Sqrt(1 - Sqr(X)))
+   Result:=GLScene.Base.Vector.Geometry.ArcTan2(X, Sqrt(1 - Sqr(X)))
 end;
 
 // ArcSin (Single)
 //
 function ArcSin(const x : Single) : Single;
-//   Result:=ArcTan2(X, Sqrt(1 - X * X))
+//   Result:=GLScene.Base.Vector.Geometry.ArcTan2(X, Sqrt(1 - X * X))
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
@@ -8079,6 +8389,16 @@ begin
    else Result:=0;
 end;
 
+// SignStrict
+//
+function SignStrict(x : Single) : Integer;
+begin
+   if x<0 then
+      Result:=-1
+   else
+      Result:=1
+end;
+
 // ScaleAndRound
 //
 function ScaleAndRound(i : Integer; var s : Single) : Integer;
@@ -8224,14 +8544,23 @@ asm
 {$endif}
 end;
 
-// MinFloat (extended 2)
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+// MinFloat
 //
-function MinFloat(const v1, v2 : Extended) : Extended;
+function MinFloat(const v1, v2, v3 : Extended) : Extended;
 {$ifdef GEOMETRY_NO_ASM}
 begin
-   if v1<v2 then
-      Result:=v1
-   else Result:=v2;
+   if v1<=v2 then
+      if v1<=v3 then
+         Result:=v1
+      else if v3<=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2<=v3 then
+      Result:=v2
+   else if v3<=v1 then
+      Result:=v3
+   else result:=v1;
 {$else}
 asm
    fld     v1
@@ -8239,8 +8568,13 @@ asm
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DB,$C1                 /// fcmovnb st(0), st(1)
    ffree   st(1)
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MinFloat
 //
@@ -8302,6 +8636,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MinFloat
 //
 function MinFloat(const v1, v2, v3 : Extended) : Extended;
@@ -8331,6 +8666,7 @@ asm
    ffree   st(1)
 {$endif}
 end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat (single)
 //
@@ -8360,6 +8696,8 @@ begin
    end else Result:=0;
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+
 // MaxFloat (extended)
 //
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
@@ -8376,7 +8714,26 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v : array of Single) : Single;
+function MaxFloat(const v1, v2 : Extended) : Extended; overload;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   ffree   st(1)
+{$endif}
+end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
+
+// MaxFloat
+//
+function MaxFloat(const v : array of Single) : Single; overload;
 var
    i : Integer;
 begin
@@ -8389,7 +8746,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Single) : Single;
+function MaxFloat(const v1, v2 : Single) : Single; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8407,7 +8764,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Double) : Double;
+function MaxFloat(const v1, v2 : Double) : Double; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8425,7 +8782,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Extended) : Extended;
+function MaxFloat(const v1, v2 : Extended) : Extended; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8440,6 +8797,38 @@ asm
    ffree   st(1)
 {$endif}
 end;
+
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+// MaxFloat
+//
+function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   if v1>=v2 then
+      if v1>=v3 then
+         Result:=v1
+      else if v3>=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2>=v3 then
+      Result:=v2
+   else if v3>=v1 then
+      Result:=v3
+   else Result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DA,$C2                 /// fcmovb  st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
+end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat
 //
@@ -8473,7 +8862,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2, v3 : Double) : Double;
+function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
@@ -8503,7 +8892,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2, v3 : Extended) : Extended;
+function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
@@ -9696,12 +10085,6 @@ function SphereVisibleRadius(distance, radius : Single) : Single;
 var
    d2, r2, ir, tr : Single;
 begin
-   {  irҠ+ rҠ= dҍ
-      rҠ+ trҠ= vrҍ
-      vrҠ+ dҠ= (ir+tr)Ҡ= irҠ+ 2.ir.tr + trҍ
-
-      irҠ+ 2.ir.tr + trҠ= dҠ+ rҠ+ trҍ
-      2.ir.tr = dҠ+ rҠ- irҠ }
    d2:=distance*distance;
    r2:=radius*radius;
    ir:=Sqrt(d2-r2);
@@ -11072,6 +11455,276 @@ begin
             (SourceVector[1] <= ComparedNumber) and
             (SourceVector[2] <= ComparedNumber) and
             (SourceVector[3] <= ComparedNumber);
+end;
+
+{: Determine if 2 rectanges intersect. }
+function RectanglesIntersect(const ACenterOfRect1, ACenterOfRect2, ASizeOfRect1, ASizeOfRect2: TVector2f): Boolean;
+begin
+  Result := (Abs(ACenterOfRect1[0] - ACenterOfRect2[0]) < (ASizeOfRect1[0] + ASizeOfRect2[0]) / 2) and
+            (Abs(ACenterOfRect1[1] - ACenterOfRect2[1]) < (ASizeOfRect1[1] + ASizeOfRect2[1]) / 2);
+end;
+
+{: Determine if BigRect completely contains SmallRect. }
+function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
+ ASizeOfBigRect1, ASizeOfSmallRect2: TVector2f; const AEps: Single = 0.0): Boolean;
+begin
+  Result := (Abs(ACenterOfBigRect1[0] - ACenterOfSmallRect2[0]) + ASizeOfSmallRect2[0] / 2 - ASizeOfBigRect1[0] / 2 < AEps) and
+            (Abs(ACenterOfBigRect1[1] - ACenterOfSmallRect2[1]) + ASizeOfSmallRect2[1] / 2 - ASizeOfBigRect1[1] / 2 < AEps);
+end;
+
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TVector): TVector2f;
+var
+  pitchangle0,pitchangle1,turnangle0,turnangle1,
+  pitchangledif,turnangledif,
+  dx0,dy0,dz0,dx1,dy1,dz1:double;
+  sign:shortint;
+begin
+  //determine relative positions to determine the lines which form the angles
+  //distances from initial camera pos to target object
+  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
+  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
+  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
+
+  //distances from final camera pos to target object
+  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
+  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
+  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
+
+  //just to make sure we don't get division by 0 exceptions
+  if dx0=0 then dx0:=0.001;
+  if dy0=0 then dy0:=0.001;
+  if dz0=0 then dz0:=0.001;
+  if dx1=0 then dx1:=0.001;
+  if dy1=0 then dy1:=0.001;
+  if dz1=0 then dz1:=0.001;
+
+
+  //determine "pitch" and "turn" angles for the initial and  final camera position
+  //the formulas differ depending on the camera.Up vector
+  //I tested all quadrants for all possible integer FJoblist.Camera.Up directions
+  if abs(AOriginalUpVector[2])=1 then  //Z=1/-1
+  begin
+    sign:= round(AOriginalUpVector[2]/abs(AOriginalUpVector[2]));
+    pitchangle0:=arctan(dz0/sqrt(sqr(dx0)+sqr(dy0)));
+    pitchangle1:=arctan(dz1/sqrt(sqr(dx1)+sqr(dy1)));
+    turnangle0:=arctan(dy0/dx0);
+    if (dx0<0) and (dy0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dy1/dx1);
+    if (dx1<0) and (dy1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[1])=1 then  //Y=1/-1
+  begin
+    sign:= round(AOriginalUpVector[1]/abs(AOriginalUpVector[1]));
+    pitchangle0:=arctan(dy0/sqrt(sqr(dx0)+sqr(dz0)));
+    pitchangle1:=arctan(dy1/sqrt(sqr(dx1)+sqr(dz1)));
+    turnangle0:=-arctan(dz0/dx0);
+    if (dx0<0) and (dz0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dz0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=-arctan(dz1/dx1);
+    if (dx1<0) and (dz1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dz1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[0])=1 then //X=1/-1
+  begin
+    sign:= round(AOriginalUpVector[0]/abs(AOriginalUpVector[0]));
+    pitchangle0:=arctan(dx0/sqrt(sqr(dz0)+sqr(dy0)));
+    pitchangle1:=arctan(dx1/sqrt(sqr(dz1)+sqr(dy1)));
+    turnangle0:=arctan(dz0/dy0);
+    if (dz0>0) and (dy0>0) then turnangle0:=-(pi-turnangle0)
+    else  if (dz0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dz1/dy1);
+    if (dz1>0) and (dy1>0) then turnangle1:=-(pi-turnangle1)
+    else  if (dz1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else
+  begin
+    Raise Exception.Create('The Camera.Up vector may contain only -1, 0 or 1');
+  end;
+
+  //determine pitch and turn angle differences
+  pitchangledif:=sign*(pitchangle1-pitchangle0);
+  turnangledif:=sign*(turnangle1-turnangle0);
+
+  if abs(turnangledif)>pi then
+    turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
+
+  // Determine rotation speeds
+  Result[0] := GLScene.Base.Vector.Geometry.RadToDeg(-pitchangledif);
+  Result[1] := GLScene.Base.Vector.Geometry.RadToDeg(turnangledif);
+end;
+
+function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
+  ATargetPosition, AMoveAroundTargetCenter: TAffineVector): TVector2f;
+var
+  pitchangle0,pitchangle1,turnangle0,turnangle1,
+  pitchangledif,turnangledif,
+  dx0,dy0,dz0,dx1,dy1,dz1:double;
+  sign:shortint;
+begin
+  //determine relative positions to determine the lines which form the angles
+  //distances from initial camera pos to target object
+  dx0 := AOriginalPosition[0] - AMoveAroundTargetCenter[0];
+  dy0 := AOriginalPosition[1] - AMoveAroundTargetCenter[1];
+  dz0 := AOriginalPosition[2] - AMoveAroundTargetCenter[2];
+
+  //distances from final camera pos to target object
+  dx1 := ATargetPosition[0] - AMoveAroundTargetCenter[0];
+  dy1 := ATargetPosition[1] - AMoveAroundTargetCenter[1];
+  dz1 := ATargetPosition[2] - AMoveAroundTargetCenter[2];
+
+  //just to make sure we don't get division by 0 exceptions
+  if dx0=0 then dx0:=0.001;
+  if dy0=0 then dy0:=0.001;
+  if dz0=0 then dz0:=0.001;
+  if dx1=0 then dx1:=0.001;
+  if dy1=0 then dy1:=0.001;
+  if dz1=0 then dz1:=0.001;
+
+
+  //determine "pitch" and "turn" angles for the initial and  final camera position
+  //the formulas differ depending on the camera.Up vector
+  //I tested all quadrants for all possible integer FJoblist.Camera.Up directions
+  if abs(AOriginalUpVector[2])=1 then  //Z=1/-1
+  begin
+    sign:= round(AOriginalUpVector[2]/abs(AOriginalUpVector[2]));
+    pitchangle0:=arctan(dz0/sqrt(sqr(dx0)+sqr(dy0)));
+    pitchangle1:=arctan(dz1/sqrt(sqr(dx1)+sqr(dy1)));
+    turnangle0:=arctan(dy0/dx0);
+    if (dx0<0) and (dy0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dy1/dx1);
+    if (dx1<0) and (dy1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[1])=1 then  //Y=1/-1
+  begin
+    sign:= round(AOriginalUpVector[1]/abs(AOriginalUpVector[1]));
+    pitchangle0:=arctan(dy0/sqrt(sqr(dx0)+sqr(dz0)));
+    pitchangle1:=arctan(dy1/sqrt(sqr(dx1)+sqr(dz1)));
+    turnangle0:=-arctan(dz0/dx0);
+    if (dx0<0) and (dz0<0) then turnangle0:=-(pi-turnangle0)
+    else  if (dx0<0) and (dz0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=-arctan(dz1/dx1);
+    if (dx1<0) and (dz1<0) then turnangle1:=-(pi-turnangle1)
+    else  if (dx1<0) and (dz1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else if abs(AOriginalUpVector[0])=1 then //X=1/-1
+  begin
+    sign:= round(AOriginalUpVector[0]/abs(AOriginalUpVector[0]));
+    pitchangle0:=arctan(dx0/sqrt(sqr(dz0)+sqr(dy0)));
+    pitchangle1:=arctan(dx1/sqrt(sqr(dz1)+sqr(dy1)));
+    turnangle0:=arctan(dz0/dy0);
+    if (dz0>0) and (dy0>0) then turnangle0:=-(pi-turnangle0)
+    else  if (dz0<0) and (dy0>0) then turnangle0:=-(pi-turnangle0);
+    turnangle1:=arctan(dz1/dy1);
+    if (dz1>0) and (dy1>0) then turnangle1:=-(pi-turnangle1)
+    else  if (dz1<0) and (dy1>0) then turnangle1:=-(pi-turnangle1);
+  end
+  else
+  begin
+    Raise Exception.Create('The Camera.Up vector may contain only -1, 0 or 1');
+  end;
+
+  //determine pitch and turn angle differences
+  pitchangledif:=sign*(pitchangle1-pitchangle0);
+  turnangledif:=sign*(turnangle1-turnangle0);
+
+  if abs(turnangledif)>pi then
+    turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
+
+  // Determine rotation speeds
+  Result[0] := GLScene.Base.Vector.Geometry.RadToDeg(-pitchangledif);
+  Result[1] := GLScene.Base.Vector.Geometry.RadToDeg(turnangledif);
+end;
+
+function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
+  pitchDelta, turnDelta: Single): TVector;
+var
+  originalT2C, normalT2C, normalCameraRight: TVector;
+  pitchNow, dist: Single;
+begin
+    // normalT2C points away from the direction the camera is looking
+    originalT2C := VectorSubtract(AMovingObjectPosition,
+      ATargetPosition);
+    SetVector(normalT2C, originalT2C);
+    dist := VectorLength(normalT2C);
+    NormalizeVector(normalT2C);
+    // normalRight points to the camera's right
+    // the camera is pitching around this axis.
+    normalCameraRight := VectorCrossProduct(AMovingObjectUp, normalT2C);
+    if VectorLength(normalCameraRight) < 0.001 then
+      SetVector(normalCameraRight, XVector) // arbitrary vector
+    else
+      NormalizeVector(normalCameraRight);
+    // calculate the current pitch.
+    // 0 is looking down and PI is looking up
+    pitchNow := GLScene.Base.Vector.Geometry.ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
+    pitchNow := ClampValue(pitchNow + GLScene.Base.Vector.Geometry.DegToRad(pitchDelta), 0 + 0.025, PI -
+      0.025);
+    // create a new vector pointing up and then rotate it down
+    // into the new position
+    SetVector(normalT2C, AMovingObjectUp);
+    RotateVector(normalT2C, normalCameraRight, -pitchNow);
+    RotateVector(normalT2C, AMovingObjectUp, -GLScene.Base.Vector.Geometry.DegToRad(turnDelta));
+    ScaleVector(normalT2C, dist);
+    Result := VectorAdd(AMovingObjectPosition, VectorSubtract(normalT2C,
+      originalT2C));
+end;
+
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single;
+begin
+  Result := GLScene.Base.Vector.Geometry.ArcCos(VectorAngleCosine(
+    VectorNormalize(VectorSubtract(A, ACenterPoint)),
+    VectorNormalize(VectorSubtract(B, ACenterPoint))));
+end;
+{: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
+function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single;
+begin
+  Result := GLScene.Base.Vector.Geometry.ArcCos(VectorAngleCosine(
+    VectorNormalize(VectorSubtract(A, ACenterPoint)),
+    VectorNormalize(VectorSubtract(B, ACenterPoint))));
+end;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TVector;
+ const ACenter: TVector; const ADistance: Single; const AFromCenterSpot: Boolean): TVector;
+var
+  lDirection: TVector;
+begin
+  lDirection := VectorNormalize(VectorSubtract(AOriginalPosition, ACenter));
+  if AFromCenterSpot then
+    Result := VectorAdd(ACenter, VectorScale(lDirection, ADistance))
+  else
+    Result := VectorAdd(AOriginalPosition, VectorScale(lDirection, ADistance))
+end;
+
+{: AOriginalPosition - Object initial position.
+   ACenter - some point, from which is should be distanced.
+
+   ADistance + AFromCenterSpot - distance, which object should keep from ACenter
+   or
+   ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
+}
+function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
+ const ACenter: TAffineVector; const ADistance: Single; const AFromCenterSpot: Boolean): TAffineVector;
+var
+  lDirection: TAffineVector;
+begin
+  lDirection := VectorNormalize(VectorSubtract(AOriginalPosition, ACenter));
+  if AFromCenterSpot then
+    Result := VectorAdd(ACenter, VectorScale(lDirection, ADistance))
+  else
+    Result := VectorAdd(AOriginalPosition, VectorScale(lDirection, ADistance))
 end;
 
 //--------------------------------------------------------------

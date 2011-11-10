@@ -3877,8 +3877,8 @@ procedure TGLSphere.BuildMesh;
 var
   LCapMesh: TMeshAtom;
   V1, V2, N1, T1: TAffineVector;
-  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
-  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
   I, J: Integer;
 begin

@@ -1345,8 +1345,8 @@ procedure TGLCustomNishitaSky.BuildMesh;
 var
   V1, V2: TAffineVector;
   i, j: Integer;
-  StepH, StepV: Extended;
-  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
+  StepH, StepV: Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
   vTexCoord, TexFactor, uTexCoord0, uTexCoord1: Single;
 begin
   // common settings
