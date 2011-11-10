@@ -16,7 +16,11 @@ interface
 
 {$I GLScene.inc}
 
-uses Windows, Classes, GLScene.PlugIn.Types, SysUtils;
+uses {$IFDEF MSWINDOWS} Windows,{$ENDIF}
+     {$IFDEF UNIX}
+     Types, LCLType, dynlibs,
+     {$ENDIF}
+     Classes, GLScene.PlugIn.Types, SysUtils ;
 
 type
   PPlugInEntry = ^TPlugInEntry;
@@ -206,8 +210,11 @@ var
   Services: TPIServices;
 
 begin
+
   Result := -1;
-  OldError := SetErrorMode(SEM_NOOPENFILEERRORBOX);
+  {$IFDEF MSWINDOWS}
+  OldError := SetErrorMode(SEM_NOOPENFILEERRORBOX);    //On UNIX No TESTED
+  {$ENDIF }
   if Length(Path) > 0 then
     try
       Result := GetIndexFromFilename(Path);
@@ -259,7 +266,9 @@ begin
         if Service in Services then
           DoNotify(opInsert, Service, Result);
     finally
+        {$IFDEF MSWINDOWS}
       SetErrorMode(OldError);
+          {$ENDIF }
     end;
 end;
 
@@ -404,4 +413,4 @@ end;
 
 // ------------------------------------------------------------------------------
 
-end.
+end.

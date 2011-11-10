@@ -39,7 +39,6 @@ interface
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
    {$IFDEF GLS_X11_SUPPORT} x,xlib,xf86vmode,{$ENDIF}
-   {$IFDEF FPC} LCLVersion, {$ENDIF}
    Classes, GLScene.Base.Vector.Geometry, GLScene.Platform;
 
 const
@@ -338,11 +337,7 @@ begin
 
   // Check support XF86VidMode Extension
   {$IFNDEF GLS_DELPHI_5}
-    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     if not XF86VidModeQueryExtension( vDisplay, @i, @j ) then
-    {$ELSE}
-    if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
-    {$IFEND}
       Assert(False, 'XF86VidMode Extension not support');
   {$ENDIF}
   
@@ -549,4 +544,4 @@ finalization
    if vScreenModeChanged then
 {$ENDIF}
       RestoreDefaultMode;  // set default video mode
-end.
+end.

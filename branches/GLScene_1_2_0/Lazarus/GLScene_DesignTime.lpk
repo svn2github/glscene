@@ -7,10 +7,11 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="E:\GLScene SVN\glscene\branches\GLScene_1_2_0\Source\"/>
+        <OtherUnitFiles Value="..\Source"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
+        <Style Value="1"/>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
           <CStyleOperator Value="False"/>
@@ -150,6 +151,10 @@
         <UnitName Value="GLScene.PropertyEditor.TextureImage"/>
       </Item28>
     </Files>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="..\Source\Languages\Lazarus"/>
+    </i18n>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="5">
       <Item1>

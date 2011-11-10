@@ -60,7 +60,7 @@ interface
 
 {$I GLScene.inc}
 
-{$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit is Windows specific'}{$ENDIF}
+{$IFDEF MSWINDOWS}
 
 uses
   Windows,
@@ -181,7 +181,7 @@ var
     they are (improperly) released by some drivers upon top-level form
     destruction. }
   vUseWindowTrackingHook: Boolean = True;
-
+  {$ENDIF}
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -189,7 +189,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
+{$IFDEF MSWINDOWS}
 uses
   Forms,
   Messages,
@@ -1333,4 +1333,5 @@ initialization
   RegisterGLContextClass(TGLWin32Context);
 {$ENDIF}
 
-end.
+{$ENDIF}
+end.

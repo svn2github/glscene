@@ -16,7 +16,8 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  {$IFDEF MSWINDOWS} Windows,{$ENDIF}
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, ExtCtrls, GLScene.Texture, GLScene.Core,
   GLScene.Objects, GLScene.GUI.Windows, GLScene.Objects.HUD,
   GLScene.Viewer, GLScene.GUI, GLScene.Graphics, GLScene.Utils, Menus, GLScene.Platform,
@@ -988,4 +989,4 @@ begin
 end;
 
 end.
-
+

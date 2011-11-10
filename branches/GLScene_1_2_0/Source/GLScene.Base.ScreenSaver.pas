@@ -24,7 +24,7 @@ unit GLScene.Base.ScreenSaver;
 interface
 
 {$i GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFDEF MSWINDOWS}
 
 uses Windows, Classes, Controls, Forms, Extctrls;
 
@@ -158,7 +158,7 @@ type
 {: Invokes the standard Windows dialog to set the password.<p>
 	May be invoked from your Properties/Configuration dialog. }
 procedure SetScreenSaverPassword;
-
+{$ENDIF}
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -166,7 +166,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
+{$IFDEF MSWINDOWS}
 uses SysUtils, Registry, Dialogs, Messages;
 
 // GetSystemDirectory
@@ -414,5 +414,5 @@ end;
 initialization
 
   RegisterClasses([TScreenSaver]);
-
-end.
+{$ENDIF}
+end.

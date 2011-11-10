@@ -59,7 +59,9 @@ implementation
 
 uses GLScene.PlugIn.Types, SysUtils;
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 // ------------------------------------------------------------------------------
 
 procedure TPlugInManagerPropForm.OKButtonClick(Sender: TObject);
@@ -222,4 +224,4 @@ end;
 
 // ------------------------------------------------------------------------------
 
-end.
+end.

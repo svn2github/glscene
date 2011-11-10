@@ -28,7 +28,7 @@ unit GLScene.AVIRecorder;
 interface
 
 {$i GLScene.inc}
-{$IFNDEF MSWINDOWS}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFDEF MSWINDOWS}
 
 uses
   Windows, Classes, Controls, Forms, Extctrls, Graphics,
@@ -150,7 +150,7 @@ type
        property OnPostProcessEvent : TAVIRecorderPostProcessEvent read FOnPostProcessEvent write FOnPostProcessEvent;
 
      end;
-
+{$ENDIF}
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -158,7 +158,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
+{$IFDEF MSWINDOWS}
 uses SysUtils, Dialogs, Messages, GLScene.Graphics;
 
 // DIB support rountines for AVI output
@@ -523,5 +523,5 @@ begin
   else
     FBuffer := nil;
 end;
-
-end.
+{$ENDIF}
+end.

@@ -17,8 +17,10 @@ unit GLScene.WaveOut;
 
 interface
 
+{$IFDEF MSWINDOWS}
+
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+
 
 uses Classes, GLScene.Sound, MMSystem, GLScene.Sound.FileObjects;
 
@@ -60,7 +62,11 @@ procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
 function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
                         waveFormat : TWaveFormatEx) : HWaveOut; overload;
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF MSWINDOWS}
 
 uses SysUtils;
 
@@ -246,4 +252,6 @@ initialization
 
   RegisterClasses([TGLSMWaveOut]);
 
-end.
+{$ENDIF}
+
+end.

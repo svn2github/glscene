@@ -7,11 +7,12 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="E:\GLScene SVN\glscene\branches\GLScene_1_2_0\Source\"/>
-        <OtherUnitFiles Value="E:\GLScene SVN\glscene\branches\GLScene_1_2_0\Source\"/>
+        <IncludeFiles Value="..\Source"/>
+        <OtherUnitFiles Value="..\Source"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
+        <Style Value="1"/>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
           <CStyleOperator Value="False"/>

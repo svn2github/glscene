@@ -86,7 +86,7 @@ type
     function IsValid: Boolean; override;
     procedure SwapBuffers; override;
 
-    function RenderOutputDevice: Pointer; override;
+    function RenderOutputDevice: HDC; override;
   end;
   {$ENDIF}
   // ------------------------------------------------------------------
@@ -801,4 +801,4 @@ begin
   Result := 0;
 end;
 {$ENDIF}
-end.
+end.

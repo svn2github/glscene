@@ -1,7 +1,7 @@
 unit GLScene.Vfw;
 
 interface
-
+{$IFDEF MSWINDOWS}
 {.$UNDEF UNICODE}
 {$I GLScene.inc}
 
@@ -2911,7 +2911,11 @@ function    GetSaveFileNamePreviewW(lpofn: POPENFILENAMEW): BOOL; stdcall;
 function    GetOpenFileNamePreview(lpofn: POPENFILENAMEA): BOOL; stdcall; // GetOpenFileNamePreviewA
 function    GetSaveFileNamePreview(lpofn: POPENFILENAMEA): BOOL; stdcall; // GetSaveFileNamePreviewA
 
+{$ENDIF}
+
 implementation
+
+{$IFDEF MSWINDOWS}
 
 function MKFOURCC( ch0, ch1, ch2, ch3: AnsiChar ): FOURCC;
 begin
@@ -4675,4 +4679,6 @@ function GetSaveFileNamePreviewW(lpofn: POPENFILENAMEW): BOOL; stdcall; external
 function GetOpenFileNamePreview(lpofn: POPENFILENAMEA): BOOL; stdcall; external VFWDLL name 'GetOpenFileNamePreviewA';
 function GetSaveFileNamePreview(lpofn: POPENFILENAMEA): BOOL; stdcall; external VFWDLL name 'GetSaveFileNamePreviewA';
 
-end.
+{$ENDIF}
+
+end.
