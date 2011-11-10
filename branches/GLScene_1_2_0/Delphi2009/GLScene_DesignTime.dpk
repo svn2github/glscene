@@ -1,9 +1,9 @@
 package GLScene_DesignTime;
 
 {$R *.res}
-{$R '..\GLScene_1_2_0\DesignTime\GLSceneObjects.dcr'}
-{$R '..\GLScene_1_2_0\DesignTime\GLSceneVCL.dcr'}
-{$R '..\GLScene_1_2_0\DesignTime\nonGLSceneVCL.dcr'}
+{$R '..\Source\GLSceneObjects.dcr'}
+{$R '..\Source\GLSceneVCL.dcr'}
+{$R '..\Source\nonGLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -25,7 +25,7 @@ package GLScene_DesignTime;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - OpenGL 3D library DesignTime'}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$LIBSUFFIX '2009'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
@@ -34,20 +34,20 @@ requires
   rtl,
   designide,
   GLScene_RunTime,
+  vclimg,
   vcl,
-  xmlrtl,
-  vclactnband,
-  vclx,
   VclSmp;
 
 contains
-  FXCollectionEditor in '..\GLScene_1_2_0\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
-  GLSceneEdit in '..\GLScene_1_2_0\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
-  GLSceneRegister in '..\GLScene_1_2_0\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\GLScene_1_2_0\DesignTime\RegisterXCollection.pas',
-  FShaderMemo in '..\GLScene_1_2_0\DesignTime\FShaderMemo.pas' {GLShaderEditor},
-  GLSceneFormDesign in '..\GLScene_1_2_0\DesignTime\GLSceneFormDesign.pas',
-  FGUILayoutEditor in '..\GLScene_1_2_0\DesignTime\FGUILayoutEditor.pas' {layouts_form},
-  GLSceneToolbar in '..\GLScene_1_2_0\DesignTime\GLSceneToolbar.pas';
+  GLScene.FX.CollectionEditor.VCL in '..\Source\GLScene.FX.CollectionEditor.VCL.pas' {XCollectionEditor},
+  GLScene.Edit.VCL in '..\Source\GLScene.Edit.VCL.pas' {GLSceneEditorForm},
+  GLScene.Register.VCL in '..\Source\GLScene.Register.VCL.pas',
+  GLScene.XCollection.Register in '..\Source\GLScene.XCollection.Register.pas',
+  GLScene.GUI.LayoutEditor in '..\Source\GLScene.GUI.LayoutEditor.pas' {layouts_form},
+  GLScene.Toolbar in '..\Source\GLScene.Toolbar.pas',
+  GLScene.Viewer.Form.Design in '..\Source\GLScene.Viewer.Form.Design.pas',
+  GLScene.Shader.Memo in '..\Source\GLScene.Shader.Memo.pas' {GLShaderEditor};
 
 end.
+
+
