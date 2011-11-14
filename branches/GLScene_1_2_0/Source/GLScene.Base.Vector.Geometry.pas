@@ -1404,13 +1404,15 @@ function IsInCube(const p, d : TVector) : Boolean; overload;
 {: Returns the minimum value of the array. }
 function MinFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MinFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+{$ENDIF}
 {: Returns the minimum of given values. }
 function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
 function MinFloat(const v1, v2 : Double) : Double; overload;
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-function MinFloat(const v1, v2 : Extended) : Extended; overload;
+//function MinFloat(const v1, v2 : Extended) : Extended; overload;
 {$ENDIF}
 function MinFloat(const v1, v2, v3 : Single) : Single; overload;
 function MinFloat(const v1, v2, v3 : Double) : Double; overload;
@@ -8481,6 +8483,7 @@ begin
    end else Result:=0;
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MinFloat (extended)
 //
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended;
@@ -8494,6 +8497,7 @@ begin
       Result:=values^[k];
    end else Result:=0;
 end;
+{$ENDIF}
 
 // MinFloat (array)
 //
@@ -8712,6 +8716,7 @@ begin
    end else Result:=0;
 end;
 
+
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Extended) : Extended; overload;
@@ -8780,6 +8785,7 @@ asm
 {$endif}
 end;
 
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Extended) : Extended; overload;
@@ -8798,7 +8804,7 @@ asm
 {$endif}
 end;
 
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
@@ -8863,36 +8869,6 @@ end;
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
-{$ifdef GEOMETRY_NO_ASM}
-begin
-   if v1>=v2 then
-      if v1>=v3 then
-         Result:=v1
-      else if v3>=v2 then
-         Result:=v3
-      else Result:=v2
-   else if v2>=v3 then
-      Result:=v2
-   else if v3>=v1 then
-      Result:=v3
-   else Result:=v1;
-{$else}
-asm
-   fld     v1
-   fld     v2
-   fld     v3
-   db $DB,$F1                 /// fcomi   st(0), st(1)
-   db $DA,$C1                 /// fcmovb  st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DA,$C2                 /// fcmovb  st(0), st(2)
-   ffree   st(2)
-   ffree   st(1)
-{$endif}
-end;
-
-// MaxFloat
-//
-function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
@@ -11760,4 +11736,4 @@ initialization
    vSIMD:=0;
 {$endif}
 
-end.
+end.
