@@ -384,7 +384,7 @@ type
      EGLNativeDisplayType = PDisplay;
      EGLNativePixmapType = TPixmap;
      EGLNativeWindowType = TWindow;
-  {$ENDIF}
+  {$IFEND}
 
      EGLBoolean = dword;
      EGLenum = dword;

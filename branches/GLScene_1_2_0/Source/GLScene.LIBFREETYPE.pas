@@ -28,7 +28,7 @@ uses
   GLScene.Platform;
 
 type
-  FT_Encoding = array[0..3] of char;
+  FT_Encoding = array[0..3] of AnsiChar;
 
 const
 {$IFDEF MSWINDOWS}
@@ -178,15 +178,15 @@ type
     rows, width, pitch: FT_Int;
     buffer: pointer;
     num_grays: FT_Short;
-    pixel_mode, palette_mode: char;
+    pixel_mode, palette_mode: AnsiChar;
     palette: pointer;
   end;
 
-  FT_Outline = ^FT_OutlineRec_;
-  FT_OutlineRec_ = packed record
+//  FT_Outline = ^FT_OutlineRec_;
+  FT_Outline = packed record
     n_contours, n_points: FT_Short;
     points: FT_Vector_ptr;
-    tags: PChar;
+    tags: PAnsiChar;
     contours: FT_Short_ptr;
     flags: FT_Int;
   end;
@@ -207,9 +207,9 @@ type
 
   FT_GlyphSlot = ^FT_GlyphSlotRec_;
   FT_GlyphSlotRec_ = packed record
-    alibrary: FT_Library_ptr;
+    alibrary: FT_Library;
 
-    face: FT_Face_ptr;
+    face: FT_Face;
     next: FT_GlyphSlot;
     flags: FT_UInt;
 
@@ -246,12 +246,16 @@ type
       max_advance: FT_Pos;
   end;
 
+  FT_Size_Internal = ^FT_Size_InternalRec_;
+  FT_Size_InternalRec_ = record
+  end;
+
   FT_Size = ^FT_SizeRec_;
   FT_SizeRec_ = record
     face: FT_Face_ptr;
     generic: FT_Generic;
     metrics: FT_Size_Metrics;
-    //internal : FT_Size_Internal;
+    internal : FT_Size_Internal;
   end;
 
   FT_Charmap = ^FT_CharmapRec_;
@@ -264,7 +268,7 @@ type
       style_flags,
       num_glyphs: FT_Long;
     family_name,
-      style_name: PChar;
+      style_name: PAnsiChar;
 
     num_fixed_sizes: FT_Int;
     available_sizes: FT_Bitmap_Size_ptr; // is array
@@ -436,13 +440,13 @@ type
     min_feature: array[0..1] of FT_Short;
   end;
 
-  FT_Glyph_Format =
+  FT_Glyph_Format =   // Need to check
     (
     FT_GLYPH_FORMAT_NONE = $00000000,
-    FT_GLYPH_FORMAT_COMPOSITE = $706D6F63,
-    FT_GLYPH_FORMAT_BITMAP = $73746962,
-    FT_GLYPH_FORMAT_OUTLINE = $6C74756F,
-    FT_GLYPH_FORMAT_PLOTTER = $746F6C70
+    FT_GLYPH_FORMAT_COMPOSITE = $636F6D70,
+    FT_GLYPH_FORMAT_BITMAP = $62697473,
+    FT_GLYPH_FORMAT_OUTLINE = $6F75746C,
+    FT_GLYPH_FORMAT_PLOTTER = $706C6F74
     );
 
   FT_Glyph_Class = ^FT_Glyph_ClassRec_;
@@ -935,7 +939,7 @@ var
 
   FT_Done_Face: function(face: FT_Face): FT_Error; cdecl;
 
-  FT_Done_FreeType: function(alibrary: FT_Library): FT_Error; cdecl;
+  FT_Done_FreeType: function(var alibrary: FT_Library): FT_Error; cdecl;
 
   FT_Done_Glyph: procedure(glyph: FT_Glyph); cdecl;
 
@@ -1076,7 +1080,7 @@ var
 
   FT_Has_PS_Glyph_Names: function(face: FT_Face): FT_Int; cdecl;
 
-  FT_Init_FreeType: function(alibrary: FT_Library): FT_Error; cdecl;
+  FT_Init_FreeType: function(var alibrary: FT_Library): FT_Error; cdecl;
 
   FT_Library_Version: procedure(Alibrary: FT_Library;
     var amajor: FT_Int;
@@ -1198,8 +1202,8 @@ var
     const outline: FT_Outline;
     var abitmap: FT_Bitmap): FT_Error; cdecl;
 
-  FT_Outline_Get_CBox: procedure(const outline: FT_Outline;
-    out acbo: FT_BBox); cdecl;
+  FT_Outline_Get_CBox: procedure(var outline: FT_Outline;
+    acbo: FT_BBox_ptr); cdecl;
 
   FT_Outline_Get_Orientation: function(const outline: FT_Outline): FT_Orientation; cdecl;
 
@@ -1242,7 +1246,7 @@ var
     strike_index: FT_Int): FT_Error; cdecl;
 
   FT_Set_Char_Size: function(
-    face: FT_Face_ptr;
+    face: FT_Face;
     char_width, char_height: FT_F26dot6;
     horz_res, vert_res: FT_UInt): FT_Error; cdecl;
 
@@ -1375,9 +1379,10 @@ var
   FT_Vector_Unit: procedure(var vec: FT_Vector;
     angle: FT_Angle); cdecl;
 
-function FT_Curve_Tag(flag: char): char;
+function FT_Curve_Tag(flag: AnsiChar): AnsiChar;
 function FT_Is_Scalable(face: FT_Face): boolean;
 function FT_Has_Kerning(face: FT_Face): boolean;
+function FT_GetErrorString(error: FT_Error): string;
 
 function InitFreetype: Boolean;
 procedure CloseFreetype;
@@ -1386,9 +1391,9 @@ function IsFreetypeInitialized: Boolean;
 
 implementation
 
-function FT_CURVE_TAG(flag: char): char;
+function FT_CURVE_TAG(flag: AnsiChar): AnsiChar;
 begin
-  result := char(Byte(flag) and 3);
+  result := AnsiChar(Byte(flag) and 3);
 end;
 
 function FT_IS_SCALABLE(face: FT_Face): boolean;
@@ -1625,6 +1630,139 @@ end;
 function IsFreetypeInitialized: Boolean;
 begin
   Result := (FTHandle <> INVALID_MODULEHANDLE);
+end;
+
+type
+  TFTErrorRec = record
+    C: FT_Error;
+    S: String;
+  end;
+
+const
+  cFT_Errors: array[0..81] of TFTErrorRec = (
+  (C: $00; S: 'no error'),
+
+  (C: $01; S: 'cannot open resource'),
+  (C: $02; S: 'unknown file format' ),
+  (C: $03; S: 'broken file' ),
+  (C: $04; S: 'invalid FreeType version' ),
+  (C: $05; S: 'module version is too low' ),
+  (C: $06; S: 'invalid argument' ),
+  (C: $07; S: 'unimplemented feature' ),
+  (C: $08; S: 'broken table' ),
+  (C: $09; S: 'broken offset within table' ),
+
+  // glyph/character errors
+
+  (C: $10; S: 'invalid glyph index' ),
+  (C: $11; S: 'invalid character code' ),
+  (C: $12; S: 'unsupported glyph image format' ),
+  (C: $13; S: 'cannot render this glyph format' ),
+  (C: $14; S: 'invalid outline' ),
+  (C: $15; S: 'invalid composite glyph' ),
+  (C: $16; S: 'too many hints' ),
+  (C: $17; S: 'invalid pixel size' ),
+
+  // handle errors
+
+  (C: $20; S: 'invalid object handle' ),
+  (C: $21; S: 'invalid library handle' ),
+  (C: $22; S: 'invalid module handle' ),
+  (C: $23; S: 'invalid face handle' ),
+  (C: $24; S: 'invalid size handle' ),
+  (C: $25; S: 'invalid glyph slot handle' ),
+  (C: $26; S: 'invalid charmap handle' ),
+  (C: $27; S: 'invalid cache manager handle' ),
+  (C: $28; S: 'invalid stream handle' ),
+
+  // driver errors
+
+  (C: $30; S: 'too many modules' ),
+  (C: $31; S: 'too many extensions' ),
+
+  // memory errors
+
+  (C: $40; S: 'out of memory' ),
+  (C: $41; S: 'unlisted object' ),
+
+  // stream errors
+
+  (C: $51; S: 'cannot open stream' ),
+  (C: $52; S: 'invalid stream seek' ),
+  (C: $53; S: 'invalid stream skip' ),
+  (C: $54; S: 'invalid stream read' ),
+  (C: $55; S: 'invalid stream operation' ),
+  (C: $56; S: 'invalid frame operation' ),
+  (C: $57; S: 'nested frame access' ),
+  (C: $58; S: 'invalid frame read' ),
+
+  // raster errors
+
+  (C: $60; S: 'raster uninitialized' ),
+  (C: $61; S: 'raster corrupted' ),
+  (C: $62; S: 'raster overflow' ),
+  (C: $63; S: 'negative height while rastering' ),
+
+  // cache errors
+
+  (C: $70; S: 'too many registered caches' ),
+
+  // TrueType and SFNT errors
+
+  (C: $80; S: 'invalid opcode' ),
+  (C: $81; S: 'too few arguments' ),
+  (C: $82; S: 'stack overflow' ),
+  (C: $83; S: 'code overflow' ),
+  (C: $84; S: 'bad argument' ),
+  (C: $85; S: 'division by zero' ),
+  (C: $86; S: 'invalid reference' ),
+  (C: $87; S: 'found debug opcode' ),
+  (C: $88; S: 'found ENDF opcode in execution stream' ),
+  (C: $89; S: 'nested DEFS' ),
+  (C: $8A; S: 'invalid code range' ),
+  (C: $8B; S: 'execution context too long' ),
+  (C: $8C; S: 'too many function definitions' ),
+  (C: $8D; S: 'too many instruction definitions' ),
+  (C: $8E; S: 'SFNT font table missing' ),
+  (C: $8F; S: 'horizontal header (hhea), table missing' ),
+  (C: $90; S: 'locations (loca), table missing' ),
+  (C: $91; S: 'name table missing' ),
+  (C: $92; S: 'character map (cmap), table missing' ),
+  (C: $93; S: 'horizontal metrics (hmtx), table missing' ),
+  (C: $94; S: 'PostScript (post), table missing' ),
+  (C: $95; S: 'invalid horizontal metrics' ),
+  (C: $96; S: 'invalid character map (cmap), format' ),
+  (C: $97; S: 'invalid ppem value' ),
+  (C: $98; S: 'invalid vertical metrics' ),
+  (C: $99; S: 'could not find context' ),
+  (C: $9A; S: 'invalid PostScript (post), table format' ),
+  (C: $9B; S: 'invalid PostScript (post), table' ),
+
+  // CFF, CID, and Type 1 errors
+
+  (C: $A0; S: 'opcode syntax error' ),
+  (C: $A1; S: 'argument stack underflow' ),
+  (C: $A2; S: 'ignore' ),
+
+  // BDF errors
+
+  (C: $B0; S: '"STARTFONT" field missing' ),
+  (C: $B1; S: '"FONT" field missing' ),
+  (C: $B2; S: '"SIZE" field missing' ),
+  (C: $B3; S: '"CHARS" field missing' ),
+  (C: $B4; S: '"STARTCHAR" field missing' ),
+  (C: $B5; S: '"ENCODING" field missing' ),
+  (C: $B6; S: '"BBX" field missing' )
+  );
+
+function FT_GetErrorString(error: FT_Error): string;
+var
+  E: Integer;
+begin
+  for E := 0 to high(cFT_Errors) do
+    if error = cFT_Errors[E].C then
+      Exit(cFT_Errors[E].S);
+  Result := 'Wrong error code';
 end;
 
 initialization

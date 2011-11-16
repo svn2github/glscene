@@ -46,6 +46,7 @@ uses
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Vector.Geometry,
   GLScene.Base.Vector.Types,
+  GLScene.Platform,
   SysUtils;
 
 type
@@ -3704,6 +3705,7 @@ begin
 
   if vNotInformed then
   begin
+    GLSLogger.LogInfo(format('Platform     : %s', [GLScene.Platform.GetPlatformVersionStr]));
     GLSLogger.LogNotice('');
     GLSLogger.LogInfo('OpenGL rendering context information:');
     GLSLogger.LogInfo(format('Renderer     : %s', [GetString(GL_RENDERER)]));

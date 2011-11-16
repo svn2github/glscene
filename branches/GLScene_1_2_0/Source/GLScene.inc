@@ -139,7 +139,7 @@
   {$IF DEFINED(cpui386) or DEFINED(cpux86_64)}
     {$DEFINE SUPPORT_GLX}
     {$DEFINE GLS_X11_SUPPORT}
-  {$ENDIF}
+  {$IFEND}
   {$IFDEF cpuarm}
     {$DEFINE GLS_OPENGL_ES}
   {$ENDIF}

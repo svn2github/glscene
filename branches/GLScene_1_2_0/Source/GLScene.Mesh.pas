@@ -187,6 +187,7 @@ type
     { Public Declarations }
     constructor Create; virtual;
     destructor Destroy; override;
+    procedure Assign(AMesh: TMeshAtom); virtual;
 
     {: Begins storing a piece of geometry }
     procedure Lock; virtual;
@@ -1088,7 +1089,29 @@ begin
     exit;
   end;
 
-  if FPrimitive <> AMesh.FPrimitive then
+  if FPrimitive = mpNOPRIMITIVE then
+  begin
+    FPrimitive := AMesh.FPrimitive;
+    FAttributes := AMesh.FAttributes;
+    FType := AMesh.FType;
+    FTypeComponentCount := AMesh.FTypeComponentCount;
+    for A := high(TAttribLocation) downto low(TAttribLocation)  do
+    begin
+      FAttributeArrays[A].Assign(AMesh.FAttributeArrays[A]);
+    end;
+    FVertexCount := AMesh.FVertexCount;
+    FHasIndices := AMesh.FHasIndices;
+    FElements.Assign(AMesh.FElements);
+    FAdjacencyElements.Assign(AMesh.FAdjacencyElements);
+    FTrianglesElements.Assign(AMesh.FTrianglesElements);
+    FRestartIndex := AMesh.FRestartIndex;
+    FRestartVertex.Assign(AMesh.FRestartVertex);
+    FStripCounts.Assign(AMesh.FStripCounts);
+    FAABB := AMesh.FAABB;
+    FValid := AMesh.FValid;
+    Exit;
+  end
+  else if FPrimitive <> AMesh.FPrimitive then
   begin
     GLSLogger.LogWarningFmt(glsMeshNEquPrimitive, [TagName, AMesh.TagName]);
     exit;
@@ -1436,6 +1459,47 @@ begin
         TagName]);
   end;
   Result := False;
+end;
+
+procedure TMeshAtom.Assign(AMesh: TMeshAtom);
+var
+  A: TAttribLocation;
+begin
+  if Assigned(AMesh) and (Self <> AMesh) then
+  begin
+    if (FBuildingState <> mmsDefault) or
+      (AMesh.FBuildingState <> mmsDefault) then
+    begin
+      GLSLogger.LogWarningFmt(glsMeshWrongCall, [TagName]);
+      exit;
+    end;
+
+    Lock;
+    AMesh.Lock;
+    try
+      FPrimitive := AMesh.FPrimitive;
+      FAttributes := AMesh.FAttributes;
+      FType := AMesh.FType;
+      FTypeComponentCount := AMesh.FTypeComponentCount;
+      for A := high(TAttribLocation) downto low(TAttribLocation)  do
+      begin
+        FAttributeArrays[A].Assign(AMesh.FAttributeArrays[A]);
+      end;
+      FVertexCount := AMesh.FVertexCount;
+      FHasIndices := AMesh.FHasIndices;
+      FElements.Assign(AMesh.FElements);
+      FAdjacencyElements.Assign(AMesh.FAdjacencyElements);
+      FTrianglesElements.Assign(AMesh.FTrianglesElements);
+      FRestartIndex := AMesh.FRestartIndex;
+      FRestartVertex.Assign(AMesh.FRestartVertex);
+      FStripCounts.Assign(AMesh.FStripCounts);
+      FAABB := AMesh.FAABB;
+      FValid := AMesh.FValid;
+    finally
+      UnLock;
+      AMesh.UnLock;
+    end;
+  end;
 end;
 
 procedure TMeshAtom.Attribute1f(Attrib: TAttribLocation; a1:

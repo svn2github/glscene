@@ -59,7 +59,7 @@ uses
   Graphics,
   Controls,
 
-  // GLScene.Core
+  // GLScene
   GLScene.Core,
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.Context,

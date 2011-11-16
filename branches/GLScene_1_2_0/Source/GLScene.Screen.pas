@@ -255,7 +255,8 @@ begin
                              [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
    end;
    Inc(vNumberVideomodes);
-   {$ENDIF}
+end;
+{$ELSE}
 procedure TryToAddToList(); // Without input parameters.
 begin
   {$IFDEF GLS_X11_SUPPORT}
@@ -268,7 +269,7 @@ begin
      {$MESSAGE Warn 'Needs to be implemented'}
   {$ENDIF}
 end;
-
+{$ENDIF}
 
 // ReadVideoModes
 //
@@ -351,7 +352,7 @@ begin
   if not vScreenModeChanged then
     if XF86VidModeGetModeLine( vDisplay, vCurrentVideoMode, @vDesktop.dotclock,
       PXF86VidModeModeLine( PtrUInt(@vDesktop) + SizeOf( vDesktop.dotclock ) ) ) then
-    TryToAddToList;
+    TryToAddToList();
   XCloseDisplay(vDisplay);
 {$ENDIF}
 {$IFDEF Darwin}
