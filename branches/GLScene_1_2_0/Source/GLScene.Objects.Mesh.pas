@@ -384,7 +384,7 @@ begin
 {$IFDEF MSWINDOWS}
         FValues := GL.WAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF GLS_X11_SUPPORT}
         FValues := GL.XAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
         if FValues = nil then
@@ -401,7 +401,7 @@ begin
 {$IFDEF MSWINDOWS}
         GL.WFreeMemoryNV(FValues);
 {$ENDIF}
-{$IFDEF LINUX}
+{$IFDEF GLS_X11_SUPPORT}
         GL.XFreeMemoryNV(FValues);
 {$ENDIF}
         FValues := FLockedOldValues;
@@ -904,9 +904,12 @@ begin
   else
     Assert(False);
   end;
+
+  {$IFNDEF GLS_NO_ASM}
   // clear fpu exception flag
   asm fclex
   end;
+  {$ENDIF}
   StructureChanged;
 end;
 
@@ -964,4 +967,4 @@ initialization
   RegisterClasses([TGLMesh]);
 
 end.
-
+

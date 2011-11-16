@@ -446,6 +446,7 @@ begin
   FOwner := AOwner;
   FEnabled := False;
   FAltTabSupportEnable := False;
+
   ReadVideoModes;
 {$IFDEF MSWINDOWS}
   FWidth := vVideoModes[0].Width;
@@ -897,4 +898,4 @@ initialization
 {$IFEND}
 {$ENDIF}
 
-end.
+end.

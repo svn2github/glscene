@@ -210,6 +210,11 @@ begin
        {$MESSAGE Warn 'Needs to be implemented'}
       end;
      {$ENDIF}
+     {$IFDEF LCLAndroid}
+       begin
+        {$MESSAGE Warn 'Needs to be implemented'}
+       end;
+      {$ENDIF}
 end;
 
 
@@ -251,16 +256,17 @@ begin
    end;
    Inc(vNumberVideomodes);
    {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
 procedure TryToAddToList(); // Without input parameters.
 begin
-  XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes[0] );
-{$ENDIF}
-{$IFDEF Darwin}
-procedure TryToAddToList(); // Without input parameters.
-begin
-  {$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
+  {$IFDEF GLS_X11_SUPPORT}
+    XF86VidModeGetAllModeLines( vDisplay, vCurrentVideoMode, @vNumberVideoModes, @vVideoModes[0] );
+  {$ENDIF}
+  {$IFDEF Darwin}
+    {$MESSAGE Warn 'Needs to be implemented'}
+  {$ENDIF}
+  {$IFDEF LCLAndroid}
+     {$MESSAGE Warn 'Needs to be implemented'}
+  {$ENDIF}
 end;
 
 
@@ -352,6 +358,10 @@ begin
 begin
   {$MESSAGE Warn 'ReadVideoModes not yet implemented for Darwin platforms'}
 {$ENDIF}
+{$IFDEF LCLAndroid}
+  begin
+   {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 // SetFullscreenMode
@@ -412,6 +422,10 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
+{$IFDEF LCLAndroid}
+begin
+   {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 // ReadScreenImage
@@ -454,6 +468,10 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
+{$IFDEF LCLAndroid}
+begin
+   {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 procedure GLShowCursor(AShow: boolean);
@@ -486,6 +504,10 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
+{$IFDEF LCLAndroid}
+begin
+   {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
 end;
 
 procedure GLGetCursorPos(var point: TGLPoint);
@@ -515,6 +537,10 @@ begin
 {$IFDEF Darwin}
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
+{$ENDIF}
+{$IFDEF LCLAndroid}
+begin
+   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
 end;
 

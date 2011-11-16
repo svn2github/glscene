@@ -94,11 +94,6 @@
   {$DEFINE MULTITHREADOPENGL}
 {$ENDIF}
 
-{$IFDEF LINUX}
-  {$DEFINE GEOMETRY_NO_ASM}
-  {$DEFINE UNIX}
-{$ENDIF}
-
 // FPC
 {$IFDEF FPC}
   {$DEFINE GEOMETRY_NO_ASM}
@@ -106,6 +101,9 @@
   {$TYPEINFO ON}
   {$INLINE ON}
   {$H+} // Enable long strings.
+  {$ifdef cpui386}
+    {$ASMMODE intel}
+  {$endif}
 {$ENDIF}
 
 // If it's not FPC, determine if C++ builder, or Delphi
@@ -135,9 +133,16 @@
 {$ENDIF}
 
 {$IFDEF Linux}
+  {$DEFINE UNIX}
   {$UNDEF SUPPORT_WGL}
-  {$DEFINE SUPPORT_GLX}
-  {$DEFINE GLS_X11_SUPPORT}
+  //CPU
+  {$IF DEFINED(cpui386) or DEFINED(cpux86_64)}
+    {$DEFINE SUPPORT_GLX}
+    {$DEFINE GLS_X11_SUPPORT}
+  {$ENDIF}
+  {$IFDEF cpuarm}
+    {$DEFINE GLS_OPENGL_ES}
+  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF DARWIN}
@@ -574,4 +579,4 @@
 {$ENDIF}
 
 
-
+

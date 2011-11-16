@@ -50,7 +50,13 @@ procedure SetupVSync(const AVSyncMode : TVSyncMode);
 {$IFDEF MSWINDOWS}
 var
   I: Integer;
+{$ENDIF}
+{$IFDEF DARWIN}
+var
+  ctx: TAGLContext;
+{$ENDIF}
 begin
+{$IFDEF MSWINDOWS}
   if GL.W_EXT_swap_control then
   begin
     I := GL.WGetSwapIntervalEXT;
@@ -61,10 +67,8 @@ begin
        Assert(False);
     end;
   end;
-end;
 {$ENDIF}
-{$IFDEF Linux}
-begin
+{$IFDEF GLS_X11_SUPPORT}
   if GL.X_SGI_swap_control then
   begin
     case AVSyncMode of
@@ -74,11 +78,9 @@ begin
        Assert(False);
     end;
   end;
-end;
+
 {$ENDIF}
 {$IFDEF DARWIN}
-var ctx: TAGLContext;
-begin
   if Assigned(GL) then
   begin
     ctx := GL.aGetCurrentContext();
@@ -90,7 +92,7 @@ begin
          Assert(False);
       end;
   end;
-end;
 {$ENDIF}
+end;
 
-end.
+end.

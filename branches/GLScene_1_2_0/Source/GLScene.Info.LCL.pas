@@ -188,7 +188,7 @@ begin
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
       {$ENDIF}
       VersionLabel.Caption:=
-      {$IFDEF Linux}
+      {$IFDEF GLS_X11_SUPPORT}
       'GLX '+String(glXQueryServerString(glXGetCurrentDisplay(),
                                           XDefaultScreen(glXGetCurrentDisplay())
                                           ,GLX_VERSION))+', OpenGL '+
@@ -243,7 +243,7 @@ begin
         CopyLabel.Caption:='n/a';
       end;
       {$ENDIF}
-      {$IFDEF Linux}
+      {$IFDEF GLS_X11_SUPPORT}
        // Include GLX extensions
        ExtStr:=String(glXQueryExtensionsString(glXGetCurrentDisplay(),0));
         while Length(ExtStr) > 0 do begin
@@ -400,4 +400,4 @@ initialization
 end.
 
 
-
+

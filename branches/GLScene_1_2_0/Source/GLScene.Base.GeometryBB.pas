@@ -1276,7 +1276,7 @@ end;
 function RayCastAABBIntersect(const rayOrigin, rayDirection: TVector; const aabb: TAABB;
   out tNear, tFar: single): boolean; overload;
 const
-  Infinity    =  1.0 / 0.0;
+  Infinity: single    =  1.0 / 0.0;
 var
   p: integer;
   invDir: double;
@@ -1339,4 +1339,4 @@ begin
 end;
 
 
-end.
+end.

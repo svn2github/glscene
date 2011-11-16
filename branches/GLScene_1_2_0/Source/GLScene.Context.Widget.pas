@@ -35,11 +35,12 @@ uses
 
 {$IFDEF UNIX}
 {$IFDEF LINUX}
-{$IFDEF GLS_OPENGL_ES}
-  GLScene.Context.OES,
-{$ELSE}
-  GLScene.Context.XServer,
-{$ENDIF}
+  {$IFDEF GLS_OPENGL_ES}
+    GLScene.Context.OES,
+  {$ENDIF}
+  {$IFDEF SUPPORT_GLX}
+    GLScene.Context.XServer,
+  {$ENDIF}
 {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
   x, xlib, xutil,
@@ -286,4 +287,4 @@ initialization
 
   RegisterGLContextClass(TGLWidgetContext);
 
-end.
+end.

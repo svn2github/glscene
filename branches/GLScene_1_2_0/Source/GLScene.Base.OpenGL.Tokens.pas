@@ -24,18 +24,18 @@ uses
   Windows
 {$ENDIF }
 
-{$IFDEF UNIX}
-  Types,
-  LCLType,
-  dynlibs,
-{$ENDIF}
 {$IFDEF GLS_X11_SUPPORT}
   X,
   Xlib,
-  XUtil
+  XUtil,
 {$ENDIF}
 {$IFDEF DARWIN}
-  MacOsAll
+  MacOsAll,
+{$ENDIF}
+{$IFDEF UNIX}
+  Types,
+  LCLType,
+  dynlibs
 {$ENDIF}
   ;
 
@@ -368,21 +368,23 @@ type
 
   type
 
-{$IFDEF LINUX}
-     EGLNativeDisplayType = PDisplay;
-     EGLNativeWindowType = TWindow;
-     EGLNativePixmapType = TPixmap;
-{$ELSE LINUX}
-{$IFDEF MSWINDOWS}
+  {$IF defined(WINDOWS)}
      EGLNativeDisplayType = HDC;
-     EGLNativeWindowType = HWND;
      EGLNativePixmapType = HBITMAP;
-{$ELSE WINDOWS}
-     EGLNativeDisplayType = ptrint;
-     EGLNativeWindowType = pointer;
-     EGLNativePixmapType = pointer;
-{$ENDIF WINDOWS}
-{$ENDIF LINUX}
+     EGLNativeWindowType = HWND;
+  {$ELSEIF defined(SYMBIAN)}
+     EGLNativeDisplayType = cint;
+     EGLNativePixmapType = Pointer;
+     EGLNativeWindowType = Pointer;
+  {$ELSEIF defined(ANDROID)}
+     EGLNativeDisplayType = Pointer;
+     EGLNativePixmapType = Pointer;
+     EGLNativeWindowType = Pointer;
+  {$ELSEIF defined(UNIX)}
+     EGLNativeDisplayType = PDisplay;
+     EGLNativePixmapType = TPixmap;
+     EGLNativeWindowType = TWindow;
+  {$ENDIF}
 
      EGLBoolean = dword;
      EGLenum = dword;
@@ -7488,4 +7490,4 @@ begin
 end;
 {$ENDIF GLS_OPENGL_ES}
 
-end.
+end.

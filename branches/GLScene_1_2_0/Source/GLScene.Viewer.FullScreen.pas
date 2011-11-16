@@ -480,7 +480,7 @@ begin
    FOwnDC:=GetDC(FForm.Handle);
    Buffer.CreateRC(FOwnDC, False);
    //Linux Unicode
-   {$ifdef Linux}
+   {$ifdef GLS_X11_SUPPORT}
    GrabMouseToForm(FForm);
    {$endif}
    // todo
@@ -500,7 +500,7 @@ begin
        Cursor := crDefault;
        PopupMenu := nil;
      end;
-     {$ifdef Linux}
+     {$ifdef GLS_X11_SUPPORT}
      ReleaseMouseFromForm(FForm) ;
      {$endif}
      {$ifdef MSWINDOWS}
@@ -783,4 +783,4 @@ finalization
    ShowWindow(FindWindow('BUTTON', nil), SW_SHOWNA);
 {$endif}
 
-end.
+end.

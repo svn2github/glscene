@@ -41,7 +41,7 @@ const
   LibPng13 = 'libpng13'; // Library name
 {$ENDIF}
 {$IFDEF LINUX}
-  LibPng13 = 'libpng12.so'; // Library name
+  LibPng13 = 'png'; // Library name
 {$ENDIF}
 {$IFDEF DARWIN}
   LibPng13 = '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/Resources/libPng.dylib'; // Library name
@@ -2689,4 +2689,4 @@ finalization
   Unloadlibpng13;
 {$ENDIF}
 
-end.
+end.
