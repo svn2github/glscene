@@ -3427,7 +3427,7 @@ procedure TGLRenderManager.DrawAll(var ARci: TRenderContextInfo);
 var
   pBatch: PDrawBatch;
   LDrawTech: TGLAbstractDrawTechnique;
-  I, O, C: Integer;
+  I: Integer;
   LFirst: Boolean;
 {$IFDEF GLS_OPENGL_DEBUG}
   LStr: string;

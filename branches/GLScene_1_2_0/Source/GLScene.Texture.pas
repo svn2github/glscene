@@ -4048,22 +4048,22 @@ end;
 procedure TGLTextureEx.Apply(var rci: TRenderContextInfo);
 var
   i, texUnits: Integer;
-  units: Cardinal;
+//  units: Cardinal;
 begin
   if not GL.ARB_multitexture then
     exit;
 
-  units := 0;
+//  units := 0;
   GL.GetIntegerv(GL_MAX_TEXTURE_UNITS, @texUnits);
   for i := 0 to Count - 1 do
   begin
     if Items[i].TextureIndex < texUnits then
     begin
       Items[i].Apply(rci);
-      if Items[i].FApplied then
-        if (Items[i].TextureIndex > 0) and (Items[i].Texture.MappingMode =
-          tmmUser) then
-          units := units or (1 shl Items[i].TextureIndex);
+//      if Items[i].FApplied then
+//        if (Items[i].TextureIndex > 0) and (Items[i].Texture.MappingMode =
+//          tmmUser) then
+//          units := units or (1 shl Items[i].TextureIndex);
     end;
   end;
 //  if units > 0 then

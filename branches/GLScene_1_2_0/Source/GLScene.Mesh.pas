@@ -1397,21 +1397,22 @@ begin
 end;
 
 procedure TMeshAtom.Validate;
+var
+  C: Integer;
 begin
   FValid := False;
+  C := FElements.Count;
   case FPrimitive of
-    mpTRIANGLES: FValid := (FVertexCount mod 3 = 0) and (FVertexCount > 2);
-    mpTRIANGLE_STRIP, mpTRIANGLE_FAN: FValid := FVertexCount > 2;
-    mpPOINTS: FValid := FVertexCount > 0;
-    mpLINES: FValid := (FVertexCount mod 2 = 0) and (FVertexCount > 1);
-    mpLINE_STRIP, mpLINE_LOOP: FValid := FVertexCount > 2;
-    mpLINES_ADJACENCY: FValid := (FVertexCount mod 4 = 0) and (FVertexCount >
-        3);
-    mpLINE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
-    mpTRIANGLES_ADJACENCY: FValid := (FVertexCount mod 6 = 0) and (FVertexCount
-        > 5);
-    mpTRIANGLE_STRIP_ADJACENCY: FValid := FVertexCount > 4;
-    mpPATCHES: FValid := FVertexCount > 1;
+    mpTRIANGLES: FValid := (C mod 3 = 0) and (C > 2);
+    mpTRIANGLE_STRIP, mpTRIANGLE_FAN: FValid := C > 2;
+    mpPOINTS: FValid := C > 0;
+    mpLINES: FValid := (C mod 2 = 0) and (C > 1);
+    mpLINE_STRIP, mpLINE_LOOP: FValid := C > 2;
+    mpLINES_ADJACENCY: FValid := (C mod 4 = 0) and (C > 3);
+    mpLINE_STRIP_ADJACENCY: FValid := C > 4;
+    mpTRIANGLES_ADJACENCY: FValid := (C mod 6 = 0) and (C > 5);
+    mpTRIANGLE_STRIP_ADJACENCY: FValid := C > 4;
+    mpPATCHES: FValid := C > 1;
   end;
 end;
 
@@ -2124,6 +2125,7 @@ begin
     // Triangles no need restarting
     FRestartVertex.Clear;
     FRestartVertex.Add(0);
+    FHasIndices := True;
   end;
 end;
 
