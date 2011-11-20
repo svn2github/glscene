@@ -23,6 +23,7 @@ uses
   GLScene.Base.Transformation,
   GLScene.Base.GeometryBB,
   GLScene.Base.Vector.Lists,
+  GLScene.Core,
   GLScene.Mesh,
   GLScene.DrawTechnique,
   GLScene.Platform,
@@ -31,8 +32,6 @@ uses
 
 type
 
-  TFontStyle = (fsBold, fsItalic, fsUnderline, fsStrikeOut);
-  TFontStyles = set of TFontStyle;
   // TGLTextHorzAdjust
   //
   // Note: haAligned, haCentrically, haFitIn have not been implemented!
@@ -75,11 +74,10 @@ type
     FVectorFont: TGLCustomVectorFont;
     FAllowedDeviation: Single;
     FAdjust: TGLTextAdjust;
-    FAspectRatio: Single;
-    FOblique: Single;
     FHSpace: Single;
     FTextHeight: Single;
-    FLines: TStringList;
+    FEditableLines: TStringList;
+    FVisualizedLines: TStringList;
     FBatches: TDrawBatchArray;
     FLocations: TAffineVectorList;
     FTransformations: array of TTransformationRec;
@@ -106,12 +104,13 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
+    procedure NotifyChange(Sender: TObject); override;
   published
     { Published Declarations }
     property VectorFont: TGLCustomVectorFont read FVectorFont
       write SetVectorFont;
     property Text: WideString read GetText write SetText stored False;
-    property Lines: TStringList read FLines write SetLines;
+    property Lines: TStringList read FEditableLines write SetLines;
     property Adjust: TGLTextAdjust read FAdjust write SetAdjust;
     property HSpace: Single read FHSpace write FHSpace;
   end;
@@ -175,29 +174,46 @@ end;
 procedure TGLSpaceText.BuildMesh;
 var
   I: Integer;
-begin
-  if Assigned(FVectorFont) and (FLines.Count > 0) then
-  begin
-    FVectorFont.BuildString(FBatch, FLines[0]);
 
-    for I := 1 to FLines.Count - 1 do
+  function IsLineDifferent: Boolean;
+  begin
+    if FVisualizedLines.Count <= I then
     begin
-      if Length(FBatches) < I then
+      FVisualizedLines.Add('');
+      exit(True);
+    end;
+    Result := FEditableLines[I] <> FVisualizedLines[I];
+  end;
+
+  procedure CheckBatchesRange;
+  begin
+    if High(FBatches) < I then
+    begin
+      SetLength(FBatches, I+1);
+      SetLength(FTransformations, I+1);
+      with FBatches[I] do
       begin
-        SetLength(FBatches, I);
-        SetLength(FTransformations, I);
-        with FBatches[I-1] do
-        begin
-          Mesh := TMeshAtom.Create;
-          Mesh.Owner := Self;
-          Mesh.TagName := ClassName+Format('-Line%d', [I]);
-          Material := FMaterial;
-          PickCallback := DoOnPicked;
-        end;
-        FVectorFont.BuildString(FBatches[I-1], FLines[I]);
+        Mesh := TMeshAtom.Create;
+        Mesh.Owner := Self;
+        Mesh.TagName := ClassName + Format('-Line%d', [I]);
+        Material := FMaterial;
+        PickCallback := DoOnPicked;
       end;
     end;
+  end;
 
+begin
+  FLocationChanged := False;
+  if Assigned(FVectorFont) and (FEditableLines.Count > 0) then
+  begin
+    for I := 0 to FEditableLines.Count - 1 do
+    begin
+      CheckBatchesRange;
+      if IsLineDifferent then
+        FVectorFont.BuildString(FBatches[I], FEditableLines[I]);
+    end;
+    FVisualizedLines.Assign(FEditableLines);
+    CalcLocations;
   end;
 
   inherited;
@@ -210,7 +226,7 @@ var
   LAABB: TAABB;
   Pos: TAffineVector;
 begin
-  FLocations.Count := FLines.Count;
+  FLocations.Count := FVisualizedLines.Count;
   if not Assigned(FVectorFont) then
     exit;
 
@@ -222,9 +238,9 @@ begin
   Pos := NullVector;
 
   // Horizontal adjust
-  for I := 0 to FLines.Count - 1 do
+  for I := 0 to FVisualizedLines.Count - 1 do
   begin
-    LAABB := FVectorFont.GetAABB(FLines[I]);
+    LAABB := FVectorFont.GetAABB(FVisualizedLines[I]);
     lineW := LAABB.max[0] - LAABB.min[0];
     lineH := LAABB.max[1] - LAABB.min[1];
     fullH := fullH + lineH;
@@ -244,7 +260,7 @@ begin
     FLocations[I] := Pos;
   end;
 
-  fullH := fullH + FHSpace * (FLines.Count - 1);
+  fullH := fullH + FHSpace * (FVisualizedLines.Count - 1);
 
   case FAdjust.Vert of
     vaBaseLine:
@@ -254,7 +270,7 @@ begin
     vaCenter:
       H := fullH * 0.5 - firstLineH;
     vaTop:
-      H := - firstLineH;
+      H := -firstLineH;
   end;
 
   FLocations.Translate(AffineVectorMake(0, H, 0));
@@ -263,11 +279,11 @@ end;
 constructor TGLSpaceText.Create(AOwner: TComponent);
 begin
   inherited;
-  FLines := TStringList.Create;
-  FLines.Add('ABC');
-  FLines.OnChange := OnTextChanged;
-  FHSpace:= 0.4;
-  Static := False;
+  FEditableLines := TStringList.Create;
+  FVisualizedLines := TStringList.Create;
+  FEditableLines.Add('ABC');
+  FEditableLines.OnChange := OnTextChanged;
+  FHSpace := 0.4;
   FAdjust := TGLTextAdjust.Create;
   FAdjust.OnChange := OnAdjustChanged;
   FLocations := TAffineVectorList.Create;
@@ -276,7 +292,8 @@ end;
 destructor TGLSpaceText.Destroy;
 begin
   VectorFont := nil;
-  FLines.Free;
+  FEditableLines.Free;
+  FVisualizedLines.Free;
   FreeBatches;
   FAdjust.Free;
   FLocations.Destroy;
@@ -290,35 +307,35 @@ begin
   for I := High(FBatches) downto 0 do
     FBatches[I].Mesh.Free;
   SetLength(FBatches, 0);
+  SetLength(FTransformations, 0);
 end;
 
-procedure TGLSpaceText.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
-  ARenderChildren: Boolean);
+procedure TGLSpaceText.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
 var
   I: Integer;
   M: TMatrix;
 begin
-  inherited DoRender(ARci, ARenderSelf, False);
+  inherited DoRender(ARci, False, False);
 
   if FLocationChanged then
     CalcLocations;
 
-  if ARenderSelf and (FLines.Count > 1) then
+  if ARenderSelf and (FVisualizedLines.Count > 0) then
   begin
     M := ARci.PipelineTransformation.ModelMatrix;
-    ARci.PipelineTransformation.Push;
-    ARci.PipelineTransformation.ModelMatrix :=
-      MatrixMultiply(M, CreateTranslationMatrix(FLocations[0]));
-    FTransformation := ARci.PipelineTransformation.StackTop;
-    ARci.PipelineTransformation.Pop;
-    for I := 0 to FLines.Count - 2 do
+    for I := 0 to FVisualizedLines.Count - 1 do
     begin
+      if High(FBatches) < I then
+        break;
       ARci.PipelineTransformation.Push;
       ARci.PipelineTransformation.ModelMatrix :=
-        MatrixMultiply(M, CreateTranslationMatrix(FLocations[I+1]));
+        MatrixMultiply(M, CreateTranslationMatrix(FLocations[I]));
       FTransformations[I] := ARci.PipelineTransformation.StackTop;
       ARci.PipelineTransformation.Pop;
       FBatches[I].Transformation := @FTransformations[I];
+      FBatches[I].Material := FBatch.Material;
+      FBatches[I].PickingMaterial := FBatch.PickingMaterial;
       ARci.drawList.Add(@FBatches[I]);
     end;
   end;
@@ -329,10 +346,10 @@ end;
 
 function TGLSpaceText.GetText: WideString;
 begin
-  if FLines.Count = 1 then
-    Result := FLines[0]
+  if FEditableLines.Count = 1 then
+    Result := FEditableLines[0]
   else
-    Result := FLines.Text;
+    Result := FEditableLines.Text;
 end;
 
 procedure TGLSpaceText.SetAdjust(const Value: TGLTextAdjust);
@@ -343,13 +360,13 @@ end;
 
 procedure TGLSpaceText.SetLines(const Value: TStringList);
 begin
-  FLines.Assign(Value);
+  FEditableLines.Assign(Value);
 end;
 
 procedure TGLSpaceText.SetText(const Value: WideString);
 begin
   if GetText <> Value then
-    FLines.Text := Value;
+    FEditableLines.Text := Value;
 end;
 
 procedure TGLSpaceText.SetVectorFont(Value: TGLCustomVectorFont);
@@ -374,6 +391,15 @@ begin
   if (Operation = opRemove) and (AComponent = FVectorFont) then
     VectorFont := nil;
   inherited;
+end;
+
+procedure TGLSpaceText.NotifyChange(Sender: TObject);
+begin
+  inherited NotifyChange(Sender);
+  if Assigned(Sender) and (Sender = FVectorFont) then
+  begin
+    FVisualizedLines.Clear;
+  end;
 end;
 
 procedure TGLSpaceText.OnTextChanged(Sender: TObject);

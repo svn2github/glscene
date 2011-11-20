@@ -1548,7 +1548,10 @@ begin
     end;
   end;
 
-  inherited;
+  FBatch.Changed := True;
+  ClearStructureChanged;
+  if not IsMainThread and Assigned(Scene) then
+    Scene.NotifyChange(Self);
 end;
 
 constructor TGLDummyCube.Create(AOwner: TComponent);

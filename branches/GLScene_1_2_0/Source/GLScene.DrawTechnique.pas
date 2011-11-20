@@ -169,6 +169,7 @@ type
       const AInstance: TInstancesChain; const AID: Integer); override;
     procedure DoBeforePicking(AnObjectCountGuess: Integer); override;
     procedure DoAfterPicking(const AList: TList); override;
+    procedure DumpPool(APool: TPoolMap);
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -1408,10 +1409,26 @@ begin
         if Size >= RequestSize then
         begin
           // Merge sectors
-          pSector := FArrayBufferMap.Sectors[J];
-          pSector.Size := Size;
           for I := J + 1 to I do
             FArrayBufferMap.DeleteSector(J + 1);
+
+          // Extract the residue
+          if (Size - RequestSize) > 0 then
+          begin
+            ArraySector.Offset := FArrayBufferMap.Sectors[J].Offset + RequestSize;
+            ArraySector.Size := Size - RequestSize;
+            ArraySector.Mesh := nil;
+            if J < FArrayBufferMap.Count - 1 then
+              FArrayBufferMap.InsertSector(J, ArraySector)
+            else
+              FArrayBufferMap.AddSector(ArraySector);
+          end;
+
+          // Set new parameters
+          LMesh.FArraySectorIndex := J;
+          pSector := FArrayBufferMap.Sectors[J];
+          pSector.Size := RequestSize;
+          pSector.Mesh := LMesh;
         end
         else
         begin
@@ -1443,6 +1460,7 @@ begin
         // TODO: defragmentation
         LMesh.FValid := False;
         GLSLogger.LogError('Static vertex array pool is full');
+        DumpPool(FArrayBufferMap);
         exit;
       end;
 
@@ -1557,10 +1575,26 @@ begin
           if Size >= RequestSize then
           begin
             // Merge sectors
-            pSector := FElementBufferMap.Sectors[J];
-            pSector.Size := Size;
             for I := J + 1 to I do
               FElementBufferMap.Delete(J + 1);
+
+            // Extract the residue
+            if (Size - RequestSize) > 0 then
+            begin
+              ElementSector.Offset := FElementBufferMap.Sectors[J].Offset +
+                RequestSize;
+              ElementSector.Size := Size - RequestSize;
+              ElementSector.Mesh := nil;
+              if J < FElementBufferMap.Count - 1 then
+                FElementBufferMap.InsertSector(J, ElementSector)
+              else
+                FElementBufferMap.AddSector(ElementSector);
+            end;
+
+            // Set new parameters
+            pSector.Size := RequestSize;
+            pSector.Mesh := LMesh;
+            pSector := FElementBufferMap.Sectors[J];
           end
           else
           begin
@@ -1591,7 +1625,8 @@ begin
         begin
           // TODO: defragmentation
           LMesh.FValid := False;
-          GLSLogger.LogError('Static vertex array pool is full');
+          GLSLogger.LogError('Static element array pool is full');
+          DumpPool(FElementBufferMap);
           exit;
         end;
 
@@ -2555,6 +2590,22 @@ begin
     finally
       ARci := storeRci;
     end;
+end;
+
+procedure TGLDrawTechniqueOGL2.DumpPool(APool: TPoolMap);
+var
+  I: Integer;
+begin
+  for I := 0 to APool.Count - 1 do
+  begin
+    with APool.Sectors[I]^ do
+    begin
+      if Assigned(Mesh) then
+        GLSLogger.LogDebugFmt('Sector of mesh "%s", size %d byte', [Mesh.TagName, Size])
+      else
+        GLSLogger.LogDebugFmt('Free sector, size %d byte', [Mesh.TagName, Size])
+    end;
+  end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL2'}{$ENDIF}

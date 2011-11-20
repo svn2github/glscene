@@ -55,6 +55,7 @@ type
 
   PAffineDblVector = ^TAffineDblVector;
 
+
   // TVF_BBox
   //
   TVF_BBox = packed {$IFNDEF FPC} record {$ELSE} object{$ENDIF}
@@ -66,7 +67,7 @@ type
     {$ENDIF}
     procedure Null;
     procedure SetValue(lx, ly, lz, ux, uy, uz: Single); overload;
-    procedure SetValue(AGlyph: FT_GlyphSlot);  overload;
+    procedure SetValue(AGlyph: FT_GlyphSlot); overload;
 
     procedure Move(const AVec: TAffineDblVector);
     procedure SetDebth(depth: Single);
@@ -156,7 +157,9 @@ type
   //
   TVF_Library = class
   private
-    class var FLibrary: FT_Library;
+    class
+
+      var FLibrary: FT_Library;
     class var FErr: FT_Error;
     class procedure Initialize;
     class procedure Finalize;
@@ -225,8 +228,8 @@ type
   public
     constructor Create(AGlyph: FT_GlyphSlot); virtual;
     destructor Destroy; override;
-    function AddToMesh(const AMesh: TMeshAtom;
-      const APen: TVector3f): Single; virtual; abstract;
+    function AddToMesh(const AMesh: TMeshAtom; const APen: TVector3f): Single;
+      virtual; abstract;
     property Advance: Single read FAdvance;
     property BBox: TVF_BBox read FBBox;
     property Error: FT_Error read FErr;
@@ -241,9 +244,8 @@ type
     constructor Create(AGlyph: FT_GlyphSlot); override;
     destructor Destroy; override;
 
-    function AddToMesh(const AMesh: TMeshAtom;
-      const APen: TVector3f): Single;
-      override;
+    function AddToMesh(const AMesh: TMeshAtom; const APen: TVector3f)
+      : Single; override;
   end;
 
   // TVF_ExtrGlyph
@@ -306,7 +308,7 @@ type
     function CharMap(AEncoding: FT_Encoding): Boolean;
     function BBox(const AStr: string): TAABB;
     function Advance(const AStr: string): Single;
-    function FaceSize(ASize, ARes: Cardinal): Boolean;
+    function FaceSize(asize, ares: Cardinal): Boolean;
     procedure AddToMesh(const AStr: string; AMesh: TMeshAtom);
 
     property Error: FT_Error read FErr;
@@ -333,7 +335,7 @@ type
     constructor Create(pBufferBytes: FT_Byte_ptr;
       bufferSizeInBytes: Cardinal); overload;
 
-    property Depth: Single read FDepth write FDepth;
+    property depth: Single read FDepth write FDepth;
   end;
 
   // TGLFreetypeVectorFont
@@ -343,9 +345,12 @@ type
     { Protected Declarations }
     FSystemFont: TFont;
     FFTFont: TVF_Font;
+    FFaceSize: Integer;
   private
     { Private Declarations }
     procedure SetFont(Value: TFont);
+    procedure SetFaceSize(const Value: Integer);
+    procedure OnFontChanged(Sender: TObject);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -358,6 +363,7 @@ type
     { Published Declarations }
     property Ranges;
     property Font: TFont read FSystemFont write SetFont;
+    property FaceSize: Integer read FFaceSize write SetFaceSize default 1;
   end;
 
 {$IFDEF FPC}
@@ -600,9 +606,13 @@ constructor TVF_Face.Create(const AFileName: string);
 var
   lvFileName: AnsiString;
 begin
-  lvFileName := AnsiString(AFileName)+#00;
-  FErr := FT_New_Face(TVF_Library.GetLybrary, PAnsiChar(lvFileName),
-    0, ftFace);
+  if TVF_Library.Error = 0 then
+  begin
+    lvFileName := AnsiString(AFileName);
+    FErr := FT_New_Face(TVF_Library.GetLybrary, PAnsiChar(lvFileName), 0, ftFace);
+  end
+  else
+    FErr := TVF_Library.Error;
 
   if FErr <> 0 then
   begin
@@ -812,7 +822,9 @@ begin
       FLibrary := nil;
       GLSLogger.LogErrorFmt(StrFTError, [FT_GetErrorString(FErr)]);
     end;
-  end;
+  end
+  else
+    FErr := $04;
 end;
 
 class procedure TVF_Library.Finalize;
@@ -989,7 +1001,8 @@ var
 begin
   can := True;
   if FPointList.Count > 0 then
-    can := not (VectorEquals(APoint, FPointList.Last) and VectorEquals(APoint, FPointList.First));
+    can := not(VectorEquals(APoint, FPointList.Last) and VectorEquals(APoint,
+      FPointList.First));
   if can then
   begin
     FPointList.Add(APoint);
@@ -1006,14 +1019,20 @@ begin
   begin
     t := I * VF_BEZIER_STEP_SIZE;
 
-    bezierValues[0][0] := (1.0 - t) * FControlPoints[0][0] + t * FControlPoints[1][0];
-    bezierValues[0][1] := (1.0 - t) * FControlPoints[0][1] + t * FControlPoints[1][1];
+    bezierValues[0][0] := (1.0 - t) * FControlPoints[0][0] + t *
+      FControlPoints[1][0];
+    bezierValues[0][1] := (1.0 - t) * FControlPoints[0][1] + t *
+      FControlPoints[1][1];
 
-    bezierValues[1][0] := (1.0 - t) * FControlPoints[1][0] + t * FControlPoints[2][0];
-    bezierValues[1][1] := (1.0 - t) * FControlPoints[1][1] + t * FControlPoints[2][1];
+    bezierValues[1][0] := (1.0 - t) * FControlPoints[1][0] + t *
+      FControlPoints[2][0];
+    bezierValues[1][1] := (1.0 - t) * FControlPoints[1][1] + t *
+      FControlPoints[2][1];
 
-    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t * bezierValues[1][0];
-    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t * bezierValues[1][1];
+    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t *
+      bezierValues[1][0];
+    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t *
+      bezierValues[1][1];
 
     AddPoint(bezierValues[0][0], bezierValues[0][1]);
   end;
@@ -1029,22 +1048,34 @@ begin
   begin
     t := I * VF_BEZIER_STEP_SIZE;
 
-    bezierValues[0][0] := (1.0 - t) * FControlPoints[0][0] + t * FControlPoints[1][0];
-    bezierValues[0][1] := (1.0 - t) * FControlPoints[0][1] + t * FControlPoints[1][1];
+    bezierValues[0][0] := (1.0 - t) * FControlPoints[0][0] + t *
+      FControlPoints[1][0];
+    bezierValues[0][1] := (1.0 - t) * FControlPoints[0][1] + t *
+      FControlPoints[1][1];
 
-    bezierValues[1][0] := (1.0 - t) * FControlPoints[1][0] + t * FControlPoints[2][0];
-    bezierValues[1][1] := (1.0 - t) * FControlPoints[1][1] + t * FControlPoints[2][1];
+    bezierValues[1][0] := (1.0 - t) * FControlPoints[1][0] + t *
+      FControlPoints[2][0];
+    bezierValues[1][1] := (1.0 - t) * FControlPoints[1][1] + t *
+      FControlPoints[2][1];
 
-    bezierValues[2][0] := (1.0 - t) * FControlPoints[2][0] + t * FControlPoints[3][0];
-    bezierValues[2][1] := (1.0 - t) * FControlPoints[2][1] + t * FControlPoints[3][1];
-    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t *   bezierValues[1][0];
-    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t *   bezierValues[1][1];
+    bezierValues[2][0] := (1.0 - t) * FControlPoints[2][0] + t *
+      FControlPoints[3][0];
+    bezierValues[2][1] := (1.0 - t) * FControlPoints[2][1] + t *
+      FControlPoints[3][1];
+    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t *
+      bezierValues[1][0];
+    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t *
+      bezierValues[1][1];
 
-    bezierValues[1][0] := (1.0 - t) * bezierValues[1][0] + t *   bezierValues[2][0];
-    bezierValues[1][1] := (1.0 - t) * bezierValues[1][1] + t *   bezierValues[2][1];
+    bezierValues[1][0] := (1.0 - t) * bezierValues[1][0] + t *
+      bezierValues[2][0];
+    bezierValues[1][1] := (1.0 - t) * bezierValues[1][1] + t *
+      bezierValues[2][1];
 
-    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t *   bezierValues[1][0];
-    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t *   bezierValues[1][1];
+    bezierValues[0][0] := (1.0 - t) * bezierValues[0][0] + t *
+      bezierValues[1][0];
+    bezierValues[0][1] := (1.0 - t) * bezierValues[0][1] + t *
+      bezierValues[1][1];
 
     AddPoint(bezierValues[0][0], bezierValues[0][1]);
   end;
@@ -1089,6 +1120,7 @@ end;
 {$IFDEF GLS_MULTITHREAD}
 threadvar
 {$ELSE}
+
 var
 {$ENDIF}
   vMainMesh: TMeshAtom;
@@ -1110,7 +1142,7 @@ procedure tessVertex(vertexData: Pointer);
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 const
-  k = 1/64;
+  k = 1 / 64;
 var
   p: ^TAffineVector;
 begin
@@ -1150,24 +1182,21 @@ begin
     DeclareAttribute(attrTexCoord0, GLSLType2f);
     case AType of
       GL_TRIANGLE_FAN:
-      begin
-        BeginAssembly(mpTRIANGLE_FAN);
-        GLSLogger.LogDebug('Trianlge fan');
-      end;
+        begin
+          BeginAssembly(mpTRIANGLE_FAN);
+        end;
       GL_TRIANGLE_STRIP:
-      begin
-        BeginAssembly(mpTRIANGLE_STRIP);
-        GLSLogger.LogDebug('Trianlge strip');
-      end;
+        begin
+          BeginAssembly(mpTRIANGLE_STRIP);
+        end;
       GL_TRIANGLES:
-      begin
-        BeginAssembly(mpTRIANGLES);
-        GLSLogger.LogDebug('Trianlge');
-      end;
+        begin
+          BeginAssembly(mpTRIANGLES);
+        end;
       GL_LINE_LOOP:
-      begin
-        BeginAssembly(mpLINE_LOOP);
-      end;
+        begin
+          BeginAssembly(mpLINE_LOOP);
+        end;
     end;
   end;
 end;
@@ -1286,7 +1315,6 @@ begin
   end;
 end;
 
-
 procedure TVF_Vectoriser.AddContourToMesh(const AMesh: TMeshAtom;
   zNormal: Double = VF_FRONT_FACING);
 var
@@ -1315,20 +1343,20 @@ begin
         begin
           v := Contour.FPointList[p];
 
-          Attribute3f(attrPosition, v[0]/64, v[1]/64, v[2]/64);
+          Attribute3f(attrPosition, v[0] / 64, v[1] / 64, v[2] / 64);
           Attribute2f(attrTexCoord0, v[0], v[1]);
           EmitVertex;
-          v := Contour.FPointList[p+1];
-          Attribute3f(attrPosition, v[0]/64, v[1]/64, v[2]/64);
+          v := Contour.FPointList[p + 1];
+          Attribute3f(attrPosition, v[0] / 64, v[1] / 64, v[2] / 64);
           Attribute2f(attrTexCoord0, v[0], v[1]);
           EmitVertex;
         end;
         v := Contour.FPointList[0];
-        Attribute3f(attrPosition, v[0]/64, v[1]/64, v[2]/64);
+        Attribute3f(attrPosition, v[0] / 64, v[1] / 64, v[2] / 64);
         Attribute2f(attrTexCoord0, v[0], v[1]);
         EmitVertex;
-        v := Contour.FPointList[Contour.PointCount -1];
-        Attribute3f(attrPosition, v[0]/64, v[1]/64, v[2]/64);
+        v := Contour.FPointList[Contour.PointCount - 1];
+        Attribute3f(attrPosition, v[0] / 64, v[1] / 64, v[2] / 64);
         Attribute2f(attrTexCoord0, v[0], v[1]);
         EmitVertex;
       end;
@@ -1404,7 +1432,16 @@ begin
   LVectoriser := TVF_Vectoriser.Create(AGlyph);
   if (LVectoriser.ContourCount > 0) and (LVectoriser.PointCount() >= 3) then
   begin
-    LVectoriser.AddGlyphToMesh(FMesh); //AddContourToMesh  (FMesh);
+    LVectoriser.AddGlyphToMesh(FMesh); // AddContourToMesh  (FMesh);
+    with FMesh do
+    begin
+      Lock;
+      try
+        WeldVertices;
+      finally
+        UnLOck;
+      end;
+    end;
   end;
   LVectoriser.Destroy;
 end;
@@ -1440,18 +1477,19 @@ end;
 
 {$ENDREGION}
 {$REGION 'TVF_ExtrGlyph'}
+
 // ------------------
 // ------------------ TVF_ExtrGlyph ------------------
 // ------------------
 constructor TVF_ExtrGlyph.Create(AGlyph: FT_GlyphSlot; ADepth: Single);
 const
-  k = 1/64;
+  k = 1 / 64;
 var
   LVectoriser: TVF_Vectoriser;
   LMesh: TMeshAtom;
   zOffset, p1, p2, p3, p4: TVector3f;
-  c, i, nextIndex: Integer;
-  contour: TVF_Contour;
+  c, I, nextIndex: Integer;
+  Contour: TVF_Contour;
   numberOfPoints: Cardinal;
   t0, t1: Single;
 begin
@@ -1479,21 +1517,23 @@ begin
       FMesh.BeginAssembly(mpTRIANGLES);
       for c := 0 to LVectoriser.ContourCount - 1 do
       begin
-        contour := LVectoriser.Contour[c];
-        numberOfPoints := contour.PointCount;
+        Contour := LVectoriser.Contour[c];
+        numberOfPoints := Contour.PointCount;
         t0 := 0;
-        for i := 0 to numberOfPoints - 1 do
+        for I := 0 to numberOfPoints - 1 do
         begin
-          if i = Integer(numberOfPoints - 1) then
-            nextIndex := 0 else nextIndex := i+1;
-          MakeVector(p1, contour.Point[i]);
-          MakeVector(p2, contour.Point[nextIndex]);
+          if I = Integer(numberOfPoints - 1) then
+            nextIndex := 0
+          else
+            nextIndex := I + 1;
+          MakeVector(p1, Contour.Point[I]);
+          MakeVector(p2, Contour.Point[nextIndex]);
           ScaleVector(p1, k);
           ScaleVector(p2, k);
           p3 := VectorAdd(p1, zOffset);
           p4 := VectorAdd(p2, zOffset);
           // Actully need calculation of texcoords based on contour lenght not points number
-          t1 := (i+1) / numberOfPoints;
+          t1 := (I + 1) / numberOfPoints;
           with FMesh do
           begin
             Attribute3f(attrPosition, p1);
@@ -1565,8 +1605,14 @@ begin
 end;
 
 function TVF_GlyphContainer.GetBBox(ACharacterCode: Cardinal): TVF_BBox;
+var
+  I: Integer;
 begin
-  Result := FGlyphList[FCharMap.GlyphListIndex(ACharacterCode)].BBox;
+  I := FCharMap.GlyphListIndex(ACharacterCode);
+  if I > -1 then
+    Result := FGlyphList[I].BBox
+  else
+    Result.Null;
 end;
 
 function TVF_GlyphContainer.CharMap(AEncoding: FT_Encoding): Boolean;
@@ -1580,39 +1626,39 @@ begin
   Result := FCharMap.FontIndex(ACharacterCode)
 end;
 
-procedure TVF_GlyphContainer.Add(AGlyph: TVF_Glyph;
-  ACharacterCode: Cardinal);
+procedure TVF_GlyphContainer.Add(AGlyph: TVF_Glyph; ACharacterCode: Cardinal);
 begin
   FCharMap.InsertIndex(ACharacterCode, FGlyphList.Add(AGlyph));
 end;
 
-function TVF_GlyphContainer.AddToMesh(ACharacterCode,
-  ANextCharacterCode: Cardinal; APen: TVector3f; AMesh: TMeshAtom): TVector3f;
+function TVF_GlyphContainer.AddToMesh(ACharacterCode, ANextCharacterCode
+  : Cardinal; APen: TVector3f; AMesh: TMeshAtom): TVector3f;
 var
-  kernAdvance: TVector3d;
+  KernAdvance: TVector3d;
   adv: Single;
   left, right: Cardinal;
 begin
   adv := 0;
 
-  left := FcharMap.FontIndex( AcharacterCode);
-  right := FcharMap.FontIndex( AnextCharacterCode);
+  left := FCharMap.FontIndex(ACharacterCode);
+  right := FCharMap.FontIndex(ANextCharacterCode);
 
-  if Fface.Error = 0 then
+  if FFace.Error = 0 then
   begin
-    kernAdvance := Fface.KernAdvance( left, right);
+    KernAdvance := FFace.KernAdvance(left, right);
 
-    if Fface.Error = 0 then
-        adv := FGlyphList[FCharMap.GlyphListIndex(ACharacterCode)].AddToMesh(AMesh, APen);
+    if FFace.Error = 0 then
+      adv := FGlyphList[FCharMap.GlyphListIndex(ACharacterCode)].AddToMesh(AMesh, APen);
 
-    kernAdvance[0] := kernAdvance[0] + adv;
-    MakeVector(Result, kernAdvance);
+    KernAdvance[0] := KernAdvance[0] + adv;
+    MakeVector(Result, KernAdvance);
   end;
 end;
 
 function TVF_GlyphContainer.Advance(ACharacterCode, ANextCharacterCode
   : Cardinal): Single;
 var
+  I: Integer;
   left, right: Cardinal;
   Width: Single;
 begin
@@ -1620,7 +1666,9 @@ begin
   right := FCharMap.FontIndex(ANextCharacterCode);
 
   Width := FFace.KernAdvance(left, right)[0];
-  Width := Width + FGlyphList[FCharMap.GlyphListIndex(ACharacterCode)].Advance;
+  I := FCharMap.GlyphListIndex(ACharacterCode);
+  if I > -1 then
+    Width := Width + FGlyphList[I].Advance;
 
   Result := Width;
 end;
@@ -1632,36 +1680,34 @@ end;
 
 procedure TVF_Font.AddToMesh(const AStr: string; AMesh: TMeshAtom);
 var
-  i: Integer;
-  g, ng: Cardinal;
-  kernAdvance: TVector3f;
+  I: Integer;
+  G, ng: Cardinal;
+  KernAdvance: TVector3f;
 begin
   FPen := NullVector;
-  for i := 1 to Length(AStr) do
+  for I := 1 to Length(AStr) do
   begin
-    if AStr[I] < ' ' then
-      continue;
-    GetGlyphs(AStr, i, g, ng);
-    CheckGlyph(g);
+    GetGlyphs(AStr, I, G, ng);
+    CheckGlyph(G);
     CheckGlyph(ng);
-    kernAdvance := FGlyphList.AddToMesh(g, ng, FPen, AMesh);
-    AddVector(FPen, kernAdvance);
+    KernAdvance := FGlyphList.AddToMesh(G, ng, FPen, AMesh);
+    AddVector(FPen, KernAdvance);
   end;
 end;
 
 function TVF_Font.Advance(const AStr: string): Single;
 var
-  i: Integer;
-  g, ng: Cardinal;
+  I: Integer;
+  G, ng: Cardinal;
   w: Single;
 begin
   w := 0;
-  for i := 1 to Length(AStr) do
+  for I := 1 to Length(AStr) do
   begin
-    GetGlyphs(AStr, i, g, ng);
-    CheckGlyph(g);
+    GetGlyphs(AStr, I, G, ng);
+    CheckGlyph(G);
     CheckGlyph(ng);
-    w := w + FGlyphList.Advance(g, ng);
+    w := w + FGlyphList.Advance(G, ng);
   end;
   Result := w;
 end;
@@ -1669,25 +1715,25 @@ end;
 function TVF_Font.BBox(const AStr: string): TAABB;
 var
   totalBBox, tempBBox: TVF_BBox;
-  i: Integer;
-  g, ng: Cardinal;
+  I: Integer;
+  G, ng: Cardinal;
   adv: Single;
 begin
   totalBBox.Null;
 
   if Length(AStr) > 0 then
   begin
-    GetGlyphs(AStr, 1, g, ng);
-    totalBBox := FGlyphList.BBox[g];
-    adv := FGlyphList.Advance(g, ng);
+    GetGlyphs(AStr, 1, G, ng);
+    totalBBox := FGlyphList.BBox[G];
+    adv := FGlyphList.Advance(G, ng);
 
-    for i := 2 to Length(AStr) do
+    for I := 2 to Length(AStr) do
     begin
-      GetGlyphs(AStr, i, g, ng);
-      tempBBox := FGlyphList.BBox[g];
+      GetGlyphs(AStr, I, G, ng);
+      tempBBox := FGlyphList.BBox[G];
       tempBBox.Move(Vector3dMake(adv, 0, 0));
       totalBBox := totalBBox + tempBBox;
-      adv := adv + FGlyphList.Advance(g, ng);
+      adv := adv + FGlyphList.Advance(G, ng);
     end;
   end;
 
@@ -1755,18 +1801,18 @@ begin
 end;
 
 procedure TVF_Font.GetGlyphs(const AStr: string; APos: Integer;
-  out AGlyph, ANextGlyph: Cardinal);
+  out AGlyph, AnextGlyph: Cardinal);
 begin
   AGlyph := Cardinal(AStr[APos]);
-  if Length(AStr) = APos then
-    ANextGlyph := 0
+  if APos < Length(AStr) then
+    AnextGlyph := Cardinal(AStr[APos + 1])
   else
-    ANextGlyph := Cardinal(AStr[APos+1]);
+    AnextGlyph := 0;
 end;
 
-function TVF_Font.FaceSize(ASize, ARes: Cardinal): Boolean;
+function TVF_Font.FaceSize(asize, ares: Cardinal): Boolean;
 begin
-  FCharSize := FFace.Size(ASize, ARes);
+  FCharSize := FFace.Size(asize, ares);
   if FFace.Error <> 0 then
   begin
     GLSLogger.LogErrorFmt(StrFTError, [FT_GetErrorString(FErr)]);
@@ -1842,7 +1888,6 @@ begin
 end;
 
 {$ENDREGION}
-
 {$REGION 'TGLFreetypeVectorFont'}
 // ------------------
 // ------------------ TGLFreetypeVectorFont ------------------
@@ -1851,25 +1896,33 @@ end;
 procedure TGLFreetypeVectorFont.BuildString(ABatch: TDrawBatch;
   const aText: UnicodeString);
 var
-  lPath: array[0..255] of WideChar;
+  lPath: array [0 .. 255] of WideChar;
   sPath: string;
 begin
+  with ABatch.Mesh do
+    try
+      Lock;
+      Clear;
+    finally
+      UnLock;
+    end;
+
   if Length(aText) = 0 then
     Exit;
 
   if not Assigned(FFTFont) then
   begin
     GetWindowsDirectoryW(lPath, 255);
-    sPath := IncludeTrailingPathDelimiter(lPath) +
-      IncludeTrailingPathDelimiter('Fonts') + FSystemFont.Name + '.ttf';
+    sPath := IncludeTrailingPathDelimiter(lPath) + IncludeTrailingPathDelimiter
+      ('Fonts') + FSystemFont.Name + '.ttf';
     if Extrusion > 0 then
     begin
       FFTFont := TVF_ExtrudedFont.Create(sPath);
-      TVF_ExtrudedFont(FFTFont).Depth := Extrusion;
+      TVF_ExtrudedFont(FFTFont).depth := Extrusion;
     end
     else
       FFTFont := TVF_PolygonFont.Create(sPath);
-    FFTFont.FaceSize(1, 72);
+    FFTFont.FaceSize(FFaceSize, 72);
   end;
 
   if FFTFont.Error <> 0 then
@@ -1885,6 +1938,8 @@ constructor TGLFreetypeVectorFont.Create(AOwner: TComponent);
 begin
   inherited;
   FSystemFont := TFont.Create;
+  FSystemFont.OnChange := OnFontChanged;
+  FFaceSize := 1;
 end;
 
 destructor TGLFreetypeVectorFont.Destroy;
@@ -1899,9 +1954,27 @@ begin
   Result := FFTFont.BBox(aText);
 end;
 
+procedure TGLFreetypeVectorFont.OnFontChanged(Sender: TObject);
+begin
+  FreeAndNil(FFTFont);
+  InvalidateUsers;
+end;
+
+procedure TGLFreetypeVectorFont.SetFaceSize(const Value: Integer);
+begin
+  if (Value > 0) and (FFaceSize <> Value) then
+  begin
+    FFaceSize := Value;
+    FreeAndNil(FFTFont);
+    InvalidateUsers;
+  end;
+end;
+
 procedure TGLFreetypeVectorFont.SetFont(Value: TFont);
 begin
   FSystemFont.Assign(Value);
+  FreeAndNil(FFTFont);
+  InvalidateUsers;
 end;
 
 {$ENDREGION}

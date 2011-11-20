@@ -183,6 +183,7 @@ type
     function GetDLO: TGLListHandle;
     function GetVAO_BuildIn: TGLVertexArrayHandle;
     function GetVAO_Generic: TGLVertexArrayHandle;
+    function GetVertexCount: Integer;
   public
     { Public Declarations }
     constructor Create; virtual;
@@ -885,6 +886,16 @@ begin
   Result := FVAO_Generic;
 end;
 
+function TMeshAtom.GetVertexCount: Integer;
+var
+  A: TAttribLocation;
+begin
+  Result := 0;
+  for A := low(TAttribLocation) to high(TAttribLocation) do
+    if FAttributes[A] then
+      Exit(FAttributeArrays[A].Count div (FTypeComponentCount[A]+1);
+end;
+
 procedure TMeshAtom.DoOnPrepare(Sender: TGLContext);
 
   function IsHandleNull(AHandle: TGLContextHandle): Boolean;
@@ -1137,6 +1148,7 @@ begin
   // Append data
   if bSuccess then
   begin
+    FVertexCount := GetVertexCount;
     for I := 0 to AMesh.FElements.Count - 1 do
     begin
       BD := AMesh.FElements[I];
