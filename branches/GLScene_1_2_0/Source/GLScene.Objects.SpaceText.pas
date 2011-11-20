@@ -318,25 +318,28 @@ var
 begin
   inherited DoRender(ARci, False, False);
 
-  if FLocationChanged then
-    CalcLocations;
-
-  if ARenderSelf and (FVisualizedLines.Count > 0) then
+  if not(ocStructure in Changes) then
   begin
-    M := ARci.PipelineTransformation.ModelMatrix;
-    for I := 0 to FVisualizedLines.Count - 1 do
+    if FLocationChanged then
+      CalcLocations;
+
+    if ARenderSelf and (FVisualizedLines.Count > 0) then
     begin
-      if High(FBatches) < I then
-        break;
-      ARci.PipelineTransformation.Push;
-      ARci.PipelineTransformation.ModelMatrix :=
-        MatrixMultiply(M, CreateTranslationMatrix(FLocations[I]));
-      FTransformations[I] := ARci.PipelineTransformation.StackTop;
-      ARci.PipelineTransformation.Pop;
-      FBatches[I].Transformation := @FTransformations[I];
-      FBatches[I].Material := FBatch.Material;
-      FBatches[I].PickingMaterial := FBatch.PickingMaterial;
-      ARci.drawList.Add(@FBatches[I]);
+      M := ARci.PipelineTransformation.ModelMatrix;
+      for I := 0 to FVisualizedLines.Count - 1 do
+      begin
+        if High(FBatches) < I then
+          break;
+        ARci.PipelineTransformation.Push;
+        ARci.PipelineTransformation.ModelMatrix :=
+          MatrixMultiply(M, CreateTranslationMatrix(FLocations[I]));
+        FTransformations[I] := ARci.PipelineTransformation.StackTop;
+        ARci.PipelineTransformation.Pop;
+        FBatches[I].Transformation := @FTransformations[I];
+        FBatches[I].Material := FBatch.Material;
+        FBatches[I].PickingMaterial := FBatch.PickingMaterial;
+        ARci.drawList.Add(@FBatches[I]);
+      end;
     end;
   end;
 
@@ -395,11 +398,12 @@ end;
 
 procedure TGLSpaceText.NotifyChange(Sender: TObject);
 begin
-  inherited NotifyChange(Sender);
   if Assigned(Sender) and (Sender = FVectorFont) then
   begin
     FVisualizedLines.Clear;
   end;
+  StructureChanged;
+  inherited NotifyChange(Sender);
 end;
 
 procedure TGLSpaceText.OnTextChanged(Sender: TObject);

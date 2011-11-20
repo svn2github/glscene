@@ -516,6 +516,8 @@ uses
   GLScene.AVIRecorder,
   GLScene.BitmapFont,
   GLScene.BitmapFont.System,
+  GLScene.VectorFont,
+  GLScene.VectorFont.Freetype,
   GLScene.DrawTechnique,
   GLScene.Blur,
   GLScene.HDS.Bumpmap,
@@ -1957,15 +1959,11 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TGLLinesNodes), TypeInfo(TLineNodesAspect), TypeInfo(TLineSplineMode),
     TypeInfo(TLinesOptions)]);
-{$IFDEF WIN32} // unit GLSpaceText
   RegisterPropertiesInCategory(sLayoutCategoryName,
     [TypeInfo(TGLTextAdjust)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TSpaceTextCharRange)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TLineSplineMode), TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
     TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
-{$ENDIF}
 
   // TGLDummyCube
   RegisterPropertiesInCategory(sLayoutCategoryName, TGLDummyCube,
@@ -1995,10 +1993,6 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLFrustrum,
     ['ApexHeight', 'Base*']);
   // TGLSpaceText
-{$IFDEF WIN32} // unit GLSpaceText
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLSpaceText,
-    ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
-{$ENDIF}
   // TGLSphere
   RegisterPropertiesInCategory(sVisualCategoryName, TGLSphere,
     ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
@@ -2237,6 +2231,7 @@ begin
       TGLCadencer,
       TGLGuiLayout,
       TGLBitmapFont, TGLSystemBitmapFont,
+      TGLFreetypeVectorFont,
       TGLScriptLibrary,
       TGLSoundLibrary, TGLSMWaveOut,
       TGLFullScreenViewer
@@ -2537,9 +2532,7 @@ initialization
     RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects, HInstance);
     RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects, HInstance);
     RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects, HInstance);
-{$IFDEF WIN32}
     RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);
-{$ENDIF}
     RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects, HInstance);
     RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects, HInstance);
     RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', glsOCSpecialObjects, HInstance);

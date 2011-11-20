@@ -104,7 +104,6 @@ contains
   GLScene.Viewer.VCL in '..\Source\GLScene.Viewer.VCL.pas',
   GLScene.ROAMPatch in '..\Source\GLScene.ROAMPatch.pas',
   GLScene.Base.HeightTileFile in '..\Source\GLScene.Base.HeightTileFile.pas',
-  GLScene.Objects.SpaceText in '..\Source\GLScene.Objects.SpaceText.pas',
   GLScene.TimeEvents.Manager in '..\Source\GLScene.TimeEvents.Manager.pas',
   GLScene.Base.Octree in '..\Source\GLScene.Base.Octree.pas',
   GLScene.Fx.Explosion in '..\Source\GLScene.Fx.Explosion.pas',
@@ -290,6 +289,10 @@ contains
   GLScene.MaterialEx in '..\Source\GLScene.MaterialEx.pas',
   GLScene.Mesh in '..\Source\GLScene.Mesh.pas',
   GLScene.Objects.NishitaSky in '..\Source\GLScene.Objects.NishitaSky.pas',
-  GLScene.Viewer.Form in '..\Source\GLScene.Viewer.Form.pas';
+  GLScene.Viewer.Form in '..\Source\GLScene.Viewer.Form.pas',
+  GLScene.LIBFREETYPE in '..\Source\GLScene.LIBFREETYPE.pas',
+  GLScene.VectorFont in '..\Source\GLScene.VectorFont.pas',
+  GLScene.VectorFont.Freetype in '..\Source\GLScene.VectorFont.Freetype.pas',
+  GLScene.Objects.SpaceText in '..\Source\GLScene.Objects.SpaceText.pas';
 
 end.

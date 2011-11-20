@@ -108,8 +108,6 @@ type
     { Private Declarations }
     FRanges: TVectorFontRanges;
     FUsers: TList;
-    FExtrusion: Single;
-    procedure SetExtrusion(Value: Single);
   protected
     { Protected Declarations }
 
@@ -127,10 +125,6 @@ type
     procedure BuildString(ABatch: TDrawBatch;
       const aText: UnicodeString); virtual; abstract;
     function GetAABB(const aText: string): TAABB; virtual; abstract;
-    { : Adjusts the 3D font extrusion.<p>
-      If Extrusion=0, the characters will be flat (2D), values >0 will
-      give them a third dimension. }
-    property Extrusion: Single read FExtrusion write SetExtrusion;
   end;
 
   // TGLVectorFont
@@ -375,15 +369,6 @@ procedure TGLCustomVectorFont.RegisterUser(anObject: TGLBaseSceneObject);
 begin
   Assert(FUsers.IndexOf(anObject) < 0);
   FUsers.Add(anObject);
-end;
-
-procedure TGLCustomVectorFont.SetExtrusion(Value: Single);
-begin
-  Value := MaxFloat(Value, 0);
-  if FExtrusion <> Value then
-  begin
-    FExtrusion := Value;
-  end;
 end;
 
 procedure TGLCustomVectorFont.SetRanges(const val: TVectorFontRanges);

@@ -1592,9 +1592,10 @@ begin
             end;
 
             // Set new parameters
+            LMesh.FElementSectorIndex := J;
+            pSector := FElementBufferMap.Sectors[J];
             pSector.Size := RequestSize;
             pSector.Mesh := LMesh;
-            pSector := FElementBufferMap.Sectors[J];
           end
           else
           begin

@@ -34,6 +34,7 @@ uses
   GLScene.Base.Vector.Types,
   GLScene.Base.Vector.Lists,
   GLScene.Base.GeometryBB,
+  GLScene.Base.Context,
   GLScene.Mesh,
   GLScene.DrawTechnique,
   GLScene.Core,
@@ -346,11 +347,17 @@ type
     FSystemFont: TFont;
     FFTFont: TVF_Font;
     FFaceSize: Integer;
+    FExtrusion: Single;
+    FFinishEvent: TFinishTaskEvent;
+    procedure Loaded; override;
+    procedure PrepareGeometry(AnUrgently: Boolean);
   private
     { Private Declarations }
     procedure SetFont(Value: TFont);
     procedure SetFaceSize(const Value: Integer);
     procedure OnFontChanged(Sender: TObject);
+    procedure BuildFont; stdcall;
+    procedure SetExtrusion(Value: Single);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -364,6 +371,10 @@ type
     property Ranges;
     property Font: TFont read FSystemFont write SetFont;
     property FaceSize: Integer read FFaceSize write SetFaceSize default 1;
+    { : Adjusts the 3D font extrusion.<p>
+      If Extrusion=0, the characters will be flat (2D), values >0 will
+      give them a third dimension. }
+    property Extrusion: Single read FExtrusion write SetExtrusion;
   end;
 
 {$IFDEF FPC}
@@ -374,9 +385,11 @@ operator + (const a, b: TVF_BBox): TVF_BBox; overload; inline;
 implementation
 
 uses
+{$IFDEF GLS_SERVICE_CONTEXT}
+  SyncObjs,
+{$ENDIF}
   GLScene.Base.OpenGL.Tokens,
   GLScene.Base.OpenGL.Adapter,
-  GLScene.Base.Context,
   GLScene.Base.GLStateMachine,
   GLScene.Shader.Parameter,
   GLScene.Base.Log;
@@ -812,6 +825,8 @@ end;
 // ------------------
 
 class procedure TVF_Library.Initialize;
+var
+  major, minor, patch: Integer;
 begin
   if InitFreetype then
   begin
@@ -821,6 +836,11 @@ begin
       FreeMem(FLibrary);
       FLibrary := nil;
       GLSLogger.LogErrorFmt(StrFTError, [FT_GetErrorString(FErr)]);
+    end
+    else
+    begin
+      FT_Library_Version(FLibrary, major, minor, patch);
+      GLSLogger.LogInfoFmt('FreeType library %d.%d.%d loaded', [major, minor, patch]);
     end;
   end
   else
@@ -1893,11 +1913,49 @@ end;
 // ------------------ TGLFreetypeVectorFont ------------------
 // ------------------
 
-procedure TGLFreetypeVectorFont.BuildString(ABatch: TDrawBatch;
-  const aText: UnicodeString);
+procedure TGLFreetypeVectorFont.BuildFont;
 var
   lPath: array [0 .. 255] of WideChar;
   sPath: string;
+  I: Integer;
+  ch, ch1, ch2: WideChar;
+begin
+{$IFDEF MSWINDOWS}
+  GetWindowsDirectoryW(lPath, 255);
+  sPath := IncludeTrailingPathDelimiter(lPath) + IncludeTrailingPathDelimiter
+    ('Fonts') + FSystemFont.Name + '.ttf';
+{$ELSE}
+  raise Exception.Create('Not yet implemented');
+{$ENDIF}
+
+  if Extrusion > 0 then
+  begin
+    FFTFont := TVF_ExtrudedFont.Create(sPath);
+    TVF_ExtrudedFont(FFTFont).depth := Extrusion;
+  end
+  else
+    FFTFont := TVF_PolygonFont.Create(sPath);
+
+  if FFTFont.Error = 0 then
+  begin
+    FFTFont.FaceSize(FFaceSize, 72);
+
+    for I := 0 to Ranges.Count - 1 do
+    begin
+      with Ranges[I] do
+      begin
+        ch1 := StartASCII[1];
+        ch2 := StopASCII[1];
+      end;
+
+      for ch := ch1 to ch2 do
+        FFTFont.CheckGlyph(Cardinal(ch));
+    end;
+  end;
+end;
+
+procedure TGLFreetypeVectorFont.BuildString(ABatch: TDrawBatch;
+  const aText: UnicodeString);
 begin
   with ABatch.Mesh do
     try
@@ -1911,19 +1969,7 @@ begin
     Exit;
 
   if not Assigned(FFTFont) then
-  begin
-    GetWindowsDirectoryW(lPath, 255);
-    sPath := IncludeTrailingPathDelimiter(lPath) + IncludeTrailingPathDelimiter
-      ('Fonts') + FSystemFont.Name + '.ttf';
-    if Extrusion > 0 then
-    begin
-      FFTFont := TVF_ExtrudedFont.Create(sPath);
-      TVF_ExtrudedFont(FFTFont).depth := Extrusion;
-    end
-    else
-      FFTFont := TVF_PolygonFont.Create(sPath);
-    FFTFont.FaceSize(FFaceSize, 72);
-  end;
+    PrepareGeometry(True);
 
   if FFTFont.Error <> 0 then
   begin
@@ -1940,24 +1986,61 @@ begin
   FSystemFont := TFont.Create;
   FSystemFont.OnChange := OnFontChanged;
   FFaceSize := 1;
+  with Ranges.Add do
+  begin
+    StartASCII := ' ';
+    StopASCII := '}';
+  end;
 end;
 
 destructor TGLFreetypeVectorFont.Destroy;
 begin
   FSystemFont.Free;
   FFTFont.Free;
+  FFinishEvent.Free;
   inherited;
 end;
 
 function TGLFreetypeVectorFont.GetAABB(const aText: string): TAABB;
 begin
-  Result := FFTFont.BBox(aText);
+  if Assigned(FFTFont) and (FFTFont.Error = 0) then
+    Result := FFTFont.BBox(aText)
+  else
+    Result := BBToAABB(NullBoundingBox);
+end;
+
+procedure TGLFreetypeVectorFont.Loaded;
+begin
+  inherited Loaded;
+  PrepareGeometry(False);
 end;
 
 procedure TGLFreetypeVectorFont.OnFontChanged(Sender: TObject);
 begin
   FreeAndNil(FFTFont);
   InvalidateUsers;
+end;
+
+procedure TGLFreetypeVectorFont.PrepareGeometry(AnUrgently: Boolean);
+begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+  if IsServiceContextAvaible and not AnUrgently then
+  begin
+    if not Assigned(FFinishEvent) then
+    begin
+      FFinishEvent := TFinishTaskEvent.Create;
+      AddTaskForServiceContext(BuildFont, FFinishEvent);
+    end
+    else if FFinishEvent.WaitFor(0) = wrSignaled then
+    begin
+      FFinishEvent.ResetEvent;
+      AddTaskForServiceContext(BuildFont, FFinishEvent);
+    end;
+    exit;
+  end
+  else
+{$ENDIF GLS_SERVICE_CONTEXT}
+    BuildFont;
 end;
 
 procedure TGLFreetypeVectorFont.SetFaceSize(const Value: Integer);
@@ -1975,6 +2058,17 @@ begin
   FSystemFont.Assign(Value);
   FreeAndNil(FFTFont);
   InvalidateUsers;
+end;
+
+procedure TGLFreetypeVectorFont.SetExtrusion(Value: Single);
+begin
+  Value := MaxFloat(Value, 0);
+  if FExtrusion <> Value then
+  begin
+    FExtrusion := Value;
+    FreeAndNil(FFTFont);
+    InvalidateUsers;
+  end;
 end;
 
 {$ENDREGION}

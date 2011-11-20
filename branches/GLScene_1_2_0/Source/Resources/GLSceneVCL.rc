@@ -67,3 +67,4 @@ GLSceneViewerControlToolbarGizmo BITMAP vcl\ToolbarGizmo.bmp
 GLSceneViewerControlToolbarCameraReset BITMAP vcl\ToolbarCameraReset.bmp
 TGLMaterialLibraryEx BITMAP vcl\TGLMaterialLibrary.bmp
 TGLSSynHiMemo BITMAP vcl\TGLSSynHiMemo.bmp
+TGLFreetypeVectorFont BITMAP vcl\TGLFreetypeVectorFont.bmp
