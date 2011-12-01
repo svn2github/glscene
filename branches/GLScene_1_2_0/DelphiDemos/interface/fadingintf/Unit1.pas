@@ -32,14 +32,14 @@ uses
   Controls,
   ExtCtrls,
   SysUtils,
-  GLScene.Base.Vector.Geometry,
-  GLScene.Base.Color,
-  GLScene.Core,
-  GLScene.ObjectsEx,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Base_Vector_Geometry,
+  GLScene_Base_Color,
+  GLScene_Core,
+  GLScene_ObjectsEx,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

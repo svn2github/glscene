@@ -21,14 +21,14 @@ uses
   Dialogs,
   ExtCtrls,
 
-  GLScene.Fx.Particle,
-  GLScene.Cadencer,
-  GLScene.PFX.Perlin,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Fx_Particle,
+  GLScene_Cadencer,
+  GLScene_PFX_Perlin,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

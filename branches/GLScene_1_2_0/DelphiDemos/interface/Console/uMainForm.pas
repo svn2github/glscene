@@ -18,9 +18,9 @@ uses
   ExtCtrls,
 
   //GLScene
-  GLScene.Behaviours, GLScene.BitmapFont, GLScene.BitmapFont.System,
-  GLScene.Core, GLScene.Base.Coordinates, GLScene.Objects, GLScene.Platform,
-  GLScene.Cadencer, GLScene.Viewer.VCL, GLScene.GUI.Console;
+  GLScene_Behaviours, GLScene_BitmapFont, GLScene_BitmapFont_System,
+  GLScene_Core, GLScene_Base_Coordinates, GLScene_Objects, GLScene_Platform,
+  GLScene_Cadencer, GLScene_Viewer_VCL, GLScene_GUI_Console;
 
 type
   TMainForm = class(TForm)

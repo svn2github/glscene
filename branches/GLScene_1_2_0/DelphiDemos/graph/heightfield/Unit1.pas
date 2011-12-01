@@ -36,18 +36,18 @@ uses
   ComCtrls,
   ExtCtrls,
 
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.Objects.GraphPlotting,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.Base.Color,
-  GLScene.Base.Vector.Types,
-  GLScene.Base.Vector.Geometry;
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_Objects_GraphPlotting,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_Base_Color,
+  GLScene_Base_Vector_Types,
+  GLScene_Base_Vector_Geometry;
 
 type
   TForm1 = class(TForm)

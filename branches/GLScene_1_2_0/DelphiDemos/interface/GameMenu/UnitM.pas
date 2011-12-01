@@ -24,17 +24,17 @@ uses
   StdCtrls,
 
   // GLScene
-  GLScene.BitmapFont,
-  GLScene.BitmapFont.System,
-  GLScene.Material,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.GameMenu,
-  GLScene.Keyboard,
+  GLScene_BitmapFont,
+  GLScene_BitmapFont_System,
+  GLScene_Material,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_GameMenu,
+  GLScene_Keyboard,
 
   // File formats
   JPEG;

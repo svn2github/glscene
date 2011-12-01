@@ -24,13 +24,13 @@ uses
   ComCtrls,
   ExtCtrls,
 
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -71,7 +71,7 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry;
+  GLScene_Base_Vector_Geometry;
 
 procedure TForm1.MoveCenterNodeTo(X, Y: Integer);
 begin

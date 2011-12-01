@@ -21,9 +21,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
 
-  GLScene.Cadencer, GLScene.BitmapFont,
-  GLScene.Core, GLScene.Objects.HUD, GLScene.Objects, GLScene.Objects.Teapot,
-  GLScene.Base.Coordinates, GLScene.Platform, GLScene.Viewer.VCL, ExtCtrls;
+  GLScene_Cadencer, GLScene_BitmapFont,
+  GLScene_Core, GLScene_Objects_HUD, GLScene_Objects, GLScene_Objects_Teapot,
+  GLScene_Base_Coordinates, GLScene_Platform, GLScene_Viewer_VCL, ExtCtrls;
 
 type
   TForm1 = class(TForm)

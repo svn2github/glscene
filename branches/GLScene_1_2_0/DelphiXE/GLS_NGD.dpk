@@ -34,10 +34,10 @@ requires
   GLScene_RunTime;
 
 contains
-  GLScene.NGD.Manager in '..\Source\GLScene.NGD.Manager.pas',
-  GLScene.Newton.Register in '..\Source\DesignTime\GLScene.Newton.Register.pas',
-  GLScene.Newton.Import in '..\Source\PhysicsAPIs\GLScene.Newton.Import.pas',
-  GLScene.Newton.Import.JointLibrary in '..\Source\PhysicsAPIs\GLScene.Newton.Import.JointLibrary.pas';
+  GLScene_NGD_Manager in '..\Source\GLScene_NGD_Manager.pas',
+  GLScene_Newton_Register in '..\Source\DesignTime\GLScene_Newton_Register.pas',
+  GLScene_Newton_Import in '..\Source\PhysicsAPIs\GLScene_Newton_Import.pas',
+  GLScene_Newton_Import_JointLibrary in '..\Source\PhysicsAPIs\GLScene_Newton_Import_JointLibrary.pas';
 
 end.
 

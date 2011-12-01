@@ -33,11 +33,11 @@ requires
   rtl;
 
 contains
-  GLScene.FMOD.API in '..\Source\SoundAPIs\fmod.pas',
-  GLScene.FMOD in '..\Source\GLScene.FMOD.pas',
-  GLScene.FMOD.Presets in '..\Source\SoundAPIs\GLScene.FMOD.Presets.pas',
-  GLScene.FMOD.Types in '..\Source\SoundAPIs\GLScene.FMOD.Types.pas',
-  GLScene.FMOD.Errors in '..\Source\SoundAPIs\GLScene.FMOD.Errors.pas',
-  GLScene.FMOD.Import in '..\Source\SoundAPIs\GLScene.FMOD.Import.pas';
+  GLScene_FMOD_API in '..\Source\SoundAPIs\fmod.pas',
+  GLScene_FMOD in '..\Source\GLScene_FMOD.pas',
+  GLScene_FMOD_Presets in '..\Source\SoundAPIs\GLScene_FMOD_Presets.pas',
+  GLScene_FMOD_Types in '..\Source\SoundAPIs\GLScene_FMOD_Types.pas',
+  GLScene_FMOD_Errors in '..\Source\SoundAPIs\GLScene_FMOD_Errors.pas',
+  GLScene_FMOD_Import in '..\Source\SoundAPIs\GLScene_FMOD_Import.pas';
 
 end.

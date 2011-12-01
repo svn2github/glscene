@@ -28,16 +28,16 @@ uses
   ExtCtrls,
   Menus,
 
-  GLScene.BitmapFont,
-  GLScene.BitmapFont.System,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects.HUD,
-  GLScene.Objects,
-  GLScene.Objects.Teapot,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_BitmapFont,
+  GLScene_BitmapFont_System,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects_HUD,
+  GLScene_Objects,
+  GLScene_Objects_Teapot,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

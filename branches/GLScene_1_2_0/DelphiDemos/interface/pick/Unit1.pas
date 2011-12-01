@@ -20,15 +20,15 @@ uses
   Controls,
   Dialogs,
 
-  GLScene.Cadencer,
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Core,
-  GLScene.ObjectsEx,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Cadencer,
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Core,
+  GLScene_ObjectsEx,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

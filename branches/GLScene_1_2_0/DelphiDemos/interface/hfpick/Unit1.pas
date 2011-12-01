@@ -38,17 +38,17 @@ uses
   StdCtrls,
   ExtCtrls,
 
-  GLScene.Base.Vector.Geometry,
-  GLScene.Base.Vector.Types,
-  GLScene.Base.Color,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Objects.GraphPlotting,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.Material,
-  GLScene.MaterialEx;
+  GLScene_Base_Vector_Geometry,
+  GLScene_Base_Vector_Types,
+  GLScene_Base_Color,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Objects_GraphPlotting,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_Material,
+  GLScene_MaterialEx;
 
 type
   TForm1 = class(TForm)

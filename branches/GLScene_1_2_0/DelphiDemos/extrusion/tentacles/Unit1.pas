@@ -23,15 +23,15 @@ uses
   Forms,
   ExtCtrls,
 
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Objects.Extrusion,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Objects_Extrusion,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -68,8 +68,8 @@ implementation
 {$R *.dfm}
 
 uses
-  GLScene.Base.Vector.Geometry, GLScene.Base.Vector.Types,
-  GLScene.Base.Color;
+  GLScene_Base_Vector_Geometry, GLScene_Base_Vector_Types,
+  GLScene_Base_Color;
 
 const
   cNbNodes = 32;

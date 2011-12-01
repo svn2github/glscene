@@ -26,14 +26,14 @@ uses
   ExtCtrls,
   StdCtrls,
 
-  GLScene.SimpleNavigation,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Objects.Extrusion,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_SimpleNavigation,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Objects_Extrusion,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -67,7 +67,7 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry;
+  GLScene_Base_Vector_Geometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

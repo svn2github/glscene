@@ -33,13 +33,13 @@ requires
   rtl;
 
 contains
-  GLScene.ODE.Manager in '..\Source\GLScene.ODE.Manager.pas',
-  GLScene.ODE.Utility in '..\Source\PhysicsAPIs\GLScene.ODE.Utility.pas',
-  GLScene.ODE.Register in '..\Source\DesignTime\GLScene.ODE.Register.pas',
-  GLScene.ODE.CustomColliders in '..\Source\GLScene.ODE.CustomColliders.pas',
-  GLScene.ODE.SkeletonColliders in '..\Source\GLScene.ODE.SkeletonColliders.pas',
-  GLScene.ODE.Import in '..\Source\PhysicsAPIs\GLScene.ODE.Import.pas',
-  GLScene.ODE.GL in '..\Source\PhysicsAPIs\GLScene.ODE.GL.pas',
-  GLScene.ODE.Ragdoll in '..\Source\GLScene.ODE.Ragdoll.pas';
+  GLScene_ODE_Manager in '..\Source\GLScene_ODE_Manager.pas',
+  GLScene_ODE_Utility in '..\Source\PhysicsAPIs\GLScene_ODE_Utility.pas',
+  GLScene_ODE_Register in '..\Source\DesignTime\GLScene_ODE_Register.pas',
+  GLScene_ODE_CustomColliders in '..\Source\GLScene_ODE_CustomColliders.pas',
+  GLScene_ODE_SkeletonColliders in '..\Source\GLScene_ODE_SkeletonColliders.pas',
+  GLScene_ODE_Import in '..\Source\PhysicsAPIs\GLScene_ODE_Import.pas',
+  GLScene_ODE_GL in '..\Source\PhysicsAPIs\GLScene_ODE_GL.pas',
+  GLScene_ODE_Ragdoll in '..\Source\GLScene_ODE_Ragdoll.pas';
 
 end.

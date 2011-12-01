@@ -54,16 +54,16 @@ uses
   Menus,
   ExtCtrls,
 
-  GLScene.BitmapFont,
-  GLScene.BitmapFont.System,
-  GLScene.Material,
-  GLScene.GUI,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.GUI.Windows;
+  GLScene_BitmapFont,
+  GLScene_BitmapFont_System,
+  GLScene_Material,
+  GLScene_GUI,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_GUI_Windows;
 
 type
   TForm1 = class(TForm)

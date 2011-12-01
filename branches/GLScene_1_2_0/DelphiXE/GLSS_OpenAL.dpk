@@ -33,7 +33,7 @@ requires
   rtl;
 
 contains
-  GLScene.OpenAL in '..\Source\GLScene.OpenAL.pas',
-  GLScene.OpenAL.API in '..\Source\SoundAPIs\openal.pas';
+  GLScene_OpenAL in '..\Source\GLScene_OpenAL.pas',
+  GLScene_OpenAL_API in '..\Source\SoundAPIs\openal.pas';
 
 end.

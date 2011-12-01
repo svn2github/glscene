@@ -59,12 +59,12 @@ uses
   Forms,
   ExtCtrls,
 
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -93,9 +93,9 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry,
-  GLScene.Base.Vector.Types,
-  GLScene.Base.Color;
+  GLScene_Base_Vector_Geometry,
+  GLScene_Base_Vector_Types,
+  GLScene_Base_Color;
 
 const
   cSize = 5;

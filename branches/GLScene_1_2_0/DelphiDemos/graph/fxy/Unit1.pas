@@ -32,14 +32,14 @@ uses
   StdCtrls,
   ComCtrls,
 
-  GLScene.Core,
-  GLScene.Objects.GraphPlotting,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.Base.Vector.Types,
-  GLScene.Base.Vector.Geometry;
+  GLScene_Core,
+  GLScene_Objects_GraphPlotting,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_Base_Vector_Types,
+  GLScene_Base_Vector_Geometry;
 
 type
   TForm1 = class(TForm)

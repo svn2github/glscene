@@ -27,15 +27,15 @@ uses
   Dialogs,
   ExtCtrls,
 
-  GLScene.Behaviours,
-  GLScene.Fx.Fire,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.ObjectsEx,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Behaviours,
+  GLScene_Fx_Fire,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_ObjectsEx,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -70,7 +70,7 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry;
+  GLScene_Base_Vector_Geometry;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);

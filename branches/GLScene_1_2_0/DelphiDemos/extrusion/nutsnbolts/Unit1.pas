@@ -25,14 +25,14 @@ uses
   Forms,
   Dialogs,
 
-  GLScene.SimpleNavigation,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.ObjectsEx,
-  GLScene.Objects.Extrusion,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_SimpleNavigation,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_ObjectsEx,
+  GLScene_Objects_Extrusion,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

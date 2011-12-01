@@ -14,10 +14,10 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Dialogs, ExtCtrls,
 
   // GLScene
-  GLScene.Gizmo, GLScene.SimpleNavigation,
-  GLScene.BitmapFont, GLScene.BitmapFont.System, GLScene.Cadencer, GLScene.Core,
-  GLScene.ObjectsEx, GLScene.Objects, GLScene.Base.Coordinates,
-  GLScene.Platform, GLScene.Viewer.VCL;
+  GLScene_Gizmo, GLScene_SimpleNavigation,
+  GLScene_BitmapFont, GLScene_BitmapFont_System, GLScene_Cadencer, GLScene_Core,
+  GLScene_ObjectsEx, GLScene_Objects, GLScene_Base_Coordinates,
+  GLScene_Platform, GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

@@ -22,12 +22,12 @@ uses
   Forms,
   Classes,
   Controls,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Objects.Teapot,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Objects_Teapot,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -59,7 +59,7 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry,
+  GLScene_Base_Vector_Geometry,
   Math;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;

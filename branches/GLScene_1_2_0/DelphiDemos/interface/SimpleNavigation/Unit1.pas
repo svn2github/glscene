@@ -18,13 +18,13 @@ uses
   Dialogs,
 
   // GLScene
-  GLScene.SimpleNavigation,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_SimpleNavigation,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

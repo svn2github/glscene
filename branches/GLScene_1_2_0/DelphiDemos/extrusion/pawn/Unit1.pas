@@ -20,13 +20,13 @@ uses
   ComCtrls,
   StdCtrls,
 
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Objects.Extrusion,
-  GLScene.Texture,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Objects_Extrusion,
+  GLScene_Texture,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

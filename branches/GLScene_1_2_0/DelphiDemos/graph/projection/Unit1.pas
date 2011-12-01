@@ -27,17 +27,17 @@ uses
   Controls,
   Forms,
 
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects.GraphPlotting,
-  GLScene.Objects,
-  GLScene.ObjectsEx,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.Base.Context.Info;
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects_GraphPlotting,
+  GLScene_Objects,
+  GLScene_ObjectsEx,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_Base_Context_Info;
 
 type
   TForm1 = class(TForm)
@@ -78,11 +78,11 @@ implementation
 {$R *.dfm}
 
 uses
-  GLScene.Base.Vector.Types,
-  GLScene.Base.Vector.Geometry,
-  GLScene.Base.GLStateMachine,
-  GLScene.Base.OpenGL.Tokens,
-  GLScene.Base.Context;
+  GLScene_Base_Vector_Types,
+  GLScene_Base_Vector_Geometry,
+  GLScene_Base_GLStateMachine,
+  GLScene_Base_OpenGL_Tokens,
+  GLScene_Base_Context;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

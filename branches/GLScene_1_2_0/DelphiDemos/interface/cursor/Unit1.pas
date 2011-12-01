@@ -34,16 +34,16 @@ uses
   ComCtrls,
   ExtCtrls,
 
-  GLScene.Texture,
-  GLScene.Material,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Particles,
-  GLScene.Base.Coordinates,
-  GLScene.Objects,
-  GLScene.Objects.HUD,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Texture,
+  GLScene_Material,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Particles,
+  GLScene_Base_Coordinates,
+  GLScene_Objects,
+  GLScene_Objects_HUD,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

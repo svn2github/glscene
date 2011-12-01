@@ -45,16 +45,16 @@ uses
   Dialogs,
   Menus,
   ExtCtrls,
-  GLScene.BitmapFont,
-  GLScene.BitmapFont.System,
-  GLScene.Material,
-  GLScene.GUI,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.GUI.Windows,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_BitmapFont,
+  GLScene_BitmapFont_System,
+  GLScene_Material,
+  GLScene_GUI,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_GUI_Windows,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)

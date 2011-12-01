@@ -1178,4 +1178,4 @@ end;
 initialization
   MediaManager.Add(TAudioDecoder_FFmpeg.Create);
 
-end.
+end.

@@ -23,19 +23,19 @@ uses
   ComCtrls,
 
   // GLScene
-  GLScene.SimpleNavigation,
-  GLScene.BitmapFont,
-  GLScene.BitmapFont.System,
-  GLScene.Cadencer,
-  GLScene.ObjectsEx,
-  GLScene.Objects,
-  GLScene.Core,
-  GLScene.Objects.GraphPlotting,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL,
-  GLScene.Base.Vector.Geometry,
-  GLScene.GizmoEx;
+  GLScene_SimpleNavigation,
+  GLScene_BitmapFont,
+  GLScene_BitmapFont_System,
+  GLScene_Cadencer,
+  GLScene_ObjectsEx,
+  GLScene_Objects,
+  GLScene_Core,
+  GLScene_Objects_GraphPlotting,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL,
+  GLScene_Base_Vector_Geometry,
+  GLScene_GizmoEx;
 
 type
   TForm1 = class(TForm)

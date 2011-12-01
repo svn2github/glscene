@@ -26,14 +26,14 @@ uses
   Forms,
   Dialogs,
 
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Objects.MultiPolygon,
-  GLScene.Objects.Extrusion,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL, ExtCtrls;
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Objects_MultiPolygon,
+  GLScene_Objects_Extrusion,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL, ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -62,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.Vector.Geometry;
+  GLScene_Base_Vector_Geometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

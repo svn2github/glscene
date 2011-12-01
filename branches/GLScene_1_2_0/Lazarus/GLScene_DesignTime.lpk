@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="4">
+  <Package Version="3">
     <PathDelim Value="\"/>
     <Name Value="GLScene_DesignTime"/>
     <CompilerOptions>
-      <Version Value="11"/>
+      <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <OtherUnitFiles Value="..\Source"/>
@@ -35,119 +35,119 @@
     <Version Major="1" Minor="2"/>
     <Files Count="28">
       <Item1>
-        <Filename Value="..\Source\GLScene.FX.CollectionEditor.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_FX_CollectionEditor_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item1>
       <Item2>
-        <Filename Value="..\Source\GLScene.FX.CollectionEditor.LCL.pas"/>
-        <UnitName Value="GLScene.FX.CollectionEditor.LCL"/>
+        <Filename Value="..\Source\GLScene_FX_CollectionEditor_LCL.pas"/>
+        <UnitName Value="GLScene_FX_CollectionEditor_LCL"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\GLScene.Edit.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_Edit_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\GLScene.Edit.LCL.pas"/>
-        <UnitName Value="GLScene.Edit.LCL"/>
+        <Filename Value="..\Source\GLScene_Edit_LCL.pas"/>
+        <UnitName Value="GLScene_Edit_LCL"/>
       </Item4>
       <Item5>
-        <Filename Value="..\Source\GLScene.Viewer.Form.Design.pas"/>
+        <Filename Value="..\Source\GLScene_Viewer_Form_Design.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="GLScene.Viewer.Form.Design"/>
+        <UnitName Value="GLScene_Viewer_Form_Design"/>
       </Item5>
       <Item6>
-        <Filename Value="..\Source\GLScene.Register.LCL.pas"/>
+        <Filename Value="..\Source\GLScene_Register_LCL.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="GLScene.Register.LCL"/>
+        <UnitName Value="GLScene_Register_LCL"/>
       </Item6>
       <Item7>
-        <Filename Value="..\Source\GLScene.XCollection.Register.pas"/>
+        <Filename Value="..\Source\GLScene_XCollection_Register.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="GLScene.XCollection.Register"/>
+        <UnitName Value="GLScene_XCollection_Register"/>
       </Item7>
       <Item8>
-        <Filename Value="..\Source\GLScene.Manager.Objects.pas"/>
-        <UnitName Value="GLScene.Manager.Objects"/>
+        <Filename Value="..\Source\GLScene_Manager_Objects.pas"/>
+        <UnitName Value="GLScene_Manager_Objects"/>
       </Item8>
       <Item9>
-        <Filename Value="..\Source\GLScene.PropertyEditor.MaterialPicker.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_MaterialPicker_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item9>
       <Item10>
-        <Filename Value="..\Source\GLScene.PropertyEditor.MaterialPicker.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.MaterialPicker.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_MaterialPicker_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_MaterialPicker_LCL"/>
       </Item10>
       <Item11>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Material.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Material_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item11>
       <Item12>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Material.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.Material.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Material_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_Material_LCL"/>
       </Item12>
       <Item13>
-        <Filename Value="..\Source\GLScene.PropertyEditor.TrackBar.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_TrackBar_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item13>
       <Item14>
-        <Filename Value="..\Source\GLScene.PropertyEditor.TrackBar.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.TrackBar.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_TrackBar_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_TrackBar_LCL"/>
       </Item14>
       <Item15>
-        <Filename Value="..\Source\GLScene.PropertyEditor.MaterialPreview.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_MaterialPreview_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item15>
       <Item16>
-        <Filename Value="..\Source\GLScene.PropertyEditor.MaterialPreview.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.MaterialPreview.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_MaterialPreview_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_MaterialPreview_LCL"/>
       </Item16>
       <Item17>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Color.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Color_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item17>
       <Item18>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Color.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.Color.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Color_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_Color_LCL"/>
       </Item18>
       <Item19>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Face.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Face_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item19>
       <Item20>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Face.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.Face.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Face_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_Face_LCL"/>
       </Item20>
       <Item21>
-        <Filename Value="..\Source\GLScene.PropertyEditor.GUI.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_GUI_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item21>
       <Item22>
-        <Filename Value="..\Source\GLScene.PropertyEditor.GUI.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.GUI.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_GUI_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_GUI_LCL"/>
       </Item22>
       <Item23>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Texture.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Texture_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item23>
       <Item24>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Texture.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.Texture.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Texture_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_Texture_LCL"/>
       </Item24>
       <Item25>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Vector.LCL.lfm"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Vector_LCL.lfm"/>
         <Type Value="LFM"/>
       </Item25>
       <Item26>
-        <Filename Value="..\Source\GLScene.PropertyEditor.Vector.LCL.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.Vector.LCL"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_Vector_LCL.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_Vector_LCL"/>
       </Item26>
       <Item27>
-        <Filename Value="..\Source\GLScene.PropertyEditor.PlugIn.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.PlugIn"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_PlugIn.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_PlugIn"/>
       </Item27>
       <Item28>
-        <Filename Value="..\Source\GLScene.PropertyEditor.TextureImage.pas"/>
-        <UnitName Value="GLScene.PropertyEditor.TextureImage"/>
+        <Filename Value="..\Source\GLScene_PropertyEditor_TextureImage.pas"/>
+        <UnitName Value="GLScene_PropertyEditor_TextureImage"/>
       </Item28>
     </Files>
     <i18n>
@@ -157,14 +157,14 @@
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="5">
       <Item1>
-        <PackageName Value="fcl"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="CodeTools"/>
       </Item1>
       <Item2>
-        <PackageName Value="ideintf"/>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item2>
       <Item3>
-        <PackageName Value="codetools"/>
+        <PackageName Value="IDEIntf"/>
       </Item3>
       <Item4>
         <PackageName Value="GLScene_Runtime"/>
@@ -172,7 +172,6 @@
       </Item4>
       <Item5>
         <PackageName Value="LCL"/>
-        <MinVersion Major="1" Valid="True"/>
       </Item5>
     </RequiredPkgs>
     <UsageOptions>

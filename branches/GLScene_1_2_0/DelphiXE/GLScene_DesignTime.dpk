@@ -39,14 +39,14 @@ requires
   VclSmp;
 
 contains
-  GLScene.FX.CollectionEditor.VCL in '..\Source\GLScene.FX.CollectionEditor.VCL.pas' {XCollectionEditor},
-  GLScene.Edit.VCL in '..\Source\GLScene.Edit.VCL.pas' {GLSceneEditorForm},
-  GLScene.Register.VCL in '..\Source\GLScene.Register.VCL.pas',
-  GLScene.XCollection.Register in '..\Source\GLScene.XCollection.Register.pas',
-  GLScene.GUI.LayoutEditor in '..\Source\GLScene.GUI.LayoutEditor.pas' {layouts_form},
-  GLScene.Toolbar in '..\Source\GLScene.Toolbar.pas',
-  GLScene.Viewer.Form.Design in '..\Source\GLScene.Viewer.Form.Design.pas',
-  GLScene.Shader.Memo in '..\Source\GLScene.Shader.Memo.pas' {GLShaderEditor};
+  GLScene_FX_CollectionEditor_VCL in '..\Source\GLScene_FX_CollectionEditor_VCL.pas' {XCollectionEditor},
+  GLScene_Edit_VCL in '..\Source\GLScene_Edit_VCL.pas' {GLSceneEditorForm},
+  GLScene_Register_VCL in '..\Source\GLScene_Register_VCL.pas',
+  GLScene_XCollection_Register in '..\Source\GLScene_XCollection_Register.pas',
+  GLScene_GUI_LayoutEditor in '..\Source\GLScene_GUI_LayoutEditor.pas' {layouts_form},
+  GLScene_Toolbar in '..\Source\GLScene_Toolbar.pas',
+  GLScene_Viewer_Form_Design in '..\Source\GLScene_Viewer_Form_Design.pas',
+  GLScene_Shader_Memo in '..\Source\GLScene_Shader_Memo.pas' {GLShaderEditor};
 
 end.
 

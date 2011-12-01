@@ -25,14 +25,14 @@ uses
   ExtCtrls,
   StdCtrls,
 
-  GLScene.Material,
-  GLScene.MaterialEx,
-  GLScene.Cadencer,
-  GLScene.Core,
-  GLScene.Objects,
-  GLScene.Base.Coordinates,
-  GLScene.Platform,
-  GLScene.Viewer.VCL;
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Cadencer,
+  GLScene_Core,
+  GLScene_Objects,
+  GLScene_Base_Coordinates,
+  GLScene_Platform,
+  GLScene_Viewer_VCL;
 
 type
   TForm1 = class(TForm)
@@ -71,10 +71,10 @@ implementation
 {$R *.DFM}
 
 uses
-  GLScene.Base.GLStateMachine,
-  GLScene.Base.Vector.Geometry,
-  GLScene.Base.Vector.Lists,
-  GLScene.Base.Color;
+  GLScene_Base_GLStateMachine,
+  GLScene_Base_Vector_Geometry,
+  GLScene_Base_Vector_Lists,
+  GLScene_Base_Color;
 
 const
   cNbPoints = 180;
