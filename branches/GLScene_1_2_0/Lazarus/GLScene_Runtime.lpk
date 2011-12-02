@@ -34,7 +34,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1" Minor="2"/>
-    <Files Count="237">
+    <Files Count="238">
       <Item1>
         <Filename Value="..\Source\GLScene_AsyncTimer.pas"/>
         <UnitName Value="GLScene_AsyncTimer"/>
@@ -976,13 +976,17 @@
         <UnitName Value="GLScene_ZLIB_API"/>
       </Item235>
       <Item236>
-        <Filename Value="..\Source\GLScene.inc"/>
-        <Type Value="Include"/>
-      </Item236>
-      <Item237>
         <Filename Value="..\Source\GLScene_Archive_Manager.pas"/>
         <UnitName Value="GLScene_Archive_Manager"/>
+      </Item236>
+      <Item237>
+        <Filename Value="..\Source\GLScene.inc"/>
+        <Type Value="Include"/>
       </Item237>
+      <Item238>
+        <Filename Value="..\Source\GLScene_Base_xf86vmode.pas"/>
+        <UnitName Value="GLScene_Base_xf86vmode"/>
+      </Item238>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>

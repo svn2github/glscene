@@ -38,7 +38,7 @@ interface
 
 uses
    {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-   {$IFDEF GLS_X11_SUPPORT} x,xlib,xf86vmode,{$ENDIF}
+   {$IFDEF GLS_X11_SUPPORT} x,xlib,GLScene_Base_xf86vmode,{$ENDIF}
    Classes, GLScene_Base_Vector_Geometry, GLScene_Platform;
 
 const
@@ -332,6 +332,7 @@ begin
 var
    i,j:Integer;
 begin
+  InitLib;
   SetLength(vVideoModes, MaxVideoModes);
   //if error usr/bin/ld: cannot find -lXxf86vm
   //then sudo apt-get install libXxf86vm-dev

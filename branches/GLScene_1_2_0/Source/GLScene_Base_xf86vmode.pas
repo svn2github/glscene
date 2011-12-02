@@ -34,12 +34,14 @@ from Kaleb S. KEITHLEY
 
 Unit GLScene_Base_xf86vmode;
 
-{$IFDEF LINUX}
+{$i GLScene.inc}
+
+Interface
+
+{$IFDEF GLS_X11_SUPPORT}
 
 {$PACKRECORDS c}
 {$DEFINE MACROS}
-
-Interface
 
 Uses
   ctypes, x, xlib, dynlibs;
@@ -331,10 +333,10 @@ function xfGetProcAddress(ProcName: AnsiString): Pointer;
 
 {$ENDIF}
 Implementation
-{$IFDEF LINUX}
+{$IFDEF GLS_X11_SUPPORT}
 
 uses
-  GLSLog;
+  GLScene_Base_Log;
 
 const
   INVALID_MODULEHANDLE = 0;
