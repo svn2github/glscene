@@ -12,7 +12,7 @@
 }
 unit GLScene_Context_Carbon;
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 interface
 
@@ -77,7 +77,6 @@ type
          function IsValid : Boolean; override;
          procedure SwapBuffers; override;
 
-         function RenderOutputDevice : Integer; override;
    end;
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -718,11 +717,6 @@ procedure TGLCarbonContext.SwapBuffers;
 begin
   if (FRC <> nil) and (rcoDoubleBuffered in Options) then
     FGL.aSwapBuffers(FRC);
-end;
-
-function TGLCarbonContext.RenderOutputDevice: Integer;
-begin
-  Result := 0;
 end;
 
 end.

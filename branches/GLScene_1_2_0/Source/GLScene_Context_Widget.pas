@@ -49,7 +49,7 @@ uses
 {$IFDEF GLS_OPENGL_ES}
   GLScene_Context_OES;
 {$ELSE}
-  GLCarbonContext;
+  GLScene_Context_Carbon;
 {$ENDIF}
 {$ENDIF}
 {$IFDEF BSD}

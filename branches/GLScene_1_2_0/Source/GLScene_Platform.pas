@@ -1378,7 +1378,7 @@ begin
   {$ENDIF}
   {$IFDEF Darwin}
   if FileExists('System/Library/CoreServices/ServerVersion.plist')  then
-    ReadXMLFile(Documento, 'System/Library/CoreServices/ServerVersion.plist');
+    ReadXMLFile(Documento, 'System/Library/CoreServices/ServerVersion.plist')
   else Exit;
   Child := Documento.DocumentElement.FirstChild;
 

@@ -34,7 +34,7 @@
       </Other>
     </CompilerOptions>
     <Version Major="1" Minor="2"/>
-    <Files Count="238">
+    <Files Count="240">
       <Item1>
         <Filename Value="..\Source\GLScene_AsyncTimer.pas"/>
         <UnitName Value="GLScene_AsyncTimer"/>
@@ -987,6 +987,14 @@
         <Filename Value="..\Source\GLScene_Base_xf86vmode.pas"/>
         <UnitName Value="GLScene_Base_xf86vmode"/>
       </Item238>
+      <Item239>
+        <Filename Value="..\Source\GLScene_Context_Carbon.pas"/>
+        <UnitName Value="GLScene_Context_Carbon"/>
+      </Item239>
+      <Item240>
+        <Filename Value="..\Source\GLScene_Context_XServer.pas"/>
+        <UnitName Value="GLScene_Context_XServer"/>
+      </Item240>
     </Files>
     <i18n>
       <EnableI18N Value="True"/>
