@@ -2290,9 +2290,10 @@ begin
 
     if GetError <> GL_NO_ERROR then
     begin
-      ClearError;
       CurrentGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
       GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.Name]);
+      CheckError;
+      ClearError;
     end;
     FHandle.NotifyDataUpdated;
   end;

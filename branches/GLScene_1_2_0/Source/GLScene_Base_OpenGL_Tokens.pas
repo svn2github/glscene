@@ -368,7 +368,7 @@ type
 
   type
 
-  {$IF defined(WINDOWS)}
+  {$IF defined(MSWINDOWS)}
      EGLNativeDisplayType = HDC;
      EGLNativePixmapType = HBITMAP;
      EGLNativeWindowType = HWND;

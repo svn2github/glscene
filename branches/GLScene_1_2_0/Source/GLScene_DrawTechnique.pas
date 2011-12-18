@@ -2163,6 +2163,9 @@ begin
         end // of Generic attributes
         else
         // Build-in attributes
+{$IFDEF GLS_OPENGL_ES}
+        if not GL.VERSION_2_0 then
+{$ENDIF}
         begin
           T := 8;
           for A := attrTexCoord7 downto attrTexCoord0 do
@@ -3586,29 +3589,47 @@ end;
 
 function TGLRenderManager.GetDrawTechnique: TGLAbstractDrawTechnique;
 begin
-  if GL.VERSION_4_1 then
+  with GL do
   begin
-    if vDrawTechniques[3] = nil then
-      vDrawTechniques[3] := TGLDrawTechniqueOGL4.Create;
-    Result := vDrawTechniques[3];
-  end
-  else if GL.VERSION_3_3 then
-  begin
-    if vDrawTechniques[2] = nil then
-      vDrawTechniques[2] := TGLDrawTechniqueOGL3.Create;
-    Result := vDrawTechniques[2];
-  end
-  else if GL.VERSION_2_1 then
-  begin
-    if vDrawTechniques[1] = nil then
-      vDrawTechniques[1] := TGLDrawTechniqueOGL2.Create;
-    Result := vDrawTechniques[1];
-  end
-  else
-  begin
-    if vDrawTechniques[0] = nil then
-      vDrawTechniques[0] := TGLDrawTechniqueOGL1.Create;
-    Result := vDrawTechniques[0];
+{$IFDEF GLS_OPENGL_ES}
+    if VERSION_2_0 then
+    begin
+      if vDrawTechniques[1] = nil then
+        vDrawTechniques[1] := TGLDrawTechniqueOGL2.Create;
+      Result := vDrawTechniques[1];
+    end
+    else
+    begin
+      if vDrawTechniques[0] = nil then
+        vDrawTechniques[0] := TGLDrawTechniqueOGL1.Create;
+      Result := vDrawTechniques[0];
+    end;
+{$ELSE}
+    if VERSION_4_1 then
+    begin
+      if vDrawTechniques[3] = nil then
+        vDrawTechniques[3] := TGLDrawTechniqueOGL4.Create;
+      Result := vDrawTechniques[3];
+    end
+    else if VERSION_3_3 then
+    begin
+      if vDrawTechniques[2] = nil then
+        vDrawTechniques[2] := TGLDrawTechniqueOGL3.Create;
+      Result := vDrawTechniques[2];
+    end
+    else if VERSION_2_1 then
+    begin
+      if vDrawTechniques[1] = nil then
+        vDrawTechniques[1] := TGLDrawTechniqueOGL2.Create;
+      Result := vDrawTechniques[1];
+    end
+    else
+    begin
+      if vDrawTechniques[0] = nil then
+        vDrawTechniques[0] := TGLDrawTechniqueOGL1.Create;
+      Result := vDrawTechniques[0];
+    end;
+{$ENDIF}
   end;
 end;
 

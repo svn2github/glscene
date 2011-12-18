@@ -9549,13 +9549,14 @@ begin
       if Owner is TComponent then
         if not (csDesigning in TComponent(Owner).ComponentState) then
           FBeforeRender(Self);
-
+    GL.CheckError;
     if Assigned(FCamera) and Assigned(FCamera.FScene) then
     begin
       with FCamera.FScene do
       begin
         SetupLights(MaxLights);
-        if not ForwardContext then
+        if not ForwardContext
+        then
         begin
           if FogEnable then
           begin
@@ -9576,6 +9577,7 @@ begin
         if not (csDesigning in TComponent(Owner).ComponentState) then
           FPostRender(Self);
   end;
+  GL.CheckError;
   Assert(Length(FViewMatrixStack) = 0,
     'Unbalance Push/PopViewMatrix.');
   Assert(Length(FProjectionMatrixStack) = 0,
@@ -9749,6 +9751,7 @@ begin
   if baseObject = nil then
     baseObject := aScene.Objects;
   baseObject.Render(LRci);
+
   aScene.RenderManager.DrawAll(LRci);
   aScene.RenderManager.DrawList.Count := 0;
 

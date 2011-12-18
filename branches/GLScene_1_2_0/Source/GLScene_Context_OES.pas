@@ -315,6 +315,8 @@ begin
   try
     Activate;
     FGL.Initialize;
+    FGLStates.ForwardContext := FGL.VERSION_2_0;
+
     GLSLogger.LogInfoFmt('OpenGL ES %d.%d context successfully created', [MajorVersion, MinorVersion]);
   finally
     if Active then

@@ -16,6 +16,8 @@ unit GLScene_Texture_Format;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   GLScene_Base_OpenGL_Tokens;
 
@@ -462,7 +464,11 @@ const
 
 function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLEnum;
 begin
+{$IFDEF GLS_OPENGL_ES}
+  Result := cTextureFormatToOpenGL[intFormat].ClrFmt;
+{$ELSE}
   Result := cTextureFormatToOpenGL[intFormat].IntFmt;
+{$ENDIF}
 end;
 
 function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TGLInternalFormat;
@@ -642,6 +648,15 @@ begin
     Result := GL.EXT_texture_compression_s3tc;
     EXIT;
   end;
+
+{$IFDEF GLS_OPENGL_ES}
+  if ((intFormat = tfCOMPRESSED_RGB_S3TC_DXT1) or (intFormat =
+    tfCOMPRESSED_RGBA_S3TC_DXT1)) then
+  begin
+    Result := GL.EXT_texture_compression_dxt1;
+    EXIT;
+  end;
+{$ENDIF}
 
   if ((intFormat >= tfSIGNED_LUMINANCE8) and (intFormat <=
     tfDSDT8_MAG8_INTENSITY8)) then

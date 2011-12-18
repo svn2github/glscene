@@ -182,7 +182,12 @@ type
     OES_texture_half_float_linear,
     OES_texture_npot,
     OES_vertex_array_object,
-    OES_vertex_half_float: Boolean;
+    OES_vertex_half_float,
+    EXT_texture_format_BGRA8888,
+    EXT_read_format_bgra,
+    ANGLE_framebuffer_blit,
+    EXT_texture_compression_dxt1,
+    ANGLE_framebuffer_multisample : Boolean;
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -3986,6 +3991,11 @@ begin
   OES_texture_npot := CheckExtension('GL_OES_texture_npot');
   OES_vertex_array_object := CheckExtension('GL_OES_vertex_array_object');
   OES_vertex_half_float := CheckExtension('GL_OES_vertex_half_float');
+  EXT_texture_format_BGRA8888 := CheckExtension('GL_EXT_texture_format_BGRA8888');
+  EXT_read_format_bgra := CheckExtension('GL_EXT_read_format_bgra');
+  ANGLE_framebuffer_blit := CheckExtension('GL_ANGLE_framebuffer_blit');
+  EXT_texture_compression_dxt1 := CheckExtension('GL_EXT_texture_compression_dxt1');
+  ANGLE_framebuffer_multisample := CheckExtension('GL_ANGLE_framebuffer_multisample');
 {$ENDIF}
 
   BindTexture := GetAddress('BindTexture');
