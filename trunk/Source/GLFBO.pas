@@ -109,8 +109,9 @@ type
     FTextureMipmap: cardinal;
     FAttachedTexture: array[0..MaxColorAttachments - 1] of TGLTexture;
     FDepthTexture: TGLTexture;
+    FDRBO: TGLDepthRBO;
+    FSRBO: TGLStencilRBO;
 
-    function GetHandle: GLuint;
     function GetStatus: TGLFramebufferStatus;
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
@@ -158,7 +159,7 @@ type
       TGLBaseSceneObject);
     procedure PostRender(const PostGenerateMipmap: Boolean);
 
-    property Handle: GLuint read GetHandle;
+    property Handle: TGLFramebufferHandle read FFrameBufferHandle;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
     property Layer: Integer read FLayer write SetLayer;
@@ -356,6 +357,10 @@ procedure TGLFrameBuffer.AttachDepthBuffer(DepthBuffer: TGLDepthRBO);
 var
   dp: TGLDepthPrecision;
 begin
+  if Assigned(FDRBO) then
+    DetachDepthBuffer;
+  FDRBO := DepthBuffer;
+
   Bind;
   AttachDepthRB;
 
@@ -459,6 +464,10 @@ procedure TGLFrameBuffer.AttachStencilBuffer(StencilBuffer: TGLStencilRBO);
 var
   sp: TGLStencilPrecision;
 begin
+  if Assigned(FSRBO) then
+    DetachStencilBuffer;
+  FSRBO := StencilBuffer;
+
   Bind;
   AttachStencilRB;
 
@@ -544,9 +553,10 @@ end;
 
 procedure TGLFrameBuffer.Bind;
 begin
-  if FFrameBufferHandle.Handle = 0 then
-    FFrameBufferHandle.AllocateHandle;
-  FFrameBufferHandle.Bind;
+  if Handle.IsDataNeedUpdate then
+    ReattachTextures
+  else
+    Handle.Bind;
 end;
 
 procedure TGLFrameBuffer.Unbind;
@@ -577,6 +587,7 @@ begin
   GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
+  FDRBO := nil;
 end;
 
 procedure TGLFrameBuffer.DetachStencilBuffer;
@@ -585,6 +596,7 @@ begin
   GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
+  FSRBO := nil;
 end;
 
 function TGLFrameBuffer.GetStatus: TGLFramebufferStatus;
@@ -679,13 +691,6 @@ begin
   Unbind;
 end;
 
-function TGLFrameBuffer.GetHandle: GLuint;
-begin
-  if FFrameBufferHandle.Handle = 0 then
-    FFrameBufferHandle.AllocateHandle;
-  Result := FFrameBufferHandle.Handle;
-end;
-
 procedure TGLFrameBuffer.SetHeight(const Value: Integer);
 begin
   if FHeight <> Value then
@@ -705,24 +710,59 @@ end;
 procedure TGLFrameBuffer.ReattachTextures;
 var
   n: Integer;
+  bEmpty: Boolean;
+  s: String;
 begin
+  Handle.AllocateHandle;
+  Handle.Bind;
   // Reattach layered textures
+  bEmpty := True;
+
   for n := 0 to MaxColorAttachments - 1 do
     if Assigned(FAttachedTexture[n]) then
+    begin
       AttachTexture(
         GL_COLOR_ATTACHMENT0_EXT + n,
         DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
         FLevel,
         FLayer);
+      bEmpty := False;
+    end;
+
   if Assigned(FDepthTexture) then
+  begin
     AttachTexture(
       GL_DEPTH_ATTACHMENT,
       DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       FDepthTexture.Handle,
       FLevel,
       FLayer);
-  Assert(Status = fsComplete, 'Framebuffer not complete');
+    bEmpty := False;
+  end;
+
+  if Assigned(FDRBO) then
+  begin
+    FDRBO.Bind;
+    FDRBO.Unbind;
+    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+      GL_RENDERBUFFER_EXT, FDRBO.Handle);
+    bEmpty := False;
+  end;
+
+  if Assigned(FSRBO) then
+  begin
+    FSRBO.Bind;
+    FSRBO.Unbind;
+    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+      GL_RENDERBUFFER_EXT, FSRBO.Handle);
+    bEmpty := False;
+  end;
+
+  if not bEmpty and (GetStringStatus(s) <> fsComplete) then
+    GLSLogger.LogErrorFmt('Framebuffer error: %s. Deactivated', [s]);
+
+  Handle.NotifyDataUpdated;
 end;
 
 procedure TGLFrameBuffer.SetLayer(const Value: Integer);
