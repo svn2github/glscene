@@ -1277,6 +1277,7 @@ function IntPower(Base: Extended; Exponent: Integer): Extended;
 function Power(const Base, Exponent: Single): Single; overload;
 {: Raise base to an integer. }
 function Power(Base: Single; Exponent: Integer): Single; overload;
+function Power(Base: Single; Exponent: Int64): Single; overload;
 
 //------------------------------------------------------------------------------
 // Trigonometric functions
@@ -7543,6 +7544,14 @@ begin
    {$HINTS ON}
 {$endif}
 end;
+
+function Power(Base: Single; Exponent: Int64): Single;
+begin
+   {$HINTS OFF}
+   Result:=Math.Power(Base, Exponent);
+   {$HINTS ON}
+end;
+
 
 // DegToRad (extended)
 //

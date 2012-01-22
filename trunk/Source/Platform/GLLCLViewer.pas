@@ -446,7 +446,9 @@ procedure TGLSceneViewer.Loaded;
 begin
   inherited Loaded;
   // initiate window creation
+  {$ifndef LCLGTK2}
   HandleNeeded;
+  {$endif}
 end;
 
 // DoBeforeRender

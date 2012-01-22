@@ -29,7 +29,7 @@ const
   MaxListSize = Maxint div 16;
 
 {$IFDEF FPC}
-  {$IF (LCL_RELEASE < 31)}
+  {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     {$DEFINE GLS_GENERIC_PREFIX}
   {$IFEND}
 {$ENDIF}
