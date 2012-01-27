@@ -1767,7 +1767,7 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
-uses SysUtils{$ifdef GEOMETRY_NO_ASM}, Math{$endif};
+uses SysUtils, Math;
 
 const
 {$ifndef GEOMETRY_NO_ASM}
@@ -7548,7 +7548,7 @@ end;
 function Power(Base: Single; Exponent: Int64): Single;
 begin
    {$HINTS OFF}
-   Result:=Math.Power(Base, Exponent);
+   Result:= Math.Power(Base, Exponent);
    {$HINTS ON}
 end;
 
