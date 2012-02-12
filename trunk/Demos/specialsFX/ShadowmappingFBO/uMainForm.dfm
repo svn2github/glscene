@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
+  Width = 673
+  Height = 518
   Caption = 'Form1'
-  ClientHeight = 480
-  ClientWidth = 640
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 640
+    Width = 657
     Height = 480
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
@@ -89,6 +89,8 @@ object Form1: TForm1
         Material.LibMaterialName = 'Chekers'
         MajorRadius = 0.400000005960464400
         MinorRadius = 0.100000001490116100
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLCylinder1: TGLCylinder
         Material.MaterialLibrary = GLMaterialLibrary1
@@ -122,13 +124,12 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ShowShadowMap'
-        Material.Texture.TextureFormat = tfExtended
-        Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Tag = 0
         Shader = GLSLShader1
       end
       item
         Name = 'ShadowMap'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MinFilter = miLinear
@@ -141,14 +142,13 @@ object Form1: TForm1
         Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Material.Texture.BorderColor.Color = {0000803F000000000000000000000000}
         Material.Texture.TextureCompareMode = tcmCompareRtoTexture
-        Tag = 0
       end
       item
         Name = 'mask'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureWrap = twSeparate
         Material.FaceCulling = fcNoCull
-        Tag = 0
         TextureScale.Coordinates = {00004040000040400000A04000000000}
         Shader = GLSLShader2
       end
@@ -164,8 +164,8 @@ object Form1: TForm1
       end
       item
         Name = 'Lightspot'
-        Material.Texture.TextureWrap = twNone
         Tag = 0
+        Material.Texture.TextureWrap = twNone
         Shader = GLSLShader2
       end
       item
