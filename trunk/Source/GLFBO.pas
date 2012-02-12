@@ -413,9 +413,15 @@ begin
       TGLBlankImage(FDepthTexture.Image).Height := Height;
     end;
     if FDepthTexture.TextureFormatEx = tfDEPTH24_STENCIL8 then
-      TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8)
+    begin
+      TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8);
+      TGLBlankImage(FDepthTexture.Image).ColorFormat := GL_DEPTH_STENCIL;
+    end
     else
+    begin
       TGLBlankImage(FDepthTexture.Image).GetBitmap32.SetColorFormatDataType(GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE);
+      TGLBlankImage(FDepthTexture.Image).ColorFormat := GL_DEPTH_COMPONENT;
+    end;
     // Depth texture mipmaping
     if not ((FDepthTexture.MinFilter in [miNearest, miLinear])) then
       FTextureMipmap := FTextureMipmap or Cardinal(1 shl MaxColorAttachments);
