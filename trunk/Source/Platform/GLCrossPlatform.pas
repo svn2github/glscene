@@ -1551,8 +1551,11 @@ begin
   Result := lResult^;
   FreeMem(lResult, 2);
 {$ELSE}
+var
+  lResult: WideString;
 begin
-  Assert(False, 'Not implemented!');
+  lResult := UTF8ToUTF16(AChar); // Yar: not tested with non latin symbols
+  Result := lResult[1];
 {$ENDIF}
 end;
 
