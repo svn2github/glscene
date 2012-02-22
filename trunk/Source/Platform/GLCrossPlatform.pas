@@ -1552,9 +1552,11 @@ begin
   FreeMem(lResult, 2);
 {$ELSE}
 var
+  S: string;
   lResult: WideString;
 begin
-  lResult := UTF8ToUTF16(AChar); // Yar: not tested with non latin symbols
+  S := AnsiToUtf8(AChar);
+  lResult := Utf8ToUtf16(S);
   Result := lResult[1];
 {$ENDIF}
 end;
