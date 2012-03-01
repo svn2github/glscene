@@ -16,6 +16,8 @@ unit GLScene_Context_Carbon;
 
 interface
 
+{$IFDEF DARWIN}
+
 uses
   MacOSAll,
   Classes, SysUtils,LCLType,  GLScene_Platform, GLScene_Base_Context, LCLProc, Forms, Controls,
@@ -78,6 +80,7 @@ type
          procedure SwapBuffers; override;
 
    end;
+   {$ENDIF}
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -85,6 +88,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
+
+{$IFDEF DARWIN}
+
 uses
   GLScene_Base_GLStateMachine, GLScene_Base_Log;
 
@@ -718,5 +724,7 @@ begin
   if (FRC <> nil) and (rcoDoubleBuffered in Options) then
     FGL.aSwapBuffers(FRC);
 end;
+
+{$ENDIF}
 
 end.

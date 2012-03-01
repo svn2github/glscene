@@ -18,7 +18,7 @@ unit GLScene_FX_CollectionEditor_LCL;
 interface
 
 {$i GLScene.inc}
-
+{$ifndef GLS_OPENGL_ES}
 uses
   LResources, Forms, GLScene_Base_XCollection, Controls, Classes, ActnList,
   Menus, ComCtrls;
@@ -76,6 +76,7 @@ type
 function XCollectionEditor: TXCollectionEditor;
 procedure ReleaseXCollectionEditor;
 
+{$endif}
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -83,6 +84,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_FX_CollectionEditor_LCL.lfm}
 
 uses
@@ -352,5 +354,5 @@ initialization
 
 finalization
   ReleaseXCollectionEditor;
-
+  {$endif}
 end.

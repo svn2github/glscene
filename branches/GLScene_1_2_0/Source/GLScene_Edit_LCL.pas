@@ -56,7 +56,7 @@ unit GLScene_Edit_LCL;
 interface
 
 {$I GLScene.inc}
-
+{$ifndef GLS_OPENGL_ES}
 uses
   {$IFDEF MSWINDOWS}
   Registry,
@@ -230,6 +230,7 @@ type
 function GLSceneEditorForm : TGLSceneEditorForm;
 procedure ReleaseGLSceneEditorForm;
 
+{$endif}
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -237,6 +238,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_Edit_LCL.lfm}
 
 uses
@@ -1544,5 +1546,5 @@ initialization
 
 finalization
   ReleaseGLSceneEditorForm;
-
+{$endif}
 end.

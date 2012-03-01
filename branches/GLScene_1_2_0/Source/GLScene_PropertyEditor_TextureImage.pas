@@ -13,6 +13,7 @@ unit GLScene_PropertyEditor_TextureImage;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Classes, GLScene_Texture, GLScene_Texture_Procedural;
@@ -72,7 +73,7 @@ procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
                                        texImageEditor : TGLTextureImageEditorClass);
 procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
 
-
+{$endif}
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -80,6 +81,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+{$ifndef GLS_OPENGL_ES}
 
 uses
   SysUtils, GLScene_Platform, GLScene_Utils;
@@ -265,6 +267,8 @@ finalization
 
   FreeAndNil(vTIEClass);
   FreeAndNil(vTIEEditor);
+
+  {$endif}
 
 end.
 

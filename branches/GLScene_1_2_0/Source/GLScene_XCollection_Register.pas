@@ -18,7 +18,7 @@ unit GLScene_XCollection_Register;
 interface
 
 {$i GLScene.inc}
-
+{$ifndef GLS_OPENGL_ES}
 uses
   Classes, GLScene_Base_XCollection,
   {$IFDEF FPC}
@@ -41,6 +41,8 @@ type
 
 procedure Register;
 
+{$endif}
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -48,6 +50,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$ifndef GLS_OPENGL_ES}
+
 uses {$IFNDEF FPC}GLScene_FX_CollectionEditor_VCL{$ELSE}GLScene_FX_CollectionEditor_LCL{$ENDIF};
 
 
@@ -88,5 +92,5 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   
+{$endif}
 end.

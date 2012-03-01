@@ -14,6 +14,7 @@ unit GLScene_PropertyEditor_Texture_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, TypInfo,
@@ -71,8 +72,11 @@ type
 
   end;
 
+{$endif}
+
 implementation
 
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_PropertyEditor_Texture_LCL.lfm}
 
 uses
@@ -223,6 +227,8 @@ begin
   EditGLTextureImage(FTexture.Image);
   DoOnChange;
 end;
+
+{$endif}
 
 end.
 

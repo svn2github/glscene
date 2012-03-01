@@ -14,6 +14,7 @@ unit GLScene_PropertyEditor_GUI_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
@@ -165,8 +166,11 @@ var
 
 function GUIComponentDialog(GuiComponent: TGLGuiElementList): boolean;
 
+{$endif}
+
 implementation
 
+{$ifndef GLS_OPENGL_ES}
 {$R *.lfm}
 
 function GUIComponentDialog(GuiComponent: TGLGuiElementList): boolean;
@@ -990,6 +994,8 @@ begin
   FOriginalWndProc(Message);
   {$ENDIF}
 end;
+
+{$endif}
 
 end.
 

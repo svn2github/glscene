@@ -77,7 +77,7 @@
 // Activate OpenGL ES
 {.$DEFINE GLS_OPENGL_ES}
 
-
+// Activate ANDROID for OS ANDROID
 //
 // Platform Detection
 //
@@ -141,6 +141,7 @@
     {$DEFINE GLS_X11_SUPPORT}
   {$IFEND}
   {$IFDEF cpuarm}
+    {$DEFINE ANDROID}
     {$DEFINE GLS_OPENGL_ES}
   {$ENDIF}
 {$ENDIF}

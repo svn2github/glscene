@@ -15,6 +15,7 @@ unit GLScene_PlugIn_Manager;
 interface
 
 {$I GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses {$IFDEF MSWINDOWS} Windows,{$ENDIF}
      {$IFDEF UNIX}
@@ -95,7 +96,11 @@ type
 
   // ------------------------------------------------------------------------------
 
+  {$endif}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 uses Dialogs, Forms, GLScene_PropertyEditor_PlugIn;
 
@@ -411,6 +416,7 @@ begin
   end;
 end;
 
+{$endif}
 // ------------------------------------------------------------------------------
 
 end.

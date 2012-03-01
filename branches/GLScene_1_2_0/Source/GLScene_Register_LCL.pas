@@ -32,6 +32,7 @@ uses
   LazIDEIntf, ProjectIntf, ProjectResourcesIntf, MacroIntf, resource, Laz_XMLCfg,
   Forms;
 
+{$IFNDEF GLS_OPENGL_ES}
 type
   // TGLLibMaterialNameProperty
 
@@ -41,6 +42,7 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
+{$ENDIF}
 
 procedure Register;
 
@@ -142,6 +144,7 @@ uses
   GLScene_PropertyEditor_Uniform_VCL, GLScene_GUI_LayoutEditor,
   GLScene_Utils;
 
+
 var
   vObjectManager: TObjectManager;
 
@@ -152,6 +155,7 @@ begin
   Result := vObjectManager;
 end;
 
+{$IFNDEF GLS_OPENGL_ES}
 type
   // TGLSceneViewerEditor
 
@@ -1199,6 +1203,7 @@ begin
 end;
 
 {$ENDREGION}
+{$ENDIF}
 
 function GetProjectTargetName: string;
 begin
@@ -1238,12 +1243,15 @@ begin
     TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader, TGLAsmShader,
     TGLShaderCombiner, TGLTextureSharingShader, TGLSLPostBlurShader]);
 
+  {$IFNDEF GLS_OPENGL_ES}
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);
   RegisterComponentEditor(TGLGUILayout, TGLGUILayoutEditor);
+  {$ENDIF}
 
   RegisterClasses([TGLCoordinates]);
 
+  {$IFNDEF GLS_OPENGL_ES}
   RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
   RegisterComponentEditor(TGLSArchiveManager, TGLSArchiveManagerEditor);
 
@@ -1327,6 +1335,7 @@ begin
     TShaderFileProperty);
   RegisterPropertyEditor(TypeInfo(boolean), TGLBaseShaderModel,
     'AutoFillOfUniforms', TUniformAutoSetProperty);
+  {$ENDIF}
 
   with ObjectManager do
   begin

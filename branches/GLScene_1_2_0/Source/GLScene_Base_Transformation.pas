@@ -19,12 +19,14 @@ interface
 
 uses
   GLScene_Base_Vector_Geometry,
+  GLScene_Base_OpenGL_Adapter,
   GLScene_Base_Vector_Types;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
 
 type
+  TGetGL = function(): TGLExtensionsAndEntryPoints;
 
   TTransformationChange = (tfcModelViewChanged, tfcInvModelViewChanged,
     tfcInvModelChanged, tfcNormalModelChanged, tfcViewProjChanged, tfcFrustum);
@@ -36,7 +38,6 @@ const
     tfcInvModelChanged, tfcViewProjChanged, tfcNormalModelChanged, tfcFrustum];
 
 type
-
   TManagedMatrix = array of Single;
 
   PTransformationRec = ^TTransformationRec;
@@ -118,6 +119,7 @@ type
 
 var
   vIdentityHmgMatrix: TManagedMatrix;
+  localGL: TGetGL;
 
 procedure SetMatrix(var ADest: TManagedMatrix; const ASource: TMatrix);
   overload;
@@ -132,8 +134,9 @@ implementation
 
 uses
   GLScene_Base_OpenGL_Tokens,
-  GLScene_Base_Context,
   GLScene_Base_Log;
+
+
 
 procedure SetMatrix(var ADest: TManagedMatrix; const ASource: TMatrix);
 begin
@@ -284,7 +287,7 @@ begin
   if Assigned(FOnCustomLoadMatrices) then
     FOnCustomLoadMatrices()
   else
-    with GL do
+    with localGL do
     begin
 {$IFDEF GLS_OPENGL_ES}
       if VERSION_2_0 then // programable pipeline only
@@ -465,7 +468,6 @@ begin
 end;
 
 initialization
-
   SetLength(vIdentityHmgMatrix, 16);
   Move(IdentityHmgMatrix[0], vIdentityHmgMatrix[0], SizeOf(TMatrix));
 

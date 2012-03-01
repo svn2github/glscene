@@ -210,7 +210,7 @@ begin
        {$MESSAGE Warn 'Needs to be implemented'}
       end;
      {$ENDIF}
-     {$IFDEF LCLAndroid}
+     {$IFDEF Android}
        begin
         {$MESSAGE Warn 'Needs to be implemented'}
        end;
@@ -265,7 +265,7 @@ begin
   {$IFDEF Darwin}
     {$MESSAGE Warn 'Needs to be implemented'}
   {$ENDIF}
-  {$IFDEF LCLAndroid}
+  {$IFDEF Android}
      {$MESSAGE Warn 'Needs to be implemented'}
   {$ENDIF}
 end;
@@ -360,7 +360,7 @@ begin
 begin
   {$MESSAGE Warn 'ReadVideoModes not yet implemented for Darwin platforms'}
 {$ENDIF}
-{$IFDEF LCLAndroid}
+{$IFDEF Android}
   begin
    {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
@@ -424,7 +424,7 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
-{$IFDEF LCLAndroid}
+{$IFDEF Android}
 begin
    {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
@@ -470,7 +470,7 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
-{$IFDEF LCLAndroid}
+{$IFDEF Android}
 begin
    {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
@@ -506,7 +506,7 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
-{$IFDEF LCLAndroid}
+{$IFDEF Android}
 begin
    {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
@@ -540,7 +540,7 @@ begin
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}
-{$IFDEF LCLAndroid}
+{$IFDEF Android}
 begin
    {$MESSAGE Warn 'Needs to be implemented'}
 {$ENDIF}

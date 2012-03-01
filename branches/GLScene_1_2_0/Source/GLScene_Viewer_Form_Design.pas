@@ -15,7 +15,7 @@ unit GLScene_Viewer_Form_Design;
 interface
 
 {$I GLScene.inc}
-
+{$ifndef GLS_OPENGL_ES}
 uses
   Forms,
 {$IFDEF GLS_DELPHI_OR_CPPB}
@@ -367,7 +367,11 @@ resourcestring
 
 procedure Register;
 
+{$endif}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 {$IFDEF GLS_DELPHI_OR_CPPB}
 {$R GLScene_Form_Design.res}
@@ -2812,5 +2816,6 @@ finalization
   DoneModule;
 {$ENDIF}
 
+{$endif}
 end.
 

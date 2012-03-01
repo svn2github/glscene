@@ -10,6 +10,7 @@ unit GLScene_PropertyEditor_Vector_LCL;
 
 interface
 
+{$ifndef GLS_OPENGL_ES}
 {$i GLScene.inc}
 
 uses  lresources,
@@ -65,6 +66,7 @@ type
 function VectorEditorForm: TVectorEditorForm;
 procedure ReleaseVectorEditorForm;
 
+{$endif}
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -72,6 +74,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_PropertyEditor_Vector_LCL.lfm}
 
 uses
@@ -245,5 +248,6 @@ finalization
 
   ReleaseVectorEditorForm;
 
+{$endif}
 end.
 

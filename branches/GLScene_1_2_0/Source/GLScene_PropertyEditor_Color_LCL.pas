@@ -11,6 +11,7 @@ unit GLScene_PropertyEditor_Color_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Forms, StdCtrls, ComCtrls, ExtCtrls, GLScene_PropertyEditor_TrackBar_LCL, Dialogs, Controls,
@@ -68,8 +69,11 @@ type
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
   end;
 
+{$endif}
+
 implementation
 
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_PropertyEditor_Color_LCL.lfm}
 
 uses
@@ -501,6 +505,7 @@ begin
   end;
 
 end;
+{$endif}
 
 end.
 

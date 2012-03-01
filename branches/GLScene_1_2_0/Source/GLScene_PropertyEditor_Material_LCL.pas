@@ -12,6 +12,8 @@ interface
 
 {$i GLScene.inc}
 
+{$ifndef GLS_OPENGL_ES}
+
 uses
 
   GLScene_PropertyEditor_TrackBar_LCL, Forms,
@@ -73,7 +75,11 @@ type
 function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
+{$endif}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 {$R GLScene_PropertyEditor_Material_LCL.lfm}
 
@@ -243,6 +249,8 @@ initialization
 finalization
 
   ReleaseMaterialEditorForm;
+
+{$endif}
 
 end.
 

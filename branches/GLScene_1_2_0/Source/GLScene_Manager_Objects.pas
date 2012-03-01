@@ -28,6 +28,7 @@ interface
 
 {$I GLScene.inc}
 
+
 uses
   Classes, Graphics, Controls, Menus, GLScene_Platform, GLScene_Core
 {$IFDEF FPC}
@@ -99,6 +100,8 @@ type
     property CameraRootIndex: Integer read FCameraRootIndex;
     property ObjectRootIndex: Integer read FObjectRootIndex;
   end;
+
+
 
 implementation
 

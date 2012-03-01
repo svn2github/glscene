@@ -11,6 +11,7 @@ unit GLScene_PropertyEditor_TrackBar_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Forms, StdCtrls, ComCtrls, Classes, Controls,lresources;
@@ -36,7 +37,11 @@ type
     property ValueMax : Integer read GetValueMax write SetValueMax;
   end;
 
+{$endif}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 {$R GLScene_PropertyEditor_TrackBar_LCL.lfm}
 
@@ -104,6 +109,8 @@ function TRTrackBarEdit.GetValueMin : Integer;
 begin
    Result:=TrackBar.Min;
 end;
+
+{$endif}
 
 end.
 

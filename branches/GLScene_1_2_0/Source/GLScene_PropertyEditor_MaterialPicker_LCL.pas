@@ -13,6 +13,7 @@ unit GLScene_PropertyEditor_MaterialPicker_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   lresources, LCLIntf,
@@ -73,7 +74,11 @@ type
 function LibMaterialPicker: TLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
+{$endif}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 {$R GLScene_PropertyEditor_MaterialPicker_LCL.lfm}
 
@@ -233,5 +238,6 @@ initialization
 finalization
   ReleaseLibMaterialPicker;
 
+{$endif}
 end.
 

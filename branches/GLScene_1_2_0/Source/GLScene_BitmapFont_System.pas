@@ -37,7 +37,7 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF FPC}
-  LCLIntf, LCLType, Types, LCLProc,//LazUTF8,
+  LCLIntf, LCLType, Types, LCLProc,LazUTF8,
 {$ENDIF}
   GLScene_BitmapFont,
   GLScene_Base_Context_Info,

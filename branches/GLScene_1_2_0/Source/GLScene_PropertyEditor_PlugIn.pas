@@ -17,6 +17,7 @@ unit GLScene_PropertyEditor_PlugIn;
 interface
 
 {$I GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Forms, Dialogs, StdCtrls, Controls, Buttons, Classes, GLScene_PlugIn_Manager;
@@ -53,9 +54,13 @@ type
 var
   PlugInManagerPropForm: TPlugInManagerPropForm;
 
+{$endif}
+
   // ------------------------------------------------------------------------------
 
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 uses GLScene_PlugIn_Types, SysUtils;
 
@@ -223,5 +228,6 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
+{$endif}
 
 end.

@@ -11,6 +11,7 @@ unit GLScene_PropertyEditor_Face_LCL;
 interface
 
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   LResources,
@@ -52,8 +53,11 @@ type
 
   end;
 
+{$endif}
+
 implementation
 
+{$ifndef GLS_OPENGL_ES}
 {$R GLScene_PropertyEditor_Face_LCL.lfm}
 
 uses
@@ -141,6 +145,8 @@ begin
    OnColorChange(Self);
    TBEShininessTrackBarChange(Self);
 end;
+
+{$endif}
 
 end.
 
