@@ -3576,7 +3576,10 @@ begin
       FSpotCutoff[I] := Value;
       FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
     end;
-
+	
+    if FFFPLight then
+      GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_CUTOFF, @Value);
+                  
     FShaderLightStatesChanged := True;
     if Assigned(FOnLightsChanged) then
       FOnLightsChanged(Self);
