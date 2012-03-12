@@ -122,7 +122,8 @@ type
     procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
     procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
-    procedure GetFocus(var Mess: TLMActivate); message LM_ACTIVATE;
+    procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
+    procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
 {$ENDIF}
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
@@ -405,19 +406,25 @@ begin
   inherited;
 end;
 
-procedure TGLSceneForm.GetFocus(var Mess: TLMActivate);
+procedure TGLSceneForm.GetFocus(var Mess: TLMessage);
 begin
-  if not (csDesigning in ComponentState) then
-  begin
-    if FFullScreenVideoMode.FEnabled
+  if not (csDesigning in ComponentState)
+    and FFullScreenVideoMode.FEnabled
     and FFullScreenVideoMode.FAltTabSupportEnable then
     begin
-      if Mess.Active = WA_ACTIVE then
-        StartupFS
-      else
-        ShutdownFS;
+      StartupFS;
     end;
-  end;
+  inherited;
+end;
+
+procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
+begin
+  if not (csDesigning in ComponentState)
+    and FFullScreenVideoMode.FEnabled
+    and FFullScreenVideoMode.FAltTabSupportEnable then
+    begin
+      ShutdownFS;
+    end;
   inherited;
 end;
 
