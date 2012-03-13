@@ -1,10 +1,10 @@
 object GLShaderEditor: TGLShaderEditor
   Left = 224
   Top = 92
-  Width = 518
-  Height = 705
   BorderIcons = [biSystemMenu]
   Caption = 'GLSL Shader Source Editor'
+  ClientHeight = 667
+  ClientWidth = 502
   Color = clBtnFace
   Constraints.MinHeight = 400
   Constraints.MinWidth = 500
@@ -183,47 +183,6 @@ object GLShaderEditor: TGLShaderEditor
       Style = tbsDropDown
     end
   end
-  object GLSLMemo: TGLSSynHiMemo
-    Left = 0
-    Top = 36
-    Width = 502
-    Height = 533
-    Cursor = crIBeam
-    Align = alClient
-    TabOrder = 1
-    TabStop = True
-    ReadOnly = False
-    AutoIndent = True
-    GutterColor = clBtnFace
-    GutterWidth = 30
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Courier New'
-    Font.Style = []
-    BkColor = clWhite
-    SelColor = clWhite
-    SelBkColor = clNavy
-    Lines.Strings = (
-      '')
-    HiddenCaret = False
-    TabSize = 4
-    UndoLimit = 100
-    DelErase = True
-    OnGutterClick = GLSLMemoGutterClick
-    OnGutterDraw = GLSLMemoGutterDraw
-    OnUndoChange = GLSLMemoUndoChange
-    DelimiterStyle.TextColor = clBlue
-    DelimiterStyle.BkColor = clWhite
-    DelimiterStyle.Style = []
-    CommentStyle.TextColor = clYellow
-    CommentStyle.BkColor = clSkyBlue
-    CommentStyle.Style = [fsItalic]
-    NumberStyle.TextColor = clNavy
-    NumberStyle.BkColor = clWhite
-    NumberStyle.Style = [fsBold]
-    CaseSensitive = True
-  end
   object CompilatorLog: TMemo
     Left = 0
     Top = 574
@@ -242,7 +201,7 @@ object GLShaderEditor: TGLShaderEditor
     Width = 502
     Height = 43
     Align = alBottom
-    TabOrder = 3
+    TabOrder = 1
     DesignSize = (
       502
       43)
@@ -282,7 +241,7 @@ object GLShaderEditor: TGLShaderEditor
     Left = 96
     Top = 632
     Bitmap = {
-      494C01010E001800580010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E0018005C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

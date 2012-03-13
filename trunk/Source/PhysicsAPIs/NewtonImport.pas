@@ -71,7 +71,7 @@ uses
   Classes;
 
 const
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   {$IFDEF NEWTONTUTORIAL}
    NewtonDLL = '..\..\sdk\dll\Newton.dll';
   {$ELSE}
@@ -1219,4 +1219,4 @@ procedure NewtonMeshGetFacePointIndices (const mesh : PNewtonMesh; const face : 
 implementation
 
 end.
-
+

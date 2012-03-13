@@ -17,6 +17,8 @@ interface
 {$I GLScene.inc}
 
 uses
+  OpenGLTokens,
+  OpenGLAdapter,
   VectorGeometry;
 
 const
@@ -108,11 +110,15 @@ type
     property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
   end;
 
+// Prevent Lazaruses issue with checksumm chenging!
+type
+  TGLCall = function(): TGLExtensionsAndEntryPoints;
+var
+  vLocalGL: TGLCall;
+
 implementation
 
 uses
-  OpenGLTokens,
-  GLContext,
   GLSLog;
 
 constructor TGLTransformation.Create;
@@ -208,12 +214,12 @@ var
   M: TMatrix;
 begin
   M := GetModelViewMatrix;
-  GL.LoadMatrixf(PGLFloat(@M));
+  vLocalGL.LoadMatrixf(PGLFloat(@M));
 end;
 
 procedure TGLTransformation.LoadProjectionMatrix;
 begin
-  with GL do
+  with vLocalGL do
   begin
     MatrixMode(GL_PROJECTION);
     LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));

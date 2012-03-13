@@ -53,12 +53,6 @@ type
 
   TRBColor = (clRed, clBlack);
 
-{$IFDEF FPC}
-  {$IF (LCL_RELEASE < 31)}
-    {$DEFINE GLS_GENERIC_PREFIX}
-  {$IFEND}
-{$ENDIF}
-
   // TRedBlackTree
   //
 {$IFDEF GLS_GENERIC_PREFIX}

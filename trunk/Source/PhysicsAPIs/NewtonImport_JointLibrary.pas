@@ -70,7 +70,7 @@ uses
   NewtonImport;
 
 const
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   JointLibraryDLL = 'dJointLibrary.dll';
 {$ENDIF}
 
@@ -199,4 +199,4 @@ procedure DGRaycastVehicleInitNormalizeTireLongitudinalForce( car : PNewtonUserJ
 
 implementation
 
-end.
+end.

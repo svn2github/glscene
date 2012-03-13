@@ -61,8 +61,20 @@ uses
   Classes,
   SysUtils,
   Registry,
-  Controls,
   Windows,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls,
+  VCL.Forms,
+  VCL.ComCtrls,
+  VCL.ImgList,
+  VCL.Dialogs,
+  VCL.Menus,
+  VCL.ActnList,
+  VCL.ToolWin,
+  VCL.ExtCtrls,
+  VCL.StdCtrls,
+{$ELSE}
+  Controls,
   Forms,
   ComCtrls,
   ImgList,
@@ -72,6 +84,8 @@ uses
   ToolWin,
   ExtCtrls,
   StdCtrls,
+{$ENDIF}
+
 {$IFDEF GLS_DELPHI_6_UP}
   DesignIntf, VCLEditors
 {$ELSE}
@@ -263,12 +277,16 @@ implementation
 {$R *.dfm}
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.ClipBrd,
+{$ELSE}
+  ClipBrd,
+{$ENDIF}
   GLViewer,
   GLSceneRegister,
   GLStrings,
   Info,
-  GLCrossPlatform,
-  ClipBrd;
+  GLCrossPlatform;
 
 resourcestring
   cGLSceneEditor = 'GLScene Editor';

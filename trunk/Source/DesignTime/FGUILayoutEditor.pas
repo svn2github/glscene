@@ -2,6 +2,8 @@ unit FGUILayoutEditor;
 
 interface
 
+{$I GLScene.inc}
+
 uses
 {$IFDEF MSWINDOWS}
   Windows,
@@ -12,6 +14,18 @@ uses
   SysUtils,
   Variants,
   Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Graphics,
+  VCL.Controls,
+  VCL.Forms,
+  VCL.Dialogs,
+  VCL.Buttons,
+  VCL.ExtDlgs,
+  VCL.StdCtrls,
+  VCL.ExtCtrls,
+  Vcl.Samples.Spin,
+  VCL.Grids,
+{$ELSE}
   Graphics,
   Controls,
   Forms,
@@ -20,11 +34,15 @@ uses
   ExtDlgs,
   StdCtrls,
   ExtCtrls,
+  Spin,
+  Grids,
+{$ENDIF}
+
+
   GLCrossPlatform,
   BaseClasses,
-  GLGui,
-  Spin,
-  Grids
+  GLGui
+
 {$IFDEF MSWINDOWS}, ShellApi{$ENDIF}
 {$IFDEF LINUX}, Process{$ENDIF};
 

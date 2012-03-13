@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSceneFormDesign<p>
@@ -17,7 +17,11 @@ interface
 {$I GLScene.inc}
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms,
+{$ELSE}
   Forms,
+{$ENDIF}
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
   Classes,

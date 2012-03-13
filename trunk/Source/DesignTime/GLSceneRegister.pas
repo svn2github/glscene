@@ -101,13 +101,20 @@ interface
 
 uses
   Windows,
-  Forms,
   Classes,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Forms,
+  VCL.Controls,
+  VCL.StdCtrls,
+  VCL.Graphics,
+{$ELSE}
+  Forms,
   Controls,
   StdCtrls,
+  Graphics,
+{$ENDIF}
   GLScene,
   GLContext,
-  Graphics,
   GLColor,
   GLCrossPlatform,
   GLObjectManager,
@@ -513,10 +520,14 @@ implementation
 // ------------------------------------------------------------------
 
 uses
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs,
+{$ELSE}
+  Dialogs,
+{$ENDIF}
   ApplicationFileIO,
   AsyncTimer,
   BaseClasses,
-  Dialogs,
   FLibMaterialPicker,
   FRUniformEditor,
   FShaderMemo,

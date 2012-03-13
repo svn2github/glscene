@@ -22,16 +22,33 @@ uses
   SysUtils,
   Variants,
   Classes,
-  Graphics,
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Controls,
+  VCL.Forms,
+  VCL.ComCtrls,
+  VCL.ImgList,
+  VCL.Dialogs,
+  VCL.Menus,
+  VCL.ActnList,
+  VCL.ToolWin,
+  VCL.ExtCtrls,
+  VCL.StdCtrls,
+  VCL.Graphics,
+{$ELSE}
   Controls,
   Forms,
-  Dialogs,
   ComCtrls,
-  ToolWin,
   ImgList,
+  Dialogs,
+  Menus,
+  ActnList,
+  ToolWin,
+  ExtCtrls,
   StdCtrls,
-  GLSMemo,
-  Menus, ExtCtrls;
+  Menus,
+  Graphics,
+{$ENDIF}
+  GLSMemo;
 
 type
 
