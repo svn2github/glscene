@@ -47,7 +47,7 @@ unit openal;
   {$DEFINE CPU386}
   {$ASMMODE INTEL}
  {$ENDIF}
- {$IFNDEF WIN32}
+ {$IFNDEF MSWINDOWS}
   {$LINKLIB c}
  {$ENDIF}
 {$ENDIF}
@@ -57,13 +57,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils{$IFDEF Win32},Windows{$ENDIF};
+  SysUtils{$IFDEF MSWINDOWS},Windows{$ENDIF};
 
 { $ DEFINE ALUT} //define ALUT to use alut.dll
 
 const
 {$IFDEF Win32}
   callibname='OpenAL32.dll';
+  calutlibname='Alut.dll';
+{$ENDIF}
+{$IFDEF Win64}
+  callibname='OpenAL64.dll';
   calutlibname='Alut.dll';
 {$ENDIF}
 {$IFDEF Linux}
@@ -1932,7 +1936,7 @@ const
   WAV_MP3       = $0055;
 
 {$IFDEF FPC}
-{$IFNDEF Win32}
+{$IFNDEF MSWINDOWS}
 // Added by bero
 const
   RTLD_LAZY         = $001;
