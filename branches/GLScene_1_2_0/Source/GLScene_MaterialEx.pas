@@ -14,6 +14,7 @@
   i.e. if textures less than maximum units may be not one binding occur per frame.
 
   <b>History : </b><font size=-1><ul>
+  <li>16/03/12 - Yar - Initial OpenGL ES and GLSL ES support
   <li>19/05/11 - Yar - Added PointProperties for FixedFunction
   <li>08/05/11 - Yar - Added ApplicationResource for TGLTextureImageEx
   <li>21/04/11 - Yar - Added LineProperties for FixedFunction
@@ -1144,10 +1145,13 @@ type
     FInfoLog: string;
     FUniforms: TPersistentObjectList;
     FAutoFill: Boolean;
+    FShared: Boolean;
     FpRci: PRenderContextInfo;
 
     function GetLibShaderName(AType: TGLShaderType): string;
     procedure SetLibShaderName(AType: TGLShaderType; const AValue: string);
+
+    procedure SetShared(const Value: Boolean);
 
     function GetUniform(const AName: string): IShaderParameter;
     class procedure ReleaseUniforms(AList: TPersistentObjectList);
@@ -1170,6 +1174,7 @@ type
     class function IsSupported: Boolean; virtual; abstract;
     class function ShaderModel: string; virtual; abstract;
     procedure DoAutoFillUniforms;
+
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -1196,6 +1201,12 @@ type
     property AutoFillOfUniforms: Boolean read FAutoFill write FAutoFill
       stored False;
     property NextPass;
+    // Shared flag controll sharing program's handle between equal programs,
+    // programs with same shader objects.
+    // This decrease time of whole shaders compiling.
+    // But when program shared - uniforms every time set by material and
+    // obtain extra setting work.
+    property Shared: Boolean read FShared write SetShared default True;
   end;
 
   TGLShaderModel3 = class(TGLBaseShaderModel)
@@ -1238,6 +1249,17 @@ type
     property LibFragmentShaderName;
   end;
 
+  TGLESShader1 = class(TGLBaseShaderModel)
+  public
+    { Public Declarations }
+    class function IsSupported: Boolean; override;
+    class function ShaderModel: string; override;
+  published
+    { Published Declarations }
+    property LibVertexShaderName;
+    property LibFragmentShaderName;
+  end;
+
   // TGLLibMaterialEx
   //
 
@@ -1252,6 +1274,7 @@ type
     FSM3: TGLShaderModel3;
     FSM4: TGLShaderModel4;
     FSM5: TGLShaderModel5;
+    FESSL1: TGLESShader1;
     FOnFPPSetting: TOnFFPSetting;
     FOnAsmProgSetting: TOnAsmProgSetting;
     FOnSM3UniformInit: TOnUniformInitialize;
@@ -1260,6 +1283,8 @@ type
     FOnSM4UniformSetting: TOnUniformSetting;
     FOnSM5UniformInit: TOnUniformInitialize;
     FOnSM5UniformSetting: TOnUniformSetting;
+    FOnESSL1UniformInit: TOnUniformInitialize;
+    FOnESSL1UniformSetting: TOnUniformSetting;
     FNextPass: TGLLibMaterialEx;
     FStoreAmalgamating: Boolean;
     procedure SetLevel(AValue: TGLMaterialLevel);
@@ -1268,6 +1293,7 @@ type
     procedure SetSM3(AValue: TGLShaderModel3);
     procedure SetSM4(AValue: TGLShaderModel4);
     procedure SetSM5(AValue: TGLShaderModel5);
+    procedure SetESSL1(AValue: TGLESShader1);
     procedure DoAllocate(Sender: TGLVirtualHandle; var Handle: TGLUint);
     procedure DoDeallocate(Sender: TGLVirtualHandle; var Handle: TGLUint);
   protected
@@ -1297,6 +1323,7 @@ type
     property ShaderModel3: TGLShaderModel3 read FSM3 write SetSM3;
     property ShaderModel4: TGLShaderModel4 read FSM4 write SetSM4;
     property ShaderModel5: TGLShaderModel5 read FSM5 write SetSM5;
+    property ShaderESSL1: TGLESShader1 read FESSL1 write SetESSL1;
 
     // FPP event
     property OnFPPSetting: TOnFFPSetting read FOnFPPSetting
@@ -1319,6 +1346,11 @@ type
       write FOnSM5UniformInit;
     property OnSM5UniformSetting: TOnUniformSetting read FOnSM5UniformSetting
       write FOnSM5UniformSetting;
+    // ESSL1 Shader event
+    property OnESSL1UniformInitialize: TOnUniformInitialize read FOnESSL1UniformInit
+      write FOnESSL1UniformInit;
+    property OnESSL1UniformSetting: TOnUniformSetting read FOnESSL1UniformSetting
+      write FOnESSL1UniformSetting;
   end;
 
   // TGLLibMaterialsEx
@@ -3457,6 +3489,7 @@ begin
   FSM3 := TGLShaderModel3.Create(Self);
   FSM4 := TGLShaderModel4.Create(Self);
   FSM5 := TGLShaderModel5.Create(Self);
+  FESSL1 := TGLESShader1.Create(Self);;
 end;
 
 type
@@ -3472,6 +3505,7 @@ begin
   FSM3.Destroy;
   FSM4.Destroy;
   FSM5.Destroy;
+  FESSL1.Destroy;
   for i := 0 to FUserList.Count - 1 do
   begin
     LUser := TObject(FUserList[i]);
@@ -3505,6 +3539,7 @@ begin
   FSM3.Loaded;
   FSM4.Loaded;
   FSM5.Loaded;
+  FESSL1.Loaded;
 end;
 
 procedure TGLLibMaterialEx.NotifyChange(Sender: TObject);
@@ -3546,6 +3581,11 @@ end;
 procedure TGLLibMaterialEx.SetSM5(AValue: TGLShaderModel5);
 begin
   FSM5.Assign(AValue);
+end;
+
+procedure TGLLibMaterialEx.SetESSL1(AValue: TGLESShader1);
+begin
+  FESSL1.Assign(AValue);
 end;
 
 function TGLLibMaterialEx.UnApply(var ARci: TRenderContextInfo): Boolean;
@@ -3616,6 +3656,14 @@ begin
           FFixedFunc.UnApply(ARci);
         FSM5.UnApply(ARci);
         GetNextPass(FSM5);
+      end;
+
+    mlESSL1:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.UnApply(ARci);
+        FESSL1.UnApply(ARci);
+        GetNextPass(FESSL1);
       end;
   else
     FNextPass := nil;
@@ -4543,11 +4591,16 @@ begin
         SetExeDirectory;
         if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
           FSource.LoadFromFile(FSourceFile);
+
+{$IFNDEF GLS_OPENGL_ES}
         if Sender.GLStates.ForwardContext then
           FIsValid := (Pos('330', FSource.Strings[0]) > 0) or
             (Pos('410', FSource.Strings[0]) > 0)
         else
           FIsValid := True;
+{$ELSE}
+        FIsValid := (Pos('100', FSource.Strings[0]) > 0);
+{$ENDIF}
 
         if FIsValid then
         begin
@@ -4880,6 +4933,7 @@ begin
   FEnabled := False;
   FUniforms := TPersistentObjectList.Create;
   FAutoFill := True;
+  FShared := True;
 end;
 
 procedure TGLBaseShaderModel.DefineProperties(Filer: TFiler);
@@ -5262,6 +5316,8 @@ begin
                 LEvent := GetMaterial.FOnSM4UniformInit
               else if Self is TGLShaderModel5 then
                 LEvent := GetMaterial.FOnSM5UniformInit
+              else if Self is TGLESShader1 then
+                LEvent := GetMaterial.FOnESSL1UniformInit
               else
                 LEvent := nil;
 
@@ -5459,6 +5515,15 @@ begin
   NotifyChange(Self);
 end;
 
+procedure TGLBaseShaderModel.SetShared(const Value: Boolean);
+begin
+  if FShared = Value then
+  begin
+    FShared := Value;
+    NotifyChange(Self);
+  end;
+end;
+
 procedure TGLBaseShaderModel.UnApply(var ARci: TRenderContextInfo);
 begin
   TFriendlyTransformation(ARci.PipelineTransformation)
@@ -5579,6 +5644,20 @@ begin
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
     GL.Begin_ := vStoreBegin;
   ARci.amalgamating := False;
+end;
+
+class function TGLESShader1.IsSupported: Boolean;
+begin
+{$IFDEF GLS_OPENGL_ES}
+  Result := GL.VERSION_2_0;
+{$ELSE}
+  Result := GL.ARB_shader_objects;
+{$ENDIF}
+end;
+
+class function TGLESShader1.ShaderModel: string;
+begin
+  Result := 'ES 1.0';
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -6526,8 +6605,9 @@ begin
     FType := LUniform.FType;
     FSamplerType := LUniform.FSamplerType;
     FAutoSet := LUniform.FAutoSet;
-  end;
-  inherited;
+  end
+  else
+    inherited; // Assign error
 end;
 
 function TGLShaderUniform.GetAutoSetMethod: string;

@@ -389,10 +389,10 @@ end;
 function TGLAbstractDrawTechnique.GetAABBMaterial: TGLAbstractLibMaterial;
 const
   cAABBMaterialName = 'GLScene_AABB_Material';
-  cAABBVertexShader120 = '#version 120'#10#13 + 'attribute vec3 Position;'#10#13
+  cAABBVertexShader120 = '#version %s'#10#13 + 'attribute vec3 Position;'#10#13
     + 'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
     'void main() { gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0); }';
-  cAABBFragmentShader120 = '#version 120'#10#13 +
+  cAABBFragmentShader120 = '#version %s'#10#13 +
     'void main() { gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); }'#10#13;
   cAABBVertexShader330 = '#version 330'#10#13 + 'in vec3 Position;'#10#13 +
     'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
@@ -417,11 +417,11 @@ begin
       // GLSL 120
       LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
       LShader.ShaderType := shtVertex;
-      LShader.Source.Add(cAABBVertexShader120);
+      LShader.Source.Add(Format(cAABBVertexShader120, ['120']));
       ShaderModel3.LibVertexShaderName := LShader.Name;
       LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
       LShader.ShaderType := shtFragment;
-      LShader.Source.Add(cAABBFragmentShader120);
+      LShader.Source.Add(Format(cAABBFragmentShader120, ['120']));
       ShaderModel3.LibFragmentShaderName := LShader.Name;
       ShaderModel3.Enabled := True;
       ShaderModel3.DoOnPrepare(CurrentGLContext);
@@ -441,6 +441,20 @@ begin
       ShaderModel4.DoOnPrepare(CurrentGLContext);
       if ShaderModel4.IsValid then
         ShaderModel4.Uniforms['ModelViewProjectionMatrix'].AutoSetMethod :=
+          cafWorldViewProjectionMatrix;
+      // ESSL 100
+      LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      LShader.ShaderType := shtVertex;
+      LShader.Source.Add(Format(cAABBVertexShader120, ['100']));
+      ShaderESSL1.LibVertexShaderName := LShader.Name;
+      LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      LShader.ShaderType := shtFragment;
+      LShader.Source.Add(Format(cAABBFragmentShader120, ['100']));
+      ShaderESSL1.LibFragmentShaderName := LShader.Name;
+      ShaderESSL1.Enabled := True;
+      ShaderESSL1.DoOnPrepare(CurrentGLContext);
+      if ShaderESSL1.IsValid then
+        ShaderESSL1.Uniforms['ModelViewProjectionMatrix'].AutoSetMethod :=
           cafWorldViewProjectionMatrix;
     end;
   end;

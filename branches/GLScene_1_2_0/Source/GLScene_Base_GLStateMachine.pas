@@ -221,7 +221,10 @@ type
     FSize: TGLsizeiptr;
   end;
 
-  TGLMaterialLevel = (mlAuto, mlFixedFunction, mlMultitexturing, mlSM3, mlSM4, mlSM5);
+  TGLMaterialLevel = (
+    mlAuto, mlFixedFunction, mlMultitexturing,
+    mlSM3, mlSM4, mlSM5,
+    mlESSL1);
 
   // TGLStateCache
   //

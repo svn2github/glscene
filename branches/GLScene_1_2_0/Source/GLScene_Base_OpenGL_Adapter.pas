@@ -2086,6 +2086,10 @@ type
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Shader object'}{$ENDIF}
     DeleteObject: PFNGLDELETEOBJECTARBPROC; // ARB only
+{$IFDEF GLS_OPENGL_ES}
+    DeleteShader: PFNGLDELETEOBJECTARBPROC;
+    DeleteProgram: PFNGLDELETEOBJECTARBPROC;
+{$ENDIF}
     GetHandle: PFNGLGETHANDLEARBPROC; // ARB only
     DetachShader: PFNGLDETACHSHADERPROC;
     CreateShader: PFNGLCREATESHADERPROC;
@@ -4495,6 +4499,10 @@ begin
   GetQueryObjectui64v := GetAddress('GetQueryObjectui64v');
 
   DeleteObject := GetAddress('DeleteObject');
+{$IFDEF GLS_OPENGL_ES}
+  DeleteShader := GetAddress('DeleteShader');
+  DeleteProgram := GetAddress('DeleteProgram');
+{$ENDIF}
   GetHandle := GetAddress('GetHandle');
   DetachShader := GetAddressAlt('DetachShader', 'DetachObject');
   CreateShader := GetAddressAlt('CreateShader', 'CreateShaderObject');
@@ -5777,6 +5785,10 @@ begin
   GetQueryObjectui64v := GetCapAddress();
 
   DeleteObject := GetCapAddress();
+{$IFDEF GLS_OPENGL_ES}
+  DeleteShader := GetCapAddress();
+  DeleteProgram := GetCapAddress();
+{$ENDIF}
   GetHandle := GetCapAddress();
   DetachShader := GetCapAddress();
   CreateShader := GetCapAddress();

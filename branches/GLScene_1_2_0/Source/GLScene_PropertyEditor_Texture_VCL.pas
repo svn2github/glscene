@@ -222,7 +222,7 @@ end;
 //
 procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
-  EditGLTextureImage(FTexture.Image);
+  GLScene_PropertyEditor_TextureImage.EditGLTextureImage(FTexture.Image);
   DoOnChange;
 end;
 

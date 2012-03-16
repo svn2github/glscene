@@ -1140,7 +1140,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: cardinal; override;
-
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
   public
     { Public Declarations }
     property Name: string read FName write FName;
@@ -3876,7 +3876,11 @@ begin
     // reset error status
     ClearError;
     // delete
+{$IFNDEF GLS_OPENGL_ES}
     DeleteObject(AHandle);
+{$ELSE}
+    DeleteShader(AHandle);
+{$ENDIF}
     // check for error
     CheckError;
   end;
@@ -3891,11 +3895,19 @@ var
   log: TGLString;
 begin
   maxLength := 0;
+{$IFDEF GLS_OPENGL_ES}
+  GL.GetShaderiv(GetHandle, GL_INFO_LOG_LENGTH, @maxLength);
+{$ELSE}
   GL.GetObjectParameteriv(GetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
+{$ENDIF}
   SetLength(log, maxLength);
   if maxLength > 0 then
   begin
+{$IFDEF GLS_OPENGL_ES}
+    GL.GetShaderInfoLog(GetHandle, maxLength, @maxLength, @log[1]);
+{$ELSE}
     GL.GetInfoLog(GetHandle, maxLength, @maxLength, @log[1]);
+{$ENDIF}
     SetLength(log, maxLength);
   end;
   Result := string(log);
@@ -3906,7 +3918,11 @@ end;
 
 class function TGLSLHandle.IsSupported: Boolean;
 begin
+{$IFDEF GLS_OPENGL_ES}
+  Result := GL.VERSION_2_0;
+{$ELSE}
   Result := GL.ARB_shader_objects;
+{$ENDIF}
 end;
 
 // ------------------
@@ -3973,7 +3989,11 @@ end;
 
 class function TGLVertexShaderHandle.IsSupported: Boolean;
 begin
+{$IFDEF GLS_OPENGL_ES}
+  Result := GL.VERSION_2_0;
+{$ELSE}
   Result := GL.ARB_vertex_shader;
+{$ENDIF}
 end;
 
 // ------------------
@@ -4015,7 +4035,11 @@ end;
 
 class function TGLFragmentShaderHandle.IsSupported: Boolean;
 begin
+{$IFDEF GLS_OPENGL_ES}
+  Result := GL.VERSION_2_0;
+{$ELSE}
   Result := GL.ARB_fragment_shader;
+{$ENDIF}
 end;
 
 // ------------------
@@ -4070,6 +4094,24 @@ end;
 function TGLProgramHandle.DoAllocateHandle: cardinal;
 begin
   Result := GL.CreateProgram();
+end;
+
+procedure TGLProgramHandle.DoDestroyHandle(var AHandle: TGLuint);
+begin
+  if not vContextActivationFailureOccurred then
+  with GL do
+  begin
+    // reset error status
+    ClearError;
+    // delete
+{$IFNDEF GLS_OPENGL_ES}
+    DeleteObject(AHandle);
+{$ELSE}
+    DeleteProgram(AHandle);
+{$ENDIF}
+    // check for error
+    CheckError;
+  end;
 end;
 
 // IsValid

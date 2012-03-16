@@ -7058,7 +7058,7 @@ const
    'ParallelLightMaterial',
    'ParallelSpotLightMaterial');
   cLightVertexShader120 =
-    '#version 120'#10#13 +
+    '#version %s'#10#13 +
     'attribute vec3 Position;'#10#13 +
     'attribute vec2 TexCoord0;'#10#13 +
     'varying vec2 v2f_TexCoord0;'#10#13 +
@@ -7067,7 +7067,7 @@ const
     ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
     ' v2f_TexCoord0 = TexCoord0; }';
   cLightFragmentShader120 =
-    '#version 120'#10#13 +
+    '#version %s'#10#13 +
     'varying vec2 v2f_TexCoord0;'#10#13 +
     'uniform sampler2D Glyph;'#10#13 +
     'uniform vec4 Diffuse;'#10#13 +
@@ -7128,11 +7128,11 @@ begin
     // GLSL 120
     LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
     LShader.ShaderType := shtVertex;
-    LShader.Source.Add(cLightVertexShader120);
+    LShader.Source.Add(Format(cLightVertexShader120, ['120']));
     ShaderModel3.LibVertexShaderName := LShader.Name;
     LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
     LShader.ShaderType := shtFragment;
-    LShader.Source.Add(cLightFragmentShader120);
+    LShader.Source.Add(Format(cLightFragmentShader120, ['120']));
     ShaderModel3.LibFragmentShaderName := LShader.Name;
     OnSM3UniformInitialize := OnShaderInitialize;
     OnSM3UniformSetting := OnShaderSetting;
@@ -7149,6 +7149,18 @@ begin
     OnSM4UniformInitialize := OnShaderInitialize;
     OnSM4UniformSetting := OnShaderSetting;
     ShaderModel4.Enabled := True;
+    // ESSL 100
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add(Format(cLightVertexShader120, ['100']));
+    ShaderESSL1.LibVertexShaderName := LShader.Name;
+    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(Format(cLightFragmentShader120, ['100']));
+    ShaderESSL1.LibFragmentShaderName := LShader.Name;
+    OnESSL1UniformInitialize := OnShaderInitialize;
+    OnESSL1UniformSetting := OnShaderSetting;
+    ShaderESSL1.Enabled := True;
   end;
 
   FBatch.Transformation := @FTransformation;
