@@ -7378,6 +7378,11 @@ begin
       ShaderModel4.Uniforms['Glyph'].TextureName := LTexture.Name;
       ShaderModel4.Uniforms['Glyph'].SamplerName := LSampler.Name;
     end;
+    if ShaderESSL1.IsValid then
+    begin
+      ShaderESSL1.Uniforms['Glyph'].TextureName := LTexture.Name;
+      ShaderESSL1.Uniforms['Glyph'].SamplerName := LSampler.Name;
+    end;
   end;
 end;
 

@@ -3383,9 +3383,10 @@ begin
     LevelReady[mlSM3] := FSM3.Enabled and FSM3.IsValid;
     LevelReady[mlSM4] := FSM4.Enabled and FSM4.IsValid;
     LevelReady[mlSM5] := FSM5.Enabled and FSM5.IsValid;
+    LevelReady[mlESSL1] := FESSL1.Enabled and FESSL1.IsValid;
 
     if FApplicableLevel = mlAuto then
-      MaxLevel := mlSM5
+      MaxLevel := High(TGLMaterialLevel)
     else
       MaxLevel := FApplicableLevel;
 
@@ -3448,6 +3449,13 @@ begin
         if FFixedFunc.Enabled then
           FFixedFunc.Apply(ARci);
         FSM5.Apply(ARci);
+      end;
+
+    mlESSL1:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.Apply(ARci);
+        FESSL1.Apply(ARci);
       end;
   end;
 end;
@@ -4898,6 +4906,8 @@ begin
       LEvent := GetMaterial.FOnSM4UniformSetting
     else if Self is TGLShaderModel5 then
       LEvent := GetMaterial.FOnSM5UniformSetting
+    else if Self is TGLESShader1 then
+      LEvent := GetMaterial.FOnESSL1UniformSetting
     else
       LEvent := nil;
 
@@ -5651,7 +5661,8 @@ begin
 {$IFDEF GLS_OPENGL_ES}
   Result := GL.VERSION_2_0;
 {$ELSE}
-  Result := GL.ARB_shader_objects;
+  // Let shader is interpreted as desktop GLSL in design time
+  Result := GL.ARB_shader_objects and IsDesignTime;
 {$ENDIF}
 end;
 
@@ -6121,10 +6132,12 @@ begin
               TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
 
+          {$IFNDEF GLS_OPENGL_ES}
           TexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE,
             cTextureCompareMode[FLibSampler.CompareMode]);
           TexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC,
             cGLComparisonFunctionToGLEnum[FLibSampler.CompareFunc]);
+          {$ENDIF}
 
           if EXT_texture_sRGB_decode then
           begin
@@ -6736,7 +6749,7 @@ end;
 procedure TGLShaderUniform.SetMat3(const Value: TMatrix3f);
 begin
   PushProgram;
-  GL.UniformMatrix2fv(FLocation, 1, False, @Value);
+  GL.UniformMatrix3fv(FLocation, 1, False, @Value);
   PopProgram;
 end;
 

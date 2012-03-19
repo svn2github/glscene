@@ -2307,6 +2307,9 @@ var
   glPrimitive: TGLEnum;
   glType: TGLEnum;
   LOffset: Pointer;
+{$IFDEF GLS_OPENGL_ES}
+  T: Integer;
+{$ENDIF}
 begin
   AllocateBuffers;
 
@@ -2377,13 +2380,20 @@ begin
               DrawElements(glPrimitive, LMesh.FElements.Count, glType, LOffset)
             else
             begin
+              {$IFDEF GLS_OPENGL_ES}
+              for T := 0 to LMesh.FRestartVertex.Count - 1 do
+                DrawArrays(glPrimitive, LMesh.FRestartVertex.List[T],
+                  LMesh.FStripCounts.List[T]);
+              {$ELSE}
               MultiDrawArrays(glPrimitive, PGLint(LMesh.FRestartVertex.List),
                 PGLsizei(LMesh.FStripCounts.List), LMesh.FRestartVertex.Count);
+              {$ENDIF}
             end;
           until LInstanceID <= 0;
 
           if not Assigned(LMaterial) then
             break;
+
         until not LMaterial.UnApply(ARci);
 
       // Restore client state
@@ -2397,6 +2407,7 @@ begin
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
+
 end;
 
 procedure TGLDrawTechniqueOGL2.DrawDynamicBatch(var ARci: TRenderContextInfo;

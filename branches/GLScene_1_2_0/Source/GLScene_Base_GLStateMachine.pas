@@ -1815,6 +1815,7 @@ begin
   if enabled <> FEnablePrimitiveRestart then
   begin
     FEnablePrimitiveRestart := enabled;
+{$IFNDEF GLS_OPENGL_ES{}
     if FForwardContext then
     begin
       if enabled then
@@ -1829,6 +1830,7 @@ begin
       else
         GL.DisableClientState(GL_PRIMITIVE_RESTART_NV);
     end;
+{$ENDIF}
   end;
 end;
 
@@ -1842,7 +1844,8 @@ begin
   Assert(not FInsideList, glsStateCashInsideList);
   if index <> FPrimitiveRestartIndex then
   begin
-    if GL.NV_primitive_restart or FForwardContext then
+    if GL.NV_primitive_restart
+    {$IFNDEF GLS_OPENGL_ES}or FForwardContext{$ENDIF} then
     begin
       FPrimitiveRestartIndex := index;
       GL.PrimitiveRestartIndex(index)
