@@ -8,6 +8,7 @@
   To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
   <li>10/02/11 - Yar - Added capturing message from NVCC
   <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
   <li>08/06/10 - Yar - Added ProjectModule property
@@ -171,16 +172,40 @@ begin
     if FileExists(path + 'nvcc.exe') then
       FNVCCPath := path;
   end;
-  path := 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\';
+  path := 'C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\';
   if FileExists(path + 'cl.exe') then
     FCppCompilerPath := path
   else
   begin
-    path := 'C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\';
+    path := 'C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\';
     if FileExists(path + 'cl.exe') then
       FCppCompilerPath := path
     else
-      FCppCompilerPath := '';
+    begin
+      path := 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\';
+      if FileExists(path + 'cl.exe') then
+        FCppCompilerPath := path
+      else
+      begin
+        path := 'C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\';
+        if FileExists(path + 'cl.exe') then
+          FCppCompilerPath := path
+        else
+        begin
+          path := 'C:\Program Files\Microsoft Visual Studio 8\VC\bin\';
+          if FileExists(path + 'cl.exe') then
+            FCppCompilerPath := path
+          else
+          begin
+            path := 'C:\Program Files (x86)\Microsoft Visual Studio 8\VC\bin\';
+            if FileExists(path + 'cl.exe') then
+              FCppCompilerPath := path
+            else
+              FCppCompilerPath := '';
+          end;
+        end;
+      end;
+    end;
   end;
   FProjectModule := 'none';
   FModuleInfo := TCUDAModuleInfo.Create;
