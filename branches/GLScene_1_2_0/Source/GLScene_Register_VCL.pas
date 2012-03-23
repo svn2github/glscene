@@ -2328,6 +2328,8 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibGeometryShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessControlShaderName', TGLLibShaderNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLShaderModel5, 'LibTessEvalShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLESShader1, 'LibVertexShaderName', TGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLESShader1, 'LibFragmentShaderName', TGLLibShaderNameProperty);
 
   RegisterPropertyEditor(TypeInfo(string), TGLTextureImageEx, 'SourceFile', TPictureFileProperty);
   RegisterPropertyEditor(TypeInfo(string), TGLShaderEx, 'SourceFile', TShaderFileProperty);

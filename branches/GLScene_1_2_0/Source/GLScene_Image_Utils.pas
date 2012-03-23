@@ -859,9 +859,9 @@ procedure DXT1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
   begin
 
     temp := PGLubyte(ASource);
-    for y := 0 to (AHeight div 4) - 1 do
+    for y := 0 to MaxInteger((AHeight div 4) - 1, 1) do
     begin
-      for x := 0 to (AWidth div 4) - 1 do
+      for x := 0 to MaxInteger((AWidth div 4) - 1, 1) do
       begin
         col0 := PWord(temp)^;
         Inc(temp, 2);
@@ -938,9 +938,9 @@ procedure DXT3_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     alpha: array [0 .. 3] of Word;
   begin
     temp := PGLubyte(ASource);
-    for y := 0 to (AHeight div 4) - 1 do
+    for y := 0 to MaxInteger((AHeight div 4) - 1, 1) do
     begin
-      for x := 0 to (AWidth div 4) - 1 do
+      for x := 0 to MaxInteger((AWidth div 4) - 1, 1) do
       begin
         alpha[0] := PWord(temp)^;
         Inc(temp, 2);
@@ -1025,9 +1025,9 @@ procedure DXT5_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     alphas: array [0 .. 7] of Byte;
   begin
     temp := PGLubyte(ASource);
-    for y := 0 to (AHeight div 4) - 1 do
+    for y := 0 to MaxInteger((AHeight div 4) - 1, 1) do
     begin
-      for x := 0 to (AWidth div 4) - 1 do
+      for x := 0 to MaxInteger((AWidth div 4) - 1, 1) do
       begin
         alphas[0] := temp^;
         Inc(temp);

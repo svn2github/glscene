@@ -3507,6 +3507,8 @@ begin
   begin
     GetMem(newData, DataSize);
     d := MaxInteger(GetDepth, 1);
+    if CubeMap then
+      d := d*6;
 
     try
       for L := FLevelCount - 1 downto 0 do

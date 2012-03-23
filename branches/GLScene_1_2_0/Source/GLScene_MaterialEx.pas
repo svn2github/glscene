@@ -14,6 +14,7 @@
   i.e. if textures less than maximum units may be not one binding occur per frame.
 
   <b>History : </b><font size=-1><ul>
+  <li>24/03/12 - Yar - Added OnMatLibComponentFail to material library
   <li>16/03/12 - Yar - Initial OpenGL ES and GLSL ES support
   <li>19/05/11 - Yar - Added PointProperties for FixedFunction
   <li>08/05/11 - Yar - Added ApplicationResource for TGLTextureImageEx
@@ -76,6 +77,14 @@ type
   TOnUniformSetting = procedure(Sender: TGLBaseShaderModel;
     var ARci: TRenderContextInfo) of object;
 
+  TMatLibComponentFails =
+  (
+    mlcfUnknow,
+    mlcfSupport,
+    mlcfLoading,
+    mlcfInitialization
+  );
+
   // TGLBaseMaterialCollectionItem
   //
 
@@ -96,6 +105,7 @@ type
     procedure NotifyChange(Sender: TObject); virtual;
     property UserList: TPersistentObjectList read GetUserList;
     procedure DoOnPrepare(Sender: TGLContext); virtual; abstract;
+    procedure DoOnFail(AFail: TMatLibComponentFails); dynamic;
   public
     { Public Declarations }
     destructor Destroy; override;
@@ -1407,6 +1417,10 @@ type
       : TGLMaterialComponentName;
   end;
 
+  TOnMatLibComponentFail = procedure(
+    const AComponent: TGLBaseMaterialCollectionItem;
+    AFail: TMatLibComponentFails) of object;
+
   // TGLMaterialLibraryEx
   //
 
@@ -1414,6 +1428,7 @@ type
   private
     { Private Declarations }
     FComponents: TGLMatLibComponents;
+    FOnMatLibComponentFail: TOnMatLibComponentFail;
   protected
     { Protected Declarations }
     procedure Loaded; override;
@@ -1454,6 +1469,9 @@ type
     property Components: TGLMatLibComponents read FComponents
       write SetComponents;
     property TexturePaths;
+    {: When components made epic fail. }
+    property OnMatLibComponentFail: TOnMatLibComponentFail read
+      FOnMatLibComponentFail write FOnMatLibComponentFail;
   end;
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
@@ -1666,6 +1684,15 @@ begin
     FreeAndNil(FUserList);
   end;
   inherited;
+end;
+
+procedure TGLBaseMaterialCollectionItem.DoOnFail(AFail: TMatLibComponentFails);
+begin
+  with GetMaterialLibraryEx do
+  begin
+    if Assigned(OnMatLibComponentFail) then
+      OnMatLibComponentFail(Self, AFail);
+  end;
 end;
 
 function TGLBaseMaterialCollectionItem.GetMaterialLibrary
@@ -2214,6 +2241,7 @@ begin
       GLSLogger.LogWarningFmt
         ('Format of texture "%s" not supported, falldown to RGBA8', [Name]);
       FreeAndNil(FImage);
+      DoOnFail(mlcfSupport);
     end;
 
     PrepareImage;
@@ -2223,7 +2251,11 @@ begin
 
     // Check supporting
     if not IsTargetSupported(LTarget) then
-      Abort;
+    begin
+      FIsValid := False;
+      DoOnFail(mlcfSupport);
+      Exit;
+    end;
 
     if (FHandle.Target <> LTarget) and (FHandle.Target <> ttNoShape) then
     begin
@@ -2274,6 +2306,7 @@ begin
     FIsValid := True;
   except
     FIsValid := False;
+    DoOnFail(mlcfUnknow);
   end;
 end;
 
@@ -2326,6 +2359,7 @@ begin
       GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.Name]);
       CheckError;
       ClearError;
+      DoOnFail(mlcfInitialization);
     end;
     FHandle.NotifyDataUpdated;
   end;
@@ -2728,6 +2762,7 @@ begin
           FImage.SetErrorImage;
           GLSLogger.LogErrorFmt('Source file of texture "%s" image not found',
             [Self.Name]);
+          DoOnFail(mlcfLoading);
         end;
       end; // if bReadFromSource
 
@@ -2742,6 +2777,7 @@ begin
         else
           GLSLogger.LogError(Self.Name + ' - ' + E.ClassName + ': ' +
             E.Message);
+        DoOnFail(mlcfUnknow);
       end;
     end;
   end; // of not Assigned
