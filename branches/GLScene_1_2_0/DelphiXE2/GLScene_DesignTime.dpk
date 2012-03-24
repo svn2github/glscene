@@ -1,0 +1,56 @@
+package GLScene_DesignTime;
+
+{$R *.res}
+{$R '..\Source\GLSceneObjects.dcr'}
+{$R '..\Source\GLSceneVCL.dcr'}
+{$R '..\Source\nonGLSceneVCL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$LIBSUFFIX 'XE2'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  GLScene_RunTime,
+  vclimg,
+  vcl,
+  VclSmp;
+
+contains
+  GLScene_FX_CollectionEditor_VCL in '..\Source\GLScene_FX_CollectionEditor_VCL.pas' {XCollectionEditor},
+  GLScene_Edit_VCL in '..\Source\GLScene_Edit_VCL.pas' {GLSceneEditorForm},
+  GLScene_Register_VCL in '..\Source\GLScene_Register_VCL.pas',
+  GLScene_XCollection_Register in '..\Source\GLScene_XCollection_Register.pas',
+  GLScene_GUI_LayoutEditor in '..\Source\GLScene_GUI_LayoutEditor.pas' {layouts_form},
+  GLScene_Toolbar in '..\Source\GLScene_Toolbar.pas',
+  GLScene_Viewer_Form_Design in '..\Source\GLScene_Viewer_Form_Design.pas',
+  GLScene_Shader_Memo in '..\Source\GLScene_Shader_Memo.pas' {GLShaderEditor};
+
+end.
+
+
