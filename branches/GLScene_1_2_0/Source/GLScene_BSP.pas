@@ -386,7 +386,12 @@ begin
                camCluster:=camNode.Cluster;
          end;
          // render facegroups
-         bspNodeList:=faceGroupList.List;
+      bspNodeList :=
+{$IFDEF GLS_DELPHI_XE2_UP}
+        @faceGroupList.List[0];
+{$ELSE}
+        faceGroupList.List;
+{$ENDIF}
          n:=bsprci.faceGroups.Count;
          i:=0; j:=0;
          while i<n do begin

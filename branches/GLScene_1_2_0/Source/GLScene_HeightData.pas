@@ -69,14 +69,14 @@ uses SysUtils, Classes, GLScene_Base_Vector_Geometry, GLScene_Platform, GLScene_
 {$IFDEF FPC}, IntfGraphics {$ENDIF};
 
 type
-  TByteArray = array [0 .. MaxInt shr 1] of Byte;
-  TByteRaster = array [0 .. MaxInt shr 3] of PByteArray;
+  TByteArray = array [0 .. MaxInt div (2*SizeOf(Byte))] of Byte;
+  TByteRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PByteArray;
   PByteRaster = ^TByteRaster;
-  TSmallintArray = array [0 .. MaxInt shr 2] of SmallInt;
+  TSmallintArray = array [0 .. MaxInt div (2*SizeOf(SmallInt))] of SmallInt;
   PSmallIntArray = ^TSmallintArray;
-  TSmallIntRaster = array [0 .. MaxInt shr 3] of PSmallIntArray;
+  TSmallIntRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PSmallIntArray;
   PSmallIntRaster = ^TSmallIntRaster;
-  TSingleRaster = array [0 .. MaxInt shr 3] of PSingleArray;
+  TSingleRaster = array [0 .. MaxInt div (2*SizeOf(Pointer))] of PSingleArray;
   PSingleRaster = ^TSingleRaster;
 
   THeightData = class;
@@ -646,7 +646,6 @@ type
     property Active: boolean read FActive write FActive;
     // If Active=False, height data passes through unchanged
   end;
-
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -1016,7 +1015,7 @@ begin
       // Cleanup dirty tiles and compute used memory
       for i := Count - 1 downto 0 do
       begin
-        HD := THeightData(List^[i]);
+        HD := THeightData(Items[i]);
         if HD <> nil then
           with HD do
           begin
@@ -1043,7 +1042,7 @@ begin
             if ReleaseThis then
             begin
               FDataHash[HashKey(HD.xLeft, HD.yTop)].Remove(HD);
-              List^[i] := nil;
+              Items[i] := nil;
               FOwner := nil;
               Free;
               packList := True;
@@ -1058,7 +1057,7 @@ begin
       begin
         for i := 0 to Count - 1 do
         begin
-          HD := THeightData(List^[i]);
+          HD := THeightData(Items[i]);
           if HD <> nil then
             with HD do
             begin
@@ -1068,14 +1067,14 @@ begin
               then
               begin
                 FDataHash[HashKey(HD.xLeft, HD.yTop)].Remove(HD);
-                List^[i] := nil;
+                Items[i] := nil;
                 FOwner := nil;
                 Free;
                 // packList:=True;
               end
               else
               begin
-                List^[k] := HD;
+                Items[k] := HD;
                 Inc(k);
               end;
             end;
@@ -1085,9 +1084,9 @@ begin
       else if packList then
       begin
         for i := 0 to Count - 1 do
-          if List^[i] <> nil then
+          if Items[i] <> nil then
           begin
-            List^[k] := List^[i];
+            Items[k] := Items[i];
             Inc(k);
           end;
         Count := k;
@@ -1207,7 +1206,7 @@ begin
       foundHd := nil;
       for i := 0 to Count - 1 do
       begin
-        HD := THeightData(List^[i]);
+        HD := THeightData(Items[i]);
         if (HD.xLeft <= x) and (HD.yTop <= y) and (HD.xLeft + HD.size - 1 > x)
           and (HD.yTop + HD.size - 1 > y) then
         begin

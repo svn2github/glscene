@@ -7415,7 +7415,7 @@ end;
 
 procedure TGLFrameBufferAttachment.SetMaxLOD(Value: Integer);
 begin
-  Value := ClampValue(Value, 0, 1000);
+  Value := ClampInteger(Value, 0, 1000);
   if FMaxLOD <> Value then
   begin
     FMaxLOD := Value;

@@ -31,13 +31,14 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/12/11 - Yar - Added VectorAdd for 2d vector (thanks microalexx)
       <li>10/06/11 - DaStr - Added some Vector2f routines
-                       Overloaded some procedures to accept both 3f and 4f vectors
-                       Marked some methods as inline
-                       Added SignStrict, MoveObjectAround(), GetSafeTurnAngle(),
-                       RectanglesIntersect(), RectangleContains(),
-                       AngleBetweenVectors(), ShiftObjectFromCenter()
-      <li>11/05/11 - Yar - Added ClampValue for Integer
+                             Overloaded some procedures to accept both 3f and 4f vectors
+                             Marked some methods as inline
+                             Added SignStrict, MoveObjectAround(), GetSafeTurnAngle(),
+                             RectanglesIntersect(), RectangleContains(),
+                             AngleBetweenVectors(), ShiftObjectFromCenter()
+      <li>11/05/11 - Yar - Added ClampInteger
       <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
       <li>04/11/10 - DaStr - Removed duplicate standard type definitions
       <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
@@ -690,6 +691,7 @@ function VectorLessThen(const SourceVector: TVector4s; const ComparedNumber: Sin
 function VectorLessEqualThen(const SourceVector: TVector4s; const ComparedNumber: Single): Boolean; overload;
 
 
+function VectorAdd(const v1, v2 : TVector2f) : TVector2f; overload;
 //: Returns the sum of two affine vectors
 function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; overload;
 //: Adds two vectors and places result in vr
@@ -1273,6 +1275,7 @@ function IntPower(Base: Extended; Exponent: Integer): Extended;
 function Power(const Base, Exponent: Single): Single; overload;
 {: Raise base to an integer. }
 function Power(Base: Single; Exponent: Integer): Single; overload;
+function Power(Base: Single; Exponent: Int64): Single; overload;
 
 //------------------------------------------------------------------------------
 // Trigonometric functions
@@ -1412,6 +1415,9 @@ function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
 function MinFloat(const v1, v2 : Double) : Double; overload;
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+function MinFloat(const v1, v2 : Extended) : Extended; overload;
+{$ENDIF}
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 //function MinFloat(const v1, v2 : Extended) : Extended; overload;
 {$ENDIF}
 function MinFloat(const v1, v2, v3 : Single) : Single; overload;
@@ -1447,6 +1453,10 @@ function MaxInteger(const v1, v2 : Integer) : Integer; overload;
 function MaxInteger(const v1, v2 : Cardinal) : Cardinal; overload;
 function MaxInteger(const v1, v2, v3 : Integer) : Integer; overload;
 function MaxInteger(const v1, v2, v3 : Cardinal) : Cardinal; overload;
+
+{: Clamps integer aValue in the aMin-aMax interval.<p> }
+function ClampInteger(const value, min, max : Integer) : Integer; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
+function ClampInteger(const value, min, max : Cardinal) : Cardinal; overload; {$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
 {: Computes the triangle's area. }
 function TriangleArea(const p1, p2, p3 : TAffineVector) : Single; overload;
@@ -1505,9 +1515,6 @@ procedure SortArrayAscending(var a : array of Extended);
 function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
 {: Clamps aValue in the aMin-INF interval.<p> }
 function ClampValue(const aValue, aMin : Single) : Single; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-{: Clamps integer aValue in the aMin-aMax interval.<p> }
-function ClampValue(const value, min, max : Integer) : Integer; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
-function ClampValue(const value, min, max : Cardinal) : Cardinal; overload; {$IFDEF GLS_INLINE}inline;{$ENDIF}
 
 {: Returns the detected optimization mode.<p>
    Returned values is either 'FPU', '3DNow!' or 'SSE'. }
@@ -1766,7 +1773,7 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
-uses SysUtils{$ifdef GEOMETRY_NO_ASM}, Math{$endif};
+uses SysUtils, Math;
 
 const
 {$ifndef GEOMETRY_NO_ASM}
@@ -1819,10 +1826,6 @@ begin
    if vFPUOnlySectionCounter=0 then
       vSIMD:=vOldSIMD;
 end;
-
-//------------------------------------------------------------------------------
-//----------------- vector functions -------------------------------------------
-//------------------------------------------------------------------------------
 
 // TexPointMake
 //
@@ -1931,7 +1934,7 @@ begin
 	Result[0]:=x;
 	Result[1]:=y;
 	Result[2]:=z;
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // PointMake (affine)
@@ -1941,7 +1944,7 @@ begin
 	Result[0]:=v[0];
 	Result[1]:=v[1];
 	Result[2]:=v[2];
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // PointMake (hmg)
@@ -1951,7 +1954,7 @@ begin
 	Result[0]:=v[0];
 	Result[1]:=v[1];
 	Result[2]:=v[2];
-   Result[3]:=1;
+  Result[3]:=1;
 end;
 
 // SetVector
@@ -2087,6 +2090,27 @@ begin
    v[1]:=0;
    v[2]:=0;
    v[3]:=0;
+{$endif}
+end;
+
+// VectorAdd (func)
+//
+function VectorAdd(const v1, v2 : TVector2f) : TVector2f;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FADD DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FADD DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+{$else}
+begin
+   Result[0]:=v1[0]+v2[0];
+   Result[1]:=v1[1]+v2[1];
 {$endif}
 end;
 
@@ -2509,7 +2533,7 @@ asm
       dec   ecx
       jnz   @@3DNowLoop
 
-      db $0F,$0E               /// femms 
+      db $0F,$0E               /// femms
 @@End:
 {$else}
 var
@@ -2614,11 +2638,30 @@ begin
 {$endif}
 end;
 
-
+// VectorSubtract (func, 2f)
+//
+function VectorSubtract(const V1, V2 : TVector2f) : TVector2f;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+{$else}
+begin
+   Result[0]:=v1[0]-v2[0];
+   Result[1]:=v1[1]-v2[1];
+{$endif}
+end;
 
 // VectorSubtract (proc, affine)
 //
-procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2641,30 +2684,9 @@ begin
 {$endif}
 end;
 
-// VectorSubtract (func, 2f)
-//
-function VectorSubtract(const V1, V2 : TVector2f) : TVector2f;
-// EAX contains address of V1
-// EDX contains address of V2
-// ECX contains the result
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      FLD  DWORD PTR [EAX]
-      FSUB DWORD PTR [EDX]
-      FSTP DWORD PTR [ECX]
-      FLD  DWORD PTR [EAX+4]
-      FSUB DWORD PTR [EDX+4]
-      FSTP DWORD PTR [ECX+4]
-{$else}
-begin
-   Result[0]:=v1[0]-v2[0];
-   Result[1]:=v1[1]-v2[1];
-{$endif}
-end;
-
 // VectorSubtract (proc, affine-hmg)
 //
-procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector); overload;
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2692,7 +2714,7 @@ end;
 
 // VectorSubtract
 //
-procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector); overload;
+procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2755,6 +2777,7 @@ begin
    Result[0]:=v1[0]-v2[0];
    Result[1]:=v1[1]-v2[1];
    Result[2]:=v1[2]-v2[2];
+   Result[3]:=v1[3]-v2[3];
 {$endif}
 end;
 
@@ -3936,12 +3959,9 @@ end;
 // InterpolatePower
 //
 function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
-var
-  intDegree: Integer;
 begin
-  intDegree := Round(DistortionDegree);
-  if (intDegree <> DistortionDegree) and (Delta < 0) then
-    Result := (Stop - Start) * GLScene_Base_Vector_Geometry.Power(Delta, intDegree) + Start
+  if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
+    Result := (Stop - Start) * GLScene_Base_Vector_Geometry.Power(Delta, Round(DistortionDegree)) + Start
   else
     Result := (Stop - Start) * GLScene_Base_Vector_Geometry.Power(Delta, DistortionDegree) + Start;
 end;
@@ -3985,25 +4005,6 @@ begin
 {$endif}
 end;
 
-// VectorLength
-//
-function VectorLength(const v : TVector2f) : Single;
-// EAX contains address of V
-// result is passed in ST(0)
-{$ifndef GEOMETRY_NO_ASM}
-asm
-       FLD  DWORD PTR [EAX]
-       FMUL ST, ST
-       FLD  DWORD PTR [EAX+4]
-       FMUL ST, ST
-       FADDP
-       FSQRT
-{$else}
-begin
-   Result:=Sqrt(VectorNorm(v[0], v[1]));
-{$endif}
-end;
-
 // VectorLength  (x, y)
 //
 function VectorLength(const x, y : Single) : Single;
@@ -4038,6 +4039,25 @@ asm
 {$else}
 begin
    Result:=Sqrt(x*x+y*y+z*z);
+{$endif}
+end;
+
+// VectorLength
+//
+function VectorLength(const v : TVector2f) : Single;
+// EAX contains address of V
+// result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+       FLD  DWORD PTR [EAX]
+       FMUL ST, ST
+       FLD  DWORD PTR [EAX+4]
+       FMUL ST, ST
+       FADDP
+       FSQRT
+{$else}
+begin
+   Result:=Sqrt(VectorNorm(v[0], v[1]));
 {$endif}
 end;
 
@@ -5150,7 +5170,7 @@ asm
       mov ecx, [edx+$C]
       cmp ecx, [eax+$C]
       jne @@Diff
-@@Equal:             
+@@Equal:
       mov eax, 1
       ret
 @@Diff:
@@ -5836,7 +5856,7 @@ begin
          db $0F,$0F,$D1,$9E       /// pfadd       mm2,mm1
          db $0F,$0F,$F0,$9E       /// pfadd       mm6,mm0
          db $0F,$0F,$D3,$9E       /// pfadd       mm2,mm3
-         
+
          db $0F,$7E,$70,$20       /// movd        [eax+32],mm6
          db $0F,$7F,$50,$18       /// movq        [eax+24],mm2
          db $0F,$0E               /// femms
@@ -6139,7 +6159,7 @@ end;
 
 // AdjointMatrix
 //
-procedure AdjointMatrix(var M : TMatrix); 
+procedure AdjointMatrix(var M : TMatrix);
 var
    a1, a2, a3, a4,
    b1, b2, b3, b4,
@@ -6544,10 +6564,10 @@ begin
   // now, get the rotations out, as described in the gem
   Tran[ttRotateY]:=GLScene_Base_Vector_Geometry.ArcSin(-row0[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=GLScene_Base_Vector_Geometry.ArcTan2(row1[Z], row2[Z]);
-    Tran[ttRotateZ]:=GLScene_Base_Vector_Geometry.ArcTan2(row0[Y], row0[X]);
+    Tran[ttRotateX]:= GLScene_Base_Vector_Geometry.ArcTan2(row1[Z], row2[Z]);
+    Tran[ttRotateZ]:= GLScene_Base_Vector_Geometry.ArcTan2(row0[Y], row0[X]);
   end else begin
-    tran[ttRotateX]:=GLScene_Base_Vector_Geometry.ArcTan2(row1[X], row1[Y]);
+    tran[ttRotateX]:= GLScene_Base_Vector_Geometry.ArcTan2(row1[X], row1[Y]);
     tran[ttRotateZ]:=0;
   end;
   // All done!
@@ -6604,7 +6624,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * GLScene_Base_Vector_Geometry.Tan(DegToRad(FOV) * 0.5);
+  y:= ZNear * GLScene_Base_Vector_Geometry.Tan(GLScene_Base_Vector_Geometry.DegToRad(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -7266,7 +7286,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   GLScene_Base_Vector_Geometry.SinCos(DegToRad(angle*cOneDotFive), s, c);
+   GLScene_Base_Vector_Geometry.SinCos(GLScene_Base_Vector_Geometry.DegToRad(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart[0]:=axis[0]*f;
@@ -7527,6 +7547,14 @@ begin
 {$endif}
 end;
 
+function Power(Base: Single; Exponent: Int64): Single;
+begin
+   {$HINTS OFF}
+   Result:= Math.Power(Base, Exponent);
+   {$HINTS ON}
+end;
+
+
 // DegToRad (extended)
 //
 function DegToRad(const Degrees: Extended): Extended;
@@ -7624,7 +7652,7 @@ procedure SinCos(const Theta: Double; out Sin, Cos: Double);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP QWORD PTR [EDX]    // cosine
    FSTP QWORD PTR [EAX]    // sine
 {$else}
@@ -7647,7 +7675,7 @@ procedure SinCos(const Theta: Single; out Sin, Cos: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
-   FSINCOS
+   FSinCos
    FSTP DWORD PTR [EDX]    // cosine
    FSTP DWORD PTR [EAX]    // sine
 {$else}
@@ -7695,7 +7723,7 @@ procedure SinCos(const theta, radius : Double; out Sin, Cos: Double);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP QWORD PTR [EDX]    // cosine
    FMUL radius
@@ -7718,7 +7746,7 @@ procedure SinCos(const theta, radius : Single; out Sin, Cos: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
-   FSINCOS
+   FSinCos
    FMUL radius
    FSTP DWORD PTR [EDX]    // cosine
    FMUL radius
@@ -7750,7 +7778,7 @@ begin
       // Fast computation (approx 5.5x)
       alpha:=2*Sqr(Sin(d*0.5));
       beta:=Sin(d);
-      SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
+      GLScene_Base_Vector_Geometry.SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
       for i:=Low(s) to High(s)-1 do begin
          // Make use of the incremental formulae:
          // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
@@ -7762,7 +7790,7 @@ begin
       // Slower, but maintains precision when steps are small
       startAngle:=startAngle*cPIdiv180;
       for i:=Low(s) to High(s) do
-         SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+         GLScene_Base_Vector_Geometry.SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
    end;
 end;
 
@@ -7770,13 +7798,13 @@ end;
 //
 function ArcCos(const x : Extended): Extended;
 begin
-   Result:=GLScene_Base_Vector_Geometry.ArcTan2(Sqrt(1 - Sqr(X)), X);
+   Result:= GLScene_Base_Vector_Geometry.ArcTan2(Sqrt(1 - Sqr(X)), X);
 end;
 
 // ArcCos (Single)
 //
 function ArcCos(const x : Single): Single;
-// Result:=GLScene_Base_Vector_Geometry.ArcTan2(Sqrt(c1 - X * X), X);
+// Result:=ArcTan2(Sqrt(c1 - X * X), X);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
@@ -7802,13 +7830,13 @@ end;
 //
 function ArcSin(const x : Extended) : Extended;
 begin
-   Result:=GLScene_Base_Vector_Geometry.ArcTan2(X, Sqrt(1 - Sqr(X)))
+   Result:= GLScene_Base_Vector_Geometry.ArcTan2(X, Sqrt(1 - Sqr(X)))
 end;
 
 // ArcSin (Single)
 //
 function ArcSin(const x : Single) : Single;
-//   Result:=GLScene_Base_Vector_Geometry.ArcTan2(X, Sqrt(1 - X * X))
+//   Result:=ArcTan2(X, Sqrt(1 - X * X))
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
@@ -8173,7 +8201,7 @@ begin
    p[2]:=2*Random-1;
    t:=2*PI*Random;
    w:=Sqrt(1-p[2]*p[2]);
-   SinCos(t, w, p[1], p[0]);
+   GLScene_Base_Vector_Geometry.SinCos(t, w, p[1], p[0]);
 end;
 
 // RoundInt (single)
@@ -8483,7 +8511,6 @@ begin
    end else Result:=0;
 end;
 
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MinFloat (extended)
 //
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended;
@@ -8497,7 +8524,6 @@ begin
       Result:=values^[k];
    end else Result:=0;
 end;
-{$ENDIF}
 
 // MinFloat (array)
 //
@@ -8549,30 +8575,18 @@ asm
 end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-// MinFloat
+// MinFloat (extended 2)
 //
-function MinFloat(const v1, v2, v3 : Extended) : Extended;
+function MinFloat(const v1, v2 : Extended) : Extended;
 {$ifdef GEOMETRY_NO_ASM}
 begin
-   if v1<=v2 then
-      if v1<=v3 then
-         Result:=v1
-      else if v3<=v2 then
-         Result:=v3
-      else Result:=v2
-   else if v2<=v3 then
-      Result:=v2
-   else if v3<=v1 then
-      Result:=v3
-   else result:=v1;
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
 {$else}
 asm
    fld     v1
    fld     v2
-   db $DB,$F1                 /// fcomi   st(0), st(1)
-   db $DB,$C1                 /// fcmovnb st(0), st(1)
-   ffree   st(1)
-   fld     v3
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DB,$C1                 /// fcmovnb st(0), st(1)
    ffree   st(1)
@@ -8700,8 +8714,6 @@ begin
    end else Result:=0;
 end;
 
-{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-
 // MaxFloat (extended)
 //
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
@@ -8716,29 +8728,9 @@ begin
    end else Result:=0;
 end;
 
-
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Extended) : Extended; overload;
-{$ifdef GEOMETRY_NO_ASM}
-begin
-   if v1>v2 then
-      Result:=v1
-   else Result:=v2;
-{$else}
-asm
-   fld     v1
-   fld     v2
-   db $DB,$F1                 /// fcomi   st(0), st(1)
-   db $DA,$C1                 /// fcmovb  st(0), st(1)
-   ffree   st(1)
-{$endif}
-end;
-{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
-
-// MaxFloat
-//
-function MaxFloat(const v : array of Single) : Single; overload;
+function MaxFloat(const v : array of Single) : Single;
 var
    i : Integer;
 begin
@@ -8751,7 +8743,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Single) : Single; overload;
+function MaxFloat(const v1, v2 : Single) : Single;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8769,7 +8761,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Double) : Double; overload;
+function MaxFloat(const v1, v2 : Double) : Double;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8788,7 +8780,7 @@ end;
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // MaxFloat
 //
-function MaxFloat(const v1, v2 : Extended) : Extended; overload;
+function MaxFloat(const v1, v2 : Extended) : Extended;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
@@ -8800,37 +8792,6 @@ asm
    fld     v2
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DA,$C1                 /// fcmovb  st(0), st(1)
-   ffree   st(1)
-{$endif}
-end;
-
-
-// MaxFloat
-//
-function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
-{$ifdef GEOMETRY_NO_ASM}
-begin
-   if v1>=v2 then
-      if v1>=v3 then
-         Result:=v1
-      else if v3>=v2 then
-         Result:=v3
-      else Result:=v2
-   else if v2>=v3 then
-      Result:=v2
-   else if v3>=v1 then
-      Result:=v3
-   else Result:=v1;
-{$else}
-asm
-   fld     v1
-   fld     v2
-   fld     v3
-   db $DB,$F1                 /// fcomi   st(0), st(1)
-   db $DA,$C1                 /// fcmovb  st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DA,$C2                 /// fcmovb  st(0), st(2)
-   ffree   st(2)
    ffree   st(1)
 {$endif}
 end;
@@ -8868,7 +8829,7 @@ end;
 
 // MaxFloat
 //
-function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
+function MaxFloat(const v1, v2, v3 : Double) : Double;
 {$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
@@ -8895,6 +8856,38 @@ asm
    ffree   st(1)
 {$endif}
 end;
+
+{$IFDEF GLS_PLATFORM_HAS_EXTENDED}
+// MaxFloat
+//
+function MaxFloat(const v1, v2, v3 : Extended) : Extended;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   if v1>=v2 then
+      if v1>=v3 then
+         Result:=v1
+      else if v3>=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2>=v3 then
+      Result:=v2
+   else if v3>=v1 then
+      Result:=v3
+   else Result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DA,$C2                 /// fcmovb  st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
+end;
+{$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MinInteger (2 int)
 //
@@ -9024,12 +9017,12 @@ begin
    else Result:=v1;
 end;
 
-function ClampValue(const value, min, max : Integer): Integer;
+function ClampInteger(const value, min, max : Integer): Integer;
 begin
   Result := MinInteger( MaxInteger(value, min), max);
 end;
 
-function ClampValue(const value, min, max : Cardinal): Cardinal;
+function ClampInteger(const value, min, max : Cardinal): Cardinal;
 begin
   Result := MinInteger( MaxInteger(value, min), max);
 end;
@@ -9424,7 +9417,7 @@ begin // 134
    else if aValue>aMax then
       Result:=aMax
    else Result:=aValue;
-end;              
+end;
 {$endif}
 
 // ClampValue (min-)
@@ -11737,3 +11730,4 @@ initialization
 {$endif}
 
 end.
+

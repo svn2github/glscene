@@ -460,7 +460,7 @@ begin
     begin
       for k := Count - 1 downto 0 do
       begin
-        hd := THeightData(List^[k]);
+        hd := THeightData(Items[k]);
         OnTileDestroyed(hd);
         hd.OnDestroy := nil;
         hd.Release;
@@ -714,12 +714,12 @@ begin
             else
               prevPatch.ConnectToTheWest(patch);
           end;
-          if (prevRow.Count > n) and (prevRow.List^[n] <> nil) then
+          if (prevRow.Count > n) and (prevRow.Items[n] <> nil) then
           begin
             if deltaY > 0 then
-              patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List^[n]))
+              patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]))
             else
-              TGLROAMPatch(prevRow.List^[n]).ConnectToTheNorth(patch);
+              TGLROAMPatch(prevRow.List[n]).ConnectToTheNorth(patch);
           end;
 
           if patch.HighRes then
@@ -851,15 +851,14 @@ var
   i, j, zero: integer;
   pList: PPointerList;
 begin
-  if not(tmClearUsedFlags in TileManagement) then
-    Exit; // Tile cache management option
+  if not (tmClearUsedFlags in TileManagement) then
+    exit;  //Tile cache management option
   for i := 0 to cTilesHashSize do
     with FTilesHash[i] do
     begin
-      pList := List;
       zero := 0;
       for j := Count - 1 downto 0 do
-        THeightData(pList^[j]).Tag := zero;
+        THeightData(Items[j]).Tag := zero;
     end;
 end;
 
@@ -876,7 +875,7 @@ begin
     hashList := FTilesHash[i];
     for j := hashList.Count - 1 downto 0 do
     begin
-      hd := THeightData(hashList.List^[j]);
+      hd := THeightData(hashList.List[j]);
       if hd.Tag = 0 then
       begin
         hashList.Delete(j);
@@ -946,16 +945,15 @@ var
 begin
   // is the tile already in our list?
   hashList := FTilesHash[HashKey(xLeft, yTop)];
-  pList := hashList.List;
   for i := hashList.Count - 1 downto 0 do
   begin
-    hd := THeightData(pList^[i]);
-    if (hd.xLeft = xLeft) and (hd.yTop = yTop) then
+    hd := THeightData(hashList.Items[i]);
+    if (hd.XLeft = xLeft) and (hd.YTop = yTop) then
     begin
       if hd.DontUse then
       begin
-        hashList.Remove(hd);
-        // This tile has now been replaced. Remove it from the hash-table.
+        hashlist.Remove(hd);
+        //This tile has now been replaced. Remove it from the hash-table.
       end
       else
       begin
@@ -1109,7 +1107,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(List^[k]);
+          hd := THeightData(List[k]);
           if Assigned(hd.ObjectTag) then
           begin
             (hd.ObjectTag as TGLROAMPatch).Free;
@@ -1160,7 +1158,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(List^[k]);
+          hd := THeightData(List[k]);
           if hd.ObjectTag <> nil then
             TGLROAMPatch(hd.ObjectTag).OcclusionSkip := OcclusionFrameSkip;
         end;

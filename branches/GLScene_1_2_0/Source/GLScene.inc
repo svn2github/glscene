@@ -82,6 +82,16 @@
 // Platform Detection
 //
 
+ {$IFDEF WIN64}
+  {$DEFINE GLS_NO_ASM}
+  {$DEFINE GEOMETRY_NO_ASM}
+{$ENDIF}
+
+{$IFDEF LINUX}
+  {$DEFINE GEOMETRY_NO_ASM}
+  {$DEFINE UNIX}
+{$ENDIF}
+
 {$IFNDEF MSWINDOWS}
   {$IFDEF WIN32}
     // MSWINDOWS wasn't defined in Delphi 5, but WIN32 was
@@ -96,18 +106,21 @@
 
 // FPC
 {$IFDEF FPC}
+  {.$DEFINE GLS_GENERIC_PREFIX}
   {$DEFINE GEOMETRY_NO_ASM}
   {$DEFINE GLS_NO_ASM}
   {$TYPEINFO ON}
   {$INLINE ON}
   {$H+} // Enable long strings.
-  {$ifdef cpui386}
-    {$ASMMODE intel}
-  {$endif}
+  {$IFDEF FPC_HAS_TYPE_EXTENDED}
+    {$DEFINE GLS_PLATFORM_HAS_EXTENDED}
+  {$ENDIF}
 {$ENDIF}
 
 // If it's not FPC, determine if C++ builder, or Delphi
 {$IFNDEF FPC}
+   // There no extended type on all non-x86 platforms.
+  {$DEFINE GLS_PLATFORM_HAS_EXTENDED}
   {$DEFINE GLS_DELPHI_OR_CPPB}
   {$IFDEF BCB}
     {$DEFINE GLS_CPPB}
@@ -160,6 +173,17 @@
 {$IFNDEF FPC}
 // Conditional expressions were introduced in Delphi 6
 {$ifdef CONDITIONALEXPRESSIONS}
+
+  // Delphi XE2 & C++ Builder XE2
+  {$if CompilerVersion>23}
+    {$DEFINE GLS_COMPILER_XE2_UP}
+  {$elseif CompilerVersion=23}
+    {$DEFINE GLS_COMPILER_2011}
+    {$DEFINE GLS_COMPILER_XE2_UP}
+    {$DEFINE GLS_COMPILER_XE2_DOWN}
+  {$elseif CompilerVersion<24}
+    {$DEFINE GLS_COMPILER_XE2_DOWN}
+  {$ifend}
 
   // Delphi XE & C++ Builder XE
   {$if CompilerVersion>22}
@@ -325,6 +349,9 @@
     {$IFDEF GLS_COMPILER_XE}
       {$DEFINE GLS_DELPHI_XE}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE2}
+      {$DEFINE GLS_DELPHI_XE2}
+    {$ENDIF}
   {$ENDIF}
 
   // UP Declarations
@@ -378,6 +405,9 @@
     {$IFDEF GLS_COMPILER_XE_UP}
       {$DEFINE GLS_DELPHI_XE_UP}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE2_UP}
+      {$DEFINE GLS_DELPHI_XE2_UP}
+    {$ENDIF}
   {$ENDIF}
 
   // Down Declarations
@@ -424,6 +454,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_XE_DOWN}
       {$DEFINE GLS_DELPHI_XE_DOWN}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE2_DOWN}
+      {$DEFINE GLS_DELPHI_XE2_DOWN}
     {$ENDIF}
   {$ENDIF}
 
@@ -491,6 +524,7 @@
 //_DOWN Defines
 
 {$IFDEF GLS_COMPILER_5}
+  {$DEFINE GLS_COMPILER_XE2_DOWN}
   {$DEFINE GLS_COMPILER_XE_DOWN}
   {$DEFINE GLS_COMPILER_2010_DOWN}
   {$DEFINE GLS_COMPILER_2009_DOWN}
@@ -504,6 +538,7 @@
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
+  {$DEFINE GLS_COMPILER_XE2_DOWN}
   {$DEFINE GLS_DELPHI_XE_DOWN}
   {$DEFINE GLS_DELPHI_2010_DOWN}
   {$DEFINE GLS_DELPHI_2009_DOWN}

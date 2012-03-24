@@ -74,7 +74,7 @@ end;
 
 procedure TGLTeapot.SetDivision(Value: Integer);
 begin
-  Value := ClampValue(Value, 1, 32);
+  Value := ClampInteger(Value, 1, 32);
   if FDivision <> Value then
   begin
     FDivision := Value;

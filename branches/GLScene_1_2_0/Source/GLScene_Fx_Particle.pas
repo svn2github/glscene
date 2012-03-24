@@ -1619,6 +1619,7 @@ var
   dist, distDelta, invRegionSize: Single;
   managerIdx, particleIdx, regionIdx: Integer;
 
+
   procedure QuickSortRegion(startIndex, endIndex: Integer; region: PPFXRegion);
   var
     I, J: Integer;
@@ -1628,7 +1629,7 @@ var
   begin
     if endIndex - startIndex > 1 then
     begin
-      poptr := @region^.particleOrder[0];
+      poptr := @region^.particleOrder^[0];
       repeat
         I := startIndex;
         J := endIndex;
@@ -1654,7 +1655,7 @@ var
     end
     else if endIndex - startIndex > 0 then
     begin
-      poptr := @region^.particleOrder[0];
+      poptr := @region^.particleOrder^[0];
       if PParticleReference(poptr^[endIndex])^.distance < PParticleReference(poptr^[startIndex])^.distance then
       begin
         buf := poptr^[startIndex];
@@ -1811,7 +1812,7 @@ begin
     try
       // Initialize managers
       for managerIdx := 0 to FManagerList.Count - 1 do
-        TGLParticleFXManager(FManagerList.List^[managerIdx]).InitializeRendering(rci);
+        TGLParticleFXManager(FManagerList.Items[managerIdx]).InitializeRendering(rci);
       // Start Rendering... at last ;)
       try
         curManager := nil;
@@ -1820,7 +1821,7 @@ begin
           curRegion := @FRegions[regionIdx];
           if curRegion^.count > 0 then
           begin
-            curParticleOrder := @curRegion^.particleOrder[0];
+            curParticleOrder := @curRegion^.particleOrder^[0];
             for particleIdx := curRegion^.count - 1 downto 0 do
             begin
               curParticle := PParticleReference(curParticleOrder^[particleIdx])^.particle;
@@ -1848,8 +1849,7 @@ begin
       finally
         // Finalize managers
         for managerIdx := 0 to FManagerList.Count - 1 do
-          TGLParticleFXManager(FManagerList.List^[managerIdx]).FinalizeRendering(rci);
-      end;
+          TGLParticleFXManager(FManagerList.Items[managerIdx]).FinalizeRendering(rci);      end;
     finally
       rci.PipelineTransformation.Pop;
     end;
@@ -2566,7 +2566,7 @@ begin
       begin
         k := -1;
         for i := 0 to n do
-          if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime < lifeTime then
+          if TPFXLifeColor(FLifeColorsLookup.Items[i]).LifeTime < lifeTime then
             k := i;
         if k < n then
           Inc(k);
@@ -2576,14 +2576,14 @@ begin
       case k of
         0:
           begin
-            lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck := TPFXLifeColor(FLifeColorsLookup.Items[k]);
             f := lifeTime * lck.InvLifeTime;
             VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
           end;
       else
-        lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
-        lck1 := TPFXLifeColor(FLifeColorsLookup.List^[k - 1]);
+        lck := TPFXLifeColor(FLifeColorsLookup.Items[k]);
+        lck1 := TPFXLifeColor(FLifeColorsLookup.Items[k - 1]);
         f := (lifeTime - lck1.LifeTime) * lck1.InvIntervalRatio;
         VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
         VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
@@ -2609,7 +2609,7 @@ begin
       inner := ColorInner.Color
     else
     begin
-      lifeColorsLookupList := FLifeColorsLookup.List;
+      lifeColorsLookupList := @FLifeColorsLookup.List[0];
       if n > 0 then
       begin
         k := -1;
@@ -2658,7 +2658,7 @@ begin
       begin
         k := -1;
         for i := 0 to n do
-          if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime < lifeTime then
+          if TPFXLifeColor(FLifeColorsLookup.Items[i]).LifeTime < lifeTime then
             k := i;
         if k < n then
           Inc(k);
@@ -2668,13 +2668,13 @@ begin
       case k of
         0:
           begin
-            lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck := TPFXLifeColor(FLifeColorsLookup.Items[k]);
             f := lifeTime * lck.InvLifeTime;
             VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
           end;
       else
-        lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
-        lck1 := TPFXLifeColor(FLifeColorsLookup.List^[k - 1]);
+        lck := TPFXLifeColor(FLifeColorsLookup.Items[k]);
+        lck1 := TPFXLifeColor(FLifeColorsLookup.Items[k - 1]);
         f := (lifeTime - lck1.LifeTime) * lck1.InvIntervalRatio;
         VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
       end;
@@ -2702,7 +2702,7 @@ begin
       begin
         k := -1;
         for i := 0 to n do
-          if TPFXLifeColor(FLifeColorsLookup.List^[i]).LifeTime < lifeTime then
+          if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime < lifeTime then
             k := i;
         if k < n then
           Inc(k);
@@ -2712,7 +2712,7 @@ begin
       case k of
         0:
           begin
-            lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
+            lck := TPFXLifeColor(FLifeColorsLookup.List[k]);
             Result := lck.FDoScale;
             if Result then
             begin
@@ -2721,8 +2721,8 @@ begin
             end;
           end;
       else
-        lck := TPFXLifeColor(FLifeColorsLookup.List^[k]);
-        lck1 := TPFXLifeColor(FLifeColorsLookup.List^[k - 1]);
+        lck := TPFXLifeColor(FLifeColorsLookup.List[k]);
+        lck1 := TPFXLifeColor(FLifeColorsLookup.List[k - 1]);
         Result := lck.FDoScale or lck1.FDoScale;
         if Result then
         begin
