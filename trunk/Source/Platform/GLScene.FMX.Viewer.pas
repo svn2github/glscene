@@ -228,7 +228,11 @@ begin
   begin
     FDrawing := True;
     try
-      FGLSBuffer.Render;
+      if FFMXContext.BeginScene then
+      begin
+        FGLSBuffer.Render;
+        FFMXContext.EndScene;
+      end;
     finally
       FDrawing := False;
     end;
