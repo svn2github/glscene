@@ -150,19 +150,25 @@ begin
 end;
 
 procedure TGLSceneViewport.CopyBuffer(Sender: TObject);
+var
+  tempBuffer: TGLEnum;
 begin
   // Flip GL framebuffer
   if GL.ARB_framebuffer_object or GL.EXT_framebuffer_blit  then
   begin
+    if Buffer.RenderingContext.AntiAliasing in [aaDefault, aaNone] then
+      tempBuffer := GL_AUX0
+    else
+      tempBuffer := GL_LEFT;
     GL.ReadBuffer(GL_FRONT);
-    GL.DrawBuffer(GL_AUX0);
+    GL.DrawBuffer(tempBuffer);
     FGLSBuffer.RenderingContext.GLStates.ReadFrameBuffer := 0;
     FGLSBuffer.RenderingContext.GLStates.DrawFrameBuffer := 0;
     GL.BlitFramebuffer(
       0, FGLSBuffer.Height-1, FGLSBuffer.Width-1, 0,
       0, 0,                   FGLSBuffer.Width-1, FGLSBuffer.Height-1,
       GL_COLOR_BUFFER_BIT, GL_NEAREST);
-    GL.ReadBuffer(GL_AUX0);
+    GL.ReadBuffer(tempBuffer);
     GL.DrawBuffer(GL_FRONT);
   end
   else

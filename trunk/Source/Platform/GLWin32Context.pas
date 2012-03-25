@@ -505,7 +505,7 @@ const
 
 var
   float: boolean;
-
+  aa: TGLAntiAliasing;
 begin
   // request hardware acceleration
   case FAcceleration of
@@ -581,12 +581,35 @@ begin
   begin
     // Restore DepthBits
     ChangeIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
-    // couldn't find AA buffer, try without
-    DropIAttrib(WGL_SAMPLE_BUFFERS_ARB);
-    DropIAttrib(WGL_SAMPLES_ARB);
     if (AntiAliasing >= csa8x) and (AntiAliasing <= csa16xHQ) then
+    begin
       DropIAttrib(WGL_COLOR_SAMPLES_NV);
+      case AntiAliasing of
+        csa8x, csa8xHQ: AntiAliasing := aa8x;
+        csa16x, csa16xHQ: AntiAliasing := aa16x;
+      end;
+      ChangeIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
+    end;
     ChoosePixelFormat;
+
+    if nNumFormats = 0 then
+    begin
+      aa := AntiAliasing;
+      repeat
+        Dec(aa);
+        if aa = aaNone then
+        begin
+          // couldn't find AA buffer, try without
+          DropIAttrib(WGL_SAMPLE_BUFFERS_ARB);
+          DropIAttrib(WGL_SAMPLES_ARB);
+          ChoosePixelFormat;
+          break;
+        end;
+        ChangeIAttrib(WGL_SAMPLES_ARB, cAAToSamples[aa]);
+        ChoosePixelFormat;
+      until nNumFormats <> 0;
+      AntiAliasing := aa;
+    end;
   end;
   // Check DepthBits again
   if (nNumFormats = 0) and (DepthBits >= 32) then
