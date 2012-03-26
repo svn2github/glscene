@@ -40,7 +40,6 @@ uses
   ComCtrls,
   ImgList,
   Dialogs,
-  Menus,
   ActnList,
   ToolWin,
   ExtCtrls,
