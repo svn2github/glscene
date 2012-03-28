@@ -31,6 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/03/12 - Maverick - Added IsColinear test and Vector2d dot product
       <li>19/12/11 - Yar - Added VectorAdd for 2d vector (thanks microalexx)
       <li>10/06/11 - DaStr - Added some Vector2f routines
                              Overloaded some procedures to accept both 3f and 4f vectors
@@ -208,7 +209,7 @@ uses GLCrossPlatform, VectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
-
+   cColinearBias = 1e-8;
 {$i GLScene.inc}
 
 // define for turning off assembly routines in this unit
@@ -790,6 +791,9 @@ function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TV
 procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single; var vr : TVector); overload;
 
 {: Calculates the dot product between V1 and V2.<p>
+   Result:=V1[X] * V2[X] + V1[Y] * V2[Y] }
+function VectorDotProduct(const V1, V2 : Tvector2f) : Single; overload;
+{: Calculates the dot product between V1 and V2.<p>
    Result:=V1[X] * V2[X] + V1[Y] * V2[Y] + V1[Z] * V2[Z] }
 function VectorDotProduct(const V1, V2 : TAffineVector) : Single; overload;
 {: Calculates the dot product between V1 and V2.<p>
@@ -1040,6 +1044,12 @@ function VectorAbs(const v : TVector) : TVector; overload; {$IFDEF GLS_INLINE_VI
 //: Returns a vector with components replaced by their Abs value. }
 function VectorAbs(const v : TAffineVector) : TAffineVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 
+//: Returns true if both vector are colinear
+function IsColinear(const v1, v2: TVector2f) : Boolean; overload;
+//: Returns true if both vector are colinear
+function IsColinear(const v1, v2: TAffineVector) : Boolean; overload;
+//: Returns true if both vector are colinear
+function IsColinear(const v1, v2: TVector) : Boolean; overload;
 //------------------------------------------------------------------------------
 // Matrix functions
 //------------------------------------------------------------------------------
@@ -3347,6 +3357,26 @@ begin
    vr[W]:=(F1 * V1[W]) + (F2 * V2[W]) + (F3 * V3[W]);
 end;
 
+// VectorDotProduct (2f)
+//
+function VectorDotProduct(const V1, V2 : TVector2f): Single;
+// EAX contains address of V1
+// EDX contains address of V2
+// result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+       FLD DWORD PTR [eax]
+       FMUL DWORD PTR [edx]
+       FLD DWORD PTR [eax+4]
+       FMUL DWORD PTR [edx+4]
+       faddp
+end;
+{$else}
+begin
+   Result:=V1[0]*V2[0]+V1[1]*V2[1];
+end;
+{$endif}
+
 // VectorDotProduct (affine)
 //
 function VectorDotProduct(const V1, V2 : TAffineVector): Single;
@@ -5560,6 +5590,42 @@ begin
    Result[0]:=Abs(v[0]);
    Result[1]:=Abs(v[1]);
    Result[2]:=Abs(v[2]);
+end;
+
+// IsColinear (2f)
+//
+function IsColinear(const v1, v2: TVector2f) : Boolean; overload;
+var
+  a, b, c : Single;
+begin
+  a := VectorDotProduct(v1, v1);
+  b := VectorDotProduct(v1, v2);
+  c := VectorDotProduct(v2, v2);
+  Result :=  (a*c - b*b) < cColinearBias;
+end;
+
+// IsColinear (affine)
+//
+function IsColinear(const v1, v2: TAffineVector) : Boolean; overload;
+var
+  a, b, c : Single;
+begin
+  a := VectorDotProduct(v1, v1);
+  b := VectorDotProduct(v1, v2);
+  c := VectorDotProduct(v2, v2);
+  Result :=  (a*c - b*b) < cColinearBias;
+end;
+
+// IsColinear (hmg)
+//
+function IsColinear(const v1, v2: TVector) : Boolean; overload;
+var
+  a, b, c : Single;
+begin
+  a := VectorDotProduct(v1, v1);
+  b := VectorDotProduct(v1, v2);
+  c := VectorDotProduct(v2, v2);
+  Result :=  (a*c - b*b) < cColinearBias;
 end;
 
 // SetMatrix (single->double)
