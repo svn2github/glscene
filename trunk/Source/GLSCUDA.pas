@@ -4,6 +4,7 @@
 { : GLSCUDA<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>26/03/12 - Maverick - Added vectors SetParam routines
   <li>07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
   <li>13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
   <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
@@ -391,6 +392,12 @@ type
     procedure SetParam(Value: Integer); overload;
     procedure SetParam(Value: Cardinal); overload;
     procedure SetParam(Value: Single); overload;
+    procedure SetParam(Value: TVector2i); overload;
+    procedure SetParam(Value: TVector3i); overload;
+    procedure SetParam(Value: TVector4i); overload;
+    procedure SetParam(Value: TVector2f); overload;
+    procedure SetParam(Value: TVector3f); overload;
+    procedure SetParam(Value: TVector4f); overload;
     procedure SetParam(MemData: TCUDAMemData); overload;
     procedure SetParam(TexRef: TCUDATexture); overload;
     procedure SetParam(Ptr: Pointer); overload;
@@ -1414,6 +1421,84 @@ begin
   if FStatus <> CUDA_SUCCESS then
     Abort;
   Inc(ParamOffset, SizeOf(Single));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector2i);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector2i));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector2i));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector3i);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector3i));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector3i));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector4i);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector4i));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector4i));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector2f);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector2f));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector2f));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector3f);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector3f));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector3f));
+end;
+
+procedure TCUDAFunction.SetParam(Value: TVector4f);
+begin
+  if not FLaunching then
+  begin
+    GLSLogger.LogError(cudasWrongParamSetup);
+    Abort;
+  end;
+  FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector4f));
+  if FStatus <> CUDA_SUCCESS then
+    Abort;
+  Inc(ParamOffset, SizeOf(TVector4f));
 end;
 
 procedure TCUDAFunction.SetParam(MemData: TCUDAMemData);
