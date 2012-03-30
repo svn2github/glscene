@@ -933,7 +933,7 @@ begin
             if FNormalDirection = ndInside then
             begin
               FBatch.Mesh.Triangulate;
-              FBatch.Mesh.FlipFaces;
+              FBatch.Mesh.FlipFaces(False, True);
             end;
             ApplyExtras;
           end;
@@ -942,7 +942,7 @@ begin
             if FNormalDirection = ndInside then
             begin
               FBatch.Mesh.Triangulate;
-              FBatch.Mesh.FlipFaces;
+              FBatch.Mesh.FlipFaces(False, True);
             end;
             FBatch.Mesh.ComputeNormals(False);
             ApplyExtras;
@@ -3557,7 +3557,7 @@ begin
       if FNormalDirection = ndInside then
       begin
         Triangulate;
-        FlipFaces;
+        FlipFaces(False, True);
       end;
       ApplyExtras;
     finally
@@ -3753,7 +3753,7 @@ begin
       begin
         FBatch.Mesh.Lock;
         try
-          FBatch.Mesh.FlipFaces(True);
+          FBatch.Mesh.FlipFaces(True, True);
           ApplyExtras;
         finally
           FBatch.Mesh.UnLock;

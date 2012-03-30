@@ -1504,6 +1504,13 @@ type
     procedure OnDiffuseChaged(Sender: TObject);
   protected
     { Protected Declarations }
+    class var
+      VertexShader120,
+      FragmentShader120,
+      VertexShader330,
+      FragmentShader330,
+      VertexShaderES100,
+      FragmentShaderES100: TGLShaderEx;
     procedure BuildMesh;
     procedure SetAmbient(AValue: TGLColor);
     procedure SetDiffuse(AValue: TGLColor);
@@ -7094,8 +7101,6 @@ const
     ' vec4 Color = texture(Glyph, v2f_TexCoord0);'#10#13 +
     ' if (Color.a < 0.5) discard;'#10#13 +
     ' FragColor = Diffuse * Color; }'#10#13;
-var
-  LShader: TGLShaderEx;
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling, osDeferredDraw];
@@ -7126,38 +7131,56 @@ begin
     FixedFunction.Texture.Enabled := True;
     FixedFunction.Texture.EnvMode := tmModulate;
     // GLSL 120
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtVertex;
-    LShader.Source.Add(Format(cLightVertexShader120, ['120']));
-    ShaderModel3.LibVertexShaderName := LShader.Name;
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtFragment;
-    LShader.Source.Add(Format(cLightFragmentShader120, ['120']));
-    ShaderModel3.LibFragmentShaderName := LShader.Name;
+    if not Assigned(VertexShader120) then
+    begin
+      VertexShader120 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      VertexShader120.ShaderType := shtVertex;
+      VertexShader120.Source.Add(Format(cLightVertexShader120, ['120']));
+    end;
+    ShaderModel3.LibVertexShaderName := VertexShader120.Name;
+    if not Assigned(FragmentShader120) then
+    begin
+      FragmentShader120 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      FragmentShader120.ShaderType := shtFragment;
+      FragmentShader120.Source.Add(Format(cLightFragmentShader120, ['120']));
+    end;
+    ShaderModel3.LibFragmentShaderName := FragmentShader120.Name;
     OnSM3UniformInitialize := OnShaderInitialize;
     OnSM3UniformSetting := OnShaderSetting;
     ShaderModel3.Enabled := True;
     // GLSL 330
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtVertex;
-    LShader.Source.Add(cLightVertexShader330);
-    ShaderModel4.LibVertexShaderName := LShader.Name;
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtFragment;
-    LShader.Source.Add(cLightFragmentShader330);
-    ShaderModel4.LibFragmentShaderName := LShader.Name;
+    if not Assigned(VertexShader330) then
+    begin
+      VertexShader330 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      VertexShader330.ShaderType := shtVertex;
+      VertexShader330.Source.Add(cLightVertexShader330);
+    end;
+    ShaderModel4.LibVertexShaderName := VertexShader330.Name;
+    if not Assigned(FragmentShader330) then
+    begin
+      FragmentShader330 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      FragmentShader330.ShaderType := shtFragment;
+      FragmentShader330.Source.Add(cLightFragmentShader330);
+    end;
+    ShaderModel4.LibFragmentShaderName := FragmentShader330.Name;
     OnSM4UniformInitialize := OnShaderInitialize;
     OnSM4UniformSetting := OnShaderSetting;
     ShaderModel4.Enabled := True;
     // ESSL 100
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtVertex;
-    LShader.Source.Add(Format(cLightVertexShader120, ['100']));
-    ShaderESSL1.LibVertexShaderName := LShader.Name;
-    LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
-    LShader.ShaderType := shtFragment;
-    LShader.Source.Add(Format(cLightFragmentShader120, ['100']));
-    ShaderESSL1.LibFragmentShaderName := LShader.Name;
+    if not Assigned(VertexShaderES100) then
+    begin
+      VertexShaderES100 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      VertexShaderES100.ShaderType := shtVertex;
+      VertexShaderES100.Source.Add(Format(cLightVertexShader120, ['100']));
+    end;
+    ShaderESSL1.LibVertexShaderName := VertexShaderES100.Name;
+    if not Assigned(FragmentShaderES100) then
+    begin
+      FragmentShaderES100 := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      FragmentShaderES100.ShaderType := shtFragment;
+      FragmentShaderES100.Source.Add(Format(cLightFragmentShader120, ['100']));
+    end;
+    ShaderESSL1.LibFragmentShaderName := FragmentShaderES100.Name;
     OnESSL1UniformInitialize := OnShaderInitialize;
     OnESSL1UniformSetting := OnShaderSetting;
     ShaderESSL1.Enabled := True;

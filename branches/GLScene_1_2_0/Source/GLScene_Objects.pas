@@ -202,6 +202,7 @@ type
       write SetMaterialLibrary;
     property LibMaterialName: string read GetLibMaterialName
       write SetLibMaterialName;
+    { : Special material which used when mesh rendered for picking.<p> }
     property CustomPickingMaterial: string read GetPickingMaterial
       write SetPickingMaterial;
     property ShowAABB: Boolean read GetShowAABB write SetShowAABB default False;
@@ -3764,7 +3765,7 @@ begin
 
       EndAssembly;
       if FNormalDirection = ndInside then
-        FlipFaces;
+        FlipFaces(False, True);
       ApplyExtras;
     finally
       UnLock;
@@ -4103,7 +4104,7 @@ begin
           if FNormalDirection = ndInside then
           begin
             FBatch.Mesh.Triangulate;
-            FBatch.Mesh.FlipFaces;
+            FBatch.Mesh.FlipFaces(False, True);
           end;
           ApplyExtras;
         end;
@@ -4112,7 +4113,7 @@ begin
           if FNormalDirection = ndInside then
           begin
             FBatch.Mesh.Triangulate;
-            FBatch.Mesh.FlipFaces;
+            FBatch.Mesh.FlipFaces(False, True);
           end;
           FBatch.Mesh.ComputeNormals(False);
           ApplyExtras;

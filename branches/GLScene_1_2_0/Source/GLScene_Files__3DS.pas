@@ -2193,7 +2193,7 @@ begin
       LoadFromStream(aStream);
       // determine front face winding
       { TODO : better face winding }
-      standardNormalsOrientation := not(NormalsOrientation = mnoDefault);
+      standardNormalsOrientation := not(FaceWinding = mnoDefault);
 
       for I := 0 to Objects.MeshCount - 1 do
         with PMesh3DS(Objects.mesh[I])^ do

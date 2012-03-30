@@ -240,6 +240,8 @@ type
       overload;
     procedure AttributeList(Attrib: TAttribLocation; AList: T4ByteList);
       overload;
+    procedure AttributeList(Attrib: TAttribLocation; AList: TTexPointList);
+      overload;
     procedure AttributeList(Attrib: TAttribLocation; AList: TAffineVectorList);
       overload;
     procedure AttributeList(Attrib: TAttribLocation; AList: TVectorList);
@@ -261,7 +263,7 @@ type
     procedure Merge(AMesh: TMeshAtom);
     {: Flip face side, front <-> back, negate normals.
        True for TwoSide to duplicate triangles froom front side to back. }
-    procedure FlipFaces(ATwoSide: Boolean = False);
+    procedure FlipFaces(ATwoSide: Boolean; ANegNormal: Boolean);
     {: Weld equivalent vertices, rebuild element buffer. }
     procedure WeldVertices;
     {: Slit equivalent vertices, every element becomes unique. }
@@ -1270,7 +1272,7 @@ begin
     GLSLogger.LogError(glsInvalidNumberOfVertex);
 end;
 
-procedure TMeshAtom.FlipFaces(ATwoSide: Boolean = False);
+procedure TMeshAtom.FlipFaces(ATwoSide: Boolean; ANegNormal: Boolean);
 var
   I, C: Integer;
   BD: T4ByteData;
@@ -1300,28 +1302,31 @@ begin
         FElements.Add(BD);
         Inc(I, 3);
       end;
-      SplitVertices;
-      if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
-        for I := FAttributeArrays[attrNormal].Count div 2 to FAttributeArrays[attrNormal].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrNormal][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrNormal][I] := BD;
-        end;
-      if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
-        for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrTangent].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrTangent][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrTangent][I] := BD;
-        end;
-      if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
-        for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrBinormal].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrBinormal][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrBinormal][I] := BD;
-        end;
+      if ANegNormal then
+      begin
+        SplitVertices;
+        if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
+          for I := FAttributeArrays[attrNormal].Count div 2 to FAttributeArrays[attrNormal].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrNormal][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrNormal][I] := BD;
+          end;
+        if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
+          for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrTangent].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrTangent][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrTangent][I] := BD;
+          end;
+        if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
+          for I := FAttributeArrays[attrTangent].Count div 2 to FAttributeArrays[attrBinormal].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrBinormal][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrBinormal][I] := BD;
+          end;
+      end;
     end
     else
     begin
@@ -1333,28 +1338,31 @@ begin
         FElements[I + 1] := BD;
         Inc(I, 3);
       end;
-      SplitVertices;
-      if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
-        for I := 0 to FAttributeArrays[attrNormal].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrNormal][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrNormal][I] := BD;
-        end;
-      if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
-        for I := 0 to FAttributeArrays[attrTangent].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrTangent][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrTangent][I] := BD;
-        end;
-      if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
-        for I := 0 to FAttributeArrays[attrBinormal].Count - 1 do
-        begin
-          BD := FAttributeArrays[attrBinormal][I];
-          BD.Float.Value := -BD.Float.Value;
-          FAttributeArrays[attrBinormal][I] := BD;
-        end;
+      if ANegNormal then
+      begin
+        SplitVertices;
+        if FAttributes[attrNormal] and (FType[attrNormal] = GLSLType3f) then
+          for I := 0 to FAttributeArrays[attrNormal].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrNormal][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrNormal][I] := BD;
+          end;
+        if FAttributes[attrTangent] and (FType[attrTangent] = GLSLType3f) then
+          for I := 0 to FAttributeArrays[attrTangent].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrTangent][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrTangent][I] := BD;
+          end;
+        if FAttributes[attrBinormal] and (FType[attrBinormal] = GLSLType3f) then
+          for I := 0 to FAttributeArrays[attrBinormal].Count - 1 do
+          begin
+            BD := FAttributeArrays[attrBinormal][I];
+            BD.Float.Value := -BD.Float.Value;
+            FAttributeArrays[attrBinormal][I] := BD;
+          end;
+      end;
     end;
   end;
 end;
@@ -1747,6 +1755,30 @@ begin
     FCurrentAttribValue[Attrib, 1].UInt.Value := a[1];
     FCurrentAttribValue[Attrib, 2].UInt.Value := a[2];
     FCurrentAttribValue[Attrib, 3].UInt.Value := a[3];
+  end;
+end;
+
+procedure TMeshAtom.AttributeList(Attrib: TAttribLocation; AList: TTexPointList);
+var
+  AA: T4ByteList;
+  Last: Integer;
+begin
+  if FBuildingState = mmsIgnoring then
+    exit;
+  if GetAttributeIndex(Attrib, GLSLTypeVoid) then
+  begin
+    if FType[Attrib] <> GLSLType2F then
+    begin
+      GLSLogger.LogWarning(glsWrongAttrType);
+      FBuildingState := mmsIgnoring;
+      exit;
+    end;
+
+    AA := FAttributeArrays[Attrib];
+    Last := AA.Count;
+    AA.Count := Last + 2 * AList.Count;
+    System.Move(AList.List^, AA.List[Last], AList.DataSize);
+    FVertexCount := AA.Count div 2;
   end;
 end;
 
