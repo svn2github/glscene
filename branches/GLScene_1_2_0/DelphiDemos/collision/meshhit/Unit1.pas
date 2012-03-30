@@ -68,7 +68,7 @@ uses
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   // Load mushroom mesh
-  FreeForm1.LoadFromFile('..\..\media\mushroom.3ds');
+  FreeForm1.LoadFromFile('..\..\..\media\mushroom.3ds');
 end;
 
 // Perform the raycasting for the perspective camera & viewer
