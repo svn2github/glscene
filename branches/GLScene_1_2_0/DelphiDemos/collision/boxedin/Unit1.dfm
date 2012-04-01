@@ -21,6 +21,7 @@ object Form1: TForm1
     Height = 482
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
+    Buffer.AntiAliasing = aa4x
     Buffer.ShadeModel = smFlat
     FieldOfView = 156.558380126953100000
     Align = alClient
@@ -146,7 +147,7 @@ object Form1: TForm1
     object Lines1: TGLLines
       LineColor.Color = {0000803F0000803F0000003F3333733F}
       LineWidth = 3.000000000000000000
-      LibMaterialName = 'LibMaterial5'
+      LibMaterialName = 'LibMaterial'
       Nodes = <>
       NodesAspect = lnaCube
       NodeSize = 10.000000000000000000
@@ -177,7 +178,11 @@ object Form1: TForm1
         Name = 'LineMaterial'
         Tag = 0
         FixedFunction.Enabled = True
-        FixedFunction.LineProperties.Enabled = False
+        FixedFunction.MaterialOptions = [moNoLighting]
+        FixedFunction.FrontProperties.Diffuse.Color = {9A99193FCDCC4C3FACC8483E0000803F}
+        FixedFunction.LineProperties.Enabled = True
+        FixedFunction.LineProperties.Smooth = True
+        FixedFunction.LineProperties.Width = 3.000000000000000000
         FixedFunction.Texture.Enabled = False
         Multitexturing.Enabled = False
         Multitexturing.Texture0.Enabled = False
