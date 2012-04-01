@@ -962,7 +962,7 @@ begin
       begin
         FBatch.Mesh.Lock;
         try
-          FBatch.Mesh.FlipFaces(True);
+          FBatch.Mesh.FlipFaces(True, True);
           ApplyExtras;
         finally
           FBatch.Mesh.UnLock;

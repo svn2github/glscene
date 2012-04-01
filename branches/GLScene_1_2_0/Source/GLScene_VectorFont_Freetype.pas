@@ -1532,7 +1532,7 @@ begin
     try
       zOffset := Vector3fMake(0, 0, ADepth);
       LMesh.Transform(CreateTranslationMatrix(zOffset));
-      FMesh.FlipFaces(False);
+      FMesh.FlipFaces(False, True);
       FMesh.Merge(LMesh);
       FMesh.BeginAssembly(mpTRIANGLES);
       for c := 0 to LVectoriser.ContourCount - 1 do

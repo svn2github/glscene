@@ -424,7 +424,6 @@ begin
          faceGroupList.Free;
       end;
    end;
-   DisableOpenGLArrays(mrci);
 end;
 
 // CleanupUnusedNodes

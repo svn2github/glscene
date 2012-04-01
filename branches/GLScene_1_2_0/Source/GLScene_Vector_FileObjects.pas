@@ -706,6 +706,7 @@ type
   private
     { Private Declarations }
     FOwner: TMeshObjectList;
+    FBatch: TDrawBatch;
     FTexCoords: TAffineVectorList; // provision for 3D textures
     FLightMapTexCoords: TAffineVectorList; // reserved for 2D surface needs
     FColors: TVectorList;
@@ -759,7 +760,7 @@ type
     procedure PrepareBuildList(var mrci: TRenderContextInfo); virtual;
     // : Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TRenderContextInfo); virtual;
-    procedure BuildMeshes(var ABatches: TDrawBatchArray); virtual;
+    procedure BuildMeshes; virtual;
 
     // : The extents of the object (min and max coordinates)
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
@@ -789,8 +790,8 @@ type
       buildTangents: Boolean = True);
 
     property Owner: TMeshObjectList read FOwner;
-    property mode: TMeshObjectMode read FMode write FMode;
-    property texCoords: TAffineVectorList read FTexCoords write SetTexCoords;
+    property Mode: TMeshObjectMode read FMode write FMode;
+    property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
     property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords
       write SetLightmapTexCoords;
     property Colors: TVectorList read FColors write SetColors;
@@ -851,7 +852,7 @@ type
     procedure PrepareBuildList(var mrci: TRenderContextInfo); virtual;
     // : Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TRenderContextInfo); virtual;
-    procedure BuildMeshes(var ABatches: TDrawBatchArray);
+    procedure BuildMeshes;
 
     procedure MorphTo(morphTargetIndex: Integer);
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
@@ -1049,6 +1050,7 @@ type
   protected
     { Protected Declarations }
     FOwner: TFaceGroups;
+    FBatch: TDrawBatch;
     FMaterialName: string;
     FMaterialCache: TGLLibMaterial;
     FLightMapIndex: Integer;
@@ -1068,7 +1070,7 @@ type
     procedure DropMaterialLibraryCache;
 
     procedure BuildList(var mrci: TRenderContextInfo); virtual; abstract;
-    procedure BuildMesh(var ABatch: TDrawBatch); virtual; abstract;
+    procedure BuildMesh; virtual; abstract;
 
     { : Add to the list the triangles corresponding to the facegroup.<p>
       This function is used by TMeshObjects ExtractTriangles to retrieve
@@ -1131,7 +1133,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
-    procedure BuildMesh(var ABatch: TDrawBatch); override;
+    procedure BuildMesh; override;
 
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
@@ -1177,7 +1179,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
-    procedure BuildMesh(var ABatch: TDrawBatch); override;
+    procedure BuildMesh; override;
 
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
@@ -1214,7 +1216,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
-    procedure BuildMesh(var ABatch: TDrawBatch); override;
+    procedure BuildMesh; override;
 
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
@@ -1336,9 +1338,9 @@ type
     procedure SetMeshExtras(const Value: TMeshExtras);
     function GetPickingMaterial: string;
     procedure SetPickingMaterial(const Value: string);
-  protected
+
+    procedure SetShowAABB(const Value: Boolean);  protected
     { Protected Declarations }
-    FBatches: TDrawBatchArray;
     FTransformation: TTransformationRec;
     FMeshExtras: TMeshExtras;
     FMeshObjects: TMeshObjectList; // a list of mesh objects
@@ -1375,11 +1377,10 @@ type
     procedure PrepareBuildList(var mrci: TRenderContextInfo); dynamic;
 
     procedure BuildMeshes;
-    procedure FreeBatches;
     procedure ApplyExtras;
     procedure DoShowAxes; override;
 
-    property ShowAABB: Boolean read FShowAABB write FShowAABB default False;
+    property ShowAABB: Boolean read FShowAABB write SetShowAABB default False;
     property MeshExtras: TMeshExtras read FMeshExtras write SetMeshExtras default [];
   public
     { Public Declarations }
@@ -3814,6 +3815,10 @@ begin
   FTexCoordsEx := TList.Create;
   FTangentsTexCoordIndex := 1;
   FBinormalsTexCoordIndex := 2;
+  FBatch.Mesh := TMeshAtom.Create;
+  if Assigned(FOwner) then
+    FBatch.Mesh.Owner := FOwner.Owner;
+  FBatch.Mesh.TagName := ClassName;
   inherited;
 end;
 
@@ -3833,6 +3838,10 @@ begin
   FTexCoordsEx.Free;
   if Assigned(FOwner) then
     FOwner.Remove(Self);
+  if Assigned(FBatch.Material) then
+    FBatch.Material.UnRegisterUser(FOwner.Owner);
+  FBatch.Mesh.Free;
+  FBatch.InstancesChain.Free;
   inherited;
 end;
 
@@ -4783,26 +4792,19 @@ begin
   end;
 end;
 
-procedure TMeshObject.BuildMeshes(var ABatches: TDrawBatchArray);
+procedure TMeshObject.BuildMeshes;
 var
-  i, k, groupID, nbGroups: Integer;
+  i: Integer;
   gotNormals, gotTexCoords, gotColor: Boolean;
   gotTexCoordsEx: array of Boolean;
-//  libMat: TGLLibMaterial;
-//  fg: TFaceGroup;
 begin
-  k := Length(ABatches);
-
   gotColor := (Vertices.Count = Colors.Count);
   case mode of
     momTriangles, momTriangleStrip:
       if Vertices.Count > 0 then
       begin
-        SetLength(ABatches, k+1);
-        ABatches[k].Mesh := TMeshAtom.Create;
-        ABatches[k].Mesh.TagName := Format('MeshObject%d', [k]);
-        ABatches[k].Material := Owner.Owner.FMaterial;
-        ABatches[k].Changed := True;
+        FBatch.Material := Owner.Owner.FMaterial;
+        FBatch.Changed := True;
 
         gotNormals := (Vertices.Count = Normals.Count);
         gotTexCoords := (Vertices.Count = TexCoords.Count);
@@ -4814,7 +4816,7 @@ begin
           gotTexCoords := False;
         end;
 
-        with ABatches[k].Mesh do
+        with FBatch.Mesh do
         begin
           Lock;
           try
@@ -4856,16 +4858,8 @@ begin
       end;
     momFaceGroups:
       begin
-        for i := 0 to FaceGroups.Count - 1 do
-        begin
-          SetLength(ABatches, k+1);
-          ABatches[k].Mesh := TMeshAtom.Create;
-          ABatches[k].Mesh.TagName := Format('FaceGroup%d', [k]);
-          ABatches[k].Material := FaceGroups[i].FMaterialCache;
-          FaceGroups[i].BuildMesh(ABatches[k]);
-          ABatches[k].Changed := True;
-          Inc(k);
-        end;
+        for i := FaceGroups.Count - 1 downto 0 do
+          FaceGroups[i].BuildMesh;
       end;
   end;
 end;
@@ -4959,12 +4953,12 @@ begin
         BuildList(mrci);
 end;
 
-procedure TMeshObjectList.BuildMeshes(var ABatches: TDrawBatchArray);
+procedure TMeshObjectList.BuildMeshes;
 var
   i: Integer;
 begin
-  for i := 0 to Count - 1 do
-    Items[i].BuildMeshes(ABatches);
+  for i := Count - 1 downto 0 do
+    Items[i].BuildMeshes;
 end;
 
 // MorphTo
@@ -5869,8 +5863,13 @@ begin
   FOwner := aOwner;
   FLightMapIndex := -1;
   Create;
+  FBatch.Mesh := TMeshAtom.Create;
+  FBatch.Mesh.TagName := ClassName;
   if Assigned(FOwner) then
+  begin
     FOwner.Add(Self);
+    FBatch.Mesh.Owner := FOwner.Owner.Owner.Owner;
+  end;
 end;
 
 // Destroy
@@ -5878,6 +5877,8 @@ end;
 
 destructor TFaceGroup.Destroy;
 begin
+  FBatch.Mesh.Free;
+  FBatch.InstancesChain.Free;
   if Assigned(FOwner) then
     FOwner.Remove(Self);
   inherited;
@@ -6101,7 +6102,7 @@ begin
       GL_UNSIGNED_INT, vertexIndices.list);
 end;
 
-procedure TFGVertexIndexList.BuildMesh(var ABatch: TDrawBatch);
+procedure TFGVertexIndexList.BuildMesh;
 var
   mo: TMeshObject;
   gotNormals, gotTexCoords, gotColor: Boolean;
@@ -6123,7 +6124,7 @@ begin
       gotTexCoords := False;
     end;
 
-    with ABatch.Mesh do
+    with FBatch.Mesh do
     begin
       Lock;
       try
@@ -6134,7 +6135,7 @@ begin
         if gotNormals then
           DeclareAttribute(attrNormal, GLSLType3f);
         if gotTexCoords then
-          DeclareAttribute(attrTexCoord0, GLSLType2f)
+          DeclareAttribute(attrTexCoord0, GLSLType3f)
         else
           for i := 0 to mo.FTexCoordsEx.Count - 1 do
             if gotTexCoordsEx[i] then
@@ -6511,7 +6512,7 @@ begin
   GL.End_;
 end;
 
-procedure TFGVertexNormalTexIndexList.BuildMesh(var ABatch: TDrawBatch);
+procedure TFGVertexNormalTexIndexList.BuildMesh;
 var
   mo: TMeshObject;
   gotNormals, gotTexCoords, gotColor: Boolean;
@@ -6556,7 +6557,7 @@ begin
       gotTexCoords := False;
     end;
 
-    with ABatch.Mesh do
+    with FBatch.Mesh do
     begin
       Lock;
       try
@@ -6753,7 +6754,7 @@ begin
   GL.CheckError;
 end;
 
-procedure TFGIndexTexCoordList.BuildMesh(var ABatch: TDrawBatch);
+procedure TFGIndexTexCoordList.BuildMesh;
 var
   mo: TMeshObject;
   gotNormals, gotTexCoords, gotColor: Boolean;
@@ -6775,7 +6776,7 @@ begin
       gotTexCoords := False;
     end;
 
-    with ABatch.Mesh do
+    with FBatch.Mesh do
     begin
       Lock;
       try
@@ -7135,7 +7136,6 @@ end;
 
 destructor TGLBaseMesh.Destroy;
 begin
-  FreeBatches;
   FConnectivity.Free;
   DropMaterialLibraryCache;
   FSkeleton.Free;
@@ -7150,7 +7150,7 @@ end;
 procedure TGLBaseMesh.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 var
-  I: Integer;
+  I, J: Integer;
 begin
   if ocStructure in Changes then
   begin
@@ -7160,8 +7160,21 @@ begin
   if ARenderSelf then
   begin
     FTransformation := ARci.PipelineTransformation.StackTop;
-    for I := High(FBatches) downto 0 do
-      ARci.drawList.Add(@FBatches[I]);
+    for I := MeshObjects.Count - 1 downto 0 do
+    begin
+      with MeshObjects[I] do
+      begin
+        if Visible then
+        begin
+          case Mode of
+            momTriangles, momTriangleStrip: ARci.drawList.Add(@FBatch);
+            momFaceGroups:
+            for J := FaceGroups.Count - 1 downto 0 do
+              ARci.drawList.Add(@FaceGroups[J].FBatch);
+          end;
+        end;
+      end;
+    end;
   end;
 
   if ARenderChildren then
@@ -7170,10 +7183,17 @@ end;
 
 procedure TGLBaseMesh.DoShowAxes;
 var
-  I: Integer;
+  I, J: Integer;
 begin
-  for I := High(FBatches) downto 0 do
-    FBatches[I].ShowAxes := ShowAxes;
+  for I := MeshObjects.Count - 1 downto 0 do
+  begin
+    with MeshObjects[I] do
+    begin
+      FBatch.ShowAxes := ShowAxes;
+      for J := FaceGroups.Count - 1 downto 0 do
+        FaceGroups[J].FBatch.ShowAxes := ShowAxes
+      end;
+  end;
 end;
 
 // Assign
@@ -7345,32 +7365,56 @@ end;
 
 procedure TGLBaseMesh.ApplyExtras;
 var
-  I: Integer;
-begin
-  for I := high(FBatches) downto 0 do
-  with FBatches[I].Mesh do
+  I, J: Integer;
+  LBatch: PDrawBatch;
+
+  procedure DoApplyExtras;
   begin
-    try
-      Lock;
-      if FFaceWinding = mnoInvert then
-        FlipFaces(False, False);
+    with LBatch.Mesh do
+    begin
+      try
+        Lock;
+        if FFaceWinding = mnoInvert then
+          FlipFaces(False, False);
 
-      if mesTangents in FMeshExtras then
-      begin
-        if not Attributes[attrTangent] then
-          ComputeTangents;
-      end
-      else
-      begin
-        Attributes[attrTangent] := False;
-        Attributes[attrBinormal] := False;
-        Validate;
+        if mesTangents in FMeshExtras then
+        begin
+          if not Attributes[attrTangent] then
+            ComputeTangents;
+        end
+        else
+        begin
+          Attributes[attrTangent] := False;
+          Attributes[attrBinormal] := False;
+          Validate;
+        end;
+
+        if not (osStreamDraw in ObjectStyle) then
+          WeldVertices;
+      finally
+        UnLock;
       end;
+    end;
+  end;
 
-      if not (osStreamDraw in ObjectStyle) then
-        WeldVertices;
-    finally
-      UnLock;
+begin
+  for I := MeshObjects.Count - 1 downto 0 do
+  begin
+    with MeshObjects[I] do
+    begin
+      case Mode of
+        momTriangles, momTriangleStrip:
+        begin
+          LBatch := @FBatch;
+          DoApplyExtras;
+        end;
+        momFaceGroups:
+        for J := FaceGroups.Count - 1 downto 0 do
+        begin
+          LBatch := @FaceGroups[J].FBatch;
+          DoApplyExtras;
+        end;
+      end; // of case
     end;
   end;
 end;
@@ -7382,14 +7426,33 @@ procedure TGLBaseMesh.GetExtents(out min, max: TAffineVector);
 const
   cZeroAABB: TAABB = (min: (0, 0, 0); max: (0, 0, 0); revision: 0);
 var
-  i: Integer;
+  I, J: Integer;
   sAABB, lAABB: TAABB;
 begin
-  sAABB := cZeroAABB;
-  for i := high(FBatches) downto 0 do
+  if ocStructure in Changes then
   begin
-    lAABB := FBatches[I].Mesh.AABB;
-    AddAABB(sAABB, lAABB);
+    BuildMeshes;
+  end;
+
+  sAABB := cZeroAABB;
+  for I := MeshObjects.Count - 1 downto 0 do
+  begin
+    with MeshObjects[I] do
+    begin
+      case Mode of
+        momTriangles, momTriangleStrip:
+        begin
+          lAABB := FBatch.Mesh.AABB;
+          AddAABB(sAABB, lAABB);
+        end;
+        momFaceGroups:
+        for J := FaceGroups.Count - 1 downto 0 do
+        begin
+          lAABB := FaceGroups[J].FBatch.Mesh.AABB;
+          AddAABB(sAABB, lAABB);
+        end;
+      end; // of case
+    end;
   end;
   min := sAABB.min;
   max := sAABB.max;
@@ -7497,6 +7560,11 @@ end;
 procedure TGLBaseMesh.SetPickingMaterial(const Value: string);
 begin
 
+end;
+
+procedure TGLBaseMesh.SetShowAABB(const Value: Boolean);
+begin
+  FShowAABB := Value;
 end;
 
 // AutoScaling
@@ -7646,17 +7714,6 @@ begin
   end;
 end;
 
-procedure TGLBaseMesh.FreeBatches;
-var
-  I: Integer;
-begin
-  for I := High(FBatches) downto 0 do
-    FBatches[I].Mesh.Free;
-  if Length(FBatches) > 0 then
-    FBatches[0].InstancesChain.Free;
-  SetLength(FBatches, 0);
-end;
-
 // PrepareBuildList
 //
 
@@ -7706,20 +7763,14 @@ end;
 function TGLBaseMesh.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector; intersectNormal: PVector): Boolean;
 var
-  I: Integer;
+  I, J: Integer;
   locRayStart, locRayVector, locPoint, locNormal: TVector;
   d, minD: Single;
-begin
-  if ocStructure in Changes then
-    BuildMeshes;
+  LBatch: PDrawBatch;
 
-  SetVector(locRayStart, AbsoluteToLocal(rayStart));
-  SetVector(locRayVector, AbsoluteToLocal(rayVector));
-  minD := -1;
-
-  for I := high(FBatches) downto 0 do
+  procedure DoIntersect;
   begin
-    with FBatches[I].Mesh do
+    with LBatch.Mesh do
     begin
       Lock;
       try
@@ -7738,6 +7789,34 @@ begin
       finally
         UnLock;
       end;
+    end;
+  end;
+
+begin
+  if ocStructure in Changes then
+    BuildMeshes;
+
+  SetVector(locRayStart, AbsoluteToLocal(rayStart));
+  SetVector(locRayVector, AbsoluteToLocal(rayVector));
+  minD := -1;
+
+  for I := MeshObjects.Count - 1 downto 0 do
+  begin
+    with MeshObjects[I] do
+    begin
+      case Mode of
+        momTriangles, momTriangleStrip:
+        begin
+          LBatch := @FBatch;
+          DoIntersect;
+        end;
+        momFaceGroups:
+        for J := FaceGroups.Count - 1 downto 0 do
+        begin
+          LBatch := @FaceGroups[J].FBatch;
+          DoIntersect;
+        end;
+      end; // of case
     end;
   end;
 
@@ -7780,16 +7859,31 @@ end;
 
 procedure TGLBaseMesh.BuildMeshes;
 var
-  I: Integer;
+  I, J: Integer;
 begin
-  FreeBatches;
-  FMeshObjects.BuildMeshes(FBatches);
-  for I := High(FBatches) downto 0 do
+  FMeshObjects.BuildMeshes;
+
+  for I := MeshObjects.Count - 1 downto 0 do
   begin
-    if FBatches[I].Material = nil then
-      FBatches[I].Material := FMaterial;
-    FBatches[I].Transformation := @FTransformation;
+    with MeshObjects[I] do
+    begin
+      case Mode of
+        momTriangles, momTriangleStrip:
+        begin
+          FBatch.Transformation := @FTransformation;
+          FBatch.Material := FMaterial;
+        end;
+        momFaceGroups:
+        for J := FaceGroups.Count - 1 downto 0 do
+        begin
+          FaceGroups[J].FBatch.Transformation := @FTransformation;;
+          if FaceGroups[J].FBatch.Material = nil then
+            FaceGroups[J].FBatch.Material := FMaterial;
+        end;
+      end; // of case
+    end;
   end;
+
   ApplyExtras;
 
   ClearStructureChanged;

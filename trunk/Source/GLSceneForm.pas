@@ -44,6 +44,13 @@ uses
   GLCrossPlatform,
   GLScreen;
 
+{$IFDEF GLS_DELPHI_OR_CPPB}
+const
+  lcl_major = 0;
+  lcl_minor = 0;
+  lcl_release = 0;
+{$ENDIF}
+
 type
 
   TGLSceneForm = class;
@@ -123,7 +130,9 @@ type
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
     procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
     procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
+{$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
     procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
+{$IFEND}
 {$ENDIF}
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
@@ -417,6 +426,7 @@ begin
   inherited;
 end;
 
+{$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
 procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
 begin
   if not (csDesigning in ComponentState)
@@ -427,6 +437,7 @@ begin
     end;
   inherited;
 end;
+{$IFEND}
 
 {$ENDIF FPC}
 

@@ -2245,8 +2245,13 @@ begin
     FTextureOverride := TGLLibMaterial(Source).FTextureOverride;
     FTexture2Name := TGLLibMaterial(Source).Texture2Name;
     FShader := TGLLibMaterial(Source).Shader;
-  end;
-  inherited;
+  end
+  else if Source is TGLMaterial then
+  begin
+    FMaterial.Assign(TGLMaterial(Source));
+  end
+  else
+    inherited; // Assign error
 end;
 
 function TGLLibMaterial.Blended: Boolean;
