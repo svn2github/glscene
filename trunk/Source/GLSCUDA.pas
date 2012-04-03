@@ -1485,7 +1485,7 @@ begin
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector3f));
   if FStatus <> CUDA_SUCCESS then
     Abort;
-  Inc(ParamOffset, SizeOf(TVector3f));
+  Inc(ParamOffset, SizeOf(TVector4f));
 end;
 
 procedure TCUDAFunction.SetParam(Value: TVector4f);
@@ -2044,9 +2044,9 @@ begin
         ctUInt8, ctInt8:
           FStatus := cuMemsetD8(Ptr, Byte(Value), DataSize);
         ctUInt16, ctInt16, ctHalfFloat:
-          FStatus := cuMemsetD16(Ptr, Word(Value), DataSize);
+          FStatus := cuMemsetD16(Ptr, Word(Value), DataSize div SizeOf(Word));
         ctUInt32, ctInt32, ctFloat:
-          FStatus := cuMemsetD32(Ptr, DWord(Value), DataSize);
+          FStatus := cuMemsetD32(Ptr, DWord(Value), DataSize div SizeOf(DWord));
       end;
     end
     // 2D memory set
