@@ -42,7 +42,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_CurvesAndSurfaces,
   GLScene_Base_Vector_Geometry,
   GLScene_Base_Vector_Lists,

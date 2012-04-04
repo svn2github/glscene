@@ -1,92 +1,95 @@
-{: GLVerletSkeletonColliders<p>
+{ : GLVerletSkeletonColliders<p>
 
-   Skeleton colliders for defining and controlling verlet
-   constraints.<p>
+  Skeleton colliders for defining and controlling verlet
+  constraints.<p>
 
-   <b>History :</b><font size=-1><ul>
-     <li>11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
-     <li>08/10/03 - SG - Creation.
-   </ul></font>
+  <b>History :</b><font size=-1><ul>
+  <li>11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
+  <li>08/10/03 - SG - Creation.
+  </ul></font>
 }
 unit GLScene_Verlet_SkeletonColliders;
 
 interface
 
 uses
-  Classes, GLScene_Base_PersistentClasses, GLScene_Base_Vector_Geometry, GLScene_Vector_FileObjects,
+  Classes,
+  GLScene_Base_PersistentClasses,
+  GLScene_Base_Vector_Geometry,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Verlet_Classes;
 
 type
-  
+
   // TSCVerletBase
   //
-  {: Base verlet skeleton collider class. }
+  { : Base verlet skeleton collider class. }
   TSCVerletBase = class(TSkeletonCollider)
-    private
-      FVerletConstraint : TVerletConstraint;
+  private
+    FVerletConstraint: TVerletConstraint;
 
-    public
-      procedure WriteToFiler(writer : TVirtualWriter); override;
-      procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); virtual;
+  public
+    procedure WriteToFiler(writer: TVirtualWriter); override;
+    procedure ReadFromFiler(reader: TVirtualReader); override;
+    procedure AddToVerletWorld(VerletWorld: TVerletWorld); virtual;
 
-      {: The verlet constraint is created through the AddToVerletWorld
-         procedure. }
-      property VerletConstraint : TVerletConstraint read FVerletConstraint;
+    { : The verlet constraint is created through the AddToVerletWorld
+      procedure. }
+    property VerletConstraint: TVerletConstraint read FVerletConstraint;
   end;
 
   // TSCVerletSphere
   //
-  {: Sphere shaped verlet constraint in a skeleton collider. }
+  { : Sphere shaped verlet constraint in a skeleton collider. }
   TSCVerletSphere = class(TSCVerletBase)
-    private
-      FRadius : Single;
+  private
+    FRadius: Single;
 
-    protected
-      procedure SetRadius(const val : Single);
+  protected
+    procedure SetRadius(const val: Single);
 
-    public
-      constructor Create; override;
-      procedure WriteToFiler(writer : TVirtualWriter); override;
-      procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); override;
-      procedure AlignCollider; override;
+  public
+    constructor Create; override;
+    procedure WriteToFiler(writer: TVirtualWriter); override;
+    procedure ReadFromFiler(reader: TVirtualReader); override;
+    procedure AddToVerletWorld(VerletWorld: TVerletWorld); override;
+    procedure AlignCollider; override;
 
-      property Radius : Single read FRadius write SetRadius;
+    property Radius: Single read FRadius write SetRadius;
   end;
 
   // TSCVerletCapsule
   //
-  {: Capsule shaped verlet constraint in a skeleton collider. }
+  { : Capsule shaped verlet constraint in a skeleton collider. }
   TSCVerletCapsule = class(TSCVerletBase)
-    private
-      FRadius,
-      FLength : Single;
+  private
+    FRadius, FLength: Single;
 
-    protected
-      procedure SetRadius(const val : Single);
-      procedure SetLength(const val : Single);
+  protected
+    procedure SetRadius(const val: Single);
+    procedure SetLength(const val: Single);
 
-    public
-      constructor Create; override;
-      procedure WriteToFiler(writer : TVirtualWriter); override;
-      procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); override;
-      procedure AlignCollider; override;
+  public
+    constructor Create; override;
+    procedure WriteToFiler(writer: TVirtualWriter); override;
+    procedure ReadFromFiler(reader: TVirtualReader); override;
+    procedure AddToVerletWorld(VerletWorld: TVerletWorld); override;
+    procedure AlignCollider; override;
 
-      property Radius : Single read FRadius write SetRadius;
-      property Length : Single read FLength write SetLength;
+    property Radius: Single read FRadius write SetRadius;
+    property Length: Single read FLength write SetLength;
   end;
 
-{: After loading call this function to add all the constraints in a
-   skeleton collider list to a given verlet world. }
-procedure AddSCVerletConstriantsToVerletWorld(
-  colliders : TSkeletonColliderList; world : TVerletWorld);
+  { : After loading call this function to add all the constraints in a
+    skeleton collider list to a given verlet world. }
+procedure AddSCVerletConstriantsToVerletWorld(colliders: TSkeletonColliderList;
+  world: TVerletWorld);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -98,12 +101,12 @@ uses
 
 // AddSCVerletConstriantsToVerletWorld
 //
-procedure AddSCVerletConstriantsToVerletWorld(
-  colliders : TSkeletonColliderList; world : TVerletWorld);
+procedure AddSCVerletConstriantsToVerletWorld(colliders: TSkeletonColliderList;
+  world: TVerletWorld);
 var
-  i : Integer;
+  i: Integer;
 begin
-  for i:=0 to colliders.Count-1 do
+  for i := 0 to colliders.Count - 1 do
     if colliders[i] is TSCVerletBase then
       TSCVerletBase(colliders[i]).AddToVerletWorld(world);
 end;
@@ -114,30 +117,33 @@ end;
 
 // WriteToFiler
 //
-procedure TSCVerletBase.WriteToFiler(writer : TVirtualWriter);
+procedure TSCVerletBase.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive Version 0
   end;
 end;
 
 // ReadFromFiler
 //
-procedure TSCVerletBase.ReadFromFiler(reader : TVirtualReader);
+procedure TSCVerletBase.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion : integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
-  archiveVersion:=reader.ReadInteger;
-  if archiveVersion=0 then with reader do
-    // Nothing yet
-  else RaiseFilerException(archiveVersion);
+  archiveVersion := reader.ReadInteger;
+  if archiveVersion = 0 then
+    with reader do
+      // Nothing yet
+    else
+      RaiseFilerException(archiveVersion);
 end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletBase.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletBase.AddToVerletWorld(VerletWorld: TVerletWorld);
 begin
   AlignCollider;
 end;
@@ -152,16 +158,17 @@ end;
 constructor TSCVerletSphere.Create;
 begin
   inherited;
-  Radius:=0.5;
+  Radius := 0.5;
   AlignCollider;
 end;
 
 // WriteToFiler
 //
-procedure TSCVerletSphere.WriteToFiler(writer : TVirtualWriter);
+procedure TSCVerletSphere.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive Version 0
     WriteFloat(FRadius);
   end;
@@ -169,23 +176,25 @@ end;
 
 // ReadFromFiler
 //
-procedure TSCVerletSphere.ReadFromFiler(reader : TVirtualReader);
+procedure TSCVerletSphere.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion : integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
-  archiveVersion:=reader.ReadInteger;
-  if archiveVersion=0 then with reader do
-    Radius:=ReadFloat
-  else RaiseFilerException(archiveVersion);
+  archiveVersion := reader.ReadInteger;
+  if archiveVersion = 0 then
+    with reader do
+      Radius := ReadFloat
+  else
+    RaiseFilerException(archiveVersion);
 end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletSphere.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletSphere.AddToVerletWorld(VerletWorld: TVerletWorld);
 begin
-  FVerletConstraint:=TVCSphere.Create(VerletWorld);
-  TVCSphere(FVerletConstraint).Radius:=FRadius;
+  FVerletConstraint := TVCSphere.Create(VerletWorld);
+  TVCSphere(FVerletConstraint).Radius := FRadius;
   inherited;
 end;
 
@@ -195,17 +204,18 @@ procedure TSCVerletSphere.AlignCollider;
 begin
   inherited;
   if Assigned(FVerletConstraint) then
-    TVCSphere(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix[3]);
+    TVCSphere(FVerletConstraint).Location := AffineVectorMake(GlobalMatrix[3]);
 end;
 
 // SetRadius
 //
-procedure TSCVerletSphere.SetRadius(const val : Single);
+procedure TSCVerletSphere.SetRadius(const val: Single);
 begin
-  if val<>FRadius then begin
-    FRadius:=val;
+  if val <> FRadius then
+  begin
+    FRadius := val;
     if Assigned(FVerletConstraint) then
-      TVCSphere(FVerletConstraint).Radius:=FRadius;
+      TVCSphere(FVerletConstraint).Radius := FRadius;
   end;
 end;
 
@@ -219,17 +229,18 @@ end;
 constructor TSCVerletCapsule.Create;
 begin
   inherited;
-  Radius:=0.5;
-  Length:=1;
+  Radius := 0.5;
+  Length := 1;
   AlignCollider;
 end;
 
 // WriteToFiler
 //
-procedure TSCVerletCapsule.WriteToFiler(writer : TVirtualWriter);
+procedure TSCVerletCapsule.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
-  with writer do begin
+  with writer do
+  begin
     WriteInteger(0); // Archive Version 0
     WriteFloat(FRadius);
     WriteFloat(FLength);
@@ -238,25 +249,29 @@ end;
 
 // ReadFromFiler
 //
-procedure TSCVerletCapsule.ReadFromFiler(reader : TVirtualReader);
+procedure TSCVerletCapsule.ReadFromFiler(reader: TVirtualReader);
 var
-  archiveVersion : integer;
+  archiveVersion: Integer;
 begin
   inherited ReadFromFiler(reader);
-  archiveVersion:=reader.ReadInteger;
-  if archiveVersion=0 then with reader do begin
-    Radius:=ReadFloat;
-    Length:=ReadFloat;
-  end else RaiseFilerException(archiveVersion);
+  archiveVersion := reader.ReadInteger;
+  if archiveVersion = 0 then
+    with reader do
+    begin
+      Radius := ReadFloat;
+      Length := ReadFloat;
+    end
+  else
+    RaiseFilerException(archiveVersion);
 end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletCapsule.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletCapsule.AddToVerletWorld(VerletWorld: TVerletWorld);
 begin
-  FVerletConstraint:=TVCCapsule.Create(VerletWorld);
-  TVCCapsule(FVerletConstraint).Radius:=FRadius;
-  TVCCapsule(FVerletConstraint).Length:=FLength;
+  FVerletConstraint := TVCCapsule.Create(VerletWorld);
+  TVCCapsule(FVerletConstraint).Radius := FRadius;
+  TVCCapsule(FVerletConstraint).Length := FLength;
   inherited;
 end;
 
@@ -265,31 +280,34 @@ end;
 procedure TSCVerletCapsule.AlignCollider;
 begin
   inherited;
-  if Assigned(FVerletConstraint) then begin
-    TVCCapsule(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix[3]);
-    TVCCapsule(FVerletConstraint).Axis:=AffineVectorMake(GlobalMatrix[1]);
+  if Assigned(FVerletConstraint) then
+  begin
+    TVCCapsule(FVerletConstraint).Location := AffineVectorMake(GlobalMatrix[3]);
+    TVCCapsule(FVerletConstraint).Axis := AffineVectorMake(GlobalMatrix[1]);
   end;
 end;
 
 // SetRadius
 //
-procedure TSCVerletCapsule.SetRadius(const val : Single);
+procedure TSCVerletCapsule.SetRadius(const val: Single);
 begin
-  if val<>FRadius then begin
-    FRadius:=val;
+  if val <> FRadius then
+  begin
+    FRadius := val;
     if Assigned(FVerletConstraint) then
-      TVCCapsule(FVerletConstraint).Radius:=FRadius;
+      TVCCapsule(FVerletConstraint).Radius := FRadius;
   end;
 end;
 
 // SetLength
 //
-procedure TSCVerletCapsule.SetLength(const val : Single);
+procedure TSCVerletCapsule.SetLength(const val: Single);
 begin
-  if val<>FLength then begin
-    FLength:=val;
+  if val <> FLength then
+  begin
+    FLength := val;
     if Assigned(FVerletConstraint) then
-      TVCCapsule(FVerletConstraint).Length:=FLength;
+      TVCCapsule(FVerletConstraint).Length := FLength;
   end;
 end;
 
@@ -297,10 +315,11 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterClasses([TSCVerletBase,TSCVerletSphere,TSCVerletCapsule]);
+RegisterClasses([TSCVerletBase, TSCVerletSphere, TSCVerletCapsule]);
 
 end.

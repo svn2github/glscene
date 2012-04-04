@@ -63,7 +63,7 @@ uses
   GLScene_Core,
   GLScene_Base_Vector_Geometry,
   GLScene_Texture,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Strings,
   GLScene_Base_Context_Info,
   GLScene_Base_Classes,

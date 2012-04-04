@@ -18,7 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLScene_Vector_FileObjects, GLScene_Base_FileIO, GLScene_Files_MD2_Base, GLScene_Files_MD2_Types;
+  Classes, SysUtils, GLScene_Objects_VectorFile, GLScene_Base_FileIO, GLScene_Files_MD2_Base, GLScene_Files_MD2_Types;
 
 type
    // TGLPLYVectorFile

@@ -276,6 +276,8 @@ type
     procedure LineSegmentation;
     {: Make additional element buffer with triangle adjacency (. }
     procedure MakeAdjacencyElements;
+    {: Return sum of vertices position and number. }
+    procedure GetPositionSum(out ASum: TAffineVector; out aN: Integer);
     {: Compute triangle's normals. }
     procedure ComputeNormals(ASmooth: Boolean = True);
     {: Compute triangle's texture coordinate of 0 channel. }
@@ -2625,6 +2627,25 @@ begin
     end;
   end;
   FAdjacencyElements.Revision := FElements.Revision;
+end;
+
+procedure TMeshAtom.GetPositionSum(out ASum: TAffineVector; out aN: Integer);
+var
+  Positions: I4ByteListToVectorList;
+  N: Integer;
+begin
+  ASum := NullVector;
+  AN := 0;
+  if not FAttributes[attrPosition] then
+    exit; // Nothing todo
+
+  Positions :=
+    T4ByteListToVectorList.Create(FAttributeArrays[attrPosition],
+    FType[attrPosition]);
+
+  for N := Positions.Count - 1 downto 0 do
+    AddVector(ASum, Positions[N]);
+  AN :=  Positions.Count;
 end;
 
 procedure TMeshAtom.ComputeNormals(ASmooth: Boolean);

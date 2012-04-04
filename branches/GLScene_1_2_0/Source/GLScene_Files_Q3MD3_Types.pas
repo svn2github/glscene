@@ -17,7 +17,7 @@ unit GLScene_Files_Q3MD3_Types;
 interface
 
 uses
-  Classes,SysUtils,GLScene_Base_FileIO,GLScene_Base_Vector_Geometry,GLScene_Vector_FileObjects,
+  Classes,SysUtils,GLScene_Base_FileIO,GLScene_Base_Vector_Geometry,GLScene_Objects_VectorFile,
   GLScene_Base_Vector_Lists,GLScene_Material,GLScene_Files_MD3_Base;
 
 type
@@ -164,6 +164,7 @@ var
   temp         : TStrings;
   i,j          : integer;
   libmat       : TGLLibMaterial;
+  MatLibrary   : TGLMaterialLibrary;
   mesh         : TMeshObject;
   texture,
   textureNoDir : string;
@@ -197,11 +198,12 @@ begin
   for i:=0 to temp.Count-1 do begin
     SkinStrings.CommaText:=temp.Strings[i];
     if SkinStrings.Count>1 then begin
-      libmat:=Actor.MaterialLibrary.Materials.GetLibMaterialByName(SkinStrings.Strings[1]);
+      MatLibrary := TGLMaterialLibrary(Actor.MaterialLibrary);
+      libmat := MatLibrary.Materials.GetLibMaterialByName(SkinStrings.Strings[1]);
       meshFound:=GetMeshObjectByName(Actor.MeshObjects,SkinStrings.Strings[0],mesh);
       if meshFound then begin
         if not Assigned(libmat) then begin
-          libmat:=Actor.MaterialLibrary.Materials.Add;
+          libmat:=MatLibrary.Materials.Add;
           libmat.Name:=SkinStrings.Strings[1];
 
           // Search for the texture file

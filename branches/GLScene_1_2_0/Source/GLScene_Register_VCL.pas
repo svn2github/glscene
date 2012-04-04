@@ -612,7 +612,7 @@ uses
   GLScene_Objects_Tree,
   GLScene_Shader_User,
   GLScene_Utils,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_VfsPAK,
   GLScene_Viewer,
   GLScene_Objects_WaterPlane,
@@ -2049,10 +2049,10 @@ begin
     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
       TypeInfo(TActorAnimationReference), TypeInfo(TGLActor)]);
   RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TMeshNormalsOrientation)]);
+    [TypeInfo(TMeshFaceWinding)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TMeshAutoCenterings), TypeInfo(TActorAnimationReference),
-    TypeInfo(TMeshNormalsOrientation)]);
+    TypeInfo(TMeshFaceWinding)]);
   // TGLFreeForm
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
     ['UseMeshmaterials']);

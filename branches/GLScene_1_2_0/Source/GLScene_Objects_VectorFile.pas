@@ -184,7 +184,7 @@
   fixed class registrations and formats unregistration
   </ul></font>
 }
-unit GLScene_Vector_FileObjects;
+unit GLScene_Objects_VectorFile;
 
 interface
 

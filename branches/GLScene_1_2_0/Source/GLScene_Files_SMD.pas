@@ -22,7 +22,7 @@ interface
 uses
   Classes,
   SysUtils,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Texture,
   GLScene_Base_FileIO,
   GLScene_Base_Vector_Types,
@@ -80,7 +80,7 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream: TStream);
   begin
     if Owner is TGLBaseMesh then
     begin
-      matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+      matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
       if Assigned(matLib) then
       begin
         if matLib.Materials.GetLibMaterialByName(name) = nil then

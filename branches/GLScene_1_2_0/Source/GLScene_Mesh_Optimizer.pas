@@ -1,189 +1,220 @@
 // GLMeshOptimizer
-{: Mesh optimization for GLScene.<p>
+{ : Mesh optimization for GLScene.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
-      <li>21/08/03 - EG - Added basic mooStandardize support
-      <li>03/06/03 - EG - Creation
-	</ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
+  <li>21/08/03 - EG - Added basic mooStandardize support
+  <li>03/06/03 - EG - Creation
+  </ul></font>
 }
 unit GLScene_Mesh_Optimizer;
 
 interface
 
-uses Classes,Sysutils,GLScene_Base_Vector_Geometry, GLScene_Vector_FileObjects;
+uses
+  Classes,
+  Sysutils,
+  GLScene_Base_Vector_Geometry,
+  GLScene_Objects_VectorFile;
 
 type
 
-   // TMeshOptimizerOptions
-   //
-   TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
-                           mooMergeObjects);
-   TMeshOptimizerOptions = set of TMeshOptimizerOption;
+  // TMeshOptimizerOptions
+  //
+  TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
+    mooMergeObjects);
+  TMeshOptimizerOptions = set of TMeshOptimizerOption;
 
 var
-   vDefaultMeshOptimizerOptions : TMeshOptimizerOptions =
-      [mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects];
+  vDefaultMeshOptimizerOptions: TMeshOptimizerOptions = [mooStandardize,
+    mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
-procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aList : TMeshObjectList); overload;
-procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aMeshObject : TMeshObject); overload;
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
-
+procedure OptimizeMesh(aList: TMeshObjectList;
+  options: TMeshOptimizerOptions); overload;
+procedure OptimizeMesh(aList: TMeshObjectList); overload;
+procedure OptimizeMesh(aMeshObject: TMeshObject;
+  options: TMeshOptimizerOptions); overload;
+procedure OptimizeMesh(aMeshObject: TMeshObject); overload;
+procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single = 0.0000001;
+  aThreshold: Single = 35.0; InvertNormals: boolean = false);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLScene_Base_PersistentClasses, GLScene_Base_Vector_Lists, GLScene_Mesh_Utils;
+uses
+  GLScene_Base_PersistentClasses,
+  GLScene_Base_Vector_Lists,
+  GLScene_Mesh_Utils;
 
 // OptimizeMesh (list, default options)
 //
-procedure OptimizeMesh(aList : TMeshObjectList);
+procedure OptimizeMesh(aList: TMeshObjectList);
 begin
-   OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
+  OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (list, with options)
 //
-procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions);
+procedure OptimizeMesh(aList: TMeshObjectList; options: TMeshOptimizerOptions);
 var
-   i, k : Integer;
-   mob, mo : TMeshObject;
-   fg : TFaceGroup;
-   fgvi : TFGVertexIndexList;
+  i, k: Integer;
+  mob, mo: TMeshObject;
+  fg: TFaceGroup;
+  fgvi: TFGVertexIndexList;
 begin
-   // optimize all mesh objects
-   for i:=0 to aList.Count-1 do begin
-      OptimizeMesh(aList[i], options);
-   end;
-   if (mooStandardize in options) then begin
-      // drop mesh objects that have become empty
-      for i:=aList.Count-1 downto 0 do begin
-         if (aList[i].Mode=momFaceGroups) and (aList[i].FaceGroups.Count=0) then
-            aList[i].Free;
+  // optimize all mesh objects
+  for i := 0 to aList.Count - 1 do
+  begin
+    OptimizeMesh(aList[i], options);
+  end;
+  if (mooStandardize in options) then
+  begin
+    // drop mesh objects that have become empty
+    for i := aList.Count - 1 downto 0 do
+    begin
+      if (aList[i].Mode = momFaceGroups) and
+        (aList[i].FaceGroups.Count = 0) then
+        aList[i].Free;
+    end;
+  end;
+  if (aList.Count > 0) and (mooMergeObjects in options) then
+  begin
+    mob := aList[0];
+    Assert(mob.Mode = momFaceGroups);
+    for i := 1 to aList.Count - 1 do
+    begin
+      mo := aList[i];
+      Assert(mo.Mode = momFaceGroups);
+      k := mob.Vertices.Count;
+      mob.Vertices.Add(mo.Vertices);
+      mob.Normals.Add(mo.Normals);
+      mob.TexCoords.Add(mo.TexCoords);
+      while mo.FaceGroups.Count > 0 do
+      begin
+        fg := mo.FaceGroups[0];
+        fgvi := (fg as TFGVertexIndexList);
+        fgvi.Owner := mob.FaceGroups;
+        mob.FaceGroups.Add(fgvi);
+        mo.FaceGroups.Delete(0);
+        fgvi.VertexIndices.Offset(k);
       end;
-   end;
-   if (aList.Count>0) and (mooMergeObjects in options) then begin
-      mob:=aList[0];
-      Assert(mob.Mode=momFaceGroups);
-      for i:=1 to aList.Count-1 do begin
-         mo:=aList[i];
-         Assert(mo.Mode=momFaceGroups);
-         k:=mob.Vertices.Count;
-         mob.Vertices.Add(mo.Vertices);
-         mob.Normals.Add(mo.Normals);
-         mob.TexCoords.Add(mo.TexCoords);
-         while mo.FaceGroups.Count>0 do begin
-            fg:=mo.FaceGroups[0];
-            fgvi:=(fg as TFGVertexIndexList);
-            fgvi.Owner:=mob.FaceGroups;
-            mob.FaceGroups.Add(fgvi);
-            mo.FaceGroups.Delete(0);
-            fgvi.VertexIndices.Offset(k);
-         end;
-      end;
-      for i:=aList.Count-1 downto 1 do
-         aList[i].Free;
-   end;
+    end;
+    for i := aList.Count - 1 downto 1 do
+      aList[i].Free;
+  end;
 end;
 
 // OptimizeMesh (object, default options)
 //
-procedure OptimizeMesh(aMeshObject : TMeshObject);
+procedure OptimizeMesh(aMeshObject: TMeshObject);
 begin
-   OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
+  OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (object, with options)
 //
-procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOptions);
+procedure OptimizeMesh(aMeshObject: TMeshObject;
+  options: TMeshOptimizerOptions);
 var
-   i : Integer;
-   fg : TFaceGroup;
-   coords, texCoords, normals : TAffineVectorList;
-   il : TIntegerList;
-   materialName : String;
+  i: Integer;
+  fg: TFaceGroup;
+  coords, TexCoords, Normals: TAffineVectorList;
+  il: TIntegerList;
+  materialName: String;
 begin
-   if (mooMergeObjects in options) then begin
-      if aMeshObject.Mode=momFaceGroups then begin
-         // remove empty facegroups
-         for i:=aMeshObject.FaceGroups.Count-1 downto 0 do begin
-            fg:=aMeshObject.FaceGroups[i];
-            if fg.TriangleCount=0 then
-               fg.Free;
-         end;
+  if (mooMergeObjects in options) then
+  begin
+    if aMeshObject.Mode = momFaceGroups then
+    begin
+      // remove empty facegroups
+      for i := aMeshObject.FaceGroups.Count - 1 downto 0 do
+      begin
+        fg := aMeshObject.FaceGroups[i];
+        if fg.TriangleCount = 0 then
+          fg.Free;
       end;
-   end;
+    end;
+  end;
 
-   if (mooStandardize in options) then begin
-      if (aMeshObject.Mode<>momFaceGroups) or (aMeshObject.FaceGroups.Count<=1) then begin
-         if aMeshObject.FaceGroups.Count=1 then
-            materialName:=aMeshObject.FaceGroups[0].MaterialName;
-         texCoords:=TAffineVectorList.Create;
-         normals:=TAffineVectorList.Create;
-         coords:=aMeshObject.ExtractTriangles(texCoords, normals);
-         try
-            il:=BuildVectorCountOptimizedIndices(coords, normals, texCoords);
-            try
-               aMeshObject.Clear;
-               if il.Count>0 then begin
-                  RemapReferences(normals, il);
-                  RemapReferences(texCoords, il);
-                  RemapAndCleanupReferences(coords, il);
-                  aMeshObject.Vertices:=coords;
-                  aMeshObject.Normals:=normals;
-                  aMeshObject.TexCoords:=texCoords;
-                  fg:=TFGVertexIndexList.CreateOwned(aMeshObject.FaceGroups);
-                  fg.MaterialName:=materialName;
-                  TFGVertexIndexList(fg).VertexIndices:=il;
-               end;
-            finally
-               il.Free;
-            end;
-         finally
-            coords.Free;
-            normals.Free;
-            texCoords.Free;
-         end;
-      end else Assert(False, 'Standardization with multiple facegroups not supported... yet.');
-   end;
-
-   if (mooVertexCache in options) and (aMeshObject.Mode=momFaceGroups) then begin
-       for i:=0 to aMeshObject.FaceGroups.Count-1 do begin
-         fg:=aMeshObject.FaceGroups[i];
-         if fg.ClassType=TFGVertexIndexList then with TFGVertexIndexList(fg) do begin
-            if Mode in [fgmmTriangles, fgmmFlatTriangles] then
-               IncreaseCoherency(VertexIndices, 12);
-         end;
+  if (mooStandardize in options) then
+  begin
+    if (aMeshObject.Mode <> momFaceGroups) or
+      (aMeshObject.FaceGroups.Count <= 1) then
+    begin
+      if aMeshObject.FaceGroups.Count = 1 then
+        materialName := aMeshObject.FaceGroups[0].materialName;
+      TexCoords := TAffineVectorList.Create;
+      Normals := TAffineVectorList.Create;
+      coords := aMeshObject.ExtractTriangles(TexCoords, Normals);
+      try
+        il := BuildVectorCountOptimizedIndices(coords, Normals, TexCoords);
+        try
+          aMeshObject.Clear;
+          if il.Count > 0 then
+          begin
+            RemapReferences(Normals, il);
+            RemapReferences(TexCoords, il);
+            RemapAndCleanupReferences(coords, il);
+            aMeshObject.Vertices := coords;
+            aMeshObject.Normals := Normals;
+            aMeshObject.TexCoords := TexCoords;
+            fg := TFGVertexIndexList.CreateOwned(aMeshObject.FaceGroups);
+            fg.materialName := materialName;
+            TFGVertexIndexList(fg).VertexIndices := il;
+          end;
+        finally
+          il.Free;
+        end;
+      finally
+        coords.Free;
+        Normals.Free;
+        TexCoords.Free;
       end;
-   end;
+    end
+    else
+      Assert(false,
+        'Standardization with multiple facegroups not supported... yet.');
+  end;
 
-   if mooSortByMaterials in options then
-      aMeshObject.FaceGroups.SortByMaterial;
+  if (mooVertexCache in options) and (aMeshObject.Mode = momFaceGroups) then
+  begin
+    for i := 0 to aMeshObject.FaceGroups.Count - 1 do
+    begin
+      fg := aMeshObject.FaceGroups[i];
+      if fg.ClassType = TFGVertexIndexList then
+        with TFGVertexIndexList(fg) do
+        begin
+          if Mode in [fgmmTriangles, fgmmFlatTriangles] then
+            IncreaseCoherency(VertexIndices, 12);
+        end;
+    end;
+  end;
+
+  if mooSortByMaterials in options then
+    aMeshObject.FaceGroups.SortByMaterial;
 end;
 
-
-
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
+procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single = 0.0000001;
+  aThreshold: Single = 35.0; InvertNormals: boolean = false);
 Var
-  I, J, K, L: integer;
+  i, J, k, L: Integer;
   WeldedVertex: TAffineVectorList;
   TmpIntegerList: TIntegerList;
   IndexMap: TStringList;
   n: TAffineVector;
-  indicesMap : TIntegerList;
+  indicesMap: TIntegerList;
   Index: Integer;
   FaceList: TIntegerList;
   NormalList: TAffineVectorList;
   FaceNormalList: TAffineVectorList;
   FaceGroup: TFaceGroup;
-  FG, FG1: TFGVertexIndexList;
+  fg, FG1: TFGVertexIndexList;
   Threshold: Single;
   Angle: Single;
   ReferenceMap: TIntegerList;
@@ -196,127 +227,133 @@ Var
   end;
   function iMin(a, b: Integer): Integer;
   begin
-    if a<b then
+    if a < b then
       Result := a
     else
       Result := b;
   end;
   function iMax(a, b: Integer): Integer;
   begin
-    if a>b then
+    if a > b then
       Result := a
     else
       Result := b;
   end;
+
 begin
-  Threshold := aThreshold * Pi/180.0;
-  //build the vectices reference map
+  Threshold := aThreshold * Pi / 180.0;
+  // build the vectices reference map
   ReferenceMap := TIntegerList.Create;
   WeldedVertex := TAffineVectorList.Create;
   WeldedVertex.Assign(aMeshObj.Vertices);
   indicesMap := TIntegerList.Create;
-  //first of all, weld the very closed vertices
+  // first of all, weld the very closed vertices
   WeldVertices(WeldedVertex, indicesMap, aWeldDistance);
-  //then, rebuild the map list
+  // then, rebuild the map list
   IndexMap := TStringList.Create;
-  for I:=0 to WeldedVertex.Count-1 do
+  for i := 0 to WeldedVertex.Count - 1 do
   begin
     ReferenceMap.Assign(indicesMap);
     TmpIntegerList := TIntegerList.Create;
-    Index := ReferenceMap.IndexOf(I);
-    while Index>=0 do
+    Index := ReferenceMap.IndexOf(i);
+    while Index >= 0 do
     begin
       TmpIntegerList.Add(Index);
       ReferenceMap[Index] := -99999;
-      Index := ReferenceMap.IndexOf(I);
+      Index := ReferenceMap.IndexOf(i);
     end;
-    IndexMap.AddObject(IntToStr(I), TmpIntegerList);
+    IndexMap.AddObject(IntToStr(i), TmpIntegerList);
   end;
   ReferenceMap.Assign(indicesMap);
-  //never used these, free them all
-  WeldedVertex.free;
-  indicesMap.free;
-  //create a TexPoint list for save face infomation, where s=facegroup index, t=face index
+  // never used these, free them all
+  WeldedVertex.Free;
+  indicesMap.Free;
+  // create a TexPoint list for save face infomation, where s=facegroup index, t=face index
   FaceList := TIntegerList.Create;
   NormalList := TAffineVectorList.Create;
   FaceNormalList := TAffineVectorList.Create;
-  //NormalIndex := TIntegerList.Create;
-  for I:=0 to aMeshObj.FaceGroups.Count-1 do
+  // NormalIndex := TIntegerList.Create;
+  for i := 0 to aMeshObj.FaceGroups.Count - 1 do
   begin
-    FaceGroup := aMeshObj.FaceGroups[I];
+    FaceGroup := aMeshObj.FaceGroups[i];
     TmpIntegerList := TFGVertexIndexList(FaceGroup).VertexIndices;
-    for J:=0 to (TmpIntegerList.Count div 3)-1 do
+    for J := 0 to (TmpIntegerList.Count div 3) - 1 do
     begin
-      FaceList.Add(I);
+      FaceList.Add(i);
       FaceList.Add(J);
       CalcPlaneNormal(aMeshObj.Vertices[TmpIntegerList[J * 3 + 0]],
         aMeshObj.Vertices[TmpIntegerList[J * 3 + 1]],
-        aMeshObj.Vertices[TmpIntegerList[J * 3 + 2]],
-        n);
-      //add three normals for one trangle
+        aMeshObj.Vertices[TmpIntegerList[J * 3 + 2]], n);
+      // add three normals for one trangle
       FaceNormalList.Add(n);
       NormalList.Add(n);
       NormalList.Add(n);
       NormalList.Add(n);
     end;
   end;
-  //do smooth
-  for I:=0 to (FaceList.Count div 2)-1 do
+  // do smooth
+  for i := 0 to (FaceList.Count div 2) - 1 do
   begin
-    Index := FaceList[I*2+0];
-    Index1 := FaceList[I*2+1];
-    FG := TFGVertexIndexList(aMeshObj.FaceGroups[Index]);
-    for J:=0 to 2 do
+    Index := FaceList[i * 2 + 0];
+    Index1 := FaceList[i * 2 + 1];
+    fg := TFGVertexIndexList(aMeshObj.FaceGroups[Index]);
+    for J := 0 to 2 do
     begin
-      for K:=0 to (FaceList.Count div 2)-1 do
+      for k := 0 to (FaceList.Count div 2) - 1 do
       begin
-        Index2 := FaceList[K*2+0];
-        Index3 := FaceList[K*2+1];
+        Index2 := FaceList[k * 2 + 0];
+        Index3 := FaceList[k * 2 + 1];
         FG1 := TFGVertexIndexList(aMeshObj.FaceGroups[Index2]);
-        if I<>K then
+        if i <> k then
         begin
-          for L:=0 to 2 do
+          for L := 0 to 2 do
           begin
-            //two face contain the same vertex
-            ID1 := FindReferenceIndex(FG.VertexIndices[Index1*3+J]);
-            ID2 := FindReferenceIndex(FG1.VertexIndices[Index3*3+L]);
-            if ID1=ID2 then
+            // two face contain the same vertex
+            ID1 := FindReferenceIndex(fg.VertexIndices[Index1 * 3 + J]);
+            ID2 := FindReferenceIndex(FG1.VertexIndices[Index3 * 3 + L]);
+            if ID1 = ID2 then
             begin
-              Angle := VectorDotProduct(FaceNormalList[I],FaceNormalList[K]);
-              if angle>Threshold then
-                NormalList[I*3+J] := VectorAdd(NormalList[I*3+J],FaceNormalList[K]);
+              Angle := VectorDotProduct(FaceNormalList[i], FaceNormalList[k]);
+              if Angle > Threshold then
+                NormalList[i * 3 + J] := VectorAdd(NormalList[i * 3 + J],
+                  FaceNormalList[k]);
             end;
           end;
         end;
       end;
-      n := NormalList[I*3+J];
+      n := NormalList[i * 3 + J];
       NormalizeVector(n);
-      NormalList[I*3+J] := n;
+      NormalList[i * 3 + J] := n;
     end;
   end;
-  for I:=0 to (FaceList.Count div 2)-1 do
+  for i := 0 to (FaceList.Count div 2) - 1 do
   begin
-    Index := FaceList[I*2+0];
-    FG := TFGVertexIndexList(aMeshObj.FaceGroups[Index]);
-    Index := FaceList[I*2+1];
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := NormalList[(I*3+0)];
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := NormalList[(I*3+1)];
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := NormalList[(I*3+2)];
+    Index := FaceList[i * 2 + 0];
+    fg := TFGVertexIndexList(aMeshObj.FaceGroups[Index]);
+    Index := FaceList[i * 2 + 1];
+    aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 0)]] :=
+      NormalList[(i * 3 + 0)];
+    aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 1)]] :=
+      NormalList[(i * 3 + 1)];
+    aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 2)]] :=
+      NormalList[(i * 3 + 2)];
     if InvertNormals then
     begin
-         aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]]);
-         aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]]);
-         aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]]);
+      aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 0)]] :=
+        VectorNegate(aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 0)]]);
+      aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 1)]] :=
+        VectorNegate(aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 1)]]);
+      aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 2)]] :=
+        VectorNegate(aMeshObj.Normals[fg.VertexIndices[(Index * 3 + 2)]]);
     end;
   end;
-  FaceList.free;
-  NormalList.free;
-  FaceNormalList.free;
-  ReferenceMap.free;
-  for I:=0 to IndexMap.Count-1 do
-    IndexMap.Objects[I].free;
-  IndexMap.free;
+  FaceList.Free;
+  NormalList.Free;
+  FaceNormalList.Free;
+  ReferenceMap.Free;
+  for i := 0 to IndexMap.Count - 1 do
+    IndexMap.Objects[i].Free;
+  IndexMap.Free;
 end;
-
 
 end.

@@ -2615,14 +2615,17 @@ var
   i, hk: Integer;
   lm: TGLAbstractLibMaterial;
 begin
-  hk := TGLAbstractLibMaterial.ComputeNameHashKey(AName);
-  for i := 0 to Count - 1 do
+  if Length(AName) > 0 then
   begin
-    lm := TGLAbstractLibMaterial(inherited Items[i]);
-    if (lm.NameHashKey = hk) and (lm.Name = AName) then
+    hk := TGLAbstractLibMaterial.ComputeNameHashKey(AName);
+    for i := 0 to Count - 1 do
     begin
-      Result := lm;
-      Exit;
+      lm := TGLAbstractLibMaterial(inherited Items[i]);
+      if (lm.NameHashKey = hk) and (lm.Name = AName) then
+      begin
+        Result := lm;
+        Exit;
+      end;
     end;
   end;
   Result := nil;

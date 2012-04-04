@@ -16,7 +16,7 @@ interface
 uses
   Classes,
   SysUtils,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_FileIO,
   GLScene_Base_Vector_Geometry;
 

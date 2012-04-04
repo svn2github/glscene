@@ -82,7 +82,7 @@ uses
   GLScene_ObjectsEx,
   GLScene_BitmapFont,
   GLScene_Viewer,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Platform,
   GLScene_Base_Coordinates,
   GLScene_Base_Context_Info,

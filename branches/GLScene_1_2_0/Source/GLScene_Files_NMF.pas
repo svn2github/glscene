@@ -16,7 +16,7 @@ unit GLScene_Files_NMF;
 interface
 
 uses
-  Classes, GLScene_Vector_FileObjects, GLScene_Base_Vector_Geometry, GLScene_Base_Vector_Lists, GLScene_Base_FileIO,
+  Classes, GLScene_Objects_VectorFile, GLScene_Base_Vector_Geometry, GLScene_Base_Vector_Lists, GLScene_Base_FileIO,
   GLScene_Files_NMF_Base;
 
 type

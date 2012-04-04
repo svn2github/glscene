@@ -25,7 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses Classes,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Files_LWO_Types;
 
 type
@@ -305,7 +305,7 @@ begin
 
   if GetOwner is TGLBaseMesh then
   begin
-    matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+    matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
 
     if Assigned(matLib) then
     begin

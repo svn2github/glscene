@@ -18,7 +18,7 @@ unit GLScene_Files_STL;
 
 interface
 
-uses Classes, GLScene_Vector_FileObjects, GLScene_Base_FileIO, GLScene_Platform;
+uses Classes, GLScene_Objects_VectorFile, GLScene_Base_FileIO, GLScene_Platform;
 
 type
 

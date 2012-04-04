@@ -31,7 +31,7 @@ uses
   GLScene_Base_OpenGL_Adapter,
   GLScene_Base_Context,
   GLScene_Core,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Vector_Types,
   GLScene_Base_PersistentClasses,
   GLScene_Platform,

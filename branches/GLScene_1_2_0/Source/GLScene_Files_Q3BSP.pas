@@ -23,7 +23,7 @@ interface
 
 uses
   Classes,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_FileIO;
 
 type
@@ -108,7 +108,7 @@ procedure TGLQ3BSPVectorFile.LoadFromStream(aStream: TStream);
     if GetOwner is TGLBaseMesh then
     begin
       // got a linked material library?
-      matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+      matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
       if Assigned(matLib) then
       begin
         Result := matName;

@@ -22,7 +22,7 @@ uses
   Classes,
   SysUtils,
   // GLScene
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_FileIO,
   GLScene_Material,
   GLScene_Base_Vector_Geometry,
@@ -90,7 +90,7 @@ var
     LibMat: TGLLibMaterial;
   begin
     if Assigned(Owner.MaterialLibrary) then
-      with Owner.MaterialLibrary do
+      with Owner.MaterialLibrary as TGLMaterialLibrary do
       begin
         if Assigned(Materials.GetLibMaterialByName(meshname)) then
           exit;

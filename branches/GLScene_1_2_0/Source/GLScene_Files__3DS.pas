@@ -57,7 +57,7 @@ uses
   // GLScene_Core
   GLScene_Core,
   GLScene_Objects,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Texture,
   GLScene_Base_FileIO,
   GLScene_Base_Vector_Geometry,
@@ -1736,7 +1736,7 @@ var
     Assert(Assigned(Material));
     if GetOwner is TGLBaseMesh then
     begin
-      matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+      matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
       if Assigned(matLib) then
       begin
         Result := Name;
@@ -2376,7 +2376,7 @@ begin
             begin
               basemesh := TGLBaseMesh(self.GetOwner);
               if basemesh.MaterialLibrary <> nil then
-                MaterialName := basemesh.MaterialLibrary.materials.Add.Name;
+                MaterialName := TGLMaterialLibrary(basemesh.MaterialLibrary).Materials.Add.Name;
               // copy the face list
               for j := 0 to NFaces - 1 do
               begin

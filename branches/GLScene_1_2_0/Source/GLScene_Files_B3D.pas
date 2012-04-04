@@ -15,7 +15,7 @@ interface
 uses
   Classes,
   SysUtils,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_FileIO,
   GLScene_Files_B3D_Base,
   GLScene_Files_B3D_Types;
@@ -78,7 +78,7 @@ var
   begin
     if GetOwner is TGLBaseMesh then
     begin
-      matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+      matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
       LightLib := TGLBaseMesh(GetOwner).LightmapLibrary;
       // got a linked material library?
       if Assigned(matLib) then

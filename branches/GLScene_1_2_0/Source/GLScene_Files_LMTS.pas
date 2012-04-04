@@ -40,7 +40,7 @@ uses
   Graphics,
   Classes,
   SysUtils,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_FileIO,
   GLScene_Base_Vector_Lists,
   GLScene_Base_Vector_Geometry,
@@ -179,7 +179,7 @@ begin
   vi := Tintegerlist.create;
 
   LL := owner.LightmapLibrary;
-  ML := owner.MaterialLibrary;
+  ML := owner.MaterialLibrary as TGLMaterialLibrary;
 
   lmnames := TStringlist.create;
   matnames := TStringlist.create;
@@ -344,11 +344,11 @@ begin
       for i := 0 to MatInfoCount - 1 do
       begin
         libmat := nil;
-        for j := 0 to owner.MaterialLibrary.Materials.Count - 1 do
-          if owner.MaterialLibrary.Materials[j].NameHashKey = Matinfo[i]
-            .mathash then
+        with owner.MaterialLibrary as TGLMaterialLibrary do
+        for j := 0 to Materials.Count - 1 do
+          if Materials[j].NameHashKey = Matinfo[i].mathash then
           begin
-            libmat := owner.MaterialLibrary.Materials[j];
+            libmat := Materials[j];
             break;
           end;
 
@@ -608,7 +608,7 @@ begin
   begin
     for i := 0 to high(texData) do
     begin
-      libmat := owner.MaterialLibrary.Materials.GetLibMaterialByName
+      libmat := (owner.MaterialLibrary as TGLMaterialLibrary).Materials.GetLibMaterialByName
         (String(texData[i].fName));
       if Assigned(libmat) then
       begin

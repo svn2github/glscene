@@ -44,7 +44,7 @@ uses
   GLScene_Base_Color,
   GLScene_Material,
   GLScene_Base_Strings,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_GLStateMachine,
   GLScene_Base_PersistentClasses, {Needed for Delphi 5}
   GLScene_Platform,

@@ -32,7 +32,7 @@ uses
   Graphics,
   GLScene_Base_Vector_Geometry,
   GLScene_Core,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Vector_Lists,
   GLScene_Base_XCollection,
   GLScene_ObjectsEx,

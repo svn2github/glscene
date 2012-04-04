@@ -38,7 +38,7 @@ uses
   Classes,
   SysUtils,
   GLScene_Platform,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Vector_Types,
   GLScene_Material,
   GLScene_Base_Vector_Geometry,
@@ -89,6 +89,7 @@ var
 
   GroupList: TList;
   GLLibMaterial: TGLLibMaterial;
+  MatLibrary: TGLMaterialLibrary;
 
   // Milkshape 3d
   ms3d_header: TMS3DHeader;
@@ -317,18 +318,19 @@ begin
         libtexture := string(ms3d_material.texture);
         dotpos := System.Pos('.', libtexture);
         Delete(libtexture, dotpos, Length(libtexture)-dotpos+1);
-        GLLibMaterial := Owner.MaterialLibrary.LibMaterialByName(libtexture);
+        MatLibrary := TGLMaterialLibrary(Owner.MaterialLibrary);
+        GLLibMaterial := MatLibrary.LibMaterialByName(libtexture);
         if Assigned(GLLibMaterial) then
         begin
           GLLibMaterial.Material.Texture.Disabled := False;
         end
         else if FileStreamExists(path + string(ms3d_material.texture)) then
-          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(libtexture, path + string(ms3d_material.texture))
+          GLLibMaterial := MatLibrary.AddTextureMaterial(libtexture, path + string(ms3d_material.texture))
         else
         begin
           if not Owner.IgnoreMissingTextures then
             Exception.Create('Texture file not found: ' + path + string(ms3d_material.texture));
-          GLLibMaterial := Owner.MaterialLibrary.Materials.Add;
+          GLLibMaterial := MatLibrary.Materials.Add;
           GLLibMaterial.Name := string(ms3d_material.name);
         end;
         GLLibMaterial.Material.FrontProperties.Emission.Color := ms3d_material.emissive;

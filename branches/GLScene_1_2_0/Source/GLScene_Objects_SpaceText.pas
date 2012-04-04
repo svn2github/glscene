@@ -90,7 +90,6 @@ type
     procedure FreeBatches;
     procedure CalcLocations;
   private
-
     { Private Declarations }
     procedure SetVectorFont(Value: TGLCustomVectorFont);
     function GetText: WideString;
@@ -332,12 +331,14 @@ begin
           break;
         ARci.PipelineTransformation.Push;
         ARci.PipelineTransformation.ModelMatrix :=
-          MatrixMultiply(M, CreateTranslationMatrix(FLocations[I]));
+          MatrixMultiply(CreateTranslationMatrix(FLocations[I]), M);
         FTransformations[I] := ARci.PipelineTransformation.StackTop;
         ARci.PipelineTransformation.Pop;
         FBatches[I].Transformation := @FTransformations[I];
         FBatches[I].Material := FBatch.Material;
         FBatches[I].PickingMaterial := FBatch.PickingMaterial;
+        FBatches[I].ShowAxes := FBatch.ShowAxes;
+        FBatches[I].ShowAABB := FBatch.ShowAABB;
         ARci.drawList.Add(@FBatches[I]);
       end;
     end;

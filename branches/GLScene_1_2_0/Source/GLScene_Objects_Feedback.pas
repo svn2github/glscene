@@ -39,7 +39,7 @@ uses
   GLScene_Base_Vector_Geometry,
   GLScene_Base_Vector_Lists,
   GLScene_Core,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Texture,
   GLScene_Base_Context_Info,
   GLScene_Base_Context,

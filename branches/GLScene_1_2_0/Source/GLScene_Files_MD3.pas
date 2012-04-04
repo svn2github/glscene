@@ -14,7 +14,7 @@ unit GLScene_Files_MD3;
 interface
 
 uses
-  Classes, SysUtils, GLScene_Vector_FileObjects, GLScene_Material, GLScene_Base_FileIO,
+  Classes, SysUtils, GLScene_Objects_VectorFile, GLScene_Material, GLScene_Base_FileIO,
   GLScene_Base_Vector_Geometry, GLScene_Files_MD3_Base;
 
 type
@@ -74,7 +74,7 @@ var
   begin
     // If a material library is assigned to the actor/freeform the
     // mesh name will be added as a material.
-    if Assigned(Owner.MaterialLibrary) then with Owner.MaterialLibrary do begin
+    if Assigned(Owner.MaterialLibrary) then with Owner.MaterialLibrary as TGLMaterialLibrary do begin
       if Assigned(Materials.GetLibMaterialByName(meshname)) then exit;
       LibMat:=Materials.Add;
       LibMat.name:=meshname;

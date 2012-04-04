@@ -78,7 +78,7 @@ uses
 
   GLScene_Base_Vector_Geometry,
   GLScene_Core,
-  GLScene_Vector_FileObjects,
+  GLScene_Objects_VectorFile,
   GLScene_Base_Vector_Lists,
   GLScene_Texture,
   GLScene_Base_Color,
@@ -859,7 +859,7 @@ var
     if GetOwner is TGLBaseMesh then
     begin
       // got a linked material library?
-      matLib := TGLBaseMesh(GetOwner).MaterialLibrary;
+      matLib := TGLBaseMesh(GetOwner).MaterialLibrary as TGLMaterialLibrary;
       if Assigned(matLib) then
       begin
         Result := matName;
@@ -1374,8 +1374,8 @@ end;
 initialization
 
   { Register this Fileformat-Handler with GLScene }
-  GLScene_Vector_FileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
-  GLScene_Vector_FileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
+  GLScene_Objects_VectorFile.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
+  GLScene_Objects_VectorFile.RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
   RegisterClass(TOBJFGVertexNormalTexIndexList);
 
 end.

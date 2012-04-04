@@ -28,7 +28,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,  GLScene_Vector_FileObjects, GLScene_Base_Verlet_Classes, GLScene_Base_Vector_Types, GLScene_Base_Vector_Lists,
+  Classes,  GLScene_Objects_VectorFile, GLScene_Base_Verlet_Classes, GLScene_Base_Vector_Types, GLScene_Base_Vector_Lists,
   GLScene_Base_Vector_Geometry, GLScene_Texture, GLScene_Base_OpenGL_Tokens, SysUtils, GLScene_Base_Context_Info,
   GLScene_Base_GLStateMachine;
 
