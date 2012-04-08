@@ -7236,7 +7236,10 @@ begin
   ARci.PipelineTransformation.Pop;
 
   if (csDesigning in ComponentState) or FVisibleAtRunTime then
+  begin
+    FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
     ARci.drawList.Add(@FBatch);
+  end;
 
   if ARenderChildren then
     Self.RenderChildren(0, Count - 1, ARci);
@@ -9792,6 +9795,7 @@ begin
     baseObject := aScene.Objects;
   baseObject.Render(LRci);
 
+  LRci.objectsSorting := aScene.ObjectsSorting;
   aScene.RenderManager.DrawAll(LRci);
   aScene.RenderManager.DrawList.Count := 0;
 

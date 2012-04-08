@@ -38,6 +38,7 @@ uses
 
 const
   VBO_STATIC_POOL_SIZE: Cardinal = 16 * 1024 * 1024;
+  Infinity: Single    =  1.0 / 0.0;
 
 type
 
@@ -59,6 +60,7 @@ type
     PickCallback: TPickCallback;
     CustomDraw: TOnCustomDraw;
     ListIndex: Integer;
+    CameraDistanceSqr: Single;
   end;
 
   TDrawBatchArray = array of TDrawBatch;
@@ -3503,6 +3505,93 @@ begin
   inherited;
 end;
 
+{$IFOPT R+}
+procedure CheckBatchDistance(ABatch: PDrawBatch);
+begin
+  if ABatch.CameraDistanceSqr = 0 then
+  begin
+    GLSLogger.LogWarningFmt('Mesh "%s" has wrong distance to camera', [ABatch.Mesh.ToString]);
+    ABatch.CameraDistanceSqr := -Infinity;
+  end;
+end;
+{$ENDIF}  
+
+function RenderFarthestFirstCompare(Item1, Item2: Pointer): Integer;
+var
+  pBatch1, pBatch2: PDrawBatch;
+begin
+  pBatch1 := PDrawBatch(Item1);
+  pBatch2 := PDrawBatch(Item2);  
+{$IFOPT R+}  
+  CheckBatchDistance(pBatch1);
+  CheckBatchDistance(pBatch2);  
+{$ENDIF}  
+  if pBatch1.CameraDistanceSqr > pBatch2.CameraDistanceSqr then
+    Exit(1)
+  else if pBatch1.CameraDistanceSqr < pBatch2.CameraDistanceSqr then
+    Exit(-1)    
+  else
+    Exit(0);
+end;
+
+function RenderBlendedLastCompare(Item1, Item2: Pointer): Integer;
+var
+  pBatch1, pBatch2: PDrawBatch;
+begin
+  pBatch1 := PDrawBatch(Item1);
+  pBatch2 := PDrawBatch(Item2);  
+{$IFOPT R+}  
+  CheckBatchDistance(pBatch1);
+  CheckBatchDistance(pBatch2);  
+{$ENDIF}  
+  if pBatch1.Material.Blended then
+  begin
+    if pBatch2.Material.Blended then
+    begin
+      if pBatch1.CameraDistanceSqr > pBatch2.CameraDistanceSqr then
+        Exit(-1)
+      else if pBatch1.CameraDistanceSqr < pBatch2.CameraDistanceSqr then
+        Exit(1)
+      else
+        Exit(0);    
+    end;
+    Exit(1);
+  end
+  else if pBatch2.Material.Blended then
+  begin
+    if pBatch1.Material.Blended then
+    begin
+      if pBatch1.CameraDistanceSqr > pBatch2.CameraDistanceSqr then
+        Exit(-1)
+      else if pBatch1.CameraDistanceSqr < pBatch2.CameraDistanceSqr then
+        Exit(1)
+      else
+        Exit(0);    
+    end;
+    Exit(-1);  
+  end
+  else
+    Exit(0);
+end;
+
+function RenderNearestFirstCompare(Item1, Item2: Pointer): Integer;
+var
+  pBatch1, pBatch2: PDrawBatch;
+begin
+  pBatch1 := PDrawBatch(Item1);
+  pBatch2 := PDrawBatch(Item2);  
+{$IFOPT R+}  
+  CheckBatchDistance(pBatch1);
+  CheckBatchDistance(pBatch2);  
+{$ENDIF}  
+  if pBatch1.CameraDistanceSqr > pBatch2.CameraDistanceSqr then
+    Exit(-1)
+  else if pBatch1.CameraDistanceSqr < pBatch2.CameraDistanceSqr then
+    Exit(1)    
+  else
+    Exit(0);
+end;
+
 procedure TGLRenderManager.DrawAll(var ARci: TRenderContextInfo);
 var
   pBatch: PDrawBatch;
@@ -3523,6 +3612,12 @@ begin
     begin
       GetOrCreatePickingMaterial;
       LDrawTech.DoBeforePicking(FDrawList.Count);
+    end;
+
+    case ARci.objectsSorting of
+      osRenderFarthestFirst: FDrawList.Sort(RenderFarthestFirstCompare);
+      osRenderBlendedLast: FDrawList.Sort(RenderBlendedLastCompare);
+      osRenderNearestFirst: FDrawList.Sort(RenderNearestFirstCompare);
     end;
 
     for I := 0 to FDrawList.Count - 1 do

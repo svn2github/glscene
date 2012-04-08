@@ -314,6 +314,7 @@ procedure TGLSpaceText.DoRender(var ARci: TRenderContextInfo;
 var
   I: Integer;
   M: TMatrix;
+  dis2: Single;
 begin
   inherited DoRender(ARci, False, False);
 
@@ -324,6 +325,7 @@ begin
 
     if ARenderSelf and (FVisualizedLines.Count > 0) then
     begin
+      dis2 := VectorDistance2(ARci.cameraPosition, AbsolutePosition);
       M := ARci.PipelineTransformation.ModelMatrix;
       for I := 0 to FVisualizedLines.Count - 1 do
       begin
@@ -339,6 +341,7 @@ begin
         FBatches[I].PickingMaterial := FBatch.PickingMaterial;
         FBatches[I].ShowAxes := FBatch.ShowAxes;
         FBatches[I].ShowAABB := FBatch.ShowAABB;
+        FBatches[I].CameraDistanceSqr := dis2;
         ARci.drawList.Add(@FBatches[I]);
       end;
     end;

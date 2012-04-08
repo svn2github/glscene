@@ -227,6 +227,7 @@ uses
 constructor TGLHUDSprite.Create(AOwner: TComponent);
 begin
   inherited;
+  FBatch.CameraDistanceSqr := -Infinity;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
   Width := 16;
   Height := 16;
@@ -620,6 +621,7 @@ procedure TGLHUDText.DoRender(var ARci: TRenderContextInfo;
       for I := High(FBatches) downto 0 do
       begin
         FBatches[I].Transformation := @FTransformation;
+        FBatches[I].CameraDistanceSqr := -Infinity;
         ARci.drawList.Add(@FBatches[I]);
       end;
     end;

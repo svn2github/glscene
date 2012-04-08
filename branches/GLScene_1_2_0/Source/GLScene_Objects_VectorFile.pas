@@ -693,10 +693,6 @@ type
   TMeshObjectRenderingOption = (moroGroupByMaterial);
   TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
 
-  TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords,
-    vbLightMapTexCoords, vbTexCoordsEx);
-  TVBOBuffers = set of TVBOBuffer;
-
   // TMeshObject
   //
   { : Base mesh class.<p>
@@ -7038,7 +7034,11 @@ begin
         begin
           case mode of
             momTriangles, momTriangleStrip:
+            begin
+              // TODO: add offset of each mesh
+              FBatch.CameraDistanceSqr := VectorDistance2(ARci.cameraPosition, AbsolutePosition);
               ARci.drawList.Add(@FBatch);
+            end;
             momFaceGroups:
               for j := FaceGroups.Count - 1 downto 0 do
                 with FaceGroups[j] do
@@ -7047,6 +7047,7 @@ begin
                     FBatch.Material := FMaterialCache
                   else
                     FBatch.Material := FMaterial;
+                  FBatch.CameraDistanceSqr := VectorDistance2(ARci.cameraPosition, AbsolutePosition);
                   ARci.drawList.Add(@FBatch);
                 end;
           end;

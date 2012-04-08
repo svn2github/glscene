@@ -1413,6 +1413,7 @@ procedure TGLCustomSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderS
 
     if ARenderSelf then
     begin
+      FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
       FTransformation := ARci.PipelineTransformation.StackTop;
       ARci.drawList.Add(@FBatch);
     end;
@@ -1587,7 +1588,10 @@ procedure TGLDummyCube.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
     begin
       FTransformation := ARci.PipelineTransformation.StackTop;
       if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
+      begin
+        FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
         ARci.drawList.Add(@FBatch);
+      end;
     end;
 
     if ARenderChildren then
@@ -3146,6 +3150,7 @@ begin
           SetMatrix(FNodeTransformation.FModelMatrix, M);
           FNodeTransformation.FStates := cAllStatesChanged;
         end;
+      FNodeBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
       ARci.drawList.Add(@FNodeBatch);
     end;
   end;
