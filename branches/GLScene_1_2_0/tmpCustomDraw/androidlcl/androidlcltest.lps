@@ -1,0 +1,271 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="9"/>
+    <BuildModes Active="Release"/>
+    <Units Count="22">
+      <Unit0>
+        <Filename Value="androidlcltest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="androidlcltest"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="38" Y="27"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="mainform"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="114"/>
+        <CursorPos X="8" Y="24"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="android/src/com/pascal/lcltest/LCLActivity.java"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="27"/>
+        <DefaultSyntaxHighlighter Value="Java"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="secondform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form2"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="secondform"/>
+        <UsageCount Value="27"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../lazarus/lazarus/lcl/customdrawncontrols.pas"/>
+        <UnitName Value="customdrawncontrols"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="22"/>
+        <CursorPos X="27" Y="15"/>
+        <UsageCount Value="9"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../lazarus/lazarus/lcl/customdrawndrawers.pas"/>
+        <UnitName Value="customdrawndrawers"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="253"/>
+        <CursorPos X="3" Y="394"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="widgetset/customdrawnint.pas"/>
+        <UnitName Value="CustomDrawnInt"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="247"/>
+        <CursorPos X="23" Y="44"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="widgetset/customdrawnwinapih.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="64"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="widgetset/customdrawnlclintfh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="74"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="widgetset/customdrawn_androidproc.pas"/>
+        <UnitName Value="customdrawn_androidproc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="17"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="9"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="widgetset/customdrawnobject_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="956"/>
+        <CursorPos X="1" Y="994"/>
+        <UsageCount Value="9"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../lazarus/lazarus/lcl/customdrawn_android.pas"/>
+        <UnitName Value="customdrawn_android"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="widgetset/customdrawnobject.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="112"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <UnitName Value="CustomDrawnInt"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="255"/>
+        <CursorPos X="22" Y="260"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../lazarus/lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="35"/>
+        <CursorPos X="36" Y="44"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../lazarus/lazarus/lcl/forms.pp"/>
+        <UnitName Value="Forms"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="38"/>
+        <CursorPos X="3" Y="47"/>
+        <UsageCount Value="10"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="108"/>
+        <CursorPos X="55" Y="111"/>
+        <UsageCount Value="10"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1059"/>
+        <CursorPos X="3" Y="776"/>
+        <UsageCount Value="11"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="489"/>
+        <CursorPos X="39" Y="498"/>
+        <UsageCount Value="10"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawndefines.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="343"/>
+        <CursorPos X="71" Y="280"/>
+        <UsageCount Value="10"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3997"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit21>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="20" HistoryIndex="19">
+      <Position1>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="25" Column="1" TopLine="21"/>
+      </Position1>
+      <Position2>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="20" Column="13" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="9" Column="13" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="22" Column="31" TopLine="18"/>
+      </Position4>
+      <Position5>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="23" Column="25" TopLine="18"/>
+      </Position5>
+      <Position6>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="21" Column="21" TopLine="18"/>
+      </Position6>
+      <Position7>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="20" Column="3" TopLine="11"/>
+      </Position7>
+      <Position8>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="17" Column="51" TopLine="11"/>
+      </Position8>
+      <Position9>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="20" Column="3" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="121" Column="35" TopLine="19"/>
+      </Position10>
+      <Position11>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="27" Column="20" TopLine="19"/>
+      </Position11>
+      <Position12>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="22" Column="15" TopLine="16"/>
+      </Position12>
+      <Position13>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="24" Column="2" TopLine="15"/>
+      </Position13>
+      <Position14>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="26" Column="5" TopLine="17"/>
+      </Position14>
+      <Position15>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="8" Column="20" TopLine="1"/>
+      </Position15>
+      <Position16>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="99" Column="3" TopLine="96"/>
+      </Position16>
+      <Position17>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="35" Column="13" TopLine="31"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="94" Column="8" TopLine="82"/>
+      </Position18>
+      <Position19>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <Caret Line="311" Column="26" TopLine="18"/>
+      </Position19>
+      <Position20>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <Caret Line="261" Column="38" TopLine="255"/>
+      </Position20>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
