@@ -2634,7 +2634,7 @@ type
     // Vendor/EXT WGL extension checks
     W_ATI_pixel_format_float, W_EXT_framebuffer_sRGB,
     W_EXT_pixel_format_packed_float, W_EXT_swap_control, W_NV_gpu_affinity,
-    W_EXT_create_context_es2_profile, W_NV_DX_interop: boolean;
+    W_EXT_create_context_es2_profile, W_NV_DX_interop, W_NV_DX_interop2: boolean;
 
     // WGL_buffer_region (ARB #4)
     WCreateBufferRegionARB: PFNWGLCREATEBUFFERREGIONARBPROC;
@@ -6269,6 +6269,7 @@ begin
   W_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
   W_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
   W_NV_DX_interop := CheckExtension('WGL_NV_DX_interop');
+  W_NV_DX_interop2 := CheckExtension('WGL_NV_DX_interop2');
   W_EXT_create_context_es2_profile := CheckExtension('WGL_EXT_create_context_es2_profile');
 end;
 
