@@ -44,6 +44,8 @@ type
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
   //-------------------------------------------------------------
@@ -127,15 +129,11 @@ const
 var
   P, Q, R, S: array[0..3, 0..3, 0..2] of TGLFloat;
   I, J, K, L, GRD: Integer;
-
 begin
   if FGrid < 2 then
     FGrid := 2;
   GRD := FGrid;
-  GL.PushMatrix;
-  GL.Translatef(0, -0.25, 0);
-  GL.Rotatef(-90, 1, 0, 0);
-  GL.Scalef(0.15, 0.15, 0.15);
+
   rci.GLStates.InvertGLFrontFace;
   GL.Enable(GL_AUTO_NORMAL);
   GL.Enable(GL_MAP2_VERTEX_3);
@@ -181,7 +179,41 @@ begin
   GL.Disable(GL_AUTO_NORMAL);
   GL.Disable(GL_MAP2_VERTEX_3);
   GL.Disable(GL_MAP2_TEXTURE_COORD_2);
-  GL.PopMatrix;
+  rci.GLStates.InvertGLFrontFace;
+end;
+
+// DoRender
+//
+
+procedure TGLTeapot.DoRender(var ARci: TRenderContextInfo;
+  ARenderSelf, ARenderChildren: Boolean);
+const
+  M: TMatrix = ((0.150000005960464, 0, 0, 0), (0, -6.55670850946422e-09, -0.150000005960464, 0), (0, 0.150000005960464, -6.55670850946422e-09, 0), (0, 1.63917712736605e-09, 0.0375000014901161, 1));
+begin
+  // start rendering self
+  if ARenderSelf then
+  begin
+    with ARci.PipelineTransformation do
+      ModelMatrix := MatrixMultiply(M, ModelMatrix);
+    if ARci.ignoreMaterials then
+      if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+        BuildList(ARci)
+      else
+        ARci.GLStates.CallList(GetHandle(ARci))
+    else
+    begin
+      Material.Apply(ARci);
+      repeat
+        if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
+          BuildList(ARci)
+        else
+          ARci.GLStates.CallList(GetHandle(ARci));
+      until not Material.UnApply(ARci);
+    end;
+  end;
+  // start rendering children (if any)
+  if ARenderChildren then
+    Self.RenderChildren(0, Count - 1, ARci);
 end;
 
 //-------------------------------------------------------------
