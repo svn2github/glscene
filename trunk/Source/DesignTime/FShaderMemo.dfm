@@ -33,7 +33,6 @@ object GLShaderEditor: TGLShaderEditor
     Left = 0
     Top = 0
     Width = 502
-    Height = 36
     AutoSize = True
     BorderWidth = 1
     ButtonHeight = 28
@@ -45,21 +44,21 @@ object GLShaderEditor: TGLShaderEditor
     TabOrder = 0
     object TBOpen: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Hint = 'Open from text file'
       ImageIndex = 0
       OnClick = TBOpenClick
     end
     object TBSave: TToolButton
       Left = 28
-      Top = 2
+      Top = 0
       Hint = 'Save to file'
       ImageIndex = 1
       OnClick = TBSaveClick
     end
     object TBStayOnTop: TToolButton
       Left = 56
-      Top = 2
+      Top = 0
       Hint = 'Stay on top'
       ImageIndex = 6
       Style = tbsCheck
@@ -67,13 +66,13 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBHelp: TToolButton
       Left = 84
-      Top = 2
+      Top = 0
       Hint = 'Help'
       ImageIndex = 2
     end
     object ToolButton2: TToolButton
       Left = 112
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 2
@@ -81,7 +80,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBUndo: TToolButton
       Left = 120
-      Top = 2
+      Top = 0
       Hint = 'Undo'
       Caption = 'TBUndo'
       Enabled = False
@@ -90,7 +89,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBRedo: TToolButton
       Left = 148
-      Top = 2
+      Top = 0
       Hint = 'Redu'
       Caption = 'TBRedo'
       Enabled = False
@@ -99,7 +98,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object ToolButton4: TToolButton
       Left = 176
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton4'
       ImageIndex = 8
@@ -107,28 +106,28 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBCopy: TToolButton
       Left = 184
-      Top = 2
+      Top = 0
       Hint = 'Copy to clipboard'
       ImageIndex = 5
       OnClick = TBCopyClick
     end
     object TBPaste: TToolButton
       Left = 212
-      Top = 2
+      Top = 0
       Hint = 'Paste from clipboard'
       ImageIndex = 3
       OnClick = TBPasteClick
     end
     object TBCut: TToolButton
       Left = 240
-      Top = 2
+      Top = 0
       Hint = 'Cut to clipboard'
       ImageIndex = 4
       OnClick = TBCutClick
     end
     object ToolButton1: TToolButton
       Left = 268
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton1'
       ImageIndex = 10
@@ -136,7 +135,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBIncIndent: TToolButton
       Left = 276
-      Top = 2
+      Top = 0
       Hint = 'Increase indent'
       Caption = 'TBIncIndent'
       ImageIndex = 10
@@ -144,7 +143,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBDecIndent: TToolButton
       Left = 304
-      Top = 2
+      Top = 0
       Hint = 'Decrease indent'
       Caption = 'TBDecIndent'
       ImageIndex = 11
@@ -152,7 +151,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBComment: TToolButton
       Left = 332
-      Top = 2
+      Top = 0
       Hint = 'Comment selected lines'
       Caption = 'TBComment'
       ImageIndex = 12
@@ -160,7 +159,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBUncoment: TToolButton
       Left = 360
-      Top = 2
+      Top = 0
       Hint = 'Uncoment selected lines'
       Caption = 'TBUncoment'
       ImageIndex = 13
@@ -168,7 +167,7 @@ object GLShaderEditor: TGLShaderEditor
     end
     object ToolButton10: TToolButton
       Left = 388
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton10'
       ImageIndex = 5
@@ -176,12 +175,52 @@ object GLShaderEditor: TGLShaderEditor
     end
     object TBTemplate: TToolButton
       Left = 396
-      Top = 2
+      Top = 0
       Hint = 'Insert template'
       DropdownMenu = TemplateMenu
       ImageIndex = 9
       Style = tbsDropDown
     end
+  end
+  object GLSLMemo: TGLSSynHiMemo
+    Left = 0
+    Top = 36
+    Width = 502
+    Height = 533
+    Cursor = crIBeam
+    Align = alClient
+    TabOrder = 1
+    TabStop = True
+    ReadOnly = False
+    AutoIndent = True
+    GutterColor = clBtnFace
+    GutterWidth = 30
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Courier New'
+    Font.Style = []
+    BkColor = clWhite
+    SelColor = clWhite
+    SelBkColor = clNavy
+    Lines.Strings = ('')
+    HiddenCaret = False
+    TabSize = 4
+    UndoLimit = 100
+    DelErase = True
+    OnGutterClick = GLSLMemoGutterClick
+    OnGutterDraw = GLSLMemoGutterDraw
+    OnUndoChange = GLSLMemoUndoChange
+    DelimiterStyle.TextColor = clBlue
+    DelimiterStyle.BkColor = clWhite
+    DelimiterStyle.Style = []
+    CommentStyle.TextColor = clYellow
+    CommentStyle.BkColor = clSkyBlue
+    CommentStyle.Style = [fsItalic]
+    NumberStyle.TextColor = clNavy
+    NumberStyle.BkColor = clWhite
+    NumberStyle.Style = [fsBold]
+    CaseSensitive = True
   end
   object CompilatorLog: TMemo
     Left = 0
@@ -222,7 +261,7 @@ object GLShaderEditor: TGLShaderEditor
       Width = 75
       Height = 25
       Anchors = [akRight, akBottom]
-      Caption = '&OK'
+      Caption = 'OK'
       ModalResult = 1
       TabOrder = 1
     end
@@ -241,7 +280,7 @@ object GLShaderEditor: TGLShaderEditor
     Left = 96
     Top = 632
     Bitmap = {
-      494C01010E0018005C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
