@@ -98,6 +98,8 @@ type
     function GetName: string;
     function GetGLSLType: TGLSLDataType;
     function GetGLSLSamplerType: TGLSLSamplerType;
+    function GetBlockOffset: TGLInt;
+    procedure SetBlockOffset(const AValue: TGLInt);
 
     function GetAutoSetMethod: string;
     function GetTextureName: string;
@@ -146,8 +148,19 @@ type
     procedure SetMat4(const Value: TMatrix4f);
 
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer);
+    procedure SetVec2Array(const Values: PGLFloat; Count: Integer);
+    procedure SetVec3Array(const Values: PGLFloat; Count: Integer);
+    procedure SetVec4Array(const Values: PGLFloat; Count: Integer);
+
     procedure SetIntArray(const Values: PGLInt; Count: Integer);
+    procedure SetIVec2Array(const Values: PGLInt; Count: Integer);
+    procedure SetIVec3Array(const Values: PGLInt; Count: Integer);
+    procedure SetIVec4Array(const Values: PGLInt; Count: Integer);
+
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer);
+    procedure SetUVec2Array(const Values: PGLUInt; Count: Integer);
+    procedure SetUVec3Array(const Values: PGLUInt; Count: Integer);
+    procedure SetUVec4Array(const Values: PGLUInt; Count: Integer);
 
     property Name: string read GetName;
     property GLSLType: TGLSLDataType read GetGLSLType;
@@ -184,6 +197,20 @@ type
     property SamplerName: string read GetSamplerName write SetSamplerName;
 
     property TextureSwizzle: TSwizzleVector read GetTextureSwizzle write SetTextureSwizzle;
+  end;
+
+
+  IShaderUniformBlock = interface(IInterface)
+    function GetName: string;
+    function GetBindingIndex: TGLuint;
+    procedure SetBindingIndex(Value: TGLuint);
+    function GetDataSize: GLSizei;
+    procedure SetDataSize(Value: GLSizei);
+    function GetAutoSetMethod: string;
+    procedure SetAutoSetMethod(const AValue: string);
+
+    {: Bindings.<p>}
+    property AutoSetMethod: string read GetAutoSetMethod write SetAutoSetMethod;
   end;
 
 const
@@ -257,9 +284,11 @@ resourcestring
 
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
+  TUniformBlockAutoSetMethod = procedure(Sender: IShaderUniformBlock; var ARci: TRenderContextInfo) of object;
 
 function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
 function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
+
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
 procedure FillUniformAutoSetMethodList(AList: TStrings;
@@ -268,6 +297,13 @@ procedure FillUniformAutoSetMethodList(AList: TStrings;
   TypeFilter: TGLSLSamplerType); overload;
 function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
 function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
+
+procedure RegisterUniformBlockAutoSetMethod(AMethodName: string;
+  ASize: TGLSizei; AMethod: TUniformBlockAutoSetMethod);
+procedure FillUniformBlockAutoSetMethodList(AList: TStrings;
+  TypeFilter: TGLSizei);
+function GetUniformBlockAutoSetMethod(AMethodName: string): TUniformBlockAutoSetMethod;
+function GetUniformBlockAutoSetMethodName(AMethod: TUniformBlockAutoSetMethod): string;
 
 implementation
 
@@ -322,8 +358,15 @@ type
     Method: TUniformAutoSetMethod;
   end;
 
+  TBlockAutoSetMethodRec = record
+    Name: string;
+    Size: TGLSizei;
+    Method: TUniformBlockAutoSetMethod;
+  end;
+
 var
   vMethods: array of TAutoSetMethodRec;
+  vBlockMethods: array of TBlockAutoSetMethodRec;
 
 function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
 begin
@@ -394,6 +437,60 @@ begin
     if @vMethods[I].Method = @AMethod then
     begin
       Result := vMethods[I].Name;
+      exit;
+    end;
+  Result := '';
+end;
+
+procedure RegisterUniformBlockAutoSetMethod(AMethodName: string;
+  ASize: TGLSizei; AMethod: TUniformBlockAutoSetMethod);
+var
+  I: Integer;
+begin
+  for I := 0 to High(vBlockMethods) do
+    if vBlockMethods[I].Name = AMethodName then
+    begin
+      vBlockMethods[I].Size := ASize;
+      vBlockMethods[I].Method := AMethod;
+      exit;
+    end;
+  I := Length(vBlockMethods);
+  SetLength(vBlockMethods, I+1);
+  vBlockMethods[I].Name := AMethodName;
+  vBlockMethods[I].Size := ASize;
+  vBlockMethods[I].Method := AMethod;
+end;
+
+procedure FillUniformBlockAutoSetMethodList(AList: TStrings; TypeFilter: TGLSizei);
+var
+  I: Integer;
+begin
+  for I := 0 to High(vBlockMethods) do
+    if vBlockMethods[I].Size = TypeFilter then
+      AList.Add(vBlockMethods[I].Name);
+end;
+
+function GetUniformBlockAutoSetMethod(AMethodName: string): TUniformBlockAutoSetMethod;
+var
+  I: Integer;
+begin
+  for I := 0 to High(vBlockMethods) do
+    if vBlockMethods[I].Name = AMethodName then
+    begin
+      Result := vBlockMethods[I].Method;
+      exit;
+    end;
+  Result := nil;
+end;
+
+function GetUniformBlockAutoSetMethodName(AMethod: TUniformBlockAutoSetMethod): string;
+var
+  I: Integer;
+begin
+  for I := 0 to High(vBlockMethods) do
+    if @vBlockMethods[I].Method = @AMethod then
+    begin
+      Result := vBlockMethods[I].Name;
       exit;
     end;
   Result := '';

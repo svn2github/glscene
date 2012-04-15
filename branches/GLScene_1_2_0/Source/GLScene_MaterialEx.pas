@@ -14,6 +14,7 @@
   i.e. if textures less than maximum units may be not one binding occur per frame.
 
   <b>History : </b><font size=-1><ul>
+  <li>16/04/12 - Yar - Added uniform block binding, lights block autoset
   <li>24/03/12 - Yar - Added OnMatLibComponentFail to material library
   <li>16/03/12 - Yar - Initial OpenGL ES and GLSL ES support
   <li>19/05/11 - Yar - Added PointProperties for FixedFunction
@@ -39,6 +40,7 @@ uses
   GLScene_Base_Classes,
   GLScene_Base_Context,
   GLScene_Base_Vector_Types,
+  GLScene_Base_RedBlackTree,
   GLScene_Material,
   GLScene_Texture,
   GLScene_Base_Color,
@@ -931,10 +933,13 @@ type
     FNameHashCode: Integer;
     FType: TGLSLDataType;
     FSamplerType: TGLSLSamplerType;
+    FBlockOffset: TGLInt;
 
     function GetName: string;
     function GetGLSLType: TGLSLDataType;
     function GetGLSLSamplerType: TGLSLSamplerType;
+    function GetBlockOffset: TGLInt;
+    procedure SetBlockOffset(const AValue: TGLInt);
 
     function GetAutoSetMethod: string; virtual;
     function GetTextureName: string; virtual;
@@ -983,8 +988,19 @@ type
     procedure SetMat4(const Value: TMatrix4f); virtual;
 
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); virtual;
+    procedure SetVec2Array(const Values: PGLFloat; Count: Integer); virtual;
+    procedure SetVec3Array(const Values: PGLFloat; Count: Integer); virtual;
+    procedure SetVec4Array(const Values: PGLFloat; Count: Integer); virtual;
+
     procedure SetIntArray(const Values: PGLInt; Count: Integer); virtual;
+    procedure SetIVec2Array(const Values: PGLInt; Count: Integer); virtual;
+    procedure SetIVec3Array(const Values: PGLInt; Count: Integer); virtual;
+    procedure SetIVec4Array(const Values: PGLInt; Count: Integer); virtual;
+
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); virtual;
+    procedure SetUVec2Array(const Values: PGLUInt; Count: Integer); virtual;
+    procedure SetUVec3Array(const Values: PGLUInt; Count: Integer); virtual;
+    procedure SetUVec4Array(const Values: PGLUInt; Count: Integer); virtual;
 
     procedure WriteToFiler(AWriter: TWriter); virtual;
     procedure ReadFromFiler(AReader: TReader); virtual;
@@ -1058,8 +1074,19 @@ type
   public
     { Public Declarations }
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec2Array(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec3Array(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec4Array(const Values: PGLFloat; Count: Integer); override;
+
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec2Array(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec3Array(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec4Array(const Values: PGLInt; Count: Integer); override;
+
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec2Array(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec3Array(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec4Array(const Values: PGLUInt; Count: Integer); override;
 
     procedure Assign(Source: TPersistent); override;
     procedure Apply(var ARci: TRenderContextInfo); override;
@@ -1067,6 +1094,7 @@ type
     property Name: string read GetName;
     property Location: TGLint read FLocation;
     property GLSLType: TGLSLDataType read GetGLSLType;
+    property BlockOffset: TGLInt read GetBlockOffset;
   end;
 
   // TGLShaderUniformDSA
@@ -1096,8 +1124,19 @@ type
   public
     { Public Declarations }
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec2Array(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec3Array(const Values: PGLFloat; Count: Integer); override;
+    procedure SetVec4Array(const Values: PGLFloat; Count: Integer); override;
+
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec2Array(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec3Array(const Values: PGLInt; Count: Integer); override;
+    procedure SetIVec4Array(const Values: PGLInt; Count: Integer); override;
+
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec2Array(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec3Array(const Values: PGLUInt; Count: Integer); override;
+    procedure SetUVec4Array(const Values: PGLUInt; Count: Integer); override;
   end;
 
   // TGLUniformTexture
@@ -1142,6 +1181,39 @@ type
       write SetTextureSwizzle;
   end;
 
+  // TGLShaderUniformBlock
+  //
+
+  TGLShaderUniformBlock = class(TGLUpdateAbleObject, IShaderUniformBlock)
+  private
+    { Protected Declarations }
+    FName: string;
+    FNameHashCode: Integer;
+    FLocation: TGLint;
+    FBindingIndex: TGLuint;
+    FSize: GLSizei;
+    FUniforms: TList;
+    FAutoSet: TUniformBlockAutoSetMethod;
+    function GetProgram: TGLUint;
+    function GetName: string;
+    function GetBindingIndex: TGLuint;
+    procedure SetBindingIndex(Value: TGLuint);
+    function GetDataSize: GLSizei;
+    procedure SetDataSize(Value: GLSizei);
+    function GetAutoSetMethod: string;
+    procedure SetAutoSetMethod(const AValue: string);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    procedure Apply(var ARci: TRenderContextInfo);
+
+    property Name: string read GetName;
+    property Location: GLInt read FLocation;
+    property DataSize: GLSizei read GetDataSize;
+    property BindingIndex: TGLuint read GetBindingIndex write SetBindingIndex;
+  end;
+
   // TGLBaseShaderModel
   //
 
@@ -1154,6 +1226,7 @@ type
     FIsValid: Boolean;
     FInfoLog: string;
     FUniforms: TPersistentObjectList;
+    FBlocks: TPersistentObjectList;
     FAutoFill: Boolean;
     FShared: Boolean;
     FpRci: PRenderContextInfo;
@@ -1163,7 +1236,9 @@ type
 
     procedure SetShared(const Value: Boolean);
 
-    function GetUniform(const AName: string): IShaderParameter;
+    function GetUniform(const AName: string): TGLAbstractShaderUniform;
+    function GetUniformInterface(const AName: string): IShaderParameter;
+    function GetUniformBlock(const AName: string): IShaderUniformBlock;
     class procedure ReleaseUniforms(AList: TPersistentObjectList);
 
     property LibVertexShaderName: TGLMaterialComponentName index shtVertex
@@ -1202,7 +1277,8 @@ type
 
     property Handle: TGLProgramHandle read FHandle;
     property IsValid: Boolean read FIsValid;
-    property Uniforms[const AName: string]: IShaderParameter read GetUniform;
+    property Uniforms[const AName: string]: IShaderParameter read GetUniformInterface;
+    property UniformBlocks[const AName: string]: IShaderUniformBlock read GetUniformBlock;
   published
     { Published Declarations }
     // Compilation info log for design time
@@ -1491,10 +1567,10 @@ uses
   GLScene_Base_Log,
   GLScene_Base_FileIO,
   GLScene_Base_Strings,
+  GLScene_Base_Transformation,
   GLScene_Image_Utils,
   GLScene_Utils,
-  GLScene_Mesh,
-  GLScene_Base_Transformation;
+  GLScene_Mesh;
 
 resourcestring
   glsDoOnPrepare = '.DoOnPrepare';
@@ -1536,10 +1612,17 @@ const
 type
   TFriendlyImage = class(TGLBaseImage);
   TFriendlyTransformation = class(TGLTransformation);
+  TLightsBufferTree = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
+    GRedBlackTree < TGLStateCache, TGLUniformBufferHandle > ;
 
   TStandartUniformAutoSetExecutor = class
+  private
+    class var FLightsBufferPerContext: TLightsBufferTree;
+    FLightBufferSizeFlag: Boolean;
   public
     constructor Create;
+    destructor Destroy; override;
+    // Matrices
     procedure SetModelMatrix(Sender: IShaderParameter;
       var ARci: TRenderContextInfo);
     procedure SetViewMatrix(Sender: IShaderParameter;
@@ -1563,6 +1646,26 @@ type
     // Lighting
     procedure SetLightSource0Position(Sender: IShaderParameter;
       var ARci: TRenderContextInfo);
+    procedure SetLightsNumber(Sender: IShaderParameter;
+      var ARci: TRenderContextInfo);
+    procedure SetLightIndices(Sender: IShaderParameter;
+      var ARci: TRenderContextInfo);
+    procedure SetLightsBlock(Sender: IShaderUniformBlock;
+      var ARci: TRenderContextInfo);
+    procedure SetLightWorldPosition
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightAmbient
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightDiffuse
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightSpecular
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightSpotDirection
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightSpotCosCutoffExponent
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+    procedure SetLightAttenuation
+      (Sender: IShaderParameter; var ARci: TRenderContextInfo);
     // Material
     procedure SetMaterialFrontAmbient(Sender: IShaderParameter;
       var ARci: TRenderContextInfo);
@@ -4978,6 +5081,7 @@ begin
   FHandle.OnPrapare := DoOnPrepare;
   FEnabled := False;
   FUniforms := TPersistentObjectList.Create;
+  FBlocks := TPersistentObjectList.Create;
   FAutoFill := True;
   FShared := True;
 end;
@@ -4998,6 +5102,7 @@ begin
   LibTessControlShaderName := '';
   LibTessEvalShaderName := '';
   FUniforms.CleanFree;
+  FBlocks.CleanFree;
   inherited;
 end;
 
@@ -5017,23 +5122,32 @@ var
   i: Integer;
 begin
   if FAutoFill then
+  begin
+    for i := FBlocks.Count - 1 downto 0 do
+      TGLShaderUniformBlock(FBlocks[i]).Apply(FpRci^);
     for i := FUniforms.Count - 1 downto 0 do
       TGLAbstractShaderUniform(FUniforms[i]).Apply(FpRci^);
+  end;
 end;
 
 procedure TGLBaseShaderModel.DoOnPrepare(Sender: TGLContext);
 var
   T: TGLShaderType;
-  LUniforms: TPersistentObjectList;
+  LUniforms, LBlocks: TPersistentObjectList;
+  LAbsUniform: TGLAbstractShaderUniform;
   LUniform, LUniform2: TGLShaderUniform;
+  LBlock: TGLShaderUniformBlock;
   ID: TGLUint;
   i, J, C: Integer;
   Location: TGLUint;
   buff: array [0 .. 255] of AnsiChar;
-  Size: TGLint;
+  indices: array[0..255] of GLInt;
+  offsets: array[0..255] of GLInt;
+  Size, BSize: TGLint;
   Len: GLsizei;
   Loc: TGLint;
   AType: GLenum;
+  Uoffset: GLInt;
   UName: string;
   GLSLData: TGLSLDataType;
   GLSLSampler: TGLSLSamplerType;
@@ -5043,6 +5157,209 @@ var
 {$IFDEF GLS_OPENGL_DEBUG}
   LString: string;
 {$ENDIF}
+
+
+  procedure AddOrUpdateUniform;
+  var
+    K: Integer;
+    sInBlock: string;
+  begin
+    GLSLData := GLSLTypeUndefined;
+    GLSLSampler := GLSLSamplerUndefined;
+    case AType of
+      GL_FLOAT:
+        GLSLData := GLSLType1F;
+      GL_FLOAT_VEC2:
+        GLSLData := GLSLType2F;
+      GL_FLOAT_VEC3:
+        GLSLData := GLSLType3F;
+      GL_FLOAT_VEC4:
+        GLSLData := GLSLType4F;
+      GL_INT:
+        GLSLData := GLSLType1I;
+      GL_INT_VEC2:
+        GLSLData := GLSLType2I;
+      GL_INT_VEC3:
+        GLSLData := GLSLType3I;
+      GL_INT_VEC4:
+        GLSLData := GLSLType4I;
+      GL_UNSIGNED_INT:
+        GLSLData := GLSLType1UI;
+      GL_UNSIGNED_INT_VEC2:
+        GLSLData := GLSLType2UI;
+      GL_UNSIGNED_INT_VEC3:
+        GLSLData := GLSLType3UI;
+      GL_UNSIGNED_INT_VEC4:
+        GLSLData := GLSLType4UI;
+      GL_BOOL:
+        GLSLData := GLSLType1I;
+      GL_BOOL_VEC2:
+        GLSLData := GLSLType2I;
+      GL_BOOL_VEC3:
+        GLSLData := GLSLType3I;
+      GL_BOOL_VEC4:
+        GLSLData := GLSLType4I;
+      GL_FLOAT_MAT2:
+        GLSLData := GLSLTypeMat2F;
+      GL_FLOAT_MAT3:
+        GLSLData := GLSLTypeMat3F;
+      GL_FLOAT_MAT4:
+        GLSLData := GLSLTypeMat4F;
+      // ------------------------------------------------------------------------------
+      GL_SAMPLER_1D:
+        GLSLSampler := GLSLSampler1D;
+      GL_SAMPLER_2D:
+        GLSLSampler := GLSLSampler2D;
+      GL_SAMPLER_3D:
+        GLSLSampler := GLSLSampler3D;
+      GL_SAMPLER_CUBE:
+        GLSLSampler := GLSLSamplerCube;
+      GL_SAMPLER_1D_SHADOW:
+        GLSLSampler := GLSLSampler1DShadow;
+      GL_SAMPLER_2D_SHADOW:
+        GLSLSampler := GLSLSampler2DShadow;
+      GL_SAMPLER_2D_RECT:
+        GLSLSampler := GLSLSamplerRect;
+      GL_SAMPLER_2D_RECT_SHADOW:
+        GLSLSampler := GLSLSamplerRectShadow;
+      GL_SAMPLER_BUFFER:
+        GLSLSampler := GLSLSamplerBuffer;
+      GL_INT_SAMPLER_2D_RECT:
+        GLSLSampler := GLSLIntSamplerRect;
+      GL_INT_SAMPLER_BUFFER:
+        GLSLSampler := GLSLIntSamplerBuffer;
+      GL_UNSIGNED_INT_SAMPLER_1D:
+        GLSLSampler := GLSLUIntSampler1D;
+      GL_UNSIGNED_INT_SAMPLER_2D:
+        GLSLSampler := GLSLUIntSampler2D;
+      GL_UNSIGNED_INT_SAMPLER_3D:
+        GLSLSampler := GLSLUIntSampler3D;
+      GL_UNSIGNED_INT_SAMPLER_CUBE:
+        GLSLSampler := GLSLUIntSamplerCube;
+      GL_UNSIGNED_INT_SAMPLER_1D_ARRAY:
+        GLSLSampler := GLSLUIntSampler1DArray;
+      GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+        GLSLSampler := GLSLUIntSampler2DArray;
+      GL_UNSIGNED_INT_SAMPLER_2D_RECT:
+        GLSLSampler := GLSLUIntSamplerRect;
+      GL_UNSIGNED_INT_SAMPLER_BUFFER:
+        GLSLSampler := GLSLUIntSamplerBuffer;
+      GL_SAMPLER_2D_MULTISAMPLE:
+        GLSLSampler := GLSLSamplerMS;
+      GL_INT_SAMPLER_2D_MULTISAMPLE:
+        GLSLSampler := GLSLIntSamplerMS;
+      GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
+        GLSLSampler := GLSLUIntSamplerMS;
+      GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
+        GLSLSampler := GLSLSamplerMSArray;
+      GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+        GLSLSampler := GLSLIntSamplerMSArray;
+      GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
+        GLSLSampler := GLSLUIntSamplerMSArray;
+    end;
+
+    bSampler := False;
+    if Assigned(LBlock) then
+      sInBlock := ' in block '+LBlock.Name
+    else
+      sInBlock := '';
+
+    if (GLSLData = GLSLTypeUndefined) and
+      (GLSLSampler = GLSLSamplerUndefined) then
+    begin
+      GLSLogger.LogWarningFmt
+        ('Detected active uniform "%s" with unknown type', [UName]);
+      Exit;
+    end
+    else if GLSLData <> GLSLTypeUndefined then
+    begin
+      GLSLogger.LogInfoFmt('Detected active uniform%s: %s %s',
+        [sInBlock, cGLSLTypeString[GLSLData], UName]);
+    end
+    else
+    begin
+      bSampler := True;
+      GLSLogger.LogInfoFmt('Detected active uniform%s: %s %s',
+        [sInBlock, cGLSLSamplerString[GLSLSampler], UName]);
+    end;
+
+    // Find already existing uniform
+    bNew := True;
+    for K := 0 to FUniforms.Count - 1 do
+    begin
+      if not(FUniforms[K] is TGLShaderUniform) then
+        continue;
+      LUniform := TGLShaderUniform(FUniforms[K]);
+      if not Assigned(LUniform) then
+        continue;
+      if LUniform.Name = UName then
+      begin
+        if bSampler and (LUniform is TGLShaderUniformTexture) then
+        begin
+          if TGLShaderUniformTexture(LUniform)
+            .FSamplerType = GLSLSampler then
+          begin
+            LUniform.FLocation := Loc;
+            LUniform.FType := GLSLType1I;
+            LUniform.SetBlockOffset(Uoffset);
+            TGLShaderUniformTexture(LUniform).FTarget :=
+              cSamplerToTexture[GLSLSampler];
+            LUniforms.Add(LUniform);
+            FUniforms[K] := nil;
+            bNew := False;
+            break;
+          end
+        end
+        else
+        begin
+          if LUniform.FType = GLSLData then
+          begin
+            if (LUniform is TGLShaderUniformDSA) and
+              not GL.EXT_direct_state_access then
+            begin
+              LUniform2 := LUniform;
+              LUniform := TGLShaderUniform.Create(Self);
+              LUniform.Assign(LUniform2);
+              LUniform2.Destroy;
+            end;
+            LUniform.FLocation := Loc;
+            LUniform.SetBlockOffset(Uoffset);
+            LUniforms.Add(LUniform);
+            FUniforms[K] := nil;
+            bNew := False;
+            break;
+          end;
+        end;
+      end;
+    end; // for J
+
+    if bNew then
+    begin
+      // Create new uniform
+      if bSampler then
+      begin
+        LUniform := TGLShaderUniformTexture.Create(Self);
+        LUniform.FType := GLSLType1I;
+        TGLShaderUniformTexture(LUniform).FSamplerType :=
+          GLSLSampler;
+        TGLShaderUniformTexture(LUniform).FTarget :=
+          cSamplerToTexture[GLSLSampler];
+      end
+      else
+      begin
+        if GL.EXT_direct_state_access then
+          LUniform := TGLShaderUniformDSA.Create(Self)
+        else
+          LUniform := TGLShaderUniform.Create(Self);
+        LUniform.FType := GLSLData;
+      end;
+      LUniform.FName := UName;
+      LUniform.FNameHashCode := ComputeNameHashKey(UName);
+      LUniform.FLocation := Loc;
+      LUniforms.Add(LUniform);
+    end;
+  end;
+
 begin
   if FEnabled then
     try
@@ -5150,6 +5467,8 @@ begin
               // Get uniforms
               LUniforms := TPersistentObjectList.Create;
 
+              Uoffset := -1;
+              LBlock := nil;
               GL.GetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
               for i := 0 to C - 1 do
               begin
@@ -5159,199 +5478,104 @@ begin
                 if Loc < 0 then
                   continue;
                 UName := Copy(string(buff), 0, Len);
-                GLSLData := GLSLTypeUndefined;
-                GLSLSampler := GLSLSamplerUndefined;
-                case AType of
-                  GL_FLOAT:
-                    GLSLData := GLSLType1F;
-                  GL_FLOAT_VEC2:
-                    GLSLData := GLSLType2F;
-                  GL_FLOAT_VEC3:
-                    GLSLData := GLSLType3F;
-                  GL_FLOAT_VEC4:
-                    GLSLData := GLSLType4F;
-                  GL_INT:
-                    GLSLData := GLSLType1I;
-                  GL_INT_VEC2:
-                    GLSLData := GLSLType2I;
-                  GL_INT_VEC3:
-                    GLSLData := GLSLType3I;
-                  GL_INT_VEC4:
-                    GLSLData := GLSLType4I;
-                  GL_UNSIGNED_INT:
-                    GLSLData := GLSLType1UI;
-                  GL_UNSIGNED_INT_VEC2:
-                    GLSLData := GLSLType2UI;
-                  GL_UNSIGNED_INT_VEC3:
-                    GLSLData := GLSLType3UI;
-                  GL_UNSIGNED_INT_VEC4:
-                    GLSLData := GLSLType4UI;
-                  GL_BOOL:
-                    GLSLData := GLSLType1I;
-                  GL_BOOL_VEC2:
-                    GLSLData := GLSLType2I;
-                  GL_BOOL_VEC3:
-                    GLSLData := GLSLType3I;
-                  GL_BOOL_VEC4:
-                    GLSLData := GLSLType4I;
-                  GL_FLOAT_MAT2:
-                    GLSLData := GLSLTypeMat2F;
-                  GL_FLOAT_MAT3:
-                    GLSLData := GLSLTypeMat3F;
-                  GL_FLOAT_MAT4:
-                    GLSLData := GLSLTypeMat4F;
-                  // ------------------------------------------------------------------------------
-                  GL_SAMPLER_1D:
-                    GLSLSampler := GLSLSampler1D;
-                  GL_SAMPLER_2D:
-                    GLSLSampler := GLSLSampler2D;
-                  GL_SAMPLER_3D:
-                    GLSLSampler := GLSLSampler3D;
-                  GL_SAMPLER_CUBE:
-                    GLSLSampler := GLSLSamplerCube;
-                  GL_SAMPLER_1D_SHADOW:
-                    GLSLSampler := GLSLSampler1DShadow;
-                  GL_SAMPLER_2D_SHADOW:
-                    GLSLSampler := GLSLSampler2DShadow;
-                  GL_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLSamplerRect;
-                  GL_SAMPLER_2D_RECT_SHADOW:
-                    GLSLSampler := GLSLSamplerRectShadow;
-                  GL_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLSamplerBuffer;
-                  GL_INT_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLIntSamplerRect;
-                  GL_INT_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLIntSamplerBuffer;
-                  GL_UNSIGNED_INT_SAMPLER_1D:
-                    GLSLSampler := GLSLUIntSampler1D;
-                  GL_UNSIGNED_INT_SAMPLER_2D:
-                    GLSLSampler := GLSLUIntSampler2D;
-                  GL_UNSIGNED_INT_SAMPLER_3D:
-                    GLSLSampler := GLSLUIntSampler3D;
-                  GL_UNSIGNED_INT_SAMPLER_CUBE:
-                    GLSLSampler := GLSLUIntSamplerCube;
-                  GL_UNSIGNED_INT_SAMPLER_1D_ARRAY:
-                    GLSLSampler := GLSLUIntSampler1DArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-                    GLSLSampler := GLSLUIntSampler2DArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLUIntSamplerRect;
-                  GL_UNSIGNED_INT_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLUIntSamplerBuffer;
-                  GL_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLSamplerMS;
-                  GL_INT_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLIntSamplerMS;
-                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLUIntSamplerMS;
-                  GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLSamplerMSArray;
-                  GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLIntSamplerMSArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLUIntSamplerMSArray;
-                end;
-
-                bSampler := False;
-                if (GLSLData = GLSLTypeUndefined) and
-                  (GLSLSampler = GLSLSamplerUndefined) then
-                begin
-                  GLSLogger.LogWarningFmt
-                    ('Detected active uniform "%s" with unknown type', [UName]);
-                  continue;
-                end
-                else if GLSLData <> GLSLTypeUndefined then
-                begin
-                  GLSLogger.LogInfoFmt('Detected active uniform: %s %s',
-                    [cGLSLTypeString[GLSLData], UName]);
-                end
-                else
-                begin
-                  bSampler := True;
-                  GLSLogger.LogInfoFmt('Detected active uniform: %s %s',
-                    [cGLSLSamplerString[GLSLSampler], UName]);
-                end;
-
-                // Find already existing uniform
-                bNew := True;
-                for J := 0 to FUniforms.Count - 1 do
-                begin
-                  if not(FUniforms[J] is TGLShaderUniform) then
-                    continue;
-                  LUniform := TGLShaderUniform(FUniforms[J]);
-                  if not Assigned(LUniform) then
-                    continue;
-                  if LUniform.Name = UName then
-                  begin
-                    if bSampler and (LUniform is TGLShaderUniformTexture) then
-                    begin
-                      if TGLShaderUniformTexture(LUniform)
-                        .FSamplerType = GLSLSampler then
-                      begin
-                        LUniform.FLocation := Loc;
-                        LUniform.FType := GLSLType1I;
-                        TGLShaderUniformTexture(LUniform).FTarget :=
-                          cSamplerToTexture[GLSLSampler];
-                        LUniforms.Add(LUniform);
-                        FUniforms[J] := nil;
-                        bNew := False;
-                        break;
-                      end
-                    end
-                    else
-                    begin
-                      if LUniform.FType = GLSLData then
-                      begin
-                        if (LUniform is TGLShaderUniformDSA) and
-                          not EXT_direct_state_access then
-                        begin
-                          LUniform2 := LUniform;
-                          LUniform := TGLShaderUniform.Create(Self);
-                          LUniform.Assign(LUniform2);
-                          LUniform2.Destroy;
-                        end;
-                        LUniform.FLocation := Loc;
-                        LUniforms.Add(LUniform);
-                        FUniforms[J] := nil;
-                        bNew := False;
-                        break;
-                      end;
-                    end;
-                  end;
-                end; // for J
-
-                if bNew then
-                begin
-                  // Create new uniform
-                  if bSampler then
-                  begin
-                    LUniform := TGLShaderUniformTexture.Create(Self);
-                    LUniform.FType := GLSLType1I;
-                    TGLShaderUniformTexture(LUniform).FSamplerType :=
-                      GLSLSampler;
-                    TGLShaderUniformTexture(LUniform).FTarget :=
-                      cSamplerToTexture[GLSLSampler];
-                  end
-                  else
-                  begin
-                    if EXT_direct_state_access then
-                      LUniform := TGLShaderUniformDSA.Create(Self)
-                    else
-                      LUniform := TGLShaderUniform.Create(Self);
-                    LUniform.FType := GLSLData;
-                  end;
-                  LUniform.FName := UName;
-                  LUniform.FNameHashCode := ComputeNameHashKey(UName);
-                  LUniform.FLocation := Loc;
-                  LUniforms.Add(LUniform);
-                end;
+                AddOrUpdateUniform;
               end; // for I
 
               // Clean old unused uniforms
               ReleaseUniforms(FUniforms);
               // Assign new one
               FUniforms := LUniforms;
+
+              // Get uniform block
+              if GL.ARB_uniform_buffer_object then
+              begin
+                LBlocks := TPersistentObjectList.Create;
+                GL.ClearError;
+                GL.GetProgramiv(ID, GL_ACTIVE_UNIFORM_BLOCKS, @C);
+                for I := 0 to C - 1 do
+                begin
+                  GL.GetActiveUniformBlockName(
+                    ID,
+                    I,
+                    Length(buff),
+                    @len,
+                    @buff[0]);
+                  if GL.GetError <> GL_NO_ERROR then
+                    continue;
+
+                  UName := Copy(string(buff), 0, len);
+                  GLSLogger.LogInfo('Detected active uniform block: ' + UName);
+                  Loc := GL.GetUniformBlockIndex(ID, PGLChar(TGLString(UName)));
+                  GL.GetActiveUniformBlockiv(ID, Loc,
+                    GL_UNIFORM_BLOCK_DATA_SIZE, @BSize);
+                  GL.GetActiveUniformBlockiv(ID, Loc,
+                    GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, @Size);
+                  GL.GetActiveUniformBlockiv(ID, Loc,
+                    GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, @indices[0]);
+                  GL.GetActiveUniformsiv(ID, Size, @indices[0],
+                    GL_UNIFORM_OFFSET, @offsets[0]);
+
+                  bNew := True;
+                  for J := 0 to FBlocks.Count - 1 do
+                  begin
+                    with TGLShaderUniformBlock(FBlocks[J]) do
+                    begin
+                      if (Name = UName) and (DataSize = BSize) then
+                      begin
+                        LBlock := TGLShaderUniformBlock(FBlocks[J]);
+                        LBlocks.Add(LBlock);
+                        FBlocks[J] := nil;
+                        bNew := False;
+                        Break;
+                      end;
+                    end;
+                  end;
+
+                  if bNew then
+                  begin
+                    LBlock := TGLShaderUniformBlock.Create(Self);
+                    LBlock.FName := UName;
+                    LBlock.FNameHashCode := ComputeNameHashKey(UName);
+                    LBlock.FSize := BSize;
+                    LBlocks.Add(LBlock);
+                  end;
+
+                  with LBlock do
+                  begin
+                    FLocation := Loc;
+                    FUniforms.Clear;
+                    for J := 0 to Size - 1 do
+                    begin
+                      GL.GetActiveUniform(
+                        ID,
+                        indices[J],
+                        Length(buff),
+                        @len,
+                        @Size,
+                        @AType,
+                        @buff[0]);
+                      UName := Copy(string(buff), 0, len);
+                      LAbsUniform := GetUniform(UName);
+                      if Assigned(LAbsUniform) then
+                      begin
+                        FUniforms.Add(LAbsUniform);
+                        LAbsUniform.SetBlockOffset(offsets[J]);
+                      end
+                      else
+                      begin
+                        Uoffset := offsets[J];
+                        AddOrUpdateUniform;
+                      end;
+                    end;
+                  end;
+                end; // for I
+
+                for I := 0 to FBlocks.Count - 1 do
+                  if Assigned(FBlocks[I]) then
+                    FBlocks[I].Destroy;
+                FBlocks.Destroy;
+                FBlocks := LBlocks;
+              end;
 
               FHandle.NotifyDataUpdated;
               FIsValid := True;
@@ -5476,7 +5700,7 @@ begin
     Result := '';
 end;
 
-function TGLBaseShaderModel.GetUniform(const AName: string): IShaderParameter;
+function TGLBaseShaderModel.GetUniform(const AName: string): TGLAbstractShaderUniform;
 var
   h, i: Integer;
   U: TGLAbstractShaderUniform;
@@ -5487,10 +5711,22 @@ begin
   begin
     U := TGLAbstractShaderUniform(FUniforms[i]);
     if (U.FNameHashCode = h) and (U.FName = AName) then
-    begin
-      Result := U;
-      exit;
-    end;
+      Exit(U);
+  end;
+end;
+
+function TGLBaseShaderModel.GetUniformInterface(const AName: string): IShaderParameter;
+var
+  h, i: Integer;
+  U: TGLAbstractShaderUniform;
+begin
+  Result := nil;
+  h := ComputeNameHashKey(AName);
+  for i := 0 to FUniforms.Count - 1 do
+  begin
+    U := TGLAbstractShaderUniform(FUniforms[i]);
+    if (U.FNameHashCode = h) and (U.FName = AName) then
+      Exit(U);
   end;
 
   if not IsDesignTime then
@@ -5503,6 +5739,33 @@ begin
     U.FNameHashCode := h;
     FUniforms.Add(U);
     Result := U;
+  end;
+end;
+
+function TGLBaseShaderModel.GetUniformBlock(const AName: string): IShaderUniformBlock;
+var
+  h, i: Integer;
+  B: TGLShaderUniformBlock;
+begin
+  Result := nil;
+  h := ComputeNameHashKey(AName);
+  for i := 0 to FBlocks.Count - 1 do
+  begin
+    B := TGLShaderUniformBlock(FBlocks[i]);
+    if (B.FNameHashCode = h) and (B.FName = AName) then
+      Exit(B);
+  end;
+
+  if not IsDesignTime then
+  begin
+    GLSLogger.LogWarningFmt
+      ('Attempt to use unknow uniform block "%s" for material "%s"',
+      [AName, GetMaterial.Name]);
+    B := TGLShaderUniformBlock.Create(Self);
+    B.FName := AName;
+    B.FNameHashCode := h;
+    FBlocks.Add(B);
+    Result := B;
   end;
 end;
 
@@ -6366,6 +6629,71 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLShaderUniformBlock'}{$ENDIF}
+
+procedure TGLShaderUniformBlock.Apply(var ARci: TRenderContextInfo);
+begin
+  if Assigned(FAutoSet) then
+    FAutoSet(Self, ARci);
+end;
+
+constructor TGLShaderUniformBlock.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FUniforms := TList.Create;
+end;
+
+destructor TGLShaderUniformBlock.Destroy;
+begin
+  FUniforms.Destroy;
+  inherited;
+end;
+
+function TGLShaderUniformBlock.GetAutoSetMethod: string;
+begin
+  Result := GetUniformBlockAutoSetMethodName(FAutoSet);
+end;
+
+function TGLShaderUniformBlock.GetBindingIndex: TGLuint;
+begin
+  Result := FBindingIndex;
+end;
+
+function TGLShaderUniformBlock.GetDataSize: GLSizei;
+begin
+  Result := FSize;
+end;
+
+function TGLShaderUniformBlock.GetName: string;
+begin
+  Result := FName;
+end;
+
+function TGLShaderUniformBlock.GetProgram: TGLUint;
+begin
+  Result := TGLBaseShaderModel(Owner).FHandle.Handle;
+end;
+
+procedure TGLShaderUniformBlock.SetAutoSetMethod(const AValue: string);
+begin
+  FAutoSet := GetUniformBlockAutoSetMethod(AValue);
+end;
+
+procedure TGLShaderUniformBlock.SetBindingIndex(Value: TGLuint);
+begin
+  if FBindingIndex <> Value then
+  begin
+    FBindingIndex := Value;
+    GL.UniformBlockBinding(GetProgram, FLocation, Value);
+  end;
+end;
+
+procedure TGLShaderUniformBlock.SetDataSize(Value: GLSizei);
+begin
+  FSize := Value;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGION}{$REGION 'TGLAbstractShaderUniform'}{$ENDIF}
 
 function TGLAbstractShaderUniform.GetFloat: Single;
@@ -6376,6 +6704,16 @@ end;
 function TGLAbstractShaderUniform.GetGLSLSamplerType: TGLSLSamplerType;
 begin
   Result := FSamplerType;
+end;
+
+function TGLAbstractShaderUniform.GetBlockOffset: TGLInt;
+begin
+  Result := FBlockOffset;
+end;
+
+procedure TGLAbstractShaderUniform.SetBlockOffset(const AValue: TGLInt);
+begin
+  FBlockOffset := AValue;
 end;
 
 function TGLAbstractShaderUniform.GetGLSLType: TGLSLDataType;
@@ -6500,12 +6838,36 @@ procedure TGLAbstractShaderUniform.SetFloatArray(const Values: PGLFloat;
 begin
 end;
 
+procedure TGLAbstractShaderUniform.SetVec2Array(const Values: PGLFloat; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetVec3Array(const Values: PGLFloat; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetVec4Array(const Values: PGLFloat; Count: Integer);
+begin
+end;
+
 procedure TGLAbstractShaderUniform.SetInt(const Value: Integer);
 begin
 end;
 
 procedure TGLAbstractShaderUniform.SetIntArray(const Values: PGLInt;
   Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetIVec2Array(const Values: PGLInt; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetIVec3Array(const Values: PGLInt; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetIVec4Array(const Values: PGLInt; Count: Integer);
 begin
 end;
 
@@ -6556,6 +6918,18 @@ end;
 
 procedure TGLAbstractShaderUniform.SetUIntArray(const Values: PGLUInt;
   Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetUVec2Array(const Values: PGLUInt; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetUVec3Array(const Values: PGLUInt; Count: Integer);
+begin
+end;
+
+procedure TGLAbstractShaderUniform.SetUVec4Array(const Values: PGLUInt; Count: Integer);
 begin
 end;
 
@@ -6651,6 +7025,7 @@ begin
     LUniform := TGLShaderUniform(Source);
     FName := LUniform.Name;
     FNameHashCode := LUniform.FNameHashCode;
+    FBlockOffset := LUniform.FBlockOffset;
     FType := LUniform.FType;
     FSamplerType := LUniform.FSamplerType;
     FAutoSet := LUniform.FAutoSet;
@@ -6740,6 +7115,27 @@ begin
   PopProgram;
 end;
 
+procedure TGLShaderUniform.SetVec2Array(const Values: PGLFloat; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform2fv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetVec3Array(const Values: PGLFloat; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform3fv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetVec4Array(const Values: PGLFloat; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform4fv(FLocation, Count, Values);
+  PopProgram;
+end;
+
 procedure TGLShaderUniform.SetInt(const Value: Integer);
 begin
   PushProgram;
@@ -6751,6 +7147,27 @@ procedure TGLShaderUniform.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
   PushProgram;
   GL.Uniform1iv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetIVec2Array(const Values: PGLInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform2iv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetIVec3Array(const Values: PGLInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform3iv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetIVec4Array(const Values: PGLInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform4iv(FLocation, Count, Values);
   PopProgram;
 end;
 
@@ -6812,6 +7229,27 @@ procedure TGLShaderUniform.SetUIntArray(const Values: PGLUInt; Count: Integer);
 begin
   PushProgram;
   GL.Uniform1uiv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetUVec2Array(const Values: PGLUInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform2uiv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetUVec3Array(const Values: PGLUInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform3uiv(FLocation, Count, Values);
+  PopProgram;
+end;
+
+procedure TGLShaderUniform.SetUVec4Array(const Values: PGLUInt; Count: Integer);
+begin
+  PushProgram;
+  GL.Uniform4uiv(FLocation, Count, Values);
   PopProgram;
 end;
 
@@ -6882,6 +7320,21 @@ begin
   GL.ProgramUniform1fv(GetProgram, FLocation, Count, Values);
 end;
 
+procedure TGLShaderUniformDSA.SetVec2Array(const Values: PGLFloat; Count: Integer);
+begin
+  GL.ProgramUniform2fv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetVec3Array(const Values: PGLFloat; Count: Integer);
+begin
+  GL.ProgramUniform3fv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetVec4Array(const Values: PGLFloat; Count: Integer);
+begin
+  GL.ProgramUniform4fv(GetProgram, FLocation, Count, Values);
+end;
+
 procedure TGLShaderUniformDSA.SetInt(const Value: Integer);
 begin
   GL.ProgramUniform1i(GetProgram, FLocation, Value);
@@ -6890,6 +7343,21 @@ end;
 procedure TGLShaderUniformDSA.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
   GL.ProgramUniform1iv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetIVec2Array(const Values: PGLInt; Count: Integer);
+begin
+  GL.ProgramUniform2iv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetIVec3Array(const Values: PGLInt; Count: Integer);
+begin
+  GL.ProgramUniform3iv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetIVec4Array(const Values: PGLInt; Count: Integer);
+begin
+  GL.ProgramUniform4iv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec2(const Value: TVector2i);
@@ -6932,6 +7400,21 @@ procedure TGLShaderUniformDSA.SetUIntArray(const Values: PGLUInt;
   Count: Integer);
 begin
   GL.ProgramUniform1uiv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetUVec2Array(const Values: PGLUInt; Count: Integer);
+begin
+  GL.ProgramUniform2uiv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetUVec3Array(const Values: PGLUInt; Count: Integer);
+begin
+  GL.ProgramUniform3uiv(GetProgram, FLocation, Count, Values);
+end;
+
+procedure TGLShaderUniformDSA.SetUVec4Array(const Values: PGLUInt; Count: Integer);
+begin
+  GL.ProgramUniform4uiv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec2(const Value: TVector2ui);
@@ -7491,8 +7974,21 @@ end;
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
 
+function CompareGLState(const Item1, Item2: TGLStateCache): Integer;
+begin
+  if PtrUint(Item1) < PtrUint(Item2) then
+    exit(-1)
+  else if PtrUint(Item1) = PtrUint(Item2) then
+    exit(0)
+  else
+    exit(1);
+end;
+
 constructor TStandartUniformAutoSetExecutor.Create;
 begin
+  FLightsBufferPerContext := TLightsBufferTree.Create(CompareGLState, nil);
+  FLightBufferSizeFlag := False;
+
   RegisterUniformAutoSetMethod('Camera world position', GLSLType4F,
     SetCameraPosition);
   RegisterUniformAutoSetMethod('LightSource[0] world position', GLSLType4F,
@@ -7533,7 +8029,51 @@ begin
   RegisterUniformAutoSetMethod('Material back face specular', GLSLType4F,
     SetMaterialBackSpecular);
   RegisterUniformAutoSetMethod('Material back face shininess', GLSLType1F,
-    SetMaterialBackShininess)
+    SetMaterialBackShininess);
+  RegisterUniformAutoSetMethod('Lights number', GLSLType1I,
+    SetLightsNumber);
+  RegisterUniformAutoSetMethod('Lights world position', GLSLType4f,
+    SetLightWorldPosition);
+  RegisterUniformAutoSetMethod('Lights ambient', GLSLType4f,
+    SetLightAmbient);
+  RegisterUniformAutoSetMethod('Lights diffuse', GLSLType4f,
+    SetLightDiffuse);
+  RegisterUniformAutoSetMethod('Lights specular', GLSLType4f,
+    SetLightSpecular);
+  RegisterUniformAutoSetMethod('Lights spot direction', GLSLType4f,
+    SetLightSpotDirection);
+  RegisterUniformAutoSetMethod('Lights spot cutoff and exponent', GLSLType4f,
+    SetLightSpotCosCutoffExponent);
+  RegisterUniformAutoSetMethod('Lights attenuation', GLSLType4f,
+    SetLightAttenuation);
+  RegisterUniformAutoSetMethod('Lights indices', GLSLType1I,
+    SetLightIndices);
+  RegisterUniformBlockAutoSetMethod('Lights state block',
+    MAX_HARDWARE_LIGHT*7*SizeOf(TVector), SetLightsBlock);
+end;
+
+procedure LightsBufferDestroyer(AKey: TGLStateCache;
+     AValue: TGLUniformBufferHandle; out AContinue: Boolean);
+begin
+  AValue.Destroy;
+  AContinue := True;
+end;
+
+procedure LightsChanged(Sender: TObject);
+var
+  LightsBuffer: TGLUniformBufferHandle;
+begin
+  if (Sender is TGLStateCache)
+    and TStandartUniformAutoSetExecutor.
+      FLightsBufferPerContext.Find(TGLStateCache(Sender), LightsBuffer) then
+    LightsBuffer.NotifyChangesOfData;
+end;
+
+destructor TStandartUniformAutoSetExecutor.Destroy;
+begin
+  FLightsBufferPerContext.ForEach(LightsBufferDestroyer);
+  FLightsBufferPerContext.Destroy;
+  inherited;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetCameraPosition
@@ -7582,6 +8122,118 @@ procedure TStandartUniformAutoSetExecutor.SetMaterialBackShininess
   (Sender: IShaderParameter; var ARci: TRenderContextInfo);
 begin
   Sender.float := ARci.GLStates.MaterialShininess[cmBack];
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightsNumber
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+begin
+  Sender.int := ARci.GLStates.LightNumber;
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightWorldPosition
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+begin
+  Sender.SetVec4Array(ARci.GLStates.GetLightStateAsAddress(True),
+    ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightAmbient
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightDiffuse
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, 2 * MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightSpecular
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, 3 * MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightSpotDirection
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, 4 * MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightSpotCosCutoffExponent
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, 5 * MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightAttenuation
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+var
+  P: PGLFloat;
+begin
+  P := ARci.GLStates.GetLightStateAsAddress(True);
+  Inc(P, 6 * MAX_SHADER_LIGHT * 4);
+  Sender.SetVec4Array(P, ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightIndices
+  (Sender: IShaderParameter; var ARci: TRenderContextInfo);
+begin
+  Sender.SetIntArray(ARci.GLStates.GetLightIndicesAsAddress,
+    ARci.GLStates.LightNumber);
+end;
+
+procedure TStandartUniformAutoSetExecutor.SetLightsBlock
+  (Sender: IShaderUniformBlock; var ARci: TRenderContextInfo);
+var
+  LightsBuffer: TGLUniformBufferHandle;
+begin
+  if TGLUniformBufferHandle.IsSupported then
+  begin
+    if not FLightsBufferPerContext.Find(ARci.GLStates, LightsBuffer) then
+    begin
+      LightsBuffer := TGLUniformBufferHandle.Create;
+      FLightsBufferPerContext.Add(ARci.GLStates, LightsBuffer);
+      ARci.GLStates.OnLightsChanged := LightsChanged;
+    end;
+
+    LightsBuffer.AllocateHandle;
+    if LightsBuffer.IsDataNeedUpdate then
+    begin
+      LightsBuffer.BindBufferData(ARci.GLStates.GetLightStateAsAddress(False),
+        Sender.GetDataSize, GL_STATIC_DRAW);
+      LightsBuffer.NotifyDataUpdated;
+      if not FLightBufferSizeFlag then
+      begin
+        GLSLogger.LogDebugFmt('LightsBuffer size: host %d, device %d',
+          [SizeOf(TShaderLightSourceState), Sender.GetDataSize]);
+        FLightBufferSizeFlag := True;
+      end;
+    end;
+    LightsBuffer.BindBase(0);
+    Sender.SetBindingIndex(0);
+  end;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackSpecular

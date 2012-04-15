@@ -72,6 +72,7 @@ type
    TAABBCorners = array[0..7] of TAffineVector;
 
 const
+  NullAABB: TAABB = (min: (0, 0, 0); max: (0, 0, 0); revision: 0);
   NullBoundingBox : THmgBoundingBox = ((0, 0, 0, 1),(0, 0, 0, 1),(0, 0, 0, 1),(0, 0, 0, 1),
                                        (0, 0, 0, 1),(0, 0, 0, 1),(0, 0, 0, 1),(0, 0, 0, 1)) ;
 

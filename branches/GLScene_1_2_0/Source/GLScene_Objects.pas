@@ -190,6 +190,7 @@ type
     FBatch: TDrawBatch;
     FTransformation: TTransformationRec;
     FFinishEvent: TFinishTaskEvent;
+    function IsMeshAssembled: Boolean;
     procedure BuildMesh; virtual; stdcall;
     function GetLibMaterialName: string; virtual;
     procedure SetLibMaterialName(const Value: string); virtual;
@@ -1214,17 +1215,22 @@ var
   I: Integer;
   LAABB: TAABB;
 begin
-  Result := FBatch.Mesh.AABB;
-  //not tested for child objects
-  if AIncludeChilden then
+  if IsMeshAssembled then
   begin
-    for I := 0 to Count - 1 do
+    Result := FBatch.Mesh.AABB;
+    //not tested for child objects
+    if AIncludeChilden then
     begin
-      LAABB := Children[I].AxisAlignedBoundingBoxUnscaled(AIncludeChilden);
-      AABBTransform(LAABB, Children[I].Matrix);
-      AddAABB(Result, LAABB);
+      for I := 0 to Count - 1 do
+      begin
+        LAABB := Children[I].AxisAlignedBoundingBoxUnscaled(AIncludeChilden);
+        AABBTransform(LAABB, Children[I].Matrix);
+        AddAABB(Result, LAABB);
+      end;
     end;
-  end;
+  end
+  else
+    Result := NullAABB;
 end;
 
 function TGLCustomSceneObjectEx.AxisAlignedDimensionsUnscaled: TVector;
@@ -1232,11 +1238,16 @@ var
   V3: TVector3f;
   LAABB: TAABB;
 begin
-  LAABB := FBatch.Mesh.AABB;
-  V3[0] := MaxFloat(Abs(LAABB.min[0]), Abs(LAABB.max[0]));
-  V3[1] := MaxFloat(Abs(LAABB.min[1]), Abs(LAABB.max[1]));
-  V3[2] := MaxFloat(Abs(LAABB.min[2]), Abs(LAABB.max[2]));
-  Result := VectorMake(V3);
+  if IsMeshAssembled then
+  begin
+    LAABB := FBatch.Mesh.AABB;
+    V3[0] := MaxFloat(Abs(LAABB.min[0]), Abs(LAABB.max[0]));
+    V3[1] := MaxFloat(Abs(LAABB.min[1]), Abs(LAABB.max[1]));
+    V3[2] := MaxFloat(Abs(LAABB.min[2]), Abs(LAABB.max[2]));
+    Result := VectorMake(V3);
+  end
+  else
+    Result := NullHmgVector;
 end;
 
 procedure TGLCustomSceneObjectEx.BuildMesh;
@@ -1306,28 +1317,30 @@ function TGLCustomSceneObjectEx.RayCastIntersect(const rayStart, rayVector: TVec
 var
   locRayStart, locRayVector, locPoint, locNormal: TVector;
 begin
-  if ocStructure in Changes then
-    BuildMesh;
-
-  SetVector(locRayStart, AbsoluteToLocal(rayStart));
-  SetVector(locRayVector, AbsoluteToLocal(rayVector));
-
-  with FBatch.Mesh do
+  if IsMeshAssembled then
   begin
-    Lock;
-    try
-      Result := RayCastIntersect(locRayStart, locRayVector, locPoint, locNormal);
-      if Result then
-      begin
-        if Assigned(intersectPoint) then
-          SetVector(intersectPoint^, LocalToAbsolute(locPoint));
-        if Assigned(intersectNormal) then
-          SetVector(intersectNormal^, LocalToAbsolute(locNormal));
+    SetVector(locRayStart, AbsoluteToLocal(rayStart));
+    SetVector(locRayVector, AbsoluteToLocal(rayVector));
+
+    with FBatch.Mesh do
+    begin
+      Lock;
+      try
+        Result := RayCastIntersect(locRayStart, locRayVector, locPoint, locNormal);
+        if Result then
+        begin
+          if Assigned(intersectPoint) then
+            SetVector(intersectPoint^, LocalToAbsolute(locPoint));
+          if Assigned(intersectNormal) then
+            SetVector(intersectNormal^, LocalToAbsolute(locNormal));
+        end;
+      finally
+        UnLock;
       end;
-    finally
-      UnLock;
     end;
-  end;
+  end
+  else
+    Result := False;
 end;
 
 procedure TGLCustomSceneObjectEx.SetShowAABB(const Value: Boolean);
@@ -1384,43 +1397,41 @@ begin
   inherited;
 end;
 
+function TGLCustomSceneObjectEx.IsMeshAssembled: Boolean;
+begin
+  if ocStructure in Changes then
+  begin
+{$IFDEF GLS_SERVICE_CONTEXT}
+    if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
+    begin
+      if not Assigned(FFinishEvent) then
+      begin
+        FFinishEvent := TFinishTaskEvent.Create;
+        AddTaskForServiceContext(BuildMesh, FFinishEvent);
+      end
+      else if FFinishEvent.WaitFor(0) = wrSignaled then
+      begin
+        FFinishEvent.ResetEvent;
+        AddTaskForServiceContext(BuildMesh, FFinishEvent);
+      end;
+      exit(False);
+    end
+    else
+{$ENDIF GLS_SERVICE_CONTEXT}
+      BuildMesh;
+  end;
+  Result := True;
+end;
+
 procedure TGLCustomSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
-
-  procedure PrepareSelf;
-  begin
-    if ocStructure in Changes then
-    begin
-{$IFDEF GLS_SERVICE_CONTEXT}
-      if not (osStreamDraw in ObjectStyle) and IsServiceContextAvaible then
-      begin
-        if not Assigned(FFinishEvent) then
-        begin
-          FFinishEvent := TFinishTaskEvent.Create;
-          AddTaskForServiceContext(BuildMesh, FFinishEvent);
-        end
-        else if FFinishEvent.WaitFor(0) = wrSignaled then
-        begin
-          FFinishEvent.ResetEvent;
-          AddTaskForServiceContext(BuildMesh, FFinishEvent);
-        end;
-        exit;
-      end
-      else
-{$ENDIF GLS_SERVICE_CONTEXT}
-        BuildMesh;
-    end;
-
-    if ARenderSelf then
-    begin
-      FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
-      FTransformation := ARci.PipelineTransformation.StackTop;
-      ARci.drawList.Add(@FBatch);
-    end;
-  end;
-
 begin
-  PrepareSelf;
+  if IsMeshAssembled and ARenderSelf then
+  begin
+    FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
+    FTransformation := ARci.PipelineTransformation.StackTop;
+    ARci.drawList.Add(@FBatch);
+  end;
 
   if ARenderChildren then
     RenderChildren(0, Count - 1, ARci);
@@ -3632,7 +3643,7 @@ begin
       begin
         Attribute3f(attrNormal, 0, 0, -1);
         Attribute3f(attrTangent, -1, 0, 0);
-        Attribute3f(attrBinormal, 0, -1, 0);
+        Attribute3f(attrBinormal, 0, 1, 0);
         Attribute2f(attrTexCoord0, 0, 1);
         Attribute3f(attrPosition, hw, hh, -hd);
         Attribute4f(attrColor, 1, 1, 0, 1);
@@ -3660,7 +3671,7 @@ begin
       begin
         Attribute3f(attrNormal, -1, 0, 0);
         Attribute3f(attrTangent, 0, 0, 1);
-        Attribute3f(attrBinormal, 0, -1, 0);
+        Attribute3f(attrBinormal, 0, 1, 0);
         Attribute2f(attrTexCoord0, 1, 1);
         Attribute3f(attrPosition, -hw, hh, hd);
         Attribute4f(attrColor, 0, 1, 1, 1);
@@ -3743,7 +3754,7 @@ begin
       if cpBottom in FParts then
       begin
         Attribute3f(attrNormal, 0, -1, 0);
-        Attribute3f(attrTangent, -1, 0, 0);
+        Attribute3f(attrTangent, 1, 0, 0);
         Attribute3f(attrBinormal, 0, 0, -1);
         Attribute2f(attrTexCoord0, 0, 0);
         Attribute3f(attrPosition, -hw, -hh, -hd);

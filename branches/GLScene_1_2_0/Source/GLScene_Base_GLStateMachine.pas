@@ -688,7 +688,7 @@ type
     property LightQuadraticAtten[Index: Integer]: Single read GetQuadAtten write
     SetQuadAtten;
     function GetLightIndicesAsAddress: PGLInt;
-    function GetLightStateAsAddress: Pointer;
+    function GetLightStateAsAddress(APacked: Boolean): Pointer;
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
 
@@ -3378,7 +3378,7 @@ begin
   Result := @FLightIndices[0];
 end;
 
-function TGLStateCache.GetLightStateAsAddress: Pointer;
+function TGLStateCache.GetLightStateAsAddress(APacked: Boolean): Pointer;
 var
   I, J, C: Integer;
 begin
@@ -3387,7 +3387,21 @@ begin
   begin
     if C > 0 then
     begin
-      if GL.VERSION_3_0 then
+      if APacked then
+      begin
+        for I := C - 1 downto 0 do
+        begin
+          J := FLightIndices[I];
+          FShaderLightStates.Position[I] := FLightStates.Position[J];
+          FShaderLightStates.Ambient[I] := FLightStates.Ambient[J];
+          FShaderLightStates.Diffuse[I] := FLightStates.Diffuse[J];
+          FShaderLightStates.Specular[I] := FLightStates.Specular[J];
+          FShaderLightStates.SpotDirection[I] := FLightStates.SpotDirection[J];
+          FShaderLightStates.SpotCosCutoffExponent[I] := FLightStates.SpotCosCutoffExponent[J];
+          FShaderLightStates.Attenuation[I] := FLightStates.Attenuation[J];
+        end;
+      end
+      else
       begin
         Move(FLightStates.Position,
           FShaderLightStates.Position,
@@ -3410,20 +3424,6 @@ begin
         Move(FLightStates.Attenuation,
           FShaderLightStates.Attenuation,
           SizeOf(FShaderLightStates.Attenuation));
-      end
-      else
-      begin
-        for I := C - 1 downto 0 do
-        begin
-          J := FLightIndices[I];
-          FShaderLightStates.Position[I] := FLightStates.Position[J];
-          FShaderLightStates.Ambient[I] := FLightStates.Ambient[J];
-          FShaderLightStates.Diffuse[I] := FLightStates.Diffuse[J];
-          FShaderLightStates.Specular[I] := FLightStates.Specular[J];
-          FShaderLightStates.SpotDirection[I] := FLightStates.SpotDirection[J];
-          FShaderLightStates.SpotCosCutoffExponent[I] := FLightStates.SpotCosCutoffExponent[J];
-          FShaderLightStates.Attenuation[I] := FLightStates.Attenuation[J];
-        end;
       end;
     end
     else

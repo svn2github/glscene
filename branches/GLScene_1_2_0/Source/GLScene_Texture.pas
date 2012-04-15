@@ -754,7 +754,7 @@ type
       reloadIdentityTextureMatrix: boolean);
     {: N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
     procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
-      textureMatrix: PMatrix = nil);
+      ATextureMatrix: PMatrix = nil);
     procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
 
@@ -3256,7 +3256,7 @@ end;
 //
 
 procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
-  textureMatrix: PMatrix = nil);
+  ATextureMatrix: PMatrix = nil);
 var
   m: TMatrix;
 begin
@@ -3271,8 +3271,8 @@ begin
       ActiveTexture := n - 1;
       TextureBinding[n - 1, FTextureHandle.Target] := Handle;
       ActiveTextureEnabled[FTextureHandle.Target] := True;
-      if Assigned(textureMatrix) then
-        SetGLTextureMatrix(textureMatrix^)
+      if Assigned(ATextureMatrix) then
+        SetGLTextureMatrix(ATextureMatrix^)
       else if FTextureHandle.Target = ttTextureCube then
       begin
         m := rci.PipelineTransformation.ModelViewMatrix;
