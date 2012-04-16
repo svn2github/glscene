@@ -453,6 +453,7 @@ type
   TUniformAutoSetProperty = class(TPropertyEditor)
   private
     procedure PassUniform(const S: string);
+    procedure PassBlock(const S: string);
   public
     { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
@@ -1814,6 +1815,11 @@ begin
   ShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0)).Uniforms[S]);
 end;
 
+procedure TUniformAutoSetProperty.PassBlock(const S: string);
+begin
+  ShaderUniformEditor.AddUniformBlock(TGLBaseShaderModel(GetComponent(0)).UniformBlocks[S]);
+end;
+
 procedure TUniformAutoSetProperty.Edit;
 var
   LOwner: TGLBaseShaderModel;
@@ -1827,7 +1833,7 @@ begin
       LOwner.MaterialLibrary.GetNames(AddTextureName, TGLTextureImageEx);
       LOwner.MaterialLibrary.GetNames(AddTextureName, TGLFrameBufferAttachment);
       LOwner.MaterialLibrary.GetNames(AddSamplerName, TGLTextureSampler);
-      LOwner.GetUniformNames(PassUniform);
+      LOwner.GetUniformNames(PassUniform, PassBlock);
       Execute;
     end;
   end;

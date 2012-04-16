@@ -182,46 +182,6 @@ object GLShaderEditor: TGLShaderEditor
       Style = tbsDropDown
     end
   end
-  object GLSLMemo: TGLSSynHiMemo
-    Left = 0
-    Top = 36
-    Width = 502
-    Height = 533
-    Cursor = crIBeam
-    Align = alClient
-    TabOrder = 1
-    TabStop = True
-    ReadOnly = False
-    AutoIndent = True
-    GutterColor = clBtnFace
-    GutterWidth = 30
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Courier New'
-    Font.Style = []
-    BkColor = clWhite
-    SelColor = clWhite
-    SelBkColor = clNavy
-    Lines.Strings = ('')
-    HiddenCaret = False
-    TabSize = 4
-    UndoLimit = 100
-    DelErase = True
-    OnGutterClick = GLSLMemoGutterClick
-    OnGutterDraw = GLSLMemoGutterDraw
-    OnUndoChange = GLSLMemoUndoChange
-    DelimiterStyle.TextColor = clBlue
-    DelimiterStyle.BkColor = clWhite
-    DelimiterStyle.Style = []
-    CommentStyle.TextColor = clYellow
-    CommentStyle.BkColor = clSkyBlue
-    CommentStyle.Style = [fsItalic]
-    NumberStyle.TextColor = clNavy
-    NumberStyle.BkColor = clWhite
-    NumberStyle.Style = [fsBold]
-    CaseSensitive = True
-  end
   object CompilatorLog: TMemo
     Left = 0
     Top = 574
@@ -277,10 +237,10 @@ object GLShaderEditor: TGLShaderEditor
     end
   end
   object ImageList: TImageList
-    Left = 96
-    Top = 632
+    Left = 8
+    Top = 584
     Bitmap = {
-      494C01010E001800680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800740010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -819,19 +779,25 @@ object GLShaderEditor: TGLShaderEditor
     DefaultExt = 'glsl'
     Filter = 'GLSL file (*.glsl)|*.glsl|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 136
-    Top = 632
+    Left = 48
+    Top = 584
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'glsl'
     Filter = 'GLSL file (*.glsl)|*.glsl|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 176
-    Top = 632
+    Left = 88
+    Top = 584
   end
   object TemplateMenu: TPopupMenu
-    Left = 216
-    Top = 632
+    Left = 128
+    Top = 584
+    object CommonTamplate: TMenuItem
+      Caption = 'Common'
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
     object GLSL120: TMenuItem
       Caption = 'GLSL 120'
     end

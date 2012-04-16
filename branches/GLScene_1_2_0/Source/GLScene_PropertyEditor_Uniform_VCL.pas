@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: FRUniformEditor<p>
@@ -16,7 +16,8 @@ interface
 
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons, GLScene_Shader_Parameter, GLScene_Texture_Format;
+  Dialogs, StdCtrls, ExtCtrls, Buttons, GLScene_Shader_Parameter,
+  GLScene_Texture_Format;
 
 type
   TShaderUniformEditor = class(TForm)
@@ -44,13 +45,14 @@ type
     procedure LBUniformsKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
-    FUniformList: array of IShaderParameter;
+    FUniformList: array of IInterface;
   public
     { Public declarations }
     procedure Clear;
     procedure AddTextureName(const S: string);
     procedure AddSamplerName(const S: string);
     procedure AddUniform(AValue: IShaderParameter);
+    procedure AddUniformBlock(AValue: IShaderParameterBlock);
 
     procedure Execute;
   end;
@@ -96,11 +98,28 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.AutoSetBoxChange(Sender: TObject);
+procedure TShaderUniformEditor.AddUniformBlock(AValue: IShaderParameterBlock);
 begin
-  if LBUniforms.ItemIndex >= 0 then
+  if AValue <> nil then
   begin
-    FUniformList[LBUniforms.ItemIndex].AutoSetMethod := AutoSetBox.Items[AutoSetBox.ItemIndex];
+    SetLength(FUniformList, Length(FUniformList)+1);
+    FUniformList[High(FUniformList)] := AValue;
+  end;
+end;
+
+procedure TShaderUniformEditor.AutoSetBoxChange(Sender: TObject);
+var
+  I: Integer;
+  param: IShaderParameter;
+  block: IShaderParameterBlock;
+begin
+  I := LBUniforms.ItemIndex;
+  if I >= 0 then
+  begin
+    if FUniformList[I].QueryInterface(IShaderParameter, param) = S_OK then
+      param.AutoSetMethod := AutoSetBox.Items[AutoSetBox.ItemIndex]
+    else if FUniformList[I].QueryInterface(IShaderParameterBlock, block) = S_OK then
+      block.AutoSetMethod := AutoSetBox.Items[AutoSetBox.ItemIndex];
   end;
 end;
 
@@ -132,14 +151,29 @@ procedure TShaderUniformEditor.Execute;
 var
   I: Integer;
   str: AnsiString;
+  res: string;
+  param: IShaderParameter;
+  block: IShaderParameterBlock;
 begin
   for I := 0 to High(FUniformList) do
   begin
-    if FUniformList[I].GLSLType <> GLSLTypeUndefined then
-      str := cGLSLTypeString[FUniformList[I].GLSLType];
-    if FUniformList[I].GLSLSamplerType <> GLSLSamplerUndefined then
-      str := cGLSLSamplerString[FUniformList[I].GLSLSamplerType];
-    LBUniforms.Items.Add(FUniformList[I].Name+': '+string(str));
+    if FUniformList[I].QueryInterface(IShaderParameter, param) = S_OK then
+    begin
+      param := FUniformList[I] as IShaderParameter;
+      if param.GLSLType <> GLSLTypeUndefined then
+        str := cGLSLTypeString[param.GLSLType];
+      if param.GLSLSamplerType <> GLSLSamplerUndefined then
+        str := cGLSLSamplerString[param.GLSLSamplerType];
+      res := Format('%s: %s', [param.Name, string(str)]);
+      if param.GetBlockOffset > -1 then
+        res := Format('offset %d - %s', [param.GetBlockOffset, res]);
+      LBUniforms.Items.Add(res);
+    end
+    else if FUniformList[I].QueryInterface(IShaderParameterBlock, block) = S_OK then
+    begin
+      block := FUniformList[I] as IShaderParameterBlock;
+      LBUniforms.Items.Add(Format('Block %s (%d bytes)', [block.GetName, block.GetDataSize]));
+    end;
   end;
   ShowModal;
 end;
@@ -153,40 +187,70 @@ procedure TShaderUniformEditor.LBUniformsClick(Sender: TObject);
 var
   SV: TSwizzleVector;
   IParam: IShaderParameter;
+  block: IShaderParameterBlock;
+  I: Integer;
 begin
-  if LBUniforms.ItemIndex >= 0 then
+  I := LBUniforms.ItemIndex;
+  if I >= 0 then
   begin
     AutoSetBox.Items.Clear;
     AutoSetBox.Items.Add(rstrNothing);
-    IParam := FUniformList[LBUniforms.ItemIndex];
-    if IParam.GLSLSamplerType <> GLSLSamplerUndefined then
+    if FUniformList[I].QueryInterface(IShaderParameter, iparam) = S_OK then
     begin
-      FillUniformAutoSetMethodList(AutoSetBox.Items, IParam.GLSLSamplerType);
-      AutoSetBox.ItemIndex :=
-        MaxInteger(AutoSetBox.Items.IndexOf(IParam.AutoSetMethod), 0);
-      TextureBox.Enabled := True;
-      SamplerBox.Enabled := True;
-      TextureBox.ItemIndex :=
-        MaxInteger(TextureBox.Items.IndexOf(IParam.TextureName), 0);
-      SamplerBox.ItemIndex :=
-        MaxInteger(SamplerBox.Items.IndexOf(IParam.SamplerName), 0);
-      SV := IParam.GetTextureSwizzle;
-      RedGroup.ItemIndex := Ord(SV[0]);
-      GreenGroup.ItemIndex := Ord(SV[1]);
-      BlueGroup.ItemIndex := Ord(SV[2]);
-      AlphaGroup.ItemIndex := Ord(SV[3]);
+      IParam := FUniformList[I] as IShaderParameter;
+      if IParam.GLSLSamplerType <> GLSLSamplerUndefined then
+      begin
+        FillUniformAutoSetMethodList(AutoSetBox.Items, IParam.GLSLSamplerType);
+        AutoSetBox.ItemIndex :=
+          MaxInteger(AutoSetBox.Items.IndexOf(IParam.AutoSetMethod), 0);
+        TextureBox.Enabled := True;
+        SamplerBox.Enabled := True;
+        TextureBox.ItemIndex :=
+          MaxInteger(TextureBox.Items.IndexOf(IParam.TextureName), 0);
+        SamplerBox.ItemIndex :=
+          MaxInteger(SamplerBox.Items.IndexOf(IParam.SamplerName), 0);
+        SV := IParam.GetTextureSwizzle;
+        RedGroup.Enabled := True;
+        GreenGroup.Enabled := True;
+        BlueGroup.Enabled := True;
+        AlphaGroup.Enabled := True;
+        RedGroup.ItemIndex := Ord(SV[0]);
+        GreenGroup.ItemIndex := Ord(SV[1]);
+        BlueGroup.ItemIndex := Ord(SV[2]);
+        AlphaGroup.ItemIndex := Ord(SV[3]);
+      end
+      else
+      begin
+        TextureBox.Enabled := False;
+        SamplerBox.Enabled := False;
+        FillUniformAutoSetMethodList(AutoSetBox.Items, IParam.GLSLType);
+        AutoSetBox.ItemIndex :=
+          MaxInteger(AutoSetBox.Items.IndexOf(IParam.AutoSetMethod), 0);
+        RedGroup.ItemIndex := -1;
+        GreenGroup.ItemIndex := -1;
+        BlueGroup.ItemIndex := -1;
+        AlphaGroup.ItemIndex := -1;
+        RedGroup.Enabled := False;
+        GreenGroup.Enabled := False;
+        BlueGroup.Enabled := False;
+        AlphaGroup.Enabled := False;
+      end;
     end
-    else
+    else if FUniformList[I].QueryInterface(IShaderParameterBlock, block) = S_OK then
     begin
       TextureBox.Enabled := False;
       SamplerBox.Enabled := False;
-      FillUniformAutoSetMethodList(AutoSetBox.Items, IParam.GLSLType);
-      AutoSetBox.ItemIndex :=
-        MaxInteger(AutoSetBox.Items.IndexOf(IParam.AutoSetMethod), 0);
       RedGroup.ItemIndex := -1;
       GreenGroup.ItemIndex := -1;
       BlueGroup.ItemIndex := -1;
       AlphaGroup.ItemIndex := -1;
+      RedGroup.Enabled := False;
+      GreenGroup.Enabled := False;
+      BlueGroup.Enabled := False;
+      AlphaGroup.Enabled := False;
+      FillUniformBlockAutoSetMethodList(AutoSetBox.Items, block.GetDataSize);
+      AutoSetBox.ItemIndex :=
+          MaxInteger(AutoSetBox.Items.IndexOf(block.AutoSetMethod), 0);
     end;
   end;
 end;
@@ -197,34 +261,46 @@ begin
 end;
 
 procedure TShaderUniformEditor.SamplerBoxChange(Sender: TObject);
+var
+  I: Integer;
+  param: IShaderParameter;
 begin
-  if LBUniforms.ItemIndex >= 0 then
+  I := LBUniforms.ItemIndex;
+  if I >= 0 then
   begin
-    FUniformList[LBUniforms.ItemIndex].SamplerName :=
-      SamplerBox.Items[SamplerBox.ItemIndex];
+    FUniformList[I].QueryInterface(IShaderParameter, param);
+    param.SamplerName := SamplerBox.Items[I];
   end;
 end;
 
 procedure TShaderUniformEditor.TextureBoxChange(Sender: TObject);
+var
+  I: Integer;
+  param: IShaderParameter;
 begin
-  if LBUniforms.ItemIndex >= 0 then
+  I := LBUniforms.ItemIndex;
+  if I >= 0 then
   begin
-    FUniformList[LBUniforms.ItemIndex].TextureName :=
-      TextureBox.Items[TextureBox.ItemIndex];
+    FUniformList[I].QueryInterface(IShaderParameter, param);
+    param.TextureName := TextureBox.Items[I];
   end;
 end;
 
 procedure TShaderUniformEditor.ColorGroupClick(Sender: TObject);
 var
   SV: TSwizzleVector;
+  I: Integer;
+  param: IShaderParameter;
 begin
-  if LBUniforms.ItemIndex >= 0 then
+  I := LBUniforms.ItemIndex;
+  if I >= 0 then
   begin
-    if FUniformList[LBUniforms.ItemIndex].GLSLSamplerType = GLSLSamplerUndefined then
+    FUniformList[I].QueryInterface(IShaderParameter, param);
+    if param.GLSLSamplerType = GLSLSamplerUndefined then
       exit;
-    SV := FUniformList[LBUniforms.ItemIndex].GetTextureSwizzle;
+    SV := param.GetTextureSwizzle;
     SV[TRadioGroup(Sender).Tag] := TGLTextureSwizzle(TRadioGroup(Sender).ItemIndex);
-    FUniformList[LBUniforms.ItemIndex].SetTextureSwizzle(SV);
+    param.SetTextureSwizzle(SV);
   end;
 end;
 

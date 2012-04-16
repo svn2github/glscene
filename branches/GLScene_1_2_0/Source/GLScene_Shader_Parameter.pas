@@ -95,6 +95,7 @@ type
 
 
   IShaderParameter = interface(IInterface)
+    ['{19A7DA02-3C64-4C9D-8EF9-CE0899BCF5CE}']
     function GetName: string;
     function GetGLSLType: TGLSLDataType;
     function GetGLSLSamplerType: TGLSLSamplerType;
@@ -200,7 +201,8 @@ type
   end;
 
 
-  IShaderUniformBlock = interface(IInterface)
+  IShaderParameterBlock = interface(IInterface)
+  ['{1AA33977-0C5E-4262-A3C2-C39238EBE1BE}']
     function GetName: string;
     function GetBindingIndex: TGLuint;
     procedure SetBindingIndex(Value: TGLuint);
@@ -284,7 +286,7 @@ resourcestring
 
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
-  TUniformBlockAutoSetMethod = procedure(Sender: IShaderUniformBlock; var ARci: TRenderContextInfo) of object;
+  TUniformBlockAutoSetMethod = procedure(Sender: IShaderParameterBlock; var ARci: TRenderContextInfo) of object;
 
 function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
 function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;

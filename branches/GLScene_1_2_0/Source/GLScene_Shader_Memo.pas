@@ -51,7 +51,7 @@ type
     TBUndo: TToolButton;
     TBRedo: TToolButton;
     ToolButton4: TToolButton;
-    GLSLMemo: TGLSSynHiMemo;
+
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
     TemplateMenu: TPopupMenu;
@@ -71,6 +71,8 @@ type
     OKButton: TButton;
     CheckButton: TButton;
     Splitter1: TSplitter;
+    CommonTamplate: TMenuItem;
+    N3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLSLMemoGutterClick(Sender: TObject; LineNo: Integer);
@@ -97,6 +99,7 @@ type
     procedure OnTemplateClick(Sender: TObject);
   public
     { Public declarations }
+    GLSLMemo: TGLSSynHiMemo;
     property OnCheck: TNotifyEvent read FOnCheck write FOnCheck;
   end;
 
@@ -469,7 +472,7 @@ const
 
 {$IFDEF GLS_REGION}{$REGION 'Shader template'}{$ENDIF}
 const
-  cTemplates: array[0..6] of string =
+  cTemplates: array[0..9] of string =
   (
     '#version 120'#10#13+
     #10#13+
@@ -699,7 +702,331 @@ const
     'in vec2 TexCoord7;'#10#13+
     'in vec4 Custom0;'#10#13+
     'in vec2 Custom1;'#10#13+
-    'in vec2 Custom2;'#10#13
+    'in vec2 Custom2;'#10#13,
+//-----------------------------------------------------------------------
+    'void pointLight(inout frec A, lrec B)'#10#13+
+    '{'#10#13+
+    '    float nDotVP;'#10#13+
+    '    float nDotHV;'#10#13+
+    '    float attenuation;'#10#13+
+    '    float d;'#10#13+
+    '    vec3 VP;'#10#13+
+    '    vec3 halfVector;'#10#13+
+    '    float pf;'#10#13+
+    '    VP = B.WorldPosition.xyz - A.WorldPosition.xyz;'#10#13+
+    '    d = length(VP);'#10#13+
+    '    VP = normalize(VP);'#10#13+
+    '    attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);'#10#13+
+    '    halfVector = normalize(VP + A.CameraVector);'#10#13+
+    '    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13+
+    '    pf = max(0.0, dot(A.Normal, halfVector));'#10#13+
+    '    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13+
+    '    A.LightAmbient += B.Ambient * attenuation;'#10#13+
+    '    A.LightDiffuse += B.Diffuse * nDotVP * attenuation;'#10#13+
+    '    A.LightSpecular += B.Specular * nDotHV * attenuation;'#10#13+
+    '}'#10#13+
+    'void spotLight(inout frec A, lrec B)'#10#13+
+    '{'#10#13+
+    '    float nDotVP;'#10#13+
+    '    float nDotHV;'#10#13+
+    '    float spotDot;'#10#13+
+    '    float spotAttenuation;'#10#13+
+    '    float attenuation;'#10#13+
+    '    float d;'#10#13+
+    '    vec3 VP;'#10#13+
+    '    vec3 halfVector;'#10#13+
+    '    float pf;'#10#13+
+    '    VP = B.WorldPosition.xyz - A.WorldPosition.xyz;'#10#13+
+    '    d = length(VP);'#10#13+
+    '    VP = normalize(VP);'#10#13+
+    '    attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);'#10#13+
+    '    spotDot = dot(-VP, normalize(B.SpotDirection));'#10#13+
+    '    if (spotDot < B.SpotCosCutoff) { spotAttenuation = 0.0; }'#10#13+
+    '    else { spotAttenuation = pow(spotDot, B.SpotExponent); }'#10#13+
+    '    attenuation *= spotAttenuation;'#10#13+
+    '    halfVector = normalize(VP + A.CameraVector);'#10#13+
+    '    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13+
+    '    pf = max(0.0, dot(A.Normal, halfVector));'#10#13+
+    '    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13+
+    '    A.LightAmbient += B.Ambient * attenuation;'#10#13+
+    '    A.LightDiffuse += B.Diffuse * nDotVP * attenuation;'#10#13+
+    '    A.LightSpecular += B.Specular * nDotHV * attenuation;'#10#13+
+    '}'#10#13+
+    'void directionalLight(inout frec A, lrec B)'#10#13+
+    '{'#10#13+
+    '    float nDotVP;'#10#13+
+    '    float nDotHV;'#10#13+
+    '    vec3 VP;'#10#13+
+    '    vec3 halfVector;'#10#13+
+    '    float pf;'#10#13+
+    '    VP = normalize(B.WorldPosition.xyz);'#10#13+
+    '    halfVector = normalize(VP + A.CameraVector);'#10#13+
+    '    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13+
+    '    nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);'#10#13+
+    '    A.LightAmbient += B.Ambient;'#10#13+
+    '    A.LightDiffuse += B.Diffuse * nDotVP;'#10#13+
+    '    A.LightSpecular += B.Specular * nDotHV;'#10#13+
+    '}'#10#13+
+    'void infiniteSpotLight(inout frec A, lrec B)'#10#13+
+    '{'#10#13+
+    '    float nDotVP;'#10#13+
+    '    float nDotHV;'#10#13+
+    '    vec3 VP;'#10#13+
+    '    vec3 halfVector;'#10#13+
+    '    float spotAttenuation;'#10#13+
+    '    vec3 Ppli;'#10#13+
+    '    vec3 Sdli;'#10#13+
+    '    float pf;'#10#13+
+    '    VP = normalize(B.WorldPosition.xyz);'#10#13+
+    '    halfVector = normalize(VP + A.CameraVector);'#10#13+
+    '    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13+
+    '    pf = max(0.0, dot(A.Normal, halfVector));'#10#13+
+    '    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13+
+    '    Ppli = -VP;'#10#13+
+    '    Sdli = B.SpotDirection;'#10#13+
+    '    spotAttenuation = pow(dot(Ppli, Sdli), B.SpotExponent);'#10#13+
+    '    A.LightAmbient += B.Ambient * spotAttenuation;'#10#13+
+    '    A.LightDiffuse += B.Diffuse * nDotVP * spotAttenuation;'#10#13+
+    '    A.LightSpecular += B.Specular * nDotHV * spotAttenuation;'#10#13+
+    '}'#10#13,
+//-----------------------------------------------------------------------
+    '#version 120'#10#13+
+    'varying vec4 v2f_WorldPosition;'#10#13+
+    'varying vec3 v2f_Normal;'#10#13+
+    'varying vec3 v2f_Tangent;'#10#13+
+    'varying vec3 v2f_Binormal;'#10#13+
+    'varying vec3 v2f_ViewDir;'#10#13+
+    'varying vec2 v2f_TexCoord;'#10#13+
+    'uniform mat3 NormalMatrix;'#10#13+
+    'uniform sampler2D DiffuseMap;'#10#13+
+    'uniform sampler2D NormalMap;'#10#13+
+    'uniform vec4 MaterialAmbientColor;'#10#13+
+    'uniform vec4 MaterialDiffuseColor;'#10#13+
+    'uniform vec4 MaterialSpecularColor;'#10#13+
+    'uniform vec4 MaterialEmissionColor;'#10#13+
+    'uniform float MaterialShiness;'#10#13+
+    'struct lrec {'#10#13+
+    '    vec4 WorldPosition;'#10#13+
+    '    vec3 Ambient;'#10#13+
+    '    vec3 Diffuse;'#10#13+
+    '    vec3 Specular;'#10#13+
+    '    vec3 SpotDirection;'#10#13+
+    '    float SpotExponent;'#10#13+
+    '    float ConstantAtten;'#10#13+
+    '    float LinearAtten;'#10#13+
+    '    float QuadAtten;'#10#13+
+    '    float SpotCosCutoff;'#10#13+
+    '};'#10#13+
+    'struct frec {'#10#13+
+    '    vec3 LightAmbient;'#10#13+
+    '    vec3 LightDiffuse;'#10#13+
+    '    vec3 LightSpecular;'#10#13+
+    '    vec4 WorldPosition;'#10#13+
+    '    vec3 Ambient;'#10#13+
+    '    vec3 Emissive;'#10#13+
+    '    vec3 Diffuse;'#10#13+
+    '    vec3 Specular;'#10#13+
+    '    float SpecularPower;'#10#13+
+    '    float Opacity;'#10#13+
+    '    float OpacityMask;'#10#13+
+    '    vec3 Normal;'#10#13+
+    '    vec3 CameraVector;'#10#13+
+    '    int LightIndex;'#10#13+
+    '};'#10#13+
+    'uniform int LightNumber;'#10#13+
+    'uniform vec4 LightWorldPosition[8];'#10#13+
+    'uniform vec4 LightAmbient[8];'#10#13+
+    'uniform vec4 LightDiffuse[8];'#10#13+
+    'uniform vec4 LightSpecular[8];'#10#13+
+    'uniform vec4 LightSpotDirection[8];'#10#13+
+    'uniform vec4 LightSpotCosCutoffExponent[8];'#10#13+
+    'uniform vec4 LightAttenuation[8];'#10#13+
+    'lrec GetLight(int I)'#10#13+
+    '{'#10#13+
+    '    lrec B;'#10#13+
+    '    B.WorldPosition = LightWorldPosition[I];'#10#13+
+    '    B.Ambient = LightAmbient[I].rgb;'#10#13+
+    '    B.Diffuse = LightDiffuse[I].rgb;'#10#13+
+    '    B.Specular = LightSpecular[I].rgb;'#10#13+
+    '    B.SpotDirection = LightSpotDirection[I].xyz;'#10#13+
+    '    B.ConstantAtten = LightAttenuation[I].x;'#10#13+
+    '    B.LinearAtten = LightAttenuation[I].y;'#10#13+
+    '    B.QuadAtten = LightAttenuation[I].z;'#10#13+
+    '    B.SpotCosCutoff = LightSpotCosCutoffExponent[I].x;'#10#13+
+    '    B.SpotExponent = LightSpotCosCutoffExponent[I].y;'#10#13+
+    '    return B;'#10#13+
+    '}'#10#13+
+    '//----------- Insert here light styles functions ------------'#10#13+
+    'void main()'#10#13+
+    '{'#10#13+
+    '    lrec A;'#10#13+
+    '    frec B;'#10#13+
+    '    vec3 normal = normalize(v2f_Normal);'#10#13+
+    '    vec3 tangent = normalize(v2f_Tangent);'#10#13+
+    '    vec3 binormal = normalize(v2f_Binormal);'#10#13+
+    '    mat3 basis = mat3(tangent, binormal, normal);'#10#13+
+    '    vec3 N = texture2D(NormalMap, v2f_TexCoord).xyz;'#10#13+
+    '    N = N * vec3(2.0) - vec3(1.0);'#10#13+
+    '    N = basis*N;'#10#13+
+    '    N = NormalMatrix*N;'#10#13+
+    '    B.Normal = normalize(N);'#10#13+
+    '    B.Ambient = MaterialAmbientColor.rgb;'#10#13+
+    '    B.Emissive = MaterialEmissionColor.rgb;'#10#13+
+    '    B.Diffuse = MaterialDiffuseColor.rgb * texture2D(DiffuseMap, v2f_TexCoord).rgb;'#10#13+
+    '    B.Specular = MaterialSpecularColor.rgb;'#10#13+
+    '    B.SpecularPower = MaterialShiness;'#10#13+
+    '    B.Opacity = MaterialDiffuseColor.a;'#10#13+
+    '    B.CameraVector = normalize(v2f_ViewDir);'#10#13+
+    '    B.WorldPosition = v2f_WorldPosition;'#10#13+
+    '    B.LightAmbient = vec3(0.0);'#10#13+
+    '    B.LightDiffuse = vec3(0.0);'#10#13+
+    '    B.LightSpecular = vec3(0.0);'#10#13+
+    '    for (int I = 0; I < 8 && I < LightNumber; I++)'#10#13+
+    '    {'#10#13+
+    '        lrec LightSource = GetLight(I);'#10#13+
+    '        if (LightSource.WorldPosition.w == 1.0)'#10#13+
+    '        {'#10#13+
+    '            if (LightSource.SpotCosCutoff == -1.0){ pointLight(B,LightSource); }'#10#13+
+    '            else { spotLight(B,LightSource); }'#10#13+
+    '        }'#10#13+
+    '        else'#10#13+
+    '        {'#10#13+
+    '            if (LightSource.SpotCosCutoff == -1.0) { directionalLight(B,LightSource); }'#10#13+
+    '            else { infiniteSpotLight(B,LightSource); }'#10#13+
+    '        }'#10#13+
+    '    }'#10#13+
+    '    B.LightAmbient = clamp(B.LightAmbient,vec3(0.0),vec3(1.0));'#10#13+
+    '    B.LightDiffuse = clamp(B.LightDiffuse,vec3(0.0),vec3(1.0));'#10#13+
+    '    B.LightSpecular = clamp(B.LightSpecular,vec3(0.0),vec3(1.0));'#10#13+
+    '    vec3 finalColor = B.Emissive + B.Ambient * B.LightAmbient;'#10#13+
+    '    finalColor += B.Diffuse * B.LightDiffuse;'#10#13+
+    '    finalColor += B.Specular * B.LightSpecular;'#10#13+
+    '    gl_FragColor = vec4(finalColor, B.Opacity);'#10#13+
+    '}'#10#13,
+//-----------------------------------------------------------------------
+    '#version 330'#10#13+
+    'in vec4 v2f_WorldPosition;'#10#13+
+    'in vec3 v2f_Normal;'#10#13+
+    'in vec3 v2f_Tangent;'#10#13+
+    'in vec3 v2f_Binormal;'#10#13+
+    'in vec3 v2f_ViewDir;'#10#13+
+    'in vec2 v2f_TexCoord;'#10#13+
+    'out vec4 FragColor;'#10#13+
+    'uniform mat3 NormalMatrix;'#10#13+
+    'uniform sampler2D DiffuseMap;'#10#13+
+    'uniform sampler2D NormalMap;'#10#13+
+    'uniform vec4 MaterialAmbientColor;'#10#13+
+    'uniform vec4 MaterialDiffuseColor;'#10#13+
+    'uniform vec4 MaterialSpecularColor;'#10#13+
+    'uniform vec4 MaterialEmissionColor;'#10#13+
+    'uniform float MaterialShiness;'#10#13+
+    'struct lrec {'#10#13+
+    '    vec4 WorldPosition;'#10#13+
+    '    vec3 Ambient;'#10#13+
+    '    vec3 Diffuse;'#10#13+
+    '    vec3 Specular;'#10#13+
+    '    vec3 SpotDirection;'#10#13+
+    '    float SpotExponent;'#10#13+
+    '    float ConstantAtten;'#10#13+
+    '    float LinearAtten;'#10#13+
+    '    float QuadAtten;'#10#13+
+    '    float SpotCosCutoff;'#10#13+
+    '};'#10#13+
+    'struct frec {'#10#13+
+    '    vec3 LightAmbient;'#10#13+
+    '    vec3 LightDiffuse;'#10#13+
+    '    vec3 LightSpecular;'#10#13+
+    '    vec4 WorldPosition;'#10#13+
+    '    vec3 Ambient;'#10#13+
+    '    vec3 Emissive;'#10#13+
+    '    vec3 Diffuse;'#10#13+
+    '    vec3 Specular;'#10#13+
+    '    float SpecularPower;'#10#13+
+    '    float Opacity;'#10#13+
+    '    float OpacityMask;'#10#13+
+    '    vec3 Normal;'#10#13+
+    '    vec3 CameraVector;'#10#13+
+    '    int LightIndex;'#10#13+
+    '};'#10#13+
+    'uniform int LightNumber;'#10#13+
+    'uniform int LightNumber;'#10#13+
+    'uniform int LightIndices[8];'#10#13+
+    'uniform LightsBlock'#10#13+
+    '{'#10#13+
+    '    uniform vec4 LightWorldPosition[8];'#10#13+
+    '    uniform vec4 LightAmbient[8];'#10#13+
+    '    uniform vec4 LightDiffuse[8];'#10#13+
+    '    uniform vec4 LightSpecular[8];'#10#13+
+    '    uniform vec4 LightSpotDirection[8];'#10#13+
+    '    uniform vec4 LightSpotCosCutoffExponent[8];'#10#13+
+    '    uniform vec4 LightAttenuation[8];'#10#13+
+    '};'#10#13+
+    'lrec GetLight(int N)'#10#13+
+    '{'#10#13+
+    '    lrec B;'#10#13+
+    '    int I = LightIndices[N];'#10#13+
+    '    B.WorldPosition = LightWorldPosition[I];'#10#13+
+    '    B.Ambient = LightAmbient[I].rgb;'#10#13+
+    '    B.Diffuse = LightDiffuse[I].rgb;'#10#13+
+    '    B.Specular = LightSpecular[I].rgb;'#10#13+
+    '    B.SpotDirection = LightSpotDirection[I].xyz;'#10#13+
+    '    B.ConstantAtten = LightAttenuation[I].x;'#10#13+
+    '    B.LinearAtten = LightAttenuation[I].y;'#10#13+
+    '    B.QuadAtten = LightAttenuation[I].z;'#10#13+
+    '    B.SpotCosCutoff = LightSpotCosCutoffExponent[I].x;'#10#13+
+    '    B.SpotExponent = LightSpotCosCutoffExponent[I].y;'#10#13+
+    '    return B;'#10#13+
+    '}'#10#13+
+    '//----------- Insert here light styles functions ------------'#10#13+
+    'void main()'#10#13+
+    '{'#10#13+
+    '    lrec A;'#10#13+
+    '    frec B;'#10#13+
+    '    vec3 normal = normalize(v2f_Normal);'#10#13+
+    '    vec3 tangent = normalize(v2f_Tangent);'#10#13+
+    '    vec3 binormal = normalize(v2f_Binormal);'#10#13+
+    '    mat3 basis = mat3(tangent, binormal, normal);'#10#13+
+    '    vec3 N = texture2D(NormalMap, v2f_TexCoord).xyz;'#10#13+
+    '    N = N * vec3(2.0) - vec3(1.0);'#10#13+
+    '    N = basis*N;'#10#13+
+    '    N = NormalMatrix*N;'#10#13+
+    '    B.Normal = normalize(N);'#10#13+
+    '    B.Ambient = MaterialAmbientColor.rgb;'#10#13+
+    '    B.Emissive = MaterialEmissionColor.rgb;'#10#13+
+    '    B.Diffuse = MaterialDiffuseColor.rgb * texture2D(DiffuseMap, v2f_TexCoord).rgb;'#10#13+
+    '    B.Specular = MaterialSpecularColor.rgb;'#10#13+
+    '    B.SpecularPower = MaterialShiness;'#10#13+
+    '    B.Opacity = MaterialDiffuseColor.a;'#10#13+
+    '    B.CameraVector = normalize(v2f_ViewDir);'#10#13+
+    '    B.WorldPosition = v2f_WorldPosition;'#10#13+
+    '    B.LightAmbient = vec3(0.0);'#10#13+
+    '    B.LightDiffuse = vec3(0.0);'#10#13+
+    '    B.LightSpecular = vec3(0.0);'#10#13+
+    '    for (int I = 0; I < 8 && I < LightNumber; I++)'#10#13+
+    '    {'#10#13+
+    '        lrec LightSource = GetLight(I);'#10#13+
+    '        if (LightSource.WorldPosition.w == 1.0)'#10#13+
+    '        {'#10#13+
+    '            if (LightSource.SpotCosCutoff == -1.0){ pointLight(B,LightSource); }'#10#13+
+    '            else { spotLight(B,LightSource); }'#10#13+
+    '        }'#10#13+
+    '        else'#10#13+
+    '        {'#10#13+
+    '            if (LightSource.SpotCosCutoff == -1.0) { directionalLight(B,LightSource); }'#10#13+
+    '            else { infiniteSpotLight(B,LightSource); }'#10#13+
+    '        }'#10#13+
+    '    }'#10#13+
+    '    B.LightAmbient = clamp(B.LightAmbient,vec3(0.0),vec3(1.0));'#10#13+
+    '    B.LightDiffuse = clamp(B.LightDiffuse,vec3(0.0),vec3(1.0));'#10#13+
+    '    B.LightSpecular = clamp(B.LightSpecular,vec3(0.0),vec3(1.0));'#10#13+
+    '    vec3 finalColor = B.Emissive + B.Ambient * B.LightAmbient;'#10#13+
+    '    finalColor += B.Diffuse * B.LightDiffuse;'#10#13+
+    '    finalColor += B.Specular * B.LightSpecular;'#10#13+
+    '    FragColor = vec4(finalColor, B.Opacity);'#10#13+
+    '}'#10#13
+
+
+
   );
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -754,6 +1081,50 @@ begin
     reg.Free;
   end;
 
+  GLSLMemo := TGLSSynHiMemo.Create(Self);
+
+  with GLSLMemo do
+  begin
+    Parent := Self;
+    Left := 0;
+    Top := 36;
+    Width := 502;
+    Height := 533;
+    Cursor := crIBeam;
+    Align := alClient;
+    TabOrder := 1;
+    TabStop := True;
+    ReadOnly := False;
+    AutoIndent := True;
+    GutterColor := clBtnFace;
+    GutterWidth := 30;
+    Font.Charset := DEFAULT_CHARSET;
+    Font.Color := clWindowText;
+    Font.Height := -12;
+    Font.Name := 'Courier New';
+    Font.Style := [];
+    BkColor := clWhite;
+    SelColor := clWhite;
+    SelBkColor := clNavy;
+    HiddenCaret := False;
+    TabSize := 4;
+    UndoLimit := 100;
+    DelErase := True;
+    OnGutterClick := GLSLMemoGutterClick;
+    OnGutterDraw := GLSLMemoGutterDraw;
+    OnUndoChange := GLSLMemoUndoChange;
+    DelimiterStyle.TextColor := clBlue;
+    DelimiterStyle.BkColor := clWhite;
+    DelimiterStyle.Style := [];
+    CommentStyle.TextColor := clYellow;
+    CommentStyle.BkColor := clSkyBlue;
+    CommentStyle.Style := [fsItalic];
+    NumberStyle.TextColor := clNavy;
+    NumberStyle.BkColor := clWhite;
+    NumberStyle.Style := [fsBold];
+    CaseSensitive := True;
+  end;
+
   No := GLSLMemo.Styles.Add(clRed, clWhite, []);
   GLSLMemo.AddWord(No, GLSLDirectives);
 
@@ -781,6 +1152,10 @@ begin
   GLSLMemo.CaseSensitive := True;
   GLSLMemo.DelErase := True;
 
+  item := NewItem('Light style functions', 0, False, True, OnTemplateClick, 0, '');
+  item.Tag := 7;
+  CommonTamplate.Add(item);
+
   item := NewItem('Attribute block', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 5;
   GLSL120.Add(item);
@@ -801,8 +1176,16 @@ begin
   item.Tag := 3;
   GLSL120.Add(item);
 
+  item := NewItem('Fragment program, multylight normal mapping', 0, False, True, OnTemplateClick, 0, '');
+  item.Tag := 8;
+  GLSL330.Add(item);
+
   item := NewItem('Attribute block', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 6;
+  GLSL330.Add(item);
+
+  item := NewItem('Fragment program, multylight normal mapping', 0, False, True, OnTemplateClick, 0, '');
+  item.Tag := 9;
   GLSL330.Add(item);
 
   item := NewItem('Geometry program, edge detection', 0, False, True, OnTemplateClick, 0, '');
@@ -1026,7 +1409,10 @@ end;
 procedure TGLShaderEditor.CheckButtonClick(Sender: TObject);
 begin
   if Assigned(FOnCheck) then
+  begin
+    CompilatorLog.Lines.Clear;
     FOnCheck(Self);
+  end;
 end;
 
 initialization

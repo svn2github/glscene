@@ -1184,9 +1184,9 @@ type
   // TGLShaderUniformBlock
   //
 
-  TGLShaderUniformBlock = class(TGLUpdateAbleObject, IShaderUniformBlock)
+  TGLShaderUniformBlock = class(TGLUpdateAbleObject, IShaderParameterBlock)
   private
-    { Protected Declarations }
+    { Private Declarations }
     FName: string;
     FNameHashCode: Integer;
     FLocation: TGLint;
@@ -1202,6 +1202,10 @@ type
     procedure SetDataSize(Value: GLSizei);
     function GetAutoSetMethod: string;
     procedure SetAutoSetMethod(const AValue: string);
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); virtual;
+    procedure ReadFromFiler(AReader: TReader); virtual;
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
@@ -1238,7 +1242,7 @@ type
 
     function GetUniform(const AName: string): TGLAbstractShaderUniform;
     function GetUniformInterface(const AName: string): IShaderParameter;
-    function GetUniformBlock(const AName: string): IShaderUniformBlock;
+    function GetUniformBlock(const AName: string): IShaderParameterBlock;
     class procedure ReleaseUniforms(AList: TPersistentObjectList);
 
     property LibVertexShaderName: TGLMaterialComponentName index shtVertex
@@ -1255,6 +1259,8 @@ type
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadUniforms(AStream: TStream);
     procedure WriteUniforms(AStream: TStream);
+    procedure ReadBlocks(AStream: TStream);
+    procedure WriteBlocks(AStream: TStream);
     procedure Loaded; override;
     class function IsSupported: Boolean; virtual; abstract;
     class function ShaderModel: string; virtual; abstract;
@@ -1273,12 +1279,12 @@ type
     procedure Apply(var ARci: TRenderContextInfo); virtual;
     procedure UnApply(var ARci: TRenderContextInfo); virtual;
 
-    procedure GetUniformNames(Proc: TGetStrProc);
+    procedure GetUniformNames(UProc, BProc: TGetStrProc);
 
     property Handle: TGLProgramHandle read FHandle;
     property IsValid: Boolean read FIsValid;
     property Uniforms[const AName: string]: IShaderParameter read GetUniformInterface;
-    property UniformBlocks[const AName: string]: IShaderUniformBlock read GetUniformBlock;
+    property UniformBlocks[const AName: string]: IShaderParameterBlock read GetUniformBlock;
   published
     { Published Declarations }
     // Compilation info log for design time
@@ -1650,7 +1656,7 @@ type
       var ARci: TRenderContextInfo);
     procedure SetLightIndices(Sender: IShaderParameter;
       var ARci: TRenderContextInfo);
-    procedure SetLightsBlock(Sender: IShaderUniformBlock;
+    procedure SetLightsBlock(Sender: IShaderParameterBlock;
       var ARci: TRenderContextInfo);
     procedure SetLightWorldPosition
       (Sender: IShaderParameter; var ARci: TRenderContextInfo);
@@ -5091,6 +5097,8 @@ begin
   inherited;
   Filer.DefineBinaryProperty('Uniforms', ReadUniforms, WriteUniforms,
     FUniforms.Count > 0);
+  Filer.DefineBinaryProperty('Blocks', ReadBlocks, WriteBlocks,
+    FBlocks.Count > 0);
 end;
 
 destructor TGLBaseShaderModel.Destroy;
@@ -5356,6 +5364,7 @@ var
       LUniform.FName := UName;
       LUniform.FNameHashCode := ComputeNameHashKey(UName);
       LUniform.FLocation := Loc;
+      LUniform.SetBlockOffset(Uoffset);
       LUniforms.Add(LUniform);
     end;
   end;
@@ -5559,12 +5568,15 @@ begin
                       if Assigned(LAbsUniform) then
                       begin
                         FUniforms.Add(LAbsUniform);
+                        TGLShaderUniform(LAbsUniform).FLocation := indices[J];
                         LAbsUniform.SetBlockOffset(offsets[J]);
                       end
                       else
                       begin
+                        Loc := indices[J];
                         Uoffset := offsets[J];
                         AddOrUpdateUniform;
+                        FUniforms.Add(Self.FUniforms.Last);
                       end;
                     end;
                   end;
@@ -5657,6 +5669,27 @@ begin
   inherited;
 end;
 
+procedure TGLBaseShaderModel.ReadBlocks(AStream: TStream);
+var
+  LReader: TReader;
+  n, i: Integer;
+  str: string;
+  LBlock: TGLShaderUniformBlock;
+begin
+  LReader := TReader.Create(AStream, 16384);
+  try
+    n := LReader.ReadInteger;
+    for i := 0 to n - 1 do
+    begin
+      LBlock := TGLShaderUniformBlock.Create(Self);
+      LBlock.ReadFromFiler(LReader);
+      FBlocks.Add(LBlock);
+    end;
+  finally
+    LReader.Free;
+  end;
+end;
+
 procedure TGLBaseShaderModel.ReadUniforms(AStream: TStream);
 var
   LReader: TReader;
@@ -5742,7 +5775,7 @@ begin
   end;
 end;
 
-function TGLBaseShaderModel.GetUniformBlock(const AName: string): IShaderUniformBlock;
+function TGLBaseShaderModel.GetUniformBlock(const AName: string): IShaderParameterBlock;
 var
   h, i: Integer;
   B: TGLShaderUniformBlock;
@@ -5781,12 +5814,29 @@ begin
       TGLShaderUniformTexture(FUniforms[i]).Loaded;
 end;
 
-procedure TGLBaseShaderModel.GetUniformNames(Proc: TGetStrProc);
+procedure TGLBaseShaderModel.GetUniformNames(UProc, BProc: TGetStrProc);
 var
-  i: Integer;
+  i, j: Integer;
+  block: TGLShaderUniformBlock;
+  uniform: TGLAbstractShaderUniform;
 begin
+  for i := 0 to FBlocks.Count - 1 do
+  begin
+    block := TGLShaderUniformBlock(FBlocks[i]);
+    BProc(block.FName);
+    for j := 0 to block.FUniforms.Count - 1 do
+    begin
+      uniform := TGLAbstractShaderUniform(block.FUniforms[J]);
+      UProc(uniform.FName);
+    end;
+  end;
+
   for i := 0 to FUniforms.Count - 1 do
-    Proc(TGLAbstractShaderUniform(FUniforms[i]).FName);
+  begin
+    uniform := TGLAbstractShaderUniform(FUniforms[I]);
+    if uniform.GetBlockOffset < 0 then
+      UProc(uniform.FName);
+  end;
 end;
 
 procedure TGLBaseShaderModel.SetLibShaderName(AType: TGLShaderType;
@@ -5839,6 +5889,23 @@ begin
     .OnCustomLoadMatrices := nil;
   // if FIsValid and not ARci.GLStates.ForwardContext then
   // FHandle.EndUseProgramObject;
+end;
+
+procedure TGLBaseShaderModel.WriteBlocks(AStream: TStream);
+var
+  LWriter: TWriter;
+  i: Integer;
+begin
+  LWriter := TWriter.Create(AStream, 16384);
+  try
+    LWriter.WriteInteger(FBlocks.Count);
+    for i := 0 to FBlocks.Count - 1 do
+    begin
+      TGLShaderUniformBlock(FBlocks[i]).WriteToFiler(LWriter);
+    end;
+  finally
+    LWriter.Free;
+  end;
 end;
 
 procedure TGLBaseShaderModel.WriteUniforms(AStream: TStream);
@@ -6674,6 +6741,17 @@ begin
   Result := TGLBaseShaderModel(Owner).FHandle.Handle;
 end;
 
+procedure TGLShaderUniformBlock.ReadFromFiler(AReader: TReader);
+begin
+  with AReader do
+  begin
+    FName := ReadWideString;
+    FNameHashCode := ComputeNameHashKey(FName);
+    SetDataSize(ReadInteger);
+    SetAutoSetMethod(ReadWideString);
+  end;
+end;
+
 procedure TGLShaderUniformBlock.SetAutoSetMethod(const AValue: string);
 begin
   FAutoSet := GetUniformBlockAutoSetMethod(AValue);
@@ -6691,6 +6769,16 @@ end;
 procedure TGLShaderUniformBlock.SetDataSize(Value: GLSizei);
 begin
   FSize := Value;
+end;
+
+procedure TGLShaderUniformBlock.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteWideString(FName);
+    WriteInteger(Integer(GetDataSize));
+    WriteWideString(GetAutoSetMethod);
+  end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -8049,7 +8137,7 @@ begin
   RegisterUniformAutoSetMethod('Lights indices', GLSLType1I,
     SetLightIndices);
   RegisterUniformBlockAutoSetMethod('Lights state block',
-    MAX_HARDWARE_LIGHT*7*SizeOf(TVector), SetLightsBlock);
+    MAX_SHADER_LIGHT*7*SizeOf(TVector), SetLightsBlock);
 end;
 
 procedure LightsBufferDestroyer(AKey: TGLStateCache;
@@ -8205,7 +8293,7 @@ begin
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetLightsBlock
-  (Sender: IShaderUniformBlock; var ARci: TRenderContextInfo);
+  (Sender: IShaderParameterBlock; var ARci: TRenderContextInfo);
 var
   LightsBuffer: TGLUniformBufferHandle;
 begin

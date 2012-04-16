@@ -4,7 +4,7 @@ object ShaderUniformEditor: TShaderUniformEditor
   BorderStyle = bsDialog
   Caption = 'Autofill of uniforms'
   ClientHeight = 344
-  ClientWidth = 440
+  ClientWidth = 600
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,29 +24,29 @@ object ShaderUniformEditor: TShaderUniformEditor
     Caption = 'Available Uniforms'
   end
   object Label1: TLabel
-    Left = 223
-    Top = 5
+    Left = 382
+    Top = 4
     Width = 78
     Height = 13
     Caption = 'Avaiblable Value'
   end
   object Label2: TLabel
-    Left = 223
-    Top = 97
+    Left = 382
+    Top = 96
     Width = 79
     Height = 13
     Caption = 'Texture Sampler'
   end
   object Label3: TLabel
-    Left = 223
-    Top = 143
+    Left = 382
+    Top = 142
     Width = 176
     Height = 13
     Caption = 'Swizzle of texture color components '
   end
   object Label4: TLabel
-    Left = 223
-    Top = 51
+    Left = 382
+    Top = 50
     Width = 131
     Height = 13
     Caption = 'Texture Image/Attachment'
@@ -54,7 +54,7 @@ object ShaderUniformEditor: TShaderUniformEditor
   object LBUniforms: TListBox
     Left = 8
     Top = 24
-    Width = 209
+    Width = 368
     Height = 313
     ItemHeight = 13
     TabOrder = 0
@@ -62,8 +62,8 @@ object ShaderUniformEditor: TShaderUniformEditor
     OnKeyPress = LBUniformsKeyPress
   end
   object AutoSetBox: TComboBox
-    Left = 223
-    Top = 24
+    Left = 382
+    Top = 23
     Width = 209
     Height = 21
     Style = csDropDownList
@@ -71,8 +71,8 @@ object ShaderUniformEditor: TShaderUniformEditor
     OnChange = AutoSetBoxChange
   end
   object SamplerBox: TComboBox
-    Left = 223
-    Top = 116
+    Left = 382
+    Top = 115
     Width = 209
     Height = 21
     Style = csDropDownList
@@ -81,8 +81,8 @@ object ShaderUniformEditor: TShaderUniformEditor
     OnChange = SamplerBoxChange
   end
   object Panel1: TPanel
-    Left = 223
-    Top = 162
+    Left = 382
+    Top = 161
     Width = 209
     Height = 143
     TabOrder = 3
@@ -163,8 +163,8 @@ object ShaderUniformEditor: TShaderUniformEditor
     end
   end
   object TextureBox: TComboBox
-    Left = 223
-    Top = 70
+    Left = 382
+    Top = 69
     Width = 209
     Height = 21
     Style = csDropDownList
@@ -173,8 +173,8 @@ object ShaderUniformEditor: TShaderUniformEditor
     OnChange = TextureBoxChange
   end
   object Button1: TButton
-    Left = 360
-    Top = 312
+    Left = 519
+    Top = 311
     Width = 73
     Height = 25
     Caption = 'Done'
