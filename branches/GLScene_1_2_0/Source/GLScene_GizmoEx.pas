@@ -72,7 +72,7 @@ uses
 
   // GLScene
   GLScene_Core, GLScene_Base_Color, GLScene_Objects, GLScene_Base_Vector_Geometry, GLScene_Material, GLScene_Base_Strings,
-  GLScene_ObjectsEx, GLScene_BitmapFont, GLScene_Viewer, GLScene_Vector_FileObjects, GLScene_Platform,
+  GLScene_ObjectsEx, GLScene_BitmapFont, GLScene_Viewer, GLScene_Objects_VectorFile, GLScene_Platform,
   GLScene_Base_Coordinates, GLScene_Base_Context_Info, GLScene_Base_GeometryBB, GLScene_Base_Vector_Types, GLScene_Canvas,
   GLScene_Base_PersistentClasses, GLScene_Screen, GLScene_Base_GLStateMachine, GLScene_MaterialEx;
 

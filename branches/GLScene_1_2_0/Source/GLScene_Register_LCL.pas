@@ -66,7 +66,7 @@ uses
   GLScene_Objects_AnimatedSprite, GLScene_Objects_Extrusion,
   GLScene_Objects_MultiPolygon,
   // GLScene - mesh
-  GLScene_Vector_FileObjects, GLScene_Objects_Mesh, GLScene_Objects_TilePlane,
+  GLScene_Objects_VectorFile, GLScene_Objects_Mesh, GLScene_Objects_TilePlane,
   GLScene_Portal,
   // GLScene - terrain
   GLScene_Objects_Terrain, GLScene_HeightData, GLScene_HDS_HeightTileFile,
@@ -388,9 +388,9 @@ type
   TUniformAutoSetProperty = class(TPropertyEditor)
   private
     procedure PassUniform(const S: string);
+    procedure PassBlock(const S: string);
   public
     { Public Declarations }
-    function GetValue: string; override;
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
@@ -1150,9 +1150,9 @@ begin
   ShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0)).Uniforms[S]);
 end;
 
-function TUniformAutoSetProperty.GetValue: string;
+procedure TUniformAutoSetProperty.PassBlock(const S: string);
 begin
-  Result := '';
+  ShaderUniformEditor.AddUniformBlock(TGLBaseShaderModel(GetComponent(0)).UniformBlocks[S]);
 end;
 
 procedure TUniformAutoSetProperty.Edit;
@@ -1168,7 +1168,7 @@ begin
       LOwner.MaterialLibrary.GetNames(AddTextureName, TGLTextureImageEx);
       LOwner.MaterialLibrary.GetNames(AddTextureName, TGLFrameBufferAttachment);
       LOwner.MaterialLibrary.GetNames(AddSamplerName, TGLTextureSampler);
-      LOwner.GetUniformNames(PassUniform);
+      LOwner.GetUniformNames(PassUniform, PassBlock);
       Execute;
     end;
   end;

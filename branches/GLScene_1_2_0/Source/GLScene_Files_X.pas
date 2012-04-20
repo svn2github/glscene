@@ -40,7 +40,7 @@ uses
   Classes, SysUtils,
 
   // GLScene_Core
-  GLScene_Vector_FileObjects, GLScene_Base_FileIO, GLScene_Base_Vector_Geometry, GLScene_Texture,
+  GLScene_Objects_VectorFile, GLScene_Base_FileIO, GLScene_Base_Vector_Geometry, GLScene_Texture,
   GLScene_Base_Vector_Lists, GLScene_Material,
 
   // Misc
@@ -73,6 +73,7 @@ var
     libmat : TGLLibMaterial;
     fg : TFGVertexNormalTexIndexList;
     str : String;
+    matLib: TGLMaterialLibrary;
   begin
     mat:=IdentityHMGMatrix;
     if Assigned(DXNode.Owner) then
@@ -95,10 +96,11 @@ var
         if (Owner.UseMeshMaterials) and Assigned(Owner.MaterialLibrary) then begin
           for i:=0 to TDXMesh(DXNode).MaterialList.Count-1 do begin
             Str:=TDXMesh(DXNode).MaterialList.Items[i].Texture;
+            matLib := Owner.MaterialLibrary as TGLMaterialLibrary;
             if FileExists(Str) then
-              libmat:=Owner.MaterialLibrary.AddTextureMaterial('', Str)
+              libmat:=matLib.AddTextureMaterial('', Str)
             else
-              libmat:=Owner.MaterialLibrary.Materials.Add;
+              libmat:=matLib.Materials.Add;
 
             libmat.Name:=Format('%s_%d',[DXNode.Name,i]);
             with libmat.Material.FrontProperties do begin

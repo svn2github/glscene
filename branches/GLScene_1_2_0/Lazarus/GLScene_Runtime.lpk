@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="4">
     <PathDelim Value="\"/>
     <Name Value="GLScene_Runtime"/>
+    <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
-      <Version Value="9"/>
+      <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\Source"/>
@@ -920,80 +921,80 @@
         <UnitName Value="GLScene_Utils"/>
       </Item221>
       <Item222>
-        <Filename Value="..\Source\GLScene_Vector_FileObjects.pas"/>
-        <UnitName Value="GLScene_Vector_FileObjects"/>
-      </Item222>
-      <Item223>
         <Filename Value="..\Source\GLScene_Verlet_Classes.pas"/>
         <UnitName Value="GLScene_Verlet_Classes"/>
-      </Item223>
-      <Item224>
+      </Item222>
+      <Item223>
         <Filename Value="..\Source\GLScene_Verlet_Clothify.pas"/>
         <UnitName Value="GLScene_Verlet_Clothify"/>
-      </Item224>
-      <Item225>
+      </Item223>
+      <Item224>
         <Filename Value="..\Source\GLScene_Verlet_SkeletonColliders.pas"/>
         <UnitName Value="GLScene_Verlet_SkeletonColliders"/>
-      </Item225>
-      <Item226>
+      </Item224>
+      <Item225>
         <Filename Value="..\Source\GLScene_VfsPAK.pas"/>
         <UnitName Value="GLScene_VfsPAK"/>
-      </Item226>
-      <Item227>
+      </Item225>
+      <Item226>
         <Filename Value="..\Source\GLScene_Vfw.pas"/>
         <UnitName Value="GLScene_Vfw"/>
-      </Item227>
-      <Item228>
+      </Item226>
+      <Item227>
         <Filename Value="..\Source\GLScene_Viewer.pas"/>
         <UnitName Value="GLScene_Viewer"/>
-      </Item228>
-      <Item229>
+      </Item227>
+      <Item228>
         <Filename Value="..\Source\GLScene_Viewer_Form.pas"/>
         <UnitName Value="GLScene_Viewer_Form"/>
-      </Item229>
-      <Item230>
+      </Item228>
+      <Item229>
         <Filename Value="..\Source\GLScene_Viewer_FullScreen.pas"/>
         <UnitName Value="GLScene_Viewer_FullScreen"/>
-      </Item230>
-      <Item231>
+      </Item229>
+      <Item230>
         <Filename Value="..\Source\GLScene_Viewer_LCL.pas"/>
         <UnitName Value="GLScene_Viewer_LCL"/>
-      </Item231>
-      <Item232>
+      </Item230>
+      <Item231>
         <Filename Value="..\Source\GLScene_WaveOut.pas"/>
         <UnitName Value="GLScene_WaveOut"/>
-      </Item232>
-      <Item233>
+      </Item231>
+      <Item232>
         <Filename Value="..\Source\GLScene_ZBuffer.pas"/>
         <UnitName Value="GLScene_ZBuffer"/>
-      </Item233>
-      <Item234>
+      </Item232>
+      <Item233>
         <Filename Value="..\Source\GLScene_ZLIB.pas"/>
         <UnitName Value="GLScene_ZLIB"/>
-      </Item234>
-      <Item235>
+      </Item233>
+      <Item234>
         <Filename Value="..\Source\GLScene_ZLIB_API.pas"/>
         <UnitName Value="GLScene_ZLIB_API"/>
-      </Item235>
-      <Item236>
+      </Item234>
+      <Item235>
         <Filename Value="..\Source\GLScene_Archive_Manager.pas"/>
         <UnitName Value="GLScene_Archive_Manager"/>
-      </Item236>
-      <Item237>
+      </Item235>
+      <Item236>
         <Filename Value="..\Source\GLScene.inc"/>
         <Type Value="Include"/>
-      </Item237>
-      <Item238>
+      </Item236>
+      <Item237>
         <Filename Value="..\Source\GLScene_Base_xf86vmode.pas"/>
         <UnitName Value="GLScene_Base_xf86vmode"/>
-      </Item238>
-      <Item239>
+      </Item237>
+      <Item238>
         <Filename Value="..\Source\GLScene_Context_Carbon.pas"/>
         <UnitName Value="GLScene_Context_Carbon"/>
-      </Item239>
-      <Item240>
+      </Item238>
+      <Item239>
         <Filename Value="..\Source\GLScene_Context_XServer.pas"/>
         <UnitName Value="GLScene_Context_XServer"/>
+      </Item239>
+      <Item240>
+        <Filename Value="..\Source\GLScene_Objects_VectorFile.pas"/>
+        <UnitName Value="GLScene_Objects_VectorFile"/>
       </Item240>
     </Files>
     <i18n>
