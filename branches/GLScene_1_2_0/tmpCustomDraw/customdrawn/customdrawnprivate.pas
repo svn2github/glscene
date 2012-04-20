@@ -9,9 +9,9 @@ uses
   Types, Classes, SysUtils,
   // LCL
   Controls, Graphics, stdctrls, extctrls, comctrls,
-  customdrawnproc, customdrawncontrols, lcltype, lclproc, lclintf;
+  customdrawnproc, customdrawncontrols, lcltype, lclproc, lclintf,lmessages;
 
-type
+{type
 
   // Standard Tab
 
@@ -54,7 +54,7 @@ type
   TCDIntfPageControl = class(TCDPageControl)
   public
     LCLControl: TCustomTabControl;
-  end;
+  end;   }
 
 // These are default message handlers which backends might use to simplify their code
 // They convert a message sent to the form into a message to the correct sub-control
@@ -64,6 +64,9 @@ procedure CallbackMouseMove(AWindowHandle: TCDForm; x, y: Integer; ShiftState: T
 procedure CallbackKeyDown(AWindowHandle: TCDForm; AKey: Word);
 procedure CallbackKeyUp(AWindowHandle: TCDForm; AKey: Word);
 procedure CallbackKeyChar(AWindowHandle: TCDForm; AKeyData: Word; AChar: TUTF8Char);
+procedure CallbackDraw(AWindowHandle: TCDForm);
+procedure CallbackCreateHandle(AWindowHandle: TCDForm);
+procedure CallbackDestroyHandle(AWindowHandle: TCDForm);
 function IsIntfControl(AControl: TWinControl): Boolean;
 
 implementation
@@ -249,17 +252,42 @@ begin
   end;
 end;
 
+procedure CallbackDraw(AWindowHandle: TCDForm);
+var
+  lTarget: TWinControl;
+begin
+  lTarget := AWindowHandle.GetFocusedControl();
+  LCLSendPaintMsg(lTarget,0,nil);
+end;
+
+procedure CallbackCreateHandle(AWindowHandle: TCDForm);
+var
+  lTarget: TWinControl;
+begin
+  lTarget := AWindowHandle.GetFocusedControl();
+  SendSimpleMessage(lTarget, LM_CREATE);
+end;
+
+procedure CallbackDestroyHandle(AWindowHandle: TCDForm);
+var
+  lTarget: TWinControl;
+begin
+  lTarget := AWindowHandle.GetFocusedControl();
+  LCLSendDestroyMsg(lTarget);
+end;
+
 function IsIntfControl(AControl: TWinControl): Boolean;
 begin
   Result := (AControl <> nil) and (AControl.Parent <> nil);
-  if Result then Result :=
+ { if Result then Result :=
     // Standard Tab
     (AControl is TCDIntfButton) or (AControl is TCDIntfEdit) or (AControl is TCDIntfCheckBox) or
     // Additional Tab
     (AControl is TCDIntfStaticText) or
     // Common Controls Tab
     (AControl is TCDIntfProgressBar) or (AControl is TCDIntfTrackBar) or
-    (AControl is TCDIntfPageControl);
+    (AControl is TCDIntfPageControl);  }
+  Result:=false;
 end;
 
 end.

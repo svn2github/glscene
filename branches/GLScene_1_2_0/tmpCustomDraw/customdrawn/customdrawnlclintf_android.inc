@@ -163,6 +163,13 @@ begin
   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoHideVirtualKeyboard);
 end;
 
+{procedure TCDWidgetSet.CreateOpenGLContext;
+begin
+  DebugLn('[TCDWidgetSet.CreateOpenGLContext]');
+  // Call the method
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateOpenGLContext);
+end; }
+
 function TCDWidgetSet.IsMobilePlatform: Boolean;
 begin
   Result := True;

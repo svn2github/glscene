@@ -41,7 +41,7 @@ uses
   // Widgetset
   customdrawnproc,
   // LCL
-  customdrawn_common, customdrawncontrols, customdrawndrawers,
+ // customdrawn_common, customdrawncontrols, customdrawndrawers,
   lazcanvas, lazregions, lazdeviceapis,
   InterfaceBase,
   Controls,  Forms, lclproc, IntfGraphics, GraphType,
@@ -147,11 +147,22 @@ type
     {$endif}
     {$ifdef CD_Android}
     CombiningAccent: Cardinal;
+    MajorVersion, MinorVersion: Integer;
     {$IFnDEF WithOldDebugln}
     procedure AndroidDebugLn(ASender: TObject; AStr: string; var AHandled: Boolean);
     {$ELSE}
     procedure AndroidDebugLn(AStr: string);
     {$ENDIF}
+    procedure StartEGL();
+    procedure FinishEGL() ;
+    function CreateContext():Pointer;
+    procedure DestroyContext(aContext:Pointer);
+    procedure CreateSurface();
+    procedure DestroySurface();
+    procedure PurgeBuffers();
+    procedure ClearBuffers();
+    procedure SwapBuffers();
+
     function AndroidKeyCodeToLCLKeyCode(AAndroidKeyCode: Integer): Word;
     {$endif}
     {$ifdef CD_Cocoa}
@@ -191,11 +202,11 @@ type
   public
     // ScreenDC and Image for doing Canvas operations outside the Paint event
     // and also for text drawing operations
-    ScreenDC: TLazCanvas;
+   { ScreenDC: TLazCanvas;
     ScreenBitmapRawImage: TRawImage;
     ScreenBitmapHeight: Integer;
     ScreenBitmapWidth: Integer;
-    ScreenImage: TLazIntfImage;
+    ScreenImage: TLazIntfImage;   }
 
     // Android Activity callbacks
     ActivityOnCreate: TProcedure;
@@ -258,8 +269,8 @@ procedure MyXConnectionWatchProc(display: PDisplay; client_data: TXPointer;
 {$endif}
 {$ifdef CD_Android}
 function Java_com_pascal_lclproject_LCLActivity_LCLOnTouch(env:PJNIEnv;this:jobject; x, y: single; action: jint): jint; cdecl;
-function Java_com_pascal_lclproject_LCLActivity_LCLDrawToBitmap(
-    env:PJNIEnv;this:jobject; width, height: jint; abitmap: jobject): jint; cdecl;
+function Java_com_pascal_lclproject_LCLActivity_LCLOnDraw(
+    env:PJNIEnv;this:jobject; width, height: jint): jint; cdecl;
 function Java_com_pascal_lclproject_LCLActivity_LCLOnCreate(
     env:PJNIEnv; this:jobject; alclactivity: jobject): jint; cdecl;
 function Java_com_pascal_lclproject_LCLActivity_LCLOnMessageBoxFinished(
@@ -273,6 +284,7 @@ function Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged(
     env:PJNIEnv; this:jobject; ANewDPI, ANewWidth: jint): jint; cdecl;
 function Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged(
     env:PJNIEnv; this:jobject; ASensorKind: jint; AValues: JDoubleArray): jint; cdecl;
+
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 
@@ -347,16 +359,32 @@ var
   // Generic methods from Context
   javaMethod_getSystemService: jmethodid = nil;
 
+  javaField_lclsurfaceholder: JfieldID=nil;
+
   // This is utilized to store the information such as invalidate requests in events
   eventResult: jint;
+  // Methods of OpenGL
+  javaMethod_LCLDoStartEGL: jmethodid = nil;
+  javaMethod_LCLDoFinishEGL: jmethodid = nil;
+  javaMethod_LCLDoCreateContext: jmethodid = nil;
+  javaMethod_LCLDoDestroyContext: jmethodid = nil;
+  javaMethod_LCLDoCreateSurface: jmethodid = nil;
+  javaMethod_LCLDoDestroySurface: jmethodid = nil;
+  javaMethod_LCLDoPurgeBuffers: jmethodid = nil;
+  javaMethod_LCLDoClearBuffers: jmethodid = nil;
+  javaMethod_LCLDoSwapBuffers: jmethodid = nil;
+
+  javaField_lclmajorversion: JfieldID=nil;
+  javaField_lclminorversion: JfieldID=nil;
+
 {$endif}
 
 implementation
 
 uses
   WsControls, lclintf,
-  CustomDrawnWSFactory,
-  CustomDrawnWSForms,
+  CustomDrawnWSFactory,  //registracia komponentov
+  CustomDrawnWSForms,    //formi
 {  Win32WSButtons,
   Win32WSMenus,
   Win32WSStdCtrls,
@@ -364,7 +392,7 @@ uses
   Win32Themes,
 ////////////////////////////////////////////////////
   Win32Extra,}
-  customdrawnprivate,
+  customdrawnprivate,  //klaviatura i mish
   LCLMessageGlue;
 
   {$ifdef CD_Windows}

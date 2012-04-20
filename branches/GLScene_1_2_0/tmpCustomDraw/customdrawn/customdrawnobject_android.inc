@@ -62,8 +62,8 @@ begin
   Result := eventResult;
 end;
 
-function Java_com_pascal_lclproject_LCLActivity_LCLDrawToBitmap(
-    env:PJNIEnv;this:jobject; width, height: jint; abitmap: jobject): jint; cdecl;
+function Java_com_pascal_lclproject_LCLActivity_LCLOnDraw(
+    env:PJNIEnv;this:jobject; width, height: jint): jint; cdecl;
 var
   pixels: PCardinal;
   lCurForm: TCDNonNativeForm;
@@ -73,7 +73,7 @@ var
   {$ENDIF}
 begin
   Result := 0;
-  AndroidBitmap_lockPixels(env, abitmap, @pixels);
+ // AndroidBitmap_lockPixels(env, abitmap, @pixels);
 
   lCurForm := GetCurrentForm();
   if lCurForm <> nil then
@@ -82,17 +82,17 @@ begin
     //lTimeStart := NowUTC();
     {$ENDIF}
     {$IFDEF VerboseCDPaintEvent}
-    DebugLn(Format('[Java_com_pascal_lclproject_LCLActivity_LCLDrawToBitmap] lCurForm:TCDNonNativeForm=%x', [PtrInt(lCurForm)]));
+    DebugLn(Format('[Java_com_pascal_lclproject_LCLActivity_LCLOnDraw] lCurForm:TCDNonNativeForm=%x', [PtrInt(lCurForm)]));
     {$ENDIF}
-
+    CallbackDraw(lCurForm);
     // Prepare the non-native image and canvas
-    UpdateControlLazImageAndCanvas(lCurForm.Image, lCurForm.Canvas, Width, Height, clfRGBA32, pixels, True, False);
+  //  UpdateControlLazImageAndCanvas(lCurForm.Image, lCurForm.Canvas, Width, Height, clfRGBA32, pixels, True, False);
 
-    RenderForm(lCurForm.Image, lCurForm.Canvas, lCurForm.LCLForm);
+   // RenderForm(lCurForm.Image, lCurForm.Canvas, lCurForm.LCLForm);
   end;
 
   // Now returns the bitmap buffer to LCLActivity so that it can render it
-  AndroidBitmap_unlockPixels(env, abitmap);
+//  AndroidBitmap_unlockPixels(env, abitmap);
 end;
 
 function Java_com_pascal_lclproject_LCLActivity_LCLOnCreate(
@@ -332,9 +332,9 @@ begin
 end;
 
 const NativeMethods: array[0..7] of JNINativeMethod=
-  ((name:'LCLDrawToBitmap';
-    signature:'(IILandroid/graphics/Bitmap;)I';
-    fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLDrawToBitmap;),
+  ((name:'LCLOnDraw';
+    signature:'(II)I';//(IILandroid/graphics/Bitmap;)I
+    fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnDraw;),
    (name:'LCLOnTouch';
     signature:'(FFI)I';
     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnTouch;),
@@ -435,6 +435,7 @@ begin
   // For LazDeviceAPIs
   javaField_lcldestination := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcldestination', 'Ljava/lang/String;');
   javaField_lclkind := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclkind', 'I');
+
   //
   if not assigned(JavaField_lcltext) then
   begin
@@ -462,6 +463,22 @@ begin
   // Generic methods from Context
   javaMethod_getSystemService := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidContentContextClass, 'getSystemService', '(Ljava/lang/String;)Ljava/lang/Object;');
 
+  //OpenGL
+ // javaMethod_LCLDoCreateOpenGLContext := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateOpenGLContext', '()V');
+ // Methods of OpenGL
+  javaMethod_LCLDoStartEGL:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStartEGL', '()V');
+  javaMethod_LCLDoFinishEGL:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoFinishEGL', '()V');
+  javaMethod_LCLDoCreateContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateContext', '()Ljavax/microedition/khronos/egl/EGLContext;');
+  javaMethod_LCLDoDestroyContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)V');
+  javaMethod_LCLDoCreateSurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateSurface', '()V');
+  javaMethod_LCLDoDestroySurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroySurface', '()V');
+  javaMethod_LCLDoPurgeBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoPurgeBuffers', '()V');
+  javaMethod_LCLDoClearBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoClearBuffers', '()V');
+  javaMethod_LCLDoSwapBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSwapBuffers', '()V');
+
+  javaField_lclmajorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmajorversion', 'I');
+  javaField_lclminorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclminorversion', 'I');
+
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad finished');
   result:=JNI_VERSION_1_4;// 1_6 is another option
 end;
@@ -470,13 +487,69 @@ procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 begin
 end;
 
+procedure TCDWidgetSet.StartEGL;
+begin
+  // Call the method
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoStartEGL);
+
+  // Read the output
+  MajorVersion := Integer(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclmajorversion));
+  MinorVersion := Integer(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclminorversion));
+end;
+
+procedure TCDWidgetSet.FinishEGL;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoFinishEGL);
+end;
+
+function TCDWidgetSet.CreateContext():Pointer;
+begin
+  result := Pointer(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateContext));
+end;
+
+procedure TCDWidgetSet.DestroyContext(aContext:Pointer);
+var
+  lParams: array[0..0] of JValue;
+begin
+    // Call the method
+  lParams[0].l := aContext;
+  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyContext,@lParams[0]);
+end;
+
+procedure TCDWidgetSet.CreateSurface;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateSurface);
+end;
+
+procedure TCDWidgetSet.DestroySurface;
+begin
+   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroySurface);
+end;
+
+procedure TCDWidgetSet.PurgeBuffers;
+begin
+   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoPurgeBuffers);
+end;
+
+procedure TCDWidgetSet.ClearBuffers;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoClearBuffers);
+end;
+
+procedure TCDWidgetSet.SwapBuffers;
+begin
+   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoSwapBuffers);
+end;
+
 {$IFnDEF WithOldDebugln}
+
 procedure TCDWidgetSet.AndroidDebugLn(ASender: TObject; AStr: string; var AHandled: Boolean);
 begin
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', PChar(AccumulatedStr+AStr));
   AccumulatedStr := '';
   AHandled := True;
 end;
+
 {$ELSE}
 procedure TCDWidgetSet.AndroidDebugLn(AStr: string);
 begin
@@ -735,7 +808,7 @@ begin
 
   {$ifdef CD_UseNativeText}
   // Create the dummy screen DC
-  ScreenBitmapRawImage.Init;
+ { ScreenBitmapRawImage.Init;
   ScreenBitmapHeight := 100;
   ScreenBitmapWidth := 100;
   ScreenBitmapRawImage.Description.Init_BPP32_A8R8G8B8_BIO_TTB(ScreenBitmapWidth, ScreenBitmapHeight);
@@ -744,7 +817,7 @@ begin
   ScreenImage.SetRawImage(ScreenBitmapRawImage);
   ScreenDC := TLazCanvas.Create(ScreenImage);
 
-  DefaultFontAndroidSize := 16;
+  DefaultFontAndroidSize := 16;   }
   {$endif}
 end;
 
@@ -759,8 +832,8 @@ procedure TCDWidgetSet.BackendDestroy;
 begin
   {$ifdef CD_UseNativeText}
   // Free the dummy screen DC
-  ScreenImage.Free;
-  ScreenDC.Free;
+//  ScreenImage.Free;
+ // ScreenDC.Free;
   {$endif}
 end;
 

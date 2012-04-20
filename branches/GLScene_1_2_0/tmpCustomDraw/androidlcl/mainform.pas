@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   LCLProc, Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase,
-  lazdeviceapis, Menus, ExtDlgs;
+  lazdeviceapis, Menus, ExtDlgs,LMessages,customdrawnint  ;
 
 type
 
@@ -23,10 +23,13 @@ type
       Shift: TShiftState; X, Y: Integer);       }
     procedure btnShowInfoClick(Sender: TObject);
     procedure FormClick(Sender: TObject);
-  //  procedure FormCreate(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
   //  procedure FormPaint(Sender: TObject);
  //   procedure MenuItem1Click(Sender: TObject);
+    procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
+    procedure LMSize(var Message: TLMSize); message LM_SIZE;
   private
     { private declarations }
   public
@@ -88,10 +91,68 @@ begin
   Device.Vibrate(2000);
 end;
 
-{procedure TForm1.FormCreate(Sender: TObject);
+procedure TForm1.FormCreate(Sender: TObject);
+{var
+    MajorVersion, MinorVersion, Err: EGLInt;
+  FDisplay: EGLDisplay;
+  FSurface: EGLSurface;
+  FConfig: EGLConfig;
+    LNumElements: Integer;
+    Attribute: array[0..12] of Integer = (
+   // EGL_BUFFER_SIZE,16,
+
+    EGL_RED_SIZE, 5,
+    EGL_GREEN_SIZE, 6,
+    EGL_BLUE_SIZE, 5,
+    EGL_ALPHA_SIZE,0,
+    EGL_DEPTH_SIZE, 0,
+    EGL_STENCIL_SIZE,0,
+  //  EGL_SURFACE_TYPE,EGL_WINDOW_BIT,
+  //  EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
+    0);
+      LConfigs: array of EGLConfig;
+      OGLContext:Pointer;     }
 begin
 
-end;  }
+   CDWidgetset.StartEGL;
+   OGLContext:= CDWidgetset.CreateContext;
+   CDWidgetset.DestroyContext(OGLContext);
+   // FDisplay := eglGetDisplay(EGL_DEFAULT_DISPLAY);
+  //  if eglInitialize(FDisplay, @MajorVersion, @MinorVersion) = 0 then
+   //   DebugLn('Failed to initialize OpenGL ES');
+
+  // DebugLn('MajorVersion:'+inttostr(MajorVersion)+' MinorVersion:'+inttostr(MinorVersion));
+
+ //  if eglChooseConfig(FDisplay, nil, nil, 0, @LNumElements) = EGL_TRUE then
+  //  begin
+  //    SetLength(LConfigs, LNumElements);
+   //   if eglGetConfigs(FDisplay, @LConfigs[0], Length(LConfigs), @LNumElements) = EGL_TRUE then
+   //     DebugLn('eglGetConfigs');
+  //  end;
+
+//  if eglChooseConfig(FDisplay, @Attribute[0], @FConfig, 1, @LNumElements) <> EGL_TRUE then
+  //  DebugLn('Failed to accept attributes');
+ // FSurface := eglCreateWindowSurface(FDisplay, LConfigs[0], nil, nil);
+ //  Err := eglGetError;
+//	if Err <> EGL_SUCCESS then
+   //  DebugLn('Failed to create surface to draw');
+end;
+
+procedure TForm1.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  DebugLn(Format('MouseDown x=%d y=%d', [x, y]));
+end;
+
+procedure TForm1.LMPaint(var Message: TLMPaint);
+begin
+  DebugLn('OnPaint');
+end;
+
+procedure TForm1.LMSize(var Message: TLMSize);
+begin
+  DebugLn('OnSize');
+end;
 
 procedure TForm1.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);

@@ -102,19 +102,19 @@ function RegisterLazDeviceAPIs: Boolean;
 
 implementation
 uses
- CustomDrawnWSArrow,
+// CustomDrawnWSArrow,
 { WinCEWSButtons,
  WinCEWSCalendar,
  WinCEWSCheckLst,}
- CustomDrawnWSComCtrls,
- CustomDrawnWSControls,
+// CustomDrawnWSComCtrls,
+// CustomDrawnWSControls,
 { WinCEWSDialogs,}
- CustomDrawnWSExtCtrls,
+// CustomDrawnWSExtCtrls,
  CustomDrawnWSForms,
 { WinCEWSImgList,
  WinCEWSMenus,
  WinCEWSSpin,}
- CustomDrawnWSStdCtrls,
+// CustomDrawnWSStdCtrls,
  CustomDrawnWSLazDeviceAPIs{,
  WinCEWSGrids};
 
@@ -146,7 +146,7 @@ end;
 
 function RegisterWinControl: Boolean; alias : 'WSRegisterWinControl';
 begin
-  RegisterWSComponent(TWinControl, TCDWSWinControl);
+//  RegisterWSComponent(TWinControl, TCDWSWinControl);
   Result := True;
 end;
 
@@ -174,7 +174,7 @@ end;
 
 function RegisterPageControl: Boolean; alias : 'WSRegisterPageControl';
 begin
-  RegisterWSComponent(TCustomTabControl, TCDWSCustomTabControl);
+ // RegisterWSComponent(TCustomTabControl, TCDWSCustomTabControl);
   Result := True;
 end;
 
@@ -186,7 +186,7 @@ end;
 
 function RegisterCustomProgressBar: Boolean; alias : 'WSRegisterCustomProgressBar';
 begin
-  RegisterWSComponent(TCustomProgressBar, TCDWSProgressBar);
+ // RegisterWSComponent(TCustomProgressBar, TCDWSProgressBar);
   Result := True;
 end;
 
@@ -207,7 +207,7 @@ end;
 
 function RegisterCustomTrackBar: Boolean; alias : 'WSRegisterCustomTrackBar';
 begin
-  RegisterWSComponent(TCustomTrackBar, TCDWSTrackBar);
+ // RegisterWSComponent(TCustomTrackBar, TCDWSTrackBar);
   Result := True;
 end;
 
@@ -274,7 +274,7 @@ end;
 
 function RegisterCustomGroupBox: Boolean; alias : 'WSRegisterCustomGroupBox';
 begin
-  RegisterWSComponent(TCustomGroupBox, TCDWSCustomGroupBox);
+ // RegisterWSComponent(TCustomGroupBox, TCDWSCustomGroupBox);
   Result := True;
 end;
 
@@ -292,7 +292,7 @@ end;
 
 function RegisterCustomEdit: Boolean; alias : 'WSRegisterCustomEdit';
 begin
-  RegisterWSComponent(TCustomEdit, TCDWSCustomEdit);
+//  RegisterWSComponent(TCustomEdit, TCDWSCustomEdit);
   Result := True;
 end;
 
@@ -309,13 +309,13 @@ end;
 
 function RegisterCustomButton: Boolean; alias : 'WSRegisterCustomButton';
 begin
-  RegisterWSComponent(TCustomButton, TCDWSButton);
+ // RegisterWSComponent(TCustomButton, TCDWSButton);
   Result := True;
 end;
 
 function RegisterCustomCheckBox: Boolean; alias : 'WSRegisterCustomCheckBox';
 begin
-  RegisterWSComponent(TCustomCheckBox, TCDWSCustomCheckBox);
+ // RegisterWSComponent(TCustomCheckBox, TCDWSCustomCheckBox);
   Result := True;
 end;
 
@@ -333,7 +333,7 @@ end;
 
 function RegisterCustomStaticText: Boolean; alias : 'WSRegisterCustomStaticText';
 begin
-  RegisterWSComponent(TCustomStaticText, TCDWSCustomStaticText);
+  //RegisterWSComponent(TCustomStaticText, TCDWSCustomStaticText);
   Result := True;
 end;
 
@@ -397,13 +397,13 @@ end;
 
 function RegisterCustomPanel: Boolean; alias : 'WSRegisterCustomPanel';
 begin
-  RegisterWSComponent(TCustomPanel, TCDWSCustomPanel);
+//  RegisterWSComponent(TCustomPanel, TCDWSCustomPanel);
   Result := True;
 end;
 
 function RegisterCustomTrayIcon: Boolean; alias : 'WSRegisterCustomTrayIcon';
 begin
-  RegisterWSComponent(TCustomTrayIcon, TCDWSCustomTrayIcon);
+ // RegisterWSComponent(TCustomTrayIcon, TCDWSCustomTrayIcon);
   Result := True;
 end;
 
@@ -464,7 +464,7 @@ end;
 // Arrow
 function RegisterArrow: Boolean; alias : 'WSRegisterArrow';
 begin
-  RegisterWSComponent(TArrow, TCDWSArrow);
+ // RegisterWSComponent(TArrow, TCDWSArrow);
   Result := True;
 end;
 

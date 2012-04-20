@@ -2320,14 +2320,14 @@ begin
 
   Result := False;
 
-  if not IsValidDC(DC) then exit;
+  {if not IsValidDC(DC) then exit;
 
   LazDC := TLazCanvas(DC);
 
   GetDefaultDrawer().DrawFrame3D(LazDC, Types.Point(ARect.Left, ARect.Top),
     Types.Size(ARect), FrameWidth, Style);
 
-  InflateRect(ARect, -FrameWidth, -FrameWidth);
+  InflateRect(ARect, -FrameWidth, -FrameWidth); }
 
   Result := True;
 end;
@@ -2741,7 +2741,7 @@ begin
   Result := 0;
 
   // Screen DC
-  if HWnd = 0 then Result := HDC(CDWidgetset.ScreenDC);
+ // if HWnd = 0 then Result := HDC(CDWidgetset.ScreenDC);
 
   // Invalid DC
   if not IsValidDC(HWnd) then Exit;
@@ -2761,13 +2761,13 @@ begin
   else
     raise Exception.Create('Invalid handle for GetDC');
 
-  // Now get Form DC
-  Result := HDC(lFormHandle.Canvas);
+  // Now get Form DC           // lFormHandle.canvas
+  Result := HDC(lFormHandle.NativeHandle);
 
   // If the Form DC doesn't yet exist, just give the ScreenDC
   // Anyone asking for a DC outside the Paint event can't expect
   // to receive something which can be drawn to anyway
-  if Result = 0 then Result := HDC(CDWidgetset.ScreenDC);
+//  if Result = 0 then Result := HDC(CDWidgetset.ScreenDC);
 
   {$ifdef VerboseCDDrawing}
     DebugLn(':<[WinAPI GetDC] Result: ', dbghex(Result));
@@ -3520,7 +3520,8 @@ begin
   end;
 
   case nIndex of
-    COLOR_SCROLLBAR               : Result:=GetDefaultDrawer().FallbackPalette.ScrollBar;
+    COLOR_SCROLLBAR               : Result:=0;
+   { COLOR_SCROLLBAR               : Result:=GetDefaultDrawer().FallbackPalette.ScrollBar;
     COLOR_BACKGROUND              : Result:=GetDefaultDrawer().FallbackPalette.Background;
     COLOR_ACTIVECAPTION           : Result:=GetDefaultDrawer().FallbackPalette.ActiveCaption;
     COLOR_INACTIVECAPTION         : Result:=GetDefaultDrawer().FallbackPalette.InactiveCaption;
@@ -3553,7 +3554,7 @@ begin
     COLOR_MENUBAR                 : Result:=GetDefaultDrawer().FallbackPalette.MenuBar;
     //
     COLOR_FORM                    : Result:=GetDefaultDrawer().FallbackPalette.Form;
-  else
+}  else
     Result:=0;
   end;
 end;

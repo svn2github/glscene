@@ -68,8 +68,8 @@ type
     // so for them we just throw the previously painted image
     InvalidateCount: Integer;
     // painting objects
-    Image: TLazIntfImage;
-    Canvas: TLazCanvas;
+    //Image: TLazIntfImage;
+  //  Canvas: TLazCanvas;
     constructor Create; virtual;
     procedure IncInvalidateCount;
     function GetFocusedControl: TWinControl;
@@ -780,8 +780,8 @@ end;
 
 procedure TCDForm.SanityCheckScrollPos;
 begin
-  ScrollY := Max(ScrollY, 0);
-  ScrollY := Min(ScrollY, GetFormVirtualHeight(Image.Height) - Image.Height);
+  ScrollY := Max(ScrollY, 0);     //(Image.Height)
+  ScrollY := Min(ScrollY, GetFormVirtualHeight(LCLForm.Height) - LCLForm.Height);
 end;
 
 end.

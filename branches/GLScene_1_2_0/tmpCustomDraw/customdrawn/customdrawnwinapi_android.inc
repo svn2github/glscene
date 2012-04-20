@@ -2372,10 +2372,10 @@ begin
   ARect.Left := 0;
   ARect.Top := 0;
 
-  if lForm.Image = nil then Exit(False);
+  if lForm.LCLForm = nil then Exit(False);
 
-  ARect.Right := lForm.Image.Width;
-  ARect.Bottom := lForm.Image.Height;
+  ARect.Right := lForm.LCLForm.Width;
+  ARect.Bottom := lForm.LCLForm.Height;
 
   Result := True;
 end;
@@ -2648,8 +2648,8 @@ end;*)
   Returns: Integer
  ------------------------------------------------------------------------------}
 function TCDWidgetSet.GetDeviceCaps(DC: HDC; Index: Integer): Integer;
-var
-  LazDC: TLazCanvas;
+//var
+ // LazDC: TLazCanvas;
 begin
   {$ifdef VerboseCDWinAPI}
     DebugLn(':>[WinAPI GetDeviceCaps] DC ' + dbghex(DC));
@@ -2657,8 +2657,8 @@ begin
 
   Result := 0;
 
-  if DC = 0 then DC := HDC(ScreenDC);
-  LazDC := TLazCanvas(DC);
+ // if DC = 0 then DC := HDC(ScreenDC);
+ // LazDC := TLazCanvas(DC);
 
   case Index of
 //    HORZSIZE:
@@ -3874,7 +3874,7 @@ end;
   Returns: True on success
  ------------------------------------------------------------------------------}
 function TCDWidgetSet.GetTextExtentExPoint(DC: HDC; Str: PChar; Count,
-  MaxWidth: Integer; MaxCount, PartialWidths: PInteger; var Size: TSize
+  MaxWidth: Integer; MaxCount, PartialWidths: PInteger; var Size: Types.TSize
   ): Boolean;
 var
   LazDC: TLazCanvas absolute DC;
@@ -3952,7 +3952,8 @@ end;
   Params:  none
   Returns: Nothing
  ------------------------------------------------------------------------------}
-function TCDWidgetSet.GetTextExtentPoint(DC: HDC; Str: PChar; Count: Integer; var Size: TSize): Boolean;
+function TCDWidgetSet.GetTextExtentPoint(DC: HDC; Str: PChar; Count: Integer;
+  var Size: Types.TSize): Boolean;
 var
   lJavaString: jstring;
   LazDC: TLazCanvas;
@@ -4228,10 +4229,11 @@ begin
   {$endif}
   if Handle = 0 then Exit(False);
   lForm := TCDForm(handle);
-  if lForm.Image = nil then Exit(False);
+  //  if lForm.Image
+  if lForm.LCLForm = nil then Exit(False);
 
-  Width := lForm.Image.Width;
-  Height := lForm.Image.Height;
+  Width := lForm.LCLForm.Width;
+  Height := lForm.LCLForm.Height;
 
   Result := True;
 end;

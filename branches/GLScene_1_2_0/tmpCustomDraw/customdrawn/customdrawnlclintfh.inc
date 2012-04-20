@@ -52,6 +52,7 @@ function GetNativeCanvas(DC: HDC; AHandleType: TNativeCanvasType; AAllowFallback
 function GetNativeHandle(Handle: HWND; AHandleType: TNativeHandleType; AAllowFallbackToParent: Boolean = False): PtrInt; override;
 
 procedure HideVirtualKeyboard();
+//procedure CreateOpenGLContext();
 
 (*function IntfSendsUTF8KeyPress: boolean; override;
 function IsDesignerDC(WindowHandle: HWND; DC: HDC): Boolean; override;*)

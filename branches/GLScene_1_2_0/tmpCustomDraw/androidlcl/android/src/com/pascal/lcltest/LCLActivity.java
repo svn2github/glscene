@@ -8,6 +8,7 @@ import android.util.*;
 import android.graphics.*;
 import android.text.*;
 import android.view.*;
+import android.opengl.*;
 import android.view.inputmethod.*;
 import android.content.res.Configuration;
 import android.content.Intent;
@@ -20,6 +21,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import java.util.*;
+
+import javax.microedition.khronos.egl.EGLContext;
+
+import com.pascal.lcltest.GLSSurfaceView.EglHelper;
 
 public class LCLActivity extends Activity implements SensorEventListener, LocationListener
 {
@@ -94,11 +99,12 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   // -------------------------------------------
   // Our drawing surface
   // -------------------------------------------
-  private class LCLSurface extends View
+  private class LCLSurface extends GLSSurfaceView
   {
     public LCLSurface(Context context)
     {
       super(context);
+      glsrender= new EglHelper();
       // Allows View.postInvalidate() to work
       setWillNotDraw(false);
       // We already double buffer, so no need for a second one
@@ -127,9 +133,10 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
       //Log.v("lclproject", "LCLSurface.onDraw width=" + Integer.toString(lWidth)
       //  + " height=" + Integer.toString(lHeight));
  
-      Bitmap localbitmap = Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
-      LCLDrawToBitmap(lWidth, lHeight, localbitmap);
-      canvas.drawBitmap(localbitmap, 0, 0, null);
+      //Bitmap localbitmap = Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
+      //LCLDrawToBitmap(lWidth, lHeight, localbitmap);
+      LCLOnDraw(lWidth, lHeight);
+     // canvas.drawBitmap(localbitmap, 0, 0, null);
       //Log.i("lclapp", "onDraw finished");
     }
 
@@ -213,11 +220,16 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   @Override public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-          
+
     lclsurface = new LCLSurface(this);
+    
+   // GLSRenderer glsrenderer;
+   // glsrenderer = new GLSRenderer();
+   // lclsurface.setRenderer(glsrenderer);
     setContentView(lclsurface);
     lclsurface.postInvalidate();
-
+    
+   
     // Tell the LCL that an OnCreate has happened and what is our instance
     lclformwidth = lclsurface.getWidth();
     lclformheight = lclsurface.getHeight();
@@ -247,10 +259,23 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     //Log.i("lclapp", "onConfigurationChanged finished");
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+   // lclsurface.onResume();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+   // lclsurface.onPause();
+  }
+
+
   // -------------------------------------------
   // JNI table of Pascal functions
   // -------------------------------------------
-  public native int LCLDrawToBitmap(int width, int height, Bitmap bitmap);
+  public native int LCLOnDraw(int width, int height);
   public native int LCLOnTouch(float x, float y, int action);
   public native int LCLOnCreate(LCLActivity lclactivity);
   public native int LCLOnMessageBoxFinished(int Result);
@@ -420,6 +445,46 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     InputMethodManager localInputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
     localInputManager.showSoftInput(lclsurface, 0);
   };
+
+  
+  public void LCLDoStartEGL()
+  {
+	  lclsurface.glsrender.start();
+	  lclmajorversion =  lclsurface.lclmajorversion;
+	  lclminorversion = lclsurface.lclminorversion;
+  };
+  public void LCLDoFinishEGL()
+  {
+	  lclsurface.glsrender.finish();
+  };
+  public EGLContext LCLDoCreateContext()
+  {
+	 return lclsurface.glsrender.createcontext();
+  };
+  public void LCLDoDestroyContext(EGLContext aEglContext)
+  {
+	  lclsurface.glsrender.destroycontext(aEglContext);
+  };  
+  public void LCLDoCreateSurface()
+  {
+	  lclsurface.glsrender.createSurface(lclsurface.holder);
+  };
+  public void LCLDoDestroySurface()
+  {
+	  lclsurface.glsrender.destroySurface();
+  };  
+  public void LCLDoPurgeBuffers()
+  {
+	  lclsurface.glsrender.purgeBuffers();
+  };  
+  public void LCLDoClearBuffers()
+  {
+	  lclsurface.glsrender.clearBuffers();
+  };  
+  public void LCLDoSwapBuffers()
+  {
+	  lclsurface.glsrender.swap();
+  };  
 
   // SensorEventListener overrides
 
@@ -612,7 +677,10 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   // for LazDeviceAPIs
   public String lcldestination;
   public int lclkind;
-
+  
+  public int lclmajorversion;
+  public int lclminorversion;
+  
   static
   {
     try 
