@@ -377,22 +377,10 @@ uses
   LCLVersion,
   LCLType,
 {$ENDIF}
-{$IFNDEF GLS_DELPHI_2007_DOWN}
   GLScene_Base_RedBlackTree,
-{$ENDIF}
   SysUtils,
   GLScene_Base_Log,
   GLScene_Base_Strings;
-
-{$IFDEF GLS_DELPHI_2007_DOWN}
-{$I OldDelphiSpike.inc}
-{$ELSE}
-
-{$IFDEF FPC}
-{$IF (LCL_RELEASE < 31)}
-{$DEFINE GLS_GENERIC_PREFIX}
-{$IFEND}
-{$ENDIF}
 
 type
   TVertexHashMap = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
@@ -400,7 +388,6 @@ type
 
   TIntIntRBT = {$IFDEF GLS_GENERIC_PREFIX}specialize{$ENDIF}
   GRedBlackTree < Integer, Integer > ;
-{$ENDIF}
 
 {$IFNDEF GLS_MULTITHREAD}
 var

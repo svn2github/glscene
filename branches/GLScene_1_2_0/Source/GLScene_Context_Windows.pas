@@ -143,7 +143,7 @@ type
     {: DoGetHandles must be implemented in child classes,
        and return the display + window }
 {$IFDEF FPC}
-    procedure DoGetHandles(outputDevice: Cardinal; out XWin: Cardinal); virtual;
+    procedure DoGetHandles(outputDevice: HDC; out XWin: HWND); virtual;
       abstract;
 {$ENDIF}
   public

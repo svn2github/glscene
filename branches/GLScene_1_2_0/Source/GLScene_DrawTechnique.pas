@@ -375,11 +375,22 @@ begin
     FreeAndNil(vDrawTechniques[I]);
 end;
 
-procedure RoundTo(var Value: Cardinal; Step: Cardinal);
+procedure RoundTo(var Value: Cardinal; Step: Cardinal); overload;
 {$IFDEF GLS_INLINE} inline;
 {$ENDIF}
 var
   L: Cardinal;
+begin
+  L := Value mod Step;
+  if L > 0 then
+    Inc(Value, Step - L);
+end;
+
+procedure RoundTo(var Value: PtrUInt; Step: PtrUInt);  overload;
+{$IFDEF GLS_INLINE} inline;
+{$ENDIF}
+var
+  L: PtrUInt;
 begin
   L := Value mod Step;
   if L > 0 then
@@ -3536,7 +3547,7 @@ end;
 
 function RenderBlendedLastCompare(Item1, Item2: Pointer): Integer;
 var
-  pBatch1, pBatch2: PDrawBatch;
+  pBatch1, pBatch2: PDrawBatch;
 begin
   pBatch1 := PDrawBatch(Item1);
   pBatch2 := PDrawBatch(Item2);  
@@ -3576,7 +3587,7 @@ end;
 
 function RenderNearestFirstCompare(Item1, Item2: Pointer): Integer;
 var
-  pBatch1, pBatch2: PDrawBatch;
+  pBatch1, pBatch2: PDrawBatch;
 begin
   pBatch1 := PDrawBatch(Item1);
   pBatch2 := PDrawBatch(Item2);  
@@ -3590,7 +3601,7 @@ begin
     Exit(1)    
   else
     Exit(0);
-end;
+end;
 
 procedure TGLRenderManager.DrawAll(var ARci: TRenderContextInfo);
 var

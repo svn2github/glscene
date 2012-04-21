@@ -148,7 +148,7 @@ type
     FPause: Boolean;
     FChanges: TGLSoundSourceChanges; // NOT persistent, not assigned
     FNbLoops: Integer;
-    FTag: Integer; // NOT persistent, not assigned
+    FTag: PtrUInt; // NOT persistent, not assigned
     FFrequency: Integer;
 
   protected
@@ -184,7 +184,7 @@ type
     function Sample: TGLSoundSample;
 
     //: This Tag is reserved for sound manager use only
-    property ManagerTag: Integer read FTag write FTag;
+    property ManagerTag: PtrUInt read FTag write FTag;
 
     {: Origin object for the sound sources.<p>
        Absolute object position/orientation are taken into account, the

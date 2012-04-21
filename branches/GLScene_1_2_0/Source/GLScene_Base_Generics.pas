@@ -28,12 +28,6 @@ uses
 const
   MaxListSize = Maxint div 16;
 
-{$IFDEF FPC}
-  {$IF (LCL_RELEASE < 31)}
-    {$DEFINE GLS_GENERIC_PREFIX}
-  {$IFEND}
-{$ENDIF}
-
 type
 
   // GList

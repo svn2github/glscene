@@ -37,7 +37,7 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF FPC}
-  LCLIntf, LCLType, Types, LCLProc,LazUTF8,
+  LCLIntf, LCLType, Types, LCLProc, //LazUTF8,
 {$ENDIF}
   GLScene_BitmapFont,
   GLScene_Base_Context_Info,
@@ -404,7 +404,7 @@ begin
   //add existing ranges
   for I := 0 to Ranges.Count - 1 do
     with Ranges.Items[I] do
-      AList.AddSerie(integer(StartASCII), 1, CharCount);
+      AList.AddSerie(integer(StartASCII[1]), 1, CharCount);
 
   AList.SortAndRemoveDuplicates;
 

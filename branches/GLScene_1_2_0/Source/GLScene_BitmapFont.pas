@@ -452,7 +452,6 @@ uses
   SyncObjs,
 {$ENDIF}
   SysUtils,
-  GLScene_Base_OpenGL_Tokens,
   GLScene_Shader_Parameter;
 
 {$IFDEF GLS_REGION}{$REGION 'TBitmapFontRange'}{$ENDIF}

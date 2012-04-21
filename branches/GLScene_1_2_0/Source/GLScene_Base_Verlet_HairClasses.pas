@@ -18,7 +18,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLScene_Base_Verlet_Classes, GLScene_Base_Vector_Types, GLScene_Base_Vector_Lists, GLScene_Base_Vector_Geometry;
+  Classes, SysUtils, GLScene_Base_Verlet_Classes, GLScene_Base_Vector_Types,
+  GLScene_Base_Vector_Lists, GLScene_Base_Vector_Geometry;
 
 type
   TVHStiffness = (vhsFull, vhsSkip1Node, vhsSkip2Node, vhsSkip3Node,
