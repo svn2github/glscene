@@ -10,7 +10,7 @@ unit GLScene_Info_LCL;
 interface
 
 {$i GLScene.inc}
-
+{$IFNDEF GLS_OPENGL_ES}
 
 uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
@@ -113,8 +113,10 @@ type
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
 
-implementation
+  {$ENDIF}
 
+implementation
+  {$IFNDEF GLS_OPENGL_ES}
 {$R GLScene_Info_LCL.lfm}
 
 uses
@@ -396,7 +398,7 @@ initialization
 
 
    RegisterInfoForm(ShowInfoForm);
-
+  {$ENDIF}
 end.
 
 

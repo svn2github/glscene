@@ -49,7 +49,11 @@ const
 
 {$IFDEF Linux}
   opengl32 = 'libGL.so';
+  {$IFDEF GLS_OPENGL_ES}
+  glu32 = 'libglues.so';
+  {$ELSE}
   glu32 = 'libGLU.so';
+  {$ENDIF}
   libEGL = 'libEGL.so';
   libGLES2 = 'libGLESv2.so';
 {$ENDIF}

@@ -386,6 +386,7 @@ begin
     Inc(Value, Step - L);
 end;
 
+{$IFNDEF FPC}
 procedure RoundTo(var Value: PtrUInt; Step: PtrUInt);  overload;
 {$IFDEF GLS_INLINE} inline;
 {$ENDIF}
@@ -396,6 +397,7 @@ begin
   if L > 0 then
     Inc(Value, Step - L);
 end;
+{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TGLAbstractDrawTechnique'}{$ENDIF}
 
