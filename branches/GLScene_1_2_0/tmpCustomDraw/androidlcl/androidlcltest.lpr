@@ -6,7 +6,7 @@ uses
   customdrawnint,
   Interfaces,
   Forms,
-  mainform{, customdrawn_android, customdrawndrawers};
+  mainform, GLScene_Runtime{, customdrawn_android, customdrawndrawers};
 
 exports
   Java_com_pascal_lclproject_LCLActivity_LCLOnTouch name 'Java_com_pascal_lcltest_LCLActivity_LCLOnTouch',

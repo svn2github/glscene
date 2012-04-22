@@ -685,6 +685,10 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   {
     try 
     {
+      Log.i("lclapp", "Trying to load libglues.so");
+      System.loadLibrary("glues");  
+      Log.i("lclapp", "Trying to load libz.so");
+      System.loadLibrary("z");   
       Log.i("lclapp", "Trying to load liblclapp.so");
       System.loadLibrary("lclapp");
     }

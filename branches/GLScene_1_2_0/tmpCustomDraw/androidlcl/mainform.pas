@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   LCLProc, Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase,
-  lazdeviceapis, Menus, ExtDlgs,LMessages,customdrawnint  ;
+  lazdeviceapis, Menus, ExtDlgs,LMessages, customdrawnint{,dynlibs } ;
 
 type
 
@@ -92,8 +92,8 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
-{var
-    MajorVersion, MinorVersion, Err: EGLInt;
+var
+{    MajorVersion, MinorVersion, Err: EGLInt;
   FDisplay: EGLDisplay;
   FSurface: EGLSurface;
   FConfig: EGLConfig;
@@ -110,13 +110,17 @@ procedure TForm1.FormCreate(Sender: TObject);
   //  EGL_SURFACE_TYPE,EGL_WINDOW_BIT,
   //  EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
     0);
-      LConfigs: array of EGLConfig;
-      OGLContext:Pointer;     }
+      LConfigs: array of EGLConfig;}
+      OGLContext:Pointer;
+     //     vzHandle: TLibHandle = 0;
 begin
 
-   CDWidgetset.StartEGL;
-   OGLContext:= CDWidgetset.CreateContext;
-   CDWidgetset.DestroyContext(OGLContext);
+  // CDWidgetset.StartEGL;
+ //  OGLContext:= CDWidgetset.CreateContext;
+  // CDWidgetset.DestroyContext(OGLContext);
+
+  //  vzHandle := LoadLibrary(PChar('libz.so'));
+    //  DebugLn('libz:'+inttostr(vzHandle));
    // FDisplay := eglGetDisplay(EGL_DEFAULT_DISPLAY);
   //  if eglInitialize(FDisplay, @MajorVersion, @MinorVersion) = 0 then
    //   DebugLn('Failed to initialize OpenGL ES');

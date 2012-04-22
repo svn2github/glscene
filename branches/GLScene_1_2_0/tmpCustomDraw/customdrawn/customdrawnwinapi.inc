@@ -3514,7 +3514,7 @@ function TCDWidgetSet.GetSysColor(nIndex: Integer): DWORD;
 begin
   if (nIndex < 0) or (nIndex > MAX_SYS_COLORS) then
   begin
-    DebugLn('[TCDWidgetSet.GetSysColor] Unknown lcl system color: ');
+    DebugLn('[TCDWidgetSet.GetSysColor] Unknown lcl system color: '+inttostr(nIndex));
     Result := 0;
     Exit;
   end;
