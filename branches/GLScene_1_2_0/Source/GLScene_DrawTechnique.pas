@@ -386,7 +386,7 @@ begin
     Inc(Value, Step - L);
 end;
 
-{$IFNDEF FPC}
+{$IFDEF CPU64}
 procedure RoundTo(var Value: PtrUInt; Step: PtrUInt);  overload;
 {$IFDEF GLS_INLINE} inline;
 {$ENDIF}
