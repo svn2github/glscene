@@ -60,7 +60,6 @@ contains
   GLScene_PropertyEditor_Face_VCL in '..\Source\GLScene_PropertyEditor_Face_VCL.pas' {RFaceEditor: TFrame},
   GLScene_PropertyEditor_MaterialPreview_VCL in '..\Source\GLScene_PropertyEditor_MaterialPreview_VCL.pas' {RMaterialPreview: TFrame},
   GLScene_PropertyEditor_Material_VCL in '..\Source\GLScene_PropertyEditor_Material_VCL.pas' {MaterialEditorForm},
-  GLScene_Vector_FileObjects in '..\Source\GLScene_Vector_FileObjects.pas',
   GLScene_PropertyEditor_MaterialPicker_VCL in '..\Source\GLScene_PropertyEditor_MaterialPicker_VCL.pas' {LibMaterialPicker},
   GLScene_PropertyEditor_Texture_VCL in '..\Source\GLScene_PropertyEditor_Texture_VCL.pas' {RTextureEdit: TFrame},
   GLScene_Base_Joystick in '..\Source\GLScene_Base_Joystick.pas',
@@ -297,6 +296,8 @@ contains
   GLScene_LIBFREETYPE in '..\Source\GLScene_LIBFREETYPE.pas',
   GLScene_VectorFont in '..\Source\GLScene_VectorFont.pas',
   GLScene_VectorFont_Freetype in '..\Source\GLScene_VectorFont_Freetype.pas',
-  GLScene_Objects_SpaceText in '..\Source\GLScene_Objects_SpaceText.pas';
+  GLScene_Objects_SpaceText in '..\Source\GLScene_Objects_SpaceText.pas',
+  GLScene_Objects_VectorFile in '..\Source\GLScene_Objects_VectorFile.pas',
+  GLScene_Context_OES in '..\Source\GLScene_Context_OES.pas';
 
 end.

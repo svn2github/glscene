@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, GLScene_Sound_FileObjects, GLScene_Core, GLScene_Base_XCollection, GLScene_Base_Vector_Geometry,
-  GLScene_Cadencer, GLScene_Base_Classes;
+  GLScene_Cadencer, GLScene_Base_Classes, GLScene_Platform;
 
 {$I GLScene.inc}
 
@@ -542,7 +542,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLScene_Platform, GLScene_Utils;
+uses SysUtils, GLScene_Utils;
 
 var
   vActiveSoundManager: TGLSoundManager;

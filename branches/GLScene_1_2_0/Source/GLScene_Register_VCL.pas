@@ -904,8 +904,10 @@ end;
 
 procedure TGLTextureImageProperty.Edit;
 begin
+{$ifndef GLS_OPENGL_ES}
   if EditGLTextureImage(TGLTextureImage(GetOrdValue)) then
     Designer.Modified;
+{$ENDIF}
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -1247,8 +1249,10 @@ end;
 
 procedure TGLMaterialProperty.Edit;
 begin
+{$ifndef GLS_OPENGL_ES}
   if GLScene_PropertyEditor_Material_VCL.MaterialEditorForm.Execute(TGLMaterial(GetOrdValue)) then
     Modified;
+{$ENDIF}
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}

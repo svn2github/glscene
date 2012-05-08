@@ -18,6 +18,7 @@ unit GLScene_PropertyEditor_Material_VCL;
 interface
 
 {$I GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Windows,
@@ -68,8 +69,11 @@ type
 function MaterialEditorForm: TMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
+{$ENDIF}
+
 implementation
 
+{$ifndef GLS_OPENGL_ES}
 {$R *.dfm}
 
 var
@@ -162,6 +166,8 @@ initialization
 finalization
 
   ReleaseMaterialEditorForm;
+
+{$ENDIF}
 
 end.
 

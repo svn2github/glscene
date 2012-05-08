@@ -5162,6 +5162,7 @@ var
   bSampler: Boolean;
   bNew: Boolean;
   LEvent: TOnUniformInitialize;
+  p: Integer;
 {$IFDEF GLS_OPENGL_DEBUG}
   LString: string;
 {$ENDIF}
@@ -5487,6 +5488,9 @@ begin
                 if Loc < 0 then
                   continue;
                 UName := Copy(string(buff), 0, Len);
+                p := Pos('[', UName);
+                if p>1 then
+                  Delete(UName, p, Len);
                 AddOrUpdateUniform;
               end; // for I
 
@@ -5513,6 +5517,9 @@ begin
                     continue;
 
                   UName := Copy(string(buff), 0, len);
+                  p := Pos('[', UName);
+                  if p>1 then
+                    Delete(UName, p, Len);
                   GLSLogger.LogInfo('Detected active uniform block: ' + UName);
                   Loc := GL.GetUniformBlockIndex(ID, PGLChar(TGLString(UName)));
                   GL.GetActiveUniformBlockiv(ID, Loc,

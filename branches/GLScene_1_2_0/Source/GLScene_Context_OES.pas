@@ -51,7 +51,9 @@ type
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-
+{$IFDEF FPC}
+    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual; abstract;
+{$ENDIF}
   public
     { Public Declarations }
     constructor Create; override;

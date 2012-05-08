@@ -98,7 +98,11 @@ type
 
   // Windows 2000\Xp\Vista\7 x32\64
 {$IFDEF MSWINDOWS}
+{$IFDEF GLS_OPENGL_ES}
+  TGLWidgetContext = class(TGLOESContext)
+{$ELSE}
   TGLWidgetContext = class(TGLWin32Context)
+{$ENDIF}
   protected
     { Protected Declarations }
     procedure DoGetHandles(outputDevice: HWND; out XWin: HWND);

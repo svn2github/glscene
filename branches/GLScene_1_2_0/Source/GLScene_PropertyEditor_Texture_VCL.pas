@@ -24,6 +24,7 @@ unit GLScene_PropertyEditor_Texture_VCL;
 interface
 
 {$I GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, TypInfo,
@@ -78,7 +79,11 @@ type
 
   end;
 
+{$ENDIF}
+
 implementation
+
+{$ifndef GLS_OPENGL_ES}
 
 {$R *.dfm}
 
@@ -231,5 +236,7 @@ begin
   FTexture.FilteringQuality := TGLTextureFilteringQuality(CBFilteringQuality.ItemIndex);
   DoOnChange;
 end;
+
+{$ENDIF}
 
 end.
