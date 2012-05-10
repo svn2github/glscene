@@ -1,0 +1,40 @@
+package GLS_SDL;
+
+{$R *.res}
+{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'GLScene - SDL Driver'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+{$LIBSUFFIX '2010'}
+
+requires
+  vcl,
+  GLScene_RunTime;
+
+contains
+  GLScene_Context_SDL in '..\Source\Platform\GLScene_Context_SDL.pas',
+  GLScene_SDL_Window in '..\Source\GameAPIs\GLScene_SDL_Window.pas',
+  GLScene_SDL in '..\Source\GameAPIs\sdl.pas';
+
+end.
