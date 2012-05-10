@@ -31,6 +31,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/05/12 - Maverick - Added plane/triangle intersection routines,
+                                overloaded plane routines, linelinedistance routine
       <li>28/03/12 - Maverick - Added IsColinear test and Vector2d dot product
       <li>19/12/11 - Yar - Added VectorAdd for 2d vector (thanks microalexx)
       <li>10/06/11 - DaStr - Added some Vector2f routines
@@ -1191,12 +1193,25 @@ procedure CalcPlaneNormal(const p1, p2, p3 : TVector; var vr : TAffineVector); o
    The plane itself is not considered to be in the tested halfspace. }
 function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;overload;
 function PointIsInHalfSpace(const point, planePoint, planeNormal : TAffineVector) : Boolean; overload;
+function PointIsInHalfSpace(const point: TAffineVector; plane : THmgPlane) : Boolean; overload;
 
 {: Computes algebraic distance between point and plane.<p>
    Value will be positive if the point is in the halfspace pointed by the normal,
    negative on the other side. }
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single; overload;
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single; overload;
+function PointPlaneDistance(const point : TAffineVector; plane : THmgPlane) : Single; overload;
+
+{: Computes point to plane projection. Plane and direction have to be normalized }
+function PointPlaneOrthoProjection(const point: TAffineVector; const plane : THmgPlane; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+function PointPlaneProjection(const point, direction : TAffineVector; const plane : THmgPlane; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+
+{: Computes point to triangle projection. Direction has to be normalized}
+function PointTriangleOrthoProjection(const point, ptA, ptB, ptC : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+function PointTriangleProjection(const point, direction, ptA, ptB, ptC : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+
+{: Returns true if line intersect ABC triangle. }
+function IsLineIntersectTriangle(const point, direction, ptA, ptB, ptC : TAffineVector) : Boolean;
 
 {: Computes closest point on a segment (a segment is a limited line).}
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector; overload;
@@ -1216,6 +1231,9 @@ procedure SegmentSegmentClosestPoint(const S0Start, S0Stop, S1Start, S1Stop : TA
 
 {: Computes the closest distance between two segments.}
 function SegmentSegmentDistance(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector) : single;
+
+{: Computes the closest distance between two lines.}
+function LineLineDistance(const linePt0, lineDir0, linePt1, lineDir1 : TAffineVector) : Single;
 
 //------------------------------------------------------------------------------
 // Quaternion functions
@@ -6952,6 +6970,13 @@ begin
    Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0);
 end;
 
+// PointIsInHalfSpace
+//
+function PointIsInHalfSpace(const point: TAffineVector; plane: THmgPlane) : Boolean;
+begin
+   Result:=(PointPlaneDistance(point, plane)>0);
+end;
+
 // PointPlaneDistance
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
@@ -6968,6 +6993,118 @@ begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
            +(point[1]-planePoint[1])*planeNormal[1]
            +(point[2]-planePoint[2])*planeNormal[2];
+end;
+
+// PointPlaneDistance
+//
+function PointPlaneDistance(const point : TAffineVector; plane : THmgPlane) : Single;
+begin
+  Result := PlaneEvaluatePoint(plane, point);
+end;
+
+// PointPlaneOrthoProjection
+//
+function PointPlaneOrthoProjection(const point: TAffineVector; const plane : THmgPlane;
+ var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  h, dot : Single;
+  normal : TAffineVector;
+begin
+  Result := False;
+
+  h := PointPlaneDistance(point, plane);
+
+  if (not bothface) and (h < 0) then Exit;
+
+  normal := Vector3fMake(plane);
+  inter := VectorAdd(point, VectorScale(normal,- h ));
+  Result := True;
+end;
+
+// PointPlaneProjection
+//
+function PointPlaneProjection(const point, direction : TAffineVector; const plane : THmgPlane;
+ var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  h, dot : Single;
+  normal : TAffineVector;
+begin
+  Result := False;
+
+  normal := Vector3fMake(plane);
+  dot := VectorDotProduct(VectorNormalize(direction), normal);
+
+  if (not bothface) and (dot > 0) then Exit;
+
+  if Abs(dot) >= 0.000000001 then begin
+    h := PointPlaneDistance(point, plane);
+    inter := VectorAdd(point, VectorScale(direction, -h / dot));
+    Result := True;
+  end;
+end;
+
+// PointTriangleOrthoProjection
+//
+function PointTriangleOrthoProjection(const point, ptA, ptB, ptC : TAffineVector;
+ var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  plane : THmgPlane;
+begin
+  Result := False;
+
+  plane := PlaneMake(ptA, ptB, ptC);
+  if not IsLineIntersectTriangle(point, Vector3fMake(plane), ptA, ptB, ptC) then Exit;
+
+  Result := PointPlaneOrthoProjection(point, plane, inter, bothface);
+end;
+
+// PointTriangleProjection
+//
+function PointTriangleProjection(const point, direction, ptA, ptB, ptC : TAffineVector;
+ var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  plane : THmgPlane;
+begin
+  Result := False;
+
+  plane := PlaneMake(ptA, ptB, ptC);
+  if not IsLineIntersectTriangle(point, direction, ptA, ptB, ptC) then Exit;
+
+  Result := PointPlaneProjection(point, direction, plane, inter, bothface);
+end;
+
+// IsLineIntersectTriangle
+//
+function IsLineIntersectTriangle(const point, direction, ptA, ptB, ptC : TAffineVector) : Boolean;
+var
+  PA, PB, PC : TAffineVector;
+  crossAB, crossBC, crossCA : TAffineVector;
+begin
+  Result := False;
+
+  PA := VectorSubtract(ptA, point);
+  PB := VectorSubtract(ptB, point);
+  PC := VectorSubtract(ptC, point);
+
+  crossAB := VectorCrossProduct(PA, PB);
+  crossBC := VectorCrossProduct(PB, PC);
+
+  if VectorDotProduct(crossAB, direction) > 0 then
+  begin
+    if VectorDotProduct(crossBC, direction) > 0 then
+    begin
+      crossCA := VectorCrossProduct(PC, PA);
+      if VectorDotProduct(crossCA, direction) > 0 then
+        Result := True;
+    end;
+  end
+  else
+    if VectorDotProduct(crossBC, direction) < 0 then
+    begin
+      crossCA := VectorCrossProduct(PC, PA);
+      if VectorDotProduct(crossCA, direction) < 0 then
+        Result := True;
+    end
 end;
 
 // PointLineClosestPoint
@@ -7145,6 +7282,24 @@ var
 begin
   SegmentSegmentClosestPoint(S0Start, S0Stop, S1Start, S1Stop, PB0, PB1);
   result := VectorDistance(PB0, PB1);
+end;
+
+// LineLineDistance
+//
+function LineLineDistance(const linePt0, lineDir0, linePt1, lineDir1 : TAffineVector) : Single;
+const
+  cBIAS = 0.000000001;
+var
+  det : Single;
+begin
+  det := (linePt1[0] - linePt0[0]) * (lineDir0[1]*lineDir1[2] - lineDir1[1]*lineDir0[2]) -
+         (linePt1[1] - linePt0[1]) * (lineDir0[0]*lineDir1[2] - lineDir1[0]*lineDir0[2]) +
+         (linePt1[2] - linePt0[2]) * (lineDir0[0]*lineDir1[1] - lineDir1[0]*lineDir0[1]);
+
+  if Abs(det) < cBIAS then
+    Result := PointLineDistance(linePt0, linePt1, lineDir1)
+  else
+    Result := Abs(det) / VectorLength(VectorCrossProduct(lineDir0, lineDir1));
 end;
 
 // QuaternionMake
