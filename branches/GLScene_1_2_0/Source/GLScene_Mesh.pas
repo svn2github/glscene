@@ -26,10 +26,11 @@ uses
   GLScene_Base_Vector_Lists,
   GLScene_Base_OpenGL_Tokens,
   GLScene_Base_Context,
-  GLScene_Shader_Parameter,
   GLScene_Base_GLStateMachine,
-  GLScene_Base_GeometryBB,
   GLScene_Base_Transformation,
+  GLScene_Base_GeometryBB,
+  GLScene_Shader_Parameter,
+  GLScene_Silhouette,
   SyncObjs;
 
 type
@@ -119,9 +120,6 @@ type
 
   TMeshExtra = (mesTangents, mesAdjacency, mesFastWireFrame, mesOctreeRayCast);
   TMeshExtras = set of TMeshExtra;
-
-  //  TMeshPurpose = (fgpCommon, fgpInterior, fgpExterior, fgpOcluder,
-  //    fgpControlCage);
 
   // TMeshAtom
   //
@@ -292,10 +290,14 @@ type
        Given coordinates & vector are in local coordinate system. }
     function RayCastIntersect(const ARayStart, ARayVector: TVector;
       out AnIntersectPoint, AnIntersectNormal: TVector): Boolean;
+
+    procedure GenerateSilhouette(ASource: TMeshAtom;
+      const ASilhouetteParameters: TGLSilhouetteParameters);
     {: Ends working with mesh. }
     procedure UnLock; virtual;
     {: Current validation state. }
     property IsValid: Boolean read GetValid;
+    function HasAdjacencyElements: Boolean;
     property Primitive: TGLMeshPrimitive read FPrimitive write SetPrimitive;
     property VertexCount: Integer read FVertexCount;
     property AttributeCount: Integer read GetAttributeCount;
@@ -885,6 +887,12 @@ begin
   for A := low(TAttribLocation) to high(TAttribLocation) do
     if FAttributes[A] then
       Exit(FAttributeArrays[A].Count div (FTypeComponentCount[A]+1));
+end;
+
+function TMeshAtom.HasAdjacencyElements: Boolean;
+begin
+  Result := (FAdjacencyElements.Count > 0) and
+    (FAdjacencyElements.Revision = FElements.Revision);
 end;
 
 procedure TMeshAtom.DoOnPrepare(Sender: TGLContext);
@@ -3430,6 +3438,160 @@ begin
     FElements.Add(I);
   end;
   FRemoveLastElement := True;
+end;
+
+procedure TMeshAtom.GenerateSilhouette(ASource: TMeshAtom;
+  const ASilhouetteParameters: TGLSilhouetteParameters);
+const
+  cFar: Single = 10e6;
+type
+  TVector6ui = array[0..5] of longWord;
+var
+  Positions: I4ByteListToVectorList;
+  T, E: Integer;
+  p0, p1, p2, p3, p4, p5: TAffineVector;
+  q0, q2, q4: TAffineVector;
+  pV: ^TVector6ui;
+  eyePosition: TVector;
+
+  function Facing(const v0, v1, v2: TAffineVector): Single;
+  var
+    d1, d2, cross3: TAffineVector;
+    cross4: TVector;
+  begin
+    d1 := VectorSubtract(v1, v0);
+    d2 := VectorSubtract(v2, v0);
+    cross3 := VectorCrossProduct(d2, d1);
+    SetVector(cross4, cross3, -VectorDotProduct(v0, cross3));
+    Result := -VectorDotProduct(cross4, eyePosition);
+  end;
+
+begin
+  if Assigned(ASource) and (ASource.IsValid) then
+  begin
+    MakePoint(eyePosition, ASilhouetteParameters.SeenFrom);
+    Lock;
+    ASource.Lock;
+    try
+      Clear;
+      if not ASource.HasAdjacencyElements then
+        ASource.MakeAdjacencyElements;
+      if ASource.Attributes[attrPosition] then
+      begin
+        Positions := T4ByteListToVectorList.Create(
+          ASource.FAttributeArrays[attrPosition],
+          GLSLType3f);
+
+        DeclareAttribute(attrPosition, ASource.AttributesType[attrPosition]);
+        BeginAssembly(mpTRIANGLES);
+        for T := 0 to ASource.FAdjacencyElements.Count div 6 - 1 do
+        begin
+          E := 6 * T;
+          pV := @ASource.FAdjacencyElements.List[E];
+          p0 := Positions[pV^[0]];
+          p2 := Positions[pV^[2]];
+          p4 := Positions[pV^[4]];
+
+          if Facing(p0, p2, p4) > 0 then
+          begin
+            p1 := Positions[pV^[1]];
+            p3 := Positions[pV^[3]];
+            p5 := Positions[pV^[5]];
+
+            if ASilhouetteParameters.Style = ssParallel then
+            begin
+              q0 := VectorAdd(p0, ASilhouetteParameters.LightDirection);
+              q2 := VectorAdd(p2, ASilhouetteParameters.LightDirection);
+              q4 := VectorAdd(p4, ASilhouetteParameters.LightDirection);
+            end
+            else
+            begin
+              q0 := VectorSubtract(p0, ASilhouetteParameters.SeenFrom);
+              q2 := VectorSubtract(p2, ASilhouetteParameters.SeenFrom);
+              q4 := VectorSubtract(p4, ASilhouetteParameters.SeenFrom);
+              VectorCombine(p0, q0, cFar, q0);
+              VectorCombine(p2, q2, cFar, q2);
+              VectorCombine(p4, q4, cFar, q4);
+            end;
+
+            if ASilhouetteParameters.CappingRequired then
+            begin
+              // Far cap
+              Attribute3f(attrPosition, q0);
+              EmitVertex;
+              Attribute3f(attrPosition, q2);
+              EmitVertex;
+              Attribute3f(attrPosition, q4);
+              EmitVertex;
+            end;
+
+            // Silhouette
+            if Facing(p0, p1, p2) <= 0 then
+            begin
+              Attribute3f(attrPosition, p2);
+              EmitVertex;
+              Attribute3f(attrPosition, p0);
+              EmitVertex;
+              Attribute3f(attrPosition, q0);
+              EmitVertex;
+              Attribute3f(attrPosition, q2);
+              EmitVertex;
+              Attribute3f(attrPosition, p2);
+              EmitVertex;
+              Attribute3f(attrPosition, q0);
+              EmitVertex;
+            end;
+            if Facing(p2, p3, p4) <= 0 then
+            begin
+              Attribute3f(attrPosition, p4);
+              EmitVertex;
+              Attribute3f(attrPosition, p2);
+              EmitVertex;
+              Attribute3f(attrPosition, q2);
+              EmitVertex;
+              Attribute3f(attrPosition, q4);
+              EmitVertex;
+              Attribute3f(attrPosition, p4);
+              EmitVertex;
+              Attribute3f(attrPosition, q2);
+              EmitVertex;
+            end;
+            if Facing(p4, p5, p0) <= 0 then
+            begin
+              Attribute3f(attrPosition, p0);
+              EmitVertex;
+              Attribute3f(attrPosition, p4);
+              EmitVertex;
+              Attribute3f(attrPosition, q0);
+              EmitVertex;
+              Attribute3f(attrPosition, q4);
+              EmitVertex;
+              Attribute3f(attrPosition, p0);
+              EmitVertex;
+              Attribute3f(attrPosition, q0);
+              EmitVertex;
+            end;
+          end
+          else
+            if ASilhouetteParameters.CappingRequired then
+            begin
+              // Near cap
+              Attribute3f(attrPosition, p0);
+              EmitVertex;
+              Attribute3f(attrPosition, p2);
+              EmitVertex;
+              Attribute3f(attrPosition, p4);
+              EmitVertex;
+            end;
+        end;
+        EndAssembly;
+      end;
+    finally
+      ASource.UnLock;
+      UnLock;
+    end;
+    FRevisionNum := ASource.FRevisionNum;
+  end;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TMeshAtom'}{$ENDIF}

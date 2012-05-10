@@ -218,6 +218,7 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
+    procedure GetMeshes(var ABatches: TDrawBatchArray); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function AxisAlignedBoundingBoxUnscaled(
       const AIncludeChilden: Boolean = True): TAABB; override;
@@ -1426,11 +1427,14 @@ end;
 procedure TGLCustomSceneObjectEx.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 begin
-  if IsMeshAssembled and ARenderSelf then
+  if ARenderSelf then
   begin
-    FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
     FTransformation := ARci.PipelineTransformation.StackTop;
-    ARci.drawList.Add(@FBatch);
+    if IsMeshAssembled then
+    begin
+      FBatch.CameraDistanceSqr := BarycenterSqrDistanceTo(ARci.cameraPosition);
+      ARci.drawList.Add(@FBatch);
+    end;
   end;
 
   if ARenderChildren then
@@ -1448,6 +1452,22 @@ end;
 function TGLCustomSceneObjectEx.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterial.Material.MaterialLibrary;
+end;
+
+procedure TGLCustomSceneObjectEx.GetMeshes(var ABatches: TDrawBatchArray);
+var
+  I: Integer;
+begin
+  for I := high(ABatches) downto 0 do
+    if ABatches[I].Mesh = FBatch.Mesh then
+    begin
+      ABatches[I].Transformation := FBatch.Transformation;
+      Exit;
+    end;
+  I := Length(ABatches);
+  SetLength(ABatches, I+1);
+  ABatches[I].Mesh := FBatch.Mesh;
+  ABatches[I].Transformation := FBatch.Transformation;
 end;
 
 function TGLCustomSceneObjectEx.GetPickingMaterial: string;

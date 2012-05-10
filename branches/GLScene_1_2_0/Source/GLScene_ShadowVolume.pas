@@ -51,7 +51,10 @@ uses
   GLScene_Base_Color,
   GLScene_Base_Context_Info,
   GLScene_Base_Transformation,
-  GLScene_DrawTechnique;
+  GLScene_DrawTechnique,
+  GLScene_Material,
+  GLScene_MaterialEx,
+  GLScene_Shader_Parameter;
 
 type
 
@@ -154,15 +157,12 @@ type
   TGLShadowVolumeLight = class(TGLShadowVolumeCaster)
   private
     { Private Declarations }
-    FSilhouettes: TPersistentObjectList;
-
+    FBatches: TDrawBatchArray;
+    FParams: TGLSilhouetteParameters;
   protected
     { Protected Declarations }
     function GetLightSource: TGLLightSource;
     procedure SetLightSource(const ls: TGLLightSource);
-
-    function GetCachedSilhouette(AIndex: Integer): TGLSilhouette;
-    procedure StoreCachedSilhouette(AIndex: Integer; ASil: TGLSilhouette);
 
     {: Compute and setup scissor clipping rect for the light.<p>
        Returns true if a scissor rect was setup }
@@ -174,8 +174,9 @@ type
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
-    procedure FlushSilhouetteCache;
-
+    procedure Update(AObject: TGLBaseSceneObject;
+      const AParams: TGLSilhouetteParameters);
+    procedure DoRender(var ARci: TRenderContextInfo);
   published
     { Published Declarations }
           {: Shadow casting lightsource.<p> }
@@ -262,14 +263,25 @@ type
     FOptions: TGLShadowVolumeOptions;
     FMode: TGLShadowVolumeMode;
     FDarkeningColor: TGLColor;
+    FSceneAmbientColor: TVector;
+
     FPart1: TDrawBatch;
     FPart2: TDrawBatch;
     FPart3: TDrawBatch;
-    FTransformation: TTransformationRec;
     FOpaques: TList;
     FOpaqueCapping: TList;
     FLightIteration: Integer;
     FWorldAABB: TAABB;
+
+    FUniformSeenFrom,
+    FUniformLightDirection,
+    FUniformIsParallelLightStyle: IShaderParameter;
+    class var FShadowMaterial: TGLLibMaterialEx;
+    procedure OnShaderInitialize(Sender: TGLBaseShaderModel);
+    procedure OnShaderSetting(Sender: TGLBaseShaderModel; var ARci: TRenderContextInfo);
+    procedure SetupStates(var ARci: TRenderContextInfo);
+    procedure LightSourcePass(var ARci: TRenderContextInfo);
+    procedure RestoreStates(var ARci: TRenderContextInfo);
   protected
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -281,9 +293,6 @@ type
     procedure SetOptions(const val: TGLShadowVolumeOptions);
     procedure SetMode(const val: TGLShadowVolumeMode);
     procedure SetDarkeningColor(const val: TGLColor);
-    procedure TurnOffLights(var ARci: TRenderContextInfo);
-    procedure BeforeShadowDraw(var ARci: TRenderContextInfo);
-    procedure AfterShadowDraw(var ARci: TRenderContextInfo);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -293,8 +302,6 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
 
     procedure Assign(Source: TPersistent); override;
-
-    procedure FlushSilhouetteCache;
 
   published
     { Public Declarations }
@@ -335,6 +342,9 @@ uses
   SysUtils,
   GLScene_Base_Vector_Lists,
   GLScene_Base_GLStateMachine;
+
+const
+  cFar: TVector = (10e6, 10e6, 10e6, 0);
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------
@@ -446,25 +456,30 @@ end;
 constructor TGLShadowVolumeLight.Create(ACollection: TCollection);
 begin
   inherited Create(ACollection);
-  FSilhouettes := TPersistentObjectList.Create;
 end;
 
 // Destroy
 //
 
 destructor TGLShadowVolumeLight.Destroy;
+var
+  I: Integer;
 begin
-  FlushSilhouetteCache;
-  FSilhouettes.Free;
+  for I := high(FBatches) downto 0 do
+    if Assigned(FBatches[I].SilhouetteMesh) then
+      FBatches[I].SilhouetteMesh.Free;
   inherited;
 end;
 
-// FlushSilhouetteCache
-//
-
-procedure TGLShadowVolumeLight.FlushSilhouetteCache;
+procedure TGLShadowVolumeLight.DoRender(var ARci: TRenderContextInfo);
+var
+  I: Integer;
 begin
-  FSilhouettes.Clean;
+  for I := high(FBatches) downto 0 do
+  begin
+    TGLScene(ARci.scene).RenderManager.DrawTechnique.DrawSilhouette(ARci,
+      FBatches[I]);
+  end;
 end;
 
 // Create
@@ -481,34 +496,6 @@ end;
 procedure TGLShadowVolumeLight.SetLightSource(const ls: TGLLightSource);
 begin
   SetCaster(ls);
-end;
-
-// GetCachedSilhouette
-//
-
-function TGLShadowVolumeLight.GetCachedSilhouette(AIndex: Integer):
-  TGLSilhouette;
-begin
-  if AIndex < FSilhouettes.Count then
-    Result := TGLSilhouette(FSilhouettes[AIndex])
-  else
-    Result := nil;
-end;
-
-// StoreCachedSilhouette
-//
-
-procedure TGLShadowVolumeLight.StoreCachedSilhouette(AIndex: Integer; ASil:
-  TGLSilhouette);
-begin
-  while AIndex >= FSilhouettes.Count do
-    FSilhouettes.Add(nil);
-  if ASil <> FSilhouettes[AIndex] then
-  begin
-    if assigned(FSilhouettes[AIndex]) then
-      FSilhouettes[AIndex].Free;
-    FSilhouettes[AIndex] := ASil;
-  end;
 end;
 
 // TGLShadowVolumeLight
@@ -565,6 +552,29 @@ begin
   ARci.GLStates.ScissorBox := box;
 
   Result := True;
+end;
+
+procedure TGLShadowVolumeLight.Update(AObject: TGLBaseSceneObject;
+  const AParams: TGLSilhouetteParameters);
+var
+  I: Integer;
+  dis: Double;
+begin
+  if not CompareMem(@AParams, @FParams, SizeOf(TGLSilhouetteParameters)) then
+  begin
+    FParams := AParams;
+    dis := AObject.BarycenterSqrDistanceTo(
+      AObject.Scene.CurrentGLCamera.AbsolutePosition);
+    AObject.GetMeshes(FBatches);
+    for I := high(FBatches) downto 0 do
+    begin
+      FBatches[I].Changed := True;
+      FBatches[I].SilhouetteFlag := True;
+      FBatches[I].SilhouetteParameters := @FParams;
+      FBatches[I].CameraDistanceSqr := dis;
+      FBatches[I].Material := TGLShadowVolume.FShadowMaterial;
+    end;
+  end;
 end;
 
 // ------------------
@@ -646,6 +656,129 @@ end;
 //
 
 constructor TGLShadowVolume.Create(AOwner: Tcomponent);
+const
+  cShadowVertexShader330 =
+  '#version 330'#10#13+
+  'in vec3 Position;'#10#13+
+  'out vec4 v2g_WorldPos;'#10#13+
+  'uniform mat4 ModelMatrix;'#10#13+
+  'uniform mat4 ViewProjectionMatrix;'#10#13+
+  'void main()'#10#13+
+  '{'#10#13+
+  '  v2g_WorldPos = ModelMatrix * vec4(Position,1.0);'#10#13+
+  '  gl_Position = ViewProjectionMatrix * v2g_WorldPos;'#10#13+
+  '}';
+  cShadowGeometryShader330 =
+  '#version 330'#10#13+
+  'layout(triangles_adjacency) in;'#10#13+
+  'layout(triangle_strip, max_vertices = 18) out;'#10#13+
+  'in vec4 v2g_WorldPos[];'#10#13+
+  'uniform mat4 ViewProjectionMatrix;'#10#13+
+  'uniform vec4 SeenFrom;'#10#13+
+  'uniform vec4 LightDirection;'#10#13+
+  'uniform vec4 ShadowBias;'#10#13+
+  'uniform bool IsParallelLightStyle;'#10#13+
+  'float facing(vec4 v0, vec4 v1, vec4 v2, vec4 eye_pos)'#10#13+
+  '{'#10#13+
+  ' vec3 e0 = v1.xyz - v0.xyz;'#10#13+
+  ' vec3 e1 = v2.xyz - v0.xyz;'#10#13+
+  ' vec4 p;'#10#13+
+  ' p.xyz = cross(e1, e0);'#10#13+
+  ' p.w = -dot(v0.xyz, p.xyz);'#10#13+
+  ' return -dot(p, eye_pos);'#10#13+
+  '}'#10#13+
+  'void main()'#10#13+
+  '{'#10#13+
+  ' float f;'#10#13+
+  ' vec4 q0, q2, q4;'#10#13+
+  ' f = facing(v2g_WorldPos[0], v2g_WorldPos[2], v2g_WorldPos[4], SeenFrom);'#10#13+
+  ' if (f > 0.0)'#10#13+
+  ' {'#10#13+
+  '     if (IsParallelLightStyle)'#10#13+
+  '     {'#10#13+
+  '         q0 = v2g_WorldPos[0] + LightDirection;'#10#13+
+  '         q2 = v2g_WorldPos[2] + LightDirection;'#10#13+
+  '         q4 = v2g_WorldPos[4] + LightDirection;'#10#13+
+  '     }'#10#13+
+  '     else'#10#13+
+  '     {'#10#13+
+  '         q0 = v2g_WorldPos[0] - SeenFrom;'#10#13+
+  '         q2 = v2g_WorldPos[2] - SeenFrom;'#10#13+
+  '         q4 = v2g_WorldPos[4] - SeenFrom;'#10#13+
+  '         vec4 k = ShadowBias;'#10#13+
+  '         q0 = k*q0 + v2g_WorldPos[0];'#10#13+
+  '         q2 = k*q2 + v2g_WorldPos[2];'#10#13+
+  '         q4 = k*q4 + v2g_WorldPos[4];'#10#13+
+  '     }'#10#13+
+  '     q0 = ViewProjectionMatrix * q0;'#10#13+
+  '     q2 = ViewProjectionMatrix * q2;'#10#13+
+  '     q4 = ViewProjectionMatrix * q4;'#10#13+
+  '     gl_Position = q0;'#10#13+
+  '     EmitVertex();'#10#13+
+  '     gl_Position = q2;'#10#13+
+  '     EmitVertex();'#10#13+
+  '     gl_Position = q4;'#10#13+
+  '     EmitVertex();'#10#13+
+  '     EndPrimitive();'#10#13+
+  '     f = facing(v2g_WorldPos[0], v2g_WorldPos[1], v2g_WorldPos[2], SeenFrom);'#10#13+
+  '     if (f <= 0)'#10#13+
+  '     {'#10#13+
+  '         gl_Position = gl_in[2].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = gl_in[0].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q2;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q0;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         EndPrimitive();'#10#13+
+  '     }'#10#13+
+  '     f = facing(v2g_WorldPos[2], v2g_WorldPos[3], v2g_WorldPos[4], SeenFrom);'#10#13+
+  '     if (f <= 0.0)'#10#13+
+  '     {'#10#13+
+  '         gl_Position = gl_in[4].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = gl_in[2].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q4;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q2;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         EndPrimitive();'#10#13+
+  '     }'#10#13+
+  '     f = facing(v2g_WorldPos[4], v2g_WorldPos[5], v2g_WorldPos[0], SeenFrom);'#10#13+
+  '     if (f <= 0.0)'#10#13+
+  '     {'#10#13+
+  '         gl_Position = gl_in[0].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = gl_in[4].gl_Position;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q0;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         gl_Position = q4;'#10#13+
+  '         EmitVertex();'#10#13+
+  '         EndPrimitive();'#10#13+
+  '     }'#10#13+
+  ' }'#10#13+
+  ' else'#10#13+
+  ' {'#10#13+
+  '  gl_Position = gl_in[0].gl_Position;'#10#13+
+  '  EmitVertex();'#10#13+
+  '  gl_Position = gl_in[2].gl_Position;'#10#13+
+  '  EmitVertex();'#10#13+
+  '  gl_Position = gl_in[4].gl_Position;'#10#13+
+  '  EmitVertex();'#10#13+
+  '  EndPrimitive();'#10#13+
+  ' }'#10#13+
+  '}';
+  cShadowFragmentShader330 =
+  '#version 330'#10#13+
+  'uniform vec4 Color;'#10#13+
+  'out vec4 FragColor;'#10#13+
+  'void main() { FragColor = Color; }';
+
+var
+  LShader: TGLShaderEx;
 begin
   inherited Create(AOwner);
   ObjectStyle := ObjectStyle + [osDeferredDraw, osNoVisibilityCulling];
@@ -656,11 +789,44 @@ begin
   FMode := svmAccurate;
   FOptions := [svoCacheSilhouettes, svoScissorClips];
   FDarkeningColor := TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
-  FPart1.CustomDraw := TurnOffLights;
-  FPart2.CustomDraw := BeforeShadowDraw;
-  FPart3.CustomDraw := AfterShadowDraw;
+  FPart1.CustomDraw := SetupStates;
+  FPart2.CustomDraw := LightSourcePass;
+  FPart3.CustomDraw := RestoreStates;
   FOpaques := TList.Create;
   FOpaqueCapping := TList.Create;
+
+  if not Assigned(FShadowMaterial) then
+  begin
+    FShadowMaterial := GetInternalMaterialLibrary.Materials.Add;
+    with FShadowMaterial do
+    begin
+      FixedFunction.MaterialOptions := [moNoLighting];
+      FixedFunction.DepthProperties.DepthClamp := True;
+      FixedFunction.DepthProperties.DepthWrite := False;
+      FixedFunction.DepthProperties.DepthCompareFunction := cfLess;
+      FixedFunction.FaceCulling := fcCull;
+      FixedFunction.BlendingMode := bmTransparency;
+      // GLSL 330
+      LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      LShader.ShaderType := shtVertex;
+      LShader.Source.Add(cShadowVertexShader330);
+      ShaderModel4.LibVertexShaderName := LShader.Name;
+      LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      LShader.ShaderType := shtGeometry;
+      LShader.GeometryInput := gsInAdjTriangles;
+      LShader.GeometryOutput := gsOutTriangleStrip;
+      LShader.GeometryVerticesOut := 18;
+      LShader.Source.Add(cShadowGeometryShader330);
+      ShaderModel4.LibGeometryShaderName := LShader.Name;
+      LShader := GetInternalMaterialLibrary.AddShader(cInternalShader);
+      LShader.ShaderType := shtFragment;
+      LShader.Source.Add(cShadowFragmentShader330);
+      ShaderModel4.LibFragmentShaderName := LShader.Name;
+      OnSM4UniformInitialize := OnShaderInitialize;
+      OnSM4UniformSetting := OnShaderSetting;
+      ShaderModel4.Enabled := True;
+    end;
+  end;
 end;
 
 // Destroy
@@ -674,6 +840,9 @@ begin
   FOccluders.Free;
   FOpaques.Free;
   FOpaqueCapping.Free;
+  FUniformSeenFrom := nil;
+  FUniformLightDirection := nil;
+  FUniformIsParallelLightStyle := nil;
 end;
 
 // Notification
@@ -690,6 +859,32 @@ begin
   inherited;
 end;
 
+procedure TGLShadowVolume.OnShaderInitialize(Sender: TGLBaseShaderModel);
+begin
+  Sender.Uniforms['ModelMatrix'].AutoSetMethod := cafModelMatrix;
+  Sender.Uniforms['ViewProjectionMatrix'].AutoSetMethod := cafViewProjectionMatrix;
+  FUniformSeenFrom := Sender.Uniforms['SeenFrom'];
+  FUniformLightDirection := Sender.Uniforms['LightDirection'];
+  FUniformIsParallelLightStyle := Sender.Uniforms['IsParallelLightStyle'];
+  Sender.Uniforms['ShadowBias'].vec4 := cFar;
+  Sender.Uniforms['Color'].AutoSetMethod := cafMaterialFrontFaceDiffuse;
+end;
+
+procedure TGLShadowVolume.OnShaderSetting(Sender: TGLBaseShaderModel;
+  var ARci: TRenderContextInfo);
+var
+  lightCaster: TGLShadowVolumeLight;
+  v: TVector;
+begin
+  lightCaster := TGLShadowVolumeLight(lights[FLightIteration]);
+  FUniformSeenFrom.vec4 := lightCaster.LightSource.AbsolutePosition;
+  v := VectorSubtract(NullHmgVector, lightCaster.LightSource.AbsolutePosition);
+  NormalizeVector(v);
+  ScaleVector(v, cFar);
+  FUniformLightDirection.vec4 := v;
+  FUniformIsParallelLightStyle.int := Integer(lightCaster.FParams.Style = ssParallel);
+end;
+
 // Assign
 //
 
@@ -703,17 +898,6 @@ begin
     StructureChanged;
   end;
   inherited Assign(Source);
-end;
-
-// FlushSilhouetteCache
-//
-
-procedure TGLShadowVolume.FlushSilhouetteCache;
-var
-  i: Integer;
-begin
-  for i := 0 to Lights.Count - 1 do
-    (Lights[i] as TGLShadowVolumeLight).FlushSilhouetteCache;
 end;
 
 // SetActive
@@ -756,8 +940,8 @@ begin
   if FOptions <> val then
   begin
     FOptions := val;
-    if not (svoCacheSilhouettes in FOptions) then
-      FlushSilhouetteCache;
+    //if not (svoCacheSilhouettes in FOptions) then
+      //FlushSilhouetteCache;
     StructureChanged;
   end;
 end;
@@ -871,23 +1055,21 @@ begin
       end;
     end;
 
-    FTransformation := ARci.PipelineTransformation.StackTop;
     FRendering := True;
-    // turn off lights
-    if Mode = svmAccurate then
+    if Lights.Count > 0 then
       ARci.drawList.Add(@FPart1);
     // render shadow receivers with ambient lighting
-
     if ARenderChildren then
       RenderChildren(0, Count - 1, ARci);
+
     for I := 0 to Lights.Count - 1 do
     begin
       with TGLShadowVolumeLight(Lights[I]) do
         if (not Assigned(LightSource)) or (not LightSource.Shining) then
           Continue;
+      ARci.drawList.Add(@FPart2);
       if ARenderChildren and (Mode = svmAccurate) then
         RenderChildren(0, Count - 1, ARci);
-      ARci.drawList.Add(@FPart2);
     end;
     if Lights.Count > 0 then
       ARci.drawList.Add(@FPart3);
@@ -897,33 +1079,43 @@ begin
     RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGLShadowVolume.TurnOffLights(var ARci: TRenderContextInfo);
+procedure TGLShadowVolume.SetupStates(var ARci: TRenderContextInfo);
 var
   I: Integer;
   lightSource: TGLLightSource;
   lightCaster: TGLShadowVolumeLight;
 begin
-  with ARci.GLStates do
+  if Mode = svmAccurate then
   begin
-    // first turn off all the shadow casting lights diffuse and specular
-    for I := 0 to Lights.Count - 1 do
+    with ARci.GLStates do
     begin
-      lightCaster := TGLShadowVolumeLight(Lights[i]);
-      lightSource := lightCaster.LightSource;
-      if Assigned(lightSource) and lightSource.Shining then
+      // first turn off all the shadow casting lights diffuse and specular
+      for I := 0 to Lights.Count - 1 do
       begin
-        LightDiffuse[lightSource.LightID] := NullHmgVector;
-        LightSpecular[lightSource.LightID] := NullHmgVector;
+        lightCaster := TGLShadowVolumeLight(Lights[i]);
+        lightSource := lightCaster.LightSource;
+        if Assigned(lightSource) and lightSource.Shining then
+        begin
+          LightDiffuse[lightSource.LightID] := NullHmgVector;
+          LightSpecular[lightSource.LightID] := NullHmgVector;
+        end;
       end;
     end;
   end;
+
+  if svoWorldScissorClip in Options then
+  begin
+    // compute shadow receiving world AABB in absolute coordinates
+    FWorldAABB := AxisAlignedBoundingBox;
+    AABBTransform(FWorldAABB, AbsoluteMatrix);
+  end;
+
 end;
 
-procedure TGLShadowVolume.BeforeShadowDraw(var ARci: TRenderContextInfo);
+procedure TGLShadowVolume.LightSourcePass(var ARci: TRenderContextInfo);
 var
   i, k: Integer;
   silParams: TGLSilhouetteParameters;
-  sil: TGLSilhouette;
   lightSource: TGLLightSource;
   lightCaster: TGLShadowVolumeLight;
   obj: TGLBaseSceneObject;
@@ -933,21 +1125,16 @@ begin
 
   if FLightIteration = 0 then
   begin
-    if svoWorldScissorClip in Options then
-    begin
-      // compute shadow receiving world AABB in absolute coordinates
-      FWorldAABB := AxisAlignedBoundingBox;
-      AABBTransform(FWorldAABB, AbsoluteMatrix);
-    end;
     // turn off *all* lights
-    for I := 0 to TGLScene(ARci.scene).Lights.Count - 1 do
+    for I := 0 to Scene.Lights.Count - 1 do
     begin
-      lightSource := (TGLScene(ARci.scene).Lights.Items[I]) as TGLLightSource;
+      lightSource := TGLLightSource(Scene.Lights[I]);
       if Assigned(lightSource) and lightSource.Shining then
         ARci.GLStates.LightEnabling[lightSource.LightID] := False;
     end;
 
-    GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
+    FSceneAmbientColor := ARci.GLStates.LightGlobalAmbient;
+    ARci.GLStates.LightGlobalAmbient := NullHmgPoint;
   end
   else
   begin
@@ -959,17 +1146,11 @@ begin
     ARci.GLStates.LightAmbient[lightID] := lightSource.Ambient.Color;
   end;
 
-  ARci.ignoreBlendingRequests := True;
-  ARci.ignoreDepthRequests := True;
+
   // render the shadow volumes
   with ARci.GLStates do
   begin
-    DepthWriteMask := False;
-    Enable(stDepthTest);
-    SetBlendFunc(bfSrcAlpha, bfOne);
-    Disable(stAlphaTest);
     Enable(stStencilTest);
-
     // render contribution of all shadow casting lights
     lightCaster := TGLShadowVolumeLight(lights[FLightIteration]);
     lightSource := lightCaster.LightSource;
@@ -992,39 +1173,26 @@ begin
     end;
 
     // clear the stencil and prepare for shadow volume pass
+    StencilClearValue := 0;
     GL.Clear(GL_STENCIL_BUFFER_BIT);
     SetStencilFunc(cfAlways, 0, 255);
-    DepthFunc := cfLess;
+    SetPolygonOffset(1, 1);
+    Enable(stPolygonOffsetFill);
+
+    ARci.ignoreBlendingRequests := False;
+    ARci.ignoreDepthRequests := False;
 
     if svoShowVolumes in Options then
+    with FShadowMaterial.FixedFunction do
     begin
-      GL.Color3f(0.05 * FLightIteration, 0.1, 0);
-      Enable(stBlend);
+      FrontProperties.Diffuse := lightSource.Ambient;
+      FrontProperties.Diffuse.Alpha := 0;
     end
     else
     begin
       SetGLColorWriting(False);
-      Disable(stBlend);
     end;
-    Enable(stCullFace);
 
-    Disable(stLighting);
-    ARci.GLStates.CurrentProgram := 0;
-
-    // Disable all client states
-    if GL.ARB_vertex_buffer_object then
-    begin
-      VertexArrayBinding := 0;
-      ArrayBufferBinding := 0;
-      ElementBufferBinding := 0;
-    end;
-    for I := 15 downto 0 do
-      GL.DisableVertexAttribArray(I);
-
-    GL.EnableClientState(GL_VERTEX_ARRAY);
-    SetPolygonOffset(1, 1);
-
-    ARci.PipelineTransformation.StackTop := FTransformation;
 
     // for all opaque shadow casters
     for k := 0 to FOpaques.Count - 1 do
@@ -1036,83 +1204,37 @@ begin
       SetVector(silParams.SeenFrom,
         obj.AbsoluteToLocal(lightSource.AbsolutePosition));
 
-      sil := lightCaster.GetCachedSilhouette(k);
-      if (not Assigned(sil)) or (not CompareMem(@sil.Parameters, @silParams,
-        SizeOf(silParams))) then
+      lightCaster.Update(obj, silParams);
+
+      // render the silhouette
+
+      if Assigned(FOpaqueCapping[k]) then
       begin
-        sil := obj.GenerateSilhouette(silParams);
-        sil.Parameters := silParams;
-        // extrude vertices to infinity
-        sil.ExtrudeVerticesToInfinity(silParams.SeenFrom);
+        // z-fail
+        CullFaceMode := cmFront;
+        SetStencilOp(soKeep, soIncr, soKeep);
+
+        lightCaster.DoRender(ARci);
+
+        CullFaceMode := cmBack;
+        SetStencilOp(soKeep, soDecr, soKeep);
+
+        lightCaster.DoRender(ARci);
+      end
+      else
+      begin
+        // z-pass
+        CullFaceMode := cmBack;
+        SetStencilOp(soKeep, soKeep, soIncr);
+
+        lightCaster.DoRender(ARci);
+
+        CullFaceMode := cmFront;
+        SetStencilOp(soKeep, soKeep, soDecr);
+
+        lightCaster.DoRender(ARci);
       end;
-      if Assigned(sil) then
-        try
-          // render the silhouette
-          ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
-          GL.VertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
-
-          if GL.GREMEDY_frame_terminator then
-            GL.FrameTerminatorGREMEDY();
-
-          if Assigned(FOpaqueCapping[k]) then
-          begin
-            // z-fail
-
-            CullFaceMode := cmFront;
-            SetStencilOp(soKeep, soIncr, soKeep);
-
-            with sil do
-            begin
-              GL.DrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
-                Indices.List);
-              Enable(stPolygonOffsetFill);
-              GL.DrawElements(GL_TRIANGLES, CapIndices.Count,
-                GL_UNSIGNED_INT,
-                CapIndices.List);
-              Disable(stPolygonOffsetFill);
-            end;
-
-            CullFaceMode := cmBack;
-            SetStencilOp(soKeep, soDecr, soKeep);
-
-            with sil do
-            begin
-              GL.DrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
-                Indices.List);
-              Enable(stPolygonOffsetFill);
-              GL.DrawElements(GL_TRIANGLES, CapIndices.Count,
-                GL_UNSIGNED_INT,
-                CapIndices.List);
-              Disable(stPolygonOffsetFill);
-            end;
-
-          end
-          else
-          begin
-            // z-pass
-            CullFaceMode := cmBack;
-            SetStencilOp(soKeep, soKeep, soIncr);
-
-            GL.DrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
-              sil.Indices.List);
-
-            CullFaceMode := cmFront;
-            SetStencilOp(soKeep, soKeep, soDecr);
-
-            GL.DrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
-              sil.Indices.List);
-          end;
-
-        finally
-          if (svoCacheSilhouettes in Options) and (not (osDirectDraw in
-            ObjectStyle)) then
-            lightCaster.StoreCachedSilhouette(k, sil)
-          else
-            sil.Free;
-        end;
     end; // for k
-
-    GL.DisableClientState(GL_VERTEX_ARRAY);
 
     // re-enable light's diffuse and specular, but no ambient
     LightEnabling[LightID] := True;
@@ -1126,11 +1248,20 @@ begin
     Enable(stBlend);
 
     CullFaceMode := cmBack;
+    Disable(stPolygonOffsetFill);
 
     if Mode = svmAccurate then
     begin
+      // Setup states to render children
       SetStencilFunc(cfEqual, 0, 255);
+      Disable(stDepthClamp);
       DepthFunc := cfEqual;
+      DepthWriteMask := False;
+      Enable(stDepthTest);
+      SetBlendFunc(bfSrcAlpha, bfOne);
+      Disable(stAlphaTest);
+      ARci.ignoreBlendingRequests := True;
+      ARci.ignoreDepthRequests := True;
     end
     else
       with GL do
@@ -1155,22 +1286,20 @@ begin
         MatrixMode(GL_MODELVIEW);
         SetBlendFunc(bfSrcAlpha, bfOne);
       end;
-  end; // with with ARci.GLStates
+  end; // with ARci.GLStates
 
   Inc(FLightIteration);
 end;
 
-procedure TGLShadowVolume.AfterShadowDraw(var ARci: TRenderContextInfo);
+procedure TGLShadowVolume.RestoreStates(var ARci: TRenderContextInfo);
 begin
   // restore OpenGL state
-  GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
-  ARci.PipelineTransformation.StackTop := FTransformation;
-  Scene.SetupLights(ARci.GLStates.MaxLights);
+  ARci.GLStates.LightGlobalAmbient := FSceneAmbientColor;
   ARci.GLStates.Disable(stStencilTest);
   ARci.GLStates.Disable(stScissorTest);
-  ARci.GLStates.SetPolygonOffset(0, 0);
   ARci.ignoreBlendingRequests := False;
   ARci.ignoreDepthRequests := False;
+  Scene.SetupLights(ARci.GLStates.MaxLights);
 end;
 
 //-------------------------------------------------------------

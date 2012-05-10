@@ -101,7 +101,6 @@ type
     GLStates: TGLStateCache;
     PipelineTransformation: TGLTransformation;
     rcci: TRenderContextClippingInfo;
-    sceneAmbientColor: TColorVector;
     bufferFaceCull: Boolean;
     bufferLighting: Boolean;
     bufferFog: Boolean;

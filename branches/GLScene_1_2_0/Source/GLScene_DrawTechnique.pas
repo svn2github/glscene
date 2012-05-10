@@ -34,7 +34,8 @@ uses
   GLScene_Base_Context,
   GLScene_Base_GLStateMachine,
   GLScene_Mesh,
-  GLScene_Material;
+  GLScene_Material,
+  GLScene_Silhouette;
 
 const
   VBO_STATIC_POOL_SIZE: Cardinal = 16 * 1024 * 1024;
@@ -61,6 +62,9 @@ type
     CustomDraw: TOnCustomDraw;
     ListIndex: Integer;
     CameraDistanceSqr: Single;
+    SilhouetteFlag: Boolean;
+    SilhouetteMesh: TMeshAtom;
+    SilhouetteParameters: PGLSilhouetteParameters;
   end;
 
   TDrawBatchArray = array of TDrawBatch;
@@ -107,14 +111,17 @@ type
   public
     { Public Declarations }
     // Draw batch which geometry stored in display list or array buffer
-    procedure DrawBatch(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
-      virtual; abstract;
+    procedure DrawBatch(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); virtual; abstract;
     // Draw batch directly from operative memory
     procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); virtual; abstract;
     // Draw AABB of batch's mesh
-    procedure DrawAABB(var ARci: TRenderContextInfo; const ABatch: TDrawBatch);
-      virtual; abstract;
+    procedure DrawAABB(var ARci: TRenderContextInfo;
+      const ABatch: TDrawBatch); virtual; abstract;
+    // Draw mesh silhouette
+    procedure DrawSilhouette(var ARci: TRenderContextInfo;
+      var ABatch: TDrawBatch); virtual; abstract;
   end;
 
   TGLAbstractDrawTechniqueClass = class of TGLAbstractDrawTechnique;
@@ -141,6 +148,8 @@ type
       const ABatch: TDrawBatch); override;
     procedure DrawAABB(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
+    procedure DrawSilhouette(var ARci: TRenderContextInfo;
+      var ABatch: TDrawBatch); override;
   end;
 
   // TGLDrawTechniqueOGL2
@@ -183,6 +192,8 @@ type
       const ABatch: TDrawBatch); override;
     procedure DrawAABB(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
+    procedure DrawSilhouette(var ARci: TRenderContextInfo;
+      var ABatch: TDrawBatch); override;
   end;
 
   TGLDrawTechniqueOGL3 = class(TGLDrawTechniqueOGL2)
@@ -202,6 +213,8 @@ type
       const ABatch: TDrawBatch); override;
     procedure DrawDynamicBatch(var ARci: TRenderContextInfo;
       const ABatch: TDrawBatch); override;
+    procedure DrawSilhouette(var ARci: TRenderContextInfo;
+      var ABatch: TDrawBatch); override;
   end;
 
   TGLDrawTechniqueOGL4 = class(TGLDrawTechniqueOGL3)
@@ -1057,6 +1070,22 @@ begin
     finally
       ARci := storeRci;
     end;
+end;
+
+procedure TGLDrawTechniqueOGL1.DrawSilhouette(var ARci: TRenderContextInfo;
+  var ABatch: TDrawBatch);
+var
+  StoreMesh: TMeshAtom;
+begin
+  if not Assigned(ABatch.SilhouetteMesh) then
+    ABatch.SilhouetteMesh := TMeshAtom.Create;
+  if TFriendlyMesh(ABatch.Mesh).FRevisionNum <>
+     TFriendlyMesh(ABatch.SilhouetteMesh).FRevisionNum then
+    ABatch.SilhouetteMesh.GenerateSilhouette(ABatch.Mesh, ABatch.SilhouetteParameters^);
+  StoreMesh := ABatch.Mesh;
+  ABatch.Mesh := ABatch.SilhouetteMesh;
+  DrawDynamicBatch(ARci, ABatch);
+  ABatch.Mesh := StoreMesh;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL1'}{$ENDIF}
@@ -2636,6 +2665,22 @@ begin
     end;
 end;
 
+procedure TGLDrawTechniqueOGL2.DrawSilhouette(var ARci: TRenderContextInfo;
+  var ABatch: TDrawBatch);
+var
+  StoreMesh: TMeshAtom;
+begin
+  if not Assigned(ABatch.SilhouetteMesh) then
+    ABatch.SilhouetteMesh := TMeshAtom.Create;
+  if TFriendlyMesh(ABatch.Mesh).FRevisionNum <>
+     TFriendlyMesh(ABatch.SilhouetteMesh).FRevisionNum then
+    ABatch.SilhouetteMesh.GenerateSilhouette(ABatch.Mesh, ABatch.SilhouetteParameters^);
+  StoreMesh := ABatch.Mesh;
+  ABatch.Mesh := ABatch.SilhouetteMesh;
+  DrawDynamicBatch(ARci, ABatch);
+  ABatch.Mesh := StoreMesh;
+end;
+
 procedure TGLDrawTechniqueOGL2.DumpPool(APool: TPoolMap);
 var
   I: Integer;
@@ -3082,6 +3127,12 @@ begin
       ARci := storeRci;
       ARci.GLStates.VertexArrayBinding := 0;
     end;
+end;
+
+procedure TGLDrawTechniqueOGL3.DrawSilhouette(var ARci: TRenderContextInfo;
+  var ABatch: TDrawBatch);
+begin
+  DrawBatch(ARci, ABatch);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION 'TGLDrawTechniqueOGL3'}{$ENDIF}
@@ -3655,7 +3706,10 @@ begin
         if Assigned(pBatch^.Mesh) and (pBatch^.Mesh.IsValid) then
         begin
           ARci.Mesh := pBatch^.Mesh;
-          LDrawTech.DrawBatch(ARci, pBatch^);
+          if pBatch.SilhouetteFlag then
+            LDrawTech.DrawSilhouette(ARci, pBatch^)
+          else
+            LDrawTech.DrawBatch(ARci, pBatch^);
         end;
       end;
     end;

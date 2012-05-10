@@ -785,6 +785,7 @@ procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of two vectors and place result in vr, F1=1.0
 procedure VectorCombine(const V1, V2: TVector; const F2: Single; var vr : TVector); overload;
+procedure VectorCombine(const V1, V2: TAffineVector; const F2: Single; var vr : TAffineVector); overload;
 //: Makes a linear combination of three vectors and return the result
 function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;{$IFDEF GLS_INLINE_VICE_ASM}inline;{$ENDIF}
 //: Makes a linear combination of three vectors and return the result
@@ -3271,6 +3272,13 @@ begin      // 201283
    vr[2]:=V1[2] + (F2 * V2[2]);
    vr[3]:=V1[3] + (F2 * V2[3]);
 {$endif}
+end;
+
+procedure VectorCombine(const V1, V2: TAffineVector; const F2: Single; var vr : TAffineVector); overload;
+begin
+   vr[0]:=V1[0] + (F2 * V2[0]);
+   vr[1]:=V1[1] + (F2 * V2[1]);
+   vr[2]:=V1[2] + (F2 * V2[2]);
 end;
 
 // VectorCombine

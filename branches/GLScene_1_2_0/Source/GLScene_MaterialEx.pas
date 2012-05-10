@@ -59,6 +59,7 @@ uses
 const
   cInternalShader = 'InternalShader';
   cafMaterialFrontFaceDiffuse = 'Material front face diffuse';
+  cafModelMatrix = 'World (model) matrix';
   cafViewProjectionMatrix = 'ViewProjection matrix';
   cafWorldViewProjectionMatrix = 'WorldViewProjection matrix';
 
@@ -5170,9 +5171,13 @@ var
 
   procedure AddOrUpdateUniform;
   var
-    K: Integer;
+    K, P: Integer;
     sInBlock: string;
   begin
+    p := Pos('[', UName);
+    if P > 0 then
+      UName := Copy(Uname, 1, P-1);
+
     GLSLData := GLSLTypeUndefined;
     GLSLSampler := GLSLSamplerUndefined;
     case AType of
@@ -5680,7 +5685,6 @@ procedure TGLBaseShaderModel.ReadBlocks(AStream: TStream);
 var
   LReader: TReader;
   n, i: Integer;
-  str: string;
   LBlock: TGLShaderUniformBlock;
 begin
   LReader := TReader.Create(AStream, 16384);
@@ -8088,7 +8092,7 @@ begin
     SetCameraPosition);
   RegisterUniformAutoSetMethod('LightSource[0] world position', GLSLType4F,
     SetLightSource0Position);
-  RegisterUniformAutoSetMethod('World (model) matrix', GLSLTypeMat4F,
+  RegisterUniformAutoSetMethod(cafModelMatrix, GLSLTypeMat4F,
     SetModelMatrix);
   RegisterUniformAutoSetMethod('WorldView matrix', GLSLTypeMat4F,
     SetModelViewMatrix);

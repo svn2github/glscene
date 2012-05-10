@@ -865,7 +865,7 @@ type
        nil instead, which will be understood as an empty silhouette. }
     function GenerateSilhouette(const silhouetteParameters:
       TGLSilhouetteParameters): TGLSilhouette; virtual;
-
+    procedure GetMeshes(var ABatches: TDrawBatchArray); virtual;
     property Children[Index: Integer]: TGLBaseSceneObject read Get; default;
     property Count: Integer read GetCount;
     property Index: Integer read GetIndex write SetIndex;
@@ -1304,6 +1304,9 @@ type
     property Hint;
   end;
 
+{$IFNDEF GLS_DELPHI_XE_DOWN}
+  TRenderContextInfo = GLScene_Base_Context_Info.TRenderContextInfo;
+{$ENDIF}
   // TDirectRenderEvent
   //
   {: Event for user-specific rendering in a TGLDirectOpenGL object. }
@@ -1892,7 +1895,7 @@ type
     { Published Declarations }
     {: Defines default ObjectSorting option for scene objects. }
     property ObjectsSorting: TGLObjectsSorting read FObjectsSorting write
-      SetObjectsSorting default osRenderBlendedLast;
+      SetObjectsSorting default osNone;
     {: Defines default VisibilityCulling option for scene objects. }
     property VisibilityCulling: TGLVisibilityCulling read FVisibilityCulling
       write SetVisibilityCulling default vcNone;
@@ -5054,6 +5057,10 @@ begin
   Result := FLocalMatrix^;
 end;
 
+procedure TGLBaseSceneObject.GetMeshes(var ABatches: TDrawBatchArray);
+begin
+end;
+
 // MatrixAsAddress
 //
 
@@ -6677,6 +6684,7 @@ begin
   FBlend := False;
   FDummyBatch.Transformation := @FTransformation;
   FDummyBatch.CustomDraw := BuildList;
+  FDummyBatch.Material := FMaterial;
 end;
 
 procedure TGLDirectOpenGL.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
@@ -6755,6 +6763,11 @@ procedure TGLDirectOpenGL.SetBlend(const val: Boolean);
 begin
   if val <> FBlend then
   begin
+    // Hack material
+    if val then
+      FMaterial.Material.BlendingMode := bmTransparency
+    else
+      FMaterial.Material.BlendingMode := bmOpaque;
     FBlend := val;
     StructureChanged;
   end;
@@ -7539,7 +7552,7 @@ begin
   FObjects := TGLSceneRootObject.Create(Self);
   FObjects.Name := 'ObjectRoot';
   FLights := TPersistentObjectList.Create;
-  FObjectsSorting := osRenderBlendedLast;
+  FObjectsSorting := osNone;
   FVisibilityCulling := vcNone;
   // actual maximum number of lights is stored in TGLSceneViewer
   FLights.Count := 8;
@@ -9745,7 +9758,6 @@ begin
   LRci.bufferFog := FFogEnable;
   LRci.bufferDepthTest := FDepthTest;
   LRci.drawState := drawState;
-  LRci.sceneAmbientColor := FAmbientColor.Color;
   LRci.primitiveMask := cAllMeshPrimitive;
   LRci.drawList := aScene.RenderManager.DrawList;
   with FCamera do
@@ -9777,6 +9789,7 @@ begin
   LRci.proxySubObject := False;
   LRci.ignoreMaterials := (roNoColorBuffer in FContextOptions);
   LRci.GLStates.SetGLColorWriting(not LRci.ignoreMaterials);
+  LRci.GLStates.LightGlobalAmbient := FAmbientColor.Color;
   if Assigned(FInitiateRendering) then
     FInitiateRendering(Self, LRci);
 
