@@ -2453,7 +2453,6 @@ var
   pixel: TFPColor;
   IntfImg: TLazIntfImage;
 begin
-  Assert((aBitmap.Width and 3) = 0);
   UnMipmap;
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
