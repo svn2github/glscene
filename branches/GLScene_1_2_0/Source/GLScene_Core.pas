@@ -496,6 +496,8 @@ type
     osNoVisibilityCulling);
   TGLObjectStyles = set of TGLObjectStyle;
 
+  TRenderContextInfo = GLScene_Base_Context_Info.TRenderContextInfo;
+
   // IGLInitializable
   //
   {: Interface to objects that need initialization<p> }

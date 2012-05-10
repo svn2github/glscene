@@ -2233,6 +2233,7 @@ type
     GetFramebufferAttachmentParameteriv: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC;
     BlitFramebuffer: PFNGLBLITFRAMEBUFFERPROC;
     GenerateMipmap: PFNGLGENERATEMIPMAPPROC;
+    DepthBounds: PFNGLDEPTHBOUNDSEXTPROC;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Queries object'}{$ENDIF}
     GenQueries: PFNGLGENQUERIESPROC;
@@ -4366,6 +4367,7 @@ begin
     GetAddress('GetFramebufferAttachmentParameteriv');
   BlitFramebuffer := GetAddress('BlitFramebuffer');
   GenerateMipmap := GetAddress('GenerateMipmap');
+  DepthBounds := GetAddress('DepthBounds');
   ClearBufferiv := GetAddress('ClearBufferiv');
   ClearBufferuiv := GetAddress('ClearBufferuiv');
   ClearBufferfv := GetAddress('ClearBufferfv');
