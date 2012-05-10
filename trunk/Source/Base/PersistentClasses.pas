@@ -13,6 +13,8 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/05/12 - Yar - Patched TBinaryReader.ReadFloat/WriteFloat for Win64 (thanks Massimo Zanoletti)
+                           In future need to replase extended floating point type! 
       <li>06/12/10 - DaStr - Added GUID to IPersistentObject
       <li>19/08/10 - Yar - Fixed WriteWideString for empty strings
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -1806,11 +1808,25 @@ end;
 //
 
 function TBinaryReader.ReadFloat: Extended;
+{$IFDEF WIN64}
+var
+   C  :TExtended80Rec; // Temporary variable to store 10 bytes floating point number in a Win64 application
+{$ENDIF}
 begin
+  {$IFDEF WIN64}
+  if ReadValue = vaExtended then
+  begin
+    Read(C, SizeOf(C));     // Load value into the temp variable
+    Result := Extended(C);  // Typecast into an Extended: in a win64 application is a Double
+  end
+  else
+    ReadTypeError;
+  {$ELSE}
   if ReadValue = vaExtended then
     Read(Result, SizeOf(Result))
   else
     ReadTypeError;
+  {$ENDIF}
 end;
 
 // ReadListBegin
@@ -1958,14 +1974,24 @@ procedure TBinaryWriter.WriteFloat(const aFloat: Extended);
 type
   TExtendedStruct = packed record
     typ: Byte;
-    val: Extended;
+    {$IFDEF WIN64}
+    val  :TExtended80Rec;  // Structure to handle a 10 bytes floating point value
+    {$ELSE}
+    val  :Extended;
+    {$ENDIF}
   end;
 var
   str: TExtendedStruct;
 begin
+  {$IFDEF WIN64}
+  str.typ := byte(vaExtended);
+  str.val := TExtended80Rec(aFloat);   // Typecast the float value (in a Win64 app the type is a Double) into the 10 bytes struct
+  Write(str, SizeOf(str));
+  {$ELSE}
   str.typ := byte(vaExtended);
   str.val := aFloat;
   Write(str, SizeOf(str));
+  {$ENDIF}
 end;
 
 // WriteListBegin
