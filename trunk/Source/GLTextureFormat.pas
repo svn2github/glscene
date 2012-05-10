@@ -4,6 +4,7 @@
 {: GLTextureFormat<p>
 
  <b>History : </b><font size=-1><ul>
+        <li>10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
         <li>03/08/10 - Yar - Added SNORM texture format
         <li>15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
         <li>22/04/10 - Yar - Moved TGLTextureTarget
@@ -360,18 +361,18 @@ const
     (IntFmt: GL_FLOAT_RG32_NV; ClrFmt: GL_RG; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 0; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
     (IntFmt: GL_FLOAT_RGB32_NV; ClrFmt: GL_RGB; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
     (IntFmt: GL_FLOAT_RGBA32_NV; ClrFmt: GL_RGBA; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 32; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_RGBA_FLOAT32_ATI; ClrFmt: GL_RGBA; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 32; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_RGB_FLOAT32_ATI; ClrFmt: GL_RGB; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_ALPHA_FLOAT32_ATI; ClrFmt: GL_ALPHA; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 32; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_INTENSITY_FLOAT32_ATI; ClrFmt: GL_LUMINANCE; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 32; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_RGBA_FLOAT32_ARB; ClrFmt: GL_RGBA; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 32; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_RGB_FLOAT32_ARB; ClrFmt: GL_RGB; DataFmt: GL_FLOAT; RBit: 32; GBit: 32; BBit: 32; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_ALPHA_FLOAT32_ARB; ClrFmt: GL_ALPHA; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 32; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_INTENSITY_FLOAT32_ARB; ClrFmt: GL_LUMINANCE; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 32; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
     (IntFmt: GL_LUMINANCE_FLOAT32_ATI; ClrFmt: GL_LUMINANCE; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 32; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_LUMINANCE_ALPHA_FLOAT32_ATI; ClrFmt: GL_LUMINANCE_ALPHA; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 32; LBit: 32; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_RGBA_FLOAT16_ATI; ClrFmt: GL_RGBA; DataFmt: GL_HALF_FLOAT; RBit: 16; GBit: 16; BBit: 16; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_RGB_FLOAT16_ATI; ClrFmt: GL_RGB; DataFmt: GL_HALF_FLOAT; RBit: 16; GBit: 16; BBit: 16; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_ALPHA_FLOAT16_ATI; ClrFmt: GL_ALPHA; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_INTENSITY_FLOAT16_ATI; ClrFmt: GL_LUMINANCE; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_LUMINANCE_FLOAT16_ATI; ClrFmt: GL_LUMINANCE; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
-    (IntFmt: GL_LUMINANCE_ALPHA_FLOAT16_ATI; ClrFmt: GL_LUMINANCE_ALPHA; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 16; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_LUMINANCE_ALPHA_FLOAT32_ARB; ClrFmt: GL_LUMINANCE_ALPHA; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 32; LBit: 32; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_RGBA_FLOAT16_ARB; ClrFmt: GL_RGBA; DataFmt: GL_HALF_FLOAT; RBit: 16; GBit: 16; BBit: 16; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_RGB_FLOAT16_ARB; ClrFmt: GL_RGB; DataFmt: GL_HALF_FLOAT; RBit: 16; GBit: 16; BBit: 16; ABit: 0; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_ALPHA_FLOAT16_ARB; ClrFmt: GL_ALPHA; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_INTENSITY_FLOAT16_ARB; ClrFmt: GL_LUMINANCE; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_LUMINANCE_FLOAT16_ARB; ClrFmt: GL_LUMINANCE; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
+    (IntFmt: GL_LUMINANCE_ALPHA_FLOAT16_ARB; ClrFmt: GL_LUMINANCE_ALPHA; DataFmt: GL_HALF_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 16; LBit: 16; DBit: 0; Sign: False; Flt: True; Fix: False; Comp: False),
     (IntFmt: GL_DEPTH24_STENCIL8; ClrFmt: GL_DEPTH_STENCIL; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 0; DBit: 24; Sign: False; Flt: False; Fix: False; Comp: False),
     (IntFmt: GL_DEPTH_COMPONENT32F; ClrFmt: GL_DEPTH_COMPONENT; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 0; DBit: 32; Sign: False; Flt: True; Fix: False; Comp: False),
     (IntFmt: GL_DEPTH32F_STENCIL8; ClrFmt: GL_DEPTH_STENCIL; DataFmt: GL_FLOAT; RBit: 0; GBit: 0; BBit: 0; ABit: 0; LBit: 0; DBit: 32; Sign: False; Flt: True; Fix: False; Comp: False),
@@ -665,7 +666,7 @@ begin
   if ((intFormat >= tfRGBA_FLOAT32)
     and (intFormat <= tfLUMINANCE_ALPHA_FLOAT16)) then
   begin
-    Result := GL.ATI_texture_float;
+    Result := GL.ARB_texture_float or GL.ATI_texture_float;
     EXIT;
   end;
 
