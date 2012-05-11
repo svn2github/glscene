@@ -55,6 +55,10 @@ type
 
   PObject = ^TObject;
 
+{$IFDEF FPC}
+  type TExtended80Rec = array[0..9] of Byte;
+{$ENDIF}
+
   // TVirtualReader
   //
   {: Virtual layer similar to VCL's TReader (but reusable) }
