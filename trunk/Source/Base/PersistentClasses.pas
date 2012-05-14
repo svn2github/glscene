@@ -56,7 +56,11 @@ type
   PObject = ^TObject;
 
 {$IFDEF FPC}
-  type TExtended80Rec = array[0..9] of Byte;
+  type TExtended80Rec = packed record
+    case Integer of
+    1: (Bytes: array[0..9] of Byte);
+    2: (Float: Extended);
+  end;
 {$ENDIF}
 
   // TVirtualReader
@@ -1821,7 +1825,11 @@ begin
   if ReadValue = vaExtended then
   begin
     Read(C, SizeOf(C));     // Load value into the temp variable
-    Result := Extended(C);  // Typecast into an Extended: in a win64 application is a Double
+    {$IFDEF FPC}
+    Result := C.Float;
+    {$ELSE}
+    Result := Extended(C); // Typecast into an Extended: in a win64 application is a Double
+    {$ENDIF}
   end
   else
     ReadTypeError;
@@ -1989,7 +1997,11 @@ var
 begin
   {$IFDEF WIN64}
   str.typ := byte(vaExtended);
+  {$IFDEF FPC}
+  str.val.Float := aFloat;
+  {$ELSE}
   str.val := TExtended80Rec(aFloat);   // Typecast the float value (in a Win64 app the type is a Double) into the 10 bytes struct
+  {$ENDIF}
   Write(str, SizeOf(str));
   {$ELSE}
   str.typ := byte(vaExtended);
