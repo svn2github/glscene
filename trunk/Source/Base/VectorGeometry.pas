@@ -31,6 +31,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/05/12 - Maverick - Added quad/disk intersection routines,
+                                c3PIdiv2 constant, some asm blocks
       <li>10/05/12 - Maverick - Added plane/triangle intersection routines,
                                 overloaded plane routines, linelinedistance routine
       <li>28/03/12 - Maverick - Added IsColinear test and Vector2d dot product
@@ -1213,6 +1215,17 @@ function PointTriangleProjection(const point, direction, ptA, ptB, ptC : TAffine
 {: Returns true if line intersect ABC triangle. }
 function IsLineIntersectTriangle(const point, direction, ptA, ptB, ptC : TAffineVector) : Boolean;
 
+{: Computes point to Quad projection. Direction has to be normalized. Quad have to be flat and convex}
+function PointQuadOrthoProjection(const point, ptA, ptB, ptC, ptD : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+function PointQuadProjection(const point, direction, ptA, ptB, ptC, ptD : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+
+{: Returns true if line intersect ABCD quad. Quad have to be flat and convex }
+function IsLineIntersectQuad(const point, direction, ptA, ptB, ptC, ptD : TAffineVector) : Boolean;
+
+{: Computes point to disk projection. Direction has to be normalized}
+function PointDiskOrthoProjection(const point, center, up : TAffineVector; const radius: Single; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+function PointDiskProjection(const point, direction, center, up : TAffineVector; const radius: Single; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+
 {: Computes closest point on a segment (a segment is a limited line).}
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector; overload;
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TVector) : TVector; overload;
@@ -1759,6 +1772,7 @@ const
    c2PI :      Single =  6.283185307;
    cPIdiv2 :   Single =  1.570796326;
    cPIdiv4 :   Single =  0.785398163;
+   c3PIdiv2 :  Single =  4.71238898;
    c3PIdiv4 :  Single =  2.35619449;
    cInv2PI :   Single = 1/6.283185307;
    cInv360 :   Single = 1/360;
@@ -3518,58 +3532,229 @@ end;
 // VectorCrossProduct
 //
 function VectorCrossProduct(const v1, v2 : TAffineVector) : TAffineVector;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+{$else}
 begin
    Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+{$endif}
 end;
 
 // VectorCrossProduct
 //
 function VectorCrossProduct(const v1, v2 : TVector) : TVector;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+
+    xor   eax, eax
+    mov   [ecx+$c], eax
+{$else}
 begin
    Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    Result[W]:=0;
+{$endif}
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2: TVector; var vr : TVector);
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+
+    xor   eax, eax
+    mov   [ecx+$c], eax
+{$else}
 begin
    vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    vr[W]:=0;
+{$endif}
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+
+    xor   eax, eax
+    mov   [ecx+$c], eax
+{$else}
 begin
    vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    vr[W]:=0;
+{$endif}
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TVector; var vr : TAffineVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+{$else}
 begin
    vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+{$endif}
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx+$8]
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fstp  dword ptr [ecx]
+
+    fld   dword ptr [eax+$8]
+    fmul  dword ptr [edx]
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fstp  dword ptr [ecx+$4]
+
+    fld   dword ptr [eax]
+    fmul  dword ptr [edx+$4]
+    fld   dword ptr [eax+$4]
+    fmul  dword ptr [edx]
+    fsubp
+    fstp  dword ptr [ecx+$8]
+{$else}
 begin
    vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
    vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
    vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+{$endif}
 end;
 
 // Lerp
@@ -6980,19 +7165,61 @@ end;
 // PointPlaneDistance
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
+// EAX contains address of point
+// EDX contains address of planepoint
+// ECX contains address of planeNormal
+// result in St(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax]
+    fsub  dword ptr [edx]
+    fmul  dword ptr [ecx]
+
+    fld   dword ptr [eax+$4]
+    fsub  dword ptr [edx+$4]
+    fmul  dword ptr [ecx+$4]
+    faddp
+
+    fld   dword ptr [eax+$8]
+    fsub  dword ptr [edx+$8]
+    fmul  dword ptr [ecx+$8]
+    faddp
+{$else}
 begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
            +(point[1]-planePoint[1])*planeNormal[1]
            +(point[2]-planePoint[2])*planeNormal[2];
+{$endif}
 end;
 
 // PointPlaneDistance
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single;
+// EAX contains address of point
+// EDX contains address of planepoint
+// ECX contains address of planeNormal
+// result in St(0)
+{$ifndef GEOMETRY_NO_ASM}
+asm
+    fld   dword ptr [eax]
+    fsub  dword ptr [edx]
+    fmul  dword ptr [ecx]
+
+    fld   dword ptr [eax+$4]
+    fsub  dword ptr [edx+$4]
+    fmul  dword ptr [ecx+$4]
+    faddp
+
+    fld   dword ptr [eax+$8]
+    fsub  dword ptr [edx+$8]
+    fmul  dword ptr [ecx+$8]
+    faddp
+{$else}
 begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
            +(point[1]-planePoint[1])*planeNormal[1]
            +(point[2]-planePoint[2])*planeNormal[2];
+{$endif}
 end;
 
 // PointPlaneDistance
@@ -7007,7 +7234,7 @@ end;
 function PointPlaneOrthoProjection(const point: TAffineVector; const plane : THmgPlane;
  var inter : TAffineVector; bothface : Boolean = True) : Boolean;
 var
-  h, dot : Single;
+  h : Single;
   normal : TAffineVector;
 begin
   Result := False;
@@ -7067,9 +7294,9 @@ var
 begin
   Result := False;
 
-  plane := PlaneMake(ptA, ptB, ptC);
   if not IsLineIntersectTriangle(point, direction, ptA, ptB, ptC) then Exit;
 
+  plane := PlaneMake(ptA, ptB, ptC);
   Result := PointPlaneProjection(point, direction, plane, inter, bothface);
 end;
 
@@ -7105,6 +7332,97 @@ begin
       if VectorDotProduct(crossCA, direction) < 0 then
         Result := True;
     end
+end;
+
+// PointQuadOrthoProjection
+//
+function PointQuadOrthoProjection(const point, ptA, ptB, ptC, ptD : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  plane : THmgPlane;
+begin
+  Result := False;
+
+  plane := PlaneMake(ptA, ptB, ptC);
+  if not IsLineIntersectQuad(point, Vector3fMake(plane), ptA, ptB, ptC, ptD) then Exit;
+
+  Result := PointPlaneOrthoProjection(point, plane, inter, bothface);
+end;
+
+// PointQuadProjection
+//
+function PointQuadProjection(const point, direction, ptA, ptB, ptC, ptD : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+var
+  plane : THmgPlane;
+begin
+  Result := False;
+
+  if not IsLineIntersectQuad(point, direction, ptA, ptB, ptC, ptD) then Exit;
+
+  plane := PlaneMake(ptA, ptB, ptC);
+  Result := PointPlaneProjection(point, direction, plane, inter, bothface);
+end;
+
+// IsLineIntersectQuad
+//
+function IsLineIntersectQuad(const point, direction, ptA, ptB, ptC, ptD : TAffineVector) : Boolean;
+var
+  PA, PB, PC, PD : TAffineVector;
+  crossAB, crossBC, crossCD, crossDA : TAffineVector;
+begin
+  Result := False;
+
+  PA := VectorSubtract(ptA, point);
+  PB := VectorSubtract(ptB, point);
+  PC := VectorSubtract(ptC, point);
+  PD := VectorSubtract(ptD, point);
+
+  crossAB := VectorCrossProduct(PA, PB);
+  crossBC := VectorCrossProduct(PB, PC);
+
+  if VectorDotProduct(crossAB, direction) > 0 then
+  begin
+    if VectorDotProduct(crossBC, direction) > 0 then
+    begin
+      crossCD := VectorCrossProduct(PC, PD);
+      if VectorDotProduct(crossCD, direction) > 0 then
+      begin
+        crossDA := VectorCrossProduct(PD, PA);
+        if VectorDotProduct(crossDA, direction) > 0 then
+          Result := True;
+      end;
+    end;
+  end
+  else
+    if VectorDotProduct(crossBC, direction) < 0 then
+    begin
+      crossCD := VectorCrossProduct(PC, PD);
+      if VectorDotProduct(crossCD, direction) < 0 then
+      begin
+        crossDA := VectorCrossProduct(PD, PA);
+        if VectorDotProduct(crossDA, direction) < 0 then
+          Result := True;
+      end;
+    end
+end;
+
+// PointDiskOrthoProjection
+//
+function PointDiskOrthoProjection(const point, center, up : TAffineVector; const radius: Single; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+begin
+  if PointPlaneOrthoProjection(point, PlaneMake(center, up),inter,bothface) then
+    Result := (VectorDistance2(inter, center)<= radius*radius)
+  else
+    Result := False;
+end;
+
+// PointDiskProjection
+//
+function PointDiskProjection(const point, direction, center, up : TAffineVector; const radius: Single; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+begin
+  if PointPlaneProjection(point, direction, PlaneMake(center, up),inter,bothface) then
+    Result := VectorDistance2(inter, center) <= radius*radius
+  else
+    Result := False;
 end;
 
 // PointLineClosestPoint
@@ -7292,14 +7610,46 @@ const
 var
   det : Single;
 begin
-  det := (linePt1[0] - linePt0[0]) * (lineDir0[1]*lineDir1[2] - lineDir1[1]*lineDir0[2]) -
-         (linePt1[1] - linePt0[1]) * (lineDir0[0]*lineDir1[2] - lineDir1[0]*lineDir0[2]) +
-         (linePt1[2] - linePt0[2]) * (lineDir0[0]*lineDir1[1] - lineDir1[0]*lineDir0[1]);
-
-  if Abs(det) < cBIAS then
+  {$ifndef GEOMETRY_NO_ASM}
+  asm
+    fld   dword ptr [ecx]
+    fsub  dword ptr [eax]
+    fld   dword ptr [edx+$4]
+    fmul  dword ptr [ebp+$40]    //+8
+    fld   dword ptr [ebp+$3c]    //+4
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fmulp
+    fld   dword ptr [eax+$4]
+    fsub  dword ptr [ecx+$4]
+    fld   dword ptr [edx]
+    fmul  dword ptr [ebp+$40]    //+8
+    fld   dword ptr [ebp+$38]    //+0
+    fmul  dword ptr [edx+$8]
+    fsubp
+    fmulp
+    faddp
+    fld   dword ptr [ecx+$8]
+    fsub  dword ptr [eax+$8]
+    fld   dword ptr [edx]
+    fmul  dword ptr [ebp+$3c]    //+4
+    fld   dword ptr [ebp+$38]    //+0
+    fmul  dword ptr [edx+$4]
+    fsubp
+    fmulp
+    faddp
+    fabs
+    fstp  det
+  end;
+  {$else}
+    det := Abs((linePt1[0] - linePt0[0]) * (lineDir0[1]*lineDir1[2] - lineDir1[1]*lineDir0[2]) -
+               (linePt1[1] - linePt0[1]) * (lineDir0[0]*lineDir1[2] - lineDir1[0]*lineDir0[2]) +
+               (linePt1[2] - linePt0[2]) * (lineDir0[0]*lineDir1[1] - lineDir1[0]*lineDir0[1]);
+  {$endif}
+  if det < cBIAS then
     Result := PointLineDistance(linePt0, linePt1, lineDir1)
   else
-    Result := Abs(det) / VectorLength(VectorCrossProduct(lineDir0, lineDir1));
+    Result := det / VectorLength(VectorCrossProduct(lineDir0, lineDir1));
 end;
 
 // QuaternionMake
