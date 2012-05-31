@@ -22,7 +22,11 @@ uses
 {$I cuda.inc}
 
 const
+{$IFDEF WIN64}
+  CUTILDLL = 'cutil64.dll';
+{$ELSE}
   CUTILDLL = 'cutil32.dll';
+{$ENDIF}
 
 var
   cutFindFilePath: function(const filename: PAnsiChar; const executablePath:
