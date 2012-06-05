@@ -55,10 +55,19 @@ uses
 {$I cuda.inc}
 
 const
-  CUFFTDLLNAMES: array [0 .. 8] of string = ('cufft32_41_28',
+{$IFDEF WIN32}
+  CUFFTDLLNAMES: array [0 .. 9] of string = (
+    'cufft32_42_9', 'cufft32_41_28',
     'cufft32_40_10', 'cufft32_32_16', 'cufft32_31_4', 'cufft32_30_14',
     'cufft32_30_9', 'cufft32_30_8', 'cufft32', 'cufft');
+{$ENDIF}
 
+{$IFDEF WIN64}
+  CUFFTDLLNAMES: array [0 .. 7] of string = (
+    'cufft64_42_9', 'cufft64_41_28',
+    'cufft64_40_10', 'cufft64_32_16', 'cufft64_31_4', 'cufft64_30_14',
+    'cufft64_30_9', 'cufft64_30_8');
+{$ENDIF}
   { /// CUFFT API function return values }
 
 type

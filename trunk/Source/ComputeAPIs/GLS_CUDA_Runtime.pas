@@ -59,9 +59,19 @@ uses
 {$I cuda.inc}
 
 const
-  CUDARTDLLNAMES: array [0 .. 7] of string = (
+{$IFDEF WIN32}
+  CUDARTDLLNAMES: array [0 .. 9] of string = (
+    'cudart32_42_9', 'cudart32_41_28',
     'cudart32_40_10', 'cudart32_32_16', 'cudart32_31_4',
     'cudart32_30_14', 'cudart32_30_9', 'cudart32_30_8', 'cudart32', 'cudart');
+{$ENDIF}
+
+{$IFDEF WIN64}
+  CUDARTDLLNAMES: array [0 .. 7] of string = (
+    'cudart64_42_9', 'cudart64_41_28',
+    'cudart64_40_10', 'cudart64_32_16', 'cudart64_31_4',
+    'cudart64_30_14', 'cudart64_30_9', 'cudart64_30_8');
+{$ENDIF}
 
 const
   // single precision constants
