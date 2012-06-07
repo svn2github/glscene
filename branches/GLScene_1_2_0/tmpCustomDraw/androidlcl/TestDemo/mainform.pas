@@ -5,15 +5,20 @@ unit mainform;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  LCLProc, Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase,
-  lazdeviceapis, Menus, ExtDlgs,LMessages, customdrawnint{,dynlibs } ;
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLProc,
+  Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase, lazdeviceapis,
+  Menus, ExtDlgs, LMessages, customdrawnint, GLScene_Viewer_Form, GLScene_Core,
+  GLScene_Objects, GLScene_AsyncTimer, GLScene_Cadencer;
 
 type
 
   { TForm1 }
 
-  TForm1 = class(TForm)
+  TForm1 = class(TGLSceneForm)//{GLScene}
+    GLCadencer1: TGLCadencer;
+    GLCamera1: TGLCamera;
+    GLCube1: TGLCube;
+    GLScene1: TGLScene;
   {  procedure Arrow1Click(Sender: TObject);
     procedure Arrow1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -23,23 +28,36 @@ type
       Shift: TShiftState; X, Y: Integer);       }
     procedure btnShowInfoClick(Sender: TObject);
     procedure FormClick(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+
   //  procedure FormPaint(Sender: TObject);
  //   procedure MenuItem1Click(Sender: TObject);
-    procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
-    procedure LMSize(var Message: TLMSize); message LM_SIZE;
+  protected
+    procedure OnSurfaceCreated(Sender: TObject);
+    procedure OnSurfaceChanged(Sender: TObject);
+    procedure OnSurfaceDestroyed(Sender: TObject);
   private
     { private declarations }
+ //   procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
+    procedure LMSize(var Message: TLMSize); message LM_SIZE;
+
   public
     { public declarations }
     ClickCounter: Integer;
+
   //  procedure HandleMessageDialogFinished(Sender: TObject; AResult: Integer);
-  end; 
+  end;
+  TTimerThread = class(TThread)
+
+  end;
 
 var
-  Form1: TForm1; 
+  Form1: TForm1;
+  OGLContext:Pointer;
 
 implementation
 
@@ -51,9 +69,16 @@ implementation
 
 procedure TForm1.FormClick(Sender: TObject);
 begin
+  //   CDWidgetset.StartEGL;
   DebugLn(Format('Form click #%d', [ClickCounter]));
   Inc(ClickCounter);
+  //   CDWidgetset.FinishEGL;
 //  Invalidate;
+end;
+
+procedure TForm1.FormPaint(Sender: TObject);
+begin
+  DebugLn('FormPaint');
 end;
 
 {procedure TForm1.Arrow1Click(Sender: TObject);
@@ -93,7 +118,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-{    MajorVersion, MinorVersion, Err: EGLInt;
+      FTimerThread: TThread;
+ {   MajorVersion, MinorVersion, Err: EGLInt;
   FDisplay: EGLDisplay;
   FSurface: EGLSurface;
   FConfig: EGLConfig;
@@ -111,13 +137,21 @@ var
   //  EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
     0);
       LConfigs: array of EGLConfig;}
-      OGLContext:Pointer;
+
      //     vzHandle: TLibHandle = 0;
 begin
+   DebugLn('OnCreate');
+ {  FTimerThread := TTimerThread.Create(False);
+   FTimerThread.FreeOnTerminate := False;
+  FTimerThread.Priority := tpTimeCritical; }
+ //  CDWidgetset.OnSurfaceCreated := @OnSurfaceCreated;
+//CDWidgetset.OnSurfaceChanged := @OnSurfaceChanged;
+//CDWidgetset.OnSurfaceDestroyed := @OnSurfaceDestroyed;
 
-  // CDWidgetset.StartEGL;
- //  OGLContext:= CDWidgetset.CreateContext;
-  // CDWidgetset.DestroyContext(OGLContext);
+ //  CDWidgetset.StartEGL;
+ //  CDWidgetset.FinishEGL;
+//   OGLContext:= CDWidgetset.CreateContext;
+ ///  CDWidgetset.DestroyContext(OGLContext);
 
   //  vzHandle := LoadLibrary(PChar('libz.so'));
     //  DebugLn('libz:'+inttostr(vzHandle));
@@ -142,20 +176,28 @@ begin
    //  DebugLn('Failed to create surface to draw');
 end;
 
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  DebugLn('OnDestroy');
+end;
+
 procedure TForm1.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
   DebugLn(Format('MouseDown x=%d y=%d', [x, y]));
 end;
 
-procedure TForm1.LMPaint(var Message: TLMPaint);
+{procedure TForm1.LMPaint(var Message: TLMPaint);
 begin
   DebugLn('OnPaint');
-end;
+   // Buffer.Render;
+
+end; }
 
 procedure TForm1.LMSize(var Message: TLMSize);
 begin
   DebugLn('OnSize');
+
 end;
 
 procedure TForm1.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -191,6 +233,38 @@ end; }
 begin
   DebugLn(Format('[TForm1.HandleMessageDialogFinished] AResult=%d', [AResult]));
 end;    }
+
+procedure TForm1.OnSurfaceCreated(Sender: TObject);
+var
+  LConfigs: array of EGLConfig;
+  LNumElements: Integer;
+begin
+  DebugLn('OnSurfaceCreated');
+ // CDWidgetset.StartEGL();
+ // SetLength(LConfigs, LNumElements);
+ // CDWidgetset.eglGetConfigs(@LConfigs[0], Length(LConfigs), @LNumElements) ;
+ { OGLContext:= CDWidgetset.CreateContext;
+  CDWidgetset.CreateSurface();
+  CDWidgetset.PurgeBuffers();   }
+end;
+
+procedure TForm1.OnSurfaceChanged(Sender: TObject);
+begin
+  DebugLn('OnSurfaceChanged');
+end;
+
+procedure TForm1.OnSurfaceDestroyed(Sender: TObject);
+begin
+  DebugLn('OnSurfaceDestroyed');
+ // CDWidgetset.ClearBuffers();
+ { CDWidgetset.DestroySurface();
+  CDWidgetset.DestroyContext(nil);  }
+ // CDWidgetset.FinishEGL();
+end;
+
+initialization
+
+
 
 end.
 

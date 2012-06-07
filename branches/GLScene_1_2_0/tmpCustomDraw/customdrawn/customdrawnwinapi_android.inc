@@ -2676,12 +2676,12 @@ begin
     LOGPIXELSX:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclxdpi);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclxdpi);
     end;
     LOGPIXELSY:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclydpi);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclydpi);
     end;
 //    VERTRES:
 //      Result := QPaintDevice_height(PaintDevice);
@@ -3740,7 +3740,7 @@ begin
     begin
       Result := 100; // avoid errors if this is called too early
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclscreenwidth);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclscreenwidth);
       if Result = 0 then Result := 100;
     end;
     SM_CYSCREEN:

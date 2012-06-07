@@ -1,0 +1,48 @@
+object Form1: TForm1
+  Left = 404
+  Height = 304
+  Top = 181
+  Width = 253
+  Caption = 'Form1'
+  OnClick = FormClick
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnPaint = FormPaint
+  LCLVersion = '0.9.31'
+  Camera = GLCamera1
+  Buffer.BackgroundColor = clRed
+  FieldOfView = 136.866500854492
+  FullScreenVideoMode.Width = 2903
+  FullScreenVideoMode.Height = 35240
+  FullScreenVideoMode.ColorDepth = 32
+  FullScreenVideoMode.Frequency = 50
+  object GLScene1: TGLScene
+    left = 45
+    top = 20
+    object GLCamera1: TGLCamera
+      TagFloat = 0
+      DepthOfView = 100
+      FocalLength = 50
+      TargetObject = GLCube1
+      Position.Coordinates = {
+        0000A0400000A0400000A0400000803F
+      }
+    end
+    object GLCube1: TGLCube
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+    end
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
+    left = 96
+    top = 20
+  end
+end

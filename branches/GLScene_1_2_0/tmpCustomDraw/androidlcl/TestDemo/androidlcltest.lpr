@@ -3,10 +3,14 @@ library androidlcltest;
 {$mode objfpc}{$H+}
 
 uses
+  {$DEFINE UseCThreads}   //многопоточность не врубилась пришлось изнасиловать и врубить самому!
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
   customdrawnint,
   Interfaces,
   Forms,
-  mainform, GLScene_Runtime{, customdrawn_android, customdrawndrawers};
+  mainform, GLScene_Runtime;
 
 exports
   Java_com_pascal_lclproject_LCLActivity_LCLOnTouch name 'Java_com_pascal_lcltest_LCLActivity_LCLOnTouch',
@@ -17,6 +21,10 @@ exports
   Java_com_pascal_lclproject_LCLActivity_LCLOnTimer name 'Java_com_pascal_lcltest_LCLActivity_LCLOnTimer',
   Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged name 'Java_com_pascal_lcltest_LCLActivity_LCLOnConfigurationChanged',
   Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged name 'Java_com_pascal_lcltest_LCLActivity_LCLOnSensorChanged',
+
+  Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated name 'Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated',
+  Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceDestroyed name 'Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceDestroyed',
+  Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged name 'Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged',
 
   JNI_OnLoad name 'JNI_OnLoad',
   JNI_OnUnload name 'JNI_OnUnload';
@@ -30,6 +38,5 @@ end;
 
 begin
   CDWidgetset.ActivityOnCreate := @MyActivityOnCreate;
- // CDWidgetset.CreateOpenGLContext;
 end.
 

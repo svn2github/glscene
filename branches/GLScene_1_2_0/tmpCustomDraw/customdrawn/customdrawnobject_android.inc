@@ -74,7 +74,6 @@ var
 begin
   Result := 0;
  // AndroidBitmap_lockPixels(env, abitmap, @pixels);
-
   lCurForm := GetCurrentForm();
   if lCurForm <> nil then
   begin
@@ -331,7 +330,28 @@ begin
   Result := eventResult;
 end;
 
-const NativeMethods: array[0..7] of JNINativeMethod=
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated(); cdecl;
+begin
+ // DebugLn('LCLOnSurfaceCreated()');
+  if Assigned(CDWidgetset.OnSurfaceCreated) then
+    CDWidgetset.OnSurfaceCreated(nil);
+end;
+
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceDestroyed(); cdecl;
+begin
+ // DebugLn('LCLOnSurfaceDestroyed()');
+  if Assigned(CDWidgetset.OnSurfaceDestroyed) then
+    CDWidgetset.OnSurfaceDestroyed(nil);
+end;
+
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged(); cdecl;
+begin
+ // DebugLn('LCLOnSurfaceChanged()');
+  if Assigned(CDWidgetset.OnSurfaceChanged) then
+    CDWidgetset.OnSurfaceChanged(nil);
+end;
+
+const NativeMethods: array[0..10] of JNINativeMethod=
   ((name:'LCLOnDraw';
     signature:'(II)I';//(IILandroid/graphics/Bitmap;)I
     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnDraw;),
@@ -355,7 +375,17 @@ const NativeMethods: array[0..7] of JNINativeMethod=
     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged;),
    (name:'LCLOnSensorChanged';
     signature:'(I[D)I';
-    fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged;)
+    fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged;),
+
+   (name:'LCLOnSurfaceCreated';
+     signature:'()V';
+     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated;),
+   (name:'LCLOnSurfaceDestroyed';
+     signature:'()V';
+     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceDestroyed;),
+   (name:'LCLOnSurfaceChanged';
+     signature:'()V';
+     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged;)
   );
 
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
@@ -391,6 +421,7 @@ begin
   javaAndroidOSBuildClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Build');
   javaAndroidOSVibratorClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Vibrator');
   javaAndroidContentContextClass := javaEnvRef^^.FindClass(javaEnvRef,'android/content/Context');
+  javaEGLContextClass := javaEnvRef^^.FindClass(javaEnvRef,'javax/microedition/khronos/egl/EGLContext');
 
   // Register Pascal exported calls
   if javaEnvRef^^.RegisterNatives(javaEnvRef, javaActivityClass, @NativeMethods[0],length(NativeMethods))<0 then
@@ -464,20 +495,35 @@ begin
   javaMethod_getSystemService := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidContentContextClass, 'getSystemService', '(Ljava/lang/String;)Ljava/lang/Object;');
 
   //OpenGL
- // javaMethod_LCLDoCreateOpenGLContext := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateOpenGLContext', '()V');
  // Methods of OpenGL
-  javaMethod_LCLDoStartEGL:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStartEGL', '()V');
-  javaMethod_LCLDoFinishEGL:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoFinishEGL', '()V');
-  javaMethod_LCLDoCreateContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateContext', '()Ljavax/microedition/khronos/egl/EGLContext;');
-  javaMethod_LCLDoDestroyContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)V');
-  javaMethod_LCLDoCreateSurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateSurface', '()V');
-  javaMethod_LCLDoDestroySurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroySurface', '()V');
-  javaMethod_LCLDoPurgeBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoPurgeBuffers', '()V');
+  javaMethod_LCLDoCreateContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateContext', '(Ljavax/microedition/khronos/egl/EGLConfig;Ljavax/microedition/khronos/egl/EGLContext;)Ljavax/microedition/khronos/egl/EGLContext;');
+  javaMethod_LCLDoDestroyContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)I');
+
+  javaMethod_LCLDoCreateSurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateSurface', '(Ljavax/microedition/khronos/egl/EGLConfig;)Ljavax/microedition/khronos/egl/EGLSurface;');
+  javaMethod_LCLDoDestroySurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroySurface', '(Ljavax/microedition/khronos/egl/EGLSurface;)V');
+
+  javaMethod_LCLDoPurgeBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoPurgeBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;Ljavax/microedition/khronos/egl/EGLContext;)V');
   javaMethod_LCLDoClearBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoClearBuffers', '()V');
-  javaMethod_LCLDoSwapBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSwapBuffers', '()V');
+  javaMethod_LCLDoSwapBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSwapBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;)Z');
+
+  javaMethod_LCLeglGetError:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLeglGetError', '()I');
+  javaMethod_mEGLContextClientVersion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'mEGLContextClientVersion', 'I');
+
+  javaMethod_LCLGetConfigs:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetConfigs', '()I');
+  javaMethod_LCLGetFixedAttribute:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetFixedAttribute', '(II)I');
+  javaMethod_LCLAddIAttrib:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLAddIAttrib', '(II)V');
+  javaMethod_LCLChooseConfig:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLChooseConfig', '()Ljavax/microedition/khronos/egl/EGLConfig;');
 
   javaField_lclmajorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmajorversion', 'I');
   javaField_lclminorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclminorversion', 'I');
+
+  javaMethod_LCLDoInvalidate:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoInvalidate', '()V');
+  javaMethod_LCLDoCreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateHolder', '()V');
+  javaMethod_LCLDoDestroyHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyHolder', '()V');
+  javaMethod_LCLDoRecreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRecreateHolder', '()V');
+  javaMethod_LCLisHolderCreated:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLisHolderCreated', '()Z');
+
+  javaField_lclholder := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclholder', 'Landroid/view/SurfaceHolder;');
 
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad finished');
   result:=JNI_VERSION_1_4;// 1_6 is another option
@@ -487,48 +533,62 @@ procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 begin
 end;
 
-procedure TCDWidgetSet.StartEGL;
+function TCDWidgetSet.CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
+var
+  lParams: array[0..1] of JValue;
+  context: EGLContext ;
 begin
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoStartEGL);
-
-  // Read the output
-  MajorVersion := Integer(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclmajorversion));
-  MinorVersion := Integer(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclminorversion));
+    // Call the method
+  lParams[0].l := aconfig;
+  lParams[1].l := shareRC;
+  context  := EGLContext(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateContext,@lParams[0]));
+   //Delaem Poiner Globalnim chtobi nebilo
+   // JNI WARNING: 0x40522160 is not a valid JNI reference
+   //http://java.sun.com/docs/books/jni/html/refs.html#27423
+   //inache Java ego sotret
+  result := javaEnvRef^^.NewGlobalRef(javaEnvRef, context);
 end;
 
-procedure TCDWidgetSet.FinishEGL;
-begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoFinishEGL);
-end;
-
-function TCDWidgetSet.CreateContext():Pointer;
-begin
-  result := Pointer(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateContext));
-end;
-
-procedure TCDWidgetSet.DestroyContext(aContext:Pointer);
+function TCDWidgetSet.DestroyContext(aContext:EGLContext): EGLint;
 var
   lParams: array[0..0] of JValue;
 begin
     // Call the method
   lParams[0].l := aContext;
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyContext,@lParams[0]);
+  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyContext,@lParams[0]));
+  javaEnvRef^^.DeleteGlobalRef(javaEnvRef, acontext);
 end;
 
-procedure TCDWidgetSet.CreateSurface;
+function TCDWidgetSet.CreateSurface(aconfig : EGLConfig): EGLSurface;
+  var
+  lParams: array[0..0] of JValue;
+  Surface: EGLSurface ;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateSurface);
+    // Call the method
+  lParams[0].l := aconfig;
+  Surface  := EGLSurface(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateSurface,@lParams[0]));
+  result := javaEnvRef^^.NewGlobalRef(javaEnvRef, Surface);
 end;
 
-procedure TCDWidgetSet.DestroySurface;
+procedure TCDWidgetSet.DestroySurface(aSurface : EGLSurface);
+var
+lParams: array[0..0] of JValue;
 begin
-   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroySurface);
+  // Call the method
+   lParams[0].l := aSurface;
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroySurface,@lParams[0]);
+   javaEnvRef^^.DeleteGlobalRef(javaEnvRef, aSurface);
 end;
 
-procedure TCDWidgetSet.PurgeBuffers;
+procedure TCDWidgetSet.PurgeBuffers(asurface : EGLSurface; acontext : EGLContext);
+var
+lParams: array[0..1] of JValue;
+Surface: EGLSurface ;
 begin
-   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoPurgeBuffers);
+  // Call the method
+  lParams[0].l := asurface;
+  lParams[1].l := acontext;
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoPurgeBuffers,@lParams[0]);
 end;
 
 procedure TCDWidgetSet.ClearBuffers;
@@ -536,9 +596,87 @@ begin
   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoClearBuffers);
 end;
 
-procedure TCDWidgetSet.SwapBuffers;
+function TCDWidgetSet.SwapBuffers(asurface : EGLSurface): boolean;
+var
+lParams: array[0..0] of JValue;
 begin
-   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoSwapBuffers);
+  // Call the method
+   lParams[0].l := aSurface;
+   result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoSwapBuffers,@lParams[0]));
+end;
+
+function TCDWidgetSet.eglGetError: EGLint;
+begin
+  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, javaMethod_LCLeglGetError));
+end;
+
+procedure TCDWidgetSet.SetContextClientVersion2;
+begin
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaMethod_mEGLContextClientVersion, 2);
+end;
+
+
+function TCDWidgetSet.eglGetConfigs(): EGLint;
+begin
+  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, javaMethod_LCLGetConfigs));
+end;
+
+function TCDWidgetSet.eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
+var
+  lParams: array[0..1] of JValue;
+begin
+    // Call the method
+  lParams[0].i := attribute;
+  lParams[1].i := Param;
+  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLGetFixedAttribute,@lParams[0]));
+end;
+
+procedure TCDWidgetSet.eglAddIAttrib(attribute: EGLint; value: EGLint);
+var
+  lParams: array[0..1] of JValue;
+begin
+  // Call the method
+  lParams[0].i := attribute;
+  lParams[1].i := value;
+  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLAddIAttrib,@lParams[0]);
+end;
+
+function TCDWidgetSet.eglChooseConfig: EGLConfig;
+begin
+  result := EGLConfig(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, javaMethod_LCLChooseConfig));
+end;
+
+procedure TCDWidgetSet.GeteglVersion;
+begin
+  MajorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclmajorversion));
+  MinorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclminorversion));
+end;
+
+
+
+procedure TCDWidgetSet.LCLDoInvalidate;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoInvalidate);
+end;
+
+procedure TCDWidgetSet.LCLDoCreateHolder;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateHolder);
+end;
+
+procedure TCDWidgetSet.LCLDoDestroyHolder;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyHolder);
+end;
+
+procedure TCDWidgetSet.LCLDoRecreateHolder;
+begin
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoRecreateHolder);
+end;
+
+function TCDWidgetSet.LCLisHolderCreated: boolean;
+begin
+  result := Boolean(javaEnvRef^^.CallBooleanMethod(javaEnvRef, javaActivityObject, javaMethod_LCLisHolderCreated));
 end;
 
 {$IFnDEF WithOldDebugln}

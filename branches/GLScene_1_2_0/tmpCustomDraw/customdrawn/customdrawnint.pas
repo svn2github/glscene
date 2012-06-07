@@ -81,6 +81,23 @@ type
     function applicationShouldTerminate(sender: NSApplication): NSApplicationTerminateReply; message 'applicationShouldTerminate:';
   end;
   {$endif}
+  {$ifdef CD_Android}
+  EGLBoolean = cuint;
+  EGLenum = cuint;
+  EGLint = cint;
+
+  PEGLint = ^EGLint;
+
+  EGLConfig = Pointer;
+  EGLContext = Pointer;
+  EGLDisplay = Pointer;
+  EGLSurface = Pointer;
+  EGLClientBuffer = Pointer;
+
+  PEGLConfig = ^EGLConfig;
+  EGLNonPixmapType = Pointer;
+  EGLNonWindowType = Pointer;
+  {$endif}
 
   { TCDWidgetSet }
 
@@ -148,20 +165,38 @@ type
     {$ifdef CD_Android}
     CombiningAccent: Cardinal;
     MajorVersion, MinorVersion: Integer;
+    Holder:Pointer;
+
+    OnSurfaceCreated: TNotifyEvent;
+    OnSurfaceChanged: TNotifyEvent;
+    OnSurfaceDestroyed: TNotifyEvent;
     {$IFnDEF WithOldDebugln}
     procedure AndroidDebugLn(ASender: TObject; AStr: string; var AHandled: Boolean);
     {$ELSE}
     procedure AndroidDebugLn(AStr: string);
     {$ENDIF}
-    procedure StartEGL();
-    procedure FinishEGL() ;
-    function CreateContext():Pointer;
-    procedure DestroyContext(aContext:Pointer);
-    procedure CreateSurface();
-    procedure DestroySurface();
-    procedure PurgeBuffers();
+
+    procedure LCLDoInvalidate();
+    procedure LCLDoCreateHolder();
+    procedure LCLDoDestroyHolder();
+    procedure LCLDoRecreateHolder();
+    function LCLisHolderCreated():boolean;
+
+    procedure GeteglVersion;
+    function CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
+    function DestroyContext(aContext: EGLContext):EGLint;
+    function CreateSurface(aconfig : EGLConfig): EGLSurface;
+    procedure DestroySurface(aSurface : EGLSurface);
+    procedure PurgeBuffers(asurface : EGLSurface; acontext : EGLContext);
     procedure ClearBuffers();
-    procedure SwapBuffers();
+    function SwapBuffers(asurface : EGLSurface): boolean;
+    function eglGetError():EGLint;
+    procedure SetContextClientVersion2;
+
+    function eglGetConfigs(): EGLint;
+    function eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
+    procedure eglAddIAttrib(attribute: EGLint; value: EGLint);
+    function eglChooseConfig(): EGLConfig;
 
     function AndroidKeyCodeToLCLKeyCode(AAndroidKeyCode: Integer): Word;
     {$endif}
@@ -285,6 +320,10 @@ function Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged(
 function Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged(
     env:PJNIEnv; this:jobject; ASensorKind: jint; AValues: JDoubleArray): jint; cdecl;
 
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated(); cdecl;
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceDestroyed(); cdecl;
+procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged(); cdecl;
+
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 
@@ -300,6 +339,7 @@ var
   javaAndroidOSBuildClass: JClass = nil;
   javaAndroidOSVibratorClass: JClass = nil;
   javaAndroidContentContextClass: JClass = nil;
+  javaEGLContextClass : JClass = nil;
 
   // Fields of our Activity
   // Strings
@@ -359,13 +399,9 @@ var
   // Generic methods from Context
   javaMethod_getSystemService: jmethodid = nil;
 
-  javaField_lclsurfaceholder: JfieldID=nil;
-
   // This is utilized to store the information such as invalidate requests in events
   eventResult: jint;
   // Methods of OpenGL
-  javaMethod_LCLDoStartEGL: jmethodid = nil;
-  javaMethod_LCLDoFinishEGL: jmethodid = nil;
   javaMethod_LCLDoCreateContext: jmethodid = nil;
   javaMethod_LCLDoDestroyContext: jmethodid = nil;
   javaMethod_LCLDoCreateSurface: jmethodid = nil;
@@ -373,10 +409,23 @@ var
   javaMethod_LCLDoPurgeBuffers: jmethodid = nil;
   javaMethod_LCLDoClearBuffers: jmethodid = nil;
   javaMethod_LCLDoSwapBuffers: jmethodid = nil;
+  javaMethod_LCLeglGetError: jmethodid = nil;
+  javaMethod_mEGLContextClientVersion: JfieldID=nil;
+
+  javaMethod_LCLGetConfigs: jmethodid = nil;
+  javaMethod_LCLGetFixedAttribute: jmethodid = nil;
+  javaMethod_LCLAddIAttrib: jmethodid = nil;
+  javaMethod_LCLChooseConfig: jmethodid = nil;
+
+  javaMethod_LCLDoInvalidate: jmethodid = nil;
+  javaMethod_LCLDoCreateHolder: jmethodid = nil;
+  javaMethod_LCLDoDestroyHolder: jmethodid = nil;
+  javaMethod_LCLDoRecreateHolder: jmethodid = nil;
+  javaMethod_LCLisHolderCreated: jmethodid = nil;
 
   javaField_lclmajorversion: JfieldID=nil;
   javaField_lclminorversion: JfieldID=nil;
-
+  javaField_lclholder: JfieldID=nil;
 {$endif}
 
 implementation

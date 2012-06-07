@@ -3,12 +3,10 @@ package com.pascal.lcltest;
 import android.app.*;
 import android.content.*;
 import android.os.*;
-import android.widget.*;
 import android.util.*;
 import android.graphics.*;
 import android.text.*;
 import android.view.*;
-import android.opengl.*;
 import android.view.inputmethod.*;
 import android.content.res.Configuration;
 import android.content.Intent;
@@ -22,9 +20,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import java.util.*;
 
-import javax.microedition.khronos.egl.EGLContext;
-
-import com.pascal.lcltest.GLSSurfaceView.EglHelper;
+import javax.microedition.khronos.egl.*;
+import javax.microedition.khronos.opengles.GL;
 
 public class LCLActivity extends Activity implements SensorEventListener, LocationListener
 {
@@ -99,12 +96,15 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   // -------------------------------------------
   // Our drawing surface
   // -------------------------------------------
-  private class LCLSurface extends GLSSurfaceView
+  private class LCLSurface extends SurfaceView  implements SurfaceHolder.Callback 
   {
+	SurfaceHolder aholder;
+	    
     public LCLSurface(Context context)
     {
       super(context);
-      glsrender= new EglHelper();
+     // glsrender= new EglHelper();
+      init();
       // Allows View.postInvalidate() to work
       setWillNotDraw(false);
       // We already double buffer, so no need for a second one
@@ -113,10 +113,84 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
       requestFocus();
       setFocusableInTouchMode(true);
     }
+    
+    private void init() {
+        // Install a SurfaceHolder.Callback so we get notified when the
+        // underlying surface is created and destroyed
+        aholder = getHolder();
+        aholder.addCallback(this);
+        
+        if (LOG_EGL) {
+            Log.v("EglHelper","init()" );
+        }
+        // setFormat is done by SurfaceView in SDK 2.3 and newer. Uncomment
+        // this statement if back-porting to 2.2 or older:
+        // holder.setFormat(PixelFormat.RGB_565);
+        //
+        // setType is not needed for SDK 2.0 or newer. Uncomment this
+        // statement if back-porting this code to older SDKs.
+        // holder.setType(SurfaceHolder.SURFACE_TYPE_GPU);
+    }
+
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width,
+			int height) {
+        if (LOG_EGL) {
+            Log.v("EglHelper","surfaceChanged()" );
+        }
+      LCLOnSurfaceChanged();  
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+        if (LOG_EGL) {
+            Log.v("EglHelper","surfaceCreated()" );
+        }
+            LCLOnSurfaceCreated();
+		// TODO Auto-generated method stub
+	//	glsrender.start();
+    //	gl = (GL10) glsrender.createSurface(holder);
+	//  glsrender.purgeBuffers();
+        //glsrender.start();
+       // glsrender.createcontext();
+      //  glsrender.createSurface(holder);
+      //  glsrender.purgeBuffers();
+		
+	//	((GL10) gl).glViewport(0, 0, 100, 100);
+        // define the color we want to be displayed as the "clipping wall"
+    //    ((GL10) gl).glClearColor(_red, _green, _blue, 1.0f);
+        // clear the color buffer to show the ClearColor we called above...
+     //   ((GL10) gl).glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+        if (LOG_EGL) {
+            Log.v("EglHelper","surfaceDestroyed()" );
+        }
+            LCLOnSurfaceDestroyed(); 
+		// TODO Auto-generated method stub
+  
+		//glsrender.destroySurface();
+		//glsrender.finish();
+	}    
+    
+    
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (LOG_EGL) {
+        Log.i("LCLSurface", "onAttachedToWindow");
+        }
+    }     
 
     @Override protected void onDraw(Canvas canvas)
-    {
-      //Log.i("lclapp", "onDraw started");
+    { if (LOG_EGL) {
+      Log.i("lclapp", "onDraw started");
+      }
       int lWidth = getWidth();
       int lHeight = getHeight();
       int oldlclformwidth = lclformwidth;
@@ -128,7 +202,7 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
 
       // Check if we rotated in the draw event, OnConfigurationChanged can't return the new form width =(
       // see http://stackoverflow.com/questions/2524683/how-to-get-new-width-height-of-root-layout-in-onconfigurationchanged
-      if (lWidth != oldlclformwidth) LCLOnConfigurationChanged(lclxdpi, lWidth); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
+    //  if (lWidth != oldlclformwidth) LCLOnConfigurationChanged(lclxdpi, lWidth); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
 
       //Log.v("lclproject", "LCLSurface.onDraw width=" + Integer.toString(lWidth)
       //  + " height=" + Integer.toString(lHeight));
@@ -211,7 +285,7 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     if (((eventResult | 1) != 0) && (lclsurface != null)) lclsurface.postInvalidate();
     //if ((eventResult | 2) != 0) reserved for BACK key handling
   }
-
+  
   // -------------------------------------------
   // Activity Events
   // -------------------------------------------
@@ -220,9 +294,9 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   @Override public void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-
+    Log.v("LCLActivity", "Activity onCreate");
     lclsurface = new LCLSurface(this);
-    
+    LCLDoStartEGL();
    // GLSRenderer glsrenderer;
    // glsrenderer = new GLSRenderer();
    // lclsurface.setRenderer(glsrenderer);
@@ -239,7 +313,20 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     getWindowManager().getDefaultDisplay().getMetrics(metrics);
     lclxdpi = (int) metrics.xdpi;
     lclydpi = (int) metrics.ydpi;
+
     LCLOnCreate(this);
+  }
+  
+  @Override protected void onDestroy()
+  {
+  	  LCLDoFinishEGL();
+	  super.onDestroy();
+	    Log.v("LCLActivity", "Activity onDestroy");
+  }
+  @Override protected void onStart()
+  {
+	  super.onStart(); 
+	  Log.v("LCLActivity", "Activity onStart"); 
   }
 
   @Override public void onConfigurationChanged (Configuration newConfig)
@@ -257,17 +344,20 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     // Don't call LCLOnConfigurationChanged, wait for a onDraw instead
     //lclsurface.postInvalidate();
     //Log.i("lclapp", "onConfigurationChanged finished");
+    
   }
 
   @Override
   protected void onResume() {
     super.onResume();
+	  Log.v("LCLActivity", "Activity onResume"); 
    // lclsurface.onResume();
   }
 
   @Override
   protected void onPause() {
     super.onPause();
+	  Log.v("LCLActivity", "Activity onPause"); 
    // lclsurface.onPause();
   }
 
@@ -283,6 +373,12 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   public native int LCLOnTimer(Runnable timerid);
   public native int LCLOnConfigurationChanged(int ANewDPI, int ANewWidth);
   public native int LCLOnSensorChanged(int ASensorKind, double[] AValues);
+  
+  public native void LCLOnSurfaceCreated();
+  public native void LCLOnSurfaceDestroyed(); 
+  public native void LCLOnSurfaceChanged();   
+  
+  
 
   // -------------------------------------------
   // Functions exported to the Pascal side
@@ -317,7 +413,6 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   public void LCLDoGetTextPartialWidths()
   {
     Paint localpaint = new Paint();
-    Rect localbounds = new Rect();
     localpaint.setTextSize(lcltextsize);
 
     float localmaxwidth = (float) lclmaxwidth;
@@ -445,47 +540,345 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     InputMethodManager localInputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
     localInputManager.showSoftInput(lclsurface, 0);
   };
-
   
-  public void LCLDoStartEGL()
-  {
-	  lclsurface.glsrender.start();
-	  lclmajorversion =  lclsurface.lclmajorversion;
-	  lclminorversion = lclsurface.lclminorversion;
+  
+  public void LCLDoInvalidate()
+  {  
+	    lclsurface.postInvalidate();
   };
-  public void LCLDoFinishEGL()
-  {
-	  lclsurface.glsrender.finish();
-  };
-  public EGLContext LCLDoCreateContext()
-  {
-	 return lclsurface.glsrender.createcontext();
-  };
-  public void LCLDoDestroyContext(EGLContext aEglContext)
-  {
-	  lclsurface.glsrender.destroycontext(aEglContext);
+  
+  public void LCLDoCreateHolder()
+  {  
+	    lclsurface.setVisibility(1);
   };  
-  public void LCLDoCreateSurface()
-  {
-	  lclsurface.glsrender.createSurface(lclsurface.holder);
-  };
-  public void LCLDoDestroySurface()
-  {
-	  lclsurface.glsrender.destroySurface();
+  
+  public void LCLDoDestroyHolder()
+  {  
+	    lclsurface.setVisibility(0);
+  }; 
+  
+  public void LCLDoRecreateHolder()
+  {  
+	    lclsurface.setVisibility(0);
+	    lclsurface.setVisibility(1);	    
   };  
-  public void LCLDoPurgeBuffers()
+  
+  public boolean LCLisHolderCreated()
+  {  
+	  return  lclsurface.aholder.isCreating();
+  }; 
+ 
+  
+  void LCLDoStartEGL()
+  {   
+	  //Starting on Create Activity
+      if (LOG_EGL) {
+		  Log.w("EglHelper", "start() tid=" + Thread.currentThread().getId());
+	  }
+	  /*
+	   * Get an EGL instance
+	   */
+	  mEgl = (EGL10) EGLContext.getEGL();
+
+	  /*
+	   * Get to the default display.
+	   */
+	  mEglDisplay = mEgl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+
+	  if (mEglDisplay == EGL10.EGL_NO_DISPLAY) {
+		  throw new RuntimeException("eglGetDisplay failed");
+	  }
+	  lclholder = lclsurface.aholder;
+	  
+	  /*
+	   * We can now initialize EGL for that display
+	   */
+	  int[] version = new int[2];
+	  if(!mEgl.eglInitialize(mEglDisplay, version)) {
+		  throw new RuntimeException("eglInitialize failed");
+	  }
+	  
+	  String s = mEgl.eglQueryString(mEglDisplay, EGL10.EGL_VERSION);
+	  if (s.indexOf("1.")>=0)
+	  {	  
+	    s = s.substring(s.indexOf("1."),s.indexOf("1.")+3);
+	    lclmajorversion = Integer.parseInt( s.substring(0,1));
+	    lclminorversion = Integer.parseInt( s.substring(2,3));
+	  }else
+	  {
+		  lclmajorversion = 1;
+		  lclminorversion = 0;  
+	  }
+
+	  Log.v("EglHelper", "MajorVersion=" + lclmajorversion + " MinorVersion=" + lclminorversion);
+	  
+  };
+  
+  void LCLDoFinishEGL()
+  { 
+      if (LOG_EGL) {
+          Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
+      }
+      if (mEglDisplay != null) {
+          mEgl.eglTerminate(mEglDisplay);
+          mEglDisplay = null;
+      }
+  };
+  public EGLContext LCLDoCreateContext(EGLConfig config,EGLContext shareRC)
+  {   if (LOG_EGL) {
+        Log.v("LCLActivity", "LCLDoCreateContext() tid=" + Thread.currentThread().getId());
+      }
+	  int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
+      int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, mEGLContextClientVersion,
+              EGL10.EGL_NONE };
+      
+      mEglConfig = config;
+      
+      mEglContext= mEgl.eglCreateContext(mEglDisplay, config, EGL10.EGL_NO_CONTEXT,
+    		  mEGLContextClientVersion != 0 ? attrib_list : null);
+      
+      if (mEglContext == null || mEglContext == EGL10.EGL_NO_CONTEXT) {
+          mEglContext = null;
+          throw new IllegalArgumentException("LCLDoCreateContext failed");
+      }	
+      if (LOG_EGL) {
+        Log.v("DefaultContextFactory", "display:" + mEglDisplay + " context: " + mEglContext);
+      }
+      return mEglContext;
+	// return lclsurface.glsrender.createcontext();
+  };
+  
+  public int LCLDoDestroyContext(EGLContext context)
+  {   if (LOG_EGL) {
+        Log.v("LCLActivity", "LCLDoDestroyContext() tid=" + Thread.currentThread().getId());
+      }
+      if (context != null) {
+          if (!mEgl.eglDestroyContext(mEglDisplay, context)) {
+              if (LOG_EGL) {
+              Log.e("DefaultContextFactory", "display:" + mEglDisplay + " context: " + context);
+              }
+              throw new RuntimeException("eglDestroyContext failed: ");
+          }
+          mEglContext = null;
+      }
+      
+	//  lclsurface.glsrender.destroycontext();
+      return 1;
+  };  
+  public EGLSurface LCLDoCreateSurface(EGLConfig config)
   {
-	  lclsurface.glsrender.purgeBuffers();
+      if (LOG_EGL) {
+          Log.v("Activity", "createSurface()  tid=" + Thread.currentThread().getId());
+      }
+      mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+              EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
+      mEglSurface = mEgl.eglCreateWindowSurface(mEglDisplay, config, lclsurface.aholder, null);
+      
+      if (mEglSurface == null || mEglSurface == EGL10.EGL_NO_SURFACE) {
+          int error = mEgl.eglGetError();
+          if (error == EGL10.EGL_BAD_NATIVE_WINDOW) {
+              Log.e("EglHelper", "createWindowSurface returned EGL_BAD_NATIVE_WINDOW.");
+          }
+          return null;
+      }
+      return mEglSurface;
+      
+      
+	 // lclsurface.glsrender.createSurface(lclsurface.aholder);
+  };
+  public void LCLDoDestroySurface(EGLSurface surface)
+  {
+      if (LOG_EGL) {
+          Log.v("EglHelper", "destroySurface()  tid=" + Thread.currentThread().getId());
+      }
+      if (surface != null && surface != EGL10.EGL_NO_SURFACE) {
+    	  mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
+                  EGL10.EGL_NO_SURFACE,
+                  EGL10.EGL_NO_CONTEXT);
+    	  mEgl.eglDestroySurface(mEglDisplay, surface);
+          mEglSurface = null;
+      } 
+	 // lclsurface.glsrender.destroySurface();
+  };  
+  public void LCLDoPurgeBuffers(EGLSurface surface, EGLContext context)
+  {
+	  mEgl.eglMakeCurrent(mEglDisplay,
+    		  surface, surface,
+    		  context);
+	  //lclsurface.glsrender.purgeBuffers();
   };  
   public void LCLDoClearBuffers()
   {
-	  lclsurface.glsrender.clearBuffers();
+	  mEgl.eglMakeCurrent(mEglDisplay,
+              EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_SURFACE,
+              EGL10.EGL_NO_CONTEXT);
+      
+	  //lclsurface.glsrender.clearBuffers();
   };  
-  public void LCLDoSwapBuffers()
+  public boolean LCLDoSwapBuffers(EGLSurface surface)
   {
-	  lclsurface.glsrender.swap();
-  };  
+      if (! mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
 
+          /*
+           * Check for EGL_CONTEXT_LOST, which means the context
+           * and all associated data were lost (For instance because
+           * the device went to sleep). We need to sleep until we
+           * get a new surface.
+           */
+          int error = mEgl.eglGetError();
+          switch(error) {
+          case EGL11.EGL_CONTEXT_LOST:
+              return false;
+          case EGL10.EGL_BAD_NATIVE_WINDOW:
+              // The native window is bad, probably because the
+              // window manager has closed it. Ignore this error,
+              // on the expectation that the application will be closed soon.
+              Log.e("EglHelper", "eglSwapBuffers returned EGL_BAD_NATIVE_WINDOW. tid=" + Thread.currentThread().getId());
+              break;
+          default:
+        	  throw new RuntimeException("eglSwapBuffers"+ error);
+          }
+      }
+      return true;
+	 // lclsurface.glsrender.swap();
+  }; 
+  public int LCLeglGetError()
+  {
+	  return mEgl.eglGetError();
+	 
+  };  
+  
+
+  protected int[] FiAttribs;
+  EGLConfig[] configs;
+  
+  // Get All configs
+  public int LCLGetConfigs() {
+      if (LOG_EGL) {
+      Log.v("LCLActivity", "LCLGetConfigs() tid=" + Thread.currentThread().getId());
+      }
+      int[] num_config = new int[1];
+	  FiAttribs=null;
+	      
+	  
+      if (!mEgl.eglChooseConfig(mEglDisplay, FiAttribs, null, 0,
+              num_config)) {
+          throw new IllegalArgumentException("eglChooseConfig failed");
+      }
+ 
+      int numConfigs = num_config[0];
+
+      if (numConfigs <= 0) {
+          throw new IllegalArgumentException(
+                  "No configs match configSpec");
+      }
+
+      configs = new EGLConfig[numConfigs];
+      if (!mEgl.eglChooseConfig(mEglDisplay, FiAttribs, configs, numConfigs,
+              num_config)) {
+          throw new IllegalArgumentException("eglChooseConfig#2 failed");
+      }
+      FiAttribs = new int[1];
+      if (LOG_EGL) {
+        Log.v("LCLActivity", "LCLGetConfigs() tid=" + Thread.currentThread().getId());
+      }
+      return 1;
+  }
+  
+  public int LCLGetFixedAttribute(int Attrib, int Param)
+  {
+    if (LOG_EGL) {  
+    Log.v("LCLActivity", "LCLGetFixedAttribute() tid=" + Thread.currentThread().getId());
+    }
+
+    int Result, J, OverRes;
+    int[] Res= new int[1];
+    /* Appointment of a function to look for equal or approximate values
+       of attributes from the list glx.
+      If you just ask all the attributes
+      that the user can put it out of ignorance
+      Access Violation could appear as the list will be empty. 
+    */
+    OverRes = -1;
+    Result = -1;
+    J = 0;
+    for (int i = 0; i < configs.length; i++) { 
+      if (mEgl.eglGetConfigAttrib(mEglDisplay, configs[i], Attrib, Res) != true)
+      {
+        continue;
+      }
+      if (Res[0] > 0 && Res[0] <= Param)
+      {
+        Result = Res[0];
+      }
+      if (Res[0] > Param && OverRes < Res[0])
+      {
+        OverRes = Res[0];
+      }
+      J = i;
+    }
+    if (Result == -1 && J == configs.length)
+    {
+      return OverRes;
+    }
+    if (LOG_EGL) {
+    Log.v("LCLActivity", "LCLGetFixedAttribute() tid=" + Thread.currentThread().getId());
+    }
+    return Result;
+  } 
+  
+  public void LCLAddIAttrib(int attrib, int value)
+  {
+	  /*  int n;
+    n := Length(FiAttribs);
+    SetLength(FiAttribs, n + 2);
+    FiAttribs[n - 1] := attrib;
+    FiAttribs[n] := value;
+    FiAttribs[n + 1] := EGL_NONE;
+    */
+    if (LOG_EGL) {  
+	Log.v("LCLActivity", "LCLAddIAttrib() tid=" + Thread.currentThread().getId());
+    }
+	  int len = FiAttribs.length;
+	  int[] newConfigSpec = new int[len + 2];
+	  System.arraycopy(FiAttribs, 0, newConfigSpec, 0, len-1);
+	  newConfigSpec[len-1] = attrib;
+	  newConfigSpec[len] = value;
+	  newConfigSpec[len+1] = EGL10.EGL_NONE;
+	  FiAttribs= newConfigSpec;
+    if (LOG_EGL) {
+	 Log.v("LCLActivity", "LCLAddIAttrib() tid=" + Thread.currentThread().getId());
+    }
+  }   
+  
+  //chooseConfig
+  
+  public EGLConfig LCLChooseConfig() {
+      if (LOG_EGL) {
+      Log.v("LCLActivity", "LCLChooseConfig() tid=" + Thread.currentThread().getId());
+      }
+	   if (mEGLContextClientVersion == 2) {
+	          int len = FiAttribs.length;
+	          int[] newConfigSpec = new int[len + 2];
+	          System.arraycopy(FiAttribs, 0, newConfigSpec, 0, len-1);
+	          newConfigSpec[len-1] = EGL10.EGL_RENDERABLE_TYPE;
+	          newConfigSpec[len] = 4; // EGL_OPENGL_ES2_BIT 
+	          newConfigSpec[len+1] = EGL10.EGL_NONE;
+	          FiAttribs= newConfigSpec;
+	      }
+      
+      int[] num_config = new int[1];
+      
+      if (!mEgl.eglChooseConfig(mEglDisplay, FiAttribs, configs, 1,
+              num_config)) {
+          throw new IllegalArgumentException("eglChooseConfig failed");
+      }
+      if (LOG_EGL) {
+      Log.v("LCLActivity", "LCLChooseConfig() config:" + configs[0]);
+      }
+      return configs[0];
+  }
+  
   // SensorEventListener overrides
 
   @Override public void onSensorChanged(SensorEvent event)
@@ -499,6 +892,7 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   @Override public void onAccuracyChanged(Sensor sensor, int accuracy)
   {
   }
+  
 
   public void LCLDoStartReadingAccelerometer()
   {
@@ -680,15 +1074,25 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
   
   public int lclmajorversion;
   public int lclminorversion;
+  GL gl;
+  EGL10 mEgl;
+  EGLDisplay mEglDisplay;
+  EGLSurface mEglSurface;
+  EGLConfig mEglConfig;
+  EGLContext mEglContext;
+  private final static boolean LOG_EGL = true;
+  public int mEGLContextClientVersion;
+  public SurfaceHolder lclholder;
+  
   
   static
   {
     try 
     {
       Log.i("lclapp", "Trying to load libglues.so");
-      System.loadLibrary("glues");  
-      Log.i("lclapp", "Trying to load libz.so");
-      System.loadLibrary("z");   
+      System.loadLibrary("glues");       
+    //  Log.i("lclapp", "Trying to load libz.so");
+   //   System.loadLibrary("z");   
       Log.i("lclapp", "Trying to load liblclapp.so");
       System.loadLibrary("lclapp");
     }

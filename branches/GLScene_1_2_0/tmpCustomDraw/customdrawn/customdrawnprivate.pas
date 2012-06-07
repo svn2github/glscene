@@ -65,8 +65,6 @@ procedure CallbackKeyDown(AWindowHandle: TCDForm; AKey: Word);
 procedure CallbackKeyUp(AWindowHandle: TCDForm; AKey: Word);
 procedure CallbackKeyChar(AWindowHandle: TCDForm; AKeyData: Word; AChar: TUTF8Char);
 procedure CallbackDraw(AWindowHandle: TCDForm);
-procedure CallbackCreateHandle(AWindowHandle: TCDForm);
-procedure CallbackDestroyHandle(AWindowHandle: TCDForm);
 function IsIntfControl(AControl: TWinControl): Boolean;
 
 implementation
@@ -258,22 +256,6 @@ var
 begin
   lTarget := AWindowHandle.GetFocusedControl();
   LCLSendPaintMsg(lTarget,0,nil);
-end;
-
-procedure CallbackCreateHandle(AWindowHandle: TCDForm);
-var
-  lTarget: TWinControl;
-begin
-  lTarget := AWindowHandle.GetFocusedControl();
-  SendSimpleMessage(lTarget, LM_CREATE);
-end;
-
-procedure CallbackDestroyHandle(AWindowHandle: TCDForm);
-var
-  lTarget: TWinControl;
-begin
-  lTarget := AWindowHandle.GetFocusedControl();
-  LCLSendDestroyMsg(lTarget);
 end;
 
 function IsIntfControl(AControl: TWinControl): Boolean;

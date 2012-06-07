@@ -1,0 +1,974 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="9"/>
+    <BuildModes Active="Release"/>
+    <Units Count="102">
+      <Unit0>
+        <Filename Value="androidlcltest.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="androidlcltest"/>
+        <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="31" Y="9"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="mainform"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="117"/>
+        <CursorPos X="31" Y="143"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="android/src/com/pascal/lcltest/LCLActivity.java"/>
+        <IsPartOfProject Value="True"/>
+        <UsageCount Value="201"/>
+        <DefaultSyntaxHighlighter Value="Java"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="secondform.pas"/>
+        <ComponentName Value="Form2"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="secondform"/>
+        <UsageCount Value="198"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <UnitName Value="CustomDrawnInt"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="398"/>
+        <CursorPos X="151" Y="413"/>
+        <UsageCount Value="97"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="466"/>
+        <CursorPos X="51" Y="512"/>
+        <UsageCount Value="97"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3495"/>
+        <CursorPos X="38" Y="3506"/>
+        <UsageCount Value="2"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3725"/>
+        <CursorPos X="36" Y="3743"/>
+        <UsageCount Value="5"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintfh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="73"/>
+        <CursorPos X="24" Y="55"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnprivate.pas"/>
+        <UnitName Value="customdrawnprivate"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="40"/>
+        <CursorPos X="6" Y="93"/>
+        <UsageCount Value="64"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="220"/>
+        <CursorPos X="33" Y="159"/>
+        <UsageCount Value="51"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="../../lazarus/lazarus/lcl/interfacebase.pp"/>
+        <UnitName Value="InterfaceBase"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="129"/>
+        <CursorPos X="3" Y="138"/>
+        <UsageCount Value="10"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="../../lazarus/lazarus/lcl/lmessages.pp"/>
+        <UnitName Value="LMessages"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="131"/>
+        <CursorPos X="32" Y="137"/>
+        <UsageCount Value="10"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="../../lazarus/lazarus/lcl/lclmessageglue.pas"/>
+        <UnitName Value="LCLMessageGlue"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="474"/>
+        <CursorPos X="44" Y="486"/>
+        <UsageCount Value="10"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Viewer_LCL.pas"/>
+        <UnitName Value="GLScene_Viewer_LCL"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="76"/>
+        <CursorPos X="15" Y="94"/>
+        <UsageCount Value="10"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
+        <UnitName Value="GLScene_Context_OES"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="350"/>
+        <CursorPos X="40" Y="279"/>
+        <UsageCount Value="89"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/android/egl.pas"/>
+        <UnitName Value="egl"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="48"/>
+        <CursorPos X="1" Y="64"/>
+        <UsageCount Value="72"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
+        <UnitName Value="jni"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="277"/>
+        <CursorPos X="18" Y="302"/>
+        <UsageCount Value="98"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_X.pas"/>
+        <UnitName Value="GLScene_Files_X"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="81"/>
+        <CursorPos X="66" Y="99"/>
+        <UsageCount Value="2"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Classes.pas"/>
+        <UnitName Value="GLScene_Base_Classes"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="202"/>
+        <CursorPos X="14" Y="68"/>
+        <UsageCount Value="3"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_OpenGL_Tokens.pas"/>
+        <UnitName Value="GLScene_Base_OpenGL_Tokens"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="40"/>
+        <CursorPos X="49" Y="57"/>
+        <UsageCount Value="72"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
+        <UnitName Value="GLScene_Base_OpenGL_Adapter"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="67"/>
+        <CursorPos X="15" Y="1"/>
+        <UsageCount Value="88"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapih.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="114"/>
+        <CursorPos X="24" Y="124"/>
+        <UsageCount Value="2"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <UnitName Value="GLScene_AsyncTimer"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="188"/>
+        <CursorPos X="2" Y="220"/>
+        <UsageCount Value="5"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Color.pas"/>
+        <UnitName Value="GLScene_Base_Color"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1056"/>
+        <CursorPos X="1" Y="1089"/>
+        <UsageCount Value="5"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Context.pas"/>
+        <UnitName Value="GLScene_Base_Context"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="209"/>
+        <CursorPos X="37" Y="220"/>
+        <UsageCount Value="54"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Coordinates.pas"/>
+        <UnitName Value="GLScene_Base_Coordinates"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="615"/>
+        <CursorPos X="38" Y="632"/>
+        <UsageCount Value="3"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
+        <UnitName Value="GLScene_Base_Log"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="531"/>
+        <CursorPos X="18" Y="554"/>
+        <UsageCount Value="3"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_PersistentClasses.pas"/>
+        <UnitName Value="GLScene_Base_PersistentClasses"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="32"/>
+        <CursorPos X="11" Y="49"/>
+        <UsageCount Value="1"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_ScreenSaver.pas"/>
+        <UnitName Value="GLScene_Base_ScreenSaver"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="383"/>
+        <CursorPos X="2" Y="416"/>
+        <UsageCount Value="1"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Script.pas"/>
+        <UnitName Value="GLScene_Base_Script"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="283"/>
+        <CursorPos X="1" Y="316"/>
+        <UsageCount Value="1"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Vector_Lists.pas"/>
+        <UnitName Value="GLScene_Base_Vector_Lists"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="4245"/>
+        <CursorPos X="2" Y="4277"/>
+        <UsageCount Value="1"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Base_XCollection.pas"/>
+        <UnitName Value="GLScene_Base_XCollection"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="859"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="2"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Behaviours.pas"/>
+        <UnitName Value="GLScene_Behaviours"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="724"/>
+        <CursorPos X="2" Y="751"/>
+        <UsageCount Value="1"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../../GLScene1.2/Source/GLScene_BitmapFont.pas"/>
+        <UnitName Value="GLScene_BitmapFont"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1764"/>
+        <CursorPos X="2" Y="1797"/>
+        <UsageCount Value="1"/>
+      </Unit34>
+      <Unit35>
+        <Filename Value="../../GLScene1.2/Source/GLScene_BitmapFont_System.pas"/>
+        <UnitName Value="GLScene_BitmapFont_System"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="19"/>
+        <CursorPos X="37" Y="40"/>
+        <UsageCount Value="1"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Blur.pas"/>
+        <UnitName Value="GLScene_Blur"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="885"/>
+        <CursorPos X="1" Y="917"/>
+        <UsageCount Value="3"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="../../GLScene1.2/Source/GLScene_BSP.pas"/>
+        <UnitName Value="GLScene_BSP"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1060"/>
+        <CursorPos X="2" Y="1093"/>
+        <UsageCount Value="3"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="../../GLScene1.2/Source/GLScene_BumpMapping.pas"/>
+        <UnitName Value="GLScene_BumpMapping"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="431"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="../../GLScene1.2/Source/GLScene_CameraController.pas"/>
+        <UnitName Value="GLScene_CameraController"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="542"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit39>
+      <Unit40>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Canvas.pas"/>
+        <UnitName Value="GLScene_Canvas"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="935"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Collision.pas"/>
+        <UnitName Value="GLScene_Collision"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="942"/>
+        <CursorPos X="29" Y="959"/>
+        <UsageCount Value="3"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Collision_Ellipse.pas"/>
+        <UnitName Value="GLScene_Collision_Ellipse"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="854"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Context_Windows.pas"/>
+        <UnitName Value="GLScene_Context_Windows"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1342"/>
+        <CursorPos X="1" Y="1373"/>
+        <UsageCount Value="5"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <UnitName Value="GLScene_Core"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8384"/>
+        <CursorPos X="22" Y="8411"/>
+        <UsageCount Value="83"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="../../GLScene1.2/Source/GLScene_DCE.pas"/>
+        <UnitName Value="GLScene_DCE"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1156"/>
+        <CursorPos X="4" Y="1181"/>
+        <UsageCount Value="5"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="../../GLScene1.2/Source/GLScene_DCE_Misc.pas"/>
+        <UnitName Value="GLScene_DCE_Misc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="255"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit46>
+      <Unit47>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS.pas"/>
+        <UnitName Value="GLScene_Files__3DS"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2490"/>
+        <CursorPos X="29" Y="2497"/>
+        <UsageCount Value="3"/>
+      </Unit47>
+      <Unit48>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Base.pas"/>
+        <UnitName Value="GLScene_Files__3DS_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2813"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit48>
+      <Unit49>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Consts.pas"/>
+        <UnitName Value="GLScene_Files__3DS_Consts"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="975"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit49>
+      <Unit50>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_SceneObjects.pas"/>
+        <UnitName Value="GLScene_Files__3DS_SceneObjects"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="495"/>
+        <CursorPos X="9" Y="526"/>
+        <UsageCount Value="5"/>
+      </Unit50>
+      <Unit51>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Types.pas"/>
+        <UnitName Value="GLScene_Files__3DS_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1288"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit51>
+      <Unit52>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Utils.pas"/>
+        <UnitName Value="GLScene_Files__3DS_Utils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="6691"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit52>
+      <Unit53>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_ASE.pas"/>
+        <UnitName Value="GLScene_Files_ASE"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1964"/>
+        <CursorPos X="22" Y="1972"/>
+        <UsageCount Value="5"/>
+      </Unit53>
+      <Unit54>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D.pas"/>
+        <UnitName Value="GLScene_Files_B3D"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="305"/>
+        <CursorPos X="2" Y="337"/>
+        <UsageCount Value="5"/>
+      </Unit54>
+      <Unit55>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D_Base.pas"/>
+        <UnitName Value="GLScene_Files_B3D_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="543"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit55>
+      <Unit56>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D_Types.pas"/>
+        <UnitName Value="GLScene_Files_B3D_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="93"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_BMP.pas"/>
+        <UnitName Value="GLScene_Files_BMP"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="546"/>
+        <CursorPos X="2" Y="578"/>
+        <UsageCount Value="5"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_DDS.pas"/>
+        <UnitName Value="GLScene_Files_DDS"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="609"/>
+        <CursorPos X="2" Y="641"/>
+        <UsageCount Value="5"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_DXTC.pas"/>
+        <UnitName Value="GLScene_Files_DXTC"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1323"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_GL2.pas"/>
+        <UnitName Value="GLScene_Files_GL2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="266"/>
+        <CursorPos X="8" Y="295"/>
+        <UsageCount Value="5"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_GL2_Base.pas"/>
+        <UnitName Value="GLScene_Files_GL2_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="323"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit61>
+      <Unit62>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_GTS.pas"/>
+        <UnitName Value="GLScene_Files_GTS"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="92"/>
+        <CursorPos X="3" Y="125"/>
+        <UsageCount Value="5"/>
+      </Unit62>
+      <Unit63>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_HDR.pas"/>
+        <UnitName Value="GLScene_Files_HDR"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="295"/>
+        <CursorPos X="1" Y="328"/>
+        <UsageCount Value="5"/>
+      </Unit63>
+      <Unit64>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2.pas"/>
+        <UnitName Value="GLScene_Files_MD2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="91"/>
+        <CursorPos X="3" Y="124"/>
+        <UsageCount Value="3"/>
+      </Unit64>
+      <Unit65>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2_Base.pas"/>
+        <UnitName Value="GLScene_Files_MD2_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit65>
+      <Unit66>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2_Types.pas"/>
+        <UnitName Value="GLScene_Files_MD2_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="40"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit66>
+      <Unit67>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD3.pas"/>
+        <UnitName Value="GLScene_Files_MD3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="116"/>
+        <CursorPos X="42" Y="120"/>
+        <UsageCount Value="3"/>
+      </Unit67>
+      <Unit68>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD3_Base.pas"/>
+        <UnitName Value="GLScene_Files_MD3_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="138"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit68>
+      <Unit69>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MDC_Types.pas"/>
+        <UnitName Value="GLScene_Files_MDC_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="81"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit69>
+      <Unit70>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MS3D_Types.pas"/>
+        <UnitName Value="GLScene_Files_MS3D_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="290"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit70>
+      <Unit71>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_NMF_Base.pas"/>
+        <UnitName Value="GLScene_Files_NMF_Base"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="46"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit71>
+      <Unit72>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_Q3MD3_Types.pas"/>
+        <UnitName Value="GLScene_Files_Q3MD3_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="25"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit72>
+      <Unit73>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_RGBE.pas"/>
+        <UnitName Value="GLScene_Files_RGBE"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="227"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit73>
+      <Unit74>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_STL_Types.pas"/>
+        <UnitName Value="GLScene_Files_STL_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit74>
+      <Unit75>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_VRML_Parser.pas"/>
+        <UnitName Value="GLScene_Files_VRML_Parser"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit75>
+      <Unit76>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Gizmo.pas"/>
+        <UnitName Value="GLScene_Gizmo"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2015"/>
+        <CursorPos X="34" Y="369"/>
+        <UsageCount Value="5"/>
+      </Unit76>
+      <Unit77>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Graphics.pas"/>
+        <UnitName Value="GLScene_Graphics"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3506"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit77>
+      <Unit78>
+        <Filename Value="../../GLScene1.2/Source/GLScene_GUI.pas"/>
+        <UnitName Value="GLScene_GUI"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1281"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="5"/>
+      </Unit78>
+      <Unit79>
+        <Filename Value="../../GLScene1.2/Source/GLScene_LIBPNG.pas"/>
+        <UnitName Value="GLScene_LIBPNG"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2600"/>
+        <CursorPos X="5" Y="2683"/>
+        <UsageCount Value="5"/>
+      </Unit79>
+      <Unit80>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
+        <UnitName Value="GLScene_Viewer_Form"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="370"/>
+        <CursorPos X="39" Y="429"/>
+        <UsageCount Value="89"/>
+      </Unit80>
+      <Unit81>
+        <Filename Value="../../GLScene1.2/Source/GLScene_ZLIB.pas"/>
+        <UnitName Value="GLScene_ZLIB"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2111"/>
+        <CursorPos X="10" Y="2146"/>
+        <UsageCount Value="2"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="../../GLScene1.2/Source/GLScene_ZLIB_API.pas"/>
+        <UnitName Value="GLScene_ZLIB_API"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="445"/>
+        <CursorPos X="3" Y="471"/>
+        <UsageCount Value="5"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="../../GLScene1.2/Source/GLScene.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="142"/>
+        <CursorPos X="21" Y="157"/>
+        <UsageCount Value="3"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="../../GLScene1.2/Source/GLScene_Files_ZLIB.pas"/>
+        <UnitName Value="GLScene_Files_ZLIB"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="304"/>
+        <CursorPos X="11" Y="339"/>
+        <UsageCount Value="2"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="../../lazarus/lazarus/lcl/lclproc.pas"/>
+        <UnitName Value="LCLProc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="205"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="../../lazarus/lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2177"/>
+        <CursorPos X="15" Y="2194"/>
+        <UsageCount Value="3"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="../../lazarus/lazarus/lcl/include/customcontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="70"/>
+        <CursorPos X="3" Y="79"/>
+        <UsageCount Value="3"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="../../lazarus/lazarus/packager/registration/lazaruspackageintf.pas"/>
+        <UnitName Value="LazarusPackageIntf"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="77"/>
+        <CursorPos X="37" Y="85"/>
+        <UsageCount Value="17"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <UnitName Value="CustomDrawnInt"/>
+        <EditorIndex Value="9"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="172"/>
+        <CursorPos X="21" Y="185"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
+        <UnitName Value="GLScene_Context_OES"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="255"/>
+        <CursorPos X="15" Y="270"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit90>
+      <Unit91>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
+        <UnitName Value="jni"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="24" Y="7"/>
+        <UsageCount Value="26"/>
+        <Loaded Value="True"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <UnitName Value="GLScene_AsyncTimer"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="191"/>
+        <CursorPos X="2" Y="215"/>
+        <UsageCount Value="19"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Platform.pas"/>
+        <UnitName Value="GLScene_Platform"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="855"/>
+        <CursorPos X="3" Y="919"/>
+        <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit93>
+      <Unit94>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
+        <UnitName Value="GLScene_Base_Log"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="389"/>
+        <CursorPos X="41" Y="372"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit94>
+      <Unit95>
+        <Filename Value="../../../GLScene1.2/Source/GLScene.inc"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="53"/>
+        <CursorPos X="3" Y="65"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit95>
+      <Unit96>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
+        <UnitName Value="GLScene_Base_OpenGL_Adapter"/>
+        <EditorIndex Value="8"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3570"/>
+        <CursorPos X="56" Y="3579"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit96>
+      <Unit97>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Tokens.pas"/>
+        <UnitName Value="GLScene_Base_OpenGL_Tokens"/>
+        <EditorIndex Value="7"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="58"/>
+        <CursorPos X="32" Y="52"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit97>
+      <Unit98>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <UnitName Value="GLScene_Core"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="8390"/>
+        <CursorPos X="17" Y="8410"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit98>
+      <Unit99>
+        <Filename Value="../../../GLScene1.2/Source/DWS2_GLScene_OpenGL_Adapter.pas"/>
+        <UnitName Value="DWS2_GLScene_OpenGL_Adapter"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="8"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit99>
+      <Unit100>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <EditorIndex Value="10"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="628"/>
+        <CursorPos X="37" Y="649"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit100>
+      <Unit101>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="256"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit101>
+    </Units>
+    <General>
+      <ActiveWindowIndexAtStart Value="0"/>
+    </General>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="135" Column="42" TopLine="108"/>
+      </Position1>
+      <Position2>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="143" Column="48" TopLine="116"/>
+      </Position2>
+      <Position3>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="148" Column="42" TopLine="121"/>
+      </Position3>
+      <Position4>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="151" Column="42" TopLine="124"/>
+      </Position4>
+      <Position5>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="192" Column="65" TopLine="165"/>
+      </Position5>
+      <Position6>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="478" Column="17" TopLine="451"/>
+      </Position6>
+      <Position7>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1650" Column="49" TopLine="1623"/>
+      </Position7>
+      <Position8>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1652" Column="51" TopLine="1625"/>
+      </Position8>
+      <Position9>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1809" Column="35" TopLine="1782"/>
+      </Position9>
+      <Position10>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1841" Column="48" TopLine="1814"/>
+      </Position10>
+      <Position11>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1842" Column="51" TopLine="1815"/>
+      </Position11>
+      <Position12>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1880" Column="43" TopLine="1853"/>
+      </Position12>
+      <Position13>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1926" Column="33" TopLine="1899"/>
+      </Position13>
+      <Position14>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1985" Column="20" TopLine="1970"/>
+      </Position14>
+      <Position15>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
+        <Caret Line="60" Column="55" TopLine="49"/>
+      </Position15>
+      <Position16>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="32" Column="42" TopLine="13"/>
+      </Position16>
+      <Position17>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="19" Column="52" TopLine="1"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="18" Column="52" TopLine="1"/>
+      </Position18>
+      <Position19>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="11" Column="24" TopLine="1"/>
+      </Position19>
+      <Position20>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="141" Column="55" TopLine="127"/>
+      </Position20>
+      <Position21>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="142" Column="4" TopLine="122"/>
+      </Position21>
+      <Position22>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="141" Column="4" TopLine="121"/>
+      </Position22>
+      <Position23>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="143" Column="45" TopLine="129"/>
+      </Position23>
+      <Position24>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="144" Column="45" TopLine="130"/>
+      </Position24>
+      <Position25>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="143" Column="45" TopLine="129"/>
+      </Position25>
+      <Position26>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="134" Column="12" TopLine="130"/>
+      </Position26>
+      <Position27>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="144" Column="74" TopLine="131"/>
+      </Position27>
+      <Position28>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
+        <Caret Line="295" Column="61" TopLine="272"/>
+      </Position28>
+      <Position29>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
+        <Caret Line="489" Column="27" TopLine="457"/>
+      </Position29>
+      <Position30>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <Caret Line="622" Column="64" TopLine="577"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

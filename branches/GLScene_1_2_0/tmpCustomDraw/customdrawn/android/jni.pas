@@ -112,6 +112,9 @@ type va_list=pointer;
        6:(f:jfloat);
        7:(d:jdouble);
        8:(l:jobject);
+       9:(pl:Pjobject);
+       10:(pi:Pjint);
+
      end;
 
      jobjectRefType=(
