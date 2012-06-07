@@ -31,6 +31,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/06/12 - Maverick - Added SegmentPlaneIntersection routine
       <li>10/05/12 - Maverick - Added quad/disk intersection routines,
                                 c3PIdiv2 constant, some asm blocks
       <li>10/05/12 - Maverick - Added plane/triangle intersection routines,
@@ -1207,6 +1208,9 @@ function PointPlaneDistance(const point : TAffineVector; plane : THmgPlane) : Si
 {: Computes point to plane projection. Plane and direction have to be normalized }
 function PointPlaneOrthoProjection(const point: TAffineVector; const plane : THmgPlane; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
 function PointPlaneProjection(const point, direction : TAffineVector; const plane : THmgPlane; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
+
+{: Computes segment / plane intersection return false if there isn't an intersection}
+function SegmentPlaneIntersection(const ptA, ptB : TAffineVector; const plane : THmgPlane; var inter : TAffineVector) : Boolean;
 
 {: Computes point to triangle projection. Direction has to be normalized}
 function PointTriangleOrthoProjection(const point, ptA, ptB, ptC : TAffineVector; var inter : TAffineVector; bothface : Boolean = True) : Boolean;
@@ -7267,6 +7271,28 @@ begin
     h := PointPlaneDistance(point, plane);
     inter := VectorAdd(point, VectorScale(direction, -h / dot));
     Result := True;
+  end;
+end;
+
+// SegmentPlaneIntersection
+//
+function SegmentPlaneIntersection(const ptA, ptB : TAffineVector; const plane : THmgPlane; var inter : TAffineVector) : Boolean;
+var
+  hA, hB, dot : Single;
+  normal, direction : TVector3f;
+begin
+  Result := False;
+  hA := PointPlaneDistance(ptA, plane);
+  hB := PointPlaneDistance(ptB, plane);
+  if hA*hB <= 0 then
+  begin
+    normal := Vector3fMake(plane);
+    direction := VectorNormalize(VectorSubtract(ptB, ptA));
+    dot := VectorDotProduct(direction, normal);
+    if Abs(dot) >= 0.000000001 then begin
+      inter := VectorAdd(ptA, VectorScale(direction, -hA / dot));
+      Result := True;
+    end;
   end;
 end;
 

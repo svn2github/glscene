@@ -6,6 +6,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/06/12 - Maverick - Added PlaneAABBIntersection routine
       <li>02/07/11 - DaStr - Removed TAABB.Revision
       <li>20/04/08 - DaStr - Added a NullBoundingBox constant and
                               BoundingBoxesAreEqual() function (thanks Pascal)
@@ -34,7 +35,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  VectorGeometry;
+  VectorGeometry, VectorLists;
 
 type
 
@@ -146,6 +147,8 @@ function PointInAABB(const p : TVector; const aabb : TAABB) : Boolean; overload;
 
 {: Checks if a plane (given by the normal+d) intersects the AABB}
 function PlaneIntersectAABB(Normal: TAffineVector; d: single; aabb: TAABB): boolean;
+{: Compute the intersection between a plane and the AABB}
+function PlaneAABBIntersection(const plane : THmgPlane; const AABB : TAABB) : TAffineVectorList;
 {: Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB}
 function TriangleIntersectAABB(const aabb: TAABB; const v1, v2, v3: TAffineVector): boolean;
 
@@ -763,6 +766,81 @@ begin
 
      if VectorDotProduct(normal, vmin) + d > 0 then Exit;
      if VectorDotProduct(normal, vmax) + d >= 0 then result:= true;
+end;
+
+// PlaneAABBIntersection
+//
+function PlaneAABBIntersection(const plane : THmgPlane;const AABB : TAABB) : TAffineVectorList;
+var
+  i, j, annexe : Integer;
+  index : array[0..2] of Integer;
+  dist, distnear : Single;
+  vec, temp : TVector3f;
+  box : array [0..1] of TVector3f;
+  V: array [0..7] of TVector3f;
+  function EdgesStripPlaneIntersection(const pt0, pt1, pt4, pt7: TVector3f;
+    const plane : THmgPlane; var inter : TVector3f): Boolean;
+  begin
+    Result := True;
+    if not SegmentPlaneIntersection(pt0, pt1, plane, inter) then
+      if not SegmentPlaneIntersection(pt1, pt4, plane, inter) then
+        if not SegmentPlaneIntersection(pt4, pt7, plane, inter) then
+          Result := False;
+  end;
+begin
+  box[0] := AABB.min;
+  box[1] := AABB.max;
+
+  Result := TAffineVectorList.Create;
+
+  // loop on vertices
+  for i := 0 to 7 do
+  begin
+    for j := 0 to 2 do
+    begin
+      index[j] := (i div (1 shl j)) mod 2;
+      vec[j] := box[index[j]][j];
+    end;
+
+    dist := PointPlaneDistance(vec, plane);
+    // try to find the right orientation to proceed intersection
+    if (i = 0) or (dist<distnear) then
+    begin
+      distnear := dist;
+      // prepare V 0 -> 7 array
+      V[0] := vec;
+      for j := 0 to 5 do
+      begin
+        temp := vec;
+        temp[j mod 3] := box[(index[j mod 3] + 1) mod 2][j mod 3];
+        if (j div 3) > 0 then
+        begin
+          temp[(j+1) mod 3] := box[(index[(j+1) mod 3] + 1) mod 2][(j+1) mod 3];
+          if (j div 3) > 1 then
+          begin
+            temp[(j+2) mod 3] := box[(index[(j+2) mod 3] + 1) mod 2][(j+2) mod 3];
+          end;
+        end;
+        V[j+1] := temp;
+      end;
+      for j := 0 to 2 do
+        vec[j] := box[(index[j]+1) mod 2][j];
+      V[7] := vec;
+    end;
+  end;
+
+  //compute edge plane intersections
+  for j := 0 to 2 do
+  begin
+    if j = 0 then annexe := 6 else annexe := j+3;
+
+    // computes intersection with annexe edge
+    if SegmentPlaneIntersection(V[j+1], V[annexe], plane, temp) then
+      Result.Add(temp);
+    // computes intersection with edge strip from main vertex V0 to opposite vertex V7
+    if EdgesStripPlaneIntersection(V[0], V[j+1], V[j+4], V[7], plane, temp) then
+      Result.Add(temp);
+  end;
 end;
 
 procedure FindMinMax(x0,x1,x2: single; out min, max: single);
