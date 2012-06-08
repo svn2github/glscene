@@ -270,7 +270,6 @@ begin
   CDWidgetset.GeteglVersion;
   MajorVersion := CDWidgetset.MajorVersion;
   MinorVersion := CDWidgetset.MinorVersion;
-
 {$ENDIF}
 
   FGL.EGL_VERSION_1_0 := IsVersionMet(1, 0, MajorVersion, MinorVersion);

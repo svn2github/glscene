@@ -8,16 +8,13 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLProc,
   Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase, lazdeviceapis,
   Menus, ExtDlgs, LMessages, customdrawnint, GLScene_Viewer_Form, GLScene_Core,
-  GLScene_Objects, GLScene_AsyncTimer, GLScene_Cadencer;
+  GLScene_Objects;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TGLSceneForm)//{GLScene}
-    GLCadencer1: TGLCadencer;
-    GLCamera1: TGLCamera;
-    GLCube1: TGLCube;
     GLScene1: TGLScene;
   {  procedure Arrow1Click(Sender: TObject);
     procedure Arrow1MouseDown(Sender: TObject; Button: TMouseButton;

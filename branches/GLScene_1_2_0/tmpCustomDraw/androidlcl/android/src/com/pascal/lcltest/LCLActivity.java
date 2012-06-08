@@ -9,21 +9,17 @@ import android.text.*;
 import android.view.*;
 import android.view.inputmethod.*;
 import android.content.res.Configuration;
-import android.content.Intent;
+//import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.telephony.SmsManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import java.util.*;
+//import java.util.*;
 
 import javax.microedition.khronos.egl.*;
 import javax.microedition.khronos.opengles.GL;
 
-public class LCLActivity extends Activity implements SensorEventListener, LocationListener
+public class LCLActivity extends Activity implements SensorEventListener
 {
   // -------------------------------------------
   // Input connection to get character events
@@ -907,6 +903,8 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
     localSensorManager.unregisterListener(this);
   };
 
+  /*
+   //SMS и GPS подключение для сцены не нужно но на всякий оставим
   // input: String lcldestination, String lcltext (Body)
   public void LCLDoSendMessage()
   {
@@ -990,7 +988,7 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
       }
     }
   };
-
+  
   // LocationListener overrides
 
   @Override public void onLocationChanged(Location loc)
@@ -1032,6 +1030,7 @@ public class LCLActivity extends Activity implements SensorEventListener, Locati
       default: Log.i("lclapp", "[LCLDoRequestPositionInfo] Wrong lclkind parameter");
     }
   }
+*/
 
   // -------------------------------------------
   // Fields exported to the Pascal side for easier data communication

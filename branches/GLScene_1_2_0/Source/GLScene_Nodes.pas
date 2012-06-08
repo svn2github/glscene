@@ -815,7 +815,9 @@ var
 begin
   vMainMesh := AMesh;
   vTempMesh := TMeshAtom.Create;
+  {$IFNDEF ANDROID}
   tess := gluNewTess;
+  {$ENDIF}
 
   with vMainMesh do
   begin
@@ -835,7 +837,7 @@ begin
       if Count > 2 then
       begin
         // Create and initialize the GLU tesselator
-
+          {$IFNDEF ANDROID}
         gluTessCallback(tess, GLU_TESS_BEGIN, @tessBegin);
         if ATextureCoord then
           gluTessCallback(tess, GLU_TESS_VERTEX, @tessTexCoordPosition)
@@ -904,6 +906,7 @@ begin
         gluTessEndContour(tess);
         gluTessEndPolygon(tess);
         Validate;
+          {$ENDIF}
       end;
     finally
       // release stuff
@@ -913,7 +916,9 @@ begin
       vTempMesh := nil;
       if Assigned(newVertices) then
         FreeMem(newVertices);
+                {$IFNDEF ANDROID}
       gluDeleteTess(tess);
+                  {$ENDIF}
     end;
   end;
 end;

@@ -312,6 +312,7 @@ begin
 
           psbBSpline:
             begin
+              {$IFNDEF ANDROID}
               NurbsRenderer := gluNewNurbsRenderer;
               gluNurbsProperty(NurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
 
@@ -336,6 +337,7 @@ begin
                 GL_MAP2_VERTEX_3);
               gluEndSurface(NurbsRenderer);
               gluDeleteNurbsRenderer(NurbsRenderer);
+            {$ENDIF}
             end;
 
         end;

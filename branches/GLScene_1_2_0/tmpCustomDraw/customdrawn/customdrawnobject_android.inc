@@ -481,12 +481,15 @@ begin
   javaMethod_LCLDoShowMessageBox := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoShowMessageBox', '()V');
   javaMethod_LCLDoCreateTimer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateTimer', '()V');
   javaMethod_LCLDoDestroyTimer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyTimer', '()V');
+  //Отобразить/спрятать виртуальную клавиатуру
   javaMethod_LCLDoHideVirtualKeyboard := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoHideVirtualKeyboard', '()V');
   javaMethod_LCLDoShowVirtualKeyboard := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoShowVirtualKeyboard', '()V');
+  //работа с акселерометром, ненаю зачем нуно мб пригодится
   javaMethod_LCLDoStartReadingAccelerometer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStartReadingAccelerometer', '()V');
   javaMethod_LCLDoStopReadingAccelerometer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStopReadingAccelerometer', '()V');
-  javaMethod_LCLDoSendMessage := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSendMessage', '()V');
-  javaMethod_LCLDoRequestPositionInfo := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRequestPositionInfo', '()V');
+  //GPS and SMS не нужны сцене
+//  javaMethod_LCLDoSendMessage := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSendMessage', '()V');
+//  javaMethod_LCLDoRequestPositionInfo := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRequestPositionInfo', '()V');
   // Methods from android.app.Activity
   javaMethod_Activity_finish := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidAppActivityClass, 'finish', '()V');
   // Methods from java.lang.System

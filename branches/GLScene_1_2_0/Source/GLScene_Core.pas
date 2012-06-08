@@ -1305,7 +1305,7 @@ type
   end;
 
 {$IFNDEF GLS_DELPHI_XE_DOWN}
-  TRenderContextInfo = GLScene_Base_Context_Info.TRenderContextInfo;
+ // TRenderContextInfo = GLScene_Base_Context_Info.TRenderContextInfo;
 {$ENDIF}
   // TDirectRenderEvent
   //

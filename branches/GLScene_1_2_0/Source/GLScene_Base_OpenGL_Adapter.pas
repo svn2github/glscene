@@ -3269,6 +3269,9 @@ procedure gluSphere(quadObject: PGLUquadric; radius: TGLdouble; slices, stacks: 
 procedure gluQuadricCallback(quadObject: PGLUquadric; which: TGLEnum;
   fn: TGLUQuadricErrorProc); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;
  {$ENDIF} external glu32;
+
+{$IFNDEF ANDROID}
+
 function gluNewTess: PGLUtesselator; {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteTess(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;
@@ -3295,6 +3298,9 @@ function gluNewNurbsRenderer: PGLUnurbs; {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteNurbsRenderer(nobj: PGLUnurbs); {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+
+{$ENDIF}
+
 procedure gluBeginSurface(nobj: PGLUnurbs); {$IFDEF MSWINDOWS} stdcall;
  {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluBeginCurve(nobj: PGLUnurbs); {$IFDEF MSWINDOWS} stdcall;

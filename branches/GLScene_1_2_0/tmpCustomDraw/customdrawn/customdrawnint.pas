@@ -390,8 +390,8 @@ var
   javaMethod_LCLDoShowVirtualKeyboard: jmethodid = nil;
   javaMethod_LCLDoStartReadingAccelerometer: jmethodid = nil;
   javaMethod_LCLDoStopReadingAccelerometer: jmethodid = nil;
-  javaMethod_LCLDoSendMessage: jmethodid = nil;
-  javaMethod_LCLDoRequestPositionInfo: jmethodid = nil;
+//  javaMethod_LCLDoSendMessage: jmethodid = nil;
+//  javaMethod_LCLDoRequestPositionInfo: jmethodid = nil;
   // Methods from android.app.Activity
   javaMethod_Activity_finish: jmethodid = nil;
   // Methods from java.lang.System

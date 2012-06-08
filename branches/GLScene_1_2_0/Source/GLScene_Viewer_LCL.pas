@@ -212,7 +212,9 @@ uses SysUtils, LCLIntf, GLScene_Viewer
          {$define CONTEXT_INCLUDED}
          {$endif}
        {$endif}
-
+       {$IFDEF ANDROID}
+  , GLScene_Context_OES
+       {$endif}
        {$ifdef LCLQT}
          {$error unimplemented QT context}
        {$endif}       ;

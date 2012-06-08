@@ -46,9 +46,9 @@ type
   TCDWSLazDeviceAPIs = class(TWSLazDeviceAPIs)
   public
     //
-    class procedure RequestPositionInfo(AMethod: TLazPositionMethod); override;
+   // class procedure RequestPositionInfo(AMethod: TLazPositionMethod); override;
     //
-    class procedure SendMessage(AMsg: TLazDeviceMessage); override;
+  //  class procedure SendMessage(AMsg: TLazDeviceMessage); override;
     //
     class procedure StartReadingAccelerometerData(); override;
     class procedure StopReadingAccelerometerData(); override;
@@ -102,7 +102,7 @@ end;
 {$endif}
 
 {$ifdef CD_Android}
-class procedure TCDWSLazDeviceAPIs.RequestPositionInfo(
+{class procedure TCDWSLazDeviceAPIs.RequestPositionInfo(
   AMethod: TLazPositionMethod);
 var
   lPositionMethod: jint;
@@ -136,7 +136,7 @@ begin
   javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclkind, 1);
   // Call the method
   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoSendMessage);
-end;
+end; }
 
 class procedure TCDWSLazDeviceAPIs.StartReadingAccelerometerData;
 begin

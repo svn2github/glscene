@@ -116,7 +116,7 @@ begin
 
   // allocate extra buffer used by GLU in complex polygons.
   GetMem(TessVertices, Vertexes.Count * SizeOf(TAffineVector));
-
+  {$IFNDEF ANDROID}
   // make a Tessellation GLU object.
   Tess := gluNewTess;
 
@@ -161,7 +161,7 @@ begin
 
   // Destroy the Tessellation GLU object.
   gluDeleteTess(tess);
-
+    {$ENDIF}
   // deallocate extra buffer used by GLU in complex polygons.
   FreeMem(TessVertices, Vertexes.Count * SizeOf(TAffineVector));
 end;

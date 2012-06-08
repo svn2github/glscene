@@ -714,6 +714,7 @@ begin
 end;
 
 procedure TMultiPolygonBase.RetrieveOutline(List: TPolygonList);
+{$IFNDEF ANDROID}
 var
   i, n: Integer;
   tess: PGLUTesselator;
@@ -780,9 +781,10 @@ var
     end;
     gluTessEndContour(tess);
   end;
-
+  {$ENDIF}
 begin
   List.Clear;
+  {$IFNDEF ANDROID}
   if (Contours.Count > 0) and (Path[0].Count > 2) then
   begin
     // Vertex count
@@ -821,6 +823,7 @@ begin
       vTempMesh := nil;
     end;
   end;
+  {$ENDIF}
 end;
 
 // BuildTesselatedPolygon
@@ -828,6 +831,7 @@ end;
 
 procedure TMultiPolygonBase.BuildTesselatedPolygon(AMesh: TMeshAtom;
   ANormal: PAffineVector; AnInvNormals, ATextureCoord: Boolean);
+{$IFNDEF ANDROID}
 var
   tess: PGLUTesselator;
 
@@ -844,8 +848,9 @@ var
 
 var
   i, n: Integer;
+  {$ENDIF}
 begin
-
+  {$IFNDEF ANDROID}
   vMainMesh := AMesh;
   vTempMesh := TMeshAtom.Create;
   tess := gluNewTess;
@@ -916,7 +921,7 @@ begin
       gluDeleteTess(tess);
     end;
   end;
-
+  {$ENDIF}
 end;
 
 // ------------------
