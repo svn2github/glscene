@@ -8414,12 +8414,14 @@ begin
     end;
     FRenderingContext.Activate;
     try
+      {$IFNDEF ANDROID}
       // this one should NOT be replaced with an assert
       if not GL.VERSION_1_1 then
       begin
         GLSLogger.LogFatalError(glsWrongVersion);
         Abort;
       end;
+      {$ENDIF}
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
       FRenderingContext.GLStates.ViewPort :=

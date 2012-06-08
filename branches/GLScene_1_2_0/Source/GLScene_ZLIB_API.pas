@@ -468,8 +468,10 @@ end;
 initialization
 
 {$IFDEF FPC}
+{$IFNDEF ANDROID}
 if Initzlib then
   ReadEntryPoints;
+{$ENDIF}
 {$ENDIF}
 
 finalization

@@ -24,6 +24,10 @@ uses
   LCLIntf,
   LCLType,
   LMessages,
+  LCLProc,
+{$IFDEF ANDROID}
+  customdrawnint,
+{$IFEND}
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   Windows, // need
   WSLCLClasses, Win32Int, Win32WSForms,
@@ -114,6 +118,7 @@ type
 {$IFDEF FPC}
     procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); message LM_ERASEBKGND;
     procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
+
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
     procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
     procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
@@ -126,7 +131,15 @@ type
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
+    {$IFNDEF ANDROID}
     procedure CreateWnd; override;
+    procedure DestroyWnd; override;
+    {$ELSE}
+    procedure OnSurfaceCreated(Sender: TObject);
+    procedure OnSurfaceChanged(Sender: TObject);
+    procedure OnSurfaceDestroyed(Sender: TObject);
+
+    {$ENDIF}
     procedure Loaded; override;
 
     procedure DoBeforeRender(Sender: TObject); dynamic;
@@ -137,7 +150,6 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DestroyWnd; override;
 
     property IsRenderingContextAvailable: Boolean read
       GetIsRenderingContextAvailable;
@@ -206,11 +218,21 @@ begin
   FBuffer.OnChange := DoBufferChange;
   FBuffer.OnStructuralChange := DoBufferStructuralChange;
   FFullScreenVideoMode := TGLFullScreenVideoMode.Create(Self);
+  {$IFDEF ANDROID}
+   CDWidgetset.OnSurfaceCreated := OnSurfaceCreated;
+   CDWidgetset.OnSurfaceChanged := OnSurfaceChanged;
+   CDWidgetset.OnSurfaceDestroyed := OnSurfaceDestroyed;
+   {$ENDIF}
   inherited Create(AOwner);
 end;
 
 destructor TGLSceneForm.Destroy;
 begin
+  {$IFDEF ANDROID}
+   CDWidgetset.OnSurfaceCreated := nil;
+   CDWidgetset.OnSurfaceChanged := nil;
+   CDWidgetset.OnSurfaceDestroyed :=nil;
+   {$ENDIF}
   FBuffer.Free;
   FBuffer := nil;
   FFullScreenVideoMode.Destroy;
@@ -231,6 +253,7 @@ begin
   inherited;
 end;
 
+{$IFNDEF ANDROID}
 // CreateWnd
 //
 
@@ -260,6 +283,38 @@ begin
   end;
   inherited;
 end;
+{$ELSE}
+// Holder Created
+//
+
+procedure TGLSceneForm.OnSurfaceCreated(Sender: TObject);
+begin
+
+  FBuffer.Resize(Self.Width, Self.Height);
+  FBuffer.CreateRC(GetDC(Handle), false);
+  if (not FBuffer.RCInstantiated) then
+  DebugLn('TGLSceneForm RenderingContext=nil');
+end;
+
+// Holder Created
+//
+
+procedure TGLSceneForm.OnSurfaceDestroyed(Sender: TObject);
+begin
+  if Assigned(FBuffer) then
+  begin
+    FBuffer.DestroyRC;
+  end;
+end;
+
+procedure TGLSceneForm.OnSurfaceChanged(Sender: TObject);
+begin
+  if Assigned(FBuffer) then
+    FBuffer.Resize(self.Width, self.Height);
+  if (not FBuffer.RCInstantiated) then
+  DebugLn('TGLSceneForm OnSurfaceChanged=nil');
+end;
+{$ENDIF}
 
 // Loaded
 //
@@ -267,6 +322,7 @@ end;
 procedure TGLSceneForm.Loaded;
 begin
   inherited Loaded;
+  {$IFNDEF ANDROID}
   // initiate window creation
   HandleNeeded;
   if not (csDesigning in ComponentState) then
@@ -274,6 +330,7 @@ begin
     if FFullScreenVideoMode.FEnabled then
       StartupFS;
   end;
+  {$ENDIF}
 end;
 
 {$IFDEF GLS_DELPHI_OR_CPPB}
@@ -359,9 +416,11 @@ end;
 
 procedure TGLSceneForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
 begin
+{$IFNDEF ANDROID}
   if IsRenderingContextAvailable then
     Message.Result := 1
   else
+{$ENDIF}
     inherited;
 end;
 
@@ -369,25 +428,32 @@ procedure TGLSceneForm.LMPaint(var Message: TLMPaint);
 var
   PS: TPaintStruct;
 begin
+  DebugLn('LMPaint');
   BeginPaint(Handle, PS);
   try
+    if (not FBuffer.RCInstantiated) then
+  DebugLn('TGLSceneForm LMPaint=nil');
     if IsRenderingContextAvailable and (Width > 0) and (Height > 0) then
       FBuffer.Render;
   finally
     EndPaint(Handle, PS);
     Message.Result := 0;
   end;
+
 end;
 
 procedure TGLSceneForm.LMSize(var Message: TLMSize);
 begin
   inherited;
+    {$IFNDEF ANDROID}
   if Assigned(FBuffer) then
     FBuffer.Resize(Message.Width, Message.Height);
+  {$ENDIF}
 end;
 
 procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);
 begin
+  {$IFNDEF ANDROID}
   if Assigned(FBuffer) then
   begin
     FBuffer.DestroyRC;
@@ -397,28 +463,33 @@ begin
       FOwnDC := 0;
     end;
   end;
+  {$ENDIF}
   inherited;
 end;
 
 procedure TGLSceneForm.GetFocus(var Mess: TLMessage);
 begin
+  {$IFNDEF ANDROID}
   if not (csDesigning in ComponentState)
     and FFullScreenVideoMode.FEnabled
     and FFullScreenVideoMode.FAltTabSupportEnable then
     begin
       StartupFS;
     end;
+  {$ENDIF}
   inherited;
 end;
 
 procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
 begin
+  {$IFNDEF ANDROID}
   if not (csDesigning in ComponentState)
     and FFullScreenVideoMode.FEnabled
     and FFullScreenVideoMode.FAltTabSupportEnable then
     begin
       ShutdownFS;
     end;
+  {$ENDIF}
   inherited;
 end;
 
@@ -426,6 +497,7 @@ end;
 
 procedure TGLFullScreenVideoMode.SetEnabled(aValue: Boolean);
 begin
+  {$IFNDEF ANDROID}
   if FEnabled <> aValue then
   begin
     FEnabled := aValue;
@@ -438,6 +510,7 @@ begin
         FOwner.ShutdownFS;
     end;
   end;
+  {$ENDIF}
 end;
 
 constructor TGLFullScreenVideoMode.Create(AOwner: TGLSceneForm);
@@ -480,6 +553,8 @@ end;
 
 procedure TGLSceneForm.StartupFS;
 begin
+  {$IFNDEF ANDROID}
+
   case FFullScreenVideoMode.FResolutionMode of
     fcNearestResolution:
       begin
@@ -510,10 +585,13 @@ begin
   Application.MainFormOnTaskBar := True;
 {$ENDIF}
 {$ENDIF}
+
+{$ENDIF}
 end;
 
 procedure TGLSceneForm.ShutdownFS;
 begin
+  {$IFNDEF ANDROID}
   RestoreDefaultMode;
   SendToBack;
   WindowState := wsNormal;
@@ -521,6 +599,7 @@ begin
   FormStyle := fsNormal;
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
+  {$ENDIF}
 end;
 
 // DoBeforeRender
@@ -528,7 +607,9 @@ end;
 
 procedure TGLSceneForm.DoBeforeRender(Sender: TObject);
 begin
+    {$IFNDEF ANDROID}
   SetupVSync(VSync);
+        {$ENDIF}
 end;
 
 // DoBufferChange
@@ -537,7 +618,11 @@ end;
 procedure TGLSceneForm.DoBufferChange(Sender: TObject);
 begin
   if (not Buffer.Rendering) and (not Buffer.Freezed) then
+   {$IFNDEF ANDROID}
     Invalidate;
+   {$ELSE}
+   CDWidgetset.LCLDoInvalidate;
+   {$ENDIF}
 end;
 
 // DoBufferStructuralChange
@@ -548,8 +633,12 @@ begin
 {$IFNDEF FPC}
   RecreateWnd;
 {$ELSE}
+ {$IFNDEF ANDROID}
   DestroyWnd;
   CreateWnd;
+  {$ELSE}
+  CDWidgetset.LCLDoRecreateHolder;
+  {$ENDIF}
 {$ENDIF}
 end;
 

@@ -21,6 +21,9 @@ uses
 {$ENDIF}
 {$IFDEF FPC}
   LCLType,
+  {$IFDEF ANDROID}
+  customdrawnint,
+  {$ENDIF}
 {$ENDIF}
   Classes,
   SysUtils,
@@ -45,15 +48,16 @@ type
     procedure ChoosePixelFormat;
   protected
     { Protected Declarations }
+    {$IFDEF ANDROID}
+    procedure AddIAttrib(attrib, value: Integer);
+    {$ENDIF}
     procedure DoCreateContext(outputDevice: HWND); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-{$IFDEF FPC}
-    procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual; abstract;
-{$ENDIF}
+
   public
     { Public Declarations }
     constructor Create; override;
@@ -102,6 +106,7 @@ var
   LNumElements: Integer;
 
   function GetFixedAttribute(Attrib: TGLInt; Param: TGLInt): TGLInt;
+  {$IFNDEF ANDROID}
   var
     I, J, Res, OverRes: integer;
   begin
@@ -125,8 +130,14 @@ var
     end;
     if (Result = -1) and (J = High(LConfigs)) then
       Result := OverRes;
-  end;
 
+
+    {$ELSE}
+  begin
+    Result := CDWidgetset.eglGetFixedAttribute(Attrib,Param);
+    {$ENDIF}
+  end;
+  {$IFNDEF ANDROID}
   function ChooseConfig: Boolean;
   begin
     if eglChooseConfig(FDisplay, nil, nil, 0, @LNumElements) = EGL_TRUE then
@@ -137,7 +148,7 @@ var
     else
       Result := False;
   end;
-
+  {$ENDIF}
 const
   cAAToSamples: array[aaDefault..csa16xHQ] of Integer =
     (0, 0, 2, 2, 4, 4, 6, 8, 16, 8, 8, 16, 16);
@@ -146,7 +157,11 @@ const
 begin
   // Temporarily create a list of available attributes
   LConfigs := nil;
+  {$IFNDEF ANDROID}
   if not ChooseConfig then
+  {$ELSE}
+  if not (CDWidgetset.eglGetConfigs=EGL_TRUE) then
+  {$ENDIF}
     raise EGLContext.Create('Failed to accept attributes');
 
     ColorBits := GetFixedAttribute(EGL_BUFFER_SIZE, ColorBits);
@@ -189,10 +204,20 @@ begin
 
   AddIAttrib(EGL_SURFACE_TYPE, EGL_WINDOW_BIT);
   AddIAttrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT);
-
+  {$IFNDEF ANDROID}
   if eglChooseConfig(FDisplay, @FiAttribs[0], @FConfig, 1, @LNumElements) <> EGL_TRUE then
     raise EGLContext.Create('Failed to accept attributes');
+  {$ELSE}
+  FConfig:=CDWidgetset.eglChooseConfig;
+  {$ENDIF}
 end;
+
+{$IFDEF ANDROID}
+procedure TGLOESContext.AddIAttrib(attrib, value: Integer);
+begin
+  CDWidgetset.eglAddIAttrib(attrib,value);
+end;
+{$ENDIF}
 
 // DoCreateContext
 //
@@ -202,12 +227,11 @@ var
   MajorVersion, MinorVersion, Err: TGLInt;
   shareRC: EGLContext;
   LWND: EGLNativeWindowType;
+  p:Pointer;
 begin
   {: Load OpenGL ES library. }
-
   if not InitOpenGL then
     RaiseLastOSError;
-
  {: Get the default display.
 		EGL uses the concept of a "display" which in most environments
 		corresponds to a single physical screen. Since we usually want
@@ -215,15 +239,15 @@ begin
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific. }
 
+{$IFNDEF ANDROID}
+
 {$IFDEF FPC}
   DoGetHandles(outputDevice, HDC(FDC));
 {$ELSE}
   FDC := HDC(outputDevice);
   LWND := WindowFromDC(FDC);
 {$ENDIF}
-
   FDisplay := eglGetDisplay(FDC);
-
   if FDisplay = EGL_NO_DISPLAY then
     raise EGLContext.Create('Failed to get display');
 
@@ -240,6 +264,14 @@ begin
 
   if eglInitialize(FDisplay, @MajorVersion, @MinorVersion) = 0 then
     raise EGLContext.Create('Failed to initialize OpenGL ES');
+{$ELSE}
+
+  //initialization start on Activity Create
+  CDWidgetset.GeteglVersion;
+  MajorVersion := CDWidgetset.MajorVersion;
+  MinorVersion := CDWidgetset.MinorVersion;
+
+{$ENDIF}
 
   FGL.EGL_VERSION_1_0 := IsVersionMet(1, 0, MajorVersion, MinorVersion);
   FGL.EGL_VERSION_1_1 := IsVersionMet(1, 1, MajorVersion, MinorVersion);
@@ -257,8 +289,13 @@ begin
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE. }
 
-  ClearIAttribs;
-  ChoosePixelFormat;
+{$IFNDEF ANDROID}
+ClearIAttribs;
+{$ELSE}
+if FGL.EGL_VERSION_1_3 or FGL.EGL_VERSION_1_4 or FGL.EGL_VERSION_2_0 then
+  CDWidgetset.SetContextClientVersion2;
+{$ENDIF}
+ChoosePixelFormat;
 
   {: Create a surface to draw to.
 		Use the config picked in the previous step and the native window
@@ -267,17 +304,24 @@ begin
 		fullscreen if there is no windowing system).
 		Pixmaps and pbuffers are surfaces which only exist in off-screen
 		memory. }
+{$IFNDEF ANDROID}
+  FSurface := eglCreateWindowSurface(FDisplay, FConfig, LWND, nil);
+{$ELSE}
+  FSurface := CDWidgetset.CreateSurface(FConfig);
+{$ENDIF}
 
-	FSurface := eglCreateWindowSurface(FDisplay, FConfig, LWND, nil);
+{$IFNDEF ANDROID}
   Err := eglGetError;
-	if Err <> EGL_SUCCESS then
+{$ELSE}
+  Err := CDWidgetset.eglGetError;
+{$ENDIF}
+  if Err <> EGL_SUCCESS then
     raise EGLContext.Create('Failed to create surface to draw');
 
   {: Create a context.
 		EGL has to create a context for OpenGL ES. Our OpenGL ES resources
 		like textures will only be valid inside this context
 		(or shared contexts) }
-
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
     shareRC := TGLOESContext(ServiceContext).FContext
   else if Assigned(FShareContext) then
@@ -285,11 +329,16 @@ begin
   else
     shareRC := EGL_NO_CONTEXT;
 
+  {$IFNDEF ANDROID}
   ClearIAttribs;
   if FGL.EGL_VERSION_1_3 then
     AddIAttrib(EGL_CONTEXT_CLIENT_VERSION, 2);
 
-	FContext := eglCreateContext(FDisplay, FConfig, shareRC, @FiAttribs[0]);
+  FContext := eglCreateContext(FDisplay, FConfig, shareRC, @FiAttribs[0]);
+  {$ELSE}
+  FContext := CDWidgetset.CreateContext(FConfig, shareRC);
+  {$ENDIF}
+
   if Assigned(shareRC) then
   begin
     if eglGetError = EGL_SUCCESS then
@@ -300,12 +349,21 @@ begin
     else
     begin
       GLSLogger.LogWarning(glsFailedToShare);
+      {$IFNDEF ANDROID}
       FContext := eglCreateContext(FDisplay, FConfig, EGL_NO_CONTEXT, @FiAttribs[0]);
+      {$ELSE}
+      FContext := CDWidgetset.CreateContext(FConfig, EGL_NO_CONTEXT);
+      {$ENDIF}
     end;
   end;
 
-  Err := eglGetError;
-	if Err <> EGL_SUCCESS then
+
+    {$IFNDEF ANDROID}
+    Err := eglGetError;
+    {$ELSE}
+    Err := CDWidgetset.eglGetError;
+    {$ENDIF}
+    if Err <> EGL_SUCCESS then
     raise EGLContext.Create('Failed to create OES rendering context');
 
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
@@ -370,8 +428,14 @@ end;
 procedure TGLOESContext.DoDestroyContext;
 begin
   if FContext <> EGL_NO_CONTEXT then
-    if eglDestroyContext(FDisplay, FContext) <> EGL_TRUE then
-      raise EGLContext.Create(cDeleteContextFailed);
+    {$IFNDEF ANDROID}
+      if eglDestroyContext(FDisplay, FContext) <> EGL_TRUE then
+        raise EGLContext.Create(cDeleteContextFailed);
+    {$ELSE}
+    CDWidgetset.DestroySurface(FSurface);
+    CDWidgetset.DestroyContext(FContext);
+    //finalisation on Destroy Actyvity
+    {$ENDIF}
 
   FDisplay := EGL_NO_DISPLAY;
   FContext := EGL_NO_CONTEXT;
@@ -383,10 +447,21 @@ end;
 
 procedure TGLOESContext.DoActivate;
 begin
-  eglMakeCurrent(FDisplay, FSurface, FSurface, FContext);
-  if eglGetError <> EGL_SUCCESS then
-    raise EGLContext.Create(Format(cContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]));
+
+      {$IFNDEF ANDROID}
+      eglMakeCurrent(FDisplay, FSurface, FSurface, FContext);
+      {$ELSE}
+      CDWidgetset.PurgeBuffers(FSurface,FContext);
+      {$ENDIF}
+
+      {$IFNDEF ANDROID}
+   if eglGetError <> EGL_SUCCESS then
+   raise EGLContext.Create(Format(cContextActivationFailed,
+     [GetLastError, SysErrorMessage(GetLastError)]));
+     {$ELSE}
+
+     {$ENDIF}
+
 
   if not FGL.IsInitialized then
     FGL.Initialize(CurrentGLContext = nil);
@@ -397,7 +472,11 @@ end;
 
 procedure TGLOESContext.DoDeactivate;
 begin
+  {$IFNDEF ANDROID}
   eglMakeCurrent(FDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+  {$ELSE}
+  CDWidgetset.ClearBuffers;
+  {$ENDIF}
 end;
 
 // IsValid
@@ -413,8 +492,17 @@ end;
 
 procedure TGLOESContext.SwapBuffers;
 begin
-  eglSwapBuffers(FDisplay, FSurface);
-  if eglGetError <> EGL_SUCCESS then
+  {$IFNDEF ANDROID}
+    eglSwapBuffers(FDisplay, FSurface);
+  {$ELSE}
+    CDWidgetset.SwapBuffers(FSurface);
+  {$ENDIF}
+
+  {$IFNDEF ANDROID}
+ if eglGetError <> EGL_SUCCESS then
+ {$ELSE}
+ if CDWidgetset.eglGetError <> EGL_SUCCESS then
+ {$ENDIF}
     raise EGLContext.Create('Swap buffer failed');
 end;
 
@@ -423,13 +511,15 @@ end;
 
 function TGLOESContext.RenderOutputDevice: HDC;
 begin
+  {$IFNDEF ANDROID}
   Result := FDC;
+ {$ELSE}
+  Result := 0;
+ {$ENDIF}
 end;
 
 initialization
-
   RegisterGLContextClass(TGLOESContext);
-
 {$ENDIF GLS_OPENGL_ES}
 
 end.

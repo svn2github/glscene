@@ -2679,8 +2679,10 @@ end;
 initialization
 
 {$IFDEF FPC}
+{$IFNDEF ANDROID}
   if Loadlibpng13 then
     ReadEntryPoints;
+{$ENDIF}
 {$ENDIF}
 
 finalization
