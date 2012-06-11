@@ -28,7 +28,7 @@ uses
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   Windows, // need
   WSLCLClasses, Win32Int, Win32WSForms,
-  Win32Proc, LCLMessageGlue, Win32WSControls, LCLVersion,
+  Win32Proc, LCLMessageGlue, Win32WSControls,
 {$IFEND}
 {$ENDIF}
   Classes,
