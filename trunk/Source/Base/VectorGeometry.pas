@@ -7670,7 +7670,7 @@ begin
   {$else}
     det := Abs((linePt1[0] - linePt0[0]) * (lineDir0[1]*lineDir1[2] - lineDir1[1]*lineDir0[2]) -
                (linePt1[1] - linePt0[1]) * (lineDir0[0]*lineDir1[2] - lineDir1[0]*lineDir0[2]) +
-               (linePt1[2] - linePt0[2]) * (lineDir0[0]*lineDir1[1] - lineDir1[0]*lineDir0[1]);
+               (linePt1[2] - linePt0[2]) * (lineDir0[0]*lineDir1[1] - lineDir1[0]*lineDir0[1]));
   {$endif}
   if det < cBIAS then
     Result := PointLineDistance(linePt0, linePt1, lineDir1)
