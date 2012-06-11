@@ -923,6 +923,7 @@ end;
 
 destructor TCUDAContext.Destroy;
 begin
+  DestroyAllHandles;
   CUDAContextManager.DestroyContext(Self);
   FHandleList.Destroy;
   inherited;

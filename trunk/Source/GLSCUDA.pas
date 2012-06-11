@@ -141,6 +141,7 @@ type
     procedure LoadFromFile(const AFilename: string);
     procedure LoadFromSource;
     procedure Unload;
+    procedure LoadAndCompile;
 
     property Context: TCUDAContext read GetContext;
     property CodeType: TGLSCUDACompilerOutput read FCodeType;
@@ -998,6 +999,14 @@ begin
     if FStatus <> CUDA_SUCCESS then
       Abort;
   end;
+end;
+
+// LoadAndCompile
+//
+
+procedure TCUDAModule.LoadAndCompile;
+begin
+  AllocateHandles;
 end;
 
 // Unload
