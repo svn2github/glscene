@@ -289,11 +289,8 @@ end;
 
 procedure TGLSceneForm.OnSurfaceCreated(Sender: TObject);
 begin
-
   FBuffer.Resize(Self.Width, Self.Height);
   FBuffer.CreateRC(GetDC(Handle), false);
-  if (not FBuffer.RCInstantiated) then
-  DebugLn('TGLSceneForm RenderingContext=nil');
 end;
 
 // Holder Created
@@ -311,8 +308,6 @@ procedure TGLSceneForm.OnSurfaceChanged(Sender: TObject);
 begin
   if Assigned(FBuffer) then
     FBuffer.Resize(self.Width, self.Height);
-  if (not FBuffer.RCInstantiated) then
-  DebugLn('TGLSceneForm OnSurfaceChanged=nil');
 end;
 {$ENDIF}
 
@@ -322,15 +317,21 @@ end;
 procedure TGLSceneForm.Loaded;
 begin
   inherited Loaded;
-  {$IFNDEF ANDROID}
   // initiate window creation
   HandleNeeded;
   if not (csDesigning in ComponentState) then
   begin
+  {$IFNDEF ANDROID}
     if FFullScreenVideoMode.FEnabled then
       StartupFS;
-  end;
+  {$ELSE}
+  if FFullScreenVideoMode.FEnabled then
+    CDWidgetset.SetFullScreenMode(1)
+  else
+    CDWidgetset.SetFullScreenMode(0);
   {$ENDIF}
+  end;
+
 end;
 
 {$IFDEF GLS_DELPHI_OR_CPPB}
@@ -431,8 +432,6 @@ begin
   DebugLn('LMPaint');
   BeginPaint(Handle, PS);
   try
-    if (not FBuffer.RCInstantiated) then
-  DebugLn('TGLSceneForm LMPaint=nil');
     if IsRenderingContextAvailable and (Width > 0) and (Height > 0) then
       FBuffer.Render;
   finally
@@ -497,7 +496,6 @@ end;
 
 procedure TGLFullScreenVideoMode.SetEnabled(aValue: Boolean);
 begin
-  {$IFNDEF ANDROID}
   if FEnabled <> aValue then
   begin
     FEnabled := aValue;
@@ -505,12 +503,18 @@ begin
       or (csLoading in FOwner.ComponentState)) then
     begin
       if FEnabled then
+        {$IFNDEF ANDROID}
         FOwner.StartupFS
       else
         FOwner.ShutdownFS;
+      {$ELSE}
+        CDWidgetset.SetFullScreenMode(1)
+      else
+        CDWidgetset.SetFullScreenMode(0);
+      {$ENDIF}
+
     end;
   end;
-  {$ENDIF}
 end;
 
 constructor TGLFullScreenVideoMode.Create(AOwner: TGLSceneForm);
@@ -621,7 +625,7 @@ begin
    {$IFNDEF ANDROID}
     Invalidate;
    {$ELSE}
-   CDWidgetset.LCLDoInvalidate;
+ //  CDWidgetset.LCLDoInvalidate;
    {$ENDIF}
 end;
 

@@ -192,6 +192,7 @@ type
     function SwapBuffers(asurface : EGLSurface): boolean;
     function eglGetError():EGLint;
     procedure SetContextClientVersion2;
+    procedure SetFullScreenMode(fs: EGLBoolean);
 
     function eglGetConfigs(): EGLint;
     function eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
@@ -411,6 +412,7 @@ var
   javaMethod_LCLDoSwapBuffers: jmethodid = nil;
   javaMethod_LCLeglGetError: jmethodid = nil;
   javaMethod_mEGLContextClientVersion: JfieldID=nil;
+  javaMethod_SetFullScreen: jmethodid = nil;
 
   javaMethod_LCLGetConfigs: jmethodid = nil;
   javaMethod_LCLGetFixedAttribute: jmethodid = nil;

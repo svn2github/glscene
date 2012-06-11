@@ -511,6 +511,7 @@ begin
 
   javaMethod_LCLeglGetError:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLeglGetError', '()I');
   javaMethod_mEGLContextClientVersion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'mEGLContextClientVersion', 'I');
+  javaMethod_SetFullScreen:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetFullScreen', '(Z)V');
 
   javaMethod_LCLGetConfigs:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetConfigs', '()I');
   javaMethod_LCLGetFixedAttribute:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetFixedAttribute', '(II)I');
@@ -616,6 +617,15 @@ end;
 procedure TCDWidgetSet.SetContextClientVersion2;
 begin
   javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaMethod_mEGLContextClientVersion, 2);
+end;
+
+procedure TCDWidgetSet.SetFullScreenMode(fs: EGLBoolean);
+var
+lParams: array[0..0] of JValue;
+begin
+  // Call the method
+  lParams[0].z := fs;
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_SetFullScreen,@lParams[0]);
 end;
 
 

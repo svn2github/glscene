@@ -3,15 +3,15 @@
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Release"/>
-    <Units Count="114">
+    <Units Count="115">
       <Unit0>
         <Filename Value="androidlcltest.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="androidlcltest"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="27" Y="10"/>
+        <TopLine Value="11"/>
+        <CursorPos X="27" Y="20"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -23,12 +23,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainform"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="25"/>
-        <CursorPos X="25" Y="46"/>
+        <TopLine Value="1"/>
+        <CursorPos X="34" Y="8"/>
         <UsageCount Value="201"/>
-        <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
@@ -806,33 +804,27 @@
       <Unit89>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
         <UnitName Value="CustomDrawnInt"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="176"/>
-        <CursorPos X="22" Y="195"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
+        <TopLine Value="361"/>
+        <CursorPos X="29" Y="380"/>
+        <UsageCount Value="32"/>
       </Unit89>
       <Unit90>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
         <UnitName Value="GLScene_Context_OES"/>
-        <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="23"/>
+        <TopLine Value="214"/>
         <CursorPos X="10" Y="23"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="32"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit90>
       <Unit91>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
         <UnitName Value="jni"/>
-        <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="17"/>
-        <CursorPos X="6" Y="33"/>
-        <UsageCount Value="34"/>
-        <Loaded Value="True"/>
+        <TopLine Value="1"/>
+        <CursorPos X="24" Y="7"/>
+        <UsageCount Value="32"/>
       </Unit91>
       <Unit92>
         <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
@@ -855,55 +847,45 @@
       <Unit94>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
         <UnitName Value="GLScene_Base_Log"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
         <TopLine Value="25"/>
         <CursorPos X="7" Y="41"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="28"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit94>
       <Unit95>
         <Filename Value="../../../GLScene1.2/Source/GLScene.inc"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
         <TopLine Value="46"/>
-        <CursorPos X="3" Y="65"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
+        <CursorPos X="26" Y="52"/>
+        <UsageCount Value="28"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit95>
       <Unit96>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Adapter"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3510"/>
         <CursorPos X="2" Y="3530"/>
-        <UsageCount Value="27"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="25"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit96>
       <Unit97>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Tokens.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Tokens"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="37"/>
         <CursorPos X="35" Y="47"/>
-        <UsageCount Value="29"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="27"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit97>
       <Unit98>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
         <UnitName Value="GLScene_Core"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8524"/>
         <CursorPos X="31" Y="8543"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="26"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit98>
       <Unit99>
@@ -917,12 +899,10 @@
       </Unit99>
       <Unit100>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="607"/>
-        <CursorPos X="3" Y="626"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
+        <TopLine Value="575"/>
+        <CursorPos X="100" Y="515"/>
+        <UsageCount Value="26"/>
       </Unit100>
       <Unit101>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf_android.inc"/>
@@ -1014,13 +994,10 @@
       <Unit111>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
         <UnitName Value="GLScene_Viewer_Form"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="618"/>
-        <CursorPos X="4" Y="628"/>
-        <UsageCount Value="14"/>
-        <Loaded Value="True"/>
+        <TopLine Value="360"/>
+        <CursorPos X="18" Y="368"/>
+        <UsageCount Value="12"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit111>
       <Unit112>
@@ -1041,131 +1018,31 @@
         <UsageCount Value="11"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit113>
+      <Unit114>
+        <Filename Value="uDev.pas"/>
+        <ComponentName Value="GLMainForm5"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="uDev"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="2"/>
+        <CursorPos X="3" Y="23"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit114>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
-        <Caret Line="489" Column="27" TopLine="457"/>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="20" Column="27" TopLine="11"/>
       </Position1>
-      <Position2>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="622" Column="64" TopLine="577"/>
-      </Position2>
-      <Position3>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="1" Column="37" TopLine="1"/>
-      </Position3>
-      <Position4>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="376" Column="29" TopLine="358"/>
-      </Position4>
-      <Position5>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="1" Column="69" TopLine="1"/>
-      </Position5>
-      <Position6>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="264" Column="67" TopLine="246"/>
-      </Position6>
-      <Position7>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="7" Column="13" TopLine="1"/>
-      </Position7>
-      <Position8>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
-        <Caret Line="18" Column="139" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="29" Column="9" TopLine="13"/>
-      </Position9>
-      <Position10>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="30" Column="9" TopLine="13"/>
-      </Position10>
-      <Position11>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="31" Column="9" TopLine="13"/>
-      </Position11>
-      <Position12>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="30" Column="9" TopLine="13"/>
-      </Position12>
-      <Position13>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
-        <Caret Line="47" Column="29" TopLine="31"/>
-      </Position13>
-      <Position14>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
-        <Caret Line="400" Column="15" TopLine="394"/>
-      </Position14>
-      <Position15>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
-        <Caret Line="439" Column="10" TopLine="423"/>
-      </Position15>
-      <Position16>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
-        <Caret Line="3366" Column="9" TopLine="3343"/>
-      </Position16>
-      <Position17>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
-        <Caret Line="3529" Column="71" TopLine="3513"/>
-      </Position17>
-      <Position18>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
-        <Caret Line="3524" Column="16" TopLine="3509"/>
-      </Position18>
-      <Position19>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
-        <Caret Line="3573" Column="32" TopLine="3557"/>
-      </Position19>
-      <Position20>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
-        <Caret Line="3529" Column="91" TopLine="3509"/>
-      </Position20>
-      <Position21>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="30" Column="33" TopLine="13"/>
-      </Position21>
-      <Position22>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="515" Column="100" TopLine="515"/>
-      </Position22>
-      <Position23>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="622" Column="29" TopLine="600"/>
-      </Position23>
-      <Position24>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
-        <Caret Line="195" Column="26" TopLine="177"/>
-      </Position24>
-      <Position25>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="514" Column="22" TopLine="499"/>
-      </Position25>
-      <Position26>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
-        <Caret Line="7" Column="24" TopLine="97"/>
-      </Position26>
-      <Position27>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <Caret Line="622" Column="35" TopLine="611"/>
-      </Position27>
-      <Position28>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
-        <Caret Line="502" Column="26" TopLine="483"/>
-      </Position28>
-      <Position29>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
-        <Caret Line="232" Column="16" TopLine="216"/>
-      </Position29>
-      <Position30>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
-        <Caret Line="507" Column="10" TopLine="489"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

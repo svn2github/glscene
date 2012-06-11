@@ -15,6 +15,8 @@ type
   { TForm1 }
 
   TForm1 = class(TGLSceneForm)//{GLScene}
+    GLCamera1: TGLCamera;
+    GLCube1: TGLCube;
     GLScene1: TGLScene;
   {  procedure Arrow1Click(Sender: TObject);
     procedure Arrow1MouseDown(Sender: TObject; Button: TMouseButton;

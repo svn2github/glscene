@@ -99,6 +99,7 @@ public class LCLActivity extends Activity implements SensorEventListener
     public LCLSurface(Context context)
     {
       super(context);
+     // SetFullScreen(false);
      // glsrender= new EglHelper();
       init();
       // Allows View.postInvalidate() to work
@@ -291,13 +292,13 @@ public class LCLActivity extends Activity implements SensorEventListener
   {
     super.onCreate(savedInstanceState);
     Log.v("LCLActivity", "Activity onCreate");
+    
     lclsurface = new LCLSurface(this);
     LCLDoStartEGL();
    // GLSRenderer glsrenderer;
    // glsrenderer = new GLSRenderer();
    // lclsurface.setRenderer(glsrenderer);
-    setContentView(lclsurface);
-    lclsurface.postInvalidate();
+
     
    
     // Tell the LCL that an OnCreate has happened and what is our instance
@@ -311,6 +312,9 @@ public class LCLActivity extends Activity implements SensorEventListener
     lclydpi = (int) metrics.ydpi;
 
     LCLOnCreate(this);
+    
+    setContentView(lclsurface);
+    lclsurface.postInvalidate();
   }
   
   @Override protected void onDestroy()
@@ -563,6 +567,24 @@ public class LCLActivity extends Activity implements SensorEventListener
   {  
 	  return  lclsurface.aholder.isCreating();
   }; 
+  
+  //переход в фуллскрин
+  public void SetFullScreen(boolean on) {
+      if (LOG_EGL) {
+		  Log.w("EglHelper", "SetFullScreen("+on+") tid=" + Thread.currentThread().getId());
+	  }	  
+      Window win = getWindow();
+      WindowManager.LayoutParams winParams = win.getAttributes();
+      final int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+      if (on) {
+              winParams.flags |=  bits;
+             requestWindowFeature(Window.FEATURE_NO_TITLE);
+      } else {
+              winParams.flags &= ~bits;
+              requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
+      }
+      win.setAttributes(winParams);
+}
  
   
   void LCLDoStartEGL()
