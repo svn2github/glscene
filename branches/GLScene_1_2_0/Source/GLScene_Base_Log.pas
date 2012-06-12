@@ -42,7 +42,10 @@ uses
 {$ENDIF}
   Classes, SysUtils, Dialogs, GLScene_Platform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
-{$IFDEF LINUX} , Process {$ENDIF};
+{$IFDEF LINUX}
+  {$IFNDEF ANDROID} , Process {$ENDIF}
+  {$IFDEF ANDROID} , LCLProc {$ENDIF}
+{$ENDIF};
 
 type
   { : Levels of importance of log messages }
@@ -391,8 +394,10 @@ end;
 
 destructor TLogSession.Shutdown;
 {$IFDEF LINUX}
+{$IFNDEF ANDROID}
 var
   lProcess: TProcess;
+  {$ENDIF}
 {$ENDIF}
 begin
 {$IFNDEF GLS_LOGGING}
@@ -412,6 +417,7 @@ begin
       PChar(LogFileName), nil, 1);
 {$ENDIF}
 {$IFDEF LINUX}
+{$IFNDEF ANDROID}
   if LogKindCount[lkFatalError] + LogKindCount[lkError] > 0 then
   begin
     lProcess := TProcess.Create(nil);
@@ -419,6 +425,7 @@ begin
     lProcess.Execute;
     lProcess.Destroy;
   end;
+{$ENDIF}
 {$ENDIF}
   if Self = GLSLogger then
     GLSLogger := nil;
@@ -429,6 +436,7 @@ end;
 
 procedure TLogSession.Log(const Desc: string; Level: TLogLevel = lkInfo);
 begin
+  DebugLn(Desc);
 {$IFNDEF GLS_LOGGING}
   if Self = GLSLogger then
     Exit;

@@ -7090,6 +7090,9 @@ const
     ' v2f_TexCoord0 = TexCoord0; }';
   cLightFragmentShader120 =
     '#version %s'#10#13 +
+    'precision highp float;'#10#13 +
+    'precision mediump int;'#10#13 +
+    'precision lowp sampler2D;'#10#13 +
     'varying vec2 v2f_TexCoord0;'#10#13 +
     'uniform sampler2D Glyph;'#10#13 +
     'uniform vec4 Diffuse;'#10#13 +

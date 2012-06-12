@@ -277,7 +277,7 @@ begin
   FGL.EGL_VERSION_1_2 := IsVersionMet(1, 2, MajorVersion, MinorVersion);
   FGL.EGL_VERSION_1_3 := IsVersionMet(1, 3, MajorVersion, MinorVersion);
   FGL.EGL_VERSION_1_4 := IsVersionMet(1, 4, MajorVersion, MinorVersion);
-  FGL.EGL_VERSION_2_0 := IsVersionMet(2, 0, MajorVersion, MinorVersion);
+  FGL.EGL_VERSION_2_0 := True{IsVersionMet(2, 0, MajorVersion, MinorVersion)};
 
   FAcceleration := chaHardware;
 
@@ -374,7 +374,7 @@ ChoosePixelFormat;
   try
     Activate;
     FGL.Initialize;
-    FGLStates.ForwardContext := FGL.VERSION_2_0;
+    FGLStates.ForwardContext := FGL.EGL_VERSION_2_0;
 
     GLSLogger.LogInfoFmt('OpenGL ES %d.%d context successfully created', [MajorVersion, MinorVersion]);
   finally

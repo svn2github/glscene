@@ -6036,7 +6036,7 @@ end;
 class function TGLESShader1.IsSupported: Boolean;
 begin
 {$IFDEF GLS_OPENGL_ES}
-  Result := GL.VERSION_2_0;
+  Result := GL.EGL_VERSION_2_0;
 {$ELSE}
   // Let shader is interpreted as desktop GLSL in design time
   Result := GL.ARB_shader_objects and IsDesignTime;
