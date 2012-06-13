@@ -6,6 +6,7 @@
    Platform independant viewer.<p>
 
     History:
+      <li>13/06/12 - Yar - Bugfix synchronization control for Mac OS (thanks to pchev)	
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>30/04/10 - Yar - Added vertical synchronization cntrol for Linux (by Rustam Asmandiarov aka Predato) 
       <li>17/09/07 - DaStr - Replaced $IFNDEF KYLIX to $IFDEF MSWINDOWS in 
@@ -78,14 +79,16 @@ end;
 {$ENDIF}
 {$IFDEF DARWIN}
 var ctx: TAGLContext;
+const ISync: Integer = 0;
+      INoSync: Integer = 1;
 begin
   if Assigned(GL) then
   begin
     ctx := GL.aGetCurrentContext();
     if Assigned(ctx) then
       case AVSyncMode of
-        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, 1);
-        vsmNoSync: GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, 0);
+        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @ISync); 
+        vsmNoSync: GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @INoSync);
       else
          Assert(False);
       end;
