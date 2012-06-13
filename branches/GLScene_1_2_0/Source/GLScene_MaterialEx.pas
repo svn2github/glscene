@@ -58,10 +58,24 @@ uses
 
 const
   cInternalShader = 'InternalShader';
+  cafMaterialFrontFaceAmbient = 'Material front face ambient';
   cafMaterialFrontFaceDiffuse = 'Material front face diffuse';
+  cafMaterialFrontFaceSpecular = 'Material front face specular';
+  cafMaterialFrontFaceEmission = 'Material front face emission';
+  cafMaterialFronFaceShininess = 'Material front face shininess';
   cafModelMatrix = 'World (model) matrix';
   cafViewProjectionMatrix = 'ViewProjection matrix';
   cafWorldViewProjectionMatrix = 'WorldViewProjection matrix';
+  cafNormalMatrix = 'WorldNormal matrix';
+  cafCameraPosition = 'Camera world position';
+  cafLightNumber = 'Lights number';
+  cafLightsWorldPosition = 'Lights world position';
+  cafLightsAmbient = 'Lights ambient';
+  cafLightsDiffuse = 'Lights diffuse';
+  cafLightsSpecular = 'Lights specular';
+  cafLightsSpotDirection = 'Lights spot direction';
+  cafLightsSpotCutoffExp = 'Lights spot cutoff and exponent';
+  cafLightsAttenuation = 'Lights attenuation';
 
 type
 
@@ -1512,6 +1526,7 @@ type
     { Private Declarations }
     FComponents: TGLMatLibComponents;
     FOnMatLibComponentFail: TOnMatLibComponentFail;
+    procedure OnGouraudShader120Initialize(Sender: TGLBaseShaderModel);
   protected
     { Protected Declarations }
     procedure Loaded; override;
@@ -4751,7 +4766,7 @@ begin
           FIsValid := (Pos('330', FSource.Strings[0]) > 0) or
             (Pos('410', FSource.Strings[0]) > 0)
         else
-          FIsValid := True;
+          FIsValid := Pos('100', FSource.Strings[0]) < 1;
 {$ELSE}
         FIsValid := (Pos('100', FSource.Strings[0]) > 0);
 {$ENDIF}
@@ -6279,10 +6294,261 @@ begin
 end;
 
 constructor TGLMaterialLibraryEx.Create(AOwner: TComponent);
+const
+  cLightVertexShader120 =
+'attribute vec3 Position;'#10#13 +
+'attribute vec3 Normal;'#10#13 +
+
+'uniform mat4 ModelMatrix;'#10#13 +
+'uniform mat4 ViewProjectionMatrix;'#10#13 +
+'uniform vec4 CameraPosition;'#10#13 +
+'uniform mat3 NormalMatrix;'#10#13 +
+
+'uniform vec4 MaterialAmbientColor;'#10#13 +
+'uniform vec4 MaterialDiffuseColor;'#10#13 +
+'uniform vec4 MaterialSpecularColor;'#10#13 +
+'uniform vec4 MaterialEmissionColor;'#10#13 +
+'uniform float MaterialShiness;'#10#13 +
+
+'varying vec4 v2f_Color;'#10#13 +
+
+'struct lrec {'#10#13 +
+'    vec4 WorldPosition;'#10#13 +
+'    vec3 Ambient;'#10#13 +
+'    vec3 Diffuse;'#10#13 +
+'    vec3 Specular;'#10#13 +
+'    vec3 SpotDirection;'#10#13 +
+'    float SpotExponent;'#10#13 +
+'    float ConstantAtten;'#10#13 +
+'    float LinearAtten;'#10#13 +
+'    float QuadAtten;'#10#13 +
+'    float SpotCosCutoff;'#10#13 +
+'};'#10#13 +
+
+'struct frec {'#10#13 +
+'    vec3 LightAmbient;'#10#13 +
+'    vec3 LightDiffuse;'#10#13 +
+'    vec3 LightSpecular;'#10#13 +
+'    vec4 WorldPosition;'#10#13 +
+'    vec3 Ambient;'#10#13 +
+'    vec3 Emissive;'#10#13 +
+'    vec3 Diffuse;'#10#13 +
+'    vec3 Specular;'#10#13 +
+'    float SpecularPower;'#10#13 +
+'    float Opacity;'#10#13 +
+'    float OpacityMask;'#10#13 +
+'    vec3 Normal;'#10#13 +
+'    vec3 CameraVector;'#10#13 +
+'    int LightIndex;'#10#13 +
+'};'#10#13 +
+
+'uniform int LightNumber;'#10#13 +
+'uniform vec4 LightWorldPosition[8];'#10#13 +
+'uniform vec4 LightAmbient[8];'#10#13 +
+'uniform vec4 LightDiffuse[8];'#10#13 +
+'uniform vec4 LightSpecular[8];'#10#13 +
+'uniform vec4 LightSpotDirection[8];'#10#13 +
+'uniform vec4 LightSpotCosCutoffExponent[8];'#10#13 +
+'uniform vec4 LightAttenuation[8];'#10#13 +
+
+'lrec GetLight(int I)'#10#13 +
+'{'#10#13 +
+'    lrec B;'#10#13 +
+'    B.WorldPosition = LightWorldPosition[I];'#10#13 +
+'    B.Ambient = LightAmbient[I].rgb;'#10#13 +
+'    B.Diffuse = LightDiffuse[I].rgb;'#10#13 +
+'    B.Specular = LightSpecular[I].rgb;'#10#13 +
+'    B.SpotDirection = LightSpotDirection[I].xyz;'#10#13 +
+'    B.ConstantAtten = LightAttenuation[I].x;'#10#13 +
+'    B.LinearAtten = LightAttenuation[I].y;'#10#13 +
+'    B.QuadAtten = LightAttenuation[I].z;'#10#13 +
+'    B.SpotCosCutoff = LightSpotCosCutoffExponent[I].x;'#10#13 +
+'    B.SpotExponent = LightSpotCosCutoffExponent[I].y;'#10#13 +
+'    return B;'#10#13 +
+'}'#10#13 +
+
+'void pointLight(inout frec A, lrec B)'#10#13 +
+'{'#10#13 +
+'    float nDotVP;'#10#13 +
+'    float nDotHV;'#10#13 +
+'    float attenuation;'#10#13 +
+'    float d;'#10#13 +
+'    vec3 VP;'#10#13 +
+'    vec3 halfVector;'#10#13 +
+'    float pf;'#10#13 +
+'    VP = B.WorldPosition.xyz - A.WorldPosition.xyz;'#10#13 +
+'    d = length(VP);'#10#13 +
+'    VP = normalize(VP);'#10#13 +
+'    attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);'#10#13 +
+'    halfVector = normalize(VP + A.CameraVector);'#10#13 +
+'    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13 +
+'    pf = max(0.0, dot(A.Normal, halfVector));'#10#13 +
+'    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13 +
+'    A.LightAmbient += B.Ambient * attenuation;'#10#13 +
+'    A.LightDiffuse += B.Diffuse * nDotVP * attenuation;'#10#13 +
+'    A.LightSpecular += B.Specular * nDotHV * attenuation;'#10#13 +
+'}'#10#13 +
+
+'void spotLight(inout frec A, lrec B)'#10#13 +
+'{'#10#13 +
+'    float nDotVP;'#10#13 +
+'    float nDotHV;'#10#13 +
+'    float spotDot;'#10#13 +
+'    float spotAttenuation;'#10#13 +
+'    float attenuation;'#10#13 +
+'    float d;'#10#13 +
+'    vec3 VP;'#10#13 +
+'    vec3 halfVector;'#10#13 +
+'    float pf;'#10#13 +
+'    VP = B.WorldPosition.xyz - A.WorldPosition.xyz;'#10#13 +
+'    d = length(VP);'#10#13 +
+'    VP = normalize(VP);'#10#13 +
+'    attenuation = 1.0 / (B.ConstantAtten + B.LinearAtten * d + B.QuadAtten * d * d);'#10#13 +
+'    spotDot = dot(-VP, normalize(B.SpotDirection));'#10#13 +
+'    if (spotDot < B.SpotCosCutoff) { spotAttenuation = 0.0; }'#10#13 +
+'    else { spotAttenuation = pow(spotDot, B.SpotExponent); }'#10#13 +
+'    attenuation *= spotAttenuation;'#10#13 +
+'    halfVector = normalize(VP + A.CameraVector);'#10#13 +
+'    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13 +
+'    pf = max(0.0, dot(A.Normal, halfVector));'#10#13 +
+'    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13 +
+'    A.LightAmbient += B.Ambient * attenuation;'#10#13 +
+'    A.LightDiffuse += B.Diffuse * nDotVP * attenuation;'#10#13 +
+'    A.LightSpecular += B.Specular * nDotHV * attenuation;'#10#13 +
+'}'#10#13 +
+
+'void directionalLight(inout frec A, lrec B)'#10#13 +
+'{'#10#13 +
+'    float nDotVP;'#10#13 +
+'    float nDotHV;'#10#13 +
+'    vec3 VP;'#10#13 +
+'    vec3 halfVector;'#10#13 +
+'    float pf;'#10#13 +
+'    VP = normalize(B.WorldPosition.xyz);'#10#13 +
+'    halfVector = normalize(VP + A.CameraVector);'#10#13 +
+'    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13 +
+'    nDotHV = pow(max(0.0, dot(A.Normal, halfVector)), A.SpecularPower);'#10#13 +
+'    A.LightAmbient += B.Ambient;'#10#13 +
+'    A.LightDiffuse += B.Diffuse * nDotVP;'#10#13 +
+'    A.LightSpecular += B.Specular * nDotHV;'#10#13 +
+'}'#10#13 +
+
+'void infiniteSpotLight(inout frec A, lrec B)'#10#13 +
+'{'#10#13 +
+'    float nDotVP;'#10#13 +
+'    float nDotHV;'#10#13 +
+'    vec3 VP;'#10#13 +
+'    vec3 halfVector;'#10#13 +
+'    float spotAttenuation;'#10#13 +
+'    vec3 Ppli;'#10#13 +
+'    vec3 Sdli;'#10#13 +
+'    float pf;'#10#13 +
+'    VP = normalize(B.WorldPosition.xyz);'#10#13 +
+'    halfVector = normalize(VP + A.CameraVector);'#10#13 +
+'    nDotVP = max(0.0, dot(A.Normal, VP));'#10#13 +
+'    pf = max(0.0, dot(A.Normal, halfVector));'#10#13 +
+'    nDotHV = sign(pf)*pow(pf, A.SpecularPower);'#10#13 +
+'    Ppli = -VP;'#10#13 +
+'    Sdli = B.SpotDirection;'#10#13 +
+'    spotAttenuation = pow(dot(Ppli, Sdli), B.SpotExponent);'#10#13 +
+'    A.LightAmbient += B.Ambient * spotAttenuation;'#10#13 +
+'    A.LightDiffuse += B.Diffuse * nDotVP * spotAttenuation;'#10#13 +
+'    A.LightSpecular += B.Specular * nDotHV * spotAttenuation;'#10#13 +
+'}'#10#13 +
+
+'void main()'#10#13 +
+'{'#10#13 +
+'    lrec A;'#10#13 +
+'    frec B;'#10#13 +
+'    B.WorldPosition = ModelMatrix*vec4(Position, 1.0);'#10#13 +
+'    vec3 ViewDir = B.WorldPosition.xyz - CameraPosition.xyz;'#10#13 +
+'    vec3 N = NormalMatrix*Normal;'#10#13 +
+'    B.Normal = normalize(N);'#10#13 +
+'    B.Ambient = MaterialAmbientColor.rgb;'#10#13 +
+'    B.Emissive = MaterialEmissionColor.rgb;'#10#13 +
+'    B.Diffuse = MaterialDiffuseColor.rgb;'#10#13 +
+'    B.Specular = MaterialSpecularColor.rgb;'#10#13 +
+'    B.SpecularPower = MaterialShiness;'#10#13 +
+'    B.Opacity = MaterialDiffuseColor.a;'#10#13 +
+'    B.CameraVector = normalize(ViewDir);'#10#13 +
+
+'    B.LightAmbient = vec3(0.0);'#10#13 +
+'    B.LightDiffuse = vec3(0.0);'#10#13 +
+'    B.LightSpecular = vec3(0.0);'#10#13 +
+'    for (int I = 0; I < 8 && I < LightNumber; I++)'#10#13 +
+'    {'#10#13 +
+'        lrec LightSource = GetLight(I);'#10#13 +
+'        if (LightSource.WorldPosition.w == 1.0)'#10#13 +
+'        {'#10#13 +
+'            if (LightSource.SpotCosCutoff == -1.0){ pointLight(B,LightSource); }'#10#13 +
+'            else { spotLight(B,LightSource); }'#10#13 +
+'        }'#10#13 +
+'        else'#10#13 +
+'        {'#10#13 +
+'            if (LightSource.SpotCosCutoff == -1.0) { directionalLight(B,LightSource); }'#10#13 +
+'            else { infiniteSpotLight(B,LightSource); }'#10#13 +
+'        }'#10#13 +
+'    }'#10#13 +
+
+'    B.LightAmbient = clamp(B.LightAmbient,vec3(0.0),vec3(1.0));'#10#13 +
+'    B.LightDiffuse = clamp(B.LightDiffuse,vec3(0.0),vec3(1.0));'#10#13 +
+'    B.LightSpecular = clamp(B.LightSpecular,vec3(0.0),vec3(1.0));'#10#13 +
+'    vec3 finalColor = B.Emissive + B.Ambient * B.LightAmbient;'#10#13 +
+'    finalColor += B.Diffuse * B.LightDiffuse;'#10#13 +
+'    finalColor += B.Specular * B.LightSpecular;'#10#13 +
+'    v2f_Color = vec4(finalColor, B.Opacity);'#10#13 +
+'}';
+
+  cLightFragmentShader120 =
+    '#version 120'#10#13 +
+//    'precision highp float;'#10#13 +
+//    'precision mediump int;'#10#13 +
+//    'precision lowp sampler2D;'#10#13 +
+    'varying vec4 Color;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_FragColor = Color; }'#10#13;
+
+  cLightFragmentShaderES =
+    '#version 120'#10#13 +
+    'precision highp float;'#10#13 +
+    'precision mediump int;'#10#13 +
+    'varying vec4 Color;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_FragColor = Color; }'#10#13;
+
+var
+  LShader: TGLShaderEx;
 begin
   inherited;
   FMaterials := TGLLibMaterialsEx.Create(Self);
   FComponents := TGLMatLibComponents.Create(Self);
+  if csDesigning in ComponentState then
+  with Materials.Add do
+  begin
+    Name := 'Gouraud';
+    // GLSL120
+    LShader := AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add('#version 120'#10#13 + cLightVertexShader120);
+    ShaderModel3.LibVertexShaderName := LShader.Name;
+    LShader := AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(cLightFragmentShader120);
+    ShaderModel3.LibFragmentShaderName := LShader.Name;
+    OnSM3UniformInitialize := OnGouraudShader120Initialize;
+    ShaderModel3.Enabled := True;
+    // ESLS
+    LShader := AddShader(cInternalShader);
+    LShader.ShaderType := shtVertex;
+    LShader.Source.Add('#version 100'#10#13 + cLightVertexShader120);
+    ShaderESSL1.LibVertexShaderName := LShader.Name;
+    LShader := AddShader(cInternalShader);
+    LShader.ShaderType := shtFragment;
+    LShader.Source.Add(cLightFragmentShaderES);
+    ShaderESSL1.LibFragmentShaderName := LShader.Name;
+    OnESSL1UniformInitialize := OnGouraudShader120Initialize;
+    ShaderESSL1.Enabled := True;
+  end;
 end;
 
 procedure TGLMaterialLibraryEx.DefineProperties(Filer: TFiler);
@@ -6317,6 +6583,30 @@ end;
 procedure TGLMaterialLibraryEx.Loaded;
 begin
   inherited;
+end;
+
+procedure TGLMaterialLibraryEx.OnGouraudShader120Initialize(
+  Sender: TGLBaseShaderModel);
+begin
+  with Sender do
+  begin
+    Uniforms['ModelMatrix'].AutoSetMethod := cafModelMatrix;
+    Uniforms['ViewProjectionMatrix'].AutoSetMethod := cafViewProjectionMatrix;
+    Uniforms['CameraPosition'].AutoSetMethod := cafCameraPosition;
+    Uniforms['MaterialAmbientColor'].AutoSetMethod := cafMaterialFrontFaceAmbient;
+    Uniforms['MaterialDiffuseColor'].AutoSetMethod := cafMaterialFrontFaceDiffuse;
+    Uniforms['MaterialSpecularColor'].AutoSetMethod := cafMaterialFrontFaceSpecular;
+    Uniforms['MaterialEmissionColor'].AutoSetMethod := cafMaterialFrontFaceEmission;
+    Uniforms['MaterialShiness'].AutoSetMethod := cafMaterialFronFaceShininess;
+    Uniforms['LightNumber'].AutoSetMethod := cafLightNumber;
+    Uniforms['LightWorldPosition'].AutoSetMethod := cafLightsWorldPosition;
+    Uniforms['LightAmbient'].AutoSetMethod := cafLightsAmbient;
+    Uniforms['LightDiffuse'].AutoSetMethod := cafLightsDiffuse;
+    Uniforms['LightSpecular'].AutoSetMethod := cafLightsSpecular;
+    Uniforms['LightSpotDirection'].AutoSetMethod := cafLightsSpotDirection;
+    Uniforms['LightSpotCosCutoffExponent'].AutoSetMethod := cafLightsSpotCutoffExp;
+    Uniforms['LightAttenuation'].AutoSetMethod := cafLightsAttenuation;
+  end;
 end;
 
 procedure TGLMaterialLibraryEx.ReadComponents(AStream: TStream);
@@ -8088,7 +8378,7 @@ begin
   FLightsBufferPerContext := TLightsBufferTree.Create(CompareGLState, nil);
   FLightBufferSizeFlag := False;
 
-  RegisterUniformAutoSetMethod('Camera world position', GLSLType4F,
+  RegisterUniformAutoSetMethod(cafCameraPosition, GLSLType4F,
     SetCameraPosition);
   RegisterUniformAutoSetMethod('LightSource[0] world position', GLSLType4F,
     SetLightSource0Position);
@@ -8096,7 +8386,7 @@ begin
     SetModelMatrix);
   RegisterUniformAutoSetMethod('WorldView matrix', GLSLTypeMat4F,
     SetModelViewMatrix);
-  RegisterUniformAutoSetMethod('WorldNormal matrix', GLSLTypeMat3F,
+  RegisterUniformAutoSetMethod(cafNormalMatrix, GLSLTypeMat3F,
     SetNormalModelMatrix);
   RegisterUniformAutoSetMethod('Inverse World matrix', GLSLTypeMat4F,
     SetInvModelMatrix);
@@ -8109,15 +8399,15 @@ begin
     SetViewProjectionMatrix);
   RegisterUniformAutoSetMethod(cafWorldViewProjectionMatrix, GLSLTypeMat4F,
     SetWorldViewProjectionMatrix);
-  RegisterUniformAutoSetMethod('Material front face emission', GLSLType4F,
+  RegisterUniformAutoSetMethod(cafMaterialFrontFaceEmission, GLSLType4F,
     SetMaterialFrontEmission);
-  RegisterUniformAutoSetMethod('Material front face ambient', GLSLType4F,
+  RegisterUniformAutoSetMethod(cafMaterialFrontFaceAmbient, GLSLType4F,
     SetMaterialFrontAmbient);
   RegisterUniformAutoSetMethod(cafMaterialFrontFaceDiffuse, GLSLType4F,
     SetMaterialFrontDiffuse);
-  RegisterUniformAutoSetMethod('Material front face specular', GLSLType4F,
+  RegisterUniformAutoSetMethod(cafMaterialFrontFaceSpecular, GLSLType4F,
     SetMaterialFrontSpecular);
-  RegisterUniformAutoSetMethod('Material front face shininess', GLSLType1F,
+  RegisterUniformAutoSetMethod(cafMaterialFronFaceShininess, GLSLType1F,
     SetMaterialFrontShininess);
   RegisterUniformAutoSetMethod('Material back face emission', GLSLType4F,
     SetMaterialBackEmission);
@@ -8129,21 +8419,21 @@ begin
     SetMaterialBackSpecular);
   RegisterUniformAutoSetMethod('Material back face shininess', GLSLType1F,
     SetMaterialBackShininess);
-  RegisterUniformAutoSetMethod('Lights number', GLSLType1I,
+  RegisterUniformAutoSetMethod(cafLightNumber, GLSLType1I,
     SetLightsNumber);
-  RegisterUniformAutoSetMethod('Lights world position', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsWorldPosition, GLSLType4f,
     SetLightWorldPosition);
-  RegisterUniformAutoSetMethod('Lights ambient', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsAmbient, GLSLType4f,
     SetLightAmbient);
-  RegisterUniformAutoSetMethod('Lights diffuse', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsDiffuse, GLSLType4f,
     SetLightDiffuse);
-  RegisterUniformAutoSetMethod('Lights specular', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsSpecular, GLSLType4f,
     SetLightSpecular);
-  RegisterUniformAutoSetMethod('Lights spot direction', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsSpotDirection, GLSLType4f,
     SetLightSpotDirection);
-  RegisterUniformAutoSetMethod('Lights spot cutoff and exponent', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsSpotCutoffExp, GLSLType4f,
     SetLightSpotCosCutoffExponent);
-  RegisterUniformAutoSetMethod('Lights attenuation', GLSLType4f,
+  RegisterUniformAutoSetMethod(cafLightsAttenuation, GLSLType4f,
     SetLightAttenuation);
   RegisterUniformAutoSetMethod('Lights indices', GLSLType1I,
     SetLightIndices);

@@ -130,6 +130,7 @@ type
     FDLO: TGLListHandle;
     FVAO_BuildIn: TGLVertexArrayHandle;
     FVAO_Generic: TGLVertexArrayHandle;
+    FVAO_Virtual: TGLVirtualHandle;
     FOwner: TComponent;
     function GetAttributes(Attribs: TAttribLocation): Boolean;
     function GetAttributesType(Attribs: TAttribLocation): TGLSLDataType;
@@ -181,6 +182,7 @@ type
     function GetDLO: TGLListHandle;
     function GetVAO_BuildIn: TGLVertexArrayHandle;
     function GetVAO_Generic: TGLVertexArrayHandle;
+    function GetVAO_Virtual: TGLVirtualHandle;
     function GetVertexCount: Integer;
   public
     { Public Declarations }
@@ -823,10 +825,12 @@ begin
   FElementSectorIndex := -1;
   FTagName := 'Nameless';
 
-  FVAO_BuildIn := TGLVertexArrayHandle.Create;
-  FVAO_BuildIn.OnPrapare := DoOnPrepare;
-  FVAO_Generic := TGLVertexArrayHandle.Create;
-  FVAO_Generic.OnPrapare := DoOnPrepare;
+//  FVAO_BuildIn := TGLVertexArrayHandle.Create;
+//  FVAO_BuildIn.OnPrapare := DoOnPrepare;
+//  FVAO_Generic := TGLVertexArrayHandle.Create;
+//  FVAO_Generic.OnPrapare := DoOnPrepare;
+//  FVAO_Virtual := TGLVirtualHandle.Create;
+//  FVAO_Virtual.OnPrapare := DoOnPrepare;
 end;
 
 destructor TMeshAtom.Destroy;
@@ -843,6 +847,7 @@ begin
   FreeAndNil(FDLO);
   FreeAndNil(FVAO_BuildIn);
   FreeAndNil(FVAO_Generic);
+  FreeAndNil(FVAO_Virtual);
 {$IFDEF GLS_MULTITHREAD}
   FLock.Destroy;
 {$ENDIF}
@@ -879,6 +884,16 @@ begin
   Result := FVAO_Generic;
 end;
 
+function TMeshAtom.GetVAO_Virtual: TGLVirtualHandle;
+begin
+  if not Assigned(FVAO_Virtual) then
+  begin
+    FVAO_Virtual := TGLVirtualHandle.Create;
+    FVAO_Virtual.OnPrapare := DoOnPrepare;
+  end;
+  Result := FVAO_Virtual;
+end;
+
 function TMeshAtom.GetVertexCount: Integer;
 var
   A: TAttribLocation;
@@ -907,7 +922,8 @@ procedure TMeshAtom.DoOnPrepare(Sender: TGLContext);
 begin
   if IsHandleNull(FDLO)
     and IsHandleNull(FVAO_BuildIn)
-    and IsHandleNull(FVAO_Generic) then
+    and IsHandleNull(FVAO_Generic)
+    and IsHandleNull(FVAO_Virtual) then
   begin
     FBufferRevision := -1;
     FArraySectorIndex := -1;

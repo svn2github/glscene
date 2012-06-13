@@ -27,7 +27,7 @@ uses
   LCLProc,
 {$IFDEF ANDROID}
   customdrawnint,
-{$IFEND}
+{$ENDIF}
 {$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
   Windows, // need
   WSLCLClasses, Win32Int, Win32WSForms,

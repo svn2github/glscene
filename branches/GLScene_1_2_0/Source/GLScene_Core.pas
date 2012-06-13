@@ -7080,7 +7080,7 @@ const
    'ParallelLightMaterial',
    'ParallelSpotLightMaterial');
   cLightVertexShader120 =
-    '#version %s'#10#13 +
+    '#version 120'#10#13 +
     'attribute vec3 Position;'#10#13 +
     'attribute vec2 TexCoord0;'#10#13 +
     'varying vec2 v2f_TexCoord0;'#10#13 +
@@ -7089,10 +7089,7 @@ const
     ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
     ' v2f_TexCoord0 = TexCoord0; }';
   cLightFragmentShader120 =
-    '#version %s'#10#13 +
-    'precision highp float;'#10#13 +
-    'precision mediump int;'#10#13 +
-    'precision lowp sampler2D;'#10#13 +
+    '#version 120'#10#13 +
     'varying vec2 v2f_TexCoord0;'#10#13 +
     'uniform sampler2D Glyph;'#10#13 +
     'uniform vec4 Diffuse;'#10#13 +
@@ -7119,6 +7116,27 @@ const
     ' vec4 Color = texture(Glyph, v2f_TexCoord0);'#10#13 +
     ' if (Color.a < 0.5) discard;'#10#13 +
     ' FragColor = Diffuse * Color; }'#10#13;
+  cLightVertexShaderES =
+    '#version 100'#10#13 +
+    'attribute vec3 Position;'#10#13 +
+    'attribute vec2 TexCoord0;'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'uniform mat4 ModelViewProjectionMatrix;'#10#13 +
+    'void main() {'#10#13 +
+    ' gl_Position = ModelViewProjectionMatrix * vec4(Position,1.0);'#10#13 +
+    ' v2f_TexCoord0 = TexCoord0; }';
+  cLightFragmentShaderES =
+    '#version 100'#10#13 +
+    'precision highp float;'#10#13 +
+    'precision mediump int;'#10#13 +
+//    'precision lowp sampler2D;'#10#13 +
+    'varying vec2 v2f_TexCoord0;'#10#13 +
+    'uniform sampler2D Glyph;'#10#13 +
+    'uniform vec4 Diffuse;'#10#13 +
+    'void main() {'#10#13 +
+    ' vec4 Color = texture2D(Glyph, v2f_TexCoord0);'#10#13 +
+    ' if (Color.a < 0.5) discard;'#10#13 +
+    ' gl_FragColor = Diffuse * Color; }'#10#13;
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling, osDeferredDraw];
@@ -7153,14 +7171,14 @@ begin
     begin
       VertexShader120 := GetInternalMaterialLibrary.AddShader(cInternalShader);
       VertexShader120.ShaderType := shtVertex;
-      VertexShader120.Source.Add(Format(cLightVertexShader120, ['120']));
+      VertexShader120.Source.Add(cLightVertexShader120);
     end;
     ShaderModel3.LibVertexShaderName := VertexShader120.Name;
     if not Assigned(FragmentShader120) then
     begin
       FragmentShader120 := GetInternalMaterialLibrary.AddShader(cInternalShader);
       FragmentShader120.ShaderType := shtFragment;
-      FragmentShader120.Source.Add(Format(cLightFragmentShader120, ['120']));
+      FragmentShader120.Source.Add(cLightFragmentShader120);
     end;
     ShaderModel3.LibFragmentShaderName := FragmentShader120.Name;
     OnSM3UniformInitialize := OnShaderInitialize;
@@ -7189,14 +7207,14 @@ begin
     begin
       VertexShaderES100 := GetInternalMaterialLibrary.AddShader(cInternalShader);
       VertexShaderES100.ShaderType := shtVertex;
-      VertexShaderES100.Source.Add(Format(cLightVertexShader120, ['100']));
+      VertexShaderES100.Source.Add(cLightVertexShaderES);
     end;
     ShaderESSL1.LibVertexShaderName := VertexShaderES100.Name;
     if not Assigned(FragmentShaderES100) then
     begin
       FragmentShaderES100 := GetInternalMaterialLibrary.AddShader(cInternalShader);
       FragmentShaderES100.ShaderType := shtFragment;
-      FragmentShaderES100.Source.Add(Format(cLightFragmentShader120, ['100']));
+      FragmentShaderES100.Source.Add(cLightFragmentShaderES);
     end;
     ShaderESSL1.LibFragmentShaderName := FragmentShaderES100.Name;
     OnESSL1UniformInitialize := OnShaderInitialize;
@@ -8511,9 +8529,10 @@ procedure TGLSceneBuffer.SetupRenderingContext(context: TGLContext);
       false: context.GLStates.PerformDisable(csState);
     end;
   end;
-
+{$IFNDEF GLS_OPENGL_ES}
 var
   LColorDepth: Cardinal;
+{$ENDIF}
 begin
   if not Assigned(context) then
     Exit;

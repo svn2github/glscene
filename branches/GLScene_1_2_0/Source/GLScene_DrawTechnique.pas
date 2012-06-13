@@ -1972,7 +1972,7 @@ function TGLDrawTechniqueOGL2.BindStateHandle(var ARci: TRenderContextInfo;
 var
   LMesh: TFriendlyMesh;
   LProgram: TGLuint;
-  LVAO: TGLVertexArrayHandle;
+  LVAO: TGLContextHandle;
 
   A: TAttribLocation;
   L, T: TGLuint;
@@ -1992,7 +1992,12 @@ begin
     LVAO := LMesh.GetVAO_BuildIn;
 
   if LVAO.IsSupported then
+    LVAO.AllocateHandle
+  else
+  begin
+    LVAO := LMesh.GetVAO_Virtual;
     LVAO.AllocateHandle;
+  end;
 
   if vBindlessGraphicsEnabled and GL.NV_vertex_buffer_unified_memory then
   begin
@@ -2150,7 +2155,8 @@ begin
       with GL do
       begin
         // Uniting all states and buffers in one vertex array object
-        LVAO.Bind;
+        if LVAO is TGLVertexArrayHandle then
+          TGLVertexArrayHandle(LVAO).Bind;
 
         // Need to direct bind array buffer for correctly VertexAttribPointer set up
         if ARci.GLStates.ArrayBufferBinding = FArrayHandle.Handle then
@@ -2222,7 +2228,7 @@ begin
         else
         // Build-in attributes
 {$IFDEF GLS_OPENGL_ES}
-        if not GL.VERSION_2_0 then
+        if not GL.EGL_VERSION_1_4 then
 {$ENDIF}
         begin
           T := 8;
@@ -2278,10 +2284,12 @@ begin
             DisableClientState(GL_VERTEX_ARRAY);
         end;
 
-        LVAO.NotifyDataUpdated;
+        if (LVAO is TGLVertexArrayHandle) and LVAO.IsSupported  then
+          LVAO.NotifyDataUpdated;
       end
     else
-      LVAO.Bind;
+      if LVAO is TGLVertexArrayHandle then
+        TGLVertexArrayHandle(LVAO).Bind;
   end;
 
   with ARci.GLStates do

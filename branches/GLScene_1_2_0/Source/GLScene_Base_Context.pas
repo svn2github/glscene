@@ -2459,9 +2459,10 @@ end;
 
 function TGLVirtualHandle.DoAllocateHandle: Cardinal;
 begin
-  Result := 0;
   if Assigned(FOnAllocate) then
-    FOnAllocate(Self, Result);
+    FOnAllocate(Self, Result)
+  else
+    Result := 1;
 end;
 
 // DoDestroyHandle
@@ -2476,7 +2477,9 @@ begin
     ClearError;
     // delete
     if Assigned(FOnDestroy) then
-      FOnDestroy(Self, AHandle);
+      FOnDestroy(Self, AHandle)
+    else
+      AHandle := 0;
     // check for error
     CheckError;
   end;

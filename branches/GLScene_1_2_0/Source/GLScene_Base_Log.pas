@@ -436,7 +436,9 @@ end;
 
 procedure TLogSession.Log(const Desc: string; Level: TLogLevel = lkInfo);
 begin
+{$IFDEF ANDROID}
   DebugLn(Desc);
+{$ENDIF}
 {$IFNDEF GLS_LOGGING}
   if Self = GLSLogger then
     Exit;
