@@ -804,7 +804,7 @@ object Form1: TForm1
         NormalizedCoord = False
         FilterMode = fmLinear
         Format = ctFloat
-        ChannelNum = cnOne
+        ChannelNum = cnTwo
         MemDataArray = ArrayOfTexture
       end
       object addForces: TCUDAFunction
