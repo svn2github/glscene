@@ -165,6 +165,7 @@ type
     {$ifdef CD_Android}
     CombiningAccent: Cardinal;
     MajorVersion, MinorVersion: Integer;
+    PlatformInfo: array[0..2] of string;
     Holder:Pointer;
 
     OnSurfaceCreated: TNotifyEvent;
@@ -181,8 +182,11 @@ type
     procedure LCLDoDestroyHolder();
     procedure LCLDoRecreateHolder();
     function LCLisHolderCreated():boolean;
+    procedure SetTitleBar(aStr: string);
 
     procedure GeteglVersion;
+    procedure GetPlatformInfo;
+
     function CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
     function DestroyContext(aContext: EGLContext):EGLint;
     function CreateSurface(aconfig : EGLConfig): EGLSurface;
@@ -198,6 +202,7 @@ type
     function eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
     procedure eglAddIAttrib(attribute: EGLint; value: EGLint);
     function eglChooseConfig(): EGLConfig;
+
 
     function AndroidKeyCodeToLCLKeyCode(AAndroidKeyCode: Integer): Word;
     {$endif}
@@ -424,6 +429,13 @@ var
   javaMethod_LCLDoDestroyHolder: jmethodid = nil;
   javaMethod_LCLDoRecreateHolder: jmethodid = nil;
   javaMethod_LCLisHolderCreated: jmethodid = nil;
+
+  javaMethod_LCLSetTitleBar: jmethodid = nil;
+
+
+  javaField_lclplatformversion: JfieldID=nil;
+  javaField_lclplatformapi: JfieldID=nil;
+  javaField_lclplatformdevice: JfieldID=nil;
 
   javaField_lclmajorversion: JfieldID=nil;
   javaField_lclminorversion: JfieldID=nil;

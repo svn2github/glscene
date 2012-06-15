@@ -3922,7 +3922,7 @@ end;
 class function TGLSLHandle.IsSupported: Boolean;
 begin
 {$IFDEF GLS_OPENGL_ES}
-  Result := GL.VERSION_2_0;
+  Result := GL.EGL_VERSION_1_4;
 {$ELSE}
   Result := GL.ARB_shader_objects;
 {$ENDIF}
@@ -3993,7 +3993,7 @@ end;
 class function TGLVertexShaderHandle.IsSupported: Boolean;
 begin
 {$IFDEF GLS_OPENGL_ES}
-  Result := GL.EGL_VERSION_2_0;
+  Result := GL.EGL_VERSION_1_4;
 {$ELSE}
   Result := GL.ARB_vertex_shader;
 {$ENDIF}
@@ -4039,7 +4039,7 @@ end;
 class function TGLFragmentShaderHandle.IsSupported: Boolean;
 begin
 {$IFDEF GLS_OPENGL_ES}
-  Result := GL.EGL_VERSION_2_0;
+  Result := GL.EGL_VERSION_1_4;
 {$ELSE}
   Result := GL.ARB_fragment_shader;
 {$ENDIF}

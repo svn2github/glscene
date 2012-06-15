@@ -521,11 +521,16 @@ begin
   javaField_lclmajorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmajorversion', 'I');
   javaField_lclminorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclminorversion', 'I');
 
+  javaField_lclplatformversion := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformversion', 'Ljava/lang/String;');
+  javaField_lclplatformapi := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformapi', 'Ljava/lang/String;');
+  javaField_lclplatformdevice := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformdevice', 'Ljava/lang/String;');
+
   javaMethod_LCLDoInvalidate:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoInvalidate', '()V');
   javaMethod_LCLDoCreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateHolder', '()V');
   javaMethod_LCLDoDestroyHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyHolder', '()V');
   javaMethod_LCLDoRecreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRecreateHolder', '()V');
   javaMethod_LCLisHolderCreated:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLisHolderCreated', '()Z');
+  javaMethod_LCLSetTitleBar:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLSetTitleBar', '(Ljava/lang/String;)V');
 
   javaField_lclholder := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclholder', 'Landroid/view/SurfaceHolder;');
 
@@ -665,6 +670,41 @@ begin
   MinorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclminorversion));
 end;
 
+procedure TCDWidgetSet.GetPlatformInfo();
+var
+  lJavaString : Jstring;
+  bool : JBoolean;
+  i : integer;
+  s : string;
+  ch : pjChar;
+begin
+  bool:=0;
+  //получаем указатель на строку
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformversion);
+  //получаем набор символов
+  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
+  //склеиваем
+  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
+  PlatformInfo[0] :=s;
+  //освобождаем ненужное
+  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+
+  s:='';
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformapi);
+  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
+  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
+  PlatformInfo[1] :=s;
+  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+
+  s:='';
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformdevice);
+  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
+  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
+  PlatformInfo[2] :=s;
+  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+
+end;
+
 
 
 procedure TCDWidgetSet.LCLDoInvalidate;
@@ -690,6 +730,18 @@ end;
 function TCDWidgetSet.LCLisHolderCreated: boolean;
 begin
   result := Boolean(javaEnvRef^^.CallBooleanMethod(javaEnvRef, javaActivityObject, javaMethod_LCLisHolderCreated));
+end;
+
+procedure TCDWidgetSet.SetTitleBar(aStr: string);
+var
+lParams: array[0..0] of JValue;
+vstr: JString;
+begin
+  vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aStr));
+  // Call the method
+   lParams[0].l := vStr;
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLSetTitleBar,@lParams[0]);
+   //javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef,vstr,pchar(aStr));
 end;
 
 {$IFnDEF WithOldDebugln}
@@ -1199,6 +1251,7 @@ end;
 
 procedure TCDWidgetSet.AppSetTitle(const ATitle: string);
 begin
+    SetTitleBar(ATitle);
 end;
 
 procedure TCDWidgetSet.AppSetVisible(const AVisible: Boolean);

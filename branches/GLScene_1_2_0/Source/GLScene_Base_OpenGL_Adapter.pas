@@ -86,7 +86,7 @@ type
 
 {$IFDEF GLS_OPENGL_ES}
    EGL_VERSION_1_0, EGL_VERSION_1_1, EGL_VERSION_1_2, EGL_VERSION_1_3,
-   EGL_VERSION_1_4, EGL_VERSION_2_0: Boolean;
+   EGL_VERSION_1_4: Boolean;
 {$ENDIF}
 
     // ARB approved OpenGL extension checks
@@ -3427,7 +3427,8 @@ var
   GLUHandle: TLibHandle = 0; // Pointer;
 {$IFDEF GLS_OPENGL_ES}
   EGLHandle: TLibHandle = 0;
-  EGL2Handle: TLibHandle = 0;
+  GLES1Handle: TLibHandle = 0;    //libGLESv1_CM
+  GLES2Handle: TLibHandle = 0;    //LibGLESv2
 {$ENDIF}
 
 {$IFDEF DARWIN}
@@ -3460,7 +3461,7 @@ begin
 end;
 {$ENDIF}
 
-function GLGetProcAddress(ProcName: PGLChar): Pointer;
+function GLGetProcAddress(ProcName: PGLChar; glCap: Pointer): Pointer;
 begin
 {$IFNDEF GLS_OPENGL_ES}
   {$IFDEF SUPPORT_GLX}
@@ -3473,13 +3474,16 @@ begin
   if @glXGetProcAddressARB <> nil then
     Result := glXGetProcAddressARB(ProcName);
 
-  if Result <> nil then
-    exit;
   {$ENDIF}
   Result := GetProcAddress(GLHandle, ProcName);
 {$ELSE}
-  Result := GetProcAddress(EGL2Handle, ProcName);
+  Result := GetProcAddress(GLES2Handle, ProcName);
+  if Result <> nil then
+    exit;
+  Result := GetProcAddress(GLES1Handle, ProcName);
 {$ENDIF}
+  if Result = nil then
+    Result := glCap;
 end;
 
 {$IFDEF DARWIN}
@@ -6754,8 +6758,9 @@ begin
   EGLHandle := LoadLibrary(PChar(libEGL));
   Result := EGLHandle <> INVALID_MODULEHANDLE;
   {$ENDIF}
-  EGL2Handle := LoadLibrary(PChar(libGLES2));
-  Result := Result and (EGL2Handle <> INVALID_MODULEHANDLE);
+  GLES1Handle := LoadLibrary(PChar(libGLES1));
+  GLES2Handle := LoadLibrary(PChar(libGLES2));
+  Result := Result and (EGLHandle <> INVALID_MODULEHANDLE);
   if Result then
   begin
 {$IFDEF GLS_OPENGL_ES}
@@ -6825,7 +6830,8 @@ end;
 
 function IsOpenGLInitialized: boolean;
 begin
-  Result :={$IFNDEF GLS_OPENGL_ES}(GLHandle <> INVALID_MODULEHANDLE){$ELSE}(EGL2Handle <> INVALID_MODULEHANDLE){$ENDIF};
+  Result :={$IFNDEF GLS_OPENGL_ES}(GLHandle <> INVALID_MODULEHANDLE){$ELSE}
+  ((GLES2Handle <> INVALID_MODULEHANDLE)or (GLES1Handle <> INVALID_MODULEHANDLE)){$ENDIF};
 end;
 
 // CloseOpenGL
@@ -6867,10 +6873,15 @@ begin
     EGLHandle := INVALID_MODULEHANDLE;
   end;
   {$ENDIF}
-  if EGL2Handle <> INVALID_MODULEHANDLE then
+  if GLES2Handle <> INVALID_MODULEHANDLE then
   begin
-    FreeLibrary(EGL2Handle);
-    EGL2Handle := INVALID_MODULEHANDLE;
+    FreeLibrary(GLES2Handle);
+    GLES2Handle := INVALID_MODULEHANDLE;
+  end;
+  if GLES1Handle <> INVALID_MODULEHANDLE then
+  begin
+    FreeLibrary(GLES1Handle);
+    GLES1Handle := INVALID_MODULEHANDLE;
   end;
 {$ENDIF}
 end;

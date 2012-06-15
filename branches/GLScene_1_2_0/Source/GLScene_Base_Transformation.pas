@@ -290,7 +290,7 @@ begin
     with localGL do
     begin
 {$IFDEF GLS_OPENGL_ES}
-      if EGL_VERSION_2_0 then // programable pipeline only
+      if EGL_VERSION_1_4 then // programable pipeline only
         exit;
 {$ENDIF}
       M := GetModelViewMatrix;

@@ -325,6 +325,7 @@ begin
     if FFullScreenVideoMode.FEnabled then
       StartupFS;
   {$ELSE}
+  CDWidgetset.SetTitleBar(caption);
   if FFullScreenVideoMode.FEnabled then
     CDWidgetset.SetFullScreenMode(1)
   else

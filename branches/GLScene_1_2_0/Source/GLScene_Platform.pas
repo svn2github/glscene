@@ -176,6 +176,8 @@ type
     CodeName: string;
     Description: string;
     ProductBuildVersion: string;
+    APILevel: string;
+    Device: string;
   end;
 
   TPlatformVersion =
@@ -205,7 +207,9 @@ type
       pvLinuxUbuntu,
       pvLinuxXandros,
       pvLinuxOracle,
-      pvAppleMacOSX
+      pvAppleMacOSX,
+      pvAndroid,
+      pviOS
     );
 
 {$IFDEF GLS_DELPHI_5}
@@ -492,7 +496,12 @@ implementation
 uses
 {$IFDEF MSWINDOWS}ShellApi{$ENDIF}
 {$IFDEF Darwin}XMLRead,DOM,{$ENDIF}
-{$IFDEF UNIX}  LCLProc  {$ENDIF} ;
+{$IFDEF UNIX}
+LCLProc,
+{$IFDEF ANDROID}
+CustomDrawnInt
+{$ENDIF}
+{$ENDIF} ;
 
 
 var
@@ -1334,10 +1343,10 @@ var
   OSVersionInfo : TOSVersionInfo;
   {$ENDIF}
   {$IFDEF UNIX}
+  str: String;
     {$IFNDEF DARWIN}
   ReleseList: TStringList;
     {$ENDIF}
-  str: String;
     {$IFDEF DARWIN}
   Documento: TXMLDocument;
   Child: TDOMNode;
@@ -1359,7 +1368,10 @@ begin
     Version :=  InttoStr(DwMajorVersion)+'.'+InttoStr(DwMinorVersion);
   end;
   {$ENDIF}
+
   {$IFDEF UNIX}
+  {$IFNDEF ANDROID}
+
   {$IFNDEF DARWIN}
   ReleseList := TStringList.Create;
 
@@ -1399,6 +1411,13 @@ begin
       Free;
     end;
   end;
+  {$ENDIF}
+  {$ELSE}
+    CDWidgetset.GetPlatformInfo;
+    Result.Version:=CDWidgetset.PlatformInfo[0];
+    Result.APILevel:=CDWidgetset.PlatformInfo[1];
+    Result.Device:=CDWidgetset.PlatformInfo[2];
+    Result.ID:='Android';
   {$ENDIF}
   //Major.Minor.Revision
   str:=Result.Version;
@@ -1442,11 +1461,13 @@ VersStr : array[TPlatformVersion] of string = (
   'Ubuntu',  // протестировано
   'Xandros',
   'Oracle',
-  'Mac OS X' // теоретич. работает
+  'Mac OS X', // теоретич. работает
+  'Android',
+  'iOS'
   );
 {$ENDIF}
 begin
-  Result := pvUnknown;                      // Неизвестная версия ОС
+  Result := pvUnknown;                    //   
   {$IFDEF MSWINDOWS}
   with GetPlatformInfo do
   begin
@@ -1516,7 +1537,9 @@ const
     'Linux Ubuntu',
     'Linux Xandros',
     'Linux Oracle',
-    'Apple MacOSX');
+    'Apple MacOSX',
+    'Android',
+    'iOS'    );
 begin
   Result := VersStr[GetPlatformVersion];
 end;

@@ -277,7 +277,6 @@ begin
   FGL.EGL_VERSION_1_2 := IsVersionMet(1, 2, MajorVersion, MinorVersion);
   FGL.EGL_VERSION_1_3 := IsVersionMet(1, 3, MajorVersion, MinorVersion);
   FGL.EGL_VERSION_1_4 := IsVersionMet(1, 4, MajorVersion, MinorVersion);
-  FGL.EGL_VERSION_2_0 := True{IsVersionMet(2, 0, MajorVersion, MinorVersion)};
 
   FAcceleration := chaHardware;
 
@@ -291,7 +290,7 @@ begin
 {$IFNDEF ANDROID}
 ClearIAttribs;
 {$ELSE}
-if FGL.EGL_VERSION_1_3 or FGL.EGL_VERSION_1_4 or FGL.EGL_VERSION_2_0 then
+if FGL.EGL_VERSION_1_3 or FGL.EGL_VERSION_1_4 then
   CDWidgetset.SetContextClientVersion2;
 {$ENDIF}
 ChoosePixelFormat;
@@ -374,7 +373,7 @@ ChoosePixelFormat;
   try
     Activate;
     FGL.Initialize;
-    FGLStates.ForwardContext := FGL.EGL_VERSION_2_0;
+    FGLStates.ForwardContext := FGL.EGL_VERSION_1_4;
 
     GLSLogger.LogInfoFmt('OpenGL ES %d.%d context successfully created', [MajorVersion, MinorVersion]);
   finally

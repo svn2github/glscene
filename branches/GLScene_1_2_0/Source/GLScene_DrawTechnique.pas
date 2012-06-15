@@ -3787,7 +3787,7 @@ begin
   with GL do
   begin
 {$IFDEF GLS_OPENGL_ES}
-    if EGL_VERSION_2_0 then
+    if EGL_VERSION_1_4 then
     begin
       if vDrawTechniques[1] = nil then
         vDrawTechniques[1] := TGLDrawTechniqueOGL2.Create;

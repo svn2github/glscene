@@ -116,7 +116,7 @@ public class LCLActivity extends Activity implements SensorEventListener
         // underlying surface is created and destroyed
         aholder = getHolder();
         aholder.addCallback(this);
-        
+        aholder.setSizeFromLayout();
         if (LOG_EGL) {
             Log.v("EglHelper","init()" );
         }
@@ -145,6 +145,7 @@ public class LCLActivity extends Activity implements SensorEventListener
         if (LOG_EGL) {
             Log.v("EglHelper","surfaceCreated()" );
         }
+            LCLDoStartEGL();
             LCLOnSurfaceCreated();
 		// TODO Auto-generated method stub
 	//	glsrender.start();
@@ -169,6 +170,7 @@ public class LCLActivity extends Activity implements SensorEventListener
             Log.v("EglHelper","surfaceDestroyed()" );
         }
             LCLOnSurfaceDestroyed(); 
+  	        LCLDoFinishEGL();
 		// TODO Auto-generated method stub
   
 		//glsrender.destroySurface();
@@ -199,7 +201,7 @@ public class LCLActivity extends Activity implements SensorEventListener
 
       // Check if we rotated in the draw event, OnConfigurationChanged can't return the new form width =(
       // see http://stackoverflow.com/questions/2524683/how-to-get-new-width-height-of-root-layout-in-onconfigurationchanged
-    //  if (lWidth != oldlclformwidth) LCLOnConfigurationChanged(lclxdpi, lWidth); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
+      if (lWidth != oldlclformwidth) LCLOnConfigurationChanged(lclxdpi, lWidth); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
 
       //Log.v("lclproject", "LCLSurface.onDraw width=" + Integer.toString(lWidth)
       //  + " height=" + Integer.toString(lHeight));
@@ -294,7 +296,6 @@ public class LCLActivity extends Activity implements SensorEventListener
     Log.v("LCLActivity", "Activity onCreate");
     
     lclsurface = new LCLSurface(this);
-    LCLDoStartEGL();
    // GLSRenderer glsrenderer;
    // glsrenderer = new GLSRenderer();
    // lclsurface.setRenderer(glsrenderer);
@@ -311,15 +312,15 @@ public class LCLActivity extends Activity implements SensorEventListener
     lclxdpi = (int) metrics.xdpi;
     lclydpi = (int) metrics.ydpi;
 
-    LCLOnCreate(this);
+   LCLOnCreate(this);
     
     setContentView(lclsurface);
     lclsurface.postInvalidate();
+
   }
   
   @Override protected void onDestroy()
   {
-  	  LCLDoFinishEGL();
 	  super.onDestroy();
 	    Log.v("LCLActivity", "Activity onDestroy");
   }
@@ -351,6 +352,7 @@ public class LCLActivity extends Activity implements SensorEventListener
   protected void onResume() {
     super.onResume();
 	  Log.v("LCLActivity", "Activity onResume"); 
+	  lclsurface.setVisibility(1);
    // lclsurface.onResume();
   }
 
@@ -358,6 +360,7 @@ public class LCLActivity extends Activity implements SensorEventListener
   protected void onPause() {
     super.onPause();
 	  Log.v("LCLActivity", "Activity onPause"); 
+	  lclsurface.setVisibility(0);
    // lclsurface.onPause();
   }
 
@@ -568,11 +571,19 @@ public class LCLActivity extends Activity implements SensorEventListener
 	  return  lclsurface.aholder.isCreating();
   }; 
   
+  public void LCLSetTitleBar(String str)
+  {  
+      if (LOG_EGL) {
+		  Log.w("EglHelper", "LCLSetTitleBar("+str+") tid=" + Thread.currentThread().getId());
+	  }	 
+	  this.setTitle(str);
+  }; 
+  
   //переход в фуллскрин
   public void SetFullScreen(boolean on) {
       if (LOG_EGL) {
 		  Log.w("EglHelper", "SetFullScreen("+on+") tid=" + Thread.currentThread().getId());
-	  }	  
+	  }	 
       Window win = getWindow();
       WindowManager.LayoutParams winParams = win.getAttributes();
       final int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -615,7 +626,8 @@ public class LCLActivity extends Activity implements SensorEventListener
 	  if(!mEgl.eglInitialize(mEglDisplay, version)) {
 		  throw new RuntimeException("eglInitialize failed");
 	  }
-	  
+	 
+	  //Версия egl
 	  String s = mEgl.eglQueryString(mEglDisplay, EGL10.EGL_VERSION);
 	  if (s.indexOf("1.")>=0)
 	  {	  
@@ -627,7 +639,34 @@ public class LCLActivity extends Activity implements SensorEventListener
 		  lclmajorversion = 1;
 		  lclminorversion = 0;  
 	  }
+	 
+      //Информация о платформе
+	  s=System.getProperty("os.version");//Версия платформы
+	  
+	  if ((s.indexOf("-")>0) || (s.indexOf("(")>0)) //копируем только до 2.3.6(1231231) или 2.3.6-1231231
+	  {
+		int i=0; 
+		if (s.indexOf("-")>0)
+		{
+			i=s.indexOf("-");
+		}
+		if (s.indexOf("(")>0)
+		{
+		    i=s.indexOf("(");
+		}		
+		s=s.substring(0,i);	 
+	  }//else иначе он выдает полную версию без мусора после точек
+		  
+	  lclplatformversion = s;
+	  lclplatformapi = android.os.Build.VERSION.SDK;
+	  lclplatformdevice = android.os.Build.DEVICE;
+	  
+	  s +="\n Debug-infos:";
+	  s += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+	  s += "\n OS API Level: " + android.os.Build.VERSION.SDK;
+	  s += "\n Device: " + android.os.Build.DEVICE;
 
+	  Log.v("EglHelper", s);      
 	  Log.v("EglHelper", "MajorVersion=" + lclmajorversion + " MinorVersion=" + lclminorversion);
 	  
   };
@@ -1104,6 +1143,11 @@ public class LCLActivity extends Activity implements SensorEventListener
   private final static boolean LOG_EGL = true;
   public int mEGLContextClientVersion;
   public SurfaceHolder lclholder;
+  
+  public String lclplatformversion;
+  public String lclplatformapi;
+  public String lclplatformdevice;
+
   
   
   static

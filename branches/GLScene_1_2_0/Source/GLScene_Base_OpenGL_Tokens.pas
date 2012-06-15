@@ -45,6 +45,7 @@ const
   glu32 = 'GLU32.dll';
   libEGL = 'libEGL.dll';
   libGLES2 = 'libGLESv2.dll';
+  libGLES1 = 'libGLESv2.dll';
 {$ENDIF}
 
 {$IFDEF Linux}
@@ -55,6 +56,7 @@ const
   glu32 = 'libGLU.so';
   {$ENDIF}
   libEGL = 'libEGL.so';
+  libGLES1 = 'libGLESv1_CM.so';
   libGLES2 = 'libGLESv2.so';
 {$ENDIF}
 
@@ -63,6 +65,7 @@ const
   glu32 = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
   libAGL = '/System/Library/Frameworks/AGL.framework/AGL';
   libdl = '/usr/lib/libdl.dylib';
+  libGLES1 = '/System/Library/Frameworks/OpenGLES.framework/OpenGLES';
   libGLES2 = '/System/Library/Frameworks/OpenGLES.framework/OpenGLES';
 {$ENDIF}
 
