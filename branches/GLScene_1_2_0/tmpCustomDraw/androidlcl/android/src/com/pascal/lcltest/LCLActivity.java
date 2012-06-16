@@ -145,6 +145,11 @@ public class LCLActivity extends Activity implements SensorEventListener
         if (LOG_EGL) {
             Log.v("EglHelper","surfaceCreated()" );
         }
+        
+            // TODO ВНИМАНИЕ!!! Если возникнет необходимость введения PBufferа, LCLDoStartEGL 
+            //нужно переместить в OnCreane 
+            //FinishGL в onDestroy однако, событие onSurfaceCreated может возникнуть с задержкой и появится после
+            //onDestroy тем самым вызвав GLError, по этому нужно более детально обдумать вызов метода.
             LCLDoStartEGL();
             LCLOnSurfaceCreated();
 		// TODO Auto-generated method stub
@@ -295,6 +300,8 @@ public class LCLActivity extends Activity implements SensorEventListener
     super.onCreate(savedInstanceState);
     Log.v("LCLActivity", "Activity onCreate");
     
+ 
+   
     lclsurface = new LCLSurface(this);
    // GLSRenderer glsrenderer;
    // glsrenderer = new GLSRenderer();
@@ -333,7 +340,9 @@ public class LCLActivity extends Activity implements SensorEventListener
   @Override public void onConfigurationChanged (Configuration newConfig)
   {
     super.onConfigurationChanged(newConfig);
-
+    
+    Log.v("LCLActivity", "onConfigurationChanged");
+    
     lclformwidth = lclsurface.getWidth();
     lclformheight = lclsurface.getHeight();
     lclscreenwidth = lclformwidth;
@@ -342,6 +351,22 @@ public class LCLActivity extends Activity implements SensorEventListener
     getWindowManager().getDefaultDisplay().getMetrics(metrics);
     lclxdpi = (int) metrics.xdpi;
     lclydpi = (int) metrics.ydpi;
+    
+    /*
+    Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+    int orientation = display.getOrientation(); 
+	switch(orientation) {
+        case Configuration.ORIENTATION_PORTRAIT:
+                    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+            break;
+        case Configuration.ORIENTATION_LANDSCAPE:
+
+                    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+            break;
+    }
+*/
     // Don't call LCLOnConfigurationChanged, wait for a onDraw instead
     //lclsurface.postInvalidate();
     //Log.i("lclapp", "onConfigurationChanged finished");
@@ -595,7 +620,26 @@ public class LCLActivity extends Activity implements SensorEventListener
               requestWindowFeature(Window.FEATURE_OPTIONS_PANEL);
       }
       win.setAttributes(winParams);
-}
+  }
+  //Смена режимов экрана
+  public boolean SetScreenOrientation(int Orientation) {
+      if (LOG_EGL) {
+		  Log.w("EglHelper", "ScreenOrientation("+Orientation+") tid=" + Thread.currentThread().getId());
+	  }	
+      /*
+      soDefault   -1
+      soLandscape  0
+      soPortrait   1
+      soUser       2
+      soBehind     3
+      soSensor     4
+      soNoSensor   5
+      */
+      this.setRequestedOrientation(Orientation-1);
+      
+      
+     return true; 
+  }
  
   
   void LCLDoStartEGL()
@@ -641,28 +685,13 @@ public class LCLActivity extends Activity implements SensorEventListener
 	  }
 	 
       //Информация о платформе
-	  s=System.getProperty("os.version");//Версия платформы
-	  
-	  if ((s.indexOf("-")>0) || (s.indexOf("(")>0)) //копируем только до 2.3.6(1231231) или 2.3.6-1231231
-	  {
-		int i=0; 
-		if (s.indexOf("-")>0)
-		{
-			i=s.indexOf("-");
-		}
-		if (s.indexOf("(")>0)
-		{
-		    i=s.indexOf("(");
-		}		
-		s=s.substring(0,i);	 
-	  }//else иначе он выдает полную версию без мусора после точек
-		  
-	  lclplatformversion = s;
+ 
+	  lclplatformversion = android.os.Build.VERSION.RELEASE;
 	  lclplatformapi = android.os.Build.VERSION.SDK;
 	  lclplatformdevice = android.os.Build.DEVICE;
 	  
-	  s +="\n Debug-infos:";
-	  s += "\n OS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+	  s ="\n Debug-infos:";
+	  s += "\n OS Version: " + android.os.Build.VERSION.RELEASE;
 	  s += "\n OS API Level: " + android.os.Build.VERSION.SDK;
 	  s += "\n Device: " + android.os.Build.DEVICE;
 
@@ -940,10 +969,13 @@ public class LCLActivity extends Activity implements SensorEventListener
 
   @Override public void onSensorChanged(SensorEvent event)
   {
-    double[] eventValues = convertFloatsToDoubles(event.values);
+      Log.v("LCLActivity", "onSensorChanged");
+      
+      /*  double[] eventValues = convertFloatsToDoubles(event.values);
     int eventKind = event.sensor.getType();
     int eventResult = LCLOnSensorChanged(eventKind, eventValues);
     if (((eventResult | 1) != 0) && (lclsurface != null)) lclsurface.postInvalidate();
+    */
   }
 
   @Override public void onAccuracyChanged(Sensor sensor, int accuracy)

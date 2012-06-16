@@ -497,9 +497,9 @@ uses
 {$IFDEF MSWINDOWS}ShellApi{$ENDIF}
 {$IFDEF Darwin}XMLRead,DOM,{$ENDIF}
 {$IFDEF UNIX}
-LCLProc,
+LCLProc
 {$IFDEF ANDROID}
-CustomDrawnInt
+,CustomDrawnInt
 {$ENDIF}
 {$ENDIF} ;
 

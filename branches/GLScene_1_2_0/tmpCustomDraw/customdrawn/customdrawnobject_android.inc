@@ -512,6 +512,7 @@ begin
   javaMethod_LCLeglGetError:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLeglGetError', '()I');
   javaMethod_mEGLContextClientVersion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'mEGLContextClientVersion', 'I');
   javaMethod_SetFullScreen:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetFullScreen', '(Z)V');
+  javaMethod_SetScreenOrientation:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetScreenOrientation', '(I)Z');
 
   javaMethod_LCLGetConfigs:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetConfigs', '()I');
   javaMethod_LCLGetFixedAttribute:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetFixedAttribute', '(II)I');
@@ -631,6 +632,15 @@ begin
   // Call the method
   lParams[0].z := fs;
    javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_SetFullScreen,@lParams[0]);
+end;
+
+function TCDWidgetSet.SetScreenOrientation(so: EGLint): boolean;
+var
+lParams: array[0..0] of JValue;
+begin
+  // Call the method
+  lParams[0].i := so;
+   Result:=Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_SetScreenOrientation,@lParams[0]));
 end;
 
 

@@ -6583,8 +6583,7 @@ begin
   XQueryFrameCountNV := GLGetProcAddress('glXQueryFrameCountNV',@glCapXQueryFrameCountNV);
   XResetFrameCountNV := GLGetProcAddress('glXResetFrameCountNV',@glCapXResetFrameCountNV);
   XBindVideoCaptureDeviceNV := GLGetProcAddress('glXBindVideoCaptureDeviceNV',@glCapXBindVideoCaptureDeviceNV);
-  XEnumerateVideoCaptureDevicesNV :=
-    GLGetProcAddress('glXEnumerateVideoCaptureDevicesNV');
+  XEnumerateVideoCaptureDevicesNV := GLGetProcAddress('glXEnumerateVideoCaptureDevicesNV',@glCapXEnumerateVideoCaptureDevicesNV);
   XLockVideoCaptureDeviceNV := GLGetProcAddress('glxLockVideoCaptureDeviceNV',@glCapXLockVideoCaptureDeviceNV);
   XQueryVideoCaptureDeviceNV := GLGetProcAddress('glXQueryVideoCaptureDeviceNV',@glCapXQueryVideoCaptureDeviceNV);
   XReleaseVideoCaptureDeviceNV := GLGetProcAddress('glXReleaseVideoCaptureDeviceNV',@glCapXReleaseVideoCaptureDeviceNV);

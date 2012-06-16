@@ -57,6 +57,18 @@ type
     fcNearestResolution,
     fcManualResolution);
 
+  {:Only on Arm
+    Attention! For the developers GLScene! Do not rearrange the constants
+    Внимание! Для разработчиков GLScene! Не менять местами константы}
+  TGLScreenOrientation = (
+    soDefault,
+    soLandscape,
+    soPortrait,
+    soUser,
+    soBehind,
+    soSensor,
+    soNoSensor);
+
   // TGLFullScreenVideoMode
   //
   {: Screen mode settings }
@@ -70,8 +82,10 @@ type
     FColorDepth: Integer;
     FFrequency: Integer;
     FResolutionMode: TGLFullScreenResolution;
+    FScreenOrientation: TGLScreenOrientation;
     procedure SetEnabled(aValue: Boolean);
     procedure SetAltTabSupportEnable(aValue: Boolean);
+    procedure SetScreenOrientation(aValue: TGLScreenOrientation);
   public
     constructor Create(AOwner: TGLSceneForm);
   published
@@ -80,6 +94,10 @@ type
       write SetAltTabSupportEnable default False;
     property ResolutionMode: TGLFullScreenResolution read FResolutionMode
       write FResolutionMode default fcUseCurrent;
+    {: Only form ARM
+       Только для Arm устройств}
+    property ScreenOrientation: TGLScreenOrientation read FScreenOrientation
+      write SetScreenOrientation default soDefault;
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property ColorDepth: Integer read FColorDepth write FColorDepth;
@@ -325,6 +343,7 @@ begin
     if FFullScreenVideoMode.FEnabled then
       StartupFS;
   {$ELSE}
+ // CDWidgetset.SetScreenOrientation(Ord(FullScreenVideoMode.ScreenOrientation));
   CDWidgetset.SetTitleBar(caption);
   if FFullScreenVideoMode.FEnabled then
     CDWidgetset.SetFullScreenMode(1)
@@ -556,6 +575,22 @@ begin
     FAltTabSupportEnable := aValue;
 end;
 
+procedure TGLFullScreenVideoMode.SetScreenOrientation(
+  aValue: TGLScreenOrientation);
+begin
+  if not (csDesigning in FOwner.ComponentState) then
+  begin
+    if (FScreenOrientation<>aValue)
+  {$IFDEF ANDROID}
+      and  (CDWidgetset.SetScreenOrientation(Ord(aValue)))
+   {$ENDIF}
+   then
+     FScreenOrientation:= aValue;
+  end
+    else
+       if FScreenOrientation<>aValue then FScreenOrientation:= aValue;
+end;
+
 procedure TGLSceneForm.StartupFS;
 begin
   {$IFNDEF ANDROID}
@@ -626,7 +661,7 @@ begin
    {$IFNDEF ANDROID}
     Invalidate;
    {$ELSE}
- //  CDWidgetset.LCLDoInvalidate;
+   CDWidgetset.LCLDoInvalidate;
    {$ENDIF}
 end;
 

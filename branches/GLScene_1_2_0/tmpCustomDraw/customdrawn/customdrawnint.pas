@@ -187,21 +187,22 @@ type
     procedure GeteglVersion;
     procedure GetPlatformInfo;
 
-    function CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
-    function DestroyContext(aContext: EGLContext):EGLint;
-    function CreateSurface(aconfig : EGLConfig): EGLSurface;
+    function CreateContext(aconfig : EGLConfig; shareRC: EGLContext) : EGLContext;
+    function DestroyContext(aContext: EGLContext) :EGLint;
+    function CreateSurface(aconfig : EGLConfig) : EGLSurface;
     procedure DestroySurface(aSurface : EGLSurface);
     procedure PurgeBuffers(asurface : EGLSurface; acontext : EGLContext);
     procedure ClearBuffers();
-    function SwapBuffers(asurface : EGLSurface): boolean;
+    function SwapBuffers(asurface : EGLSurface) : boolean;
     function eglGetError():EGLint;
     procedure SetContextClientVersion2;
-    procedure SetFullScreenMode(fs: EGLBoolean);
+    procedure SetFullScreenMode(fs : EGLBoolean);
+    function SetScreenOrientation(so : EGLint) : boolean;
 
-    function eglGetConfigs(): EGLint;
-    function eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
-    procedure eglAddIAttrib(attribute: EGLint; value: EGLint);
-    function eglChooseConfig(): EGLConfig;
+    function eglGetConfigs() : EGLint;
+    function eglGetFixedAttribute(attribute : EGLint; Param : EGLint): EGLint;
+    procedure eglAddIAttrib(attribute : EGLint; value : EGLint);
+    function eglChooseConfig() : EGLConfig;
 
 
     function AndroidKeyCodeToLCLKeyCode(AAndroidKeyCode: Integer): Word;
@@ -418,6 +419,7 @@ var
   javaMethod_LCLeglGetError: jmethodid = nil;
   javaMethod_mEGLContextClientVersion: JfieldID=nil;
   javaMethod_SetFullScreen: jmethodid = nil;
+  javaMethod_SetScreenOrientation: jmethodid = nil;
 
   javaMethod_LCLGetConfigs: jmethodid = nil;
   javaMethod_LCLGetFixedAttribute: jmethodid = nil;
