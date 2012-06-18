@@ -513,6 +513,7 @@ begin
   javaMethod_mEGLContextClientVersion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'mEGLContextClientVersion', 'I');
   javaMethod_SetFullScreen:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetFullScreen', '(Z)V');
   javaMethod_SetScreenOrientation:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetScreenOrientation', '(I)Z');
+  javaMethod_LCLLoadLibrary:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLLoadLibrary', '(Ljava/lang/String;)Z');
 
   javaMethod_LCLGetConfigs:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetConfigs', '()I');
   javaMethod_LCLGetFixedAttribute:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetFixedAttribute', '(II)I');
@@ -752,6 +753,17 @@ begin
    lParams[0].l := vStr;
    javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLSetTitleBar,@lParams[0]);
    //javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef,vstr,pchar(aStr));
+end;
+
+function TCDWidgetSet.Loadlibrary(aLib: string) : boolean;
+  var
+  lParams: array[0..0] of JValue;
+  vstr: JString;
+  begin
+    vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aLib));
+    // Call the method
+     lParams[0].l := vstr;
+     Result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLLoadLibrary,@lParams[0]));
 end;
 
 {$IFnDEF WithOldDebugln}

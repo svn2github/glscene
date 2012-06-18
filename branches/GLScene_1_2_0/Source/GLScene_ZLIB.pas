@@ -1602,8 +1602,10 @@ end;
 
 constructor TCustomZStream.Create(stream: TStream);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
-
   FStream := stream;
   FStreamPos := stream.Position;
 end;
@@ -1674,6 +1676,9 @@ end;
 constructor TZCompressionStream.Create(dest: TStream;
   compressionLevel: TZCompressionLevel);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create(dest);
 
   FZStream.next_out := @FBuffer;
@@ -1686,6 +1691,9 @@ constructor TZCompressionStream.Create(dest: TStream;
   compressionLevel: TZCompressionLevel; windowBits, memLevel: Integer;
   strategy: TZStrategy);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create(dest);
 
   FZStream.next_out := @FBuffer;
@@ -1781,6 +1789,9 @@ end;
 
 constructor TZDecompressionStream.Create(source: TStream);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create(source);
 
   FZStream.next_in := @FBuffer;
@@ -1792,6 +1803,9 @@ end;
 constructor TZDecompressionStream.Create(source: TStream;
   windowBits: Integer);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create(source);
 
   FZStream.next_in := @FBuffer;
@@ -1891,6 +1905,9 @@ end;
 
 constructor TZCustomBuffer.Create;
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
 
   FillChar(FZStream, SizeOf(TZStreamRec), 0);
@@ -1987,6 +2004,9 @@ end;
 
 constructor TZCompressionBuffer.Create(level: TZCompressionLevel);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
 
   ZCompressCheck(ZDeflateInit(FZStream, level));
@@ -1995,6 +2015,9 @@ end;
 constructor TZCompressionBuffer.Create(level: TZCompressionLevel;
   windowBits, memLevel: Integer; strategy: TZStrategy);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
 
   ZCompressCheck(ZDeflateInit2(FZStream, level, windowBits, memLevel,
@@ -2073,6 +2096,9 @@ end;
 
 constructor TZDecompressionBuffer.Create;
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
 
   ZDecompressCheck(ZInflateInit(FZStream));
@@ -2080,6 +2106,9 @@ end;
 
 constructor TZDecompressionBuffer.Create(windowBits: Integer);
 begin
+  {$IFDEF FPC}
+  Initzlib;
+  {$ENDIF}
   inherited Create;
 
   ZDecompressCheck(ZInflateInit2(FZStream, windowBits));

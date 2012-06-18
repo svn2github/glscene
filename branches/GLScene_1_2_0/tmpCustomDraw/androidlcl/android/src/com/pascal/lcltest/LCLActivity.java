@@ -621,6 +621,7 @@ public class LCLActivity extends Activity implements SensorEventListener
       }
       win.setAttributes(winParams);
   }
+  
   //Смена режимов экрана
   public boolean SetScreenOrientation(int Orientation) {
       if (LOG_EGL) {
@@ -638,6 +639,28 @@ public class LCLActivity extends Activity implements SensorEventListener
       this.setRequestedOrientation(Orientation-1);
       
       
+     return true; 
+  }
+  
+  //Динамическая загрузка библиотеки
+  //При повторной загрзке выдаст ошибку мол приложение уже загружено
+  public boolean LCLLoadLibrary(String lib) {
+      if (LOG_EGL) {
+		  Log.i("EglHelper", "LCLLoadLibrary: Trying to load "+lib+") tid=" + Thread.currentThread().getId());
+	  }	  
+      String s=lib.substring(3,lib.indexOf("."));
+        try 
+        {
+          System.loadLibrary(s);       
+        }
+        catch(UnsatisfiedLinkError ule) 
+        {
+        
+          Log.e("lclapp", "WARNING: Could not load "+ s);
+          ule.printStackTrace();
+          return false;  
+        }     
+        
      return true; 
   }
  
@@ -1189,7 +1212,9 @@ public class LCLActivity extends Activity implements SensorEventListener
       Log.i("lclapp", "Trying to load libglues.so");
       System.loadLibrary("glues");       
     //  Log.i("lclapp", "Trying to load libz.so");
-   //   System.loadLibrary("z");   
+    //  System.loadLibrary("z");  
+      //  Log.i("lclapp", "Trying to load libpng.so");
+      //   System.loadLibrary("png");   
       Log.i("lclapp", "Trying to load liblclapp.so");
       System.loadLibrary("lclapp");
     }

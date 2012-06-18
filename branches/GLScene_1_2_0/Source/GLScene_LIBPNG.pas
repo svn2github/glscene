@@ -41,7 +41,7 @@ const
   LibPng13 = 'libpng13'; // Library name
 {$ENDIF}
 {$IFDEF LINUX}
-  LibPng13 = 'png'; // Library name
+  LibPng13 = 'libpng.so'; // Library name
 {$ENDIF}
 {$IFDEF DARWIN}
   LibPng13 = '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ImageIO.framework/Versions/A/Resources/libPng.dylib'; // Library name
@@ -1199,7 +1199,16 @@ var
   _png_get_header_version: function(png_ptr: png_structp): png_charp; cdecl;
   _png_get_libpng_ver: function(png_ptr: png_structp): png_charp; cdecl;
 {$ENDIF}
+function Loadlibpng13: boolean;
+
 implementation
+
+uses
+{$IFDEF FPC}
+  {$IFDEF ANDROID}
+  CustomDrawnInt;
+  {$ENDIF}
+{$ENDIF}
 
 {$IFNDEF FPC}
 {$L LinkedObjects\adler32.obj}
@@ -2435,18 +2444,32 @@ begin
   Result := False;
   if (vzHandle = INVALID_MODULEHANDLE) then
   begin
-    Closezlib;
-    vzHandle := LoadLibrary(PChar(LibPng13));
-    if (vzHandle <> INVALID_MODULEHANDLE) then
-      Result := True
-    else
+    {$IFDEF ANDROID}
+    //Сначала загружаем библиотеку через Java, потом загружаем нативно!
+    if CDWidgetset.Loadlibrary(LibPng13) then
     begin
-      if vzHandle <> INVALID_MODULEHANDLE then
-        FreeLibrary(vzHandle);
-      {$IFDEF GLS_GLS_LOGGING}
-      GLSLogger.Log('LIBPNG.pas: libpng13 library not loaded');
-      {$ENDIF}
-    end;
+    {$ENDIF}
+      Closezlib;
+      vzHandle := LoadLibrary(PChar(LibPng13));
+      if (vzHandle <> INVALID_MODULEHANDLE) then
+      begin
+        Result := True;
+        ReadEntryPoints;
+      end
+      else
+      begin
+        if vzHandle <> INVALID_MODULEHANDLE then
+          FreeLibrary(vzHandle);
+        {$IFDEF GLS_GLS_LOGGING}
+        GLSLogger.Log('LIBPNG.pas: libpng13 library not loaded');
+        {$ENDIF}
+      end;
+    {$IFDEF ANDROID}
+    end
+          {$IFDEF GLS_LOGGING}
+       else         GLSLogger.Log('ZLibEx.pas: Zlib library not loaded on Java');
+          {$ENDIF}
+    {$ENDIF}
   end
   else
     Result := True;
@@ -2678,12 +2701,8 @@ end;
 
 initialization
 
-{$IFDEF FPC}
-{$IFNDEF ANDROID}
-  if Loadlibpng13 then
-    ReadEntryPoints;
-{$ENDIF}
-{$ENDIF}
+//Загрузку библиотеки проводить в момент использования в коде
+//В андроиде секция initialization вызывает проблемы
 
 finalization
 

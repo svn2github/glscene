@@ -183,6 +183,7 @@ type
     procedure LCLDoRecreateHolder();
     function LCLisHolderCreated():boolean;
     procedure SetTitleBar(aStr: string);
+    function Loadlibrary(aLib: string) : boolean;
 
     procedure GeteglVersion;
     procedure GetPlatformInfo;
@@ -420,6 +421,7 @@ var
   javaMethod_mEGLContextClientVersion: JfieldID=nil;
   javaMethod_SetFullScreen: jmethodid = nil;
   javaMethod_SetScreenOrientation: jmethodid = nil;
+  javaMethod_LCLLoadLibrary: jmethodid = nil;
 
   javaMethod_LCLGetConfigs: jmethodid = nil;
   javaMethod_LCLGetFixedAttribute: jmethodid = nil;

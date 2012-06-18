@@ -147,20 +147,20 @@ begin
       If FStream = nil then exit;
       Result := aStream;
 
-      //ɹ欠᪫
+      //Ищем файл
       FStream.Seek(FHeader.DirOffset + SizeOf(TFileSection) * index, soFromBeginning);
       FStream.Read(Dir, SizeOf(TFileSection));
       FStream.Seek(Dir.FilePos, soFromBeginning);
 
-      //믯鱳欠᪫ 駠椮 ௲﫠 㮠㱥��� ௲揄
+      //копируем файл из общего потока во временный поток
       tempStream := TMemoryStream.Create;
       tempStream.CopyFrom(FStream, Dir.FileLength);
       tempStream.Position := 0;
 
-      //妪ﭯ沱鬍
+      //декомпрессим
        decompr := TZDecompressionStream.Create(tempStream);
        try
-         //ˮੰ欠樳콲᲍
+         //Копируем результат
          Result.CopyFrom(decompr, 0);
        finally
         decompr.Free;
@@ -202,7 +202,8 @@ var
    Temp, compressed: TMemoryStream;
    FCompressor: TZCompressionStream;
 begin
-   //Ů⡢즭饠᪫͊   If (FStream = nil) or ContentExists(ContentName) then exit;
+   //Добавление файла
+   If (FStream = nil) or ContentExists(ContentName) then exit;
 
    FStream.Position := FHeader.DirOffset;
    //???
@@ -218,17 +219,18 @@ begin
    Dir.FilePos    := FHeader.DirOffset;
    Dir.CbrMode := compressionLevel;
 
-   //Ү襠欠௲猪嬿 ᨠ飠騠⡭椮
+   //Создаем поток для разархивации в него
    compressed := TMemoryStream.Create;
 
-   //Ѡ衰飨欠塭 ⡭椮
+   //Разархивируем данные в него
    FCompressor := TZCompressionStream.Create(compressed,TZCompressionLevel(compressionLevel));
    FCompressor.CopyFrom(FS,   FS.Size);
    FCompressor.Free;
 
-   //ˮੰ欠樳콲᲍
+   //Копируем результат
    FStream.CopyFrom(compressed, 0);
-   //Ƞ௬鮠欠 ᨬ氠᪫͊   Dir.FileLength := compressed.Size;
+   //Запоминаем размер файла
+   Dir.FileLength := compressed.Size;
    Compressed .Free;
 
    //???
@@ -238,10 +240,11 @@ begin
       FStream.CopyFrom(Temp, 0);
       Temp.Free;
    end;
-   //Ҫ졤㡥졨���᪫ࡱ 롲ᬮ䯬
+   //Складываем имя файла с каталогом
    StrPCopy(Dir.FileName, AnsiString(Path + ExtractFileName(ContentName)));
-   //Ƞੱ㡥졤ᮭ塮 ᪫半   FStream.WriteBuffer(Dir, SizeOf(TFileSection));
-   //Ƞੱ㡥졨譥鿠⡵饥
+   //Записываем данные о файле
+   FStream.WriteBuffer(Dir, SizeOf(TFileSection));
+   //Записываем изменения в хидер
    FHeader.DirLength := FHeader.DirLength + SizeOf(TFileSection);
    FStream.Position  := 0;
    FStream.WriteBuffer(FHeader, SizeOf(TZLibHeader));
@@ -334,7 +337,7 @@ begin
 end;
 
 initialization
-  // ՠꫠ鲯לּ贾驠k䯰鳬 硲鿠zlib
+  //Файл использующий Алгоритм сжатия zlib
   RegisterArchiveFormat('zlib', 'GLScene file uses the zlib compression algorithm', TZLibArchive);
 
 end.

@@ -112,6 +112,9 @@ var
   ii: Integer;
   use16: Boolean;
 begin
+  {$IFDEF FPC}
+  Loadlibpng13;
+  {$ENDIF}
   stream.Read(sig, 8);
 
   if _png_sig_cmp(@sig, 0, 8) <> 0 then
@@ -270,6 +273,9 @@ var
   rowPointers: array of PGLUbyte;
   ii: Integer;
 begin
+  {$IFDEF FPC}
+  Loadlibpng13;
+  {$ENDIF}
   png_ptr := _png_create_write_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
 
   if not Assigned(png_ptr) then

@@ -172,7 +172,7 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
 {$IFDEF FPC}
   const
     {$ifdef unix}
-    libz = 'libz';
+    libz = 'libz.so';
     {$endif unix}
     {.$IFDEF LINUX}
     // libz = 'libz.so.1';
@@ -274,6 +274,9 @@ Uses
    x,
   {$ENDIF}
   {$IFDEF UNIX}
+    {$IFDEF ANDROID}
+  CustomDrawnInt,
+    {$ENDIF}
    dynlibs;
   {$ENDIF}
 
@@ -382,19 +385,34 @@ begin
   Result := False;
   if (vzHandle=INVALID_MODULEHANDLE) then
   begin
-     Closezlib;
-     vzHandle := LoadLibrary(PChar(libz));
-     if (vzHandle <> INVALID_MODULEHANDLE) then
-      Result := True
-     else begin
-       if vzHandle <> INVALID_MODULEHANDLE then
-         FreeLibrary(vzHandle);
-      {$IFDEF GLS_GLS_LOGGING}
-        GLSLogger.Log('ZLibEx.pas: Zlib library not loaded');
-      {$ENDIF}
-     end;
+     {$IFDEF ANDROID}
+     //Сначала загружаем библиотеку через Java, потом загружаем нативно!
+     if CDWidgetset.Loadlibrary(libz) then
+     begin
+     {$ENDIF}
+         Closezlib;
+         vzHandle := LoadLibrary(PChar(libz));
+         if (vzHandle <> INVALID_MODULEHANDLE) then
+         begin
+          Result := True;
+          ReadEntryPoints;
+         end
+         else begin
+           if vzHandle <> INVALID_MODULEHANDLE then
+             FreeLibrary(vzHandle);
+          {$IFDEF GLS_LOGGING}
+            GLSLogger.Log('ZLibEx.pas: Zlib library not loaded');
+          {$ENDIF}
+         end;
+     {$IFDEF ANDROID}
+     end
+           {$IFDEF GLS_LOGGING}
+        else         GLSLogger.Log('ZLibEx.pas: Zlib library not loaded on Java');
+           {$ENDIF}
+     {$ENDIF}
   end
   else Result:=True;
+
 end;
 
 procedure Closezlib;
@@ -467,12 +485,8 @@ end;
 
 initialization
 
-{$IFDEF FPC}
-{$IFNDEF ANDROID}
-if Initzlib then
-  ReadEntryPoints;
-{$ENDIF}
-{$ENDIF}
+//Загрузку библиотеки проводить в момент использования в коде
+//В андроиде секция initialization вызывает проблемы
 
 finalization
 
