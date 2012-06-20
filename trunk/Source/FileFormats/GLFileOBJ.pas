@@ -9,6 +9,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
       <li>30/06/11 - DaStr - Added ability to assign meshes
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>04/03/10 - DanB - Now uses CharInSet
@@ -863,6 +864,7 @@ var
     matLib: TGLMaterialLibrary;
     libMat: TGLLibMaterial;
     texName: string;
+    libFilename: string;
   begin
     if GetOwner is TGLBaseMesh then
     begin
@@ -877,8 +879,15 @@ var
           // spawn a new material
           libMat := matLib.Materials.Add;
           libMat.Name := matName;
+
+          // get full path for material file to be load
+          if matLib.TexturePaths = EmptyStr then
+            libFilename := libName
+          else
+            libFilename := IncludeTrailingPathDelimiter(matLib.TexturePaths) + libName;
+
           try
-            fs := CreateFileStream(libName);
+            fs := CreateFileStream(libFilename);
           except
             fs := nil;
           end;
