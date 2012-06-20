@@ -324,7 +324,7 @@ function Java_com_pascal_lclproject_LCLActivity_LCLOnKey(
 function Java_com_pascal_lclproject_LCLActivity_LCLOnTimer(
     env:PJNIEnv; this:jobject; ATimer: jobject): jint; cdecl;
 function Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged(
-    env:PJNIEnv; this:jobject; ANewDPI, ANewWidth: jint): jint; cdecl;
+    env:PJNIEnv; this:jobject; ANewxDPI,ANewyDPI, ANewWidth,ANewHeight: jint): jint; cdecl;
 function Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged(
     env:PJNIEnv; this:jobject; ASensorKind: jint; AValues: JDoubleArray): jint; cdecl;
 

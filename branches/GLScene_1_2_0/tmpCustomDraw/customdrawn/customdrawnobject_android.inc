@@ -236,10 +236,10 @@ begin
 end;
 
 function Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged(
-  env:PJNIEnv; this:jobject; ANewDPI, ANewWidth: jint): jint; cdecl;
+  env:PJNIEnv; this:jobject; ANewxDPI,ANewyDPI, ANewWidth,ANewHeight: jint): jint; cdecl;
 var
   lForm: TCDNonNativeForm;
-  lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth: Integer;
+  lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth,lOldFormHeight, lNewFormHeight: Integer;
   i: Integer;
 begin
   for i := 0 to GetFormCount()-1 do
@@ -248,17 +248,21 @@ begin
 
     if lForm.LayoutAutoAdjusted then lOldDPI := Screen.PixelsPerInch
     else lOldDPI := lForm.LCLForm.DesignTimeDPI;
-    lNewDPI := ANewDPI;
+    lNewDPI := ANewxDPI;
     lOldFormWidth := lForm.LCLForm.Width;
     lNewFormWidth := ANewWidth;
-    DebugLn(Format('[LCLOnConfigurationChanged] i=%d lOldDPI=%d lNewDPI=%d lOldFormWidth=%d lNewFormWidth=%d',
-      [i, lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth]));
-    lForm.LCLForm.AutoAdjustLayout(lapAutoAdjustWithoutHorizontalScrolling,
-      lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth);
+    lOldFormHeight := lForm.LCLForm.Height;
+    lNewFormHeight := ANewHeight;
+    DebugLn(Format('[LCLOnConfigurationChanged] i=%d lOldDPI=%d lNewDPI=%d lOldFormWidth=%d lNewFormWidth=%d  lOldFormHeight=%d lNewFormHeight=%d',
+      [i, lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth,lOldFormHeight, lNewFormHeight]));
+   // lForm.LCLForm.AutoAdjustLayout(lapAutoAdjustWithoutHorizontalScrolling,
+    //  lOldDPI, lNewDPI, lOldFormWidth, lNewFormWidth);
+    lForm.LCLForm.DesignTimeDPI := ANewxDPI;
+    lForm.LCLForm.SetBounds(0,0,lNewFormWidth,lNewFormHeight);
   end;
 
   // Update the font size
-  CDWidgetset.DefaultFontAndroidSize := Round(16 * (ANewDPI / 125));
+  CDWidgetset.DefaultFontAndroidSize := Round(16 * (ANewxDPI / 125));
 end;
 
 function Java_com_pascal_lclproject_LCLActivity_LCLOnSensorChanged(
@@ -371,7 +375,7 @@ const NativeMethods: array[0..10] of JNINativeMethod=
     signature:'(Ljava/lang/Runnable;)I';
     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnTimer;),
    (name:'LCLOnConfigurationChanged';
-    signature:'(II)I';
+    signature:'(IIII)I';
     fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnConfigurationChanged;),
    (name:'LCLOnSensorChanged';
     signature:'(I[D)I';

@@ -135,6 +135,7 @@ public class LCLActivity extends Activity implements SensorEventListener
         if (LOG_EGL) {
             Log.v("EglHelper","surfaceChanged()" );
         }
+        Log.v("LCLActivity", "surfaceChanged: width"+width+"height"+height);
       LCLOnSurfaceChanged();  
 		// TODO Auto-generated method stub
 		
@@ -195,25 +196,13 @@ public class LCLActivity extends Activity implements SensorEventListener
     { if (LOG_EGL) {
       Log.i("lclapp", "onDraw started");
       }
-      int lWidth = getWidth();
-      int lHeight = getHeight();
-      int oldlclformwidth = lclformwidth;
-
-      lclformwidth = lWidth;
-      lclformheight = lHeight;
-      lclscreenwidth = lclformwidth;
-      lclscreenheight = lclformheight;
-
-      // Check if we rotated in the draw event, OnConfigurationChanged can't return the new form width =(
-      // see http://stackoverflow.com/questions/2524683/how-to-get-new-width-height-of-root-layout-in-onconfigurationchanged
-      if (lWidth != oldlclformwidth) LCLOnConfigurationChanged(lclxdpi, lWidth); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
-
+      SendScreenChanges(true);
       //Log.v("lclproject", "LCLSurface.onDraw width=" + Integer.toString(lWidth)
       //  + " height=" + Integer.toString(lHeight));
  
       //Bitmap localbitmap = Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
       //LCLDrawToBitmap(lWidth, lHeight, localbitmap);
-      LCLOnDraw(lWidth, lHeight);
+      LCLOnDraw(lclformwidth, lclformheight);
      // canvas.drawBitmap(localbitmap, 0, 0, null);
       //Log.i("lclapp", "onDraw finished");
     }
@@ -310,16 +299,9 @@ public class LCLActivity extends Activity implements SensorEventListener
     
    
     // Tell the LCL that an OnCreate has happened and what is our instance
-    lclformwidth = lclsurface.getWidth();
-    lclformheight = lclsurface.getHeight();
-    lclscreenwidth = lclformwidth;
-    lclscreenheight = lclformheight;
-    DisplayMetrics metrics = new DisplayMetrics();
-    getWindowManager().getDefaultDisplay().getMetrics(metrics);
-    lclxdpi = (int) metrics.xdpi;
-    lclydpi = (int) metrics.ydpi;
-
-   LCLOnCreate(this);
+  //предварительное сохранение параметров экрана без вызова собятия
+    SendScreenChanges(false); 
+    LCLOnCreate(this);
     
     setContentView(lclsurface);
     lclsurface.postInvalidate();
@@ -335,6 +317,7 @@ public class LCLActivity extends Activity implements SensorEventListener
   {
 	  super.onStart(); 
 	  Log.v("LCLActivity", "Activity onStart"); 
+	  SendScreenChanges(true);
   }
 
   @Override public void onConfigurationChanged (Configuration newConfig)
@@ -343,30 +326,8 @@ public class LCLActivity extends Activity implements SensorEventListener
     
     Log.v("LCLActivity", "onConfigurationChanged");
     
-    lclformwidth = lclsurface.getWidth();
-    lclformheight = lclsurface.getHeight();
-    lclscreenwidth = lclformwidth;
-    lclscreenheight = lclformheight;
-    DisplayMetrics metrics = new DisplayMetrics();
-    getWindowManager().getDefaultDisplay().getMetrics(metrics);
-    lclxdpi = (int) metrics.xdpi;
-    lclydpi = (int) metrics.ydpi;
     
-    /*
-    Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
-    int orientation = display.getOrientation(); 
-	switch(orientation) {
-        case Configuration.ORIENTATION_PORTRAIT:
-                    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-            break;
-        case Configuration.ORIENTATION_LANDSCAPE:
-
-                    setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-            break;
-    }
-*/
+    SendScreenChanges(true);
     // Don't call LCLOnConfigurationChanged, wait for a onDraw instead
     //lclsurface.postInvalidate();
     //Log.i("lclapp", "onConfigurationChanged finished");
@@ -399,7 +360,7 @@ public class LCLActivity extends Activity implements SensorEventListener
   public native int LCLOnMessageBoxFinished(int Result);
   public native int LCLOnKey(int kind, int keyCode, KeyEvent event, int AChar);
   public native int LCLOnTimer(Runnable timerid);
-  public native int LCLOnConfigurationChanged(int ANewDPI, int ANewWidth);
+  public native int LCLOnConfigurationChanged(int ANewxDPI,int ANewyDPI, int ANewWidth,int ANewHeight);
   public native int LCLOnSensorChanged(int ASensorKind, double[] AValues);
   
   public native void LCLOnSurfaceCreated();
@@ -539,6 +500,77 @@ public class LCLActivity extends Activity implements SensorEventListener
       if (this.Destroyed == false) LocalHandler.postDelayed(this, lcltimerinterval);
     }
   };
+    
+  void SendScreenChanges(boolean sendchanges)
+  {	  	
+	  int statusBarHeight = 0;  
+	  int titleBarHeight = 0;  
+	  
+  	  Window win = getWindow();
+  	  
+	    if (sendchanges==true)
+	    {
+	    	Rect rect = new Rect();
+	    	win.getDecorView().getWindowVisibleDisplayFrame(rect);
+	    	statusBarHeight = rect.top;
+	    	int contentViewTop =
+	    			win.findViewById(Window.ID_ANDROID_CONTENT).getTop();	
+	    	titleBarHeight = contentViewTop - statusBarHeight;  
+	    }
+	  
+	  
+	    DisplayMetrics metrics = new DisplayMetrics();
+	    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+	    lclxdpi = (int) metrics.xdpi;
+	    lclydpi = (int) metrics.ydpi;
+	    
+	    int lWidth=0;
+	    int lHeight=0;
+	    
+	     WindowManager.LayoutParams winParams = win.getAttributes();
+	     int flag = WindowManager.LayoutParams.FLAG_FULLSCREEN; 
+	    if ((winParams.flags&flag)==flag)
+	    {
+    	    lWidth = metrics.widthPixels;
+    	    lHeight = metrics.heightPixels;      	     	
+	    } else
+	    {
+	    
+	    	int ot = getResources().getConfiguration().orientation;
+	    	switch(ot)
+	    	{
+	    	default:
+	    		lWidth = metrics.widthPixels;
+	    		lHeight = metrics.heightPixels;               
+	    		break;
+	    	case  Configuration.ORIENTATION_PORTRAIT:
+	    		lWidth = metrics.widthPixels -statusBarHeight-titleBarHeight;
+	    		lHeight = metrics.heightPixels;
+	    		break;
+	    	case Configuration.ORIENTATION_LANDSCAPE:
+	    		lWidth = metrics.widthPixels ;
+	    		lHeight = metrics.heightPixels -statusBarHeight-titleBarHeight;
+	    		break;	 
+
+	    	}
+	    }
+	    
+	    int oldlclformwidth = lclformwidth;
+	    int oldlclformheight = lclformheight; 
+	    
+	    lclformwidth = lWidth;
+	    lclformheight = lHeight;
+	    lclscreenwidth = lclformwidth;
+	    lclscreenheight = lclformheight;
+
+	      // Check if we rotated in the draw event, OnConfigurationChanged can't return the new form width =(
+	      // see http://stackoverflow.com/questions/2524683/how-to-get-new-width-height-of-root-layout-in-onconfigurationchanged
+	    if (sendchanges==true)
+	    {
+	      if ((lWidth != oldlclformwidth)||(lHeight != oldlclformheight)) LCLOnConfigurationChanged(lclxdpi,lclydpi, lWidth, lHeight); // we send xdpi because thats what the LCL uses for Screen.PixelsPerInch
+	    }
+  }
+  
 
   // input:  int lcltimerinterval in milliseconds
   // output:  Runnable lcltimerid
@@ -648,7 +680,8 @@ public class LCLActivity extends Activity implements SensorEventListener
       if (LOG_EGL) {
 		  Log.i("EglHelper", "LCLLoadLibrary: Trying to load "+lib+") tid=" + Thread.currentThread().getId());
 	  }	  
-      String s=lib.substring(3,lib.indexOf("."));
+      String s=lib.substring(3,lib.indexOf("."
+    		  ));
         try 
         {
           System.loadLibrary(s);       
