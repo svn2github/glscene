@@ -529,6 +529,10 @@ public class LCLActivity extends Activity implements SensorEventListener
 	    
 	     WindowManager.LayoutParams winParams = win.getAttributes();
 	     int flag = WindowManager.LayoutParams.FLAG_FULLSCREEN; 
+	     
+	     //Если выставлен режим фуллскрина то лучше размеры не менять
+	     //если же такого нету то из полного размера экрана нуно вычесть размеры титл бара и строки событий
+	     //ну там где часики батарейка и прочая чюшь.
 	    if ((winParams.flags&flag)==flag)
 	    {
     	    lWidth = metrics.widthPixels;
@@ -536,23 +540,21 @@ public class LCLActivity extends Activity implements SensorEventListener
 	    } else
 	    {
 	    
+    	/*	lWidth = metrics.widthPixels;
+    		lHeight = metrics.heightPixels;    
 	    	int ot = getResources().getConfiguration().orientation;
 	    	switch(ot)
 	    	{
-	    	default:
-	    		lWidth = metrics.widthPixels;
-	    		lHeight = metrics.heightPixels;               
-	    		break;
 	    	case  Configuration.ORIENTATION_PORTRAIT:
 	    		lWidth = metrics.widthPixels -statusBarHeight-titleBarHeight;
 	    		lHeight = metrics.heightPixels;
 	    		break;
-	    	case Configuration.ORIENTATION_LANDSCAPE:
+	    	case Configuration.ORIENTATION_LANDSCAPE:*/
 	    		lWidth = metrics.widthPixels ;
 	    		lHeight = metrics.heightPixels -statusBarHeight-titleBarHeight;
-	    		break;	 
+	    /*		break;	 
 
-	    	}
+	    	}*/
 	    }
 	    
 	    int oldlclformwidth = lclformwidth;
