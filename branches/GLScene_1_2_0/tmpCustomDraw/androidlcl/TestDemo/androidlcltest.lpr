@@ -3,7 +3,8 @@ library androidlcltest;
 {$mode objfpc}{$H+}
 
 uses
-  {$DEFINE UseCThreads}   //многопоточность не врубилась пришлось изнасиловать и врубить самому!
+//  {$DEFINE UNIX}
+ // {$DEFINE UseCThreads}   //многопоточность не врубилась пришлось изнасиловать и врубить самому!
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}

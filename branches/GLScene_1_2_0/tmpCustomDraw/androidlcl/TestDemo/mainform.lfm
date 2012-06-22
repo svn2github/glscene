@@ -1,8 +1,9 @@
 object Form1: TForm1
-  Left = 411
+  Left = 471
   Height = 304
-  Top = 163
+  Top = 377
   Width = 253
+  BorderStyle = bsNone
   Caption = 'Form1'
   OnClick = FormClick
   OnCreate = FormCreate
@@ -109,5 +110,14 @@ object Form1: TForm1
     }
     left = 45
     top = 96
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
+    OnProgress = GLCadencer1Progress
+    left = 114
+    top = 101
   end
 end

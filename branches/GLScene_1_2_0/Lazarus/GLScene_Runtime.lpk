@@ -31,6 +31,7 @@
         <CompilerMessages>
           <UseMsgFile Value="True"/>
         </CompilerMessages>
+        <CustomOptions Value="-dUseCThreads"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>

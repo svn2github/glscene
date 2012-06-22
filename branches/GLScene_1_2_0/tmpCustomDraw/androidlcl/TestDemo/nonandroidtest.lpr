@@ -4,7 +4,7 @@ program nonandroidtest;
 
 uses
   Interfaces, // this includes the LCL widgetset
-  Forms, mainform;
+  Forms, mainform, GLScene_Runtime;
 
 {$R *.res}
 

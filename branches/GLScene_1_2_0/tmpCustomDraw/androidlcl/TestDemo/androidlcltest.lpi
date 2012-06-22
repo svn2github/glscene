@@ -175,7 +175,7 @@
       <CompilerMessages>
         <UseMsgFile Value="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-dANDROID -Xd -CpARMV6"/>
+      <CustomOptions Value="-dANDROID -Xd -CpARMV6 -dUseCThreads"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

@@ -7,14 +7,17 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, LCLProc,
   Arrow, StdCtrls, ComCtrls, LCLType, LCLIntf, InterfaceBase, lazdeviceapis,
-  Menus, ExtDlgs, LMessages, customdrawnint, GLScene_Viewer_Form, GLScene_Core,
-  GLScene_Objects, GLScene_MaterialEx;
+  Menus, ExtDlgs, LMessages, GLScene_Viewer_Form, GLScene_Core,
+  GLScene_Objects, GLScene_MaterialEx, GLScene_Base_Classes, GLScene_Cadencer,
+  //cthreads
+  Unix, BaseUnix;
 
 type
 
   { TForm1 }
 
   TForm1 = class(TGLSceneForm)//{GLScene}
+    GLCadencer1: TGLCadencer;
     GLCamera1: TGLCamera;
     GLCube1: TGLCube;
     GLLightSource1: TGLLightSource;
@@ -27,6 +30,7 @@ type
       );
     procedure Arrow1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);       }
+    procedure AsyncTimer1Timer(Sender: TObject);
     procedure btnShowInfoClick(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -34,6 +38,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
 
   //  procedure FormPaint(Sender: TObject);
  //   procedure MenuItem1Click(Sender: TObject);
@@ -52,13 +58,13 @@ type
 
   //  procedure HandleMessageDialogFinished(Sender: TObject; AResult: Integer);
   end;
-  TTimerThread = class(TThread)
 
-  end;
+  { TThread1 }
 
 var
   Form1: TForm1;
   OGLContext:Pointer;
+
 
 implementation
 
@@ -117,63 +123,15 @@ begin
   Device.Vibrate(2000);
 end;
 
+procedure TForm1.AsyncTimer1Timer(Sender: TObject);
+begin
+   DebugLn('AsyncTimer');
+end;
+
 procedure TForm1.FormCreate(Sender: TObject);
-var
-      FTimerThread: TThread;
- {   MajorVersion, MinorVersion, Err: EGLInt;
-  FDisplay: EGLDisplay;
-  FSurface: EGLSurface;
-  FConfig: EGLConfig;
-    LNumElements: Integer;
-    Attribute: array[0..12] of Integer = (
-   // EGL_BUFFER_SIZE,16,
-
-    EGL_RED_SIZE, 5,
-    EGL_GREEN_SIZE, 6,
-    EGL_BLUE_SIZE, 5,
-    EGL_ALPHA_SIZE,0,
-    EGL_DEPTH_SIZE, 0,
-    EGL_STENCIL_SIZE,0,
-  //  EGL_SURFACE_TYPE,EGL_WINDOW_BIT,
-  //  EGL_RENDERABLE_TYPE,EGL_OPENGL_ES2_BIT,
-    0);
-      LConfigs: array of EGLConfig;}
-
-     //     vzHandle: TLibHandle = 0;
 begin
    DebugLn('OnCreate');
- {  FTimerThread := TTimerThread.Create(False);
-   FTimerThread.FreeOnTerminate := False;
-  FTimerThread.Priority := tpTimeCritical; }
- //  CDWidgetset.OnSurfaceCreated := @OnSurfaceCreated;
-//CDWidgetset.OnSurfaceChanged := @OnSurfaceChanged;
-//CDWidgetset.OnSurfaceDestroyed := @OnSurfaceDestroyed;
 
- //  CDWidgetset.StartEGL;
- //  CDWidgetset.FinishEGL;
-//   OGLContext:= CDWidgetset.CreateContext;
- ///  CDWidgetset.DestroyContext(OGLContext);
-
-  //  vzHandle := LoadLibrary(PChar('libz.so'));
-    //  DebugLn('libz:'+inttostr(vzHandle));
-   // FDisplay := eglGetDisplay(EGL_DEFAULT_DISPLAY);
-  //  if eglInitialize(FDisplay, @MajorVersion, @MinorVersion) = 0 then
-   //   DebugLn('Failed to initialize OpenGL ES');
-
-  // DebugLn('MajorVersion:'+inttostr(MajorVersion)+' MinorVersion:'+inttostr(MinorVersion));
-
- //  if eglChooseConfig(FDisplay, nil, nil, 0, @LNumElements) = EGL_TRUE then
-  //  begin
-  //    SetLength(LConfigs, LNumElements);
-   //   if eglGetConfigs(FDisplay, @LConfigs[0], Length(LConfigs), @LNumElements) = EGL_TRUE then
-   //     DebugLn('eglGetConfigs');
-  //  end;
-
-//  if eglChooseConfig(FDisplay, @Attribute[0], @FConfig, 1, @LNumElements) <> EGL_TRUE then
-  //  DebugLn('Failed to accept attributes');
- // FSurface := eglCreateWindowSurface(FDisplay, LConfigs[0], nil, nil);
- //  Err := eglGetError;
-//	if Err <> EGL_SUCCESS then
    //  DebugLn('Failed to create surface to draw');
 end;
 
@@ -186,6 +144,16 @@ procedure TForm1.FormMouseDown(Sender: TObject; Button: TMouseButton; Shift: TSh
   Y: Integer);
 begin
   DebugLn(Format('MouseDown x=%d y=%d', [x, y]));
+  //fTimer.FTimerThread.Resume;
+
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+    DebugLn('GLCadencer1Progress');
+ // Invalidate;
+ // GLCube1.Turn(20*deltaTime);
 end;
 
 {procedure TForm1.LMPaint(var Message: TLMPaint);
@@ -197,7 +165,7 @@ end; }
 
 procedure TForm1.LMSize(var Message: TLMSize);
 begin
-  DebugLn('OnSize');
+ // DebugLn('OnSize: Width'+inttostr(Width)+'Height'+inttostr(Height));
 
 end;
 
@@ -237,7 +205,6 @@ end;    }
 
 procedure TForm1.OnSurfaceCreated(Sender: TObject);
 var
-  LConfigs: array of EGLConfig;
   LNumElements: Integer;
 begin
   DebugLn('OnSurfaceCreated');

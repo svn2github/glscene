@@ -3,7 +3,7 @@
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Release"/>
-    <Units Count="125">
+    <Units Count="91">
       <Unit0>
         <Filename Value="androidlcltest.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -11,7 +11,7 @@
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="27" Y="10"/>
+        <CursorPos X="31" Y="12"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -23,11 +23,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainform"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="53" Y="27"/>
-        <ComponentState Value="1"/>
+        <CursorPos X="60" Y="11"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -44,7 +44,7 @@
         <ComponentName Value="Form2"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="secondform"/>
-        <UsageCount Value="198"/>
+        <UsageCount Value="188"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
@@ -53,7 +53,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="398"/>
         <CursorPos X="151" Y="413"/>
-        <UsageCount Value="97"/>
+        <UsageCount Value="87"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
@@ -61,158 +61,80 @@
         <WindowIndex Value="0"/>
         <TopLine Value="466"/>
         <CursorPos X="51" Y="512"/>
-        <UsageCount Value="97"/>
+        <UsageCount Value="87"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="3495"/>
-        <CursorPos X="38" Y="3506"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit6>
-      <Unit7>
         <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi_android.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3725"/>
         <CursorPos X="36" Y="3743"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintfh.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="73"/>
-        <CursorPos X="24" Y="55"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit8>
-      <Unit9>
+      </Unit6>
+      <Unit7>
         <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnprivate.pas"/>
         <UnitName Value="customdrawnprivate"/>
         <WindowIndex Value="0"/>
         <TopLine Value="40"/>
         <CursorPos X="6" Y="93"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="54"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit9>
-      <Unit10>
+      </Unit7>
+      <Unit8>
         <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf_android.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="220"/>
         <CursorPos X="33" Y="159"/>
-        <UsageCount Value="51"/>
+        <UsageCount Value="41"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="../../lazarus/lazarus/lcl/interfacebase.pp"/>
-        <UnitName Value="InterfaceBase"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="129"/>
-        <CursorPos X="3" Y="138"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="../../lazarus/lazarus/lcl/lmessages.pp"/>
-        <UnitName Value="LMessages"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="131"/>
-        <CursorPos X="32" Y="137"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="../../lazarus/lazarus/lcl/lclmessageglue.pas"/>
-        <UnitName Value="LCLMessageGlue"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="474"/>
-        <CursorPos X="44" Y="486"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Viewer_LCL.pas"/>
-        <UnitName Value="GLScene_Viewer_LCL"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="76"/>
-        <CursorPos X="15" Y="94"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit14>
-      <Unit15>
+      </Unit8>
+      <Unit9>
         <Filename Value="../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
         <UnitName Value="GLScene_Context_OES"/>
         <WindowIndex Value="0"/>
         <TopLine Value="350"/>
         <CursorPos X="40" Y="279"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="79"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit15>
-      <Unit16>
+      </Unit9>
+      <Unit10>
         <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/android/egl.pas"/>
         <UnitName Value="egl"/>
         <WindowIndex Value="0"/>
         <TopLine Value="48"/>
         <CursorPos X="1" Y="64"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="62"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit16>
-      <Unit17>
+      </Unit10>
+      <Unit11>
         <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
         <UnitName Value="jni"/>
         <WindowIndex Value="0"/>
         <TopLine Value="277"/>
         <CursorPos X="18" Y="302"/>
-        <UsageCount Value="98"/>
+        <UsageCount Value="88"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Files_X.pas"/>
-        <UnitName Value="GLScene_Files_X"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="81"/>
-        <CursorPos X="66" Y="99"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Classes.pas"/>
-        <UnitName Value="GLScene_Base_Classes"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="202"/>
-        <CursorPos X="14" Y="68"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit19>
-      <Unit20>
+      </Unit11>
+      <Unit12>
         <Filename Value="../../GLScene1.2/Source/GLScene_Base_OpenGL_Tokens.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Tokens"/>
         <WindowIndex Value="0"/>
         <TopLine Value="40"/>
         <CursorPos X="49" Y="57"/>
-        <UsageCount Value="72"/>
+        <UsageCount Value="62"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit20>
-      <Unit21>
+      </Unit12>
+      <Unit13>
         <Filename Value="../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Adapter"/>
         <WindowIndex Value="0"/>
         <TopLine Value="67"/>
         <CursorPos X="15" Y="1"/>
-        <UsageCount Value="88"/>
+        <UsageCount Value="78"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapih.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="114"/>
-        <CursorPos X="24" Y="124"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit22>
-      <Unit23>
+      </Unit13>
+      <Unit14>
         <Filename Value="../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
         <UnitName Value="GLScene_AsyncTimer"/>
         <WindowIndex Value="0"/>
@@ -220,8 +142,8 @@
         <CursorPos X="2" Y="220"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit23>
-      <Unit24>
+      </Unit14>
+      <Unit15>
         <Filename Value="../../GLScene1.2/Source/GLScene_Base_Color.pas"/>
         <UnitName Value="GLScene_Base_Color"/>
         <WindowIndex Value="0"/>
@@ -229,125 +151,17 @@
         <CursorPos X="1" Y="1089"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit24>
-      <Unit25>
+      </Unit15>
+      <Unit16>
         <Filename Value="../../GLScene1.2/Source/GLScene_Base_Context.pas"/>
         <UnitName Value="GLScene_Base_Context"/>
         <WindowIndex Value="0"/>
         <TopLine Value="209"/>
         <CursorPos X="37" Y="220"/>
-        <UsageCount Value="54"/>
+        <UsageCount Value="44"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Coordinates.pas"/>
-        <UnitName Value="GLScene_Base_Coordinates"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="615"/>
-        <CursorPos X="38" Y="632"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
-        <UnitName Value="GLScene_Base_Log"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="531"/>
-        <CursorPos X="18" Y="554"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_PersistentClasses.pas"/>
-        <UnitName Value="GLScene_Base_PersistentClasses"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="32"/>
-        <CursorPos X="11" Y="49"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_ScreenSaver.pas"/>
-        <UnitName Value="GLScene_Base_ScreenSaver"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="383"/>
-        <CursorPos X="2" Y="416"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Script.pas"/>
-        <UnitName Value="GLScene_Base_Script"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="283"/>
-        <CursorPos X="1" Y="316"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_Vector_Lists.pas"/>
-        <UnitName Value="GLScene_Base_Vector_Lists"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="4245"/>
-        <CursorPos X="2" Y="4277"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Base_XCollection.pas"/>
-        <UnitName Value="GLScene_Base_XCollection"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="859"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Behaviours.pas"/>
-        <UnitName Value="GLScene_Behaviours"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="724"/>
-        <CursorPos X="2" Y="751"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="../../GLScene1.2/Source/GLScene_BitmapFont.pas"/>
-        <UnitName Value="GLScene_BitmapFont"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1764"/>
-        <CursorPos X="2" Y="1797"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit34>
-      <Unit35>
-        <Filename Value="../../GLScene1.2/Source/GLScene_BitmapFont_System.pas"/>
-        <UnitName Value="GLScene_BitmapFont_System"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="19"/>
-        <CursorPos X="37" Y="40"/>
-        <UsageCount Value="1"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit35>
-      <Unit36>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Blur.pas"/>
-        <UnitName Value="GLScene_Blur"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="885"/>
-        <CursorPos X="1" Y="917"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit36>
-      <Unit37>
-        <Filename Value="../../GLScene1.2/Source/GLScene_BSP.pas"/>
-        <UnitName Value="GLScene_BSP"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1060"/>
-        <CursorPos X="2" Y="1093"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit37>
-      <Unit38>
+      </Unit16>
+      <Unit17>
         <Filename Value="../../GLScene1.2/Source/GLScene_BumpMapping.pas"/>
         <UnitName Value="GLScene_BumpMapping"/>
         <WindowIndex Value="0"/>
@@ -355,8 +169,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit38>
-      <Unit39>
+      </Unit17>
+      <Unit18>
         <Filename Value="../../GLScene1.2/Source/GLScene_CameraController.pas"/>
         <UnitName Value="GLScene_CameraController"/>
         <WindowIndex Value="0"/>
@@ -364,8 +178,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit39>
-      <Unit40>
+      </Unit18>
+      <Unit19>
         <Filename Value="../../GLScene1.2/Source/GLScene_Canvas.pas"/>
         <UnitName Value="GLScene_Canvas"/>
         <WindowIndex Value="0"/>
@@ -373,17 +187,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit40>
-      <Unit41>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Collision.pas"/>
-        <UnitName Value="GLScene_Collision"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="942"/>
-        <CursorPos X="29" Y="959"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit41>
-      <Unit42>
+      </Unit19>
+      <Unit20>
         <Filename Value="../../GLScene1.2/Source/GLScene_Collision_Ellipse.pas"/>
         <UnitName Value="GLScene_Collision_Ellipse"/>
         <WindowIndex Value="0"/>
@@ -391,8 +196,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit42>
-      <Unit43>
+      </Unit20>
+      <Unit21>
         <Filename Value="../../GLScene1.2/Source/GLScene_Context_Windows.pas"/>
         <UnitName Value="GLScene_Context_Windows"/>
         <WindowIndex Value="0"/>
@@ -400,17 +205,17 @@
         <CursorPos X="1" Y="1373"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit43>
-      <Unit44>
+      </Unit21>
+      <Unit22>
         <Filename Value="../../GLScene1.2/Source/GLScene_Core.pas"/>
         <UnitName Value="GLScene_Core"/>
         <WindowIndex Value="0"/>
         <TopLine Value="8384"/>
         <CursorPos X="22" Y="8411"/>
-        <UsageCount Value="83"/>
+        <UsageCount Value="73"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit44>
-      <Unit45>
+      </Unit22>
+      <Unit23>
         <Filename Value="../../GLScene1.2/Source/GLScene_DCE.pas"/>
         <UnitName Value="GLScene_DCE"/>
         <WindowIndex Value="0"/>
@@ -418,8 +223,8 @@
         <CursorPos X="4" Y="1181"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit45>
-      <Unit46>
+      </Unit23>
+      <Unit24>
         <Filename Value="../../GLScene1.2/Source/GLScene_DCE_Misc.pas"/>
         <UnitName Value="GLScene_DCE_Misc"/>
         <WindowIndex Value="0"/>
@@ -427,17 +232,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit46>
-      <Unit47>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS.pas"/>
-        <UnitName Value="GLScene_Files__3DS"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="2490"/>
-        <CursorPos X="29" Y="2497"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit47>
-      <Unit48>
+      </Unit24>
+      <Unit25>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Base.pas"/>
         <UnitName Value="GLScene_Files__3DS_Base"/>
         <WindowIndex Value="0"/>
@@ -445,8 +241,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit48>
-      <Unit49>
+      </Unit25>
+      <Unit26>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Consts.pas"/>
         <UnitName Value="GLScene_Files__3DS_Consts"/>
         <WindowIndex Value="0"/>
@@ -454,8 +250,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit49>
-      <Unit50>
+      </Unit26>
+      <Unit27>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_SceneObjects.pas"/>
         <UnitName Value="GLScene_Files__3DS_SceneObjects"/>
         <WindowIndex Value="0"/>
@@ -463,8 +259,8 @@
         <CursorPos X="9" Y="526"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit50>
-      <Unit51>
+      </Unit27>
+      <Unit28>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Types.pas"/>
         <UnitName Value="GLScene_Files__3DS_Types"/>
         <WindowIndex Value="0"/>
@@ -472,8 +268,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit51>
-      <Unit52>
+      </Unit28>
+      <Unit29>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files__3DS_Utils.pas"/>
         <UnitName Value="GLScene_Files__3DS_Utils"/>
         <WindowIndex Value="0"/>
@@ -481,8 +277,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit52>
-      <Unit53>
+      </Unit29>
+      <Unit30>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_ASE.pas"/>
         <UnitName Value="GLScene_Files_ASE"/>
         <WindowIndex Value="0"/>
@@ -490,8 +286,8 @@
         <CursorPos X="22" Y="1972"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit53>
-      <Unit54>
+      </Unit30>
+      <Unit31>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D.pas"/>
         <UnitName Value="GLScene_Files_B3D"/>
         <WindowIndex Value="0"/>
@@ -499,8 +295,8 @@
         <CursorPos X="2" Y="337"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit54>
-      <Unit55>
+      </Unit31>
+      <Unit32>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D_Base.pas"/>
         <UnitName Value="GLScene_Files_B3D_Base"/>
         <WindowIndex Value="0"/>
@@ -508,8 +304,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit55>
-      <Unit56>
+      </Unit32>
+      <Unit33>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_B3D_Types.pas"/>
         <UnitName Value="GLScene_Files_B3D_Types"/>
         <WindowIndex Value="0"/>
@@ -517,8 +313,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit56>
-      <Unit57>
+      </Unit33>
+      <Unit34>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_BMP.pas"/>
         <UnitName Value="GLScene_Files_BMP"/>
         <WindowIndex Value="0"/>
@@ -526,8 +322,8 @@
         <CursorPos X="2" Y="578"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit57>
-      <Unit58>
+      </Unit34>
+      <Unit35>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_DDS.pas"/>
         <UnitName Value="GLScene_Files_DDS"/>
         <WindowIndex Value="0"/>
@@ -535,8 +331,8 @@
         <CursorPos X="2" Y="641"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit58>
-      <Unit59>
+      </Unit35>
+      <Unit36>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_DXTC.pas"/>
         <UnitName Value="GLScene_Files_DXTC"/>
         <WindowIndex Value="0"/>
@@ -544,8 +340,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit59>
-      <Unit60>
+      </Unit36>
+      <Unit37>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_GL2.pas"/>
         <UnitName Value="GLScene_Files_GL2"/>
         <WindowIndex Value="0"/>
@@ -553,8 +349,8 @@
         <CursorPos X="8" Y="295"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit60>
-      <Unit61>
+      </Unit37>
+      <Unit38>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_GL2_Base.pas"/>
         <UnitName Value="GLScene_Files_GL2_Base"/>
         <WindowIndex Value="0"/>
@@ -562,8 +358,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit61>
-      <Unit62>
+      </Unit38>
+      <Unit39>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_GTS.pas"/>
         <UnitName Value="GLScene_Files_GTS"/>
         <WindowIndex Value="0"/>
@@ -571,8 +367,8 @@
         <CursorPos X="3" Y="125"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit62>
-      <Unit63>
+      </Unit39>
+      <Unit40>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_HDR.pas"/>
         <UnitName Value="GLScene_Files_HDR"/>
         <WindowIndex Value="0"/>
@@ -580,17 +376,8 @@
         <CursorPos X="1" Y="328"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit63>
-      <Unit64>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2.pas"/>
-        <UnitName Value="GLScene_Files_MD2"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="91"/>
-        <CursorPos X="3" Y="124"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit64>
-      <Unit65>
+      </Unit40>
+      <Unit41>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2_Base.pas"/>
         <UnitName Value="GLScene_Files_MD2_Base"/>
         <WindowIndex Value="0"/>
@@ -598,8 +385,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit65>
-      <Unit66>
+      </Unit41>
+      <Unit42>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD2_Types.pas"/>
         <UnitName Value="GLScene_Files_MD2_Types"/>
         <WindowIndex Value="0"/>
@@ -607,17 +394,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit66>
-      <Unit67>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD3.pas"/>
-        <UnitName Value="GLScene_Files_MD3"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="116"/>
-        <CursorPos X="42" Y="120"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit67>
-      <Unit68>
+      </Unit42>
+      <Unit43>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_MD3_Base.pas"/>
         <UnitName Value="GLScene_Files_MD3_Base"/>
         <WindowIndex Value="0"/>
@@ -625,8 +403,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit68>
-      <Unit69>
+      </Unit43>
+      <Unit44>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_MDC_Types.pas"/>
         <UnitName Value="GLScene_Files_MDC_Types"/>
         <WindowIndex Value="0"/>
@@ -634,8 +412,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit69>
-      <Unit70>
+      </Unit44>
+      <Unit45>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_MS3D_Types.pas"/>
         <UnitName Value="GLScene_Files_MS3D_Types"/>
         <WindowIndex Value="0"/>
@@ -643,8 +421,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit70>
-      <Unit71>
+      </Unit45>
+      <Unit46>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_NMF_Base.pas"/>
         <UnitName Value="GLScene_Files_NMF_Base"/>
         <WindowIndex Value="0"/>
@@ -652,8 +430,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit71>
-      <Unit72>
+      </Unit46>
+      <Unit47>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_Q3MD3_Types.pas"/>
         <UnitName Value="GLScene_Files_Q3MD3_Types"/>
         <WindowIndex Value="0"/>
@@ -661,8 +439,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit72>
-      <Unit73>
+      </Unit47>
+      <Unit48>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_RGBE.pas"/>
         <UnitName Value="GLScene_Files_RGBE"/>
         <WindowIndex Value="0"/>
@@ -670,8 +448,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit73>
-      <Unit74>
+      </Unit48>
+      <Unit49>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_STL_Types.pas"/>
         <UnitName Value="GLScene_Files_STL_Types"/>
         <WindowIndex Value="0"/>
@@ -679,8 +457,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit74>
-      <Unit75>
+      </Unit49>
+      <Unit50>
         <Filename Value="../../GLScene1.2/Source/GLScene_Files_VRML_Parser.pas"/>
         <UnitName Value="GLScene_Files_VRML_Parser"/>
         <WindowIndex Value="0"/>
@@ -688,8 +466,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit75>
-      <Unit76>
+      </Unit50>
+      <Unit51>
         <Filename Value="../../GLScene1.2/Source/GLScene_Gizmo.pas"/>
         <UnitName Value="GLScene_Gizmo"/>
         <WindowIndex Value="0"/>
@@ -697,8 +475,8 @@
         <CursorPos X="34" Y="369"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit76>
-      <Unit77>
+      </Unit51>
+      <Unit52>
         <Filename Value="../../GLScene1.2/Source/GLScene_Graphics.pas"/>
         <UnitName Value="GLScene_Graphics"/>
         <WindowIndex Value="0"/>
@@ -706,8 +484,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit77>
-      <Unit78>
+      </Unit52>
+      <Unit53>
         <Filename Value="../../GLScene1.2/Source/GLScene_GUI.pas"/>
         <UnitName Value="GLScene_GUI"/>
         <WindowIndex Value="0"/>
@@ -715,8 +493,8 @@
         <CursorPos X="1" Y="1"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit78>
-      <Unit79>
+      </Unit53>
+      <Unit54>
         <Filename Value="../../GLScene1.2/Source/GLScene_LIBPNG.pas"/>
         <UnitName Value="GLScene_LIBPNG"/>
         <WindowIndex Value="0"/>
@@ -724,26 +502,17 @@
         <CursorPos X="5" Y="2683"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit79>
-      <Unit80>
+      </Unit54>
+      <Unit55>
         <Filename Value="../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
         <UnitName Value="GLScene_Viewer_Form"/>
         <WindowIndex Value="0"/>
         <TopLine Value="370"/>
         <CursorPos X="39" Y="429"/>
-        <UsageCount Value="89"/>
+        <UsageCount Value="79"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit80>
-      <Unit81>
-        <Filename Value="../../GLScene1.2/Source/GLScene_ZLIB.pas"/>
-        <UnitName Value="GLScene_ZLIB"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="2111"/>
-        <CursorPos X="10" Y="2146"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit81>
-      <Unit82>
+      </Unit55>
+      <Unit56>
         <Filename Value="../../GLScene1.2/Source/GLScene_ZLIB_API.pas"/>
         <UnitName Value="GLScene_ZLIB_API"/>
         <WindowIndex Value="0"/>
@@ -751,516 +520,447 @@
         <CursorPos X="3" Y="471"/>
         <UsageCount Value="5"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit82>
-      <Unit83>
-        <Filename Value="../../GLScene1.2/Source/GLScene.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="142"/>
-        <CursorPos X="21" Y="157"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit83>
-      <Unit84>
-        <Filename Value="../../GLScene1.2/Source/GLScene_Files_ZLIB.pas"/>
-        <UnitName Value="GLScene_Files_ZLIB"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="304"/>
-        <CursorPos X="11" Y="339"/>
-        <UsageCount Value="2"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit84>
-      <Unit85>
-        <Filename Value="../../lazarus/lazarus/lcl/lclproc.pas"/>
-        <UnitName Value="LCLProc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="205"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit85>
-      <Unit86>
-        <Filename Value="../../lazarus/lazarus/lcl/controls.pp"/>
-        <UnitName Value="Controls"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="2177"/>
-        <CursorPos X="15" Y="2194"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit86>
-      <Unit87>
-        <Filename Value="../../lazarus/lazarus/lcl/include/customcontrol.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="70"/>
-        <CursorPos X="3" Y="79"/>
-        <UsageCount Value="3"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit87>
-      <Unit88>
+      </Unit56>
+      <Unit57>
         <Filename Value="../../lazarus/lazarus/packager/registration/lazaruspackageintf.pas"/>
         <UnitName Value="LazarusPackageIntf"/>
         <WindowIndex Value="0"/>
         <TopLine Value="77"/>
         <CursorPos X="37" Y="85"/>
-        <UsageCount Value="17"/>
+        <UsageCount Value="7"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit88>
-      <Unit89>
+      </Unit57>
+      <Unit58>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnint.pas"/>
         <UnitName Value="CustomDrawnInt"/>
-        <EditorIndex Value="12"/>
+        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="284"/>
-        <CursorPos X="1" Y="284"/>
-        <UsageCount Value="40"/>
+        <TopLine Value="316"/>
+        <CursorPos X="39" Y="328"/>
+        <UsageCount Value="97"/>
         <Loaded Value="True"/>
-      </Unit89>
-      <Unit90>
+      </Unit58>
+      <Unit59>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Context_OES.pas"/>
         <UnitName Value="GLScene_Context_OES"/>
         <EditorIndex Value="8"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="359"/>
-        <CursorPos X="41" Y="377"/>
-        <UsageCount Value="40"/>
+        <TopLine Value="338"/>
+        <CursorPos X="13" Y="362"/>
+        <UsageCount Value="97"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit90>
-      <Unit91>
+      </Unit59>
+      <Unit60>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/android/jni.pas"/>
         <UnitName Value="jni"/>
+        <EditorIndex Value="13"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="17"/>
-        <CursorPos X="6" Y="33"/>
-        <UsageCount Value="34"/>
-      </Unit91>
-      <Unit92>
+        <TopLine Value="194"/>
+        <CursorPos X="11" Y="209"/>
+        <UsageCount Value="76"/>
+        <Loaded Value="True"/>
+      </Unit60>
+      <Unit61>
         <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
         <UnitName Value="GLScene_AsyncTimer"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="191"/>
-        <CursorPos X="2" Y="215"/>
-        <UsageCount Value="19"/>
+        <TopLine Value="106"/>
+        <CursorPos X="21" Y="120"/>
+        <UsageCount Value="36"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit92>
-      <Unit93>
+      </Unit61>
+      <Unit62>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Platform.pas"/>
         <UnitName Value="GLScene_Platform"/>
+        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="855"/>
-        <CursorPos X="3" Y="919"/>
-        <UsageCount Value="9"/>
+        <TopLine Value="907"/>
+        <CursorPos X="14" Y="925"/>
+        <UsageCount Value="54"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit93>
-      <Unit94>
+      </Unit62>
+      <Unit63>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Log.pas"/>
         <UnitName Value="GLScene_Base_Log"/>
-        <EditorIndex Value="11"/>
         <WindowIndex Value="0"/>
         <TopLine Value="41"/>
         <CursorPos X="7" Y="41"/>
-        <UsageCount Value="36"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="40"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit94>
-      <Unit95>
+      </Unit63>
+      <Unit64>
         <Filename Value="../../../GLScene1.2/Source/GLScene.inc"/>
         <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="139"/>
+        <TopLine Value="133"/>
         <CursorPos X="23" Y="158"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="93"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit95>
-      <Unit96>
+      </Unit64>
+      <Unit65>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Adapter.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Adapter"/>
         <EditorIndex Value="7"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3648"/>
-        <CursorPos X="3" Y="3690"/>
-        <UsageCount Value="33"/>
+        <TopLine Value="6592"/>
+        <CursorPos X="34" Y="6604"/>
+        <UsageCount Value="90"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit96>
-      <Unit97>
+      </Unit65>
+      <Unit66>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_OpenGL_Tokens.pas"/>
         <UnitName Value="GLScene_Base_OpenGL_Tokens"/>
         <WindowIndex Value="0"/>
         <TopLine Value="6614"/>
         <CursorPos X="27" Y="6616"/>
-        <UsageCount Value="34"/>
+        <UsageCount Value="24"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit97>
-      <Unit98>
+      </Unit66>
+      <Unit67>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
         <UnitName Value="GLScene_Core"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="7079"/>
-        <CursorPos X="38" Y="7093"/>
-        <UsageCount Value="34"/>
+        <TopLine Value="8486"/>
+        <CursorPos X="58" Y="8496"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit98>
-      <Unit99>
-        <Filename Value="../../../GLScene1.2/Source/DWS2_GLScene_OpenGL_Adapter.pas"/>
-        <UnitName Value="DWS2_GLScene_OpenGL_Adapter"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="8"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit99>
-      <Unit100>
+      </Unit67>
+      <Unit68>
         <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
-        <EditorIndex Value="13"/>
+        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="595"/>
-        <CursorPos X="3" Y="626"/>
-        <UsageCount Value="34"/>
+        <TopLine Value="245"/>
+        <CursorPos X="60" Y="254"/>
+        <UsageCount Value="91"/>
         <Loaded Value="True"/>
-      </Unit100>
-      <Unit101>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintf_android.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="106"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit101>
-      <Unit102>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwslazdeviceapis.pas"/>
-        <UnitName Value="CustomDrawnWSLazDeviceAPIS"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="33"/>
-        <CursorPos X="5" Y="51"/>
-        <UsageCount Value="10"/>
-      </Unit102>
-      <Unit103>
+      </Unit68>
+      <Unit69>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Files_ZLIB.pas"/>
         <UnitName Value="GLScene_Files_ZLIB"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="308"/>
-        <CursorPos X="5" Y="337"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="254"/>
+        <CursorPos X="59" Y="64"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit103>
-      <Unit104>
+      </Unit69>
+      <Unit70>
         <Filename Value="../../../GLScene1.2/Source/GLScene_ZLIB_API.pas"/>
         <UnitName Value="GLScene_ZLIB_API"/>
+        <EditorIndex Value="12"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="449"/>
-        <CursorPos X="10" Y="474"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="380"/>
+        <CursorPos X="92" Y="385"/>
+        <UsageCount Value="50"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit104>
-      <Unit105>
+      </Unit70>
+      <Unit71>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Files_PNG.pas"/>
         <UnitName Value="GLScene_Files_PNG"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="34"/>
+        <CursorPos X="15" Y="116"/>
+        <UsageCount Value="3"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit105>
-      <Unit106>
+      </Unit71>
+      <Unit72>
         <Filename Value="../../../GLScene1.2/Source/GLScene_LIBPNG.pas"/>
         <UnitName Value="GLScene_LIBPNG"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="2660"/>
-        <CursorPos X="3" Y="2684"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="64"/>
+        <CursorPos X="27" Y="41"/>
+        <UsageCount Value="4"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit106>
-      <Unit107>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Nodes.pas"/>
-        <UnitName Value="GLScene_Nodes"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="894"/>
-        <CursorPos X="17" Y="921"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit107>
-      <Unit108>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Objects_ParametricSurfaces.pas"/>
-        <UnitName Value="GLScene_Objects_ParametricSurfaces"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="296"/>
-        <CursorPos X="13" Y="340"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit108>
-      <Unit109>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_GLUTesselation.pas"/>
-        <UnitName Value="GLScene_GLUTesselation"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="99"/>
-        <CursorPos X="1" Y="119"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit109>
-      <Unit110>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Objects_MultiPolygon.pas"/>
-        <UnitName Value="GLScene_Objects_MultiPolygon"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="898"/>
-        <CursorPos X="114" Y="906"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit110>
-      <Unit111>
+      </Unit72>
+      <Unit73>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_Form.pas"/>
         <UnitName Value="GLScene_Viewer_Form"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="618"/>
-        <CursorPos X="43" Y="630"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="237"/>
+        <CursorPos X="35" Y="237"/>
+        <UsageCount Value="77"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit111>
-      <Unit112>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer.pas"/>
-        <UnitName Value="GLScene_Viewer"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="40"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit112>
-      <Unit113>
+      </Unit73>
+      <Unit74>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Viewer_LCL.pas"/>
         <UnitName Value="GLScene_Viewer_LCL"/>
         <WindowIndex Value="0"/>
         <TopLine Value="205"/>
         <CursorPos X="12" Y="215"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit113>
-      <Unit114>
-        <Filename Value="../../../Рабочий стол/новый файл"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="41" Y="13"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="None"/>
-      </Unit114>
-      <Unit115>
-        <Filename Value="../../../Рабочий стол/новый файл.txt"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="2115"/>
-        <CursorPos X="51" Y="2124"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="None"/>
-      </Unit115>
-      <Unit116>
+      </Unit74>
+      <Unit75>
         <Filename Value="../../../GLScene1.2/Source/glсaps.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="62" Y="8"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="2"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit116>
-      <Unit117>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapih.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="211"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit117>
-      <Unit118>
-        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnlclintfh.inc"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
-      </Unit118>
-      <Unit119>
+      </Unit75>
+      <Unit76>
         <Filename Value="../../../GLScene1.2/Source/GLScene_DrawTechnique.pas"/>
         <UnitName Value="GLScene_DrawTechnique"/>
-        <EditorIndex Value="10"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3771"/>
         <CursorPos X="36" Y="3780"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit119>
-      <Unit120>
+      </Unit76>
+      <Unit77>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
         <UnitName Value="GLScene_Base_GLStateMachine"/>
-        <EditorIndex Value="9"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3542"/>
         <CursorPos X="4" Y="3571"/>
-        <UsageCount Value="11"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="15"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit120>
-      <Unit121>
+      </Unit77>
+      <Unit78>
         <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Context.pas"/>
         <UnitName Value="GLScene_Base_Context"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="4036"/>
-        <CursorPos X="1" Y="4038"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="26" Y="4050"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit121>
-      <Unit122>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Transformation.pas"/>
-        <UnitName Value="GLScene_Base_Transformation"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="280"/>
-        <CursorPos X="25" Y="295"/>
-        <UsageCount Value="10"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit122>
-      <Unit123>
+      </Unit78>
+      <Unit79>
         <Filename Value="../../../lazarus/lazarus/lcl/lclclasses.pp"/>
         <UnitName Value="LCLClasses"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="16"/>
-        <CursorPos X="10" Y="32"/>
-        <UsageCount Value="10"/>
-      </Unit123>
-      <Unit124>
+        <TopLine Value="52"/>
+        <CursorPos X="3" Y="38"/>
+        <UsageCount Value="4"/>
+      </Unit79>
+      <Unit80>
         <Filename Value="../../../GLScene1.2/Source/GLScene_MaterialEx.pas"/>
         <UnitName Value="GLScene_MaterialEx"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="4723"/>
+        <TopLine Value="4732"/>
         <CursorPos X="36" Y="4749"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="1"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit124>
+      </Unit80>
+      <Unit81>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Archive_Manager.pas"/>
+        <UnitName Value="GLScene_Archive_Manager"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="190"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit81>
+      <Unit82>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Files_PAK.pas"/>
+        <UnitName Value="GLScene_Files_PAK"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="270"/>
+        <CursorPos X="3" Y="110"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit82>
+      <Unit83>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_ZLIB.pas"/>
+        <UnitName Value="GLScene_ZLIB"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="453"/>
+        <CursorPos X="110" Y="478"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Graphics.pas"/>
+        <UnitName Value="GLScene_Graphics"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="152"/>
+        <CursorPos X="5" Y="168"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit84>
+      <Unit85>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Files_JPEG.pas"/>
+        <UnitName Value="GLScene_Files_JPEG"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="49"/>
+        <CursorPos X="29" Y="65"/>
+        <UsageCount Value="3"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit85>
+      <Unit86>
+        <Filename Value="../../../lazarus/lazarus/lcl/forms.pp"/>
+        <UnitName Value="Forms"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="644"/>
+        <CursorPos X="14" Y="660"/>
+        <UsageCount Value="7"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnproc.pas"/>
+        <UnitName Value="customdrawnproc"/>
+        <EditorIndex Value="11"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="757"/>
+        <CursorPos X="3" Y="772"/>
+        <UsageCount Value="41"/>
+        <Loaded Value="True"/>
+      </Unit87>
+      <Unit88>
+        <Filename Value="../../../lazarus/lazarus/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="994"/>
+        <CursorPos X="39" Y="1150"/>
+        <UsageCount Value="4"/>
+      </Unit88>
+      <Unit89>
+        <Filename Value="../../../lazarus/lazarus/lcl/include/wincontrol.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="3769"/>
+        <CursorPos X="3" Y="3783"/>
+        <UsageCount Value="4"/>
+      </Unit89>
+      <Unit90>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnwinapi_android.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1970"/>
+        <CursorPos X="51" Y="2001"/>
+        <UsageCount Value="7"/>
+      </Unit90>
     </Units>
     <General>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1532" Column="63" TopLine="1509"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1550" Column="63" TopLine="1524"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="462" Column="19" TopLine="442"/>
       </Position2>
       <Position3>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1583" Column="63" TopLine="1557"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="1767" Column="89" TopLine="1741"/>
       </Position3>
       <Position4>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1595" Column="63" TopLine="1569"/>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <Caret Line="254" Column="35" TopLine="242"/>
       </Position4>
       <Position5>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1634" Column="21" TopLine="1608"/>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnproc.pas"/>
+        <Caret Line="772" Column="3" TopLine="757"/>
       </Position5>
       <Position6>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1678" Column="21" TopLine="1652"/>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnproc.pas"/>
+        <Caret Line="76" Column="14" TopLine="45"/>
       </Position6>
       <Position7>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1704" Column="21" TopLine="1678"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
+        <Caret Line="8494" Column="38" TopLine="8482"/>
       </Position7>
       <Position8>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1805" Column="23" TopLine="1788"/>
+        <Filename Value="../../../lazarus/lazarus/lcl/interfaces/customdrawn/customdrawnobject_android.inc"/>
+        <Caret Line="248" Column="73" TopLine="242"/>
       </Position8>
       <Position9>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="1833" Column="43" TopLine="1810"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="11" Column="82" TopLine="1"/>
       </Position9>
       <Position10>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="2279" Column="21" TopLine="2259"/>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="31" Column="12" TopLine="1"/>
       </Position10>
       <Position11>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="2437" Column="21" TopLine="2411"/>
+        <Filename Value="androidlcltest.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position11>
       <Position12>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="2458" Column="21" TopLine="2432"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="125" Column="14" TopLine="109"/>
       </Position12>
       <Position13>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="2482" Column="21" TopLine="2456"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="127" Column="6" TopLine="109"/>
       </Position13>
       <Position14>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="3000" Column="21" TopLine="2974"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="139" Column="32" TopLine="110"/>
       </Position14>
       <Position15>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="3245" Column="45" TopLine="3219"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="122" Column="35" TopLine="106"/>
       </Position15>
       <Position16>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="3251" Column="23" TopLine="3225"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="121" Column="27" TopLine="105"/>
       </Position16>
       <Position17>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="3299" Column="27" TopLine="3273"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="134" Column="19" TopLine="118"/>
       </Position17>
       <Position18>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_GLStateMachine.pas"/>
-        <Caret Line="3556" Column="30" TopLine="3536"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="110" Column="37" TopLine="94"/>
       </Position18>
       <Position19>
         <Filename Value="mainform.pas"/>
-        <Caret Line="39" Column="77" TopLine="1"/>
+        <Caret Line="164" Column="29" TopLine="148"/>
       </Position19>
       <Position20>
         <Filename Value="mainform.pas"/>
-        <Caret Line="40" Column="77" TopLine="9"/>
+        <Caret Line="169" Column="12" TopLine="148"/>
       </Position20>
       <Position21>
         <Filename Value="mainform.pas"/>
-        <Caret Line="39" Column="44" TopLine="1"/>
+        <Caret Line="164" Column="4" TopLine="148"/>
       </Position21>
       <Position22>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_MaterialEx.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="132" Column="20" TopLine="109"/>
       </Position22>
       <Position23>
-        <Filename Value="mainform.pas"/>
-        <Caret Line="39" Column="44" TopLine="1"/>
+        <Filename Value="../../../GLScene1.2/Source/GLScene_AsyncTimer.pas"/>
+        <Caret Line="117" Column="41" TopLine="101"/>
       </Position23>
       <Position24>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_MaterialEx.pas"/>
-        <Caret Line="186" Column="72" TopLine="170"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="65" Column="21" TopLine="46"/>
       </Position24>
       <Position25>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_MaterialEx.pas"/>
-        <Caret Line="4749" Column="23" TopLine="4723"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="161" Column="21" TopLine="145"/>
       </Position25>
       <Position26>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Context.pas"/>
-        <Caret Line="1017" Column="20" TopLine="1001"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="152" Column="39" TopLine="139"/>
       </Position26>
       <Position27>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_MaterialEx.pas"/>
-        <Caret Line="4749" Column="36" TopLine="4723"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="150" Column="23" TopLine="134"/>
       </Position27>
       <Position28>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Base_Context.pas"/>
-        <Caret Line="1049" Column="24" TopLine="1031"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="144" Column="9" TopLine="134"/>
       </Position28>
       <Position29>
         <Filename Value="mainform.pas"/>
-        <Caret Line="31" Column="54" TopLine="1"/>
+        <Caret Line="155" Column="23" TopLine="139"/>
       </Position29>
       <Position30>
-        <Filename Value="../../../GLScene1.2/Source/GLScene_Core.pas"/>
-        <Caret Line="3190" Column="47" TopLine="3173"/>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="149" Column="36" TopLine="132"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>
