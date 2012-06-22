@@ -9,6 +9,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>22/06/12 - YP - Load groups in their own mesh instead of a new facegroup
       <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
       <li>30/06/11 - DaStr - Added ability to assign meshes
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -711,8 +712,10 @@ var
   hv: THomogeneousVector;
   av: TAffineVector;
   mesh: TMeshObject;
+  newMeshGroup: boolean;
   faceGroup: TOBJFGVertexNormalTexIndexList;
   faceGroupNames: TStringList;
+  m, vCount, vtCount, vnCount: Integer;
 
   procedure ReadHomogeneousVector;
     { Read a vector with a maximum of 4 elements from the current line. }
@@ -785,12 +788,12 @@ var
 
   procedure AddFaceVertex(faceVertices: string);
 
-    function GetIndex(Count: Integer): Integer;
+    function GetIndex(Count: Integer; Offset: Integer): Integer;
     var
       s: string;
     begin
       s := NextToken(FaceVertices, '/');
-      Result := StrToIntDef(s, 0);
+      Result := StrToIntDef(s, 0) - Offset;
       if Result = 0 then
         Result := -1 // Missing
       else if Result < 0 then
@@ -808,9 +811,9 @@ var
   var
     vIdx, tIdx, nIdx: Integer;
   begin
-    vIdx := GetIndex(mesh.Vertices.Count);
-    tIdx := GetIndex(mesh.TexCoords.Count);
-    nIdx := GetIndex(mesh.Normals.Count);
+    vIdx := GetIndex(mesh.Vertices.Count, vCount+1);
+    tIdx := GetIndex(mesh.TexCoords.Count, vtCount+1);
+    nIdx := GetIndex(mesh.Normals.Count, vnCount+1);
 
     faceGroup.Add(vIdx, nIdx, tIdx);
   end;
@@ -971,8 +974,11 @@ begin
   objMtlFileName := '';
   curMtlName := '';
 
-  mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
-  mesh.Mode := momFaceGroups;
+  vCount := 0;
+  vtCount := 0;
+  vnCount := 0;
+
+  NewMeshGroup := True; // root is a group
 
   faceGroupNames := TStringList.Create;
   faceGroupNames.Duplicates := dupAccept;
@@ -993,16 +999,27 @@ begin
 
       if command = 'V' then
       begin
+        Inc(vCount);
+
+        if NewMeshGroup then
+        begin
+          mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+          mesh.Mode := momFaceGroups;
+          newMeshGroup := False; // release tag
+        end;
+
         ReadHomogeneousVector;
         Mesh.Vertices.Add(hv[0], hv[1], hv[2]);
       end
       else if command = 'VT' then
       begin
+        Inc(vtCount);
         ReadAffineVector;
         Mesh.TexCoords.Add(av[0], av[1], 0);
       end
       else if command = 'VN' then
       begin
+        Inc(vnCount);
         ReadAffineVector;
         Mesh.Normals.Add(av[0], av[1], av[2]);
       end
@@ -1012,8 +1029,10 @@ begin
       end
       else if command = 'G' then
       begin
+        newMeshGroup := True;
         { Only the first name on the line, multiple groups not supported. }
-        SetCurrentFaceGroup(NextToken(FLine, ' '), curMtlName);
+        mesh.Name := NextToken(FLine, ' ');
+        SetCurrentFaceGroup(mesh.Name, curMtlName);
       end
       else if command = 'F' then
       begin
@@ -1030,6 +1049,7 @@ begin
       else if command = 'USEMTL' then
       begin
         curMtlName := GetOrAllocateMaterial(objMtlFileName, NextToken(FLine, ' '));
+
         if faceGroup = nil then
           SetCurrentFaceGroup('', curMtlName)
         else
@@ -1051,13 +1071,16 @@ begin
         Error('Unsupported Command ''' + command + '''');
     end;
 
-    mesh.FaceGroups.SortByMaterial;
-
 {$IFDEF STATS}
     t1 := GLGetTickCount;
 {$ENDIF}
 
+  for m := 0 to Owner.MeshObjects.Count-1 do
+  begin
+    mesh := Owner.MeshObjects[m];
+    mesh.FaceGroups.SortByMaterial;
     CalcMissingOBJNormals(mesh);
+  end;
 
 {$IFDEF STATS}
     t2 := GLGetTickCount;
@@ -1077,6 +1100,8 @@ begin
         Mesh.Normals.Count,
         Mesh.FaceGroups.Count]));
 {$ENDIF}
+
+
   finally
     faceGroupNames.Free;
   end;
