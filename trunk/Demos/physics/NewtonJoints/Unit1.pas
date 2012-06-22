@@ -17,6 +17,7 @@ unit Unit1;
 
 
   <b>History : </b><font size=-1><ul>
+  <li>22/05/12 - YP - Fix bitmap font
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>20/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -49,7 +50,7 @@ type
     Universal: TGLCone;
     CustomBall: TGLSphere;
     Ball: TGLSphere;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLAbsoluteHUDText1: TGLAbsoluteHUDText;
     GLAbsoluteHUDText2: TGLAbsoluteHUDText;
     GLAbsoluteHUDText3: TGLAbsoluteHUDText;

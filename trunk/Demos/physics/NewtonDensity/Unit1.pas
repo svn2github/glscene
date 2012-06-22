@@ -22,6 +22,7 @@ unit Unit1;
   You can see the result when the cube hit the paper ball or the lead ball.
 
   <b>History : </b><font size=-1><ul>
+  <li>22/05/12 - YP - Fix bitmap font
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -71,7 +72,7 @@ type
     GLLeadSphere: TGLSphere;
     GLCube1: TGLCube;
     SpinEdit1: TSpinEdit;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLHUDText1: TGLHUDText;
     GLNGDManager1: TGLNGDManager;
     SpinEdit2: TSpinEdit;

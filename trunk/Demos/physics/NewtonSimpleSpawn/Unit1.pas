@@ -8,6 +8,7 @@ unit Unit1;
   The floor is static, so it can't move.
 
   <b>History : </b><font size=-1><ul>
+  <li>22/05/12 - YP - Fix bitmap font
   <li>31/01/11 - FP - Update for GLNGDManager
   <li>17/09/10 - FP - Created by Franck Papouin
   </ul>
@@ -54,7 +55,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLNGDManager1: TGLNGDManager;
     GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText;
-    GLStoredBitmapFont1: TGLStoredBitmapFont;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     Panel1: TPanel;
     Button1: TButton;
     Button2: TButton;

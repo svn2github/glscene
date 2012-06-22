@@ -103,8 +103,8 @@ object Form1: TForm1
     object Floor: TGLCube
       BehavioursData = {
         0458434F4C02010201060C54474C4E47445374617469630200060C5374617469
-        6320466C6F6F7202000200060D474C4E47444D616E61676572310800090F0AD7
-        233C1200000000}
+        6320466C6F6F7202000201060D474C4E47444D616E6167657231080009050000
+        0000000AD7A3F83F1200000000}
       CubeSize = {000020410000003F00002041}
     end
     object GLDummyCube1: TGLDummyCube
@@ -113,7 +113,7 @@ object Form1: TForm1
     end
     object GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText
       Position.Coordinates = {0000003F6666663F000000000000803F}
-      BitmapFont = GLStoredBitmapFont1
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Bodycount:=1'
     end
   end
@@ -150,7 +150,7 @@ object Form1: TForm1
     Left = 232
     Top = 8
   end
-  object GLStoredBitmapFont1: TGLStoredBitmapFont
+  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11
