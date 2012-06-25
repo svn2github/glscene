@@ -106,6 +106,8 @@ begin
   nextTick := lastTick + (FInterval * perfFreq) div 1000;
   while not Terminated do
   begin
+    FOwner.FMutex.Acquire;
+    FOwner.FMutex.Release;
     while not Terminated do
     begin
       QueryPerformanceCounter(lastTick);
@@ -116,9 +118,7 @@ begin
     if not Terminated then
     begin
       // if time elapsed run user-event
-     FOwner.FMutex.Acquire;
-      FOwner.DoTimer;
-      FOwner.FMutex.Release;
+      Synchronize(FOwner.DoTimer);
       QueryPerformanceCounter(curTick);
       nextTick := lastTick + (FInterval * perfFreq) div 1000;
       if nextTick <= curTick then
