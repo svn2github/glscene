@@ -9,7 +9,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>25/06/12 - YP - Fix root mesh loader
+      <li>26/06/12 - YP - Fix root mesh loader and facegroup assign reset
       <li>22/06/12 - YP - Load groups in their own mesh instead of a new facegroup
       <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
       <li>30/06/11 - DaStr - Added ability to assign meshes
@@ -982,15 +982,13 @@ begin
   // root is a group mesh
   mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   mesh.Mode := momFaceGroups;
+  faceGroup := nil;
   NewMeshGroup := False;
 
   faceGroupNames := TStringList.Create;
   faceGroupNames.Duplicates := dupAccept;
   faceGroupNames.Sorted := True;
   try
-
-    faceGroup := nil;
-
     while not FEof do
     begin
       ReadLine;
@@ -1009,6 +1007,7 @@ begin
         begin
           mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
           mesh.Mode := momFaceGroups;
+          faceGroup := nil;
           newMeshGroup := False; // release tag
         end;
 
