@@ -9,8 +9,8 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>26/06/12 - YP - Fix root mesh loader and facegroup assign reset
-      <li>22/06/12 - YP - Load groups in their own mesh instead of a new facegroup
+      <li>26/06/12 - YP - Split groups in their own mesh instead of a new facegroup
+                          (see globale var vGLFileOBJ_SplitMesh, enabled by default)
       <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
       <li>30/06/11 - DaStr - Added ability to assign meshes
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -75,6 +75,7 @@ unit GLFileOBJ;
 interface
 
 uses
+  DbugIntf,
   GLCrossPlatform,
   Classes,
   SysUtils,
@@ -161,6 +162,12 @@ type
     function MaterialVectorProperty(const materialName, propertyName: string;
       const defaultValue: TVector): TVector;
   end;
+
+var
+  {: If enabled, main mesh will be splitted into multiple mesh from facegroup
+     data.}
+
+  vGLFileOBJ_SplitMesh: boolean = True;
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -331,6 +338,7 @@ var
         { For every Vertex in the current Polygon }
         for j := 0 to FPolygonVertices[Polygon] - 1 do
         begin
+          Assert(NormalIndices.List <> nil);
           idx := NormalIndices.List^[Index];
           if idx >= 0 then
             GL.Normal3fv(@NormalPool[idx]);
@@ -713,10 +721,8 @@ var
   hv: THomogeneousVector;
   av: TAffineVector;
   mesh: TMeshObject;
-  newMeshGroup: boolean;
   faceGroup: TOBJFGVertexNormalTexIndexList;
   faceGroupNames: TStringList;
-  m, vCount, vtCount, vnCount: Integer;
 
   procedure ReadHomogeneousVector;
     { Read a vector with a maximum of 4 elements from the current line. }
@@ -762,9 +768,9 @@ var
     if i >= 0 then
     begin
       faceGroup := TOBJFGVertexNormalTexIndexList(faceGroupNames.Objects[i]);
+
       if faceGroup.MaterialName <> matlName then
       begin
-        aName := aName + '-' + matlName;
         i := faceGroupNames.IndexOf(aName);
         if i >= 0 then
         begin
@@ -789,12 +795,12 @@ var
 
   procedure AddFaceVertex(faceVertices: string);
 
-    function GetIndex(Count: Integer; Offset: Integer): Integer;
+    function GetIndex(Count: Integer): Integer;
     var
       s: string;
     begin
       s := NextToken(FaceVertices, '/');
-      Result := StrToIntDef(s, 0) - Offset;
+      Result := StrToIntDef(s, 0);
       if Result = 0 then
         Result := -1 // Missing
       else if Result < 0 then
@@ -812,9 +818,9 @@ var
   var
     vIdx, tIdx, nIdx: Integer;
   begin
-    vIdx := GetIndex(mesh.Vertices.Count, vCount+1);
-    tIdx := GetIndex(mesh.TexCoords.Count, vtCount+1);
-    nIdx := GetIndex(mesh.Normals.Count, vnCount+1);
+    vIdx := GetIndex(mesh.Vertices.Count);
+    tIdx := GetIndex(mesh.TexCoords.Count);
+    nIdx := GetIndex(mesh.Normals.Count);
 
     faceGroup.Add(vIdx, nIdx, tIdx);
   end;
@@ -959,6 +965,55 @@ var
     end;
   end;
 
+  procedure SplitMesh;
+  var
+    i, j, count: Integer;
+    newMesh: TMeshObject;
+    newfaceGroup: TOBJFGVertexNormalTexIndexList;
+    VertexIdx, NormalIdx, TexCoordIdx: Integer;
+    AffineVector: TAffineVector;
+  begin
+    for i := 0 to mesh.FaceGroups.Count-1 do
+    begin
+      faceGroup := mesh.FaceGroups[i] as TOBJFGVertexNormalTexIndexList;
+
+      newMesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+      newMesh.Mode := momFaceGroups;
+      newMesh.Name := faceGroup.Name;
+
+      newfaceGroup := TOBJFGVertexNormalTexIndexList.CreateOwned(newMesh.FaceGroups);
+      newfaceGroup.Assign(faceGroup);
+      newfaceGroup.FName := faceGroup.Name;
+      newfaceGroup.Mode := faceGroup.Mode;
+      newfaceGroup.MaterialName := faceGroup.MaterialName;
+
+      //SendInteger('VertexIndices', faceGroup.VertexIndices.Count);
+      //SendInteger('TexCoords', faceGroup.TexCoordIndices.Count);
+      //SendInteger('Normals', faceGroup.NormalIndices.Count);
+
+      count := faceGroup.VertexIndices.Count;
+      for j := 0 to count-1 do
+      begin
+        VertexIdx := faceGroup.VertexIndices[j];
+        AffineVector := mesh.Vertices[VertexIdx];
+        VertexIdx := newMesh.Vertices.Add(AffineVector);
+
+        TexCoordIdx := faceGroup.TexCoordIndices[j];
+        AffineVector := mesh.TexCoords[TexCoordIdx];
+        TexCoordIdx := newMesh.TexCoords.Add(AffineVector);
+
+        NormalIdx := faceGroup.NormalIndices[j];
+        AffineVector := mesh.Normals[NormalIdx];
+        NormalIdx := newMesh.Normals.Add(AffineVector);
+
+        newfaceGroup.Add(VertexIdx, NormalIdx, TexCoordIdx);
+      end;
+
+    end;
+
+    Owner.MeshObjects.RemoveAndFree(mesh);
+  end;
+
 var
   command, objMtlFileName, curMtlName: string;
 {$IFDEF STATS}
@@ -975,20 +1030,16 @@ begin
   objMtlFileName := '';
   curMtlName := '';
 
-  vCount := 0;
-  vtCount := 0;
-  vnCount := 0;
-
-  // root is a group mesh
   mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   mesh.Mode := momFaceGroups;
-  faceGroup := nil;
-  NewMeshGroup := False;
 
   faceGroupNames := TStringList.Create;
   faceGroupNames.Duplicates := dupAccept;
   faceGroupNames.Sorted := True;
   try
+
+    faceGroup := nil;
+
     while not FEof do
     begin
       ReadLine;
@@ -1001,28 +1052,16 @@ begin
 
       if command = 'V' then
       begin
-        Inc(vCount);
-
-        if NewMeshGroup then
-        begin
-          mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
-          mesh.Mode := momFaceGroups;
-          faceGroup := nil;
-          newMeshGroup := False; // release tag
-        end;
-
         ReadHomogeneousVector;
         Mesh.Vertices.Add(hv[0], hv[1], hv[2]);
       end
       else if command = 'VT' then
       begin
-        Inc(vtCount);
         ReadAffineVector;
         Mesh.TexCoords.Add(av[0], av[1], 0);
       end
       else if command = 'VN' then
       begin
-        Inc(vnCount);
         ReadAffineVector;
         Mesh.Normals.Add(av[0], av[1], av[2]);
       end
@@ -1032,10 +1071,8 @@ begin
       end
       else if command = 'G' then
       begin
-        newMeshGroup := True;
         { Only the first name on the line, multiple groups not supported. }
-        mesh.Name := NextToken(FLine, ' ');
-        SetCurrentFaceGroup(mesh.Name, curMtlName);
+        SetCurrentFaceGroup(NextToken(FLine, ' '), curMtlName);
       end
       else if command = 'F' then
       begin
@@ -1052,7 +1089,6 @@ begin
       else if command = 'USEMTL' then
       begin
         curMtlName := GetOrAllocateMaterial(objMtlFileName, NextToken(FLine, ' '));
-
         if faceGroup = nil then
           SetCurrentFaceGroup('', curMtlName)
         else
@@ -1074,16 +1110,13 @@ begin
         Error('Unsupported Command ''' + command + '''');
     end;
 
+    mesh.FaceGroups.SortByMaterial;
+
 {$IFDEF STATS}
     t1 := GLGetTickCount;
 {$ENDIF}
 
-  for m := 0 to Owner.MeshObjects.Count-1 do
-  begin
-    mesh := Owner.MeshObjects[m];
-    mesh.FaceGroups.SortByMaterial;
     CalcMissingOBJNormals(mesh);
-  end;
 
 {$IFDEF STATS}
     t2 := GLGetTickCount;
@@ -1104,6 +1137,8 @@ begin
         Mesh.FaceGroups.Count]));
 {$ENDIF}
 
+    if vGLFileOBJ_SplitMesh then
+      SplitMesh;
 
   finally
     faceGroupNames.Free;
@@ -1431,7 +1466,7 @@ begin
     else
     begin
       if FPolygonVertices = nil then
-        TIntegerList.Create;
+        FPolygonVertices := TIntegerList.Create;
       FPolygonVertices.Assign(TOBJFGVertexNormalTexIndexList(Source).FPolygonVertices);
     end;  
   end
