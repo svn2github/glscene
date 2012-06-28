@@ -411,15 +411,18 @@ type
     FMass: Single;
     FAppliedForce: TGLCoordinates;
     FAppliedTorque: TGLCoordinates;
-    FAppliedOmega: TGLCoordinates;
-    FAppliedVelocity: TGLCoordinates;
 
     function StoredDensity: Boolean;
     function StoredLinearDamping: Boolean;
     function StoredNullCollisionVolume: Boolean;
-
   protected
     { Protected Declarations }
+    function GetVelocity: TAffineVector;
+    procedure SetVelocity(const Velocity: TAffineVector);
+
+    function GetOmega: TAffineVector;
+    procedure SetOmega(const Omega: TAffineVector);
+
     procedure SetAutoSleep(const Value: Boolean);
     procedure SetLinearDamping(const Value: Single);
     procedure SetDensity(const Value: Single); virtual;
@@ -443,20 +446,19 @@ type
       timestep: NGDFloat; threadIndex: Integer); static; cdecl;
     class procedure NewtonSetTransform(const body: PNewtonBody;
       const matrix: PNGDFloat; threadIndex: Integer); static; cdecl;
-  published
+
 
   public
     { Public Declarations }
     constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
-    procedure SetOmega(const omega: TVector);
-    procedure SetVelocity(const velocity: TVector);
     class function FriendlyName: string; override;
     property CustomForceAndTorqueEvent
       : TApplyForceAndTorqueEvent read FCustomForceAndTorqueEvent write
       FCustomForceAndTorqueEvent;
-
+    property Velocity: TAffineVector read GetVelocity write SetVelocity;
+    property Omega: TAffineVector read GetOmega write SetOmega;
   published
     { Published Declarations }
     property Force: TGLCoordinates read FForce write FForce;
@@ -478,8 +480,6 @@ type
       StoredNullCollisionVolume;
 
     // Read Only
-    property AppliedOmega: TGLCoordinates read FAppliedOmega;
-    property AppliedVelocity: TGLCoordinates read FAppliedVelocity;
     property AppliedForce: TGLCoordinates read FAppliedForce;
     property AppliedTorque: TGLCoordinates read FAppliedTorque;
     property Volume: Single read FVolume;
@@ -2148,10 +2148,6 @@ begin
   FCenterOfMass.OnNotifyChange := NotifyCenterOfMassChange;
   FAABBmin := TGLCoordinates.CreateInitialized(self, NullHmgVector, csPoint);
   FAABBmax := TGLCoordinates.CreateInitialized(self, NullHmgVector, csPoint);
-  FAppliedOmega := TGLCoordinates.CreateInitialized(self, NullHmgVector,
-    csVector);
-  FAppliedVelocity := TGLCoordinates.CreateInitialized(self, NullHmgVector,
-    csVector);
   FAppliedForce := TGLCoordinates.CreateInitialized(self, NullHmgVector,
     csVector);
   FAppliedTorque := TGLCoordinates.CreateInitialized(self, NullHmgVector,
@@ -2175,8 +2171,6 @@ begin
   FAABBmax.Free;
   FAppliedForce.Free;
   FAppliedTorque.Free;
-  FAppliedVelocity.Free;
-  FAppliedOmega.Free;
   inherited;
 end;
 
@@ -2196,6 +2190,7 @@ class function TGLNGDDynamic.FriendlyName: string;
 begin
   Result := 'NGD Dynamic';
 end;
+
 
 procedure TGLNGDDynamic.Initialize;
 begin
@@ -2336,7 +2331,7 @@ procedure TGLNGDDynamic.Render;
     if mdShowAppliedVelocity in FManager.DebugOption.NGDManagerDebugs then
     begin
       FManager.FCurrentColor := FManager.DebugOption.AppliedVelocityColor;
-      nor := VectorAdd(pos, FAppliedVelocity.AsVector);
+      nor := VectorAdd(pos, VectorMake(Velocity) );
       FManager.AddNode(pos);
       FManager.AddNode(nor);
     end;
@@ -2435,14 +2430,24 @@ begin
       NewtonBodySetLinearDamping(FNewtonBody, FLinearDamping);
 end;
 
-procedure TGLNGDDynamic.SetOmega(const omega: TVector);
+function TGLNGDDynamic.GetOmega: TAffineVector;
 begin
-  NewtonBodySetOmega(FNewtonBody, @omega);
+  NewtonBodyGetOmega(FNewtonBody, @Result);
 end;
 
-procedure TGLNGDDynamic.SetVelocity(const velocity: TVector);
+procedure TGLNGDDynamic.SetOmega(const Omega: TAffineVector);
 begin
-  NewtonBodySetVelocity(FNewtonBody, @velocity);
+  NewtonBodySetOmega(FNewtonBody, @Omega);
+end;
+
+function TGLNGDDynamic.GetVelocity: TAffineVector;
+begin
+  NewtonBodyGetVelocity(FNewtonBody, @Result);
+end;
+
+procedure TGLNGDDynamic.SetVelocity(const Velocity: TAffineVector);
+begin
+  NewtonBodySetVelocity(FNewtonBody, @Velocity);
 end;
 
 function TGLNGDDynamic.StoredDensity: Boolean;
@@ -2571,13 +2576,9 @@ var
   worldGravity: TVector;
 begin
 
-  // Read Only: We get the force,torque,velocity and omega resulting from
-  // every interaction on this body
+  // Read Only: We get the force and torque resulting from every interaction on this body
   NewtonBodyGetForce(cbody, @(FAppliedForce.AsVector));
   NewtonBodyGetTorque(cbody, @(FAppliedTorque.AsVector));
-
-  NewtonBodyGetVelocity(cbody, @(FAppliedVelocity.AsVector));
-  NewtonBodyGetOmega(cbody, @(FAppliedOmega.AsVector));
 
   // Raise Custom event
   if Assigned(FCustomForceAndTorqueEvent) then
