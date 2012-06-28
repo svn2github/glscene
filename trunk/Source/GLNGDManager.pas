@@ -16,6 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>28/06/12 - YP - Updated to newton 2.36 (no api change with 2.35)
   <li>02/02/11 - FP - Read/Write to Filer update to version 1
   Use RWFloat instead of RWSingle for Single for lazarus compatibility
   <li>02/02/11 - FP - Add initial name for behavior
@@ -79,6 +80,9 @@ uses
   , GLColor, GeometryBB; // For show debug
 
 type
+
+  NGDFloat = NewtonImport.Float;
+  PNGDFloat = ^NGDFloat;
 
   { Record }
   THeightField = record
@@ -1156,9 +1160,9 @@ end;
 
 procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
 
-  procedure DestroyJoint(itemIndex: Integer);
+  procedure DestroyJoint(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
     begin
       if FNewtonJoint <> nil then
       begin
@@ -1173,9 +1177,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
     end;
   end;
 
-  procedure BuildBallAndSocket(itemIndex: Integer);
+  procedure BuildBallAndSocket(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateBall(FNewtonWorld,
@@ -1187,9 +1191,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildHinge(itemIndex: Integer);
+  procedure BuildHinge(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateHinge(FNewtonWorld,
@@ -1202,9 +1206,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildSlider(itemIndex: Integer);
+  procedure BuildSlider(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateSlider(FNewtonWorld,
@@ -1217,9 +1221,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildCorkscrew(itemIndex: Integer);
+  procedure BuildCorkscrew(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateCorkscrew(FNewtonWorld,
@@ -1232,9 +1236,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildUniversal(itemIndex: Integer);
+  procedure BuildUniversal(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateUniversal(FNewtonWorld,
@@ -1248,11 +1252,11 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildCustomBallAndSocket(itemIndex: Integer);
+  procedure BuildCustomBallAndSocket(Joint: TNGDJoint);
   var
     pinAndPivot: TMatrix;
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         pinAndPivot := IdentityHmgMatrix;
@@ -1271,7 +1275,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildCustomHinge(itemIndex: Integer);
+  procedure BuildCustomHinge(Joint: TNGDJoint);
   var
     pinAndPivot: TMatrix;
     bso: TGLBaseSceneObject;
@@ -1283,7 +1287,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
 
       In glscene, the GLBaseSceneObjects direction is the third row,
       because the first row is the right vector (second row is up vector). }
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         bso := TGLBaseSceneObject.Create(FManager);
@@ -1307,7 +1311,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildCustomSlider(itemIndex: Integer);
+  procedure BuildCustomSlider(Joint: TNGDJoint);
   var
     pinAndPivot: TMatrix;
     bso: TGLBaseSceneObject;
@@ -1319,7 +1323,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
 
       In glscene, the GLBaseSceneObjects direction is the third row,
       because the first row is the right vector (second row is up vector). }
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
 
@@ -1343,9 +1347,9 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildUpVector(itemIndex: Integer);
+  procedure BuildUpVector(Joint: TNGDJoint);
   begin
-    with NewtonJoint.Items[itemIndex] as TNGDJoint do
+    with Joint do
       if Assigned(FParentObject) then
       begin
         FNewtonJoint := NewtonConstraintCreateUpVector(FNewtonWorld,
@@ -1354,92 +1358,92 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       end;
   end;
 
-  procedure BuildKinematicController(itemIndex: Integer);
+  procedure BuildKinematicController(Joint: TNGDJoint);
   begin
     // do nothing
   end;
 
-  procedure BuildOneJoint(itemIndex: Integer);
+  procedure BuildOneJoint(Joint: TNGDJoint);
   begin
-    case (NewtonJoint.Items[itemIndex] as TNGDJoint).FJointType of
+    case Joint.FJointType of
       nj_BallAndSocket:
         begin
-          DestroyJoint(itemIndex);
-          BuildBallAndSocket(itemIndex);
+          DestroyJoint(Joint);
+          BuildBallAndSocket(Joint);
         end;
 
       nj_Hinge:
         begin
-          DestroyJoint(itemIndex);
-          BuildHinge(itemIndex);
+          DestroyJoint(Joint);
+          BuildHinge(Joint);
         end;
 
       nj_Slider:
         begin
-          DestroyJoint(itemIndex);
-          BuildSlider(itemIndex);
+          DestroyJoint(Joint);
+          BuildSlider(Joint);
         end;
 
       nj_Corkscrew:
         begin
-          DestroyJoint(itemIndex);
-          BuildCorkscrew(itemIndex);
+          DestroyJoint(Joint);
+          BuildCorkscrew(Joint);
         end;
 
       nj_Universal:
         begin
-          DestroyJoint(itemIndex);
-          BuildUniversal(itemIndex);
+          DestroyJoint(Joint);
+          BuildUniversal(Joint);
         end;
 
       nj_CustomBallAndSocket:
         begin
-          DestroyJoint(itemIndex);
-          BuildCustomBallAndSocket(itemIndex);
+          DestroyJoint(Joint);
+          BuildCustomBallAndSocket(Joint);
         end;
 
       nj_CustomHinge:
         begin
-          DestroyJoint(itemIndex);
-          BuildCustomHinge(itemIndex);
+          DestroyJoint(Joint);
+          BuildCustomHinge(Joint);
         end;
 
       nj_CustomSlider:
         begin
-          DestroyJoint(itemIndex);
-          BuildCustomSlider(itemIndex);
+          DestroyJoint(Joint);
+          BuildCustomSlider(Joint);
         end;
 
       nj_UpVector:
         begin
-          DestroyJoint(itemIndex);
-          BuildUpVector(itemIndex);
+          DestroyJoint(Joint);
+          BuildUpVector(Joint);
         end;
 
       nj_KinematicController:
         begin
-          // DestroyJoint(itemIndex);
-          // BuildKinematicController(itemIndex);
+          // DestroyJoint(Joint);
+          // BuildKinematicController(Joint);
         end;
     end;
   end;
 
 var
-  I: Integer;
+  i: Integer;
 begin
 
   if not(csDesigning in ComponentState) and not(csLoading in ComponentState)
     then
   begin
     if Sender is TGLNGDManager then
-      for I := 0 to NewtonJoint.Count - 1 do
-        BuildOneJoint(I);
+      for i := 0 to NewtonJoint.Count - 1 do
+        BuildOneJoint(NewtonJoint.Items[i] as TNGDJoint);
 
     if (Sender is TNGDJoint) then
-      BuildOneJoint((Sender as TNGDJoint).index);
+      BuildOneJoint((Sender as TNGDJoint));
 
     if Sender is TGLCoordinates then
-      BuildOneJoint(((Sender as TGLCoordinates).Owner as TNGDJoint).index);
+      BuildOneJoint(((Sender as TGLCoordinates).Owner as TNGDJoint));
 
     NotifyChange(self);
   end;
@@ -1625,7 +1629,7 @@ begin
   Result := NewtonCreateHeightFieldCollision(FManager.FNewtonWorld,
     FHeightFieldOptions.width, FHeightFieldOptions.depth,
     Ord(FHeightFieldOptions.gridDiagonals),
-    PWord(FHeightFieldOptions.heightArray), PShortInt(attributeMap),
+    PUnsigned_short(FHeightFieldOptions.heightArray), P2Char(attributeMap),
     FHeightFieldOptions.widthDepthScale, FHeightFieldOptions.heightScale, 0);
 end;
 
@@ -2281,7 +2285,7 @@ procedure TGLNGDDynamic.Render;
       while thisContact <> nil do
       begin
         material := NewtonContactGetMaterial(thisContact);
-        NewtonMaterialGetContactPositionAndNormal(material, @pos, @nor);
+        NewtonMaterialGetContactPositionAndNormal(material, FNewtonBody, @pos, @nor);
 
         FManager.AddNode(pos);
         nor := VectorAdd(pos, nor);
