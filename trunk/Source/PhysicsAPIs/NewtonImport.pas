@@ -106,6 +106,10 @@ const
   {$ENDIF}
 {$ENDIF}
 
+{$IFDEF WIN64}
+   NewtonDLL = 'Newton64.dll';
+{$ENDIF}
+
 {$IFDEF UNIX}
 {$IFDEF DARWIN} // MacOS X
   NewtonDLL = 'libnewton.dylib';
