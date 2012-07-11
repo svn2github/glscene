@@ -73,6 +73,9 @@ const
 {$IFDEF WIN32}
    JointLibraryDLL = 'dJointLibrary.dll';
 {$ENDIF}
+{$IFDEF WIN64}
+   JointLibraryDLL = 'dJointLibrary64.dll';
+{$ENDIF}
 
 {$IFDEF UNIX}
 {$IFDEF DARWIN} // MacOS X
