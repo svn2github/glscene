@@ -75,7 +75,6 @@ unit GLFileOBJ;
 interface
 
 uses
-  DbugIntf,
   GLCrossPlatform,
   Classes,
   SysUtils,
