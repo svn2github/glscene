@@ -72,7 +72,13 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLScene_Platform;
+uses
+  {$IFDEF FPC}
+    {$IFDEF Android}
+    customdrawnint,
+    {$ENDIF}
+  {$ENDIF}
+  SysUtils, GLScene_Platform;
 
 type
 
@@ -97,10 +103,12 @@ end;
 
 // Execute
 //
+{$IFNDEF FPC}
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
 begin
+
   QueryPerformanceFrequency(perfFreq);
   QueryPerformanceCounter(lastTick);
   nextTick := lastTick + (FInterval * perfFreq) div 1000;
@@ -118,7 +126,8 @@ begin
     if not Terminated then
     begin
       // if time elapsed run user-event
-      Synchronize(FOwner.DoTimer);
+
+       Synchronize(FOwner.DoTimer);
       QueryPerformanceCounter(curTick);
       nextTick := lastTick + (FInterval * perfFreq) div 1000;
       if nextTick <= curTick then
@@ -129,6 +138,59 @@ begin
     end;
   end;
 end;
+{$ELSE}
+procedure TTimerThread.Execute;
+var
+  lastTick, nextTick, curTick, perfFreq: Int64;
+  {$IFDEF Android}
+    fjavaEnvRef : pointer;
+   {$ENDIF}
+begin
+
+  {$IFDEF Android}
+    fjavaEnvRef := AttachCurrentThread;
+  {$ENDIF}
+  QueryPerformanceFrequency(perfFreq);
+  QueryPerformanceCounter(lastTick);
+  nextTick := lastTick + (FInterval * perfFreq) div 1000;
+  while not Terminated do
+  begin
+    FOwner.FMutex.Acquire;
+    FOwner.FMutex.Release;
+    while not Terminated do
+    begin
+      QueryPerformanceCounter(lastTick);
+      if lastTick >= nextTick then
+        break;
+      Sleep(1);
+    end;
+    if not Terminated then
+    begin
+      // if time elapsed run user-event
+
+      {$IFNDEF Android}
+       Synchronize(FOwner.DoTimer);
+      {$ELSE}
+      FOwner.FMutex.Acquire;
+
+      FOwner.DoTimer;
+
+      FOwner.FMutex.Release;
+      {$ENDIF}
+      QueryPerformanceCounter(curTick);
+      nextTick := lastTick + (FInterval * perfFreq) div 1000;
+      if nextTick <= curTick then
+      begin
+        // CPU too slow... delay to avoid monopolizing what's left
+        nextTick := curTick + (FInterval * perfFreq) div 1000;
+      end;
+    end;
+  end;
+  {$IFDEF Android}
+  DetachCurrentThread(fjavaEnvRef);
+  {$ENDIF}
+end;
+{$ENDIF}
 
 { TAsyncTimer }
 

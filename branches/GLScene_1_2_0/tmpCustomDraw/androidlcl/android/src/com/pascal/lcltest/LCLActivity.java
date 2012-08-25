@@ -18,6 +18,7 @@ import android.hardware.SensorManager;
 
 import javax.microedition.khronos.egl.*;
 import javax.microedition.khronos.opengles.GL;
+import javax.microedition.khronos.opengles.GL10;
 
 public class LCLActivity extends Activity implements SensorEventListener
 {
@@ -135,7 +136,6 @@ public class LCLActivity extends Activity implements SensorEventListener
         if (LOG_EGL) {
             Log.v("EglHelper","surfaceChanged()" );
         }
-        Log.v("LCLActivity", "surfaceChanged: width"+width+"height"+height);
       LCLOnSurfaceChanged();  
 		// TODO Auto-generated method stub
 		
@@ -606,6 +606,7 @@ public class LCLActivity extends Activity implements SensorEventListener
   
   public void LCLDoInvalidate()
   {  
+	 // Log.v("LCLActivity", "LCLDoInvalidate1"); 
 	    lclsurface.postInvalidate();
   };
   
@@ -621,8 +622,9 @@ public class LCLActivity extends Activity implements SensorEventListener
   
   public void LCLDoRecreateHolder()
   {  
-	    lclsurface.setVisibility(0);
-	    lclsurface.setVisibility(1);	    
+	   lclsurface.setVisibility(0);
+	    lclsurface.setVisibility(1);	
+	//  Log.v("LCLActivity", "LCLDoRecreateHolder"); 
   };  
   
   public boolean LCLisHolderCreated()
@@ -729,18 +731,6 @@ public class LCLActivity extends Activity implements SensorEventListener
 		  throw new RuntimeException("eglInitialize failed");
 	  }
 	 
-	  //Версия egl
-	  String s = mEgl.eglQueryString(mEglDisplay, EGL10.EGL_VERSION);
-	  if (s.indexOf("1.")>=0)
-	  {	  
-	    s = s.substring(s.indexOf("1."),s.indexOf("1.")+3);
-	    lclmajorversion = Integer.parseInt( s.substring(0,1));
-	    lclminorversion = Integer.parseInt( s.substring(2,3));
-	  }else
-	  {
-		  lclmajorversion = 1;
-		  lclminorversion = 0;  
-	  }
 	 
       //Информация о платформе
  
@@ -748,12 +738,45 @@ public class LCLActivity extends Activity implements SensorEventListener
 	  lclplatformapi = android.os.Build.VERSION.SDK;
 	  lclplatformdevice = android.os.Build.DEVICE;
 	  
+	  String s;
+	  
 	  s ="\n Debug-infos:";
 	  s += "\n OS Version: " + android.os.Build.VERSION.RELEASE;
 	  s += "\n OS API Level: " + android.os.Build.VERSION.SDK;
 	  s += "\n Device: " + android.os.Build.DEVICE;
-
-	  Log.v("EglHelper", s);      
+	  Log.v("EglHelper", s);    
+	  //Версия egl
+	  
+	  lclmajorversion = version[0];
+	  lclminorversion = version[1]; 
+	  
+      //Ради поулчения версии EGL стоко гемору приходится испытать
+	  //eglInitialize как то не понятно выдает версию егл
+	  /*
+	  LCLGetConfigs();
+	  LCLAddIAttrib(EGL10.EGL_RED_SIZE,LCLGetFixedAttribute(EGL10.EGL_RED_SIZE,5));
+	  LCLAddIAttrib(EGL10.EGL_GREEN_SIZE,LCLGetFixedAttribute(EGL10.EGL_GREEN_SIZE,6));
+	  LCLAddIAttrib(EGL10.EGL_BLUE_SIZE,LCLGetFixedAttribute(EGL10.EGL_BLUE_SIZE,5));
+	  LCLAddIAttrib(EGL10.EGL_ALPHA_SIZE,LCLGetFixedAttribute(EGL10.EGL_ALPHA_SIZE,0));	
+	  LCLAddIAttrib(EGL10.EGL_DEPTH_SIZE,LCLGetFixedAttribute(EGL10.EGL_DEPTH_SIZE,0));
+	  EGLConfig config = LCLChooseConfig();
+	  EGLSurface surface = LCLDoCreateSurface(config);
+	  EGLContext context = LCLDoCreateContext(config,null);
+	  LCLDoPurgeBuffers(surface,context);
+	  GL10 gl= (GL10) context.getGL();
+	  s = gl.glGetString(GL10.GL_VERSION);
+  
+	  LCLDoClearBuffers();
+	  LCLDoDestroySurface(surface);
+	  LCLDoDestroyContext(context);
+	  
+	  if (android.os.Build.DEVICE != "generic")
+	  {	  
+	    s = s.substring(s.length()-3,s.length());
+	    lclmajorversion = Integer.parseInt( s.substring(0,1));
+	    lclminorversion = Integer.parseInt( s.substring(2,3));
+	  }
+	 */
 	  Log.v("EglHelper", "MajorVersion=" + lclmajorversion + " MinorVersion=" + lclminorversion);
 	  
   };

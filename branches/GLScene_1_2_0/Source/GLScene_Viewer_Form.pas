@@ -464,10 +464,10 @@ end;
 procedure TGLSceneForm.LMSize(var Message: TLMSize);
 begin
   inherited;
-    {$IFNDEF ANDROID}
+ //   {$IFNDEF ANDROID}
   if Assigned(FBuffer) then
     FBuffer.Resize(Message.Width, Message.Height);
-  {$ENDIF}
+ // {$ENDIF}
 end;
 
 procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);
@@ -482,6 +482,8 @@ begin
       FOwnDC := 0;
     end;
   end;
+  {$ELSE}
+  FBuffer.DestroyRC;
   {$ENDIF}
   inherited;
 end;

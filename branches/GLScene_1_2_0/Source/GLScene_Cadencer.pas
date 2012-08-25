@@ -256,7 +256,13 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils;
+uses
+  {$IFDEF FPC}
+    {$IFDEF Android}
+    customdrawnint,
+    {$ENDIF}
+  {$ENDIF}
+  SysUtils;
 
 const
 {$IFDEF FPC}
@@ -365,7 +371,15 @@ end;
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
+{$IFDEF Android}
+  fjavaEnvRef : pointer;
+ {$ENDIF}
 begin
+
+  {$IFDEF Android}
+  fjavaEnvRef := AttachCurrentThread;
+  {$ENDIF}
+
   QueryPerformanceFrequency(perfFreq);
   QueryPerformanceCounter(lastTick);
   nextTick := lastTick + (FInterval * perfFreq) div 1000;
@@ -383,7 +397,15 @@ begin
     if not Terminated then
     begin
       // if time elapsed run user-event
+      {$IFNDEF Android}
       Synchronize(FOwner.TimerProc);
+      {$ELSE}
+      FOwner.FMutex.Acquire;
+
+      FOwner.TimerProc;
+
+      FOwner.FMutex.Release;
+      {$ENDIF}
       QueryPerformanceCounter(curTick);
       nextTick := lastTick + (FInterval * perfFreq) div 1000;
       if nextTick <= curTick then
@@ -393,6 +415,9 @@ begin
       end;
     end;
   end;
+  {$IFDEF Android}
+  DetachCurrentThread(fjavaEnvRef);
+  {$ENDIF}
 end;
 {$ENDIF}
 // ------------------

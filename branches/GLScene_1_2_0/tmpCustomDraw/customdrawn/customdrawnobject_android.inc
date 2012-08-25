@@ -99,7 +99,15 @@ function Java_com_pascal_lclproject_LCLActivity_LCLOnCreate(
 begin
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'LCLOnCreate called by LCLActivity.onCreate');
   Result := 0;
+
+  //Кэшируем указатель на класс Activity что бы можно было его
+  //использовать в паралельном потоке
+  //http://stackoverflow.com/questions/6838397/how-do-i-load-my-own-java-class-in-c-on-android
+  if javaActivityObject<>nil then
+  javaEnvRef^^.DeleteGlobalRef(javaEnvRef,javaActivityObject);
   javaActivityObject := alclactivity;
+  javaEnvRef^^.NewGlobalRef(javaEnvRef, javaActivityObject);
+
   Screen.UpdateScreen(); // Any values read before LCLOnCreate are wrong
   // Update the font size
   CDWidgetset.DefaultFontAndroidSize := Round(16 * (Screen.PixelsPerInch / 125));
@@ -392,9 +400,16 @@ const NativeMethods: array[0..10] of JNINativeMethod=
      fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged;)
   );
 
+function javaEnvRef():PJNIEnv; //{$IFDEF GLS_INLINE} inline; {$ENDIF}
+begin
+ // DebugLn('GetCurrentThreadID='+ inttostr(GetCurrentThreadId));
+     Result := fArrayEnvRefLayerThread[GetEnvIDForCurrentThread].EnvID;
+end;
+
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 begin
   javaVMRef := vm;
+
 
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad called');
 {  __android_log_write(ANDROID_LOG_INFO, 'lclapp', PChar(Format('vm=%x', [PtrInt(vm)])));
@@ -405,15 +420,25 @@ begin
     vm^^.GetEnv crashes HTC Wildfire, Alcatel and the Emulator if you don't build your project with -CpARMV6
     see: http://groups.google.com/group/android-ndk/browse_thread/thread/ba542483f062a828/ef9077617794e0f5
   }
-  if vm^^.GetEnv(vm,@javaEnvRef,JNI_VERSION_1_4)<>JNI_OK then
+  if vm^^.GetEnv(vm,@defaultjavaEnvRef,JNI_VERSION_1_4)<>JNI_OK then
   begin
     __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'curVM^.GetEnv failed');
     Exit(JNI_ERR);
   end;
 
+    //задаем длинну массива для текущего потока
+  setlength(fArrayEnvRefLayerThread,1);
+  //задаем длинну для переменных текущего потока
+  setlength(fArrayEnvRefLayerThread[0].variablesid, Ord(High(javavariablesid)) + 1);
+  fArrayEnvRefLayerThread[0].EnvID := defaultjavaEnvRef;
+  fArrayEnvRefLayerThread[0].ThreadID := GetCurrentThreadId;
+  IdCurrentEnvInArray := -1;
+
   // Find our activity class
   __android_log_write(ANDROID_LOG_INFO,'lclapp','Reading our Activity Class');
-  javaActivityClass := javaEnvRef^^.FindClass(javaEnvRef,'com/pascal/lcltest/LCLActivity');
+
+  javaActivityClass := javaEnvRef^^.NewGlobalRef(javaEnvRef,(javaEnvRef^^.FindClass(javaEnvRef,'com/pascal/lcltest/LCLActivity')));
+
   if not assigned(javaActivityClass) then
   begin
     __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'javaEnvRef^.FindClass failed');
@@ -425,7 +450,7 @@ begin
   javaAndroidOSBuildClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Build');
   javaAndroidOSVibratorClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Vibrator');
   javaAndroidContentContextClass := javaEnvRef^^.FindClass(javaEnvRef,'android/content/Context');
-  javaEGLContextClass := javaEnvRef^^.FindClass(javaEnvRef,'javax/microedition/khronos/egl/EGLContext');
+
 
   // Register Pascal exported calls
   if javaEnvRef^^.RegisterNatives(javaEnvRef, javaActivityClass, @NativeMethods[0],length(NativeMethods))<0 then
@@ -434,64 +459,7 @@ begin
     // Exit(JNI_ERR); Don't exit if exporting the native method fails because it works without this too
   end;
 
-  // Read all field IDs
-  JavaField_lcltext := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltext', 'Ljava/lang/String;');
-  JavaField_lcltitle := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltitle', 'Ljava/lang/String;');
-  JavaField_lclbutton1str := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton1str', 'Ljava/lang/String;');
-  JavaField_lclbutton2str := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton2str', 'Ljava/lang/String;');
-  JavaField_lclbutton3str := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton3str', 'Ljava/lang/String;');
-  //
-  JavaField_lclwidth := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclwidth', 'I');
-  JavaField_lclheight := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclheight', 'I');
-  JavaField_lclbutton1 := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton1', 'I');
-  JavaField_lclbutton2 := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton2', 'I');
-  JavaField_lclbutton3 := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbutton3', 'I');
-  JavaField_lclbitmap := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclbitmap', 'Landroid/graphics/Bitmap;');
-  JavaField_lcltextsize := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltextsize', 'I');
-  // Text metrics
-  javaField_lcltextascent := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltextascent', 'I');
-  javaField_lcltextbottom := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltextbottom', 'I');
-  javaField_lcltextdescent := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltextdescent', 'I');
-  javaField_lcltextleading := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltextleading', 'I');
-  javaField_lcltexttop := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltexttop', 'I');
-  javaField_lclmaxwidth := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmaxwidth', 'I');
-  javaField_lclmaxcount := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmaxcount', 'I');
-  javaField_lclpartialwidths := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclpartialwidths', '[F');
-  // Timer
-  javaField_lcltimerinterval := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltimerinterval', 'I');
-  javaField_lcltimerid := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcltimerid', 'Ljava/lang/Runnable;');
-  // Screen Metrics
-  javaField_lclxdpi := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclxdpi', 'I');
-  javaField_lclydpi := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclydpi', 'I');
-  javaField_lclformwidth := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclformwidth', 'I');
-  javaField_lclformheight := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclformheight', 'I');
-  javaField_lclscreenwidth := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclscreenwidth', 'I');
-  javaField_lclscreenheight := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclscreenheight', 'I');
-  // For LazDeviceAPIs
-  javaField_lcldestination := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lcldestination', 'Ljava/lang/String;');
-  javaField_lclkind := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclkind', 'I');
-
-  //
-  if not assigned(JavaField_lcltext) then
-  begin
-    __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'javaEnvRef^.GetFieldID failed for lcltext');
-    Exit(JNI_ERR);
-  end;
-
-  // Read all method IDs
-  javaMethod_LCLDoGetTextBounds := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoGetTextBounds', '()V');
-  javaMethod_LCLDoGetTextPartialWidths := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoGetTextPartialWidths', '()V');
-  javaMethod_LCLDoDrawText := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDrawText', '(I)V');
-  javaMethod_LCLDoShowMessageBox := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoShowMessageBox', '()V');
-  javaMethod_LCLDoCreateTimer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateTimer', '()V');
-  javaMethod_LCLDoDestroyTimer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyTimer', '()V');
-  //Отобразить/спрятать виртуальную клавиатуру
-  javaMethod_LCLDoHideVirtualKeyboard := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoHideVirtualKeyboard', '()V');
-  javaMethod_LCLDoShowVirtualKeyboard := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoShowVirtualKeyboard', '()V');
-  //работа с акселерометром, ненаю зачем нуно мб пригодится
-  javaMethod_LCLDoStartReadingAccelerometer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStartReadingAccelerometer', '()V');
-  javaMethod_LCLDoStopReadingAccelerometer := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoStopReadingAccelerometer', '()V');
-  //GPS and SMS не нужны сцене
+    //GPS and SMS не нужны сцене
 //  javaMethod_LCLDoSendMessage := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSendMessage', '()V');
 //  javaMethod_LCLDoRequestPositionInfo := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRequestPositionInfo', '()V');
   // Methods from android.app.Activity
@@ -501,44 +469,8 @@ begin
   // Generic methods from Context
   javaMethod_getSystemService := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidContentContextClass, 'getSystemService', '(Ljava/lang/String;)Ljava/lang/Object;');
 
-  //OpenGL
- // Methods of OpenGL
-  javaMethod_LCLDoCreateContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateContext', '(Ljavax/microedition/khronos/egl/EGLConfig;Ljavax/microedition/khronos/egl/EGLContext;)Ljavax/microedition/khronos/egl/EGLContext;');
-  javaMethod_LCLDoDestroyContext:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)I');
 
-  javaMethod_LCLDoCreateSurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateSurface', '(Ljavax/microedition/khronos/egl/EGLConfig;)Ljavax/microedition/khronos/egl/EGLSurface;');
-  javaMethod_LCLDoDestroySurface:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroySurface', '(Ljavax/microedition/khronos/egl/EGLSurface;)V');
-
-  javaMethod_LCLDoPurgeBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoPurgeBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;Ljavax/microedition/khronos/egl/EGLContext;)V');
-  javaMethod_LCLDoClearBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoClearBuffers', '()V');
-  javaMethod_LCLDoSwapBuffers:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSwapBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;)Z');
-
-  javaMethod_LCLeglGetError:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLeglGetError', '()I');
-  javaMethod_mEGLContextClientVersion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'mEGLContextClientVersion', 'I');
-  javaMethod_SetFullScreen:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetFullScreen', '(Z)V');
-  javaMethod_SetScreenOrientation:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'SetScreenOrientation', '(I)Z');
-  javaMethod_LCLLoadLibrary:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLLoadLibrary', '(Ljava/lang/String;)Z');
-
-  javaMethod_LCLGetConfigs:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetConfigs', '()I');
-  javaMethod_LCLGetFixedAttribute:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLGetFixedAttribute', '(II)I');
-  javaMethod_LCLAddIAttrib:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLAddIAttrib', '(II)V');
-  javaMethod_LCLChooseConfig:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLChooseConfig', '()Ljavax/microedition/khronos/egl/EGLConfig;');
-
-  javaField_lclmajorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclmajorversion', 'I');
-  javaField_lclminorversion:= javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclminorversion', 'I');
-
-  javaField_lclplatformversion := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformversion', 'Ljava/lang/String;');
-  javaField_lclplatformapi := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformapi', 'Ljava/lang/String;');
-  javaField_lclplatformdevice := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclplatformdevice', 'Ljava/lang/String;');
-
-  javaMethod_LCLDoInvalidate:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoInvalidate', '()V');
-  javaMethod_LCLDoCreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoCreateHolder', '()V');
-  javaMethod_LCLDoDestroyHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoDestroyHolder', '()V');
-  javaMethod_LCLDoRecreateHolder:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRecreateHolder', '()V');
-  javaMethod_LCLisHolderCreated:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLisHolderCreated', '()Z');
-  javaMethod_LCLSetTitleBar:= javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLSetTitleBar', '(Ljava/lang/String;)V');
-
-  javaField_lclholder := javaEnvRef^^.GetFieldID(javaEnvRef, javaActivityClass, 'lclholder', 'Landroid/view/SurfaceHolder;');
+  FillArrayJavaIDPointers(javaEnvRef);
 
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad finished');
   result:=JNI_VERSION_1_4;// 1_6 is another option
@@ -546,7 +478,181 @@ end;
 
 procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 begin
+  javaEnvRef^^.DeleteGlobalRef(javaEnvRef,javaActivityClass);
 end;
+
+function FillArrayJavaIDPointers(EnvID: pointer):jint;
+var i:integer;
+begin
+  i := GetEnvIDForCurrentThread;
+  // Read all field IDs
+  AddFieldID(i, JavaField_lcltext,'lcltext', 'Ljava/lang/String;');
+  AddFieldID(i, JavaField_lcltitle , 'lcltitle', 'Ljava/lang/String;');
+  AddFieldID(i, JavaField_lclbutton1str, 'lclbutton1str', 'Ljava/lang/String;');
+  AddFieldID(i, JavaField_lclbutton2str, 'lclbutton2str', 'Ljava/lang/String;');
+  AddFieldID(i, JavaField_lclbutton3str, 'lclbutton3str', 'Ljava/lang/String;');
+  //
+  AddFieldID(i, JavaField_lclwidth, 'lclwidth', 'I');
+  AddFieldID(i, JavaField_lclheight, 'lclheight', 'I');
+  AddFieldID(i, JavaField_lclbutton1, 'lclbutton1', 'I');
+  AddFieldID(i, JavaField_lclbutton2, 'lclbutton2', 'I');
+  AddFieldID(i, JavaField_lclbutton3, 'lclbutton3', 'I');
+  AddFieldID(i, JavaField_lclbitmap, 'lclbitmap', 'Landroid/graphics/Bitmap;');
+  AddFieldID(i, JavaField_lcltextsize, 'lcltextsize', 'I');
+  // Text metrics
+  AddFieldID(i,javaField_lcltextascent , 'lcltextascent', 'I');
+  AddFieldID(i,javaField_lcltextbottom , 'lcltextbottom', 'I');
+  AddFieldID(i,javaField_lcltextdescent , 'lcltextdescent', 'I');
+  AddFieldID(i,javaField_lcltextleading , 'lcltextleading', 'I');
+  AddFieldID(i,javaField_lcltexttop , 'lcltexttop', 'I');
+  AddFieldID(i,javaField_lclmaxwidth , 'lclmaxwidth', 'I');
+  AddFieldID(i,javaField_lclmaxcount , 'lclmaxcount', 'I');
+  AddFieldID(i,javaField_lclpartialwidths , 'lclpartialwidths', '[F');
+  // Timer
+  AddFieldID(i,javaField_lcltimerinterval , 'lcltimerinterval', 'I');
+  AddFieldID(i,javaField_lcltimerid , 'lcltimerid', 'Ljava/lang/Runnable;');
+  // Screen Metrics
+  AddFieldID(i,javaField_lclxdpi , 'lclxdpi', 'I');
+  AddFieldID(i,javaField_lclydpi , 'lclydpi', 'I');
+  AddFieldID(i,javaField_lclformwidth , 'lclformwidth', 'I');
+  AddFieldID(i,javaField_lclformheight , 'lclformheight', 'I');
+  AddFieldID(i, javaField_lclscreenwidth , 'lclscreenwidth', 'I');
+  AddFieldID(i,javaField_lclscreenheight , 'lclscreenheight', 'I');
+  // For LazDeviceAPIs
+  AddFieldID(i,javaField_lcldestination , 'lcldestination', 'Ljava/lang/String;');
+  AddFieldID(i,javaField_lclkind , 'lclkind', 'I');
+
+  //
+  if not assigned(GetJavaIDVariableinArray(JavaField_lcltext)) then
+  begin
+    __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'javaEnvRef^.GetFieldID failed for lcltext');
+    Exit(JNI_ERR);
+  end;
+
+  // Read all method IDs
+  AddMethodID(i, javaMethod_LCLDoGetTextBounds, 'LCLDoGetTextBounds', '()V');
+  AddMethodID(i, javaMethod_LCLDoGetTextPartialWidths , 'LCLDoGetTextPartialWidths', '()V');
+  AddMethodID(i, javaMethod_LCLDoDrawText , 'LCLDoDrawText', '(I)V');
+  AddMethodID(i, javaMethod_LCLDoShowMessageBox , 'LCLDoShowMessageBox', '()V');
+  AddMethodID(i, javaMethod_LCLDoCreateTimer , 'LCLDoCreateTimer', '()V');
+  AddMethodID(i, javaMethod_LCLDoDestroyTimer , 'LCLDoDestroyTimer', '()V');
+  //Отобразить/спрятать виртуальную клавиатуру
+  AddMethodID(i, javaMethod_LCLDoHideVirtualKeyboard , 'LCLDoHideVirtualKeyboard', '()V');
+  AddMethodID(i, javaMethod_LCLDoShowVirtualKeyboard , 'LCLDoShowVirtualKeyboard', '()V');
+  //работа с акселерометром, ненаю зачем нуно мб пригодится
+  AddMethodID(i, javaMethod_LCLDoStartReadingAccelerometer , 'LCLDoStartReadingAccelerometer', '()V');
+  AddMethodID(i, javaMethod_LCLDoStopReadingAccelerometer , 'LCLDoStopReadingAccelerometer', '()V');
+
+  //OpenGL
+ // Methods of OpenGL
+  AddMethodID(i, javaMethod_LCLDoCreateContext, 'LCLDoCreateContext', '(Ljavax/microedition/khronos/egl/EGLConfig;Ljavax/microedition/khronos/egl/EGLContext;)Ljavax/microedition/khronos/egl/EGLContext;');
+  AddMethodID(i, javaMethod_LCLDoDestroyContext, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)I');
+
+  AddMethodID(i, javaMethod_LCLDoCreateSurface, 'LCLDoCreateSurface', '(Ljavax/microedition/khronos/egl/EGLConfig;)Ljavax/microedition/khronos/egl/EGLSurface;');
+  AddMethodID(i, javaMethod_LCLDoDestroySurface, 'LCLDoDestroySurface', '(Ljavax/microedition/khronos/egl/EGLSurface;)V');
+
+  AddMethodID(i, javaMethod_LCLDoPurgeBuffers, 'LCLDoPurgeBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;Ljavax/microedition/khronos/egl/EGLContext;)V');
+  AddMethodID(i, javaMethod_LCLDoClearBuffers, 'LCLDoClearBuffers', '()V');
+  AddMethodID(i, javaMethod_LCLDoSwapBuffers, 'LCLDoSwapBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;)Z');
+
+  AddMethodID(i, javaMethod_LCLeglGetError, 'LCLeglGetError', '()I');
+  AddFieldID(i, javafield_mEGLContextClientVersion, 'mEGLContextClientVersion', 'I');
+  AddMethodID(i, javaMethod_SetFullScreen, 'SetFullScreen', '(Z)V');
+  AddMethodID(i, javaMethod_SetScreenOrientation, 'SetScreenOrientation', '(I)Z');
+  AddMethodID(i, javaMethod_LCLLoadLibrary, 'LCLLoadLibrary', '(Ljava/lang/String;)Z');
+
+  AddMethodID(i, javaMethod_LCLGetConfigs, 'LCLGetConfigs', '()I');
+  AddMethodID(i, javaMethod_LCLGetFixedAttribute, 'LCLGetFixedAttribute', '(II)I');
+  AddMethodID(i, javaMethod_LCLAddIAttrib, 'LCLAddIAttrib', '(II)V');
+  AddMethodID(i, javaMethod_LCLChooseConfig, 'LCLChooseConfig', '()Ljavax/microedition/khronos/egl/EGLConfig;');
+
+  AddFieldID(i, javaField_lclmajorversion, 'lclmajorversion', 'I');
+  AddFieldID(i, javaField_lclminorversion, 'lclminorversion', 'I');
+
+  AddFieldID(i, javaField_lclplatformversion, 'lclplatformversion', 'Ljava/lang/String;');
+  AddFieldID(i, javaField_lclplatformapi, 'lclplatformapi', 'Ljava/lang/String;');
+  AddFieldID(i, javaField_lclplatformdevice, 'lclplatformdevice', 'Ljava/lang/String;');
+
+  AddMethodID(i, javaMethod_LCLDoInvalidate, 'LCLDoInvalidate', '()V');
+  AddMethodID(i, javaMethod_LCLDoCreateHolder, 'LCLDoCreateHolder', '()V');
+  AddMethodID(i, javaMethod_LCLDoDestroyHolder, 'LCLDoDestroyHolder', '()V');
+  AddMethodID(i, javaMethod_LCLDoRecreateHolder, 'LCLDoRecreateHolder', '()V');
+  AddMethodID(i, javaMethod_LCLisHolderCreated, 'LCLisHolderCreated', '()Z');
+  AddMethodID(i, javaMethod_LCLSetTitleBar, 'LCLSetTitleBar', '(Ljava/lang/String;)V');
+end;
+
+function AttachCurrentThread: Pointer;
+var n: integer;
+    fjavaEnvRef: PJNIEnv;
+begin
+  javaVMRef^^.AttachCurrentThread(javaVMRef,@fjavaEnvRef,nil) ;
+  n:=  length(fArrayEnvRefLayerThread);
+  setlength(fArrayEnvRefLayerThread, n+1 );
+  n:=  length(fArrayEnvRefLayerThread);
+   with fArrayEnvRefLayerThread[n-1] do
+     begin
+      EnvID:=fjavaEnvRef;
+      ThreadID := GetCurrentThreadId;
+      setlength(variablesid, Ord(High(javavariablesid)) + 1);
+     end;
+
+  FillArrayJavaIDPointers(fjavaEnvRef);
+  Result := fjavaEnvRef;
+end;
+
+procedure DetachCurrentThread(EnvRef: pointer);
+var i,j: integer;
+begin
+  j := GetEnvIDForCurrentThread;
+  //удаляем массив указателей к переменным в яве
+  Setlength(fArrayEnvRefLayerThread[j].variablesid, 0);
+  //удаляем запись структуры текущего потока со здвигом
+  for i:=j to length(fArrayEnvRefLayerThread)-1 do
+  if i+1< length(fArrayEnvRefLayerThread)-1 then
+    fArrayEnvRefLayerThread[i]:= fArrayEnvRefLayerThread[i+1];
+  Setlength(fArrayEnvRefLayerThread, length(fArrayEnvRefLayerThread)-1);
+
+  javaVMRef^^.DetachCurrentThread(javaVMRef) ;
+end;
+
+function GetJavaIDVariableinArray(id: javavariablesid): Pointer;
+var EnvID:integer;
+begin
+  EnvID := GetEnvIDForCurrentThread;
+  Result := fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]
+end;
+
+function GetEnvIDForCurrentThread(): integer;
+var i: integer;
+    ThrID:integer;
+begin
+  Result:=0;
+  ThrID := GetCurrentThreadId;
+  for i:=0 to length(fArrayEnvRefLayerThread)-1 do
+  if fArrayEnvRefLayerThread[i].ThreadID = ThrID then
+  begin
+     Result := i;
+     break;
+  end;
+end;
+
+procedure AddMethodID(EnvID: integer; id: javavariablesid; method, vartype: PChar);
+var
+  fjavaEnvRef: PJNIEnv=nil;
+begin
+  fjavaEnvRef :=  fArrayEnvRefLayerThread[EnvID].EnvID;
+  fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]:= fjavaEnvRef^^.GetMethodID(fjavaEnvRef, javaActivityClass, method, vartype);
+end;
+
+procedure AddFieldID(EnvID: integer;id: javavariablesid; field, vartype: PChar);
+var
+  fjavaEnvRef: PJNIEnv=nil;
+begin
+  fjavaEnvRef :=  fArrayEnvRefLayerThread[EnvID].EnvID;
+  fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]:= fjavaEnvRef^^.GetFieldID(fjavaEnvRef, javaActivityClass, field, vartype);
+end;
+
+
 
 function TCDWidgetSet.CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
 var
@@ -556,12 +662,12 @@ begin
     // Call the method
   lParams[0].l := aconfig;
   lParams[1].l := shareRC;
-  context  := EGLContext(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateContext,@lParams[0]));
-   //Delaem Poiner Globalnim chtobi nebilo
+  context  := EGLContext(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateContext),@lParams[0]));
+   //Делаем указатель глобальным
    // JNI WARNING: 0x40522160 is not a valid JNI reference
    //http://java.sun.com/docs/books/jni/html/refs.html#27423
-   //inache Java ego sotret
-  result := javaEnvRef^^.NewGlobalRef(javaEnvRef, context);
+   //иначе ява его забудет
+  result := NewGlobalRef(context);
 end;
 
 function TCDWidgetSet.DestroyContext(aContext:EGLContext): EGLint;
@@ -570,8 +676,8 @@ var
 begin
     // Call the method
   lParams[0].l := aContext;
-  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyContext,@lParams[0]));
-  javaEnvRef^^.DeleteGlobalRef(javaEnvRef, acontext);
+  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyContext),@lParams[0]));
+  DeleteGlobalRef(acontext);
 end;
 
 function TCDWidgetSet.CreateSurface(aconfig : EGLConfig): EGLSurface;
@@ -581,8 +687,8 @@ function TCDWidgetSet.CreateSurface(aconfig : EGLConfig): EGLSurface;
 begin
     // Call the method
   lParams[0].l := aconfig;
-  Surface  := EGLSurface(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateSurface,@lParams[0]));
-  result := javaEnvRef^^.NewGlobalRef(javaEnvRef, Surface);
+  Surface  := EGLSurface(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateSurface),@lParams[0]));
+  result := NewGlobalRef(Surface);
 end;
 
 procedure TCDWidgetSet.DestroySurface(aSurface : EGLSurface);
@@ -591,8 +697,8 @@ lParams: array[0..0] of JValue;
 begin
   // Call the method
    lParams[0].l := aSurface;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroySurface,@lParams[0]);
-   javaEnvRef^^.DeleteGlobalRef(javaEnvRef, aSurface);
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroySurface),@lParams[0]);
+   DeleteGlobalRef(aSurface);
 end;
 
 procedure TCDWidgetSet.PurgeBuffers(asurface : EGLSurface; acontext : EGLContext);
@@ -603,12 +709,12 @@ begin
   // Call the method
   lParams[0].l := asurface;
   lParams[1].l := acontext;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoPurgeBuffers,@lParams[0]);
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoPurgeBuffers),@lParams[0]);
 end;
 
 procedure TCDWidgetSet.ClearBuffers;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoClearBuffers);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoClearBuffers));
 end;
 
 function TCDWidgetSet.SwapBuffers(asurface : EGLSurface): boolean;
@@ -617,17 +723,17 @@ lParams: array[0..0] of JValue;
 begin
   // Call the method
    lParams[0].l := aSurface;
-   result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoSwapBuffers,@lParams[0]));
+   result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoSwapBuffers),@lParams[0]));
 end;
 
 function TCDWidgetSet.eglGetError: EGLint;
 begin
-  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, javaMethod_LCLeglGetError));
+  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLeglGetError)));
 end;
 
 procedure TCDWidgetSet.SetContextClientVersion2;
 begin
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaMethod_mEGLContextClientVersion, 2);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_mEGLContextClientVersion), 2);
 end;
 
 procedure TCDWidgetSet.SetFullScreenMode(fs: EGLBoolean);
@@ -636,7 +742,7 @@ lParams: array[0..0] of JValue;
 begin
   // Call the method
   lParams[0].z := fs;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_SetFullScreen,@lParams[0]);
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_SetFullScreen),@lParams[0]);
 end;
 
 function TCDWidgetSet.SetScreenOrientation(so: EGLint): boolean;
@@ -645,13 +751,13 @@ lParams: array[0..0] of JValue;
 begin
   // Call the method
   lParams[0].i := so;
-   Result:=Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_SetScreenOrientation,@lParams[0]));
+   Result:=Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_SetScreenOrientation),@lParams[0]));
 end;
 
 
 function TCDWidgetSet.eglGetConfigs(): EGLint;
 begin
-  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, javaMethod_LCLGetConfigs));
+  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLGetConfigs)));
 end;
 
 function TCDWidgetSet.eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
@@ -661,7 +767,7 @@ begin
     // Call the method
   lParams[0].i := attribute;
   lParams[1].i := Param;
-  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLGetFixedAttribute,@lParams[0]));
+  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLGetFixedAttribute),@lParams[0]));
 end;
 
 procedure TCDWidgetSet.eglAddIAttrib(attribute: EGLint; value: EGLint);
@@ -671,18 +777,18 @@ begin
   // Call the method
   lParams[0].i := attribute;
   lParams[1].i := value;
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLAddIAttrib,@lParams[0]);
+  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLAddIAttrib),@lParams[0]);
 end;
 
 function TCDWidgetSet.eglChooseConfig: EGLConfig;
 begin
-  result := EGLConfig(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, javaMethod_LCLChooseConfig));
+  result := EGLConfig(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLChooseConfig)));
 end;
 
 procedure TCDWidgetSet.GeteglVersion;
 begin
-  MajorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclmajorversion));
-  MinorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclminorversion));
+  MajorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmajorversion)));
+  MinorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclminorversion)));
 end;
 
 procedure TCDWidgetSet.GetPlatformInfo();
@@ -695,7 +801,7 @@ var
 begin
   bool:=0;
   //получаем указатель на строку
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformversion);
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformversion));
   //получаем набор символов
   ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
   //склеиваем
@@ -705,14 +811,14 @@ begin
   javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
 
   s:='';
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformapi);
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformapi));
   ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
   for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
   PlatformInfo[1] :=s;
   javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
 
   s:='';
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclplatformdevice);
+  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformdevice));
   ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
   for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
   PlatformInfo[2] :=s;
@@ -723,28 +829,29 @@ end;
 
 
 procedure TCDWidgetSet.LCLDoInvalidate;
+var  lCurForm: TCDNonNativeForm;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoInvalidate);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoInvalidate));
 end;
 
 procedure TCDWidgetSet.LCLDoCreateHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateHolder);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateHolder));
 end;
 
 procedure TCDWidgetSet.LCLDoDestroyHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyHolder);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyHolder));
 end;
 
 procedure TCDWidgetSet.LCLDoRecreateHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoRecreateHolder);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoRecreateHolder));
 end;
 
 function TCDWidgetSet.LCLisHolderCreated: boolean;
 begin
-  result := Boolean(javaEnvRef^^.CallBooleanMethod(javaEnvRef, javaActivityObject, javaMethod_LCLisHolderCreated));
+  result := Boolean(javaEnvRef^^.CallBooleanMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLisHolderCreated)));
 end;
 
 procedure TCDWidgetSet.SetTitleBar(aStr: string);
@@ -755,7 +862,7 @@ begin
   vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aStr));
   // Call the method
    lParams[0].l := vStr;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLSetTitleBar,@lParams[0]);
+   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLSetTitleBar),@lParams[0]);
    //javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef,vstr,pchar(aStr));
 end;
 
@@ -767,7 +874,17 @@ function TCDWidgetSet.Loadlibrary(aLib: string) : boolean;
     vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aLib));
     // Call the method
      lParams[0].l := vstr;
-     Result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLLoadLibrary,@lParams[0]));
+     Result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLLoadLibrary),@lParams[0]));
+end;
+
+function TCDWidgetSet.NewGlobalRef(aObject: Pointer): Pointer;
+begin
+  Result := javaEnvRef^^.NewGlobalRef(javaEnvRef, aObject);
+end;
+
+procedure TCDWidgetSet.DeleteGlobalRef(aObject: Pointer);
+begin
+  javaEnvRef^^.DeleteGlobalRef(javaEnvRef, aObject);
 end;
 
 {$IFnDEF WithOldDebugln}
@@ -1317,13 +1434,13 @@ begin
   lTimer.TimerFunc := TimerFunc;
 
   // Prepare the input
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltimerinterval, Interval);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerinterval), Interval);
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateTimer);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateTimer));
 
   // Read the output
-  lTimer.NativeHandle := PtrInt(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lcltimerid));
+  lTimer.NativeHandle := PtrInt(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerid)));
 
   // Add it to our list
   AddTimer(lTimer);
@@ -1347,10 +1464,10 @@ begin
   if lTimer = nil then Exit;
 
   // Prepare the input
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, javaField_lcltimerid, jobject(lTimer.NativeHandle));
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerid), jobject(lTimer.NativeHandle));
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoDestroyTimer);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyTimer));
 
   // Remove from the list
   RemoveTimer(lTimer);

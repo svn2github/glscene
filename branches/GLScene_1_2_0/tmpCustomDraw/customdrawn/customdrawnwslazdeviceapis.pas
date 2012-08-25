@@ -141,13 +141,13 @@ end; }
 class procedure TCDWSLazDeviceAPIs.StartReadingAccelerometerData;
 begin
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoStartReadingAccelerometer);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoStartReadingAccelerometer));
 end;
 
 class procedure TCDWSLazDeviceAPIs.StopReadingAccelerometerData;
 begin
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoStopReadingAccelerometer);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoStopReadingAccelerometer));
 end;
 
 class function TCDWSLazDeviceAPIs.GetDeviceManufacturer: string;

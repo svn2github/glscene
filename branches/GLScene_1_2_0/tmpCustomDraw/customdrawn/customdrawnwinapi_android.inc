@@ -2019,20 +2019,20 @@ begin
 
   // Prepare the input
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, Str);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltextsize, lFontSize);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
 
   // Call the method to measure the text
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoGetTextBounds);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
 
   // Call the method to draw the text
   lParams[0].i := FPColorToAndroidColor(lDestCanvas.Font.FPColor);
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, javaMethod_LCLDoDrawText, @lParams[0]);
+  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDrawText), @lParams[0]);
 
   // Get the bitmap with the text
-  lJavaBitmap := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclbitmap);
-  lWidth := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclwidth);
-  lHeight := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclheight);
+  lJavaBitmap := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclbitmap));
+  lWidth := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
+  lHeight := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
 
   {$ifdef VerboseCDText}
     DebugLn(Format(':[WinAPI ExtTextOut] lWidth=%d lHeight=%d DestCanvasSize=%d, %d lFontSize=%d',
@@ -2676,12 +2676,12 @@ begin
     LOGPIXELSX:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclxdpi);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclxdpi));
     end;
     LOGPIXELSY:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclydpi);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclydpi));
     end;
 //    VERTRES:
 //      Result := QPaintDevice_height(PaintDevice);
@@ -3740,14 +3740,14 @@ begin
     begin
       Result := 100; // avoid errors if this is called too early
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclscreenwidth);
+      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenwidth));
       if Result = 0 then Result := 100;
     end;
     SM_CYSCREEN:
     begin
       Result := 100; // avoid errors if this is called too early
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclscreenheight);
+      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenheight));
       if Result = 0 then Result := 100;
     end;
     SM_CXSIZE:
@@ -3779,12 +3779,12 @@ begin
     SM_CXVIRTUALSCREEN:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclscreenwidth);
+      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenwidth));
     end;
     SM_CYVIRTUALSCREEN:
     begin
       if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, javaField_lclscreenheight);
+      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenheight));
     end;
     SM_CXVSCROLL,
     SM_CYVSCROLL,
@@ -3907,15 +3907,15 @@ begin
 
   // Prepare the input
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(lTextStr));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltextsize, lFontSize);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lclmaxwidth, MaxWidth);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject,GetJavaIDVariableinArray( javaField_lcltextsize), lFontSize);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmaxwidth), MaxWidth);
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoGetTextPartialWidths);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextPartialWidths));
 
   // Read the output
-  lMaxCount := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclmaxcount);
+  lMaxCount := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmaxcount));
   {$ifdef VerboseCDText}
   DebugLn(Format(':[WinAPI GetTextExtentExPoint] MaxCount=%d', [lMaxCount]));
   {$endif}
@@ -3926,7 +3926,7 @@ begin
   begin
     lIsCopy := 0;
     // Get the object field, returns JObject (because Array is instance of Object)
-    arraydata_obj := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, javaField_lclpartialwidths);
+    arraydata_obj := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclpartialwidths));
     // Get the elements (you probably have to fetch the length of the array as well
     arraydata := javaEnvRef^^.GetFloatArrayElements(javaEnvRef, arraydata_obj, lIsCopy);
 
@@ -3975,15 +3975,15 @@ begin
 
   // Prepare the input
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, Str);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltextsize, lFontSize);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoGetTextBounds);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
 
   // Read the output
-  Size.cx := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclwidth);
-  Size.cy := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclheight);
+  Size.cx := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
+  Size.cy := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
 
   {$ifdef VerboseCDText}
     DebugLn(Format('[WinAPI GetTextExtentPoint] Size=%d, %d', [Size.cx, Size.cy]));
@@ -4021,28 +4021,28 @@ begin
 
   // Prepare the input for getting the average width of a char
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar('x'));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltextsize, lFontSize);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoGetTextBounds);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
 
-  lAverageCharWidth := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclwidth);
+  lAverageCharWidth := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
 
   // Prepare the input for getting the max height of a text and other metrics
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar('Íg'));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, javaField_lcltextsize, lFontSize);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoGetTextBounds);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
 
   // Read the output
-  TM.tmHeight := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lclheight);
-  TM.tmAscent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lcltextascent);
-  TM.tmDescent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lcltextdescent);
+  TM.tmHeight := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
+  TM.tmAscent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextascent));
+  TM.tmDescent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextdescent));
   TM.tmInternalLeading := 0;
-  TM.tmExternalLeading := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, javaField_lcltextleading);
+  TM.tmExternalLeading := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextleading));
   TM.tmAveCharWidth := lAverageCharWidth;
   TM.tmMaxCharWidth := TM.tmAveCharWidth; // Just a not very good guess for now
 {    FontWeight := QtDC.font.getWeight;
@@ -4669,102 +4669,102 @@ begin
   // Prepare the input
   // String fields
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, lpText);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, lpCaption);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltitle, lJavaString);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltitle), lJavaString);
 
   // Add all buttons
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton3, -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), -1);
   case utype of
     MB_OK:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbYes);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDOK);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDOK);
     end;
     MB_OKCANCEL:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbYes);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDOK);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDOK);
       // button2
       BtnText := RemoveAccelChars(rsMbCancel);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, IDCANCEL);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDCANCEL);
     end;
     MB_ABORTRETRYIGNORE:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbAbort);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDABORT);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDABORT);
       // button2
       BtnText := RemoveAccelChars(rsMbRetry);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, IDRETRY);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDRETRY);
       // button3
       BtnText := RemoveAccelChars(rsMbIgnore);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton3str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton3, IDIGNORE);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), IDIGNORE);
     end;
     MB_YESNOCANCEL:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbYes);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDYES);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDYES);
       // button2
       BtnText := RemoveAccelChars(rsMbNo);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, IDNO);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDNO);
       // button3
       BtnText := RemoveAccelChars(rsMbCancel);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton3str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton3, IDCANCEL);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), IDCANCEL);
     end;
     MB_YESNO:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbYes);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDYES);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDYES);
       // button2
       BtnText := RemoveAccelChars(rsMbNo);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, IDNO);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDNO);
     end;
     MB_RETRYCANCEL:
     begin
       // button1
       BtnText := RemoveAccelChars(rsMbRetry);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, IDRETRY);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDRETRY);
       // button2
       BtnText := RemoveAccelChars(rsMbCancel);
       lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, IDCANCEL);
+      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDCANCEL);
     end;
   end;
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoShowMessageBox);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowMessageBox));
 end;
 
 (*{------------------------------------------------------------------------------

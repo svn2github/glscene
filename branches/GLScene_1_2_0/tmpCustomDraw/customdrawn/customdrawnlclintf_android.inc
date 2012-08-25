@@ -160,7 +160,7 @@ procedure TCDWidgetSet.HideVirtualKeyboard();
 begin
   DebugLn('[TCDWidgetSet.HideVirtualKeyboard]');
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoHideVirtualKeyboard);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoHideVirtualKeyboard));
 end;
 
 {procedure TCDWidgetSet.CreateOpenGLContext;
@@ -200,14 +200,14 @@ begin
   // Prepare the input
   // String fields
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(DialogMessage));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltext, lJavaString);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
   lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(DialogCaption));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lcltitle, lJavaString);
+  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltitle), lJavaString);
 
   // Read the buttons
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton3, -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), -1);
+  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), -1);
   for BtnIndex := 0 to ButtonCount - 1 do
   begin
     BtnKind := Buttons[BtnIndex];
@@ -231,24 +231,24 @@ begin
     case BtnIndex of
       0:
       begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton1str, lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton1, BtnKind);
+        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
+        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), BtnKind);
       end;
       1:
       begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton2str, lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton2, BtnKind);
+        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
+        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), BtnKind);
       end;
       2:
       begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, JavaField_lclbutton3str, lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, JavaField_lclbutton3, BtnKind);
+        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
+        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), BtnKind);
       end;
     end;
   end;
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoShowMessageBox);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowMessageBox));
 end;
 
 {------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ procedure TCDWidgetSet.ShowVirtualKeyboard;
 begin
   DebugLn('[TCDWidgetSet.ShowVirtualKeyboard]');
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoShowVirtualKeyboard);
+  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowVirtualKeyboard));
 end;
 
 //##apiwiz##eps##   // Do not remove, no wizard declaration after this line
