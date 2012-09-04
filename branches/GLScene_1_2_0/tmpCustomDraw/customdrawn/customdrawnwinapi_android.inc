@@ -1996,6 +1996,15 @@ var
   lFontSize: Integer;
   // array for the parameters
   lParams: array[0..0] of JValue;
+
+  JavaField_lcltext: JfieldID=nil;
+  javaField_lcltextsize: JfieldID=nil;
+  javaMethod_LCLDoGetTextBounds: jmethodid = nil;
+  javaMethod_LCLDoDrawText: jmethodid = nil;
+
+  javaField_lclbitmap: JfieldID=nil;
+  javaField_lclwidth: JfieldID=nil;
+  javaField_lclheight: JfieldID=nil;
 begin
   {$ifdef VerboseCDText}
     DebugLn(Format(':>[WinAPI ExtTextOut] DC=%x javaEnvRef=%x Str=%s X=%d Y=%d',
@@ -2015,24 +2024,37 @@ begin
   if (lDestCanvas.Font = nil) or (lDestCanvas.Font.Size = 0) then lFontSize := DefaultFontAndroidSize
   else lFontSize := Abs(lDestCanvas.Font.Size);
 
-  if (javaEnvRef = nil) then Exit;
 
+  if (javaVMRef.Env = nil) then Exit;
+
+  with javaVMRef.Env do
+  begin
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    javaField_lcltextsize:= GetFieldID( javaActivityClass, 'lcltextsize', 'I');
+    javaMethod_LCLDoGetTextBounds:= GetMethodID( javaActivityClass,   'LCLDoGetTextBounds', '()V');
+    javaMethod_LCLDoDrawText:= GetMethodID( javaActivityClass,   'LCLDoDrawText', '(I)V');
+
+    javaField_lclbitmap:= GetFieldID( javaActivityClass, 'lclbitmap', 'Landroid/graphics/Bitmap;');
+    javaField_lclwidth:= GetFieldID( javaActivityClass, 'lclwidth', 'I');
+    javaField_lclheight:= GetFieldID( javaActivityClass, 'lclheight', 'I');
   // Prepare the input
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, Str);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
+    lJavaString :=NewStringUTF( Str);
+    SetObjectField(javaActivityObject, JavaField_lcltext, lJavaString);
+    SetIntField(javaActivityObject, javaField_lcltextsize, lFontSize);
+   // ReleaseStringUTFChars(lJavaString,Str);
 
-  // Call the method to measure the text
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
+    // Call the method to measure the text
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoGetTextBounds);
 
-  // Call the method to draw the text
-  lParams[0].i := FPColorToAndroidColor(lDestCanvas.Font.FPColor);
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDrawText), @lParams[0]);
+    // Call the method to draw the text
+    lParams[0].i := FPColorToAndroidColor(lDestCanvas.Font.FPColor);
+    CallVoidMethodA( javaActivityObject, javaMethod_LCLDoDrawText, @lParams[0]);
 
-  // Get the bitmap with the text
-  lJavaBitmap := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclbitmap));
-  lWidth := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
-  lHeight := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
+    // Get the bitmap with the text
+    lJavaBitmap := GetObjectField( javaActivityObject, javaField_lclbitmap);
+    lWidth := GetLongField( javaActivityObject, javaField_lclwidth);
+    lHeight := GetLongField( javaActivityObject, javaField_lclheight);
+  end;
 
   {$ifdef VerboseCDText}
     DebugLn(Format(':[WinAPI ExtTextOut] lWidth=%d lHeight=%d DestCanvasSize=%d, %d lFontSize=%d',
@@ -2044,7 +2066,7 @@ begin
   // ---------------------------
 
   // Lock the bitmap
-  AndroidBitmap_lockPixels(javaEnvRef, lJavaBitmap, @pixels);
+  AndroidBitmap_lockPixels(nil, lJavaBitmap, @pixels);
 
   // Prepare the non-native image and canvas
   UpdateControlLazImageAndCanvas(lImage, lCanvas, lWidth, lHeight, clfRGBA32, pixels, True, False, False);
@@ -2061,7 +2083,7 @@ begin
   lCanvas.Free;
   lImage.Free;
   // Release the bitmap lock
-  AndroidBitmap_unlockPixels(javaEnvRef, lJavaBitmap);
+  AndroidBitmap_unlockPixels(nil, lJavaBitmap);
 
   {$ifdef VerboseCDText}
     DebugLn(':<[WinAPI ExtTextOut]');
@@ -2648,8 +2670,10 @@ end;*)
   Returns: Integer
  ------------------------------------------------------------------------------}
 function TCDWidgetSet.GetDeviceCaps(DC: HDC; Index: Integer): Integer;
-//var
+var
  // LazDC: TLazCanvas;
+  javaField_lclxdpi: JfieldID=nil;
+  javaField_lclydpi: JfieldID=nil;
 begin
   {$ifdef VerboseCDWinAPI}
     DebugLn(':>[WinAPI GetDeviceCaps] DC ' + dbghex(DC));
@@ -2659,36 +2683,38 @@ begin
 
  // if DC = 0 then DC := HDC(ScreenDC);
  // LazDC := TLazCanvas(DC);
-
-  case Index of
-//    HORZSIZE:
-//      Result := QPaintDevice_widthMM(PaintDevice);
-//    VERTSIZE:
-//      Result := QPaintDevice_heightMM(PaintDevice);
-//    HORZRES:
-//      Result := QPaintDevice_width(PaintDevice);
-//    BITSPIXEL:
-//      Result := QPaintDevice_depth(PaintDevice);
-    PLANES:
-      Result := 1;
-//    SIZEPALETTE:
-//      Result := QPaintDevice_numColors(PaintDevice);
-    LOGPIXELSX:
-    begin
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclxdpi));
+  with javaVMRef.Env do
+  begin
+    case Index of
+  //    HORZSIZE:
+  //      Result := QPaintDevice_widthMM(PaintDevice);
+  //    VERTSIZE:
+  //      Result := QPaintDevice_heightMM(PaintDevice);
+  //    HORZRES:
+  //      Result := QPaintDevice_width(PaintDevice);
+  //    BITSPIXEL:
+  //      Result := QPaintDevice_depth(PaintDevice);
+      PLANES:
+        Result := 1;
+  //    SIZEPALETTE:
+  //      Result := QPaintDevice_numColors(PaintDevice);
+      LOGPIXELSX:
+      begin
+        javaField_lclxdpi:= GetFieldID( javaActivityClass, 'lclxdpi', 'I');
+        Result := GetIntField( javaActivityObject, javaField_lclxdpi);
+      end;
+      LOGPIXELSY:
+      begin
+        javaField_lclydpi:= GetFieldID( javaActivityClass, 'lclydpi', 'I');
+        Result := GetIntField( javaActivityObject, javaField_lclydpi);
+      end;
+  //    VERTRES:
+  //      Result := QPaintDevice_height(PaintDevice);
+      NUMRESERVED:
+        Result := 0;
+      else
+        Result := 0;
     end;
-    LOGPIXELSY:
-    begin
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclydpi));
-    end;
-//    VERTRES:
-//      Result := QPaintDevice_height(PaintDevice);
-    NUMRESERVED:
-      Result := 0;
-    else
-      Result := 0;
   end;
   {$ifdef VerboseCDWinAPI}
     DebugLn(':<[WinAPI GetDeviceCaps] Result=' + dbghex(Result));
@@ -3577,290 +3603,295 @@ end;*)
 function TCDWidgetSet.GetSystemMetrics(nIndex: Integer): Integer;
 var
   R: TRect;
+  javaField_lclscreenwidth: JfieldID=nil;
+  javaField_lclscreenheight: JfieldID=nil;
 begin
   {$ifdef VerboseCDWinAPI}
     DebugLn(Format(':>[TCDWidgetSet.GetSystemMetrics] nIndex=%d javaEnvRef=%x', [nIndex, PtrInt(javaEnvRef)]));
   {$endif}
   Result := 0;
-  case nIndex of
-    SM_ARRANGE:
+  with javaVMRef.Env do
+  begin
+    case nIndex of
+      SM_ARRANGE:
+        begin
+          {$ifdef VerboseQtWinAPI}
+            WriteLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_ARRANGE          ');
+          {$endif}
+        end;
+      SM_CLEANBOOT:
+        begin
+          {$ifdef VerboseQtWinAPI}
+            WriteLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CLEANBOOT          ');
+          {$endif}
+        end;
+      SM_CMONITORS:
+        Result := 1;
+      SM_CMOUSEBUTTONS:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CMOUSEBUTTONS    ');
+        end;
+  {    SM_CXBORDER, SM_CYBORDER:
+        begin
+          // size of frame around controls
+          Result := QStyle_pixelMetric(QApplication_style(),
+                      QStylePM_DefaultFrameWidth, nil, nil);
+        end;}
+      SM_CXCURSOR:
+        begin
+          Result := 32; // recomended in docs
+        end;
+      SM_CYCURSOR:
+        begin
+          Result := 32; // recomended in docs
+        end;
+      SM_CXDOUBLECLK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXDOUBLECLK      ');
+        end;
+      SM_CYDOUBLECLK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYDOUBLECLK      ');
+        end;
+      SM_CXDRAG:
+        begin
+          Result := 2;
+        end;
+      SM_CYDRAG:
+        begin
+          Result := 2;
+        end;
+      SM_CXEDGE:
+        begin
+          Result := 2;
+        end;
+      SM_CYEDGE:
+        begin
+          Result := 2;
+        end;
+      SM_CXFIXEDFRAME:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXFIXEDFRAME     ');
+        end;
+      SM_CYFIXEDFRAME:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYFIXEDFRAME     ');
+        end;
+      SM_CXFULLSCREEN:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXFULLSCREEN     ');
+        end;
+      SM_CYFULLSCREEN:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYFULLSCREEN     ');
+        end;
+      SM_CXHTHUMB:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXHTHUMB         ');
+        end;
+      SM_CXICON,
+      SM_CYICON:
+        begin
+          Result := 32;
+        end;
+      SM_CXICONSPACING:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXICONSPACING    ');
+        end;
+      SM_CYICONSPACING:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYICONSPACING    ');
+        end;
+      SM_CXMAXIMIZED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMAXIMIZED      ');
+        end;
+      SM_CYMAXIMIZED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMAXIMIZED      ');
+        end;
+      SM_CXMAXTRACK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMAXTRACK       ');
+        end;
+      SM_CYMAXTRACK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMAXTRACK       ');
+        end;
+      SM_CXMENUCHECK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMENUCHECK      ');
+        end;
+      SM_CYMENUCHECK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMENUCHECK      ');
+        end;
+  {    SM_CXMENUSIZE:
+        begin
+          Result := QStyle_pixelMetric(QApplication_style(), QStylePM_IndicatorWidth, nil, nil);
+        end;
+      SM_CYMENUSIZE:
+        begin
+          Result := QStyle_pixelMetric(QApplication_style(), QStylePM_IndicatorHeight, nil, nil);
+        end;}
+      SM_CXMIN:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMIN            ');
+        end;
+      SM_CYMIN:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMIN            ');
+        end;
+      SM_CXMINIMIZED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINIMIZED      ');
+        end;
+      SM_CYMINIMIZED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINIMIZED      ');
+        end;
+      SM_CXMINSPACING:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINSPACING     ');
+        end;
+      SM_CYMINSPACING:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINSPACING     ');
+        end;
+      SM_CXMINTRACK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINTRACK       ');
+        end;
+      SM_CYMINTRACK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINTRACK       ');
+        end;
+      SM_CXSCREEN:
       begin
-        {$ifdef VerboseQtWinAPI}
-          WriteLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_ARRANGE          ');
-        {$endif}
+        Result := 100; // avoid errors if this is called too early
+        javaField_lclscreenwidth:= GetFieldID( javaActivityClass, 'lclscreenwidth', 'I');
+        Result := GetIntField(javaActivityObject, javaField_lclscreenwidth);
+        if Result = 0 then Result := 100;
       end;
-    SM_CLEANBOOT:
+      SM_CYSCREEN:
       begin
-        {$ifdef VerboseQtWinAPI}
-          WriteLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CLEANBOOT          ');
-        {$endif}
+        Result := 100; // avoid errors if this is called too early
+        javaField_lclscreenheight:= GetFieldID( javaActivityClass, 'lclscreenheight', 'I');
+        Result := GetLongField( javaActivityObject, javaField_lclscreenheight);
+        if Result = 0 then Result := 100;
       end;
-    SM_CMONITORS:
-      Result := 1;
-    SM_CMOUSEBUTTONS:
+      SM_CXSIZE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXSIZE           ');
+        end;
+      SM_CYSIZE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSIZE           ');
+        end;
+  {    SM_CXSIZEFRAME,
+      SM_CYSIZEFRAME:
+        begin
+          Result := QStyle_pixelMetric(QApplication_style(), QStylePM_MDIFrameWidth, nil, nil);
+        end;}
+      SM_CXSMICON,
+      SM_CYSMICON:
+        begin
+          Result := 16
+        end;
+      SM_CXSMSIZE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXSMSIZE         ');
+        end;
+      SM_CYSMSIZE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSMSIZE         ');
+        end;
+      SM_CXVIRTUALSCREEN:
       begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CMOUSEBUTTONS    ');
+        javaField_lclscreenwidth:= GetFieldID( javaActivityClass, 'lclscreenwidth', 'I');
+        Result := GetLongField( javaActivityObject, javaField_lclscreenwidth);
       end;
-{    SM_CXBORDER, SM_CYBORDER:
+      SM_CYVIRTUALSCREEN:
       begin
-        // size of frame around controls
-        Result := QStyle_pixelMetric(QApplication_style(),
-                    QStylePM_DefaultFrameWidth, nil, nil);
+        javaField_lclscreenwidth:= GetFieldID( javaActivityClass, 'lclscreenheight', 'I');
+        Result := GetLongField( javaActivityObject, javaField_lclscreenheight);
+      end;
+      SM_CXVSCROLL,
+      SM_CYVSCROLL,
+      SM_CXHSCROLL,
+  {    SM_CYHSCROLL:
+      begin
+        Result := QStyle_pixelMetric(QApplication_Style, QStylePM_ScrollBarExtent, nil, nil);
+      end;
+      SM_CYCAPTION:
+      begin
+        Result := QStyle_pixelMetric(QApplication_Style, QStylePM_TitleBarHeight, nil, nil);
       end;}
-    SM_CXCURSOR:
-      begin
-        Result := 32; // recomended in docs
-      end;
-    SM_CYCURSOR:
-      begin
-        Result := 32; // recomended in docs
-      end;
-    SM_CXDOUBLECLK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXDOUBLECLK      ');
-      end;
-    SM_CYDOUBLECLK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYDOUBLECLK      ');
-      end;
-    SM_CXDRAG:
-      begin
-        Result := 2;
-      end;
-    SM_CYDRAG:
-      begin
-        Result := 2;
-      end;
-    SM_CXEDGE:
-      begin
-        Result := 2;
-      end;
-    SM_CYEDGE:
-      begin
-        Result := 2;
-      end;
-    SM_CXFIXEDFRAME:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXFIXEDFRAME     ');
-      end;
-    SM_CYFIXEDFRAME:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYFIXEDFRAME     ');
-      end;
-    SM_CXFULLSCREEN:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXFULLSCREEN     ');
-      end;
-    SM_CYFULLSCREEN:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYFULLSCREEN     ');
-      end;
-    SM_CXHTHUMB:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXHTHUMB         ');
-      end;
-    SM_CXICON,
-    SM_CYICON:
-      begin
-        Result := 32;
-      end;
-    SM_CXICONSPACING:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXICONSPACING    ');
-      end;
-    SM_CYICONSPACING:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYICONSPACING    ');
-      end;
-    SM_CXMAXIMIZED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMAXIMIZED      ');
-      end;
-    SM_CYMAXIMIZED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMAXIMIZED      ');
-      end;
-    SM_CXMAXTRACK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMAXTRACK       ');
-      end;
-    SM_CYMAXTRACK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMAXTRACK       ');
-      end;
-    SM_CXMENUCHECK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMENUCHECK      ');
-      end;
-    SM_CYMENUCHECK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMENUCHECK      ');
-      end;
-{    SM_CXMENUSIZE:
-      begin
-        Result := QStyle_pixelMetric(QApplication_style(), QStylePM_IndicatorWidth, nil, nil);
-      end;
-    SM_CYMENUSIZE:
-      begin
-        Result := QStyle_pixelMetric(QApplication_style(), QStylePM_IndicatorHeight, nil, nil);
-      end;}
-    SM_CXMIN:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMIN            ');
-      end;
-    SM_CYMIN:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMIN            ');
-      end;
-    SM_CXMINIMIZED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINIMIZED      ');
-      end;
-    SM_CYMINIMIZED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINIMIZED      ');
-      end;
-    SM_CXMINSPACING:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINSPACING     ');
-      end;
-    SM_CYMINSPACING:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINSPACING     ');
-      end;
-    SM_CXMINTRACK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXMINTRACK       ');
-      end;
-    SM_CYMINTRACK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMINTRACK       ');
-      end;
-    SM_CXSCREEN:
-    begin
-      Result := 100; // avoid errors if this is called too early
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenwidth));
-      if Result = 0 then Result := 100;
+      SM_CYKANJIWINDOW:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYKANJIWINDOW    ');
+        end;
+      SM_CYMENU:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMENU           ');
+        end;
+      SM_CYSMCAPTION:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSMCAPTION      ');
+        end;
+      SM_CYVTHUMB:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYVTHUMB         ');
+        end;
+      SM_DBCSENABLED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_DBCSENABLED      ');
+        end;
+      SM_DEBUG:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_DEBUG            ');
+        end;
+      SM_MENUDROPALIGNMENT:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MENUDROPALIGNMENT');
+        end;
+      SM_MIDEASTENABLED:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MIDEASTENABLED   ');
+        end;
+      SM_MOUSEPRESENT:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MOUSEPRESENT     ');
+        end;
+      SM_MOUSEWHEELPRESENT:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MOUSEWHEELPRESENT');
+        end;
+      SM_NETWORK:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_NETWORK          ');
+        end;
+      SM_PENWINDOWS:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_PENWINDOWS       ');
+        end;
+      SM_SECURE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SECURE           ');
+        end;
+      SM_SHOWSOUNDS:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SHOWSOUNDS       ');
+        end;
+      SM_SLOWMACHINE:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SLOWMACHINE      ');
+        end;
+      SM_SWAPBUTTON:
+        begin
+          //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SWAPBUTTON       ');
+        end;
     end;
-    SM_CYSCREEN:
-    begin
-      Result := 100; // avoid errors if this is called too early
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenheight));
-      if Result = 0 then Result := 100;
-    end;
-    SM_CXSIZE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXSIZE           ');
-      end;
-    SM_CYSIZE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSIZE           ');
-      end;
-{    SM_CXSIZEFRAME,
-    SM_CYSIZEFRAME:
-      begin
-        Result := QStyle_pixelMetric(QApplication_style(), QStylePM_MDIFrameWidth, nil, nil);
-      end;}
-    SM_CXSMICON,
-    SM_CYSMICON:
-      begin
-        Result := 16
-      end;
-    SM_CXSMSIZE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CXSMSIZE         ');
-      end;
-    SM_CYSMSIZE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSMSIZE         ');
-      end;
-    SM_CXVIRTUALSCREEN:
-    begin
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenwidth));
-    end;
-    SM_CYVIRTUALSCREEN:
-    begin
-      if javaEnvRef = nil then Exit;
-      Result := javaEnvRef^^.GetLongField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclscreenheight));
-    end;
-    SM_CXVSCROLL,
-    SM_CYVSCROLL,
-    SM_CXHSCROLL,
-{    SM_CYHSCROLL:
-    begin
-      Result := QStyle_pixelMetric(QApplication_Style, QStylePM_ScrollBarExtent, nil, nil);
-    end;
-    SM_CYCAPTION:
-    begin
-      Result := QStyle_pixelMetric(QApplication_Style, QStylePM_TitleBarHeight, nil, nil);
-    end;}
-    SM_CYKANJIWINDOW:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYKANJIWINDOW    ');
-      end;
-    SM_CYMENU:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYMENU           ');
-      end;
-    SM_CYSMCAPTION:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYSMCAPTION      ');
-      end;
-    SM_CYVTHUMB:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_CYVTHUMB         ');
-      end;
-    SM_DBCSENABLED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_DBCSENABLED      ');
-      end;
-    SM_DEBUG:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_DEBUG            ');
-      end;
-    SM_MENUDROPALIGNMENT:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MENUDROPALIGNMENT');
-      end;
-    SM_MIDEASTENABLED:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MIDEASTENABLED   ');
-      end;
-    SM_MOUSEPRESENT:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MOUSEPRESENT     ');
-      end;
-    SM_MOUSEWHEELPRESENT:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_MOUSEWHEELPRESENT');
-      end;
-    SM_NETWORK:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_NETWORK          ');
-      end;
-    SM_PENWINDOWS:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_PENWINDOWS       ');
-      end;
-    SM_SECURE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SECURE           ');
-      end;
-    SM_SHOWSOUNDS:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SHOWSOUNDS       ');
-      end;
-    SM_SLOWMACHINE:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SLOWMACHINE      ');
-      end;
-    SM_SWAPBUTTON:
-      begin
-        //DebugLn('Trace:TODO: [TQtWidgetSet.GetSystemMetrics] --> SM_SWAPBUTTON       ');
-      end;
   end;
   {$ifdef VerboseCDWinAPI}
     DebugLn(':<[TCDWidgetSet.GetSystemMetrics] Result=' + dbghex(Result));
@@ -3886,6 +3917,12 @@ var
   lFontSize: Integer;
   lJavaString: jstring;
   lIsCopy: jboolean;
+  JavaField_lcltext: JfieldID=nil;
+  javaField_lcltextsize: JfieldID=nil;
+  javaField_lclmaxwidth: JfieldID=nil;
+  javaField_lclmaxcount: JfieldID=nil;
+  javaField_lclpartialwidths: JfieldID=nil;
+  javaMethod_LCLDoGetTextPartialWidths: jmethodid = nil;
 begin
   {$ifdef VerboseCDText}
     DebugLn(Format('[WinAPI GetTextExtentExPoint] DC=%x javaEnvRef=%x Str=%s MaxWidth=%d',
@@ -3903,19 +3940,27 @@ begin
   if (LazDC.Font = nil) or (LazDC.Font.Size = 0) then lFontSize := DefaultFontAndroidSize
   else lFontSize := LazDC.Font.Size;
 
-  if (javaEnvRef = nil) then Exit;
+  with javaVMRef.Env do
+  begin
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    javaField_lcltextsize:= GetFieldID( javaActivityClass,   'lcltextsize', 'I');
+    javaField_lclmaxwidth:= GetFieldID( javaActivityClass,   'lclmaxwidth', 'I');
+    javaField_lclmaxcount:= GetFieldID( javaActivityClass,   'lclmaxcount', 'I');
+    javaField_lclpartialwidths:= GetFieldID( javaActivityClass,   'lclpartialwidths', '[F');
+
+    javaMethod_LCLDoGetTextPartialWidths:= GetMethodID( javaActivityClass, 'LCLDoGetTextPartialWidths', '()V');
 
   // Prepare the input
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(lTextStr));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject,GetJavaIDVariableinArray( javaField_lcltextsize), lFontSize);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmaxwidth), MaxWidth);
-
+    lJavaString :=NewStringUTF(PChar(lTextStr));
+    SetObjectField(javaActivityObject, JavaField_lcltext, lJavaString);
+    SetIntField(javaActivityObject,javaField_lcltextsize, lFontSize);
+    SetIntField(javaActivityObject, javaField_lclmaxwidth, MaxWidth);
+   // ReleaseStringUTFChars(lJavaString,PChar(lTextStr));
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextPartialWidths));
+  CallVoidMethod( javaActivityObject, javaMethod_LCLDoGetTextPartialWidths);
 
   // Read the output
-  lMaxCount := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmaxcount));
+  lMaxCount := GetIntField( javaActivityObject, javaField_lclmaxcount);
   {$ifdef VerboseCDText}
   DebugLn(Format(':[WinAPI GetTextExtentExPoint] MaxCount=%d', [lMaxCount]));
   {$endif}
@@ -3926,9 +3971,9 @@ begin
   begin
     lIsCopy := 0;
     // Get the object field, returns JObject (because Array is instance of Object)
-    arraydata_obj := javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclpartialwidths));
+    arraydata_obj := GetObjectField( javaActivityObject, javaField_lclpartialwidths);
     // Get the elements (you probably have to fetch the length of the array as well
-    arraydata := javaEnvRef^^.GetFloatArrayElements(javaEnvRef, arraydata_obj, lIsCopy);
+    arraydata := GetFloatArrayElements( arraydata_obj, lIsCopy);
 
     for i := 0 to lMaxCount-1 do
     begin
@@ -3940,7 +3985,8 @@ begin
     end;
 
     // Don't forget to release it
-    javaEnvRef^^.ReleaseFloatArrayElements(javaEnvRef, arraydata_obj, arraydata, 0);
+    ReleaseFloatArrayElements( arraydata_obj, arraydata, 0);
+  end;
   end;
 
   // Now calculate the general size
@@ -3958,6 +4004,11 @@ var
   lJavaString: jstring;
   LazDC: TLazCanvas;
   lFontSize: Integer;
+  JavaField_lcltext: JfieldID=nil;
+  javaField_lcltextsize: JfieldID=nil;
+  javaField_lclwidth: JfieldID=nil;
+  javaField_lclheight: JfieldID=nil;
+  javaMethod_LCLDoGetTextBounds: jmethodid = nil;
 begin
   {$ifdef VerboseCDText}
     DebugLn(Format('[WinAPI GetTextExtentPoint] DC=%x javaEnvRef=%x', [DC, PtrInt(javaEnvRef)]));
@@ -3971,23 +4022,33 @@ begin
   if (LazDC.Font = nil) or (LazDC.Font.Size = 0) then lFontSize := DefaultFontAndroidSize
   else lFontSize := LazDC.Font.Size;
 
-  if (javaEnvRef = nil) then Exit;
 
-  // Prepare the input
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, Str);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
+  with javaVMRef.Env do
+  begin
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    javaField_lcltextsize:= GetFieldID( javaActivityClass,   'lcltextsize', 'I');
+    javaField_lclwidth:= GetFieldID( javaActivityClass,   'lclwidth', 'I');
+    javaField_lclheight:= GetFieldID( javaActivityClass,  'lclheight', 'I');
 
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
+    javaMethod_LCLDoGetTextBounds:= GetMethodID( javaActivityClass, 'LCLDoGetTextBounds', '()V');
+    // Prepare the input
+    lJavaString :=NewStringUTF( Str);
+    SetObjectField(javaActivityObject, JavaField_lcltext, lJavaString);
+    SetIntField(javaActivityObject, javaField_lcltextsize, lFontSize);
+  //  ReleaseStringUTFChars(lJavaString,str);
 
-  // Read the output
-  Size.cx := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
-  Size.cy := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
+    // Call the method
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoGetTextBounds);
 
-  {$ifdef VerboseCDText}
-    DebugLn(Format('[WinAPI GetTextExtentPoint] Size=%d, %d', [Size.cx, Size.cy]));
-  {$endif}
+    // Read the output
+    Size.cx := GetIntField( javaActivityObject, javaField_lclwidth);
+    Size.cy := GetIntField( javaActivityObject, javaField_lclheight);
+  end;
+
+    {$ifdef VerboseCDText}
+      DebugLn(Format('[WinAPI GetTextExtentPoint] Size=%d, %d', [Size.cx, Size.cy]));
+    {$endif}
+
 
   Result := True;
 end;
@@ -4004,6 +4065,14 @@ var
   lJavaString: jstring;
   LazDC: TLazCanvas;
   lFontSize: Integer;
+  JavaField_lcltext: JfieldID=nil;
+  javaField_lcltextsize: JfieldID=nil;
+  javaField_lclwidth: JfieldID=nil;
+  javaField_lclheight: JfieldID=nil;
+  javaField_lcltextascent: JfieldID=nil;
+  javaField_lcltextdescent: JfieldID=nil;
+  javaField_lcltextleading: JfieldID=nil;
+  javaMethod_LCLDoGetTextBounds: jmethodid = nil;
 begin
   {$ifdef VerboseCDText}
     DebugLn(Format('[WinAPI GetTextMetrics] DC=%x javaEnvRef=%x', [DC, PtrInt(javaEnvRef)]));
@@ -4017,34 +4086,47 @@ begin
   if (LazDC.Font = nil) or (LazDC.Font.Size = 0) then lFontSize := DefaultFontAndroidSize
   else lFontSize := LazDC.Font.Size;
 
-  if (javaEnvRef = nil) then Exit;
+  with javaVMRef.Env do
+  begin
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    javaField_lcltextsize:= GetFieldID( javaActivityClass,   'lcltextsize', 'I');
+    javaField_lclwidth:= GetFieldID( javaActivityClass,   'lclwidth', 'I');
+    javaField_lclheight:= GetFieldID( javaActivityClass,  'lclheight', 'I');
 
-  // Prepare the input for getting the average width of a char
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar('x'));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
+    javaField_lcltextascent:= GetFieldID( javaActivityClass,   'lcltextascent', 'I');
+    javaField_lcltextdescent:= GetFieldID( javaActivityClass,   'lcltextdescent', 'I');
+    javaField_lcltextleading:= GetFieldID( javaActivityClass,  'lcltextleading', 'I');
 
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
+    javaMethod_LCLDoGetTextBounds:= GetMethodID( javaActivityClass, 'LCLDoGetTextBounds', '()V');
+    // Prepare the input for getting the average width of a char
+    lJavaString :=NewStringUTF( PChar('x'));
+    SetObjectField( javaActivityObject, JavaField_lcltext, lJavaString);
+    SetIntField( javaActivityObject, javaField_lcltextsize, lFontSize);
+  //  ReleaseStringUTFChars(lJavaString,PChar('x'));
 
-  lAverageCharWidth := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclwidth));
+    // Call the method
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoGetTextBounds);
 
-  // Prepare the input for getting the max height of a text and other metrics
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar('Íg'));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextsize), lFontSize);
+    lAverageCharWidth := GetIntField( javaActivityObject, javaField_lclwidth);
 
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoGetTextBounds));
+    // Prepare the input for getting the max height of a text and other metrics
+    lJavaString :=NewStringUTF( PChar('Íg'));
+    SetObjectField( javaActivityObject, JavaField_lcltext, lJavaString);
+    SetIntField( javaActivityObject, javaField_lcltextsize, lFontSize);
+  //  ReleaseStringUTFChars(lJavaString,PChar('Íg'));
 
-  // Read the output
-  TM.tmHeight := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclheight));
-  TM.tmAscent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextascent));
-  TM.tmDescent := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextdescent));
-  TM.tmInternalLeading := 0;
-  TM.tmExternalLeading := javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltextleading));
-  TM.tmAveCharWidth := lAverageCharWidth;
-  TM.tmMaxCharWidth := TM.tmAveCharWidth; // Just a not very good guess for now
+    // Call the method
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoGetTextBounds);
+
+    // Read the output
+    TM.tmHeight := GetIntField(javaActivityObject, javaField_lclheight);
+    TM.tmAscent := GetIntField(javaActivityObject, javaField_lcltextascent);
+    TM.tmDescent := GetIntField(javaActivityObject, javaField_lcltextdescent);
+    TM.tmInternalLeading := 0;
+    TM.tmExternalLeading := GetIntField( javaActivityObject, javaField_lcltextleading);
+    TM.tmAveCharWidth := lAverageCharWidth;
+    TM.tmMaxCharWidth := TM.tmAveCharWidth; // Just a not very good guess for now
+  end;
 {    FontWeight := QtDC.font.getWeight;
     case FontWeight of
       25: TM.tmWeight := FW_LIGHT;
@@ -4656,6 +4738,18 @@ function TCDWidgetSet.MessageBox(hWnd: HWND; lpText, lpCaption: PChar; uType: Ca
 var
   lJavaString: jstring;
   BtnText: string;
+  JavaField_lcltext: JfieldID=nil;
+  JavaField_lcltitle: JfieldID=nil;
+  javaField_lcltextsize: JfieldID=nil;
+  javaField_lclwidth: JfieldID=nil;
+  javaField_lclheight: JfieldID=nil;
+  JavaField_lclbutton1: JfieldID=nil;
+  JavaField_lclbutton2: JfieldID=nil;
+  JavaField_lclbutton3: JfieldID=nil;
+  JavaField_lclbutton1str: JfieldID=nil;
+  JavaField_lclbutton2str: JfieldID=nil;
+  JavaField_lclbutton3str: JfieldID=nil;
+  javaMethod_LCLDoShowMessageBox: jmethodid = nil;
 begin
   {$ifdef VerboseCDWinAPI}
     DebugLn(Format('[TCDWidgetSet.MessageBox] HWND=%x javaEnvRef=%x lpText=%s lpCaption=%s uType=%d',
@@ -4663,108 +4757,134 @@ begin
   {$endif}
 
   Result := 0; // The real result goes to Application.OnMessageDialogExecute
+  with javaVMRef.Env do
+  begin
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    JavaField_lcltitle:= GetFieldID( javaActivityClass,   'lcltitle', 'Ljava/lang/String;');
+    JavaField_lclbutton1:= GetFieldID( javaActivityClass,   'lclbutton1', 'I');
+    JavaField_lclbutton2:= GetFieldID( javaActivityClass,  'lclbutton2', 'I');
+    JavaField_lclbutton3:= GetFieldID( javaActivityClass,  'lclbutton3', 'I');
+    JavaField_lclbutton1str:= GetFieldID( javaActivityClass,   'lclbutton1str', 'Ljava/lang/String;');
+    JavaField_lclbutton2str:= GetFieldID( javaActivityClass, 'lclbutton2str', 'Ljava/lang/String;');
+    JavaField_lclbutton3str:= GetFieldID( javaActivityClass,  'lclbutton3str', 'Ljava/lang/String;');
+    javaMethod_LCLDoShowMessageBox:= GetMethodID( javaActivityClass, 'LCLDoShowMessageBox', '()V');
 
-  if (javaEnvRef = nil) then Exit;
+    // Prepare the input
+    // String fields
+    lJavaString :=NewStringUTF( lpText);
+    SetObjectField( javaActivityObject, JavaField_lcltext, lJavaString);
+   // ReleaseStringUTFChars(lJavaString, lpText);
 
-  // Prepare the input
-  // String fields
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, lpText);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, lpCaption);
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltitle), lJavaString);
+    lJavaString :=NewStringUTF( lpCaption);
+    SetObjectField( javaActivityObject, JavaField_lcltitle, lJavaString);
+   // ReleaseStringUTFChars(lJavaString,lpCaption);
 
-  // Add all buttons
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), -1);
-  case utype of
-    MB_OK:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbYes);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDOK);
+    // Add all buttons
+    SetIntField( javaActivityObject, JavaField_lclbutton1, -1);
+    SetIntField(javaActivityObject, JavaField_lclbutton2, -1);
+    SetIntField( javaActivityObject, JavaField_lclbutton3, -1);
+    case utype of
+      MB_OK:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbYes);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+       // ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDOK);
+      end;
+      MB_OKCANCEL:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbYes);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDOK);
+        // button2
+        BtnText := RemoveAccelChars(rsMbCancel);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton2, IDCANCEL);
+      end;
+      MB_ABORTRETRYIGNORE:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbAbort);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDABORT);
+        // button2
+        BtnText := RemoveAccelChars(rsMbRetry);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton2, IDRETRY);
+        // button3
+        BtnText := RemoveAccelChars(rsMbIgnore);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton3str, lJavaString);
+     //   ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton3, IDIGNORE);
+      end;
+      MB_YESNOCANCEL:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbYes);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDYES);
+        // button2
+        BtnText := RemoveAccelChars(rsMbNo);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton2, IDNO);
+        // button3
+        BtnText := RemoveAccelChars(rsMbCancel);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton3str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton3, IDCANCEL);
+      end;
+      MB_YESNO:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbYes);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+       // ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDYES);
+        // button2
+        BtnText := RemoveAccelChars(rsMbNo);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton2, IDNO);
+      end;
+      MB_RETRYCANCEL:
+      begin
+        // button1
+        BtnText := RemoveAccelChars(rsMbRetry);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+      //  ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton1, IDRETRY);
+        // button2
+        BtnText := RemoveAccelChars(rsMbCancel);
+        lJavaString :=NewStringUTF( PChar(BtnText));
+        SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+     //   ReleaseStringUTFChars(lJavaString, PChar(BtnText));
+        SetIntField( javaActivityObject, JavaField_lclbutton2, IDCANCEL);
+      end;
     end;
-    MB_OKCANCEL:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbYes);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDOK);
-      // button2
-      BtnText := RemoveAccelChars(rsMbCancel);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDCANCEL);
-    end;
-    MB_ABORTRETRYIGNORE:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbAbort);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDABORT);
-      // button2
-      BtnText := RemoveAccelChars(rsMbRetry);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDRETRY);
-      // button3
-      BtnText := RemoveAccelChars(rsMbIgnore);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), IDIGNORE);
-    end;
-    MB_YESNOCANCEL:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbYes);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDYES);
-      // button2
-      BtnText := RemoveAccelChars(rsMbNo);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDNO);
-      // button3
-      BtnText := RemoveAccelChars(rsMbCancel);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), IDCANCEL);
-    end;
-    MB_YESNO:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbYes);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDYES);
-      // button2
-      BtnText := RemoveAccelChars(rsMbNo);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDNO);
-    end;
-    MB_RETRYCANCEL:
-    begin
-      // button1
-      BtnText := RemoveAccelChars(rsMbRetry);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), IDRETRY);
-      // button2
-      BtnText := RemoveAccelChars(rsMbCancel);
-      lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-      javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-      javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), IDCANCEL);
-    end;
-  end;
 
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowMessageBox));
+  CallVoidMethod( javaActivityObject, javaMethod_LCLDoShowMessageBox);
+  end;
 end;
 
 (*{------------------------------------------------------------------------------

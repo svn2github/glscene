@@ -387,7 +387,7 @@ begin
   begin
      {$IFDEF ANDROID}
      //Сначала загружаем библиотеку через Java, потом загружаем нативно!
-     if CDWidgetset.Loadlibrary(libz) then
+     if CDWidgetset.JavaLoadlib(libz) then
      begin
      {$ENDIF}
          Closezlib;

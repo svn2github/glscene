@@ -35,7 +35,7 @@ uses
   {$ifdef CD_Cocoa}MacOSAll, CocoaAll, CocoaPrivate, CocoaGDIObjects,{$endif}
   {$ifdef CD_X11}X, XLib, XUtil, BaseUnix, customdrawn_x11proc,{$ifdef CD_UseNativeText}xft, fontconfig,{$endif}{$endif}
   {$ifdef CD_Android}
-  customdrawn_androidproc, jni, bitmap, log, keycodes,
+  customdrawn_androidproc, jni,jnithread, bitmap, log, keycodes,
   {$endif}
   {$ifdef WinCE}aygshell,{$endif}
   // Widgetset
@@ -177,16 +177,17 @@ type
     procedure AndroidDebugLn(AStr: string);
     {$ENDIF}
 
+    procedure AttachCurrentThread;
+    procedure DetachCurrentThread;
+
     procedure LCLDoInvalidate();
     procedure LCLDoCreateHolder();
     procedure LCLDoDestroyHolder();
     procedure LCLDoRecreateHolder();
     function LCLisHolderCreated():boolean;
     procedure SetTitleBar(aStr: string);
-    function Loadlibrary(aLib: string) : boolean;
+    function JavaLoadlib(aLib: string) : boolean;
 
-    function NewGlobalRef(aObject: Pointer): Pointer;
-    procedure DeleteGlobalRef(aObject: Pointer);
 
     procedure GeteglVersion;
     procedure GetPlatformInfo;
@@ -338,121 +339,11 @@ procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged(); cdecl;
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 
-type
-  javavariablesid = (
-    javaField_lcltext,
-    javaField_lcltitle,
-    javaField_lclbutton1str,
-    javaField_lclbutton2str,
-    javaField_lclbutton3str,
-    // Integers
-    javaField_lclwidth,
-    javaField_lclheight,
-    javaField_lclbutton1,
-    javaField_lclbutton2,
-    javaField_lclbutton3,
-    javaField_lclbitmap,
-    javaField_lcltextsize,
-    // Text metrics
-    javaField_lcltextascent,
-    javaField_lcltextbottom,
-    javaField_lcltextdescent,
-    javaField_lcltextleading,
-    javaField_lcltexttop,
-    javaField_lclmaxwidth,
-    javaField_lclmaxcount,
-    javaField_lclpartialwidths,
-    // Timer
-    javaField_lcltimerinterval,
-    javaField_lcltimerid,
-    // Screen Metrics
-    javaField_lclxdpi,
-    javaField_lclydpi,
-    javaField_lclformwidth,
-    javaField_lclformheight,
-    javaField_lclscreenwidth,
-    javaField_lclscreenheight,
-    // For LazDeviceAPIs
-    javaField_lcldestination,
-    javaField_lclkind,
-
-    // Methods of our Activity
-    javaMethod_LCLDoGetTextBounds,
-    javaMethod_LCLDoGetTextPartialWidths,
-    javaMethod_LCLDoDrawText,
-    javaMethod_LCLDoShowMessageBox,
-    javaMethod_LCLDoCreateTimer,
-    javaMethod_LCLDoDestroyTimer,
-    javaMethod_LCLDoHideVirtualKeyboard,
-    javaMethod_LCLDoShowVirtualKeyboard,
-    javaMethod_LCLDoStartReadingAccelerometer,
-    javaMethod_LCLDoStopReadingAccelerometer,
-    //  javaMethod_LCLDoSendMessage: jmethodid = nil;
-    //  javaMethod_LCLDoRequestPositionInfo: jmethodid = nil;
-
-    // Methods of OpenGL
-    javaMethod_LCLDoCreateContext,
-    javaMethod_LCLDoDestroyContext,
-    javaMethod_LCLDoCreateSurface,
-    javaMethod_LCLDoDestroySurface,
-    javaMethod_LCLDoPurgeBuffers,
-    javaMethod_LCLDoClearBuffers,
-    javaMethod_LCLDoSwapBuffers,
-    javaMethod_LCLeglGetError,
-    javaField_mEGLContextClientVersion,
-    javaMethod_SetFullScreen,
-    javaMethod_SetScreenOrientation,
-    javaMethod_LCLLoadLibrary,
-
-    javaMethod_LCLGetConfigs,
-    javaMethod_LCLGetFixedAttribute,
-    javaMethod_LCLAddIAttrib,
-    javaMethod_LCLChooseConfig,
-
-    javaMethod_LCLDoInvalidate,
-    javaMethod_LCLDoCreateHolder,
-    javaMethod_LCLDoDestroyHolder,
-    javaMethod_LCLDoRecreateHolder,
-    javaMethod_LCLisHolderCreated,
-
-    javaMethod_LCLSetTitleBar,
-
-
-    javaField_lclplatformversion,
-    javaField_lclplatformapi,
-    javaField_lclplatformdevice,
-
-    javaField_lclmajorversion,
-    javaField_lclminorversion);
-
-  //Работа с потоком
-  //Прикепляем текущий поток к JNI и ...
-  function AttachCurrentThread: Pointer;
-  procedure DetachCurrentThread(EnvRef: pointer);
-
-  //Заполняем указатели в массиве IDшками на переменные в Java
-  function FillArrayJavaIDPointers(EnvID: pointer):jint;
-  function GetJavaIDVariableinArray(id: javavariablesid): Pointer;
-  function GetEnvIDForCurrentThread(): integer;
-  procedure AddMethodID(EnvID: integer;id: javavariablesid; method,vartype: PChar);
-  procedure AddFieldID(EnvID: integer;id: javavariablesid; field,vartype: PChar);
-
-  function javaEnvRef():PJNIEnv;      //GetCurrentThreadEnv
-  //function SetFieldID(field:integer):Pointer;
-  //function SetMetodID(field:integer):Pointer;
-type
-  TEnvRefStructureLayerThread = record
-    EnvID: pointer;
-    ThreadID: integer;
-    variablesid: array of pointer;
-  end;
 
 var
-  fArrayEnvRefLayerThread: array of TEnvRefStructureLayerThread;
-  IdCurrentEnvInArray: integer;
-  javaVMRef: PJavaVM=nil;
+  javaVMRef: TThreadJavaVM;
  // javaEnvRef: PJNIEnv=nil;
-  defaultjavaEnvRef: PJNIEnv=nil;
+  javaEnv: TJNIEnv;
   javaActivityClass: JClass = nil;
   javaActivityObject: jobject = nil;
 

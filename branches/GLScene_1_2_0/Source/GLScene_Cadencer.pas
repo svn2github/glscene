@@ -371,13 +371,10 @@ end;
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
-{$IFDEF Android}
-  fjavaEnvRef : pointer;
- {$ENDIF}
 begin
 
   {$IFDEF Android}
-  fjavaEnvRef := AttachCurrentThread;
+  CDWidgetSet.AttachCurrentThread;
   {$ENDIF}
 
   QueryPerformanceFrequency(perfFreq);
@@ -416,7 +413,7 @@ begin
     end;
   end;
   {$IFDEF Android}
-  DetachCurrentThread(fjavaEnvRef);
+  CDWidgetSet.DetachCurrentThread;
   {$ENDIF}
 end;
 {$ENDIF}

@@ -100,13 +100,16 @@ begin
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'LCLOnCreate called by LCLActivity.onCreate');
   Result := 0;
 
+  with javaVMRef.Env do
+  begin
   //Кэшируем указатель на класс Activity что бы можно было его
   //использовать в паралельном потоке
   //http://stackoverflow.com/questions/6838397/how-do-i-load-my-own-java-class-in-c-on-android
   if javaActivityObject<>nil then
-  javaEnvRef^^.DeleteGlobalRef(javaEnvRef,javaActivityObject);
+  DeleteGlobalRef(javaActivityObject);
   javaActivityObject := alclactivity;
-  javaEnvRef^^.NewGlobalRef(javaEnvRef, javaActivityObject);
+  NewGlobalRef(javaActivityObject);
+  end;
 
   Screen.UpdateScreen(); // Any values read before LCLOnCreate are wrong
   // Update the font size
@@ -284,13 +287,13 @@ var
   lUnixTimeStamp: Int64;
 begin
   Result := 0;
-
-  if (javaEnvRef = nil) then Exit;
+  with javaVMRef.Env do
+  begin
 
   // Get the elements and length
   lIsCopy := 0;
-  arraylen := javaEnvRef^^.GetArrayLength(javaEnvRef, AValues);
-  arraydata := javaEnvRef^^.GetDoubleArrayElements(javaEnvRef, AValues, lIsCopy);
+  arraylen := GetArrayLength( AValues);
+  arraydata := GetDoubleArrayElements(AValues, lIsCopy);
 
   // Send the data to the LCL
   case ASensorKind of
@@ -336,10 +339,11 @@ begin
   end;
 
   // Don't forget to release it
-  javaEnvRef^^.ReleaseDoubleArrayElements(javaEnvRef, AValues, arraydata, 0);
+  ReleaseDoubleArrayElements( AValues, arraydata, 0);
 
   // This sends messages like Invalidate requests
   Result := eventResult;
+  end;
 end;
 
 procedure Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceCreated(); cdecl;
@@ -400,15 +404,16 @@ const NativeMethods: array[0..10] of JNINativeMethod=
      fnPtr:@Java_com_pascal_lclproject_LCLActivity_LCLOnSurfaceChanged;)
   );
 
-function javaEnvRef():PJNIEnv; //{$IFDEF GLS_INLINE} inline; {$ENDIF}
+{function javaEnvRef():PJNIEnv; //{$IFDEF GLS_INLINE} inline; {$ENDIF}
 begin
  // DebugLn('GetCurrentThreadID='+ inttostr(GetCurrentThreadId));
      Result := fArrayEnvRefLayerThread[GetEnvIDForCurrentThread].EnvID;
-end;
+end;        }
 
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 begin
-  javaVMRef := vm;
+  javaVMRef:= TThreadJavaVM.Create(vm);
+  //javaVMRef := vm;
 
 
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad called');
@@ -420,24 +425,27 @@ begin
     vm^^.GetEnv crashes HTC Wildfire, Alcatel and the Emulator if you don't build your project with -CpARMV6
     see: http://groups.google.com/group/android-ndk/browse_thread/thread/ba542483f062a828/ef9077617794e0f5
   }
-  if vm^^.GetEnv(vm,@defaultjavaEnvRef,JNI_VERSION_1_4)<>JNI_OK then
+  if javaVMRef.GetEnv(javaEnv,JNI_VERSION_1_4)<>JNI_OK then
   begin
     __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'curVM^.GetEnv failed');
     Exit(JNI_ERR);
   end;
 
+ // javaVMRef.SetEnv(defaultjavaEnvRef);
+{
     //задаем длинну массива для текущего потока
   setlength(fArrayEnvRefLayerThread,1);
   //задаем длинну для переменных текущего потока
   setlength(fArrayEnvRefLayerThread[0].variablesid, Ord(High(javavariablesid)) + 1);
   fArrayEnvRefLayerThread[0].EnvID := defaultjavaEnvRef;
   fArrayEnvRefLayerThread[0].ThreadID := GetCurrentThreadId;
-  IdCurrentEnvInArray := -1;
-
+  IdCurrentEnvInArray := -1;    }
+  with javaEnv do
+  begin
   // Find our activity class
   __android_log_write(ANDROID_LOG_INFO,'lclapp','Reading our Activity Class');
 
-  javaActivityClass := javaEnvRef^^.NewGlobalRef(javaEnvRef,(javaEnvRef^^.FindClass(javaEnvRef,'com/pascal/lcltest/LCLActivity')));
+  javaActivityClass := NewGlobalRef((FindClass('com/pascal/lcltest/LCLActivity')));
 
   if not assigned(javaActivityClass) then
   begin
@@ -445,15 +453,15 @@ begin
     Exit(JNI_ERR);
   end;
   // Now other classes
-  javaAndroidAppActivityClass := javaEnvRef^^.FindClass(javaEnvRef,'android/app/Activity');
-  javaJavaLandSystemClass := javaEnvRef^^.FindClass(javaEnvRef,'java/lang/System');
-  javaAndroidOSBuildClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Build');
-  javaAndroidOSVibratorClass := javaEnvRef^^.FindClass(javaEnvRef,'android/os/Vibrator');
-  javaAndroidContentContextClass := javaEnvRef^^.FindClass(javaEnvRef,'android/content/Context');
+  javaAndroidAppActivityClass := FindClass('android/app/Activity');
+  javaJavaLandSystemClass := FindClass('java/lang/System');
+  javaAndroidOSBuildClass := FindClass('android/os/Build');
+  javaAndroidOSVibratorClass := FindClass('android/os/Vibrator');
+  javaAndroidContentContextClass := FindClass('android/content/Context');
 
 
   // Register Pascal exported calls
-  if javaEnvRef^^.RegisterNatives(javaEnvRef, javaActivityClass, @NativeMethods[0],length(NativeMethods))<0 then
+  if RegisterNatives(javaActivityClass, @NativeMethods[0],length(NativeMethods))<0 then
   begin
     __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'javaEnvRef^.RegisterNatives failed');
     // Exit(JNI_ERR); Don't exit if exporting the native method fails because it works without this too
@@ -463,14 +471,15 @@ begin
 //  javaMethod_LCLDoSendMessage := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoSendMessage', '()V');
 //  javaMethod_LCLDoRequestPositionInfo := javaEnvRef^^.GetMethodID(javaEnvRef, javaActivityClass, 'LCLDoRequestPositionInfo', '()V');
   // Methods from android.app.Activity
-  javaMethod_Activity_finish := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidAppActivityClass, 'finish', '()V');
+  javaMethod_Activity_finish := GetMethodID(javaAndroidAppActivityClass, 'finish', '()V');
   // Methods from java.lang.System
-  javaMethod_System_exit := javaEnvRef^^.GetStaticMethodID(javaEnvRef, javaJavaLandSystemClass, 'exit', '(I)V');
+  javaMethod_System_exit := GetStaticMethodID( javaJavaLandSystemClass, 'exit', '(I)V');
   // Generic methods from Context
-  javaMethod_getSystemService := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidContentContextClass, 'getSystemService', '(Ljava/lang/String;)Ljava/lang/Object;');
+  javaMethod_getSystemService := GetMethodID(javaAndroidContentContextClass, 'getSystemService', '(Ljava/lang/String;)Ljava/lang/Object;');
 
+  end;
 
-  FillArrayJavaIDPointers(javaEnvRef);
+//  FillArrayJavaIDPointers(javaEnvRef);
 
   __android_log_write(ANDROID_LOG_INFO, 'lclapp', 'JNI_OnLoad finished');
   result:=JNI_VERSION_1_4;// 1_6 is another option
@@ -478,413 +487,292 @@ end;
 
 procedure JNI_OnUnload(vm:PJavaVM;reserved:pointer); cdecl;
 begin
-  javaEnvRef^^.DeleteGlobalRef(javaEnvRef,javaActivityClass);
+  javaEnv.DeleteGlobalRef(javaActivityClass);
+  freeandnil(javaEnv);
+  freeandnil(javaVMRef);
 end;
 
-function FillArrayJavaIDPointers(EnvID: pointer):jint;
-var i:integer;
+procedure TCDWidgetSet.AttachCurrentThread();
 begin
-  i := GetEnvIDForCurrentThread;
-  // Read all field IDs
-  AddFieldID(i, JavaField_lcltext,'lcltext', 'Ljava/lang/String;');
-  AddFieldID(i, JavaField_lcltitle , 'lcltitle', 'Ljava/lang/String;');
-  AddFieldID(i, JavaField_lclbutton1str, 'lclbutton1str', 'Ljava/lang/String;');
-  AddFieldID(i, JavaField_lclbutton2str, 'lclbutton2str', 'Ljava/lang/String;');
-  AddFieldID(i, JavaField_lclbutton3str, 'lclbutton3str', 'Ljava/lang/String;');
-  //
-  AddFieldID(i, JavaField_lclwidth, 'lclwidth', 'I');
-  AddFieldID(i, JavaField_lclheight, 'lclheight', 'I');
-  AddFieldID(i, JavaField_lclbutton1, 'lclbutton1', 'I');
-  AddFieldID(i, JavaField_lclbutton2, 'lclbutton2', 'I');
-  AddFieldID(i, JavaField_lclbutton3, 'lclbutton3', 'I');
-  AddFieldID(i, JavaField_lclbitmap, 'lclbitmap', 'Landroid/graphics/Bitmap;');
-  AddFieldID(i, JavaField_lcltextsize, 'lcltextsize', 'I');
-  // Text metrics
-  AddFieldID(i,javaField_lcltextascent , 'lcltextascent', 'I');
-  AddFieldID(i,javaField_lcltextbottom , 'lcltextbottom', 'I');
-  AddFieldID(i,javaField_lcltextdescent , 'lcltextdescent', 'I');
-  AddFieldID(i,javaField_lcltextleading , 'lcltextleading', 'I');
-  AddFieldID(i,javaField_lcltexttop , 'lcltexttop', 'I');
-  AddFieldID(i,javaField_lclmaxwidth , 'lclmaxwidth', 'I');
-  AddFieldID(i,javaField_lclmaxcount , 'lclmaxcount', 'I');
-  AddFieldID(i,javaField_lclpartialwidths , 'lclpartialwidths', '[F');
-  // Timer
-  AddFieldID(i,javaField_lcltimerinterval , 'lcltimerinterval', 'I');
-  AddFieldID(i,javaField_lcltimerid , 'lcltimerid', 'Ljava/lang/Runnable;');
-  // Screen Metrics
-  AddFieldID(i,javaField_lclxdpi , 'lclxdpi', 'I');
-  AddFieldID(i,javaField_lclydpi , 'lclydpi', 'I');
-  AddFieldID(i,javaField_lclformwidth , 'lclformwidth', 'I');
-  AddFieldID(i,javaField_lclformheight , 'lclformheight', 'I');
-  AddFieldID(i, javaField_lclscreenwidth , 'lclscreenwidth', 'I');
-  AddFieldID(i,javaField_lclscreenheight , 'lclscreenheight', 'I');
-  // For LazDeviceAPIs
-  AddFieldID(i,javaField_lcldestination , 'lcldestination', 'Ljava/lang/String;');
-  AddFieldID(i,javaField_lclkind , 'lclkind', 'I');
-
-  //
-  if not assigned(GetJavaIDVariableinArray(JavaField_lcltext)) then
-  begin
-    __android_log_write(ANDROID_LOG_FATAL, 'lclapp', 'javaEnvRef^.GetFieldID failed for lcltext');
-    Exit(JNI_ERR);
-  end;
-
-  // Read all method IDs
-  AddMethodID(i, javaMethod_LCLDoGetTextBounds, 'LCLDoGetTextBounds', '()V');
-  AddMethodID(i, javaMethod_LCLDoGetTextPartialWidths , 'LCLDoGetTextPartialWidths', '()V');
-  AddMethodID(i, javaMethod_LCLDoDrawText , 'LCLDoDrawText', '(I)V');
-  AddMethodID(i, javaMethod_LCLDoShowMessageBox , 'LCLDoShowMessageBox', '()V');
-  AddMethodID(i, javaMethod_LCLDoCreateTimer , 'LCLDoCreateTimer', '()V');
-  AddMethodID(i, javaMethod_LCLDoDestroyTimer , 'LCLDoDestroyTimer', '()V');
-  //Отобразить/спрятать виртуальную клавиатуру
-  AddMethodID(i, javaMethod_LCLDoHideVirtualKeyboard , 'LCLDoHideVirtualKeyboard', '()V');
-  AddMethodID(i, javaMethod_LCLDoShowVirtualKeyboard , 'LCLDoShowVirtualKeyboard', '()V');
-  //работа с акселерометром, ненаю зачем нуно мб пригодится
-  AddMethodID(i, javaMethod_LCLDoStartReadingAccelerometer , 'LCLDoStartReadingAccelerometer', '()V');
-  AddMethodID(i, javaMethod_LCLDoStopReadingAccelerometer , 'LCLDoStopReadingAccelerometer', '()V');
-
-  //OpenGL
- // Methods of OpenGL
-  AddMethodID(i, javaMethod_LCLDoCreateContext, 'LCLDoCreateContext', '(Ljavax/microedition/khronos/egl/EGLConfig;Ljavax/microedition/khronos/egl/EGLContext;)Ljavax/microedition/khronos/egl/EGLContext;');
-  AddMethodID(i, javaMethod_LCLDoDestroyContext, 'LCLDoDestroyContext', '(Ljavax/microedition/khronos/egl/EGLContext;)I');
-
-  AddMethodID(i, javaMethod_LCLDoCreateSurface, 'LCLDoCreateSurface', '(Ljavax/microedition/khronos/egl/EGLConfig;)Ljavax/microedition/khronos/egl/EGLSurface;');
-  AddMethodID(i, javaMethod_LCLDoDestroySurface, 'LCLDoDestroySurface', '(Ljavax/microedition/khronos/egl/EGLSurface;)V');
-
-  AddMethodID(i, javaMethod_LCLDoPurgeBuffers, 'LCLDoPurgeBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;Ljavax/microedition/khronos/egl/EGLContext;)V');
-  AddMethodID(i, javaMethod_LCLDoClearBuffers, 'LCLDoClearBuffers', '()V');
-  AddMethodID(i, javaMethod_LCLDoSwapBuffers, 'LCLDoSwapBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;)Z');
-
-  AddMethodID(i, javaMethod_LCLeglGetError, 'LCLeglGetError', '()I');
-  AddFieldID(i, javafield_mEGLContextClientVersion, 'mEGLContextClientVersion', 'I');
-  AddMethodID(i, javaMethod_SetFullScreen, 'SetFullScreen', '(Z)V');
-  AddMethodID(i, javaMethod_SetScreenOrientation, 'SetScreenOrientation', '(I)Z');
-  AddMethodID(i, javaMethod_LCLLoadLibrary, 'LCLLoadLibrary', '(Ljava/lang/String;)Z');
-
-  AddMethodID(i, javaMethod_LCLGetConfigs, 'LCLGetConfigs', '()I');
-  AddMethodID(i, javaMethod_LCLGetFixedAttribute, 'LCLGetFixedAttribute', '(II)I');
-  AddMethodID(i, javaMethod_LCLAddIAttrib, 'LCLAddIAttrib', '(II)V');
-  AddMethodID(i, javaMethod_LCLChooseConfig, 'LCLChooseConfig', '()Ljavax/microedition/khronos/egl/EGLConfig;');
-
-  AddFieldID(i, javaField_lclmajorversion, 'lclmajorversion', 'I');
-  AddFieldID(i, javaField_lclminorversion, 'lclminorversion', 'I');
-
-  AddFieldID(i, javaField_lclplatformversion, 'lclplatformversion', 'Ljava/lang/String;');
-  AddFieldID(i, javaField_lclplatformapi, 'lclplatformapi', 'Ljava/lang/String;');
-  AddFieldID(i, javaField_lclplatformdevice, 'lclplatformdevice', 'Ljava/lang/String;');
-
-  AddMethodID(i, javaMethod_LCLDoInvalidate, 'LCLDoInvalidate', '()V');
-  AddMethodID(i, javaMethod_LCLDoCreateHolder, 'LCLDoCreateHolder', '()V');
-  AddMethodID(i, javaMethod_LCLDoDestroyHolder, 'LCLDoDestroyHolder', '()V');
-  AddMethodID(i, javaMethod_LCLDoRecreateHolder, 'LCLDoRecreateHolder', '()V');
-  AddMethodID(i, javaMethod_LCLisHolderCreated, 'LCLisHolderCreated', '()Z');
-  AddMethodID(i, javaMethod_LCLSetTitleBar, 'LCLSetTitleBar', '(Ljava/lang/String;)V');
+  javaVMRef.AttachCurrentThread(nil);
 end;
 
-function AttachCurrentThread: Pointer;
-var n: integer;
-    fjavaEnvRef: PJNIEnv;
+procedure TCDWidgetSet.DetachCurrentThread();
 begin
-  javaVMRef^^.AttachCurrentThread(javaVMRef,@fjavaEnvRef,nil) ;
-  n:=  length(fArrayEnvRefLayerThread);
-  setlength(fArrayEnvRefLayerThread, n+1 );
-  n:=  length(fArrayEnvRefLayerThread);
-   with fArrayEnvRefLayerThread[n-1] do
-     begin
-      EnvID:=fjavaEnvRef;
-      ThreadID := GetCurrentThreadId;
-      setlength(variablesid, Ord(High(javavariablesid)) + 1);
-     end;
-
-  FillArrayJavaIDPointers(fjavaEnvRef);
-  Result := fjavaEnvRef;
-end;
-
-procedure DetachCurrentThread(EnvRef: pointer);
-var i,j: integer;
-begin
-  j := GetEnvIDForCurrentThread;
-  //удаляем массив указателей к переменным в яве
-  Setlength(fArrayEnvRefLayerThread[j].variablesid, 0);
-  //удаляем запись структуры текущего потока со здвигом
-  for i:=j to length(fArrayEnvRefLayerThread)-1 do
-  if i+1< length(fArrayEnvRefLayerThread)-1 then
-    fArrayEnvRefLayerThread[i]:= fArrayEnvRefLayerThread[i+1];
-  Setlength(fArrayEnvRefLayerThread, length(fArrayEnvRefLayerThread)-1);
-
-  javaVMRef^^.DetachCurrentThread(javaVMRef) ;
-end;
-
-function GetJavaIDVariableinArray(id: javavariablesid): Pointer;
-var EnvID:integer;
-begin
-  EnvID := GetEnvIDForCurrentThread;
-  Result := fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]
-end;
-
-function GetEnvIDForCurrentThread(): integer;
-var i: integer;
-    ThrID:integer;
-begin
-  Result:=0;
-  ThrID := GetCurrentThreadId;
-  for i:=0 to length(fArrayEnvRefLayerThread)-1 do
-  if fArrayEnvRefLayerThread[i].ThreadID = ThrID then
-  begin
-     Result := i;
-     break;
-  end;
-end;
-
-procedure AddMethodID(EnvID: integer; id: javavariablesid; method, vartype: PChar);
-var
-  fjavaEnvRef: PJNIEnv=nil;
-begin
-  fjavaEnvRef :=  fArrayEnvRefLayerThread[EnvID].EnvID;
-  fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]:= fjavaEnvRef^^.GetMethodID(fjavaEnvRef, javaActivityClass, method, vartype);
-end;
-
-procedure AddFieldID(EnvID: integer;id: javavariablesid; field, vartype: PChar);
-var
-  fjavaEnvRef: PJNIEnv=nil;
-begin
-  fjavaEnvRef :=  fArrayEnvRefLayerThread[EnvID].EnvID;
-  fArrayEnvRefLayerThread[EnvID].variablesid[ORD(id)]:= fjavaEnvRef^^.GetFieldID(fjavaEnvRef, javaActivityClass, field, vartype);
+  javaVMRef.DetachCurrentThread;
 end;
 
 
 
 function TCDWidgetSet.CreateContext(aconfig : EGLConfig; shareRC: EGLContext):EGLContext;
 var
-  lParams: array[0..1] of JValue;
   context: EGLContext ;
 begin
-    // Call the method
-  lParams[0].l := aconfig;
-  lParams[1].l := shareRC;
-  context  := EGLContext(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateContext),@lParams[0]));
+  with javaVMRef.Env do
+  begin
+  context  := EGLContext(CallObjectMethodA(javaActivityObject,
+  javaActivityClass,
+  'LCLDoCreateContext',
+  '(Ljavax/microedition/khronos/egl/EGLConfig;Ljavax/microedition/khronos/egl/EGLContext;)Ljavax/microedition/khronos/egl/EGLContext;',
+  [aconfig,shareRC]));
    //Делаем указатель глобальным
    // JNI WARNING: 0x40522160 is not a valid JNI reference
    //http://java.sun.com/docs/books/jni/html/refs.html#27423
    //иначе ява его забудет
   result := NewGlobalRef(context);
+  end;
 end;
 
 function TCDWidgetSet.DestroyContext(aContext:EGLContext): EGLint;
-var
-  lParams: array[0..0] of JValue;
 begin
+  with javaVMRef.Env do
+  begin
     // Call the method
-  lParams[0].l := aContext;
-  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyContext),@lParams[0]));
+  result := EGLint(CallIntMethodA(javaActivityObject,
+                       javaActivityClass,
+                       'LCLDoDestroyContext',
+                       '(Ljavax/microedition/khronos/egl/EGLContext;)I',
+                       [aContext]));
   DeleteGlobalRef(acontext);
+  end;
 end;
 
 function TCDWidgetSet.CreateSurface(aconfig : EGLConfig): EGLSurface;
   var
-  lParams: array[0..0] of JValue;
   Surface: EGLSurface ;
 begin
     // Call the method
-  lParams[0].l := aconfig;
-  Surface  := EGLSurface(javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateSurface),@lParams[0]));
+  with javaVMRef.Env do
+  begin
+  Surface  := EGLSurface(CallObjectMethodA( javaActivityObject,
+                         javaActivityClass,
+                         'LCLDoCreateSurface',
+                         '(Ljavax/microedition/khronos/egl/EGLConfig;)Ljavax/microedition/khronos/egl/EGLSurface;'
+                         ,[aconfig]));
   result := NewGlobalRef(Surface);
+  end;
 end;
 
 procedure TCDWidgetSet.DestroySurface(aSurface : EGLSurface);
-var
-lParams: array[0..0] of JValue;
 begin
+  with javaVMRef.Env do
+  begin
   // Call the method
-   lParams[0].l := aSurface;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroySurface),@lParams[0]);
+   CallVoidMethodA(javaActivityObject,javaActivityClass, 'LCLDoDestroySurface',
+                   '(Ljavax/microedition/khronos/egl/EGLSurface;)V',[aSurface]);
    DeleteGlobalRef(aSurface);
+  end;
 end;
 
 procedure TCDWidgetSet.PurgeBuffers(asurface : EGLSurface; acontext : EGLContext);
 var
-lParams: array[0..1] of JValue;
 Surface: EGLSurface ;
 begin
   // Call the method
-  lParams[0].l := asurface;
-  lParams[1].l := acontext;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoPurgeBuffers),@lParams[0]);
+  with javaVMRef.Env do
+  begin
+   CallVoidMethodA( javaActivityObject,javaActivityClass,
+                    'LCLDoPurgeBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;Ljavax/microedition/khronos/egl/EGLContext;)V',
+                    [asurface,acontext]);
+  end;
 end;
 
 procedure TCDWidgetSet.ClearBuffers;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoClearBuffers));
+  with javaVMRef.Env do
+  begin
+  CallVoidMethod(javaActivityObject, javaActivityClass,
+  'LCLDoClearBuffers', '()V');
+  end;
 end;
 
 function TCDWidgetSet.SwapBuffers(asurface : EGLSurface): boolean;
-var
-lParams: array[0..0] of JValue;
 begin
   // Call the method
-   lParams[0].l := aSurface;
-   result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoSwapBuffers),@lParams[0]));
+   with javaVMRef.Env do
+   begin
+     result := Boolean(CallBooleanMethodA( javaActivityObject, javaActivityClass,
+               'LCLDoSwapBuffers', '(Ljavax/microedition/khronos/egl/EGLSurface;)Z',
+               [aSurface]));
+   end;
 end;
 
 function TCDWidgetSet.eglGetError: EGLint;
 begin
-  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLeglGetError)));
+  with javaVMRef.Env do
+  begin
+  result := EGLint(CallIntMethod(javaActivityObject, javaActivityClass, 'LCLeglGetError', '()I'));
+  end;
 end;
 
 procedure TCDWidgetSet.SetContextClientVersion2;
+var javaField_mEGLContextClientVersion: JfieldID=nil;
 begin
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_mEGLContextClientVersion), 2);
+  with javaVMRef.Env do
+  begin
+  javaField_mEGLContextClientVersion := GetFieldID( javaActivityClass,  'mEGLContextClientVersion', 'I');
+  SetIntField( javaActivityObject, javaField_mEGLContextClientVersion, 2);
+  end;
 end;
 
 procedure TCDWidgetSet.SetFullScreenMode(fs: EGLBoolean);
-var
-lParams: array[0..0] of JValue;
 begin
   // Call the method
-  lParams[0].z := fs;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_SetFullScreen),@lParams[0]);
+  with javaVMRef.Env do
+  begin
+   CallVoidMethodA( javaActivityObject,javaActivityClass, 'SetFullScreen', '(Z)V',[fs]);
+  end;
 end;
 
 function TCDWidgetSet.SetScreenOrientation(so: EGLint): boolean;
-var
-lParams: array[0..0] of JValue;
 begin
   // Call the method
-  lParams[0].i := so;
-   Result:=Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_SetScreenOrientation),@lParams[0]));
+  with javaVMRef.Env do
+  begin
+   Result:=Boolean(CallBooleanMethodA(javaActivityObject,javaActivityClass, 'SetScreenOrientation', '(I)Z',[so]));
+  end;
 end;
 
 
 function TCDWidgetSet.eglGetConfigs(): EGLint;
 begin
-  result := EGLint(javaEnvRef^^.CallIntMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLGetConfigs)));
+  with javaVMRef.Env do
+  begin
+    Result := EGLint(CallIntMethod(javaActivityObject,javaActivityClass,'LCLGetConfigs', '()I'));
+  end;
 end;
 
 function TCDWidgetSet.eglGetFixedAttribute(attribute: EGLint; Param: EGLint): EGLint;
-var
-  lParams: array[0..1] of JValue;
 begin
     // Call the method
-  lParams[0].i := attribute;
-  lParams[1].i := Param;
-  result := EGLint(javaEnvRef^^.CallIntMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLGetFixedAttribute),@lParams[0]));
+  with javaVMRef.Env do
+  begin
+    Result := EGLint(CallIntMethodA(javaActivityObject,javaActivityClass, 'LCLGetFixedAttribute', '(II)I',[attribute,Param]));
+  end;
 end;
 
 procedure TCDWidgetSet.eglAddIAttrib(attribute: EGLint; value: EGLint);
-var
-  lParams: array[0..1] of JValue;
 begin
   // Call the method
-  lParams[0].i := attribute;
-  lParams[1].i := value;
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLAddIAttrib),@lParams[0]);
+  with javaVMRef.Env do
+  begin
+    CallVoidMethodA(javaActivityObject, javaActivityClass, 'LCLAddIAttrib', '(II)V',[attribute,value]);
+  end;
 end;
 
 function TCDWidgetSet.eglChooseConfig: EGLConfig;
 begin
-  result := EGLConfig(javaEnvRef^^.CallObjectMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLChooseConfig)));
+  with javaVMRef.Env do
+  begin
+    result := EGLConfig(CallObjectMethod(javaActivityObject,javaActivityClass,'LCLChooseConfig', '()Ljavax/microedition/khronos/egl/EGLConfig;'));
+  end;
 end;
 
 procedure TCDWidgetSet.GeteglVersion;
+var
+  javaField_lclmajorversion: JfieldID=nil;
+  javaField_lclminorversion: JfieldID=nil;
 begin
-  MajorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclmajorversion)));
-  MinorVersion := Integer(javaEnvRef^^.GetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclminorversion)));
+  with javaVMRef.Env do
+  begin
+  javaField_lclmajorversion:= GetFieldID( javaActivityClass,   'lclmajorversion', 'I');
+  javaField_lclminorversion:= GetFieldID( javaActivityClass,   'lclminorversion', 'I');
+  self.MajorVersion := Integer(GetIntField( javaActivityObject, javaField_lclmajorversion));
+  self.MinorVersion := Integer(GetIntField( javaActivityObject, javaField_lclminorversion));
+  end;
 end;
 
 procedure TCDWidgetSet.GetPlatformInfo();
 var
   lJavaString : Jstring;
-  bool : JBoolean;
-  i : integer;
-  s : string;
-  ch : pjChar;
+  javaField_lclplatformversion: JfieldID=nil;
+  javaField_lclplatformapi: JfieldID=nil;
+  javaField_lclplatformdevice: JfieldID=nil;
 begin
-  bool:=0;
-  //получаем указатель на строку
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformversion));
-  //получаем набор символов
-  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
-  //склеиваем
-  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
-  PlatformInfo[0] :=s;
-  //освобождаем ненужное
-  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+  with javaVMRef.Env do
+  begin
+    javaField_lclplatformversion:= GetFieldID( javaActivityClass,   'lclplatformversion', 'Ljava/lang/String;');
+    lJavaString :=GetObjectField(javaActivityObject, javaField_lclplatformversion);
+    PlatformInfo[0] :=JStringToString(lJavaString);
 
-  s:='';
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformapi));
-  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
-  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
-  PlatformInfo[1] :=s;
-  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+    javaField_lclplatformapi:= GetFieldID( javaActivityClass,   'lclplatformapi', 'Ljava/lang/String;');
+    lJavaString :=GetObjectField( javaActivityObject, javaField_lclplatformapi);
+    PlatformInfo[1] :=JStringToString(lJavaString);
 
-  s:='';
-  lJavaString :=javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lclplatformdevice));
-  ch:= javaEnvRef^^.GetStringChars(javaEnvRef, lJavaString,bool);
-  for i:=0 to javaEnvRef^^.GetStringLength(javaEnvRef,lJavaString)-1 do   s :=s+ char(ch[i]);
-  PlatformInfo[2] :=s;
-  javaEnvRef^^.ReleaseStringChars(javaEnvRef,lJavaString,ch);
+    javaField_lclplatformdevice:= GetFieldID( javaActivityClass,   'lclplatformdevice', 'Ljava/lang/String;');
+    lJavaString :=GetObjectField(javaActivityObject, javaField_lclplatformdevice);
+    PlatformInfo[2] :=JStringToString(lJavaString);
+  end;
 
 end;
-
-
 
 procedure TCDWidgetSet.LCLDoInvalidate;
 var  lCurForm: TCDNonNativeForm;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoInvalidate));
+  with javaVMRef.Env do
+  begin
+    CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoInvalidate', '()V');
+  end;
 end;
 
 procedure TCDWidgetSet.LCLDoCreateHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateHolder));
+  with javaVMRef.Env do
+  begin
+    CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoCreateHolder', '()V');
+  end;
 end;
 
 procedure TCDWidgetSet.LCLDoDestroyHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyHolder));
+  with javaVMRef.Env do
+  begin
+    CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoDestroyHolder', '()V');
+  end;
 end;
 
 procedure TCDWidgetSet.LCLDoRecreateHolder;
 begin
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoRecreateHolder));
+  with javaVMRef.Env do
+  begin
+    CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoRecreateHolder', '()V');
+  end;
 end;
 
 function TCDWidgetSet.LCLisHolderCreated: boolean;
 begin
-  result := Boolean(javaEnvRef^^.CallBooleanMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLisHolderCreated)));
+  with javaVMRef.Env do
+  begin
+    result := Boolean(CallBooleanMethod( javaActivityObject,javaActivityClass, 'LCLisHolderCreated', '()Z'));
+  end;
 end;
 
 procedure TCDWidgetSet.SetTitleBar(aStr: string);
 var
-lParams: array[0..0] of JValue;
 vstr: JString;
 begin
-  vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aStr));
-  // Call the method
-   lParams[0].l := vStr;
-   javaEnvRef^^.CallVoidMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLSetTitleBar),@lParams[0]);
-   //javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef,vstr,pchar(aStr));
-end;
-
-function TCDWidgetSet.Loadlibrary(aLib: string) : boolean;
-  var
-  lParams: array[0..0] of JValue;
-  vstr: JString;
+  with javaVMRef.Env do
   begin
-    vstr := javaEnvRef^^.NewStringUTF(javaEnvRef,pchar(aLib));
+    vstr := NewStringUTF(pchar(aStr));
+  // Call the method
+    CallVoidMethodA( javaActivityObject,javaActivityClass, 'LCLSetTitleBar', '(Ljava/lang/String;)V',[vStr]);
+   // ReleaseStringUTFChars(vstr,pchar(aStr));
+  end;
+end;
+
+function TCDWidgetSet.JavaLoadlib(aLib: string) : boolean;
+var
+  vstr: JString;
+begin
+  with javaVMRef.Env do
+  begin
+    vstr := NewStringUTF(pchar(aLib));
     // Call the method
-     lParams[0].l := vstr;
-     Result := Boolean(javaEnvRef^^.CallBooleanMethodA(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLLoadLibrary),@lParams[0]));
-end;
+     Result := Boolean(CallBooleanMethodA( javaActivityObject,javaActivityClass, 'LCLLoadLibrary', '(Ljava/lang/String;)Z',[vstr]));
+     ReleaseStringUTFChars(vstr,pchar(aLib));
 
-function TCDWidgetSet.NewGlobalRef(aObject: Pointer): Pointer;
-begin
-  Result := javaEnvRef^^.NewGlobalRef(javaEnvRef, aObject);
-end;
+  end;
 
-procedure TCDWidgetSet.DeleteGlobalRef(aObject: Pointer);
-begin
-  javaEnvRef^^.DeleteGlobalRef(javaEnvRef, aObject);
 end;
 
 {$IFnDEF WithOldDebugln}
@@ -1233,7 +1121,7 @@ end;*)
 procedure TCDWidgetSet.AppMinimize;
 begin
   // calling Activity.Free doesnt close the app, only hides it, so it is good for AppMinimize
-   javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_Activity_finish);
+   javaEnv.CallVoidMethod(javaActivityObject, javaMethod_Activity_finish);
 end;
 
 {------------------------------------------------------------------------------
@@ -1383,7 +1271,7 @@ begin
 
   // Call the method
   lParams[0].i := 0;
-  javaEnvRef^^.CallStaticVoidMethodA(javaEnvRef, javaJavaLandSystemClass, javaMethod_System_exit, @lParams[0]);
+  javaEnv.CallStaticVoidMethodA(javaJavaLandSystemClass, javaMethod_System_exit, @lParams[0]);
 
   DebugLn('[TCDWidgetSet.AppTerminate] End');
 end;
@@ -1425,6 +1313,9 @@ end;
 function TCDWidgetSet.CreateTimer(Interval: integer; TimerFunc: TWSTimerProc) : THandle;
 var
   lTimer: TCDTimer;
+  javaField_lcltimerinterval: JfieldID=nil;
+  javaMethod_LCLDoCreateTimer: jmethodid = nil;
+  javaField_lcltimerid: JfieldID=nil;
 begin
   lTimer := TCDTimer.Create;
 
@@ -1432,19 +1323,24 @@ begin
 
   lTimer.Interval := Interval;
   lTimer.TimerFunc := TimerFunc;
+  with javaEnv do
+  begin
+    javaField_lcltimerinterval:= GetFieldID( javaActivityClass,   'lcltimerinterval', 'I');
+    javaMethod_LCLDoCreateTimer:= GetMethodID( javaActivityClass,    'LCLDoCreateTimer', '()V');
+    javaField_lcltimerid:= GetFieldID( javaActivityClass, 'lcltimerid', 'Ljava/lang/Runnable;');
+    // Prepare the input
+    SetIntField( javaActivityObject, javaField_lcltimerinterval, Interval);
 
-  // Prepare the input
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerinterval), Interval);
+    // Call the method
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoCreateTimer);
 
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoCreateTimer));
+    // Read the output
+    lTimer.NativeHandle := PtrInt(GetObjectField( javaActivityObject, javaField_lcltimerid));
 
-  // Read the output
-  lTimer.NativeHandle := PtrInt(javaEnvRef^^.GetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerid)));
-
-  // Add it to our list
-  AddTimer(lTimer);
-  DebugLn(Format('[TCDWidgetSet.CreateTimer] Result=%x', [PtrInt(Result)]));
+    // Add it to our list
+    AddTimer(lTimer);
+    DebugLn(Format('[TCDWidgetSet.CreateTimer] Result=%x', [PtrInt(Result)]));
+  end;
 end;
 
 {------------------------------------------------------------------------------
@@ -1455,6 +1351,8 @@ end;
 function TCDWidgetSet.DestroyTimer(TimerHandle: THandle) : boolean;
 var
   lTimer: TCDTimer;
+  javaMethod_LCLDoDestroyTimer: jmethodid = nil;
+  javaField_lcltimerid: JfieldID=nil;
 begin
   DebugLn(Format('[TCDWidgetSet.DestroyTimer] TimerHandle=%x', [PtrInt(TimerHandle)]));
   Result := False;
@@ -1463,11 +1361,16 @@ begin
 
   if lTimer = nil then Exit;
 
-  // Prepare the input
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaField_lcltimerid), jobject(lTimer.NativeHandle));
+  with javaEnv do
+  begin
+    javaMethod_LCLDoDestroyTimer:= GetMethodID( javaActivityClass,    'LCLDoDestroyTimer', '()V');
+    javaField_lcltimerid:= GetFieldID( javaActivityClass, 'lcltimerid', 'Ljava/lang/Runnable;');
+    // Prepare the input
+    SetObjectField( javaActivityObject, javaField_lcltimerid, jobject(lTimer.NativeHandle));
 
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoDestroyTimer));
+    // Call the method
+    CallVoidMethod(javaActivityObject, javaMethod_LCLDoDestroyTimer);
+  end;
 
   // Remove from the list
   RemoveTimer(lTimer);

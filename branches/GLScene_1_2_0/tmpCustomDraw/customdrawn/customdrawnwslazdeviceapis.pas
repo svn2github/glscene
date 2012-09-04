@@ -141,13 +141,13 @@ end; }
 class procedure TCDWSLazDeviceAPIs.StartReadingAccelerometerData;
 begin
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoStartReadingAccelerometer));
+  javaVMRef.Env.CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoStartReadingAccelerometer', '()V');
 end;
 
 class procedure TCDWSLazDeviceAPIs.StopReadingAccelerometerData;
 begin
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoStopReadingAccelerometer));
+  javaVMRef.Env.CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoStopReadingAccelerometer', '()V');
 end;
 
 class function TCDWSLazDeviceAPIs.GetDeviceManufacturer: string;
@@ -155,12 +155,16 @@ var
   lFieldID: JFieldID;
   lJavaString: JString;
   lNativeString: PChar;
+  iscopy: JBoolean;
 begin
-  lFieldID := javaEnvRef^^.GetStaticFieldID(javaEnvRef, javaAndroidOSBuildClass, 'MANUFACTURER', 'Ljava/lang/String;');
-  lJavaString := JString(javaEnvRef^^.GetStaticObjectField(javaEnvRef, javaAndroidOSBuildClass, lFieldID));
-  lNativeString := javaEnvRef^^.GetStringUTFChars(javaEnvRef, lJavaString, nil);
+  with javaVMRef.Env do
+  begin
+  lFieldID := GetStaticFieldID( javaAndroidOSBuildClass, 'MANUFACTURER', 'Ljava/lang/String;');
+  lJavaString := JString(GetStaticObjectField(javaAndroidOSBuildClass, lFieldID));
+  lNativeString := GetStringUTFChars(lJavaString, iscopy);
   Result := lNativeString;
-  javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef, lJavaString, lNativeString);
+  ReleaseStringUTFChars(lJavaString, lNativeString);
+  end;
 end;
 
 class function TCDWSLazDeviceAPIs.GetDeviceModel: string;
@@ -168,12 +172,16 @@ var
   lFieldID: JFieldID;
   lJavaString: JString;
   lNativeString: PChar;
+  iscopy: JBoolean;
 begin
-  lFieldID := javaEnvRef^^.GetStaticFieldID(javaEnvRef, javaAndroidOSBuildClass, 'MODEL', 'Ljava/lang/String;');
-  lJavaString := JString(javaEnvRef^^.GetStaticObjectField(javaEnvRef, javaAndroidOSBuildClass, lFieldID));
-  lNativeString := javaEnvRef^^.GetStringUTFChars(javaEnvRef, lJavaString, nil);
+  with javaVMRef.Env do
+  begin
+  lFieldID := GetStaticFieldID(javaAndroidOSBuildClass, 'MODEL', 'Ljava/lang/String;');
+  lJavaString := JString(GetStaticObjectField(javaAndroidOSBuildClass, lFieldID));
+  lNativeString := GetStringUTFChars(lJavaString, iscopy);
   Result := lNativeString;
-  javaEnvRef^^.ReleaseStringUTFChars(javaEnvRef, lJavaString, lNativeString);
+  ReleaseStringUTFChars(lJavaString, lNativeString);
+  end;
 end;
 
 class procedure TCDWSLazDeviceAPIs.Vibrate(ADurationMS: Cardinal);
@@ -186,20 +194,23 @@ var
 const
   javaConstant_VIBRATOR_SERVICE = 'vibrator';
 begin
+  with javaVMRef.Env do
+  begin
   // First IDs
-  javaMethod_vibrate := javaEnvRef^^.GetMethodID(javaEnvRef, javaAndroidOSVibratorClass, 'vibrate', '(J)V');
+  javaMethod_vibrate := GetMethodID(javaAndroidOSVibratorClass, 'vibrate', '(J)V');
 
   // get the string Context.VIBRATOR_SERVICE remember that NewStringUTF does not require ReleaseStringUTFChars
-  javaString_VIBRATOR_SERVICE := javaEnvRef^^.NewStringUTF(javaEnvRef, pchar(javaConstant_VIBRATOR_SERVICE));
+  javaString_VIBRATOR_SERVICE := NewStringUTF( pchar(javaConstant_VIBRATOR_SERVICE));
 
   // Get the vibrator object
   // Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
   lParams[0].l := javaString_VIBRATOR_SERVICE;
-  lVibratorObject := javaEnvRef^^.CallObjectMethodA(javaEnvRef, javaActivityObject, javaMethod_getSystemService, @lParams[0]);
+  lVibratorObject := CallObjectMethodA(javaActivityObject, javaMethod_getSystemService, @lParams[0]);
 
   // Now call the method from the vibrator object
   lParams[0].j := ADurationMS;
-  javaEnvRef^^.CallVoidMethodA(javaEnvRef, lVibratorObject, javaMethod_Vibrate, @lParams[0]);
+  CallVoidMethodA(lVibratorObject, javaMethod_Vibrate, @lParams[0]);
+  end;
 end;
 {$endif}
 

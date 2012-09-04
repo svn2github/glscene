@@ -160,14 +160,14 @@ procedure TCDWidgetSet.HideVirtualKeyboard();
 begin
   DebugLn('[TCDWidgetSet.HideVirtualKeyboard]');
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoHideVirtualKeyboard));
+  javaVMRef.Env.CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoHideVirtualKeyboard', '()V');
 end;
 
 {procedure TCDWidgetSet.CreateOpenGLContext;
 begin
   DebugLn('[TCDWidgetSet.CreateOpenGLContext]');
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateOpenGLContext);
+  CallVoidMethod(javaEnvRef, javaActivityObject, javaMethod_LCLDoCreateOpenGLContext);
 end; }
 
 function TCDWidgetSet.IsMobilePlatform: Boolean;
@@ -186,6 +186,15 @@ var
   lJavaString: jstring;
   BtnIndex, BtnKind: Integer;
   BtnText: string;
+  JavaField_lcltext: JfieldID=nil;
+  JavaField_lcltitle: JfieldID=nil;
+  JavaField_lclbutton1: JfieldID=nil;
+  JavaField_lclbutton2: JfieldID=nil;
+  JavaField_lclbutton3: JfieldID=nil;
+  JavaField_lclbutton1str: JfieldID=nil;
+  JavaField_lclbutton2str: JfieldID=nil;
+  JavaField_lclbutton3str: JfieldID=nil;
+  javaMethod_LCLDoShowMessageBox: jmethodid = nil;
 begin
   {$ifdef VerboseCDWinAPI}
     DebugLn(Format('[TCDWidgetSet.PromptUser] javaEnvRef=%x DialogCaption=%s '
@@ -195,60 +204,75 @@ begin
 
   Result := 0; // The real result goes to Application.OnMessageDialogExecute
 
-  if (javaEnvRef = nil) then Exit;
-
-  // Prepare the input
-  // String fields
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(DialogMessage));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltext), lJavaString);
-  lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(DialogCaption));
-  javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lcltitle), lJavaString);
-
-  // Read the buttons
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), -1);
-  javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), -1);
-  for BtnIndex := 0 to ButtonCount - 1 do
+  with javaVMRef.Env do
   begin
-    BtnKind := Buttons[BtnIndex];
-    {$ifdef VerboseCDWinAPI}
-      DebugLn(Format(':[TCDWidgetSet.PromptUser] BtnKind=%d', [BtnKind]));
-    {$endif}
-    case BtnKind of
-      idButtonOK:      BtnText := RemoveAccelChars(rsMbOK);
-      idButtonCancel:  BtnText := RemoveAccelChars(rsMbCancel);
-      idButtonAbort:   BtnText := RemoveAccelChars(rsMbAbort);
-      idButtonRetry:   BtnText := RemoveAccelChars(rsMbRetry);
-      idButtonIgnore:  BtnText := RemoveAccelChars(rsMbIgnore);
-      idButtonYes:     BtnText := RemoveAccelChars(rsMbYes);
-      idButtonNo:      BtnText := RemoveAccelChars(rsMbNo);
-      idButtonAll:     BtnText := RemoveAccelChars(rsMbAll);
-      idButtonNoToAll: BtnText := RemoveAccelChars(rsMbNoToAll);
-      idButtonYesToAll:BtnText := RemoveAccelChars(rsMbYesToAll);
+    JavaField_lcltext:= GetFieldID( javaActivityClass, 'lcltext', 'Ljava/lang/String;');
+    JavaField_lcltitle:= GetFieldID( javaActivityClass,   'lcltitle', 'Ljava/lang/String;');
+    JavaField_lclbutton1:= GetFieldID( javaActivityClass,   'lclbutton1', 'I');
+    JavaField_lclbutton2:= GetFieldID( javaActivityClass,  'lclbutton2', 'I');
+    JavaField_lclbutton3:= GetFieldID( javaActivityClass,  'lclbutton3', 'I');
+    JavaField_lclbutton1str:= GetFieldID( javaActivityClass,   'lclbutton1str', 'Ljava/lang/String;');
+    JavaField_lclbutton2str:= GetFieldID( javaActivityClass, 'lclbutton2str', 'Ljava/lang/String;');
+    JavaField_lclbutton3str:= GetFieldID( javaActivityClass,  'lclbutton3str', 'Ljava/lang/String;');
+    javaMethod_LCLDoShowMessageBox:= GetMethodID( javaActivityClass, 'LCLDoShowMessageBox', '()V');
+    // Prepare the input
+    // String fields
+    lJavaString :=NewStringUTF(PChar(DialogMessage));
+    SetObjectField(javaActivityObject, JavaField_lcltext, lJavaString);
+  //  ReleaseStringUTFChars(lJavaString, PChar(DialogMessage));
+
+    lJavaString :=NewStringUTF(PChar(DialogCaption));
+    SetObjectField( javaActivityObject, JavaField_lcltitle, lJavaString);
+  //  ReleaseStringUTFChars(lJavaString, PChar(DialogMessage));
+
+    // Read the buttons
+    SetIntField(javaActivityObject, JavaField_lclbutton1, -1);
+    SetIntField(javaActivityObject, JavaField_lclbutton2, -1);
+    SetIntField(javaActivityObject, JavaField_lclbutton3, -1);
+
+    for BtnIndex := 0 to ButtonCount - 1 do
+    begin
+      BtnKind := Buttons[BtnIndex];
+      {$ifdef VerboseCDWinAPI}
+        DebugLn(Format(':[TCDWidgetSet.PromptUser] BtnKind=%d', [BtnKind]));
+      {$endif}
+      case BtnKind of
+        idButtonOK:      BtnText := RemoveAccelChars(rsMbOK);
+        idButtonCancel:  BtnText := RemoveAccelChars(rsMbCancel);
+        idButtonAbort:   BtnText := RemoveAccelChars(rsMbAbort);
+        idButtonRetry:   BtnText := RemoveAccelChars(rsMbRetry);
+        idButtonIgnore:  BtnText := RemoveAccelChars(rsMbIgnore);
+        idButtonYes:     BtnText := RemoveAccelChars(rsMbYes);
+        idButtonNo:      BtnText := RemoveAccelChars(rsMbNo);
+        idButtonAll:     BtnText := RemoveAccelChars(rsMbAll);
+        idButtonNoToAll: BtnText := RemoveAccelChars(rsMbNoToAll);
+        idButtonYesToAll:BtnText := RemoveAccelChars(rsMbYesToAll);
+      end;
+
+      lJavaString :=NewStringUTF(PChar(BtnText));
+      case BtnIndex of
+        0:
+        begin
+          SetObjectField( javaActivityObject, JavaField_lclbutton1str, lJavaString);
+          SetIntField( javaActivityObject, JavaField_lclbutton1, BtnKind);
+        end;
+        1:
+        begin
+          SetObjectField( javaActivityObject, JavaField_lclbutton2str, lJavaString);
+          SetIntField( javaActivityObject, JavaField_lclbutton2, BtnKind);
+        end;
+        2:
+        begin
+          SetObjectField( javaActivityObject, JavaField_lclbutton3str, lJavaString);
+          SetIntField( javaActivityObject, JavaField_lclbutton3, BtnKind);
+        end;
+      end;
+   //   ReleaseStringUTFChars(lJavaString, PChar(BtnText));
     end;
 
-    lJavaString :=javaEnvRef^^.NewStringUTF(javaEnvRef, PChar(BtnText));
-    case BtnIndex of
-      0:
-      begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1str), lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton1), BtnKind);
-      end;
-      1:
-      begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2str), lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton2), BtnKind);
-      end;
-      2:
-      begin
-        javaEnvRef^^.SetObjectField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3str), lJavaString);
-        javaEnvRef^^.SetIntField(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(JavaField_lclbutton3), BtnKind);
-      end;
-    end;
+    // Call the method
+    CallVoidMethod( javaActivityObject, javaMethod_LCLDoShowMessageBox);
   end;
-
-  // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowMessageBox));
 end;
 
 {------------------------------------------------------------------------------
@@ -285,7 +309,7 @@ procedure TCDWidgetSet.ShowVirtualKeyboard;
 begin
   DebugLn('[TCDWidgetSet.ShowVirtualKeyboard]');
   // Call the method
-  javaEnvRef^^.CallVoidMethod(javaEnvRef, javaActivityObject, GetJavaIDVariableinArray(javaMethod_LCLDoShowVirtualKeyboard));
+  javaVMRef.Env.CallVoidMethod(javaActivityObject,javaActivityClass, 'LCLDoShowVirtualKeyboard', '()V');
 end;
 
 //##apiwiz##eps##   // Do not remove, no wizard declaration after this line
