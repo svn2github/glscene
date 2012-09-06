@@ -29,7 +29,7 @@ interface
 
 uses
   // RTL
-  Types, Classes, SysUtils, Math,
+  {$ifndef CD_Cocoa}Types,{$endif}Classes, SysUtils, Math,
   fpimage, fpcanvas, fpimgcanv, ctypes, dateutils,
   {$ifdef CD_Windows}Windows, customdrawn_WinProc,{$endif}
   {$ifdef CD_Cocoa}MacOSAll, CocoaAll, CocoaPrivate, CocoaGDIObjects,{$endif}
@@ -140,6 +140,8 @@ type
     {$ifdef CD_X11}
     FDisplayName: string;
     FDisplay: PDisplay;
+    FScreen: longint;
+    FVisual: TVisual; // Visual from X11
 
     LeaderWindow: X.TWindow;
     ClientLeaderAtom: TAtom;
@@ -147,6 +149,7 @@ type
     FWMProtocols: TAtom;	  // Atom for "WM_PROTOCOLS"
     FWMDeleteWindow: TAtom;	  // Atom for "WM_DELETE_WINDOW"
     FWMHints: TAtom;		  // Atom for "_MOTIF_WM_HINTS"
+    FWMPaint: TAtom;		  // Atom for "WM_PAINT"
 
     // For composing character events
     ComposeBuffer: string;
@@ -156,11 +159,25 @@ type
     LastKeySym: TKeySym; // Used for KeyRelease event
     LastKey: Word;       // Used for KeyRelease event
 
+    ShiftState: TShiftState; // Keeps ShiftState from X
+
     // XConnections list
     XConnections: TFPList;
+    // Windows Info List
+    XWindowList: TStringList;
+    // Timer queue head
+    {$ifdef CD_X11_UseNewTimer}
+    XTimerListHead: customdrawn_x11proc.TCDX11Timer;
+    {$endif}
+
+    // Functions to keep track of windows needing repaint
+   // function CheckInvalidateWindowForX(XWIndowID: X.TWindow): Boolean;
+  //  procedure WindowUpdated(XWIndowID: X.TWindow);
 
     function FindWindowByXID(XWindowID: X.TWindow; out AWindowInfo: TX11WindowInfo): TWinControl;
     procedure AppProcessMessage;
+   // procedure AppProcessInvalidates;
+ //   function XStateToLCLState(XKeyState: cuint): TShiftState;
     {$endif}
     {$ifdef CD_Android}
     CombiningAccent: Cardinal;
@@ -249,11 +266,11 @@ type
   public
     // ScreenDC and Image for doing Canvas operations outside the Paint event
     // and also for text drawing operations
-   { ScreenDC: TLazCanvas;
+    ScreenDC: TLazCanvas;
     ScreenBitmapRawImage: TRawImage;
     ScreenBitmapHeight: Integer;
     ScreenBitmapWidth: Integer;
-    ScreenImage: TLazIntfImage;   }
+    ScreenImage: TLazIntfImage;
 
     // Android Activity callbacks
     ActivityOnCreate: TProcedure;

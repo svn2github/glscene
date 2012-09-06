@@ -415,7 +415,7 @@ var
   lVisual: PVisual;
   lDepth: cint;
 begin
-  lScanlineSize := (ADestWindowInfo.Canvas.Width*ADestWindowInfo.ColorDepth) div 8;
+  lScanlineSize := (ADestWindowInfo.Attr.Width*ADestWindowInfo.ColorDepth) div 8;
   lScreen := DefaultScreen(CDWidgetSet.FDisplay);
   lVisual := {DefaultVisual(CDWidgetSet.FDisplay, lScreen); //} ADestWindowInfo.Attr.Visual;
   lDepth := ADestWindowInfo.ColorDepth;
@@ -608,12 +608,12 @@ end;
 // Here we have 1 handle per window, so the X11 backend should only send LM_ACTIVATE
 class procedure TCDWSCustomForm.EvFocusIn(const AWinControl: TWinControl; AWindowInfo: TX11WindowInfo);
 begin
-  LCLSendActivateMsg(AWinControl, True, false);
+  LCLSendActivateMsg(AWinControl, WA_ACTIVE, false);
 end;
 
 class procedure TCDWSCustomForm.EvFocusOut(const AWinControl: TWinControl; AWindowInfo: TX11WindowInfo);
 begin
-  LCLSendDeactivateStartMsg(AWinControl);
+  LCLSendActivateMsg(AWinControl, WA_INACTIVE, false);
 end;
 
 class procedure TCDWSCustomForm.EvPaint(const AWinControl: TWinControl; AWindowInfo: TX11WindowInfo);
@@ -650,9 +650,9 @@ begin
    TrueColor = 4;
    DirectColor = 5;}
   {$ENDIF}
-  UpdateControlLazImageAndCanvas(AWindowInfo.Image, AWindowInfo.Canvas, lWidth, lHeight, clfBGR24);
+ // UpdateControlLazImageAndCanvas(AWindowInfo.Image, AWindowInfo.Canvas, lWidth, lHeight, clfBGR24);
 
-  RenderForm(AWindowInfo.Image, AWindowInfo.Canvas, TCustomForm(AWinControl));
+ // RenderForm(AWindowInfo.Image, AWindowInfo.Canvas, TCustomForm(AWinControl));
 
   {$IFDEF VerboseCDPaintProfiler}
   lCDTimeEnd := NowUTC();
@@ -660,8 +660,8 @@ begin
   {$ENDIF}
 
   // Now render it into the control
-  AWindowInfo.Image.GetRawImage(lRawImage);
-  DrawRawImageToGC(lRawImage, AWindowInfo, 0, 0, lWidth, lHeight);
+ // AWindowInfo.Image.GetRawImage(lRawImage);
+//  DrawRawImageToGC(lRawImage, AWindowInfo, 0, 0, lWidth, lHeight);
 
   {$IFDEF VerboseCDPaintProfiler}
   DebugLn(Format('[TCDWSCustomForm.EvPaint] Total Paint duration: %d ms of this CustomDrawn: %d ms Native: %d',
@@ -2588,6 +2588,7 @@ begin
   lWindowInfo.ColorDepth := lWindowInfo.Attr.depth;
   CreateX11Canvas(lWindowInfo);
   Result := TLCLIntfHandle(lWindowInfo);
+  if lWindowInfo.Children = nil then lWindowInfo.Children := TFPList.Create;
 
   {$ifdef VerboseCDForms}
   DebugLn(Format(':<[TCDWSCustomForm.CreateHandle] Result=%x',
