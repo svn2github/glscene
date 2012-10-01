@@ -1203,9 +1203,9 @@ function Loadlibpng13: boolean;
 
 implementation
 
-uses
 {$IFDEF FPC}
   {$IFDEF ANDROID}
+uses
   CustomDrawnInt;
   {$ENDIF}
 {$ENDIF}

@@ -10,8 +10,8 @@ unit GLScene_PropertyEditor_Vector_LCL;
 
 interface
 
-{$ifndef GLS_OPENGL_ES}
 {$i GLScene.inc}
+{$ifndef GLS_OPENGL_ES}
 
 uses  lresources,
   Forms, ComCtrls, StdCtrls, ExtCtrls, Buttons, Graphics, Controls,

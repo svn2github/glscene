@@ -365,11 +365,18 @@ resourcestring
                                        'of components needed to create more '+
                                        'complex applications.';
 
-procedure Register;
-
 {$endif}
 
+procedure Register;
+
 implementation
+
+{$IFDEF GLS_OPENGL_ES}
+procedure Register;
+begin
+end;
+
+{$ENDIF}
 
 {$ifndef GLS_OPENGL_ES}
 

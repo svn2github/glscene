@@ -25,6 +25,7 @@ uses
   LCLType,
   LMessages,
   LCLProc,
+  LCLVersion,
 {$IFDEF ANDROID}
   customdrawnint,
 {$ENDIF}
@@ -140,7 +141,9 @@ type
     procedure LMSize(var Message: TLMSize); message LM_SIZE;
     procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
     procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
+    {$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
     procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
+    {$IFEND}
 {$ENDIF}
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
@@ -501,6 +504,7 @@ begin
   inherited;
 end;
 
+{$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
 procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
 begin
   {$IFNDEF ANDROID}
@@ -513,6 +517,7 @@ begin
   {$ENDIF}
   inherited;
 end;
+{$IFEND}
 
 {$ENDIF FPC}
 
