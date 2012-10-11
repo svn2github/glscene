@@ -315,7 +315,6 @@ type
     FFileCollision: string;
     FNGDSurfaceItem: TNGDSurfaceItem;
     FHeightFieldOptions: THeightField;
-
   protected
     { Protected Declarations }
     procedure Initialize; virtual;
@@ -327,6 +326,7 @@ type
     procedure SetNewtonBodyMatrix(const Value: TMatrix);
     procedure SetContinuousCollisionMode(const Value: Boolean);
     function GetNewtonBodyMatrix: TMatrix;
+    function GetNewtonBodyAABB: TAABB;
     procedure UpdCollision; virtual;
     procedure Render; virtual;
     procedure SetNGDNewtonCollisions(const Value: TNGDNewtonCollisions);
@@ -368,6 +368,7 @@ type
     class function UniqueItem: Boolean; override;
     property NewtonBodyMatrix: TMatrix read GetNewtonBodyMatrix write
       SetNewtonBodyMatrix;
+    property NewtonBodyAABB: TAABB read GetNewtonBodyAABB;
     procedure Serialize(filename: string);
     procedure DeSerialize(filename: string);
     property HeightFieldOptions: THeightField read FHeightFieldOptions write
@@ -1682,11 +1683,18 @@ begin
 
 end;
 
+
 function TGLNGDBehaviour.GetNewtonBodyMatrix: TMatrix;
 begin
   if Assigned(FManager) then
     NewtonBodyGetmatrix(FNewtonBody, @FNewtonBodyMatrix);
   Result := FNewtonBodyMatrix;
+end;
+
+function TGLNGDBehaviour.GetNewtonBodyAABB: TAABB;
+begin
+  if Assigned(FManager) then
+    NewtonBodyGetAABB(FNewtonBody, @(Result.min), @(Result.max));
 end;
 
 function TGLNGDBehaviour.GetNGDFileCollision: PNewtonCollision;

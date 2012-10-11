@@ -776,6 +776,9 @@ type
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
     procedure GetExtents(out aabb: TAABB); overload; virtual;
 
+    //: Barycenter from vertices data
+    function GetBarycenter: TVector;
+
     //: Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
@@ -4102,6 +4105,21 @@ begin
     FExtentCacheRevision := FVertices.Revision;
   end;
   aabb := FExtentCache;
+end;
+
+// GetBarycenter
+//
+
+function TMeshObject.GetBarycenter: TVector;
+var
+  dMin, dMax: TAffineVector;
+begin
+  GetExtents(dMin, dMax);
+
+  Result[0] := (dMin[0] + dMax[0]) / 2;
+  Result[1] := (dMin[1] + dMax[1]) / 2;
+  Result[2] := (dMin[2] + dMax[2]) / 2;
+  Result[3] := 0;
 end;
 
 // Prepare
