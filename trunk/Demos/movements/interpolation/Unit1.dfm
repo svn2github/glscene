@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 447
-  ClientWidth = 933
+  ClientHeight = 483
+  ClientWidth = 716
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,29 +16,27 @@ object Form1: TForm1
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 105
-    Width = 933
-    Height = 342
+    Top = 129
+    Width = 716
+    Height = 354
     Camera = GLCamera1
     Buffer.BackgroundColor = clMedGray
     Buffer.Lighting = False
-    FieldOfView = 147.402404785156300000
+    FieldOfView = 148.451522827148400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
-    ExplicitTop = 102
-    ExplicitWidth = 648
+    ExplicitWidth = 818
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 933
-    Height = 105
+    Width = 716
+    Height = 129
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
-    ExplicitTop = -6
-    ExplicitWidth = 648
+    ExplicitWidth = 933
     object Label2: TLabel
       Left = 6
       Top = 77
@@ -86,8 +84,8 @@ object Form1: TForm1
     object Label5: TLabel
       Left = 344
       Top = 84
-      Width = 473
-      Height = 13
+      Width = 353
+      Height = 29
       AutoSize = False
       Caption = 
         '- Note that interpolation is time dependant (it will play at the' +
@@ -98,6 +96,7 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = [fsItalic]
       ParentFont = False
+      WordWrap = True
     end
     object Button1: TButton
       Left = 6
@@ -177,7 +176,7 @@ object Form1: TForm1
       Width = 50.000000000000000000
     end
     object PointA: TGLPoints
-      Position.Coordinates = {0000484400009643000000000000803F}
+      Position.Coordinates = {0000164400009643000000000000803F}
       NoZWrite = False
       Static = False
       size = 10.000000000000000000
