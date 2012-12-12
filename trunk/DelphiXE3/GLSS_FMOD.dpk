@@ -1,0 +1,46 @@
+package GLSS_FMOD;
+
+{$R *.res}
+{$R '..\Source\SoundAPIs\GLSceneVCLFMod.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene - FMOD Manager'}
+{$LIBSUFFIX 'XE3'}
+{$IMPLICITBUILD ON}
+
+requires
+  vcl,
+  GLScene_RunTime,
+  rtl;
+
+contains
+  fmod in '..\Source\SoundAPIs\fmod.pas',
+  GLSMFMOD in '..\Source\GLSMFMOD.pas',
+  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
+  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas',
+  fmoddyn in '..\Source\SoundAPIs\fmoddyn.pas';
+
+end.
