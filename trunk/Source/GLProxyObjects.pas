@@ -84,7 +84,7 @@ type
     FFrontColor: TGLFaceProperties;
     function GetMasterMaterialObject: TGLCustomSceneObject;
     procedure SetMasterMaterialObject(const Value: TGLCustomSceneObject);
-
+    procedure SetFrontColor(AValue: TGLFaceProperties);
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -94,7 +94,8 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
   published
     { Published Declarations }
-    property FrontColor: TGLFaceProperties read FFrontColor;
+    property FrontColor: TGLFaceProperties read FFrontColor write
+      SetFrontColor;
     // Redeclare as TGLCustomSceneObject.
     property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject
       write SetMasterMaterialObject;
@@ -381,6 +382,11 @@ end;
 
 // SetMasterMaterialObject
 //
+
+procedure TGLColorProxy.SetFrontColor(AValue: TGLFaceProperties);
+begin
+  FFrontColor.Assign(AValue);
+end;
 
 procedure TGLColorProxy.SetMasterMaterialObject(
   const Value: TGLCustomSceneObject);

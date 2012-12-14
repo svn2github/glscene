@@ -310,9 +310,9 @@ begin
       px := x * subsampling;
       py := y * subsampling;
       vec := HD.NormalAtNode(px, py, ScaleVec);
-      nmRow[x].r := round(128 + 127 * vec[0]); //nmRow[x].r:=0;         //Red
-      nmRow[x].g := round(128 + 127 * vec[1]); //nmRow[x].g:=0;         //Green
-      nmRow[x].b := round(128 + 127 * vec[2]); //nmRow[x].b:=0;         //Blue
+      nmRow[x].r := round(128 + 127 * vec.Coord[0]); //nmRow[x].r:=0;         //Red
+      nmRow[x].g := round(128 + 127 * vec.Coord[1]); //nmRow[x].g:=0;         //Green
+      nmRow[x].b := round(128 + 127 * vec.Coord[2]); //nmRow[x].b:=0;         //Blue
       nmRow[x].a := 255;
     end;
   end;

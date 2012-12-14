@@ -6,7 +6,8 @@
   Miscelaneous functions used by DCE (Dynamic Collision Engine).
 
   <b>History : </b><font size=-1><ul>
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
+    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+    <li>30/03/07 - DaStr - Added $I GLScene.inc
     <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features
     <li>03/09/04 - LucasG - First release
     <li>29/07/04 - LucasG - Creation
@@ -50,34 +51,34 @@ procedure ECAddEllipsoid(var MovePack: TECMovePack;
 
 const
     DCEBox: array [0..35] of TAffineVector = (
-      ( 1,-1,-1), ( 1, 1,-1), ( 1,-1, 1),
-      ( 1, 1,-1), ( 1, 1, 1), ( 1,-1, 1),
+      (X: 1; Y:-1; Z:-1),  (X: 1; Y: 1; Z:-1),  (X: 1; Y:-1; Z: 1),
+      (X: 1; Y: 1; Z:-1),  (X: 1; Y: 1; Z: 1),  (X: 1; Y:-1; Z: 1),
 
-      ( 1, 1,-1), (-1, 1,-1), (-1, 1, 1),
-      ( 1, 1, 1), ( 1, 1,-1), (-1, 1, 1),
+      (X: 1; Y: 1; Z:-1),  (X:-1; Y: 1; Z:-1),  (X:-1; Y: 1; Z: 1),
+      (X: 1; Y: 1; Z: 1),  (X: 1; Y: 1; Z:-1),  (X:-1; Y: 1; Z: 1),
 
-      (-1, 1, 1), (-1,-1, 1), ( 1,-1, 1),
-      ( 1, 1, 1), (-1, 1, 1), ( 1,-1, 1),
+      (X:-1; Y: 1; Z: 1),  (X:-1; Y:-1; Z: 1),  (X: 1; Y:-1; Z: 1),
+      (X: 1; Y: 1; Z: 1),  (X:-1; Y: 1; Z: 1),  (X: 1; Y:-1; Z: 1),
 
-      (-1,-1, 1), (-1, 1, 1), (-1, 1,-1),
-      (-1,-1,-1), (-1,-1, 1), (-1, 1,-1),
+      (X:-1; Y:-1; Z: 1),  (X:-1; Y: 1; Z: 1),  (X:-1; Y: 1; Z:-1),
+      (X:-1; Y:-1; Z:-1),  (X:-1; Y:-1; Z: 1),  (X:-1; Y: 1; Z:-1),
 
-      ( 1,-1, 1), (-1,-1, 1), ( 1,-1,-1),
-      (-1,-1, 1), (-1,-1,-1), ( 1,-1,-1),
+      (X: 1; Y:-1; Z: 1),  (X:-1; Y:-1; Z: 1),  (X: 1; Y:-1; Z:-1),
+      (X:-1; Y:-1; Z: 1),  (X:-1; Y:-1; Z:-1),  (X: 1; Y:-1; Z:-1),
 
-      ( 1, 1,-1), ( 1,-1,-1), (-1, 1,-1),
-      ( 1,-1,-1), (-1,-1,-1), (-1, 1,-1)
+      (X: 1; Y: 1; Z:-1),  (X: 1; Y:-1; Z:-1),  (X:-1; Y: 1; Z:-1),
+      (X: 1; Y:-1; Z:-1),  (X:-1; Y:-1; Z:-1),  (X:-1; Y: 1; Z:-1)
 
     );
-  
+
 implementation
 
 procedure ECSetCollisionRange(var MovePack: TECMovePack);
 var  N: TAffineVector;
 begin
-  N[0] := Abs(MovePack.Velocity[0]) + Abs(MovePack.Gravity[0]) + (MovePack.Radius[0]);
-  N[1] := Abs(MovePack.Velocity[1]) + Abs(MovePack.Gravity[1]) + (MovePack.Radius[1]);
-  N[2] := Abs(MovePack.Velocity[2]) + Abs(MovePack.Gravity[2]) + (MovePack.Radius[2]);
+  N.Coord[0] := Abs(MovePack.Velocity.Coord[0]) + Abs(MovePack.Gravity.Coord[0]) + (MovePack.Radius.Coord[0]);
+  N.Coord[1] := Abs(MovePack.Velocity.Coord[1]) + Abs(MovePack.Gravity.Coord[1]) + (MovePack.Radius.Coord[1]);
+  N.Coord[2] := Abs(MovePack.Velocity.Coord[2]) + Abs(MovePack.Gravity.Coord[2]) + (MovePack.Radius.Coord[2]);
   MovePack.CollisionRange := MaxXYZComponent(N);
 end;
 
@@ -179,18 +180,18 @@ procedure ECAddTerrain(var MovePack: TECMovePack;
 
   function intvec(x,z: Single): TAffineVector;
   begin
-    result[0] := x + MovePack.Position[0];
-    result[1] := 0 + MovePack.Position[1];
-    result[2] := z + MovePack.Position[2];
+    result.Coord[0] := x + MovePack.Position.Coord[0];
+    result.Coord[1] := 0 + MovePack.Position.Coord[1];
+    result.Coord[2] := z + MovePack.Position.Coord[2];
   end;
 
   function locabs(x,y,z: Single): TAffineVector;
   begin
     //result := TerrainRenderer.LocalToAbsolute(AffineVectorMake(x,y,z));
     //result := AffineVectorMake(x,y,z);
-    result[0] := x + MovePack.Position[0];
-    result[1] := y + TerrainRenderer.AbsolutePosition[1];
-    result[2] := z + MovePack.Position[2];
+    result.Coord[0] := x + MovePack.Position.Coord[0];
+    result.Coord[1] := y + TerrainRenderer.AbsolutePosition.Coord[1];
+    result.Coord[2] := z + MovePack.Position.Coord[2];
   end;
 
 

@@ -188,7 +188,11 @@ end;
 procedure TGLTeapot.DoRender(var ARci: TRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 const
-  M: TMatrix = ((0.150000005960464, 0, 0, 0), (0, -6.55670850946422e-09, -0.150000005960464, 0), (0, 0.150000005960464, -6.55670850946422e-09, 0), (0, 1.63917712736605e-09, 0.0375000014901161, 1));
+  M: TMatrix = (
+  X:(X:0.150000005960464; Y:0; Z:0; W:0);
+  Y:(X:0; Y:-6.55670850946422e-09; Z:-0.150000005960464; W:0);
+  Z:(X:0; Y:0.150000005960464; Z:-6.55670850946422e-09; W:0);
+  W:(X:0; Y:1.63917712736605e-09; Z:0.0375000014901161; W:1));
 begin
   // start rendering self
   if ARenderSelf then

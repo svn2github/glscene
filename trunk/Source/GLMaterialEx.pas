@@ -4177,7 +4177,7 @@ end;
 
 procedure TGLTextureProperties.SetTextureMatrix(const AValue: TMatrix);
 begin
-  FTextureMatrixIsIdentity := CompareMem(@AValue[0], @IdentityHmgMatrix[0],
+  FTextureMatrixIsIdentity := CompareMem(@AValue.Coord[0], @IdentityHmgMatrix.Coord[0],
     SizeOf(TMatrix));
   FTextureMatrix := AValue;
   FTextureOverride := True;
@@ -6348,21 +6348,21 @@ end;
 procedure TGLShaderUniform.SetIVec2(const Value: TVector2i);
 begin
   PushProgram;
-  GL.Uniform2i(FLocation, Value[0], Value[1]);
+  GL.Uniform2i(FLocation, Value.Coord[0], Value.Coord[1]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIVec3(const Value: TVector3i);
 begin
   PushProgram;
-  GL.Uniform3i(FLocation, Value[0], Value[1], Value[2]);
+  GL.Uniform3i(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetIVec4(const Value: TVector4i);
 begin
   PushProgram;
-  GL.Uniform4i(FLocation, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4i(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   PopProgram;
 end;
 
@@ -6409,42 +6409,42 @@ end;
 procedure TGLShaderUniform.SetUVec2(const Value: TVector2ui);
 begin
   PushProgram;
-  GL.Uniform2ui(FLocation, Value[0], Value[1]);
+  GL.Uniform2ui(FLocation, Value.Coord[0], Value.Coord[1]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUVec3(const Value: TVector3ui);
 begin
   PushProgram;
-  GL.Uniform3ui(FLocation, Value[0], Value[1], Value[2]);
+  GL.Uniform3ui(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetUVec4(const Value: TVector4ui);
 begin
   PushProgram;
-  GL.Uniform4ui(FLocation, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4ui(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec2(const Value: TVector2f);
 begin
   PushProgram;
-  GL.Uniform2f(FLocation, Value[0], Value[1]);
+  GL.Uniform2f(FLocation, Value.Coord[0], Value.Coord[1]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec3(const Value: TVector3f);
 begin
   PushProgram;
-  GL.Uniform3f(FLocation, Value[0], Value[1], Value[2]);
+  GL.Uniform3f(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
   PopProgram;
 end;
 
 procedure TGLShaderUniform.SetVec4(const Value: TVector4f);
 begin
   PushProgram;
-  GL.Uniform4f(FLocation, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4f(FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   PopProgram;
 end;
 
@@ -6486,18 +6486,18 @@ end;
 
 procedure TGLShaderUniformDSA.SetIVec2(const Value: TVector2i);
 begin
-  GL.ProgramUniform2i(GetProgram, FLocation, Value[0], Value[1]);
+  GL.ProgramUniform2i(GetProgram, FLocation, Value.Coord[0], Value.Coord[1]);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec3(const Value: TVector3i);
 begin
-  GL.ProgramUniform3i(GetProgram, FLocation, Value[0], Value[1], Value[2]);
+  GL.ProgramUniform3i(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 procedure TGLShaderUniformDSA.SetIVec4(const Value: TVector4i);
 begin
-  GL.ProgramUniform4i(GetProgram, FLocation, Value[0], Value[1], Value[2],
-    Value[3]);
+  GL.ProgramUniform4i(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2],
+    Value.Coord[3]);
 end;
 
 procedure TGLShaderUniformDSA.SetMat2(const Value: TMatrix2f);
@@ -6528,34 +6528,34 @@ end;
 
 procedure TGLShaderUniformDSA.SetUVec2(const Value: TVector2ui);
 begin
-  GL.ProgramUniform2ui(GetProgram, FLocation, Value[0], Value[1]);
+  GL.ProgramUniform2ui(GetProgram, FLocation, Value.Coord[0], Value.Coord[1]);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec3(const Value: TVector3ui);
 begin
-  GL.ProgramUniform3ui(GetProgram, FLocation, Value[0], Value[1], Value[2]);
+  GL.ProgramUniform3ui(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 procedure TGLShaderUniformDSA.SetUVec4(const Value: TVector4ui);
 begin
-  GL.ProgramUniform4ui(GetProgram, FLocation, Value[0], Value[1], Value[2],
-    Value[3]);
+  GL.ProgramUniform4ui(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2],
+    Value.Coord[3]);
 end;
 
 procedure TGLShaderUniformDSA.SetVec2(const Value: TVector2f);
 begin
-  GL.ProgramUniform2f(GetProgram, FLocation, Value[0], Value[1]);
+  GL.ProgramUniform2f(GetProgram, FLocation, Value.Coord[0], Value.Coord[1]);
 end;
 
 procedure TGLShaderUniformDSA.SetVec3(const Value: TVector3f);
 begin
-  GL.ProgramUniform3f(GetProgram, FLocation, Value[0], Value[1], Value[2]);
+  GL.ProgramUniform3f(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 procedure TGLShaderUniformDSA.SetVec4(const Value: TVector4f);
 begin
-  GL.ProgramUniform4f(GetProgram, FLocation, Value[0], Value[1], Value[2],
-    Value[3]);
+  GL.ProgramUniform4f(GetProgram, FLocation, Value.Coord[0], Value.Coord[1], Value.Coord[2],
+    Value.Coord[3]);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}

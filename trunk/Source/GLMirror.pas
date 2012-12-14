@@ -386,16 +386,16 @@ begin
     GL.Begin_(GL_QUADS);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p.Coord[0], p.Coord[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p.Coord[0], p.Coord[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p.Coord[0], p.Coord[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p[0], p[1], 0.999);
+    GL.Vertex3f(p.Coord[0], p.Coord[1], 0.999);
     GL.End_;
 
     with aBuffer.RenderingContext.GLStates do

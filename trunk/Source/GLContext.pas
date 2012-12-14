@@ -4204,7 +4204,7 @@ end;
 procedure TGLProgramHandle.SetUniform2i(const index: string;
   const Value: TVector2i);
 begin
-  GL.Uniform2i(GetUniformLocation(index), Value[0], Value[1]);
+  GL.Uniform2i(GetUniformLocation(index), Value.Coord[0], Value.Coord[1]);
 end;
 
 // SetUniform3i
@@ -4213,7 +4213,7 @@ end;
 procedure TGLProgramHandle.SetUniform3i(const index: string;
   const Value: TVector3i);
 begin
-  GL.Uniform3i(GetUniformLocation(index), Value[0], Value[1], Value[2]);
+  GL.Uniform3i(GetUniformLocation(index), Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 // SetUniform4i
@@ -4222,8 +4222,8 @@ end;
 procedure TGLProgramHandle.SetUniform4i(const index: string;
   const Value: TVector4i);
 begin
-  GL.Uniform4i(GetUniformLocation(index), Value[0], Value[1], Value[2],
-    Value[3]);
+  GL.Uniform4i(GetUniformLocation(index), Value.Coord[0], Value.Coord[1], Value.Coord[2],
+    Value.Coord[3]);
 end;
 
 // GetUniform2f
@@ -4240,7 +4240,7 @@ end;
 procedure TGLProgramHandle.SetUniform2f(const index: string; const val:
   TVector2f);
 begin
-  GL.Uniform2f(GetUniformLocation(index), val[0], val[1]);
+  GL.Uniform2f(GetUniformLocation(index), val.Coord[0], val.Coord[1]);
 end;
 
 // GetUniform3f
@@ -4257,7 +4257,7 @@ end;
 procedure TGLProgramHandle.SetUniform3f(const index: string; const val:
   TAffineVector);
 begin
-  GL.Uniform3f(GetUniformLocation(index), val[0], val[1], val[2]);
+  GL.Uniform3f(GetUniformLocation(index), val.Coord[0], val.Coord[1], val.Coord[2]);
 end;
 
 // GetUniform4f
@@ -4274,7 +4274,7 @@ end;
 procedure TGLProgramHandle.SetUniform4f(const index: string; const val:
   TVector);
 begin
-  GL.Uniform4f(GetUniformLocation(index), val[0], val[1], val[2], val[3]);
+  GL.Uniform4f(GetUniformLocation(index), val.Coord[0], val.Coord[1], val.Coord[2], val.Coord[3]);
 end;
 
 // GetUniformMatrix2fv

@@ -235,7 +235,7 @@ begin
     begin
       fg := TFGBSPNode.CreateOwned(mo.FaceGroups);
       plane := bsp.Planes[bsp.Nodes[i].plane];
-      plane := VectorMake(plane[0], plane[1], plane[2], plane[3]);
+      plane := VectorMake(plane.Coord[0], plane.Coord[1], plane.Coord[2], plane.Coord[3]);
       fg.SplitPlane := plane;
       fg.PositiveSubNodeIndex := bsp.Nodes[i].Children[0];
       if fg.PositiveSubNodeIndex < 0 then

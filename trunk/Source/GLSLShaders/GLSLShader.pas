@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>18/02/11 - Yar - Fixed transform feedback varyings activation
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
@@ -575,32 +576,32 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector2f(const Value: TVector2f);
 begin
-  GL.Uniform2f(FParameterID, Value[0], Value[1]);
+  GL.Uniform2f(FParameterID, Value.Coord[0], Value.Coord[1]);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector2i(const Value: TVector2i);
 begin
-  GL.Uniform2i(FParameterID, Value[0], Value[1]);
+  GL.Uniform2i(FParameterID, Value.Coord[0], Value.Coord[1]);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3f(const Value: TVector3f);
 begin
-  GL.Uniform3f(FParameterID, Value[0], Value[1], Value[2]);
+  GL.Uniform3f(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3i(const Value: TVector3i);
 begin
-  GL.Uniform3i(FParameterID, Value[0], Value[1], Value[2]);
+  GL.Uniform3i(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4f(const Value: TVector4f);
 begin
-  GL.Uniform4f(FParameterID, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4f(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
-  GL.Uniform4i(FParameterID, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4i(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
 end;
 
 function TGLSLShaderParameter.GetAsUniformBuffer: GLenum;
@@ -625,7 +626,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
 begin
-  GL.Uniform2ui(FParameterID, Value[0], Value[1]);
+  GL.Uniform2ui(FParameterID, Value.Coord[0], Value.Coord[1]);
 end;
 
 function TGLSLShaderParameter.GetAsVector3ui: TVector3ui;
@@ -635,7 +636,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
 begin
-  GL.Uniform3ui(FParameterID, Value[0], Value[1], Value[2]);
+  GL.Uniform3ui(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2]);
 end;
 
 function TGLSLShaderParameter.GetAsVector4ui: TVector4ui;
@@ -645,7 +646,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
 begin
-  GL.Uniform4ui(FParameterID, Value[0], Value[1], Value[2], Value[3]);
+  GL.Uniform4ui(FParameterID, Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
 end;
 
 procedure TGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);

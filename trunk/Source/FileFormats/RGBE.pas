@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: RGBE<p>
+{ : RGBE<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>15/06/10 - Yar - Fixes for Linux x64
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
+  <b>History : </b><font size=-1><ul>
+  <li>15/06/10 - Yar - Fixes for Linux x64
+  <li>20/01/10 - Yar - Creation
+  </ul><p>
 }
 unit RGBE;
 
@@ -17,11 +17,11 @@ interface
 uses
   Classes, VectorTypes, VectorGeometry, GLCrossPlatform;
 
-procedure float2rgbe(var rgbe: TVector4b; const red, green, blue: Single);
-procedure rgbe2float(var red, green, blue: Single; const rgbe: TVector4b);
-procedure LoadRLEpixels(stream : TStream; dst: PSingle;
-  scanline_width,	num_scanlines: integer);
-procedure LoadRGBEpixels(stream : TStream; dst: PSingle; numpixels: integer);
+procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
+procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);
+procedure LoadRLEpixels(Stream: TStream; Dst: PSingle;
+  Scanline_width, Num_scanlines: Integer);
+procedure LoadRGBEpixels(Stream: TStream; Dst: PSingle; Numpixels: Integer);
 
 implementation
 
@@ -30,232 +30,255 @@ uses
 
 type
   ERGBEexception = class(Exception);
-{ Extract exponent and mantissa from X }
+
+  { Extract exponent and mantissa from X }
 procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
 { Mantissa ptr in EAX, Exponent ptr in EDX }
 {$IFDEF GLS_NO_ASM}
 begin
-  Exponent:=0;
-  if (X<>0) then
-    if (abs(X)<0.5) then
+  Exponent := 0;
+  if (X <> 0) then
+    if (Abs(X) < 0.5) then
       repeat
-        X:=X*2;
+        X := X * 2;
         Dec(Exponent);
-      until (abs(X)>=0.5)
+      until (Abs(X) >= 0.5)
     else
-      while (abs(X)>=1) do
-        begin
-        X:=X/2;
+      while (Abs(X) >= 1) do
+      begin
+        X := X / 2;
         Inc(Exponent);
-        end;
-  Mantissa:=X;
+      end;
+  Mantissa := X;
 {$ELSE}
 asm
-        FLD     X
-        PUSH    EAX
-        MOV     dword ptr [edx], 0    { if X = 0, return 0 }
+  FLD     X
+  PUSH    EAX
+  MOV     dword ptr [edx], 0    { if X = 0, return 0 }
 
-        FTST
-        FSTSW   AX
-        FWAIT
-        SAHF
-        JZ      @@Done
+  FTST
+  FSTSW   AX
+  FWAIT
+  SAHF
+  JZ      @@Done
 
-        FXTRACT                 // ST(1) = exponent, (pushed) ST = fraction
-        FXCH
+  FXTRACT                 // ST(1) = exponent, (pushed) ST = fraction
+  FXCH
 
-// The FXTRACT instruction normalizes the fraction 1 bit higher than
-// wanted for the definition of frexp() so we need to tweak the result
-// by scaling the fraction down and incrementing the exponent.
+  // The FXTRACT instruction normalizes the fraction 1 bit higher than
+  // wanted for the definition of frexp() so we need to tweak the result
+  // by scaling the fraction down and incrementing the exponent.
 
-        FISTP   dword ptr [edx]
-        FLD1
-        FCHS
-        FXCH
-        FSCALE                  // scale fraction
-        INC     dword ptr [edx] // exponent biased to match
-        FSTP ST(1)              // discard -1, leave fraction as TOS
+  FISTP   dword ptr [edx]
+  FLD1
+  FCHS
+  FXCH
+  FSCALE                  // scale fraction
+  INC     dword ptr [edx] // exponent biased to match
+  FSTP ST(1)              // discard -1, leave fraction as TOS
 
 @@Done:
-        POP     EAX
-        FSTP    tbyte ptr [eax]
-        FWAIT
-{$ENDIF}
+  POP     EAX
+  FSTP    tbyte ptr [eax]
+  FWAIT
+  {$ENDIF}
 end;
 
 function Ldexp(X: Extended; const P: Integer): Extended;
 {$IFDEF GLS_NO_ASM}
 begin
-   ldexp:=x*intpower(2.0,p);
+  Ldexp := X * Intpower(2.0, P);
 {$ELSE}
-  { Result := X * (2^P) }
+{ Result := X * (2^P) }
 asm
-        PUSH    EAX
-        FILD    dword ptr [ESP]
-        FLD     X
-        FSCALE
-        POP     EAX
-        FSTP    ST(1)
-        FWAIT
-{$ENDIF}
+  PUSH    EAX
+  FILD    dword ptr [ESP]
+  FLD     X
+  FSCALE
+  POP     EAX
+  FSTP    ST(1)
+  FWAIT
+  {$ENDIF}
 end;
 
 // standard conversion from float pixels to rgbe pixels
-procedure float2rgbe(var rgbe: TVector4b; const red, green, blue: Single);
+procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
 var
-  v, m: Extended;
-  e: integer;
+  V, M: Extended;
+  E: Integer;
 begin
-  v := red;
-  if (green > v) then v := green;
-  if (blue > v) then v := blue;
-  if (v < 1e-32) then begin
-    rgbe[0] := 0;
-    rgbe[1] := 0;
-    rgbe[2] := 0;
-    rgbe[3] := 0;
+  V := Red;
+  if (Green > V) then
+    V := Green;
+  if (Blue > V) then
+    V := Blue;
+  if (V < 1E-32) then
+  begin
+    RGBE.Coord[0] := 0;
+    RGBE.Coord[1] := 0;
+    RGBE.Coord[2] := 0;
+    RGBE.Coord[3] := 0;
   end
-  else begin
-    FrExp(v, m, e);
-    m := m * 256/v;
-    rgbe[0] := Floor(red * v);
-    rgbe[1] := Floor(green * v);
-    rgbe[2] := Floor(blue * v);
-    rgbe[3] := Floor(e + 128);
+  else
+  begin
+    FrExp(V, M, E);
+    M := M * 256 / V;
+    RGBE.Coord[0] := Floor(Red * V);
+    RGBE.Coord[1] := Floor(Green * V);
+    RGBE.Coord[2] := Floor(Blue * V);
+    RGBE.Coord[3] := Floor(E + 128);
   end;
 end;
 
 // standard conversion from rgbe to float pixels
 // note: Ward uses ldexp(col+0.5,exp-(128+8)).  However we wanted pixels
-//       in the range [0,1] to map back into the range [0,1].
-procedure rgbe2float(var red, green, blue: Single; const rgbe: TVector4b);
+// in the range [0,1] to map back into the range [0,1].
+procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);
 var
-  f: single;
+  F: Single;
 begin
-  if rgbe[3]<>0 then   //nonzero pixel
+  if RGBE.Coord[3] <> 0 then // nonzero pixel
   begin
-    f := ldexp(1.0, rgbe[3]-(128+8));
-    red := rgbe[0] * f;
-    green := rgbe[1] * f;
-    blue := rgbe[2] * f;
+    F := Ldexp(1.0, RGBE.Coord[3] - (128 + 8));
+    Red := RGBE.Coord[0] * F;
+    Green := RGBE.Coord[1] * F;
+    Blue := RGBE.Coord[2] * F;
   end
-  else begin
-    red := 0;
-    green := 0;
-    blue := 0;
+  else
+  begin
+    Red := 0;
+    Green := 0;
+    Blue := 0;
   end;
 end;
 
-procedure LoadRLEpixels(stream : TStream; dst: PSingle;
-  scanline_width,	num_scanlines: Integer);
+procedure LoadRLEpixels(Stream: TStream; Dst: PSingle;
+  Scanline_width, Num_scanlines: Integer);
 var
-  rgbeTemp: TVector4b;
-  buf: TVector2b;
-  rf, gf, bf: Single;
-  scanline_buffer: PByteArray;
-  ptr, ptr_end: PByte;
-  i: integer;
-  count: Cardinal;
+  RgbeTemp: TVector4b;
+  Buf: TVector2b;
+  Rf, Gf, Bf: Single;
+  Scanline_buffer: PByteArray;
+  Ptr, Ptr_end: PByte;
+  I: Integer;
+  Count: Cardinal;
 begin
-  if (scanline_width < 8) or (scanline_width > $7FFF) then begin
-    //run length encoding is not allowed so read flat
-    LoadRGBEPixels(stream, dst, scanline_width*num_scanlines);
+  if (Scanline_width < 8) or (Scanline_width > $7FFF) then
+  begin
+    // run length encoding is not allowed so read flat
+    LoadRGBEPixels(Stream, Dst, Scanline_width * Num_scanlines);
     Exit;
   end;
 
-  scanline_buffer := nil;
-  while num_scanlines > 0 do
+  Scanline_buffer := nil;
+  while Num_scanlines > 0 do
   begin
-    stream.Read(rgbeTemp, SizeOf( TVector4b ));
-    if (rgbeTemp[0] <> 2)
-    or (rgbeTemp[1] <> 2)
-    or (rgbeTemp[2] and $80 <> 0) then
+    Stream.Read(RgbeTemp, SizeOf(TVector4b));
+    if (RgbeTemp.Coord[0] <> 2) or (RgbeTemp.Coord[1] <> 2) or
+      (RgbeTemp.Coord[2] and $80 <> 0) then
     begin
       // this file is not run length encoded
-      rgbe2float( rf, gf, bf, rgbeTemp);
-      dst^ := rf; Inc(dst);
-      dst^ := gf; Inc(dst);
-      dst^ := bf; Inc(dst);
-      if Assigned(scanline_buffer) then FreeMem( scanline_buffer );
-      LoadRGBEpixels(stream, dst, scanline_width*num_scanlines-1);
+      Rgbe2float(Rf, Gf, Bf, RgbeTemp);
+      Dst^ := Rf;
+      Inc(Dst);
+      Dst^ := Gf;
+      Inc(Dst);
+      Dst^ := Bf;
+      Inc(Dst);
+      if Assigned(Scanline_buffer) then
+        FreeMem(Scanline_buffer);
+      LoadRGBEpixels(Stream, Dst, Scanline_width * Num_scanlines - 1);
       Exit;
     end;
-    if ((Integer(rgbeTemp[2]) shl 8) or rgbeTemp[3]) <> scanline_width then begin
-      if Assigned(scanline_buffer) then FreeMem( scanline_buffer );
+    if ((Integer(RgbeTemp.Coord[2]) shl 8) or RgbeTemp.Coord[3]) <> Scanline_width
+    then
+    begin
+      if Assigned(Scanline_buffer) then
+        FreeMem(Scanline_buffer);
       raise ERGBEexception.Create('Wrong scanline width.');
     end;
 
-    if not Assigned(scanline_buffer) then ReallocMem(scanline_buffer, 4*scanline_width);
+    if not Assigned(Scanline_buffer) then
+      ReallocMem(Scanline_buffer, 4 * Scanline_width);
 
-    ptr := PByte( scanline_buffer );
+    Ptr := PByte(Scanline_buffer);
     // read each of the four channels for the scanline into the buffer
-    for i := 0 to 3 do
+    for I := 0 to 3 do
     begin
-      ptr_end := @scanline_buffer[(i+1)*scanline_width];
-      while PtrUInt(ptr) < PtrUInt(ptr_end) do
+      Ptr_end := @Scanline_buffer[(I + 1) * Scanline_width];
+      while PtrUInt(Ptr) < PtrUInt(Ptr_end) do
       begin
-        stream.Read(buf, SizeOf( TVector2b ));
-        if buf[0] > 128 then
-        begin //a run of the same value
-          count := buf[0]-128;
-          if (count = 0) or (count > PtrUInt(ptr_end) - PtrUInt(ptr)) then
+        Stream.Read(Buf, SizeOf(TVector2b));
+        if Buf.Coord[0] > 128 then
+        begin // a run of the same value
+          Count := Buf.Coord[0] - 128;
+          if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
           begin
-            FreeMem( scanline_buffer );
+            FreeMem(Scanline_buffer);
             raise ERGBEexception.Create('Bad HDR scanline data.');
           end;
-          while count > 0 do
+          while Count > 0 do
           begin
-            ptr^ := buf[1];
-            Dec( count );
-            Inc( ptr );
+            Ptr^ := Buf.Coord[1];
+            Dec(Count);
+            Inc(Ptr);
           end;
         end
-        else begin //a non-run
-          count := buf[0];
-          if (count = 0) or (count > PtrUInt(ptr_end) - PtrUInt(ptr)) then
+        else
+        begin // a non-run
+          Count := Buf.Coord[0];
+          if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
           begin
-            FreeMem( scanline_buffer );
+            FreeMem(Scanline_buffer);
             raise ERGBEexception.Create('Bad HDR scanline data.');
           end;
-          ptr^ := buf[1];
-          Dec( count );
-          Inc( ptr );
-          if count>0 then stream.Read(ptr^, Count);
-          Inc( ptr, count);
+          Ptr^ := Buf.Coord[1];
+          Dec(Count);
+          Inc(Ptr);
+          if Count > 0 then
+            Stream.Read(Ptr^, Count);
+          Inc(Ptr, Count);
         end;
       end;
     end;
 
     // now convert data from buffer into floats
-    for i := 0 to scanline_width-1 do
+    for I := 0 to Scanline_width - 1 do
     begin
-      rgbeTemp[0] := scanline_buffer[i];
-      rgbeTemp[1] := scanline_buffer[i+scanline_width];
-      rgbeTemp[2] := scanline_buffer[i+2*scanline_width];
-      rgbeTemp[3] := scanline_buffer[i+3*scanline_width];
-      rgbe2float( rf, gf, bf, rgbeTemp);
-      dst^ := rf; Inc(dst);
-      dst^ := gf; Inc(dst);
-      dst^ := bf; Inc(dst);
+      RgbeTemp.Coord[0] := Scanline_buffer[I];
+      RgbeTemp.Coord[1] := Scanline_buffer[I + Scanline_width];
+      RgbeTemp.Coord[2] := Scanline_buffer[I + 2 * Scanline_width];
+      RgbeTemp.Coord[3] := Scanline_buffer[I + 3 * Scanline_width];
+      Rgbe2float(Rf, Gf, Bf, RgbeTemp);
+      Dst^ := Rf;
+      Inc(Dst);
+      Dst^ := Gf;
+      Inc(Dst);
+      Dst^ := Bf;
+      Inc(Dst);
     end;
-    Dec( num_scanlines );
+    Dec(Num_scanlines);
   end;
-  if Assigned(scanline_buffer) then FreeMem( scanline_buffer );
+  if Assigned(Scanline_buffer) then
+    FreeMem(Scanline_buffer);
 end;
 
-procedure LoadRGBEpixels(stream : TStream; dst: PSingle; numpixels: integer);
+procedure LoadRGBEpixels(Stream: TStream; Dst: PSingle; Numpixels: Integer);
 var
-  rgbeTemp: TVector4b;
-  rf, gf, bf: Single;
+  RgbeTemp: TVector4b;
+  Rf, Gf, Bf: Single;
 begin
-  while numpixels>0 do
+  while Numpixels > 0 do
   begin
-    stream.Read(rgbeTemp, SizeOf( TVector4b ));
-    rgbe2float( rf, gf, bf, rgbeTemp);
-    dst^ := rf; Inc(dst);
-    dst^ := gf; Inc(dst);
-    dst^ := bf; Inc(dst);
-    Dec( numpixels );
+    Stream.Read(RgbeTemp, SizeOf(TVector4b));
+    Rgbe2float(Rf, Gf, Bf, RgbeTemp);
+    Dst^ := Rf;
+    Inc(Dst);
+    Dst^ := Gf;
+    Inc(Dst);
+    Dst^ := Bf;
+    Inc(Dst);
+    Dec(Numpixels);
   end;
 end;
 

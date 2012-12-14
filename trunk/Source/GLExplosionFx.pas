@@ -224,9 +224,9 @@ begin
     else
       FDirList.Add(FDirection.AsVector);
   // calculate the center (position) of the triangle so it rotates around its center
-    posi[0] := (p1[0] + p2[0] + p3[0]) / 3;
-    posi[1] := (p1[1] + p2[1] + p3[1]) / 3;
-    posi[2] := (p1[2] + p2[2] + p3[2]) / 3;
+    posi.Coord[0] := (p1.Coord[0] + p2.Coord[0] + p3.Coord[0]) / 3;
+    posi.Coord[1] := (p1.Coord[1] + p2.Coord[1] + p3.Coord[1]) / 3;
+    posi.Coord[2] := (p1.Coord[2] + p2.Coord[2] + p3.Coord[2]) / 3;
     FPosList.add(posi);
   // random rotation (in degrees)
     FRotList.Add(DegToRad(3.0*Random), DegToRad(3.0*Random), DegToRad(3.0*Random));
@@ -262,9 +262,9 @@ begin
     SetVector(p3, FTriList.Items[Face * 3 + 2]);
   // rotate the face
     mat := IdentityHmgMatrix;
-    mat := MatrixMultiply(mat, CreateRotationMatrixX(FRotList.Items[face][0]));
-    mat := MatrixMultiply(mat, CreateRotationMatrixY(FRotList.Items[face][1]));
-    mat := MatrixMultiply(mat, CreateRotationMatrixZ(FRotList.Items[face][2]));
+    mat := MatrixMultiply(mat, CreateRotationMatrixX(FRotList.Items[face].Coord[0]));
+    mat := MatrixMultiply(mat, CreateRotationMatrixY(FRotList.Items[face].Coord[1]));
+    mat := MatrixMultiply(mat, CreateRotationMatrixZ(FRotList.Items[face].Coord[2]));
     SubtractVector(p1, FPosList.Items[Face]);  // use of procedure is faster: PhP
     SubtractVector(p2, FPosList.Items[Face]);  // -''-
     SubtractVector(p3, FPosList.Items[Face]);  // -''-
@@ -276,7 +276,7 @@ begin
     AddVector(p3, FPosList.Items[Face]);  // -''-
   // move the face in the direction it is heading
     SetVector(dir, FDirList.Items[Face]);
-    GL.Normal3f(dir[0], dir[1], dir[2]);
+    GL.Normal3f(dir.Coord[0], dir.Coord[1], dir.Coord[2]);
     ScaleVector(dir, Speed);
     AddVector(p1, dir);
     AddVector(p2, dir);
@@ -289,9 +289,9 @@ begin
     FTrilist.Items[face * 3 +1] := p2;
     FTrilist.Items[face * 3 +2] := p3;
 
-    GL.Vertex3f(p1[0], p1[1], p1[2]);
-    GL.Vertex3f(p2[0], p2[1], p2[2]);
-    GL.Vertex3f(p3[0], p3[1], p3[2]);
+    GL.Vertex3f(p1.Coord[0], p1.Coord[1], p1.Coord[2]);
+    GL.Vertex3f(p2.Coord[0], p2.Coord[1], p2.Coord[2]);
+    GL.Vertex3f(p3.Coord[0], p3.Coord[1], p3.Coord[2]);
   end;
   GL.End_;
   rci.GLStates.Enable(stCullFace);

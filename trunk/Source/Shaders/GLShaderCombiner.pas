@@ -137,8 +137,7 @@ begin
   end;
 end;
 
-function TGLCustomShaderCombiner.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+function TGLCustomShaderCombiner.DoUnApply(var rci: TRenderContextInfo): Boolean;
 begin
   case FCombinerType of
     sctOneMPTwoSP:
@@ -202,8 +201,7 @@ begin
   end;
 end;
 
-procedure TGLCustomShaderCombiner.SetShaderOne(
-  const Value: TGLShader);
+procedure TGLCustomShaderCombiner.SetShaderOne(const Value: TGLShader);
 begin
   if FShaderOne <> nil then
     FShaderOne.RemoveFreeNotification(Self);
@@ -212,8 +210,7 @@ begin
     FShaderOne.FreeNotification(Self);
 end;
 
-procedure TGLCustomShaderCombiner.SetShaderTwo(
-  const Value: TGLShader);
+procedure TGLCustomShaderCombiner.SetShaderTwo(const Value: TGLShader);
 begin
   if FShaderTwo <> nil then
     FShaderTwo.RemoveFreeNotification(Self);

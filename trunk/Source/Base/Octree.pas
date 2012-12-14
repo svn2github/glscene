@@ -1,29 +1,31 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Octree<p>
+{ : Octree<p>
 
-   Octree management classes and structures.<p>
+  Octree management classes and structures.<p>
 
-   TODO: move the many public vars/fields to private/protected<p>
+  TODO: move the many public vars/fields to private/protected<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
-      <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
-      <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
-      <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
-      <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
-      <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
-      <li>29/11/02 - EG - Added triangleInfo
-      <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
-      <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
-	   <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
-	</ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+  <li>30/03/07 - DaStr - Added $I GLScene.inc
+  <li>28/03/07 - DaStr - Renamed parameters in some methods
+                        (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+  <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+                        (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+  <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
+  <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
+  <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
+  <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
+  <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
+  <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
+  <li>29/11/02 - EG - Added triangleInfo
+  <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
+  <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
+  <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
+  </ul></font>
 }
 unit Octree;
 
@@ -35,124 +37,135 @@ uses Classes, VectorTypes, VectorGeometry, VectorLists, GeometryBB;
 
 type
 
-   TProcInt = procedure(i: integer) of object;
-   TProcAffineAffineAffine = procedure(v1, v2, v3: TAffineFLTVector) of object;
+  TProcInt = procedure(I: Integer) of object;
+  TProcAffineAffineAffine = procedure(V1, V2, V3: TAffineFLTVector) of object;
 
-   // TOctreeTriangleInfo
-   //
-   {: Stores information about an intersected triangle. }
-   TOctreeTriangleInfo = record
-      index : Integer;
-      vertex : array [0..2] of TAffineVector;
-   end;
-   POctreeTriangleInfo = ^TOctreeTriangleInfo;
+  // TOctreeTriangleInfo
+  //
+  { : Stores information about an intersected triangle. }
+  TOctreeTriangleInfo = record
+    Index: Integer;
+    Vertex: array [0 .. 2] of TAffineVector;
+  end;
 
-   // TOctreeNode
-   //
-   POctreeNode = ^TOctreeNode;
-   TOctreeNode = record
-      MinExtent : TAffineFLTVector;
-      MaxExtent : TAffineFLTVector;
+  POctreeTriangleInfo = ^TOctreeTriangleInfo;
 
-      //Duplicates possible?
-      TriArray : array of Integer;  // array of triangle references
+  // TOctreeNode
+  //
+  POctreeNode = ^TOctreeNode;
 
-      ChildArray : array [0..7] of POctreeNode;  //Octree's 8 children
-   end;
+  TOctreeNode = record
+    MinExtent: TAffineFLTVector;
+    MaxExtent: TAffineFLTVector;
 
-   // TOctree
-   //
-   {: Manages an Octree containing references to triangles.<p> }
-   TOctree = class (TObject)
-      private
-         { Private Declarations }
-{$ifdef DEBUG}
-         intersections: integer;    //for debugging  - number of triangles intersecting an AABB plane
-{$endif}
+    // Duplicates possible?
+    TriArray: array of Integer; // array of triangle references
 
-      protected
-         { Protected Declarations }
-         //Find the exact centre of an AABB
-         function GetMidPoint (min, max: single): single;
-         //Check if a point lies within the AABB specified by min and max entents
-         function PointInNode(const min, max, aPoint : TAffineFLTVector): Boolean;
-         //Check if a triangle (vertices v1, v2, v3) lies within the AABB specified by min and max entents
-         function TriIntersectNode(const minExtent, maxExtent, v1, v2, v3: TAffineFLTVector): BOOLEAN;
-         //Check if a sphere (at point C with radius) lies within the AABB specified by min and max entents
-         function SphereInNode(const minExtent, maxExtent : TAffineVector;
-                               const c: TVector; radius: Single): Boolean;
+    ChildArray: array [0 .. 7] of POctreeNode; // Octree's 8 children
+  end;
 
-         procedure WalkTriToLeafx(Onode: POctreeNode; const v1, v2, v3 : TAffineFLTVector);
-         procedure WalkPointToLeafx(ONode: POctreeNode; const p : TAffineVector);
-         procedure WalkSphereToLeafx(Onode: POctreeNode; const p : TVector; radius : Single);
-         procedure WalkRayToLeafx(Onode: POctreeNode; const p, v: TVector);
+  // TOctree
+  //
+  { : Manages an Octree containing references to triangles.<p> }
+  TOctree = class(TObject)
+  private
+    { Private Declarations }
+{$IFDEF DEBUG}
+    Intersections: Integer;
+    // for debugging  - number of triangles intersecting an AABB plane
+{$ENDIF}
+  protected
+    { Protected Declarations }
+    // Find the exact centre of an AABB
+    function GetMidPoint(Min, Max: Single): Single;
+    // Check if a point lies within the AABB specified by min and max entents
+    function PointInNode(const Min, Max, APoint: TAffineFLTVector): Boolean;
+    // Check if a triangle (vertices v1, v2, v3) lies within the AABB specified by min and max entents
+    function TriIntersectNode(const MinExtent, MaxExtent, V1, V2,
+      V3: TAffineFLTVector): BOOLEAN;
+    // Check if a sphere (at point C with radius) lies within the AABB specified by min and max entents
+    function SphereInNode(const MinExtent, MaxExtent: TAffineVector;
+      const C: TVector; Radius: Single): Boolean;
 
-         function GetExtent (const flags: array of byte; ParentNode: POctreeNode): TAffineFLTVector;
+    procedure WalkTriToLeafx(Onode: POctreeNode;
+      const V1, V2, V3: TAffineFLTVector);
+    procedure WalkPointToLeafx(ONode: POctreeNode; const P: TAffineVector);
+    procedure WalkSphereToLeafx(Onode: POctreeNode; const P: TVector;
+      Radius: Single);
+    procedure WalkRayToLeafx(Onode: POctreeNode; const P, V: TVector);
 
-         {: Recursive routine to build nodes from parent to max depth level. }
-         procedure Refine(ParentNode: POctreeNode; level: integer);
+    function GetExtent(const Flags: array of Byte; ParentNode: POctreeNode)
+      : TAffineFLTVector;
 
-         //Main "walking" routines.  Walks the item through the Octree down to a leaf node.
-         procedure WalkPointToLeaf(ONode: POctreeNode; const p : TAffineVector);
-         procedure WalkTriToLeaf(Onode: POctreeNode; const v1, v2, v3 : TAffineVector);
-         procedure WalkRayToLeaf(Onode: POctreeNode; const p, v : TVector);
+    { : Recursive routine to build nodes from parent to max depth level. }
+    procedure Refine(ParentNode: POctreeNode; Level: Integer);
 
-         //: Example of how to process each node in the tree
-         procedure ConvertR4(ONode: POctreeNode; const scale : TAffineFLTVector);
+    // Main "walking" routines.  Walks the item through the Octree down to a leaf node.
+    procedure WalkPointToLeaf(ONode: POctreeNode; const P: TAffineVector);
+    procedure WalkTriToLeaf(Onode: POctreeNode;
+      const V1, V2, V3: TAffineVector);
+    procedure WalkRayToLeaf(Onode: POctreeNode; const P, V: TVector);
 
-         procedure CreateTree(depth: integer);
-         procedure CutMesh;
-         
-      public
-         { Public Declarations }
-         WorldMinExtent, WorldMaxExtent: TAffineFLTVector;
-         RootNode: POctreeNode;      //always points to root node
-         MaxOlevel: integer;   //max depth level of TOctreeNode
-         NodeCount : Integer;  //number of nodes (ex: 8 for level 1, 72 for level 2 etc).
-         TriCountMesh : Integer;   //total number of triangles in the mesh
-         TriCountOctree : Integer; //total number of triangles cut into the octree
-         MeshCount : Integer;  //number of meshes currently cut into the Octree
+    // : Example of how to process each node in the tree
+    procedure ConvertR4(ONode: POctreeNode; const Scale: TAffineFLTVector);
 
-         ResultArray : array of POctreeNode;  //holds the result nodes of various calls
+    procedure CreateTree(Depth: Integer);
+    procedure CutMesh;
 
-         {19/06/2004 - Lucas G. - Needed this change - Used in ECMisc.pas}
-         triangleFiler : TAffineVectorList;
-         procedure WalkSphereToLeaf(Onode: POctreeNode; const p : TVector; radius : Single);
+  public
+    { Public Declarations }
+    WorldMinExtent, WorldMaxExtent: TAffineFLTVector;
+    RootNode: POctreeNode; // always points to root node
+    MaxOlevel: Integer; // max depth level of TOctreeNode
+    NodeCount: Integer;
+    // number of nodes (ex: 8 for level 1, 72 for level 2 etc).
+    TriCountMesh: Integer; // total number of triangles in the mesh
+    TriCountOctree: Integer; // total number of triangles cut into the octree
+    MeshCount: Integer; // number of meshes currently cut into the Octree
 
-         {: Initializes the tree from the triangle list.<p>
-            All triangles must be contained in the world extent to be properly
-            taken into account. }
-         procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent : TAffineVector;
-                                  const ATriangles : TAffineVectorList;
-                                  const ATreeDepth : Integer);
-         procedure DisposeTree;
+    ResultArray: array of POctreeNode;
+    // holds the result nodes of various calls
 
-         destructor Destroy;  override;
+    { 19/06/2004 - Lucas G. - Needed this change - Used in ECMisc.pas }
+    TriangleFiler: TAffineVectorList;
+    procedure WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
+      Radius: Single);
 
-         function RayCastIntersect(const rayStart, rayVector : TVector;
-                                       intersectPoint : PVector = nil;
-                                       intersectNormal : PVector = nil;
-                                       triangleInfo : POctreeTriangleInfo = nil) : Boolean;
-         function SphereSweepIntersect(const rayStart, rayVector : TVector;
-                                      const velocity, radius : single;
-                                      intersectPoint : PVector = nil;
-                                      intersectNormal : PVector = nil) : Boolean;
+    { : Initializes the tree from the triangle list.<p>
+      All triangles must be contained in the world extent to be properly
+      taken into account. }
+    procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent
+      : TAffineVector; const ATriangles: TAffineVectorList;
+      const ATreeDepth: Integer);
+    procedure DisposeTree;
 
-         function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
-         {: Returns all triangles in the AABB. }
-         function GetTrianglesFromNodesIntersectingAABB(const objAABB : TAABB) : TAffineVectorList;
-         {: Returns all triangles in an arbitrarily placed cube}         
-         function GetTrianglesFromNodesIntersectingCube(const objAABB : TAABB;
-                                     const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
-         {: Checks if an AABB intersects a face on the octree}
-         function AABBIntersect(const AABB: TAABB; m1to2, m2to1: TMatrix; triangles: TAffineVectorList = nil): boolean;
-//         function SphereIntersect(position:TAffineVector; radius:single);
-   end;
+    destructor Destroy; override;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+    function RayCastIntersect(const RayStart, RayVector: TVector;
+      IntersectPoint: PVector = nil; IntersectNormal: PVector = nil;
+      TriangleInfo: POctreeTriangleInfo = nil): Boolean;
+    function SphereSweepIntersect(const RayStart, RayVector: TVector;
+      const Velocity, Radius: Single; IntersectPoint: PVector = nil;
+      IntersectNormal: PVector = nil): Boolean;
+
+    function TriangleIntersect(const V1, V2, V3: TAffineVector): Boolean;
+    { : Returns all triangles in the AABB. }
+    function GetTrianglesFromNodesIntersectingAABB(const ObjAABB: TAABB)
+      : TAffineVectorList;
+    { : Returns all triangles in an arbitrarily placed cube }
+    function GetTrianglesFromNodesIntersectingCube(const ObjAABB: TAABB;
+      const ObjToSelf, SelfToObj: TMatrix): TAffineVectorList;
+    { : Checks if an AABB intersects a face on the octree }
+    function AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
+      Triangles: TAffineVectorList = nil): Boolean;
+    // function SphereIntersect(position:TAffineVector; radius:single);
+  end;
+
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -160,997 +173,1127 @@ implementation
 // ----------------------------------------------------------------------
 // Name  : CheckPointInSphere()
 // Input : point - point we wish to check for inclusion
-//         sO - Origin of sphere
-//         sR - radius of sphere
+// sO - Origin of sphere
+// sR - radius of sphere
 // Notes :
 // Return: TRUE if point is in sphere, FALSE if not.
 // -----------------------------------------------------------------------
 
-function CheckPointInSphere(const point, sO : TVector; const sR : Single) : Boolean;
+function CheckPointInSphere(const Point, SO: TVector; const SR: Single)
+  : Boolean;
 begin
-   //Allow small margin of error
-   Result:=(VectorDistance2(point, sO)<=Sqr(sR));
+  // Allow small margin of error
+  Result := (VectorDistance2(Point, SO) <= Sqr(SR));
 end;
 
 // ----------------------------------------------------------------------
 // Name  : CheckPointInTriangle()
 // Input : point - point we wish to check for inclusion
-//         a - first vertex in triangle
-//         b - second vertex in triangle 
-//         c - third vertex in triangle
+// a - first vertex in triangle
+// b - second vertex in triangle
+// c - third vertex in triangle
 // Notes : Triangle should be defined in clockwise order a,b,c
 // Return: TRUE if point is in triangle, FALSE if not.
-// -----------------------------------------------------------------------  
+// -----------------------------------------------------------------------
 
-function CheckPointInTriangle(point, a, b, c: TAffineVector):boolean;
+function CheckPointInTriangle(Point, A, B, C: TAffineVector): Boolean;
 var
-  total_angles:Single;
-  v1,v2,v3:TAffineVector;
+  Total_angles: Single;
+  V1, V2, V3: TAffineVector;
 begin
-  total_angles := 0;
+  Total_angles := 0;
 
   // make the 3 vectors
-  v1 := VectorSubtract(point,a);
-  v2 := VectorSubtract(point,b);
-  v3 := VectorSubtract(point,c);
+  V1 := VectorSubtract(Point, A);
+  V2 := VectorSubtract(Point, B);
+  V3 := VectorSubtract(Point, C);
 
-  normalizeVector(v1);
-  normalizeVector(v2);
-  normalizeVector(v3);
+  NormalizeVector(V1);
+  NormalizeVector(V2);
+  NormalizeVector(V3);
 
-  total_angles := total_angles + arccos(VectorDotProduct(v1,v2));
-  total_angles := total_angles + arccos(VectorDotProduct(v2,v3));
-  total_angles := total_angles + arccos(VectorDotProduct(v3,v1));
+  Total_angles := Total_angles + Arccos(VectorDotProduct(V1, V2));
+  Total_angles := Total_angles + Arccos(VectorDotProduct(V2, V3));
+  Total_angles := Total_angles + Arccos(VectorDotProduct(V3, V1));
 
-  if (abs(total_angles-2*PI) <= 0.005) then
-    result:= TRUE
+  if (Abs(Total_angles - 2 * PI) <= 0.005) then
+    Result := TRUE
   else
-    result:=FALSE;
+    Result := FALSE;
 end;
 
 // ----------------------------------------------------------------------
 // Name  : ClosestPointOnLine()
 // Input : a - first end of line segment
-//         b - second end of line segment
-//         p - point we wish to find closest point on line from
+// b - second end of line segment
+// p - point we wish to find closest point on line from
 // Notes : Helper function for closestPointOnTriangle()
 // Return: closest point on line segment
 // -----------------------------------------------------------------------
 
-function ClosestPointOnLine(const a, b, p : TAffineVector): TAffineVector;
-var d, t: double;
-    c, v: TAffineFLTVector;
+function ClosestPointOnLine(const A, B, P: TAffineVector): TAffineVector;
+var
+  D, T: Double;
+  C, V: TAffineFLTVector;
 begin
-    VectorSubtract(p, a, c);
-    VectorSubtract(b, a, v);
+  VectorSubtract(P, A, C);
+  VectorSubtract(B, A, V);
 
-    d:=VectorLength(v);
-    NormalizeVector(v);
-    t:=VectorDotProduct(v,c);
+  D := VectorLength(V);
+  NormalizeVector(V);
+  T := VectorDotProduct(V, C);
 
-    //Check to see if t is beyond the extents of the line segment
-    if (t < 0.0) then result:=a
-    else if (t > d) then result:=b
-    else begin
-      v[0]:=v[0]*t;
-      v[1]:=v[1]*t;
-      v[2]:=v[2]*t;
-      result:=VectorAdd(a, v);
-    end;
+  // Check to see if t is beyond the extents of the line segment
+  if (T < 0.0) then
+    Result := A
+  else if (T > D) then
+    Result := B
+  else
+  begin
+    V.Coord[0] := V.Coord[0] * T;
+    V.Coord[1] := V.Coord[1] * T;
+    V.Coord[2] := V.Coord[2] * T;
+    Result := VectorAdd(A, V);
+  end;
 end;
 
 // ----------------------------------------------------------------------
 // Name  : ClosestPointOnTriangle()
 // Input : a - first vertex in triangle
-//         b - second vertex in triangle
-//         c - third vertex in triangle
-//         p - point we wish to find closest point on triangle from
+// b - second vertex in triangle
+// c - third vertex in triangle
+// p - point we wish to find closest point on triangle from
 // Notes :
 // Return: closest point on triangle
 // -----------------------------------------------------------------------
 {
-function ClosestPointOnTriangle(const a, b, c, n, p: TAffineVector): TAffineVector;
-var
-   dAB, dBC, dCA : Single;
-   Rab, Rbc, Rca, intPoint : TAffineFLTVector;
-   hit:boolean;
-begin
-    //this would be faster if RayCastTriangleIntersect detected backwards hits
-    hit:=RayCastTriangleIntersect(VectorMake(p),VectorMake(n),a,b,c,@intPoint) or
-         RayCastTriangleIntersect(VectorMake(p),VectorMake(VectorNegate(n)),a,b,c,@intPoint);
-    if (hit) then
-    begin
-      Result:=intPoint;
-    end
-    else
-    begin
-    Rab:=ClosestPointOnLine(a, b, p);
-    Rbc:=ClosestPointOnLine(b, c, p);
-    Rca:=ClosestPointOnLine(c, a, p);
+  function ClosestPointOnTriangle(const a, b, c, n, p: TAffineVector): TAffineVector;
+  var
+  dAB, dBC, dCA : Single;
+  Rab, Rbc, Rca, intPoint : TAffineFLTVector;
+  hit:boolean;
+  begin
+  //this would be faster if RayCastTriangleIntersect detected backwards hits
+  hit:=RayCastTriangleIntersect(VectorMake(p),VectorMake(n),a,b,c,@intPoint) or
+  RayCastTriangleIntersect(VectorMake(p),VectorMake(VectorNegate(n)),a,b,c,@intPoint);
+  if (hit) then
+  begin
+  Result:=intPoint;
+  end
+  else
+  begin
+  Rab:=ClosestPointOnLine(a, b, p);
+  Rbc:=ClosestPointOnLine(b, c, p);
+  Rca:=ClosestPointOnLine(c, a, p);
 
-    dAB:=VectorDistance2(p, Rab);
-    dBC:=VectorDistance2(p, Rbc);
-    dCA:=VectorDistance2(p, Rca);
+  dAB:=VectorDistance2(p, Rab);
+  dBC:=VectorDistance2(p, Rbc);
+  dCA:=VectorDistance2(p, Rca);
 
-      if dBC<dAB then
-        if dCA<dBC then
-           Result:=Rca
-        else Result:=Rbc
-      else if dCA<dAB then
-        Result:=Rca
-      else Result:=Rab;
-    end;
-end;
+  if dBC<dAB then
+  if dCA<dBC then
+  Result:=Rca
+  else Result:=Rbc
+  else if dCA<dAB then
+  Result:=Rca
+  else Result:=Rab;
+  end;
+  end;
 }
 
 // ----------------------------------------------------------------------
 // Name  : ClosestPointOnTriangleEdge()
 // Input : a - first vertex in triangle
-//         b - second vertex in triangle
-//         c - third vertex in triangle
-//         p - point we wish to find closest point on triangle from
+// b - second vertex in triangle
+// c - third vertex in triangle
+// p - point we wish to find closest point on triangle from
 // Notes :
 // Return: closest point on line triangle edge
 // -----------------------------------------------------------------------
 
-function ClosestPointOnTriangleEdge(const a, b, c, p: TAffineVector): TAffineVector;
+function ClosestPointOnTriangleEdge(const A, B, C, P: TAffineVector)
+  : TAffineVector;
 var
-   dAB, dBC, dCA : Single;
-   Rab, Rbc, Rca : TAffineFLTVector;
+  DAB, DBC, DCA: Single;
+  Rab, Rbc, Rca: TAffineFLTVector;
 begin
-    Rab:=ClosestPointOnLine(a, b, p);
-    Rbc:=ClosestPointOnLine(b, c, p);
-    Rca:=ClosestPointOnLine(c, a, p);
+  Rab := ClosestPointOnLine(A, B, P);
+  Rbc := ClosestPointOnLine(B, C, P);
+  Rca := ClosestPointOnLine(C, A, P);
 
-    dAB:=VectorDistance2(p, Rab);
-    dBC:=VectorDistance2(p, Rbc);
-    dCA:=VectorDistance2(p, Rca);
+  DAB := VectorDistance2(P, Rab);
+  DBC := VectorDistance2(P, Rbc);
+  DCA := VectorDistance2(P, Rca);
 
-    if dBC<dAB then
-      if dCA<dBC then
-         Result:=Rca
-      else Result:=Rbc
-    else if dCA<dAB then
-      Result:=Rca
-    else Result:=Rab;
+  if DBC < DAB then
+    if DCA < DBC then
+      Result := Rca
+    else
+      Result := Rbc
+  else if DCA < DAB then
+    Result := Rca
+  else
+    Result := Rab;
 end;
 
 // HitBoundingBox
 //
-function HitBoundingBox(const minB, maxB: TAffineFLTVector;
-                        const origin, dir: TVector;
-                        var coord: TVector): BOOLEAN;
+function HitBoundingBox(const MinB, MaxB: TAffineFLTVector;
+  const Origin, Dir: TVector; var Coord: TVector): BOOLEAN;
 const
-   NUMDIM	= 2;
-   RIGHT	= 0;
-   LEFT	= 1;
-   MIDDLE    = 2;
+  NUMDIM = 2;
+  RIGHT = 0;
+  LEFT = 1;
+  MIDDLE = 2;
 var
-   i, whichplane: integer;
-   inside: BOOLEAN;
-   quadrant: array [0..NUMDIM] of byte;
-   maxT: array [0..NUMDIM] of double;
-   candidatePlane: array [0..NUMDIM] of double;
+  I, Whichplane: Integer;
+  Inside: BOOLEAN;
+  Quadrant: array [0 .. NUMDIM] of Byte;
+  MaxT: array [0 .. NUMDIM] of Double;
+  CandidatePlane: array [0 .. NUMDIM] of Double;
 
 begin
-	inside := TRUE;
+  Inside := TRUE;
 
-	// Find candidate planes; this loop can be avoided if
-   	// rays cast all from the eye(assume perpsective view)
-        for i:=0 to NUMDIM do begin
-		if(origin[i] < minB[i]) then begin
-			quadrant[i] := LEFT;
-			candidatePlane[i] := minB[i];
-			inside := FALSE;
-                end
-		else if (origin[i] > maxB[i]) then begin
-			quadrant[i] := RIGHT;
-			candidatePlane[i] := maxB[i];
-			inside := FALSE;
-                end
-		else	quadrant[i] := MIDDLE;
-        end;
+  // Find candidate planes; this loop can be avoided if
+  // rays cast all from the eye(assume perpsective view)
+  for I := 0 to NUMDIM do
+  begin
+    if (Origin.Coord[I] < MinB.Coord[I]) then
+    begin
+      Quadrant[I] := LEFT;
+      CandidatePlane[I] := MinB.Coord[I];
+      Inside := FALSE;
+    end
+    else if (Origin.Coord[I] > MaxB.Coord[I]) then
+    begin
+      Quadrant[I] := RIGHT;
+      CandidatePlane[I] := MaxB.Coord[I];
+      Inside := FALSE;
+    end
+    else
+      Quadrant[I] := MIDDLE;
+  end;
 
+  // * Ray origin inside bounding box */
+  if Inside then
+  begin
+    SetVector(Coord, Origin);
+    Result := TRUE;
+    Exit;
+  end;
 
-	//* Ray origin inside bounding box */
-	if inside then begin
-		SetVector(coord,  origin);
-		result:= TRUE;
-                exit;
-	end;
+  // * Calculate T distances to candidate planes */
+  for I := 0 to NUMDIM do
+  begin
+    if (Quadrant[I] <> MIDDLE) AND (Dir.Coord[I] <> 0) then
+      MaxT[I] := (CandidatePlane[I] - Origin.Coord[I]) / Dir.Coord[I]
+    else
+      MaxT[I] := -1;
+  end;
 
+  // * Get largest of the maxT's for final choice of intersection */
+  WhichPlane := 0;
+  for I := 1 to NUMDIM do
+    if (MaxT[WhichPlane] < MaxT[I]) then
+      WhichPlane := I;
 
-	//* Calculate T distances to candidate planes */
-        for i:=0 to NUMDIM do begin
-		if (quadrant[i] <> MIDDLE) AND (dir[i] <> 0) then
-			maxT[i] := (candidatePlane[i]-origin[i]) / dir[i]
-		else
-			maxT[i] := -1;
-        end;
+  // * Check final candidate actually inside box */
+  if (MaxT[WhichPlane] < 0) then
+  begin
+    Result := FALSE;
+    Exit;
+  end;
 
-	//* Get largest of the maxT's for final choice of intersection */
-	whichPlane := 0;
-        for i:=1 to NUMDIM do
-            if (maxT[whichPlane] < maxT[i]) then whichPlane := i;
+  for I := 0 to NUMDIM do
+  begin
+    if WhichPlane <> I then
+    begin
+      Coord.Coord[I] := Origin.Coord[I] + MaxT[WhichPlane] * Dir.Coord[I];
+      if (Coord.Coord[I] < MinB.Coord[I]) OR (Coord.Coord[I] > MaxB.Coord[I])
+      then
+      begin
+        Result := FALSE;
+        Exit;
+      end;
+    end
+    else
+      Coord.Coord[I] := CandidatePlane[I];
+  end;
 
-	//* Check final candidate actually inside box */
-	if (maxT[whichPlane] < 0) then begin
-            result:=FALSE;
-            exit;
-        end;
-
-        for i:=0 to NUMDIM do begin
-		if whichPlane <> i then begin
-			coord[i] := origin[i] + maxT[whichPlane] * dir[i];
-			if (coord[i] < minB[i]) OR (coord[i] > maxB[i]) then begin
-				result:=FALSE;
-                                exit;
-                        end;
-                end
-		else 	coord[i] := candidatePlane[i];
-        end;
-
-	result:=TRUE;				//* ray hits box */
+  Result := TRUE; // * ray hits box */
 
 end;
 
-const USE_EPSILON_TEST = TRUE;
-      EPSILON = 0.000001;
+const
+  USE_EPSILON_TEST = TRUE;
+  EPSILON = 0.000001;
 
-// coplanar_tri_tri
-//
-function coplanar_tri_tri(const N,V0,V1,V2,U0,U1,U2: TAffineFLTVEctor): integer;
+  // coplanar_tri_tri
+  //
+function Coplanar_tri_tri(const N, V0, V1, V2, U0, U1,
+  U2: TAffineFLTVEctor): Integer;
 var
-   A: TAffineFLTVector;
-   i0,i1: shortint;
+  A: TAffineFLTVector;
+  I0, I1: Shortint;
 
-   function EDGE_AGAINST_TRI_EDGES(const V0,V1,U0,U1,U2: TAffineFLTVector): integer;
-   var
-      Ax,Ay,Bx,By,Cx,Cy,e,d,f: single;
+  function EDGE_AGAINST_TRI_EDGES(const V0, V1, U0, U1,
+    U2: TAffineFLTVector): Integer;
+  var
+    Ax, Ay, Bx, By, Cx, Cy, E, D, F: Single;
 
-      //* this edge to edge test is based on Franlin Antonio's gem:
-      //   "Faster Line Segment Intersection", in Graphics Gems III,
-      //   pp. 199-202 */
-      function EDGE_EDGE_TEST(const V0, U0, U1 : TAffineFLTVector) : Integer;
+    // * this edge to edge test is based on Franlin Antonio's gem:
+    // "Faster Line Segment Intersection", in Graphics Gems III,
+    // pp. 199-202 */
+    function EDGE_EDGE_TEST(const V0, U0, U1: TAffineFLTVector): Integer;
+    begin
+      Result := 0;
+      Bx := U0.Coord[I0] - U1.Coord[I0];
+      By := U0.Coord[I1] - U1.Coord[I1];
+      Cx := V0.Coord[I0] - U0.Coord[I0];
+      Cy := V0.Coord[I1] - U0.Coord[I1];
+      F := Ay * Bx - Ax * By;
+      D := By * Cx - Bx * Cy;
+      if ((F > 0) and (D >= 0) and (D <= F)) or
+        ((F < 0) and (D <= 0) and (D >= F)) then
       begin
-         result:=0;
-         Bx:=U0[i0]-U1[i0];
-         By:=U0[i1]-U1[i1];
-         Cx:=V0[i0]-U0[i0];
-         Cy:=V0[i1]-U0[i1];
-         f:=Ay*Bx-Ax*By;
-         d:=By*Cx-Bx*Cy;
-         if((f>0) and (d>=0) and (d<=f)) or ((f<0) and (d<=0) and (d>=f)) then begin
-            e:=Ax*Cy-Ay*Cx;
-            if(f>0) then begin
-               if (e>=0) and (e<=f) then result:=1
-            end else if(e<=0) and (e>=f) then result:=1;
-         end;
+        E := Ax * Cy - Ay * Cx;
+        if (F > 0) then
+        begin
+          if (E >= 0) and (E <= F) then
+            Result := 1
+        end
+        else if (E <= 0) and (E >= F) then
+          Result := 1;
       end;
+    end;
 
-   begin
-     Ax:=V1[i0]-V0[i0];
-     Ay:=V1[i1]-V0[i1];
-     //* test edge U0,U1 against V0,V1 */
-     result:=EDGE_EDGE_TEST(V0,U0,U1);
-     if result=1 then exit;
-     //* test edge U1,U2 against V0,V1 */
-     result:=EDGE_EDGE_TEST(V0,U1,U2);
-     if result=1 then exit;
-     //* test edge U2,U1 against V0,V1 */
-     result:=EDGE_EDGE_TEST(V0,U2,U0);
-   end;
+  begin
+    Ax := V1.Coord[I0] - V0.Coord[I0];
+    Ay := V1.Coord[I1] - V0.Coord[I1];
+    // * test edge U0,U1 against V0,V1 */
+    Result := EDGE_EDGE_TEST(V0, U0, U1);
+    if Result = 1 then
+      Exit;
+    // * test edge U1,U2 against V0,V1 */
+    Result := EDGE_EDGE_TEST(V0, U1, U2);
+    if Result = 1 then
+      Exit;
+    // * test edge U2,U1 against V0,V1 */
+    Result := EDGE_EDGE_TEST(V0, U2, U0);
+  end;
 
-   function POINT_IN_TRI(const V0,U0,U1,U2: TAffineFLTVector): integer;
-   var
-      a,b,c,d0,d1,d2: single;
-   begin
-      result:=0;
-      //* is T1 completly inside T2? */
-      //* check if V0 is inside tri(U0,U1,U2) */
-      a:=U1[i1]-U0[i1];
-      b:=-(U1[i0]-U0[i0]);
-      c:=-a*U0[i0]-b*U0[i1];
-      d0:=a*V0[i0]+b*V0[i1]+c;
+  function POINT_IN_TRI(const V0, U0, U1, U2: TAffineFLTVector): Integer;
+  var
+    A, B, C, D0, D1, D2: Single;
+  begin
+    Result := 0;
+    // * is T1 completly inside T2? */
+    // * check if V0 is inside tri(U0,U1,U2) */
+    A := U1.Coord[I1] - U0.Coord[I1];
+    B := -(U1.Coord[I0] - U0.Coord[I0]);
+    C := -A * U0.Coord[I0] - B * U0.Coord[I1];
+    D0 := A * V0.Coord[I0] + B * V0.Coord[I1] + C;
 
-      a:=U2[i1]-U1[i1];
-      b:=-(U2[i0]-U1[i0]);
-      c:=-a*U1[i0]-b*U1[i1];
-      d1:=a*V0[i0]+b*V0[i1]+c;
+    A := U2.Coord[I1] - U1.Coord[I1];
+    B := -(U2.Coord[I0] - U1.Coord[I0]);
+    C := -A * U1.Coord[I0] - B * U1.Coord[I1];
+    D1 := A * V0.Coord[I0] + B * V0.Coord[I1] + C;
 
-      a:=U0[i1]-U2[i1];
-      b:=-(U0[i0]-U2[i0]);
-      c:=-a*U2[i0]-b*U2[i1];
-      d2:=a*V0[i0]+b*V0[i1]+c;
-      if (d0*d1>0.0) then
-         if (d0*d2>0.0) then result:=1;
-   end;
+    A := U0.Coord[I1] - U2.Coord[I1];
+    B := -(U0.Coord[I0] - U2.Coord[I0]);
+    C := -A * U2.Coord[I0] - B * U2.Coord[I1];
+    D2 := A * V0.Coord[I0] + B * V0.Coord[I1] + C;
+    if (D0 * D1 > 0.0) then
+      if (D0 * D2 > 0.0) then
+        Result := 1;
+  end;
 
 /// Begin Main logic ///////////////////////////////
 begin
-   //* first project onto an axis-aligned plane, that maximizes the area */
-   //* of the triangles, compute indices: i0,i1. */
-   A[0]:=abs(N[0]);
-   A[1]:=abs(N[1]);
-   A[2]:=abs(N[2]);
-   if(A[0]>A[1]) then begin
-      if(A[0]>A[2]) then begin
-          i0:=1;      //* A[0] is greatest */
-          i1:=2;
-      end else begin
-          i0:=0;      //* A[2] is greatest */
-          i1:=1;
-      end
-   end else begin  //* A[0]<=A[1] */
-      if(A[2]>A[1]) then begin
-          i0:=0;      //* A[2] is greatest */
-          i1:=1;
-      end else begin
-          i0:=0;      //* A[1] is greatest */
-          i1:=2;
-      end
-   end;
+  // * first project onto an axis-aligned plane, that maximizes the area */
+  // * of the triangles, compute indices: i0,i1. */
+  A.Coord[0] := Abs(N.Coord[0]);
+  A.Coord[1] := Abs(N.Coord[1]);
+  A.Coord[2] := Abs(N.Coord[2]);
+  if (A.Coord[0] > A.Coord[1]) then
+  begin
+    if (A.Coord[0] > A.Coord[2]) then
+    begin
+      I0 := 1; // * A[0] is greatest */
+      I1 := 2;
+    end
+    else
+    begin
+      I0 := 0; // * A[2] is greatest */
+      I1 := 1;
+    end
+  end
+  else
+  begin // * A[0]<=A[1] */
+    if (A.Coord[2] > A.Coord[1]) then
+    begin
+      I0 := 0; // * A[2] is greatest */
+      I1 := 1;
+    end
+    else
+    begin
+      I0 := 0; // * A[1] is greatest */
+      I1 := 2;
+    end
+  end;
 
-   //* test all edges of triangle 1 against the edges of triangle 2 */
-   result:=EDGE_AGAINST_TRI_EDGES(V0,V1,U0,U1,U2);
-   if result=1 then exit;
-   result:=EDGE_AGAINST_TRI_EDGES(V1,V2,U0,U1,U2);
-   if result=1 then exit;
-   result:=EDGE_AGAINST_TRI_EDGES(V2,V0,U0,U1,U2);
-   if result=1 then exit;
+  // * test all edges of triangle 1 against the edges of triangle 2 */
+  Result := EDGE_AGAINST_TRI_EDGES(V0, V1, U0, U1, U2);
+  if Result = 1 then
+    Exit;
+  Result := EDGE_AGAINST_TRI_EDGES(V1, V2, U0, U1, U2);
+  if Result = 1 then
+    Exit;
+  Result := EDGE_AGAINST_TRI_EDGES(V2, V0, U0, U1, U2);
+  if Result = 1 then
+    Exit;
 
-   //* finally, test if tri1 is totally contained in tri2 or vice versa */
-   result:=POINT_IN_TRI(V0,U0,U1,U2);
-   if result=1 then exit;
-   result:=POINT_IN_TRI(U0,V0,V1,V2);
+  // * finally, test if tri1 is totally contained in tri2 or vice versa */
+  Result := POINT_IN_TRI(V0, U0, U1, U2);
+  if Result = 1 then
+    Exit;
+  Result := POINT_IN_TRI(U0, V0, V1, V2);
 end;
 
-// tri_tri_intersect 
+// tri_tri_intersect
 //
-function tri_tri_intersect(const V0,V1,V2,U0,U1,U2: TAFFineFLTVector): integer;
+function Tri_tri_intersect(const V0, V1, V2, U0, U1,
+  U2: TAFFineFLTVector): Integer;
 var
-   E1,E2: TAffineFLTVector;
-   N1,N2: TAffineFLTVector;
-   d1,d2: single;
-   du0,du1,du2,dv0,dv1,dv2: single;
-   D: TAffineFLTVector;
-   isect1: array[0..1] of single;
-   isect2: array[0..1] of single;
-   du0du1,du0du2,dv0dv1,dv0dv2: single;
-   index: shortint;
-   vp0,vp1,vp2: single;
-   up0,up1,up2: single;
-   b,c,max: single;
+  E1, E2: TAffineFLTVector;
+  N1, N2: TAffineFLTVector;
+  D1, D2: Single;
+  Du0, Du1, Du2, Dv0, Dv1, Dv2: Single;
+  D: TAffineFLTVector;
+  Isect1: array [0 .. 1] of Single;
+  Isect2: array [0 .. 1] of Single;
+  Du0du1, Du0du2, Dv0dv1, Dv0dv2: Single;
+  Index: Shortint;
+  Vp0, Vp1, Vp2: Single;
+  Up0, Up1, Up2: Single;
+  B, C, Max: Single;
 
-   procedure ISECT(VV0,VV1,VV2,D0,D1,D2: single; var isect0,isect1: single);
-   begin
-      isect0:=VV0+(VV1-VV0)*D0/(D0-D1);
-      isect1:=VV0+(VV2-VV0)*D0/(D0-D2);
-   end;
+  procedure ISECT(VV0, VV1, VV2, D0, D1, D2: Single;
+    var Isect0, Isect1: Single);
+  begin
+    Isect0 := VV0 + (VV1 - VV0) * D0 / (D0 - D1);
+    Isect1 := VV0 + (VV2 - VV0) * D0 / (D0 - D2);
+  end;
 
-   function COMPUTE_INTERVALS(VV0,VV1,VV2,D0,D1,D2,D0D1,D0D2: single; var isect0,isect1: single): integer;
-   begin
-     result:=0;
-     if(D0D1>0.0) then
-       //* here we know that D0D2<=0.0 */
-       //* that is D0, D1 are on the same side, D2 on the other or on the plane */ \
-       ISECT(VV2,VV0,VV1,D2,D0,D1,isect0,isect1)
-     else if(D0D2>0.0) then
-      //* here we know that d0d1<=0.0 */
-       ISECT(VV1,VV0,VV2,D1,D0,D2,isect0,isect1)
-     else if(D1*D2>0.0) or (D0<>0.0) then
-       //* here we know that d0d1<=0.0 or that D0!=0.0 */
-       ISECT(VV0,VV1,VV2,D0,D1,D2,isect0,isect1)
-     else if(D1<>0.0) then
-       ISECT(VV1,VV0,VV2,D1,D0,D2,isect0,isect1)
-     else if(D2<>0.0) then
-       ISECT(VV2,VV0,VV1,D2,D0,D1,isect0,isect1)
-     else
-       //* triangles are coplanar */
-       result:=coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);
-   end;
+  function COMPUTE_INTERVALS(VV0, VV1, VV2, D0, D1, D2, D0D1, D0D2: Single;
+    var Isect0, Isect1: Single): Integer;
+  begin
+    Result := 0;
+    if (D0D1 > 0.0) then
+      // * here we know that D0D2<=0.0 */
+      // * that is D0, D1 are on the same side, D2 on the other or on the plane */ \
+      ISECT(VV2, VV0, VV1, D2, D0, D1, Isect0, Isect1)
+    else if (D0D2 > 0.0) then
+      // * here we know that d0d1<=0.0 */
+      ISECT(VV1, VV0, VV2, D1, D0, D2, Isect0, Isect1)
+    else if (D1 * D2 > 0.0) or (D0 <> 0.0) then
+      // * here we know that d0d1<=0.0 or that D0!=0.0 */
+      ISECT(VV0, VV1, VV2, D0, D1, D2, Isect0, Isect1)
+    else if (D1 <> 0.0) then
+      ISECT(VV1, VV0, VV2, D1, D0, D2, Isect0, Isect1)
+    else if (D2 <> 0.0) then
+      ISECT(VV2, VV0, VV1, D2, D0, D1, Isect0, Isect1)
+    else
+      // * triangles are coplanar */
+      Result := Coplanar_tri_tri(N1, V0, V1, V2, U0, U1, U2);
+  end;
 
-   //* sort so that a<=b */
-   procedure SORT(var a: single; var b: single);
-   var
-      c : single;
-   begin
-      if (a>b) then begin
-         c:=a;
-         a:=b;
-         b:=c;
-      end;
-   end;
+// * sort so that a<=b */
+  procedure SORT(var A: Single; var B: Single);
+  var
+    C: Single;
+  begin
+    if (A > B) then
+    begin
+      C := A;
+      A := B;
+      B := C;
+    end;
+  end;
 
 begin
-   //* compute plane equation of triangle(V0,V1,V2) */
-   E1:=VectorSubtract(V1,V0);
-   E2:=VectorSubtract(V2,V0);
-   N1:=VectorCrossProduct(E1, E2);
-   d1:=-VectorDotProduct(N1,V0);
-   //* plane equation 1: N1.X+d1=0 */
+  // * compute plane equation of triangle(V0,V1,V2) */
+  E1 := VectorSubtract(V1, V0);
+  E2 := VectorSubtract(V2, V0);
+  N1 := VectorCrossProduct(E1, E2);
+  D1 := -VectorDotProduct(N1, V0);
+  // * plane equation 1: N1.X+d1=0 */
 
-   //* put U0,U1,U2 into plane equation 1 to compute signed distances to the plane*/
-   du0:=VectorDotProduct(N1,U0)+d1;
-   du1:=VectorDotProduct(N1,U1)+d1;
-   du2:=VectorDotProduct(N1,U2)+d1;
+  // * put U0,U1,U2 into plane equation 1 to compute signed distances to the plane*/
+  Du0 := VectorDotProduct(N1, U0) + D1;
+  Du1 := VectorDotProduct(N1, U1) + D1;
+  Du2 := VectorDotProduct(N1, U2) + D1;
 
-   //* coplanarity robustness check */
-   if USE_EPSILON_TEST=TRUE then begin
-      if (abs(du0)<EPSILON) then du0:=0.0;
-      if (abs(du1)<EPSILON) then du1:=0.0;
-      if (abs(du2)<EPSILON) then du2:=0.0;
-   end;
-   du0du1:=du0*du1;
-   du0du2:=du0*du2;
+  // * coplanarity robustness check */
+  if USE_EPSILON_TEST = TRUE then
+  begin
+    if (Abs(Du0) < EPSILON) then
+      Du0 := 0.0;
+    if (Abs(Du1) < EPSILON) then
+      Du1 := 0.0;
+    if (Abs(Du2) < EPSILON) then
+      Du2 := 0.0;
+  end;
+  Du0du1 := Du0 * Du1;
+  Du0du2 := Du0 * Du2;
 
-   if(du0du1>0.0) and (du0du2>0.0) then begin//* same sign on all of them + not equal 0 ? */
-      result:=0;                    //* no intersection occurs */
-      exit;
-   end;
+  if (Du0du1 > 0.0) and (Du0du2 > 0.0) then
+  begin // * same sign on all of them + not equal 0 ? */
+    Result := 0; // * no intersection occurs */
+    Exit;
+  end;
 
-   //* compute plane of triangle (U0,U1,U2) */
-   E1:=VectorSubtract(U1,U0);
-   E2:=VectorSubtract(U2,U0);
-   N2:=VectorCrossProduct(E1, E2);
-   d2:=-VectorDotProduct(N2,U0);
-   //* plane equation 2: N2.X+d2=0 */
+  // * compute plane of triangle (U0,U1,U2) */
+  E1 := VectorSubtract(U1, U0);
+  E2 := VectorSubtract(U2, U0);
+  N2 := VectorCrossProduct(E1, E2);
+  D2 := -VectorDotProduct(N2, U0);
+  // * plane equation 2: N2.X+d2=0 */
 
-   //* put V0,V1,V2 into plane equation 2 */
-   dv0:=VectorDotProduct(N2,V0)+d2;
-   dv1:=VectorDotProduct(N2,V1)+d2;
-   dv2:=VectorDotProduct(N2,V2)+d2;
+  // * put V0,V1,V2 into plane equation 2 */
+  Dv0 := VectorDotProduct(N2, V0) + D2;
+  Dv1 := VectorDotProduct(N2, V1) + D2;
+  Dv2 := VectorDotProduct(N2, V2) + D2;
 
-   if USE_EPSILON_TEST=TRUE then begin
-      if(abs(dv0)<EPSILON) then dv0:=0.0;
-      if(abs(dv1)<EPSILON) then dv1:=0.0;
-      if(abs(dv2)<EPSILON) then dv2:=0.0;
-   end;
+  if USE_EPSILON_TEST = TRUE then
+  begin
+    if (Abs(Dv0) < EPSILON) then
+      Dv0 := 0.0;
+    if (Abs(Dv1) < EPSILON) then
+      Dv1 := 0.0;
+    if (Abs(Dv2) < EPSILON) then
+      Dv2 := 0.0;
+  end;
 
-   dv0dv1:=dv0*dv1;
-   dv0dv2:=dv0*dv2;
+  Dv0dv1 := Dv0 * Dv1;
+  Dv0dv2 := Dv0 * Dv2;
 
-   if(dv0dv1>0.0) and (dv0dv2>0.0) then begin //* same sign on all of them + not equal 0 ? */
-      result:=0;                    //* no intersection occurs */
-      exit;
-   end;
+  if (Dv0dv1 > 0.0) and (Dv0dv2 > 0.0) then
+  begin // * same sign on all of them + not equal 0 ? */
+    Result := 0; // * no intersection occurs */
+    Exit;
+  end;
 
-   //* compute direction of intersection line */
-   D:=VectorCrossProduct(N1, N2);
+  // * compute direction of intersection line */
+  D := VectorCrossProduct(N1, N2);
 
-   //* compute and index to the largest component of D */
-   max:=abs(D[0]);
-   index:=0;
-   b:=abs(D[1]);
-   c:=abs(D[2]);
-   if(b>max) then begin
-     max:=b; index:=1;
-   end;
-   if(c>max) then begin
-     //max:=c;   why?
-     index:=2;
-   end;
-   //* this is the simplified projection onto L*/
-   vp0:=V0[index];
-   vp1:=V1[index];
-   vp2:=V2[index];
+  // * compute and index to the largest component of D */
+  Max := Abs(D.Coord[0]);
+  index := 0;
+  B := Abs(D.Coord[1]);
+  C := Abs(D.Coord[2]);
+  if (B > Max) then
+  begin
+    Max := B;
+    index := 1;
+  end;
+  if (C > Max) then
+  begin
+    // max:=c;   why?
+    index := 2;
+  end;
+  // * this is the simplified projection onto L*/
+  Vp0 := V0.Coord[index];
+  Vp1 := V1.Coord[index];
+  Vp2 := V2.Coord[index];
 
-   up0:=U0[index];
-   up1:=U1[index];
-   up2:=U2[index];
+  Up0 := U0.Coord[index];
+  Up1 := U1.Coord[index];
+  Up2 := U2.Coord[index];
 
-   //* compute interval for triangle 1 */
-   COMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,isect1[0],isect1[1]);
+  // * compute interval for triangle 1 */
+  COMPUTE_INTERVALS(Vp0, Vp1, Vp2, Dv0, Dv1, Dv2, Dv0dv1, Dv0dv2, Isect1[0],
+    Isect1[1]);
 
-   //* compute interval for triangle 2 */
-   COMPUTE_INTERVALS(up0,up1,up2,du0,du1,du2,du0du1,du0du2,isect2[0],isect2[1]);
+  // * compute interval for triangle 2 */
+  COMPUTE_INTERVALS(Up0, Up1, Up2, Du0, Du1, Du2, Du0du1, Du0du2, Isect2[0],
+    Isect2[1]);
 
-   SORT(isect1[0],isect1[1]);
-   SORT(isect2[0],isect2[1]);
+  SORT(Isect1[0], Isect1[1]);
+  SORT(Isect2[0], Isect2[1]);
 
-   if (isect1[1]<isect2[0]) or (isect2[1]<isect1[0]) then
-      result:=0
-   else result:=1;
+  if (Isect1[1] < Isect2[0]) or (Isect2[1] < Isect1[0]) then
+    Result := 0
+  else
+    Result := 1;
 end;
 
 // ------------------
 // ------------------ TOctree ------------------
 // ------------------
 
-const MIN = 0;
-const MID = 1;
-const MAX = 2;
-const POINT = 0;
-const TRIANGLE = 1;
-const TOPFACE = 0;
-const BOTTOMFACE = 1;
-const LEFTFACE = 2;
-const RIGHTFACE = 3;
-const FRONTFACE = 4;
-const BACKFACE = 5;
-const TOPLEFT = 0;
-const TOPRIGHT = 1;
-const BOTTOMLEFT = 2;
-const BOTTOMRIGHT = 3;
-
-// Theory on FlagMax and FlagMin:
-// When a node is subdivided, each of the 8 children assumes 1/8th ownership of its
-// parent's bounding box (defined by parent extents).  Calculating a child's min/max
-// extent only requires 3 values: the parent's min extent, the parent's max extent
-// and the midpoint of the parent's extents (since the cube is divided in half twice).
-// The following arrays assume that the children are numbered from 0 to 7, named Upper
-// and Lower (Upper = top 4 cubes on Y axis, Bottom = lower 4 cubes), Left and Right, and
-// Fore and Back (Fore facing furthest away from you the viewer).
-// Each node can use its corresponding element in the array to flag the operation needed
-// to find its new min/max extent.  Note that min, mid and max refer to an array of
-// 3 coordinates (x,y,z); each of which are flagged separately. Also note that these
-// flags are based on the Y vector being the up vector.
 const
-   FlagMax: array[0..7] of array [0..2] of byte = (
-      (MID,MAX,MAX), //Upper Fore Left
-      (MAX,MAX,MAX), //Upper Fore Right
-      (MID,MAX,MID), //Upper Back Left
-      (MAX,MAX,MID), //Upper Back Right
+  MIN = 0;
 
-      (MID,MID,MAX), //Lower Fore Left   (similar to above except height/2)
-      (MAX,MID,MAX), //Lower Fore Right
-      (MID,MID,MID), //Lower Back Left
-      (MAX,MID,MID)  //Lower Back Right
+const
+  MID = 1;
+
+const
+  MAX = 2;
+
+const
+  POINT = 0;
+
+const
+  TRIANGLE = 1;
+
+const
+  TOPFACE = 0;
+
+const
+  BOTTOMFACE = 1;
+
+const
+  LEFTFACE = 2;
+
+const
+  RIGHTFACE = 3;
+
+const
+  FRONTFACE = 4;
+
+const
+  BACKFACE = 5;
+
+const
+  TOPLEFT = 0;
+
+const
+  TOPRIGHT = 1;
+
+const
+  BOTTOMLEFT = 2;
+
+const
+  BOTTOMRIGHT = 3;
+
+  // Theory on FlagMax and FlagMin:
+  // When a node is subdivided, each of the 8 children assumes 1/8th ownership of its
+  // parent's bounding box (defined by parent extents).  Calculating a child's min/max
+  // extent only requires 3 values: the parent's min extent, the parent's max extent
+  // and the midpoint of the parent's extents (since the cube is divided in half twice).
+  // The following arrays assume that the children are numbered from 0 to 7, named Upper
+  // and Lower (Upper = top 4 cubes on Y axis, Bottom = lower 4 cubes), Left and Right, and
+  // Fore and Back (Fore facing furthest away from you the viewer).
+  // Each node can use its corresponding element in the array to flag the operation needed
+  // to find its new min/max extent.  Note that min, mid and max refer to an array of
+  // 3 coordinates (x,y,z); each of which are flagged separately. Also note that these
+  // flags are based on the Y vector being the up vector.
+const
+  FlagMax: array [0 .. 7] of array [0 .. 2] of Byte = ((MID, MAX, MAX),
+    // Upper Fore Left
+    (MAX, MAX, MAX), // Upper Fore Right
+    (MID, MAX, MID), // Upper Back Left
+    (MAX, MAX, MID), // Upper Back Right
+
+    (MID, MID, MAX), // Lower Fore Left   (similar to above except height/2)
+    (MAX, MID, MAX), // Lower Fore Right
+    (MID, MID, MID), // Lower Back Left
+    (MAX, MID, MID) // Lower Back Right
     );
 
-   FlagMin: array[0..7] of array [0..2] of byte = (
-      (MIN,MID,MID), //Upper Fore Left
-      (MID,MID,MID), //Upper Fore Right
-      (MIN,MID,MIN), //Upper Back Left
-      (MID,MID,MIN), //Upper Back Right
+  FlagMin: array [0 .. 7] of array [0 .. 2] of Byte = ((MIN, MID, MID),
+    // Upper Fore Left
+    (MID, MID, MID), // Upper Fore Right
+    (MIN, MID, MIN), // Upper Back Left
+    (MID, MID, MIN), // Upper Back Right
 
-      (MIN,MIN,MID), //Lower Fore Left  (similar to above except height/2)
-      (MID,MIN,MID), //Lower Fore Right
-      (MIN,MIN,MIN), //Lower Back Left
-      (MID,MIN,MIN)  //Lower Back Right
+    (MIN, MIN, MID), // Lower Fore Left  (similar to above except height/2)
+    (MID, MIN, MID), // Lower Fore Right
+    (MIN, MIN, MIN), // Lower Back Left
+    (MID, MIN, MIN) // Lower Back Right
     );
 
-    //Design of the AABB faces, using similar method to above.. Note than normals are not
-    //correct, but not needed for current tri-intersection test.
-    //Could be removed if the tri-plane collision is replaced with a tri-box routine.
-    FlagFaces: array [0..23] of array[0..2] of byte = (
-//Top Face
-       (MIN,MAX,MAX), //Upper left corner
-       (MAX,MAX,MAX), //Upper right corner
-       (MAX,MIN,MAX), //Bottom right corner
-       (MIN,MIN,MAX),
+  // Design of the AABB faces, using similar method to above.. Note than normals are not
+  // correct, but not needed for current tri-intersection test.
+  // Could be removed if the tri-plane collision is replaced with a tri-box routine.
+  FlagFaces: array [0 .. 23] of array [0 .. 2] of Byte = (
+    // Top Face
+    (MIN, MAX, MAX), // Upper left corner
+    (MAX, MAX, MAX), // Upper right corner
+    (MAX, MIN, MAX), // Bottom right corner
+    (MIN, MIN, MAX),
 
-//Bottom Face
-       (MIN,MAX,MIN), //Upper left corner
-       (MAX,MAX,MIN), //Upper right corner
-       (MAX,MIN,MIN), //Bottom right corner
-       (MIN,MIN,MIN),
+    // Bottom Face
+    (MIN, MAX, MIN), // Upper left corner
+    (MAX, MAX, MIN), // Upper right corner
+    (MAX, MIN, MIN), // Bottom right corner
+    (MIN, MIN, MIN),
 
-//Back Face
-       (MIN,MAX,MAX), //Upper left corner
-       (MAX,MAX,MAX), //Upper right corner
-       (MAX,MAX,MIN), //Bottom right corner
-       (MIN,MAX,MIN),
+    // Back Face
+    (MIN, MAX, MAX), // Upper left corner
+    (MAX, MAX, MAX), // Upper right corner
+    (MAX, MAX, MIN), // Bottom right corner
+    (MIN, MAX, MIN),
 
-//Front Face
-       (MIN,MIN,MAX), //Upper left corner
-       (MAX,MIN,MAX), //Upper right corner
-       (MAX,MIN,MIN), //Bottom right corner
-       (MIN,MIN,MIN),
+    // Front Face
+    (MIN, MIN, MAX), // Upper left corner
+    (MAX, MIN, MAX), // Upper right corner
+    (MAX, MIN, MIN), // Bottom right corner
+    (MIN, MIN, MIN),
 
-//Left Face
-       (MIN,MAX,MAX), //Upper left corner
-       (MIN,MIN,MAX), //Upper right corner
-       (MIN,MIN,MIN), //Bottom right corner
-       (MIN,MAX,MIN),
+    // Left Face
+    (MIN, MAX, MAX), // Upper left corner
+    (MIN, MIN, MAX), // Upper right corner
+    (MIN, MIN, MIN), // Bottom right corner
+    (MIN, MAX, MIN),
 
-//Right Face
-       (MAX,MIN,MAX), //Upper left corner
-       (MAX,MAX,MAX), //Upper right corner
-       (MAX,MAX,MIN), //Bottom right corner
-       (MAX,MIN,MIN));
+    // Right Face
+    (MAX, MIN, MAX), // Upper left corner
+    (MAX, MAX, MAX), // Upper right corner
+    (MAX, MAX, MIN), // Bottom right corner
+    (MAX, MIN, MIN));
 
-// Destroy
-//
+  // Destroy
+  //
 destructor TOctree.Destroy;
 begin
-   DisposeTree;
-   inherited Destroy;
+  DisposeTree;
+  inherited Destroy;
 end;
 
 // DisposeTree
 //
 procedure TOctree.DisposeTree;
 
-   procedure WalkDispose(var node : POctreeNode);
-   var
-      i : Integer;
-   begin
-      if Assigned(node) then begin
-         for i:=0 to 7 do
-            WalkDispose(node^.ChildArray[i]);
-         Dispose(node);
-      end;
-   end;
+  procedure WalkDispose(var Node: POctreeNode);
+  var
+    I: Integer;
+  begin
+    if Assigned(Node) then
+    begin
+      for I := 0 to 7 do
+        WalkDispose(Node^.ChildArray[I]);
+      Dispose(Node);
+    end;
+  end;
 
 begin
-   WalkDispose(RootNode);
-   RootNode:=nil;
-   triangleFiler.free;
-   triangleFiler:= nil;   
+  WalkDispose(RootNode);
+  RootNode := nil;
+  TriangleFiler.Free;
+  TriangleFiler := nil;
 end;
 
 // CreateTree
 //
-procedure TOctree.CreateTree(depth : Integer);
+procedure TOctree.CreateTree(Depth: Integer);
 begin
-   MaxOlevel:=depth;  //initialize max depth.
-   Refine(rootnode, 0);
+  MaxOlevel := Depth; // initialize max depth.
+  Refine(Rootnode, 0);
 end;
-
 
 // "cuts" all the triangles in the mesh into the octree.
 procedure TOctree.CutMesh;
 
-   procedure AddTriangleToNodes(n: integer);
-   var
-      x, k : integer;
-      p : POctreeNode;
-   begin
-      for x:=0 to High(resultArray) do begin
-         p:=resultarray[x];   // Pointer to a node.
+  procedure AddTriangleToNodes(N: Integer);
+  var
+    X, K: Integer;
+    P: POctreeNode;
+  begin
+    for X := 0 to High(ResultArray) do
+    begin
+      P := Resultarray[X]; // Pointer to a node.
 
-         k:=Length(p^.TriArray);
-         SetLength(p^.TriArray, k+1);  // Increase array by 1.
-         p^.TriArray[k]:=n;    // Store triangle # reference.
+      K := Length(P^.TriArray);
+      SetLength(P^.TriArray, K + 1); // Increase array by 1.
+      P^.TriArray[K] := N; // Store triangle # reference.
 
-{$ifdef DEBUG}
-         Inc(intersections);
-{$endif}
-      end;
-   end;
+{$IFDEF DEBUG}
+      Inc(Intersections);
+{$ENDIF}
+    end;
+  end;
 
 var
-   n : Integer;  //n = triangle # in mesh
+  N: Integer; // n = triangle # in mesh
 begin
-   TriCountMesh:=triangleFiler.Count div 3;
-   n:=0;
-   while n<triangleFiler.Count do begin
-      WalkTriToLeaf(RootNode, triangleFiler.List^[n],
-                              triangleFiler.List^[n+1],
-                              triangleFiler.List^[n+2]);
-      if resultArray <> NIL then begin
-         AddTriangleToNodes(n);
-         Inc(TriCountOctree, 1);
-      end;
-      Inc(n, 3);
-   end;
+  TriCountMesh := TriangleFiler.Count div 3;
+  N := 0;
+  while N < TriangleFiler.Count do
+  begin
+    WalkTriToLeaf(RootNode, TriangleFiler.List^[N], TriangleFiler.List^[N + 1],
+      TriangleFiler.List^[N + 2]);
+    if ResultArray <> NIL then
+    begin
+      AddTriangleToNodes(N);
+      Inc(TriCountOctree, 1);
+    end;
+    Inc(N, 3);
+  end;
 end;
 
-function TOctree.GetMidPoint(min, max: single): single;
+function TOctree.GetMidPoint(Min, Max: Single): Single;
 begin
-result:=max/2+min/2;   //This formula is non-quadrant specific; ie: good.
+  Result := Max / 2 + Min / 2;
+  // This formula is non-quadrant specific; ie: good.
 end;
 
-function TOctree.GetExtent(const flags: array of byte; ParentNode: POctreeNode ): TAffineFLTVector;
-var emin, emax: TAffineFLTVector;
-    n: integer;
+function TOctree.GetExtent(const Flags: array of Byte; ParentNode: POctreeNode)
+  : TAffineFLTVector;
+var
+  Emin, Emax: TAffineFLTVector;
+  N: Integer;
 begin
-   emin:=ParentNode^.MinExtent;  //Some easy to work with variables.
-   emax:=ParentNode^.MaxExtent;
+  Emin := ParentNode^.MinExtent; // Some easy to work with variables.
+  Emax := ParentNode^.MaxExtent;
 
-   for n:=0 to 2 do begin
-     case flags[n] of
-       MIN: result[n]:=emin[n];
-       MID: result[n]:=GetMidPoint(emin[n],emax[n]);
-       MAX: result[n]:=emax[n];
-     end;
-   end;
+  for N := 0 to 2 do
+  begin
+    case Flags[N] of
+      MIN:
+        Result.Coord[N] := Emin.Coord[N];
+      MID:
+        Result.Coord[N] := GetMidPoint(Emin.Coord[N], Emax.Coord[N]);
+      MAX:
+        Result.Coord[N] := Emax.Coord[N];
+    end;
+  end;
 end;
 
 // InitializeTree
 //
-procedure TOctree.InitializeTree(const AWorldMinExtent, AWorldMaxExtent : TAffineVector;
-                                 const ATriangles : TAffineVectorList;
-                                 const ATreeDepth : Integer);
+procedure TOctree.InitializeTree(const AWorldMinExtent, AWorldMaxExtent
+  : TAffineVector; const ATriangles: TAffineVectorList;
+  const ATreeDepth: Integer);
 var
-   n : Integer;
-   newnode : POctreeNode;
+  N: Integer;
+  Newnode: POctreeNode;
 begin
-   Self.WorldMinExtent:=AWorldMinExtent;
-   Self.WorldMaxExtent:=AWorldMaxExtent;
+  Self.WorldMinExtent := AWorldMinExtent;
+  Self.WorldMaxExtent := AWorldMaxExtent;
 
-   //set up the filer data for this mesh
-   if triangleFiler=nil then
-      triangleFiler:=TAffineVectorList.Create;
-   triangleFiler.Assign(ATriangles);
+  // set up the filer data for this mesh
+  if TriangleFiler = nil then
+    TriangleFiler := TAffineVectorList.Create;
+  TriangleFiler.Assign(ATriangles);
 
-   New(newnode);
-   newnode^.MinExtent:=AWorldMinExtent;
-   newnode^.MaxExtent:=AWorldMaxExtent;
-   newnode^.TriArray:=NIL;
-   for n:=0 to 7 do newnode^.ChildArray[n]:=NIL;
+  New(Newnode);
+  Newnode^.MinExtent := AWorldMinExtent;
+  Newnode^.MaxExtent := AWorldMaxExtent;
+  Newnode^.TriArray := NIL;
+  for N := 0 to 7 do
+    Newnode^.ChildArray[N] := NIL;
 
-   //Initialize work variables for new tree.
-   rootnode:=newnode; //rootnode always points to root.
-   NodeCount:=0;     //initialize node count
+  // Initialize work variables for new tree.
+  Rootnode := Newnode; // rootnode always points to root.
+  NodeCount := 0; // initialize node count
 
-   CreateTree(ATreeDepth);
-   CutMesh;
+  CreateTree(ATreeDepth);
+  CutMesh;
 end;
 
 // Refine
 //
-procedure TOctree.Refine(parentNode : POctreeNode; level : Integer);
+procedure TOctree.Refine(ParentNode: POctreeNode; Level: Integer);
 var
-   n, x, z : Integer;
-   pwork : array [0..7] of POctreeNode;   //Stores addresses of newly created children.
-   newnode : POctreeNode;
+  N, X, Z: Integer;
+  Pwork: array [0 .. 7] of POctreeNode;
+  // Stores addresses of newly created children.
+  Newnode: POctreeNode;
 begin
-   if level < MaxOlevel then begin
-      for n:=0 to 7 do begin                 //Create 8 new children under this parent.
-         Inc(NodeCount);
-         New(newnode);
-         Pwork[n]:=newnode;                  //Create work pointers for the next for loop.
+  if Level < MaxOlevel then
+  begin
+    for N := 0 to 7 do
+    begin // Create 8 new children under this parent.
+      Inc(NodeCount);
+      New(Newnode);
+      Pwork[N] := Newnode; // Create work pointers for the next for loop.
 
-         //Generate new extents based on parent's extents
-         newnode^.MinExtent:=GetExtent(flagMin[n], ParentNode);
-         newnode^.MaxExtent:=GetExtent(flagMax[n], ParentNode);
+      // Generate new extents based on parent's extents
+      Newnode^.MinExtent := GetExtent(FlagMin[N], ParentNode);
+      Newnode^.MaxExtent := GetExtent(FlagMax[N], ParentNode);
 
-         newnode^.TriArray:=nil;             //Initialize.
+      Newnode^.TriArray := nil; // Initialize.
 
-         for z:=0 to 7 do
-            newnode^.ChildArray[z]:=nil;     //initialize all child pointers to NIL
+      for Z := 0 to 7 do
+        Newnode^.ChildArray[Z] := nil; // initialize all child pointers to NIL
 
-         ParentNode^.ChildArray[n]:=newnode; //initialize parent's child pointer to this node
-      end;
-      for x:=0 to 7 do     // Now recursively Refine each child we just made
-          Refine(pwork[x], level+1);
-   end; //end if
+      ParentNode^.ChildArray[N] := Newnode;
+      // initialize parent's child pointer to this node
+    end;
+    for X := 0 to 7 do // Now recursively Refine each child we just made
+      Refine(Pwork[X], Level + 1);
+  end; // end if
 end;
 
 // ConvertR4
 //
-procedure TOctree.ConvertR4(ONode: POctreeNode; const scale : TAffineFLTVector);
+procedure TOctree.ConvertR4(ONode: POctreeNode; const Scale: TAffineFLTVector);
 var
-   n: smallint;
+  N: Smallint;
 begin
-   ScaleVector(Onode^.MinExtent, scale);
-   ScaleVector(Onode^.MaxExtent, scale);
-   if ONode^.ChildArray[0] <> NIL then begin //ie: if not a leaf then loop through children.
-      for n:=0 to 7 do begin
-         ConvertR4(Onode^.ChildArray[n], scale);
-      end;
-   end
+  ScaleVector(Onode^.MinExtent, Scale);
+  ScaleVector(Onode^.MaxExtent, Scale);
+  if ONode^.ChildArray[0] <> NIL then
+  begin // ie: if not a leaf then loop through children.
+    for N := 0 to 7 do
+    begin
+      ConvertR4(Onode^.ChildArray[N], Scale);
+    end;
+  end
 end;
 
 // PointInNode
 //
-function TOctree.PointInNode(const min, max, aPoint: TAffineFLTVector) : BOOLEAN;
+function TOctree.PointInNode(const Min, Max, APoint: TAffineFLTVector): BOOLEAN;
 begin
-   Result:=(aPoint[0]>=min[0]) and (aPoint[1]>=min[1]) and (aPoint[2]>=min[2])
-           and (aPoint[0]<=max[0]) and (aPoint[1]<=max[1]) and (aPoint[2]<=max[2]);
+  Result := (APoint.Coord[0] >= Min.Coord[0]) and
+    (APoint.Coord[1] >= Min.Coord[1]) and (APoint.Coord[2] >= Min.Coord[2]) and
+    (APoint.Coord[0] <= Max.Coord[0]) and (APoint.Coord[1] <= Max.Coord[1]) and
+    (APoint.Coord[2] <= Max.Coord[2]);
 end;
 
 // WalkPointToLeaf
 //
-procedure TOctree.WalkPointToLeaf(Onode: POctreeNode; const p : TAffineVector);
+procedure TOctree.WalkPointToLeaf(Onode: POctreeNode; const P: TAffineVector);
 begin
-   Finalize(resultarray);
-   WalkPointToLeafx(Onode, p);
+  Finalize(Resultarray);
+  WalkPointToLeafx(Onode, P);
 end;
 
 // WalkPointToLeafx
 //
-procedure TOctree.WalkPointToLeafx(Onode: POctreeNode; const p : TAffineVector);
+procedure TOctree.WalkPointToLeafx(Onode: POctreeNode; const P: TAffineVector);
 var
-   n : integer;
+  N: Integer;
 begin
-   if PointInNode(Onode^.MinExtent, Onode^.MaxExtent, p) then begin
-      if Assigned(Onode^.ChildArray[0]) then
-        for n:=0 to 7 do
-          WalkPointToLeafx(Onode^.ChildArray[n], p)
-      else begin
-         SetLength(resultarray, Length(resultarray)+1);
-         resultarray[High(resultarray)]:=Onode;
-      end;
-   end;
+  if PointInNode(Onode^.MinExtent, Onode^.MaxExtent, P) then
+  begin
+    if Assigned(Onode^.ChildArray[0]) then
+      for N := 0 to 7 do
+        WalkPointToLeafx(Onode^.ChildArray[N], P)
+    else
+    begin
+      SetLength(Resultarray, Length(Resultarray) + 1);
+      Resultarray[High(Resultarray)] := Onode;
+    end;
+  end;
 end;
 
 // SphereInNode
 //
-function TOctree.SphereInNode(const minExtent, maxExtent : TAffineVector;
-                              const c : TVector; radius : Single): Boolean;
-//Sphere-AABB intersection by Miguel Gomez
+function TOctree.SphereInNode(const MinExtent, MaxExtent: TAffineVector;
+  const C: TVector; Radius: Single): Boolean;
+// Sphere-AABB intersection by Miguel Gomez
 var
-   s, d : Single;
-   i : Integer;
+  S, D: Single;
+  I: Integer;
 begin
-//find the square of the distance
-//from the sphere to the box
-d:=0;
-for i:=0 to 2 do
-begin
-  if(C[i] < MinExtent[i]) then
+  // find the square of the distance
+  // from the sphere to the box
+  D := 0;
+  for I := 0 to 2 do
   begin
-     s := C[i] - MinExtent[i];
-     d := d + s*s;
-  end
-  else if(C[i] > MaxExtent[i]) then
-  begin
-     s := C[i] - MaxExtent[i];
-     d := d + s*s;
-  end;
-end; //end for
+    if (C.Coord[I] < MinExtent.Coord[I]) then
+    begin
+      S := C.Coord[I] - MinExtent.Coord[I];
+      D := D + S * S;
+    end
+    else if (C.Coord[I] > MaxExtent.Coord[I]) then
+    begin
+      S := C.Coord[I] - MaxExtent.Coord[I];
+      D := D + S * S;
+    end;
+  end; // end for
 
-if d<= radius*radius then
-   result:=TRUE
-else
-   result:=FALSE;
+  if D <= Radius * Radius then
+    Result := TRUE
+  else
+    Result := FALSE;
 end;
 
 // WalkSphereToLeaf
 //
-procedure TOctree.WalkSphereToLeaf(Onode : POctreeNode; const p : TVector;
-                                   radius : Single);
+procedure TOctree.WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
+  Radius: Single);
 begin
-   Finalize(resultarray);
-   WalkSphereToLeafx(Onode, p, radius);
+  Finalize(Resultarray);
+  WalkSphereToLeafx(Onode, P, Radius);
 end;
 
 // WalkSphereToLeafx
 //
-procedure TOctree.WalkSphereToLeafx(Onode : POctreeNode; const p : TVector;
-                                    radius : Single);
+procedure TOctree.WalkSphereToLeafx(Onode: POctreeNode; const P: TVector;
+  Radius: Single);
 var
-   n : integer;
+  N: Integer;
 begin
-   if SphereInNode(Onode^.MinExtent, Onode^.MaxExtent, p, radius) then begin
-      if Assigned(Onode^.ChildArray[0]) then
-        for n:=0 to 7 do
-          WalkSphereToLeafx(Onode^.ChildArray[n], p, radius)
-      else begin
-         SetLength(resultarray, Length(resultarray)+1);
-         resultarray[High(resultarray)]:=Onode;
-      end;
-   end;
+  if SphereInNode(Onode^.MinExtent, Onode^.MaxExtent, P, Radius) then
+  begin
+    if Assigned(Onode^.ChildArray[0]) then
+      for N := 0 to 7 do
+        WalkSphereToLeafx(Onode^.ChildArray[N], P, Radius)
+    else
+    begin
+      SetLength(Resultarray, Length(Resultarray) + 1);
+      Resultarray[High(Resultarray)] := Onode;
+    end;
+  end;
 end;
 
-//Cast a ray (point p, vector v) into the Octree (ie: ray-box intersect).
-procedure TOctree.WalkRayToLeaf(Onode: POctreeNode; const p, v: TVector);
+// Cast a ray (point p, vector v) into the Octree (ie: ray-box intersect).
+procedure TOctree.WalkRayToLeaf(Onode: POctreeNode; const P, V: TVector);
 begin
-   finalize(resultarray);
+  Finalize(Resultarray);
 
-   WalkRayToLeafx(Onode, p, v);
+  WalkRayToLeafx(Onode, P, V);
 end;
 
 // WalkRayToLeafx
 //
-procedure TOctree.WalkRayToLeafx(Onode: POctreeNode; const p, v: TVector);
+procedure TOctree.WalkRayToLeafx(Onode: POctreeNode; const P, V: TVector);
 var
-   n : integer;
-   coord : TVector;
+  N: Integer;
+  Coord: TVector;
 begin
-   if HitBoundingBox(Onode^.MinExtent, Onode^.MaxExtent, p, v, coord) then begin
-      if Assigned(Onode^.ChildArray[0]) then
-         for n:=0 to 7 do
-            WalkRayToLeafx(Onode^.ChildArray[n], p, v)
-      else begin
-         SetLength(resultarray, Length(resultarray)+1);
-         resultarray[High(resultarray)]:=Onode;
-      end;
-   end;
+  if HitBoundingBox(Onode^.MinExtent, Onode^.MaxExtent, P, V, Coord) then
+  begin
+    if Assigned(Onode^.ChildArray[0]) then
+      for N := 0 to 7 do
+        WalkRayToLeafx(Onode^.ChildArray[N], P, V)
+    else
+    begin
+      SetLength(Resultarray, Length(Resultarray) + 1);
+      Resultarray[High(Resultarray)] := Onode;
+    end;
+  end;
 end;
 
-//Check triangle intersect with any of the node's faces.
-//Could be replaced with a tri-box check.
-function TOctree.TriIntersectNode(const minExtent, maxExtent, v1, v2, v3 : TAffineVector) : Boolean;
+// Check triangle intersect with any of the node's faces.
+// Could be replaced with a tri-box check.
+function TOctree.TriIntersectNode(const MinExtent, MaxExtent, V1, V2,
+  V3: TAffineVector): Boolean;
 var
-  f0, f1, f2, f3:  TAffineFLTVector;
-  n, o, p: integer;
-  aFace: array [0..3] of TAffineFLTVector;  //A face's 4 corners.
+  F0, F1, F2, F3: TAffineFLTVector;
+  N, O, P: Integer;
+  AFace: array [0 .. 3] of TAffineFLTVector; // A face's 4 corners.
 begin
-for n:=0 to 5 do begin               //Do all 6 faces.
-  for o:=0 to 3 do begin             //Do all 4 vertices for the face.
-   for p:=0 to 2 do begin            //Do x,y,z for each vertex.
-     if FlagFaces[o+n*4,p] = MIN then
-       aFace[o,p]:=MinExtent[p]
-     else
-       aFace[o,p]:=MaxExtent[p];
-   end; //end for o
-  end; //end for p
-  f0:=aFace[0];  f1:=aFace[1]; f2:=aFace[2]; f3:=aFace[3];
+  for N := 0 to 5 do
+  begin // Do all 6 faces.
+    for O := 0 to 3 do
+    begin // Do all 4 vertices for the face.
+      for P := 0 to 2 do
+      begin // Do x,y,z for each vertex.
+        if FlagFaces[O + N * 4, P] = MIN then
+          AFace[O].Coord[P] := MinExtent.Coord[P]
+        else
+          AFace[O].Coord[P] := MaxExtent.Coord[P];
+      end; // end for o
+    end; // end for p
+    F0 := AFace[0];
+    F1 := AFace[1];
+    F2 := AFace[2];
+    F3 := AFace[3];
 
-  //Now check the two triangles in the face against the mesh triangle.
-  if tri_tri_intersect(v1, v2, v3, f0, f1, f2) = 1 then
-      result:=TRUE
-  else
-      if tri_tri_intersect(v1, v2, v3, f2, f3, f0) = 1 then
-         result:=TRUE
-      else
-         result:=FALSE;
-  if result then exit;
+    // Now check the two triangles in the face against the mesh triangle.
+    if Tri_tri_intersect(V1, V2, V3, F0, F1, F2) = 1 then
+      Result := TRUE
+    else if Tri_tri_intersect(V1, V2, V3, F2, F3, F0) = 1 then
+      Result := TRUE
+    else
+      Result := FALSE;
+    if Result then
+      Exit;
 
-  end; //end for n
+  end; // end for n
 end;
 
 // WalkTriToLeaf
 //
-procedure TOctree.WalkTriToLeaf(Onode: POctreeNode; const v1, v2, v3: TAffineFLTVector);
+procedure TOctree.WalkTriToLeaf(Onode: POctreeNode;
+  const V1, V2, V3: TAffineFLTVector);
 begin
-   finalize(resultarray);
-   WalkTriToLeafx(Onode, v1, v2, v3);
+  Finalize(Resultarray);
+  WalkTriToLeafx(Onode, V1, V2, V3);
 end;
 
 // WalkTriToLeafx
 //
-procedure TOctree.WalkTriToLeafx(Onode: POctreeNode; const v1, v2, v3: TAffineFLTVector);
+procedure TOctree.WalkTriToLeafx(Onode: POctreeNode;
+  const V1, V2, V3: TAffineFLTVector);
 var
-   m : Integer;
+  M: Integer;
 begin
-   if TriIntersectNode(Onode^.MinExtent, Onode^.MaxExtent, v1, v2, v3) or
-         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v1) or
-         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v2) or
-         PointInNode(Onode^.MinExtent, Onode^.MaxExtent, v3) then begin
-      if Onode^.ChildArray[0] <> NIL then
-        for m:=0 to 7 do
-          WalkTriToLeafx(Onode^.ChildArray[m], v1, v2, v3)
-      else begin
-         SetLength(resultarray, Length(resultarray)+1);
-         resultarray[High(resultarray)]:=Onode;
-      end;
-   end;
+  if TriIntersectNode(Onode^.MinExtent, Onode^.MaxExtent, V1, V2, V3) or
+    PointInNode(Onode^.MinExtent, Onode^.MaxExtent, V1) or
+    PointInNode(Onode^.MinExtent, Onode^.MaxExtent, V2) or
+    PointInNode(Onode^.MinExtent, Onode^.MaxExtent, V3) then
+  begin
+    if Onode^.ChildArray[0] <> NIL then
+      for M := 0 to 7 do
+        WalkTriToLeafx(Onode^.ChildArray[M], V1, V2, V3)
+    else
+    begin
+      SetLength(Resultarray, Length(Resultarray) + 1);
+      Resultarray[High(Resultarray)] := Onode;
+    end;
+  end;
 end;
 
 // RayCastIntersectAABB
 //
-function TOctree.RayCastIntersect(const rayStart, rayVector : TVector;
-                                      intersectPoint : PVector = nil;
-                                      intersectNormal : PVector = nil;
-                                      triangleInfo : POctreeTriangleInfo = nil) : Boolean;
+function TOctree.RayCastIntersect(const RayStart, RayVector: TVector;
+  IntersectPoint: PVector = nil; IntersectNormal: PVector = nil;
+  TriangleInfo: POctreeTriangleInfo = nil): Boolean;
 const
-   cInitialMinD : Single = 1e40;
+  CInitialMinD: Single = 1E40;
 var
-   i, t, k : Integer;
-   d, minD : Single;
-   p : POctreeNode;
-   iPoint, iNormal : TVector;
+  I, T, K: Integer;
+  D, MinD: Single;
+  P: POctreeNode;
+  IPoint, INormal: TVector;
 begin
-   WalkRayToLeaf(RootNode, rayStart, rayVector);
+  WalkRayToLeaf(RootNode, RayStart, RayVector);
 
-   if resultarray = nil then begin
-      Result:=False;
-      Exit;
-   end;
+  if Resultarray = nil then
+  begin
+    Result := False;
+    Exit;
+  end;
 
-   minD:=cInitialMinD;
-   for i:=0 to High(resultarray) do begin
-      p:=ResultArray[i];
-      for t:=0 to High(p^.TriArray) do begin
-         k:=p^.triarray[t];
-         if RayCastTriangleIntersect(rayStart, rayVector,
-                                     triangleFiler.List^[k],
-                                     triangleFiler.List^[k+1],
-                                     triangleFiler.List^[k+2],
-                                     @iPoint, @iNormal) then begin
-            d:=VectorDistance2(rayStart, iPoint);
-            if d<minD then begin
-               minD:=d;
-               if intersectPoint<>nil then
-                  intersectPoint^:=iPoint;
-               if intersectNormal<>nil then
-                  intersectNormal^:=iNormal;
-               if triangleInfo<>nil then begin
-                  triangleInfo^.index:=k;
-                  triangleInfo^.vertex[0]:=triangleFiler.List^[k];
-                  triangleInfo^.vertex[1]:=triangleFiler.List^[k+1];
-                  triangleInfo^.vertex[2]:=triangleFiler.List^[k+2];
-               end;
-            end;
-         end;
+  MinD := CInitialMinD;
+  for I := 0 to High(Resultarray) do
+  begin
+    P := ResultArray[I];
+    for T := 0 to High(P^.TriArray) do
+    begin
+      K := P^.Triarray[T];
+      if RayCastTriangleIntersect(RayStart, RayVector, TriangleFiler.List^[K],
+        TriangleFiler.List^[K + 1], TriangleFiler.List^[K + 2], @IPoint,
+        @INormal) then
+      begin
+        D := VectorDistance2(RayStart, IPoint);
+        if D < MinD then
+        begin
+          MinD := D;
+          if IntersectPoint <> nil then
+            IntersectPoint^ := IPoint;
+          if IntersectNormal <> nil then
+            IntersectNormal^ := INormal;
+          if TriangleInfo <> nil then
+          begin
+            TriangleInfo^.Index := K;
+            TriangleInfo^.Vertex[0] := TriangleFiler.List^[K];
+            TriangleInfo^.Vertex[1] := TriangleFiler.List^[K + 1];
+            TriangleInfo^.Vertex[2] := TriangleFiler.List^[K + 2];
+          end;
+        end;
       end;
-   end;
-   Result:=(minD<>cInitialMinD);
+    end;
+  end;
+  Result := (MinD <> CInitialMinD);
 end;
 
 // SphereIntersectAABB -- Walk a sphere through an Octree, given a velocity, and return the nearest polygon
@@ -1162,356 +1305,394 @@ end;
 //
 // TO DO: R4 conversion (routine already exists for this) for ellipsoid space.
 //
-//  Method for caclulating CD vs polygon: (Robert Hayes method)
+// Method for caclulating CD vs polygon: (Robert Hayes method)
 // ...for each triangle:
 // 1. Cast a ray from sphere origin to triangle's plane along plane's negative normal (set to length
-//    of sphere radius).  If no hit, skip this triangle.  Otherwise this is the default plane
-//    intersection point.
+// of sphere radius).  If no hit, skip this triangle.  Otherwise this is the default plane
+// intersection point.
 // 2. If the distance is =< the sphere radius, the plane is embedded in the sphere.  Go to step 6 with
-//    plane intersection point from above step.
+// plane intersection point from above step.
 // 3. If the distance > sphere radius, calculate the sphere intersection point to this plane by
-//    subtracting the plane's normal from the sphere's origin.
+// subtracting the plane's normal from the sphere's origin.
 // 4. Cast a new ray from the sphere intersection point to the plane; this is the new plane
-//    intersection point.
+// intersection point.
 // 5. Cast a ray from the sphere intersection point to the triangle.  If it is a direct hit, then
-//    this point is the polygon intersection point.
+// this point is the polygon intersection point.
 // 6. Else, find the point on the triangle that is closest to the plane intersection point; this becomes
-//    the polygon intersection point (ie: hit an edge or corner)
+// the polygon intersection point (ie: hit an edge or corner)
 // 7. Cast a ray from the polygon intersection point along the negative velocity vector of the sphere
-//    (note: for accuracy reasons - SphereIntersect replaced with PointInSphere)
+// (note: for accuracy reasons - SphereIntersect replaced with PointInSphere)
 // 8. If there is no intersection, the sphere cannot possibly collide with this triangle
 // 9. Else, save the distance from step 8 if, and only if, it is the shortest collision distance so far.
 //
 // Return the polygon intersection point and the closest triangle's normal if hit.
 //
-function TOctree.SphereSweepIntersect(const rayStart, rayVector : TVector;
-                                     const velocity, radius: single;
-                                     intersectPoint : PVector = nil;
-                                     intersectNormal : PVector = nil) : Boolean;
+function TOctree.SphereSweepIntersect(const RayStart, RayVector: TVector;
+  const Velocity, Radius: Single; IntersectPoint: PVector = nil;
+  IntersectNormal: PVector = nil): Boolean;
 const
-   cInitialMinD2 : Single = 1e40;
-   cEpsilon : Single = 0.05;
+  CInitialMinD2: Single = 1E40;
+  CEpsilon: Single = 0.05;
 
 var
-   i, t, k : Integer;
-   minD2, sd2, radius2 : Single;
-   distanceToTravel, distanceToTravelMinusRadius2 : Single;
-   p: POctreeNode;
-   pNormal: TAffineVector;
-   pNormal4: TVector;
-   NEGpNormal4: TVector;
-   sIPoint, sIPoint2: TVector;     //sphere intersection point
-   pIPoint: TVector;     //plane intersection point
-   polyIPoint: TVector;  //polygon intersection point
-   NEGVelocity: TVector; //sphere's forward velocity
-   directHit : Boolean;
+  I, T, K: Integer;
+  MinD2, Sd2, Radius2: Single;
+  DistanceToTravel, DistanceToTravelMinusRadius2: Single;
+  P: POctreeNode;
+  PNormal: TAffineVector;
+  PNormal4: TVector;
+  NEGpNormal4: TVector;
+  SIPoint, SIPoint2: TVector; // sphere intersection point
+  PIPoint: TVector; // plane intersection point
+  PolyIPoint: TVector; // polygon intersection point
+  NEGVelocity: TVector; // sphere's forward velocity
+  DirectHit: Boolean;
 
-   p1, p2, p3: PAffineVector;
+  P1, P2, P3: PAffineVector;
 
-   //SphereSweepAABB:TAABB;
-   
-   //response identifiers (for future use)
-   //destinationPoint, newdestinationPoint: TVector;
-   //slidePlaneOrigin, slidePlaneNormal: TVector;
-   //newvelocityVector: TVector;
-   //v: single;
-   //L: double;
+  // SphereSweepAABB:TAABB;
+
+  // response identifiers (for future use)
+  // destinationPoint, newdestinationPoint: TVector;
+  // slidePlaneOrigin, slidePlaneNormal: TVector;
+  // newvelocityVector: TVector;
+  // v: single;
+  // L: double;
 begin
-   //Note: Current implementation only accurate for FreeForm:Radius at 1:1 ratio.
+  // Note: Current implementation only accurate for FreeForm:Radius at 1:1 ratio.
 
-   Result:=False;  //default: no collision
+  Result := False; // default: no collision
 
-   //quit if no movement
-   if (velocity=0)or(not (VectorNorm(rayVector)>0)) then Exit;
-   //How far ahead to check for collisions.
-   distanceToTravel:=velocity+radius+cEpsilon;
-   distanceToTravelMinusRadius2:=Sqr(velocity+cEpsilon);
-   radius2:=Sqr(radius);
+  // quit if no movement
+  if (Velocity = 0) or (not(VectorNorm(RayVector) > 0)) then
+    Exit;
+  // How far ahead to check for collisions.
+  DistanceToTravel := Velocity + Radius + CEpsilon;
+  DistanceToTravelMinusRadius2 := Sqr(Velocity + CEpsilon);
+  Radius2 := Sqr(Radius);
 
-   //Determine all the octree nodes this sphere intersects with.
-   //NOTE: would be more efficient to find the bounding box that includes the
-   //startpoint and endpoint (+sphere diameter)... especially with a large sphere
-   //and/or a large velocity.
-   WalkSphereToLeaf(RootNode, RayStart, distanceToTravel);
+  // Determine all the octree nodes this sphere intersects with.
+  // NOTE: would be more efficient to find the bounding box that includes the
+  // startpoint and endpoint (+sphere diameter)... especially with a large sphere
+  // and/or a large velocity.
+  WalkSphereToLeaf(RootNode, RayStart, DistanceToTravel);
 
-//   This method may be more effective if sphere sweeps from one point to another and stops.
-//   NOTE: If it recursively slides of planes, then WalkSphereToLeaf would probably be better, as
-//   it will determine all possible triangles that could intersect over the whole motion
-//   AABBFromSweep(SphereSweepAABB,rayStart,destinationPoint,Radius+cEpsilon);
-//   GetTrianglesFromNodesIntersectingAABB(SphereSweepAABB);
+  // This method may be more effective if sphere sweeps from one point to another and stops.
+  // NOTE: If it recursively slides of planes, then WalkSphereToLeaf would probably be better, as
+  // it will determine all possible triangles that could intersect over the whole motion
+  // AABBFromSweep(SphereSweepAABB,rayStart,destinationPoint,Radius+cEpsilon);
+  // GetTrianglesFromNodesIntersectingAABB(SphereSweepAABB);
 
-   if not Assigned(resultarray) then exit;
+  if not Assigned(Resultarray) then
+    Exit;
 
-   //Negative velocity vector for use with ray-sphere check.
-   VectorScale(rayVector, -velocity/VectorLength(rayVector), NEGVelocity);
+  // Negative velocity vector for use with ray-sphere check.
+  VectorScale(RayVector, -Velocity / VectorLength(RayVector), NEGVelocity);
 
-   minD2:=cInitialMinD2;
-   for i:=0 to High(resultarray) do begin
-      p:=ResultArray[i];
-      for t:=0 to High(p^.TriArray) do begin
-         k:=p^.triarray[t];
-         //These are the vertices of the triangle to check
-         p1:=@trianglefiler.List[k];
-         p2:=@trianglefiler.List[k+1];
-         p3:=@trianglefiler.List[k+2];
+  MinD2 := CInitialMinD2;
+  for I := 0 to High(Resultarray) do
+  begin
+    P := ResultArray[I];
+    for T := 0 to High(P^.TriArray) do
+    begin
+      K := P^.Triarray[T];
+      // These are the vertices of the triangle to check
+      P1 := @Trianglefiler.List[K];
+      P2 := @Trianglefiler.List[K + 1];
+      P3 := @Trianglefiler.List[K + 2];
 
-         //Create the normal for this triangle
-         pNormal:=CalcPlaneNormal(p1^, p2^, p3^);
+      // Create the normal for this triangle
+      PNormal := CalcPlaneNormal(P1^, P2^, P3^);
 
-         //Ignore backfacing planes
-         if VectorDotProduct(pNormal, PAffineVector(@rayVector)^)>0.0 then Continue;
+      // Ignore backfacing planes
+      if VectorDotProduct(PNormal, PAffineVector(@RayVector)^) > 0.0 then
+        Continue;
 
-         //Set the normal to the radius of the sphere
-         ScaleVector(pNormal, radius);
-         //Make some TVectors
-         MakeVector(pNormal4, pNormal);
-         NEGpNormal4:=VectorNegate(pNormal4);
+      // Set the normal to the radius of the sphere
+      ScaleVector(PNormal, Radius);
+      // Make some TVectors
+      MakeVector(PNormal4, PNormal);
+      NEGpNormal4 := VectorNegate(PNormal4);
 
-         //Calculate the plane intersection point (sphere origin to plane)
-         if RayCastPlaneIntersect(RayStart, NEGpNormal4, VectorMake(p1^),
-                                  pNormal4, @pIPoint) then begin
-            directHit:=False;
-            sd2:=VectorDistance2(rayStart, pIPoint);
+      // Calculate the plane intersection point (sphere origin to plane)
+      if RayCastPlaneIntersect(RayStart, NEGpNormal4, VectorMake(P1^), PNormal4,
+        @PIPoint) then
+      begin
+        DirectHit := False;
+        Sd2 := VectorDistance2(RayStart, PIPoint);
 
-            //If sd <= radius, fall through to "not direct hit" code below with pIPoint
-            //as the plane intersection point.  Sphere is embedded.
-            //Otherwise...
-            if sd2 > radius2 then begin
-               //Calculate sphere intersection point (ie: point on sphere that hits plane)
-               SetVector(sIPoint, VectorSubtract(RayStart, pNormal4));
-               //Get new plane intersection point (in case not a direct hit)
-               RayCastPlaneIntersect(sIPoint, RayVector, VectorMake(p1^), pNormal4, @pIPoint);
-               //Does the velocity vector directly hit the triangle? If yes then that is the
-               //polygon intersection point.
-               if RayCastTriangleIntersect(sIPoint, RayVector,
-                                           p1^, p2^, p3^, @polyIPoint, @pNormal4) then begin
-                  sd2:=VectorDistance2(sIPoint, polyIPoint);
-                  directHit:=True;
-               end;
-            end;
+        // If sd <= radius, fall through to "not direct hit" code below with pIPoint
+        // as the plane intersection point.  Sphere is embedded.
+        // Otherwise...
+        if Sd2 > Radius2 then
+        begin
+          // Calculate sphere intersection point (ie: point on sphere that hits plane)
+          SetVector(SIPoint, VectorSubtract(RayStart, PNormal4));
+          // Get new plane intersection point (in case not a direct hit)
+          RayCastPlaneIntersect(SIPoint, RayVector, VectorMake(P1^), PNormal4,
+            @PIPoint);
+          // Does the velocity vector directly hit the triangle? If yes then that is the
+          // polygon intersection point.
+          if RayCastTriangleIntersect(SIPoint, RayVector, P1^, P2^, P3^,
+            @PolyIPoint, @PNormal4) then
+          begin
+            Sd2 := VectorDistance2(SIPoint, PolyIPoint);
+            DirectHit := True;
+          end;
+        end;
 
-            //If not a direct hit then check if sphere "nicks" the triangle's edge or corner...
-            //If it does then that is the polygon intersection point.
-            if not directHit then begin
-               if not CheckPointInTriangle(AffineVectorMake(piPoint),p1^,p2^,p3^) then
-               SetVector(polyIPoint,
-                         ClosestPointOnTriangleEdge(p1^, p2^, p3^,
-                                                PAffineVector(@pIPoint)^),1)
-               else
-                 polyIPoint:=piPoint;
+        // If not a direct hit then check if sphere "nicks" the triangle's edge or corner...
+        // If it does then that is the polygon intersection point.
+        if not DirectHit then
+        begin
+          if not CheckPointInTriangle(AffineVectorMake(PiPoint), P1^, P2^, P3^)
+          then
+            SetVector(PolyIPoint, ClosestPointOnTriangleEdge(P1^, P2^, P3^,
+              PAffineVector(@PIPoint)^), 1)
+          else
+            PolyIPoint := PiPoint;
 
-               //See if this point + negative velocity vector lies within the sphere.
-               //(This implementation seems more accurate than RayCastSphereIntersect)
-              { if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
-                  continue;
-              // sd2:=0;  //stops the test too soon (noticable on triangle edges in flat planes)
-               sd2:=sqr(VectorDistance(raystart, polyIPoint)-Radius);
-              }
-               //see if this point + negative velocity vector intersect the sphere.
-               //(PointInSphere doesn't work for fast motion)
-               if VectorDistance2(polyIPoint,rayStart)>radius2 then
-               begin
-                 if RayCastSphereIntersect(polyIPoint,VectorNormalize(NEGVelocity),rayStart,radius,sIPoint,sIPoint2)=0 then
-                   continue;
-                 sd2:=VectorDistance2(sIPoint,polyIPoint);
-               end
-               else
-                 sd2:=0;
-            end;
+          // See if this point + negative velocity vector lies within the sphere.
+          // (This implementation seems more accurate than RayCastSphereIntersect)
+          { if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
+            continue;
+            // sd2:=0;  //stops the test too soon (noticable on triangle edges in flat planes)
+            sd2:=sqr(VectorDistance(raystart, polyIPoint)-Radius);
+          }
+          // see if this point + negative velocity vector intersect the sphere.
+          // (PointInSphere doesn't work for fast motion)
+          if VectorDistance2(PolyIPoint, RayStart) > Radius2 then
+          begin
+            if RayCastSphereIntersect(PolyIPoint, VectorNormalize(NEGVelocity),
+              RayStart, Radius, SIPoint, SIPoint2) = 0 then
+              Continue;
+            Sd2 := VectorDistance2(SIPoint, PolyIPoint);
+          end
+          else
+            Sd2 := 0;
+        end;
 
-            // Allow sphere to get close to triangle (less epsilon which is built into distanceToTravel)
-            if sd2<=distanceToTravelMinusRadius2 then begin
-               Result:=True; //flag a collision
-               if sd2<minD2 then begin
-                  minD2:=sd2;
-                  if intersectPoint<>nil then intersectPoint^:=polyIPoint;
-                  if intersectNormal<>nil then intersectNormal^:=pNormal4;
-                  if sd2=0 then Exit;
-               end;
-            end;
-         end;
-      end;  //end for t triangles
-   end; //end for i nodes
+        // Allow sphere to get close to triangle (less epsilon which is built into distanceToTravel)
+        if Sd2 <= DistanceToTravelMinusRadius2 then
+        begin
+          Result := True; // flag a collision
+          if Sd2 < MinD2 then
+          begin
+            MinD2 := Sd2;
+            if IntersectPoint <> nil then
+              IntersectPoint^ := PolyIPoint;
+            if IntersectNormal <> nil then
+              IntersectNormal^ := PNormal4;
+            if Sd2 = 0 then
+              Exit;
+          end;
+        end;
+      end;
+    end; // end for t triangles
+  end; // end for i nodes
 end;
 
-function TOctree.TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+function TOctree.TriangleIntersect(const V1, V2, V3: TAffineVector): Boolean;
 var
-   i, t, k:integer;
-   p: POctreeNode;
-   p1, p2, p3: PAffineVector;
+  I, T, K: Integer;
+  P: POctreeNode;
+  P1, P2, P3: PAffineVector;
 begin
-   Result:=False;  //default: no collision
-   WalkTriToLeaf(RootNode, v1, v2, v3);
-   if not Assigned(resultarray) then exit;
+  Result := False; // default: no collision
+  WalkTriToLeaf(RootNode, V1, V2, V3);
+  if not Assigned(Resultarray) then
+    Exit;
 
-   for i:=0 to High(resultarray) do begin
-      p:=ResultArray[i];
-      for t:=0 to High(p^.TriArray) do begin
-         k:=p^.triarray[t];
-         //These are the vertices of the triangle to check
-         p1:=@trianglefiler.List[k];
-         p2:=@trianglefiler.List[k+1];
-         p3:=@trianglefiler.List[k+2];
-         if tri_tri_intersect(v1, v2, v3, p1^, p2^, p3^)<>0 then
-         begin
-            result:= true;
-            exit;
-         end;
-      end;  //end for t triangles
-   end; //end for i nodes
+  for I := 0 to High(Resultarray) do
+  begin
+    P := ResultArray[I];
+    for T := 0 to High(P^.TriArray) do
+    begin
+      K := P^.Triarray[T];
+      // These are the vertices of the triangle to check
+      P1 := @Trianglefiler.List[K];
+      P2 := @Trianglefiler.List[K + 1];
+      P3 := @Trianglefiler.List[K + 2];
+      if Tri_tri_intersect(V1, V2, V3, P1^, P2^, P3^) <> 0 then
+      begin
+        Result := True;
+        Exit;
+      end;
+    end; // end for t triangles
+  end; // end for i nodes
 end;
 
 // AABBIntersect
 //
-function TOctree.AABBIntersect(const AABB: TAABB;
-m1to2, m2to1: TMatrix; triangles: TAffineVectorList = nil): boolean;
+function TOctree.AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
+  Triangles: TAffineVectorList = nil): Boolean;
 var
-  triList: TAffineVectorList;
-  i: integer;
+  TriList: TAffineVectorList;
+  I: Integer;
 begin
-     //get triangles in nodes intersected by the aabb
-     triList:= GetTrianglesFromNodesIntersectingCube(aabb, m1to2, m2to1);
+  // get triangles in nodes intersected by the aabb
+  TriList := GetTrianglesFromNodesIntersectingCube(Aabb, M1to2, M2to1);
 
-     result:= false;
-     if Trilist.Count>0 then begin
-          trilist.TransformAsPoints(m2to1);
-          i:= 0;
-          //run all faces and check if they're inside the aabb
-          //uncoment the * and comment the {//} to check only vertices
-     {//} while i < triList.Count -1 do begin
-          //*for i:= 0 to triList.count -1 do begin
-          //*  v:=VectorMake(TriList.Items[i]);
-          //*  if pointInAABB(AffinevectorMake(v), aabb) then
-          {//} if TriangleIntersectAABB(aabb, triList[i], triList[i+1], trilist[i+2]) then begin
-                    Result:=True;
-                    if not Assigned(triangles) then break
-                    else
-                      triangles.Add(triList[i], triList[i+1], trilist[i+2]);
-               end;
-          {//} i:= i+3;
-          end;
+  Result := False;
+  if Trilist.Count > 0 then
+  begin
+    Trilist.TransformAsPoints(M2to1);
+    I := 0;
+    // run all faces and check if they're inside the aabb
+    // uncoment the * and comment the {//} to check only vertices
+    { // } while I < TriList.Count - 1 do
+    begin
+      // *for i:= 0 to triList.count -1 do begin
+      // *  v:=VectorMake(TriList.Items[i]);
+      // *  if pointInAABB(AffinevectorMake(v), aabb) then
+      { // } if TriangleIntersectAABB(Aabb, TriList[I], TriList[I + 1],
+        Trilist[I + 2]) then
+      begin
+        Result := True;
+        if not Assigned(Triangles) then
+          Break
+        else
+          Triangles.Add(TriList[I], TriList[I + 1], Trilist[I + 2]);
       end;
+      { // } I := I + 3;
+    end;
+  end;
 
-     triList.Free;
+  TriList.Free;
 end;
 
 // GetTrianglesFromNodesIntersectingAABB
 //
-function TOctree.GetTrianglesFromNodesIntersectingAABB(const objAABB : TAABB) : TAffineVectorList;
+function TOctree.GetTrianglesFromNodesIntersectingAABB(const ObjAABB: TAABB)
+  : TAffineVectorList;
 var
-  AABB1 : TAABB;
+  AABB1: TAABB;
 
-   procedure HandleNode(Onode: POctreeNode);
-   var
-      AABB2: TAABB;
-      i: integer;
-   begin
-      AABB2.min:=Onode^.MinExtent;
-      AABB2.max:=Onode^.MaxExtent;
+  procedure HandleNode(Onode: POctreeNode);
+  var
+    AABB2: TAABB;
+    I: Integer;
+  begin
+    AABB2.Min := Onode^.MinExtent;
+    AABB2.Max := Onode^.MaxExtent;
 
-      if IntersectAABBsAbsolute(AABB1, AABB2) then begin
-         if Assigned(Onode^.ChildArray[0]) then begin
-            for i:=0 to 7 do
-               HandleNode(Onode^.ChildArray[i])
-         end else begin
-            SetLength(ResultArray, Length(ResultArray)+1);
-            ResultArray[High(ResultArray)]:=Onode;
-         end;
+    if IntersectAABBsAbsolute(AABB1, AABB2) then
+    begin
+      if Assigned(Onode^.ChildArray[0]) then
+      begin
+        for I := 0 to 7 do
+          HandleNode(Onode^.ChildArray[I])
+      end
+      else
+      begin
+        SetLength(ResultArray, Length(ResultArray) + 1);
+        ResultArray[High(ResultArray)] := Onode;
       end;
-   end;
+    end;
+  end;
 
 var
-   i, k : Integer;
-   p : POctreeNode;
-   triangleIndices : TIntegerList;
+  I, K: Integer;
+  P: POctreeNode;
+  TriangleIndices: TIntegerList;
 
 begin
-   //Calc AABBs
-   AABB1:=objAABB;
-   
-   SetLength(ResultArray, 0);
-   if Assigned(RootNode) then
-      HandleNode(RootNode);
+  // Calc AABBs
+  AABB1 := ObjAABB;
 
-   Result:=TAffineVectorList.Create;
-   triangleIndices:=TIntegerList.Create;
-   try
-      //fill the triangles from all nodes in the resultarray to AL
-      for i:=0 to High(ResultArray) do begin
-         p:=ResultArray[i];
-         triangleIndices.AddIntegers(p^.TriArray);
-      end;
-      triangleIndices.SortAndRemoveDuplicates;
-      Result.Capacity:=triangleIndices.Count*3;
-      for i:=0 to triangleIndices.Count-1 do begin
-         k:=triangleIndices[i];
-         Result.Add(triangleFiler.List^[k], triangleFiler.List^[k+1], triangleFiler.List^[k+2]);
-      end;
-   finally
-      triangleIndices.Free;
-   end;
+  SetLength(ResultArray, 0);
+  if Assigned(RootNode) then
+    HandleNode(RootNode);
+
+  Result := TAffineVectorList.Create;
+  TriangleIndices := TIntegerList.Create;
+  try
+    // fill the triangles from all nodes in the resultarray to AL
+    for I := 0 to High(ResultArray) do
+    begin
+      P := ResultArray[I];
+      TriangleIndices.AddIntegers(P^.TriArray);
+    end;
+    TriangleIndices.SortAndRemoveDuplicates;
+    Result.Capacity := TriangleIndices.Count * 3;
+    for I := 0 to TriangleIndices.Count - 1 do
+    begin
+      K := TriangleIndices[I];
+      Result.Add(TriangleFiler.List^[K], TriangleFiler.List^[K + 1],
+        TriangleFiler.List^[K + 2]);
+    end;
+  finally
+    TriangleIndices.Free;
+  end;
 
 end;
 
 // GetTrianglesFromNodesIntersectingCube
 //
-function TOctree.GetTrianglesFromNodesIntersectingCube(const objAABB : TAABB;
-                                    const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
+function TOctree.GetTrianglesFromNodesIntersectingCube(const ObjAABB: TAABB;
+  const ObjToSelf, SelfToObj: TMatrix): TAffineVectorList;
 var
-  AABB1 : TAABB;
-  M1To2, M2To1 : TMatrix;
+  AABB1: TAABB;
+  M1To2, M2To1: TMatrix;
 
-   procedure HandleNode(Onode: POctreeNode);
-   var
-      AABB2: TAABB;
-      i: integer;
-   begin
-      AABB2.min:=Onode^.MinExtent;
-      AABB2.max:=Onode^.MaxExtent;
+  procedure HandleNode(Onode: POctreeNode);
+  var
+    AABB2: TAABB;
+    I: Integer;
+  begin
+    AABB2.Min := Onode^.MinExtent;
+    AABB2.Max := Onode^.MaxExtent;
 
-      if IntersectAABBs(AABB1, AABB2, M1To2, M2To1) then begin
-         if Assigned(Onode^.ChildArray[0]) then begin
-            for i:=0 to 7 do
-               HandleNode(Onode^.ChildArray[i])
-         end else begin
-            SetLength(ResultArray, Length(ResultArray)+1);
-            ResultArray[High(ResultArray)]:=Onode;
-         end;
+    if IntersectAABBs(AABB1, AABB2, M1To2, M2To1) then
+    begin
+      if Assigned(Onode^.ChildArray[0]) then
+      begin
+        for I := 0 to 7 do
+          HandleNode(Onode^.ChildArray[I])
+      end
+      else
+      begin
+        SetLength(ResultArray, Length(ResultArray) + 1);
+        ResultArray[High(ResultArray)] := Onode;
       end;
-   end;
+    end;
+  end;
 
 var
-   i, k : Integer;
-   p : POctreeNode;
-   triangleIndices : TIntegerList;
+  I, K: Integer;
+  P: POctreeNode;
+  TriangleIndices: TIntegerList;
 begin
-   //Calc AABBs
-   AABB1:=objAABB;
-   // Calc Conversion Matrixes
-   M1To2:=objToSelf;
-   M2To1:=selfToObj;
+  // Calc AABBs
+  AABB1 := ObjAABB;
+  // Calc Conversion Matrixes
+  M1To2 := ObjToSelf;
+  M2To1 := SelfToObj;
 
-   SetLength(ResultArray, 0);
-   if Assigned(RootNode) then
-      HandleNode(RootNode);
+  SetLength(ResultArray, 0);
+  if Assigned(RootNode) then
+    HandleNode(RootNode);
 
-   Result:=TAffineVectorList.Create;
-   triangleIndices:=TIntegerList.Create;
-   try
-      //fill the triangles from all nodes in the resultarray to AL
-      for i:=0 to High(ResultArray) do begin
-         p:=ResultArray[i];
-         triangleIndices.AddIntegers(p^.TriArray);
-      end;
-      triangleIndices.SortAndRemoveDuplicates;
-      Result.Capacity:=triangleIndices.Count*3;
-      for i:=0 to triangleIndices.Count-1 do begin
-         k:=triangleIndices[i];
-         Result.Add(triangleFiler.List^[k], triangleFiler.List^[k+1], triangleFiler.List^[k+2]);
-      end;
-   finally
-      triangleIndices.Free;
-   end;
+  Result := TAffineVectorList.Create;
+  TriangleIndices := TIntegerList.Create;
+  try
+    // fill the triangles from all nodes in the resultarray to AL
+    for I := 0 to High(ResultArray) do
+    begin
+      P := ResultArray[I];
+      TriangleIndices.AddIntegers(P^.TriArray);
+    end;
+    TriangleIndices.SortAndRemoveDuplicates;
+    Result.Capacity := TriangleIndices.Count * 3;
+    for I := 0 to TriangleIndices.Count - 1 do
+    begin
+      K := TriangleIndices[I];
+      Result.Add(TriangleFiler.List^[K], TriangleFiler.List^[K + 1],
+        TriangleFiler.List^[K + 2]);
+    end;
+  finally
+    TriangleIndices.Free;
+  end;
 end;
 
 end.

@@ -6,6 +6,7 @@
    Implements projected textures through a GLScene object.
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -183,7 +184,12 @@ end;
 
 procedure TGLTextureEmitter.SetupTexMatrix(var ARci: TRenderContextInfo);
 const
-  cBaseMat: TMatrix = ((0.5, 0, 0, 0), (0, 0.5, 0, 0), (0, 0, 1, 0), (0.5, 0.5, 0, 1));
+  cBaseMat: TMatrix =
+  (Coord:((X:0.5; Y:0;   Z:0; W:0),
+          (X:0;   Y:0.5; Z:0; W:0),
+          (X:0;   Y:0; Z:1; W:0),
+          (X:0.5; Y:0.5; Z:0; W:1)));
+
 var
   PM: TMatrix;
 begin

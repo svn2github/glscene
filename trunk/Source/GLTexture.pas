@@ -6,6 +6,8 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
+                           changed type TGLCubeMapTarget to integer using GLS_CPPB
        <li>12/05/11 - Yar - Added KeepImageAfterTransfer for TGLTexture
        <li>04/10/10 - Yar - Improved multycontext features for TGLTexture
        <li>23/08/10 - Yar - Added OpenGLTokens to uses
@@ -91,6 +93,8 @@
                           Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
       <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
       <li>04/10/04 - NC - Added TGLFloatDataImage
+      <li>02/08/04 - LR, YHC - BCB corrections: Added dummy method for the abstract problem
+                          Changed type of TGLCubeMapTarget to integer
       <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
       <li>29/06/04 - SG - Added bmModulate blending mode
@@ -174,29 +178,29 @@
           (gain = 7-10% on T&L intensive rendering),
                           TGLTexBaseClass is no more (RIP)
       <li>21/03/00 - EG - TGLMaterial props are now longer stored when it is
-          linked to a material library entry,
-          Added TGLPictureImage (split from TGLPersistentImage),
-          TGLPicFileImage has been updated and reactivated,
-          ColorManager is now autocreated and non longer force-linked.
+                          linked to a material library entry,
+                          Added TGLPictureImage (split from TGLPersistentImage),
+                          TGLPicFileImage has been updated and reactivated,
+                          ColorManager is now autocreated and non longer force-linked.
       <li>19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
       <li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
-          Added FindGLTextureImageClassByFriendlyName,
-          FChanges states now ignored in TGLTexture.GetHandle,
-          Added SaveToFile/LoadFromFile to TextureImage
+                          Added FindGLTextureImageClassByFriendlyName,
+                          FChanges states now ignored in TGLTexture.GetHandle,
+                          Added SaveToFile/LoadFromFile to TextureImage
       <li>17/03/00 - EG - Added tiaLuminance
       <li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
-          Added ImageAlpha
+                          Added ImageAlpha
       <li>13/03/00 - EG - Changed TGLTextureImage image persistence again,
-          Added "Edit" method for texture image classes,
-          TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
+                          Added "Edit" method for texture image classes,
+                          TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
       <li>03/03/00 - EG - Removed TImagePath,
-          Started major rework of the whole TGLTextureImage stuff,
-          Fixed and optimized TGLTexture.PrepareImage
+                          Started major rework of the whole TGLTextureImage stuff,
+                          Fixed and optimized TGLTexture.PrepareImage
       <li>12/02/00 - EG - Added Material Library
       <li>10/02/00 - EG - Fixed crash when texture is empty
       <li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
-          fixed notification on material property setXxx methods,
-          Objects now begin with 'TGL'
+                          fixed notification on material property setXxx methods,
+                          Objects now begin with 'TGL'
       <li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
       <li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
                           IsPowerOf2 moved to GLMisc, added TGLPersistentImage.Assign,
@@ -340,9 +344,9 @@ type
     class function IsSelfLoading: Boolean; virtual;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
     function GetTextureTarget: TGLTextureTarget; virtual; abstract;
-    function GetHeight: Integer; virtual; abstract;
-    function GetWidth: Integer; virtual; abstract;
-    function GetDepth: Integer; virtual; abstract;
+    function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetDepth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
@@ -357,7 +361,7 @@ type
     {: Save textureImage to file.<p>
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic; abstract;
+    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     {: Load textureImage from a file.<p>
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture.<br>
@@ -367,7 +371,7 @@ type
     {: Returns a user-friendly denomination for the class.<p>
      This denomination is used for picking a texture image class
      in the IDE expert. }
-    class function FriendlyName: string; virtual; abstract;
+    class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     {: Returns a user-friendly description for the class.<p>
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
@@ -380,7 +384,7 @@ type
     {: Returns image's bitmap handle.<p>
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32: TGLImage; virtual; abstract;
+    function GetBitmap32: TGLImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     {: Request for unloading bitmapData, to free some memory.<p>
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap.<br>
@@ -565,9 +569,14 @@ type
       SetPictureFileName;
   end;
 
+
   // TGLCubeMapTarget
   //
-  TGLCubeMapTarget = (cmtPX, cmtNX, cmtPY, cmtNY, cmtPZ, cmtNZ);
+{$IFDEF GLS_CPPB}
+  TGLCubeMapTarget = Integer;
+{$ELSE}
+  TGLCubeMapTarget = (CmtPX, CmtNX, CmtPY, CmtNY, CmtPZ, CmtNZ);
+{$ENDIF}
 
   // TGLCubeMapImage
   //
@@ -1067,6 +1076,41 @@ var
 
 type
   TFriendlyImage = class(TGLBaseImage);
+
+{$IFDEF GLS_CPPB}
+  // Dummy methods for CPP
+  //
+function TGLTextureImage.GetHeight: Integer;
+begin
+  Result := 0;
+end;
+
+function TGLTextureImage.GetWidth: Integer;
+begin
+  Result := 0;
+end;
+
+function TGLTextureImage.GetDepth: Integer;
+begin
+  Result := 0;
+end;
+
+
+procedure TGLTextureImage.SaveToFile(const FileName: String);
+begin
+end;
+
+class function TGLTextureImage.FriendlyName: String;
+begin
+  Result := '';
+end;
+
+function TGLTextureImage.GetBitmap32: TGLImage;
+begin
+  Result := nil;
+end;
+{$ENDIF}
+
 
 {$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
@@ -3168,10 +3212,10 @@ procedure TGLTexture.Apply(var rci: TRenderContextInfo);
         end;
       tmmCubeMapCamera:
         begin
-          m[0] := VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
-          m[1] := VectorNegate(rci.cameraDirection);
-          m[2] := rci.cameraUp;
-          m[3] := WHmgPoint;
+          m.Coord[0] := VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
+          m.Coord[1] := VectorNegate(rci.cameraDirection);
+          m.Coord[2] := rci.cameraUp;
+          m.Coord[3] := WHmgPoint;
           mm := rci.PipelineTransformation.ViewMatrix;
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
@@ -3893,7 +3937,7 @@ begin
     if FTextureMatrixIsIdentity then
       GL.LoadIdentity
     else
-      GL.LoadMatrixf(@FTextureMatrix[0][0]);
+      GL.LoadMatrixf(@FTextureMatrix.Coord[0].Coord[0]);
     GL.MatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     if FTextureIndex = 0 then

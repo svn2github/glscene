@@ -2,8 +2,10 @@
 // Heavily based on Delphi Free Stuff Include File
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
-// 
+//
 // History:
+// 10/11/12 - PW - Added support for Delphi and C++Builder with united
+//                and separated GLS_DELPHI or GLS_CPPB options  
 // 02/04/10 - Yar - Added GLS_NO_INLINE option
 // 13/12/09 - DaStr - Added GLS_MULTITHREAD option (thanks Controller)
 // 10/11/09 - DaStr - Added Delphi 2010 support
@@ -31,6 +33,9 @@
 
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
+
+// Activate combined support for Delphi and C++Builder
+{$DEFINE GLS_DELPHI_OR_CPPB}
 
 // Activate support for png images (using pngimage.pas library)
 // GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
@@ -75,7 +80,7 @@
 {.$DEFINE GLS_X11_SUPPORT}
 
 // Activate OpenGL ES
-{.$DEFINE EGL_SUPPORT}
+{.$DEFINE GLS_OPENGL_ES}
 
 //
 // Platform Detection
@@ -104,6 +109,7 @@
 
 // FPC
 {$IFDEF FPC}
+  {$UNDEFINE GLS_DELPHI_OR_CPPB}
   {.$DEFINE GLS_GENERIC_PREFIX}
   {$DEFINE GEOMETRY_NO_ASM}
   {$DEFINE GLS_NO_ASM}
@@ -118,11 +124,11 @@
 // If it's not FPC, determine if C++ builder, or Delphi
 {$IFNDEF FPC}
    // There no extended type on all non-x86 platforms.
-  {$DEFINE GLS_PLATFORM_HAS_EXTENDED}
-  {$DEFINE GLS_DELPHI_OR_CPPB}
-  {$IFDEF BCB}
+  {.$DEFINE GLS_PLATFORM_HAS_EXTENDED}
+  {$IFDEF GLS_DELPHI_OR_CPPB}
     {$DEFINE GLS_CPPB}
-    // C++Builder requires this if you use Delphi components in run-time packages.
+//    {$DEFINE BCB}  // for BCB6, Zlib, Cg
+    // C++Builder requires hpp/obj files to use Delphi components in run-time packages.
     {$ObjExportAll On}
   {$ELSE}
     {$DEFINE GLS_DELPHI}
@@ -163,6 +169,17 @@
 {$IFNDEF FPC}
 // Conditional expressions were introduced in Delphi 6
 {$ifdef CONDITIONALEXPRESSIONS}
+
+  // Delphi XE3 & C++ Builder XE3
+  {$if CompilerVersion>24}
+    {$DEFINE GLS_COMPILER_XE3_UP}
+  {$elseif CompilerVersion=24}
+    {$DEFINE GLS_COMPILER_2012}
+    {$DEFINE GLS_COMPILER_XE3_UP}
+    {$DEFINE GLS_COMPILER_XE3_DOWN}
+  {$elseif CompilerVersion<25}
+    {$DEFINE GLS_COMPILER_XE3_DOWN}
+  {$ifend}
 
   // Delphi XE2 & C++ Builder XE2
   {$if CompilerVersion>23}
@@ -342,6 +359,9 @@
     {$IFDEF GLS_COMPILER_XE2}
       {$DEFINE GLS_DELPHI_XE2}
     {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE3}
+      {$DEFINE GLS_DELPHI_XE3}
+    {$ENDIF}
   {$ENDIF}
 
   // UP Declarations
@@ -397,6 +417,9 @@
     {$ENDIF}
     {$IFDEF GLS_COMPILER_XE2_UP}
       {$DEFINE GLS_DELPHI_XE2_UP}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_XE3_UP}
+      {$DEFINE GLS_DELPHI_XE3_UP}
     {$ENDIF}
   {$ENDIF}
 
@@ -603,6 +626,4 @@
 {$IFDEF GLS_SERVICE_CONTEXT}
   {$DEFINE GLS_MULTITHREAD}
 {$ENDIF}
-
-
 

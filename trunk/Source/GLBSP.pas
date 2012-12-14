@@ -356,7 +356,7 @@ var
     local.position := Owner.Owner.AbsoluteToLocal(absPos);
     SetVector(v, absRadius, absRadius, absRadius, 0);
     v := Owner.Owner.AbsoluteToLocal(v);
-    local.radius := MaxFloat(v);
+    local.radius := MaxFloat(v.Coord);
   end;
 
 begin
@@ -593,8 +593,10 @@ function TBSPMeshObject.FindNodeByPoint(aPoint: TVector): TFGBSPNode;
       Result := nodeIndex
     else
     begin
-      eval := node.splitPlane[0] * aPoint[0] + node.splitPlane[1] * aPoint[1] +
-        node.splitPlane[2] * aPoint[2] - node.splitPlane[3];
+      eval := node.splitPlane.Coord[0] * aPoint.Coord[0] +
+              node.splitPlane.Coord[1] * aPoint.Coord[1] +
+              node.splitPlane.Coord[2] * aPoint.Coord[2] -
+              node.splitPlane.Coord[3];
       if eval >= 0 then
         idx := node.PositiveSubNodeIndex
       else
@@ -1160,10 +1162,10 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates: TIntegerList);
     // compute extent and its inversion
     vector := VectorSubtract(vB^, vA^);
     for i := 0 to 2 do
-      if vector[i] <> 0 then
-        invVector[i] := 1 / vector[i]
+      if vector.Coord[i] <> 0 then
+        invVector.Coord[i] := 1 / vector.Coord[i]
       else
-        invVector[i] := 0;
+        invVector.Coord[i] := 0;
     // lookup all candidates
     for i := 0 to candidatesList.Count - 1 do
     begin
@@ -1171,16 +1173,19 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates: TIntegerList);
       if (k = iA) or (k = iB) or (k = iC) then
         Continue;
       candidate := @vertices[k];
-      if (candidate^[0] > boxMin[0]) and (candidate^[1] > boxMin[1]) and
-        (candidate^[2] > boxMin[2]) and (candidate^[0] < boxMax[0]) and
-        (candidate^[1] < boxMax[1]) and (candidate^[2] < boxMax[2]) then
+      if (candidate^.Coord[0] > boxMin.Coord[0]) and
+         (candidate^.Coord[1] > boxMin.Coord[1]) and
+         (candidate^.Coord[2] > boxMin.Coord[2]) and
+         (candidate^.Coord[0] < boxMax.Coord[0]) and
+         (candidate^.Coord[1] < boxMax.Coord[1]) and
+         (candidate^.Coord[2] < boxMax.Coord[2]) then
       begin
         f := candidate^;
         SubtractVector(f, vA^);
         ScaleVector(f, invVector);
-        if (Abs(f[0] - f[1]) < cTJunctionEpsilon) and
-          (Abs(f[0] - f[2]) < cTJunctionEpsilon) and
-          (Abs(f[1] - f[2]) < cTJunctionEpsilon) then
+        if (Abs(f.Coord[0] - f.Coord[1]) < cTJunctionEpsilon) and
+           (Abs(f.Coord[0] - f.Coord[2]) < cTJunctionEpsilon) and
+           (Abs(f.Coord[1] - f.Coord[2]) < cTJunctionEpsilon) then
         begin
           Result := AddLerpIfDistinct(iA, iB, k);
           Break;

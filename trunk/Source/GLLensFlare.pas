@@ -6,6 +6,7 @@
    Lens flare object.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -544,10 +545,10 @@ begin
 
     GL.Begin_(GL_TRIANGLE_FAN);
     GL.Color4fv(grad.FromColor.AsAddress);
-    GL.Vertex2f(v[0], v[1]);
+    GL.Vertex2f(v.Coord[0], v.Coord[1]);
     GL.Color4fv(grad.ToColor.AsAddress);
     for i := 0 to Resolution - 1 do
-      GL.Vertex2f(FCosRes[i] * rnd + v[0], FSinRes[i] * rnd + v[1]);
+      GL.Vertex2f(FCosRes[i] * rnd + v.Coord[0], FSinRes[i] * rnd + v.Coord[1]);
     GL.End_;
   end;
 end;
@@ -581,10 +582,10 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := CurrentBuffer.WorldToScreen(v);
-    flareInViewPort := (screenPos[0] < rci.viewPortSize.cx)
-    and (screenPos[0] >= 0)
-    and (screenPos[1] < rci.viewPortSize.cy)
-    and (screenPos[1] >= 0);
+    flareInViewPort := (screenPos.Coord[0] < rci.viewPortSize.cx)
+    and (screenPos.Coord[0] >= 0)
+    and (screenPos.Coord[1] < rci.viewPortSize.cy)
+    and (screenPos.Coord[1] >= 0);
   end
   else
     flareInViewPort := False;
@@ -621,13 +622,13 @@ begin
   GL.MatrixMode(GL_PROJECTION);
   GL.PushMatrix;
   projMatrix := IdentityHmgMatrix;
-  projMatrix[0][0] := 2 / rci.viewPortSize.cx;
-  projMatrix[1][1] := 2 / rci.viewPortSize.cy;
+  projMatrix.Coord[0].Coord[0] := 2 / rci.viewPortSize.cx;
+  projMatrix.Coord[1].Coord[1] := 2 / rci.viewPortSize.cy;
   GL.LoadMatrixf(@projMatrix);
 
   MakeVector(posVector,
-    screenPos[0] - rci.viewPortSize.cx * 0.5,
-    screenPos[1] - rci.viewPortSize.cy * 0.5,
+    screenPos.Coord[0] - rci.viewPortSize.cx * 0.5,
+    screenPos.Coord[1] - rci.viewPortSize.cy * 0.5,
     0);
 
   if AutoZTest then
@@ -663,10 +664,10 @@ begin
       end;
 
       GL.Begin_(GL_QUADS);
-      GL.Vertex3f(posVector[0] + 2, posVector[1], 1);
-      GL.Vertex3f(posVector[0], posVector[1] + 2, 1);
-      GL.Vertex3f(posVector[0] - 2, posVector[1], 1);
-      GL.Vertex3f(posVector[0], posVector[1] - 2, 1);
+      GL.Vertex3f(posVector.Coord[0] + 2, posVector.Coord[1], 1);
+      GL.Vertex3f(posVector.Coord[0], posVector.Coord[1] + 2, 1);
+      GL.Vertex3f(posVector.Coord[0] - 2, posVector.Coord[1], 1);
+      GL.Vertex3f(posVector.Coord[0], posVector.Coord[1] - 2, 1);
       GL.End_;
 
       if TGLOcclusionQueryHandle.IsSupported then
@@ -684,8 +685,8 @@ begin
     begin
       //Compares the distance to the lensflare, to the z-buffer depth.
       //This prevents the flare from being occluded by objects BEHIND the light.
-      depth := CurrentBuffer.PixelToDistance(Round(ScreenPos[0]),
-        Round(rci.viewPortSize.cy - ScreenPos[1]));
+      depth := CurrentBuffer.PixelToDistance(Round(ScreenPos.Coord[0]),
+        Round(rci.viewPortSize.cy - ScreenPos.Coord[1]));
       dist := VectorDistance(rci.cameraPosition, self.AbsolutePosition);
       FlareIsNotOccluded := ((dist - depth) < 1);
     end;
@@ -703,7 +704,7 @@ begin
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
-      GL.Translatef(posVector[0], posVector[1], posVector[2]);
+      GL.Translatef(posVector.Coord[0], posVector.Coord[1], posVector.Coord[2]);
 
       // Glow (a circle with transparent edges):
       if feGlow in Elements then

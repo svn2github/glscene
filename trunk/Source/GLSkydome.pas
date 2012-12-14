@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLSkydome<p>
@@ -6,8 +6,9 @@
    Skydome object<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>24/03/11 - Yar - Added esoDepthTest to TEarthSkydomeOption
-                           (Drawing sky dome latest with depth test reduce pixels overdraw) 
+                           (Drawing sky dome latest with depth test reduce pixels overdraw)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -20,6 +21,7 @@
       <li>19/12/06 - DaStr - TSkyDomeStars.AddRandomStars() overloaded
       <li>29/06/06 - PvD - Fixed small bug to properly deal with polygon fill
       <li>20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
       <li>04/08/03 - SG - Fixed small bug with random star creation
       <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
@@ -477,7 +479,7 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
     f, r, r2: Single;
     vertex1, vertex2: TVector;
   begin
-    vertex1[3] := 1;
+    vertex1.Coord[3] := 1;
     if start = -90 then
     begin
       // triangle fan with south pole
@@ -485,11 +487,11 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
       GL.Color4fv(@colStart);
       GL.Vertex3f(0, 0, -1);
       f := 2 * PI / Slices;
-      SinCos(DegToRad(stop), vertex1[2], r);
+      SinCos(VectorGeometry.DegToRad(stop), vertex1.Coord[2], r);
       GL.Color4fv(@colStop);
       for i := 0 to Slices do
       begin
-        SinCos(i * f, r, vertex1[1], vertex1[0]);
+        SinCos(i * f, r, vertex1.Coord[1], vertex1.Coord[0]);
         GL.Vertex4fv(@vertex1);
       end;
       GL.End_;
@@ -501,29 +503,29 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
       GL.Color4fv(@colStop);
       GL.Vertex3fv(@ZHmgPoint);
       f := 2 * PI / Slices;
-      SinCos(DegToRad(start), vertex1[2], r);
+      SinCos(VectorGeometry.DegToRad(start), vertex1.Coord[2], r);
       GL.Color4fv(@colStart);
       for i := Slices downto 0 do
       begin
-        SinCos(i * f, r, vertex1[1], vertex1[0]);
+        SinCos(i * f, r, vertex1.Coord[1], vertex1.Coord[0]);
         GL.Vertex4fv(@vertex1);
       end;
       GL.End_;
     end
     else
     begin
-      vertex2[3] := 1;
+      vertex2.Coord[3] := 1;
       // triangle strip
       GL.Begin_(GL_TRIANGLE_STRIP);
       f := 2 * PI / Slices;
-      SinCos(DegToRad(start), vertex1[2], r);
-      SinCos(DegToRad(stop), vertex2[2], r2);
+      SinCos(VectorGeometry.DegToRad(start), vertex1.Coord[2], r);
+      SinCos(VectorGeometry.DegToRad(stop), vertex2.Coord[2], r2);
       for i := 0 to Slices do
       begin
-        SinCos(i * f, r, vertex1[1], vertex1[0]);
+        SinCos(i * f, r, vertex1.Coord[1], vertex1.Coord[0]);
         GL.Color4fv(@colStart);
         GL.Vertex4fv(@vertex1);
-        SinCos(i * f, r2, vertex2[1], vertex2[0]);
+        SinCos(i * f, r2, vertex2.Coord[1], vertex2.Coord[0]);
         GL.Color4fv(@colStop);
         GL.Vertex4fv(@vertex2);
       end;
@@ -712,9 +714,9 @@ begin
     star := Items[i];
     SinCos(star.DEC * cPIdiv180, decS, decC);
     SinCos(star.RA * cPIdiv180, decC, raS, raC);
-    star.FCacheCoord[0] := raC;
-    star.FCacheCoord[1] := raS;
-    star.FCacheCoord[2] := decS;
+    star.FCacheCoord.Coord[0] := raC;
+    star.FCacheCoord.Coord[1] := raS;
+    star.FCacheCoord.Coord[2] := decS;
   end;
 end;
 
@@ -735,7 +737,7 @@ var
     if (n and 63) = 0 then
     begin
       twinkleColor := VectorScale(color, Random * 0.6 + 0.4);
-      GL.Color3fv(@twinkleColor[0]);
+      GL.Color3fv(@twinkleColor.Coord[0]);
       n := 0;
     end
     else
@@ -787,12 +789,12 @@ begin
         DoTwinkle;
       end
       else
-        GL.Color3fv(@color[0]);
+        GL.Color3fv(@color.Coord[0]);
       lastColor := star.FColor;
     end
     else if twinkle then
       DoTwinkle;
-    GL.Vertex3fv(@star.FCacheCoord[0]);
+    GL.Vertex3fv(@star.FCacheCoord.Coord[0]);
   end;
   GL.End_;
 
@@ -815,11 +817,11 @@ begin
     star := Add;
     // pick a point in the half-cube
     if limitToTopDome then
-      coord[2] := Random
+      coord.Coord[2] := Random
     else
-      coord[2] := Random * 2 - 1;
+      coord.Coord[2] := Random * 2 - 1;
     // calculate RA and Dec
-    star.Dec := ArcSin(coord[2]) * c180divPI;
+    star.Dec := ArcSin(coord.Coord[2]) * c180divPI;
     star.Ra := Random * 360 - 180;
     // pick a color
     star.Color := color;
@@ -852,16 +854,16 @@ begin
     star := Add;
     // pick a point in the half-cube
     if limitToTopDome then
-      coord[2] := Random
+      coord.Coord[2] := Random
     else
-      coord[2] := Random * 2 - 1;
+      coord.Coord[2] := Random * 2 - 1;
     // calculate RA and Dec
-    star.Dec := ArcSin(coord[2]) * c180divPI;
+    star.Dec := ArcSin(coord.Coord[2]) * c180divPI;
     star.Ra := Random * 360 - 180;
     // pick a color
-    star.Color := RGB(RandomTT(ColorMin[0], ColorMax[0]),
-      RandomTT(ColorMin[1], ColorMax[1]),
-      RandomTT(ColorMin[2], ColorMax[2]));
+    star.Color := RGB(RandomTT(ColorMin.Coord[0], ColorMax.Coord[0]),
+      RandomTT(ColorMin.Coord[1], ColorMax.Coord[1]),
+      RandomTT(ColorMin.Coord[2], ColorMax.Coord[2]));
     // pick a magnitude
     star.Magnitude := Magnitude_min + Random * (Magnitude_max - Magnitude_min);
   end;
@@ -888,7 +890,7 @@ begin
         colorVector := StarRecordColor(sr, 3);
         Magnitude := sr.VMagnitude * 0.1;
         if sr.VMagnitude > 35 then
-          Color := ConvertColorVector(colorVector, colorVector[3])
+          Color := ConvertColorVector(colorVector, colorVector.Coord[3])
         else
           Color := ConvertColorVector(colorVector);
       end;
@@ -1328,18 +1330,18 @@ var
     color: TColorVector;
   begin
     r := 0;
-    vertex1[3] := 1;
+    vertex1.Coord[3] := 1;
     // triangle fan with south pole
     GL.Begin_(GL_TRIANGLE_FAN);
     color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
     GL.Color4fv(DeepColor.AsAddress);
     GL.Vertex3f(0, 0, -1);
-    SinCos(DegToRad(stop), vertex1[2], r);
-    thetaStart := DegToRad(90 - stop);
+    SinCos(VectorGeometry.DegToRad(stop), vertex1.Coord[2], r);
+    thetaStart := VectorGeometry.DegToRad(90 - stop);
     for i := 0 to steps - 1 do
     begin
-      vertex1[0] := r * cosTable[i];
-      vertex1[1] := r * sinTable[i];
+      vertex1.Coord[0] := r * cosTable[i];
+      vertex1.Coord[1] := r * sinTable[i];
       color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
       GL.Color4fv(@color);
       GL.Vertex4fv(@vertex1);
@@ -1354,7 +1356,7 @@ var
     vertex1, vertex2: TVector;
     color: TColorVector;
   begin
-    vertex1[3] := 1;
+    vertex1.Coord[3] := 1;
     if stop = 90 then
     begin
       // triangle fan with north pole
@@ -1362,12 +1364,12 @@ var
       color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
       GL.Color4fv(@color);
       GL.Vertex4fv(@ZHmgPoint);
-      SinCos(DegToRad(start), vertex1[2], r);
-      thetaStart := DegToRad(90 - start);
+      SinCos(VectorGeometry.DegToRad(start), vertex1.Coord[2], r);
+      thetaStart := VectorGeometry.DegToRad(90 - start);
       for i := 0 to steps - 1 do
       begin
-        vertex1[0] := r * cosTable[i];
-        vertex1[1] := r * sinTable[i];
+        vertex1.Coord[0] := r * cosTable[i];
+        vertex1.Coord[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
         GL.Color4fv(@color);
         GL.Vertex4fv(@vertex1);
@@ -1376,22 +1378,22 @@ var
     end
     else
     begin
-      vertex2[3] := 1;
+      vertex2.Coord[3] := 1;
       // triangle strip
       GL.Begin_(GL_TRIANGLE_STRIP);
-      SinCos(DegToRad(start), vertex1[2], r);
-      SinCos(DegToRad(stop), vertex2[2], r2);
-      thetaStart := DegToRad(90 - start);
-      thetaStop := DegToRad(90 - stop);
+      SinCos(VectorGeometry.DegToRad(start), vertex1.Coord[2], r);
+      SinCos(VectorGeometry.DegToRad(stop), vertex2.Coord[2], r2);
+      thetaStart := VectorGeometry.DegToRad(90 - start);
+      thetaStop := VectorGeometry.DegToRad(90 - stop);
       for i := 0 to steps - 1 do
       begin
-        vertex1[0] := r * cosTable[i];
-        vertex1[1] := r * sinTable[i];
+        vertex1.Coord[0] := r * cosTable[i];
+        vertex1.Coord[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
         GL.Color4fv(@color);
         GL.Vertex4fv(@vertex1);
-        vertex2[0] := r2 * cosTable[i];
-        vertex2[1] := r2 * sinTable[i];
+        vertex2.Coord[0] := r2 * cosTable[i];
+        vertex2.Coord[1] := r2 * sinTable[i];
         color := CalculateColor(thetaStop, CalculateCosGamma(vertex2));
         GL.Color4fv(@color);
         GL.Vertex4fv(@vertex2);
@@ -1404,7 +1406,7 @@ var
   n, i, sdiv2: Integer;
   t, t2, p, fs: Single;
 begin
-  ts := DegToRad(90 - SunElevation);
+  ts := VectorGeometry.DegToRad(90 - SunElevation);
   SetVector(sunPos, sin(ts), 0, cos(ts));
   // prepare sin/cos LUT, with a higher sampling around 0Ѝ
   n := Slices div 2;

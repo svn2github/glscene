@@ -6,6 +6,7 @@
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
     <li>13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
                             global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"
     <li>11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
@@ -258,11 +259,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  R[0]:=Mat.Coord[0].Coord[0]; R[1]:=Mat.Coord[1].Coord[0]; R[2]:= Mat.Coord[2].Coord[0]; R[3]:= 0;
+  R[4]:=Mat.Coord[0].Coord[1]; R[5]:=Mat.Coord[1].Coord[1]; R[6]:= Mat.Coord[2].Coord[1]; R[7]:= 0;
+  R[8]:=Mat.Coord[0].Coord[2]; R[9]:=Mat.Coord[1].Coord[2]; R[10]:=Mat.Coord[2].Coord[2]; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
+  dBodySetPosition(FBody,Mat.Coord[3].Coord[0],Mat.Coord[3].Coord[1],Mat.Coord[3].Coord[2]);
 end;
 
 procedure TODERagdollBone.Start;
@@ -275,30 +276,30 @@ var
   var absMat: TMatrix;
   begin
     absMat := ReferenceMatrix;
-    absMat[3] := NullHmgVector;
+    absMat.Coord[3] := NullHmgVector;
     Result := VectorNormalize(VectorTransform(Axis, absMat));
   end;
 
 begin
   FBody := dBodyCreate(FRagdoll.ODEWorld.World);
 
-  boneSize[0] := Size[0]*VectorLength(BoneMatrix[0]);
-  boneSize[1] := Size[1]*VectorLength(BoneMatrix[1]);
-  boneSize[2] := Size[2]*VectorLength(BoneMatrix[2]);
+  boneSize.Coord[0] := Size.Coord[0]*VectorLength(BoneMatrix.Coord[0]);
+  boneSize.Coord[1] := Size.Coord[1]*VectorLength(BoneMatrix.Coord[1]);
+  boneSize.Coord[2] := Size.Coord[2]*VectorLength(BoneMatrix.Coord[2]);
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
   for n:=0 to 2 do
-      if (BoneSize[n]=0) then
-         BoneSize[n]:=0.000001;
+      if (BoneSize.Coord[n]=0) then
+         BoneSize.Coord[n]:=0.000001;
 
-  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize[0], BoneSize[1], BoneSize[2]);
+  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.Coord[0], BoneSize.Coord[1], BoneSize.Coord[2]);
 
   dMassAdjust(mass, vGLODERagdoll_cMass);
   dBodySetMass(FBody, @mass);
 
   AlignBodyToMatrix(ReferenceMatrix);
 
-  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize[0], BoneSize[1], BoneSize[2]);
+  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize.Coord[0], BoneSize.Coord[1], BoneSize.Coord[2]);
   FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TODERagdollCube);
   if (Joint is TODERagdollDummyJoint) then
     dGeomSetBody(FGeom, FOwner.Body)
@@ -314,8 +315,8 @@ begin
       vAxis := RotateAxis(Axis);
       FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetHingeAnchor(FJointId, Anchor[0], Anchor[1], Anchor[2]);
-      dJointSetHingeAxis (FJointId, vAxis[0], vAxis[1], vAxis[2]);
+      dJointSetHingeAnchor(FJointId, Anchor.Coord[0], Anchor.Coord[1], Anchor.Coord[2]);
+      dJointSetHingeAxis (FJointId, vAxis.Coord[0], vAxis.Coord[1], vAxis.Coord[2]);
    	  dJointSetHingeParam (FJointId, dParamLoStop, ParamLoStop);
       dJointSetHingeParam (FJointId, dParamHiStop, ParamHiStop);
     end;
@@ -327,9 +328,9 @@ begin
       vAxis2 := RotateAxis(Axis2);
       FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetUniversalAnchor(FJointId, Anchor[0], Anchor[1], Anchor[2]);
-      dJointSetUniversalAxis1(FJointId, vAxis[0], vAxis[1], vAxis[2]);
-      dJointSetUniversalAxis2(FJointId, vAxis2[0], vAxis2[1], vAxis2[2]);
+      dJointSetUniversalAnchor(FJointId, Anchor.Coord[0], Anchor.Coord[1], Anchor.Coord[2]);
+      dJointSetUniversalAxis1(FJointId, vAxis.Coord[0], vAxis.Coord[1], vAxis.Coord[2]);
+      dJointSetUniversalAxis2(FJointId, vAxis2.Coord[0], vAxis2.Coord[1], vAxis2.Coord[2]);
    	  dJointSetUniversalParam(FJointId, dParamLoStop, ParamLoStop);
    	  dJointSetUniversalParam(FJointId, dParamHiStop, ParamHiStop);
    	  dJointSetUniversalParam(FJointId, dParamLoStop2, ParamLoStop2);
@@ -343,9 +344,9 @@ begin
   begin
     Visible := FRagdoll.ShowBoundingBoxes;
     Material.FrontProperties.Diffuse.SetColor(1,0,0,0.4);
-    CubeWidth := BoneSize[0];
-    CubeHeight := BoneSize[1];
-    CubeDepth := BoneSize[2];
+    CubeWidth := BoneSize.Coord[0];
+    CubeHeight := BoneSize.Coord[1];
+    CubeDepth := BoneSize.Coord[2];
     Bone:=self;
     Ragdoll:=self.FRagdoll;
   end;

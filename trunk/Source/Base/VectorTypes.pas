@@ -23,6 +23,9 @@
     <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
     <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
     <li>19/12/04 - PhP - Added byte vectors
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                             move PAffineVectorArray, PVectorArray and PMatrixArray
+                             from VectorGeometry to this Unit    
     <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
     <li>24/08/03 - PhP - Added smallint vectors
     <li>04/07/01 - EG - Creation
@@ -38,68 +41,299 @@ uses
   GLCrossPlatform;
 
 type
-  TVector2d = array[0..1] of double;
-  TVector2f = array[0..1] of single;
-  TVector2h = array[0..1] of THalfFloat;
-  TVector2i = array[0..1] of longint;
-  TVector2ui = array[0..1] of longWord;
-  TVector2s = array[0..1] of smallint;
-  TVector2b = array[0..1] of byte;
-  TVector2sb = array[0..1] of ShortInt;
-  TVector2e = array[0..1] of Extended;
-  TVector2w = array[0..1] of Word;
-  TVector2p = array[0..1] of Pointer;
+  //2
+  TVector2d = record
+    case boolean of
+      true  : (Coord: array[0..1] of double);
+      false : (X,Y: double);
+  end;
+  TVector2f = record
+    case boolean of
+      true  : (Coord: array[0..1] of single);
+      false : (X,Y: single);
+  end;
+  TVector2h = record
+    case boolean of
+      true  : (Coord: array[0..1] of THalfFloat);
+      false : (X,Y: THalfFloat);
+  end;
+  TVector2i = record
+    case boolean of
+      true  : (Coord: array[0..1] of longint);
+      false : (X,Y: longint);
+  end;
+  TVector2ui = record
+    case boolean of
+      true  : (Coord: array[0..1] of longword);
+      false : (X,Y: longword);
+  end;
+  TVector2s = record
+    case boolean of
+      true  : (Coord: array[0..1] of smallint);
+      false : (X,Y: smallint);
+  end;
+  TVector2b = record
+    case boolean of
+      true  : (Coord: array[0..1] of byte);
+      false : (X,Y: byte);
+  end;
+  TVector2sb = record
+    case boolean of
+      true  : (Coord: array[0..1] of ShortInt);
+      false : (X,Y: ShortInt);
+  end;
+  TVector2e = record
+    case boolean of
+      true  : (Coord: array[0..1] of Extended);
+      false : (X,Y: Extended);
+  end;
+  TVector2w = record
+    case boolean of
+      true  : (Coord: array[0..1] of Word);
+      false : (X,Y: Word);
+  end;
+  TVector2p = record
+    case boolean of
+      true  : (Coord: array[0..1] of Pointer);
+      false : (X,Y: Pointer);
+  end;
 
-  TVector3d = array[0..2] of double;
-  TVector3f = array[0..2] of single;
-  TVector3h = array[0..2] of THalfFloat;
-  TVector3i = array[0..2] of longint;
-  TVector3ui = array[0..2] of longWord;
-  TVector3s = array[0..2] of smallint;
-  TVector3b = array[0..2] of byte;
-  TVector3sb = array[0..2] of ShortInt;
-  TVector3e = array[0..2] of Extended;
-  TVector3w = array[0..2] of Word;
-  TVector3p = array[0..2] of Pointer;
+  //3
+  TVector3d = record
+    case boolean of
+      true  : (Coord: array[0..2] of double);
+      false : (X,Y,Z: double);
+  end;
+  TVector3f = record
+    case boolean of
+      true  : (Coord: array[0..2] of single);
+      false : (X,Y,Z: single);
+  end;
+  TVector3h = record
+    case boolean of
+      true  : (Coord: array[0..2] of THalfFloat);
+      false : (X,Y,Z: THalfFloat);
+  end;
+  TVector3i = record
+    case boolean of
+      true  : (Coord: array[0..2] of longint);
+      false : (X,Y,Z: longint);
+  end;
+  TVector3ui = record
+    case boolean of
+      true  : (Coord: array[0..2] of Longword);
+      false : (X,Y,Z: Longword);
+  end;
+  TVector3s = record
+    case boolean of
+      true  : (Coord: array[0..2] of smallint);
+      false : (X,Y,Z: smallint);
+  end;
+  TVector3b = record
+    case boolean of
+      true  : (Coord: array[0..2] of byte);
+      false : (X,Y,Z: byte);
+  end;
+  TVector3sb = record
+    case boolean of
+      true  : (Coord: array[0..2] of ShortInt);
+      false : (X,Y,Z: ShortInt);
+  end;
+  TVector3e = record
+    case boolean of
+      true  : (Coord: array[0..2] of Extended);
+      false : (X,Y,Z: Extended);
+  end;
+  TVector3w = record
+    case boolean of
+      true  : (Coord: array[0..2] of Word);
+      false : (X,Y,Z: Word);
+  end;
+  TVector3p = record
+    case boolean of
+      true  : (Coord: array[0..2] of Pointer);
+      false : (X,Y,Z: Pointer);
+  end;
 
-  TVector4d = array[0..3] of double;
-  TVector4f = array[0..3] of single;
-  TVector4h = array[0..3] of THalfFloat;
-  TVector4i = array[0..3] of longint;
-  TVector4ui = array[0..3] of longWord;
-  TVector4s = array[0..3] of smallint;
-  TVector4b = array[0..3] of byte;
-  TVector4sb = array[0..3] of ShortInt;
-  TVector4e = array[0..3] of Extended;
-  TVector4w = array[0..3] of Word;
-  TVector4p = array[0..3] of Pointer;
+  //4
+  TVector4d = record
+    case boolean of
+      true  : (Coord: array[0..3] of double);
+      false : (X,Y,Z,W: double);
+  end;
+  TVector4f = record
+    case boolean of
+      true  : (Coord: array[0..3] of single);
+      false : (X,Y,Z,W: single);
+  end;
+  TVector4h = record
+    case boolean of
+      true  : (Coord: array[0..3] of THalfFloat);
+      false : (X,Y,Z,W: THalfFloat);
+  end;
+  TVector4i = record
+    case boolean of
+      true  : (Coord: array[0..3] of LongInt);
+      false : (X,Y,Z,W: longint);
+  end;
+  TVector4ui = record
+    case boolean of
+      true  : (Coord: array[0..3] of LongWord);
+      false : (X,Y,Z,W: LongWord);
+  end;
+  TVector4s = record
+    case boolean of
+      true  : (Coord: array[0..3] of SmallInt);
+      false : (X,Y,Z,W: SmallInt);
+  end;
+  TVector4b = record
+    case boolean of
+      true  : (Coord: array[0..3] of Byte);
+      false : (X,Y,Z,W: byte);
+  end;
+  TVector4sb = record
+    case boolean of
+      true  : (Coord: array[0..3] of ShortInt);
+      false : (X,Y,Z,W: ShortInt);
+  end;
+  TVector4e = record
+    case boolean of
+      true  : (Coord: array[0..3] of Extended);
+      false : (X,Y,Z,W: Extended);
+  end;
+  TVector4w = record
+    case boolean of
+      true  : (Coord: array[0..3] of Word);
+      false : (X,Y,Z,W: Word);
+  end;
+  TVector4p = record
+    case boolean of
+      true  : (Coord: array[0..3] of Pointer);
+      false : (X,Y,Z,W: Pointer);
+  end;
 
-  TMatrix2d = array[0..1] of TVector2d;
-  TMatrix2f = array[0..1] of TVector2f;
-  TMatrix2i = array[0..1] of TVector2i;
-  TMatrix2s = array[0..1] of TVector2s;
-  TMatrix2b = array[0..1] of TVector2b;
-  TMatrix2e = array[0..1] of TVector2e;
-  TMatrix2w = array[0..1] of TVector2w;
-  TMatrix2p = array[0..1] of TVector2p;
+ TMatrix2d = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2d);
+      false : (X,Y: TVector2d);
+  end;
+  TMatrix2f = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2f);
+      false : (X,Y: TVector2f);
+  end;
+  TMatrix2i = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2i);
+      false : (X,Y: TVector2i);
+  end;
+  TMatrix2s = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2s);
+      false : (X,Y: TVector2s);
+  end;
+  TMatrix2b = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2b);
+      false : (X,Y: TVector2b);
+  end;  
+  TMatrix2e = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2e);
+      false : (X,Y: TVector2e);
+  end;
+  TMatrix2w = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2w);
+      false : (X,Y: TVector2w);
+  end;
+  TMatrix2p = record
+    case boolean of
+      true  : (Coord: array[0..1] of TVector2p);
+      false : (X,Y: TVector2p);
+  end;  
 
-  TMatrix3d = array[0..2] of TVector3d;
-  TMatrix3f = array[0..2] of TVector3f;
-  TMatrix3i = array[0..2] of TVector3i;
-  TMatrix3s = array[0..2] of TVector3s;
-  TMatrix3b = array[0..2] of TVector3b;
-  TMatrix3e = array[0..2] of TVector3e;
-  TMatrix3w = array[0..2] of TVector3w;
-  TMatrix3p = array[0..2] of TVector3p;
+  TMatrix3d = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3d);
+      false : (X,Y,Z: TVector3d);
+  end;
+  TMatrix3f = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3f);
+      false : (X,Y,Z: TVector3f);
+  end;
+  TMatrix3i = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3i);
+      false : (X,Y,Z: TVector3i);
+  end;
+  TMatrix3s = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3s);
+      false : (X,Y,Z: TVector3s);
+  end;
+  TMatrix3b = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3b);
+      false : (X,Y,Z: TVector3b);
+  end;  
+  TMatrix3e = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3e);
+      false : (X,Y,Z: TVector3e);
+  end;
+  TMatrix3w = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3w);
+      false : (X,Y,Z: TVector3w);
+  end;
+  TMatrix3p = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3p);
+      false : (X,Y,Z: TVector3p);
+  end;  
 
-  TMatrix4d = array[0..3] of TVector4d;
-  TMatrix4f = array[0..3] of TVector4f;
-  TMatrix4i = array[0..3] of TVector4i;
-  TMatrix4s = array[0..3] of TVector4s;
-  TMatrix4b = array[0..3] of TVector4b;
-  TMatrix4e = array[0..3] of TVector4e;
-  TMatrix4w = array[0..3] of TVector4w;
-  TMatrix4p = array[0..3] of TVector4p;
+  TMatrix4d = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4d);
+      false : (X,Y,Z,W: TVector4d);
+  end;
+  TMatrix4f = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4f);
+      false : (X,Y,Z,W: TVector4f);
+  end;
+  TMatrix4i = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4i);
+      false : (X,Y,Z,W: TVector4i);
+  end;
+  TMatrix4s = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4s);
+      false : (X,Y,Z,W: TVector4s);
+  end;
+  TMatrix4b = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4b);
+      false : (X,Y,Z,W: TVector4b);
+  end;  
+  TMatrix4e = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4e);
+      false : (X,Y,Z,W: TVector4e);
+  end;
+  TMatrix4w = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4w);
+      false : (X,Y,Z,W: TVector4w);
+  end;
+  TMatrix4p = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4p);
+      false : (X,Y,Z,W: TVector4p);
+  end;   
 
   TD3DVector = packed record
     case Integer of
@@ -117,6 +351,7 @@ type
            _41, _42, _43, _44: single);
       1 : (M : TMatrix4f);
   end;
+
 
 implementation
 

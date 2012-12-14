@@ -82,9 +82,9 @@ var
       if sl.Count<>5 then
          raise Exception.Create('Invalid Normal')
       else begin
-         aNormal[0]:=GLUtils.StrToFloatDef(sl[2], 0);
-         aNormal[1]:=GLUtils.StrToFloatDef(sl[3], 0);
-         aNormal[2]:=GLUtils.StrToFloatDef(sl[4], 0);
+         aNormal.Coord[0]:=GLUtils.StrToFloatDef(sl[2], 0);
+         aNormal.Coord[1]:=GLUtils.StrToFloatDef(sl[3], 0);
+         aNormal.Coord[2]:=GLUtils.StrToFloatDef(sl[4], 0);
       end;
    end;
 
@@ -94,9 +94,9 @@ var
       if (sl.Count<>4) or (CompareText(sl[0], cVERTEX_LABEL)<>0) then
          raise Exception.Create('Invalid Vertex')
       else begin
-         aVertex[0]:=GLUtils.StrToFloatDef(sl[1], 0);
-         aVertex[1]:=GLUtils.StrToFloatDef(sl[2], 0);
-         aVertex[2]:=GLUtils.StrToFloatDef(sl[3], 0);
+         aVertex.Coord[0]:=GLUtils.StrToFloatDef(sl[1], 0);
+         aVertex.Coord[1]:=GLUtils.StrToFloatDef(sl[2], 0);
+         aVertex.Coord[2]:=GLUtils.StrToFloatDef(sl[3], 0);
       end;
    end;
 

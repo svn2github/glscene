@@ -151,7 +151,7 @@ begin
     for i := 0 to n - 1 do
       with oct.Vertices[i] do
       begin
-        mo.Vertices.Add(pos[0], pos[1], pos[2]);
+        mo.Vertices.Add(pos.Coord[0], pos.Coord[1], pos.Coord[2]);
         mo.TexCoords.Add(tv.s, tv.t);
         mo.LightMapTexCoords.Add(lv.s, lv.t);
       end;

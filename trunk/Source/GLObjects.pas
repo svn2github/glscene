@@ -13,6 +13,8 @@
   objects can be found GLGeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
+                 getter and a setter methods
   <li>23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
                        Replaced plane primitives to triangles, added tangent and binormal attributes
   <li>29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
@@ -22,38 +24,38 @@
   <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
   <li>05/03/10 - DanB - More state added to TGLStateCache
   <li>22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
-  Now use Material.DepthProperties
+                 Now use Material.DepthProperties
   <li>28/12/09 - DanB - Modifying TGLLineBase.LineColor now calls StructureChanged
   <li>13/03/09 - DanB - ScreenRect now accepts a buffer parameter, rather than using CurrentBuffer
   <li>05/10/08 - DaStr - Added lsmLoop support to TGLLines
-  (thanks Alejandro Leon Escalera) (BugtrackerID = 2084250)
+                (thanks Alejandro Leon Escalera) (BugtrackerID = 2084250)
   <li>22/01/08 - DaStr - Fixed rendering of TGLPoints
-  (thanks Kapitan) (BugtrackerID = 1876920)
+                (thanks Kapitan) (BugtrackerID = 1876920)
   <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
   <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+                 (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
   <li>15/02/07 - DaStr - Global $R- removed, added default values to
-  TGLSprite.NoZWrite, MirrorU, MirrorV
+                 TGLSprite.NoZWrite, MirrorU, MirrorV
   <li>14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
   <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
   <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
   <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
-  Also fixed a TGLLineBase.assign problem (object being assigned to
-  was refering the base lists, not copying them).
-  Bugtracker ID=830846
+                 Also fixed a TGLLineBase.assign problem (object being assigned to
+                 was refering the base lists, not copying them).
+                 Bugtracker ID=830846
   <li>17/01/05 - SG - Added color support for bezier style TGLLines
   <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
   <li>06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
   <li>20/01/04 - SG - Added IcosahedronBuildList
   <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
-  stacks/slices of the sphere into account
+                      stacks/slices of the sphere into account
   <li>10/09/03 - EG - Introduced TGLNodedLines
   <li>18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
   <li>21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
-  TGLDodecahedron moved to new GLPolyhedron unit,
-  TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
-  TGLAnnulus, TGLFrustrum and TGLPolygon moved to new
-  GLGeomObjects unit
+                      TGLDodecahedron moved to new GLPolyhedron unit,
+                      TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
+                      TGLAnnulus, TGLFrustrum and TGLPolygon moved to new
+                      GLGeomObjects unit
   <li>16/07/03 - EG - Style changes and cleanups
   <li>19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
   <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
@@ -89,7 +91,7 @@
   <li>09/01/01 - EG - TGLSpaceText now handles its TFont.OnFontChange
   <li>08/01/01 - EG - Added TGLLinesNode (color support) and Node size control
   <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
-  updated TGLSprite.BuildList to work with new matrices
+                      updated TGLSprite.BuildList to work with new matrices
   <li>14/11/00 - EG - Added TGLDummyCube.Destroy (thx Airatz)
   <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
   <li>06/08/00 - EG - TRotationSolid renamed to TGLRevolutionSolid & moved to GLExtrusion
@@ -98,8 +100,8 @@
   <li>19/07/00 - EG - Added TGLHUDSprite
   <li>18/07/00 - EG - Added TGLRevolutionSolid
   <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
-  Added TGLLineBase (split of TGLLines),
-  TGLDummyCube now uses osDirectDraw instead of special behaviour
+                      Added TGLLineBase (split of TGLLines),
+                      TGLDummyCube now uses osDirectDraw instead of special behaviour
   <li>13/07/00 - EG - Added TGLArrowLine (code by Aaron Hochwimmer)
   <li>28/06/00 - EG - Support for "ObjectStyle"
   <li>23/06/00 - EG - Reduced default Loop count for TGLDisk
@@ -110,11 +112,11 @@
   <li>01/06/00 - EG - Added TGLAnnulus (code by Aaron Hochwimmer)
   <li>29/05/00 - EG - TGLLines now uses TGLNode/TGLNodes
   <li>28/05/00 - EG - Added persistence ability to TGLLines,
-  Added defaults for all TGLLines properties
+                      Added defaults for all TGLLines properties
   <li>27/05/00 - EG - Moved in RogerCao's TGLLines object, added a TLineNode
-  class (currently private) and various enhancements + fixes,
-  DodecahedronBuildList now available as a procedure,
-  CubeWireframeBuildList now available as a procedure
+                      class (currently private) and various enhancements + fixes,
+                      DodecahedronBuildList now available as a procedure,
+                      CubeWireframeBuildList now available as a procedure
   <li>26/05/00 - RoC - Added division property to TGLLines, and Spline supported
   <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
   <li>14/05/00 - EG - Removed Top/Bottom checks for TGLSphere,
@@ -135,7 +137,7 @@
   FreeForm and vector file stuff moved to new GLVectorFileObjects
   <li>08/02/00 - EG - Added TGLDummyCube
   <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
-  TVertexList.AddVertex, "default"s to properties
+                      TVertexList.AddVertex, "default"s to properties
   </ul></font>
 }
 unit GLObjects;
@@ -736,12 +738,10 @@ type
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    procedure SetCubeWidth(const aValue: Single);
-    procedure SetCubeHeight(const aValue: Single);
-    procedure SetCubeDepth(const aValue: Single);
+    function GetCubeWHD(const Index: Integer): TGLFloat;
+    procedure SetCubeWHD(Index: Integer; AValue: TGLFloat);
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
-
   protected
     { Protected Declarations }
     procedure DefineProperties(Filer: TFiler); override;
@@ -764,11 +764,11 @@ type
 
   published
     { Published Declarations }
-    property CubeWidth: TGLFloat read FCubeSize[0]write SetCubeWidth
+    property CubeWidth: TGLFloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeHeight: TGLFloat read FCubeSize[1]write SetCubeHeight
+    property CubeHeight: TGLFloat index 1 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeDepth: TGLFloat read FCubeSize[2]write SetCubeDepth
+    property CubeDepth: TGLFloat index 2 read GetCubeWHD write SetCubeWHD
       stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
@@ -1008,17 +1008,19 @@ const
   B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
   C = 1 * 0.3;
 const
-  vertices: packed array [0 .. 19] of TAffineVector = ((-A, 0, B), (-A, 0, -B),
-    (A, 0, -B), (A, 0, B), (B, -A, 0), (-B, -A, 0), (-B, A, 0), (B, A, 0),
-    (0, B, -A), (0, -B, -A), (0, -B, A), (0, B, A), (-C, -C, C), (-C, -C, -C),
-    (C, -C, -C), (C, -C, C), (-C, C, C), (-C, C, -C), (C, C, -C), (C, C, C));
+  Vertices: packed array [0 .. 19] of TAffineVector = ((X: - A; Y: 0; Z: B),
+    (X: - A; Y: 0; Z: - B), (X: A; Y: 0; Z: - B), (X: A; Y: 0; Z: B), (X: B;
+    Y: - A; Z: 0), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: A;
+    Z: 0), (X: 0; Y: B; Z: - A), (X: 0; Y: - B; Z: - A), (X: 0; Y: - B; Z: A),
+    (X: 0; Y: B; Z: A), (X: - C; Y: - C; Z: C), (X: - C; Y: - C; Z: - C), (X: C;
+    Y: - C; Z: - C), (X: C; Y: - C; Z: C), (X: - C; Y: C; Z: C), (X: - C; Y: C;
+    Z: - C), (X: C; Y: C; Z: - C), (X: C; Y: C; Z: C));
 
-  polygons: packed array [0 .. 11] of packed array [0 .. 4]
+  Polygons: packed array [0 .. 11] of packed array [0 .. 4]
     of Byte = ((0, 12, 10, 11, 16), (1, 17, 8, 9, 13), (2, 14, 9, 8, 18),
     (3, 19, 11, 10, 15), (4, 14, 2, 3, 15), (5, 12, 0, 1, 13),
     (6, 17, 1, 0, 16), (7, 19, 3, 2, 18), (8, 17, 6, 7, 18), (9, 14, 4, 5, 13),
     (10, 12, 5, 4, 15), (11, 19, 7, 6, 16));
-
 var
   i, j: Integer;
   n: TAffineVector;
@@ -1057,11 +1059,12 @@ const
   A = 0.5;
   B = 0.30901699437; // 1/(1+Sqrt(5))
 const
-  vertices: packed array [0 .. 11] of TAffineVector = ((0, -B, -A), (0, -B, A),
-    (0, B, -A), (0, B, A), (-A, 0, -B), (-A, 0, B), (A, 0, -B), (A, 0, B),
-    (-B, -A, 0), (-B, A, 0), (B, -A, 0), (B, A, 0));
-
-  triangles: packed array [0 .. 19] of packed array [0 .. 2]
+  Vertices: packed array [0 .. 11] of TAffineVector = ((X: 0; Y: - B; Z: - A),
+    (X: 0; Y: - B; Z: A), (X: 0; Y: B; Z: - A), (X: 0; Y: B; Z: A), (X: - A;
+    Y: 0; Z: - B), (X: - A; Y: 0; Z: B), (X: A; Y: 0; Z: - B), (X: A; Y: 0;
+    Z: B), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: - A; Z: 0),
+    (X: B; Y: A; Z: 0));
+  Triangles: packed array [0 .. 19] of packed array [0 .. 2]
     of Byte = ((2, 9, 11), (3, 11, 9), (3, 5, 1), (3, 1, 7), (2, 6, 0),
     (2, 0, 4), (1, 8, 10), (0, 10, 8), (9, 4, 5), (8, 5, 4), (11, 7, 6),
     (10, 6, 7), (3, 9, 5), (3, 7, 11), (2, 4, 9), (2, 11, 6), (0, 8, 4),
@@ -1135,10 +1138,10 @@ end;
 
 function TGLDummyCube.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result[0] := 0.5 * Abs(FCubeSize);
-  Result[1] := Result[0];
-  Result[2] := Result[0];
-  Result[3] := 0;
+  Result.Coord[0] := 0.5 * Abs(FCubeSize);
+  Result.Coord[1] := Result.Coord[0];
+  Result.Coord[2] := Result.Coord[0];
+  Result.Coord[3] := 0;
 end;
 
 // RayCastIntersect
@@ -1316,9 +1319,9 @@ end;
 
 function TGLPlane.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result[0] := 0.5 * Abs(FWidth);
-  Result[1] := 0.5 * Abs(FHeight);
-  Result[2] := 0;
+  Result.Coord[0] := 0.5 * Abs(FWidth);
+  Result.Coord[1] := 0.5 * Abs(FHeight);
+  Result.Coord[2] := 0;
 end;
 
 // RayCastIntersect
@@ -1332,15 +1335,15 @@ var
 begin
   locRayStart := AbsoluteToLocal(rayStart);
   locRayVector := AbsoluteToLocal(rayVector);
-  if locRayStart[2] >= 0 then
+  if locRayStart.Coord[2] >= 0 then
   begin
     // ray start over plane
-    if locRayVector[2] < 0 then
+    if locRayVector.Coord[2] < 0 then
     begin
-      t := locRayStart[2] / locRayVector[2];
-      ip[0] := locRayStart[0] - t * locRayVector[0];
-      ip[1] := locRayStart[1] - t * locRayVector[1];
-      if (Abs(ip[0]) <= 0.5 * Width) and (Abs(ip[1]) <= 0.5 * Height) then
+      t := locRayStart.Coord[2] / locRayVector.Coord[2];
+      ip.Coord[0] := locRayStart.Coord[0] - t * locRayVector.Coord[0];
+      ip.Coord[1] := locRayStart.Coord[1] - t * locRayVector.Coord[1];
+      if (Abs(ip.Coord[0]) <= 0.5 * Width) and (Abs(ip.Coord[1]) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1355,12 +1358,12 @@ begin
   else
   begin
     // ray start below plane
-    if locRayVector[2] > 0 then
+    if locRayVector.Coord[2] > 0 then
     begin
-      t := locRayStart[2] / locRayVector[2];
-      ip[0] := locRayStart[0] - t * locRayVector[0];
-      ip[1] := locRayStart[1] - t * locRayVector[1];
-      if (Abs(ip[0]) <= 0.5 * Width) and (Abs(ip[1]) <= 0.5 * Height) then
+      t := locRayStart.Coord[2] / locRayVector.Coord[2];
+      ip.Coord[0] := locRayStart.Coord[0] - t * locRayVector.Coord[0];
+      ip.Coord[1] := locRayStart.Coord[1] - t * locRayVector.Coord[1];
+      if (Abs(ip.Coord[0]) <= 0.5 * Width) and (Abs(ip.Coord[1]) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1374,8 +1377,8 @@ begin
   end;
   if Result and Assigned(intersectPoint) then
   begin
-    ip[2] := 0;
-    ip[3] := 1;
+    ip.Coord[2] := 0;
+    ip.Coord[3] := 1;
     intersectPoint^ := LocalToAbsolute(ip);
   end;
 end;
@@ -1574,10 +1577,10 @@ begin
     v[2] := LocalToAbsolute(PointMake(hw, hh, 0));
     v[3] := LocalToAbsolute(PointMake(-hw, hh, 0));
     buf.WorldToScreen(@v[0], 4);
-    Result.Left := Round(MinFloat([v[0][0], v[1][0], v[2][0], v[3][0]]));
-    Result.Right := Round(MaxFloat([v[0][0], v[1][0], v[2][0], v[3][0]]));
-    Result.Top := Round(MinFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
-    Result.Bottom := Round(MaxFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
+    Result.Left := Round(MinFloat([v[0].Coord[0], v[1].Coord[0], v[2].Coord[0], v[3].Coord[0]]));
+    Result.Right := Round(MaxFloat([v[0].Coord[0], v[1].Coord[0], v[2].Coord[0], v[3].Coord[0]]));
+    Result.Top := Round(MinFloat([v[0].Coord[1], v[1].Coord[1], v[2].Coord[1], v[3].Coord[1]]));
+    Result.Bottom := Round(MaxFloat([v[0].Coord[1], v[1].Coord[1], v[2].Coord[1], v[3].Coord[1]]));
   end
   else
     FillChar(Result, SizeOf(TGLRect), 0);
@@ -1748,11 +1751,11 @@ end;
 
 function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result[0] := 0.5 * Abs(FWidth);
-  Result[1] := 0.5 * Abs(FHeight);
+  Result.Coord[0] := 0.5 * Abs(FWidth);
+  Result.Coord[1] := 0.5 * Abs(FHeight);
   // Sprites turn with the camera and can be considered to have the same depth
   // as width
-  Result[2] := 0.5 * Abs(FWidth);
+  Result.Coord[2] := 0.5 * Abs(FWidth);
 end;
 
 // BuildList
@@ -1773,12 +1776,12 @@ begin
   // (dunno how they are named in english)
   w := FWidth * 0.5;
   h := FHeight * 0.5;
-  vx[0] := mat[0][0];
-  vy[0] := mat[0][1];
-  vx[1] := mat[1][0];
-  vy[1] := mat[1][1];
-  vx[2] := mat[2][0];
-  vy[2] := mat[2][1];
+  vx.Coord[0] := mat.Coord[0].Coord[0];
+  vy.Coord[0] := mat.Coord[0].Coord[1];
+  vx.Coord[1] := mat.Coord[1].Coord[0];
+  vy.Coord[1] := mat.Coord[1].Coord[1];
+  vx.Coord[2] := mat.Coord[2].Coord[0];
+  vy.Coord[2] := mat.Coord[2].Coord[1];
   ScaleVector(vx, w / VectorLength(vx));
   ScaleVector(vy, h / VectorLength(vy));
   if FMirrorU then
@@ -1805,17 +1808,17 @@ begin
   if FRotation <> 0 then
   begin
     GL.PushMatrix;
-    GL.Rotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
+    GL.Rotatef(FRotation, mat.Coord[0].Coord[2], mat.Coord[1].Coord[2], mat.Coord[2].Coord[2]);
   end;
   GL.Begin_(GL_QUADS);
   xgl.TexCoord2f(u1, v1);
-  GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
+  GL.Vertex3f(vx.Coord[0] + vy.Coord[0], vx.Coord[1] + vy.Coord[1], vx.Coord[2] + vy.Coord[2]);
   xgl.TexCoord2f(u0, v1);
-  GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
+  GL.Vertex3f(-vx.Coord[0] + vy.Coord[0], -vx.Coord[1] + vy.Coord[1], -vx.Coord[2] + vy.Coord[2]);
   xgl.TexCoord2f(u0, v0);
-  GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
+  GL.Vertex3f(-vx.Coord[0] - vy.Coord[0], -vx.Coord[1] - vy.Coord[1], -vx.Coord[2] - vy.Coord[2]);
   xgl.TexCoord2f(u1, v0);
-  GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
+  GL.Vertex3f(vx.Coord[0] - vy.Coord[0], vx.Coord[1] - vy.Coord[1], vx.Coord[2] - vy.Coord[2]);
   GL.End_;
   if FRotation <> 0 then
     GL.PopMatrix;
@@ -3038,9 +3041,9 @@ begin
     nd := -1
   else
     nd := 1;
-  hw := FCubeSize[0] * 0.5;
-  hh := FCubeSize[1] * 0.5;
-  hd := FCubeSize[2] * 0.5;
+  hw := FCubeSize.Coord[0] * 0.5;
+  hh := FCubeSize.Coord[1] * 0.5;
+  hd := FCubeSize.Coord[2] * 0.5;
 
   with GL do
   begin
@@ -3186,9 +3189,9 @@ var
 begin
   connectivity := TConnectivity.Create(True);
 
-  hw := FCubeSize[0] * 0.5;
-  hh := FCubeSize[1] * 0.5;
-  hd := FCubeSize[2] * 0.5;
+  hw := FCubeSize.Coord[0] * 0.5;
+  hh := FCubeSize.Coord[1] * 0.5;
+  hd := FCubeSize.Coord[2] * 0.5;
 
   if cpFront in FParts then
   begin
@@ -3235,45 +3238,28 @@ begin
   connectivity.Free;
 end;
 
-// SetCubeWidth
+// GetCubeWHD
 //
-
-procedure TGLCube.SetCubeWidth(const aValue: Single);
+function TGLCube.GetCubeWHD(const Index: Integer): TGLFloat;
 begin
-  if aValue <> FCubeSize[0] then
+  Result := FCubeSize.Coord[index];
+end;
+
+
+// SetCubeWHD
+//
+procedure TGLCube.SetCubeWHD(Index: Integer; AValue: TGLFloat);
+begin
+  if AValue <> FCubeSize.Coord[index] then
   begin
-    FCubeSize[0] := aValue;
+    FCubeSize.Coord[index] := AValue;
     StructureChanged;
   end;
 end;
 
-// SetCubeHeight
-//
-
-procedure TGLCube.SetCubeHeight(const aValue: Single);
-begin
-  if aValue <> FCubeSize[1] then
-  begin
-    FCubeSize[1] := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetCubeDepth
-//
-
-procedure TGLCube.SetCubeDepth(const aValue: Single);
-begin
-  if aValue <> FCubeSize[2] then
-  begin
-    FCubeSize[2] := aValue;
-    StructureChanged;
-  end;
-end;
 
 // SetParts
 //
-
 procedure TGLCube.SetParts(aValue: TCubeParts);
 begin
   if aValue <> FParts then
@@ -3314,10 +3300,10 @@ end;
 
 function TGLCube.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result[0] := FCubeSize[0] * 0.5;
-  Result[1] := FCubeSize[1] * 0.5;
-  Result[2] := FCubeSize[2] * 0.5;
-  Result[3] := 0;
+  Result.Coord[0] := FCubeSize.Coord[0] * 0.5;
+  Result.Coord[1] := FCubeSize.Coord[1] * 0.5;
+  Result.Coord[2] := FCubeSize.Coord[2] * 0.5;
+  Result.Coord[3] := 0;
 end;
 
 // RayCastIntersect
@@ -3336,9 +3322,9 @@ begin
   rs := AbsoluteToLocal(rayStart);
   SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
   e := 0.5 + 0.0001; // Small value for floating point imprecisions
-  eSize[0] := FCubeSize[0] * e;
-  eSize[1] := FCubeSize[1] * e;
-  eSize[2] := FCubeSize[2] * e;
+  eSize.Coord[0] := FCubeSize.Coord[0] * e;
+  eSize.Coord[1] := FCubeSize.Coord[1] * e;
+  eSize.Coord[2] := FCubeSize.Coord[2] * e;
   p[0] := XHmgVector;
   p[1] := YHmgVector;
   p[2] := ZHmgVector;
@@ -3349,12 +3335,17 @@ begin
   begin
     if VectorDotProduct(p[i], rv) > 0 then
     begin
-      t := -(p[i][0] * rs[0] + p[i][1] * rs[1] + p[i][2] * rs[2] + 0.5 *
-        FCubeSize[i mod 3]) / (p[i][0] * rv[0] + p[i][1] * rv[1] +
-        p[i][2] * rv[2]);
-      MakePoint(r, rs[0] + t * rv[0], rs[1] + t * rv[1], rs[2] + t * rv[2]);
-      if (Abs(r[0]) <= eSize[0]) and (Abs(r[1]) <= eSize[1]) and
-        (Abs(r[2]) <= eSize[2]) and
+      t := -(p[i].Coord[0] * rs.Coord[0] + p[i].Coord[1] * rs.Coord[1] +
+             p[i].Coord[2] * rs.Coord[2] + 0.5 *
+        FCubeSize.Coord[i mod 3]) / (p[i].Coord[0] * rv.Coord[0] +
+                                     p[i].Coord[1] * rv.Coord[1] +
+                                     p[i].Coord[2] * rv.Coord[2]);
+      MakePoint(r, rs.Coord[0] + t * rv.Coord[0], rs.Coord[1] +
+                                 t * rv.Coord[1], rs.Coord[2] +
+                                 t * rv.Coord[2]);
+      if (Abs(r.Coord[0]) <= eSize.Coord[0]) and
+         (Abs(r.Coord[1]) <= eSize.Coord[1]) and
+         (Abs(r.Coord[2]) <= eSize.Coord[2]) and
         (VectorDotProduct(VectorSubtract(r, rs), rv) > 0) then
       begin
         if Assigned(intersectPoint) then
@@ -3376,7 +3367,7 @@ procedure TGLCube.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
-    (FCubeSize[0] <> 1) or (FCubeSize[1] <> 1) or (FCubeSize[2] <> 1));
+    (FCubeSize.Coord[0] <> 1) or (FCubeSize.Coord[1] <> 1) or (FCubeSize.Coord[2] <> 1));
 end;
 
 // ReadData
@@ -3514,8 +3505,8 @@ end;
 procedure TGLSphere.BuildList(var rci: TRenderContextInfo);
 var
   v1, V2, N1: TAffineVector;
-  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Extended;
-  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
   uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
   i, j: Integer;
   DoReverse: Boolean;
@@ -3539,7 +3530,7 @@ begin
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngTop, SinP, CosP);
+    VectorGeometry.SinCos(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
@@ -3552,15 +3543,15 @@ begin
       GL.Vertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
-        N1[1] := -N1[1];
+        N1.Coord[1] := -N1.Coord[1];
     end;
-    v1[1] := SinP;
+    v1.Coord[1] := SinP;
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
-      SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      v1[2] := CosP * CosT;
+      VectorGeometry.SinCos(Theta, SinT, CosT);
+      v1.Coord[0] := CosP * SinT;
+      v1.Coord[2] := CosP * CosT;
       if FTopCap = ctCenter then
       begin
         N1 := VectorPerpendicular(YVector, v1);
@@ -3584,10 +3575,10 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    SinCos(Phi, SinP, CosP);
-    SinCos(Phi2, SinP2, CosP2);
-    v1[1] := SinP;
-    V2[1] := SinP2;
+    VectorGeometry.SinCos(Phi, SinP, CosP);
+    VectorGeometry.SinCos(Phi2, SinP2, CosP2);
+    v1.Coord[1] := SinP;
+    V2.Coord[1] := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
@@ -3596,10 +3587,10 @@ begin
     begin
 
       SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      V2[0] := CosP2 * SinT;
-      v1[2] := CosP * CosT;
-      V2[2] := CosP2 * CosT;
+      v1.Coord[0] := CosP * SinT;
+      V2.Coord[0] := CosP2 * SinT;
+      v1.Coord[2] := CosP * CosT;
+      V2.Coord[2] := CosP2 * CosT;
 
       uTexCoord := i * uTexFactor;
       xgl.TexCoord2f(uTexCoord, vTexCoord0);
@@ -3652,13 +3643,13 @@ begin
         NegateVector(N1); 
       end;
     end;
-    v1[1] := SinP;
+    v1.Coord[1] := SinP;
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
       SinCos(Theta, SinT, CosT);
-      v1[0] := CosP * SinT;
-      v1[2] := CosP * CosT;
+      v1.Coord[0] := CosP * SinT;
+      v1.Coord[2] := CosP * CosT;
       if FBottomCap = ctCenter then
       begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
@@ -3699,7 +3690,7 @@ begin
       SetVector(intersectPoint^, LocalToAbsolute(i1));
     if Assigned(intersectNormal) then
     begin
-      i1[3] := 0; // vector transform
+      i1.Coord[3] := 0; // vector transform
       SetVector(intersectNormal^, LocalToAbsolute(i1));
     end;
   end
@@ -3882,10 +3873,10 @@ end;
 
 function TGLSphere.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result[0] := Abs(FRadius);
-  Result[1] := Result[0];
-  Result[2] := Result[0];
-  Result[3] := 0;
+  Result.Coord[0] := Abs(FRadius);
+  Result.Coord[1] := Result.Coord[0];
+  Result.Coord[2] := Result.Coord[0];
+  Result.Coord[3] := 0;
 end;
 
 // ------------------

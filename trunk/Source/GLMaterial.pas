@@ -6,6 +6,8 @@
  Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
+                          in TGLShader and TGLAbstractLibMaterial for GLS_CPPB
       <li>11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
       <li>20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
       <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
@@ -132,11 +134,12 @@ type
     {: Request to apply the shader.<p>
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
-      abstract;
+       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     {: Request to un-apply the shader.<p>
        Subclasses can assume the shader has been applied previously.<br>
        Return True to request a multipass. }
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual; abstract;
+    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
+       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     {: Invoked once, before the destruction of context or release of shader.<p>
        The call happens with the OpenGL context being active. }
     procedure DoFinalize; dynamic;
@@ -551,7 +554,8 @@ type
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TGLLibMaterialName);
-    procedure Loaded; virtual; abstract;
+    procedure Loaded; virtual;{$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+
   public
     { Public Declarations }
     constructor Create(ACollection: TCollection); override;
@@ -559,9 +563,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); virtual; abstract;
+    procedure Apply(var ARci: TRenderContextInfo); virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; abstract;
+    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
 
     procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
@@ -834,12 +838,47 @@ type
     property TexturePaths;
   end;
 
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 implementation
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 
 uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils, GLSLog;
 
 resourcestring
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';
+
+
+  // Dummy methods for CPP
+  //
+{$IFDEF GLS_CPPB}
+procedure TGLShader.DoApply(var Rci: TRenderContextInfo; Sender: TObject);
+begin
+end;
+
+function TGLShader.DoUnApply(var Rci: TRenderContextInfo): Boolean;
+begin
+  Result := True;
+end;
+
+procedure TGLAbstractLibMaterial.Loaded;
+begin
+end;
+
+procedure TGLAbstractLibMaterial.Apply(var ARci: TRenderContextInfo);
+begin
+end;
+
+function TGLAbstractLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+begin
+  Result := True;
+end;
+{$ENDIF}
+
 
   // ------------------
   // ------------------ TGLFaceProperties ------------------
@@ -2315,7 +2354,7 @@ begin
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci,
-        @libMatTexture2.FTextureMatrix[0][0])
+        @libMatTexture2.FTextureMatrix.Coord[0].Coord[0])
     else
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
@@ -2455,7 +2494,7 @@ end;
 
 procedure TGLLibMaterial.SetTextureMatrix(const Value: TMatrix);
 begin
-  FTextureMatrixIsIdentity := CompareMem(@Value[0], @IdentityHmgMatrix[0], SizeOf(TMatrix));
+  FTextureMatrixIsIdentity := CompareMem(@Value.Coord[0], @IdentityHmgMatrix.Coord[0], SizeOf(TMatrix));
   FTextureMatrix := Value;
   FTextureOverride := True;
   NotifyUsers;

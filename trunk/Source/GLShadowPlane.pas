@@ -9,6 +9,7 @@
    materials/mirror demo before using this component.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/06/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -18,6 +19,7 @@
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>23/03/04 - EG - Added spoTransparent
       <li>29/11/03 - EG - Scissors turned of if camera is withing bounding volume
       <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
@@ -150,7 +152,7 @@ uses OpenGLTokens, GLContext;
 
 constructor TGLShadowPlane.Create(AOwner: Tcomponent);
 const
-  cDefaultShadowColor: TColorVector = (0, 0, 0, 0.5);
+  cDefaultShadowColor: TColorVector = (X:0; Y:0; Z:0; W:0.5);
 begin
   inherited Create(AOwner);
   FShadowOptions := cDefaultShadowPlaneOptions;

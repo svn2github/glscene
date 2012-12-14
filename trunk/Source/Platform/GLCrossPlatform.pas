@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLCrossPlatform<p>
@@ -9,6 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE to remove
+                          redeclarations of RGB, GLPoint and GLRect functions
       <li>30/06/11 - DaStr - Added CharToWideChar()
       <li>19/06/11 - Yar - Added IsDirectoryWriteable
       <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
@@ -55,6 +57,8 @@
       <li>24/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
                              Added "Application" function
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>02/08/04 - LR, YHC - BCB corrections: Added namespace 'Graphics' to TGLBitmap
+                               use $NODEFINE to remove declarations of duplicate variables
       <li>08/07/04 - LR - Added clBlack
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
@@ -146,7 +150,8 @@ type
 
   // DaStr: Actually, there is a way around, see TPenStyle for example.
 
-  TGLPoint = TPoint;
+  TGLPoint = TPoint; 
+
   PGLPoint = ^TGLPoint;
   TGLRect = TRect;
   PGLRect = ^TGLRect;
@@ -359,12 +364,10 @@ var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TGLPoint;
-
+function GLPoint(const x, y: Integer): TGLPoint;//{$IFDEF GLS_CPPB}{$NODEFINE GLPoint}{$ENDIF}
 {: Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor;
-
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
+function RGB(const r, g, b: Byte): TColor;{$IFDEF GLS_CPPB}{$NODEFINE RGB}{$ENDIF}
+function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;//{$IFDEF GLS_CPPB}{$NODEFINE GLRect}{$ENDIF}
 {: Increases or decreases the width and height of the specified rectangle.<p>
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
@@ -1162,7 +1165,7 @@ begin
 {$ENDIF}
 {$IFDEF GLS_DELPHI_XE_UP}
   FormatSettings.
-{$ENDIF}
+  {$ENDIF}
   DecimalSeparator;
 end;
 

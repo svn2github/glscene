@@ -124,7 +124,7 @@ begin
 
             // Fix and then add the Texture coords
             vec2:=TexCoords[j];
-            vec2[1]:=1-vec2[1]; // reverse the v coordinate
+            vec2.Coord[1]:=1-vec2.Coord[1]; // reverse the v coordinate
             mesh.TexCoords.Add(vec2);
 
             // Add weighted bones

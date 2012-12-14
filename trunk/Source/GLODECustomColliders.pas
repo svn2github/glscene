@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
     <li>22/04/10 - Yar - Fixes after GLState revision
     <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -688,13 +689,13 @@ begin
       with TContactPoint(FContactList[i]) do
       begin
         contact.depth := Depth;
-        contact.pos[0] := Position[0];
-        contact.pos[1] := Position[1];
-        contact.pos[2] := Position[2];
+        contact.pos[0] := Position.Coord[0];
+        contact.pos[1] := Position.Coord[1];
+        contact.pos[2] := Position.Coord[2];
         contact.pos[3] := 1;
-        contact.normal[0] := -Normal[0];
-        contact.normal[1] := -Normal[1];
-        contact.normal[2] := -Normal[2];
+        contact.normal[0] := -Normal.Coord[0];
+        contact.normal[1] := -Normal.Coord[1];
+        contact.normal[2] := -Normal.Coord[2];
         contact.normal[3] := 0;
       end;
       contact.g1 := o1;
@@ -922,7 +923,7 @@ function TGLODEHeightField.Collide(aPos: TAffineVector;
     begin
       if Assigned(TGLHeightField(Owner.Owner).OnGetHeight) then
       begin
-        TGLHeightField(Owner.Owner).OnGetHeight(pos[0], pos[1], height, dummy1, dummy2);
+        TGLHeightField(Owner.Owner).OnGetHeight(pos.Coord[0], pos.Coord[1], height, dummy1, dummy2);
         Result := True;
       end;
     end;
@@ -938,20 +939,20 @@ begin
   localPos := AbsoluteToLocal(PointMake(aPos));
   if GetHeight(localPos, height) then
   begin
-    Depth := height - localPos[2];
+    Depth := height - localPos.Coord[2];
     Result := (Depth > 0);
     if Result then
     begin
-      localPos[2] := height;
+      localPos.Coord[2] := height;
       cPos := AffineVectorMake(LocalToAbsolute(localPos));
-      temp1[0] := localPos[0] + cDelta;
-      temp1[1] := localPos[1];
-      temp1[2] := localPos[2];
-      GetHeight(PointMake(temp1), temp1[2]);
-      temp2[0] := localPos[0];
-      temp2[1] := localPos[1] + cDelta;
-      temp2[2] := localPos[2];
-      GetHeight(PointMake(temp2), temp2[2]);
+      temp1.Coord[0] := localPos.Coord[0] + cDelta;
+      temp1.Coord[1] := localPos.Coord[1];
+      temp1.Coord[2] := localPos.Coord[2];
+      GetHeight(PointMake(temp1), temp1.Coord[2]);
+      temp2.Coord[0] := localPos.Coord[0];
+      temp2.Coord[1] := localPos.Coord[1] + cDelta;
+      temp2.Coord[2] := localPos.Coord[2];
+      GetHeight(PointMake(temp2), temp2.Coord[2]);
       cNorm := CalcPlaneNormal(AffineVectorMake(localPos), temp1, temp2);
       cNorm := AffineVectorMake(LocalToAbsolute(VectorMake(cNorm)));
     end;

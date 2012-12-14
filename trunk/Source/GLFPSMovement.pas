@@ -858,7 +858,7 @@ begin
 
   // Change in position = velocity * time taken
   if GravityEnabled then
-    newPosition[1] := newPosition[1] - Manager.MovementScale * 0.5 *
+    newPosition.Coord[1] := newPosition.Coord[1] - Manager.MovementScale * 0.5 *
       progressTime.deltaTime;
 
   // do some magic!!!  and store new position in newPosition
@@ -904,9 +904,9 @@ begin
   for i := 0 to CollisionStates.count - 1 do
   begin
     CollisionState := TCollisionState(CollisionStates.Items[i]);
-    x := CollisionState.Position[0];
-    y := CollisionState.Position[1];
-    z := CollisionState.Position[2];
+    x := CollisionState.Position.Coord[0];
+    y := CollisionState.Position.Coord[1];
+    z := CollisionState.Position.Coord[2];
     GL.Vertex3f(x, y, z);
   end;
   GL.End_();
@@ -918,13 +918,13 @@ begin
     t := (Manager.DisplayTime - (tickCount - CollisionState.Time)) /
       Manager.DisplayTime;
     GL.Color3f(t, t, t);
-    GL.Vertex3f(CollisionState.Contact.intPoint[0],
-      CollisionState.Contact.intPoint[1], CollisionState.Contact.intPoint[2]);
-    GL.Vertex3f(CollisionState.Contact.intPoint[0] +
-      CollisionState.Contact.intNormal[0], // GLSphere4.Radius,
-      CollisionState.Contact.intPoint[1] + CollisionState.Contact.intNormal[1],
+    GL.Vertex3f(CollisionState.Contact.intPoint.Coord[0],
+      CollisionState.Contact.intPoint.Coord[1], CollisionState.Contact.intPoint.Coord[2]);
+    GL.Vertex3f(CollisionState.Contact.intPoint.Coord[0] +
+      CollisionState.Contact.intNormal.Coord[0], // GLSphere4.Radius,
+      CollisionState.Contact.intPoint.Coord[1] + CollisionState.Contact.intNormal.Coord[1],
       // GLSphere4.Radius,
-      CollisionState.Contact.intPoint[2] + CollisionState.Contact.intNormal[2]);
+      CollisionState.Contact.intPoint.Coord[2] + CollisionState.Contact.intNormal.Coord[2]);
     // GLSphere4.Radius);
   end;
   GL.End_();

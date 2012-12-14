@@ -6,6 +6,7 @@
   OpenGL windows management classes and structures<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>11/06/10 - YP - Link GUI elements to their parent
@@ -1809,10 +1810,10 @@ var
 begin
   if Assigned(BitmapFont) then
   begin
-    Position[0] := Round(X);
-    Position[1] := Round(Y);
-    Position[2] := 0;
-    Position[3] := 0;
+    Position.Coord[0] := Round(X);
+    Position.Coord[1] := Round(Y);
+    Position.Coord[2] := 0;
+    Position.Coord[3] := 0;
     BitmapFont.RenderString(rci, Data, taLeftJustify, tlTop, Color, @Position);
   end;
 end;
@@ -1824,11 +1825,11 @@ var
 begin
   if Assigned(BitmapFont) then
   begin
-    Position[0] := Round(((X2 + X1 -
+    Position.Coord[0] := Round(((X2 + X1 -
       BitmapFont.CalcStringWidth(Data)) * 0.5));
-    Position[1] := Round(-((Y2 + Y1 - GetFontHeight) * 0.5)) + 2;
-    Position[2] := 0;
-    Position[3] := 0;
+    Position.Coord[1] := Round(-((Y2 + Y1 - GetFontHeight) * 0.5)) + 2;
+    Position.Coord[2] := 0;
+    Position.Coord[3] := 0;
     BitmapFont.RenderString(rci, Data, taLeftJustify, tlTop, Color, @Position);
   end;
 end;
@@ -2364,7 +2365,7 @@ begin
     FGuiComponent.RenderToArea(0, 0, Width, Height, FRenderStatus, FReBuildGui);
 
     ATitleColor := FTitleColor;
-    ATitleColor[3] := AlphaChannel;
+    ATitleColor.Coord[3] := AlphaChannel;
 
     WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2 + FRenderStatus[GLAlTop].X1 -
       BitmapFont.CalcStringWidth(Caption)) * 0.5),
@@ -2782,7 +2783,7 @@ begin
     begin
       TextColor := FDefaultColor;
     end;
-    TextColor[3] := AlphaChannel;
+    TextColor.Coord[3] := AlphaChannel;
 
     WriteTextAt(rci, FRenderStatus[GLALCenter].X1,
       FRenderStatus[GLALCenter].Y1,
@@ -3008,40 +3009,40 @@ begin
     case Alignment of
       taLeftJustify:
         begin
-          TekstPos[0] := 0;
+          TekstPos.Coord[0] := 0;
         end;
       taCenter:
         begin
-          TekstPos[0] := Width / 2;
+          TekstPos.Coord[0] := Width / 2;
         end;
       taRightJustify:
         begin
-          TekstPos[0] := Width;
+          TekstPos.Coord[0] := Width;
         end;
     end;
 
     case TextLayout of
       tlTop:
         begin
-          TekstPos[1] := 0;
+          TekstPos.Coord[1] := 0;
         end;
       tlCenter:
         begin
-          TekstPos[1] := Round(-Height / 2);
+          TekstPos.Coord[1] := Round(-Height / 2);
         end;
       tlBottom:
         begin
-          TekstPos[1] := -Height;
+          TekstPos.Coord[1] := -Height;
         end;
     end;
 
-    TekstPos[2] := 0;
-    TekstPos[3] := 0;
+    TekstPos.Coord[2] := 0;
+    TekstPos.Coord[3] := 0;
 
     Tekst := Caption;
 
     TextColor := FDefaultColor;
-    TextColor[3] := AlphaChannel;
+    TextColor.Coord[3] := AlphaChannel;
 
     BitmapFont.RenderString(rci, Tekst, FAlignment, FTextLayout, TextColor,
       @TekstPos);

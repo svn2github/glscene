@@ -3,6 +3,7 @@
 	Base abstract ragdoll class. Should be extended to use any physics system. <p>
 
 	<b>History :</b><font size=-1><ul>
+    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
     <li>23/08/10 - Yar - Added VectorTypes to uses
     <li>09/11/05 - LucasG - Fixed joint and few small things
     <li>07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
@@ -199,13 +200,13 @@ begin
     min := BoneVertex;
     for i:=1 to BoneVertices.Count-1 do begin
       BoneVertex := VectorTransform(BoneVertices[i], invMat);
-      if (BoneVertex[0] > max[0]) then max[0] := BoneVertex[0];
-      if (BoneVertex[1] > max[1]) then max[1] := BoneVertex[1];
-      if (BoneVertex[2] > max[2]) then max[2] := BoneVertex[2];
+      if (BoneVertex.Coord[0] > max.Coord[0]) then max.Coord[0] := BoneVertex.Coord[0];
+      if (BoneVertex.Coord[1] > max.Coord[1]) then max.Coord[1] := BoneVertex.Coord[1];
+      if (BoneVertex.Coord[2] > max.Coord[2]) then max.Coord[2] := BoneVertex.Coord[2];
 
-      if (BoneVertex[0] < min[0]) then min[0] := BoneVertex[0];
-      if (BoneVertex[1] < min[1]) then min[1] := BoneVertex[1];
-      if (BoneVertex[2] < min[2]) then min[2] := BoneVertex[2];
+      if (BoneVertex.Coord[0] < min.Coord[0]) then min.Coord[0] := BoneVertex.Coord[0];
+      if (BoneVertex.Coord[1] < min.Coord[1]) then min.Coord[1] := BoneVertex.Coord[1];
+      if (BoneVertex.Coord[2] < min.Coord[2]) then min.Coord[2] := BoneVertex.Coord[2];
     end;
 
     FBoundMax := max;
@@ -221,7 +222,7 @@ begin
   FReferenceMatrix := FBoneMatrix;
   mat := MatrixMultiply(bone.GlobalMatrix,FRagdoll.Owner.AbsoluteMatrix);
   //Set Joint position
-  SetAnchor(AffineVectorMake(mat[3]));
+  SetAnchor(AffineVectorMake(mat.Coord[3]));
 
   BoneVertices.Free; // NEW1
 end;
@@ -255,22 +256,22 @@ begin
 
   if (noBounds) then
   begin
-    FOrigin := AffineVectorMake(mat[3]);
+    FOrigin := AffineVectorMake(mat.Coord[3]);
     FSize := AffineVectorMake(0.1,0.1,0.1);
   end else begin
     //Set Origin
     posMat := mat;
-    posMat[3] := NullHmgVector;
+    posMat.Coord[3] := NullHmgVector;
     o := VectorTransform(FBoundBoneDelta, posMat);
-    FOrigin := VectorAdd(AffineVectorMake(mat[3]), o);
+    FOrigin := VectorAdd(AffineVectorMake(mat.Coord[3]), o);
     //Set Size
     FSize := VectorScale(VectorSubtract(FBoundMax, FBoundMin),0.9);
-    FSize[0] := FSize[0]*VectorLength(mat[0]);
-    FSize[1] := FSize[1]*VectorLength(mat[1]);
-    FSize[2] := FSize[2]*VectorLength(mat[2]);
+    FSize.Coord[0] := FSize.Coord[0]*VectorLength(mat.Coord[0]);
+    FSize.Coord[1] := FSize.Coord[1]*VectorLength(mat.Coord[1]);
+    FSize.Coord[2] := FSize.Coord[2]*VectorLength(mat.Coord[2]);
   end;
   //Put the origin in the BoneMatrix
-  FBoneMatrix[3] := VectorMake(FOrigin,1);
+  FBoneMatrix.Coord[3] := VectorMake(FOrigin,1);
 end;
 
 function TRagdollBone.GetRagdollBone(Index: Integer): TRagdollBone;

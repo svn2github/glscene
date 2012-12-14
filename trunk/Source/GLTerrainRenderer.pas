@@ -23,6 +23,7 @@
       <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
       <li>09/10/06 - Lin- Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
       <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
@@ -482,7 +483,7 @@ begin
   if Assigned(HeightDataSource) then
   begin
     pLocal := AbsoluteToLocal(p);
-    Result := HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1],
+    Result := HeightDataSource.InterpolatedHeight(pLocal.Coord[0], pLocal.Coord[1],
       TileSize + 1) * Scale.Z * (1 / 128);
   end
   else
@@ -552,20 +553,20 @@ begin
   vEye := VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
   vEyeDirection := VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
   SetVector(observer, vEye);
-  vEye[0] := Round(vEye[0] * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
-  vEye[1] := Round(vEye[1] * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
+  vEye.Coord[0] := Round(vEye.Coord[0] * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
+  vEye.Coord[1] := Round(vEye.Coord[1] * FinvTileSize - 0.5) * TileSize + TileSize * 0.5;
   tileGroundRadius := Sqr(TileSize * 0.5 * Scale.X) + Sqr(TileSize * 0.5 * Scale.Y);
   tileRadius := Sqrt(tileGroundRadius + Sqr(256 * Scale.Z));
   tileGroundRadius := Sqrt(tileGroundRadius);
   // now, we render a quad grid centered on eye position
   SetVector(tilePos, vEye);
-  tilePos[2] := 0;
+  tilePos.Coord[2] := 0;
   f := (rci.rcci.farClippingDistance + tileGroundRadius) / Scale.X;
   f := Round(f * FinvTileSize + 1.0) * TileSize;
-  maxTilePosX := vEye[0] + f;
-  maxTilePosY := vEye[1] + f;
-  minTilePosX := vEye[0] - f;
-  minTilePosY := vEye[1] - f;
+  maxTilePosX := vEye.Coord[0] + f;
+  maxTilePosY := vEye.Coord[1] + f;
+  minTilePosX := vEye.Coord[0] - f;
+  minTilePosY := vEye.Coord[1] - f;
 
   if Assigned(FOnGetTerrainBounds) then
   begin
@@ -652,14 +653,14 @@ begin
   AbsoluteMatrix; // makes sure it is available
 
   // determine orientation (to render front-to-back)
-  if vEyeDirection[0] >= 0 then
+  if vEyeDirection.Coord[0] >= 0 then
     deltaX := TileSize
   else
   begin
     deltaX := -TileSize;
     minTilePosX := maxTilePosX;
   end;
-  if vEyeDirection[1] >= 0 then
+  if vEyeDirection.Coord[1] >= 0 then
     deltaY := TileSize
   else
   begin
@@ -669,10 +670,10 @@ begin
 
   tileRadius := tileRadius;
 
-  tilePos[1] := minTilePosY;
+  tilePos.Coord[1] := minTilePosY;
   for iY := 0 to nbY - 1 do
   begin
-    tilePos[0] := minTilePosX;
+    tilePos.Coord[0] := minTilePosX;
     prevPatch := nil;
     n := 0;
     for iX := 0 to nbX do
@@ -739,10 +740,10 @@ begin
         prevPatch := nil;
         rowList.Add(nil);
       end;
-      tilePos[0] := tilePos[0] + deltaX;
+      tilePos.Coord[0] := tilePos.Coord[0] + deltaX;
       Inc(n);
     end;
-    tilePos[1] := tilePos[1] + deltaY;
+    tilePos.Coord[1] := tilePos.Coord[1] + deltaY;
     buf := prevRow;
     prevRow := rowList;
     rowList := buf;
@@ -912,8 +913,8 @@ function TGLTerrainRenderer.HashedTile(const tilePos: TAffineVector;
 var
   xLeft, yTop: integer;
 begin
-  xLeft := Round(tilePos[0] * FinvTileSize - 0.5) * (TileSize);
-  yTop := Round(tilePos[1] * FinvTileSize - 0.5) * (TileSize);
+  xLeft := Round(tilePos.Coord[0] * FinvTileSize - 0.5) * (TileSize);
+  yTop := Round(tilePos.Coord[1] * FinvTileSize - 0.5) * (TileSize);
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
@@ -971,8 +972,8 @@ var
   canAllocate: boolean;
 begin
   canAllocate := tmAllocateNewTiles in TileManagement;
-  xLeft := Round(tilePos[0] * FinvTileSize - 0.5) * TileSize;
-  yTop := Round(tilePos[1] * FinvTileSize - 0.5) * TileSize;
+  xLeft := Round(tilePos.Coord[0] * FinvTileSize - 0.5) * TileSize;
+  yTop := Round(tilePos.Coord[1] * FinvTileSize - 0.5) * TileSize;
   tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
   if not assigned(tile) then

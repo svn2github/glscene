@@ -793,36 +793,36 @@ begin
 
   case FAdjust.FHorz of
     haLeft:
-      AdjustVector[0] := lWidth / 2;
+      AdjustVector.Coord[0] := lWidth / 2;
     haCenter:
-      AdjustVector[0] := 0; // Nothing.
+      AdjustVector.Coord[0] := 0; // Nothing.
     haRight:
-      AdjustVector[0] := -lWidth / 2;
+      AdjustVector.Coord[0] := -lWidth / 2;
   else
     begin
-      AdjustVector[0] := 0;
+      AdjustVector.Coord[0] := 0;
       Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 
   case FAdjust.FVert of
     vaTop:
-      AdjustVector[1] := -(abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+      AdjustVector.Coord[1] := -(abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
     vaCenter:
-      AdjustVector[1] := 0; // Nothing.
+      AdjustVector.Coord[1] := 0; // Nothing.
     vaBottom:
-      AdjustVector[1] := (abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+      AdjustVector.Coord[1] := (abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
     vaBaseLine:
-      AdjustVector[1] := -(abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
+      AdjustVector.Coord[1] := -(abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
   else
     begin
-      AdjustVector[1] := 0;
+      AdjustVector.Coord[1] := 0;
       Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 
-  AdjustVector[2] := -(FExtrusion / 2);
-  AdjustVector[3] := 1;
+  AdjustVector.Coord[2] := -(FExtrusion / 2);
+  AdjustVector.Coord[3] := 1;
   Result := LocalToAbsolute(AdjustVector);
 end;
 
@@ -841,10 +841,10 @@ begin
   else
     charScale := FTextHeight / lHeightMax;
 
-  Result[0] := lWidth / 2 * charScale;
-  Result[1] := (lHeightMax + abs(lHeightMin)) / 2 * charScale;
-  Result[2] := FExtrusion / 2;
-  Result[3] := 0;
+  Result.Coord[0] := lWidth / 2 * charScale;
+  Result.Coord[1] := (lHeightMax + abs(lHeightMin)) / 2 * charScale;
+  Result.Coord[2] := FExtrusion / 2;
+  Result.Coord[3] := 0;
 end;
 
 // ------------------

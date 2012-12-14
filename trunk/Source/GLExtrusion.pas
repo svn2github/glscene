@@ -7,7 +7,10 @@
    surface described by a moving curve.<p>
 
  <b>Historique : </b><font size=-1><ul>
+
+      <li>10/11/12 - PW - Added CPP compatibility: again changed vector arrays to records
       <li>15/11/11 - Vince - Fixes pipe texture coordinates missing initialisation
+
       <li>15/11/11 - Vince - Bugfixed issue with YOffsetPerTurn
       <li>07/05/11 - Yar - Fixed stColorMaterial state switching accordingly NodesColorMode
       <li>28/03/11 - Vince - Improve Normals generation on Pipes
@@ -27,6 +30,7 @@
       <li>14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>02/01/06 - LC - Fixed TGLExtrusionSolid texuring. Bugtracker ID=1619318
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>02/11/01 - Egg - TGLPipe.BuildList now has a "persistent" cache
       <li>25/11/01 - Egg - TGLPipe nodes can now be colored
       <li>19/07/01 - Egg - Fix in TGLRevolutionSolid due to RotateAround change
@@ -517,12 +521,12 @@ var
     tb: TAffineVector;
     mx, mz: Single;
   begin
-    mx := ptBottom^[0] + ptTop^[0];
-    mz := ptBottom^[2] + ptTop^[2];
+    mx := ptBottom^.Coord[0] + ptTop^.Coord[0];
+    mz := ptBottom^.Coord[2] + ptTop^.Coord[2];
     VectorSubtract(ptBottom^, ptTop^, tb);
-    normal[0] := -tb[1] * mx;
-    normal[1] := mx * tb[0] + mz * tb[2];
-    normal[2] := -mz * tb[1];
+    normal.Coord[0] := -tb.Coord[1] * mx;
+    normal.Coord[1] := mx * tb.Coord[0] + mz * tb.Coord[2];
+    normal.Coord[2] := -mz * tb.Coord[1];
     NormalizeVector(normal);
   end;
 
@@ -582,8 +586,8 @@ var
     VectorRotateAroundY(ptBottom^, alpha, bottomBase);
     if gotYDeltaOffset then
     begin
-      topBase[1] := topBase[1] + yOffset;
-      bottomBase[1] := bottomBase[1] + yOffset;
+      topBase.Coord[1] := topBase.Coord[1] + yOffset;
+      bottomBase.Coord[1] := bottomBase.Coord[1] + yOffset;
       yOffset := yOffset + deltaYOffset;
     end;
     CalcNormal(@topBase, @bottomBase, normal);
@@ -607,8 +611,8 @@ var
       VectorRotateAroundY(ptBottom^, nextAlpha, bottomNext);
       if gotYDeltaOffset then
       begin
-        topNext[1] := topNext[1] + yOffset;
-        bottomNext[1] := bottomNext[1] + yOffset;
+        topNext.Coord[1] := topNext.Coord[1] + yOffset;
+        bottomNext.Coord[1] := bottomNext.Coord[1] + yOffset;
         yOffset := yOffset + deltaYOffset
       end;
       CalcNormal(@topNext, @bottomNext, normal);
@@ -742,7 +746,7 @@ begin
     if (rspStartPolygon in FParts) or (rspStopPolygon in FParts) then
     begin
       bary := Nodes.Barycenter;
-      bary[1] := 0;
+      bary.Coord[1] := 0;
       NormalizeVector(bary);
       // tessellate start polygon
       if rspStartPolygon in FParts then
@@ -804,7 +808,7 @@ var
 begin
   maxRadius := 0;
   maxHeight := 0;
-  if FAxisAlignedDimensionsCache[0] < 0 then
+  if FAxisAlignedDimensionsCache.Coord[0] < 0 then
   begin
     for i := 0 to Nodes.Count - 1 do
     begin
@@ -812,9 +816,9 @@ begin
       maxRadius := MaxFloat(maxRadius, Sqr(Nodes[i].X) + Sqr(Nodes[i].Z));
     end;
     maxRadius := sqrt(maxRadius);
-    FAxisAlignedDimensionsCache[0] := maxRadius;
-    FAxisAlignedDimensionsCache[1] := maxHeight;
-    FAxisAlignedDimensionsCache[2] := maxRadius;
+    FAxisAlignedDimensionsCache.Coord[0] := maxRadius;
+    FAxisAlignedDimensionsCache.Coord[1] := maxHeight;
+    FAxisAlignedDimensionsCache.Coord[2] := maxRadius;
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -824,7 +828,7 @@ end;
 
 procedure TGLRevolutionSolid.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
   inherited;
 end;
 
@@ -1708,9 +1712,9 @@ var
     {var
       p : TAffineVector;}
   begin
-    normal[0] := Bottom[1] - Top[1];
-    normal[1] := Top[0] - Bottom[0];
-    normal[2] := 0;
+    normal.Coord[0] := Bottom.Coord[1] - Top.Coord[1];
+    normal.Coord[1] := Top.Coord[0] - Bottom.Coord[0];
+    normal.Coord[2] := 0;
     NormalizeVector(normal);
     if FHeight < 0 then
       NegateVector(normal);
@@ -1770,9 +1774,9 @@ var
     dir := VectorNormalize(VectorSubtract(bottomBase, topBase));
 
     topTPBase.S := VectorDotProduct(topBase, dir);
-    topTPBase.T := topBase[2];
+    topTPBase.T := topBase.Coord[2];
     bottomTPBase.S := VectorDotProduct(bottomBase, dir);
-    bottomTPBase.T := bottomBase[2];
+    bottomTPBase.T := bottomBase.Coord[2];
 
     lastNormal := normal;
     topNext := topBase;
@@ -1788,10 +1792,10 @@ var
       GL.Normal3fv(@normBottom);
       xgl.TexCoord2fv(@bottomTPBase);
       GL.Vertex3fv(@bottomBase);
-      topNext[2] := step * DeltaZ;
-      bottomNext[2] := topNext[2];
-      topTPNext.T := topNext[2];
-      bottomTPNext.T := bottomNext[2];
+      topNext.Coord[2] := step * DeltaZ;
+      bottomNext.Coord[2] := topNext.Coord[2];
+      topTPNext.T := topNext.Coord[2];
+      bottomTPNext.T := bottomNext.Coord[2];
       xgl.TexCoord2fv(@topTPNext);
       GL.Normal3fv(@normTop);
       GL.Vertex3fv(@topNext);
@@ -1886,7 +1890,7 @@ begin
   FNormalDirection := ndOutside;
   FParts := [espOutside];
   MinSmoothAngle := 5;
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
 end;
 
 // Destroy
@@ -1976,12 +1980,12 @@ function TGLExtrusionSolid.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache[0] < 0 then
+  if FAxisAlignedDimensionsCache.Coord[0] < 0 then
   begin
     Contours.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache[0] := MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-    FAxisAlignedDimensionsCache[1] := MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2] +
+    FAxisAlignedDimensionsCache.Coord[0] := MaxFloat(Abs(dMin.Coord[0]), Abs(dMax.Coord[0]));
+    FAxisAlignedDimensionsCache.Coord[1] := MaxFloat(Abs(dMin.Coord[1]), Abs(dMax.Coord[1]));
+    FAxisAlignedDimensionsCache.Coord[2] := MaxFloat(Abs(dMin.Coord[2]), Abs(dMax.Coord[2] +
       Height));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
@@ -1992,7 +1996,7 @@ end;
 
 procedure TGLExtrusionSolid.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
   inherited;
 end;
 

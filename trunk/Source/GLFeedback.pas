@@ -15,6 +15,7 @@
    will indicate if there is valid data in the buffer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
@@ -278,38 +279,38 @@ begin
       begin
         for j := 0 to 2 do
         begin
-          vertex[0] := FBuffer[i];
+          vertex.Coord[0] := FBuffer[i];
           Inc(i);
-          vertex[1] := FBuffer[i];
+          vertex.Coord[1] := FBuffer[i];
           Inc(i);
-          vertex[2] := FBuffer[i];
+          vertex.Coord[2] := FBuffer[i];
           Inc(i);
           if FMode = fm4DColorTexture then
             Inc(i);
           if ColorBuffered then
           begin
-            color[0] := FBuffer[i];
+            color.Coord[0] := FBuffer[i];
             Inc(i);
-            color[1] := FBuffer[i];
+            color.Coord[1] := FBuffer[i];
             Inc(i);
-            color[2] := FBuffer[i];
+            color.Coord[2] := FBuffer[i];
             Inc(i);
-            color[3] := FBuffer[i];
+            color.Coord[3] := FBuffer[i];
             Inc(i);
           end;
           if TexCoordBuffered then
           begin
-            texcoord[0] := FBuffer[i];
+            texcoord.Coord[0] := FBuffer[i];
             Inc(i);
-            texcoord[1] := FBuffer[i];
+            texcoord.Coord[1] := FBuffer[i];
             Inc(i);
-            texcoord[2] := FBuffer[i];
+            texcoord.Coord[2] := FBuffer[i];
             Inc(i);
-            texcoord[3] := FBuffer[i];
+            texcoord.Coord[3] := FBuffer[i];
             Inc(i);
           end;
 
-          vertex[2] := 2 * vertex[2] - 1;
+          vertex.Coord[2] := 2 * vertex.Coord[2] - 1;
           ScaleVector(vertex, FCorrectionScaling);
 
           tempVertices.Add(AffineVectorMake(vertex));

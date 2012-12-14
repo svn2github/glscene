@@ -301,9 +301,9 @@ begin
   Tag:=FTags[TagIdx+Frame*FNumTags];
   for j:=0 to 2 do
     for i:=0 to 2 do
-      Result[i][j]:=Tag.rotation[i][j];
+      Result.Coord[i].Coord[j]:=Tag.rotation.Coord[i].Coord[j];
   for i:=0 to 2 do
-    Result[3][i]:=Tag.vPosition[i];
+    Result.Coord[3].Coord[i]:=Tag.vPosition.Coord[i];
 end;
 
 end.

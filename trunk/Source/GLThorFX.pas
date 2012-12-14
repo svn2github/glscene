@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { : GLThorFX<p>
-
   <b>History : </b><font size=-1><ul>
-  <li>21/01/01 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
+  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
+  <li>21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -15,6 +15,7 @@
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
   <li>13/02/07 - aidave - Updated Target.Style to csPoint
   <li>23/12/04 - PhP - GLScenestyled Header
+  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
   <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
   <li>04/15/03 - Added initialization to CalcThor, to fix an error
   Thanks to Martin Kirsch for this solution
@@ -372,18 +373,18 @@ begin
   SetVector(nvec, FTarget.x, FTarget.y, FTarget.z);
   len := VectorLength(nvec);
   NormalizeVector(nvec);
-  a := ArcCos(nvec[2]);
-  b := ArcTan2(nvec[0], nvec[1]);
+  a := ArcCos(nvec.Coord[2]);
+  b := ArcTan2(nvec.Coord[0], nvec.Coord[1]);
 
   N := 0;
   While (N < Maxpoints) do
   begin
     dist := N / Maxpoints * len;
     vec := FThorpoints^[N].Position;
-    vec[2] := dist;
+    vec.Coord[2] := dist;
 
     if Assigned(OnCalcPoint) then
-      OnCalcPoint(Self, N, vec[0], vec[1], vec[2]);
+      OnCalcPoint(Self, N, vec.Coord[0], vec.Coord[1], vec.Coord[2]);
     // Let user mess around with point position
 
     SetVector(axs, 1, 0, 0); // Rotate up
@@ -410,13 +411,12 @@ begin
   fracScale := (right - left) / Maxpoints;
   midh := (lh + rh) / 2 + (fracScale * FWildness * random) -
     (fracScale * FWildness) / 2;
-  FThorpoints^[mid].Position[xyz] := midh +
+  FThorpoints^[mid].Position.Coord[xyz] := midh +
     (FVibrate * random - (FVibrate / 2));
   // if res=1 then FThorpoints[right-1].Position[xyz]:=
   // (FThorpoints[right].Position[xyz]+midh)/(right-mid)*(right-mid-1);
   if res = 1 then
-    FThorpoints^[right - 1].Position[xyz] := FThorpoints^[right].Position[xyz];
-
+    FThorpoints^[right - 1].Position.Coord[xyz] := FThorpoints^[right].Position.Coord[xyz];
   if (mid - left) > 1 then
     CalcFrac(left, mid, lh, midh, xyz);
   if (right - mid) > 1 then
@@ -590,8 +590,8 @@ begin
     mat := rci.PipelineTransformation.ModelViewMatrix;
     for m := 0 to 2 do
     begin
-      vx[m] := mat[m][0] * Manager.GlowSize;
-      vy[m] := mat[m][1] * Manager.GlowSize;
+      vx.Coord[m] := mat.Coord[m].Coord[0] * Manager.GlowSize;
+      vy.Coord[m] := mat.Coord[m].Coord[1] * Manager.GlowSize;
     end;
 
     SetVector(InnerColor, Manager.FInnerColor.color);
@@ -618,7 +618,7 @@ begin
       begin
         fp := @(Manager.FThorpoints[i]);
         SetVector(Ppos, fp^.Position);
-        GL.Vertex3f(Ppos[0], Ppos[1], Ppos[2]);
+        GL.Vertex3f(Ppos.Coord[0], Ppos.Coord[1], Ppos.Coord[2]);
       end;
       GL.End_;
     end; // Core;
@@ -635,26 +635,35 @@ begin
         SetVector(Ppos2, fp^.Position);
         GL.Begin_(GL_TRIANGLE_FAN);
         GL.Color4fv(@Icol);
-        GL.Vertex3f(Ppos[0], Ppos[1], Ppos[2]); // middle1
+        GL.Vertex3f(Ppos.Coord[0], Ppos.Coord[1], Ppos.Coord[2]); // middle1
         GL.Color4fv(@Ocol);
-        GL.Vertex3f(vx[0] + vy[0] + Ppos[0], vx[1] + vy[1] + Ppos[1],
-          vx[2] + vy[2] + Ppos[2]); // TopRight
-        GL.Vertex3f(vx[0] * 1.4 + Ppos[0], vx[1] * 1.4 + Ppos[1],
-          vx[2] * 1.4 + Ppos[2]); // Right1
-        GL.Vertex3f(vx[0] - vy[0] + Ppos[0], vx[1] - vy[1] + Ppos[1],
-          vx[2] - vy[2] + Ppos[2]); // BottomRight
-        GL.Vertex3f(-vy[0] * 1.4 + Ppos[0], -vy[1] * 1.4 + Ppos[1],
-          -vy[2] * 1.4 + Ppos[2]); // bottom1
-        GL.Vertex3f(-vx[0] - vy[0] + Ppos[0], -vx[1] - vy[1] + Ppos[1],
-          -vx[2] - vy[2] + Ppos[2]); // BottomLeft
-        GL.Vertex3f(-vx[0] * 1.4 + Ppos[0], -vx[1] * 1.4 + Ppos[1],
-          -vx[2] * 1.4 + Ppos[2]); // left1
-        GL.Vertex3f(-vx[0] + vy[0] + Ppos[0], -vx[1] + vy[1] + Ppos[1],
-          -vx[2] + vy[2] + Ppos[2]); // TopLeft
-        GL.Vertex3f(vy[0] * 1.4 + Ppos[0], vy[1] * 1.4 + Ppos[1],
-          vy[2] * 1.4 + Ppos[2]); // top1
-        GL.Vertex3f(vx[0] + vy[0] + Ppos[0], vx[1] + vy[1] + Ppos[1],
-          vx[2] + vy[2] + Ppos[2]); // TopRight
+        GL.Vertex3f(Vx.Coord[0] + Vy.Coord[0] + Ppos.Coord[0],
+          Vx.Coord[1] + Vy.Coord[1] + Ppos.Coord[1], Vx.Coord[2] + Vy.Coord[2] +
+          Ppos.Coord[2]); // TopRight
+        GL.Vertex3f(Vx.Coord[0] * 1.4 + Ppos.Coord[0],
+          Vx.Coord[1] * 1.4 + Ppos.Coord[1], Vx.Coord[2] * 1.4 + Ppos.Coord[2]);
+        // Right1
+        GL.Vertex3f(Vx.Coord[0] - Vy.Coord[0] + Ppos.Coord[0],
+          Vx.Coord[1] - Vy.Coord[1] + Ppos.Coord[1], Vx.Coord[2] - Vy.Coord[2] +
+          Ppos.Coord[2]); // BottomRight
+        GL.Vertex3f(-Vy.Coord[0] * 1.4 + Ppos.Coord[0],
+          -Vy.Coord[1] * 1.4 + Ppos.Coord[1], -Vy.Coord[2] * 1.4 + Ppos.Coord[2]
+          ); // bottom1
+        GL.Vertex3f(-Vx.Coord[0] - Vy.Coord[0] + Ppos.Coord[0],
+          -Vx.Coord[1] - Vy.Coord[1] + Ppos.Coord[1], -Vx.Coord[2] - Vy.Coord[2]
+          + Ppos.Coord[2]); // BottomLeft
+        GL.Vertex3f(-Vx.Coord[0] * 1.4 + Ppos.Coord[0],
+          -Vx.Coord[1] * 1.4 + Ppos.Coord[1], -Vx.Coord[2] * 1.4 + Ppos.Coord
+          [2]); // left1
+        GL.Vertex3f(-Vx.Coord[0] + Vy.Coord[0] + Ppos.Coord[0],
+          -Vx.Coord[1] + Vy.Coord[1] + Ppos.Coord[1], -Vx.Coord[2] + Vy.Coord[2]
+          + Ppos.Coord[2]); // TopLeft
+        GL.Vertex3f(Vy.Coord[0] * 1.4 + Ppos.Coord[0],
+          Vy.Coord[1] * 1.4 + Ppos.Coord[1], Vy.Coord[2] * 1.4 + Ppos.Coord[2]);
+        // top1
+        GL.Vertex3f(Vx.Coord[0] + Vy.Coord[0] + Ppos.Coord[0],
+          Vx.Coord[1] + Vy.Coord[1] + Ppos.Coord[1], Vx.Coord[2] + Vy.Coord[2] +
+          Ppos.Coord[2]); // TopRight
         GL.End_;
       end; // Glow
     end;

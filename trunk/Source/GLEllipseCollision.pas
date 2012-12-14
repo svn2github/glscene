@@ -159,7 +159,7 @@ begin
   b := VectorDotProduct(e10,e20);
   c := VectorDotProduct(e20,e20);
   ac_bb := (a*c)-(b*b);
-  vp := AffineVectorMake(point[0]-pa[0], point[1]-pa[1], point[2]-pa[2]);
+  vp := AffineVectorMake(point.Coord[0]-pa.Coord[0], point.Coord[1]-pa.Coord[1], point.Coord[2]-pa.Coord[2]);
   d := VectorDotProduct(vp,e10);
   e := VectorDotProduct(vp,e20);
   x := (d*c)-(e*b);
@@ -211,22 +211,22 @@ end;
 
 function VectorDivide(const v, divider : TAffineVector): TAffineVector;
 begin
-   result[0]:=v[0]/divider[0];
-   result[1]:=v[1]/divider[1];
-   result[2]:=v[2]/divider[2];
+   result.Coord[0]:=v.Coord[0]/divider.Coord[0];
+   result.Coord[1]:=v.Coord[1]/divider.Coord[1];
+   result.Coord[2]:=v.Coord[2]/divider.Coord[2];
 end;
 
 procedure VectorSetLength(var V: TAffineVector; Len: Single);
 var l,l2: Single;
 begin
-  l2 := V[0]*V[0] + V[1]*V[1] + V[2]*V[2];
+  l2 := V.Coord[0]*V.Coord[0] + V.Coord[1]*V.Coord[1] + V.Coord[2]*V.Coord[2];
   l := sqrt(l2);
   if L <> 0 then
   begin
     Len := Len / l;
-    V[0] :=  V[0] * Len;
-    V[1] :=  V[1] * Len;
-    V[2] :=  V[2] * Len;
+    V.Coord[0] :=  V.Coord[0] * Len;
+    V.Coord[1] :=  V.Coord[1] * Len;
+    V.Coord[2] :=  V.Coord[2] * Len;
   end;
 end;
 
@@ -236,10 +236,10 @@ procedure TECPlane.MakePlane(const nOrigin, nNormal: TAffineVector);
 begin
   Normal := nNormal;
   Origin := nOrigin;
-  Equation[0] := normal[0];
-  Equation[1] := normal[1];
-  Equation[2] := normal[2];
-  Equation[3] := -(normal[0]*origin[0]+normal[1]*origin[1]+normal[2]*origin[2]);
+  Equation[0] := normal.Coord[0];
+  Equation[1] := normal.Coord[1];
+  Equation[2] := normal.Coord[2];
+  Equation[3] := -(normal.Coord[0]*origin.Coord[0]+normal.Coord[1]*origin.Coord[1]+normal.Coord[2]*origin.Coord[2]);
 end;
 
 procedure TECPlane.MakePlane(const p1, p2, p3: TAffineVector);

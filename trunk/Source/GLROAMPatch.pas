@@ -656,8 +656,8 @@ var
   s: integer;
 begin
   tessMaxDepth := FMaxDepth;
-  tessObserverPosX := Round(FObserverPosition[0]);
-  tessObserverPosY := Round(FObserverPosition[1]);
+  tessObserverPosX := Round(FObserverPosition.Coord[0]);
+  tessObserverPosY := Round(FObserverPosition.Coord[1]);
 
   if HighRes then
   begin
@@ -677,8 +677,8 @@ begin
       FullLeftTess(@vTriangleNodes[FBRNode], 1);
     if Assigned(FWest) and FWest.HighRes then
       FullLeftTess(@vTriangleNodes[FTLNode], 1);
-    if FObserverPosition[2] > 0 then
-      tessFrameVarianceDelta := Round(Sqr(FObserverPosition[2] * (1 / 16)))
+    if FObserverPosition.Coord[2] > 0 then
+      tessFrameVarianceDelta := Round(Sqr(FObserverPosition.Coord[2] * (1 / 16)))
     else
       tessFrameVarianceDelta := 0;
   end;
@@ -958,14 +958,14 @@ begin
   texCoordsList := PTexPoint(texCoords.List);
   for y := 0 to FPatchSize do
   begin
-    p[1] := y;
-    tex.T := p[1];
+    p.Coord[1] := y;
+    tex.T := p.Coord[1];
     row := raster[y];
     for x := 0 to FPatchSize do
     begin
-      p[0] := x;
-      tex.S := p[0];
-      p[2] := row[x];
+      p.Coord[0] := x;
+      tex.S := p.Coord[0];
+      p.Coord[2] := row[x];
       verticesList^ := p;
       Inc(verticesList);
       texCoordsList^ := tex;

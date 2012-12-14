@@ -273,13 +273,13 @@ begin
                r:=Owner.Skeleton.Frames[i].Rotation[j];
                str.Add(StringReplace(
                  Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',
-                        [j,p[0],p[1],p[2],r[0],r[1],r[2]]),
+                        [j,p.Coord[0],p.Coord[1],p.Coord[2],r.Coord[0],r.Coord[1],r.Coord[2]]),
                  ',', '.', [rfReplaceAll]));
             end;
          end;
          str.Add('end');
       end;
-    
+
       // Add the mesh data
       if Owner.MeshObjects.Count>0 then begin
          str.Add('triangles');
@@ -297,7 +297,7 @@ begin
                      b:=VerticesBonesWeights^[VertexIndices[3*k+l]]^[0].BoneID;
                      str.Add(StringReplace(
                        Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
-                              [b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]),
+                              [b,v.Coord[0],v.Coord[1],v.Coord[2],n.Coord[0],n.Coord[1],n.Coord[2],t.Coord[0],t.Coord[1]]),
                        ',', '.', [rfReplaceAll]));
                   end;
                end;

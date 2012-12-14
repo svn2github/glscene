@@ -164,7 +164,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   Windows;
 {$ENDIF}
 
@@ -174,7 +174,7 @@ Libc;
 {$ENDIF}
 
 const
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   LibName = 'SDL.dll';
 {$ENDIF}
 {$IFDEF UNIX}
@@ -1784,7 +1784,7 @@ typedef struct {
 
 // SDL_mutex.h types
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   PSDL_Mutex = ^TSDL_Mutex;
   TSDL_Mutex = record
     id: THANDLE;
@@ -1802,7 +1802,7 @@ typedef struct {
   end;
 {$ENDIF}
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   PSDL_semaphore = ^TSDL_semaphore;
   TSDL_semaphore = record
     id: THANDLE;
@@ -1844,7 +1844,7 @@ typedef struct {
   end;
 
   // SDL_thread.h types
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
   TSYS_ThreadHandle = THandle;
 {$ENDIF}
 
@@ -1926,7 +1926,7 @@ function SDL_WasInit( flags : UInt32 ): UInt32; cdecl; external LibName;
 procedure SDL_Quit; cdecl; external LibName;
 {$EXTERNALSYM SDL_Quit}
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 // This should be called from your WinMain() function, if any
 function SDL_RegisterApp(name: PAnsiChar; style: UInt32; h_Inst: Pointer):
 Integer; cdecl; external LibName;
@@ -1959,7 +1959,7 @@ procedure SDL_SetError(fmt: PAnsiChar); cdecl; external LibName;
 procedure SDL_ClearError; cdecl; external LibName;
 {$EXTERNALSYM SDL_ClearError}
 
-{$IFNDEF WIN32}
+{$IFNDEF MSWINDOWS}
 procedure SDL_Error(Code: TSDL_errorcode); cdecl; external LibName;
 {$EXTERNALSYM SDL_Error}
 {$ENDIF}
@@ -3452,7 +3452,7 @@ procedure SDL_KillThread(thread: PSDL_Thread); cdecl; external LibName;
 {------------------------------------------------------------------------------}
 { Get Environment Routines                                                     }
 {------------------------------------------------------------------------------}
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 function _putenv( const variable : PAnsiChar ): integer; cdecl;
 {$ENDIF}
 
@@ -3466,7 +3466,7 @@ function SDL_putenv(const variable: PAnsiChar): integer;
 //function putenv(const variable: PAnsiChar): integer;
 //{$EXTERNALSYM putenv}
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 function getenv( const name : PAnsiChar ): PAnsiChar; cdecl;
 {$ENDIF}
 
@@ -3498,7 +3498,7 @@ end;
 
 procedure SDL_OutOfMemory;
 begin
-  {$IFNDEF WIN32}
+  {$IFNDEF MSWINDOWS}
   SDL_Error(SDL_ENOMEM);
   {$ENDIF}
 end;
@@ -3625,13 +3625,13 @@ begin
   Result := SDL_mutexV(mutex);
 end;
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 function _putenv( const variable : PAnsiChar ): Integer; cdecl; external 'MSVCRT.DLL';
 {$ENDIF}
 
 function SDL_putenv(const variable: PAnsiChar): Integer;
 begin
-  {$IFDEF WIN32}
+  {$IFDEF MSWINDOWS}
   Result := _putenv(variable);
   {$ENDIF}
 
@@ -3640,13 +3640,13 @@ begin
   {$ENDIF}
 end;
 
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
 function getenv( const name : PAnsiChar ): PAnsiChar; cdecl; external 'MSVCRT.DLL';
 {$ENDIF}
 
 function SDL_getenv(const name: PAnsiChar): PAnsiChar;
 begin
-  {$IFDEF WIN32}
+  {$IFDEF MSWINDOWS}
   Result := getenv(name);
   {$ENDIF}
 

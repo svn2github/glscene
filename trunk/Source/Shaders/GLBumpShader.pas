@@ -585,14 +585,14 @@ begin
   FVertexProgramHandle.Bind;
 
   // Set the light position to program.local[0]
-  GL.GetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos[0]);
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos[0]);
+  GL.GetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.Coord[0]);
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.Coord[0]);
 
   // Set the light attenutation to program.local[1]
-  lightAtten[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
-  lightAtten[1] := rci.GLStates.LightLinearAtten[FLightIDs[0]];
-  lightAtten[2] := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten[0]);
+  lightAtten.Coord[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
+  lightAtten.Coord[1] := rci.GLStates.LightLinearAtten[FLightIDs[0]];
+  lightAtten.Coord[2] := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.Coord[0]);
 
   case FBumpMethod of
     bmDot3TexCombiner:
@@ -611,10 +611,10 @@ begin
           rci.GLStates.TextureBinding[1, ttTexture2D] := dummyHandle;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
         GL.GetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
-        lightDiffuse[0] := lightDiffuse[0] * materialDiffuse[0];
-        lightDiffuse[1] := lightDiffuse[1] * materialDiffuse[1];
-        lightDiffuse[2] := lightDiffuse[2] * materialDiffuse[2];
-        lightDiffuse[3] := lightDiffuse[3] * materialDiffuse[3];
+        lightDiffuse.Coord[0] := lightDiffuse.Coord[0] * materialDiffuse.Coord[0];
+        lightDiffuse.Coord[1] := lightDiffuse.Coord[1] * materialDiffuse.Coord[1];
+        lightDiffuse.Coord[2] := lightDiffuse.Coord[2] * materialDiffuse.Coord[2];
+        lightDiffuse.Coord[3] := lightDiffuse.Coord[3] * materialDiffuse.Coord[3];
         GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
         GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
         GL.TexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
@@ -635,14 +635,14 @@ begin
         FFragmentProgramHandle.Bind;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
         lightSpecular := rci.GLStates.LightSpecular[FLightIDs[0]];
-        lightAtten[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
+        lightAtten.Coord[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
 
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0,
-          @lightDiffuse[0]);
+          @lightDiffuse.Coord[0]);
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1,
-          @lightSpecular[0]);
+          @lightSpecular.Coord[0]);
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 2,
-          @lightAtten[0]);
+          @lightAtten.Coord[0]);
       end;
 
   else
@@ -740,9 +740,9 @@ begin
 
       GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
       GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
-      ambient[0] := ambient[0] * LMaterialAmbient[0];
-      ambient[1] := ambient[1] * LMaterialAmbient[1];
-      ambient[2] := ambient[2] * LMaterialAmbient[2];
+      ambient.Coord[0] := ambient.Coord[0] * LMaterialAmbient.Coord[0];
+      ambient.Coord[1] := ambient.Coord[1] * LMaterialAmbient.Coord[1];
+      ambient.Coord[2] := ambient.Coord[2] * LMaterialAmbient.Coord[2];
       GL.Color3fv(@ambient);
 
       FAmbientPass := True;
@@ -823,9 +823,9 @@ begin
 
       GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
       GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
-      ambient[0] := ambient[0] * LMaterialAmbient[0];
-      ambient[1] := ambient[1] * LMaterialAmbient[1];
-      ambient[2] := ambient[2] * LMaterialAmbient[2];
+      ambient.Coord[0] := ambient.Coord[0] * LMaterialAmbient.Coord[0];
+      ambient.Coord[1] := ambient.Coord[1] * LMaterialAmbient.Coord[1];
+      ambient.Coord[2] := ambient.Coord[2] * LMaterialAmbient.Coord[2];
       GL.Color3fv(@ambient);
 
       FAmbientPass := True;

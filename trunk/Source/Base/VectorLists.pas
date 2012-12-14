@@ -586,7 +586,7 @@ type
 
     function Add(const item: TQuaternion): Integer; overload;
     function Add(const item: TAffineVector; w: Single): Integer; overload;
-    function Add(const X, Y, Z, w: Single): Integer; overload;
+    function Add(const X, Y, Z, W: Single): Integer; overload;
     procedure Push(const Val: TQuaternion);
     function Pop: TQuaternion;
     function IndexOf(const item: TQuaternion): Integer;
@@ -1287,10 +1287,10 @@ begin
     for K := 0 to 2 do
     begin
       f := ref^[K];
-      if f < min[K] then
-        min[K] := f;
-      if f > max[K] then
-        max[K] := f;
+      if f < min.Coord[K] then
+        min.Coord[K] := f;
+      if f > max.Coord[K] then
+        max.Coord[K] := f;
     end;
   end;
 end;
@@ -1512,7 +1512,7 @@ end;
 //
 function TAffineVectorList.Add(const item: TVector2f): Integer;
 begin
-  Result := Add(AffineVectorMake(item[0], item[1], 0));
+  Result := Add(AffineVectorMake(item.Coord[0], item.Coord[1], 0));
 end;
 
 // Add (texpoint)
@@ -1533,9 +1533,9 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^[0] := X;
-  v^[1] := Y;
-  v^[2] := 0;
+  v^.Coord[0] := X;
+  v^.Coord[1] := Y;
+  v^.Coord[2] := 0;
   Inc(FRevision);
 end;
 
@@ -1550,9 +1550,9 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^[0] := X;
-  v^[1] := Y;
-  v^[2] := Z;
+  v^.Coord[0] := X;
+  v^.Coord[1] := Y;
+  v^.Coord[2] := Z;
   Inc(FRevision);
 end;
 
@@ -1566,9 +1566,9 @@ begin
   if Result = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^[0] := X;
-  v^[1] := Y;
-  v^[2] := Z;
+  v^.Coord[0] := X;
+  v^.Coord[1] := Y;
+  v^.Coord[2] := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1581,9 +1581,9 @@ var
 begin
   Result := FCount;
   v := @List[Result];
-  v^[0] := X;
-  v^[1] := Y;
-  v^[2] := Z;
+  v^.Coord[0] := X;
+  v^.Coord[1] := Y;
+  v^.Coord[2] := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1598,9 +1598,9 @@ begin
   if Result = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^[0] := xy^[0];
-  v^[1] := xy^[1];
-  v^[2] := Z;
+  v^.Coord[0] := xy^[0];
+  v^.Coord[1] := xy^[1];
+  v^.Coord[2] := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1613,9 +1613,9 @@ var
 begin
   Result := FCount;
   v := @List[Result];
-  v^[0] := xy^[0];
-  v^[1] := xy^[1];
-  v^[2] := Z;
+  v^.Coord[0] := xy^[0];
+  v^.Coord[1] := xy^[1];
+  v^.Coord[2] := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1846,7 +1846,7 @@ procedure TAffineVectorList.Scale(factor: Single);
 begin
   if (Count > 0) and (factor <> 1) then
   begin
-    ScaleFloatArray(@FList[0][0], Count * 3, factor);
+    ScaleFloatArray(@FList[0].Coord[0], Count * 3, factor);
     Inc(FRevision);
   end;
 end;
@@ -1928,11 +1928,11 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   PAffineVector(@FList[FCount - 3])^ := i1;
-  FList^[FCount - 3][3] := w;
+  FList^[FCount - 3].Coord[3] := w;
   PAffineVector(@FList[FCount - 2])^ := i2;
-  FList^[FCount - 2][3] := w;
+  FList^[FCount - 2].Coord[3] := w;
   PAffineVector(@FList[FCount - 1])^ := i3;
-  FList^[FCount - 1][3] := w;
+  FList^[FCount - 1].Coord[3] := w;
 end;
 
 // AddVector
@@ -3548,7 +3548,7 @@ end;
 
 function TQuaternionList.Add(const item: TAffineVector; w: Single): Integer;
 begin
-  Result := Add(QuaternionMake(item, w));
+  Result := Add(QuaternionMake(item.Coord, w));
 end;
 
 // Add

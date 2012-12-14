@@ -282,8 +282,8 @@ end;
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
 begin
    r:=VectorLength(v);
-   theta:=ArcTan2(v[1], v[0]);
-   phi:=ArcCos(v[2]/r);
+   theta:=ArcTan2(v.Coord[1], v.Coord[0]);
+   phi:=ArcCos(v.Coord[2]/r);
 end;
 
 // ----- Cartesian_Spherical ---------------------------------------------------

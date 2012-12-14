@@ -107,9 +107,9 @@ end;
 //
 procedure VectorToFMODVector(const aVector : TVector; var aFMODVector : TFSoundVector);
 begin
-   aFMODVector.x:=aVector[0];
-   aFMODVector.y:=aVector[1];
-   aFMODVector.z:=-aVector[2];
+   aFMODVector.x:=aVector.Coord[0];
+   aFMODVector.y:=aVector.Coord[1];
+   aFMODVector.z:=-aVector.Coord[2];
 end;
 
 // ------------------

@@ -6,6 +6,8 @@
    Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: used TLoadingImposterEvent
+                          as procedure instead of function with GLS_CPPB
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -14,6 +16,8 @@
       <li>28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
       <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               fixed BCB Compiler error "E2370 Simple type name expected"
       <li>07/05/04 - EG - Perspective distortion properly applied
       <li>06/05/04 - EG - Fixes, improvements, clean ups
       <li>04/05/04 - EG - Reworked architecture
@@ -112,14 +116,20 @@ type
     property Modulated: Boolean read FModulated write FModulated;
   end;
 
-  // Imposter loading events
-  //
-  TLoadingImposterEvent = function(Sender: TObject; impostoredObject:
-    TGLBaseSceneObject;
-    destImposter: TImposter): TGLBitmap32 of object;
-  TImposterLoadedEvent = procedure(Sender: TObject; impostoredObject:
-    TGLBaseSceneObject;
-    destImposter: TImposter) of object;
+   // Imposter loading events
+   //
+   {$IFDEF GLS_CPPB}
+   TLoadingImposterEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter; var result : TGLBitmap32) of object;
+   {$ELSE}
+   TLoadingImposterEvent = function (Sender : TObject; impostoredObject :
+     TGLBaseSceneObject;
+     destImposter : TImposter) : TGLBitmap32 of object;
+   {$ENDIF}
+
+   TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject :
+         TGLBaseSceneObject;
+         destImposter : TImposter) of object;
 
   // TImposterReference
   //
@@ -576,14 +586,14 @@ begin
       GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     mat := rci.PipelineTransformation.ModelViewMatrix;
-    FVx[0] := mat[0][0];
-    FVx[1] := mat[1][0];
-    FVx[2] := mat[2][0];
+    FVx.Coord[0] := mat.Coord[0].Coord[0];
+    FVx.Coord[1] := mat.Coord[1].Coord[0];
+    FVx.Coord[2] := mat.Coord[2].Coord[0];
     NormalizeVector(FVx);
 
-    FVy[0] := mat[0][1];
-    FVy[1] := mat[1][1];
-    FVy[2] := mat[2][1];
+    FVy.Coord[0] := mat.Coord[0].Coord[1];
+    FVy.Coord[1] := mat.Coord[1].Coord[1];
+    FVy.Coord[2] := mat.Coord[2].Coord[1];
     NormalizeVector(FVy);
     if impoPerspectiveCorrection in Builder.ImposterOptions then
     begin
@@ -621,7 +631,7 @@ procedure TImposter.Render(var rci: TRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 const
-  cQuadTexExtents: TVector = (0, 0, 1, 1);
+  cQuadTexExtents: TVector = (X:0; Y:0; Z:1; W:1);
 begin
   RenderQuad(cQuadTexExtents, objPos, size);
 end;
@@ -634,16 +644,16 @@ var
   pos: TVector;
 begin
   VectorCombine(objPos, FQuad[0], size, pos);
-  GL.TexCoord2f(texExtents[2], texExtents[3]);
+  GL.TexCoord2f(texExtents.Coord[2], texExtents.Coord[3]);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[1], size, pos);
-  GL.TexCoord2f(texExtents[0], texExtents[3]);
+  GL.TexCoord2f(texExtents.Coord[0], texExtents.Coord[3]);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[2], size, pos);
-  GL.TexCoord2f(texExtents[0], texExtents[1]);
+  GL.TexCoord2f(texExtents.Coord[0], texExtents.Coord[1]);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[3], size, pos);
-  GL.TexCoord2f(texExtents[2], texExtents[1]);
+  GL.TexCoord2f(texExtents.Coord[2], texExtents.Coord[1]);
   GL.Vertex3fv(@pos);
 end;
 
@@ -750,11 +760,15 @@ begin
     if (imp.ImpostoredObject <> nil) and (imp.Texture.Handle = 0) then
     begin
       if Assigned(FOnLoadingImposter) then
-        bmp32 := FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
+         {$IFDEF GLS_CPPB}
+            FOnLoadingImposter(Self, imp.ImpostoredObject, imp, bmp32)
+         {$ELSE}
+            bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
+         {$ENDIF}
       else
         bmp32 := nil;
-      if not Assigned(bmp32) then
-        DoPrepareImposter(rci, imp.ImpostoredObject, imp)
+		      if not Assigned(bmp32) then
+       DoPrepareImposter(rci, imp.ImpostoredObject, imp)
       else
       begin
         DoUserSpecifiedImposter(rci, imp, bmp32);
@@ -1178,10 +1192,10 @@ begin // inherited; exit;
 
   // determine closest corona
   bestCorona := siBuilder.Coronas.CoronaForElevationTangent(
-    localCameraPos[1] / VectorLength(localCameraPos[0], localCameraPos[2]));
+    localCameraPos.Coord[1] / VectorLength(localCameraPos.Coord[0], localCameraPos.Coord[2]));
 
   // determine closest sample in corona
-  azimuthAngle := FastArcTan2(localCameraPos[2], localCameraPos[0]) + cPI;
+  azimuthAngle := FastArcTan2(localCameraPos.Coord[2], localCameraPos.Coord[0]) + cPI;
   i := Round(azimuthAngle * bestCorona.Samples * cInv2PI);
   if i < 0 then
     i := 0
@@ -1189,13 +1203,13 @@ begin // inherited; exit;
     i := bestCorona.Samples - 1;
   i := bestCorona.FSampleBaseIndex + i;
 
-  tdx := siBuilder.FInvSamplesPerAxis[0];
-  tdy := siBuilder.FInvSamplesPerAxis[1];
+  tdx := siBuilder.FInvSamplesPerAxis.Coord[0];
+  tdy := siBuilder.FInvSamplesPerAxis.Coord[1];
   DivMod(i, siBuilder.SamplesPerAxis.X, y, x);
-  texExtents[0] := tdx * x;
-  texExtents[1] := tdy * y;
-  texExtents[2] := texExtents[0] + tdx;
-  texExtents[3] := texExtents[1] + tdy;
+  texExtents.Coord[0] := tdx * x;
+  texExtents.Coord[1] := tdy * y;
+  texExtents.Coord[2] := texExtents.Coord[0] + tdx;
+  texExtents.Coord[3] := texExtents.Coord[1] + tdy;
 
   // then render it
   RenderQuad(texExtents, objPos, Size);
@@ -1378,8 +1392,8 @@ begin
 
   FSamplesPerAxis.X := FTextureSize.X div SampleSize;
   FSamplesPerAxis.Y := FTextureSize.Y div SampleSize;
-  FInvSamplesPerAxis[0] := 1 / FSamplesPerAxis.X;
-  FInvSamplesPerAxis[1] := 1 / FSamplesPerAxis.Y;
+  FInvSamplesPerAxis.Coord[0] := 1 / FSamplesPerAxis.X;
+  FInvSamplesPerAxis.Coord[1] := 1 / FSamplesPerAxis.Y;
   Assert(FSamplesPerAxis.X * FSamplesPerAxis.Y >= Coronas.SampleCount,
     'User specified bitmap and imposter parameters don''t match');
 
@@ -1421,7 +1435,7 @@ begin
   if ImposterReference <> irCenter then
     radius := radius * 0.5;
 
-  Assert((rci.GLStates.ViewPort[2] >= SampleSize) and (rci.GLStates.ViewPort[3] >= SampleSize),
+  Assert((rci.GLStates.ViewPort.Coord[2] >= SampleSize) and (rci.GLStates.ViewPort.Coord[3] >= SampleSize),
     'ViewPort too small to render imposter samples!');
 
   // Setup the buffer in a suitable fashion for our needs
@@ -1431,13 +1445,13 @@ begin
     rci.GLStates.Disable(stLighting);
 
   rci.PipelineTransformation.Push;
-  fx := radius * rci.GLStates.ViewPort[2] / SampleSize;
-  fy := radius * rci.GLStates.ViewPort[3] / SampleSize;
+  fx := radius * rci.GLStates.ViewPort.Coord[2] / SampleSize;
+  fy := radius * rci.GLStates.ViewPort.Coord[3] / SampleSize;
   yOffset := cReferenceToPos[ImposterReference] * radius;
   rci.PipelineTransformation.ProjectionMatrix :=
     CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5);
-  xSrc := (rci.GLStates.ViewPort[2] - SampleSize) div 2;
-  ySrc := (rci.GLStates.ViewPort[3] - SampleSize) div 2;
+  xSrc := (rci.GLStates.ViewPort.Coord[2] - SampleSize) div 2;
+  ySrc := (rci.GLStates.ViewPort.Coord[3] - SampleSize) div 2;
 
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
@@ -1864,4 +1878,5 @@ initialization
   RegisterClasses([TGLImposter]);
 
 end.
+
 

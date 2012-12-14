@@ -6,6 +6,7 @@
   GLScene cross IDE generic classes collection.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>10/11/12 - PW - Added CPP compatibility: redeclared FOnChange: TNotifyEvent;
   <li>06/10/10 - Yar - Creation
   </ul></font>
 }
@@ -40,12 +41,14 @@ type
     type
     TListChangeEvent = procedure(Sender: TObject; const Item: T;
       Action: TListNotification) of object;
-    var
+//    var
   private
     FItems: array of T;
     FCount: Integer;
     FCapacity: Integer;
-    FOnChange: TListChangeEvent;
+//    FOnChange: TListChangeEvent;
+    FOnChange: TNotifyEvent;
+
   protected
     procedure SetCapacity(Value: Integer);
     procedure SetCount(Value: Integer);
@@ -72,7 +75,8 @@ type
     property ItemAddress[Index: Integer]: Pointer read GetItemAddress;
     property Capacity: Integer read FCapacity write SetCapacity;
     property Count: Integer read FCount write SetCount;
-    property OnChange: TListChangeEvent read FOnChange write FOnChange;
+//    property OnChange: TListChangeEvent read FOnChange write FOnChange;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   // GThreadList
@@ -292,8 +296,8 @@ end;
 
 procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Notify(const Item: T; Action: TListNotification);
 begin
-  if Assigned(FOnChange) then
-    FOnChange(Self, Item, Action);
+//  if Assigned(FOnChange) then FOnChange(Self, Item, Action);
+  if Assigned(FOnChange) then FOnChange(Self);
 end;
 
 function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Remove(AItem: T): Integer;

@@ -6,6 +6,7 @@
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>19/03/11 - Yar - Added setters for Low and High atmosphere colors
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -251,19 +252,19 @@ var
         intensity := intensity * contrib;
         alt := (VectorLength(atmPoint) - FPlanetRadius) * invAtmosphereHeight;
         VectorLerp(LowAtmColor.Color, HighAtmColor.Color, alt, altColor);
-        Result[0] := Result[0] * decay + altColor[0] * intensity;
-        Result[1] := Result[1] * decay + altColor[1] * intensity;
-        Result[2] := Result[2] * decay + altColor[2] * intensity;
+        Result.Coord[0] := Result.Coord[0] * decay + altColor.Coord[0] * intensity;
+        Result.Coord[1] := Result.Coord[1] * decay + altColor.Coord[1] * intensity;
+        Result.Coord[2] := Result.Coord[2] * decay + altColor.Coord[2] * intensity;
       end
       else
       begin
         // sample on the dark sid
-        Result[0] := Result[0] * decay;
-        Result[1] := Result[1] * decay;
-        Result[2] := Result[2] * decay;
+        Result.Coord[0] := Result.Coord[0] * decay;
+        Result.Coord[1] := Result.Coord[1] * decay;
+        Result.Coord[2] := Result.Coord[2] * decay;
       end;
     end;
-    Result[3] := n * contrib * Opacity * 0.1;
+    Result.Coord[3] := n * contrib * Opacity * 0.1;
   end;
 
 
@@ -300,7 +301,7 @@ begin
   if FSun <> nil then
   begin
     Assert(FAtmosphereRadius > FPlanetRadius);
-    
+
     sunPos := VectorSubtract(FSun.AbsolutePosition, AbsolutePosition);
     eyepos := VectorSubtract(rci.CameraPosition, AbsolutePosition);
 
@@ -418,10 +419,10 @@ end;
 
 function TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result[0] := FAtmosphereRadius;
-  Result[1] := Result[0];
-  Result[2] := Result[0];
-  Result[3] := 0;
+  Result.Coord[0] := FAtmosphereRadius;
+  Result.Coord[1] := Result.Coord[0];
+  Result.Coord[2] := Result.Coord[0];
+  Result.Coord[3] := 0;
 end;
 
 procedure TGLCustomAtmosphere.Notification(AComponent: TComponent;

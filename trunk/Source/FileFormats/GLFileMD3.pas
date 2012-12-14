@@ -6,8 +6,10 @@
               FreeForms and Actors.
 
   History :
-    21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
-    28/02/03 - SG - Creation
+    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+    <li>21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
+    <li>28/02/03 - SG - Creation
 }
 unit GLFileMD3;
 
@@ -63,9 +65,9 @@ var
     // The MD3 normal is a latitude/longitude value that needs
     // to be calculated into cartesian space.
     lat:=(n[1])*(2*pi)/255; lng:=(n[0])*(2*pi)/255;
-    result[0]:=cos(lat)*sin(lng);
-    result[1]:=sin(lat)*sin(lng);
-    result[2]:=cos(lng);
+    result.Coord[0]:=cos(lat)*sin(lng);
+    result.Coord[1]:=sin(lat)*sin(lng);
+    result.Coord[2]:=cos(lng);
   end;
 
   procedure AllocateMaterial(meshname:string);
@@ -101,15 +103,15 @@ begin
           // Get the vertex indices and texture coordinates
           for j:=0 to MeshData[i].MeshHeader.numTriangles-1 do begin
             with MeshData[i].Triangles[j] do begin
-              Add(vertexIndices[0],
-                  MeshData[i].TexCoords[vertexIndices[0]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[0]].textureCoord[1]);
-              Add(vertexIndices[2],
-                  MeshData[i].TexCoords[vertexIndices[2]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[2]].textureCoord[1]);
-              Add(vertexIndices[1],
-                  MeshData[i].TexCoords[vertexIndices[1]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[1]].textureCoord[1]);
+              Add(vertexIndices.Coord[0],
+                  MeshData[i].TexCoords[vertexIndices.Coord[0]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[0]].textureCoord.Coord[1]);
+              Add(vertexIndices.Coord[2],
+                  MeshData[i].TexCoords[vertexIndices.Coord[2]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[2]].textureCoord.Coord[1]);
+              Add(vertexIndices.Coord[1],
+                  MeshData[i].TexCoords[vertexIndices.Coord[1]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[1]].textureCoord.Coord[1]);
             end;
           end;
         end;
@@ -122,11 +124,11 @@ begin
           morphTarget.Vertices.Capacity:=numVerts;
           for k:=numVerts*j to numVerts*(j+1)-1 do begin
             morphTarget.Vertices.Add(
-              MeshData[i].Vertices[k].Vertex[0]/64,
-              MeshData[i].Vertices[k].Vertex[1]/64,
-              MeshData[i].Vertices[k].Vertex[2]/64);
+              MeshData[i].Vertices[k].Vertex.Coord[0]/64,
+              MeshData[i].Vertices[k].Vertex.Coord[1]/64,
+              MeshData[i].Vertices[k].Vertex.Coord[2]/64);
             morphTarget.Normals.Add(
-              GetNormalFromMD3Normal(MeshData[i].Vertices[k].normal));
+              GetNormalFromMD3Normal(MeshData[i].Vertices[k].normal.Coord));
           end;
         end;
       end;

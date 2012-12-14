@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with records
       <li>01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
       <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
@@ -25,6 +26,7 @@
       <li>09/03/05 - EG - Fixed space width during rendering
       <li>12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
       <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/06/04 - NelC - Added TGLFlatText.Assign
       <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
@@ -1091,16 +1093,16 @@ begin
   CheckTexture(ARci);
   // precalcs
   if Assigned(aPosition) then
-    MakePoint(vTopLeft, aPosition[0] + AlignmentAdjustement(1), aPosition[1] + LayoutAdjustement, 0)
+    MakePoint(vTopLeft, aPosition.Coord[0] + AlignmentAdjustement(1), aPosition.Coord[1] + LayoutAdjustement, 0)
   else
     MakePoint(vTopLeft, AlignmentAdjustement(1), LayoutAdjustement, 0);
   deltaV := -(CharHeight + VSpace);
   if aReverseY then
-    vBottomRight[1] := vTopLeft[1] + CharHeight
+    vBottomRight.Coord[1] := vTopLeft.Coord[1] + CharHeight
   else
-    vBottomRight[1] := vTopLeft[1] - CharHeight;
-  vBottomRight[2] := 0;
-  vBottomRight[3] := 1;
+    vBottomRight.Coord[1] := vTopLeft.Coord[1] - CharHeight;
+  vBottomRight.Coord[2] := 0;
+  vBottomRight.Coord[3] := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
   with ARci.GLStates do
@@ -1123,16 +1125,16 @@ begin
       #13:
         begin
           if Assigned(aPosition) then
-            vTopLeft[0] := aPosition[0] + AlignmentAdjustement(i + 1)
+            vTopLeft.Coord[0] := aPosition.Coord[0] + AlignmentAdjustement(i + 1)
           else
-            vTopLeft[0] := AlignmentAdjustement(i + 1);
-          vTopLeft[1] := vTopLeft[1] + deltaV;
+            vTopLeft.Coord[0] := AlignmentAdjustement(i + 1);
+          vTopLeft.Coord[1] := vTopLeft.Coord[1] + deltaV;
           if aReverseY then
-            vBottomRight[1] := vTopLeft[1] + CharHeight
+            vBottomRight.Coord[1] := vTopLeft.Coord[1] + CharHeight
           else
-            vBottomRight[1] := vTopLeft[1] - CharHeight;
+            vBottomRight.Coord[1] := vTopLeft.Coord[1] - CharHeight;
         end;
-      #32: vTopLeft[0] := vTopLeft[0] + spaceDeltaH;
+      #32: vTopLeft.Coord[0] := vTopLeft.Coord[0] + spaceDeltaH;
     else
       chi := CharacterToTileIndex(currentChar);
       if chi < 0 then continue; //not found
@@ -1141,21 +1143,21 @@ begin
       with GL do
       begin
         GetICharTexCoords(ARci, chi, topLeft, bottomRight);
-        vBottomRight[0] := vTopLeft[0] + pch.w;
+        vBottomRight.Coord[0] := vTopLeft.Coord[0] + pch.w;
 
         TexCoord2fv(@topLeft);
         Vertex4fv(@vTopLeft);
 
         TexCoord2f(topLeft.S, bottomRight.T);
-        Vertex2f(vTopLeft[0], vBottomRight[1]);
+        Vertex2f(vTopLeft.Coord[0], vBottomRight.Coord[1]);
 
         TexCoord2fv(@bottomRight);
         Vertex4fv(@vBottomRight);
 
         TexCoord2f(bottomRight.S, topLeft.T);
-        Vertex2f(vBottomRight[0], vTopLeft[1]);
+        Vertex2f(vBottomRight.Coord[0], vTopLeft.Coord[1]);
 
-        vTopLeft[0] := vTopLeft[0] + pch.w + HSpace;
+        vTopLeft.Coord[0] := vTopLeft.Coord[0] + pch.w + HSpace;
       end;
     end;
   end;
@@ -1173,10 +1175,10 @@ procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo;
 var
   v: TVector;
 begin
-  v[0] := x;
-  v[1] := y;
-  v[2] := 0;
-  v[3] := 1;
+  v.Coord[0] := x;
+  v.Coord[1] := y;
+  v.Coord[2] := 0;
+  v.Coord[3] := 1;
   RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
 end;
 

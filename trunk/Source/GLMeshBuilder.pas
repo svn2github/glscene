@@ -33,9 +33,9 @@ implementation
 Function  VectorCombineWeighted(Position,Scale : TAffineVector; X, Y, Z : Single) : TAffineVector;
 
 Begin
-  Result[0]:= position[0]+Scale[0]*X;
-  Result[1]:= position[1]+Scale[1]*Y;
-  Result[2]:= position[2]+Scale[2]*Z;
+  Result.Coord[0]:= position.Coord[0]+Scale.Coord[0]*X;
+  Result.Coord[1]:= position.Coord[1]+Scale.Coord[1]*Y;
+  Result.Coord[2]:= position.Coord[2]+Scale.Coord[2]*Z;
 End;
 
 Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);

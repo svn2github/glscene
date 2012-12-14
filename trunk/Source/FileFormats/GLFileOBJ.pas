@@ -9,9 +9,13 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
  <b>History : </b><font size=-1><ul>
+
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+
       <li>26/06/12 - YP - Split groups in their own mesh instead of a new facegroup
                           (see globale var vGLFileOBJ_SplitMesh, enabled by default)
       <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
+
       <li>30/06/11 - DaStr - Added ability to assign meshes
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>04/03/10 - DanB - Now uses CharInSet
@@ -734,7 +738,7 @@ var
     while (FLine <> '') and (i < 4) do
     begin
       f := NextToken(FLine, ' ');
-      Val(f, hv[i], c);
+      Val(f, hv.Coord[i], c);
       if c <> 0 then
         Error(Format('''%s'' is not a valid floating-point constant.', [f]));
       Inc(i);
@@ -752,7 +756,7 @@ var
     while (FLine <> '') and (i < 3) do
     begin
       f := NextToken(FLine, ' ');
-      Val(f, av[i], c);
+      Val(f, av.Coord[i], c);
       if c <> 0 then
         Error(Format('''%s'' is not a valid floating-point constant.', [f]));
       inc(i);
@@ -1052,17 +1056,17 @@ begin
       if command = 'V' then
       begin
         ReadHomogeneousVector;
-        Mesh.Vertices.Add(hv[0], hv[1], hv[2]);
+        Mesh.Vertices.Add(hv.Coord[0], hv.Coord[1], hv.Coord[2]);
       end
       else if command = 'VT' then
       begin
         ReadAffineVector;
-        Mesh.TexCoords.Add(av[0], av[1], 0);
+        Mesh.TexCoords.Add(av.Coord[0], av.Coord[1], 0);
       end
       else if command = 'VN' then
       begin
         ReadAffineVector;
-        Mesh.Normals.Add(av[0], av[1], av[2]);
+        Mesh.Normals.Add(av.Coord[0], av.Coord[1], av.Coord[2]);
       end
       else if command = 'VP' then
       begin
@@ -1179,7 +1183,9 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('v %g %g %g', [List^[i][0], List^[i][1], List^[i][2]]);
+          s := Format('v %g %g %g', [List^[i].Coord[0],
+                                     List^[i].Coord[1],
+                                     List^[i].Coord[2]]);
           Writeln(s);
         end;
         Inc(n, Count);
@@ -1202,7 +1208,9 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vn %g %g %g', [List^[i][0], List^[i][1], List^[i][2]]);
+          s := Format('vn %g %g %g', [List^[i].Coord[0],
+                                      List^[i].Coord[1],
+                                      List^[i].Coord[2]]);
           Writeln(s);
         end;
         Inc(n, Count);
@@ -1225,7 +1233,7 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vt %g %g', [List^[i][0], List^[i][1]]);
+          s := Format('vt %g %g', [List^[i].Coord[0], List^[i].Coord[1]]);
           Writeln(s);
         end;
         Inc(n, Count);
@@ -1440,7 +1448,7 @@ begin
       Result := NullHmgVector;
       for i := 0 to 3 do
         if sl.Count > i then
-          Result[i] := GLUtils.StrToFloatDef(sl[i], 0)
+          Result.Coord[i] := GLUtils.StrToFloatDef(sl[i], 0)
         else
           Break;
     end

@@ -7,10 +7,13 @@
    Allows re-routing file reads to reads from a single archive file f.i.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>25/08/10 - DaStr - Fixed compiler warnings 
+      <li>10/11/12 - PW - Added CPPB compatibility: used TAFIOFileStreamEvent as procedure
+                     instead of function for GLS_CPPB
+      <li>25/08/10 - DaStr - Fixed compiler warnings
       <li>25/07/10 - Yar - Added TGLSResourceStream class and CreateResourceStream string
       <li>23/01/10 - Yar - Change LoadFromStream to dynamic
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+      <li>02/08/04 - LR, YHC - BCB corrections: fixed BCB Compiler error "E2370 Simple type name expected"
       <li>05/06/03 - EG - TDataFile moved in from GLMisc
       <li>31/01/03 - EG - Added FileExists mechanism
       <li>21/11/02 - EG - Creation
@@ -61,7 +64,11 @@ type
 
   // TAFIOFileStreamEvent
   //
-  TAFIOFileStreamEvent = function(const fileName: string; mode: Word): TStream of object;
+  {$IFDEF GLS_CPPB}
+   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
+  {$ELSE}
+   TAFIOFileStreamEvent = function (const fileName : String; mode : Word) : TStream of object;
+  {$ENDIF}
 
   // TAFIOFileStreamExistsEvent
   //
@@ -197,17 +204,19 @@ begin
     Result := vAFIOCreateFileStream(fileName, mode)
   else
   begin
-    Result := nil;
-    if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
-      Result := vAFIO.FOnFileStream(fileName, mode);
-    if not Assigned(Result) then
-    begin
-      if ((mode and fmCreate) = fmCreate) or FileExists(fileName) then
-        Result := TFileStream.Create(fileName, mode)
-      else
-        raise Exception.Create('File not found: "' + fileName + '"');
-    end;
-  end;
+      Result:=nil;
+      if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
+         {$IFDEF GLS_CPPB}
+         vAFIO.FOnFileStream(fileName, mode, Result);
+         {$ELSE}
+         Result:=vAFIO.FOnFileStream(fileName, mode);
+         {$ENDIF}
+      if not Assigned(Result) then begin
+         if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
+            Result:=TFileStream.Create(fileName, mode)
+         else raise Exception.Create('File not found: "'+fileName+'"');
+      end;
+   end;
 end;
 
 // FileStreamExists
@@ -242,7 +251,7 @@ var
     FPResource := FindResource(HInstance, PChar(ResName), ResType);
     Result := FPResource <> 0;
   end;
-  {$endif}
+  {$ENDIF}
 {$ENDIF}
 begin
   Result := nil;
@@ -256,7 +265,7 @@ begin
   {$ifndef ver2_2}
   else if IsResourceExist then
     Result := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource)
-  {$endif}
+  {$ENDIF}
 {$ENDIF}
   else
     GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));
@@ -283,6 +292,7 @@ begin
   vAFIO := nil;
   inherited Destroy;
 end;
+
 
 // ------------------
 // ------------------ TDataFile ------------------

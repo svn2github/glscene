@@ -6,12 +6,14 @@
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
       <li>17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
       <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
                              CCilinder (ode 0.8) with Capsule(ode 0.9))
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>04/12/03 - SG - Creation.
    </ul></font>
 }
@@ -182,10 +184,10 @@ begin
   inherited;
   if Assigned(FGeom) then begin
     Mat:=GlobalMatrix;
-    dGeomSetPosition(FGeom,Mat[3][0],Mat[3][1],Mat[3][2]);
-    R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-    R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-    R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+    dGeomSetPosition(FGeom,Mat.Coord[3].Coord[0],Mat.Coord[3].Coord[1],Mat.Coord[3].Coord[2]);
+    R[0]:=Mat.Coord[0].Coord[0]; R[1]:=Mat.Coord[1].Coord[0]; R[2]:= Mat.Coord[2].Coord[0]; R[3]:= 0;
+    R[4]:=Mat.Coord[0].Coord[1]; R[5]:=Mat.Coord[1].Coord[1]; R[6]:= Mat.Coord[2].Coord[1]; R[7]:= 0;
+    R[8]:=Mat.Coord[0].Coord[2]; R[9]:=Mat.Coord[1].Coord[2]; R[10]:=Mat.Coord[2].Coord[2]; R[11]:=0;
     dGeomSetRotation(FGeom,R);
   end;
 end;

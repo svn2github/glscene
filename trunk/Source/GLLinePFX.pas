@@ -6,6 +6,7 @@
    A PFX whose particles are lines
 
    <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -153,8 +154,8 @@ begin
    inherited;
    GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0];
-      Fvy[i]:=matrix[i][1];
+      Fvx.Coord[i]:=matrix.Coord[i].Coord[0];
+      Fvy.Coord[i]:=matrix.Coord[i].Coord[1];
    end;
    FNvx:=VectorNormalize(Fvx);
    FNvy:=VectorNormalize(Fvy);
@@ -200,13 +201,13 @@ begin
       GL.Color4fv(@inner);
       GL.Vertex3fv(@start);
       GL.Color4fv(@outer);
-      GL.Vertex3f(start[0]+dv[0], start[1]+dv[1], start[2]+dv[2]);
-      GL.Vertex3f(stop[0]+dv[0], stop[1]+dv[1], stop[2]+dv[2]);
+      GL.Vertex3f(start.Coord[0]+dv.Coord[0], start.Coord[1]+dv.Coord[1], start.Coord[2]+dv.Coord[2]);
+      GL.Vertex3f(stop.Coord[0]+dv.Coord[0], stop.Coord[1]+dv.Coord[1], stop.Coord[2]+dv.Coord[2]);
       GL.Color4fv(@inner);
       GL.Vertex3fv(@stop);
       GL.Color4fv(@outer);
-      GL.Vertex3f(stop[0]-dv[0], stop[1]-dv[1], stop[2]-dv[2]);
-      GL.Vertex3f(start[0]-dv[0], start[1]-dv[1], start[2]-dv[2]);
+      GL.Vertex3f(stop.Coord[0]-dv.Coord[0], stop.Coord[1]-dv.Coord[1], stop.Coord[2]-dv.Coord[2]);
+      GL.Vertex3f(start.Coord[0]-dv.Coord[0], start.Coord[1]-dv.Coord[1], start.Coord[2]-dv.Coord[2]);
    GL.End_;
 end;
 

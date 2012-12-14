@@ -439,7 +439,7 @@ begin
   if FWindowHandle <> 0 then
   begin
     envVal := '';
-{$IFDEF WIN32}
+{$IFDEF MSWINDOWS}
     SDL_putenv('SDL_VIDEODRIVER=windib');
     envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
 {$ELSE} // Not Windows.

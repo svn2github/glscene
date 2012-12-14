@@ -128,7 +128,7 @@ begin
   gluTessCallback(tess, GLU_TESS_COMBINE, @DoTessCombine);
 
   if Assigned(normal) then
-    gluTessNormal(tess, normal^[0], normal^[1], normal^[2])
+    gluTessNormal(tess, normal^.Coord[0], normal^.Coord[1], normal^.Coord[2])
   else
     gluTessNormal(tess, 0, 1, 0);
 

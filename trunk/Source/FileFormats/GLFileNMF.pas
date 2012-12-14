@@ -99,8 +99,8 @@ begin
       for j:=0 to 2 do begin
         nmf.RawTriangles[i].vert[j]:=Vertices[3*i+j];
         nmf.RawTriangles[i].norm[j]:=Normals[3*i+j];
-        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j][0];
-        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j][1];
+        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j].Coord[0];
+        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j].Coord[1];
       end;
     end;
     nmf.SaveToStream(aStream);

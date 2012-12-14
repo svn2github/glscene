@@ -923,12 +923,12 @@ begin
         end;
 
         GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
-        vx[0] := mat[0][0];
-        vy[0] := mat[0][1];
-        vx[1] := mat[1][0];
-        vy[1] := mat[1][1];
-        vx[2] := mat[2][0];
-        vy[2] := mat[2][1];
+        vx.Coord[0] := mat.Coord[0].Coord[0];
+        vy.Coord[0] := mat.Coord[0].Coord[1];
+        vx.Coord[1] := mat.Coord[1].Coord[0];
+        vy.Coord[1] := mat.Coord[1].Coord[1];
+        vx.Coord[2] := mat.Coord[2].Coord[0];
+        vy.Coord[2] := mat.Coord[2].Coord[1];
         ScaleVector(vx, w * VectorLength(vx));
         ScaleVector(vy, h * VectorLength(vy));
 
@@ -952,17 +952,20 @@ begin
         begin
           GL.MatrixMode(GL_MODELVIEW);
           GL.PushMatrix;
-          GL.Rotatef(FRotation, mat[0][2], mat[1][2], mat[2][2]);
+          GL.Rotatef(FRotation, mat.Coord[0].Coord[2], mat.Coord[1].Coord[2], mat.Coord[2].Coord[2]);
         end;
         GL.Begin_(GL_QUADS);
         GL.TexCoord2f(u1, v1);
-        GL.Vertex3f(vx[0] + vy[0], vx[1] + vy[1], vx[2] + vy[2]);
+        GL.Vertex3f(vx.Coord[0] + vy.Coord[0], vx.Coord[1] + vy.Coord[1],
+                    vx.Coord[2] + vy.Coord[2]);
         GL.TexCoord2f(u0, v1);
-        GL.Vertex3f(-vx[0] + vy[0], -vx[1] + vy[1], -vx[2] + vy[2]);
+        GL.Vertex3f(-vx.Coord[0] + vy.Coord[0],
+                    -vx.Coord[1] + vy.Coord[1],
+                    -vx.Coord[2] + vy.Coord[2]);
         GL.TexCoord2f(u0, v0);
-        GL.Vertex3f(-vx[0] - vy[0], -vx[1] - vy[1], -vx[2] - vy[2]);
+        GL.Vertex3f(-vx.Coord[0] - vy.Coord[0], -vx.Coord[1] - vy.Coord[1], -vx.Coord[2] - vy.Coord[2]);
         GL.TexCoord2f(u1, v0);
-        GL.Vertex3f(vx[0] - vy[0], vx[1] - vy[1], vx[2] - vy[2]);
+        GL.Vertex3f(vx.Coord[0] - vy.Coord[0], vx.Coord[1] - vy.Coord[1], vx.Coord[2] - vy.Coord[2]);
         GL.End_;
         if FRotation <> 0 then
         begin

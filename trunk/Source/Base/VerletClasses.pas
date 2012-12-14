@@ -11,6 +11,7 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>25/11/09 - DanB - Fix for TVerletGlobalConstraint.TranslateKickbackTorque
       <li>31/03/07 - DaStr - Added $I GLScene.inc
       <li>14/04/04 - MF - Fixed force for springs, was referring to deltaP...
@@ -1701,9 +1702,9 @@ end;
 constructor TVFGravity.Create(const aOwner : TVerletWorld);
 begin
    inherited;
-   FGravity[0]:=0;
-   FGravity[1]:=-9.81;
-   FGravity[2]:=0;
+   FGravity.Coord[0]:=0;
+   FGravity.Coord[1]:=-9.81;
+   FGravity.Coord[2]:=0;
 end;
 
 // AddForceToNode
@@ -1775,9 +1776,9 @@ begin
   if FWindMagnitude<>0 then
   begin
     Chaos := FWindMagnitude * FWindChaos;
-    FCurrentWindBurst[0] := FWindDirection[0] * FWindMagnitude + Chaos * (random-0.5) * 2;
-    FCurrentWindBurst[1] := FWindDirection[1] * FWindMagnitude + Chaos * (random-0.5) * 2;
-    FCurrentWindBurst[2] := FWindDirection[2] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.Coord[0] := FWindDirection.Coord[0] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.Coord[1] := FWindDirection.Coord[1] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.Coord[2] := FWindDirection.Coord[2] * FWindMagnitude + Chaos * (random-0.5) * 2;
 
     s := VectorSubtract(s, FCurrentWindBurst);
   end;
@@ -1799,9 +1800,9 @@ begin
   inherited;
 
   FDragCoeff := 0.001;
-  FWindDirection[0] := 0;
-  FWindDirection[1] := 0;
-  FWindDirection[2] := 0;
+  FWindDirection.Coord[0] := 0;
+  FWindDirection.Coord[1] := 0;
+  FWindDirection.Coord[2] := 0;
   FWindMagnitude := 0;
   FWindChaos := 0;
 end;
@@ -1922,7 +1923,7 @@ var
    f, r : Single;
    deltaLength, diff : Single;
 const
-   cDefaultDelta : TAffineVector = (0.01, 0, 0);
+   cDefaultDelta : TAffineVector = (X:0.01; Y:0; Z:0);
 begin
    Assert((NodeA<>NodeB), 'The nodes are identical - that causes division by zero!');
 
@@ -1999,9 +2000,9 @@ begin
    natZ:=NullVector;
    for i:=0 to Nodes.Count-1 do begin
       delta:=VectorSubtract(Nodes[i].Location, barycenter);
-      CombineVector(natX, delta, FNodeParams[i][0]);
-      CombineVector(natY, delta, FNodeParams[i][1]);
-      CombineVector(natZ, delta, FNodeParams[i][2]);
+      CombineVector(natX, delta, FNodeParams[i].Coord[0]);
+      CombineVector(natY, delta, FNodeParams[i].Coord[1]);
+      CombineVector(natZ, delta, FNodeParams[i].Coord[2]);
    end;
 end;
 
@@ -2021,18 +2022,18 @@ begin
    for i:=0 to Nodes.Count-1 do begin
       FNodeCoords[i]:=VectorSubtract(Nodes[i].Location, barycenter);
       d:=Nodes[i].Weight/VectorLength(FNodeCoords[i]);
-      FNodeParams[i][0]:=FNodeCoords[i][0]*d;
-      FNodeParams[i][1]:=FNodeCoords[i][1]*d;
-      FNodeParams[i][2]:=FNodeCoords[i][2]*d;
+      FNodeParams[i].Coord[0]:=FNodeCoords[i].Coord[0]*d;
+      FNodeParams[i].Coord[1]:=FNodeCoords[i].Coord[1]*d;
+      FNodeParams[i].Coord[2]:=FNodeCoords[i].Coord[2]*d;
    end;
 
-   ComputeNaturals(barycenter, FNatMatrix[0], FNatMatrix[1], FNatMatrix[2]);
+   ComputeNaturals(barycenter, FNatMatrix.Coord[0], FNatMatrix.Coord[1], FNatMatrix.Coord[2]);
 
-   FNatMatrix[2]:=VectorCrossProduct(FNatMatrix[0], FNatMatrix[1]);
-   FNatMatrix[1]:=VectorCrossProduct(FNatMatrix[2], FNatMatrix[0]);
-   NormalizeVector(FNatMatrix[0]);
-   NormalizeVector(FNatMatrix[1]);
-   NormalizeVector(FNatMatrix[2]);   
+   FNatMatrix.Coord[2]:=VectorCrossProduct(FNatMatrix.Coord[0], FNatMatrix.Coord[1]);
+   FNatMatrix.Coord[1]:=VectorCrossProduct(FNatMatrix.Coord[2], FNatMatrix.Coord[0]);
+   NormalizeVector(FNatMatrix.Coord[0]);
+   NormalizeVector(FNatMatrix.Coord[1]);
+   NormalizeVector(FNatMatrix.Coord[2]);
 
    FInvNatMatrix:=FNatMatrix;
 //   TransposeMatrix(FInvNatMatrix);
@@ -2088,7 +2089,7 @@ begin
    nrjAdjust:=NullVector;
    for i:=0 to Nodes.Count-1 do begin
       delta:=VectorCombine3(natural[0], natural[1], natural[2],
-                            FNodeCoords[i][0], FNodeCoords[i][1], FNodeCoords[i][2]);
+                            FNodeCoords[i].Coord[0], FNodeCoords[i].Coord[1], FNodeCoords[i].Coord[2]);
       deltas[i]:=VectorSubtract(VectorAdd(barycenter, delta), Nodes[i].Location);
       nrjAdjust:=VectorAdd(nrjBase, VectorCrossProduct(VectorSubtract(Nodes[i].Location, barycenter),
                                                        deltas[i]));
@@ -2304,7 +2305,7 @@ var
     x := (x-0.5)*2;
     y := (y-0.5)*2;
     z := (z-0.5)*2;
-    MakeVector(Corners[CornerID], FHalfSides[0]*x, FHalfSides[1]*y, FHalfSides[2]*z);
+    MakeVector(Corners[CornerID], FHalfSides.Coord[0]*x, FHalfSides.Coord[1]*y, FHalfSides.Coord[2]*z);
     AddVector(Corners[CornerID], FLocation);
   end;
 
@@ -2324,9 +2325,9 @@ var
 
     CenteraEdge := VectorSubtract(aEdgeClosest, FLocation);
 
-    if (abs(CenteraEdge[0])<FHalfSides[0]) and
-       (abs(CenteraEdge[1])<FHalfSides[1]) and
-       (abs(CenteraEdge[2])<FHalfSides[2]) then
+    if (abs(CenteraEdge.Coord[0])<FHalfSides.Coord[0]) and
+       (abs(CenteraEdge.Coord[1])<FHalfSides.Coord[1]) and
+       (abs(CenteraEdge.Coord[2])<FHalfSides.Coord[2]) then
     begin
       // The distance to move the edge is the difference between CenterCubeEdge and
       // CenteraEdge
@@ -2351,14 +2352,14 @@ begin
 
   // If both edges are on the same side of _any_ box side, the edge can't
   // cut the box
-  if ((EdgeRelative[0][0]> FHalfSides[0]) and (EdgeRelative[1][0] >FHalfSides[0])) or
-     ((EdgeRelative[0][0]<-FHalfSides[0]) and (EdgeRelative[1][0]<-FHalfSides[0])) or
+  if ((EdgeRelative[0].Coord[0]> FHalfSides.Coord[0]) and (EdgeRelative[1].Coord[0] >FHalfSides.Coord[0])) or
+     ((EdgeRelative[0].Coord[0]<-FHalfSides.Coord[0]) and (EdgeRelative[1].Coord[0]<-FHalfSides.Coord[0])) or
 
-     ((EdgeRelative[0][1]> FHalfSides[1]) and (EdgeRelative[1][1]> FHalfSides[1])) or
-     ((EdgeRelative[0][1]<-FHalfSides[1]) and (EdgeRelative[1][1]<-FHalfSides[1])) or
+     ((EdgeRelative[0].Coord[1]> FHalfSides.Coord[1]) and (EdgeRelative[1].Coord[1]> FHalfSides.Coord[1])) or
+     ((EdgeRelative[0].Coord[1]<-FHalfSides.Coord[1]) and (EdgeRelative[1].Coord[1]<-FHalfSides.Coord[1])) or
 
-     ((EdgeRelative[0][2]> FHalfSides[2]) and (EdgeRelative[1][2]> FHalfSides[2])) or
-     ((EdgeRelative[0][2]<-FHalfSides[2]) and (EdgeRelative[1][2]<-FHalfSides[2])) then
+     ((EdgeRelative[0].Coord[2]> FHalfSides.Coord[2]) and (EdgeRelative[1].Coord[2]> FHalfSides.Coord[2])) or
+     ((EdgeRelative[0].Coord[2]<-FHalfSides.Coord[2]) and (EdgeRelative[1].Coord[2]<-FHalfSides.Coord[2])) then
   begin
     exit;
   end;
@@ -2425,34 +2426,34 @@ begin
 
    p:=VectorSubtract(aNode.FLocation, FLocation);
 
-   absP[0]:=FHalfSides[0]-Abs(p[0]);
-   absP[1]:=FHalfSides[1]-Abs(p[1]);
-   absP[2]:=FHalfSides[2]-Abs(p[2]);
+   absP.Coord[0]:=FHalfSides.Coord[0]-Abs(p.Coord[0]);
+   absP.Coord[1]:=FHalfSides.Coord[1]-Abs(p.Coord[1]);
+   absP.Coord[2]:=FHalfSides.Coord[2]-Abs(p.Coord[2]);
 
-   if (PInteger(@absP[0])^<=0) or (PInteger(@absP[1])^<=0) or(PInteger(@absP[2])^<=0) then
+   if (PInteger(@absP.Coord[0])^<=0) or (PInteger(@absP.Coord[1])^<=0) or(PInteger(@absP.Coord[2])^<=0) then
       Exit;
 
-   if absP[0]<absP[1] then
-      if absP[0]<absP[2] then
+   if absP.Coord[0]<absP.Coord[1] then
+      if absP.Coord[0]<absP.Coord[2] then
          smallestSide:=0
       else smallestSide:=2
-   else if absP[1]<absP[2] then
+   else if absP.Coord[1]<absP.Coord[2] then
       smallestSide:=1
    else smallestSide:=2;
 
    contactNormal:=NullVector;
 
    // Only move along the "shortest" axis
-   if PInteger(@p[smallestSide])^>=0 then begin
-      dp:=absP[smallestSide];
-      contactNormal[smallestSide]:=1;
+   if PInteger(@p.Coord[smallestSide])^>=0 then begin
+      dp:=absP.Coord[smallestSide];
+      contactNormal.Coord[smallestSide]:=1;
       aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
-      aNode.FLocation[smallestSide]:=aNode.FLocation[smallestSide]+dp;
+      aNode.FLocation.Coord[smallestSide]:=aNode.FLocation.Coord[smallestSide]+dp;
    end else begin
-      dp:=absP[smallestSide];
-      contactNormal[smallestSide]:=-1;
+      dp:=absP.Coord[smallestSide];
+      contactNormal.Coord[smallestSide]:=-1;
       aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
-      aNode.FLocation[smallestSide]:=aNode.FLocation[smallestSide]-dp;
+      aNode.FLocation.Coord[smallestSide]:=aNode.FLocation.Coord[smallestSide]-dp;
    end;
 
    aNode.FChangedOnStep:=Owner.CurrentStepCount;

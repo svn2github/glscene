@@ -80,28 +80,28 @@ begin
   rci.GLStates.LineWidth := w;
 
   GL.Begin_(GL_LINE_STRIP);
-  GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.min[2]);
-  GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.min[2]);
-  GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.min[2]);
-  GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.min[2]);
-  GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.min[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
 
-  GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.max[2]);
-  GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.max[2]);
-  GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.max[2]);
-  GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.max[2]);
-  GL.Vertex3f(AABB.min[0], AABB.min[1], AABB.max[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
   GL.End_;
 
   GL.Begin_(GL_LINES);
-  GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.min[2]);
-  GL.Vertex3f(AABB.min[0], AABB.max[1], AABB.max[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.min.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
 
-  GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.min[2]);
-  GL.Vertex3f(AABB.max[0], AABB.max[1], AABB.max[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
 
-  GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.min[2]);
-  GL.Vertex3f(AABB.max[0], AABB.min[1], AABB.max[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
+  GL.Vertex3f(AABB.max.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
   GL.End_;
 end;
 

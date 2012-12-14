@@ -349,12 +349,12 @@ begin
      alListenerfv(AL_POSITION, PALfloat(@pos));
      alListenerfv(AL_VELOCITY, PALfloat(@vel));
 
-     dirUp[0]:= dir[0];
-     dirUp[1]:= dir[1];
-     dirUp[2]:= dir[2];
-     dirUp[3]:= up[0];
-     dirUp[4]:= up[1];
-     dirUp[5]:= up[2];
+     dirUp[0]:= dir.Coord[0];
+     dirUp[1]:= dir.Coord[1];
+     dirUp[2]:= dir.Coord[2];
+     dirUp[3]:= up.Coord[0];
+     dirUp[4]:= up.Coord[1];
+     dirUp[5]:= up.Coord[2];
      alListenerfv(AL_ORIENTATION, PALfloat(@dirUp));
 
      inherited;

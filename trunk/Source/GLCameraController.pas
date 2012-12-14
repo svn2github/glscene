@@ -703,7 +703,7 @@ begin
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
       FJobList.FController.FCameraTarget.AbsolutePosition,
-      FRotateSpeed[0] * FDeltaTime, FRotateSpeed[1] * FDeltaTime);
+      FRotateSpeed.Coord[0] * FDeltaTime, FRotateSpeed.Coord[1] * FDeltaTime);
   end
     else
   begin
@@ -786,7 +786,7 @@ begin
     tempDir := FInitialDir;
     RotateVector(tempDir, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
     FJobList.FController.FCamera.AbsoluteDirection := tempDir;
-    
+
     //Compute Up Vector
     tempUp := FInitialUp;
     RotateVector(tempUp, Vector3fMake(FRotAxis), FAngle * FElapsedTime/FProceedTime);
@@ -993,7 +993,7 @@ begin
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
       FJobList.FController.FCameraTarget.AbsolutePosition,
-      FRotateSpeed[0] * FDeltaTime, FRotateSpeed[1] * FDeltaTime);
+      FRotateSpeed.Coord[0] * FDeltaTime, FRotateSpeed.Coord[1] * FDeltaTime);
 
     if FNeedToRecalculateZoom then
       RestoreDistanceToTarget();
@@ -1020,12 +1020,12 @@ begin
       begin
         FSmoothNavigator.Enabled := False;
         FRunning := False;
-      end  
+      end
       else
       begin
         lCurrentDistanceToTarget := FJobList.FController.FCamera.DistanceTo(FJobList.FController.FCameraTarget);
         ApplyDistanceToResult();
-      end;  
+      end;
     end
     else
     begin

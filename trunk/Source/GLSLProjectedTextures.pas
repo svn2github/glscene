@@ -225,7 +225,10 @@ end;
 
 procedure TGLSLTextureEmitter.SetupTexMatrix;
 const
-  cBaseMat: TMatrix = ((0.5, 0, 0, 0), (0, 0.5, 0, 0), (0, 0, 1, 0), (0.5, 0.5, 0, 1));
+  cBaseMat: TMatrix = (Coord:((X:0.5; Y:0;   Z:0; W:0),
+                              (X:0;   Y:0.5; Z:0; W:0),
+                              (X:0;   Y:0;   Z:1; W:0),
+                              (X:0.5; Y:0.5; Z:0; W:1)));
 begin
   // Set the projector's "perspective" (i.e. the "spotlight cone"):.
   TexMatrix := MatrixMultiply(

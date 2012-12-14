@@ -6,6 +6,8 @@
   A polymorphism-enabled TCollection-like set of classes<p>
 
   <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead abstract
+                           definition in class function FriendlyName for GLS_CPPB
       <li>20/01/11 - DanB - TXCollectionItem no longer sets initial Name = FriendlyName
       <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>31/08/10 - Yar - Bugfixed TXCollectionItem.ReadFromFiler when Assertion off
@@ -13,6 +15,8 @@
       <li>10/04/08 - DaStr - TXCollectionItem now descends from
                               TGLInterfacedPersistent (BugTracker ID = 1938988)
       <li>08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Add dummy method for the abstract problem
       <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
       <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
       <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
@@ -91,12 +95,12 @@ type
       {: Returns a user-friendly denomination for the class.<p>
         This denomination is used for picking a texture image class
         in the IDE expert. }
-    class function FriendlyName: string; virtual; abstract;
+    class function FriendlyName: String; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
       {: Returns a user-friendly description for the class.<p>
         This denomination is used for helping the user when picking a
         texture image class in the IDE expert. If it's not overriden,
         takes its value from FriendlyName. }
-    class function FriendlyDescription: string; virtual;
+    class function FriendlyDescription: String; virtual;
          {: Category of the item class.<p>
             This is a free string, it will used by the XCollectionEditor to
             regroup collectionitems and menu items }
@@ -108,7 +112,7 @@ type
         to mix (since TClassB is a TClassA, and TClassA is unique).<br>
         Attempting to break the unicity rules will not be possible at
         design-time (in Delphi IDE) and will trigger an exception at run-time. }
-    class function UniqueItem: boolean; virtual;
+    class function UniqueItem: Boolean; virtual;
       {: Allows the XCollectionItem class to determine if it should be allowed
          to be added to the given collection. }
     class function CanAddTo(collection: TXCollection): boolean; virtual;
@@ -166,8 +170,7 @@ type
     property Items[index: integer]: TXCollectionItem read GetItems; default;
     property Count: integer read FCount;
     function Add(anItem: TXCollectionItem): integer;
-    function GetOrCreate(anItem: TXCollectionItemClass)
-      : TXCollectionItem;
+    function GetOrCreate(anItem: TXCollectionItemClass): TXCollectionItem;
     procedure Delete(index: integer);
     procedure Remove(anItem: TXCollectionItem);
     procedure Clear;
@@ -223,6 +226,14 @@ const
 var
   vXCollectionItemClasses: TList;
   vXCollectionDestroyEvent: TNotifyEvent;
+
+// Dummy method for CPP
+{$IFDEF GLS_CPPB}
+class function TXCollectionItem.FriendlyName : String;
+begin
+  result := '';
+end;
+{$ENDIF}
 
 //---------- internal global routines (used by xcollection editor) -------------
 
@@ -586,7 +597,9 @@ begin
   end;
 end;
 
-procedure TXCollection.ReadFromFiler(reader: TReader);
+// ReadFromFiler
+//
+procedure TXCollection.ReadFromFiler(reader : TReader);
 var
   vt: TValueType;
   Header: array[0..3] of AnsiChar;
@@ -671,9 +684,9 @@ begin
           XCollectionItem.ReadFromFiler(reader);
         end;
       end;
-    end;
-  finally
-    classList.Free;
+	  end;
+	   finally
+	       classList.Free;
   end;
   FCount := FList.Count;
 end;

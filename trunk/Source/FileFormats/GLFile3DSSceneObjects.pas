@@ -117,13 +117,13 @@ begin
   halfAngle := (angle) / 2;
   invAxisLengthMult := 1 / VectorLength(axis) * sin(halfAngle);
 
-  v[0] := axis[0] * invAxisLengthMult;
-  v[1] := axis[1] * invAxisLengthMult;
-  v[2] := axis[2] * invAxisLengthMult;
-  v[3] := cos(halfAngle);
+  v.Coord[0] := axis.Coord[0] * invAxisLengthMult;
+  v.Coord[1] := axis.Coord[1] * invAxisLengthMult;
+  v.Coord[2] := axis.Coord[2] * invAxisLengthMult;
+  v.Coord[3] := cos(halfAngle);
 
   Result.ImagPart := AffineVectorMake(v);
-  Result.RealPart := v[3];
+  Result.RealPart := v.Coord[3];
 end;
 
 function QuaternionToRotateMatrix(const Quaternion: TQuaternion): TMatrix;
@@ -133,38 +133,38 @@ var
   m: TMatrix;
 begin
   quat := VectorMake(Quaternion.ImagPart);
-  quat[3] := Quaternion.RealPart;
+  quat.Coord[3] := Quaternion.RealPart;
 
-  x2 := quat[0] + quat[0];
-  y2 := quat[1] + quat[1];
-  z2 := quat[2] + quat[2];
-  xx := quat[0] * x2;
-  xy := quat[0] * y2;
-  xz := quat[0] * z2;
-  yy := quat[1] * y2;
-  yz := quat[1] * z2;
-  zz := quat[2] * z2;
-  wx := quat[3] * x2;
-  wy := quat[3] * y2;
-  wz := quat[3] * z2;
+  x2 := quat.Coord[0] + quat.Coord[0];
+  y2 := quat.Coord[1] + quat.Coord[1];
+  z2 := quat.Coord[2] + quat.Coord[2];
+  xx := quat.Coord[0] * x2;
+  xy := quat.Coord[0] * y2;
+  xz := quat.Coord[0] * z2;
+  yy := quat.Coord[1] * y2;
+  yz := quat.Coord[1] * z2;
+  zz := quat.Coord[2] * z2;
+  wx := quat.Coord[3] * x2;
+  wy := quat.Coord[3] * y2;
+  wz := quat.Coord[3] * z2;
 
-  m[0][0] := 1.0 - (yy + zz);
-  m[0][1] := xy - wz;
-  m[0][2] := xz + wy;
-  m[1][0] := xy + wz;
-  m[1][1] := 1.0 - (xx + zz);
-  m[1][2] := yz - wx;
-  m[2][0] := xz - wy;
-  m[2][1] := yz + wx;
-  m[2][2] := 1.0 - (xx + yy);
+  m.Coord[0].Coord[0] := 1.0 - (yy + zz);
+  m.Coord[0].Coord[1] := xy - wz;
+  m.Coord[0].Coord[2] := xz + wy;
+  m.Coord[1].Coord[0] := xy + wz;
+  m.Coord[1].Coord[1] := 1.0 - (xx + zz);
+  m.Coord[1].Coord[2] := yz - wx;
+  m.Coord[2].Coord[0] := xz - wy;
+  m.Coord[2].Coord[1] := yz + wx;
+  m.Coord[2].Coord[2] := 1.0 - (xx + yy);
 
-  m[0][3] := 0;
-  m[1][3] := 0;
-  m[2][3] := 0;
-  m[3][0] := 0;
-  m[3][1] := 0;
-  m[3][2] := 0;
-  m[3][3] := 1;
+  m.Coord[0].Coord[3] := 0;
+  m.Coord[1].Coord[3] := 0;
+  m.Coord[2].Coord[3] := 0;
+  m.Coord[3].Coord[0] := 0;
+  m.Coord[3].Coord[1] := 0;
+  m.Coord[3].Coord[2] := 0;
+  m.Coord[3].Coord[3] := 1;
 
   Result := m;
 end;
@@ -290,7 +290,7 @@ begin
 
   v := VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector));
 
-  v1 := AffineVectorMake(v[0], v[1], 0);
+  v1 := AffineVectorMake(v.Coord[0], v.Coord[1], 0);
   NormalizeVector(v1);
   ang := VectorGeometry.arccos(VectorDotProduct(v, v1));
 
@@ -474,15 +474,15 @@ begin
   MeshObjects.GetExtents(dMin, dMax);
   mat := ParentMatrix;
   mat := MatrixMultiply(FRefMat, mat);
-  if not IsInfinite(dMin[0]) then
+  if not IsInfinite(dMin.Coord[0]) then
     dMin := VectorTransform(dMin, mat);
-  if not IsInfinite(dMax[0]) then
+  if not IsInfinite(dMax.Coord[0]) then
     dMax := VectorTransform(dMax, mat);
 
-  Result[0] := (dMax[0] - dMin[0]) / 2;
-  Result[1] := (dMax[1] - dMin[1]) / 2;
-  Result[2] := (dMax[2] - dMin[2]) / 2;
-  Result[3] := 0;
+  Result.Coord[0] := (dMax.Coord[0] - dMin.Coord[0]) / 2;
+  Result.Coord[1] := (dMax.Coord[1] - dMin.Coord[1]) / 2;
+  Result.Coord[2] := (dMax.Coord[2] - dMin.Coord[2]) / 2;
+  Result.Coord[3] := 0;
 end;
 
 // BarycenterAbsolutePosition
@@ -496,15 +496,15 @@ begin
   MeshObjects.GetExtents(dMin, dMax);
   mat := ParentMatrix;
   mat := MatrixMultiply(FRefMat, mat);
-  if not IsInfinite(dMin[0]) then
+  if not IsInfinite(dMin.Coord[0]) then
     dMin := VectorTransform(dMin, mat);
-  if not IsInfinite(dMax[0]) then
+  if not IsInfinite(dMax.Coord[0]) then
     dMax := VectorTransform(dMax, mat);
 
-  Result[0] := (dMax[0] + dMin[0]) / 2;
-  Result[1] := (dMax[1] + dMin[1]) / 2;
-  Result[2] := (dMax[2] + dMin[2]) / 2;
-  Result[3] := 1;
+  Result.Coord[0] := (dMax.Coord[0] + dMin.Coord[0]) / 2;
+  Result.Coord[1] := (dMax.Coord[1] + dMin.Coord[1]) / 2;
+  Result.Coord[2] := (dMax.Coord[2] + dMin.Coord[2]) / 2;
+  Result.Coord[3] := 1;
 
   Result := LocalToAbsolute(Result);
 end;

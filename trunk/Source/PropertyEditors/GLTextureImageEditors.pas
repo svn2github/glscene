@@ -3,6 +3,8 @@
 	Standard texture image editors for standard texture image classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead
+                          abstract class function Edit for GLS_CPPB
       <li>22/01/10 - Yar - Added to TGLBlankImage property editor ability to set the depth
       <li>03/07/04 - LR - Make change for Linux
       <li>24/07/03 - EG - Creation
@@ -28,7 +30,7 @@ type
 			{: Request to edit a textureImage.<p>
 				Returns True if changes have been made.<br>
 				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual; abstract;
+			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
    end;
 
    TGLTextureImageEditorClass = class of TGLTextureImageEditor;
@@ -86,6 +88,15 @@ uses
 
 var
    vTIEClass, vTIEEditor : TList;
+
+  // Dummy method for CPP
+  //
+{$IFDEF GLS_CPPB}
+class function TGLTextureImageEditor.Edit(ATexImage: TGLTextureImage): Boolean;
+begin
+  Result := True;
+end;
+{$ENDIF}
 
 // EditGLTextureImage
 //

@@ -1209,9 +1209,9 @@ var
 
 function sameVertex(i0, i1: LongWord): Boolean;
 begin
-  Result := (VerticesList[i0][0] = VerticesList[i1][0])
-    and (VerticesList[i0][1] = VerticesList[i1][1])
-    and (VerticesList[i0][2] = VerticesList[i1][2]);
+  Result := (VerticesList[i0].Coord[0] = VerticesList[i1].Coord[0])
+    and (VerticesList[i0].Coord[1] = VerticesList[i1].Coord[1])
+    and (VerticesList[i0].Coord[2] = VerticesList[i1].Coord[2]);
 end;
 
 procedure joinTriangles(

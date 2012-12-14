@@ -108,9 +108,9 @@ end;
 procedure VectorToBASSVector(const aVector : TVector; var aBASSVector : BASS_3DVECTOR);
 begin
    with aBASSVector do begin
-      x:=aVector[0];
-      y:=aVector[1];
-      z:=-aVector[2];
+      x:=aVector.Coord[0];
+      y:=aVector.Coord[1];
+      z:=-aVector.Coord[2];
    end;
 end;
 

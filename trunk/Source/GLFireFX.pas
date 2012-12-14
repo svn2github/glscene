@@ -546,7 +546,7 @@ begin
     fy := Random - 0.5;
     d := RSqrt(Sqr(fx) + Sqr(fy));
     PAffineVector(@tmp)^ := VectorCombine(ringVectorX, ringVectorY, fx * d, fy * d);
-    tmp[3] := 1;
+    tmp.Coord[3] := 1;
     ScaleVector(tmp, minInitialSpeed + Random * (maxInitialSpeed - minInitialSpeed));
     with FFireParticles^[NP] do
     begin
@@ -638,30 +638,30 @@ var
 begin
   for i := 0 to 2 do
   begin
-    vx[i] := mat[i][0] * FParticleSize;
-    vy[i] := mat[i][1] * FParticleSize;
+    vx.Coord[i] := mat.Coord[i].Coord[0] * FParticleSize;
+    vy.Coord[i] := mat.Coord[i].Coord[1] * FParticleSize;
   end;
   with GL do
   begin
     Begin_(GL_TRIANGLE_FAN);
     Vertex3fv(@NullVector);
-    Color4f(Color2[0], Color2[1], Color2[2], 0.0);
-    Vertex3f(-vx[0], -vx[1], -vx[2]);
+    Color4f(Color2.Coord[0], Color2.Coord[1], Color2.Coord[2], 0.0);
+    Vertex3f(-vx.Coord[0], -vx.Coord[1], -vx.Coord[2]);
     // those things should be composited in the model view matrix
-    Vertex3f(-0.5 * vx[0] + FFireEvaporation * vy[0],
-      -0.5 * vx[1] + FFireEvaporation * vy[1],
-      -0.5 * vx[2] + FFireEvaporation * vy[2]);
-    Vertex3f(+0.5 * vx[0] + FFireEvaporation * vy[0],
-      +0.5 * vx[1] + FFireEvaporation * vy[1],
-      +0.5 * vx[2] + FFireEvaporation * vy[2]);
-    Vertex3f(+vx[0], +vx[1], +vx[2]);
-    Vertex3f(+0.5 * vx[0] - FFireEvaporation * vy[0],
-      +0.5 * vx[1] - FFireEvaporation * vy[1],
-      +0.5 * vx[2] - FFireEvaporation * vy[2]);
-    Vertex3f(-0.5 * vx[0] - FFireEvaporation * vy[0],
-      -0.5 * vx[1] - FFireEvaporation * vy[1],
-      -0.5 * vx[2] - FFireEvaporation * vy[2]);
-    Vertex3f(-vx[0], -vx[1], -vx[2]);
+    Vertex3f(-0.5 * vx.Coord[0] + FFireEvaporation * vy.Coord[0],
+      -0.5 * vx.Coord[1] + FFireEvaporation * vy.Coord[1],
+      -0.5 * vx.Coord[2] + FFireEvaporation * vy.Coord[2]);
+    Vertex3f(+0.5 * vx.Coord[0] + FFireEvaporation * vy.Coord[0],
+      +0.5 * vx.Coord[1] + FFireEvaporation * vy.Coord[1],
+      +0.5 * vx.Coord[2] + FFireEvaporation * vy.Coord[2]);
+    Vertex3f(+vx.Coord[0], +vx.Coord[1], +vx.Coord[2]);
+    Vertex3f(+0.5 * vx.Coord[0] - FFireEvaporation * vy.Coord[0],
+      +0.5 * vx.Coord[1] - FFireEvaporation * vy.Coord[1],
+      +0.5 * vx.Coord[2] - FFireEvaporation * vy.Coord[2]);
+    Vertex3f(-0.5 * vx.Coord[0] - FFireEvaporation * vy.Coord[0],
+      -0.5 * vx.Coord[1] - FFireEvaporation * vy.Coord[1],
+      -0.5 * vx.Coord[2] - FFireEvaporation * vy.Coord[2]);
+    Vertex3f(-vx.Coord[0], -vx.Coord[1], -vx.Coord[2]);
     End_;
   end;
 end;
@@ -832,9 +832,11 @@ begin
       for i := n - 1 downto 0 do
       begin
         fp := PFireParticle(objList[i]);
-        GL.Translatef(fp^.Position[0] - lastTr[0], fp^.Position[1] - lastTr[1], fp^.Position[2] - lastTr[2]);
+        GL.Translatef(fp^.Position.Coord[0] - lastTr.Coord[0],
+                      fp^.Position.Coord[1] - lastTr.Coord[1],
+                      fp^.Position.Coord[2] - lastTr.Coord[2]);
         SetVector(lastTr, fp^.Position);
-        innerColor[3] := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
+        innerColor.Coord[3] := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
         GL.Color4fv(@innerColor);
         Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
       end;

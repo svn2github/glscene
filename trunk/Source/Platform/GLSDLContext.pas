@@ -411,7 +411,7 @@ end;
 // RenderOutputDevice
 //
 
-function TGLSDLContext.RenderOutputDevice: Integer;
+function TGLSDLContext.RenderOutputDevice: Pointer;
 begin
   // unsupported
   Result := nil;

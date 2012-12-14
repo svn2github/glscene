@@ -115,9 +115,11 @@ uses
 {$ENDIF}
   GLScene,
   GLContext,
+
   GLColor,
   GLCrossPlatform,
   GLObjectManager,
+
 {$IFDEF GLS_DELPHI_7_UP}
   ToolsAPI,
 {$ENDIF}
@@ -528,6 +530,7 @@ uses
   ApplicationFileIO,
   AsyncTimer,
   BaseClasses,
+
   FLibMaterialPicker,
   FRUniformEditor,
   FShaderMemo,
@@ -1071,7 +1074,7 @@ end;
 
 function TGLColorProperty.ColorToBorderColor(aColor: TColorVector; selected: Boolean): TColor;
 begin
-  if (aColor[0] > 0.75) or (aColor[1] > 0.75) or (aColor[2] > 0.75) then
+  if (aColor.Coord[0] > 0.75) or (aColor.Coord[1] > 0.75) or (aColor.Coord[2] > 0.75) then
     Result := clBlack
   else if selected then
     Result := clWhite
@@ -2294,9 +2297,9 @@ procedure Register;
 begin
   RegisterComponents('GLScene',
     [TGLScene,
-    TGLSceneViewer, TGLMemoryViewer,
+      TGLSceneViewer, TGLMemoryViewer,
 {$IFDEF GLS_DELPHI_XE2_UP}
-    TGLSceneViewport,
+      TGLSceneViewport,
 {$ENDIF}
       TGLMaterialLibrary, TGLMaterialLibraryEx,
       TGLCadencer,

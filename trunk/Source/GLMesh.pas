@@ -7,8 +7,8 @@
 
   This unit is for simple meshes and legacy support, GLVectorFileObjects
   implements more efficient (though more complex) mesh tools.<p>
-
   <b>History : </b><font size=-1><ul>
+  <li>10/11/12 - PW - Added CPP compatibility: changed some vector arrays to records
   <li>26/04/11 - Yar - Added VertexColor property (thanks to Filippo Forlani)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -17,7 +17,7 @@
   <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
   <li>30/03/07 - DaStr - Added $I GLScene.inc
   <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+                  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
   <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
   <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
   <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
@@ -26,8 +26,8 @@
   <li>19/07/00 - EG - Introduced enhanced mesh structure
   <li>11/07/00 - EG - Just discovered and made use of "fclex" :)
   <li>18/06/00 - EG - Creation from split of GLObjects,
-  TVertexList now uses TVertexData,
-  Rewrite of TGLMesh.CalcNormals (smaller & faster)
+                    TVertexList now uses TVertexData,
+                    Rewrite of TGLMesh.CalcNormals (smaller & faster)
   </ul></font>
 }
 unit GLMesh;
@@ -646,11 +646,11 @@ begin
     with FValues^[i] do
       for k := 0 to 2 do
       begin
-        f := coord[k];
-        if f < min[k] then
-          min[k] := f;
-        if f > max[k] then
-          max[k] := f;
+        f := coord.Coord[k];
+        if f < min.Coord[k] then
+          min.Coord[k] := f;
+        if f > max.Coord[k] then
+          max.Coord[k] := f;
       end;
   end;
 end;
@@ -723,7 +723,7 @@ begin
   FVertices.AddVertex(YVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(ZVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.OnNotifyChange := VerticesChanged;
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
   FVertexMode := vmVNCT;
   // should change this later to default to vmVN. But need to
 end; // change GLMeshPropform so that it greys out unused vertex info
@@ -935,12 +935,12 @@ function TGLMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache[0] < 0 then
+  if FAxisAlignedDimensionsCache.Coord[0] < 0 then
   begin
     Vertices.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache[0] := MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-    FAxisAlignedDimensionsCache[1] := MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+    FAxisAlignedDimensionsCache.Coord[0] := MaxFloat(Abs(dMin.Coord[0]), Abs(dMax.Coord[0]));
+    FAxisAlignedDimensionsCache.Coord[1] := MaxFloat(Abs(dMin.Coord[1]), Abs(dMax.Coord[1]));
+    FAxisAlignedDimensionsCache.Coord[2] := MaxFloat(Abs(dMin.Coord[2]), Abs(dMax.Coord[2]));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -950,7 +950,7 @@ end;
 
 procedure TGLMesh.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
   inherited;
 end;
 

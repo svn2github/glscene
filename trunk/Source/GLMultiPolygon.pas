@@ -450,10 +450,10 @@ begin
     GetItems(i).Nodes.GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
-      if lMin[k] < min[k] then
-        min[k] := lMin[k];
-      if lMax[k] > max[k] then
-        max[k] := lMax[k];
+      if lMin.Coord[k] < min.Coord[k] then
+        min.Coord[k] := lMin.Coord[k];
+      if lMax.Coord[k] > max.Coord[k] then
+        max.Coord[k] := lMax.Coord[k];
     end;
   end;
 end;
@@ -469,7 +469,7 @@ begin
   FContours := TGLContours.Create(Self);
   FContours.OnNotifyChange := ContourChanged;
   FContoursNormal := AffineVectorMake(0, 0, 1);
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
 end;
 
 // Destroy
@@ -725,7 +725,7 @@ begin
       gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
 
       // issue normal
-      gluTessNormal(tess, FContoursNormal[0], FContoursNormal[1], FContoursNormal[2]);
+      gluTessNormal(tess, FContoursNormal.Coord[0], FContoursNormal.Coord[1], FContoursNormal.Coord[2]);
 
       // set properties
       gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
@@ -792,7 +792,7 @@ begin
     if Assigned(normal) then
     begin
       GL.Normal3fv(PGLFloat(normal));
-      gluTessNormal(tess, normal^[0], normal^[1], normal^[2]);
+      gluTessNormal(tess, normal^.Coord[0], normal^.Coord[1], normal^.Coord[2]);
     end;
     gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
     // Issue polygon
@@ -893,12 +893,12 @@ function TMultiPolygonBase.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache[0] < 0 then
+  if FAxisAlignedDimensionsCache.Coord[0] < 0 then
   begin
     Contours.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache[0] := MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-    FAxisAlignedDimensionsCache[1] := MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-    FAxisAlignedDimensionsCache[2] := MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+    FAxisAlignedDimensionsCache.Coord[0] := MaxFloat(Abs(dMin.Coord[0]), Abs(dMax.Coord[0]));
+    FAxisAlignedDimensionsCache.Coord[1] := MaxFloat(Abs(dMin.Coord[1]), Abs(dMax.Coord[1]));
+    FAxisAlignedDimensionsCache.Coord[2] := MaxFloat(Abs(dMin.Coord[2]), Abs(dMax.Coord[2]));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -908,7 +908,7 @@ end;
 
 procedure TMultiPolygonBase.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache[0] := -1;
+  FAxisAlignedDimensionsCache.Coord[0] := -1;
   inherited;
 end;
 

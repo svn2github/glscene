@@ -70,6 +70,9 @@ uses
   GLCrossPlatform;
 
 type
+
+  TPoint = GLCrossPlatform.TGLPoint; // for Mouse Wheel
+
   TGLSimpleNavigationOption = (
     snoInvertMoveAroundX, snoInvertMoveAroundY, // MoveAroundTarget.
     snoInvertZoom, snoInvertMouseWheel, // Zoom.

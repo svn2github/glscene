@@ -40,6 +40,10 @@
       <li>03/10/04 - Mrqzzz - added property TGLParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
       <li>25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
       <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 4
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter.
+                               fixed undefined TPFXRegion error in BCB
       <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
       <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
       <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
@@ -111,6 +115,10 @@ type
     FRotation: Single;
     FCreationTime: Double;
     FEffectScale: Single;
+    function GetPosition(const Index: Integer): Single;
+    procedure WritePosition(const Index: Integer; const aValue: Single);
+    function GetVelocity(const Index: Integer): Single;
+    procedure WriteVelocity(const Index: Integer; const aValue: Single);
 
   protected
     { Protected Declarations }
@@ -139,12 +147,13 @@ type
     {: Time at which particle was created }
     property CreationTime: Double read FCreationTime write FCreationTime;
 
-    property PosX: Single read FPosition[0] write FPosition[0];
-    property PosY: Single read FPosition[1] write FPosition[1];
-    property PosZ: Single read FPosition[2] write FPosition[2];
-    property VelX: Single read FVelocity[0] write FVelocity[0];
-    property VelY: Single read FVelocity[1] write FVelocity[1];
-    property VelZ: Single read FVelocity[2] write FVelocity[2];
+    property PosX : Single index 0 read GetPosition write WritePosition;
+    property PosY : Single index 1 read GetPosition write WritePosition;
+    property PosZ : Single index 2 read GetPosition write WritePosition;
+    property VelX : Single index 0 read GetVelocity write WriteVelocity;
+    property VelY : Single index 1 read GetVelocity write WriteVelocity;
+    property VelZ : Single index 2 read GetVelocity write WriteVelocity;
+
     property Tag: Integer read FTag write FTag;
   end;
 
@@ -1004,20 +1013,20 @@ begin
   case dispersion of
     sdmFast:
       begin
-        v[0] := (Random - 0.5) * p[0];
-        v[1] := (Random - 0.5) * p[1];
-        v[2] := (Random - 0.5) * p[2];
+        v.Coord[0] := (Random - 0.5) * p.Coord[0];
+        v.Coord[1] := (Random - 0.5) * p.Coord[1];
+        v.Coord[2] := (Random - 0.5) * p.Coord[2];
       end;
   else
     fsq := Sqr(0.5);
     repeat
-      v[0] := (Random - 0.5);
-      v[1] := (Random - 0.5);
-      v[2] := (Random - 0.5);
+      v.Coord[0] := (Random - 0.5);
+      v.Coord[1] := (Random - 0.5);
+      v.Coord[2] := (Random - 0.5);
     until VectorNorm(v) <= fsq;
-    v[0] := v[0] * p[0];
-    v[1] := v[1] * p[1];
-    v[2] := v[2] * p[2];
+    v.Coord[0] := v.Coord[0] * p.Coord[0];
+    v.Coord[1] := v.Coord[1] * p.Coord[1];
+    v.Coord[2] := v.Coord[2] * p.Coord[2];
   end;
 end;
 
@@ -1027,7 +1036,6 @@ end;
 
 // Create
 //
-
 constructor TGLParticle.Create;
 begin
   FEffectScale := 1;
@@ -1036,15 +1044,35 @@ end;
 
 // Destroy
 //
-
 destructor TGLParticle.Destroy;
 begin
   inherited Destroy;
 end;
 
+function TGLParticle.GetPosition(const Index: Integer): Single;
+begin
+  Result := FPosition.Coord[Index];
+end;
+
+procedure TGLParticle.WritePosition(const Index: Integer; const aValue: Single);
+begin
+  if (aValue <> FPosition.Coord[Index]) then
+    FPosition.Coord[Index] := aValue;
+end;
+
+function TGLParticle.GetVelocity(const Index: Integer): Single;
+begin
+  Result := FVelocity.Coord[0];
+end;
+
+procedure TGLParticle.WriteVelocity(const Index: Integer; const aValue: Single);
+begin
+  if (aValue <> FVelocity.Coord[Index]) then
+    FVelocity.Coord[Index] := aValue;
+end;
+
 // WriteToFiler
 //
-
 procedure TGLParticle.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
@@ -1057,6 +1085,7 @@ begin
     WriteFloat(FCreationTime);
   end;
 end;
+
 
 // ReadFromFiler
 //
@@ -2976,8 +3005,8 @@ begin
   GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
   for i := 0 to 2 do
   begin
-    Fvx[i] := matrix[i][0] * FParticleSize;
-    Fvy[i] := matrix[i][1] * FParticleSize;
+    Fvx.Coord[i] := matrix.Coord[i].Coord[0] * FParticleSize;
+    Fvy.Coord[i] := matrix.Coord[i].Coord[1] * FParticleSize;
   end;
   FVertices := TAffineVectorList.Create;
   FVertices.Capacity := FNbSides;
@@ -3235,9 +3264,9 @@ begin
 
   for i := 0 to 2 do
   begin
-    Fvx[i] := matrix[i][0] * w;
-    Fvy[i] := matrix[i][1] * h;
-    Fvz[i] := matrix[i][2];
+    Fvx.Coord[i] := matrix.Coord[i].Coord[0] * w;
+    Fvy.Coord[i] := matrix.Coord[i].Coord[1] * h;
+    Fvz.Coord[i] := matrix.Coord[i].Coord[2];
   end;
 
   FVertices := TAffineVectorList.Create;
@@ -3281,7 +3310,7 @@ type
 const
   cBaseTexCoordsSet: TTexCoordsSet = ((S: 1; T: 1), (S: 0; T: 1), (S: 0; T: 0), (S: 1; T: 0));
   cTexCoordsSets: array[0..3] of TTexCoordsSet =
-    (((S: 1.0; T: 1.0), (S: 0.5; T: 1.0), (S: 0.5; T: 0.5), (S: 1.0; T: 0.5)),
+   (((S: 1.0; T: 1.0), (S: 0.5; T: 1.0), (S: 0.5; T: 0.5), (S: 1.0; T: 0.5)),
     ((S: 0.5; T: 1.0), (S: 0.0; T: 1.0), (S: 0.0; T: 0.5), (S: 0.5; T: 0.5)),
     ((S: 1.0; T: 0.5), (S: 0.5; T: 0.5), (S: 0.5; T: 0.0), (S: 1.0; T: 0.0)),
     ((S: 0.5; T: 0.5), (S: 0.0; T: 0.5), (S: 0.0; T: 0.0), (S: 0.5; T: 0.0)));

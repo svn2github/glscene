@@ -183,7 +183,7 @@ const
   {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
   {.$define cDEBUG}
 
-  {$IFDEF WIN32}
+  {$IFDEF MSWINDOWS}
     {$IFDEF cSINGLE}
       {$IFDEF cDEBUG}
         ODEDLL = 'ode_singled.dll';

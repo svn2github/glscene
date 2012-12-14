@@ -16,6 +16,7 @@
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
   <li>11/17/12 - YP - Check not nil result with GetBodyFromGLSceneObject
                       FreeAndNil when destroying objects
                       Destroy all relative joints when finalizing a behaviour to avoid random crash
@@ -23,39 +24,39 @@
                       DestroyNewtonData is now common for all procedures
   <li>28/06/12 - YP - Updated to newton 2.36 (no api change with 2.35)
   <li>02/02/11 - FP - Read/Write to Filer update to version 1
-  Use RWFloat instead of RWSingle for Single for lazarus compatibility
+                 Use RWFloat instead of RWSingle for Single for lazarus compatibility
   <li>02/02/11 - FP - Add initial name for behavior
-  Moved two TNGDSurfacePair properties from published to public for Lazarus
+                 Moved two TNGDSurfacePair properties from published to public for Lazarus
   <li>01/02/11 - FP - Fixed custom hinge DegToRad limit
-  Update newtoncreatebody API with matrix parameter (since newton 2.28)
-  Joint draw [parent-to-pivot-to-child] instead of [parent-to-child]
+                 Update newtoncreatebody API with matrix parameter (since newton 2.28)
+                 Joint draw [parent-to-pivot-to-child] instead of [parent-to-child]
   <li>21/01/11 - FP - Huge update: Joint in manager collection. Material (now surface) in manager collection
-  Callback as static class function now raise events
-  Debugs view use TGLLines instead of TGLRenderPoint
-  Reset filer version to zero
+                  Callback as static class function now raise events
+                  Debugs view use TGLLines instead of TGLRenderPoint
+                  Reset filer version to zero
   <li>16/12/10 - FP - Update to NewtonSDK 2.25-2.26
   <li>19/11/10 - FP - Fixed FAngularDamping memory leak for TGLNGDDynamic
   <li>19/11/10 - FP - Added UseGravity property for TGLNGDDynamic
   <li>05/11/10 - FP - Removed check freeform in TGLNGDStatic.GeTree
-  Removed FCollisionArray from TGLNGDBehaviour
-  Modified misspelling usevelovity to usevelocity [thx bobrob69]
-  Moved Creation of compound collision for freeform from GetCollisionFromBaseSceneObject to SetCollision for TGLNGDDynamic [thx bobrob69]
+                  Removed FCollisionArray from TGLNGDBehaviour
+                  Modified misspelling usevelovity to usevelocity [thx bobrob69]
+                  Moved Creation of compound collision for freeform from GetCollisionFromBaseSceneObject to SetCollision for TGLNGDDynamic [thx bobrob69]
   <li>25/10/10 - FP - Fixed Material badly loaded when created in design time
   <li>25/10/10 - FP - Commented 'Release each collision form the array' in TGLNGDBehaviour.SetCollision.
-  Changed angular friction in  TGLNGDDynamic.Pick method to be able to pick body with small mass.
-  Added Beta Serialize and Deserialise for TGLNGDBehaviour.
-  Commented 'rebuild in runtime' in TGLNGDStatic.Render, because this is conflicting with news serialize methods
+                  Changed angular friction in  TGLNGDDynamic.Pick method to be able to pick body with small mass.
+                  Added Beta Serialize and Deserialise for TGLNGDBehaviour.
+                  Commented 'rebuild in runtime' in TGLNGDStatic.Render, because this is conflicting with news serialize methods
   <li>23/10/10 - Yar - Replace OpenGL1x to OpenGLAdapter
   <li>08/10/10 - FP - Added show contact for dynamic in render.
-  Uncommented ShowContact property in manager.
+                 Uncommented ShowContact property in manager.
   <li>07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
   <li>30/09/10 - FP - Removed beta functions of player and car in TGLNGDDynamic.
-  Added AddImpulse function in TGLNGDDynamic.
+                 Added AddImpulse function in TGLNGDDynamic.
   <li>29/09/10 - FP - Moved FManager assignation for MaterialPair from loaded to create
   <li>21/09/10 - FP - Added timestep in TContactProcessEvent.
-  Removed Manager property of MaterialPair.
-  MaterialPair.loaded use the owner.owner component as manager now.
-  MaterialPair FilerVersion up to 1
+                  Removed Manager property of MaterialPair.
+                  MaterialPair.loaded use the owner.owner component as manager now.
+                  MaterialPair FilerVersion up to 1
   <li>20/09/10 - FP - Call Finalize/Initialize in Setid
   <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
   <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
@@ -852,6 +853,7 @@ begin
   Assert(Behaviour <> nil, 'NGD Behaviour (static or dynamic) is missing for this object');
   Result := Behaviour.FNewtonBody;
 end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1247,7 +1249,7 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
       if Assigned(FParentObject) and Assigned(FChildObject) then
       begin
         pinAndPivot := IdentityHmgMatrix;
-        pinAndPivot[3] := FCustomBallAndSocketOptions.FPivotPoint.AsVector;
+        pinAndPivot.Coord[3] := FCustomBallAndSocketOptions.FPivotPoint.AsVector;
         FNewtonUserJoint := CreateCustomBallAndSocket(@pinAndPivot,
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
@@ -1281,8 +1283,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
         bso.AbsolutePosition := FCustomHingeOptions.FPivotPoint.AsVector;
         bso.AbsoluteDirection := FCustomHingeOptions.FPinDirection.AsVector;
         pinAndPivot := bso.AbsoluteMatrix;
-        pinAndPivot[0] := bso.AbsoluteMatrix[2];
-        pinAndPivot[2] := bso.AbsoluteMatrix[0];
+        pinAndPivot.Coord[0] := bso.AbsoluteMatrix.Coord[2];
+        pinAndPivot.Coord[2] := bso.AbsoluteMatrix.Coord[0];
         bso.Free;
 
         FNewtonUserJoint := CreateCustomHinge(@pinAndPivot,
@@ -1320,8 +1322,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
         bso.AbsolutePosition := FCustomSliderOptions.FPivotPoint.AsVector;
         bso.AbsoluteDirection := FCustomSliderOptions.FPinDirection.AsVector;
         pinAndPivot := bso.AbsoluteMatrix;
-        pinAndPivot[0] := bso.AbsoluteMatrix[2];
-        pinAndPivot[2] := bso.AbsoluteMatrix[0];
+        pinAndPivot.Coord[0] := bso.AbsoluteMatrix.Coord[2];
+        pinAndPivot.Coord[2] := bso.AbsoluteMatrix.Coord[0];
         bso.Free;
 
         FNewtonUserJoint := CreateCustomSlider(@pinAndPivot, GetBodyFromGLSceneObject(FChildObject), GetBodyFromGLSceneObject(FParentObject));
@@ -1568,9 +1570,11 @@ function TGLNGDBehaviour.GetBBoxCollision: PNewtonCollision;
 var
   BoundingBox: THmgBoundingBox;
 begin
-  BoundingBox := AABBToBB(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx);
-  Result := NewtonCreateConvexHull(FManager.FNewtonWorld, 8, @BoundingBox[0], SizeOf(TVector), 0.01, 0, nil);
-  Assert(Result <> nil);
+  for I := 0 to 8 - 1 do
+    vc[I] := AABBToBB(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx).BBox[I];
+
+  Result := NewtonCreateConvexHull(FManager.FNewtonWorld, 8, @vc[0],
+    SizeOf(TVector), 0.01, 0, nil);
 end;
 
 
@@ -1582,7 +1586,7 @@ begin
   AABBToBSphere(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx, boundingSphere);
 
   collisionOffsetMatrix := IdentityHmgMatrix;
-  collisionOffsetMatrix[3] := VectorMake(boundingSphere.Center, 1);
+  collisionOffsetMatrix.Coord[3] := VectorMake(boundingSphere.Center, 1);
   Result := NewtonCreateSphere(FManager.FNewtonWorld, boundingSphere.Radius,
     boundingSphere.Radius, boundingSphere.Radius, 0, @collisionOffsetMatrix);
 end;
@@ -2305,10 +2309,10 @@ procedure TGLNGDDynamic.Render;
   begin
     NewtonBodyGetCentreOfMass(FNewtonBody, @Result);
     M := IdentityHmgMatrix;
-    M[3] := Result;
-    M[3, 3] := 1;
+    M.Coord[3] := Result;
+    M.Coord[3].Coord[3] := 1;
     M := MatrixMultiply(M, FOwnerBaseSceneObject.AbsoluteMatrix);
-    Result := M[3];
+    Result := M.Coord[3];
   end;
 
   procedure DrawForce;
@@ -2421,8 +2425,8 @@ begin
       FMass := FVolume * FDensity;
 
       if not(csDesigning in FOwnerBaseSceneObject.ComponentState) then
-        NewtonBodySetMassMatrix(FNewtonBody, FMass, FMass * inertia[0],
-          FMass * inertia[1], FMass * inertia[2]);
+        NewtonBodySetMassMatrix(FNewtonBody, FMass, FMass * inertia.Coord[0],
+          FMass * inertia.Coord[1], FMass * inertia.Coord[2]);
 
       FCenterOfMass.AsVector := origin;
     end;
@@ -2935,15 +2939,15 @@ procedure TNGDJoint.Render;
     FManager.FCurrentColor := FManager.DebugOption.JointAxisColor;
 
     FManager.AddNode(FParentObject.AbsolutePosition);
-    FManager.AddNode(pickedMatrix[3]);
+    FManager.AddNode(pickedMatrix.Coord[3]);
 
     FManager.FCurrentColor := FManager.DebugOption.JointPivotColor;
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(0, 0, size)));
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(0, 0, -size)));
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(0, size, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(0, -size, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(size, 0, 0)));
-    FManager.AddNode(VectorAdd(pickedMatrix[3], VectorMake(-size, 0, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(0, 0, size)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(0, 0, -size)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(0, size, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(0, -size, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(size, 0, 0)));
+    FManager.AddNode(VectorAdd(pickedMatrix.Coord[3], VectorMake(-size, 0, 0)));
 
   end;
 

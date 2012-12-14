@@ -6,6 +6,7 @@
  Cadencing composant for GLScene (ease Progress processing)<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: restored GetCurrenttime instead of GetCurrentTime
       <li>07/08/11 - Yar - Added OnTotalProgress event, which happens after all iterations with fixed delta time (thanks Controller)
       <li>06/02/11 - Predator - Improved TGLCadencer for Lazarus
       <li>29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
@@ -15,6 +16,7 @@
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>21/09/07 - DaStr - Added TGLCadencer.SetCurrentTime()
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+      <li>02/08/04 - LR, YHC - BCB corrections: changed GetCurrentTime to GetCurrenttime
       <li>28/06/04 - LR - Added some ifdef Win32 for Linux
       <li>20/10/03 - EG - Fixed issues about cadencer destruction
       <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
@@ -143,7 +145,7 @@ type
     procedure Progress;
 
     {: Adjusts CurrentTime if necessary, then returns its value. }
-    function GetCurrentTime: Double;
+    function GetCurrenttime: Double;
 
     {: Returns True if a "Progress" is underway.<p>
        Be aware that as long as IsBusy is True, the Cadencer may be
@@ -851,7 +853,7 @@ begin
       if Enabled then
       begin
         // ...and progress !
-        newTime := GetCurrentTime;
+        newTime := GetCurrenttime;
         deltaTime := newTime - lastTime;
         if (deltaTime >= MinDeltaTime) and (deltaTime >= FixedDeltaTime) then
         begin
@@ -932,10 +934,10 @@ begin
   end;
 end;
 
-// GetCurrentTime
+// GetCurrenttime
 //
 
-function TGLCadencer.GetCurrentTime: Double;
+function TGLCadencer.GetCurrenttime: Double;
 begin
   Result := (GetRawReferenceTime - FOriginTime) * FTimeMultiplier;
   FCurrentTime := Result;

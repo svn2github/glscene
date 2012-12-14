@@ -6,6 +6,7 @@
    Tools for managing an application-side cache of OpenGL state.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
       <li>12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
       <li>07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
@@ -442,7 +443,9 @@ type
     procedure SetViewPort(const Value: TVector4i);
     function GetEnableClipDistance(ClipDistance: Cardinal): TGLboolean;
     procedure SetEnableClipDistance(Index: Cardinal; const Value: TGLboolean);
+    function GetDepthRangeFar:TGLclampd;
     procedure SetDepthRangeFar(const Value: TGLclampd);
+    function GetDepthRangeNear:TGLclampd;
     procedure SetDepthRangeNear(const Value: TGLclampd);
     procedure SetEnableDepthClamp(const enabled: TGLboolean);
     // Coloring state
@@ -703,10 +706,10 @@ type
     {: Modifies the near + far clipping planes. }
     procedure SetDepthRange(const ZNear, ZFar: TGLclampd);
     {: The near clipping plane distance. }
-    property DepthRangeNear: TGLclampd read FDepthRange[0] write
+    property DepthRangeNear: TGLclampd read GetDepthRangeNear write
       SetDepthRangeNear;
     {: The far clipping plane distance. }
-    property DepthRangeFar: TGLclampd read FDepthRange[1] write
+    property DepthRangeFar: TGLclampd read GetDepthRangeFar write
       SetDepthRangeFar;
     {: Enables/Disables each of the clip distances, used in shaders. }
     property EnableClipDistance[Index: Cardinal]: TGLboolean read
@@ -1308,8 +1311,8 @@ begin
     FLightStates.Specular[I] := clrBlack;
     FLightStates.SpotDirection[I] := VectorMake(0.0, 0.0, -1.0, 0.0);
     FSpotCutoff[I] := 180.0;
-    FlightStates.SpotCosCutoffExponent[I][0] := -1;
-    FLightStates.SpotCosCutoffExponent[I][1] := 0;
+    FlightStates.SpotCosCutoffExponent[I].Coord[0] := -1;
+    FLightStates.SpotCosCutoffExponent[I].Coord[1] := 0;
     FLightStates.Attenuation[I] := NullHmgVector;
   end;
   FLightStates.Diffuse[0] := clrWhite;
@@ -1666,13 +1669,13 @@ begin
   begin
     // We need a temp variable, because FColor is cauched.
     GL.GetFloatv(GL_CURRENT_COLOR, @color);
-    color[3] := alpha;
+    color.Coord[3] := alpha;
     GL.Color4fv(@color);
   end
   else
   begin
     i := aFace - GL_FRONT;
-    if (FFrontBackColors[i][2][3] <> alpha) or FInsideList then
+    if (FFrontBackColors[i][2].Coord[3] <> alpha) or FInsideList then
     begin
       if FInsideList then
       begin
@@ -1682,7 +1685,7 @@ begin
       end
       else
       begin
-        FFrontBackColors[i][2][3] := alpha;
+        FFrontBackColors[i][2].Coord[3] := alpha;
         GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
       end;
     end;
@@ -1833,7 +1836,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FBlendColor := Value;
-    GL.BlendColor(Value[0], Value[1], Value[2], Value[3]);
+    GL.BlendColor(Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   end;
 end;
 
@@ -1989,7 +1992,7 @@ begin
   if not VectorEquals(Value, FCurrentVertexAttrib[Index]) then
   begin
     FCurrentVertexAttrib[Index] := Value;
-    GL.VertexAttrib4fv(Index, @Value[0]);
+    GL.VertexAttrib4fv(Index, @Value.Coord[0]);
   end;
 end;
 
@@ -2324,6 +2327,16 @@ begin
   Result := FCurrentVertexAttrib[Index];
 end;
 
+function TGLStateCache.GetDepthRangeFar: TGLclampd;
+begin
+  Result := FDepthRange[1];
+end;
+
+function TGLStateCache.GetDepthRangeNear: TGLclampd;
+begin
+  Result := FDepthRange[0];
+end;
+
 function TGLStateCache.GetEnableBlend(Index: Integer): TGLboolean;
 begin
   Result := FEnableBlend[Index];
@@ -2458,7 +2471,7 @@ begin
   else
     FTextureMatrixIsIdentity[ActiveTexture] := False;
   GL.MatrixMode(GL_TEXTURE);
-  GL.LoadMatrixf(PGLFloat(@matrix[0][0]));
+  GL.LoadMatrixf(PGLFloat(@matrix.Coord[0].Coord[0]));
   GL.MatrixMode(GL_MODELVIEW);
 end;
 
@@ -2841,7 +2854,7 @@ begin
       Include(FListStates[FCurrentList], sttScissor)
     else
       FScissorBox := Value;
-    GL.Scissor(Value[0], Value[1], Value[2], Value[3]);
+    GL.Scissor(Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   end;
 end;
 
@@ -2887,7 +2900,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FColorClearValue := Value;
-    GL.ClearColor(Value[0], Value[1], Value[2], Value[3]);
+    GL.ClearColor(Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   end;
 end;
 
@@ -3340,7 +3353,7 @@ begin
       Include(FListStates[FCurrentList], sttViewport)
     else
       FViewPort := Value;
-    GL.Viewport(Value[0], Value[1], Value[2], Value[3]);
+    GL.Viewport(Value.Coord[0], Value.Coord[1], Value.Coord[2], Value.Coord[3]);
   end;
 end;
 
@@ -3574,7 +3587,7 @@ begin
     else
     begin
       FSpotCutoff[I] := Value;
-      FLightStates.SpotCosCutoffExponent[I][0] := cos(DegToRad(Value));
+      FLightStates.SpotCosCutoffExponent[I].Coord[0] := cos(VectorGeometry.DegToRad(Value));
     end;
 	
     if FFFPLight then
@@ -3588,18 +3601,18 @@ end;
 
 function TGLStateCache.GetSpotExponent(I: Integer): Single;
 begin
-  Result := FLightStates.SpotCosCutoffExponent[I][1];
+  Result := FLightStates.SpotCosCutoffExponent[I].Coord[1];
 end;
 
 procedure TGLStateCache.SetSpotExponent(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.SpotCosCutoffExponent[I][1] )
+  if (Value <> FLightStates.SpotCosCutoffExponent[I].Coord[1] )
     or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.SpotCosCutoffExponent[I][1]  := Value;
+      FLightStates.SpotCosCutoffExponent[I].Coord[1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
@@ -3612,17 +3625,17 @@ end;
 
 function TGLStateCache.GetConstantAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I][0] ;
+  Result := FLightStates.Attenuation[I].Coord[0] ;
 end;
 
 procedure TGLStateCache.SetConstantAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][0] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].Coord[0] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I][0]  := Value;
+      FLightStates.Attenuation[I].Coord[0]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
@@ -3635,17 +3648,17 @@ end;
 
 function TGLStateCache.GetLinearAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I][1] ;
+  Result := FLightStates.Attenuation[I].Coord[1] ;
 end;
 
 procedure TGLStateCache.SetLinearAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][1] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].Coord[1] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I][1]  := Value;
+      FLightStates.Attenuation[I].Coord[1]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
@@ -3658,17 +3671,17 @@ end;
 
 function TGLStateCache.GetQuadAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I][2] ;
+  Result := FLightStates.Attenuation[I].Coord[2] ;
 end;
 
 procedure TGLStateCache.SetQuadAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I][2] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].Coord[2] ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I][2]  := Value;
+      FLightStates.Attenuation[I].Coord[2]  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);
