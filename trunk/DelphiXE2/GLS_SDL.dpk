@@ -1,7 +1,9 @@
 package GLS_SDL;
 
 {$R *.res}
+{$R *.otares}
 {$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -12,21 +14,23 @@ package GLS_SDL;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO OFF}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLScene - SDL Driver'}
+{$LIBSUFFIX 'XE2'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
-{$LIBSUFFIX 'XE2'}
 
 requires
   vcl,
@@ -35,7 +39,7 @@ requires
 contains
   GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
   SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  SDL in '..\Source\GameAPIs\sdl.pas';
+  sdl in '..\Source\GameAPIs\sdl.pas';
 
 end.
 
