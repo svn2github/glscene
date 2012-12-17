@@ -1,4 +1,16 @@
 del *.dcu /s
+del *.bak /s
+del *.hpp /s
+del *.lib /s
+del *.bpi /s
+del *.#00 /s
+del *.pch /s
+del *.tds /s
+del *.ilc /s
+del *.ild /s
+del *.ilf /s
+del *.ils /s
+del *.pdi /s
 del *.ppu /s
 del *.o /s
 del *.~* /s
@@ -10,3 +22,5 @@ del *.mps /s
 del *.rst /s
 del *.s /s
 del *.a /s
+del *.o /s
+del *.~* /s
