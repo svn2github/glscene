@@ -1568,15 +1568,14 @@ end;
 
 function TGLNGDBehaviour.GetBBoxCollision: PNewtonCollision;
 var
-  BoundingBox: THmgBoundingBox;
+  I: Integer;
+  vc: array [0 .. 7] of TVector;
 begin
   for I := 0 to 8 - 1 do
     vc[I] := AABBToBB(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx).BBox[I];
-
   Result := NewtonCreateConvexHull(FManager.FNewtonWorld, 8, @vc[0],
     SizeOf(TVector), 0.01, 0, nil);
 end;
-
 
 function TGLNGDBehaviour.GetBSphereCollision: PNewtonCollision;
 var
