@@ -639,7 +639,7 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLViewer,
-{$IFDEF GLS_DELPHI_XE2_UP}
+{$IFDEF GLS_DELPHI_XE2}
   GLScene.FMX.Viewer,
 {$ENDIF}
   GLWaterPlane,
