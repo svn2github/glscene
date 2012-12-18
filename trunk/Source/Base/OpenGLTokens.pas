@@ -4,6 +4,8 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
+                           to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
       <li>21/08/11 - Yar - Added OpenGL ES
       <li>31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
       <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
@@ -187,12 +189,12 @@ type
 
   // Windows types
 {$IFDEF MSWINDOWS}
-  PWGLSwap = ^TWGLSwap;
+  PWGLswap = ^TWGLswap;
   _WGLSWAP = packed record
     hdc: HDC;
     uiFlags: UINT;
   end;
-  TWGLSwap = _WGLSWAP;
+  TWGLswap = _WGLSWAP;
   WGLSWAP = _WGLSWAP;
   HPBUFFERARB = Integer;
 

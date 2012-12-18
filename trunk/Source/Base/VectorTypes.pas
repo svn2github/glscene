@@ -19,13 +19,14 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>18/12/11 - PW - Restored CPP compatibility: changed arrays to records
     <li>21/02/11 - Yar - Added half and signed byte vectors
     <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
     <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
     <li>19/12/04 - PhP - Added byte vectors
     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                              move PAffineVectorArray, PVectorArray and PMatrixArray
-                             from VectorGeometry to this Unit    
+                             from VectorGeometry to this Unit
     <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
     <li>24/08/03 - PhP - Added smallint vectors
     <li>04/07/01 - EG - Creation
@@ -351,7 +352,6 @@ type
            _41, _42, _43, _44: single);
       1 : (M : TMatrix4f);
   end;
-
 
 implementation
 

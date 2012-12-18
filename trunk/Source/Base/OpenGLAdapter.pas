@@ -85,7 +85,8 @@ type
     // supported version checks
     VERSION_1_0, VERSION_1_1, VERSION_1_2, VERSION_1_3, VERSION_1_4,
     VERSION_1_5, VERSION_2_0, VERSION_2_1, VERSION_3_0, VERSION_3_1,
-    VERSION_3_2, VERSION_3_3, VERSION_4_0, VERSION_4_1, VERSION_4_2: boolean;
+    VERSION_3_2, VERSION_3_3, VERSION_4_0, VERSION_4_1, VERSION_4_2,
+    VERSION_4_3: boolean;
 
     // ARB approved OpenGL extension checks
     ARB_blend_func_extended, ARB_color_buffer_float, ARB_compatibility,
@@ -3698,6 +3699,7 @@ begin
   VERSION_4_0 := IsVersionMet(4, 0, MajorVersion, MinorVersion);
   VERSION_4_1 := IsVersionMet(4, 1, MajorVersion, MinorVersion);
   VERSION_4_2 := IsVersionMet(4, 2, MajorVersion, MinorVersion);
+  VERSION_4_3 := IsVersionMet(4, 2, MajorVersion, MinorVersion);
 
   if vNotInformed then
   begin
