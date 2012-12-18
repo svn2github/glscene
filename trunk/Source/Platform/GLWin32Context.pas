@@ -710,7 +710,12 @@ begin
     // Initialize forward context
     if GLStates.ForwardContext then
     begin
-      if FGL.VERSION_4_2 then
+      if FGL.VERSION_4_3 then
+      begin
+        AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+        AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+      end
+      else if FGL.VERSION_4_2 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
@@ -1154,7 +1159,12 @@ begin
                 // Initialize forward context
                 if GLStates.ForwardContext then
                 begin
-                  if FGL.VERSION_4_2 then
+                  if FGL.VERSION_4_3 then
+                  begin
+                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+                  end
+                  else if FGL.VERSION_4_2 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);

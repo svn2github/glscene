@@ -9,8 +9,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE to remove
-                          redeclarations of RGB, GLPoint and GLRect functions
+      <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
+                          redeclarations of RGB, GLPoint, GLRect and some other types
       <li>30/06/11 - DaStr - Added CharToWideChar()
       <li>19/06/11 - Yar - Added IsDirectoryWriteable
       <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
@@ -291,12 +291,13 @@ type
   PPoint = ^TPoint;
   TRect = Types.TRect;
   PRect = ^TRect;
+
 {$ELSE}
   DWORD = Types.DWORD;
-  TPoint = Types.TPoint;
-  PPoint = Types.PPoint;
-  TRect = Types.TRect;
-  PRect = Types.PRect;
+  TPoint = Types.TPoint;{$NODEFINE TPoint}
+  PPoint = Types.PPoint;{$NODEFINE PPoint}
+  TRect = Types.TRect;  {$NODEFINE TRect}
+  PRect = Types.PRect;  {$NODEFINE PRect}
 {$ENDIF}
 {$ENDIF}
 
@@ -364,10 +365,10 @@ var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
 
-function GLPoint(const x, y: Integer): TGLPoint;//{$IFDEF GLS_CPPB}{$NODEFINE GLPoint}{$ENDIF}
+function GLPoint(const x, y: Integer): TGLPoint;
 {: Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor;{$IFDEF GLS_CPPB}{$NODEFINE RGB}{$ENDIF}
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;//{$IFDEF GLS_CPPB}{$NODEFINE GLRect}{$ENDIF}
+function RGB(const r, g, b: Byte): TColor;{$NODEFINE RGB}
+function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;{$NODEFINE GLRect}
 {: Increases or decreases the width and height of the specified rectangle.<p>
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
