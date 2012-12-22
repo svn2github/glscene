@@ -2830,7 +2830,7 @@ begin
    Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
    Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
    Result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
-   Result[3]:=v1[3]-v2[3];
+   Result.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 

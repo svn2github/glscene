@@ -34,9 +34,6 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
-// Activate combined support for Delphi and C++Builder
-{$DEFINE GLS_DELPHI_OR_CPPB}
-
 // Activate support for png images (using pngimage.pas library)
 // GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
 // Also, Define "Auto" Resize To Nearest 8 Multiple Size
