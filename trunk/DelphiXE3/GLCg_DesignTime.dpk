@@ -1,7 +1,7 @@
 package GLCg_DesignTime;
 
 {$R *.res}
-{$R '..\Source\CgShaders\GLSceneVCLCg.dcr'}
+{$R '..\Source\GLSceneVCLCg.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -34,9 +34,12 @@ requires
   rtl,
   designide,
   GLCg_RunTime,
-  VclSmp;
+  VclSmp,
+  fmx,
+  GLScene_DesignTime,
+  GLScene_RunTime;
 
 contains
-  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas';
+  GLCgRegister in '..\Source\GLCgRegister.pas';
 
 end.

@@ -1,7 +1,7 @@
 package GLSS_OpenAL;
 
 {$R *.res}
-{$R '..\Source\SoundAPIs\GLSceneVCLOpenAL.dcr'}
+{$R '..\Source\GLSceneVCLOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -37,6 +37,6 @@ requires
 
 contains
   GLSMOpenAL in '..\Source\GLSMOpenAL.pas',
-  openal in '..\Source\SoundAPIs\openal.pas';
+  openal in '..\Source\openal.pas';
 
 end.
