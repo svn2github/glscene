@@ -120,8 +120,9 @@ begin
   Height := 100;
   FFMXBuffer := FMX.Types.TBitmap.Create(100, 100);
   FMultisample := TMultisample.msNone;
-  // FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); - E2003 Undeclared identifier: 'DefaultClass'
-  FFMXContext := TContextManager.DefaultContextClass.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
+
+  FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); //- E2003 Undeclared identifier: 'DefaultClass'
+  //FFMXContext := TContextManager.DefaultContextClass.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
 end;
 
 destructor TGLSceneViewport.Destroy;

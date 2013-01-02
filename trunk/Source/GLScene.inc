@@ -126,7 +126,9 @@
    // There no extended type on all non-x86 platforms.
   {.$DEFINE GLS_PLATFORM_HAS_EXTENDED}
   {$IFDEF GLS_DELPHI_OR_CPPB}
+    {$IFDEF BCB}
     {$DEFINE GLS_CPPB}
+    {$ENDIF}
 //    {$DEFINE BCB}  // for BCB6, Zlib, Cg
     // C++Builder requires hpp/obj files to use Delphi components in run-time packages.
     {$ObjExportAll On}
