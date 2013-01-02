@@ -100,7 +100,7 @@ begin
     @iPnt)
   then begin
     Label1.Caption :=
-       Format('Intersect point: %.3f %.3f %.3f', [iPnt[0], iPnt[1], iPnt[2]]);
+       Format('Intersect point: %.3f %.3f %.3f', [iPnt.X, iPnt.Y, iPnt.Z]);
     GLPoints1.Positions.Add(iPnt);
     beep;
   end else begin

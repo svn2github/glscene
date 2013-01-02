@@ -184,8 +184,8 @@ begin
     case Step of
       0:
       begin
-        CubeWidth := Length[0]*2;
-        CubeDepth := Length[2]*2;
+        CubeWidth := Length.X*2;
+        CubeDepth := Length.Z*2;
       end;
       1: CubeHeight := FVectorLength;
       2:  FCreationScenarious := -1;
@@ -203,8 +203,8 @@ begin
     case Step of
       0:
       begin
-        Width := Length[0]*2;
-        Height := Length[2]*2;
+        Width := Length.X*2;
+        Height := Length.Z*2;
       end;
       1: FCreationScenarious := -1;
     end;
@@ -234,10 +234,10 @@ begin
   SetVector(v, X, InvertedY, 0);
  if not isy then
   Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ
-   (v, GLTargetCamera.AbsolutePosition[1], Result)
+   (v, GLTargetCamera.AbsolutePosition.Y, Result)
    else
      Viewer.Buffer.ScreenVectorIntersectWithPlaneXY
-       (v, GLTargetCamera.AbsolutePosition[2], Result)
+       (v, GLTargetCamera.AbsolutePosition.Z, Result)
 end;
 
 Procedure TForm1.UpdateTreeView;
@@ -491,8 +491,8 @@ begin
         else
           MousePos := MouseWorldPos(x, y, true);
       MousePos := VectorSubtract(LostMousePos,MousePos);
-      MousePos[0]:= -MousePos[0]*0.4 ;
-      MousePos[2]:= -MousePos[2]*0.4 ;
+      MousePos.X:= -MousePos.X*0.4 ;
+      MousePos.Z:= -MousePos.Z*0.4 ;
       GLTargetCamera.Position.AsVector := Vectoradd(pos, MousePos);
     end;
     if SpeedButton16.Down or SpeedButton19.Down or SpeedButton20.Down then

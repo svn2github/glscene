@@ -80,28 +80,27 @@ implementation
 {$R *.dfm}
 
 procedure TPostShaderDemoForm.FormCreate(Sender: TObject);
-const
-  MEDIA_PATH = '..\..\media\';
 begin
+  SetGLSceneMediaDir();
   // First load models.
-  Fighter.LoadFromFile(MEDIA_PATH + 'waste.md2'); //Fighter
+  Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
   Fighter.Scale.Scale(2);
 
-  Teapot.LoadFromFile(MEDIA_PATH + 'Teapot.3ds'); //Teapot (no texture coordinates)
+  Teapot.LoadFromFile('Teapot.3ds'); //Teapot (no texture coordinates)
   Teapot.Scale.Scale(0.8);
 
-  Sphere_big.LoadFromFile(MEDIA_PATH + 'Sphere_big.3DS');
+  Sphere_big.LoadFromFile('Sphere_big.3DS');
   Sphere_big.Scale.Scale(70);
 
-  Sphere_little.LoadFromFile(MEDIA_PATH + 'Sphere_little.3ds');
+  Sphere_little.LoadFromFile('Sphere_little.3ds');
   Sphere_little.Scale.Scale(4);
 
   // Then load textures.
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Earth.jpg');
-  MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Waste.jpg');
-  MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile(MEDIA_PATH + 'Flare1.bmp');
+  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
+  MaterialLibrary.LibMaterialByName('Fighter').Material.Texture.Image.LoadFromFile('Waste.jpg');
+  MaterialLibrary.LibMaterialByName('Noise').Material.Texture.Image.LoadFromFile('Flare1.bmp');
 
   // Blur Shader
   BlurShader := TGLSLPostBlurShader.Create(Self);

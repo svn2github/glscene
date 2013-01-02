@@ -77,30 +77,32 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
-const
-  FILE_PATH = '..\..\media\';
 begin
+  SetGLSceneMediaDir();
   // First load models.
-  Fighter.LoadFromFile(FILE_PATH + 'waste.md2'); //Fighter
+  Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
   Fighter.Scale.Scale(3);
 
-  Teapot.LoadFromFile(FILE_PATH + 'Teapot.3ds'); //Teapot (no texture coordinates)
+  Teapot.LoadFromFile('Teapot.3ds'); //Teapot (no texture coordinates)
   Teapot.Scale.Scale(0.8);
 
-  Sphere_big.LoadFromFile(FILE_PATH + 'Sphere_big.3DS'); //Sphere_big
+  Sphere_big.LoadFromFile('Sphere_big.3DS'); //Sphere_big
   Sphere_big.Scale.Scale(70);
 
-  Sphere_little.LoadFromFile(FILE_PATH + 'Sphere_little.3ds'); //Sphere_little
+  Sphere_little.LoadFromFile('Sphere_little.3ds'); //Sphere_little
   Sphere_little.Scale.Scale(4);
 
   // Then load textures.
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(FILE_PATH + 'Earth.jpg');
+  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
 
   // Shader.
-  GLSLShader.LoadShaderPrograms('Shaders/Shader.Vert', 'Shaders/Shader.Frag');
+  GLSLShader.LoadShaderPrograms('Shader.Vert', 'Shader.Frag');
   GLSLShader.Enabled := True;
 end;
 

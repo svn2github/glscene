@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 170
-  Top = 79
+  Left = 219
+  Top = 156
   Width = 521
   Height = 296
   AutoSize = True
@@ -121,6 +121,8 @@ object Form1: TForm1
         Visible = False
         MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object Plane1: TGLPlane
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}

@@ -49,12 +49,13 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, GLFile3DS;
+uses VectorGeometry, GLFile3DS, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // Load mushroom mesh
-   FreeForm1.LoadFromFile('..\..\media\mushroom.3ds');
+   FreeForm1.LoadFromFile('mushroom.3ds');
 end;
 
 // Perform the raycasting for the perspective camera & viewer

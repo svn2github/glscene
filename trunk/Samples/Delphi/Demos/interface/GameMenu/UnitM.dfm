@@ -27,6 +27,7 @@ object Form1: TForm1
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object MainPanel: TPanel
     Left = 0
@@ -96,8 +97,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end>
     Left = 216
     Top = 48

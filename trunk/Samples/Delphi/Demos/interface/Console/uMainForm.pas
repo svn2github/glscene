@@ -81,6 +81,9 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TMainForm.OnCommand(const Sender: TGLConsoleCommand;
   const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
 var
@@ -121,13 +124,14 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   Console := TGLConsole.CreateAsChild(Scene.Objects);
   Console.Visible := False;
   Console.SceneViewer := Viewer;
   Console.Font := Font1;
 
   //optional stuff:
-  Console.HudSprite.Material.Texture.Image.LoadFromFile('..\..\media\GLScene.bmp');
+  Console.HudSprite.Material.Texture.Image.LoadFromFile('GLScene.bmp');
   Console.AddLine('Console started');
   Console.HUDSpriteColor := clWhite;
   Console.FontColor := clBlue;

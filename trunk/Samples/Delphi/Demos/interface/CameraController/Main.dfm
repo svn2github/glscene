@@ -17,10 +17,10 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 616
+    Left = 608
     Top = 0
     Width = 446
-    Height = 567
+    Height = 556
     Align = alRight
     TabOrder = 0
     object Panel2: TPanel
@@ -520,11 +520,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 616
-    Height = 567
+    Width = 608
+    Height = 556
     Camera = GLCamera
     VSync = vsmSync
-    FieldOfView = 134.116027832031300000
+    FieldOfView = 133.304656982421900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -612,8 +612,8 @@ object Form1: TForm1
   end
   object Panel6: TPanel
     Left = 0
-    Top = 567
-    Width = 1062
+    Top = 556
+    Width = 1054
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
@@ -713,12 +713,12 @@ object Form1: TForm1
         Position.Coordinates = {000000000000F0C1000000000000803F}
         LineColor.Color = {E9E8683E8786063FD2D1513F0000803F}
         XSamplingScale.Min = -150.000000000000000000
-        XSamplingScale.Max = 150.000000000000000000
-        XSamplingScale.Step = 5.000000000000000000
-        YSamplingScale.Step = 0.100000001490116100
+        XSamplingScale.max = 150.000000000000000000
+        XSamplingScale.step = 5.000000000000000000
+        YSamplingScale.step = 0.100000001490116100
         ZSamplingScale.Min = -150.000000000000000000
-        ZSamplingScale.Max = 150.000000000000000000
-        ZSamplingScale.Step = 5.000000000000000000
+        ZSamplingScale.max = 150.000000000000000000
+        ZSamplingScale.step = 5.000000000000000000
         Parts = [gpX, gpZ]
       end
       object GLPlane1: TGLPlane
@@ -738,20 +738,20 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'transparent blue'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {FBFAFA3EF7F6F63E0000803F9A99193F}
         Material.BlendingMode = bmTransparency
-        Tag = 0
       end
       item
         Name = 'opaque green'
-        Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {000000000000803FF3F2F23E0000803F}
       end
       item
         Name = 'opaque red'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-        Tag = 0
       end>
     Left = 40
     Top = 40
@@ -772,6 +772,7 @@ object Form1: TForm1
   end
   object GLCameraController1: TGLCameraController
     Camera = GLCamera
+    CameraTarget = dcSphere
     soSafeDistance = 10.000000000000000000
     soTimeToSafePlacement = 1.000000000000000000
     soTimeToOrbit = 2.000000000000000000

@@ -54,7 +54,7 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, VectorTypes;
+uses VectorGeometry, VectorTypes, GLUtils;
 
 var
   FadeOutCount : integer;
@@ -63,7 +63,8 @@ var
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   BitmapFont.Glyphs.LoadFromFile('..\..\media\toonfont.bmp');
+   SetGLSceneMediaDir();
+   BitmapFont.Glyphs.LoadFromFile('toonfont.bmp');
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events0Event(event: TTimeEvent);

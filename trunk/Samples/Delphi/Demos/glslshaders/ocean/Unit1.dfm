@@ -60,11 +60,11 @@ object Form1: TForm1
       Material.MaterialLibrary = MatLib
       Material.LibMaterialName = 'water'
       XSamplingScale.Min = -100.000000000000000000
-      XSamplingScale.Max = 100.000000000000000000
-      XSamplingScale.Step = 2.000000000000000000
+      XSamplingScale.max = 100.000000000000000000
+      XSamplingScale.step = 2.000000000000000000
       YSamplingScale.Min = -100.000000000000000000
-      YSamplingScale.Max = 100.000000000000000000
-      YSamplingScale.Step = 2.000000000000000000
+      YSamplingScale.max = 100.000000000000000000
+      YSamplingScale.step = 2.000000000000000000
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLSphere2: TGLSphere
@@ -87,21 +87,21 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'water'
+        Tag = 0
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Disabled = False
         Material.Texture.NormalMapScale = 0.050000000745058060
-        Tag = 0
         Shader = GLUserShader1
       end
       item
         Name = 'cubeMap'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCubeMapImage'
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureWrap = twNone
         Material.Texture.MappingMode = tmmCubeMapNormal
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 16
     Top = 56

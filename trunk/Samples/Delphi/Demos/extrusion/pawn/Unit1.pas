@@ -59,11 +59,12 @@ implementation
 
 {$R *.DFM}
 
-uses JPeg;
+uses JPeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   RotationSolid1.Material.Texture.Image.LoadFromFile('..\..\media\ashwood.jpg');
+   SetGLSceneMediaDir();
+   RotationSolid1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);

@@ -63,11 +63,12 @@ implementation
 
 {$R *.dfm}
 
-uses GLFile3DS;
+uses GLFile3DS, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   FreeForm1.LoadFromFile('..\..\media\BoxedIn.3ds');
+   SetGLSceneMediaDir();
+   FreeForm1.LoadFromFile('BoxedIn.3ds');
 
    FreeForm1.BuildOctree;
    Label1.Caption:='Octree Nodes    : '+inttostr(FreeForm1.Octree.NodeCount);

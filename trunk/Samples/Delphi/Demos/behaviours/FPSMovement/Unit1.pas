@@ -65,7 +65,7 @@ var
 implementation
 
 uses
-  GLKeyboard;
+  GLKeyboard, GLUtils;
 
 var
   yangle: double = 90;
@@ -79,11 +79,12 @@ var
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  Map1.LoadFromFile('..\..\media\map.3ds');
+  SetGLSceneMediaDir();
+  Map1.LoadFromFile('map.3ds');
   Map1.BuildOctree();
   Map1.Up.SetVector(0, 1, 0);
 
-  map2.LoadFromFile('..\..\media\beer.3ds');
+  map2.LoadFromFile('beer.3ds');
   map2.BuildOctree;
 
   showCursor(false);

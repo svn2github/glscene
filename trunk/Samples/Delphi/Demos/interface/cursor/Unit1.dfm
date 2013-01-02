@@ -116,12 +116,12 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'cursor'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 136
     Top = 16

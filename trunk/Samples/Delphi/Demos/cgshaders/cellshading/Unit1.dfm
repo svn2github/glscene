@@ -17,12 +17,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 423
-    Height = 396
+    Width = 415
+    Height = 392
     Camera = GLCamera1
+    FieldOfView = 151.377914428710900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
@@ -43,11 +45,11 @@ object Form1: TForm1
       end
     end
     object GLActor1: TGLActor
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'CgShaderMat'
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       PitchAngle = 90.000000000000000000
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'CgShaderMat'
       Interval = 100
     end
   end
@@ -66,8 +68,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'CgShaderMat'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
         Shader = CgCellShader
       end>
     Left = 40

@@ -2741,14 +2741,14 @@ object Form1: TForm1
       end
       object GLXYZGrid1: TGLXYZGrid
         XSamplingScale.Min = -5.000000000000000000
-        XSamplingScale.Max = 5.000000000000000000
-        XSamplingScale.Step = 1.000000000000000000
+        XSamplingScale.max = 5.000000000000000000
+        XSamplingScale.step = 1.000000000000000000
         YSamplingScale.Min = -5.000000000000000000
-        YSamplingScale.Max = 5.000000000000000000
-        YSamplingScale.Step = 1.000000000000000000
+        YSamplingScale.max = 5.000000000000000000
+        YSamplingScale.step = 1.000000000000000000
         ZSamplingScale.Min = -5.000000000000000000
-        ZSamplingScale.Max = 5.000000000000000000
-        ZSamplingScale.Step = 1.000000000000000000
+        ZSamplingScale.max = 5.000000000000000000
+        ZSamplingScale.step = 1.000000000000000000
         Parts = [gpX, gpZ]
       end
     end

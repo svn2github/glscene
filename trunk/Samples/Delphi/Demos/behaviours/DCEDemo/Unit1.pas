@@ -42,7 +42,8 @@ uses
   GLCoordinates,
   BaseClasses,
   GLRenderContextInfo,
-  GLState;
+  GLState,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -121,16 +122,17 @@ uses Jpeg,
 
 procedure TForm1.Load;
 begin
+  SetGLSceneMediaDir();
   //Load Materials
   with GLMatlLib do
   begin
-    AddTextureMaterial('Terrain', '..\..\media\snow512.jpg');
-    AddTextureMaterial('Actor', '..\..\media\waste.jpg');
+    AddTextureMaterial('Terrain', 'snow512.jpg');
+    AddTextureMaterial('Actor', 'waste.jpg');
   end;
 
   //Load Terrain
   GLBitmapHDS1.MaxPoolSize := 8 * 1024 * 1024;
-  GLBitmapHDS1.Picture.LoadFromFile('..\..\media\terrain.bmp');
+  GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
   Terrain.Direction.SetVector(0, 1, 0);
   Terrain.Material.LibMaterialName := 'Terrain';
   Terrain.TilesPerTexture := 256 / Terrain.TileSize;
@@ -141,19 +143,19 @@ begin
   // Load mushroom mesh
   //Always use AutoScaling property or you may get some problems
   moMushRoom.AutoScaling.SetPoint(0.1, 0.1, 0.1);
-  moMushRoom.LoadFromFile('..\..\media\Mushroom.3ds');
+  moMushRoom.LoadFromFile('Mushroom.3ds');
   moMushRoom.Direction.SetVector(0, 1, 0);
   moMushRoom.BuildOctree;
 
   //Load player
   Player.Position.SetPoint(0, 3, 0);
   //Actor
-  GLActor1.LoadFromFile('..\..\media\Waste.md2');
+  GLActor1.LoadFromFile('Waste.md2');
   GLActor1.Direction.SetVector(0, 1, 0);
   GLActor1.Up.SetVector(1, 0, 0);
   GLActor1.Scale.SetVector(0.05, 0.05, 0.05);
   GLActor1.Material.LibMaterialName := 'Actor';
-  GLActor1.Animations.LoadFromFile('..\..\media\Quake2Animations.aaf');
+  GLActor1.Animations.LoadFromFile('Quake2Animations.aaf');
   // Define animation properties
   GLActor1.AnimationMode := aamLoop;
   GLActor1.SwitchToAnimation('stand');
@@ -171,13 +173,13 @@ begin
 
   Force := NullVector;
   if IsKeyDown('w') or IsKeyDown('z') then
-    Force[2] := cForce;
+    Force.Z := cForce;
   if IsKeyDown('s') then
-    Force[2] := -cForce;
+    Force.Z := -cForce;
   if IsKeyDown('a') or IsKeyDown('q') then
-    Force[0] := cForce;
+    Force.X := cForce;
   if IsKeyDown('d') then
-    Force[0] := -cForce;
+    Force.X := -cForce;
 
   GetOrCreateDCEDynamic(Player).ApplyAccel(Force);
 end;
@@ -409,22 +411,22 @@ begin
     begin
       GL.Color3f(0, 0, 0);
       GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(p1[0], p1[1], p1[2]);
-      GL.Vertex3f(p2[0], p2[1], p2[2]);
-      GL.Vertex3f(p3[0], p3[1], p3[2]);
+      GL.Vertex3f(p1.X, p1.Y, p1.Z);
+      GL.Vertex3f(p2.X, p2.Y, p2.Z);
+      GL.Vertex3f(p3.X, p3.Y, p3.Z);
       GL.End_;
       CalcPlaneNormal(p1, p2, p3, n);
       ScaleVector(n, 0.25);
-      p[0] := (p1[0] + p2[0] + p3[0]) / 3;
-      p[1] := (p1[1] + p2[1] + p3[1]) / 3;
-      p[2] := (p1[2] + p2[2] + p3[2]) / 3;
+      p.X := (p1.X + p2.X + p3.X) / 3;
+      p.Y := (p1.Y + p2.Y + p3.Y) / 3;
+      p.Z := (p1.Z + p2.Z + p3.Z) / 3;
       GL.Color3f(0, 0, 1);
       GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(p[0], p[1], p[2]);
-      GL.Vertex3f(p[0] + n[0], p[1] + n[1], p[2] + n[2]);
+      GL.Vertex3f(p.X, p.Y, p.Z);
+      GL.Vertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
       GL.End_;
       GL.Begin_(GL_POINTS);
-      GL.Vertex3f(p[0] + n[0], p[1] + n[1], p[2] + n[2]);
+      GL.Vertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
       GL.End_;
 
     end; //}

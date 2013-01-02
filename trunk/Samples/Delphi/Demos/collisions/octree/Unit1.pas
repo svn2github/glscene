@@ -63,14 +63,15 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, VectorLists, GLFile3DS;
+uses VectorGeometry, VectorLists, GLFile3DS, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    t : Int64;
 begin
+   SetGLSceneMediaDir();
    // Load high poly mesh (10,000 triangles).
-   FreeForm1.LoadFromFile('..\..\media\HighPolyObject.3ds');
+   FreeForm1.LoadFromFile('HighPolyObject.3ds');
 
    t:=StartPrecisionTimer;
 

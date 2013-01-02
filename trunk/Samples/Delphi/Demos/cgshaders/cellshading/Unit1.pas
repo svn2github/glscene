@@ -65,23 +65,24 @@ implementation
 {$R *.dfm}
 
 uses
-  GLFileMD2;
+  GLFileMD2, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
 begin
+  SetGLSceneMediaDir();
   // Load the vertex and fragment Cg programs
   CgCellShader.VertexProgram.LoadFromFile('cellshading_vp.cg');
   CgCellShader.FragmentProgram.LoadFromFile('cellshading_fp.cg');
 
   // Load and scale the actor
-  GLActor1.LoadFromFile('..\..\media\waste.md2');
+  GLActor1.LoadFromFile('waste.md2');
   r:=GLActor1.BoundingSphereRadius;
   GLActor1.Scale.SetVector(2.5/r,2.5/r,2.5/r);
   GLActor1.AnimationMode:=aamLoop;
   // Load the texture
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\wastecell.jpg');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('wastecell.jpg');
 end;
 
 procedure TForm1.CgCellShaderApplyVP(CgProgram: TCgProgram; Sender: TObject);

@@ -45,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLContext, Dialogs, GLTexture, Jpeg;
+uses GLContext, Dialogs, GLTexture, Jpeg, GLUtils;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
@@ -80,7 +80,7 @@ begin
            ShowMessage('Your graphics board does not support cube maps...'#13#10
                        +'So, no cube maps for ya...')
         else begin
-           SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+           SetGLSceneMediaDir();
            with Teapot1.Material.Texture do begin
               ImageClassName:=TGLCubeMapImage.ClassName;
               with Image as TGLCubeMapImage do begin

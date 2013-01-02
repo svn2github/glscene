@@ -356,12 +356,12 @@ object Form1: TForm1
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -10.000000000000000000
-      XSamplingScale.Max = 10.000000000000000000
-      XSamplingScale.Step = 3.000000000000000000
+      XSamplingScale.max = 10.000000000000000000
+      XSamplingScale.step = 3.000000000000000000
       YSamplingScale.Min = -10.000000000000000000
-      YSamplingScale.Max = 10.000000000000000000
-      YSamplingScale.Step = 3.000000000000000000
-      ZSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.max = 10.000000000000000000
+      YSamplingScale.step = 3.000000000000000000
+      ZSamplingScale.step = 0.100000001490116100
     end
     object GLLines1: TGLLines
       Visible = False

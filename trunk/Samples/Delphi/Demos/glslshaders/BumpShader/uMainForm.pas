@@ -96,26 +96,27 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
-const
-  FILE_PATH = '..\..\media\';
 var
   I: Integer;
 begin
   //First load models
-  TrinityMatlib.TexturePaths := FILE_PATH;
-  Fighter.LoadFromFile(FILE_PATH + 'TRINITYrage.smd'); //Fighter
-  Fighter.AddDataFromFile(FILE_PATH + 'walk.smd');
+  SetGLSceneMediaDir();
+  Fighter.LoadFromFile('TRINITYrage.smd'); //Fighter
+  Fighter.AddDataFromFile('walk.smd');
   Fighter.Animations[1].MakeSkeletalTranslationStatic;
-  Fighter.AddDataFromFile(FILE_PATH + 'run.smd');
+  Fighter.AddDataFromFile('run.smd');
   Fighter.Animations[2].MakeSkeletalTranslationStatic;
-  Fighter.AddDataFromFile(FILE_PATH + 'long_jump.smd');
-  Fighter.AddDataFromFile(FILE_PATH + 'jump.smd');
-  Fighter.AddDataFromFile(FILE_PATH + 'look_left_right.smd');
+  Fighter.AddDataFromFile('long_jump.smd');
+  Fighter.AddDataFromFile('jump.smd');
+  Fighter.AddDataFromFile('look_left_right.smd');
   Fighter.Animations[5].MakeSkeletalRotationDelta;
   Fighter.SwitchToAnimation(1);
 {
-  Fighter.LoadFromFile(FILE_PATH + 'waste.md2'); //Fighter
+  Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
   Fighter.Scale.Scale(3);
@@ -124,22 +125,22 @@ begin
   Fighter.Scale.Scale(3);
 //  Fighter.MeshObjects.BuildTangentSpace;
 
-  Teapot.LoadFromFile(FILE_PATH + 'Teapot.3ds'); //Teapot
+  Teapot.LoadFromFile('Teapot.3ds'); //Teapot
   Teapot.Scale.Scale(0.8);
   //  Teapot.MeshObjects.BuildTangentSpace; does not have texture coordinates...
 
-  Sphere_big.LoadFromFile(FILE_PATH + 'Sphere_big.3DS'); //Sphere_big
+  Sphere_big.LoadFromFile('Sphere_big.3DS'); //Sphere_big
   Sphere_big.Scale.Scale(70);
   Sphere_big.MeshObjects.BuildTangentSpace;
 
-  Sphere_little.LoadFromFile(FILE_PATH + 'Sphere_little.3ds'); //Sphere_little
+  Sphere_little.LoadFromFile('Sphere_little.3ds'); //Sphere_little
   Sphere_little.Scale.Scale(4);
   Sphere_little.MeshObjects.BuildTangentSpace;
 
   // Then load textures
-  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile(FILE_PATH + 'Earth.jpg');
-  MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture.Image.LoadFromFile(FILE_PATH + 'EarthSpec.dds');
-  MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture.Image.LoadFromFile(FILE_PATH + 'EarthNormals.jpg');
+  MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
+  MaterialLibrary.LibMaterialByName('EarthGross').Material.Texture.Image.LoadFromFile('EarthSpec.dds');
+  MaterialLibrary.LibMaterialByName('EarthNormals').Material.Texture.Image.LoadFromFile('EarthNormals.jpg');
 
   // Create Shader
   MultiLightShader := TGLSLMLBumpShader.Create(Self);

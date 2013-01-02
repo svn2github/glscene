@@ -17,17 +17,19 @@ object Form1: TForm1
   object GLSceneViewer2: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 697
-    Height = 475
+    Width = 689
+    Height = 471
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
     Buffer.ShadeModel = smFlat
+    FieldOfView = 156.026565551757800000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 697
+    Width = 689
     Height = 65
     Align = alTop
     BevelOuter = bvNone
@@ -96,23 +98,20 @@ object Form1: TForm1
       object FreeForm1: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
     object Sphere1: TGLSphere
+      Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
-      Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.100000001490116100
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
-        Position.Coordinates = {0000000000000000CDCCCC3D0000803F}
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F9A99193F}
         Material.FrontProperties.Emission.Color = {1283803E1283803E000000000000803F}
         Material.BlendingMode = bmTransparency
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000000000000000CDCCCC3D0000803F}
         BottomRadius = 0.050000000745058060
         Height = 1.000000000000000000
         TopRadius = 0.100000001490116100
@@ -126,13 +125,13 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
     end
     object Sphere2: TGLSphere
+      Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
+      Material.FrontProperties.Shininess = 128
+      Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
       VisibilityCulling = vcObjectBased
       Direction.Coordinates = {4A602B3FC61C69BE490635BF00000000}
       Position.Coordinates = {000000000000E040000000C00000803F}
       Up.Coordinates = {B819C33EF71E6C3FCDAE823D00000000}
-      Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-      Material.FrontProperties.Shininess = 128
-      Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
       Radius = 20.000000000000000000
       Slices = 24
       Stacks = 24
@@ -147,8 +146,8 @@ object Form1: TForm1
     object Lines1: TGLLines
       LineColor.Color = {0000803F0000803F0000003F3333733F}
       LineWidth = 3.000000000000000000
-      Nodes = <>
       NodeColor.Color = {0000803F0000803F000000000000803F}
+      Nodes = <>
       NodesAspect = lnaCube
       NodeSize = 10.000000000000000000
       Options = [loUseNodeColorForLines]

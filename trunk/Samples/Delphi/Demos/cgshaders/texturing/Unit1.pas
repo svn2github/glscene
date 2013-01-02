@@ -130,8 +130,12 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   // load Cg proggy
   with CgShader1 do begin
     VertexProgram.LoadFromFile('cg_texture_vp.cg');
@@ -164,8 +168,8 @@ begin
   end;
 
   // Display profiles used
-  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileStringA;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileStringA;
 end;
 
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);

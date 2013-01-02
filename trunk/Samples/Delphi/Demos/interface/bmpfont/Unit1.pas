@@ -55,10 +55,14 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // Load the font bitmap
-   BitmapFont1.Glyphs.LoadFromFile('..\..\media\darkgold_font.bmp');
+   BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
    // sorry, couldn't resist...
    HUDText1.Text:='Hello World !'#13#10#13#10
                  +'This is me, '#13#10

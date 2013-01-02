@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 209
     Top = 0
     Width = 0
-    Height = 397
+    Height = 386
     Color = clBtnShadow
     ParentColor = False
   end
@@ -29,7 +29,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 209
-    Height = 397
+    Height = 386
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -236,8 +236,8 @@ object Form1: TForm1
   object Panel9: TPanel
     Left = 209
     Top = 0
-    Width = 392
-    Height = 397
+    Width = 384
+    Height = 386
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -249,7 +249,7 @@ object Form1: TForm1
     object Panel10: TPanel
       Left = 1
       Top = 1
-      Width = 390
+      Width = 382
       Height = 48
       Align = alTop
       Caption = 'GLCgBombShader Demo'
@@ -264,12 +264,13 @@ object Form1: TForm1
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
       Top = 49
-      Width = 390
-      Height = 347
+      Width = 382
+      Height = 336
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
-      FieldOfView = 147.847686767578100000
+      FieldOfView = 146.851989746093800000
       Align = alClient
+      TabOrder = 1
     end
   end
   object GLScene1: TGLScene
@@ -316,12 +317,12 @@ object Form1: TForm1
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -3.000000000000000000
-      XSamplingScale.Max = 3.000000000000000000
-      XSamplingScale.Step = 0.100000001490116100
-      YSamplingScale.Step = 0.100000001490116100
+      XSamplingScale.max = 3.000000000000000000
+      XSamplingScale.step = 0.100000001490116100
+      YSamplingScale.step = 0.100000001490116100
       ZSamplingScale.Min = -3.000000000000000000
-      ZSamplingScale.Max = 3.000000000000000000
-      ZSamplingScale.Step = 0.100000001490116100
+      ZSamplingScale.max = 3.000000000000000000
+      ZSamplingScale.step = 0.100000001490116100
       Parts = [gpX, gpZ]
     end
     object GLLightSource1: TGLLightSource
@@ -349,39 +350,39 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {8988083E00000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {DBDADA3ED5D4543EA1A0A03D0000803F}
         Material.FrontProperties.Specular.Color = {EDEC6C3EDDDC5C3ED5D4543E0000803F}
         Material.BlendingMode = bmTransparency
-        Tag = 0
       end
       item
         Name = 'Fire'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'marbles1'
+        Tag = 0
         Material.Texture.MappingMode = tmmEyeLinear
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'marbles2'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'snow'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'FighterTexture'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {E1E0E03DC1C0C03DC1C0C03D0000803F}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 520
     Top = 56

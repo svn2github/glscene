@@ -21,7 +21,7 @@ object Form1: TForm1
   object Splitter1: TSplitter
     Left = 369
     Top = 0
-    Height = 457
+    Height = 446
     Color = clBtnShadow
     ParentColor = False
   end
@@ -29,7 +29,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 369
-    Height = 457
+    Height = 446
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -38,7 +38,7 @@ object Form1: TForm1
       Left = 2
       Top = 2
       Width = 365
-      Height = 453
+      Height = 442
       ActivePage = TabSheet1
       Align = alClient
       Font.Charset = ANSI_CHARSET
@@ -52,7 +52,7 @@ object Form1: TForm1
         Caption = 'Vertex Program'
         object Splitter3: TSplitter
           Left = 0
-          Top = 318
+          Top = 307
           Width = 357
           Height = 3
           Cursor = crVSplit
@@ -95,7 +95,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 357
-          Height = 293
+          Height = 282
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -114,7 +114,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 355
-            Height = 250
+            Height = 239
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -129,7 +129,7 @@ object Form1: TForm1
           end
           object Panel13: TPanel
             Left = 1
-            Top = 267
+            Top = 256
             Width = 355
             Height = 25
             Align = alBottom
@@ -153,7 +153,7 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 321
+          Top = 310
           Width = 357
           Height = 104
           Align = alBottom
@@ -310,7 +310,7 @@ object Form1: TForm1
         end
         object Panel8: TPanel
           Left = 0
-          Top = 321
+          Top = 310
           Width = 357
           Height = 104
           Align = alBottom
@@ -372,8 +372,8 @@ object Form1: TForm1
   object Panel9: TPanel
     Left = 372
     Top = 0
-    Width = 379
-    Height = 457
+    Width = 371
+    Height = 446
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -385,7 +385,7 @@ object Form1: TForm1
     object Panel10: TPanel
       Left = 1
       Top = 1
-      Width = 377
+      Width = 369
       Height = 48
       Align = alTop
       Caption = 'Cg Simple'
@@ -400,13 +400,15 @@ object Form1: TForm1
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
       Top = 49
-      Width = 377
-      Height = 407
+      Width = 369
+      Height = 396
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
+      FieldOfView = 149.673782348632800000
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove
+      TabOrder = 1
     end
   end
   object GLScene1: TGLScene
@@ -421,23 +423,22 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object GLFreeForm1: TGLFreeForm
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {8FC2F53C8FC2F53C8FC2F53C00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'LibMaterial'
       AutoCentering = [macCenterX, macCenterY]
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -2.000000000000000000
-      XSamplingScale.Max = 2.000000000000000000
-      XSamplingScale.Step = 0.100000001490116100
-      YSamplingScale.Step = 0.100000001490116100
+      XSamplingScale.max = 2.000000000000000000
+      XSamplingScale.step = 0.100000001490116100
+      YSamplingScale.step = 0.100000001490116100
       ZSamplingScale.Min = -2.000000000000000000
-      ZSamplingScale.Max = 2.000000000000000000
-      ZSamplingScale.Step = 0.100000001490116100
+      ZSamplingScale.max = 2.000000000000000000
+      ZSamplingScale.step = 0.100000001490116100
       Parts = [gpX, gpZ]
-      LinesSmoothing = False
     end
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {000000003333333F000000000000803F}
@@ -455,11 +456,11 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {8988083E00000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {DBDADA3ED5D4543EA1A0A03D0000803F}
         Material.FrontProperties.Shininess = 128
         Material.FrontProperties.Specular.Color = {EDEC6C3EDDDC5C3ED5D4543E0000803F}
-        Tag = 0
         Shader = CgShader1
       end>
     Left = 384

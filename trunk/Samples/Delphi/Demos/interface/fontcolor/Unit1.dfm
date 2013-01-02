@@ -17,19 +17,21 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 362
-    Height = 270
+    Width = 354
+    Height = 261
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 138.072158813476600000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 72
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000004000000040000000400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Teapot1: TGLTeapot
       Material.FrontProperties.Diffuse.Color = {9D9C1C3FB3B2323F0000803F0000803F}
@@ -39,7 +41,6 @@ object Form1: TForm1
       BitmapFont = BitmapFont
       Text = 'FADING OUT'
       Alignment = taCenter
-      Layout = tlTop
       ModulateColor.Color = {0000803F0000803F0000803F3333333F}
     end
     object HUDText2: TGLHUDText
@@ -47,7 +48,6 @@ object Form1: TForm1
       BitmapFont = BitmapFont
       Text = 'THE END'
       Alignment = taCenter
-      Layout = tlTop
       ModulateColor.Color = {0000803FF8FEFE3E000000003333333F}
     end
     object HUDText3: TGLHUDText
@@ -55,7 +55,6 @@ object Form1: TForm1
       BitmapFont = BitmapFont
       Text = 'RED RED'
       Alignment = taCenter
-      Layout = tlTop
       ModulateColor.Color = {0000803F00000000000000000000803F}
     end
     object HUDText4: TGLHUDText
@@ -63,12 +62,11 @@ object Form1: TForm1
       BitmapFont = BitmapFont
       Text = 'TRANSPARENT'
       Alignment = taCenter
-      Layout = tlTop
       ModulateColor.Color = {9A99593F9A99593FCDCCCC3DCDCCCC3E}
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Teapot1
       Position.Coordinates = {0000803F0000003F0000803F0000803F}
     end
@@ -108,8 +106,8 @@ object Form1: TForm1
     Events = <
       item
         Name = 'Event0'
-        StartTime = 1.5
-        EndTime = 3
+        StartTime = 1.500000000000000000
+        EndTime = 3.000000000000000000
         EventType = etContinuous
         OnEvent = GLTimeEventsMGR1Events0Event
       end
@@ -119,8 +117,8 @@ object Form1: TForm1
       end
       item
         Name = 'Event2'
-        StartTime = 2
-        EndTime = 10
+        StartTime = 2.000000000000000000
+        EndTime = 10.000000000000000000
         EventType = etContinuous
         OnEvent = GLTimeEventsMGR1Events2Event
       end>

@@ -104,6 +104,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
 var
   v : TVector;
@@ -134,8 +137,8 @@ begin
   // Shows the profiles to be used. The latest support profiles would be detected
   // if you have CgShader1.VertexProgram.Profile set to vpDetectLatest (similarly
   // for the fragment program).
-  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileStringA;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileStringA;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -162,7 +165,8 @@ begin
    // internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
    // is not aware of that. If you apply a vertex shader on those objects, they
    // would appear scaled and/or rotated.
-   GLFreeForm1.LoadFromFile('..\..\media\Teapot.3ds');
+   SetGLSceneMediaDir();
+   GLFreeForm1.LoadFromFile('Teapot.3ds');
 end;
 
 procedure TForm1.CBVertexProgramClick(Sender: TObject);

@@ -21,18 +21,19 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 41
-    Width = 560
-    Height = 374
+    Width = 552
+    Height = 363
     Camera = GLCamera1
-    FieldOfView = 150.060897827148400000
+    FieldOfView = 149.196136474609400000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 560
+    Width = 552
     Height = 41
     Align = alTop
     TabOrder = 1
@@ -96,7 +97,7 @@ object Form1: TForm1
     object GLPoints1: TGLPoints
       NoZWrite = False
       Static = False
-      Size = 7.000000000000000000
+      size = 7.000000000000000000
     end
     object GLDummyCube1: TGLDummyCube
       CubeSize = 0.100000001490116100

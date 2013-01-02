@@ -1,6 +1,8 @@
 object Form1: TForm1
   Left = 182
   Top = 91
+  Width = 320
+  Height = 240
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,11 +20,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 505
-    Height = 357
+    Width = 304
+    Height = 182
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 148.703598022460900000
+    FieldOfView = 122.426765441894500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -575,7 +577,7 @@ object Form1: TForm1
           end>
         Name = 'edit'
       end>
-    FileName = '..\..\media\default.layout'
+    FileName = 'default.layout'
     Left = 176
     Top = 16
   end

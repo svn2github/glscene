@@ -22,8 +22,8 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Left = 209
     Top = 0
-    Width = 442
-    Height = 434
+    Width = 434
+    Height = 423
     Align = alClient
     Beveled = True
     MinSize = 40
@@ -31,20 +31,21 @@ object MainForm: TMainForm
   object Viewer: TGLSceneViewer
     Left = 209
     Top = 0
-    Width = 442
-    Height = 434
+    Width = 434
+    Height = 423
     Camera = GLCamera1
     Buffer.BackgroundColor = clMoneyGreen
     Buffer.AmbientColor.Color = {9A99993E9A99993E9A99993E0000803F}
-    FieldOfView = 154.049331665039100000
+    FieldOfView = 153.398193359375000000
     Align = alClient
     OnMouseDown = ViewerMouseDown
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 209
-    Height = 434
+    Height = 423
     Align = alLeft
     Caption = 'Panel1'
     TabOrder = 1
@@ -52,14 +53,14 @@ object MainForm: TMainForm
       Left = 1
       Top = 233
       Width = 207
-      Height = 200
+      Height = 189
       Align = alClient
     end
     object GroupBox1: TGroupBox
       Left = 1
       Top = 233
       Width = 207
-      Height = 200
+      Height = 189
       Align = alClient
       Caption = 'Console options'
       TabOrder = 0
@@ -205,9 +206,9 @@ object MainForm: TMainForm
     object GLCube1: TGLCube
       Position.Coordinates = {000000000000003F0000A0C00000803F}
       BehavioursData = {
-        0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-        080500000000000000A002400500000000000000A00140050000000000000080
-        004009020008020008}
+        0458434F4C02010201060B54474C42496E657274696102000600020002000500
+        00000000000080FF3F0200080500000000000000A002400500000000000000A0
+        0140050000000000000080004009020008020008}
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000

@@ -118,14 +118,14 @@ object PostShaderDemoForm: TPostShaderDemoForm
         Position.Coordinates = {00000000000000000000A0C10000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -200.000000000000000000
-        XSamplingScale.Max = 200.000000000000000000
-        XSamplingScale.Step = 20.000000000000000000
+        XSamplingScale.max = 200.000000000000000000
+        XSamplingScale.step = 20.000000000000000000
         YSamplingScale.Min = -200.000000000000000000
-        YSamplingScale.Max = 200.000000000000000000
-        YSamplingScale.Step = 20.000000000000000000
+        YSamplingScale.max = 200.000000000000000000
+        YSamplingScale.step = 20.000000000000000000
         ZSamplingScale.Min = -200.000000000000000000
-        ZSamplingScale.Max = 200.000000000000000000
-        ZSamplingScale.Step = 20.000000000000000000
+        ZSamplingScale.max = 200.000000000000000000
+        ZSamplingScale.step = 20.000000000000000000
         Parts = [gpX, gpZ]
       end
     end
@@ -202,38 +202,38 @@ object PostShaderDemoForm: TPostShaderDemoForm
     Materials = <
       item
         Name = 'Noise'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'Fighter'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {BFBEBE3EBBBABA3EBBBABA3E0000803F}
         Material.FrontProperties.Emission.Color = {B1B0B03DB1B0B03DB1B0B03D0000803F}
         Material.FrontProperties.Specular.Color = {8988083E8180003E8988083E0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Earth'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {E7E6E63EEBEAEA3EEBEAEA3E0000803F}
         Material.FrontProperties.Emission.Color = {F1F0F03DF1F0F03DF1F0F03D0000803F}
         Material.FrontProperties.Specular.Color = {8180003E8180003EE1E0E03D0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Snow'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'FireGrade'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end>
     Left = 24
     Top = 88

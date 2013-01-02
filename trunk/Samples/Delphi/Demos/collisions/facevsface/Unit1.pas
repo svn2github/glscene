@@ -93,16 +93,17 @@ implementation
 
 {$R *.DFM}
 
-uses Math;
+uses Math, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   i:integer;
 begin
-   TeaPot1.LoadFromFile('..\..\media\TeaPot.3ds');
+   SetGLSceneMediaDir();
+   TeaPot1.LoadFromFile('TeaPot.3ds');
    TeaPot1.BuildOctree;
 
-   TeaPot2.LoadFromFile('..\..\media\TeaPot.3ds');
+   TeaPot2.LoadFromFile('TeaPot.3ds');
    TeaPot2.BuildOctree;
 
 //   rgObjectsClick(nil);

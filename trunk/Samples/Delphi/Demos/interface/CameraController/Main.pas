@@ -199,7 +199,7 @@ begin
   GetInput(TButton(Sender));
   lTargetPosition := dcSphere.LocalToAbsolute(PointMake(DextX, DextY, DextZ));
 
-  FGLCameraController.OrbitToPos(lTargetPosition[0], lTargetPosition[1], lTargetPosition[2], Time);
+  FGLCameraController.OrbitToPos(lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z, Time);
 end;
 
 procedure TForm1.btnOrbitToPosAdvClick(Sender: TObject);
@@ -208,7 +208,7 @@ var
 begin
   GetInput(TButton(Sender));
   lTargetPosition := dcSphere.LocalToAbsolute(PointMake(DextX, DextY, DextZ));
-  FGLCameraController.OrbitToPosAdvanced(lTargetPosition[0], lTargetPosition[1], lTargetPosition[2], Time, UpAxis.Checked);
+  FGLCameraController.OrbitToPosAdvanced(lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z, Time, UpAxis.Checked);
 end;
 
 
@@ -373,7 +373,7 @@ begin
   FCameraSmoothAnimator_AbsPos.TargetValue.DirectVector := GLCamera.AbsolutePosition;
   FCameraSmoothAnimator_AbsPos.Enabled := True;
   FGLCameraController.OrbitToPosAdvancedSmooth(
-    lTargetPosition[0], lTargetPosition[1], lTargetPosition[2],
+    lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z,
     lTime, FCameraSmoothAnimator_AbsPos);
 end;
 

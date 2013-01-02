@@ -17,18 +17,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 410
-    Height = 340
+    Width = 402
+    Height = 331
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 146.379318237304700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 410
+    Width = 402
     Height = 25
     Align = alTop
     TabOrder = 1
@@ -59,25 +61,27 @@ object Form1: TForm1
     Left = 8
     Top = 40
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLPoints1: TGLPoints
         NoZWrite = True
-        Size = 10
+        Static = False
+        size = 10.000000000000000000
         Style = psSmoothAdditive
         PointParameters.Enabled = True
         PointParameters.DistanceAttenuation.Coordinates = {0000C0BF3333333F0000000000000000}
       end
       object GLPoints2: TGLPoints
         NoZWrite = True
-        Size = 20
+        Static = False
+        size = 20.000000000000000000
         Style = psSmoothAdditive
         PointParameters.Enabled = True
         PointParameters.DistanceAttenuation.Coordinates = {0000C0BF3333333F0000000000000000}
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000A04000008040000040400000803F}
       Left = 256

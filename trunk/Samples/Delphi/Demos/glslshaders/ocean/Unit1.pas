@@ -15,7 +15,6 @@ uses
   GLScene,
   GLTexture,
   GLObjects,
-  GLUtils,
   ComCtrls,
   GLContext,
   Jpeg,
@@ -86,13 +85,14 @@ implementation
 
 uses
   GLTextureFormat,
-  OpenGLTokens;
+  OpenGLTokens,
+  GLUtils;
 
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName) + '..\..\media');
+  SetGLSceneMediaDir();
 
   // Load the cube map which is used both for environment and as reflection texture
 

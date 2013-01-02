@@ -60,9 +60,13 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\GLScene.bmp');
+  SetGLSceneMediaDir();
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('GLScene.bmp');
 
   GameMenu := TGLGameMenu(GLScene1.Objects.AddNewChild(TGLGameMenu));
   GameMenu.MaterialLibrary := GLMaterialLibrary1;

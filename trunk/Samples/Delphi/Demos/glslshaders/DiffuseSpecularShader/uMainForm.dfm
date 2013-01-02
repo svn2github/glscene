@@ -123,14 +123,14 @@ object GLSLTestForm: TGLSLTestForm
         Position.Coordinates = {00000000000000000000A0C10000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -200.000000000000000000
-        XSamplingScale.Max = 200.000000000000000000
-        XSamplingScale.Step = 20.000000000000000000
+        XSamplingScale.max = 200.000000000000000000
+        XSamplingScale.step = 20.000000000000000000
         YSamplingScale.Min = -200.000000000000000000
-        YSamplingScale.Max = 200.000000000000000000
-        YSamplingScale.Step = 20.000000000000000000
+        YSamplingScale.max = 200.000000000000000000
+        YSamplingScale.step = 20.000000000000000000
         ZSamplingScale.Min = -200.000000000000000000
-        ZSamplingScale.Max = 200.000000000000000000
-        ZSamplingScale.Step = 20.000000000000000000
+        ZSamplingScale.max = 200.000000000000000000
+        ZSamplingScale.step = 20.000000000000000000
         Parts = [gpX, gpZ]
       end
     end
@@ -223,16 +223,17 @@ object GLSLTestForm: TGLSLTestForm
     Materials = <
       item
         Name = 'Fighter'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {BFBEBE3EBBBABA3EBBBABA3E0000803F}
         Material.FrontProperties.Emission.Color = {B1B0B03DB1B0B03DB1B0B03D0000803F}
         Material.FrontProperties.Specular.Color = {8988083E8180003E8988083E0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Earth'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {C1C0403DC1C0403D8180003D0000803F}
         Material.FrontProperties.Emission.Color = {A1A0203DA1A0203DC1C0403D0000803F}
         Material.FrontProperties.Shininess = 128
@@ -240,7 +241,6 @@ object GLSLTestForm: TGLSLTestForm
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 24
     Top = 88

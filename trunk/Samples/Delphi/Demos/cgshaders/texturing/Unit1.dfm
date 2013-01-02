@@ -693,12 +693,12 @@ object Form1: TForm1
       Position.Coordinates = {000000006F12033B000000000000803F}
       LineColor.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       XSamplingScale.Min = -2.000000000000000000
-      XSamplingScale.Max = 2.000000000000000000
-      XSamplingScale.Step = 0.100000001490116100
-      YSamplingScale.Step = 0.100000001490116100
+      XSamplingScale.max = 2.000000000000000000
+      XSamplingScale.step = 0.100000001490116100
+      YSamplingScale.step = 0.100000001490116100
       ZSamplingScale.Min = -2.000000000000000000
-      ZSamplingScale.Max = 2.000000000000000000
-      ZSamplingScale.Step = 0.100000001490116100
+      ZSamplingScale.max = 2.000000000000000000
+      ZSamplingScale.step = 0.100000001490116100
       Parts = [gpX, gpZ]
     end
     object GLPlane1: TGLPlane
@@ -744,14 +744,14 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
         Shader = CgShader1
       end
       item
         Name = 'LibMaterial1'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end
       item
         Name = 'LibMaterial2'
