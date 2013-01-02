@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E0C70AF5-D1F7-41A0-A60F-F71B530ED67A}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="fxy\fxy.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="splines\splines.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="fxy">
+        <MSBuild Projects="fxy\fxy.cbproj"/>
+    </Target>
+    <Target Name="fxy:Clean">
+        <MSBuild Projects="fxy\fxy.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fxy:Make">
+        <MSBuild Projects="fxy\fxy.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="splines">
+        <MSBuild Projects="splines\splines.cbproj"/>
+    </Target>
+    <Target Name="splines:Clean">
+        <MSBuild Projects="splines\splines.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="splines:Make">
+        <MSBuild Projects="splines\splines.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="fxy;splines"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="fxy:Clean;splines:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="fxy:Make;splines:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

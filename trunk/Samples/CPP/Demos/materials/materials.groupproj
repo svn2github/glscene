@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{030D665E-1C50-48A9-B6CA-8D07889A6DE2}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="mirror\mirror.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="multipass\multipass.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="transparency\Transparency.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="D:\GLS\LESSONS\CPP\tut2\tut2.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="mirror">
+        <MSBuild Projects="mirror\mirror.cbproj"/>
+    </Target>
+    <Target Name="mirror:Clean">
+        <MSBuild Projects="mirror\mirror.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="mirror:Make">
+        <MSBuild Projects="mirror\mirror.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="multipass">
+        <MSBuild Projects="multipass\multipass.cbproj"/>
+    </Target>
+    <Target Name="multipass:Clean">
+        <MSBuild Projects="multipass\multipass.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="multipass:Make">
+        <MSBuild Projects="multipass\multipass.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Transparency">
+        <MSBuild Projects="transparency\Transparency.cbproj"/>
+    </Target>
+    <Target Name="Transparency:Clean">
+        <MSBuild Projects="transparency\Transparency.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Transparency:Make">
+        <MSBuild Projects="transparency\Transparency.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="tut2">
+        <MSBuild Projects="D:\GLS\LESSONS\CPP\tut2\tut2.cbproj"/>
+    </Target>
+    <Target Name="tut2:Clean">
+        <MSBuild Projects="D:\GLS\LESSONS\CPP\tut2\tut2.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="tut2:Make">
+        <MSBuild Projects="D:\GLS\LESSONS\CPP\tut2\tut2.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="mirror;multipass;Transparency;tut2"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="mirror:Clean;multipass:Clean;Transparency:Clean;tut2:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="mirror:Make;multipass:Make;Transparency:Make;tut2:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

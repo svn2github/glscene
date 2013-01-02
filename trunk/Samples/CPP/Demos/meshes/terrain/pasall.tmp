@@ -1,0 +1,5 @@
+﻿program pasall;
+uses
+  GLSound in '..\..\..\..\..\Source\GLSound.pas';
+begin
+end.

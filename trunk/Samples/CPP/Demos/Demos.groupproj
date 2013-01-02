@@ -1,0 +1,96 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DA52A9B3-F5B1-4FF5-9273-1CFE3FC25482}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="behaviours\FPSMovement\FPSMovement.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="graph\fxy\fxy.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="materials\mirror\mirror.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="graph\splines\splines.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="specialsFX\waterplane\waterplane.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="specialsFX\projtextures\ProjTextures.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="FPSMovement">
+        <MSBuild Projects="behaviours\FPSMovement\FPSMovement.cbproj"/>
+    </Target>
+    <Target Name="FPSMovement:Clean">
+        <MSBuild Projects="behaviours\FPSMovement\FPSMovement.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FPSMovement:Make">
+        <MSBuild Projects="behaviours\FPSMovement\FPSMovement.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="fxy">
+        <MSBuild Projects="graph\fxy\fxy.cbproj"/>
+    </Target>
+    <Target Name="fxy:Clean">
+        <MSBuild Projects="graph\fxy\fxy.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fxy:Make">
+        <MSBuild Projects="graph\fxy\fxy.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="mirror">
+        <MSBuild Projects="materials\mirror\mirror.cbproj"/>
+    </Target>
+    <Target Name="mirror:Clean">
+        <MSBuild Projects="materials\mirror\mirror.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="mirror:Make">
+        <MSBuild Projects="materials\mirror\mirror.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="splines">
+        <MSBuild Projects="graph\splines\splines.cbproj"/>
+    </Target>
+    <Target Name="splines:Clean">
+        <MSBuild Projects="graph\splines\splines.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="splines:Make">
+        <MSBuild Projects="graph\splines\splines.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="waterplane">
+        <MSBuild Projects="specialsFX\waterplane\waterplane.cbproj"/>
+    </Target>
+    <Target Name="waterplane:Clean">
+        <MSBuild Projects="specialsFX\waterplane\waterplane.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="waterplane:Make">
+        <MSBuild Projects="specialsFX\waterplane\waterplane.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="ProjTextures">
+        <MSBuild Projects="specialsFX\projtextures\ProjTextures.cbproj"/>
+    </Target>
+    <Target Name="ProjTextures:Clean">
+        <MSBuild Projects="specialsFX\projtextures\ProjTextures.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ProjTextures:Make">
+        <MSBuild Projects="specialsFX\projtextures\ProjTextures.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="FPSMovement;fxy;mirror;splines;waterplane;ProjTextures"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="FPSMovement:Clean;fxy:Clean;mirror:Clean;splines:Clean;waterplane:Clean;ProjTextures:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="FPSMovement:Make;fxy:Make;mirror:Make;splines:Make;waterplane:Make;ProjTextures:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

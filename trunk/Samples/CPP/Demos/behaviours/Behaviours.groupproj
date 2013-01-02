@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{B1D1D4D8-D171-4358-AF39-7B7FBE7D7064}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="FPSMovement\FPSMovement.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="FPSMovement">
+        <MSBuild Projects="FPSMovement\FPSMovement.cbproj"/>
+    </Target>
+    <Target Name="FPSMovement:Clean">
+        <MSBuild Projects="FPSMovement\FPSMovement.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FPSMovement:Make">
+        <MSBuild Projects="FPSMovement\FPSMovement.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLScene_RunTime">
+        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLScene_RunTime:Clean">
+        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_RunTime:Make">
+        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="FPSMovement;GLScene_RunTime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="FPSMovement:Clean;GLScene_RunTime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="FPSMovement:Make;GLScene_RunTime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

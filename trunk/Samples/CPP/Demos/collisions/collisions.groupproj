@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{B690B0F4-1F1B-4DD5-9210-6099D2BFF2BB}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="boxedin\boxedin.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="octree\octreedemo.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="boxedin">
+        <MSBuild Projects="boxedin\boxedin.cbproj"/>
+    </Target>
+    <Target Name="boxedin:Clean">
+        <MSBuild Projects="boxedin\boxedin.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="boxedin:Make">
+        <MSBuild Projects="boxedin\boxedin.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="octreedemo">
+        <MSBuild Projects="octree\octreedemo.cbproj"/>
+    </Target>
+    <Target Name="octreedemo:Clean">
+        <MSBuild Projects="octree\octreedemo.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="octreedemo:Make">
+        <MSBuild Projects="octree\octreedemo.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="boxedin;octreedemo"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="boxedin:Clean;octreedemo:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="boxedin:Make;octreedemo:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
