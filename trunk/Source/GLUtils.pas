@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>02/01/13 - Yar - Added SetGLSceneMediaDir
       <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
       <li>04/03/10 - DanB - Now uses CharInSet
       <li>27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
@@ -116,6 +117,8 @@ function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 {: Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
+
+procedure SetGLSceneMediaDir();
 
 //------------------------------------------------------
 //------------------------------------------------------
@@ -708,6 +711,18 @@ begin
   finally
     openDialog.Free;
   end;
+end;
+
+procedure SetGLSceneMediaDir();
+var
+  path: UTF8String;
+  p: Integer;
+begin
+   path := ExtractFilePath({$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF});
+   p := Pos('Samples', path);
+   Delete(path, p+7, Length(path));
+   path := IncludeTrailingPathDelimiter(path) + 'media';
+   {$IFDEF FPC}SetCurrentDirUTF8(path);{$ELSE}SetCurrentDir(path);{$ENDIF}
 end;
 
 end.
