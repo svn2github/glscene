@@ -1,0 +1,68 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = cubemap.exe customquad.exe dyntexdemo.exe dyncubemap.exe Fire2D.exe \
+  matscript.exe mirror.exe multimaterial.exe multipass.exe Multitexture.exe \
+  procedural.exe ProceduralClouds.exe texanim.exe texcombine.exe texformat.exe \
+  Transparency.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+cubemap.exe: cubemap\cubemap.dpr
+  $(DCC)
+
+customquad.exe: customquad\customquad.dpr
+  $(DCC)
+
+dyntexdemo.exe: dynamictexture\dyntexdemo.dpr
+  $(DCC)
+
+dyncubemap.exe: dyncubemap\dyncubemap.dpr
+  $(DCC)
+
+Fire2D.exe: fire2d\Fire2D.dpr
+  $(DCC)
+
+matscript.exe: MaterialScript\matscript.dpr
+  $(DCC)
+
+mirror.exe: mirror\mirror.dpr
+  $(DCC)
+
+multimaterial.exe: multimaterial\multimaterial.dpr
+  $(DCC)
+
+multipass.exe: multipass\multipass.dpr
+  $(DCC)
+
+Multitexture.exe: multitexture\Multitexture.dpr
+  $(DCC)
+
+procedural.exe: procedural\procedural.dpr
+  $(DCC)
+
+texanim.exe: texanim\texanim.dpr
+  $(DCC)
+
+texcombine.exe: texcombine\texcombine.dpr
+  $(DCC)
+
+texformat.exe: texformat\texformat.dpr
+  $(DCC)
+
+Transparency.exe: transparency\Transparency.dpr
+  $(DCC)
+
+ProceduralClouds.exe: proceduralclouds\ProceduralClouds.dpr
+  $(DCC)
+
+

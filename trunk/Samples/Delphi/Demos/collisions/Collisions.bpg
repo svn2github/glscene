@@ -1,0 +1,49 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = boxedin.exe BoxSphereIntersectDemo.exe facevsface.exe meshhit.exe \
+  OcclusionQueryDemo.exe octreedemo.exe RayBox.exe raycast.exe sphere.exe \
+  TriangleBoxIntersectDemo.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+boxedin.exe: boxedin\boxedin.dpr
+  $(DCC)
+
+BoxSphereIntersectDemo.exe: BoxSphere\BoxSphereIntersectDemo.dpr
+  $(DCC)
+
+facevsface.exe: facevsface\facevsface.dpr
+  $(DCC)
+
+meshhit.exe: meshhit\meshhit.dpr
+  $(DCC)
+
+OcclusionQueryDemo.exe: OcclusionQuery\OcclusionQueryDemo.dpr
+  $(DCC)
+
+octreedemo.exe: octree\octreedemo.dpr
+  $(DCC)
+
+RayBox.exe: RayBox\RayBox.dpr
+  $(DCC)
+
+raycast.exe: raycast\raycast.dpr
+  $(DCC)
+
+sphere.exe: sphere\sphere.dpr
+  $(DCC)
+
+TriangleBoxIntersectDemo.exe: TriangleBox\TriangleBoxIntersectDemo.dpr
+  $(DCC)
+
+

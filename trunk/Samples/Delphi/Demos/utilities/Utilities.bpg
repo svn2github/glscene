@@ -1,0 +1,42 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = fontgen.exe GuiEditor.exe HTFViewer.exe TerrainPack.exe \
+  JoystickDemo.exe keymap.exe Recorder.exe ScreensaverDemo.scr
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+fontgen.exe: fontgen\fontgen.dpr
+  $(DCC)
+
+GuiEditor.exe: GuiEditor\GuiEditor.dpr
+  $(DCC)
+
+HTFViewer.exe: HTFUtils\HTFViewer.dpr
+  $(DCC)
+
+TerrainPack.exe: HTFUtils\TerrainPack.dpr
+  $(DCC)
+
+JoystickDemo.exe: joystick\JoystickDemo.dpr
+  $(DCC)
+
+keymap.exe: keymap\keymap.dpr
+  $(DCC)
+
+Recorder.exe: recorder\Recorder.dpr
+  $(DCC)
+
+ScreensaverDemo.scr: screensaver\ScreensaverDemo.dpr
+  $(DCC)
+
+

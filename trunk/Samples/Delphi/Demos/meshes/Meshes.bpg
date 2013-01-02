@@ -1,0 +1,74 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = Actor.exe ActorProxy.exe actortwocam.exe centering.exe CSGDemo.exe \
+  ducky.exe ExPolygon.exe feedback.exe Formula.exe Mushroom.exe portal.exe \
+  shadedterrain.exe skeletal.exe subdivide.exe synthterr.exe terrain.exe \
+  tiles.exe tree.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+Actor.exe: actor\Actor.dpr
+  $(DCC)
+
+ActorProxy.exe: actorproxy\ActorProxy.dpr
+  $(DCC)
+
+actortwocam.exe: actortwocam\actortwocam.dpr
+  $(DCC)
+
+centering.exe: centering\centering.dpr
+  $(DCC)
+
+CSGDemo.exe: CSG\CSGDemo.dpr
+  $(DCC)
+
+ducky.exe: ducky\ducky.dpr
+  $(DCC)
+
+ExPolygon.exe: expolygon\ExPolygon.dpr
+  $(DCC)
+
+feedback.exe: feedback\feedback.dpr
+  $(DCC)
+
+Formula.exe: formula\Formula.dpr
+  $(DCC)
+
+Mushroom.exe: mushroom\Mushroom.dpr
+  $(DCC)
+
+portal.exe: portal\portal.dpr
+  $(DCC)
+
+shadedterrain.exe: shadedterrain\shadedterrain.dpr
+  $(DCC)
+
+skeletal.exe: skeletal\skeletal.dpr
+  $(DCC)
+
+subdivide.exe: subdivide\subdivide.dpr
+  $(DCC)
+
+synthterr.exe: synthterr\synthterr.dpr
+  $(DCC)
+
+tiles.exe: tiles\tiles.dpr
+  $(DCC)
+
+terrain.exe: terrain\terrain.dpr
+  $(DCC)
+
+tree.exe: tree\tree.dpr
+  $(DCC)
+
+

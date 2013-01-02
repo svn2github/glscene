@@ -1,0 +1,161 @@
+object Form1: TForm1
+  Left = 201
+  Height = 356
+  Top = 119
+  Width = 505
+  Caption = 'Form1'
+  ClientHeight = 329
+  ClientWidth = 505
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Menu = MainMenu1
+  OnCreate = FormCreate
+  LCLVersion = '0.9.29'
+  WindowState = wsMaximized
+  object Bevel1: TBevel
+    Left = 0
+    Height = 3
+    Top = 0
+    Width = 505
+    Align = alTop
+    Shape = bsTopLine
+  end
+  object GLSceneViewer1: TGLSceneViewer
+    Left = 0
+    Height = 307
+    Top = 3
+    Width = 505
+    Camera = GLCamera1
+    AfterRender = GLSceneViewer1AfterRender
+    Buffer.DepthTest = False
+    FieldOfView = 143.915740966796
+    Align = alClient
+    OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 19
+    Top = 310
+    Width = 505
+    Panels = <>
+  end
+  object GLScene1: TGLScene
+    ObjectsSorting = osNone
+    left = 8
+    top = 16
+    object HSBitmap: TGLHUDSprite
+      TagFloat = 0
+      Material.FrontProperties.Emission.Color = {
+        0000803F0000803F0000803F0000803F
+      }
+      Material.Texture.Disabled = False
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000484200004842000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      Width = 256
+      Height = 256
+      Rotation = 0
+    end
+    object GLParticles1: TGLParticles
+      TagFloat = 0
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      CubeSize = 1
+      OnActivateParticle = GLParticles1ActivateParticle
+      object HSParticle: TGLHUDSprite
+        TagFloat = 0
+        Material.MaterialLibrary = GLMaterialLibrary1
+        Material.LibMaterialName = 'cursor'
+        PitchAngle = 0
+        RollAngle = 0
+        TurnAngle = 0
+        OnProgress = HSParticleProgress
+        Rotation = 0
+      end
+    end
+    object HSCursor: TGLHUDSprite
+      TagFloat = 0
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'cursor'
+      PitchAngle = 0
+      Position.Coordinates = {
+        0000484200004842000000000000803F
+      }
+      RollAngle = 0
+      TurnAngle = 0
+      Rotation = 0
+    end
+    object GLCamera1: TGLCamera
+      TagFloat = 0
+      DepthOfView = 100
+      FocalLength = 50
+      left = 232
+      top = 152
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 40
+    top = 16
+    object MIFile: TMenuItem
+      Caption = 'File'
+      object MILoadImage: TMenuItem
+        Caption = 'Load image...'
+        OnClick = MILoadImageClick
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+      object MIExit: TMenuItem
+        Caption = 'Exit'
+        OnClick = MIExitClick
+      end
+    end
+    object O1: TMenuItem
+      Caption = 'Options'
+      object MITrail: TMenuItem
+        Caption = 'Trail'
+        OnClick = MITrailClick
+      end
+    end
+  end
+  object OpenPictureDialog1: TOpenPictureDialog
+    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
+    left = 72
+    top = 16
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    MaxDeltaTime = 0
+    MinDeltaTime = 0
+    FixedDeltaTime = 0
+    OnProgress = GLCadencer1Progress
+    left = 104
+    top = 16
+  end
+  object GLMaterialLibrary1: TGLMaterialLibrary
+    Materials = <    
+      item
+        Name = 'cursor'
+        Material.FrontProperties.Emission.Color = {
+          0000803F0000803F0000803F0000803F
+        }
+        Material.BlendingMode = bmTransparency
+        Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
+        Material.Texture.TextureMode = tmModulate
+        Material.Texture.Disabled = False
+        Tag = 0
+      end>
+    left = 136
+    top = 16
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    left = 168
+    top = 16
+  end
+end
