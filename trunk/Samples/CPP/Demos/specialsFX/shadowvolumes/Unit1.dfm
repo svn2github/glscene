@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 73
   Top = 86
-  Caption = 'Shadow Volumes'
+  Caption = 'GLScene Shadow Volumes'
   ClientHeight = 441
   ClientWidth = 695
   Color = clBtnFace
@@ -11,14 +11,13 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  WindowState = wsMaximized
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 560
+    Width = 536
     Height = 441
     Margins.Left = 2
     Margins.Top = 2
@@ -34,9 +33,9 @@ object Form1: TForm1
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 560
+    Left = 536
     Top = 0
-    Width = 135
+    Width = 159
     Height = 441
     Margins.Left = 2
     Margins.Top = 2
@@ -52,8 +51,10 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
+    ExplicitLeft = 540
+    ExplicitTop = -7
     DesignSize = (
-      135
+      159
       441)
     object LabelFPS: TLabel
       Left = 44
@@ -74,7 +75,7 @@ object Form1: TForm1
     end
     object Label2: TLabel
       Left = 16
-      Top = 352
+      Top = 301
       Width = 108
       Height = 15
       Margins.Left = 2
@@ -86,8 +87,8 @@ object Form1: TForm1
     end
     object CBShowVolumes: TCheckBox
       Left = 16
-      Top = 192
-      Width = 97
+      Top = 160
+      Width = 113
       Height = 17
       Margins.Left = 2
       Margins.Top = 2
@@ -99,8 +100,8 @@ object Form1: TForm1
     end
     object RBZFail: TRadioButton
       Left = 16
-      Top = 88
-      Width = 97
+      Top = 69
+      Width = 113
       Height = 17
       Margins.Left = 2
       Margins.Top = 2
@@ -114,8 +115,8 @@ object Form1: TForm1
     end
     object RBZPass: TRadioButton
       Left = 16
-      Top = 112
-      Width = 73
+      Top = 90
+      Width = 105
       Height = 17
       Margins.Left = 2
       Margins.Top = 2
@@ -127,8 +128,8 @@ object Form1: TForm1
     end
     object RBNoShadows: TRadioButton
       Left = 16
-      Top = 56
-      Width = 97
+      Top = 48
+      Width = 105
       Height = 17
       Margins.Left = 2
       Margins.Top = 2
@@ -140,8 +141,8 @@ object Form1: TForm1
     end
     object RBDarkening: TRadioButton
       Left = 16
-      Top = 144
-      Width = 105
+      Top = 128
+      Width = 129
       Height = 17
       Margins.Left = 2
       Margins.Top = 2
@@ -153,7 +154,7 @@ object Form1: TForm1
     end
     object CBMainLight: TCheckBox
       Left = 16
-      Top = 232
+      Top = 197
       Width = 97
       Height = 17
       Margins.Left = 2
@@ -168,7 +169,7 @@ object Form1: TForm1
     end
     object CBBlueLight: TCheckBox
       Left = 16
-      Top = 256
+      Top = 218
       Width = 97
       Height = 17
       Margins.Left = 2
@@ -181,7 +182,7 @@ object Form1: TForm1
     end
     object CBRedLight: TCheckBox
       Left = 16
-      Top = 280
+      Top = 239
       Width = 97
       Height = 17
       Margins.Left = 2
@@ -194,7 +195,7 @@ object Form1: TForm1
     end
     object ScrollBar_ShadowResolution: TScrollBar
       Left = 16
-      Top = 371
+      Top = 320
       Width = 89
       Height = 17
       Margins.Left = 2
@@ -211,7 +212,7 @@ object Form1: TForm1
     end
     object Button_GenerateSilhouette: TButton
       Left = 4
-      Top = 312
+      Top = 272
       Width = 125
       Height = 25
       Margins.Left = 2
