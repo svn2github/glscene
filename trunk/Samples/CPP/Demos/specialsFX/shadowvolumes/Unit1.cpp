@@ -6,17 +6,6 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLFileSMD"
-#pragma link "BaseClasses"
-#pragma link "GLCadencer"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
-#pragma link "GLGeomObjects"
-#pragma link "GLMaterial"
-#pragma link "GLObjects"
-#pragma link "GLScene"
-#pragma link "GLShadowVolume"
-#pragma link "GLVectorFileObjects"
-#pragma link "GLWin32Viewer"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
