@@ -1,7 +1,7 @@
 package GLS_SDL7;
 
 {$R *.res}
-{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$R '..\Source\GLSceneVCLSDL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -32,8 +32,8 @@ requires
   GLScene7;
 
 contains
-  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  SDL in '..\Source\GameAPIs\sdl.pas';
+  GLSDLContext in '..\Source\GLSDLContext.pas',
+  SDLWindow in '..\Source\SDLWindow.pas',
+  SDL in '..\Source\sdl.pas';
 
 end.

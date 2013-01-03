@@ -1,7 +1,7 @@
 package GLSS_FMOD7;
 
 {$R *.res}
-{$R '..\Source\SoundAPIs\GLSceneVCLFMod.dcr'}
+{$R '..\Source\GLSceneVCLFMod.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -32,9 +32,9 @@ requires
   rtl;
 
 contains
-  FMOD in '..\Source\SoundAPIs\fmod.pas',
+  FMOD in '..\Source\fmod.pas',
   GLSMFMOD in '..\Source\GLSMFMOD.pas',
-  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
-  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas';
+  fmodpresets in '..\Source\fmodpresets.pas',
+  fmodtypes in '..\Source\fmodtypes.pas';
 
 end.

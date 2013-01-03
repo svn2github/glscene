@@ -2,7 +2,7 @@ package GLSS_BASS;
 
 {$R *.res}
 {$R *.otares}
-{$R '..\Source\SoundAPIs\GLSceneVCLBass.dcr'}
+{$R '..\Source\GLSceneVCLBass.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -37,6 +37,6 @@ requires
 
 contains
   GLSMBASS in '..\Source\GLSMBASS.pas',
-  Bass in '..\Source\SoundAPIs\Bass.pas';
+  Bass in '..\Source\Bass.pas';
 
 end.

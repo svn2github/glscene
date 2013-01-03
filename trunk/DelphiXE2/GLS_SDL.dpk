@@ -2,7 +2,7 @@ package GLS_SDL;
 
 {$R *.res}
 {$R *.otares}
-{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$R '..\Source\GLSceneVCLSDL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -37,9 +37,9 @@ requires
   GLScene_RunTime;
 
 contains
-  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  sdl in '..\Source\GameAPIs\sdl.pas';
+  GLSDLContext in '..\Source\GLSDLContext.pas',
+  SDLWindow in '..\Source\SDLWindow.pas',
+  sdl in '..\Source\sdl.pas';
 
 end.
 

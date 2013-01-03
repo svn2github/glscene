@@ -1,7 +1,7 @@
 package GLCg_RunTime;
 
 {$R *.res}
-{$R '..\Source\CgShaders\GLSceneVCLCg.dcr'}
+{$R '..\Source\GLSceneVCLCg.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -36,10 +36,10 @@ requires
   GLScene_RunTime;
 
 contains
-  cgGL in '..\Source\CgShaders\cgGL.pas',
-  cg in '..\Source\CgShaders\cg.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas',
-  CGPostTransformationShader in '..\Source\CgShaders\CGPostTransformationShader.pas';
+  cgGL in '..\Source\cgGL.pas',
+  cg in '..\Source\cg.pas',
+  GLCgShader in '..\Source\GLCgShader.pas',
+  GLCgBombShader in '..\Source\GLCgBombShader.pas',
+  CGPostTransformationShader in '..\Source\CGPostTransformationShader.pas';
 
 end.
