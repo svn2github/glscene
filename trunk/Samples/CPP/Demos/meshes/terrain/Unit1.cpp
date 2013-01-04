@@ -28,7 +28,7 @@
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
-
+#pragma link "GLFileMP3"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 

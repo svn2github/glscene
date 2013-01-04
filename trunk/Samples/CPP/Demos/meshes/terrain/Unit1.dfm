@@ -14,6 +14,8 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnKeyPress = FormKeyPress
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -37,13 +39,13 @@ object Form1: TForm1
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
-    Left = 56
-    Top = 16
+    Left = 208
+    Top = 72
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 56
+    Left = 24
+    Top = 16
     object InitialRenderPoint: TGLRenderPoint
     end
     object SkyDome1: TGLSkyDome
@@ -142,14 +144,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 96
+    Left = 496
+    Top = 24
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 16
-    Top = 16
+    Top = 72
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -173,8 +175,8 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {00000043000000430000004300000000}
       end>
-    Left = 16
-    Top = 56
+    Left = 112
+    Top = 16
   end
   object BitmapFont1: TGLBitmapFont
     GlyphsIntervalX = 1
@@ -187,8 +189,8 @@ object Form1: TForm1
       end>
     CharWidth = 30
     CharHeight = 30
-    Left = 16
-    Top = 96
+    Left = 112
+    Top = 72
   end
   object GLSMBASS1: TGLSMBASS
     Active = True
@@ -199,19 +201,19 @@ object Form1: TForm1
     Cadencer = GLCadencer1
     Environment = seForest
     Algorithm3D = algFull
-    Left = 96
+    Left = 296
     Top = 16
     Doppler = 0.000000000000000000
   end
   object TISound: TTimer
     Interval = 3000
     OnTimer = TISoundTimer
-    Left = 16
-    Top = 136
+    Left = 440
+    Top = 24
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 96
-    Top = 56
+    Left = 208
+    Top = 16
   end
 end

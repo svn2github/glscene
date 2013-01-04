@@ -27,8 +27,9 @@
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "GLMaterial.hpp"          // Pascal unit
-#include <jpeg.hpp>             // Pascal unit
+#include "GLMaterial.hpp"
+#include "GLFileMP3.hpp"
+#include "Jpeg.hpp"
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {
@@ -55,17 +56,17 @@ __published:                   // IDE-managed Components
   TGLDummyCube *GLDummyCube1;
   TGLRenderPoint *InitialRenderPoint;
   void __fastcall GLCadencer1Progress(TObject * Sender, const double deltaTime,
-                                      const double newTime);
+									  const double newTime);
   void __fastcall GLSceneViewer1MouseDown(TObject * Sender, TMouseButton Button,
-                                          TShiftState Shift, int X, int Y);
+										  TShiftState Shift, int X, int Y);
   void __fastcall GLSceneViewer1MouseMove(TObject * Sender, TShiftState Shift,
-                                          int X, int Y);
+										  int X, int Y);
   void __fastcall Timer1Timer(TObject * Sender);
   void __fastcall FormKeyPress(TObject * Sender, char &Key);
   void __fastcall TISoundTimer(TObject * Sender);
 private:                       // User declarations
 public:                        // User declarations
-    __fastcall TForm1(TComponent * Owner);
+	__fastcall TForm1(TComponent * Owner);
 
   int mx, my;
   bool fullScreen;
@@ -75,4 +76,4 @@ public:                        // User declarations
 extern PACKAGE TForm1 *Form1;
 //---------------------------------------------------------------------------
 #endif
- 
+
