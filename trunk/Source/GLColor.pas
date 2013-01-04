@@ -6,8 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directive,
-                        defined integer CmtPX,..., CmtNZ constants to use with CPPB
+    <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
     <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
     <li>24/10/10 - DaStr - Removed dependancy from OpenGL
     <li>23/08/10 - Yar - Added OpenGLTokens to uses
@@ -401,16 +400,6 @@ const
    clrAqua                : TColorVector = (X:0;        Y:1;        Z:1;        W:1);
 
    cDefaultNormalMapScale = 0.125;
-
-{$IFDEF GLS_CPPB}
-  CmtPX = 0;
-  CmtNX = 1;
-  CmtPY = 2;
-  CmtNY = 3;
-  CmtPZ = 4;
-  CmtNZ = 5;
-{$ENDIF}
-
 
 {$J- - disallow change of the following typed constants}
 
