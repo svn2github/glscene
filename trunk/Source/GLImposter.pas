@@ -6,8 +6,8 @@
    Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: used TLoadingImposterEvent
-                          as procedure instead of function with GLS_CPPB
+      <li>10/11/12 - PW - Added CPP compatibility: used direct HPPEMIT for
+                          TLoadingImposterEvent as procedure instead of function in Delphi
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
@@ -120,13 +120,10 @@ type
    //
    TLoadingImposterEvent = function (Sender : TObject; impostoredObject :
      TGLBaseSceneObject; destImposter : TImposter) : TGLBitmap32 of object;
-
-(*
-   {$IFDEF GLS_CPPB}
-   TLoadingImposterEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
-                 destImposter : TImposter; var result : TGLBitmap32) of object;
-   {$ENDIF}
-*)
+   {$NODEFINE TLoadingImposterEvent}
+   //Used CPPB procedure instead of Delphi function
+   //TLoadingImposterEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject; destImposter : TImposter; var result : TGLBitmap32) of object;
+   {$HPPEMIT 'typedef Glgraphics::TGLBitmap32* __fastcall (__closure *TLoadingImposterEvent)(System::TObject* Sender, Glscene::TGLBaseSceneObject* impostoredObject, TImposter* destImposter);'}
 
    TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject :
          TGLBaseSceneObject;
@@ -761,10 +758,7 @@ begin
     if (imp.ImpostoredObject <> nil) and (imp.Texture.Handle = 0) then
     begin
       if Assigned(FOnLoadingImposter) then
-            bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
-         {$IFDEF GLS_CPPB}
-//            FOnLoadingImposter(Self, imp.ImpostoredObject, imp, bmp32)
-         {$ENDIF}
+        bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
       else
         bmp32 := nil;
 		      if not Assigned(bmp32) then
