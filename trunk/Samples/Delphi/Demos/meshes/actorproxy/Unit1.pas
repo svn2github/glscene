@@ -60,13 +60,17 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i:integer;
 begin
-     MasterActor.LoadFromFile('..\..\media\TRINITYrage.smd');
-     MasterActor.AddDataFromFile('..\..\media\run.smd');
-     MasterActor.AddDataFromFile('..\..\media\jump.smd');
+     SetGLSceneMediaDir();
+     MasterActor.LoadFromFile('TRINITYrage.smd');
+     MasterActor.AddDataFromFile('run.smd');
+     MasterActor.AddDataFromFile('jump.smd');
 
      MasterActor.Animations.Items[0].Name:='still';
      MasterActor.Animations.Items[1].Name:='walk';

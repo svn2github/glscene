@@ -47,18 +47,19 @@ implementation
 
 {$R *.DFM}
 
-uses OpenGLTokens, GLContext, GLState, JPeg;
+uses OpenGLTokens, GLContext, GLState, JPeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // dynamically create 2 materials and load 2 textures
    with GLMaterialLibrary do begin
-      with AddTextureMaterial('wood', '..\..\media\ashwood.jpg') do
+      with AddTextureMaterial('wood', 'ashwood.jpg') do
       begin
          Material.FrontProperties.Emission.Color:=clrGray50;
          Material.FaceCulling := fcNoCull;
       end;
-      with AddTextureMaterial('stone', '..\..\media\walkway.jpg') do
+      with AddTextureMaterial('stone', 'walkway.jpg') do
       begin
          Material.FrontProperties.Emission.Color:=clrGray50;
          Material.FaceCulling := fcNoCull;

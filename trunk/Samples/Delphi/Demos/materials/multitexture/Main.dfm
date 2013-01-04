@@ -56,7 +56,7 @@ object Form1: TForm1
   object Label4: TLabel
     Left = 432
     Top = 8
-    Width = 94
+    Width = 93
     Height = 19
     Caption = 'MultiTexture'
     Font.Charset = ANSI_CHARSET
@@ -72,7 +72,9 @@ object Form1: TForm1
     Width = 393
     Height = 393
     Camera = GLCamera1
+    FieldOfView = 151.447769165039100000
     Enabled = False
+    TabOrder = 0
   end
   object TrackBar1: TTrackBar
     Left = 416
@@ -81,15 +83,9 @@ object Form1: TForm1
     Height = 25
     Max = 30
     Min = 5
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 10
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
     ThumbLength = 10
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object CBClampTex2: TCheckBox
@@ -105,15 +101,15 @@ object Form1: TForm1
     Left = 48
     Top = 32
     object Plane1: TGLPlane
-      Position.Coordinates = {0000000000000000000080BF0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Base'
-      Height = 1
-      Width = 1
+      Position.Coordinates = {0000000000000000000080BF0000803F}
+      Height = 1.000000000000000000
+      Width = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       Left = 192
       Top = 192
     end
@@ -122,16 +118,16 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Base'
+        Tag = 0
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'Second'
       end
       item
         Name = 'Second'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 48
     Top = 64

@@ -56,9 +56,7 @@ var
 
 implementation
 
-{$IFNDEF FPC}
 {$R *.dfm}
-{$ENDIF}
 
 uses
   GLUtils, GLContext, GLDynamicTexture;
@@ -187,8 +185,4 @@ begin
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-initialization
-  {$IFDEF LCL}
-  {$i unit1.lrs}
-  {$ENDIF}
 end.

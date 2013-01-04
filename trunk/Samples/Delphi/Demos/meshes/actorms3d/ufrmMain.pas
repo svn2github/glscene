@@ -75,8 +75,8 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
-    procedure GLFrameBufferBeforeRender(Sender: TObject);
-    procedure GLFrameBufferAfterRender(Sender: TObject);
+    procedure GLFrameBufferBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLFrameBufferAfterRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -203,9 +203,10 @@ procedure TfrmMain.FormCreate(Sender: TObject);
   end;
 
 begin
+  SetGLSceneMediaDir();
   with GLSArchiveManager1.Archives[0] do
   begin
-    LoadFromFile('..\..\media\ActorMS3D.zlib');
+    LoadFromFile('ActorMS3D.zlib');
     LoadTexture('floor_parquet', 'JPG');
     LoadTexture('Chair', 'PNG');
     LoadTexture('Hair', 'PNG');
@@ -213,7 +214,7 @@ begin
     Actor1.LoadFromStream('Woman4.ms3d', GetContent('Main/Woman4.ms3d'));
     Chair1.LoadFromStream('Chair.ms3d', GetContent('Main/Chair.ms3d'));
   end;
-  MatLib.TextureByName('Lightspot').Image.LoadFromFile('..\..\media\Flare1.bmp');
+  MatLib.TextureByName('Lightspot').Image.LoadFromFile('Flare1.bmp');
 
   Actor1.AnimationMode := aamNone;
   Actor1.Scale.SetVector(0.1, 0.1, 0.1, 0);
@@ -278,9 +279,9 @@ begin
   FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5),
     VectorMake(0.5, 0.5, 0.5));
   GLSLShader1.VertexProgram.LoadFromFile(
-    '..\..\specialsFX\ShadowmappingFBO\Shaders\shadowmap_vp.glsl');
+    'shadowmap_vp.glsl');
   GLSLShader1.FragmentProgram.LoadFromFile(
-    '..\..\specialsFX\ShadowmappingFBO\Shaders\shadowmap_fp.glsl');
+    'shadowmap_fp.glsl');
   GLSLShader1.Enabled := true;
 end;
 
@@ -322,12 +323,12 @@ begin
   FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FBiasMatrix);
 end;
 
-procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject);
+procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
   CurrentGLContext.GLStates.Disable(stPolygonOffsetFill);
 end;
 
-procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject);
+procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
   with CurrentGLContext.PipelineTransformation do
   begin

@@ -81,7 +81,8 @@ var
 
 implementation
 
-uses VectorGeometry;
+uses VectorGeometry, GLUtils;
+
 {$R *.dfm}
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -123,11 +124,12 @@ end;
            
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   // scaled 40
-  GLFreeForm1.LoadFromFile('..\..\media\polyhedron.3ds');
+  GLFreeForm1.LoadFromFile('polyhedron.3ds');
 
   // scaled 20, position.x = 16
-  GLFreeForm2.LoadFromFile('..\..\media\polyhedron.3ds');
+  GLFreeForm2.LoadFromFile('polyhedron.3ds');
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);

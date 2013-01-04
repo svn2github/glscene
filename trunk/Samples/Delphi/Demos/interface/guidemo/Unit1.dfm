@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 182
-  Top = 91
+  Left = 337
+  Top = 235
   Width = 320
   Height = 240
   Caption = 'Form1'
@@ -587,7 +587,7 @@ object Form1: TForm1
         Name = 'Gui'
         Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\DefaultSkin.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\..\media\DefaultSkin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.Disabled = False
       end>

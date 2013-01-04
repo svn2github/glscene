@@ -258,17 +258,17 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Tex0'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'Tex1'
         Shader = GLTexCombineShader
       end
       item
         Name = 'Tex1'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Tex2'

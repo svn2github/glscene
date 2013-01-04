@@ -69,12 +69,12 @@ implementation
 
 {$R *.dfm}
 
-uses GLTextureCombiners;
+uses GLTextureCombiners, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
    // load the textures
-   SetCurrentDir('..\..\media');
+   SetGLSceneMediaDir();
    with GLMaterialLibrary.Materials do begin
       Image1.Picture.LoadFromFile('beigemarble.jpg');
       Items[0].Material.Texture.Image.Assign(Image1.Picture);

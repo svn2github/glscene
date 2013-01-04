@@ -17,18 +17,20 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 448
-    Height = 333
+    Width = 440
+    Height = 324
     Camera = GLCamera1
+    FieldOfView = 145.695159912109400000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 448
+    Left = 440
     Top = 0
     Width = 102
-    Height = 333
+    Height = 324
     Align = alRight
     BevelOuter = bvLowered
     Font.Charset = DEFAULT_CHARSET
@@ -102,25 +104,25 @@ object Form1: TForm1
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {9A99193F9A99193F0000003F00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
-      XSamplingScale.Min = -5.5
-      XSamplingScale.Max = 5.5
-      XSamplingScale.Step = 0.200000002980232
-      YSamplingScale.Min = -5.5
-      YSamplingScale.Max = 5.5
-      YSamplingScale.Step = 0.200000002980232
+      XSamplingScale.Min = -5.500000000000000000
+      XSamplingScale.max = 5.500000000000000000
+      XSamplingScale.step = 0.200000002980232200
+      YSamplingScale.Min = -5.500000000000000000
+      YSamplingScale.max = 5.500000000000000000
+      YSamplingScale.step = 0.200000002980232200
       ColorMode = hfcmAmbientAndDiffuse
       OnGetHeight = HeightFieldGetHeight
     end
     object GLLightSource1: TGLLightSource
       Ambient.Color = {9A99193E9A99193E9A99193E0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {9A99593F9A99593F9A99593F0000803F}
       Position.Coordinates = {0000E040000070410000A0400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = HeightField
       Position.Coordinates = {0000A04000008040000040400000803F}
     end

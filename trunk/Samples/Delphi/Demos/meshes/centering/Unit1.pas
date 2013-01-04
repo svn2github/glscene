@@ -45,10 +45,14 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 const
-   cFileName = '..\..\media\polyhedron.3ds';
+   cFileName = 'polyhedron.3ds';
 begin
+   SetGLSceneMediaDir();
    // left one
    FreeForm3.AutoCentering:=[macCenterX, macCenterZ];
    FreeForm3.LoadFromFile(cFileName);

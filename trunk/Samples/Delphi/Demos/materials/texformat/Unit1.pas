@@ -65,16 +65,16 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg, GLTextureFormat;
+uses Jpeg, GLTextureFormat, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    sr : TSearchRec;
    i : Integer;
 begin
+    SetGLSceneMediaDir();
    // collect JPeg textures from the demos' media directory
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
-   i:=FindFirst('..\..\media\*.jpg', faAnyFile, sr);
+   i:=FindFirst('*.jpg', faAnyFile, sr);
    while i=0 do begin
       CBImage.Items.Add(sr.Name);
       i:=FindNext(sr);
@@ -93,7 +93,7 @@ begin
    with HUDSprite1.Material.Texture do begin
       TextureFormat:=TGLTextureFormat(Integer(tfRGB)+CBFormat.ItemIndex);
       Compression:=TGLTextureCompression(Integer(tcNone)+CBCompression.ItemIndex);
-      Image.LoadFromFile('..\..\media\'+CBImage.Text);
+      Image.LoadFromFile(CBImage.Text);
       LAPicSize.Caption:=IntToStr(Image.Width)+' x '+IntToStr(Image.Height);
       if RBDefault.Checked then begin
          HUDSprite1.Width:=Image.Width;

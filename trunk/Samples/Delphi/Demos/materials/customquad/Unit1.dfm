@@ -17,47 +17,51 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 444
-    Height = 339
+    Width = 436
+    Height = 330
     Camera = GLCamera1
+    FieldOfView = 131.112091064453100000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 8
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       BehavioursData = {
-        0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-        080500000000000000B405400500000000000000000000050000000000000000
-        000009020008020008}
+        0458434F4C02010201060B54474C42496E657274696102000600020002000500
+        00000000000080FF3F0200080500000000000000B40540050000000000000000
+        0000050000000000000000000009020008020008}
       object DirectOpenGL1: TGLDirectOpenGL
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         UseBuildList = False
         OnRender = DirectOpenGL1Render
+        Blend = False
       end
     end
     object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      MajorRadius = 1.29999995231628
-      MinorRadius = 0.100000001490116
+      MajorRadius = 1.299999952316284000
+      MinorRadius = 0.100000001490116100
       Rings = 36
+      StopAngle = 360.000000000000000000
+      Parts = [toSides, toStartDisk, toStopDisk]
       BehavioursData = {
-        0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-        08050000000000000000000005000000000000000000000500000000000000F0
-        034009020008020008}
+        0458434F4C02010201060B54474C42496E657274696102000600020002000500
+        00000000000080FF3F0200080500000000000000000000050000000000000000
+        00000500000000000000F0034009020008020008}
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000A0410000A0410000A0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 75
+      DepthOfView = 100.000000000000000000
+      FocalLength = 75.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {00004040000000400000803F0000803F}
       Left = 200

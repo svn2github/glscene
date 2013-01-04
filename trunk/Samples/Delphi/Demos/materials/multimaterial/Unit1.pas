@@ -51,13 +51,13 @@ implementation
 
 {$R *.dfm}
 
-uses JPEG;
+uses JPEG, GLUtils;
 
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+  SetGLSceneMediaDir();
 
   with GLMaterialLibrary1 do begin
     // Add the specular pass

@@ -188,18 +188,19 @@ object frmMain: TfrmMain
     Materials = <
       item
         Name = 'floor_parquet'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {0000803F0000803F0000000000000000}
         Shader = GLSLShader1
       end
       item
         Name = 'Shadow'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MinFilter = miLinear
@@ -213,41 +214,40 @@ object frmMain: TfrmMain
         Material.Texture.BorderColor.Color = {0000803F000000000000000000000000}
         Material.Texture.Disabled = False
         Material.Texture.TextureCompareMode = tcmCompareRtoTexture
-        Tag = 0
       end
       item
         Name = 'Lightspot'
+        Tag = 0
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
         Shader = GLSLShader1
       end
       item
         Name = 'Hair'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Woman4-Remap-texture'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Chair'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 20
     Top = 132

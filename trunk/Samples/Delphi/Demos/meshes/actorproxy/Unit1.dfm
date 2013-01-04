@@ -17,18 +17,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 639
-    Height = 488
+    Width = 631
+    Height = 477
     Camera = GLCamera1
     Buffer.BackgroundColor = 4194304
-    FieldOfView = 156.838760375976600000
+    FieldOfView = 156.319564819335900000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 488
-    Width = 639
+    Top = 477
+    Width = 631
     Height = 27
     Align = alBottom
     TabOrder = 1
@@ -131,6 +132,7 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Mat1'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D616765D10A0000FFD8FFE000104A46494600010101006400
           640000FFDB00430006040506050406060506070706080A100A0A09090A140E0F
@@ -221,10 +223,10 @@ object Form1: TForm1
           874AA25565C418490A795317A33018761171943D8284B81C258EDC2FC127FFD9}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Mat2'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D6167656C810000FFD8FFE000104A46494600010100000100
           010000FFDB004300020101010101020101010202020202040302020202050404
@@ -1264,7 +1266,6 @@ object Form1: TForm1
           ABCCEE42277B3D31D96BA7C3A340BEAE2A9A08AB7AA3AFEE7FFFD9}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 48
     Top = 120

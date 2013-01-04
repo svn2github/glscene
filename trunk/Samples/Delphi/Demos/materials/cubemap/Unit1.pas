@@ -66,7 +66,8 @@ implementation
 uses
   Jpeg,
   GLTexture,
-  GLContext;
+  GLContext,
+  GLUtils;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
@@ -86,7 +87,7 @@ begin
     Exit;
   end;
   // Our cube map images are here
-  SetCurrentDir(ExtractFilePath(Application.ExeName) + '..\..\media');
+  SetGLSceneMediaDir();
 
   with Teapot1.Material.Texture do
   begin

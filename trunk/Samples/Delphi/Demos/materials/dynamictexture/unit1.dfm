@@ -58,8 +58,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Anim'
-        Material.Texture.TextureMode = tmReplace
         Tag = 0
+        Material.Texture.TextureMode = tmReplace
       end>
     Left = 544
     Top = 96

@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 182
-  Top = 91
+  Left = 346
+  Top = 205
+  Width = 515
+  Height = 504
   Caption = 'Gui Paint'
-  ClientHeight = 446
-  ClientWidth = 499
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -769,7 +769,7 @@ object Form1: TForm1
         Name = 'Gui'
         Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\defaultskin.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\..\media\defaultskin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
@@ -779,7 +779,7 @@ object Form1: TForm1
         Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\brush.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\..\media\brush.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
@@ -789,7 +789,7 @@ object Form1: TForm1
         Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\pen.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\..\media\pen.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False

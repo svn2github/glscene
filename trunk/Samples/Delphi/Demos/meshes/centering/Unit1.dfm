@@ -42,7 +42,7 @@ object Form1: TForm1
     Height = 209
     Camera = GLCamera1
     Buffer.BackgroundColor = 11447982
-    FieldOfView = 60.275093078613290000
+    FieldOfView = 60.275093078613280000
     TabOrder = 0
   end
   object TrackBar1: TTrackBar

@@ -64,16 +64,16 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg;
+uses Jpeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
+   SetGLSceneMediaDir();
    // prepare images to merge in the multitexture
    with GLMaterialLibrary1 do begin
-      Image1.Picture.LoadFromFile('..\..\media\ashwood.jpg');
+      Image1.Picture.LoadFromFile('ashwood.jpg');
       Materials[0].Material.Texture.Image.Assign(Image1.Picture);
-      Image2.Picture.LoadFromFile('..\..\media\Flare1.bmp');
+      Image2.Picture.LoadFromFile('Flare1.bmp');
       Materials[1].Material.Texture.Image.Assign(Image2.Picture);
    end;
 end;

@@ -50,6 +50,7 @@ object Form1: TForm1
     end
     object Teapot1: TGLTeapot
       Material.Texture.TextureMode = tmReplace
+      Position.Coordinates = {00000000000080BE000000000000803F}
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000

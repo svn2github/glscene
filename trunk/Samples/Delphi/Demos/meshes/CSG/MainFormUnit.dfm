@@ -140,8 +140,8 @@ object Form1: TForm1
       end
       item
         Name = '2'
-        Material.FrontProperties.Diffuse.Color = {6666E63E6666E63E6666E63E0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {6666E63E6666E63E6666E63E0000803F}
       end>
     Left = 48
     Top = 8

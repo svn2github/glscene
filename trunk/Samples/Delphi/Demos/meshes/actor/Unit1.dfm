@@ -18,29 +18,30 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 38
-    Width = 518
-    Height = 355
+    Width = 510
+    Height = 346
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
+    FieldOfView = 46.776966094970700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 393
-    Width = 518
+    Top = 384
+    Width = 510
     Height = 19
     Panels = <
       item
         Width = 200
       end>
-    SimplePanel = False
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 518
+    Width = 510
     Height = 38
     Align = alTop
     BevelOuter = bvLowered
@@ -163,30 +164,30 @@ object Form1: TForm1
     Left = 40
     Top = 48
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
         Ambient.Color = {0000803F0000803F0000803F0000803F}
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Position.Coordinates = {0000204100000000000020410000803F}
         LightStyle = lsOmni
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
       end
       object GLCamera1: TGLCamera
-        DepthOfView = 1000
-        FocalLength = 400
+        DepthOfView = 1000.000000000000000000
+        FocalLength = 400.000000000000000000
         TargetObject = DummyCube1
         Position.Coordinates = {00009041000080410000C0400000803F}
         Direction.Coordinates = {2EF964BF2EF9E43E0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
       end
       object Disk1: TGLDisk
-        Position.Coordinates = {0000000000000000000080BF0000803F}
         Material.Texture.MinFilter = miLinear
         Material.Texture.Disabled = False
+        Position.Coordinates = {0000000000000000000080BF0000803F}
         Loops = 1
-        OuterRadius = 3
+        OuterRadius = 3.000000000000000000
         Slices = 8
-        SweepAngle = 360
+        SweepAngle = 360.000000000000000000
       end
     end
     object Actor1: TGLActor

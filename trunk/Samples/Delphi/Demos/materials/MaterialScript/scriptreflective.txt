@@ -17,12 +17,12 @@ Material{
       ImageAlpha=tiaDefault
       ImageBrightness=1
       ImageClassName=CubeMap Image{
-         PicturePX=..\..\media\cm_back.jpg
-         PictureNX=..\..\media\cm_front.jpg
-         PicturePY=..\..\media\cm_top.jpg
-         PictureNY=..\..\media\cm_bottom.jpg
-         PicturePZ=..\..\media\cm_left.jpg
-         PictureNZ=..\..\media\cm_right.jpg
+         PicturePX=..\..\..\..\media\cm_back.jpg
+         PictureNX=..\..\..\..\media\cm_front.jpg
+         PicturePY=..\..\..\..\media\cm_top.jpg
+         PictureNY=..\..\..\..\media\cm_bottom.jpg
+         PicturePZ=..\..\..\..\media\cm_left.jpg
+         PictureNZ=..\..\..\..\media\cm_right.jpg
       }
       ImageGamma=1
       MagFilter=maLinear
