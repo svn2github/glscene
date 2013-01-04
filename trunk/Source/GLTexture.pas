@@ -6,8 +6,9 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from GLColor unit to here
        <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
-                           changed type TGLCubeMapTarget to integer using GLS_CPPB
+                           restored definition of TGLCubeMapTarget as integer type
        <li>12/05/11 - Yar - Added KeepImageAfterTransfer for TGLTexture
        <li>04/10/10 - Yar - Improved multycontext features for TGLTexture
        <li>23/08/10 - Yar - Added OpenGLTokens to uses
@@ -238,6 +239,13 @@ uses
 
 const
   cDefaultNormalMapScale = 0.125;
+
+  CmtPX = 0;
+  CmtNX = 1;
+  CmtPY = 2;
+  CmtNY = 3;
+  CmtPZ = 4;
+  CmtNZ = 5;
 
 type
   TGLMinFilter =
@@ -572,11 +580,7 @@ type
 
   // TGLCubeMapTarget
   //
-{$IFDEF GLS_CPPB}
-  TGLCubeMapTarget = Integer;
-{$ELSE}
-  TGLCubeMapTarget = (CmtPX, CmtNX, CmtPY, CmtNY, CmtPZ, CmtNZ);
-{$ENDIF}
+ TGLCubeMapTarget = Integer;
 
   // TGLCubeMapImage
   //
