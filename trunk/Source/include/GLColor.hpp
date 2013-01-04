@@ -333,12 +333,6 @@ extern PACKAGE Vectortypes::TVector4f clrBlue;
 extern PACKAGE Vectortypes::TVector4f clrFuchsia;
 extern PACKAGE Vectortypes::TVector4f clrAqua;
 #define cDefaultNormalMapScale  (1.250000E-01)
-static const System::Int8 CmtPX = System::Int8(0x0);
-static const System::Int8 CmtNX = System::Int8(0x1);
-static const System::Int8 CmtPY = System::Int8(0x2);
-static const System::Int8 CmtNY = System::Int8(0x3);
-static const System::Int8 CmtPZ = System::Int8(0x4);
-static const System::Int8 CmtNZ = System::Int8(0x5);
 extern PACKAGE bool vUseDefaultColorSets;
 extern PACKAGE TGLColorManager* __fastcall ColorManager(void);
 extern PACKAGE Vectortypes::TVector4f __fastcall ConvertWinColor(System::Uitypes::TColor aColor, float alpha = 1.000000E+00);

@@ -31,6 +31,7 @@
 #include <System.Types.hpp>	// Pascal unit
 
 //-- user supplied -----------------------------------------------------------
+typedef Glgraphics::TGLBitmap32* __fastcall (__closure *TLoadingImposterEvent)(System::TObject* Sender, Glscene::TGLBaseSceneObject* impostoredObject, TImposter* destImposter);
 
 namespace Glimposter
 {
@@ -78,8 +79,6 @@ public:
 };
 
 #pragma pack(pop)
-
-typedef Glgraphics::TGLImage* __fastcall (__closure *TLoadingImposterEvent)(System::TObject* Sender, Glscene::TGLBaseSceneObject* impostoredObject, TImposter* destImposter);
 
 typedef void __fastcall (__closure *TImposterLoadedEvent)(System::TObject* Sender, Glscene::TGLBaseSceneObject* impostoredObject, TImposter* destImposter);
 

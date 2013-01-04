@@ -595,6 +595,12 @@ public:
 
 //-- var, const, procedure ---------------------------------------------------
 #define cDefaultNormalMapScale  (1.250000E-01)
+static const System::Int8 CmtPX = System::Int8(0x0);
+static const System::Int8 CmtNX = System::Int8(0x1);
+static const System::Int8 CmtPY = System::Int8(0x2);
+static const System::Int8 CmtNY = System::Int8(0x3);
+static const System::Int8 CmtPZ = System::Int8(0x4);
+static const System::Int8 CmtNZ = System::Int8(0x5);
 extern PACKAGE void __fastcall RegisterTGraphicClassFileExtension(const System::UnicodeString extension, const Glcrossplatform::TGraphicClass aClass);
 extern PACKAGE Vcl::Graphics::TGraphic* __fastcall CreateGraphicFromFile(const System::UnicodeString fileName);
 extern PACKAGE void __fastcall RegisterGLTextureImageClass(TGLTextureImageClass textureImageClass);
