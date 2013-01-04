@@ -1,0 +1,1 @@
+The directory for C/C++ output HPP file generation
