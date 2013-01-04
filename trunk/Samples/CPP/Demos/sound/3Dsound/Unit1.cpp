@@ -1,66 +1,86 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include <math.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLGeomObjects"
-#pragma link "GLWin32Viewer"
-#pragma link "GLSMBASS"
-#pragma link "GLSMFMOD"
-#pragma link "GLSound"
-#pragma link "GLObjects"
-#pragma link "GLScene"
-#pragma link "GLCadencer"
 #pragma link "BaseClasses"
+#pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
+#pragma link "GLGeomObjects"
+#pragma link "GLObjects"
+#pragma link "GLScene"
+#pragma link "GLSMBASS"
+#pragma link "GLSMFMOD"
+#pragma link "GLSMOpenAL"
+#pragma link "GLSound"
+#pragma link "GLWin32Viewer"
+#pragma link "GLFileWAV"
+#pragma link "GLFileMP3"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
+int mx,my;
 //---------------------------------------------------------------------------
-__fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
 {
-// Load our sound sample
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\drumloop.wav","");
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\chimes.wav","");
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\howl.mp3","");
 }
-
 //---------------------------------------------------------------------------
-
-void __fastcall TForm1::SphereProgress(TObject * Sender,
-									   const double deltaTime,
-									   const double newTime)
+void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-  float alpha;
+   SetGLSceneMediaDir();
+   // Load our sound sample
+   GLSoundLibrary->Samples->AddFile("drumloop.wav","drumloop.wav");
+   GLSoundLibrary->Samples->AddFile("chimes.wav","chimes.wav");
+   GLSoundLibrary->Samples->AddFile("howl.mp3","howl.mp3");
 
-  // Move the red sphere (sound source) along an elliptic path
-  alpha = 60.0 * DegToRad(newTime);
-  ((TGLSphere *) Sender)->Position->SetPoint(sin(alpha) * 2, 0.5,
-											 cos(alpha) * 5);
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::TrackBarChange(TObject * Sender)
+void __fastcall TForm1::SphereProgress(TObject *Sender, const double deltaTime, const double newTime)
+
 {
-  // Rotate the listener around the vertical axis
-  DummyCube->TurnAngle = TrackBar->Position;
-  Application->ProcessMessages();
-}
+   Single alpha;
+   // Move the red sphere (sound source) along an elliptic path
+   alpha = 60*DegToRad(newTime);
+   ((TGLSphere *) Sender)->Position->SetPoint(sin(alpha)*2, 0.5, cos(alpha)*5);
 
+}
 //---------------------------------------------------------------------------
-void __fastcall TForm1::TrackBar1Change(TObject * Sender)
+void __fastcall TForm1::TrackBar1Change(TObject *Sender)
 {
-  // Move the listener forward/back
-  Mickey->Position->Z = (float)TrackBar1->Position / 10.0;
-  Application->ProcessMessages();
+   // Move the listener forward/back
+   Mickey->Position->Z = TrackBar1->Position/10;
+   Application->ProcessMessages();
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::TimerTimer(TObject * Sender)
+void __fastcall TForm1::TrackBarChange(TObject *Sender)
+{
+   // Rotate the listener around the vertical axis
+   DummyCube->TurnAngle = TrackBar->Position;
+   Application->ProcessMessages();
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+  TGLBSoundEmitter *se = new TGLBSoundEmitter(Sphere->Behaviours);
+  se->Source->SoundLibrary = GLSoundLibrary;
+  se->Source->SoundName = "chimes.wav";
+  se->Playing = True;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::btnHowlClick(TObject *Sender)
+{
+  TGLBSoundEmitter *se = new TGLBSoundEmitter(Sphere->Behaviours);
+  se->Source->SoundLibrary = GLSoundLibrary;
+  se->Source->SoundName = "howl.mp3";
+  se->Playing = True;
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::TimerTimer(TObject *Sender)
 {
   String mngName;
   TGLSoundManager *sm;
@@ -68,22 +88,22 @@ void __fastcall TForm1::TimerTimer(TObject * Sender)
 
   // some stats
   if(dynamic_cast < TGLSMBASS * >(sm))
-    mngName = "BASS";
+	mngName = "BASS";
   else if(dynamic_cast < TGLSMFMOD * >(sm))
-    mngName = "FMOD";
+	mngName = "FMOD";
   else
-    mngName = "";
+	mngName = "";
   if(sm)
-    Caption = Format("%.2f FPS, %s CPU use : %.2f%%",
-                     ARRAYOFCONST((GLSceneViewer->FramesPerSecond(), mngName,
-                                   ActiveSoundManager()->CPUUsagePercent())));
+	LabelFPS->Caption = Format("%.2f FPS, %s CPU use : %.2f%%",
+		 ARRAYOFCONST((GLSceneViewer->FramesPerSecond(), mngName,
+					   ActiveSoundManager()->CPUUsagePercent())));
   else
-    Caption = "No active sound manager.";
+	LabelFPS->Caption = "No active sound manager.";
   GLSceneViewer->ResetPerformanceMonitor();
-}
 
+}
 //---------------------------------------------------------------------------
-void __fastcall TForm1::RBFMODClick(TObject * Sender)
+void __fastcall TForm1::RBFMODClick(TObject *Sender)
 {
   TGLSoundManager *newManager, *sm;
 
@@ -108,24 +128,21 @@ void __fastcall TForm1::RBFMODClick(TObject * Sender)
     }
   }
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::Button1Click(TObject * Sender)
+void __fastcall TForm1::GLSceneViewerMouseMove(TObject *Sender, TShiftState Shift,
+		  int X, int Y)
 {
-  TGLBSoundEmitter *se = new TGLBSoundEmitter(Mickey->Behaviours);
-  se->Source->SoundLibrary = GLSoundLibrary;
-  se->Source->SoundName = "chimes.wav";
-  se->Playing = True;
+  if(Shift.Contains(ssLeft))
+	GLCamera1->MoveAroundTarget(my - Y, mx - X);
+  else if(Shift.Contains(ssRight))
+	GLCamera1->AdjustDistanceToTarget(1 + (my - Y) * 0.01);
+	mx = X;
+	my = Y;
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::Button2Click(TObject * Sender)
+void __fastcall TForm1::GLSceneViewerMouseDown(TObject *Sender, TMouseButton Button,
+		  TShiftState Shift, int X, int Y)
 {
-  TGLBSoundEmitter *se = new TGLBSoundEmitter(Mickey->Behaviours);
-  se->Source->SoundLibrary = GLSoundLibrary;
-  se->Source->SoundName = "howl.mp3";
-  se->Playing = True;
+ mx = X; my = Y;
 }
-
 //---------------------------------------------------------------------------
-
