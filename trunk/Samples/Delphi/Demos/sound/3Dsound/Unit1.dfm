@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 209
   Top = 92
-  Width = 483
-  Height = 391
-  Caption = 'Form1'
+  Caption = 'Sound Around'
+  ClientHeight = 367
+  ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,20 +16,20 @@ object Form1: TForm1
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
     Left = 0
-    Top = 66
-    Width = 467
-    Height = 260
+    Top = 73
+    Width = 481
+    Height = 267
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 137.924972534179700000
+    FieldOfView = 138.934951782226600000
     Align = alClient
     TabOrder = 0
   end
   object TrackBar: TTrackBar
     Left = 0
-    Top = 326
-    Width = 467
+    Top = 340
+    Width = 481
     Height = 27
     Align = alBottom
     Max = 180
@@ -43,9 +43,9 @@ object Form1: TForm1
   end
   object TrackBar1: TTrackBar
     Left = 0
-    Top = 33
-    Width = 467
-    Height = 33
+    Top = 41
+    Width = 481
+    Height = 32
     Align = alTop
     Max = 50
     Min = -50
@@ -59,24 +59,31 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 467
-    Height = 33
+    Width = 481
+    Height = 41
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 3
     DesignSize = (
-      467
-      33)
+      481
+      41)
     object Label1: TLabel
-      Left = 0
+      Left = 10
       Top = 8
       Width = 82
       Height = 13
       Caption = 'Sound Manager :'
     end
+    object LabelFPS: TLabel
+      Left = 10
+      Top = 27
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object RBBass: TRadioButton
-      Left = 89
-      Top = 10
+      Left = 98
+      Top = 6
       Width = 57
       Height = 17
       Caption = 'BASS'
@@ -84,8 +91,8 @@ object Form1: TForm1
       OnClick = RBFMODClick
     end
     object RBFMOD: TRadioButton
-      Left = 152
-      Top = 10
+      Left = 161
+      Top = 6
       Width = 57
       Height = 17
       Caption = 'FMOD'
@@ -93,8 +100,8 @@ object Form1: TForm1
       OnClick = RBFMODClick
     end
     object Button1: TButton
-      Left = 384
-      Top = 4
+      Left = 390
+      Top = 2
       Width = 83
       Height = 25
       Anchors = [akTop, akRight]
@@ -103,7 +110,7 @@ object Form1: TForm1
       OnClick = Button1Click
     end
     object btnHowl: TButton
-      Left = 295
+      Left = 301
       Top = 2
       Width = 83
       Height = 25
@@ -114,8 +121,8 @@ object Form1: TForm1
       OnClick = btnHowlClick
     end
     object RBOpenAL: TRadioButton
-      Left = 215
-      Top = 10
+      Left = 224
+      Top = 6
       Width = 65
       Height = 17
       Caption = 'OpenAL'
@@ -130,8 +137,8 @@ object Form1: TForm1
     Listener = Mickey
     Sources = <>
     Cadencer = GLCadencer1
-    Left = 8
-    Top = 144
+    Left = 352
+    Top = 80
   end
   object GLSMBASS: TGLSMBASS
     MaxChannels = 32
@@ -139,8 +146,8 @@ object Form1: TForm1
     Listener = Mickey
     Sources = <>
     Cadencer = GLCadencer1
-    Left = 40
-    Top = 144
+    Left = 288
+    Top = 80
   end
   object GLSMOpenAL: TGLSMOpenAL
     Active = True
@@ -150,17 +157,17 @@ object Form1: TForm1
     Sources = <>
     Cadencer = GLCadencer1
     Environment = seAuditorium
-    Left = 72
-    Top = 144
+    Left = 416
+    Top = 80
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 8
-    Top = 104
+    Left = 216
+    Top = 80
   end
   object GLScene: TGLScene
-    Left = 8
-    Top = 64
+    Left = 16
+    Top = 80
     object DummyCube: TGLDummyCube
       CubeSize = 1.000000000000000000
       object Torus1: TGLTorus
@@ -174,6 +181,8 @@ object Form1: TForm1
         MinorRadius = 0.100000001490116100
         Rings = 16
         Sides = 3
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object Mickey: TGLSphere
         Position.Coordinates = {000000000000003F000000000000803F}
@@ -220,11 +229,11 @@ object Form1: TForm1
       Slices = 9
       Stacks = 9
       BehavioursData = {
-        0201061054474C42536F756E64456D6974746572020002000200020005000000
-        0000000080FF3F050000000000000080FF3F0500000000000000C80540050000
-        0000000000B407400500000000000000B407400500000000000000000000060E
-        474C536F756E644C696272617279060C6472756D6C6F6F702E77617608080203
-        09}
+        0458434F4C02010201061054474C42536F756E64456D69747465720200120000
+        00000200020002000200050000000000000080FF3F050000000000000080FF3F
+        0500000000000000C805400500000000000000B407400500000000000000B407
+        400500000000000000000000060E474C536F756E644C696272617279060C6472
+        756D6C6F6F702E7761760808020309}
       object Disk1: TGLDisk
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000080BF000000000000803F}
@@ -251,12 +260,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene
     SleepLength = 1
-    Left = 8
-    Top = 184
+    Left = 80
+    Top = 80
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 8
-    Top = 224
+    Left = 144
+    Top = 80
   end
 end

@@ -1,43 +1,3 @@
-{: 3D Sound sample (WaveOut manager is used in this sample).<p>
-
-   This sample has a moving red sound source with a looping sound, and a "mickey"
-   listener that you can move around using the trackbars.<p>
-
-   You already know the TGLScene, TGLSceneViewer, the TTimer is just used for
-   regularly updating the Form's caption with FPS and CPU usage stats. You also
-   know the TGLCadencer, but here, it not only cadenced the scene, but is also
-   referred and used by the TGLSMWaveOut sound manager.<p>
-
-   A TGLSoundLibrary is used to load and store the sample, a 44kHz WAV file. The
-   sound library can be used to embed sound files in the application, you just
-   have to add a sample at design-time and this removes the need for an external
-   file, but for our samples, we share a single wav files among all demos.
-   Sound libraries are used to store sound samples, you may only play a sample
-   that is available in library (you can add/remove samples dynamically).<p>
-
-   We also have sound manager. There can only be one *active* sound manager in
-   any app at any time, it serves as an interface to a low-level sound API.
-   3D sounds are dynamic things, the easiest way to achieve this is to connect
-   the manager to the cadencer by setting its "Cadencer" property, this way,
-   it will get updated regularly.<p>
-
-   And now, the last part : a sound emitter behaviour has been attached to the
-   red sphere, in this behaviour we specify a sample (by selecting a sound
-   library, and a sample in the sound library). The "NbLoops" property was also
-   adjusted, to keep our sound looping (playing again and again).<p>
-
-   That's basicly all you need to use GLScene Sound System. Note however, that
-   depending on the low-level API you chose (ie. sound manager), some features
-   amy or may not be available, but you don't need to worry about that, if
-   a feature is unavailable on a particular driver, it will just be ignored.<p>
-
-   For the sake of the demo, all three samples are using different formats,
-   the APIs take care of the conversions: "drumloop.wav" is a 44kHz PCM,
-   "howl.mp3" a 16kHz MP3, and "chimes.wav" a 22kHz PCM... All three files
-   however are mono, because stereo sounds cannot go 3D... Remember that only
-   3D sounds are required to be mono, if you have some background music or ambient
-   soundtrack, it can be stereo (use the Sound System API directly to play it).<p>
-}
 unit Unit1;
 
 interface
@@ -46,7 +6,7 @@ uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, GLSMWaveOut, ComCtrls, Controls, StdCtrls, GLWin32Viewer,
   GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
-  GLFileMP3;
+  GLFileMP3, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -72,6 +32,7 @@ type
     Panel1: TPanel;
     Button1: TButton;
     btnHowl: TButton;
+    LabelFPS: TLabel;
     procedure SphereProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure TimerTimer(Sender: TObject);
@@ -97,10 +58,11 @@ uses VectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // Load our sound sample
-   GLSoundLibrary.Samples.AddFile('..\..\media\drumloop.wav','drumloop.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\chimes.wav','chimes.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\howl.mp3','howl.mp3');
+   GLSoundLibrary.Samples.AddFile('drumloop.wav','drumloop.wav');
+   GLSoundLibrary.Samples.AddFile('chimes.wav','chimes.wav');
+   GLSoundLibrary.Samples.AddFile('howl.mp3','howl.mp3');
 end;
 
 procedure TForm1.SphereProgress(Sender: TObject; const deltaTime,
@@ -136,10 +98,10 @@ begin
       mngName:='WaveOut'
    else mngName:='';
    if ActiveSoundManager<>nil then
-      Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
+      LabelFPS.Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
                       [GLSceneViewer.FramesPerSecond, mngName,
                        ActiveSoundManager.CPUUsagePercent])
-   else Caption:='No active sound manager.';
+   else LabelFPS.Caption:='No active sound manager.';
    GLSceneViewer.ResetPerformanceMonitor;
 end;
 

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 209
   Top = 92
-  Width = 483
-  Height = 391
-  Caption = 'Form1'
+  Caption = 'Sound WaveOut'
+  ClientHeight = 347
+  ClientWidth = 475
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,19 +17,19 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 66
-    Width = 467
-    Height = 260
+    Width = 475
+    Height = 254
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 137.924972534179700000
+    FieldOfView = 137.020797729492200000
     Align = alClient
     TabOrder = 0
   end
   object TrackBar: TTrackBar
     Left = 0
-    Top = 326
-    Width = 467
+    Top = 320
+    Width = 475
     Height = 27
     Align = alBottom
     Max = 180
@@ -44,7 +44,7 @@ object Form1: TForm1
   object TrackBar1: TTrackBar
     Left = 0
     Top = 33
-    Width = 467
+    Width = 475
     Height = 33
     Align = alTop
     Max = 50
@@ -59,14 +59,21 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 467
+    Width = 475
     Height = 33
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 3
     DesignSize = (
-      467
+      475
       33)
+    object LabelFPS: TLabel
+      Left = 8
+      Top = 7
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object Button1: TButton
       Left = 384
       Top = 4
@@ -118,6 +125,8 @@ object Form1: TForm1
         MinorRadius = 0.100000001490116100
         Rings = 16
         Sides = 3
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object Mickey: TGLSphere
         Position.Coordinates = {000000000000003F000000000000803F}
@@ -164,11 +173,11 @@ object Form1: TForm1
       Slices = 9
       Stacks = 9
       BehavioursData = {
-        0458434F4C02010201061054474C42536F756E64456D69747465720200060002
-        00020002000200050000000000000080FF3F050000000000000080FF3F050000
-        0000000000C805400500000000000000B407400500000000000000B407400500
-        000000000000000000060E474C536F756E644C696272617279060C6472756D6C
-        6F6F702E7761760808020309}
+        0458434F4C02010201061054474C42536F756E64456D69747465720200120000
+        00000200020002000200050000000000000080FF3F050000000000000080FF3F
+        0500000000000000C805400500000000000000B407400500000000000000B407
+        400500000000000000000000060E474C536F756E644C696272617279060C6472
+        756D6C6F6F702E7761760808020309}
       object Disk1: TGLDisk
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000080BF000000000000803F}
