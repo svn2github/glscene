@@ -1,0 +1,1 @@
+The directory for C/C++ output lib/bpi generation
