@@ -8,6 +8,7 @@ copy SDL.dll %SystemRoot%\System32\
 echo Copying Sound's dll to the windows system32 directory
 copy bass.dll %SystemRoot%\System32\
 copy fmod.dll %SystemRoot%\System32\
+copy OpenAL32.dll %SystemRoot%\System32\
 copy OpenAL64.dll %SystemRoot%\System32\
 
 
