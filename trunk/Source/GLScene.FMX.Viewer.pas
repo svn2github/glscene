@@ -124,7 +124,7 @@ begin
   {$IFDEF GLS_COMPILER_XE3_UP}
   FFMXContext := TContextManager.DefaultContextClass.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
   {$ELSE}
-  FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); - E2003 Undeclared identifier: 'DefaultClass'
+  FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); 
   {$ENDIF}
 end;
 
