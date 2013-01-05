@@ -38,6 +38,8 @@ del *.ilc /s
 del *.ild /s
 del *.ilf /s
 del *.ils /s
+del *.pdi /s
+del *.vlb /s
 
 
 echo _
