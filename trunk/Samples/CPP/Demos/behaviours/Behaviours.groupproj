@@ -3,10 +3,16 @@
         <ProjectGuid>{B1D1D4D8-D171-4358-AF39-7B7FBE7D7064}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="DCEDemo\dceDemo.cbproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="FPSMovement\FPSMovement.cbproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj">
+        <Projects Include="PathControl\PathControl.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Torque\Torque.cbproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,6 +23,15 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="dceDemo">
+        <MSBuild Projects="DCEDemo\dceDemo.cbproj"/>
+    </Target>
+    <Target Name="dceDemo:Clean">
+        <MSBuild Projects="DCEDemo\dceDemo.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="dceDemo:Make">
+        <MSBuild Projects="DCEDemo\dceDemo.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="FPSMovement">
         <MSBuild Projects="FPSMovement\FPSMovement.cbproj"/>
     </Target>
@@ -26,23 +41,32 @@
     <Target Name="FPSMovement:Make">
         <MSBuild Projects="FPSMovement\FPSMovement.cbproj" Targets="Make"/>
     </Target>
-    <Target Name="GLScene_RunTime">
-        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj"/>
+    <Target Name="PathControl">
+        <MSBuild Projects="PathControl\PathControl.cbproj"/>
     </Target>
-    <Target Name="GLScene_RunTime:Clean">
-        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj" Targets="Clean"/>
+    <Target Name="PathControl:Clean">
+        <MSBuild Projects="PathControl\PathControl.cbproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLScene_RunTime:Make">
-        <MSBuild Projects="..\..\..\..\DelphiXE3\GLScene_RunTime.dproj" Targets="Make"/>
+    <Target Name="PathControl:Make">
+        <MSBuild Projects="PathControl\PathControl.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Torque">
+        <MSBuild Projects="Torque\Torque.cbproj"/>
+    </Target>
+    <Target Name="Torque:Clean">
+        <MSBuild Projects="Torque\Torque.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Torque:Make">
+        <MSBuild Projects="Torque\Torque.cbproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="FPSMovement;GLScene_RunTime"/>
+        <CallTarget Targets="dceDemo;FPSMovement;PathControl;Torque"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="FPSMovement:Clean;GLScene_RunTime:Clean"/>
+        <CallTarget Targets="dceDemo:Clean;FPSMovement:Clean;PathControl:Clean;Torque:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="FPSMovement:Make;GLScene_RunTime:Make"/>
+        <CallTarget Targets="dceDemo:Make;FPSMovement:Make;PathControl:Make;Torque:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
