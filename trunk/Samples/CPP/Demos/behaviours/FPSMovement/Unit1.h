@@ -8,9 +8,7 @@
 #include <StdCtrls.hpp>
 #include <ExtCtrls.hpp>
 #include <Forms.hpp>
-
-#include "OpenGL1x.hpp"         // Pascal unit
-#include "GLScene.hpp"
+#include "OpenGL1x.hpp"
 #include "BaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -19,27 +17,18 @@
 #include "GLMaterial.hpp"
 #include "GLNavigator.hpp"
 #include "GLObjects.hpp"
+#include "GLScene.hpp"
 #include "GLSimpleNavigation.hpp"
 #include "GLVectorFileObjects.hpp"
-#include "GLWin32Viewer.hpp"          // Pascal unit
-#pragma hdrstop
-
+#include "GLWin32Viewer.hpp"
+#include "GLKeyboard.hpp"
 #include <GLGeomObjects.hpp>    // Pascal unit
 #include <VectorGeometry.hpp>   // Pascal unit
 #include <Octree.hpp>           // Pascal unit
 #include <VectorLists.hpp>      // Pascal unit
 #include <GLNavigator.hpp>      // Pascal unit
 #include <GLCollision.hpp>      // Pascal unit
-#include <GLObjects.hpp>        // Pascal unit
-#include <GLWin32Viewer.hpp>    // Pascal unit
-#include <GLCadencer.hpp>       // Pascal unit
 #include <GLTexture.hpp>        // Pascal unit
-#include <GLFPSMovement.hpp>
-#include "GLCoordinates.hpp"
-#include "GLCrossPlatform.hpp"
-#include "GLMaterial.hpp"         // Pascal unit
-#include "GLKeyboard.hpp"
-#include "GLSimpleNavigation.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1:public TForm
