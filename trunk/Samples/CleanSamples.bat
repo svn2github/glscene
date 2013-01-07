@@ -1,4 +1,5 @@
 echo off
+del *.exe /s  
 del *.dcu /s 
 del *.ddp /s
 del *.ppu /s
@@ -49,7 +50,6 @@ echo ************************************************
 echo _
 
 
-rem del *.exe /s  applications
 rem del *.cfg /s  animations
 
 
