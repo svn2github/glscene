@@ -417,18 +417,14 @@ type
     FMass: Single;
     FAppliedForce: TGLCoordinates;
     FAppliedTorque: TGLCoordinates;
+    FAppliedOmega: TGLCoordinates;
+    FAppliedVelocity: TGLCoordinates;
 
     function StoredDensity: Boolean;
     function StoredLinearDamping: Boolean;
     function StoredNullCollisionVolume: Boolean;
   protected
     { Protected Declarations }
-    function GetVelocity: TAffineVector;
-    procedure SetVelocity(const Velocity: TAffineVector);
-
-    function GetOmega: TAffineVector;
-    procedure SetOmega(const Omega: TAffineVector);
-
     procedure SetAutoSleep(const Value: Boolean);
     procedure SetLinearDamping(const Value: Single);
     procedure SetDensity(const Value: Single); virtual;
@@ -459,16 +455,20 @@ type
     constructor Create(AOwner: TXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
+    function GetOmega: TVector;
+    procedure SetOmega(const Omega: TVector);
+    function GetVelocity: TVector;
+    procedure SetVelocity(const Velocity: TVector);
     class function FriendlyName: string; override;
     property CustomForceAndTorqueEvent
       : TApplyForceAndTorqueEvent read FCustomForceAndTorqueEvent write
       FCustomForceAndTorqueEvent;
-    property Velocity: TAffineVector read GetVelocity write SetVelocity;
-    property Omega: TAffineVector read GetOmega write SetOmega;
   published
     { Published Declarations }
     property Force: TGLCoordinates read FForce write FForce;
     property Torque: TGLCoordinates read FTorque write FTorque;
+    property Velocity: TVector read GetVelocity write SetVelocity;
+    property Omega: TVector read GetOmega write SetOmega;
     property CenterOfMass
       : TGLCoordinates read FCenterOfMass write FCenterOfMass;
     property AutoSleep: Boolean read FAutoSleep write SetAutoSleep default True;
@@ -486,6 +486,8 @@ type
       StoredNullCollisionVolume;
 
     // Read Only
+    property AppliedOmega: TGLCoordinates read FAppliedOmega;
+    property AppliedVelocity: TGLCoordinates read FAppliedVelocity;
     property AppliedForce: TGLCoordinates read FAppliedForce;
     property AppliedTorque: TGLCoordinates read FAppliedTorque;
     property Volume: Single read FVolume;
@@ -686,11 +688,15 @@ type
     procedure SetMinDistance(const Value: Single);
     function StoredMaxDistance: Boolean;
     function StoredMinDistance: Boolean;
+
   public
     constructor Create(AOwner: TComponent; aOuter: TNGDJoint); override;
+
   published
-    property MinDistance: Single read FMinDistance write SetMinDistance stored StoredMinDistance;
-    property MaxDistance: Single read FMaxDistance write SetMaxDistance stored StoredMaxDistance;
+    property MinDistance: Single read FMinDistance write SetMinDistance stored 
+	   StoredMinDistance;
+    property MaxDistance: Single read FMaxDistance write SetMaxDistance stored 
+	   StoredMaxDistance;
   end;
 
   TNGDJointKinematicController = class(TPersistent)
@@ -1057,10 +1063,8 @@ begin
   if (csDesigning in ComponentState) then
     Result := FNewtonJointGroup.Count
   else
-  begin
     // Constraint is the number of joint
     Result := NewtonWorldGetConstraintCount(FNewtonWorld);
-  end;
 end;
 
 procedure TGLNGDManager.NotifyChange(Sender: TObject);
@@ -1535,9 +1539,7 @@ end;
 destructor TGLNGDBehaviour.Destroy;
 begin
   if Assigned(FManager) then
-  begin
     Manager := nil;  // This will call finalize
-  end;
   inherited;
 end;
 
@@ -1568,8 +1570,8 @@ end;
 
 function TGLNGDBehaviour.GetBBoxCollision: PNewtonCollision;
 var
-  I: Integer;
   vc: array [0 .. 7] of TVector;
+  I: Integer;
 begin
   for I := 0 to 8 - 1 do
     vc[I] := AABBToBB(FOwnerBaseSceneObject.AxisAlignedBoundingBoxEx).BBox[I];
@@ -2158,6 +2160,10 @@ begin
   FCenterOfMass.OnNotifyChange := NotifyCenterOfMassChange;
   FAABBmin := TGLCoordinates.CreateInitialized(self, NullHmgVector, csPoint);
   FAABBmax := TGLCoordinates.CreateInitialized(self, NullHmgVector, csPoint);
+  FAppliedOmega := TGLCoordinates.CreateInitialized(self, NullHmgVector,
+    csVector);
+  FAppliedVelocity := TGLCoordinates.CreateInitialized(self, NullHmgVector,
+    csVector);
   FAppliedForce := TGLCoordinates.CreateInitialized(self, NullHmgVector,
     csVector);
   FAppliedTorque := TGLCoordinates.CreateInitialized(self, NullHmgVector,
@@ -2181,6 +2187,8 @@ begin
   FAABBmax.Free;
   FAppliedForce.Free;
   FAppliedTorque.Free;
+  FAppliedVelocity.Free;
+  FAppliedOmega.Free;
   inherited;
 end;
 
@@ -2341,7 +2349,7 @@ procedure TGLNGDDynamic.Render;
     if mdShowAppliedVelocity in FManager.DebugOption.NGDManagerDebugs then
     begin
       FManager.FCurrentColor := FManager.DebugOption.AppliedVelocityColor;
-      nor := VectorAdd(pos, VectorMake(Velocity) );
+      nor := VectorAdd(pos, FAppliedVelocity.AsVector);
       FManager.AddNode(pos);
       FManager.AddNode(nor);
     end;
@@ -2440,22 +2448,22 @@ begin
       NewtonBodySetLinearDamping(FNewtonBody, FLinearDamping);
 end;
 
-function TGLNGDDynamic.GetOmega: TAffineVector;
+function TGLNGDDynamic.GetOmega: TVector;
 begin
   NewtonBodyGetOmega(FNewtonBody, @Result);
 end;
 
-procedure TGLNGDDynamic.SetOmega(const Omega: TAffineVector);
+procedure TGLNGDDynamic.SetOmega(const Omega: TVector);
 begin
   NewtonBodySetOmega(FNewtonBody, @Omega);
 end;
 
-function TGLNGDDynamic.GetVelocity: TAffineVector;
+function TGLNGDDynamic.GetVelocity: TVector;
 begin
   NewtonBodyGetVelocity(FNewtonBody, @Result);
 end;
 
-procedure TGLNGDDynamic.SetVelocity(const Velocity: TAffineVector);
+procedure TGLNGDDynamic.SetVelocity(const Velocity: TVector);
 begin
   NewtonBodySetVelocity(FNewtonBody, @Velocity);
 end;
@@ -2590,6 +2598,9 @@ begin
   NewtonBodyGetForce(cbody, @(FAppliedForce.AsVector));
   NewtonBodyGetTorque(cbody, @(FAppliedTorque.AsVector));
 
+  NewtonBodyGetVelocity(cbody, @(FAppliedVelocity.AsVector));
+  NewtonBodyGetOmega(cbody, @(FAppliedOmega.AsVector));
+
   // Raise Custom event
   if Assigned(FCustomForceAndTorqueEvent) then
     FCustomForceAndTorqueEvent(cbody, timestep, threadIndex)
@@ -2694,7 +2705,10 @@ class procedure TNGDSurfacePair.NewtonContactsProcess
   (const contact: PNewtonJoint; timestep: NGDFloat; threadIndex: Integer);
   cdecl; {$IFDEF FPC} static; {$ENDIF}
 begin
-  TNGDSurfacePair(NewtonMaterialGetMaterialPairUserData(NewtonContactGetMaterial(NewtonContactJointGetFirstContact(contact)))).FContactProcessEvent(contact, timestep, threadIndex);
+  TNGDSurfacePair(NewtonMaterialGetMaterialPairUserData
+   (NewtonContactGetMaterial
+     (NewtonContactJointGetFirstContact(contact)))).FContactProcessEvent
+	    (contact, timestep, threadIndex);
 end;
 
 function TNGDSurfacePair.OnNewtonAABBOverlapEvent

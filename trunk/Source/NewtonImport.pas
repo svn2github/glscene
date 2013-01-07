@@ -76,6 +76,7 @@ uses
 
 {$IFDEF UNIX}
 {$IFDEF FPC}
+  LCLType,
 {$IFDEF Ver1_0}
   linux,
 {$ELSE}
@@ -233,6 +234,10 @@ type
   PNewtonCollision = ^Pointer;
   PNewtonSceneProxy = ^Pointer;
   PNewtonBreakableComponentMesh = ^Pointer;
+  PNewtonMeshVertex = ^Pointer;
+  PNewtonMeshEdge = ^Pointer;
+  PNewtonMeshFace = ^Pointer;
+  PNewtonMeshPoint= ^Pointer;
   // JointLibrary
   PNewtonUserJoint = ^Pointer;
 
@@ -249,6 +254,10 @@ type
   PNewtonCollision = Pointer;
   PNewtonSceneProxy = Pointer;
   PNewtonBreakableComponentMesh = Pointer;
+  PNewtonMeshVertex = Pointer;
+  PNewtonMeshEdge = Pointer;
+  PNewtonMeshFace = Pointer;
+  PNewtonMeshPoint= Pointer;
   // JointLibrary
   PNewtonUserJoint = Pointer;
 
