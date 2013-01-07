@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 568
-  ClientWidth = 767
+  Caption = 'Newton Joints'
+  ClientHeight = 403
+  ClientWidth = 575
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,17 +17,18 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 767
-    Height = 568
+    Width = 575
+    Height = 403
     Camera = GLCamera1
-    FieldOfView = 160.030075073242200000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 152.128311157226600000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseUp = GLSceneViewer1MouseUp
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 176
+    Left = 40
     Top = 16
     object GLLines1: TGLLines
       Pickable = False
@@ -63,8 +64,8 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200090000000000
         000000000000000000803F020008}
       object GLAbsoluteHUDText1: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Hinge Joint'
+        Rotation = 0.000000000000000000
       end
     end
     object Slider: TGLCube
@@ -76,8 +77,8 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200090000000000
         000000000000000000803F020008}
       object GLAbsoluteHUDText2: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Slider Joint'
+        Rotation = 0.000000000000000000
       end
     end
     object Corkscrew: TGLCube
@@ -89,8 +90,8 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200090000000000
         000000000000000000803F020008}
       object GLAbsoluteHUDText3: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Corkscrew Joint'
+        Rotation = 0.000000000000000000
       end
     end
     object CustomHinge: TGLCube
@@ -103,8 +104,8 @@ object Form1: TForm1
         000000000000000000803F020008}
       CubeSize = {000000400000004000000040}
       object GLAbsoluteHUDText4: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Custom Hinge with Limits'
+        Rotation = 0.000000000000000000
       end
     end
     object CustomSlider: TGLCube
@@ -117,8 +118,8 @@ object Form1: TForm1
         000000000000000000803F020008}
       CubeSize = {000000400000004000000040}
       object GLAbsoluteHUDText5: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Custom Slider with Limits'
+        Rotation = 0.000000000000000000
       end
     end
     object Universal: TGLCone
@@ -132,8 +133,8 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200092EBD3B3200
         0080BE000000000000803F020008}
       object GLAbsoluteHUDText6: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Universal Joint'
+        Rotation = 0.000000000000000000
       end
     end
     object CustomBall: TGLSphere
@@ -146,8 +147,8 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200090000000000
         000000000000000000803F020008}
       object GLAbsoluteHUDText8: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Custom Ball with Limits'
+        Rotation = 0.000000000000000000
       end
     end
     object Ball: TGLSphere
@@ -160,15 +161,15 @@ object Form1: TForm1
         00000080FF3F0905000000000000000000000200080200080200090000000000
         000000000000000000803F020008}
       object GLAbsoluteHUDText7: TGLAbsoluteHUDText
-        BitmapFont = GLWindowsBitmapFont1
         Text = 'Ball and Socketl Joint'
+        Rotation = 0.000000000000000000
       end
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 136
+    Left = 104
     Top = 16
   end
   object GLNGDManager1: TGLNGDManager
@@ -251,13 +252,13 @@ object Form1: TForm1
         ChildObject = CustomBall
         CollisionState = True
       end>
-    Left = 256
+    Left = 200
     Top = 16
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Newton Joints - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -268,16 +269,7 @@ object Form1: TForm1
         Action = snaMoveAroundTarget
       end>
     OnMouseMove = GLSimpleNavigation1MouseMove
-    Left = 216
-    Top = 16
-  end
-  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 296
-    Top = 16
+    Left = 40
+    Top = 80
   end
 end

@@ -1,10 +1,9 @@
 object frmRagdoll: TfrmRagdoll
   Left = 236
   Top = 242
-  AutoScroll = False
-  Caption = 'GLScene + ODE Skinned ragdoll (by Lucas Goraieb)'
-  ClientHeight = 572
-  ClientWidth = 733
+  Caption = 'Ragdoll'
+  ClientHeight = 496
+  ClientWidth = 665
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,18 +23,20 @@ object frmRagdoll: TfrmRagdoll
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 733
-    Height = 572
+    Width = 665
+    Height = 496
     Camera = GLCamera1
     Buffer.BackgroundColor = 15648684
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 150.611511230468800000
+    FieldOfView = 146.347335815429700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
+    Left = 24
+    Top = 24
     object ODEScene: TGLDummyCube
       CubeSize = 1.000000000000000000
       object Actor1: TGLActor
@@ -75,6 +76,7 @@ object frmRagdoll: TfrmRagdoll
       Text = 
         'Keys: Q,W,E,A,S,D -> Apply forces  | X,C -> Start, stop ragdoll ' +
         '| F1,F2, F3 -> Switch animation | Return -> Explode'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object GLCamera1: TGLCamera
@@ -92,7 +94,8 @@ object frmRagdoll: TfrmRagdoll
     FixedDeltaTime = 0.016900000000000000
     SleepLength = 1
     OnProgress = GLCadencer1Progress
-    Top = 32
+    Left = 24
+    Top = 72
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = ANSI_CHARSET
@@ -100,10 +103,11 @@ object frmRagdoll: TfrmRagdoll
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Top = 64
+    Left = 120
+    Top = 72
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 32
-    Top = 32
+    Left = 120
+    Top = 24
   end
 end

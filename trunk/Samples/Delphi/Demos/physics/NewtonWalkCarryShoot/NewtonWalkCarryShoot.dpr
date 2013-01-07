@@ -1,7 +1,7 @@
 program NewtonWalkCarryShoot;
 
 uses
-  ExceptionLog,
+  //ExceptionLog,
   Forms,
   Unit1 in 'Unit1.pas' {Form1};
 

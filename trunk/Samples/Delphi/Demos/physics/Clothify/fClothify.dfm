@@ -1,9 +1,9 @@
 object frmClothify: TfrmClothify
   Left = 34
   Top = 114
-  Width = 723
-  Height = 542
   Caption = 'Clothify'
+  ClientHeight = 498
+  ClientWidth = 715
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,59 +14,20 @@ object frmClothify: TfrmClothify
   Position = poScreenCenter
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  DesignSize = (
-    707
-    504)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 671
-    Top = 0
-    Width = 38
-    Height = 13
-    Anchors = [akTop, akRight]
-    Caption = '0,0 FPS'
-  end
-  object Label3: TLabel
-    Left = 8
-    Top = 0
-    Width = 27
-    Height = 13
-    Caption = 'Slack'
-  end
-  object Label6: TLabel
-    Left = 104
-    Top = 0
-    Width = 43
-    Height = 13
-    Caption = 'Iterations'
-  end
-  object Label7: TLabel
-    Left = 192
-    Top = 0
-    Width = 34
-    Height = 13
-    Caption = 'Friction'
-  end
-  object Label8: TLabel
-    Left = 416
-    Top = 0
-    Width = 44
-    Height = 13
-    Caption = 'Shadows'
-  end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 48
+    Top = 60
     Width = 715
-    Height = 465
+    Height = 438
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.AmbientColor.Color = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
-    FieldOfView = 144.242599487304700000
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 142.190841674804700000
+    Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
@@ -105,7 +66,6 @@ object frmClothify: TfrmClothify
       Width = 137
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 0
       Items.Strings = (
         'Trinityrage.smd, 0.15'
@@ -123,7 +83,6 @@ object frmClothify: TfrmClothify
       Width = 89
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 1
       Items.Strings = (
         'Constraints'
@@ -135,7 +94,6 @@ object frmClothify: TfrmClothify
       Width = 73
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 2
       Items.Strings = (
         'Sphere'
@@ -192,73 +150,119 @@ object frmClothify: TfrmClothify
       OnClick = Button_CancelLoadClick
     end
   end
-  object Button_OpenLoadForm: TButton
-    Left = 360
-    Top = 11
-    Width = 51
-    Height = 21
-    Caption = '&Load'
-    TabOrder = 2
-    OnClick = Button_OpenLoadFormClick
-  end
-  object TrackBar_Slack: TTrackBar
+  object Panel1: TPanel
     Left = 0
-    Top = 14
-    Width = 97
-    Height = 25
-    Max = 100
-    TabOrder = 3
-    TickStyle = tsNone
-    OnChange = TrackBar_SlackChange
-  end
-  object TrackBar_Iterations: TTrackBar
-    Left = 96
-    Top = 14
-    Width = 81
-    Height = 25
-    Max = 30
-    Min = 1
-    Position = 4
-    TabOrder = 4
-    TickStyle = tsNone
-    OnChange = TrackBar_IterationsChange
-  end
-  object TrackBar_Friction: TTrackBar
-    Left = 184
-    Top = 14
-    Width = 81
-    Height = 25
-    Max = 100
-    Position = 60
-    TabOrder = 5
-    TickStyle = tsNone
-    OnChange = TrackBar_FrictionChange
-  end
-  object CheckBox_ShowOctree: TCheckBox
-    Left = 272
-    Top = 15
-    Width = 81
-    Height = 17
-    Caption = 'Show Octree'
-    TabOrder = 6
-  end
-  object ComboBox_Shadow: TComboBox
-    Left = 416
-    Top = 16
-    Width = 145
-    Height = 21
-    Style = csDropDownList
-    ItemHeight = 13
-    TabOrder = 7
-    OnChange = ComboBox_ShadowChange
-    Items.Strings = (
-      '(no shadows)'
-      'Shadow Volumes'
-      'Simple Shadow Plane')
+    Top = 0
+    Width = 715
+    Height = 60
+    Align = alTop
+    TabOrder = 2
+    DesignSize = (
+      715
+      60)
+    object Label3: TLabel
+      Left = 8
+      Top = 0
+      Width = 27
+      Height = 13
+      Caption = 'Slack'
+    end
+    object Label6: TLabel
+      Left = 104
+      Top = 0
+      Width = 43
+      Height = 13
+      Caption = 'Iterations'
+    end
+    object Label7: TLabel
+      Left = 192
+      Top = 0
+      Width = 34
+      Height = 13
+      Caption = 'Friction'
+    end
+    object Label8: TLabel
+      Left = 416
+      Top = 0
+      Width = 44
+      Height = 13
+      Caption = 'Shadows'
+    end
+    object Label1: TLabel
+      Left = 583
+      Top = 19
+      Width = 38
+      Height = 13
+      Anchors = [akTop, akRight]
+      Caption = '0,0 FPS'
+    end
+    object TrackBar_Slack: TTrackBar
+      Left = 0
+      Top = 14
+      Width = 97
+      Height = 25
+      Max = 100
+      TabOrder = 0
+      TickStyle = tsNone
+      OnChange = TrackBar_SlackChange
+    end
+    object TrackBar_Iterations: TTrackBar
+      Left = 96
+      Top = 14
+      Width = 81
+      Height = 25
+      Max = 30
+      Min = 1
+      Position = 4
+      TabOrder = 1
+      TickStyle = tsNone
+      OnChange = TrackBar_IterationsChange
+    end
+    object TrackBar_Friction: TTrackBar
+      Left = 184
+      Top = 14
+      Width = 81
+      Height = 25
+      Max = 100
+      Position = 60
+      TabOrder = 2
+      TickStyle = tsNone
+      OnChange = TrackBar_FrictionChange
+    end
+    object CheckBox_ShowOctree: TCheckBox
+      Left = 272
+      Top = 15
+      Width = 81
+      Height = 17
+      Caption = 'Show Octree'
+      TabOrder = 3
+    end
+    object Button_OpenLoadForm: TButton
+      Left = 360
+      Top = 11
+      Width = 51
+      Height = 21
+      Caption = '&Load'
+      TabOrder = 4
+      OnClick = Button_OpenLoadFormClick
+    end
+    object ComboBox_Shadow: TComboBox
+      Left = 416
+      Top = 16
+      Width = 145
+      Height = 21
+      Style = csDropDownList
+      TabOrder = 5
+      OnChange = ComboBox_ShadowChange
+      Items.Strings = (
+        '(no shadows)'
+        'Shadow Volumes'
+        'Simple Shadow Plane')
+    end
   end
   object GLScene1: TGLScene
-    Left = 248
-    Top = 192
+    Left = 40
+    Top = 168
     object GLShadowVolume1: TGLShadowVolume
       Lights = <
         item
@@ -425,25 +429,25 @@ object frmClothify: TfrmClothify
       Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1.000000033181353E32
+      DepthOfView = 1.000000033181354E32
       FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000704100002041000070410000803F}
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 288
-    Top = 192
+    Left = 40
+    Top = 224
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 360
-    Top = 192
+    Left = 144
+    Top = 168
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 328
-    Top = 192
+    Left = 144
+    Top = 224
   end
 end

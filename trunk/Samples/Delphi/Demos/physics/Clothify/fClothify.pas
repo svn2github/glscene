@@ -1,16 +1,3 @@
-{: Clothify demo.<p>
-
-   Caution: this demo mixes several experimental thingies, and will probably be
-            cleaned-up/split to be easier to follow, ad interim, you enter
-            the jungle below at your own risks :)
-
-	<b>History : </b><font size=-1><ul>
-      <li>1/23/03 - MF - Added shadow volumes. Yeah, more code in this allready
-                         too complex demo.
-      <li>?/?/03 - MF - Created
-  </ul>
-
-}
 unit fClothify;
 
 interface
@@ -20,7 +7,7 @@ uses
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
   OpenGLTokens, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
-  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
+  GLVerletClothify, ComCtrls, GLFileJPEG, GLFile3DS, ODEImport, ODEGL,
   GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo,
   GLState, GLContext;
@@ -35,7 +22,6 @@ type
     GLLightSource1: TGLLightSource;
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCadencer1: TGLCadencer;
-    Label1: TLabel;
     Timer1: TTimer;
     GLSphere1: TGLSphere;
     GLCylinder1: TGLCylinder;
@@ -64,19 +50,21 @@ type
     CheckBox_UseOctree: TCheckBox;
     CheckBox_SolidEdges: TCheckBox;
     CheckBox_Weld: TCheckBox;
-    Button_OpenLoadForm: TButton;
     Button_CancelLoad: TButton;
-    Label3: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    TrackBar_Slack: TTrackBar;
-    TrackBar_Iterations: TTrackBar;
-    TrackBar_Friction: TTrackBar;
-    CheckBox_ShowOctree: TCheckBox;
-    ComboBox_Shadow: TComboBox;
-    Label8: TLabel;
     GLShadowVolume1: TGLShadowVolume;
     GLPlane1: TGLPlane;
+    Panel1: TPanel;
+    Label3: TLabel;
+    TrackBar_Slack: TTrackBar;
+    Label6: TLabel;
+    TrackBar_Iterations: TTrackBar;
+    Label7: TLabel;
+    TrackBar_Friction: TTrackBar;
+    CheckBox_ShowOctree: TCheckBox;
+    Button_OpenLoadForm: TButton;
+    Label8: TLabel;
+    ComboBox_Shadow: TComboBox;
+    Label1: TLabel;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -125,8 +113,7 @@ implementation
 
 procedure TfrmClothify.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir('..\..\Media\');
-
+  SetGLSceneMediaDir();
   ComboBox_MeshName.ItemIndex:=0;
   ComboBox_ConstraintType.ItemIndex:=0;
   ComboBox_Collider.ItemIndex:=3;
@@ -215,9 +202,9 @@ var
     Cube := TVCCube.Create(VerletWorld);
     Cube.Location := AffineVectorMake(GLCube.AbsolutePosition);
     Cube.FrictionRatio := 0.1;
-    Sides[0] := GLCube.CubeWidth * 1.1;
-    Sides[1] := GLCube.CubeHeight * 1.1;
-    Sides[2] := GLCube.CubeDepth * 1.1;
+    Sides.V[0] := GLCube.CubeWidth * 1.1;
+    Sides.V[1] := GLCube.CubeHeight * 1.1;
+    Sides.V[2] := GLCube.CubeDepth * 1.1;
     Cube.Sides := Sides;//}
   end;
 
@@ -262,7 +249,7 @@ begin
 
   s := ComboBox_MeshName.Items[MaxInteger(ComboBox_MeshName.ItemIndex, 0)];
 
-  DecimalSeparator := '.';
+  System.SysUtils.FormatSettings.DecimalSeparator := '.';
 
   p:=Pos(',', s);
   if p>0 then begin
@@ -446,9 +433,9 @@ begin
          VCSphere.Location := GLSphere1.Position.AsAffineVector;
 
          dBodyAddForce(dGeomGetBody(ODESphere),
-                       VCSphere.KickbackForce[0],
-                       VCSphere.KickbackForce[1],
-                       VCSphere.KickbackForce[2]);
+                       VCSphere.KickbackForce.V[0],
+                       VCSphere.KickbackForce.V[1],
+                       VCSphere.KickbackForce.V[2]);
 
          dSpaceCollide (space,nil,nearCallback);
          dWorldStep(World, VerletWorld.MaxDeltaTime);
@@ -513,28 +500,28 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderC
     rci.GLStates.LineWidth := w;
 
     GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
 
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
     GL.End_;
 
     GL.Begin_(GL_LINES);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
     GL.End_;
   end;
 

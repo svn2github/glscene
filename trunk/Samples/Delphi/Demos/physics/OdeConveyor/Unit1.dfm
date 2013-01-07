@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 416
-  ClientWidth = 796
+  Caption = 'Conveyor'
+  ClientHeight = 391
+  ClientWidth = 584
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,10 +18,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 193
     Top = 0
-    Width = 603
-    Height = 416
+    Width = 391
+    Height = 391
     Camera = GLCamera1
-    FieldOfView = 152.966857910156300000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 151.307739257812500000
     Align = alClient
     TabOrder = 0
   end
@@ -29,7 +30,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 193
-    Height = 416
+    Height = 391
     Align = alLeft
     Caption = ' '
     TabOrder = 1
@@ -155,8 +156,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 200
-    Top = 40
+    Left = 208
+    Top = 8
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
@@ -206,8 +207,8 @@ object Form1: TForm1
     Scene = GLScene1
     Enabled = False
     OnProgress = GLCadencer1Progress
-    Left = 200
-    Top = 72
+    Left = 280
+    Top = 8
   end
   object GLODEManager1: TGLODEManager
     Gravity.Coordinates = {00000000C3F51CC1000000000000803F}
@@ -218,13 +219,13 @@ object Form1: TForm1
     RenderPoint = GLRenderPoint1
     Visible = True
     VisibleAtRunTime = True
-    Left = 200
+    Left = 360
     Top = 8
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Conveyor - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -238,7 +239,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 200
-    Top = 104
+    Left = 280
+    Top = 64
   end
 end

@@ -1,8 +1,8 @@
-program Material;
+program NewtonWalkAndCarry;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'unit1.pas' {Form1};
 
 {$R *.res}
 

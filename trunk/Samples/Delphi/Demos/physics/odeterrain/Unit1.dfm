@@ -36,13 +36,13 @@ object Form1: TForm1
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
-    Left = 56
-    Top = 16
+    Left = 320
+    Top = 72
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 56
+    Left = 32
+    Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       LightStyle = lsParallel
@@ -81,6 +81,7 @@ object Form1: TForm1
         Visible = False
         Width = 30.000000000000000000
         Height = 30.000000000000000000
+        Rotation = 0.000000000000000000
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -94,6 +95,7 @@ object Form1: TForm1
         Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60.000000000000000000
         Height = 60.000000000000000000
+        Rotation = 0.000000000000000000
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
@@ -107,13 +109,13 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       QualityDistance = 150.000000000000000000
       BehavioursData = {
-        0201061154474C4F44454865696768744669656C6402000200060D474C4F4445
-        4D616E616765723102000500000000006F1283F53F0800000500000000000000
-        FA08400500000000000000000000050000000000000000000005000000000000
-        0000000005000000000000000000000500000000000000000000050000000000
-        0000000000050000000000000000000005000000000000000000000500000000
-        0000000000000200050000000000000080FF3F080500000000000000C0004000
-        00803F0200}
+        0458434F4C02010201061154474C4F44454865696768744669656C6402001200
+        00000002000200060D474C4F44454D616E616765723102000500000000006F12
+        83F53F0800000500000000000000FA0840050000000000000000000005000000
+        0000000000000005000000000000000000000500000000000000000000050000
+        0000000000000000050000000000000000000005000000000000000000000500
+        00000000000000000005000000000000000000000200050000000000000080FF
+        3F080500000000000000C000400000803F0200}
     end
     object ODEObjects: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -123,6 +125,7 @@ object Form1: TForm1
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
+      Rotation = 0.000000000000000000
     end
     object GLLensFlare: TGLLensFlare
       Size = 100
@@ -150,40 +153,40 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 96
+    Left = 224
+    Top = 72
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 16
+    Left = 128
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'ground'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'details'
       end
       item
         Name = 'details'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {00000043000000430000004300000000}
       end>
-    Left = 16
-    Top = 56
+    Left = 32
+    Top = 72
   end
   object BitmapFont1: TGLBitmapFont
     GlyphsIntervalX = 1
@@ -196,8 +199,8 @@ object Form1: TForm1
       end>
     CharWidth = 30
     CharHeight = 30
-    Left = 16
-    Top = 96
+    Left = 320
+    Top = 16
   end
   object GLODEManager1: TGLODEManager
     Gravity.Coordinates = {0000000000000000C3F51CC10000803F}
@@ -207,7 +210,7 @@ object Form1: TForm1
     RenderPoint = ODERenderPoint
     Visible = True
     VisibleAtRunTime = True
-    Left = 96
+    Left = 416
     Top = 16
   end
   object GLNavigator1: TGLNavigator
@@ -215,14 +218,14 @@ object Form1: TForm1
     MovingObject = GLCamera1
     UseVirtualUp = True
     AutoUpdateObject = True
-    Left = 96
-    Top = 56
+    Left = 224
+    Top = 16
   end
   object GLUserInterface1: TGLUserInterface
     MouseSpeed = 25.000000000000000000
     GLNavigator = GLNavigator1
     GLVertNavigator = GLNavigator1
-    Left = 96
-    Top = 96
+    Left = 128
+    Top = 72
   end
 end

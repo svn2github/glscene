@@ -71,9 +71,18 @@ uses
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  MediaPath : String;
+  I : Integer;
 begin
-  SetCurrentDir('..\..\Media\');
-  
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos('Samples', MediaPath);
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    SetCurrentDir(MediaPath+'Media\');
+  end;
+
   // Set Mesh and scale their vertice position
   // because matrix scale is not supported in newton
   Map.LoadFromFile('ngdmap1.3ds');
@@ -143,7 +152,6 @@ var
 begin
   if Key = 'x' then
   begin
-
     newFreeform := TGLFreeForm.CreateAsChild(GLDummyCube1);
     newFreeform.LoadFromFile('HighPolyObject.3ds');
     ScaleMesh(newFreeform, 0.05);
@@ -192,7 +200,7 @@ begin
     Ball.Radius := 0.1;
     Ball.AbsolutePosition := GLCamera1.TargetObject.AbsolutePosition;
     delta := VectorScale(GLCamera1.AbsoluteVectorToTarget, 2);
-    Ball.Translate(delta[0], delta[1], delta[2]);
+    Ball.Translate(delta.V[0], delta.V[1], delta.V[2]);
     GetOrCreateNGDDynamic(Ball);
     GetNGDDynamic(Ball).Manager := GLNGDManager1;
     GetNGDDynamic(Ball).Density := 100;
@@ -285,19 +293,19 @@ begin
     f := VectorAdd(fup, fdn);
     f := VectorAdd(f, frg);
     f := VectorAdd(f, flf);
-    f[1] := 0; // Do not allow the body to go up or down
+    f.V[1] := 0; // Do not allow the body to go up or down
     NormalizeVector(f);
 
     // Move the body
-    if NGDDyn.AppliedVelocity.VectorLength < 5 then
+    if NGDDyn.Force.VectorLength < 5 then //before - AppliedVelocity
       NGDDyn.AddImpulse(f, GLCamera1.TargetObject.AbsolutePosition);
 
   end
   else
   begin
     // Slow down the body if the user stop pushing keys
-    if NGDDyn.AppliedVelocity.VectorLength > 3 then
-      NGDDyn.SetVelocity(VectorScale(NGDDyn.AppliedVelocity.AsVector, 0.5));
+    if NGDDyn.Force.VectorLength > 3 then //before - AppliedVelocity
+      NGDDyn.AddImpulse(VectorScale(NGDDyn.AppliedForce.AsVector, 0.5), f); //before - SetVector
   end;
 
 end;

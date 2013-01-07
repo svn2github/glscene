@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 507
-  ClientWidth = 723
+  Caption = 'Density'
+  ClientHeight = 398
+  ClientWidth = 572
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,10 +17,10 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 723
-    Height = 507
+    Width = 572
+    Height = 398
     Camera = GLCamera1
-    FieldOfView = 157.684555053710900000
+    FieldOfView = 151.792068481445300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
@@ -59,7 +59,7 @@ object Form1: TForm1
     Value = 1
   end
   object GLScene1: TGLScene
-    Left = 144
+    Left = 40
     Top = 16
     object GLCamera1: TGLCamera
       DepthOfView = 10000.000000000000000000
@@ -184,33 +184,33 @@ object Form1: TForm1
     end
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000704100000243000000000000803F}
-      BitmapFont = GLWindowsBitmapFont1
       Text = 'Water Density'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object GLHUDText2: TGLHUDText
       Position.Coordinates = {0000704100003E43000000000000803F}
-      BitmapFont = GLWindowsBitmapFont1
       Text = 'Linear Viscosity'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object GLHUDText3: TGLHUDText
       Position.Coordinates = {0000704100007043000000000000803F}
-      BitmapFont = GLWindowsBitmapFont1
       Text = 'Angular Viscosity'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 200
+    Left = 104
     Top = 16
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Density - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -220,23 +220,14 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 80
-    Top = 16
-  end
-  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 376
+    Left = 416
     Top = 16
   end
   object GLNGDManager1: TGLNGDManager
     NewtonSurfaceItem = <>
     NewtonSurfacePair = <>
     NewtonJoint = <>
-    Left = 264
+    Left = 520
     Top = 16
   end
 end

@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
+  Caption = 'Newton Walk Carry Shoot'
   ClientHeight = 384
   ClientWidth = 580
   Color = clBtnFace
@@ -21,6 +21,7 @@ object Form1: TForm1
     Width = 580
     Height = 384
     Camera = GLCamera1
+    Buffer.BackgroundColor = clBackground
     FieldOfView = 150.806854248046900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
@@ -28,12 +29,14 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 48
     Top = 8
     object Body: TGLTorus
       Pickable = False
-      MajorRadius = 0.400000005960464500
+      MajorRadius = 0.400000005960464400
       MinorRadius = 0.100000001490116100
+      StopAngle = 360.000000000000000000
+      Parts = [toSides, toStartDisk, toStopDisk]
       BehavioursData = {
         0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
         44796E616D696302000201060D474C4E47444D616E6167657231080209050000
@@ -232,6 +235,7 @@ object Form1: TForm1
     end
     object GLHUDCross: TGLHUDSprite
       Pickable = False
+      Rotation = 0.000000000000000000
     end
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
@@ -239,14 +243,14 @@ object Form1: TForm1
     GLSceneViewer = GLSceneViewer1
     ZoomSpeed = 1.100000023841858000
     MoveAroundTargetSpeed = 0.250000000000000000
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Newton Walk Carry Shoot - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 56
-    Top = 8
+    Left = 48
+    Top = 64
   end
   object GLNGDManager1: TGLNGDManager
     NewtonSurfaceItem = <>
@@ -263,13 +267,13 @@ object Form1: TForm1
         ParentObject = Body
         UPVectorDirection.Coordinates = {0000803F000000000000000000000000}
       end>
-    Left = 136
+    Left = 224
     Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 96
+    Left = 136
     Top = 8
   end
 end

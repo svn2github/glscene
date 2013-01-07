@@ -1,28 +1,5 @@
 unit Unit1;
 
-{ : Newton Game Dynamics Physics Engine demo.<p>
-
-  This exemple show Joints.
-  Mouse1 to pick, Mouse2 to move camera.
-
-  When you create Joints with TGLNGD, it's better if one of the two bodies is
-  static.
-  In debug view (If ShowJoint is true in manager), the blues lines represent
-  pins direction, aquamarine dot represent pivot point, and aqua is connections
-  between BaseSceneObjects.
-  However if you create multiples connected joints
-  (ex: FLOOR<--HINGE-->CUBE<--HINGE-->SPHERE),
-  the debug view won't match to bodies positions because Joints are
-  represented in global space. Debug view was made for design time.
-
-
-  <b>History : </b><font size=-1><ul>
-  <li>22/05/12 - YP - Fix bitmap font
-  <li>31/01/11 - FP - Update for GLNGDManager
-  <li>20/09/10 - FP - Created by Franck Papouin
-  </ul>
-}
-
 interface
 
 uses
@@ -50,7 +27,6 @@ type
     Universal: TGLCone;
     CustomBall: TGLSphere;
     Ball: TGLSphere;
-    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLAbsoluteHUDText1: TGLAbsoluteHUDText;
     GLAbsoluteHUDText2: TGLAbsoluteHUDText;
     GLAbsoluteHUDText3: TGLAbsoluteHUDText;
@@ -70,11 +46,11 @@ type
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
        point3d, FPaneNormal: TVector;
 
   public
-    { Déclarations publiques }
+    { Public declarations }
         PickJoint: TNGDJoint;
     MousePoint: TPoint;
   end;
@@ -98,14 +74,14 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject;
 begin
   GLNGDManager1.Step(deltaTime);
 
-    if IsKeyDown(VK_LBUTTON) then
+  if IsKeyDown(VK_LBUTTON) then
   begin
-    point2d := VectorMake(MousePoint.X, GLSceneViewer1.Height - MousePoint.Y,
-      0, 0);
+    point2d := VectorMake(
+      MousePoint.X, GLSceneViewer1.Height - MousePoint.Y, 0, 0);
 
       // Move the body to the new position
-    if GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlane(point2d, point3d,
-      FPaneNormal, GotoPoint3d) then
+    if GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlane(
+      point2d, point3d,  FPaneNormal, GotoPoint3d) then
       PickJoint.KinematicControllerPick(GotoPoint3d, paMove);
 
   end

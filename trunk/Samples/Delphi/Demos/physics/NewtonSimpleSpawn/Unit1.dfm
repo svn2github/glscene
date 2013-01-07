@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 433
-  ClientWidth = 800
+  Caption = 'Newton Simple Spawn'
+  ClientHeight = 377
+  ClientWidth = 578
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,11 +16,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 105
     Top = 0
-    Width = 695
-    Height = 433
+    Width = 473
+    Height = 377
     Camera = GLCamera1
-    Buffer.BackgroundColor = 5329233
-    FieldOfView = 153.991439819335900000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 150.288558959960900000
     Align = alClient
     TabOrder = 0
   end
@@ -28,7 +28,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 105
-    Height = 433
+    Height = 377
     Align = alLeft
     Caption = ' '
     TabOrder = 1
@@ -88,7 +88,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 112
+    Left = 128
     Top = 8
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -113,20 +113,20 @@ object Form1: TForm1
     end
     object GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText
       Position.Coordinates = {0000003F6666663F000000000000803F}
-      BitmapFont = GLWindowsBitmapFont1
       Text = 'Bodycount:=1'
+      Rotation = 0.000000000000000000
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 152
+    Left = 216
     Top = 8
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Newton Simple Spawn - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -140,23 +140,14 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 192
-    Top = 8
+    Left = 216
+    Top = 72
   end
   object GLNGDManager1: TGLNGDManager
     NewtonSurfaceItem = <>
     NewtonSurfacePair = <>
     NewtonJoint = <>
-    Left = 232
-    Top = 8
-  end
-  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    Left = 272
+    Left = 440
     Top = 8
   end
 end

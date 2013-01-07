@@ -1,20 +1,3 @@
-{: Verlet cloth simulation and verlet constraints controlled by an
-   actor's skeleton.<p>
-   
-   Verlet physics is used to simulate a cloth-like effect on a mesh.
-   In this demo, the cape mesh is linked to the verlet world and the
-   verlet nodes control the surface of the mesh. Verlet constraints
-   define boundaries that the verlet nodes cannot enter.<p>
-   
-   The skeleton colliders define the verlet constraints for the actor
-   using simple spheres and capsules (sphere-capped cylinders). The 
-   constraints get updated each frame to match the actor's current
-   skeleton frame. Using simple primitives to approximate a mesh is
-   much quicker than determining mesh volume -> verlet interactions.<p>
-   
-   A dynamic octree is used here to give a little performace boost to 
-   the verlet testing.
-}
 unit Unit1;
 
 interface
@@ -29,7 +12,7 @@ uses
   
   GLKeyboard, OpenGLTokens, VectorGeometry, GeometryBB, JPEG, VerletClasses,
   SpatialPartitioning, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLRenderContextInfo, GLState, GLContext;
+  GLRenderContextInfo, GLState, GLContext, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,6 +31,7 @@ type
     GLShadowVolume1: TGLShadowVolume;
     Cape: TGLActor;
     GLLightSource2: TGLLightSource;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -136,14 +120,11 @@ begin
   BaseMesh.StructureChanged;
 end;
 
+
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  i : Integer;
 begin
+  SetGLSceneMediaDir();
   Randomize;
-
-  SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
-
   // Load the actor and animations
   GLActor1.LoadFromFile('trinityRAGE.smd');
   GLActor1.AddDataFromFile('walk.smd');
@@ -241,28 +222,28 @@ procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextI
     rci.GLStates.LineWidth := w;
 
     GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
 
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      GL.Vertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
     GL.End_;
 
     GL.Begin_(GL_LINES);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
 
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      GL.Vertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
     GL.End_;
   end;
 
@@ -301,7 +282,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Format('%2.1f FPS',[GLSceneViewer1.FramesPerSecond]);
+  LabelFPS.Caption := Format('%2.1f FPS',[GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

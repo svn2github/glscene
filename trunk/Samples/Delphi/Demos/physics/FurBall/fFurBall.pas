@@ -1,6 +1,3 @@
-{: Using Verlet Hair with ODE; Fur Balls<p>
-}
-
 unit fFurBall;
 
 interface
@@ -28,20 +25,21 @@ type
     Sphere1: TGLSphere;
     DCShadowCaster: TGLDummyCube;
     FurBall: TGLSphere;
-    CheckBox_LockBall: TCheckBox;
-    Label1: TLabel;
-    CheckBox_FurGravity: TCheckBox;
-    CheckBox_WindResistence: TCheckBox;
     GLShadowPlane_Floor2: TGLShadowPlane;
     GLLines1: TGLLines;
     GLShadowPlane_Wall2: TGLShadowPlane;
     GLShadowPlane_Wall3: TGLShadowPlane;
-    CheckBox_Bald: TCheckBox;
     Label_FPS: TLabel;
     Timer1: TTimer;
-    CheckBox_Shadows: TCheckBox;
+    Panel1: TPanel;
+    CheckBox_LockBall: TCheckBox;
     CheckBox_Inertia: TCheckBox;
+    CheckBox_FurGravity: TCheckBox;
+    CheckBox_WindResistence: TCheckBox;
     TrackBar_WindForce: TTrackBar;
+    CheckBox_Bald: TCheckBox;
+    Label1: TLabel;
+    CheckBox_Shadows: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,

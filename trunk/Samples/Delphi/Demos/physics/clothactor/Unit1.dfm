@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 69
   Top = 116
-  Width = 634
-  Height = 476
-  Caption = 'Form1'
+  Caption = 'Cloth Actor'
+  ClientHeight = 432
+  ClientWidth = 626
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,10 +14,17 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    618
-    438)
+    626
+    432)
   PixelsPerInch = 96
   TextHeight = 13
+  object LabelFPS: TLabel
+    Left = 120
+    Top = 2
+    Width = 20
+    Height = 13
+    Caption = 'FPS'
+  end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 24
@@ -33,16 +40,16 @@ object Form1: TForm1
     TabOrder = 0
   end
   object CheckBox_ShowOctree: TCheckBox
-    Left = 0
-    Top = 0
+    Left = 8
+    Top = 1
     Width = 97
     Height = 17
     Caption = 'Show Octree'
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 8
+    Left = 32
+    Top = 40
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -120,18 +127,18 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 40
-    Top = 8
+    Left = 112
+    Top = 40
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 40
+    Left = 32
+    Top = 96
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 96
-    Top = 56
+    Left = 112
+    Top = 88
   end
 end

@@ -1,3 +1,6 @@
+//
+{: Using Verlet Hair with ODE; Fur Balls<p> }
+//
 program FurBall;
 
 uses

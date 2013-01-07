@@ -47,7 +47,7 @@ object Form1: TForm1
     Visible = False
   end
   object GLScene1: TGLScene
-    Left = 256
+    Left = 40
     Top = 8
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.100000023841858000
@@ -71,9 +71,10 @@ object Form1: TForm1
       Radius = 0.500000000000000000
       BehavioursData = {
         0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-        44796E616D696302000200060D474C4E47444D616E61676572310900090F0000
-        803F12000000000200090FCDCCCC3D0F0000803F090F00000000020008020008
-        0200090000000000000000000000000000803F020008}
+        44796E616D696302000201060D474C4E47444D616E6167657231090009050000
+        000000000080FF3F1200000000020109050000000000CDCCCCFB3F0500000000
+        00000080FF3F0905000000000000000000000200080200080200090000000000
+        000000000000000000803F020008}
     end
     object Player_Cube: TGLDummyCube
       Direction.Coordinates = {00000080000000000000803F00000000}
@@ -108,9 +109,10 @@ object Form1: TForm1
         Up.Coordinates = {0000000000000000000080BF00000000}
         BehavioursData = {
           0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-          44796E616D696302000200060D474C4E47444D616E61676572310800090F0000
-          803F12000000000200090FCDCCCC3D0F0000803F090F00000000020008020008
-          0200090000000000000000000000000000803F020008}
+          44796E616D696302000201060D474C4E47444D616E6167657231080009050000
+          000000000080FF3F1200000000020109050000000000CDCCCCFB3F0500000000
+          00000080FF3F0905000000000000000000000200080200080200090000000000
+          000000000000000000803F020008}
       end
       object GLSphere1: TGLSphere
         Tag = 1
@@ -119,9 +121,10 @@ object Form1: TForm1
         Stacks = 32
         BehavioursData = {
           0458434F4C02010201060D54474C4E474444796E616D69630200060B4E474420
-          44796E616D696302000200060D474C4E47444D616E61676572310900090F0000
-          803F12000000000200090FCDCCCC3D0F0000803F090F00000000020008020008
-          0200090000000000000000000000000000803F020008}
+          44796E616D696302000201060D474C4E47444D616E6167657231090009050000
+          000000000080FF3F1200000000020109050000000000CDCCCCFB3F0500000000
+          00000080FF3F0905000000000000000000000200080200080200090000000000
+          000000000000000000803F020008}
       end
     end
     object GLHUDSprite1: TGLHUDSprite
@@ -235,156 +238,158 @@ object Form1: TForm1
       Pickable = False
       Width = 48.000000000000000000
       Height = 48.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000484200004842000000000000803F}
       Pickable = False
       BitmapFont = GLWindowsBitmapFont1
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000803F00000000000000000000803F}
     end
     object GLLines1: TGLLines
       Pickable = False
       Nodes = <
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = -2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 0.625000059604644800
+          X = 0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = 0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = -0.625000059604644800
+          X = -0.625000059604644700
           Y = 2.125000000000000000
           Z = -0.625000000000000000
           Color.Color = {0000803F0000803F000000000000803F}
@@ -689,7 +694,7 @@ object Form1: TForm1
   end
   object GLNGDManager1: TGLNGDManager
     VisibleAtRunTime = True
-    Gravity.Coordinates = {00000000E17A9EC10000000000000000}
+    Gravity.Coordinates = {00000000CDCC1CC10000000000000000}
     WorldSizeMin.Coordinates = {00401CC600401CC600401CC600000000}
     WorldSizeMax.Coordinates = {00401C4600401C4600401C4600000000}
     NewtonSurfaceItem = <>
@@ -708,23 +713,23 @@ object Form1: TForm1
         KinematicControllerOptions.AngularFriction = 3000.000000000000000000
         JointType = nj_KinematicController
       end>
-    Left = 352
-    Top = 8
+    Left = 152
+    Top = 80
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     FixedDeltaTime = 0.010000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 320
-    Top = 8
+    Left = 40
+    Top = 80
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 288
+    Left = 152
     Top = 8
   end
   object OpenDialog1: TOpenDialog
-    Left = 288
-    Top = 104
+    Left = 320
+    Top = 152
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -741,23 +746,23 @@ object Form1: TForm1
       item
         StartASCII = #192
         StopASCII = #255
-        StartGlyphIdx = 0
+        StartGlyphIdx = 97
       end>
-    Left = 288
-    Top = 56
+    Left = 40
+    Top = 144
   end
   object GLNavigator1: TGLNavigator
     MovingObject = Player_Cube
     AutoUpdateObject = True
-    Left = 352
-    Top = 56
+    Left = 288
+    Top = 8
   end
   object GLUserInterface1: TGLUserInterface
     MouseSpeed = 40.000000000000000000
     GLNavigator = GLNavigator1
     GLVertNavigator = GLNavigator2
-    Left = 320
-    Top = 56
+    Left = 152
+    Top = 144
   end
   object GLNavigator2: TGLNavigator
     VirtualUp.Coordinates = {000000000000803F0000000000000000}
@@ -767,7 +772,7 @@ object Form1: TForm1
     MinAngle = -90.000000000000000000
     AngleLock = True
     Left = 384
-    Top = 56
+    Top = 8
   end
   object TIPickTimer: TTimer
     Enabled = False

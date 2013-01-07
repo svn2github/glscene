@@ -8,7 +8,7 @@ uses
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLODEManager,
   GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses, GLState;
+  GLMaterial, GLCoordinates, BaseClasses, GLState, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -41,9 +41,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     procedure DropODEObject(anElementClass : TODEElementClass);
   end;
 
@@ -58,9 +58,8 @@ uses GLKeyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // Set up the visuals
-
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
    GLBitmapHDS1.MaxPoolSize:=8*1024*1024;
    GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
    GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('snow512.jpg');

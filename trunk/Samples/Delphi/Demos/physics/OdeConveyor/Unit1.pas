@@ -1,44 +1,3 @@
-{ : ODE Conveyor belt demo.<p>
-
-  This demo demontrates how to use the Motion1 parameter of ODE.
-
-  Surface settings applied when a collision occured. In this situation, the ODE
-  Manager uses surface settings of both objects:
-  eg: muFinal = (muObject1 + muObject2)*0.5
-
-  To choose the direction of the motion, we are changing the FDir-1 parameter of
-  the collision contact.
-
-  For a full explanation take a look at:
-  http://opende.sourceforge.net/wiki/index.php/Manual_(All)#Contact
-
-  Approximate coefficients of friction (from http://en.wikipedia.org/wiki/Friction)
-  ------------------------------------
-  Materials 	    Static friction (µs)
-  ---------------------------------------------------
-  Dry & clean 	Lubricated
-  Aluminum 	      Steel 	  0.61
-  Copper 	        Steel 	  0.53
-  Brass 	        Steel 	  0.51
-  Cast iron 	    Copper 	  1.05
-  Cast iron 	    Zinc 	    0.85
-  Concrete (wet) 	Rubber 	  0.30
-  Concrete (dry) 	Rubber 	  1.0
-  Concrete 	      Wood 	    0.62[7]
-  Copper 	        Glass 	  0.68
-  Glass 	        Glass 	  0.94
-  Metal 	        Wood 	    0.2-0.6[7] 	  0.2 (wet)[7]
-  Polythene 	    Steel 	  0.2[8] 	      0.2[8]
-  Steel 	        Steel 	  0.80[8] 	    0.16[8]
-  Steel 	        Teflon  	0.04[8] 	    0.04[8]
-  Teflon 	        Teflon 	  0.04[8] 	    0.04[8]
-  Wood 	          Wood 	    0.25-0.5[7] 	0.2 (wet)[7]
-
-  <b>History : </b><font size=-1><ul>
-  <li>19/09/10 - YP - Created by Yann Papouin
-  </ul>
-}
-
 unit Unit1;
 
 interface
@@ -53,7 +12,6 @@ uses
   Controls,
   Forms,
   Dialogs,
-  GLNGDManager,
   GLODEManager,
   odeimport,
   GLCadencer,
@@ -111,11 +69,11 @@ type
     procedure AddODECubeClick(Sender: TObject);
 
   private
-    { Déclarations privées }
+    { Private declarations }
     FUserDirection: TVector;
     FDirectionVector: TVector;
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -158,10 +116,10 @@ procedure TForm1.GLODEManager1Collision(Sender, Object1, Object2: TObject;
 begin
   if Object2 = GetOrCreateOdeStatic(ConveyorBelt1) then
   begin
-    Contact.fdir1[0] := FDirectionVector[0]; // x
-    Contact.fdir1[1] := FDirectionVector[1]; // y
-    Contact.fdir1[2] := FDirectionVector[2]; // z
-    Contact.fdir1[3] := FDirectionVector[3]; // not used
+    Contact.fdir1[0] := FDirectionVector.V[0]; // x
+    Contact.fdir1[1] := FDirectionVector.V[1]; // y
+    Contact.fdir1[2] := FDirectionVector.V[2]; // z
+    Contact.fdir1[3] := FDirectionVector.V[3]; // not used
   end;
 end;
 
@@ -228,19 +186,19 @@ end;
 procedure TForm1.FDirChange(Sender: TObject);
 begin
   // Get back user data from GUI
-  FUserDirection[0] := StrToFloatDef(FDirX.Text, FUserDirection[0]); // x
-  FUserDirection[1] := StrToFloatDef(FDirY.Text, FUserDirection[0]); // y
-  FUserDirection[2] := StrToFloatDef(FDirZ.Text, FUserDirection[0]); // z
-  FUserDirection[3] := 0; // not used
+  FUserDirection.V[0] := StrToFloatDef(FDirX.Text, FUserDirection.V[0]); // x
+  FUserDirection.V[1] := StrToFloatDef(FDirY.Text, FUserDirection.V[0]); // y
+  FUserDirection.V[2] := StrToFloatDef(FDirZ.Text, FUserDirection.V[0]); // z
+  FUserDirection.V[3] := 0; // not used
 
   // Copy user data and normalized it
   FDirectionVector := FUserDirection;
   NormalizeVector(FDirectionVector);
 
   // Now returned normalized data to user to understand the 1-unit thing
-  NormX.Caption := Format('Norm(X) = %.3f', [FDirectionVector[0]]);
-  NormY.Caption := Format('Norm(Y) = %.3f', [FDirectionVector[1]]);
-  NormZ.Caption := Format('Norm(Z) = %.3f', [FDirectionVector[2]]);
+  NormX.Caption := Format('Norm(X) = %.3f', [FDirectionVector.V[0]]);
+  NormY.Caption := Format('Norm(Y) = %.3f', [FDirectionVector.V[1]]);
+  NormZ.Caption := Format('Norm(Z) = %.3f', [FDirectionVector.V[2]]);
 end;
 
 end.
