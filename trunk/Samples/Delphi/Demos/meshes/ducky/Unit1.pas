@@ -53,16 +53,17 @@ implementation
 
 {$R *.dfm}
 
-uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists;
+uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   cp : TAffineVectorList;
 begin
+  SetGLSceneMediaDir();
   // Load the nurbs data
-  GLActor1.LoadFromFile('..\..\media\duck1.nurbs');
-  GLActor1.AddDataFromFile('..\..\media\duck2.nurbs');
-  GLActor1.AddDataFromFile('..\..\media\duck3.nurbs');
+  GLActor1.LoadFromFile('duck1.nurbs');
+  GLActor1.AddDataFromFile('duck2.nurbs');
+  GLActor1.AddDataFromFile('duck3.nurbs');
 
   { Translate Actor based on the first mesh object's average
     control point. Quick and dirty ... or maybe just dirty :P }

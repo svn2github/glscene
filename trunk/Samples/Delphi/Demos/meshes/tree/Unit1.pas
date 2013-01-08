@@ -126,7 +126,7 @@ implementation
 {$R *.dfm}
 
 uses
-  TGA, JPEG;
+  TGA, JPEG, GLUtils;
 
 procedure TForm1.AlignControlsToTree;
 begin
@@ -172,7 +172,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFileDir(Application.ExeName)+'/../../media');
+  SetGLSceneMediaDir();
 
   // Set up default textures
   with GLMaterialLibrary1.AddTextureMaterial('LeafFront','maple_multi.tga') do begin

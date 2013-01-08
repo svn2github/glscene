@@ -22,7 +22,7 @@ object Form1: TForm1
     Height = 376
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 50.347049713134760000
+    FieldOfView = 50.347049713134770000
     Align = alClient
     OnMouseDown = ScnMouseDown
     OnMouseMove = ScnMouseMove
@@ -123,7 +123,7 @@ object Form1: TForm1
     end
     object TopLight1: TGLLightSource
       Ambient.Color = {0000003F0000003F0000003F0000803F}
-      ConstAttenuation = 0.800000011920928900
+      ConstAttenuation = 0.800000011920929000
       Diffuse.Color = {EAE9693FEAE9693FEAE9693F0000803F}
       Position.Coordinates = {0000804100005041000040410000803F}
       SpotCutOff = 180.000000000000000000

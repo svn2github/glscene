@@ -79,7 +79,7 @@ type
   TEaseFunction = function(t:Single; b:Single; c:Single; d:Single):Single;
 
 
-{$REGION 'ease functions'}
+{.$REGION 'ease functions'}
 
 (**
  * Easing equation function for a simple linear tweening, with no easing.
@@ -862,7 +862,7 @@ begin
   else
     Result := easeInBounce((t*2)-d, b+c/2, c/2, d);
 end;
-{$ENDREGION}
+{.$ENDREGION}
 
 
 
@@ -922,8 +922,8 @@ begin
   EaseFunction := GetEaseFunctionFromType(EaseType);
   for i := 0 to 2 do
   begin
-    Target[i] := Target[i]-Current[i];
-    Result[i] := EaseFunction(Time, Current[i], Target[i], Duration);
+    Target.V[i] := Target.V[i]-Current.V[i];
+    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
   end;
 end;
 
@@ -938,8 +938,8 @@ begin
   EaseFunction := GetEaseFunctionFromType(EaseType);
   for i := 0 to 3 do
   begin
-    Target[i] := Target[i]-Current[i];
-    Result[i] := EaseFunction(Time, Current[i], Target[i], Duration);
+    Target.V[i] := Target.V[i]-Current.V[i];
+    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
   end;
 end;
 

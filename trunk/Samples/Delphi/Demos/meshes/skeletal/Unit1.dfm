@@ -17,20 +17,22 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 408
-    Height = 375
+    Width = 400
+    Height = 366
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.Lighting = False
+    FieldOfView = 149.436782836914100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 408
+    Left = 400
     Top = 0
     Width = 107
-    Height = 375
+    Height = 366
     Align = alRight
     BevelOuter = bvNone
     Font.Charset = ANSI_CHARSET
@@ -107,14 +109,14 @@ object Form1: TForm1
   end
   object Panel2: TPanel
     Left = 0
-    Top = 375
-    Width = 515
+    Top = 366
+    Width = 507
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
     DesignSize = (
-      515
+      507
       41)
     object TrackBar1: TTrackBar
       Left = 64
@@ -123,14 +125,9 @@ object Form1: TForm1
       Height = 34
       Anchors = [akLeft, akTop, akRight, akBottom]
       Max = 100
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 50
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 0
       TickMarks = tmBoth
-      TickStyle = tsAuto
       OnChange = TrackBar1Change
     end
     object CBBlend: TCheckBox
@@ -148,9 +145,9 @@ object Form1: TForm1
     Top = 8
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000803F0000803F0000803F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000C8420000C8420000C8420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Actor1: TGLActor
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -162,24 +159,23 @@ object Form1: TForm1
       MaterialLibrary = GLMaterialLibrary1
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object XYZGrid1: TGLXYZGrid
       Position.Coordinates = {00000000000090C1000000000000803F}
       LineColor.Color = {1283803E1283003F1283003F0000803F}
-      XSamplingScale.Min = -12
-      XSamplingScale.Max = 12
-      XSamplingScale.Step = 4
-      YSamplingScale.Step = 1
-      ZSamplingScale.Min = -20
-      ZSamplingScale.Max = 20
-      ZSamplingScale.Step = 4
+      XSamplingScale.Min = -12.000000000000000000
+      XSamplingScale.max = 12.000000000000000000
+      XSamplingScale.step = 4.000000000000000000
+      YSamplingScale.step = 1.000000000000000000
+      ZSamplingScale.Min = -20.000000000000000000
+      ZSamplingScale.max = 20.000000000000000000
+      ZSamplingScale.step = 4.000000000000000000
       Parts = [gpX, gpZ]
-      LinesSmoothing = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 500
-      FocalLength = 50
+      DepthOfView = 500.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {000048420000A0410000A0400000803F}
       Direction.Coordinates = {00000000000000000000803F00000000}

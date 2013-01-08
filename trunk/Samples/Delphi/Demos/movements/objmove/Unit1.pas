@@ -68,7 +68,7 @@ type
   end;
 
 const
-  SelectionColor: TColorVector = (0.243, 0.243, 0.243, 1.000);
+  SelectionColor: TColorVector = (X: 0.243; Y:0.243; Z:0.243; W:1.000);
 
 var
   Form1: TForm1;
@@ -211,7 +211,7 @@ begin
 
     TopText.Text := Format(
       'New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
-      [objPos[0], objPos[1], objPos[2]]);
+      [objPos.X, objPos.Y, objPos.Z]);
 
     winPos := Scn.Buffer.WorldToScreen(objPos);
 
@@ -219,8 +219,8 @@ begin
     begin
       Visible := true;
       Text := CurrentPick.Name;
-      Position.X := winPos[0] + 10;
-      Position.Y := Scn.Height - winPos[1] + 10;
+      Position.X := winPos.X + 10;
+      Position.Y := Scn.Height - winPos.Y + 10;
     end;
   end
   else

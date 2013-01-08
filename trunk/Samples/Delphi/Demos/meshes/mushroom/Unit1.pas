@@ -61,7 +61,7 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, GLTexture, JPeg, GLFile3DS;
+uses VectorGeometry, GLTexture, JPeg, GLFile3DS, GLUtils;
 
 const
    cSpread = 90;
@@ -69,11 +69,11 @@ const
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-//   Randomize;
+   SetGLSceneMediaDir();
    // Load mushroom mesh
-   FreeForm1.LoadFromFile('..\..\media\mushroom.3ds');
+   FreeForm1.LoadFromFile('mushroom.3ds');
    // Load ground texture
-   Disk1.Material.Texture.Image.LoadFromFile('..\..\media\clover.jpg');
+   Disk1.Material.Texture.Image.LoadFromFile('clover.jpg');
    // Duplicate our reference mushroom (but not its mesh data !)
    AddMushrooms;
 end;

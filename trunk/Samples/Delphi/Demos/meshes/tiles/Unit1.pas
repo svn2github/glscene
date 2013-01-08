@@ -77,15 +77,13 @@ implementation
 
 {$R *.dfm}
 
-uses GLKeyboard;
+uses GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
 begin
-   // adjust the path
-   GLMaterialLibrary.TexturePaths:=ExtractFilePath(Application.ExeName)+'..\..\media';
-
+   SetGLSceneMediaDir();
    // fill the tiled area with random tiles
    RandSeed:=0;
    for i:=-20 to 20 do for j:=-20 to 20 do
@@ -139,8 +137,8 @@ begin
    if PtInRect(GLSceneViewer1.ClientRect, mp) then begin
       GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXY(
               VectorMake(mp.x, GLSceneViewer1.Height-mp.y, 0), 0, ip);
-      tileX:=Round(ip[0]-0.5);
-      tileY:=Round(ip[1]-0.5);
+      tileX:=Round(ip.X-0.5);
+      tileY:=Round(ip.Y-0.5);
       DCSelection.Position.SetPoint(tileX, tileY, 0);
 
       if shiftDown then begin

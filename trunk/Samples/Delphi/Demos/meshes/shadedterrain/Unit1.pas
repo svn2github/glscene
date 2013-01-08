@@ -67,11 +67,11 @@ implementation
 
 {$R *.DFM}
 
-uses GLKeyboard;
+uses GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+   SetGLSceneMediaDir();
    // 8 MB height data cache
    // Note this is the data size in terms of elevation samples, it does not
    // take into account all the data required/allocated by the renderer
@@ -113,8 +113,8 @@ begin
    normalMapMaterial.Material.MaterialOptions:=[moNoLighting];
    n:=VectorNormalize(SPSun.AbsolutePosition);
    ScaleVector(n, 0.5);
-   n[1]:=-n[1];
-   n[2]:=-n[2];
+   n.Y:=-n.Y;
+   n.Z:=-n.Z;
    AddVector(n , 0.5);
    normalMapMaterial.Material.FrontProperties.Diffuse.Color:=n;
 end;

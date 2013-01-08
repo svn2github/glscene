@@ -197,26 +197,27 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ground'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'details'
       end
       item
         Name = 'details'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {00000042000000420000004200000000}
       end
       item
         Name = 'texture'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3F0000003F0000803F}
         Material.Texture.Image.Picture.Data = {
           07544269746D617036180000424D361800000000000036000000280000000008
@@ -419,17 +420,16 @@ object Form1: TForm1
         Material.Texture.MappingSCoordinates.Coordinates = {000000000000000082A8FB3700000000}
         Material.Texture.MappingTCoordinates.Coordinates = {00000000000000000000000000000000}
         Material.Texture.Disabled = False
-        Tag = 0
         TextureOffset.Coordinates = {0000003F000000000000000000000000}
       end
       item
         Name = 'contrast'
+        Tag = 0
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmReplace
         Material.Texture.EnvColor.Color = {0000003F0000003F0000003F0000003F}
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 16
     Top = 136

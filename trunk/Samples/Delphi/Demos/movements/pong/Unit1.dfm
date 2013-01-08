@@ -117,7 +117,7 @@ object Form1: TForm1
       Font.Style = [fsBold]
       Lines.Strings = (
         '000')
-      AllowedDeviation = 1.000000000000000000
+      allowedDeviation = 1.000000000000000000
       CharacterRange = stcrNumbers
     end
   end
@@ -125,24 +125,24 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Mat'
-        Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
       end
       item
         Name = 'Edge'
-        Material.FrontProperties.Diffuse.Color = {0000803FBDBCBC3EF1F0F03D0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {0000803FBDBCBC3EF1F0F03D0000803F}
       end
       item
         Name = 'Ball'
+        Tag = 0
         Material.FrontProperties.Shininess = 75
         Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
-        Tag = 0
       end
       item
         Name = 'Pad'
-        Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
     Left = 8
     Top = 72

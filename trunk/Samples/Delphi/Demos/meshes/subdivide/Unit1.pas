@@ -60,29 +60,17 @@ implementation
 {$R *.dfm}
 
 uses MeshUtils, VectorGeometry, Jpeg, TGA, GLFileObj,
-     GLFile3DS, GLFileMD2, GLFileSMD;
+     GLFile3DS, GLFileMD2, GLFileSMD, GLUtils;
 
 procedure TForm1.BULoadClick(Sender: TObject);
 begin
    BUSubdivide.Enabled:=True;
 
-   GLMaterialLibrary1.TexturePaths:='..\..\media';
-
-//   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\polyhedron.3ds');
-//   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\mushroom.3ds');
-//   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\trinityrage.smd');
-
-{   GLActor1.LoadFromFile('e:\sf\glscene\demos\media\trinityrage.smd');
-   GLActor1.AddDataFromFile('e:\sf\glscene\demos\media\run.smd');
-   GLActor1.Animations[1].MakeSkeletalTranslationStatic;
-   GLActor1.SwitchToAnimation(GLActor1.Animations[1]);}
-
-   GLActor1.LoadFromFile('..\..\media\waste.md2');
-   GLActor1.Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
+   SetGLSceneMediaDir();
+   GLActor1.LoadFromFile('waste.md2');
+   GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
    GLActor1.Material.Texture.Enabled:=True;
    GLActor1.SwitchToAnimation(GLActor1.Animations[0]); 
-
-//   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\HighPolyObject.3ds');
 
    CBAnimateClick(Self);
 end;

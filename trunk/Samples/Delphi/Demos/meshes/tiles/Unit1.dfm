@@ -131,14 +131,14 @@ object Form1: TForm1
     object GLXYZGrid: TGLXYZGrid
       AntiAliased = True
       XSamplingScale.Min = -30.000000000000000000
-      XSamplingScale.Max = 30.000000000000000000
-      XSamplingScale.Step = 1.000000000000000000
+      XSamplingScale.max = 30.000000000000000000
+      XSamplingScale.step = 1.000000000000000000
       YSamplingScale.Min = -30.000000000000000000
-      YSamplingScale.Max = 30.000000000000000000
-      YSamplingScale.Step = 1.000000000000000000
+      YSamplingScale.max = 30.000000000000000000
+      YSamplingScale.step = 1.000000000000000000
       ZSamplingScale.Min = -10.000000000000000000
-      ZSamplingScale.Max = 10.000000000000000000
-      ZSamplingScale.Step = 1.000000000000000000
+      ZSamplingScale.max = 10.000000000000000000
+      ZSamplingScale.step = 1.000000000000000000
     end
     object DCSelection: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -176,40 +176,40 @@ object Form1: TForm1
       end
       item
         Name = 'blue'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {00000000000000000000003F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000000000003F0000803F}
-        Tag = 0
       end
       item
         Name = 'red'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000003F}
         Material.FrontProperties.Emission.Color = {0000003F00000000000000000000803F}
-        Tag = 0
       end
       item
         Name = 'beigemarble'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'beigemarble.jpg'
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'marbletiles'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'marbletiles.jpg'
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {0000803E0000803E0000803F00000000}
       end
       item
         Name = 'walkway'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'walkway.jpg'
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {0000003F0000003F0000803F00000000}
       end>
-    TexturePaths = '..\..\media'
+    TexturePaths = '..\..\..\..\media'
     Left = 24
     Top = 64
   end

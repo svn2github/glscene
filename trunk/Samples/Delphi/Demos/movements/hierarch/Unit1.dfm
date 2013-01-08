@@ -16,8 +16,8 @@ object Form1: TForm1
   OnCloseQuery = FormCloseQuery
   OnResize = FormResize
   DesignSize = (
-    449
-    314)
+    441
+    305)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -26,8 +26,11 @@ object Form1: TForm1
     Width = 433
     Height = 273
     Camera = GLCamera1
+    VSync = vsmSync
     Buffer.BackgroundColor = clSilver
+    FieldOfView = 107.546936035156300000
     Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 0
   end
   object TrackBar: TTrackBar
     Left = 56
@@ -36,16 +39,10 @@ object Form1: TForm1
     Height = 25
     Anchors = [akLeft, akRight, akBottom]
     Max = 360
-    Orientation = trHorizontal
     PageSize = 10
     Frequency = 10
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
     ThumbLength = 15
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
     OnChange = TrackBarChange
   end
   object CBPlay: TCheckBox
@@ -64,35 +61,32 @@ object Form1: TForm1
       Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 2
+      CubeSize = 2.000000000000000000
       object Cube2: TGLCube
-        Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8786063F8786063F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000000000000000A1A0203F0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000404000000000000000000000803F}
         CubeSize = {0000003F0000003F0000003F}
         object DummyCube2: TGLDummyCube
           Direction.Coordinates = {00000000F304353FF304353F00000000}
           Up.Coordinates = {00000000F304353FF30435BF00000000}
-          CubeSize = 1
+          CubeSize = 1.000000000000000000
           object Cube3: TGLCube
             Position.Coordinates = {000000000000803F000000000000803F}
-            Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
             CubeSize = {CDCC4C3ECDCC4C3ECDCC4C3E}
           end
         end
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
-      SpotCutOff = 180
+      ConstAttenuation = 1.000000000000000000
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 100
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = Cube1
       Position.Coordinates = {000020410000A040000020410000803F}
     end

@@ -98,11 +98,11 @@ implementation
 
 {$R *.DFM}
 
-uses GLKeyboard;
+uses GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+   SetGLSceneMediaDir();
    // 8 MB height data cache
    // Note this is the data size in terms of elevation samples, it does not
    // take into account all the data required/allocated by the renderer
@@ -283,9 +283,9 @@ begin
       // wolf howl at some distance, at ground level
       wolfPos:=GLCamera1.AbsolutePosition;
       SinCos(Random*c2PI, 100+Random(1000), s, c);
-      wolfPos[0]:=wolfPos[0]+c;
-      wolfPos[2]:=wolfPos[2]+s;
-      wolfPos[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);
+      wolfPos.X:=wolfPos.X+c;
+      wolfPos.Z:=wolfPos.Z+s;
+      wolfPos.Y:=TerrainRenderer1.InterpolatedHeight(wolfPos);
       DCSound.Position.AsVector:=wolfPos;
       with GetOrCreateSoundEmitter(DCSound) do begin
          Source.SoundLibrary:=GLSoundLibrary;

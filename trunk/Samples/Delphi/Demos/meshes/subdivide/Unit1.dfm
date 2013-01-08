@@ -16,30 +16,32 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 382
+    Left = 374
     Top = 0
     Width = 2
-    Height = 324
+    Height = 315
     Align = alRight
     AutoSize = False
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 382
-    Height = 324
+    Width = 374
+    Height = 315
     Camera = GLCamera1
     Buffer.BackgroundColor = 13619151
     Buffer.FaceCulling = False
+    FieldOfView = 144.774841308593800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 384
+    Left = 376
     Top = 0
     Width = 115
-    Height = 324
+    Height = 315
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -77,15 +79,9 @@ object Form1: TForm1
       Width = 97
       Height = 17
       Hint = 'Subdivision smoothness'
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 5
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 2
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object RBWireFrame: TRadioButton
       Left = 16
@@ -121,21 +117,21 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLActor1: TGLActor
+      Material.Texture.TextureMode = tmReplace
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
-      Material.Texture.TextureMode = tmReplace
       Interval = 100
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000020410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLActor1
       Position.Coordinates = {0000A04000008040000040400000803F}
     end

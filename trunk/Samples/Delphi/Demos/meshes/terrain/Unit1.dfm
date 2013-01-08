@@ -155,22 +155,22 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ground'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'details'
       end
       item
         Name = 'details'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {00000043000000430000004300000000}
       end>
     Left = 16

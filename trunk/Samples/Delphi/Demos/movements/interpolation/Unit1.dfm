@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 325
+  Top = 237
+  Width = 732
+  Height = 521
   Caption = 'Form1'
-  ClientHeight = 483
-  ClientWidth = 716
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,7 +26,6 @@ object Form1: TForm1
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
-    ExplicitWidth = 818
   end
   object Panel1: TPanel
     Left = 0
@@ -36,7 +35,6 @@ object Form1: TForm1
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
-    ExplicitWidth = 933
     object Label2: TLabel
       Left = 6
       Top = 77
@@ -130,6 +128,7 @@ object Form1: TForm1
       Width = 155
       Height = 21
       Style = csDropDownList
+      ItemHeight = 13
       TabOrder = 3
     end
     object EaseTypeB: TComboBox
@@ -138,6 +137,7 @@ object Form1: TForm1
       Width = 155
       Height = 21
       Style = csDropDownList
+      ItemHeight = 13
       TabOrder = 4
     end
     object TimeA: TSpinEdit

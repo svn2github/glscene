@@ -73,20 +73,21 @@ implementation
 
 {$R *.DFM}
 
-uses JPeg, GLKeyboard;
+uses JPeg, GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i : Integer;
 begin
+   SetGLSceneMediaDir();
    for i:=0 to 15 do
       SGMap.Cells[i, i]:='X';
    SGMap.Cells[8, 8]:='';
    SGMap.Col:=8;
    SGMap.Row:=12;
    with GLMaterialLibrary1 do begin
-      AddTextureMaterial('gnd', '..\..\media\walkway.jpg');
-      with AddTextureMaterial('wall', '..\..\media\rawwall.jpg') do begin
+      AddTextureMaterial('gnd', 'walkway.jpg');
+      with AddTextureMaterial('wall', 'rawwall.jpg') do begin
          TextureScale.Y:=3;
       end;
    end;
