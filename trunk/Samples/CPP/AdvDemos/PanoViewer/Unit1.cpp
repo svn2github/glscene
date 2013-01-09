@@ -5,9 +5,6 @@
 #pragma hdrstop
 
 #include "Unit1.h"
-#include "GLKeyBoard.hpp"
-#include "JPEG.hpp"
-#include "GLFileJPEG.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLCadencer"
@@ -30,6 +27,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BtnLoadClick(TObject *Sender)
 {
+  SetGLSceneMediaDir();
+  OpenPictureDialog1->FileName = "sejourstmathieu2048.jpg";
   if (OpenPictureDialog1->Execute())
   GLMaterialLibrary1->Materials->Items[0]->Material->
   Texture->Image->LoadFromFile(OpenPictureDialog1->FileName);

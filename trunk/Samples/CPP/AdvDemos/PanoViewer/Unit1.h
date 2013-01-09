@@ -6,20 +6,26 @@
 #include <Classes.hpp>
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
+#include <ExtCtrls.hpp>
+#include <ExtDlgs.hpp>
+#include <ComCtrls.hpp>
+#include <Dialogs.hpp>
 #include <Forms.hpp>
+
 #include "GLCadencer.hpp"
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLTexture.hpp"
 #include "GLWin32Viewer.hpp"
-#include <ComCtrls.hpp>
-#include <Dialogs.hpp>
-#include <ExtCtrls.hpp>
-#include <ExtDlgs.hpp>
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLMaterial.hpp"
 #include "GLCrossPlatform.hpp"
+#include "GLKeyBoard.hpp"
+#include "JPEG.hpp"
+#include "GLFileJPEG.hpp"
+#include "GLUtils.hpp"
+
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
