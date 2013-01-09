@@ -87,7 +87,7 @@ object Form1: TForm1
       object GLTorus1: TGLTorus
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Chekers'
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
         StopAngle = 360.000000000000000000
         Parts = [toSides, toStartDisk, toStopDisk]

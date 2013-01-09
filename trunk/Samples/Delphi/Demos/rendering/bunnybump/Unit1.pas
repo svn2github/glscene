@@ -98,11 +98,11 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, GLContext;
+uses VectorGeometry, GLContext, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+  SetGLSceneMediaDir();
 
   // Load the bunny mesh and scale for viewing
   Bunny.LoadFromFile('bunny.glsm');

@@ -71,7 +71,7 @@ var
 
 implementation
 
-uses GLSpatialPartitioning;
+uses GLSpatialPartitioning, GLUtils;
 
 {$R *.dfm}
 
@@ -117,10 +117,11 @@ begin
   tree.visible := false;
   trees.ObjectsSorting := osRenderFarthestFirst;
 
-  GLBitmapHDS1.Picture.LoadFromFile('..\..\media\terrain.bmp');
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\snow512.jpg');
-  GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('..\..\media\detailmap.jpg');
-  tree.Material.Texture.Image.LoadFromFile('..\..\media\tree1.bmp');
+  SetGLSceneMediaDir();
+  GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('snow512.jpg');
+  GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
+  tree.Material.Texture.Image.LoadFromFile('tree1.bmp');
   Show;
   CreateTrees;
   cullingMode := 'quadtree ';
@@ -173,10 +174,10 @@ procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   function PlaneToStr(const APlane : THmgPlane) : string;
   begin
     result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
-      APlane[0],
-      APlane[1],
-      APlane[2],
-      APlane[3]]);
+      APlane.X,
+      APlane.Y,
+      APlane.Z,
+      APlane.W]);
   end;
 var
   i: integer;

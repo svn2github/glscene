@@ -138,6 +138,7 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'spot'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
@@ -145,14 +146,13 @@ object Form1: TForm1
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'spot2'
+        Tag = 0
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 80
     Top = 24

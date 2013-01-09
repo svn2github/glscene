@@ -87,6 +87,9 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
@@ -102,7 +105,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-     SetCurrentDir('..\..\media');
+     SetGLSceneMediaDir();
      matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
      matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
 

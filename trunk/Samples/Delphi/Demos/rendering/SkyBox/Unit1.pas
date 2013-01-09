@@ -67,21 +67,18 @@ implementation
 
 {$R *.dfm}
 
-
-function mediaPath : string;
-begin
-   Result := ExtractFilePath(Paramstr(0))+'..\..\media\';
-end;
+uses GLUtils;
 
 function TForm1.LoadTexture(Matname,Filename : string) : TGLLibMaterial;
 begin
-   Result := GLMaterialLibrary1.AddTextureMaterial(Matname,mediaPath + Filename);
+   Result := GLMaterialLibrary1.AddTextureMaterial(Matname,Filename);
    Result.Material.Texture.Disabled := false;
    Result.Material.Texture.TextureMode := tmDecal;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+     SetGLSceneMediaDir();
      // --------------
      // Load graphics
      // --------------

@@ -400,11 +400,11 @@ object MainFm: TMainFm
         Scale.Coordinates = {00002041000020410000004000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -1.000000000000000000
-        XSamplingScale.Max = 1.000000000000000000
-        XSamplingScale.Step = 0.070000000298023220
+        XSamplingScale.max = 1.000000000000000000
+        XSamplingScale.step = 0.070000000298023220
         YSamplingScale.Min = -1.000000000000000000
-        YSamplingScale.Max = 1.000000000000000000
-        YSamplingScale.Step = 0.070000000298023220
+        YSamplingScale.max = 1.000000000000000000
+        YSamplingScale.step = 0.070000000298023220
         Options = [hfoTextureCoordinates]
       end
       object Cube1: TGLCube
@@ -419,19 +419,21 @@ object MainFm: TMainFm
         MinorRadius = 0.150000005960464500
         Rings = 28
         Sides = 16
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
         BehavioursData = {
-          0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-          08050000000000000000000005000000000000000000000500000000000000A0
-          034009020008020008}
+          0458434F4C02010201060B54474C42496E657274696102000600020002000500
+          00000000000080FF3F0200080500000000000000000000050000000000000000
+          00000500000000000000A0034009020008020008}
       end
       object Teapot1: TGLTeapot
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BeigeMarble'
         Scale.Coordinates = {9A99D93F9A99D93F9A99D93F00000000}
         BehavioursData = {
-          0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-          080500000000000000A003400500000000000000000000050000000000000000
-          000008020008020008}
+          0458434F4C02010201060B54474C42496E657274696102000600020002000500
+          00000000000080FF3F0200080500000000000000A00340050000000000000000
+          0000050000000000000000000008020008020008}
       end
     end
     object Shadows1: TGLZShadows
@@ -473,34 +475,34 @@ object MainFm: TMainFm
     Materials = <
       item
         Name = 'ShadowMat'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000003F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
-        Tag = 0
       end
       item
         Name = 'PlaneMat'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
-        Tag = 0
       end
       item
         Name = 'Tiles'
-        Material.Texture.TextureMode = tmModulate
         Tag = 0
+        Material.Texture.TextureMode = tmModulate
       end
       item
         Name = 'BeigeMarble'
-        Material.Texture.TextureMode = tmModulate
         Tag = 0
+        Material.Texture.TextureMode = tmModulate
       end
       item
         Name = 'Marble'
-        Material.Texture.TextureMode = tmModulate
         Tag = 0
+        Material.Texture.TextureMode = tmModulate
       end>
     Left = 48
     Top = 32

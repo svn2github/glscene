@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
+  Width = 816
+  Height = 518
   Caption = 'Form1'
-  ClientHeight = 480
-  ClientWidth = 800
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -148,22 +148,22 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ping'
+        Tag = 0
         Material.DepthProperties.DepthClamp = True
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'pong'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 88
     Top = 24

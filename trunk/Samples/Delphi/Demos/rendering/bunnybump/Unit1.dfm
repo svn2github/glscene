@@ -203,10 +203,10 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Bump'
+        Tag = 0
         Material.FrontProperties.Shininess = 64
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Disabled = False
-        Tag = 0
         Shader = GLBumpShader1
       end>
     Left = 40

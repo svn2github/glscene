@@ -17,17 +17,19 @@ object Form1: TForm1
   object viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 574
-    Height = 336
+    Width = 566
+    Height = 327
     Camera = Camera1
+    FieldOfView = 145.991653442382800000
     Align = alClient
     OnMouseDown = viewerMouseDown
     OnMouseMove = viewerMouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 336
-    Width = 574
+    Top = 327
+    Width = 566
     Height = 97
     Align = alBottom
     BevelOuter = bvNone
@@ -76,7 +78,6 @@ object Form1: TForm1
       Top = 72
       Width = 393
       Height = 16
-      Min = 0
       Max = 200
       Smooth = True
       TabOrder = 2
@@ -87,15 +88,8 @@ object Form1: TForm1
       Width = 409
       Height = 25
       Max = 200
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 3
       ThumbLength = 15
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = MaxStepsBarChange
     end
     object SpeedBar: TTrackBar
@@ -104,15 +98,9 @@ object Form1: TForm1
       Width = 121
       Height = 25
       Max = 20
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 1
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 4
       ThumbLength = 15
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = SpeedBarChange
     end
   end
@@ -122,11 +110,13 @@ object Form1: TForm1
     object mesh: TGLFreeForm
       Scale.Coordinates = {CDCCCC3ECDCCCC3ECDCCCC3E00000000}
       NormalsOrientation = mnoInvert
-      EffectsData = {0201060F54474C424578706C6F73696F6E46580200}
+      EffectsData = {
+        0458434F4C02010201060F54474C424578706C6F73696F6E4658020006000200
+        0200}
     end
     object Camera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = mesh
       Position.Coordinates = {0000000000004842000000000000803F}
       Direction.Coordinates = {00000000000080BF0000000000000000}
@@ -134,8 +124,8 @@ object Form1: TForm1
       Left = 328
       Top = 216
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1
-        SpotCutOff = 180
+        ConstAttenuation = 1.000000000000000000
+        SpotCutOff = 180.000000000000000000
         SpotDirection.Coordinates = {00000000000000000000803F00000000}
       end
     end

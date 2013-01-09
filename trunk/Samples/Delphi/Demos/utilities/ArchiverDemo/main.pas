@@ -40,7 +40,7 @@ var
 implementation
 
 uses
-  VectorTypes;
+  VectorTypes, GLUtils;
 
 {$R *.dfm}
 
@@ -54,9 +54,10 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   with GLSArchiveManager1.Archives[0] do
   begin
-    LoadFromFile('..\..\Media\Chair.zlib');
+    LoadFromFile('Chair.zlib');
     if FileName='' then ShowMessage('Archive Can not be Loaded');
     {: Automatic loading from archive.
        If file is not in archive, then it's loaded from harddrive. }

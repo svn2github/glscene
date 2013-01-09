@@ -1,9 +1,9 @@
 object frmOctreeDemo: TfrmOctreeDemo
   Left = 309
   Top = 207
+  Width = 786
+  Height = 591
   Caption = 'Octree Demo'
-  ClientHeight = 553
-  ClientWidth = 770
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

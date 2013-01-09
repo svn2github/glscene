@@ -17,7 +17,6 @@ uses
   GLShadowVolume,
   GLGeomObjects,
   ExtCtrls,
-  GLUtils,
   GLFile3DS,
   GLFileLMTS,
   GLContext,
@@ -69,7 +68,8 @@ implementation
 uses
   GLFileOBJ,
   JPEG,
-  TGA;
+  TGA,
+  GLUtils;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 var
@@ -133,7 +133,7 @@ begin
   sdir := -10;
   GLCamera1.CameraStyle := cscustom;
 
-  SetCurrentDir(ExtractFilePath(ParamStr(0)) + '..\..\media\');
+  SetGLSceneMediaDir();
   glslProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
   glslProjectedTextures1.Material.Texture.Disabled := False;
   glslProjectedTextures1.Material.Texture.TextureWrap := twNone;

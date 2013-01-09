@@ -89,10 +89,13 @@ implementation
 
 {$R *.dfm}
 
+uses GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
-      LoadFromFile(ExtractFilePath(Application.ExeName)+'..\..\Media\DefaultSkin.bmp');
+      LoadFromFile('DefaultSkin.bmp');
 end;
 
 procedure TForm1.Open1Click(Sender: TObject);

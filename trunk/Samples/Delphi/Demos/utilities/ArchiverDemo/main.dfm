@@ -75,6 +75,7 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Tag = 0
       end>
+    TexturePaths = '..\..\..\media\'
     Left = 127
     Top = 128
   end

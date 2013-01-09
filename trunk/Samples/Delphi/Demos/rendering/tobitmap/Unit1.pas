@@ -67,7 +67,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, Unit2, GLGraphics;
+uses Jpeg, Unit2, GLGraphics, GLUtils;
 
 {
    A utility function, this takes the bitmap and uses Form2 to display it with
@@ -186,9 +186,10 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   HUDSprite1.Material.Texture.Image.LoadFromFile('..\..\media\ashwood.jpg');
-   Plane1.Material.Texture.Image.LoadFromFile('..\..\media\marbletiles.jpg');
-   Sphere1.Material.Texture.Image.LoadFromFile('..\..\media\marbletiles.jpg');
+   SetGLSceneMediaDir();
+   HUDSprite1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+   Plane1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+   Sphere1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
 end;
 
 procedure TForm1.Sphere1Progress(Sender: TObject; const deltaTime,

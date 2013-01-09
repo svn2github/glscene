@@ -25,7 +25,6 @@ uses
   GLMaterial,
   GLTexture,
   GLWin32Viewer,
-  GLUtils,
   GLGeomObjects,
   StdCtrls,
   ExtCtrls,
@@ -103,7 +102,8 @@ uses
   JPEG,
   GLFileObj,
   GLGraphics,
-  VectorTypes;
+  VectorTypes,
+  GLUtils;
 
 procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
@@ -118,16 +118,9 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  NativeDir: string;
 begin
-
-  NativeDir := ExtractFilePath(Application.ExeName);
-  if NativeDir[length(NativeDir)] <> '\' then
-    NativeDir := NativeDir + '\';
-
   // Loading textures
-  SetCurrentDir(NativeDir + '..\..\media');
+  SetGLSceneMediaDir();
   with GLMaterialLibrary1 do
   begin
 

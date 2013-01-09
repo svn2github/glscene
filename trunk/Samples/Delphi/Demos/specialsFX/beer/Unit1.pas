@@ -56,9 +56,12 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-   SetCurrentDir('../../media');
+   SetGLSceneMediaDir();
 
    GLFreeForm1.LoadFromFile('beer.3ds');
 

@@ -65,14 +65,12 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg;
+uses Jpeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-   textureFileName : String;
 begin
-   textureFileName:=ExtractFilePath(Application.ExeName)+'..\..\Media\BeigeMarble.jpg';
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile(textureFileName);
+   SetGLSceneMediaDir();
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('BeigeMarble.jpg');
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

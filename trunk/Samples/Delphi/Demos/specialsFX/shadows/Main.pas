@@ -102,6 +102,9 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TMainFm.ViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -163,10 +166,11 @@ end;
 
 procedure TMainFm.FormCreate(Sender: TObject);
 begin
- GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('..\..\media\marbletiles.jpg');
+ SetGLSceneMediaDir();
+ GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('marbletiles.jpg');
  GLMaterialLibrary1.Materials[2].Material.texture.disabled:=false;
 
- GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('..\..\media\beigemarble.jpg');
+ GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('beigemarble.jpg');
  GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
 end;
 

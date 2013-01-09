@@ -13,8 +13,8 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
-    536
-    311)
+    528
+    302)
   PixelsPerInch = 96
   TextHeight = 14
   object Label1: TLabel
@@ -52,7 +52,9 @@ object Form1: TForm1
     Height = 297
     Camera = GLCamera1
     Buffer.BackgroundColor = 12040119
+    FieldOfView = 142.783203125000000000
     Anchors = [akLeft, akTop, akRight, akBottom]
+    TabOrder = 0
   end
   object RBNone: TRadioButton
     Left = 440
@@ -120,15 +122,15 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000C8420000A042000070420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCTarget: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = DCTarget
         Position.Coordinates = {0000A04000000040000040400000803F}
         Left = 256
@@ -136,19 +138,19 @@ object Form1: TForm1
       end
     end
     object DCSpheres: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object DCActors: TGLDummyCube
       Visible = False
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object ACReference: TGLActor
+      Material.MaterialLibrary = GLMaterialLibrary
+      Material.LibMaterialName = 'ActorTexture'
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Position.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
       Scale.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D00000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-      Material.MaterialLibrary = GLMaterialLibrary
-      Material.LibMaterialName = 'ActorTexture'
       AnimationMode = aamLoop
       Interval = 100
     end
@@ -168,8 +170,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'ActorTexture'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end>
     Left = 48
     Top = 48

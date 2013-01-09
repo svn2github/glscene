@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 290
   Top = 175
+  Width = 534
+  Height = 500
   Caption = 'Form1'
-  ClientHeight = 462
-  ClientWidth = 518
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -58,6 +58,7 @@ object Form1: TForm1
       Width = 161
       Height = 21
       Style = csDropDownList
+      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'pNone (no change)'
@@ -77,6 +78,7 @@ object Form1: TForm1
       Width = 145
       Height = 21
       Style = csDropDownList
+      ItemHeight = 13
       ItemIndex = 5
       TabOrder = 1
       Text = '256'
@@ -135,13 +137,13 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 228
     Top = 48

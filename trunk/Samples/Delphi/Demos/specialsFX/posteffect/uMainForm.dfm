@@ -17,17 +17,17 @@ object MainForm: TMainForm
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 497
+    Left = 489
     Top = 33
     Width = 2
-    Height = 293
+    Height = 282
     Align = alRight
     AutoSize = False
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 499
+    Width = 491
     Height = 33
     Align = alTop
     TabOrder = 0
@@ -63,12 +63,13 @@ object MainForm: TMainForm
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 33
-    Width = 497
-    Height = 293
+    Width = 489
+    Height = 282
     Camera = GLCamera1
     Buffer.BackgroundColor = 16776176
-    FieldOfView = 142.310775756835900000
+    FieldOfView = 140.949981689453100000
     Align = alClient
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     Left = 8
@@ -109,6 +110,7 @@ object MainForm: TMainForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
+    FormCaption = 'TGLPostEffect demo - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]

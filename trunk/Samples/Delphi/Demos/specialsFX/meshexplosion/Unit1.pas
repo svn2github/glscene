@@ -62,12 +62,16 @@ implementation
 
 {$R *.DFM}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
 exp: TGLBExplosionFx;
 begin
+     SetGLSceneMediaDir();
      //load mesh
-     mesh.LoadFromFile('..\..\media\mushroom.3ds');
+     mesh.LoadFromFile('mushroom.3ds');
      //cache information
      cache:= TMeshObjectList.Create;
      cache.Assign(mesh.MeshObjects);

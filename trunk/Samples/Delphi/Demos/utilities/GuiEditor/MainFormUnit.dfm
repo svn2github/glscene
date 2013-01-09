@@ -176,6 +176,7 @@ object Form1: TForm1
       Height = 200.000000000000000000
     end
     object GLPanel1: TGLPanel
+      Autosize = False
       RedrawAtOnce = False
       GuiLayout = GLGuiLayout1
       NoZWrite = False
@@ -206,17 +207,17 @@ object Form1: TForm1
       item
         StartASCII = 'a'
         StopASCII = 'z'
-        StartGlyphIdx = 0
+        StartGlyphIdx = 26
       end
       item
         StartASCII = '0'
         StopASCII = '9'
-        StartGlyphIdx = 26
+        StartGlyphIdx = 52
       end
       item
         StartASCII = ' '
         StopASCII = ' '
-        StartGlyphIdx = 36
+        StartGlyphIdx = 62
       end>
     Left = 80
     Top = 48
@@ -229,8 +230,8 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end>
     Left = 184
     Top = 48

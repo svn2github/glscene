@@ -65,16 +65,19 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+     SetGLSceneMediaDir();
      // Blur GLDummyCube1and it's children
      GLBlur1.TargetObject:=GLDummyCube1;
      // point to GLDummyCube1
      GLCamera1.TargetObject:=GLDummyCube1;
      // load materials
-     GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\beigemarble.jpg');
-     GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('..\..\media\moon.bmp');
+     GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+     GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('moon.bmp');
 end;
 
 

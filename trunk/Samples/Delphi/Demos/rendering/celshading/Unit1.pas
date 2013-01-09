@@ -45,13 +45,13 @@ implementation
 {$R *.dfm}
 
 uses
-  GLFileMD2, JPEG, GLKeyboard;
+  GLFileMD2, JPEG, GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+  SetGLSceneMediaDir();
 
   GLActor1.LoadFromFile('waste.md2');
   r:=GLActor1.BoundingSphereRadius;

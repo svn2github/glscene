@@ -13,8 +13,8 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
-    502
-    416)
+    494
+    412)
   PixelsPerInch = 96
   TextHeight = 13
   object LFogStart: TLabel
@@ -58,9 +58,11 @@ object Form1: TForm1
     Width = 502
     Height = 274
     Camera = GLCamera1
+    FieldOfView = 139.899520874023400000
     Anchors = [akLeft, akTop, akRight]
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CBFogEnable: TCheckBox
     Left = 8

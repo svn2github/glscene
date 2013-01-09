@@ -64,6 +64,8 @@ implementation
 
 {$R *.dfm}
 
+uses GLUtils;
+
 // applyfogsettings
 //
 procedure TForm1.ApplyFogSettings;
@@ -148,7 +150,8 @@ var
   Cube : TGLCube;
 
 begin
-  GLMaterialLibrary1.AddTextureMaterial('glscene', '..\..\media\glscene.bmp');
+  SetGLSceneMediaDir();
+  GLMaterialLibrary1.AddTextureMaterial('glscene', 'glscene.bmp');
   for X := -cNb to cNb do
     for Y := -cNb to cNb do
       for Z := -cNb to cNb do

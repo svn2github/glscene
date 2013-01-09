@@ -17,19 +17,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 472
-    Height = 486
+    Width = 464
+    Height = 475
     Camera = GLCamera1
     Buffer.BackgroundColor = 4333056
-    FieldOfView = 156.075897216796900000
+    FieldOfView = 155.675598144531300000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 472
+    Left = 464
     Top = 0
     Width = 328
-    Height = 486
+    Height = 475
     Align = alRight
     Caption = ' '
     TabOrder = 1
@@ -169,6 +170,8 @@ object Form1: TForm1
       Position.Coordinates = {00000000000000003433B3BF0000803F}
       MajorRadius = 0.400000005960464500
       MinorRadius = 0.200000002980232200
+      StopAngle = 360.000000000000000000
+      Parts = [toSides, toStartDisk, toStopDisk]
     end
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -180,6 +183,8 @@ object Form1: TForm1
         MinorRadius = 0.200000002980232200
         Rings = 8
         Sides = 8
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLCube1: TGLCube
         Material.MaterialLibrary = GLMaterialLibrary1
@@ -757,15 +762,15 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'matCube'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'matAnnulus'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 40
     Top = 128

@@ -80,6 +80,8 @@ implementation
 
 {$R *.dfm}
 
+uses GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   // Add GLBlur to scene
@@ -89,7 +91,8 @@ begin
   B.RenderWidth := 256;
   B.RenderHeight := 256;
   // Load texture for objects
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\marbletiles.jpg');
+  SetGLSceneMediaDir();
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('marbletiles.jpg');
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

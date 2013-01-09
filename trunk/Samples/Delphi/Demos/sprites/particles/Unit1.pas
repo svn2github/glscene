@@ -59,8 +59,12 @@ implementation
 
 {$R *.DFM}
 
+uses GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
+   Sprite1.Material.Texture.Image.LoadFromFile('flare1.bmp');
    // if we don't do this, our random won't look like random
    Randomize;
 end;

@@ -57,20 +57,20 @@ implementation
 
 {$R *.DFM}
 
-uses SysUtils, VectorGeometry;
+uses SysUtils, VectorGeometry, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-	picName : String;
 	i : Integer;
 	spr : TGLSprite;
 begin
+  SetGLSceneMediaDir();
 	// Load texture for sprite2, this is the hand-coded way using a PersistentImage
 	// Sprite1 uses a PicFileImage, and so the image is automagically loaded by
 	// GLScene when necessary (no code is required).
 	// (Had I used two PicFileImage, I would have avoided this code)
-	picName:='..\..\media\flare1.bmp';
-	GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(picName);
+	GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('flare1.bmp');
+  Sprite1.Material.Texture.Image.Assign(GLMaterialLibrary1.Materials[0].Material.Texture.Image);
 	// New sprites are created by duplicating the template "sprite2"
 	for i:=1 to 9 do begin
 		spr:=TGLSprite(DummyCube1.AddNewChild(TGLSprite));

@@ -48,8 +48,6 @@ object Form1: TForm1
       Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
       Material.BlendingMode = bmAdditive
-      Material.Texture.ImageClassName = 'TGLPicFileImage'
-      Material.Texture.Image.PictureFileName = '..\..\media\Flare1.bmp'
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmModulate
       Material.Texture.Disabled = False
@@ -67,6 +65,7 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'BlueBall'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {F3F2F23EF3F2F23E0000803F0000803F}
@@ -74,7 +73,6 @@ object Form1: TForm1
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 8
     Top = 64

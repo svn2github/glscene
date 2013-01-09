@@ -36,15 +36,13 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
       OnActivateParticle = GLParticles1ActivateParticle
       BehavioursData = {
-        0201060B54474C42496E657274696102000200050000000000000080FF3F0200
-        080500000000000000F003400500000000000000000000050000000000000000
-        000008020008020008}
+        0458434F4C02010201060B54474C42496E657274696102000600020002000500
+        00000000000080FF3F0200080500000000000000F00340050000000000000000
+        0000050000000000000000000008020008020008}
       object Sprite1: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.BlendingMode = bmAdditive
-        Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\Flare1.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfIntensity
         Material.Texture.Disabled = False

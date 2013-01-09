@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 195
   Top = 103
+  Width = 465
+  Height = 335
   Caption = 'Form1'
-  ClientHeight = 297
-  ClientWidth = 449
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -123,7 +123,7 @@ object Form1: TForm1
         Font.Style = []
         Lines.Strings = (
           'Render to Bitmap')
-        AllowedDeviation = 1.000000000000000000
+        allowedDeviation = 1.000000000000000000
         CharacterRange = stcrAlphaNum
         AspectRatio = 1.299999952316284000
         TextHeight = 0.400000005960464500

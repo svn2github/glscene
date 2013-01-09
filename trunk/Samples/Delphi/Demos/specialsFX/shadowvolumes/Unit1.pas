@@ -94,6 +94,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  GLUtils;
+
 procedure TForm1.FormCreate(Sender: TObject);
 const
    cSpacing = 1;
@@ -103,7 +106,7 @@ var
    x, y, z : Integer;
    sphere : TGLSphere;
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+   SetGLSceneMediaDir();
 
    // Dynamically construct an array of spheres, and make them shadow casters
    // Note that as the spheres are children of the shadowvolume component,

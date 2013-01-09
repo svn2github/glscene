@@ -57,7 +57,7 @@ implementation
 
 {$R *.dfm}
 
-uses JPEG, TGA, GLFileObj, GLFile3DS, GLFileMD2, GLFileSMD;
+uses JPEG, TGA, GLFileObj, GLFile3DS, GLFileMD2, GLFileSMD, GLUtils;
 
 procedure TMainForm.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
@@ -66,9 +66,9 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  GLMaterialLibrary1.TexturePaths := '..\..\media';
-  GLActor1.LoadFromFile('..\..\media\waste.md2');
-  GLActor1.Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
+  SetGLSceneMediaDir();
+  GLActor1.LoadFromFile('waste.md2');
+  GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
   GLActor1.Material.Texture.Enabled := True;
   GLActor1.SwitchToAnimation(GLActor1.Animations[0]);
 

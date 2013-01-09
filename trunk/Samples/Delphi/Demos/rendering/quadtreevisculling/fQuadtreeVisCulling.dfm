@@ -172,16 +172,16 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     Materials = <
       item
         Name = '1'
+        Tag = 0
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = '2'
       end
       item
         Name = '2'
+        Tag = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 80
     Top = 156

@@ -16,11 +16,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 421
-    Height = 353
+    Width = 413
+    Height = 342
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 148.366622924804700000
+    FieldOfView = 147.402404785156300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -99,33 +99,33 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'walkway'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'walkway.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'rawwall'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'rawwall.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {000000400000803F0000803F00000000}
       end
       item
         Name = 'marbletiles'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'marbletiles.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {000040410000803F0000803F00000000}
       end>
-    TexturePaths = '..\..\media\'
+    TexturePaths = '..\..\..\..\media\'
     Left = 48
     Top = 8
   end

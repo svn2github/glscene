@@ -71,7 +71,7 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg, GLFileMD2;
+uses Jpeg, GLFileMD2, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -79,6 +79,7 @@ var
    newSphere : TGLSphere;
    newActor : TGLActor;
 begin
+   SetGLSceneMediaDir();
    // Spheres are used as standalone, high-polycount objects
    // that are highly T&L friendly
    for i:=-4 to 4 do for j:=-4 to 4 do begin
@@ -90,8 +91,8 @@ begin
    // Actors are used as standalone, med-polycount objects
    // that aren't T&L friendly (all geometry must be sent to
    // the hardware at each frame)
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
-   ACReference.LoadFromFile('..\..\media\waste.md2');
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('waste.jpg');
+   ACReference.LoadFromFile('waste.md2');
    for i:=-3 to 3 do for j:=-3 to 3 do begin
       newActor:=(DCActors.AddNewChild(TGLActor) as TGLActor);
       newActor.Assign(ACReference);

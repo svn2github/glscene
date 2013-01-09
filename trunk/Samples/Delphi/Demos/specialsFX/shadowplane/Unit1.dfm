@@ -17,12 +17,14 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 463
-    Height = 333
+    Width = 455
+    Height = 324
     Camera = GLCamera1
     Buffer.BackgroundColor = 8421440
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    FieldOfView = 145.695159912109400000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 8
@@ -57,7 +59,7 @@ object Form1: TForm1
     Left = 344
     Top = 8
     object DCShadowing: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Cube1: TGLCube
         Position.Coordinates = {000000000000003F000000000000803F}
         Up.Coordinates = {00000000FFFF7F3F1AF6953100000000}
@@ -65,29 +67,31 @@ object Form1: TForm1
       end
       object Sphere1: TGLSphere
         Position.Coordinates = {000000000000803F0000C0BF0000803F}
-        Radius = 0.200000002980232
+        Radius = 0.200000002980232200
       end
       object Torus1: TGLTorus
         Direction.Coordinates = {00000000B28F703F441DAF3E00000000}
         Position.Coordinates = {000000000000803F0000C03F0000803F}
         Up.Coordinates = {00000000441DAF3EB28F70BF00000000}
-        MajorRadius = 0.300000011920929
-        MinorRadius = 0.100000001490116
+        MajorRadius = 0.300000011920929000
+        MinorRadius = 0.100000001490116100
         Rings = 24
         Sides = 12
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
     end
     object DCLight: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Position.Coordinates = {0000000000004040000000000000803F}
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
         object Sphere2: TGLSphere
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
-          Radius = 0.100000001490116
+          Radius = 0.100000001490116100
           Slices = 8
           Stacks = 8
         end
@@ -95,21 +99,21 @@ object Form1: TForm1
     end
     object DCCameraTarget: TGLDummyCube
       Position.Coordinates = {000000003333333F000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = DCCameraTarget
         Position.Coordinates = {0000A04000008040000040400000803F}
       end
     end
     object GLShadowPlane1: TGLShadowPlane
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMaterialLibrary
       Material.LibMaterialName = 'Marble'
-      Height = 8
-      Width = 4
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {0000000000000000000080BF00000000}
+      Height = 8.000000000000000000
+      Width = 4.000000000000000000
       XTiles = 4
       YTiles = 8
       Style = [psTileTexture]
@@ -117,12 +121,12 @@ object Form1: TForm1
       ShadowedLight = GLLightSource1
     end
     object GLShadowPlane2: TGLShadowPlane
-      Position.Coordinates = {0000000000000040000080C00000803F}
-      Up.Coordinates = {000000000000803F0000008000000000}
       Material.MaterialLibrary = GLMaterialLibrary
       Material.LibMaterialName = 'Marble'
-      Height = 4
-      Width = 4
+      Position.Coordinates = {0000000000000040000080C00000803F}
+      Up.Coordinates = {000000000000803F0000008000000000}
+      Height = 4.000000000000000000
+      Width = 4.000000000000000000
       XTiles = 4
       YTiles = 4
       Style = [psTileTexture]
@@ -130,13 +134,13 @@ object Form1: TForm1
       ShadowedLight = GLLightSource1
     end
     object GLShadowPlane3: TGLShadowPlane
+      Material.MaterialLibrary = GLMaterialLibrary
+      Material.LibMaterialName = 'Marble'
       Direction.Coordinates = {0000803F000000800000000000000000}
       Position.Coordinates = {000000C000000040000000000000803F}
       Up.Coordinates = {0000000000000000000080BF00000000}
-      Material.MaterialLibrary = GLMaterialLibrary
-      Material.LibMaterialName = 'Marble'
-      Height = 8
-      Width = 4
+      Height = 8.000000000000000000
+      Width = 4.000000000000000000
       XTiles = 4
       YTiles = 8
       Style = [psTileTexture]
@@ -159,10 +163,10 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Marble'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {0000003F0000003F0000803F00000000}
       end>
     Left = 304
