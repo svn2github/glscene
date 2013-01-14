@@ -1,33 +1,27 @@
 object Form1: TForm1
-  Left = 167
-  Top = 128
+  Left = 0
+  Top = 0
   Align = alClient
   BorderStyle = bsNone
-  Caption = 'Form1'
-  ClientHeight = 400
-  ClientWidth = 603
+  Caption = 'GLScene Archipelago'
+  ClientHeight = 421
+  ClientWidth = 560
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 603
-    Height = 400
-    Margins.Left = 2
-    Margins.Top = 2
-    Margins.Right = 2
-    Margins.Bottom = 2
+    Width = 560
+    Height = 421
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -37,7 +31,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.FogEnable = True
-    FieldOfView = 138.887908935546900000
+    FieldOfView = 140.778594970703100000
     Align = alClient
     TabOrder = 0
   end
@@ -46,36 +40,24 @@ object Form1: TForm1
     Top = 168
     Width = 185
     Height = 49
-    Margins.Left = 2
-    Margins.Top = 2
-    Margins.Right = 2
-    Margins.Bottom = 2
     BorderWidth = 6
     TabOrder = 1
     Visible = False
     object Label1: TLabel
-      Left = 6
-      Top = 6
-      Width = 174
-      Height = 19
-      Margins.Left = 2
-      Margins.Top = 2
-      Margins.Right = 2
-      Margins.Bottom = 2
+      Left = 7
+      Top = 7
+      Width = 171
+      Height = 20
       Align = alTop
       Alignment = taCenter
       AutoSize = False
       Caption = 'Loading && compressing textures'
     end
     object ProgressBar: TProgressBar
-      Left = 6
-      Top = 25
-      Width = 174
-      Height = 18
-      Margins.Left = 2
-      Margins.Top = 2
-      Margins.Right = 2
-      Margins.Bottom = 2
+      Left = 7
+      Top = 27
+      Width = 171
+      Height = 15
       Align = alClient
       Max = 16
       TabOrder = 0
@@ -83,8 +65,8 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 16
+    Left = 24
+    Top = 24
     object SkyDome: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
@@ -125,7 +107,6 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = MaterialLibrary
       CLODPrecision = 5
-      OnHeightDataPostRender = TerrainRendererHeightDataPostRender
     end
     object DOWake: TGLDirectOpenGL
       OnProgress = DOWakeProgress
@@ -159,14 +140,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 56
+    Left = 532
+    Top = 80
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencerProgress
-    Left = 16
-    Top = 16
+    Left = 96
+    Top = 24
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
@@ -201,15 +182,15 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 56
-    Top = 56
+    Left = 96
+    Top = 80
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
     HTFFileName = 'Islands.htf'
     InfiniteWrap = False
     MaxPoolSize = 0
-    Left = 160
-    Top = 16
+    Left = 288
+    Top = 24
   end
   object BFSmall: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -217,26 +198,26 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 120
-    Top = 56
+    Left = 480
+    Top = 24
   end
   object GLCustomHDS1: TGLCustomHDS
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 120
-    Top = 16
+    Left = 392
+    Top = 24
   end
   object GLMemoryViewer1: TGLMemoryViewer
     Buffer.BackgroundColor = clBlack
     Buffer.Lighting = False
-    Left = 312
+    Left = 176
     Top = 24
   end
   object MLSailBoat: TGLMaterialLibrary
     TexturePaths = 'sailboat'
-    Left = 56
-    Top = 96
+    Left = 24
+    Top = 80
   end
   object BFLarge: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -244,7 +225,7 @@ object Form1: TForm1
     Font.Height = -21
     Font.Name = 'Arial'
     Font.Style = []
-    Left = 120
-    Top = 96
+    Left = 532
+    Top = 24
   end
 end

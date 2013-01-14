@@ -1,11 +1,9 @@
+//---------------------------------------------------------------------------
+
 #include <vcl.h>
-#include <math.h>
 #pragma hdrstop
 
 #include "Unit1.h"
-#include "GLKeyboard.hpp"
-#include "OpenGL1x.hpp"
-#include "GLState.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLBitmapFont"
@@ -23,11 +21,11 @@
 #pragma link "GLWindowsFont"
 #pragma link "GLKeyboard"
 #pragma link "GLState"
-#pragma link "jpeg"
 #pragma link "BaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
@@ -37,7 +35,7 @@ TForm1 *Form1;
 
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner)
-        : TForm(Owner)
+	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
@@ -47,30 +45,39 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   AnsiString name;
   TGLLibMaterial *libMat;
 
-  SetCurrentDir(ExtractFilePath(Application->ExeName)+"\\Data");
+  String DataPath = ExtractFilePath(ParamStr(0));
+  int I = DataPath.Pos("Archipelago");
+  if (I != 0) {
+	DataPath.Delete(I+12,DataPath.Length()-I);
+	DataPath += "\\Data";
+	SetCurrentDir(DataPath);
+  }
+
+//  SetCurrentDir(ExtractFilePath(Application->ExeName)+"\\Data");
 
   GLCustomHDS1->MaxPoolSize = 8*1024*1024;
   GLCustomHDS1->DefaultHeight = cWaterLevel;
 
   // load texmaps
   for (i = 0; i<=3; i++)
-    for (j = 0; j<=3; j++)
-    {
-      name = Format("Tex_%d_%d.bmp", ARRAYOFCONST((i, j)));
-      if (! FileExists(name)) {
-         ShowMessage( "Texture file "+name+" not found...\n"
+	for (j = 0; j<=3; j++)
+	{
+	  name = Format("Tex_%d_%d.bmp", ARRAYOFCONST((i, j)));
+	  if (! FileExists(name)) {
+		 ShowMessage( "Texture file "+name+" not found...\n"
 					  "Did you run ""splitter->exe"" as said in the readme->txt?");
-         Application->Terminate();
-         Abort();
-      }
-      libMat = MaterialLibrary->AddTextureMaterial(name, name, false);
-      libMat->Material->Texture->TextureMode = tmReplace;
-      libMat->Material->Texture->TextureWrap = twNone;
-      libMat->Material->Texture->Compression = tcStandard; // comment out to turn off texture compression
-      //         FilteringQuality = tfAnisotropic;
+		 Application->Terminate();
+		 Abort();
+	  }
+	  libMat = MaterialLibrary->AddTextureMaterial(name, name, false);
+	  libMat->Material->Texture->TextureMode = tmReplace;
+	  libMat->Material->Texture->TextureWrap = twNone;
+	  libMat->Material->Texture->Compression = tcStandard; // comment out to turn off texture compression
+	  //         FilteringQuality = tfAnisotropic;
 
-      libMat->Texture2Name = "detail";
-    }
+//	  libMat->Texture2Name = DataPath+"detail";
+	  libMat = MaterialLibrary->LibMaterialByName("\\detail");
+	}
 
   // Initial camera height offset (controled with pageUp/pageDown)
   CamHeight = 20;
@@ -85,8 +92,8 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   FFSailBoat->TurnAngle = -30;
   // boost ambient
   for (i = 0; i<MLSailBoat->Materials->Count; i++)
-    MLSailBoat->Materials->Items[i]->Material->FrontProperties->Ambient->Color =
-      MLSailBoat->Materials->Items[i]->Material->FrontProperties->Diffuse->Color;
+	MLSailBoat->Materials->Items[i]->Material->FrontProperties->Ambient->Color =
+	  MLSailBoat->Materials->Items[i]->Material->FrontProperties->Diffuse->Color;
 
   // Move camera starting point near the sailboat
   DCCamera->Position = FFSailBoat->Position;
@@ -103,7 +110,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
               "Num4 & Num6 : steer the sailboat\r"
               "F1: show this help");
   HTHelp->Position->SetPoint(Screen->Width/2 - 100,
-                             Screen->Height/2 - 150, 0);
+							 Screen->Height/2 - 150, 0);
   HelpOpacity = 4;
   GLSceneViewer->Cursor = crNone;
 
@@ -122,7 +129,7 @@ void TForm1::ResetMousePos(void)
 
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
-      const double deltaTime, const double newTime)
+   const double deltaTime,  const double newTime)
 {
   float speed, alpha, f;
   float terrainHeight, surfaceHeight;
@@ -139,7 +146,7 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   if (IsKeyDown(VK_DOWN))
      DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteVectorToTarget());
   if (IsKeyDown(VK_LEFT))
-     DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteRightVectorToTarget());
+	 DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteRightVectorToTarget());
   if (IsKeyDown(VK_RIGHT))
      DCCamera->Position->AddScaledVector(speed, GLCamera->AbsoluteRightVectorToTarget());
   if (IsKeyDown(VK_PRIOR))
@@ -168,7 +175,7 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   }
   GetCursorPos(&newMousePos);
   GLCamera->MoveAroundTarget((Screen->Height/2-newMousePos.y)*0.25,
-                             (Screen->Width/2-newMousePos.x)*0.25);
+							 (Screen->Width/2-newMousePos.x)*0.25);
   ResetMousePos();
 
   // don"t drop our target through terrain!
@@ -190,14 +197,14 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
 
        GLSceneViewer->Buffer->BackgroundColor = clWhite;
        GLCamera->DepthOfView = 1000;
-       WasAboveWater = true;
+	   WasAboveWater = true;
     }
   }
   else {
     if (WasAboveWater) {
        SkyDome->Visible = false;
 
-      GLSceneViewer->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
+	  GLSceneViewer->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
       GLSceneViewer->Buffer->FogEnvironment->FogEnd = 100;
       GLSceneViewer->Buffer->FogEnvironment->FogStart = 0;
 
@@ -225,7 +232,6 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   FFSailBoat->Up->SetVector(cos(alpha)*0.02*f, 1, (sin(alpha)*0.02-0.005)*f);
   FFSailBoat->Move(deltaTime*2);
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
@@ -235,9 +241,8 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
                      WaterPolyCount)));
   GLSceneViewer->ResetPerformanceMonitor();
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormKeyPress(TObject *Sender, char &Key)
+void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
 {
   int i;
   TPolygonMode pm;
@@ -250,12 +255,12 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, char &Key)
          pm = pmFill;
       else pm = pmLines;
       for (i = 0; i<MaterialLibrary->Materials->Count; i++)
-         MaterialLibrary->Materials->Items[i]->Material->PolygonMode = pm;
+		 MaterialLibrary->Materials->Items[i]->Material->PolygonMode = pm;
 
        for (i = 0; i<MLSailBoat->Materials->Count; i++)
           MLSailBoat->Materials->Items[i]->Material->PolygonMode = pm;
        FFSailBoat->StructureChanged();
-       break;
+	   break;
     }
     case 's' :
     case 'S' : WaterPlane = ! WaterPlane; break;
@@ -272,49 +277,46 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, char &Key)
   }
   Key = 0x0;
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLCustomHDS1MarkDirtyEvent(const TRect &area)
 {
-   GLHeightTileFileHDS1->MarkDirty(area);        
+   GLHeightTileFileHDS1->MarkDirty(area);
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::GLCustomHDS1StartPreparingData(
-      THeightData *heightData)
+
+void __fastcall TForm1::GLCustomHDS1StartPreparingData(THeightData *heightData)
 {
   THeightData *htfHD;
   int i, j, n;
   TTexPoint offset;
 
-  htfHD = GLHeightTileFileHDS1->GetData(heightData->xLeft, heightData->yTop,
-      heightData->size, heightData->dataType);
+  htfHD = GLHeightTileFileHDS1->GetData(heightData->XLeft, heightData->YTop,
+	  heightData->Size, heightData->DataType);
   if ((htfHD->DataState == hdsNone)) //or (htfHD->HeightMax<=cWaterLevel-cWaterOpaqueDepth))
-    heightData->DataState = hdsNone;
+	heightData->DataState = hdsNone;
   else {
-	i = (heightData->xLeft/128);
-    j = (heightData->yTop/128);
+	i = (heightData->XLeft/128);
+	j = (heightData->YTop/128);
     if ((Cardinal(i)<4) && (Cardinal(j)<4)) {
        heightData->MaterialName = Format("Tex_%d_%d.bmp", ARRAYOFCONST((i, j)));
        heightData->TextureCoordinatesMode = tcmLocal;
-	   n = ((heightData->xLeft/32) & 3);
+	   n = ((heightData->XLeft/32) & 3);
 	   offset.S = n*0.25;
-       n = ((heightData->yTop/32) & 3);
+       n = ((heightData->YTop/32) & 3);
        offset.T = -n*0.25;
        heightData->TextureCoordinatesOffset = offset;
        heightData->TextureCoordinatesScale = TexPointMake(0.25, 0.25);
-       heightData->dataType = hdtSmallInt;
-       htfHD->dataType = hdtSmallInt;
+	   heightData->DataType = hdtSmallInt;
+       htfHD->DataType = hdtSmallInt;
        heightData->Allocate(hdtSmallInt);
        Move(htfHD->SmallIntData, heightData->SmallIntData, htfHD->DataSize);
        heightData->DataState = hdsReady;
        heightData->HeightMin = htfHD->HeightMin;
        heightData->HeightMax = htfHD->HeightMax;
-    } else heightData->DataState = hdsNone;
+	} else heightData->DataState = hdsNone;
   }
   GLHeightTileFileHDS1->Release(htfHD);
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLSceneViewerBeforeRender(TObject *Sender)
 {
@@ -326,17 +328,17 @@ void __fastcall TForm1::GLSceneViewerBeforeRender(TObject *Sender)
   ProgressBar->Max = n-1;
   try
   {
-    for (i = 0; i<n; i++) {
-       ProgressBar->Position = i;
-       MaterialLibrary->Materials->Items[i]->Material->Texture->Handle;
-       PAProgress->Repaint();
-    }
+	for (i = 0; i<n; i++) {
+	   ProgressBar->Position = i;
+	   MaterialLibrary->Materials->Items[i]->Material->Texture->Handle;
+	   PAProgress->Repaint();
+	}
   }
   __finally
   {
-    ResetMousePos();
-    PAProgress->Visible = false;
-    GLSceneViewer->BeforeRender = NULL;
+	ResetMousePos();
+	PAProgress->Visible = false;
+	GLSceneViewer->BeforeRender = NULL;
   }
 }
 
@@ -351,7 +353,7 @@ float TForm1::WaterHeight(const float px, const float py)
 {
   float alpha;
   alpha = WaterPhase(px+TerrainRenderer->TileSize*0.5,
-                     py+TerrainRenderer->TileSize*0.5);
+					 py+TerrainRenderer->TileSize*0.5);
   return (cWaterLevel+sin(alpha)*cWaveAmplitude)*(TerrainRenderer->Scale->Z*(1.0/128));
 }
 
@@ -368,10 +370,10 @@ void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx, 
   px = x+rx+s2;
   py = y+ry+s2;
   if (hd->DataState == hdsNone) {
-     alpha = 1;
+	 alpha = 1;
   } else {
-     alpha = (cWaterLevel-hd->SmallIntHeight(rx, ry))*(1/cWaterOpaqueDepth);
-     alpha = ClampValue(alpha, 0.5, 1);
+	 alpha = (cWaterLevel-hd->SmallIntHeight(rx, ry))*(1/cWaterOpaqueDepth);
+	 alpha = ClampValue(alpha, 0.5, 1);
   }
   SinCos(WaterPhase(px, py), sa, ca);
   colorRatio = 1-alpha*0.1;
@@ -379,101 +381,42 @@ void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx, 
   glTexCoord2f(px*0.01+0.002*sa, py*0.01+0.0022*ca-t*0.002);
   glVertex3f(px, py, cWaterLevel+cWaveAmplitude*sa);
 }
-
-void __fastcall TForm1::TerrainRendererHeightDataPostRender(
-      TRenderContextInfo &rci, const TList *heightDatas)
-{
-  int i, x, y, s, s2;
-  float t;
-  THeightData *hd;
-
-  if (WaterPlane)
-  {
-    t = GLCadencer->CurrentTime;
-    MaterialLibrary->ApplyMaterial("water", rci);
-    do
-    {
-      if (! WasAboveWater)
-         rci.GLStates->InvertGLFrontFace();
-      glPushAttrib(GL_ENABLE_BIT);
-
-      glDisable(GL_LIGHTING);
-      glDisable(GL_NORMALIZE);
-
-      glStencilFunc(GL_ALWAYS, 1, 255);
-      glStencilMask(255);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-      glEnable(GL_STENCIL_TEST);
-      glNormal3f(0, 0, 1);
-
-      for (i = 0; i<heightDatas->Count; i++) {
-		 hd = (THeightData *)(heightDatas->[i]);
-		 if ((hd->DataState == hdsReady) && (hd->HeightMin>cWaterLevel)) continue;
-         x = hd->XLeft;
-         y = hd->YTop;
-         s = hd->Size-1;
-         s2 = s/2;
-         glBegin(GL_TRIANGLE_FAN);
-            IssuePoint(hd, x, y, s2, t, s2, s2);
-            IssuePoint(hd, x, y, s2, t, 0, 0);
-            IssuePoint(hd, x, y, s2, t, s2, 0);
-            IssuePoint(hd, x, y, s2, t, s, 0);
-            IssuePoint(hd, x, y, s2, t, s, s2);
-            IssuePoint(hd, x, y, s2, t, s, s);
-            IssuePoint(hd, x, y, s2, t, s2, s);
-            IssuePoint(hd, x, y, s2, t, 0, s);
-            IssuePoint(hd, x, y, s2, t, 0, s2);
-            IssuePoint(hd, x, y, s2, t, 0, 0);
-         glEnd();
-      }
-      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-      glPopAttrib();
-      if (! WasAboveWater)
-		 rci.GLStates->InvertGLFrontFace();
-      WaterPolyCount = heightDatas->Count*8;
-    }
-    while (MaterialLibrary->UnApplyMaterial(rci));
-  }
-}
-
 //---------------------------------------------------------------------------
-double Random()
-{
-  return (double)rand()/(double)RAND_MAX;
-}
+
 
 void __fastcall TForm1::DOWakeProgress(TObject *Sender,
-      const double deltaTime, const double newTime)
+	const double deltaTime, const double newTime)
+
 {
   int i;
-  TVector sbp, sbr;
+  Vectorgeometry::TVector sbp, sbr;
 
   if (WakeVertices == NULL)
   {
-    WakeVertices = new TAffineVectorList();
-    WakeStretch = new TAffineVectorList();
-    WakeTime = new TSingleList();
+	WakeVertices = new TAffineVectorList();
+	WakeStretch = new TAffineVectorList();
+	WakeTime = new TSingleList();
   }
 
    // enlarge current vertices
   i = 0;
   while (i<WakeVertices->Count)
   {
-     WakeVertices->CombineItem(i,   WakeStretch->List[i >> 1], -0.45*deltaTime);
-     WakeVertices->CombineItem(i+1, WakeStretch->List[i >> 1],  0.45*deltaTime);
-     i += 2;
+	 WakeVertices->CombineItem(i,   WakeStretch->List[i >> 1], -0.45*deltaTime);
+	 WakeVertices->CombineItem(i+1, WakeStretch->List[i >> 1],  0.45*deltaTime);
+	 i += 2;
   }
 
   // Progress wake
   if (newTime>DOWake->TagFloat) {
-    if (DOWake->TagFloat == 0) {
-       DOWake->TagFloat = newTime+0.2;
-    }
-    else
-    {
-      DOWake->TagFloat = newTime+1;
-      sbp = VectorCombine(FFSailBoat->AbsolutePosition, FFSailBoat->AbsoluteDirection, 1, 3);
-      sbr = FFSailBoat->AbsoluteRight();
+	if (DOWake->TagFloat == 0) {
+	   DOWake->TagFloat = newTime+0.2;
+	}
+	else
+	{
+	  DOWake->TagFloat = newTime+1;
+	  sbp = VectorCombine(FFSailBoat->AbsolutePosition, FFSailBoat->AbsoluteDirection, 1, 3);
+	  sbr = FFSailBoat->AbsoluteRight();
       // add new
       WakeVertices->Add(VectorCombine(sbp, sbr, 1, -2));
       WakeVertices->Add(VectorCombine(sbp, sbr, 1,  2));
@@ -485,64 +428,121 @@ void __fastcall TForm1::DOWakeProgress(TObject *Sender,
          WakeStretch->Delete(0);
          WakeTime->Delete(0);
       }
-    }
+	}
   }
 }
-
 //---------------------------------------------------------------------------
-void __fastcall TForm1::DOWakeRender(TObject *Sender,
-      TRenderContextInfo &rci)
+
+void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
 {
   int i, n;
   TVector3f p;
-  TVector sbp;
+  Vectorgeometry::TVector sbp;
   float c;
 
   if ((WakeVertices) &&
-      (!((! FFSailBoat->Visible) || (! WaterPlane))))
+	  (!((! FFSailBoat->Visible) || (! WaterPlane))))
   {
-    MaterialLibrary->ApplyMaterial("wake", rci);
-    do
-    {
-      glPushAttrib(GL_ENABLE_BIT);
+	MaterialLibrary->ApplyMaterial("wake", rci);
+	do
+	{
+	  glPushAttrib(GL_ENABLE_BIT);
 
-      glDisable(GL_LIGHTING);
-      glDisable(GL_FOG);
+	  glDisable(GL_LIGHTING);
+	  glDisable(GL_FOG);
 
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_ONE, GL_ONE);
+	  glEnable(GL_BLEND);
+	  glBlendFunc(GL_ONE, GL_ONE);
 
-      glStencilFunc(GL_EQUAL, 1, 255);
-      glStencilMask(255);
-      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-      glEnable(GL_STENCIL_TEST);
+	  glStencilFunc(GL_EQUAL, 1, 255);
+	  glStencilMask(255);
+	  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	  glEnable(GL_STENCIL_TEST);
 	  glDisable(GL_DEPTH_TEST);
 
-      if (! WasAboveWater)
-         rci.GLStates->InvertGLFrontFace();
+	  if (! WasAboveWater)
+		 rci.GLStates->InvertGLFrontFace();
 
-      glBegin(GL_TRIANGLE_STRIP);
-      n = WakeVertices->Count;
+	  glBegin(GL_TRIANGLE_STRIP);
+	  n = WakeVertices->Count;
 	  for (i = 0; i<n; i++) {
-         p = WakeVertices->List[i ^ 1];
-         sbp = TerrainRenderer->AbsoluteToLocal(VectorMake(p,0));
-         if ((i & 1) == 0) {
-            c = (i & 0xFFE)*0.2/n;
-            glColor3f(c, c, c);
-            glTexCoord2f(0, WakeTime->Items[i/2]);
-         } else glTexCoord2f(1, WakeTime->Items[i/2]);
-         glVertex3f(p.Coord[0], WaterHeight(sbp.Coord[0], sbp.Coord[1]), p.Coord[2]);
-      }
-      glEnd();
+		 p.V = WakeVertices->List[i ^ 1];
+		 sbp.V = TerrainRenderer->AbsoluteToLocal(VectorMake(p,0));
+		 if ((i & 1) == 0) {
+			c = (i & 0xFFE)*0.2/n;
+			glColor3f(c, c, c);
+			glTexCoord2f(0, WakeTime->Items[i/2]);
+		 } else
+		 glTexCoord2f(1, WakeTime->Items[i/2]);
+		 glVertex3f(p.V[0], WaterHeight(sbp.V[0], sbp.V[1]), p.V[2]);
+	  }
+	  glEnd();
 
-      if (! WasAboveWater)
+	  if (! WasAboveWater)
          rci.GLStates->InvertGLFrontFace();
-      
+
       glPopAttrib();
-    }
-    while (MaterialLibrary->UnApplyMaterial(rci));
+	}
+	while (MaterialLibrary->UnApplyMaterial(rci));
   }
 }
+//---------------------------------------------------------------------------
 
+void __fastcall TForm1::TerrainRendererHeightDataPostRender(TRenderContextInfo &rci,
+		  TList *&HeightDatas)
+{
+  int i, x, y, s, s2;
+  float t;
+  THeightData *hd;
+
+  if (WaterPlane)
+  {
+	t = GLCadencer->CurrentTime;
+	MaterialLibrary->ApplyMaterial("water", rci);
+	do
+	{
+	  if (! WasAboveWater)
+		 rci.GLStates->InvertGLFrontFace();
+	  glPushAttrib(GL_ENABLE_BIT);
+
+	  glDisable(GL_LIGHTING);
+	  glDisable(GL_NORMALIZE);
+
+	  glStencilFunc(GL_ALWAYS, 1, 255);
+	  glStencilMask(255);
+	  glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	  glEnable(GL_STENCIL_TEST);
+	  glNormal3f(0, 0, 1);
+
+	  for (i = 0; i<HeightDatas->Count; i++) {
+		 hd = (THeightData *)(HeightDatas->List[i]);
+
+		 if ((hd->DataState == hdsReady) && (hd->HeightMin>cWaterLevel)) continue;
+		 x = hd->XLeft;
+		 y = hd->YTop;
+		 s = hd->Size-1;
+		 s2 = s/2;
+		 glBegin(GL_TRIANGLE_FAN);
+			IssuePoint(hd, x, y, s2, t, s2, s2);
+			IssuePoint(hd, x, y, s2, t, 0, 0);
+			IssuePoint(hd, x, y, s2, t, s2, 0);
+			IssuePoint(hd, x, y, s2, t, s, 0);
+			IssuePoint(hd, x, y, s2, t, s, s2);
+			IssuePoint(hd, x, y, s2, t, s, s);
+			IssuePoint(hd, x, y, s2, t, s2, s);
+			IssuePoint(hd, x, y, s2, t, 0, s);
+			IssuePoint(hd, x, y, s2, t, 0, s2);
+			IssuePoint(hd, x, y, s2, t, 0, 0);
+		 glEnd();
+	  }
+	  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	  glPopAttrib();
+	  if (! WasAboveWater)
+		 rci.GLStates->InvertGLFrontFace();
+	  WaterPolyCount = HeightDatas->Count*8;
+	}
+	while (MaterialLibrary->UnApplyMaterial(rci));
+  }
+}
 //---------------------------------------------------------------------------
 
