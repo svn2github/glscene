@@ -15,6 +15,8 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
@@ -131,10 +133,12 @@ object Form1: TForm1
     object HTFPS: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BFSmall
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTHelp: TGLHUDText
       BitmapFont = BFLarge
+      Rotation = 0.000000000000000000
     end
   end
   object Timer1: TTimer
@@ -152,17 +156,18 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'detail'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'detail.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {00008042000080420000804200000000}
       end
       item
         Name = 'water'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = '035eau.jpg'
@@ -170,16 +175,15 @@ object Form1: TForm1
         Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'waterenv'
       end
       item
         Name = 'wake'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.Image.PictureFileName = 'wake.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 56
     Top = 56

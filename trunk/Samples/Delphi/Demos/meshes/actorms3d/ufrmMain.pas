@@ -1,43 +1,14 @@
 unit ufrmMain;
 
-{: This demo shows how easy it is to use milkshape animations in GLScene. The
-    animations are courtesy of Carnegie-Mellon's motion capture project. <p>
-
-    Animations also make use of MS3D's weighted vertexes. This was really needed as
-    it makes animations much more realistic, as you will see.
-
-    The demo also shows the use of double sided textures (her hair), specular lighting,
-    and transparency. To make a texture doublesided, just give it a tiny bit of transparency
-    in Milkshape. This will cause the loader to turn off backface culling for any group that
-    uses that material. <br>
-
-    I have also utilized one of Yar's shader demos modified a little so the spotlight
-    will always follow the actor during the animation sequence.<br>
-
-    Model was made with MS3D, UVMapping and texturing were done with Paintshop and UVMapper Pro
-
-    Note on the animations: There is a flaw in the MakeSkeletalTranslationStatic routine if you
-    want to stop all root node translations. I'll be adding an overloaded method in the real soon.
-    For now,  if you do not want root node transformations (i.e. you want her to stay in one spot)
-    uncomment the line: //pos:=ms3d_joints^[i].Base.Position.V; where the animations are loaded
-    in GLFileMS3D.<br>
-
-    TL
-
-}
-
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Controls, Forms,
   Dialogs, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses, GLScene,
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,
-    GLFileMS3D,
-  GLMaterial, StdCtrls, ExtCtrls, GLCameraController, GLGraphics, TGA,
-  ApplicationFileIO, GLRenderContextInfo,
-  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane,
-    VectorGeometry,
-  GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState,
+  GLFileMS3D, GLMaterial, StdCtrls, ExtCtrls, GLCameraController, GLGraphics, TGA,
+  GLRenderContextInfo,  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane,
+  VectorGeometry,  GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState,
   GLSArchiveManager;
 
 type
@@ -75,8 +46,6 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
-    procedure GLFrameBufferBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure GLFrameBufferAfterRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -85,6 +54,10 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure aniBoxSelect(Sender: TObject);
     procedure Actor1EndFrameReached(Sender: TObject);
+    procedure GLFrameBufferAfterRender(Sender: TObject;
+      var rci: TRenderContextInfo);
+    procedure GLFrameBufferBeforeRender(Sender: TObject;
+      var rci: TRenderContextInfo);
   private
     FAppPath: string;
     procedure SetAppPath(const Value: string);
@@ -114,7 +87,8 @@ implementation
 
 uses
   OpenGLTokens, GLContext,
-  GLFileZLIB, GLCompositeImage, GLFileJPEG, GLFilePNG;
+  GLFileZLIB, GLCompositeImage,
+  GLFileJPEG, GLFilePNG;
 
 {$R *.dfm}
 
@@ -278,10 +252,8 @@ begin
 
   FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5),
     VectorMake(0.5, 0.5, 0.5));
-  GLSLShader1.VertexProgram.LoadFromFile(
-    'shadowmap_vp.glsl');
-  GLSLShader1.FragmentProgram.LoadFromFile(
-    'shadowmap_fp.glsl');
+  GLSLShader1.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
+  GLSLShader1.FragmentProgram.LoadFromFile('shadowmap_fp.glsl');
   GLSLShader1.Enabled := true;
 end;
 
@@ -323,12 +295,14 @@ begin
   FEyeToLightMatrix := MatrixMultiply(FEyeToLightMatrix, FBiasMatrix);
 end;
 
-procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject;
+  var rci: TRenderContextInfo);
 begin
   CurrentGLContext.GLStates.Disable(stPolygonOffsetFill);
 end;
 
-procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject;
+  var rci: TRenderContextInfo);
 begin
   with CurrentGLContext.PipelineTransformation do
   begin

@@ -26,13 +26,7 @@ void TForm1::ClickWater(int x, int y)
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  String SubStr = "Samples";
-  int I = MediaPath.Pos(SubStr);
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	SetCurrentDir(MediaPath+"Media\\");
-  }
+  SetGLSceneMediaDir();
   // Load the cube map which is used both for environment and as reflection texture
   TGLTexture *t = GLMaterialLibrary1->Materials->Items[0]->Material->Texture;
   t->ImageClassName = __classid(TGLCubeMapImage)->ClassName();

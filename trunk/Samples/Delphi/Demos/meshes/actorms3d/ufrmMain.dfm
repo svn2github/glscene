@@ -1,9 +1,9 @@
 object frmMain: TfrmMain
   Left = 332
   Top = 110
-  Width = 1154
-  Height = 859
-  Caption = 'MS3D Animation Demo'
+  Caption = 'Actor MS3D Animation'
+  ClientHeight = 736
+  ClientWidth = 1028
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,7 @@ object frmMain: TfrmMain
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
@@ -19,21 +20,21 @@ object frmMain: TfrmMain
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 1138
-    Height = 756
+    Width = 1028
+    Height = 671
     Camera = GLCamera1
     Buffer.BackgroundColor = 3618615
     Buffer.AmbientColor.Color = {0000803F0000803F0000803F0000803F}
     Buffer.AntiAliasing = aa4xHQ
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 144.774841308593800000
+    FieldOfView = 140.638275146484400000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 1138
+    Width = 1028
     Height = 65
     Align = alTop
     TabOrder = 1
@@ -70,7 +71,6 @@ object frmMain: TfrmMain
       Width = 177
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 3
       OnSelect = aniBoxSelect
       Items.Strings = (
@@ -93,7 +93,7 @@ object frmMain: TfrmMain
     end
   end
   object GLScene1: TGLScene
-    Left = 20
+    Left = 28
     Top = 84
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -181,7 +181,7 @@ object frmMain: TfrmMain
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 84
+    Left = 108
     Top = 84
   end
   object MatLib: TGLMaterialLibrary
@@ -249,15 +249,15 @@ object frmMain: TfrmMain
         Material.Texture.Image.Depth = 0
         Material.Texture.Disabled = False
       end>
-    Left = 20
-    Top = 132
+    Left = 188
+    Top = 84
   end
   object GLSLShader1: TGLSLShader
     Enabled = False
     OnApply = GLSLShader1Apply
     OnInitialize = GLSLShader1Initialize
-    Left = 20
-    Top = 180
+    Left = 28
+    Top = 148
   end
   object GLNavigation: TGLSimpleNavigation
     Form = Owner
@@ -277,22 +277,22 @@ object frmMain: TfrmMain
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 88
-    Top = 184
+    Left = 104
+    Top = 152
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 88
-    Top = 132
+    Left = 264
+    Top = 84
   end
   object GLSArchiveManager1: TGLSArchiveManager
     Archives = <
       item
         Name = 'LibArchive'
       end>
-    Left = 24
+    Left = 48
     Top = 224
   end
 end

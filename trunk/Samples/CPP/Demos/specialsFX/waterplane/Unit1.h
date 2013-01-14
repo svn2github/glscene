@@ -21,6 +21,7 @@
 #include "GLWaterPlane.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLObjects.hpp"
+#include "GLUtils.hpp"
 
 #pragma hdrstop
 

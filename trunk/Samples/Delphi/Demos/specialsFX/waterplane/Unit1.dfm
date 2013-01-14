@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 169
   Top = 106
-  Width = 544
-  Height = 375
-  Caption = 'Form1'
+  Caption = 'Water Plane'
+  ClientHeight = 405
+  ClientWidth = 556
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,26 +11,26 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 528
-    Height = 337
+    Width = 556
+    Height = 405
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FaceCulling = False
-    FieldOfView = 159.809509277343800000
+    FieldOfView = 163.146057128906300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
-    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 24
-    Top = 24
+    Left = 16
+    Top = 16
     object GLSphere1: TGLSphere
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'CubeMap'
@@ -57,11 +57,11 @@ object Form1: TForm1
       Scale.Coordinates = {1F85EB3D1F85EB3D0000003F00000000}
       Up.Coordinates = {2FBD3B3302000033000080BF00000000}
       XSamplingScale.Min = -63.000000000000000000
-      XSamplingScale.Max = 63.000000000000000000
-      XSamplingScale.Step = 2.000000000000000000
+      XSamplingScale.max = 63.000000000000000000
+      XSamplingScale.step = 2.000000000000000000
       YSamplingScale.Min = -63.000000000000000000
-      YSamplingScale.Max = 63.000000000000000000
-      YSamplingScale.Step = 2.000000000000000000
+      YSamplingScale.max = 63.000000000000000000
+      YSamplingScale.step = 2.000000000000000000
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLWaterPlane1: TGLWaterPlane
@@ -91,18 +91,14 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 72
-    Top = 24
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 24
-    Top = 64
+    Left = 80
+    Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'CubeMap'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000003F}
         Material.MaterialOptions = [moNoLighting]
@@ -110,16 +106,35 @@ object Form1: TForm1
         Material.Texture.TextureWrap = twNone
         Material.Texture.MappingMode = tmmCubeMapReflection
         Material.Texture.Disabled = False
-        Tag = 0
         Shader = GLUserShader1
       end>
-    Left = 120
-    Top = 24
+    Left = 368
+    Top = 16
   end
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
     OnDoUnApply = GLUserShader1DoUnApply
-    Left = 120
-    Top = 64
+    Left = 272
+    Top = 16
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Water Plane - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 176
+    Top = 16
   end
 end

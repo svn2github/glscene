@@ -45,6 +45,7 @@ uses
   VectorLists,
   GLSkydome,
   GLWin32Viewer,
+  VectorTypes,
   VectorGeometry,
   GLHeightTileFileHDS,
   GLWindowsFont,
@@ -92,15 +93,15 @@ type
     procedure GLCustomHDS1MarkDirtyEvent(const area: TRect);
     procedure GLCustomHDS1StartPreparingData(heightData: THeightData);
     procedure GLSceneViewerBeforeRender(Sender: TObject);
-    procedure TerrainRendererHeightDataPostRender(
-      var rci: TRenderContextInfo; const heightDatas: TList);
     procedure DOWakeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure DOWakeRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure TerrainRendererHeightDataPostRender(var rci: TRenderContextInfo;
+      var HeightDatas: TList);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     FullScreen: Boolean;
     CamHeight: Single;
     WaterPolyCount: Integer;
@@ -142,9 +143,17 @@ var
   i, j: Integer;
   name: string;
   libMat: TGLLibMaterial;
+  DataPath : String;
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName) + '\Data');
-
+  //DataPath in Debug or Release exe output for different platforms
+  DataPath := ExtractFilePath(ParamStr(0));
+  I := Pos(UpperCase('Archipelago'), UpperCase(DataPath));
+  if (I <> 0) then
+  begin
+    Delete(DataPath, I+12, Length(DataPath)-I);
+    DataPath := DataPath+'Data\';
+    SetCurrentDir(DataPath);
+  end;
   GLCustomHDS1.MaxPoolSize := 8 * 1024 * 1024;
   GLCustomHDS1.DefaultHeight := cWaterLevel;
 
@@ -168,7 +177,7 @@ begin
         Compression := tcStandard; // comment out to turn off texture compression
         //         FilteringQuality:=tfAnisotropic;
       end;
-      libMat.Texture2Name := 'detail';
+      libMat.Texture2Name := DataPath + 'detail';
     end;
 
   // Initial camera height offset (controled with pageUp/pageDown)
@@ -278,7 +287,7 @@ begin
     Y := terrainHeight + CamHeight;
   end;
   // adjust fog distance/color for air/water
-  if (GLCamera.AbsolutePosition[1] > surfaceHeight) or (not WaterPlane) then
+  if (GLCamera.AbsolutePosition.V[1] > surfaceHeight) or (not WaterPlane) then
   begin
     if not WasAboveWater then
     begin
@@ -325,13 +334,98 @@ begin
   end;
   // rock the sailboat
   sbp := TerrainRenderer.AbsoluteToLocal(FFSailBoat.AbsolutePosition);
-  alpha := WaterPhase(sbp[0] + TerrainRenderer.TileSize * 0.5,
-    sbp[1] + TerrainRenderer.TileSize * 0.5);
+  alpha := WaterPhase(sbp.V[0] + TerrainRenderer.TileSize * 0.5,
+    sbp.V[1] + TerrainRenderer.TileSize * 0.5);
   FFSailBoat.Position.Y := (cWaterLevel + Sin(alpha) * cWaveAmplitude) * (TerrainRenderer.Scale.Z / 128)
     - 1.5;
   f := cWaveAmplitude * 0.01;
   FFSailBoat.Up.SetVector(Cos(alpha) * 0.02 * f, 1, (Sin(alpha) * 0.02 - 0.005) * f);
   FFSailBoat.Move(deltaTime * 2);
+end;
+
+procedure TForm1.TerrainRendererHeightDataPostRender(
+  var rci: TRenderContextInfo; var HeightDatas: TList);
+var
+  i, x, y, s, s2: Integer;
+  t: Single;
+  hd: THeightData;
+const
+  r = 0.75;
+  g = 0.75;
+  b = 1;
+
+  procedure IssuePoint(rx, ry: Integer);
+  var
+    px, py: Single;
+    alpha, colorRatio, ca, sa: Single;
+  begin
+    px := x + rx + s2;
+    py := y + ry + s2;
+    if hd.DataState = hdsNone then
+    begin
+      alpha := 1;
+    end
+    else
+    begin
+      alpha := (cWaterLevel - hd.SmallIntHeight(rx, ry)) * (1 / cWaterOpaqueDepth);
+      alpha := ClampValue(alpha, 0.5, 1);
+    end;
+    SinCos(WaterPhase(px, py), sa, ca);
+    colorRatio := 1 - alpha * 0.1;
+    GL.Color4f(r * colorRatio, g * colorRatio, b, alpha);
+    GL.TexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
+    GL.Vertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
+  end;
+
+begin
+  if not WaterPlane then
+    Exit;
+  t := GLCadencer.CurrentTime;
+  MaterialLibrary.ApplyMaterial('water', rci);
+  repeat
+    with rci.GLStates do
+    begin
+      if not WasAboveWater then
+        InvertGLFrontFace;
+      Disable(stLighting);
+      Disable(stNormalize);
+      SetStencilFunc(cfAlways, 1, 255);
+      StencilWriteMask := 255;
+      Enable(stStencilTest);
+      SetStencilOp(soKeep, soKeep, soReplace);
+
+      GL.Normal3f(0, 0, 1);
+
+      for i := 0 to heightDatas.Count - 1 do
+      begin
+        hd := THeightData(heightDatas.List[i]);
+        if (hd.DataState = hdsReady) and (hd.HeightMin > cWaterLevel) then
+          continue;
+        x := hd.XLeft;
+        y := hd.YTop;
+        s := hd.Size - 1;
+        s2 := s div 2;
+        GL.Begin_(GL_TRIANGLE_FAN);
+        IssuePoint(s2, s2);
+        IssuePoint(0, 0);
+        IssuePoint(s2, 0);
+        IssuePoint(s, 0);
+        IssuePoint(s, s2);
+        IssuePoint(s, s);
+        IssuePoint(s2, s);
+        IssuePoint(0, s);
+        IssuePoint(0, s2);
+        IssuePoint(0, 0);
+        GL.End_;
+      end;
+      SetStencilOp(soKeep, soKeep, soKeep);
+      Disable(stStencilTest);
+    end;
+
+    if not WasAboveWater then
+      rci.GLStates.InvertGLFrontFace;
+    WaterPolyCount := heightDatas.Count * 8;
+  until not MaterialLibrary.UnApplyMaterial(rci);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
@@ -456,91 +550,6 @@ begin
   Result := (cWaterLevel + Sin(alpha) * cWaveAmplitude) * (TerrainRenderer.Scale.Z * (1 / 128));
 end;
 
-procedure TForm1.TerrainRendererHeightDataPostRender(
-  var rci: TRenderContextInfo; const heightDatas: TList);
-var
-  i, x, y, s, s2: Integer;
-  t: Single;
-  hd: THeightData;
-const
-  r = 0.75;
-  g = 0.75;
-  b = 1;
-
-  procedure IssuePoint(rx, ry: Integer);
-  var
-    px, py: Single;
-    alpha, colorRatio, ca, sa: Single;
-  begin
-    px := x + rx + s2;
-    py := y + ry + s2;
-    if hd.DataState = hdsNone then
-    begin
-      alpha := 1;
-    end
-    else
-    begin
-      alpha := (cWaterLevel - hd.SmallIntHeight(rx, ry)) * (1 / cWaterOpaqueDepth);
-      alpha := ClampValue(alpha, 0.5, 1);
-    end;
-    SinCos(WaterPhase(px, py), sa, ca);
-    colorRatio := 1 - alpha * 0.1;
-    GL.Color4f(r * colorRatio, g * colorRatio, b, alpha);
-    GL.TexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
-    GL.Vertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
-  end;
-
-begin
-  if not WaterPlane then
-    Exit;
-  t := GLCadencer.CurrentTime;
-  MaterialLibrary.ApplyMaterial('water', rci);
-  repeat
-    with rci.GLStates do
-    begin
-      if not WasAboveWater then
-        InvertGLFrontFace;
-      Disable(stLighting);
-      Disable(stNormalize);
-      SetStencilFunc(cfAlways, 1, 255);
-      StencilWriteMask := 255;
-      Enable(stStencilTest);
-      SetStencilOp(soKeep, soKeep, soReplace);
-
-      GL.Normal3f(0, 0, 1);
-
-      for i := 0 to heightDatas.Count - 1 do
-      begin
-        hd := THeightData(heightDatas.List[i]);
-        if (hd.DataState = hdsReady) and (hd.HeightMin > cWaterLevel) then
-          continue;
-        x := hd.XLeft;
-        y := hd.YTop;
-        s := hd.Size - 1;
-        s2 := s div 2;
-        GL.Begin_(GL_TRIANGLE_FAN);
-        IssuePoint(s2, s2);
-        IssuePoint(0, 0);
-        IssuePoint(s2, 0);
-        IssuePoint(s, 0);
-        IssuePoint(s, s2);
-        IssuePoint(s, s);
-        IssuePoint(s2, s);
-        IssuePoint(0, s);
-        IssuePoint(0, s2);
-        IssuePoint(0, 0);
-        GL.End_;
-      end;
-      SetStencilOp(soKeep, soKeep, soKeep);
-      Disable(stStencilTest);
-    end;
-
-    if not WasAboveWater then
-      rci.GLStates.InvertGLFrontFace;
-    WaterPolyCount := heightDatas.Count * 8;
-  until not MaterialLibrary.UnApplyMaterial(rci);
-end;
-
 procedure TForm1.DOWakeProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
@@ -636,7 +645,7 @@ begin
         end
         else
           GL.TexCoord2f(1, WakeTime[i div 2]);
-        GL.Vertex3f(p[0], WaterHeight(sbp[0], sbp[1]), p[2]);
+        GL.Vertex3f(p.V[0], WaterHeight(sbp.V[0], sbp.V[1]), p.V[2]);
       end;
       GL.End_;
 

@@ -1,6 +1,3 @@
-{: WaterPlane demo
-
-}
 unit Unit1;
 
 interface
@@ -10,7 +7,8 @@ uses
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
   GLCadencer, ExtCtrls, Jpeg, GLTexture, GLUserShader, OpenGLTokens, GLContext,
   VectorGeometry, GLGraph, VectorTypes, GLState, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCoordinates, BaseClasses, GLRenderContextInfo, GLSimpleNavigation,
+  GLColor, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -19,7 +17,6 @@ type
     GLCamera1: TGLCamera;
     DCTarget: TGLDummyCube;
     GLCadencer1: TGLCadencer;
-    Timer1: TTimer;
     GLWaterPlane1: TGLWaterPlane;
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLUserShader1: TGLUserShader;
@@ -27,7 +24,7 @@ type
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLHeightField1: TGLHeightField;
     GLLightSource1: TGLLightSource;
-    procedure Timer1Timer(Sender: TObject);
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -73,10 +70,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
-
+   SetGLSceneMediaDir();
    // Load the cube map which is used both for environment and as reflection texture
-
    with GLMaterialLibrary1.Materials[0].Material.Texture do begin
       ImageClassName:=TGLCubeMapImage.ClassName;
       with Image as TGLCubeMapImage do begin
@@ -154,13 +149,6 @@ end;
 procedure TForm1.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
 begin
    reflectionToggle:=True;    // toggle for pond/water plane
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-   Caption:= GLSceneViewer1.FramesPerSecondText
-            +Format(' / %.3f ms', [GLWaterPlane1.LastIterationStepTime*1000]);
-   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

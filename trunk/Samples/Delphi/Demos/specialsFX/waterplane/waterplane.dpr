@@ -1,3 +1,6 @@
+{: WaterPlane demo
+
+}
 program waterplane;
 
 uses
