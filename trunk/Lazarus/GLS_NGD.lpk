@@ -7,7 +7,7 @@
       <Version Value="9"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\Source;..\Source\PhysicsAPIs;..\Source\DesignTime"/>
+        <OtherUnitFiles Value="..\Source"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -35,7 +35,7 @@
     </CompilerOptions>
     <Files Count="5">
       <Item1>
-        <Filename Value="..\Source\DesignTime\GLNewtonRegister.pas"/>
+        <Filename Value="..\Source\GLNewtonRegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLNewtonRegister"/>
       </Item1>
@@ -44,15 +44,15 @@
         <UnitName Value="GLNGDManager"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Source\PhysicsAPIs\delphinewton.inc"/>
+        <Filename Value="..\Source\delphinewton.inc"/>
         <Type Value="Include"/>
       </Item3>
       <Item4>
-        <Filename Value="..\Source\PhysicsAPIs\NewtonImport.pas"/>
+        <Filename Value="..\Source\NewtonImport.pas"/>
         <UnitName Value="NewtonImport"/>
       </Item4>
       <Item5>
-        <Filename Value="..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas"/>
+        <Filename Value="..\Source\NewtonImport_JointLibrary.pas"/>
         <UnitName Value="NewtonImport_JointLibrary"/>
       </Item5>
     </Files>

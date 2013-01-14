@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/PhysicsAPIs/;../Source/;../Source/Base/;../Source/DesignTime/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -31,7 +31,7 @@
     <Version Major="1" Build="3"/>
     <Files Count="9">
       <Item1>
-        <Filename Value="../Source/DesignTime/GLODERegister.pas"/>
+        <Filename Value="../Source/GLODERegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLODERegister"/>
       </Item1>
@@ -44,15 +44,15 @@
         <UnitName Value="GLODEManager"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/PhysicsAPIs/dynodegl.pas"/>
+        <Filename Value="../Source/dynodegl.pas"/>
         <UnitName Value="dynodegl"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/PhysicsAPIs/ODEImport.pas"/>
+        <Filename Value="../Source/ODEImport.pas"/>
         <UnitName Value="ODEImport"/>
       </Item5>
       <Item6>
-        <Filename Value="../Source/PhysicsAPIs/ODEGL.pas"/>
+        <Filename Value="../Source/ODEGL.pas"/>
         <UnitName Value="ODEGL"/>
       </Item6>
       <Item7>
@@ -64,7 +64,7 @@
         <UnitName Value="GLODESkeletonColliders"/>
       </Item8>
       <Item9>
-        <Filename Value="../Source/PhysicsAPIs/delphiode.inc"/>
+        <Filename Value="../Source/delphiode.inc"/>
         <Type Value="Include"/>
       </Item9>
     </Files>

@@ -6,7 +6,7 @@
       <Version Value="9"/>
       <SearchPaths>
         <IncludeFiles Value="../Source"/>
-        <OtherUnitFiles Value="../Source/SoundAPIs;../Source;../Source/Base;../Source/Platform"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -37,19 +37,19 @@
         <UnitName Value="GLSMFMOD"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/SoundAPIs/fmodpresets.pas"/>
+        <Filename Value="../Source/fmodpresets.pas"/>
         <UnitName Value="fmodpresets"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/SoundAPIs/fmodtypes.pas"/>
+        <Filename Value="../Source/fmodtypes.pas"/>
         <UnitName Value="fmodtypes"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/SoundAPIs/fmoderrors.pas"/>
+        <Filename Value="../Source/fmoderrors.pas"/>
         <UnitName Value="fmoderrors"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/SoundAPIs/fmoddyn.pas"/>
+        <Filename Value="../Source/fmoddyn.pas"/>
         <UnitName Value="fmoddyn"/>
       </Item5>
     </Files>

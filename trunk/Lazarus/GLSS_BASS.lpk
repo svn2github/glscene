@@ -6,7 +6,7 @@
       <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/soundapis/;../Source/;../Source/base/;../Source/platform/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -36,7 +36,7 @@
         <UnitName Value="GLSMBASS"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/SoundAPIs/Bass.pas"/>
+        <Filename Value="../Source/Bass.pas"/>
         <UnitName Value="Bass"/>
       </Item2>
     </Files>

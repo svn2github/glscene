@@ -287,7 +287,7 @@ var
     try
       for j:=0 to 3 do
         for i:=0 to 3 do
-          Result.Coord[i].Coord[j]:=ReadSingle;
+          Result.V[i].V[j]:=ReadSingle;
     except
       on E:Exception do begin
         Result:=IdentityHMGMatrix;
@@ -303,13 +303,13 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=StrToFloatDef(TempBuffer[1]);
-      Result.Coord[2]:=StrToFloatDef(TempBuffer[2]);
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
+      Result.V[2]:=StrToFloatDef(TempBuffer[2]);
     end else begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=ReadSingle;
-      Result.Coord[2]:=ReadSingle;
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=ReadSingle;
+      Result.V[2]:=ReadSingle;
     end;
   end;
 
@@ -321,15 +321,15 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=StrToFloatDef(TempBuffer[1]);
-      Result.Coord[2]:=StrToFloatDef(TempBuffer[2]);
-      Result.Coord[3]:=StrToFloatDef(TempBuffer[3]);
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
+      Result.V[2]:=StrToFloatDef(TempBuffer[2]);
+      Result.V[3]:=StrToFloatDef(TempBuffer[3]);
     end else begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=ReadSingle;
-      Result.Coord[2]:=ReadSingle;
-      Result.Coord[3]:=ReadSingle;
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=ReadSingle;
+      Result.V[2]:=ReadSingle;
+      Result.V[3]:=ReadSingle;
     end;
   end;
 
@@ -341,13 +341,13 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=StrToFloatDef(TempBuffer[1]);
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
     end else begin
-      Result.Coord[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.Coord[1]:=ReadSingle;
+      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
+      Result.V[1]:=ReadSingle;
     end;
-    Result.Coord[2]:=0;
+    Result.V[2]:=0;
   end;
 
   procedure ReadMeshVectors(VectorList : TAffineVectorList);

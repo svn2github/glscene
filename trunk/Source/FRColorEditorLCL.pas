@@ -109,10 +109,10 @@ end;
 //
 procedure TRColorEditor.SetEditedColor(const val : THomogeneousFltVector);
 begin
-  RedValue:=Round(val.Coord[0]*255);
-  GreenValue:=Round(val.Coord[1]*255);
-  BlueValue:=Round(val.Coord[2]*255);
-  AlphaValue:=Round(val.Coord[3]*1000);
+  RedValue:=Round(val.V[0]*255);
+  GreenValue:=Round(val.V[1]*255);
+  BlueValue:=Round(val.V[2]*255);
+  AlphaValue:=Round(val.V[3]*1000);
 
   ContentsChanged;
 end;

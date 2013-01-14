@@ -687,7 +687,7 @@ end;
 function TGLColorProperty.ColorToBorderColor(aColor: TColorVector;
   selected: boolean): TColor;
 begin
-  if (aColor.Coord[0] > 0.75) or (aColor.Coord[1] > 0.75) or (aColor.Coord[2] > 0.75) then
+  if (aColor.V[0] > 0.75) or (aColor.V[1] > 0.75) or (aColor.V[2] > 0.75) then
     Result := clBlack
   else if selected then
     Result := clWhite

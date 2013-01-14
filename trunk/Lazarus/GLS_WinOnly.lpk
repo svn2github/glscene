@@ -6,7 +6,7 @@
       <Version Value="9"/>
       <SearchPaths>
         <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/;../Source/Platform/;../Source/SoundAPIs/;../Source/Base/;../Source/DesignTime/;../Source/VideoAPIs/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -23,11 +23,11 @@
     <Version Major="1" Build="3"/>
     <Files Count="7">
       <Item1>
-        <Filename Value="../Source/Base/Joystick.pas"/>
+        <Filename Value="../Source/Joystick.pas"/>
         <UnitName Value="Joystick"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/Base/ScreenSaver.pas"/>
+        <Filename Value="../Source/ScreenSaver.pas"/>
         <UnitName Value="ScreenSaver"/>
       </Item2>
       <Item3>
@@ -39,12 +39,12 @@
         <UnitName Value="GLAVIRecorder"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/DesignTime/GLSceneRegisterWinOnlyLCL.pas"/>
+        <Filename Value="../Source/GLSceneRegisterWinOnlyLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterWinOnlyLCL"/>
       </Item5>
       <Item6>
-        <Filename Value="../Source/VideoAPIs/GLSVfw.pas"/>
+        <Filename Value="../Source/GLSVfw.pas"/>
         <UnitName Value="GLSVfw"/>
       </Item6>
       <Item7>
