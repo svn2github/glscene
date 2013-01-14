@@ -8,9 +8,12 @@
   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
   <li>10/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
   <li>05/04/10 - Yar - Added GLSceneMatrixToODER (thanks Vovik)
-  <li>22/11/09 - DaStr - Improved Unix compatibility
-                         (thanks Predator) (BugtrackerID = 2893580)
+  <li>22/11/09 - DaStr - Improved Unix compatibility (thanks Predator) 
+                 (BugtrackerID = 2893580)
+  <li>08/12/08 - PR dBodySetMass no longer accepts zero mass. check added
   <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
+  <li>11/09/07 - Mrqzzz - added reference to odeimport
+  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
   <li>03/02/03 - EG - Fixed CopyPosFromGeomToGL
   <li>11/02/03 - MF - Added a couple of vector functions for copying between
     ODE formats and GLScene formats
@@ -51,8 +54,7 @@ procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3; pos: TdVector3);
 overload;
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
 overload;
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:
-  TdVector3); overload;
+procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:  TdVector3); overload;
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
 
 // Converting between ODE and GLScene formats
@@ -77,19 +79,15 @@ function dVector3Length(R: PdVector3): single; overload;
 
 function dBodyToBodyDistance(Body1, Body2: PdxBody): TdReal;
 
-procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject:
-  TGLBaseSceneObject);
-procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom:
-  PdxGeom);
+procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject:  TGLBaseSceneObject);
+procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom: PdxGeom);
 procedure PositionSceneObjectForGeom(Geom: PdxGeom);
 
 procedure CopyCubeSizeFromBox(Cube: TGLCube; Geom: PdxGeom);
-procedure CopyBodyFromCube(Body: PdxBody; var Geom: PdxGeom; Cube: TGLCube;
-  Space: PdxSpace);
+procedure CopyBodyFromCube(Body: PdxBody; var Geom: PdxGeom; Cube: TGLCube;  Space: PdxSpace);
 
 function CreateGeomFromCube(Cube: TGLCube; Space: PdxSpace): PdxGeom;
-function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;
-  Space: PdxSpace): PdxBody;
+function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;  Space: PdxSpace): PdxBody;
 
 {: Note that this method requires you to manually deallocate vertices and
   indices when you're done with the trimesh }
@@ -114,8 +112,7 @@ implementation
 
 uses SysUtils;
 
-procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos:
-  TdVector3); overload;
+procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos: TdVector3); overload;
 begin
   m.V[0].V[0] := r[0][0];
   m.V[0].V[1] := r[0][1];
@@ -383,8 +380,7 @@ begin
   result := VectorNormalize(m.V[2]);
 end;
 
-procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom:
-  PdxGeom);
+procedure PositionSceneObject(GLBaseSceneObject: TGLBaseSceneObject; Geom: PdxGeom);
 var
   Scale: TAffineVector;
 begin
@@ -404,8 +400,7 @@ begin
   Cube.CubeDepth := Sides[2]; // 2
 end;
 
-procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject:
-  TGLBaseSceneObject);
+procedure CopyPosFromGeomToGL(Geom: PdxGeom; GLBaseSceneObject: TGLBaseSceneObject);
 var
   v: TVector;
   m: TMatrix;
@@ -447,8 +442,7 @@ begin
   result := Geom;
 end;
 
-function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;
-  Space: PdxSpace): PdxBody;
+function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld; Space: PdxSpace): PdxBody;
 var
   Body: PdxBody;
 begin

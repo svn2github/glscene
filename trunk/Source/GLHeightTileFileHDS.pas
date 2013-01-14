@@ -51,7 +51,7 @@ type
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure StartPreparingData(heightData : THeightData); override;
+         procedure StartPreparingData(HeightData : THeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
          function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
@@ -161,7 +161,7 @@ end;
 
 // StartPreparingData
 //
-procedure TGLHeightTileFileHDS.StartPreparingData(heightData : THeightData);
+procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : THeightData);
 var
    oldType : THeightDataType;
    htfTile : PHeightTile;
@@ -174,13 +174,13 @@ var
 begin
    // access htf data
    if OpenHTF=nil then begin
-     heightData.DataState:=hdsNone;
+     HeightData.DataState:=hdsNone;
      Exit;
-   end else Assert(FHTF.TileSize=heightData.Size,
-                   'HTF TileSize and HeightData size don''t match.('+IntToStr(FHTF.TileSize)+' and '+Inttostr(heightData.Size)+')');
+   end else Assert(FHTF.TileSize=HeightData.Size,
+                   'HTF TileSize and HeightData size don''t match.('+IntToStr(FHTF.TileSize)+' and '+Inttostr(HeightData.Size)+')');
    heightdata.DataState := hdsPreparing;
-   // retrieve data and place it in the heightData
-   with heightData do begin
+   // retrieve data and place it in the HeightData
+   with HeightData do begin
       if Inverted then YPos:=YTop
                   else YPos:=FHTF.SizeY-YTop-size+1;
       if InfiniteWrap then begin
@@ -207,14 +207,14 @@ begin
              inY:=y*HeightData.Size;
              outY:=((size-1)-y)*HeightData.Size;
              PLineIn :=@htfTile.data[inY];
-             PLineOut:=@heightData.SmallIntData[outY];
+             PLineOut:=@HeightData.SmallIntData[outY];
              Move(PLineIn^,PLineOut^,LineDataSize);
            end;
          end;
          //---Move(htfTile.data[0], SmallIntData^, DataSize);---
          if oldType<>hdtSmallInt then DataType:=oldType;
 
-         TextureCoordinates(heightData);
+         TextureCoordinates(HeightData);
          inherited;
          HeightMin:=htfTileInfo.min;
          HeightMax:=htfTileInfo.max;

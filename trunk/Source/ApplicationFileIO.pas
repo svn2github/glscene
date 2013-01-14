@@ -64,11 +64,7 @@ type
 
   // TAFIOFileStreamEvent
   //
-  {$IFDEF GLS_CPPB}
    TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
-  {$ELSE}
-   TAFIOFileStreamEvent = function (const fileName : String; mode : Word) : TStream of object;
-  {$ENDIF}
 
   // TAFIOFileStreamExistsEvent
   //
@@ -83,20 +79,20 @@ type
        the last one created will be the active one. }
   TApplicationFileIO = class(TComponent)
   private
-    { Private Declarations }
+    { Private declarations }
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
 
   protected
-    { Protected Declarations }
+    { Protected declarations }
 
   public
-    { Public Declarations }
+    { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    { Published declarations }
       {: Event that allows you to specify a stream for the file.<p>
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
@@ -206,11 +202,7 @@ begin
   begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
-         {$IFDEF GLS_CPPB}
          vAFIO.FOnFileStream(fileName, mode, Result);
-         {$ELSE}
-         Result:=vAFIO.FOnFileStream(fileName, mode);
-         {$ENDIF}
       if not Assigned(Result) then begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
             Result:=TFileStream.Create(fileName, mode)

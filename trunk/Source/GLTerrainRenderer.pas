@@ -6,6 +6,7 @@
    GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>15/08/10 - Yar - Return missing part of code in BuildList
       <li>20/05/10 - Yar - Fixes for Linux x64
@@ -60,10 +61,8 @@ const
 type
 
   TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
-  TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;
-    const patches: TList) of object;
-  THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo;
-    const heightDatas: TList) of object;
+  TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;  const patches: TList) of object;
+  THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo; var HeightDatas: TList) of object;
   TMaxCLODTrianglesReachedEvent = procedure(var rci: TRenderContextInfo) of object;
 
   TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
@@ -87,11 +86,11 @@ type
   private
     { Private Declarations }
     FHeightDataSource: THeightDataSource;
-    FTileSize: integer;
+    FTileSize: Integer;
     FQualityDistance, FinvTileSize: single;
-    FLastTriangleCount: integer;
-    FTilesPerTexture: single;
-    FMaxCLODTriangles, FCLODPrecision: integer;
+    FLastTriangleCount: Integer;
+    FTilesPerTexture: Single;
+    FMaxCLODTriangles, FCLODPrecision: Integer;
     FBufferVertices: TAffineVectorList;
     FBufferTexPoints: TTexPointList;
     FBufferVertexIndices: TIntegerList;
@@ -102,7 +101,7 @@ type
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
 
     FQualityStyle: TTerrainHighResStyle;
-    FOcclusionFrameSkip: integer;
+    FOcclusionFrameSkip: Integer;
     FOcclusionTesselate: TTerrainOcclusionTesselate;
 
   protected
@@ -114,16 +113,16 @@ type
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
       canAllocate: boolean = True): THeightData; overload;
-    function HashedTile(const xLeft, yTop: integer;
+    function HashedTile(const xLeft, yTop: Integer;
       canAllocate: boolean = True): THeightData; overload;
 
     procedure SetHeightDataSource(const val: THeightDataSource);
     procedure SetTileSize(const val: integer);
-    procedure SetTilesPerTexture(const val: single);
-    procedure SetCLODPrecision(const val: integer);
+    procedure SetTilesPerTexture(const val: Single);
+    procedure SetCLODPrecision(const val: Integer);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
     procedure SetQualityStyle(const val: TTerrainHighResStyle);
-    procedure SetOcclusionFrameSkip(val: integer);
+    procedure SetOcclusionFrameSkip(val: Integer);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure DestroyHandle; override;

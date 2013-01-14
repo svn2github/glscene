@@ -10,3 +10,9 @@ del *.mps /s
 del *.rst /s
 del *.s /s
 del *.a /s
+echo **************************************
+echo   DELETE AUTO-GENERATED CPP FILES 
+echo **************************************
+rem del *.hpp
+rem del *.bpi
+rem del *.lib
