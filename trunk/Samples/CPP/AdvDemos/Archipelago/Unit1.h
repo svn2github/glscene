@@ -32,15 +32,15 @@
 #include "GLState.hpp"
 #include "GLTextureFormat.hpp"
 #include "OpenGL1x.hpp"
-#include "JPEG.hpp"
 #include "GLFileJPEG.hpp"
+#include "JPEG.hpp"
 
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
-	TGLSceneViewer *GLSceneViewer;
+	TGLSceneViewer *GLSceneViewer1;
 	TPanel *PAProgress;
 	TLabel *Label1;
 	TProgressBar *ProgressBar;
@@ -63,6 +63,7 @@ __published:	// IDE-managed Components
 	TGLMemoryViewer *GLMemoryViewer1;
 	TGLMaterialLibrary *MLSailBoat;
 	TGLWindowsBitmapFont *BFLarge;
+	TGLHUDText *GLHUDText1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencerProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall Timer1Timer(TObject *Sender);

@@ -52,9 +52,6 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	DataPath += "\\Data";
 	SetCurrentDir(DataPath);
   }
-
-//  SetCurrentDir(ExtractFilePath(Application->ExeName)+"\\Data");
-
   GLCustomHDS1->MaxPoolSize = 8*1024*1024;
   GLCustomHDS1->DefaultHeight = cWaterLevel;
 
@@ -75,8 +72,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	  libMat->Material->Texture->Compression = tcStandard; // comment out to turn off texture compression
 	  //         FilteringQuality = tfAnisotropic;
 
-//	  libMat->Texture2Name = DataPath+"detail";
-	  libMat = MaterialLibrary->LibMaterialByName("\\detail");
+	  libMat->Texture2Name = DataPath+"detail";
 	}
 
   // Initial camera height offset (controled with pageUp/pageDown)
@@ -101,18 +97,18 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   DCCamera->Turn(200);
 
   // Help text
-  HTHelp->Text =  AnsiString("GLScene Archipelago Demo\r"
-              "* : Increase CLOD precision\r"
-              "/ : decrease CLOD precision\r"
-              "W : wireframe on/off\r"
-              "S : sea surface on/off\r"
-              "B : sailboat visible on/off\r"
-              "Num4 & Num6 : steer the sailboat\r"
-              "F1: show this help");
+  HTHelp->Text = WideString("GLScene Archipelago Demo\r\
+			  * : Increase CLOD precision\r\
+			  / : decrease CLOD precision\r\
+			  W : wireframe on/off\r\
+			  S : sea surface on/off\r\
+			  B : sailboat visible on/off\r\
+			  Num4 & Num6 : steer the sailboat\r\
+			  F1: show this help");
   HTHelp->Position->SetPoint(Screen->Width/2 - 100,
 							 Screen->Height/2 - 150, 0);
   HelpOpacity = 4;
-  GLSceneViewer->Cursor = crNone;
+  GLSceneViewer1->Cursor = crNone;
 
   WakeVertices = NULL;
   WakeStretch = NULL;
@@ -123,7 +119,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void TForm1::ResetMousePos(void)
 {
-   if (GLSceneViewer->Cursor == crNone)
+   if (GLSceneViewer1->Cursor == crNone)
 	  SetCursorPos(Screen->Width/2, Screen->Height/2);
 }
 
@@ -191,11 +187,11 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
     if (! WasAboveWater) {
        SkyDome->Visible = true;
 
-      GLSceneViewer->Buffer->FogEnvironment->FogColor->Color = clrWhite;
-      GLSceneViewer->Buffer->FogEnvironment->FogEnd = 1000;
-      GLSceneViewer->Buffer->FogEnvironment->FogStart = 500;
+      GLSceneViewer1->Buffer->FogEnvironment->FogColor->Color = clrWhite;
+	  GLSceneViewer1->Buffer->FogEnvironment->FogEnd = 1000;
+      GLSceneViewer1->Buffer->FogEnvironment->FogStart = 500;
 
-       GLSceneViewer->Buffer->BackgroundColor = clWhite;
+       GLSceneViewer1->Buffer->BackgroundColor = clWhite;
        GLCamera->DepthOfView = 1000;
 	   WasAboveWater = true;
     }
@@ -204,11 +200,11 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
     if (WasAboveWater) {
        SkyDome->Visible = false;
 
-	  GLSceneViewer->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
-      GLSceneViewer->Buffer->FogEnvironment->FogEnd = 100;
-      GLSceneViewer->Buffer->FogEnvironment->FogStart = 0;
+	  GLSceneViewer1->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
+      GLSceneViewer1->Buffer->FogEnvironment->FogEnd = 100;
+      GLSceneViewer1->Buffer->FogEnvironment->FogStart = 0;
 
-       GLSceneViewer->Buffer->BackgroundColor = clNavy;
+       GLSceneViewer1->Buffer->BackgroundColor = clNavy;
        GLCamera->DepthOfView = 100;
        WasAboveWater = false;
 	}
@@ -236,10 +232,10 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
   HTFPS->Text = Format("%.1f FPS - %d - %d",
-                    ARRAYOFCONST((GLSceneViewer->FramesPerSecond(),
+                    ARRAYOFCONST((GLSceneViewer1->FramesPerSecond(),
                      TerrainRenderer->LastTriangleCount,
                      WaterPolyCount)));
-  GLSceneViewer->ResetPerformanceMonitor();
+  GLSceneViewer1->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
@@ -250,7 +246,7 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
   switch (Key)
   {
     case 'w' :
-    case 'W' : {
+	case 'W' : {
       if (MaterialLibrary->Materials->Items[0]->Material->PolygonMode == pmLines)
          pm = pmFill;
       else pm = pmLines;
@@ -302,13 +298,13 @@ void __fastcall TForm1::GLCustomHDS1StartPreparingData(THeightData *heightData)
        heightData->TextureCoordinatesMode = tcmLocal;
 	   n = ((heightData->XLeft/32) & 3);
 	   offset.S = n*0.25;
-       n = ((heightData->YTop/32) & 3);
+	   n = ((heightData->YTop/32) & 3);
        offset.T = -n*0.25;
        heightData->TextureCoordinatesOffset = offset;
        heightData->TextureCoordinatesScale = TexPointMake(0.25, 0.25);
 	   heightData->DataType = hdtSmallInt;
        htfHD->DataType = hdtSmallInt;
-       heightData->Allocate(hdtSmallInt);
+	   heightData->Allocate(hdtSmallInt);
        Move(htfHD->SmallIntData, heightData->SmallIntData, htfHD->DataSize);
        heightData->DataState = hdsReady;
        heightData->HeightMin = htfHD->HeightMin;
@@ -338,7 +334,7 @@ void __fastcall TForm1::GLSceneViewerBeforeRender(TObject *Sender)
   {
 	ResetMousePos();
 	PAProgress->Visible = false;
-	GLSceneViewer->BeforeRender = NULL;
+	GLSceneViewer1->BeforeRender = NULL;
   }
 }
 
@@ -381,111 +377,7 @@ void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx, 
   glTexCoord2f(px*0.01+0.002*sa, py*0.01+0.0022*ca-t*0.002);
   glVertex3f(px, py, cWaterLevel+cWaveAmplitude*sa);
 }
-//---------------------------------------------------------------------------
 
-
-void __fastcall TForm1::DOWakeProgress(TObject *Sender,
-	const double deltaTime, const double newTime)
-
-{
-  int i;
-  Vectorgeometry::TVector sbp, sbr;
-
-  if (WakeVertices == NULL)
-  {
-	WakeVertices = new TAffineVectorList();
-	WakeStretch = new TAffineVectorList();
-	WakeTime = new TSingleList();
-  }
-
-   // enlarge current vertices
-  i = 0;
-  while (i<WakeVertices->Count)
-  {
-	 WakeVertices->CombineItem(i,   WakeStretch->List[i >> 1], -0.45*deltaTime);
-	 WakeVertices->CombineItem(i+1, WakeStretch->List[i >> 1],  0.45*deltaTime);
-	 i += 2;
-  }
-
-  // Progress wake
-  if (newTime>DOWake->TagFloat) {
-	if (DOWake->TagFloat == 0) {
-	   DOWake->TagFloat = newTime+0.2;
-	}
-	else
-	{
-	  DOWake->TagFloat = newTime+1;
-	  sbp = VectorCombine(FFSailBoat->AbsolutePosition, FFSailBoat->AbsoluteDirection, 1, 3);
-	  sbr = FFSailBoat->AbsoluteRight();
-      // add new
-      WakeVertices->Add(VectorCombine(sbp, sbr, 1, -2));
-      WakeVertices->Add(VectorCombine(sbp, sbr, 1,  2));
-      WakeStretch->Add(VectorScale(sbr, (0.95+Random()*0.1)));
-      WakeTime->Add(newTime*0.1);
-      if (WakeVertices->Count >= 80) {
-         WakeVertices->Delete(0);
-         WakeVertices->Delete(0);
-         WakeStretch->Delete(0);
-         WakeTime->Delete(0);
-      }
-	}
-  }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
-{
-  int i, n;
-  TVector3f p;
-  Vectorgeometry::TVector sbp;
-  float c;
-
-  if ((WakeVertices) &&
-	  (!((! FFSailBoat->Visible) || (! WaterPlane))))
-  {
-	MaterialLibrary->ApplyMaterial("wake", rci);
-	do
-	{
-	  glPushAttrib(GL_ENABLE_BIT);
-
-	  glDisable(GL_LIGHTING);
-	  glDisable(GL_FOG);
-
-	  glEnable(GL_BLEND);
-	  glBlendFunc(GL_ONE, GL_ONE);
-
-	  glStencilFunc(GL_EQUAL, 1, 255);
-	  glStencilMask(255);
-	  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	  glEnable(GL_STENCIL_TEST);
-	  glDisable(GL_DEPTH_TEST);
-
-	  if (! WasAboveWater)
-		 rci.GLStates->InvertGLFrontFace();
-
-	  glBegin(GL_TRIANGLE_STRIP);
-	  n = WakeVertices->Count;
-	  for (i = 0; i<n; i++) {
-		 p.V = WakeVertices->List[i ^ 1];
-		 sbp.V = TerrainRenderer->AbsoluteToLocal(VectorMake(p,0));
-		 if ((i & 1) == 0) {
-			c = (i & 0xFFE)*0.2/n;
-			glColor3f(c, c, c);
-			glTexCoord2f(0, WakeTime->Items[i/2]);
-		 } else
-		 glTexCoord2f(1, WakeTime->Items[i/2]);
-		 glVertex3f(p.V[0], WaterHeight(sbp.V[0], sbp.V[1]), p.V[2]);
-	  }
-	  glEnd();
-
-	  if (! WasAboveWater)
-         rci.GLStates->InvertGLFrontFace();
-
-      glPopAttrib();
-	}
-	while (MaterialLibrary->UnApplyMaterial(rci));
-  }
-}
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::TerrainRendererHeightDataPostRender(TRenderContextInfo &rci,
@@ -545,4 +437,110 @@ void __fastcall TForm1::TerrainRendererHeightDataPostRender(TRenderContextInfo &
   }
 }
 //---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::DOWakeProgress(TObject *Sender,
+	const double deltaTime, const double newTime)
+
+{
+  int i;
+  Vectorgeometry::TVector sbp, sbr;
+
+  if (WakeVertices == NULL)
+  {
+	WakeVertices = new TAffineVectorList();
+	WakeStretch = new TAffineVectorList();
+	WakeTime = new TSingleList();
+  }
+
+   // enlarge current vertices
+  i = 0;
+  while (i<WakeVertices->Count)
+  {
+	 WakeVertices->CombineItem(i,   WakeStretch->Items[i >> 1], -0.45*deltaTime);
+	 WakeVertices->CombineItem(i+1, WakeStretch->Items[i >> 1],  0.45*deltaTime);
+	 i += 2;
+  }
+
+  // Progress wake
+  if (newTime>DOWake->TagFloat) {
+	if (DOWake->TagFloat == 0) {
+	   DOWake->TagFloat = newTime+0.2;
+	}
+	else
+	{
+	  DOWake->TagFloat = newTime+1;
+	  sbp = VectorCombine(FFSailBoat->AbsolutePosition, FFSailBoat->AbsoluteDirection, 1, 3);
+	  sbr = FFSailBoat->AbsoluteRight();
+      // add new
+      WakeVertices->Add(VectorCombine(sbp, sbr, 1, -2));
+      WakeVertices->Add(VectorCombine(sbp, sbr, 1,  2));
+      WakeStretch->Add(VectorScale(sbr, (0.95+Random()*0.1)));
+      WakeTime->Add(newTime*0.1);
+      if (WakeVertices->Count >= 80) {
+         WakeVertices->Delete(0);
+		 WakeVertices->Delete(0);
+         WakeStretch->Delete(0);
+         WakeTime->Delete(0);
+      }
+	}
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
+{
+  int i, n;
+  Vectortypes::TVector3f p;
+  Vectorgeometry::TVector sbp;
+  float c;
+
+  if ((WakeVertices) &&
+	  (!((! FFSailBoat->Visible) || (! WaterPlane))))
+  {
+	MaterialLibrary->ApplyMaterial("wake", rci);
+	do
+	{
+	  glPushAttrib(GL_ENABLE_BIT);
+
+	  glDisable(GL_LIGHTING);
+	  glDisable(GL_FOG);
+
+	  glEnable(GL_BLEND);
+	  glBlendFunc(GL_ONE, GL_ONE);
+
+	  glStencilFunc(GL_EQUAL, 1, 255);
+	  glStencilMask(255);
+	  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	  glEnable(GL_STENCIL_TEST);
+	  glDisable(GL_DEPTH_TEST);
+
+	  if (! WasAboveWater)
+		 rci.GLStates->InvertGLFrontFace();
+
+	  glBegin(GL_TRIANGLE_STRIP);
+	  n = WakeVertices->Count;
+	  for (i = 0; i<n; i++) {
+		 p = WakeVertices->Items[i ^ 1];
+		 sbp = TerrainRenderer->AbsoluteToLocal(VectorMake(p,0));
+		 if ((i & 1) == 0) {
+			c = (i & 0xFFE)*0.2/n;
+			glColor3f(c, c, c);
+			glTexCoord2f(0, WakeTime->Items[i/2]);
+		 } else
+		 glTexCoord2f(1, WakeTime->Items[i/2]);
+		 glVertex3f(p.V[0], WaterHeight(sbp.V[0], sbp.V[1]), p.V[2]);
+	  }
+	  glEnd();
+
+	  if (! WasAboveWater)
+		 rci.GLStates->InvertGLFrontFace();
+
+	  glPopAttrib();
+	}
+	while (MaterialLibrary->UnApplyMaterial(rci));
+  }
+}
+//---------------------------------------------------------------------------
+
 
