@@ -1,24 +1,3 @@
-{: Archipelago GLScene demo.<p>
-
-   This demo illustrates several GLScene components:
-   - TerrainRenderer, used with a material library
-   - TerrainRenderer's OnHeightDataPostRender, used to render sea surface
-   - HeightTileFileHDS, used as primary elevation datasource
-   - CustomHDS, used to attach texturing information to the elevation samples
-   - DirectOpenGL, used to render the sailboat's wake
-
-   Note that both custom OpenGL rendering sections are interrelated, the sea
-   surface rendering code also setups the stencil buffer, which is used by
-   the wake rendering code.
-
-   Credits:
-   - Terrain elevation map and textures : Mattias Fagerlund
-     (http://www.cambrianlabs.com/Mattias/)
-   - Sailboat model and textures : Daniel Polli / Daniel@dansteph.com
-     (http://virtualsailor.dansteph.com)
-
-   Eric Grange (http://glscene.org)
-}
 unit Unit1;
 
 interface
@@ -62,7 +41,7 @@ uses
 
 type
   TForm1 = class(TForm)
-    GLSceneViewer: TGLSceneViewer;
+    GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera: TGLCamera;
     DCCamera: TGLDummyCube;
@@ -145,7 +124,7 @@ var
   libMat: TGLLibMaterial;
   DataPath : String;
 begin
-  //DataPath in Debug or Release exe output for different platforms
+  //The DataPath for Debug or Release exe output on different platforms
   DataPath := ExtractFilePath(ParamStr(0));
   I := Pos(UpperCase('Archipelago'), UpperCase(DataPath));
   if (I <> 0) then
@@ -213,12 +192,12 @@ begin
   HTHelp.Position.SetPoint(Screen.Width div 2 - 100,
     Screen.Height div 2 - 150, 0);
   HelpOpacity := 4;
-  GLSceneViewer.Cursor := crNone;
+  GLSceneViewer1.Cursor := crNone;
 end;
 
 procedure TForm1.ResetMousePos;
 begin
-  if GLSceneViewer.Cursor = crNone then
+  if GLSceneViewer1.Cursor = crNone then
     SetCursorPos(Screen.Width div 2, Screen.Height div 2);
 end;
 
@@ -292,13 +271,13 @@ begin
     if not WasAboveWater then
     begin
       SkyDome.Visible := True;
-      with GLSceneViewer.Buffer.FogEnvironment do
+      with GLSceneViewer1.Buffer.FogEnvironment do
       begin
         FogColor.Color := clrWhite;
         FogEnd := 1000;
         FogStart := 500;
       end;
-      GLSceneViewer.Buffer.BackgroundColor := clWhite;
+      GLSceneViewer1.Buffer.BackgroundColor := clWhite;
       GLCamera.DepthOfView := 1000;
       WasAboveWater := True;
     end;
@@ -308,13 +287,13 @@ begin
     if WasAboveWater then
     begin
       SkyDome.Visible := False;
-      with GLSceneViewer.Buffer.FogEnvironment do
+      with GLSceneViewer1.Buffer.FogEnvironment do
       begin
         FogColor.AsWinColor := clNavy;
         FogEnd := 100;
         FogStart := 0;
       end;
-      GLSceneViewer.Buffer.BackgroundColor := clNavy;
+      GLSceneViewer1.Buffer.BackgroundColor := clNavy;
       GLCamera.DepthOfView := 100;
       WasAboveWater := False;
     end;
@@ -431,10 +410,10 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   HTFPS.Text := Format('%.1f FPS - %d - %d',
-    [GLSceneViewer.FramesPerSecond,
+    [GLSceneViewer1.FramesPerSecond,
     TerrainRenderer.LastTriangleCount,
       WaterPolyCount]);
-  GLSceneViewer.ResetPerformanceMonitor;
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
@@ -532,7 +511,7 @@ begin
   finally
     ResetMousePos;
     PAProgress.Visible := False;
-    GLSceneViewer.BeforeRender := nil;
+    GLSceneViewer1.BeforeRender := nil;
   end;
 end;
 

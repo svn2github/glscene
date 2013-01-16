@@ -15,11 +15,9 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
-  object GLSceneViewer: TGLSceneViewer
+  object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 603
