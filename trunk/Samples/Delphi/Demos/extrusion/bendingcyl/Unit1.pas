@@ -1,15 +1,3 @@
-{: A very simple demo of the TGLPipe object, to show what it can do.<p>
-
-   The TGLPipe objects extrudes a circle along a trajectory (given by its node).
-   You can specify a radius factor for each node and use spline smoothing.<p>
-
-   Here we only use 3 control points, the top ones moves horizontally, and the
-   middle one can be made fat/slim.<p>
-
-   The current implementation is very limited when it comes to 3D pipes, as there
-   is no "smooth" rotation interpolator, therefore, ou will have best results
-   if your trajectory stays in the X/Y (local) plane.
-}
 unit Unit1;
 
 interface
@@ -31,6 +19,7 @@ type
     DummyCube1: TGLDummyCube;
     CBFat: TCheckBox;
     Timer1: TTimer;
+    PanelFPS: TPanel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure CBSplineClick(Sender: TObject);
@@ -61,7 +50,8 @@ begin
    Pipe1.Nodes[2].X:=1*Sin(newTime*60*cPIdiv180);
    if CBFat.Checked then
       TGLPipeNode(Pipe1.Nodes[1]).RadiusFactor:=1+Cos(newTime*30*cPIdiv180)
-   else TGLPipeNode(Pipe1.Nodes[1]).RadiusFactor:=1;
+   else
+     TGLPipeNode(Pipe1.Nodes[1]).RadiusFactor:=1;
 end;
 
 procedure TForm1.CBSplineClick(Sender: TObject);
@@ -88,7 +78,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    with GLSceneViewer1 do begin
-      Caption:=Format('%d Triangles, %.1f FPS', [Pipe1.TriangleCount, FramesPerSecond]);
+      PanelFPS.Caption:=Format('%d Triangles, %.1f FPS', [Pipe1.TriangleCount, FramesPerSecond]);
       ResetPerformanceMonitor;
    end;
 end;

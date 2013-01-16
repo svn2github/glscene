@@ -1,8 +1,3 @@
-{: A "pawn"-like revolution solid.<p>
-
-   Allows playing with a few settings for a revolution solid and see the visual
-   (and triangle count) impact they have.
-}
 unit Unit1;
 
 interface
@@ -10,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, StdCtrls, ComCtrls, GLTexture, ExtCtrls,
-  GLExtrusion, GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLExtrusion, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
+  BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -20,18 +16,20 @@ type
     GLLightSource1: TGLLightSource;
     DummyCube1: TGLDummyCube;
     RotationSolid1: TGLRevolutionSolid;
+    Timer1: TTimer;
+    Panel1: TPanel;
+    Label1: TLabel;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    TrackBar1: TTrackBar;
     CheckBox4: TCheckBox;
-    Timer1: TTimer;
     Label3: TLabel;
     TrackBar2: TTrackBar;
     Label4: TLabel;
     TrackBar3: TTrackBar;
+    Label2: TLabel;
+    TrackBar1: TTrackBar;
+    LabelTri: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -59,12 +57,12 @@ implementation
 
 {$R *.DFM}
 
-uses JPeg, GLUtils;
+uses JPeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetGLSceneMediaDir();
-   RotationSolid1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+  SetGLSceneMediaDir();
+  RotationSolid1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
@@ -113,7 +111,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%d Triangles', [RotationSolid1.TriangleCount]);
+   LabelTri.Caption:=Format('%d Triangles', [RotationSolid1.TriangleCount]);
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

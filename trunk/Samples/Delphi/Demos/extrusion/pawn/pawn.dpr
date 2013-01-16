@@ -1,3 +1,8 @@
+{: A "pawn"-like revolution solid.<p>
+
+   Allows playing with a few settings for a revolution solid and see the visual
+   (and triangle count) impact they have.
+}
 program pawn;
 
 uses

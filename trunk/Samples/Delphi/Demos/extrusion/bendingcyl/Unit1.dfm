@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 270
   Top = 106
-  Width = 356
-  Height = 308
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Bending Cylinder'
+  ClientHeight = 379
+  ClientWidth = 534
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,15 +17,18 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 342
-    Height = 273
+    Width = 534
+    Height = 379
     Camera = GLCamera1
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 150.438476562500000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CBSpline: TCheckBox
-    Left = 272
+    Left = 112
     Top = 8
     Width = 57
     Height = 17
@@ -34,12 +37,20 @@ object Form1: TForm1
     OnClick = CBSplineClick
   end
   object CBFat: TCheckBox
-    Left = 272
-    Top = 32
+    Left = 200
+    Top = 8
     Width = 57
     Height = 17
     Caption = 'Fat/Slim'
     TabOrder = 2
+  end
+  object PanelFPS: TPanel
+    Left = 288
+    Top = 8
+    Width = 129
+    Height = 17
+    Caption = 'FPS'
+    TabOrder = 3
   end
   object GLScene1: TGLScene
     Left = 8
@@ -51,7 +62,6 @@ object Form1: TForm1
     end
     object Pipe1: TGLPipe
       Position.Coordinates = {00000000000080BF000000000000803F}
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Nodes = <
         item
         end

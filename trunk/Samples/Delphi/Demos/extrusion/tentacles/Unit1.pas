@@ -1,15 +1,3 @@
-{: Tentacles demo, a weird use for TGLPipe.<p>
-
-   Serves as a test for TGLPipe's ability to have a per-node color with smooth
-   interpolation between nodes, and as some kind of sickening modern art...<br>
-   Position of the nodes, radius and color are updated for each frame. Note that
-   the TGLPipe's ObjectStyle is altered to make it "osDirectDraw": since the geometry
-   is constantly altered, it's no use compiling/saving it for the next frame,
-   setting the style to "osDirectDraw" tells GLScene the object should be rendered
-   directly (faster when geometry constantly changes, slower  when geometry is
-   static from one frame to the other).<br>
-   Try commenting out that line and see for yourself ;).
-}
 unit Unit1;
 
 interface
@@ -36,6 +24,7 @@ type
     Pipe4: TGLPipe;
     Pipe5: TGLPipe;
     Sphere1: TGLSphere;
+    PanelFPS: TPanel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -62,7 +51,9 @@ var
    pipe : TGLPipe;
 begin
    // prepare the TGLPipe objects (add node, set props...)
-   for k:=0 to DCBase.Count-1 do if DCBase[k] is TGLPipe then begin
+   for k:=0 to DCBase.Count-1 do
+     if (DCBase[k] is TGLPipe) then
+     begin
       pipe:=TGLPipe(DCBase[k]);
       with pipe do begin
          Nodes.Clear;
@@ -88,11 +79,15 @@ var
    pipe : TGLPipe;
 begin
    t:=newTime;
-   for k:=0 to DCBase.Count-1 do if DCBase[k] is TGLPipe then begin
+   for k:=0 to DCBase.Count-1 do
+   if (DCBase[k] is TGLPipe) then
+   begin
       pipe:=TGLPipe(DCBase[k]);
       with pipe.Nodes do begin
          BeginUpdate;
-         for i:=0 to Count-1 do with Items[i] as TGLPipeNode do begin
+         for i:=0 to Count-1 do
+         with (Items[i] as TGLPipeNode) do
+         begin
             // don't search any hidden logic behind the formulaes below:
             // they're just here to induce this sickening weirdo movement
             t1:=-t+i*0.1+k*c2PI/5;
@@ -112,7 +107,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // standard FPS counter
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   PanelFPS.Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
