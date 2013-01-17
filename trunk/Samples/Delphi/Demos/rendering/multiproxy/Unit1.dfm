@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 164
   Top = 112
-  Width = 491
-  Height = 389
-  Caption = 'Form1'
+  Caption = 'Multi Proxy'
+  ClientHeight = 355
+  ClientWidth = 546
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,22 +11,25 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 60
-    Width = 483
-    Height = 300
+    Width = 546
+    Height = 295
     Camera = GLCamera
     Buffer.BackgroundColor = clGray
+    FieldOfView = 111.728118896484400000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 483
+    Width = 546
     Height = 60
     Align = alTop
     BevelOuter = bvLowered
@@ -37,18 +40,12 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    object Label1: TLabel
-      Left = 8
+    object LabelFPS: TLabel
+      Left = 464
       Top = 8
-      Width = 58
+      Width = 19
       Height = 14
-      Caption = 'MultiProxy'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
+      Caption = 'FPS'
     end
     object RBUseLODs: TRadioButton
       Left = 88
@@ -90,74 +87,74 @@ object Form1: TForm1
     end
   end
   object GLScene: TGLScene
-    Left = 8
+    Left = 24
     Top = 72
     object DCTarget: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLParticles: TGLParticles
         Direction.Coordinates = {0000000000000000FFFF7F3F00000000}
         Position.Coordinates = {0000000000000040000000000000803F}
-        RollAngle = -5
+        RollAngle = -5.000000000000000000
         Up.Coordinates = {B97EB23D9E067F3F0000000000000000}
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object MPSphere: TGLMultiProxy
           OnProgress = MPSphereProgress
           MasterObjects = <
             item
               MasterObject = SPHighRes
-              DistanceMax = 20
+              DistanceMax = 20.000000000000000000
             end
             item
               MasterObject = SPMedRes
-              DistanceMin = 20
-              DistanceMax = 60
+              DistanceMin = 20.000000000000000000
+              DistanceMax = 60.000000000000000000
             end
             item
               MasterObject = SPLowRes
-              DistanceMin = 60
-              DistanceMax = 99999
+              DistanceMin = 60.000000000000000000
+              DistanceMax = 99999.000000000000000000
             end>
         end
       end
     end
     object DCReferences: TGLDummyCube
       Visible = False
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object SPHighRes: TGLSphere
-        Radius = 0.5
+        Radius = 0.500000000000000000
         Slices = 32
         Stacks = 32
       end
       object SPMedRes: TGLSphere
-        Radius = 0.5
+        Radius = 0.500000000000000000
       end
       object SPLowRes: TGLSphere
-        Radius = 0.5
+        Radius = 0.500000000000000000
         Slices = 8
         Stacks = 8
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00004842000020420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera: TGLCamera
-      DepthOfView = 200
-      FocalLength = 100
+      DepthOfView = 200.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = DCTarget
       Position.Coordinates = {0000F04100004040000000400000803F}
     end
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
-    TimeMultiplier = 0.5
-    Left = 88
-    Top = 72
+    TimeMultiplier = 0.500000000000000000
+    Left = 24
+    Top = 128
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 48
+    Left = 152
     Top = 72
   end
 end

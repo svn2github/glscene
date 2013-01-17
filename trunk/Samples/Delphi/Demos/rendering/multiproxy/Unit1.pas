@@ -1,12 +1,3 @@
-{: Illustrates the use of TGLMultiProxy to perform discreet LOD.<p>
-
-   The MultiProxy object is used to switch automatically between three models
-   of varying resolution (since I'm no good at modelling, these are only
-   three resolution levels of a sphere).<br>
-   You'll find the MultiProxy under the GLParticles object in DCTarget,
-   the TGLParticles object is used to automatically duplicate the MultiProxy
-   and its settings (happens in FormCreate).
-}
 unit Unit1;
 
 interface
@@ -33,11 +24,11 @@ type
     Timer1: TTimer;
     MPSphere: TGLMultiProxy;
     Panel1: TPanel;
-    Label1: TLabel;
     RBUseLODs: TRadioButton;
     RBHighRes: TRadioButton;
     CBColorize: TCheckBox;
     RBLowRes: TRadioButton;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure MPSphereProgress(Sender: TObject; const deltaTime,
@@ -119,7 +110,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   LabelFPS.Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

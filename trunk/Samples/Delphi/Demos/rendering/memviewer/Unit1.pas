@@ -1,24 +1,3 @@
-{: Rendering to a TMemoryViewer and using the render as texture.<p>
-
-   This sample illustrates use of the TGLMemoryViewer to render to a texture.
-   The simple scene features a lone cube, when rendered to the memory viewer,
-   a red background is used (the TGLSceneViewer uses a gray background).<p>
-
-   After each main viewer render, the scene is rendered to the memory viewer
-   and the result is copied to the texture of the cube (a "BlankImage" was
-   defined at runtime, because we only need to specify the texture size).
-   Most of the time, you won't need to render textures at each frame, and a set
-   options illustrates that. The 1:2 mode is significantly faster and visually
-   equivalent (even with VSync on, to limit the framerate).<p>
-
-   Never forget a memory viewer will use 3D board memory, thus reducing
-   available space for VectorGeometry and textures... try using only one memory
-   viewer and maximize its use.
-
-   This sample will only work on 3D boards that support WGL_ARB_pbuffer, which
-   should be the case for all of the modern boards, and even some of the older
-   ones.
-}
 unit Unit1;
 
 interface
@@ -46,7 +25,6 @@ uses
 type
   TForm1 = class(TForm)
     Timer1: TTimer;
-    CheckBox1: TCheckBox;
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
@@ -55,11 +33,14 @@ type
     GLLightSource1: TGLLightSource;
     GLMemoryViewer1: TGLMemoryViewer;
     GLCadencer1: TGLCadencer;
+    Panel1: TPanel;
     Label1: TLabel;
+    Label2: TLabel;
     RB1to1: TRadioButton;
     RB1to2: TRadioButton;
     RB1to10: TRadioButton;
-    Label2: TLabel;
+    CheckBox1: TCheckBox;
+    LabelFPS: TLabel;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -138,7 +119,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+  LabelFPS.Caption := Format('GLScene Memory Viewer'+' - %.1f FPS', [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 201
   Top = 110
-  Width = 429
-  Height = 380
-  Caption = 'Form1'
+  Caption = 'Invariance'
+  ClientHeight = 336
+  ClientWidth = 421
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,11 +16,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 413
-    Height = 342
+    Width = 421
+    Height = 336
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 147.402404785156300000
+    FieldOfView = 146.851989746093800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

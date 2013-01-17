@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture, JPeg,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -25,6 +26,7 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
+    procedure FormActivate(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,6 +40,11 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TForm1.FormActivate(Sender: TObject);
+begin
+  SetGLSceneMediaDir();
+end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

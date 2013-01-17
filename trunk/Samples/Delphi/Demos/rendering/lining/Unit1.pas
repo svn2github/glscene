@@ -1,13 +1,3 @@
-{: Demo for using the Outline and the Hiddenline shaders.<p>
-
-   The HiddenLine shader provides some kind of 'technical drawing' rendering
-   styles. You can change the settings for front lines and back lines to get
-   various looks.<p>
-
-   The Outline shader is useful for displaying objects as 'selected' or for
-   toon-style shading.<p>
-}
-
 unit Unit1;
 
 interface
@@ -91,6 +81,15 @@ begin
   GLHiddenLineShader2.Solid:=CheckBox3.Checked;
 end;
 
+procedure TForm1.CheckBox4Click(Sender: TObject);
+begin
+  with GLHiddenLineShader2.BackLine do
+    if CheckBox4.Checked then
+      Pattern:=$FF00  // bit pattern
+    else
+      Pattern:=$FFFF;
+end;
+
 procedure TForm1.CheckBox5Click(Sender: TObject);
 begin
   GLHiddenLineShader2.SurfaceLit:=CheckBox5.Checked;
@@ -102,15 +101,6 @@ begin
     GLHiddenLineShader2.ShadeModel:=smFlat
   else
     GLHiddenLineShader2.ShadeModel:=smSmooth;
-end;
-
-procedure TForm1.CheckBox4Click(Sender: TObject);
-begin
-  with GLHiddenLineShader2.BackLine do
-    if CheckBox4.Checked then
-      Pattern:=$FF00  // bit pattern
-    else
-      Pattern:=$FFFF;
 end;
 
 //

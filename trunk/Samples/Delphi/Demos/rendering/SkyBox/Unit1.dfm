@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 176
   Top = 73
-  Width = 651
-  Height = 565
-  Caption = 'Form1'
+  Caption = 'Sky Box'
+  ClientHeight = 415
+  ClientWidth = 559
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,23 +13,24 @@ object Form1: TForm1
   OldCreateOrder = False
   Position = poScreenCenter
   Visible = True
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 635
-    Height = 527
+    Width = 559
+    Height = 415
     Camera = GLCamera1
     Buffer.BackgroundColor = 7168
     Buffer.AmbientColor.Color = {0000803F0000803F0000803F0000803F}
-    FieldOfView = 162.736495971679700000
+    FieldOfView = 158.177749633789100000
     Align = alClient
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 24
+    Left = 32
     Top = 24
     object GLSkyBox1: TGLSkyBox
       Direction.Coordinates = {9598A23144F7DFB20000803F00000000}
@@ -141,7 +142,7 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 64
+    Left = 112
     Top = 24
   end
   object GLNavigator1: TGLNavigator
@@ -151,24 +152,39 @@ object Form1: TForm1
     AutoUpdateObject = True
     MaxAngle = 90.000000000000000000
     MinAngle = -90.000000000000000000
-    Left = 104
+    Left = 208
     Top = 24
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 24
-    Top = 64
+    Left = 32
+    Top = 80
   end
   object GLUserInterface1: TGLUserInterface
     MouseSpeed = 16.000000000000000000
     GLNavigator = GLNavigator1
-    Left = 144
+    Left = 296
     Top = 24
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 248
-    Top = 24
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'GLScene SkyBox - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 296
+    Top = 88
   end
 end

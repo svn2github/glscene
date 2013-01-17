@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 290
   Top = 175
-  Width = 534
-  Height = 500
-  Caption = 'Form1'
+  Caption = 'Blur'
+  ClientHeight = 462
+  ClientWidth = 518
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,7 +23,7 @@ object Form1: TForm1
     Buffer.FogEnvironment.FogColor.Color = {1283003F1283003F0000803F0000803F}
     Buffer.FogEnvironment.FogStart = 1.000000000000000000
     Buffer.FogEnvironment.FogEnd = 3.000000000000000000
-    Buffer.BackgroundColor = clBlack
+    Buffer.BackgroundColor = clBackground
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
     FieldOfView = 153.029327392578100000
     Align = alClient
@@ -52,13 +52,19 @@ object Form1: TForm1
       Height = 13
       Caption = 'Render Size:'
     end
+    object LabelFPS: TLabel
+      Left = 376
+      Top = 26
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object ComboBox1: TComboBox
       Left = 8
       Top = 20
       Width = 161
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'pNone (no change)'
@@ -78,7 +84,6 @@ object Form1: TForm1
       Width = 145
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 5
       TabOrder = 1
       Text = '256'
@@ -95,8 +100,8 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osRenderFarthestFirst
-    Left = 188
-    Top = 48
+    Left = 44
+    Top = 64
     object GLLightSource1: TGLLightSource
       Ambient.Color = {BEC0403FBEC0403FBEC0403F0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -138,26 +143,28 @@ object Form1: TForm1
       item
         Name = 'LibMaterial'
         Tag = 0
-        Material.Texture.ImageClassName = 'TGLCompositeImage'
-        Material.Texture.Image.Width = 256
-        Material.Texture.Image.Height = 256
-        Material.Texture.Image.Depth = 0
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'marbletiles.jpg'
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
       end>
-    Left = 228
-    Top = 48
+    TexturePaths = '..\..\..\..\media\'
+    Left = 140
+    Top = 64
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     SleepLength = 0
     OnProgress = GLCadencer1Progress
-    Left = 268
-    Top = 48
+    Left = 44
+    Top = 144
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 308
-    Top = 48
+    Left = 260
+    Top = 64
   end
 end

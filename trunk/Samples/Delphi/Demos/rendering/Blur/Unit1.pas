@@ -1,15 +1,3 @@
-{
- Example showing usage of GLBlur
-
- Adding it to the scene root will blur all the scene.
- Adding a GLBlur to an object will make it blur only that object
- (note that you might need to sort objects to avoid z-order issues
-  or you can set GLScene1.ObjectSorting = osRenderFarthestFirst)
-
- You can choose a GLBlur effect from the "presets" property or
- set the parameters yourself (see GLBlur.pas)
-
-}
 unit Unit1;
 
 interface
@@ -37,7 +25,9 @@ uses
   GLCrossPlatform,
   GLMaterial,
   GLCoordinates,
-  BaseClasses;
+  BaseClasses,
+  Jpeg,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -56,6 +46,7 @@ type
     ComboBox2: TComboBox;
     Timer1: TTimer;
     GLDummyCube1: TGLDummyCube;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -80,10 +71,9 @@ implementation
 
 {$R *.dfm}
 
-uses GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   // Add GLBlur to scene
   B := TGLBlur.Create(self);
   GLCube1.AddChild(B);
@@ -91,8 +81,10 @@ begin
   B.RenderWidth := 256;
   B.RenderHeight := 256;
   // Load texture for objects
-  SetGLSceneMediaDir();
   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+  ComboBox1.ItemIndex := 2;
+  ComboBox1Click(self);
+
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -115,7 +107,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Floattostr(Trunc(GLSceneViewer1.FramesPerSecond));
+  LabelFPS.Caption := FloatToStr(Trunc(GLSceneViewer1.FramesPerSecond))+ ' FPS';
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

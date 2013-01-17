@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 206
   Top = 117
-  Width = 540
-  Height = 353
   Caption = 'Lining Shaders'
+  ClientHeight = 309
+  ClientWidth = 532
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,24 +11,27 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 377
-    Height = 326
+    Height = 309
     Camera = GLCamera1
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 144.134292602539100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 377
     Top = 0
     Width = 155
-    Height = 326
+    Height = 309
     Align = alRight
     BevelOuter = bvSpace
     Font.Charset = ANSI_CHARSET
@@ -67,7 +70,7 @@ object Form1: TForm1
       Shape = bsTopLine
     end
     object CheckBox1: TCheckBox
-      Left = 9
+      Left = 6
       Top = 186
       Width = 131
       Height = 17
@@ -177,22 +180,24 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object Torus1: TGLTorus
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial2'
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {0000000000000000000080BF00000000}
       MajorRadius = 2.500000000000000000
       MinorRadius = 1.500000000000000000
+      StopAngle = 360.000000000000000000
+      Parts = [toSides, toStartDisk, toStopDisk]
     end
     object Sphere1: TGLSphere
       ShowAxes = True
       Radius = 0.500000000000000000
     end
     object GLAnnulusOutlined: TGLAnnulus
-      Position.Coordinates = {0000E04000000000000000000000803F}
-      Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
+      Position.Coordinates = {0000E04000000000000000000000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
       BottomRadius = 0.500000000000000000
       Height = 1.000000000000000000
       BottomInnerRadius = 0.300000011920929000
@@ -200,10 +205,10 @@ object Form1: TForm1
       TopRadius = 0.500000000000000000
     end
     object GLAnnulusPink: TGLAnnulus
-      Position.Coordinates = {0000E0C000000000000000000000803F}
-      Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial4'
+      Position.Coordinates = {0000E0C000000000000000000000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
       BottomRadius = 0.500000000000000000
       Height = 1.000000000000000000
       BottomInnerRadius = 0.300000011920929000
@@ -211,10 +216,10 @@ object Form1: TForm1
       TopRadius = 0.500000000000000000
     end
     object GLAnnulusDotted: TGLAnnulus
-      Position.Coordinates = {00000000000000000000E0C00000803F}
-      Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial1'
+      Position.Coordinates = {00000000000000000000E0C00000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
       BottomRadius = 0.500000000000000000
       Height = 1.000000000000000000
       BottomInnerRadius = 0.300000011920929000
@@ -222,15 +227,15 @@ object Form1: TForm1
       TopRadius = 0.500000000000000000
     end
     object GLCubeGreen: TGLCube
-      Position.Coordinates = {00000000000000000000E0400000803F}
-      Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial5'
+      Position.Coordinates = {00000000000000000000E0400000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
     end
     object GLCubeTransparent: TGLCube
-      Position.Coordinates = {0000000000008040000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial3'
+      Position.Coordinates = {0000000000008040000000000000803F}
       CubeSize = {000040400000404000004040}
     end
     object GLCamera1: TGLCamera
@@ -244,10 +249,10 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {9190903D9190903D8786863E0000803F}
         Material.FrontProperties.Diffuse.Color = {9796163F0000803F0000803F0000803F}
         Material.FrontProperties.Shininess = 128
-        Tag = 0
         Shader = GLOutlineShader1
       end
       item
@@ -257,12 +262,12 @@ object Form1: TForm1
       end
       item
         Name = 'LibMaterial2'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {C5C4443EBFBEBE3EB5B4343E0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803FEBEAEA3E8180803C0000803F}
         Material.FrontProperties.Shininess = 128
         Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
         Material.BlendingMode = bmTransparency
-        Tag = 0
         Shader = GLHiddenLineShader2
       end
       item
@@ -277,9 +282,9 @@ object Form1: TForm1
       end
       item
         Name = 'LibMaterial5'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {9998183E9796163F9190103E17D92E3F}
         Material.BlendingMode = bmTransparency
-        Tag = 0
         Shader = GLHiddenLineShader5
       end>
     Left = 8
