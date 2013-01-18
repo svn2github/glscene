@@ -1,10 +1,10 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{1EFB5BD6-6033-430A-9B05-230C62C18661}</ProjectGuid>
+        <ProjectGuid>{6157C599-9E82-4051-AD5E-BA4183F35E94}</ProjectGuid>
         <ProjectVersion>14.3</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <AppType>Application</AppType>
-        <MainSource>CgSimple.cpp</MainSource>
+        <MainSource>Texturing.cpp</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -35,14 +35,14 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <IncludePath>D:\Library\GLScene\Samples\CPP\Demos\cgshaders\texturing\;$(IncludePath)</IncludePath>
+        <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <IncludePath>D:\Library\GLScene\Samples\CPP\Demos\cgshaders\simple\;$(IncludePath)</IncludePath>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLCg_RunTime.lib</AllPackageLibs>
-        <_TCHARMapping>wchar_t</_TCHARMapping>
         <Multithreaded>true</Multithreaded>
         <ProjectType>CppVCLApplication</ProjectType>
-        <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <ILINK_LibraryPath>D:\Library\GLScene\Samples\CPP\Demos\cgshaders\simple\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLCg_RunTime.lib</AllPackageLibs>
+        <ILINK_LibraryPath>D:\Library\GLScene\Samples\CPP\Demos\cgshaders\texturing\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <_TCHARMapping>wchar_t</_TCHARMapping>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>
         <UsePackages>true</UsePackages>
@@ -53,13 +53,13 @@
         <BCC_ExtendedErrorInfo>true</BCC_ExtendedErrorInfo>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <PackageImports>IndyIPClient;GLSS_BASS;frx17;fs17;GLS_NGD;GLCg_RunTime;bindcompfmx;GR32_RSXE3;DBXSqliteDriver;vcldbx;GLS_ODE;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLSS_OpenAL;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;GLS_Computing_RunTime;vclie;GR32_DSGN_RSXE3;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLSS_FMOD;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
-        <PackageImports>IndyIPClient;GLSS_BASS;frx17;fs17;GLS_NGD;GLCg_RunTime;bindcompfmx;GR32_RSXE3;DBXSqliteDriver;vcldbx;GLS_ODE;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLScene_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;GLSS_OpenAL;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;GLS_Computing_RunTime;vclie;GR32_DSGN_RSXE3;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;GLSS_FMOD;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
@@ -93,14 +93,14 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <ItemGroup>
-        <CppCompile Include="CgSimple.cpp">
+        <None Include="cg_texture_fp.cg"/>
+        <None Include="cg_texture_vp.cg"/>
+        <CppCompile Include="Texturing.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
-        <PCHCompile Include="CgSimple1.h">
+        <PCHCompile Include="Texturing1.h">
             <BuildOrder>1</BuildOrder>
         </PCHCompile>
-        <None Include="Simple_fp.cg"/>
-        <None Include="Simple_vp.cg"/>
         <CppCompile Include="Unit1.cpp">
             <Form>Form1</Form>
             <FormType>dfm</FormType>
@@ -126,7 +126,7 @@
         <BorlandProject>
             <CPlusPlusBuilder.Personality>
                 <Source>
-                    <Source Name="MainSource">CgSimple.cpp</Source>
+                    <Source Name="MainSource">Texturing.cpp</Source>
                 </Source>
                 <VersionInfo>
                     <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
@@ -163,7 +163,6 @@
                     <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
                     <VersionInfoKeys Name="CFBundleExecutable"/>
                 </VersionInfoKeys>
-                <Excluded_Packages/>
                 <ProjectProperties>
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>

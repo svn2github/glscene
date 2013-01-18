@@ -7,17 +7,15 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "BaseClasses"
-#pragma link "GLCgShader"
-#pragma link "GLCrossPlatform"
-#pragma link "GLMaterial"
-#pragma link "GLScene"
-#pragma link "GLWin32Viewer"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
+#pragma link "GLCrossPlatform"
 #pragma link "GLGraph"
+#pragma link "GLMaterial"
 #pragma link "GLObjects"
+#pragma link "GLScene"
+#pragma link "GLWin32Viewer"
 #pragma link "GLVectorFileObjects"
-#pragma link "GLFile3DS"
 
 #pragma resource "*.dfm"
 TForm1 *Form1;
@@ -29,75 +27,102 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-   // Load Cg proggy from project directory
-	SetCurrentDir(ExtractFilePath(Application->ExeName));
-	CgShader1->VertexProgram->LoadFromFile("simple_vp.cg");
-	MemoVertCode->Lines->Assign(CgShader1->VertexProgram->Code);
+  // load Cg proggy from project directory
+  SetCurrentDir(ExtractFilePath(Application->ExeName));
+  CgShader1->VertexProgram->LoadFromFile("cg_texture_vp.cg");
+  MemoVertCode->Lines->Assign(CgShader1->VertexProgram->Code);
 
-	CgShader1->FragmentProgram->LoadFromFile("simple_fp.cg");
-	MemoFragCode->Lines->Assign(CgShader1->FragmentProgram->Code);
+  CgShader1->FragmentProgram->LoadFromFile("cg_texture_fp.cg");
+  MemoFragCode->Lines->Assign(CgShader1->FragmentProgram->Code);
 
-	CgShader1->VertexProgram->Enabled = false;
-	CgShader1->FragmentProgram->Enabled = false;
-
-	ButtonApplyFP->Enabled = false;
-	ButtonApplyVP->Enabled = false;
-
-	// Bind shader to the material
-	GLMaterialLibrary1->Materials->Items[0]->Shader = CgShader1;
-
-	// Load the teapot model from media directory.
-	SetGLSceneMediaDir();
-	// Note that GLScene will alter the ModelView matrix
-	// internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
-	// is not aware of that. If you apply a vertex shader on those objects, they
-	// would appear scaled and/or rotated.
-	GLFreeForm1->LoadFromFile("Teapot.3ds");
+  // Load images from media dir
+  SetGLSceneMediaDir();
+  GLMatLib->Materials->Items[0]->Material->Texture->Image->LoadFromFile("moon.bmp");
+  GLMatLib->Materials->Items[1]->Material->Texture->Image->LoadFromFile("clover.jpg");
+  GLMatLib->Materials->Items[2]->Material->Texture->Image->LoadFromFile("marbletiles.jpg");
+  GLMatLib->Materials->Items[3]->Material->Texture->Image->LoadFromFile("chrome_buckle.bmp");
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm1::CgShader1Initialize(TCustomCgShader *CgShader)
+{
+	// Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
+	// once set can be assigned for once in the OnInitialize event.
+	//  with   do begin
+	CgShader1->FragmentProgram->ParamByName("Map0")->SetToTextureOf(GLMatLib->Materials->Items[0]);
+	CgShader1->FragmentProgram->ParamByName("Map1")->SetToTextureOf(GLMatLib->Materials->Items[1]);
+	CgShader1->FragmentProgram->ParamByName("Map2")->SetToTextureOf(GLMatLib->Materials->Items[2]);
+	CgShader1->FragmentProgram->ParamByName("Map3")->SetToTextureOf(GLMatLib->Materials->Items[3]);
+	// Alternatively, you can set texture parameters using two other methods:
+	//CgShader1->FragmentProgram->SetTexture("Map0", GLMatLib->Materials->Items[0]->Material->Texture->Handle);
+	//or
+	//CgShader1->FragmentProgram->ParamByName("Map0")->SetAsTexture2D(Materials->Items[0]->Material->Texture->Handle);
+	// Display profiles used
+	LabelVertProfile->Caption = "Using profile: " +
+	 CgShader1->VertexProgram->GetProfileStringA();
+	LabelFragProfile->Caption = "Using profile: " +
+	 CgShader1->FragmentProgram->GetProfileStringA();
 }
 //---------------------------------------------------------------------------
 
+ float conv1(TTrackBar *TrackBar)
+ {
+  int half;
+  half = TrackBar->Max/2;
+  return (TrackBar->Position-half) / half;
+ }
 
 void __fastcall TForm1::CgShader1ApplyVP(TCgProgram *CgProgram, TObject *Sender)
 {
   Vectorgeometry::TVector v;
-  TCgParameter *Param;
-  // rotate light vector for the "simple lighting" vertex program
-  v = ZHmgVector;
-  RotateVector(v, YVector, GLCadencer1->CurrentTime);
-
-  Param = CgProgram->ParamByName("LightVec");
-  Param->AsVector = v;
-  // or using plain Cg API: cgGLSetParameter4fv(Param.Handle, @v);
-
-  // set uniform parameters that change every frame
   CgProgram->ParamByName("ModelViewProj")->SetAsStateMatrix(CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
-  CgProgram->ParamByName("ModelViewIT")->SetAsStateMatrix(CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
-  //  Or, using plain Cg API:
-  //  Param = CgProgram->ParamByName("ModelViewIT");
-  //  cgGLSetStateMatrixParameter(Param->Handle, CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
+// Alternatively, you can set it using:
+// CgProgram->SetStateMatrix("ModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+
+  v = VectorMake(conv1(TrackBar1), conv1(TrackBar2), conv1(TrackBar3), conv1(TrackBar4) );
+  CgProgram->ParamByName("shifts")->SetAsVector(v);
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::CgShader1Initialize(TCustomCgShader *CgShader)
+ float conv2(TTrackBar *TrackBar)
+ {
+  int half;
+  half = TrackBar->Max/2;
+  return (TrackBar->Position-half) / half;
+ }
+
+void __fastcall TForm1::CgShader1ApplyFP(TCgProgram *CgProgram, TObject *Sender)
 {
-  // Shows the profiles to be used. The latest support profiles would be detected
-  // if you have CgShader1.VertexProgram.Profile set to vpDetectLatest (similarly
-  // for the fragment program).
-  LabelVertProfile->Caption = "Using profile: " + CgShader1->VertexProgram->GetProfileStringA();
-  LabelFragProfile->Caption = "Using profile: " + CgShader1->FragmentProgram->GetProfileStringA();
+  Vectorgeometry::TVector v;
+  CgProgram->ParamByName("Map0")->EnableTexture();
+  CgProgram->ParamByName("Map1")->EnableTexture();
+  CgProgram->ParamByName("Map2")->EnableTexture();
+  CgProgram->ParamByName("Map3")->EnableTexture();
+
+  v = VectorMake(conv2(TrackBar5), conv2(TrackBar6), conv2(TrackBar7), conv2(TrackBar8));
+
+  CgProgram->ParamByName("weights")->SetAsVector(v);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::CgShader1UnApplyFP(TCgProgram *CgProgram)
+{
+	CgProgram->ParamByName("Map0")->DisableTexture();
+	CgProgram->ParamByName("Map1")->DisableTexture();
+	CgProgram->ParamByName("Map2")->DisableTexture();
+	CgProgram->ParamByName("Map3")->DisableTexture();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::CBVertexProgramClick(TObject *Sender)
 {
-  CgShader1->VertexProgram->Enabled = CBVertexProgram->Checked;
+   CgShader1->VertexProgram->Enabled = !CBVertexProgram->Checked;
 }
 //---------------------------------------------------------------------------
 
-
 void __fastcall TForm1::CBFragmentProgramClick(TObject *Sender)
 {
-  CgShader1->FragmentProgram->Enabled = CBFragmentProgram->Checked;
+  CgShader1->FragmentProgram->Enabled = !CBFragmentProgram->Checked;
 }
 //---------------------------------------------------------------------------
 
@@ -154,19 +179,19 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-   mx = X;  my = Y;
+   mx = X;
+   my = Y;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift,
-          int X, int Y)
+		  int X, int Y)
 {
    if (Shift.Contains(ssLeft) || Shift.Contains(ssRight))
    {
 	  GLCamera1->MoveAroundTarget(my-Y, mx-X);
 	  mx = X;
 	  my = Y;
-
    }
 }
 //---------------------------------------------------------------------------
@@ -179,7 +204,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaT
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
-		  TPoint &MousePos, bool &Handled)
+          TPoint &MousePos, bool &Handled)
 {
 	if (Glcrossplatform::PtInRect(ClientRect, ScreenToClient(MousePos)))
 	{
@@ -200,6 +225,12 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
 void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
 {
   if (Key == 0x27) Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::CheckBox2Click(TObject *Sender)
+{
+ CgShader1->Enabled = CheckBox2->Checked;
 }
 //---------------------------------------------------------------------------
 
