@@ -1,13 +1,3 @@
-{
-  Simple Cg Shader Demo
-
-  Tested with Cg 1.1
-
-  Try to get an ATI feel by editing the vertex shader code. ;)
-
-  Last update: 20/01/04
-  Nelson Chu
-}
 unit Unit1;
 
 interface
@@ -17,7 +7,7 @@ uses
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
   GLVectorFileObjects, GLFile3DS, GLGraph, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -34,10 +24,10 @@ type
     Splitter1: TSplitter;
     Panel2: TPanel;
     CBVertexProgram: TCheckBox;
-    LabelVertProfile: TLabel;                       
+    LabelVertProfile: TLabel;
     Panel4: TPanel;
     LabelFragProfile: TLabel;
-    CheckBox1: TCheckBox;
+    CBFragmentProgram: TCheckBox;
     Splitter2: TSplitter;
     Panel6: TPanel;
     Panel7: TPanel;
@@ -62,7 +52,7 @@ type
     Button4: TButton;
     GLFreeForm1: TGLFreeForm;
     Panel9: TPanel;
-    Panel10: TPanel;
+    PanelFPS: TPanel;
     GLSceneViewer1: TGLSceneViewer;
     Timer1: TTimer;
     GLXYZGrid1: TGLXYZGrid;
@@ -104,8 +94,35 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+   // Load Cg proggy
+   with CgShader1 do begin
+     VertexProgram.LoadFromFile('simple_vp.cg');
+     MemoVertCode.Lines.Assign(VertexProgram.Code);
+
+     FragmentProgram.LoadFromFile('simple_fp.cg');
+     MemoFragCode.Lines.Assign(FragmentProgram.Code);
+
+     VertexProgram.Enabled:=false;
+     FragmentProgram.Enabled:=false;
+   end;
+
+   ButtonApplyFP.Enabled:=false;
+   ButtonApplyVP.Enabled:=false;
+
+   // Bind shader to the material
+   GLMaterialLibrary1.Materials[0].Shader := CgShader1;
+
+   // Load the teapot model from media directory.
+   SetGLSceneMediaDir();
+   // Note that GLScene will alter the ModelView matrix
+   // internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
+   // is not aware of that. If you apply a vertex shader on those objects, they
+   // would appear scaled and/or rotated.
+  GLFreeForm1.LoadFromFile('Teapot.3ds');
+end;
+
 
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
 var
@@ -139,34 +156,6 @@ begin
   // for the fragment program).
   LabelVertProfile.Caption:='Using profile: ' + CgShader1.VertexProgram.GetProfileStringA;
   LabelFragProfile.Caption:='Using profile: ' + CgShader1.FragmentProgram.GetProfileStringA;
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-   // Load Cg proggy
-   with CgShader1 do begin
-     VertexProgram.LoadFromFile('simple_vp.cg');
-     MemoVertCode.Lines.Assign(VertexProgram.Code);
-
-     FragmentProgram.LoadFromFile('simple_fp.cg');
-     MemoFragCode.Lines.Assign(FragmentProgram.Code);
-
-     VertexProgram.Enabled:=false;
-     FragmentProgram.Enabled:=false;
-   end;
-
-   ButtonApplyFP.Enabled:=false;
-   ButtonApplyVP.Enabled:=false;
-
-   // Bind shader to the material
-   GLMaterialLibrary1.Materials[0].Shader := CgShader1;
-
-   // Load the teapot model. Note that GLScene will alter the ModelView matrix
-   // internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
-   // is not aware of that. If you apply a vertex shader on those objects, they
-   // would appear scaled and/or rotated.
-   SetGLSceneMediaDir();
-   GLFreeForm1.LoadFromFile('Teapot.3ds');
 end;
 
 procedure TForm1.CBVertexProgramClick(Sender: TObject);
@@ -224,8 +213,8 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   mx:=x;
-   my:=y;
+   mx:=X;
+   my:=Y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
@@ -257,14 +246,14 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   with GLSceneViewer1 do begin
-    caption:=Format('Cg Shader Demo - %.1f fps', [FramesPerSecond]);
+    PanelFPS.Caption:=Format('%.1f fps', [FramesPerSecond]);
     ResetPerformanceMonitor;
   end;
 end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-  if key=#27 then close;
+  if Key=#27 then Close();
 end;
 
 end.

@@ -1,11 +1,3 @@
-{
-  Cg Multi-Texturing Demo
-
-  Shows how to do texture coordinate shifting with a VP and blending with a FP.
-
-  Last update: 09/02/04
-  Nelson Chu
-}
 unit Unit1;
 
 interface
@@ -14,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture,
   GLCgShader, Cg, cgGL, StdCtrls, VectorGeometry, GLCadencer, ExtCtrls, ComCtrls,
-  GLGraph, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLGraph, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -32,7 +25,7 @@ type
     LabelVertProfile: TLabel;                       
     Panel4: TPanel;
     LabelFragProfile: TLabel;
-    CheckBox1: TCheckBox;
+    CBFragmentProgram: TCheckBox;
     Splitter2: TSplitter;
     Panel6: TPanel;
     Panel7: TPanel;
@@ -56,7 +49,7 @@ type
     Button1: TButton;
     Button4: TButton;
     Panel9: TPanel;
-    Panel10: TPanel;
+    PanelFPS: TPanel;
     GLSceneViewer1: TGLSceneViewer;
     Timer1: TTimer;
     GLXYZGrid1: TGLXYZGrid;
@@ -130,13 +123,9 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
-  // load Cg proggy
+  // load Cg proggy from project dir
   with CgShader1 do begin
     VertexProgram.LoadFromFile('cg_texture_vp.cg');
     MemoVertCode.Lines.Assign(VertexProgram.Code);
@@ -145,6 +134,8 @@ begin
     MemoFragCode.Lines.Assign(FragmentProgram.Code);
   end;
 
+  // Load images from media dir
+  SetGLSceneMediaDir();
   with GLMatLib do begin
     Materials[0].Material.Texture.Image.LoadFromFile('moon.bmp');
     Materials[1].Material.Texture.Image.LoadFromFile('clover.jpg');
@@ -173,12 +164,13 @@ begin
 end;
 
 procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);
+
 var v : TVector;
 
   function conv(TrackBar : TTrackBar): single;
   var half : integer;
   begin
-    half:=TrackBar.max div 2;
+    half:=TrackBar.Max div 2;
     result:= (TrackBar.Position-half) / half;
   end;
 
@@ -199,7 +191,7 @@ var v : TVector;
   function conv(TrackBar : TTrackBar): single;
   var half : integer;
   begin
-    half:=TrackBar.max div 2;
+    half:=TrackBar.Max div 2;
     result:= (TrackBar.Position-half) / half;
   end;
 
@@ -283,17 +275,17 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   mx:=x;
-   my:=y;
+   mx:=X;
+   my:=Y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
    if Shift<>[] then begin
-      GLCamera1.MoveAroundTarget(my-y, mx-x);
-      mx:=x;
-      my:=y;
+      GLCamera1.MoveAroundTarget(my-Y, mx-X);
+      mx:=X;
+      my:=Y;
    end;
 end;
 
@@ -316,7 +308,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   with GLSceneViewer1 do begin
-    caption:=Format('Cg Shader Demo - %.1f fps', [FramesPerSecond]);
+    PanelFPS.Caption:=Format('%.1f fps', [FramesPerSecond]);
     ResetPerformanceMonitor;
   end;
 end;

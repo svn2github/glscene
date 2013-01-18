@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 202
   Top = 112
-  Width = 759
-  Height = 484
-  Caption = 'Cg Shader Demo'
+  Caption = 'Cg Simple Shader'
+  ClientHeight = 440
+  ClientWidth = 751
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,15 +21,16 @@ object Form1: TForm1
   object Splitter1: TSplitter
     Left = 369
     Top = 0
-    Height = 446
+    Height = 440
     Color = clBtnShadow
     ParentColor = False
+    ExplicitHeight = 457
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 369
-    Height = 446
+    Height = 440
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -38,8 +39,8 @@ object Form1: TForm1
       Left = 2
       Top = 2
       Width = 365
-      Height = 442
-      ActivePage = TabSheet1
+      Height = 436
+      ActivePage = TabSheet2
       Align = alClient
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
@@ -52,13 +53,14 @@ object Form1: TForm1
         Caption = 'Vertex Program'
         object Splitter3: TSplitter
           Left = 0
-          Top = 307
+          Top = 301
           Width = 357
           Height = 3
           Cursor = crVSplit
           Align = alBottom
           Color = clBtnShadow
           ParentColor = False
+          ExplicitTop = 318
         end
         object Panel2: TPanel
           Left = 0
@@ -95,7 +97,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 357
-          Height = 282
+          Height = 276
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -114,7 +116,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 355
-            Height = 239
+            Height = 233
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -129,7 +131,7 @@ object Form1: TForm1
           end
           object Panel13: TPanel
             Left = 1
-            Top = 256
+            Top = 250
             Width = 355
             Height = 25
             Align = alBottom
@@ -153,7 +155,7 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 310
+          Top = 304
           Width = 357
           Height = 104
           Align = alBottom
@@ -215,13 +217,14 @@ object Form1: TForm1
         ImageIndex = 1
         object Splitter2: TSplitter
           Left = 0
-          Top = 318
+          Top = 301
           Width = 357
           Height = 3
           Cursor = crVSplit
           Align = alBottom
           Color = clBtnShadow
           ParentColor = False
+          ExplicitTop = 318
         end
         object Panel4: TPanel
           Left = 0
@@ -238,7 +241,7 @@ object Form1: TForm1
             Height = 13
             Caption = 'Using profile:'
           end
-          object CheckBox1: TCheckBox
+          object CBFragmentProgram: TCheckBox
             Left = 6
             Top = 4
             Width = 67
@@ -252,7 +255,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 357
-          Height = 293
+          Height = 276
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -271,7 +274,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 355
-            Height = 250
+            Height = 233
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -286,7 +289,7 @@ object Form1: TForm1
           end
           object Panel3: TPanel
             Left = 1
-            Top = 267
+            Top = 250
             Width = 355
             Height = 25
             Align = alBottom
@@ -310,7 +313,7 @@ object Form1: TForm1
         end
         object Panel8: TPanel
           Left = 0
-          Top = 310
+          Top = 304
           Width = 357
           Height = 104
           Align = alBottom
@@ -372,8 +375,8 @@ object Form1: TForm1
   object Panel9: TPanel
     Left = 372
     Top = 0
-    Width = 371
-    Height = 446
+    Width = 379
+    Height = 440
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -382,29 +385,29 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 1
-    object Panel10: TPanel
+    object PanelFPS: TPanel
       Left = 1
       Top = 1
-      Width = 369
+      Width = 377
       Height = 48
       Align = alTop
-      Caption = 'Cg Simple'
+      Caption = 'FPS'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
       Font.Name = 'Trebuchet MS'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
       TabOrder = 0
     end
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
       Top = 49
-      Width = 369
-      Height = 396
+      Width = 377
+      Height = 390
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
-      FieldOfView = 149.673782348632800000
+      FieldOfView = 150.288558959960900000
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove
@@ -412,8 +415,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 416
-    Top = 56
+    Left = 40
+    Top = 80
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000803F0000803F0000803F0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -463,25 +466,25 @@ object Form1: TForm1
         Material.FrontProperties.Specular.Color = {EDEC6C3EDDDC5C3ED5D4543E0000803F}
         Shader = CgShader1
       end>
-    Left = 384
-    Top = 88
+    Left = 40
+    Top = 136
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 416
-    Top = 88
+    Left = 112
+    Top = 80
   end
   object CgShader1: TCgShader
     VertexProgram.OnApply = CgShader1ApplyVP
     OnApplyVP = CgShader1ApplyVP
     OnInitialize = CgShader1Initialize
-    Left = 384
-    Top = 56
+    Left = 184
+    Top = 80
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 452
-    Top = 56
+    Left = 260
+    Top = 80
   end
 end

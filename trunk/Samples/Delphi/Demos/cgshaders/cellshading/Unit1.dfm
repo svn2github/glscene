@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 114
-  Width = 431
-  Height = 430
-  Caption = 'Cg Cell Shading Demo'
+  Caption = 'Cg Cell Shading'
+  ClientHeight = 353
+  ClientWidth = 550
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,24 +11,27 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 415
-    Height = 392
+    Width = 550
+    Height = 353
     Camera = GLCamera1
-    FieldOfView = 151.377914428710900000
+    FieldOfView = 148.366622924804700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 423
+    ExplicitHeight = 386
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 8
+    Left = 40
+    Top = 16
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
@@ -61,8 +64,8 @@ object Form1: TForm1
     OnApplyFP = CgCellShaderApplyFP
     OnUnApplyFP = CgCellShaderUnApplyFP
     OnInitialize = CgCellShaderInitialize
-    Left = 40
-    Top = 40
+    Left = 120
+    Top = 72
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -72,18 +75,18 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Shader = CgCellShader
       end>
-    Left = 40
-    Top = 8
+    Left = 112
+    Top = 16
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    Left = 8
-    Top = 40
+    Left = 40
+    Top = 72
   end
   object AsyncTimer1: TAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
-    Left = 8
-    Top = 72
+    Left = 256
+    Top = 16
   end
 end

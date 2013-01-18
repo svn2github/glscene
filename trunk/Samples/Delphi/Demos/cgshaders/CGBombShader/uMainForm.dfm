@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 387
   Top = 217
-  Width = 609
-  Height = 424
-  Caption = 'Strange CG Bomb Shader Demo  by Da Stranger'
+  Caption = 'Cg Bomb Shader'
+  ClientHeight = 419
+  ClientWidth = 562
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,15 +21,16 @@ object Form1: TForm1
     Left = 209
     Top = 0
     Width = 0
-    Height = 386
+    Height = 419
     Color = clBtnShadow
     ParentColor = False
+    ExplicitHeight = 397
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 209
-    Height = 386
+    Height = 419
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -40,7 +41,6 @@ object Form1: TForm1
       Width = 161
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'Fire'
@@ -126,7 +126,7 @@ object Form1: TForm1
       TabOrder = 3
       ThumbLength = 10
       TickMarks = tmTopLeft
-      OnChange = TrackBarChange
+      OnChange = TrackBar1Change
     end
     object TrackBar2: TTrackBar
       Left = 24
@@ -236,8 +236,8 @@ object Form1: TForm1
   object Panel9: TPanel
     Left = 209
     Top = 0
-    Width = 384
-    Height = 386
+    Width = 353
+    Height = 419
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -246,55 +246,40 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 1
-    object Panel10: TPanel
-      Left = 1
-      Top = 1
-      Width = 382
-      Height = 48
-      Align = alTop
-      Caption = 'GLCgBombShader Demo'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Trebuchet MS'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 0
-    end
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
-      Top = 49
-      Width = 382
-      Height = 336
+      Top = 1
+      Width = 351
+      Height = 417
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
-      FieldOfView = 146.851989746093800000
+      FieldOfView = 148.195465087890600000
       Align = alClient
-      TabOrder = 1
+      TabOrder = 0
     end
   end
   object GLScene1: TGLScene
-    Left = 432
-    Top = 56
-    object GLFreeForm4: TGLFreeForm
+    Left = 256
+    Top = 64
+    object ffSphere1: TGLFreeForm
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {0000000000000000000000400000803F}
+      Position.Coordinates = {000000C00000003F000000000000803F}
       Scale.Coordinates = {8FC2F53C8FC2F53C8FC2F53C00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       AutoCentering = [macCenterX, macCenterY]
     end
-    object GLFreeForm3: TGLFreeForm
+    object ffSphere2: TGLFreeForm
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {000000C000000000000000000000803F}
+      Position.Coordinates = {000080BF00000000000000400000803F}
       Scale.Coordinates = {8FC2F53C8FC2F53C8FC2F53C00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       AutoCentering = [macCenterX, macCenterY]
     end
-    object GLFreeForm2: TGLFreeForm
+    object ffTeapot: TGLFreeForm
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -311,7 +296,7 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {0000004000000000000000000000803F}
+      Position.Coordinates = {000000409A99993F000000000000803F}
       Up.Coordinates = {00000000000000000000803F00000000}
       Interval = 100
     end
@@ -384,23 +369,23 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 520
-    Top = 56
+    Left = 416
+    Top = 64
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 488
-    Top = 56
+    Left = 328
+    Top = 64
   end
   object Timer1: TTimer
-    Left = 460
-    Top = 56
+    Left = 492
+    Top = 64
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'GLCgBombShader Demo - %FPS'
+    FormCaption = 'GLCgBombShader - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -414,7 +399,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 553
-    Top = 56
+    Left = 321
+    Top = 128
   end
 end

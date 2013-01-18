@@ -1,11 +1,3 @@
-{: GL CgBomb Shader Demo.
-
-  A demo that demostrates how to use the TGLCgBombShader component.
-
-  Version history:
-    05/04/07 - DaStr - Initial version
-
-}
 unit uMainForm;
 
 interface
@@ -22,7 +14,8 @@ uses
   VectorGeometry,
 
   // FileFormats
-  JPEG, GLFileMD2, GLCrossPlatform, GLCoordinates, BaseClasses;
+  JPEG, GLFileMD2, GLCrossPlatform, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -34,19 +27,18 @@ type
     Panel1: TPanel;
     Splitter1: TSplitter;
     Panel9: TPanel;
-    Panel10: TPanel;
     GLSceneViewer1: TGLSceneViewer;
     Timer1: TTimer;
     GLXYZGrid1: TGLXYZGrid;
     GLDummyCube1: TGLDummyCube;
-    GLFreeForm2: TGLFreeForm;
-    GLFreeForm3: TGLFreeForm;
+    ffTeapot: TGLFreeForm;
+    ffSphere1: TGLFreeForm;
     ComboBox1: TComboBox;
     GroupBox1: TGroupBox;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;
-    GLFreeForm4: TGLFreeForm;
+    ffSphere2: TGLFreeForm;
     CheckBox4: TCheckBox;
     JustATestCube: TGLCube;
     ShaderEnabledCheckBox: TCheckBox;
@@ -62,7 +54,6 @@ type
     TrackBar9: TTrackBar;
     GLActor1: TGLActor;
     procedure FormCreate(Sender: TObject);
-    procedure TrackBarChange(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure CheckBox1Click(Sender: TObject);
@@ -75,6 +66,7 @@ type
     procedure TrackBar7Change(Sender: TObject);
     procedure TrackBar8Change(Sender: TObject);
     procedure TrackBar9Change(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
   private
     { Private declarations }
   public
@@ -91,22 +83,19 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  // First load models from media directory
   SetGLSceneMediaDir();
-  // First load models.
   GLActor1.LoadFromFile('waste.md2'); //Fighter
   GLActor1.SwitchToAnimation(0, True);
   GLActor1.AnimationMode := aamLoop;
   GLActor1.Scale.Scale(0.05);
 
-  GLFreeForm2.LoadFromFile('Teapot.3ds');
-  GLFreeForm3.LoadFromFile('Sphere_little.3DS');
-  GLFreeForm4.LoadFromFile('Sphere_big.3DS');
-  GLFreeForm4.Scale.Scale(20);
+  ffTeapot.LoadFromFile('Teapot.3ds');
+  ffSphere1.LoadFromFile('Sphere_little.3DS');
+  ffSphere2.LoadFromFile('Sphere_big.3DS');
+  ffSphere2.Scale.Scale(20);
 
   GLMaterialLibrary1.LibMaterialByName('marbles1').Material.Texture.Image.LoadFromFile('beigemarble.jpg');
   GLMaterialLibrary1.LibMaterialByName('marbles2').Material.Texture.Image.LoadFromFile('marbletiles.jpg');
@@ -126,13 +115,6 @@ begin
 end;
 
 
-procedure TForm1.TrackBarChange(Sender: TObject);
-begin
-  if Myshader = nil then
-    Exit;
-  Myshader.Displacement := InterpolateCombinedSafe(0, 100, TrackBar1.Position, 0.01, 10, 1, itLinear);
-end;
-
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
   Myshader.GradientTexture := GLMaterialLibrary1.LibMaterialByName(ComboBox1.Text).Material.Texture;
@@ -140,12 +122,11 @@ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
-  GLSceneViewer1.Invalidate;
+  GLSceneViewer1.Invalidate();
 end;
 
 procedure TForm1.ResetPositions;
 begin
-{
   TrackBar1.Position := Round(InterpolateCombinedSafe(0.01, 10, Myshader.Displacement, 0, 100, 1, itLinear));
   TrackBar2.Position := Round(InterpolateCombinedSafe(-0.13, 10, Myshader.Sharpness, 0, 100, 1, itLinear));
   TrackBar3.Position := Round(InterpolateCombinedSafe(0.01, 6, Myshader.ColorSharpness, 0, 100, 1, itLinear));
@@ -155,20 +136,26 @@ begin
   TrackBar7.Position := Round(InterpolateCombinedSafe(0, 1, Myshader.Alpha, 0, 100, 1, itLinear));
   TrackBar8.Position := Round(InterpolateCombinedSafe(0, 2, Myshader.MainTextureShare, 0, 100, 1, itLinear));
   TrackBar9.Position := Round(InterpolateCombinedSafe(0, 2, Myshader.GradientTextureShare, 0, 100, 1, itLinear));
-}
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   GLActor1.Visible := CheckBox1.Checked;
-  GLFreeForm2.Visible := CheckBox2.Checked;
-  GLFreeForm3.Visible := CheckBox3.Checked;
-  GLFreeForm4.Visible := CheckBox4.Checked;
+  ffTeapot.Visible := CheckBox2.Checked;
+  ffSphere1.Visible := CheckBox3.Checked;
+  ffSphere2.Visible := CheckBox4.Checked;
 end;
 
 procedure TForm1.ShaderEnabledCheckBoxClick(Sender: TObject);
 begin
   MyShader.Enabled := ShaderEnabledCheckBox.Checked;
+end;
+
+procedure TForm1.TrackBar1Change(Sender: TObject);
+begin
+  if Myshader = nil then
+    Exit;
+  Myshader.Displacement := InterpolateCombinedSafe(0, 100, TrackBar1.Position, 0.01, 10, 1, itLinear);
 end;
 
 procedure TForm1.TrackBar2Change(Sender: TObject);

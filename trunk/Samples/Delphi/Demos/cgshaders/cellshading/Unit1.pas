@@ -1,23 +1,3 @@
-{: Simple cell shading with CgShaders.<p>
-
-   This demo uses a vertex program to combine the normal and
-   light vector to produce a light intensity which is passed
-   to the fragment program as the 3rd element in the texture
-   coordinate stream. This intensity is then clamped to specific
-   values based on the range the intensity falls into. This is
-   how the cells are created. You can add or remove cells by
-   adding and removing ranges from the intensity clamping in
-   the fragment program. This intensity is multiplied to the
-   color value for each fragment retrieved from the texture
-   map. Using solid colors on the texture gives nice results
-   once cell shaded.<p>
-   
-   While this demo only shows parallel lighting, you could use
-   point lights quite easily by modifying the uniform
-   parameters passed to the vertex program and the processing
-   of the intensity. Multiple lights wouldn't be difficult
-   to implement either.<p>
-}
 unit Unit1;
 
 interface
@@ -26,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLTexture, GLCgShader,
   GLWin32Viewer, CgGL, GLVectorFileObjects, JPEG, AsyncTimer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -65,19 +45,20 @@ implementation
 {$R *.dfm}
 
 uses
-  GLFileMD2, GLUtils;
+  GLFileMD2;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
 begin
-  SetGLSceneMediaDir();
-  // Load the vertex and fragment Cg programs
+  // Load the vertex and fragment Cg programs from project dir
   CgCellShader.VertexProgram.LoadFromFile('cellshading_vp.cg');
   CgCellShader.FragmentProgram.LoadFromFile('cellshading_fp.cg');
 
-  // Load and scale the actor
+  // Load and scale the actor from media dir
+  SetGLSceneMediaDir();
   GLActor1.LoadFromFile('waste.md2');
+
   r:=GLActor1.BoundingSphereRadius;
   GLActor1.Scale.SetVector(2.5/r,2.5/r,2.5/r);
   GLActor1.AnimationMode:=aamLoop;
@@ -105,34 +86,34 @@ procedure TForm1.CgCellShaderApplyFP(CgProgram: TCgProgram; Sender: TObject);
 begin
   // Enable the texture map sampler for use in the fragment
   // program
-  CgProgram.ParamByName('Map0').EnableTexture;
+  CgProgram.ParamByName('Map0').EnableTexture();
 end;
 
 procedure TForm1.CgCellShaderUnApplyFP(CgProgram: TCgProgram);
 begin
   // Disable the texture map sampler
-  CgProgram.ParamByName('Map0').DisableTexture;
+  CgProgram.ParamByName('Map0').DisableTexture();
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  mx:=x;
-  my:=y;
+  mx:=X;
+  my:=Y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
   if ssLeft in Shift then
-    GLCamera1.MoveAroundTarget(my-y,mx-x);
-  mx:=x;
-  my:=y;
+    GLCamera1.MoveAroundTarget(my-Y,mx-X);
+  mx:=X;
+  my:=Y;
 end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Form1.Caption:=Format('Cg Cell Shading Demo - %.2f FPS',[GLSceneViewer1.FramesPerSecond]);
+  Form1.Caption:=Format('Cg Cell Shading - %.2f FPS',[GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
