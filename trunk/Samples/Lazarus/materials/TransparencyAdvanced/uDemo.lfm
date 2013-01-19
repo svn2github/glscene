@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   OnCreate = FormCreate
   OnResize = FormResize
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 640
@@ -24,7 +24,7 @@ object Form1: TForm1
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Buffer.FaceCulling = False
     Buffer.ShadeModel = smFlat
-    FieldOfView = 162.238693237304
+    FieldOfView = 162.238693237305
     Align = alClient
     TabOrder = 0
   end
@@ -271,13 +271,14 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'Transparent'
+        Tag = 0
         Material.DepthProperties.DepthCompareFunction = cfAlways
         Material.BlendingMode = bmCustom
         Material.MaterialOptions = [moNoLighting]
-        Tag = 0
       end    
       item
         Name = 'Surround'
+        Tag = 0
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
@@ -287,23 +288,23 @@ object Form1: TForm1
         Material.Texture.TextureWrapS = twMirrorRepeat
         Material.Texture.TextureWrapR = twMirrorRepeat
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {
           000080400000803F0000803F00000000
         }
       end    
       item
         Name = 'ColorLayers'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.Depth = 6
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'DepthLayers'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.Depth = 6
         Material.Texture.Image.ColorFormat = 6408
@@ -312,7 +313,6 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfExtended
         Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT24
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Final'
@@ -354,4 +354,4 @@ object Form1: TForm1
     left = 24
     top = 192
   end
-end
+end

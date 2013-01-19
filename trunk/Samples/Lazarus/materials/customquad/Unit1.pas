@@ -53,18 +53,11 @@ implementation
 
 {$R *.lfm}
 
-uses OpenGLTokens, GLContext, FileUtil;
+uses OpenGLTokens, GLContext, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
   // dynamically create 2 materials and load 2 textures
   with GLMaterialLibrary do
   begin
@@ -123,4 +116,4 @@ begin
 end;
 
 end.
-
+

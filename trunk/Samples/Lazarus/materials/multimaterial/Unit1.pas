@@ -52,20 +52,13 @@ implementation
 {$R *.lfm}
 
  uses
-   FileUtil;
+   GLUtils;
 
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   with GLMaterialLibrary1 do
   begin
@@ -135,4 +128,4 @@ begin
 end;
 
 end.
-
+

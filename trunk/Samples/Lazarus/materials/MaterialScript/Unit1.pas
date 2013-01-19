@@ -45,7 +45,7 @@ implementation
 
 {$R *.lfm}
 
-
+uses GLUtils;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
@@ -68,7 +68,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   GLMaterialScripter1.DebugMemo := Memo2;
   GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetGLSceneMediaDir();
 end;
 
 end.

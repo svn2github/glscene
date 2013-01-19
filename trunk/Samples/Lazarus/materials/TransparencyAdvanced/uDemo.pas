@@ -61,19 +61,13 @@ implementation
 uses
   VectorGeometry,
   GLContext, GLState, OpenGLTokens, GLColor, GLKeyboard,
-  GLCompositeImage, GLFileJPEG, FileUtil;
+  GLCompositeImage, GLFileJPEG, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  path: UTF8String;
-  p: integer;
   img: TGLBlankImage;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   GLMaterialLibrary1.TextureByName('Surround').Image.LoadFromFile
     ('WHEATFLD.JPG');
   GLSLShader1.LoadShaderPrograms(
@@ -98,11 +92,11 @@ end;
 
 procedure TForm1.CreateShapes;
 const
-  vLtBlue: TColorVector = (0.00, 0.00, 1.00, 0.90);
-  vLtPink: TColorVector = (0.40, 0.00, 0.20, 0.50);
-  vLtYellow: TColorVector = (0.98, 0.96, 0.14, 0.30);
-  vLtMagenta: TColorVector = (0.83, 0.04, 0.83, 0.70);
-  vLtGreen: TColorVector = (0.05, 0.98, 0.14, 0.30);
+  vLtBlue: TColorVector = (X: 0.00; Y: 0.00; Z: 1.00; W: 0.90);
+  vLtPink: TColorVector = (X: 0.40; Y: 0.00; Z: 0.20; W: 0.50);
+  vLtYellow: TColorVector = (X: 0.98; Y: 0.96; Z: 0.14; W: 0.30);
+  vLtMagenta: TColorVector = (X: 0.83; Y: 0.04; Z: 0.83; W: 0.70);
+  vLtGreen: TColorVector = (X: 0.05; Y: 0.98; Z: 0.14; W: 0.30);
 
 var
   vd: array [0 .. 3] of TVertexData;
@@ -323,4 +317,4 @@ begin
   LayeredFrameBuffer.Height := GLSceneViewer1.Height;
 end;
 
-end.
+end.

@@ -48,12 +48,9 @@ implementation
 
 {$R *.lfm}
 
-uses GLTexture, FileUtil;
+uses GLTexture, GLUtils;
 
 procedure TForm1.Button1Click(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
   // Cube map warning message
   // If you don't check and turn off cube maps yourself in your apps when
@@ -66,11 +63,7 @@ begin
   end;
 
   // Our cube map images are here
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   with Teapot1.Material.Texture do
   begin
@@ -123,4 +116,4 @@ begin
 end;
 
 end.
-
+

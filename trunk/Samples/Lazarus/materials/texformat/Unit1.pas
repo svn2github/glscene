@@ -65,20 +65,14 @@ implementation
 
 {$R *.lfm}
 
-uses GLTextureFormat, FileUtil;
+uses GLTextureFormat, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   sr: TSearchRec;
   i: integer;
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // collect JPeg textures from the demos' media directory
   i := FindFirst('*.jpg', faAnyFile, sr);
   while i = 0 do

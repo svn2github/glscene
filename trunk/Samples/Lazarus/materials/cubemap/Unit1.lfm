@@ -8,7 +8,7 @@ object Form1: TForm1
   ClientWidth = 316
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 334
@@ -16,7 +16,7 @@ object Form1: TForm1
     Width = 316
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 55.5485649108886
+    FieldOfView = 55.5485649108887
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -39,7 +39,7 @@ object Form1: TForm1
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
-      CubeSize = 0.80000001192092
+      CubeSize = 0.80000001192093
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource
@@ -57,6 +57,9 @@ object Form1: TForm1
       TagFloat = 0
       Material.Texture.TextureMode = tmReplace
       PitchAngle = 0
+      Position.Coordinates = {
+        00000000000080BE000000000000803F
+      }
       RollAngle = 0
       TurnAngle = 0
     end
@@ -70,4 +73,4 @@ object Form1: TForm1
       }
     end
   end
-end
+end
