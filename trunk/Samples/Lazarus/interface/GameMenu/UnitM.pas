@@ -60,18 +60,11 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil, LCLType;
+uses GLUtils, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('GLScene.bmp');
 
@@ -138,4 +131,4 @@ begin
 end;
 
 end.
-
+

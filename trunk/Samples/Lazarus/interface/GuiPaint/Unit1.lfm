@@ -4,7 +4,7 @@ object Form1: TForm1
   Top = 91
   Width = 499
   Caption = 'Gui Paint'
-  ClientHeight = 419
+  ClientHeight = 426
   ClientWidth = 499
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
@@ -13,15 +13,15 @@ object Form1: TForm1
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Height = 419
+    Height = 426
     Top = 0
     Width = 499
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 153.153381347656
+    FieldOfView = 153.57893371582
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -1078,35 +1078,36 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'Gui'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\defaultskin.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\media\defaultskin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Brush'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\brush.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\media\brush.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Pen'
+        Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\pen.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\..\media\pen.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'White'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {
           0000803F0000803F0000803F0000803F
         }
@@ -1117,36 +1118,35 @@ object Form1: TForm1
           0000803F0000803F0000803F0000803F
         }
         Material.Texture.TextureMode = tmReplace
-        Tag = 0
       end    
       item
         Name = 'Black'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           0000000000000000000000000000803F
         }
         Material.Texture.TextureMode = tmReplace
-        Tag = 0
       end    
       item
         Name = 'Red'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           0000803F00000000000000000000803F
         }
-        Tag = 0
       end    
       item
         Name = 'Green'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           000000000000803F000000000000803F
         }
-        Tag = 0
       end    
       item
         Name = 'Blue'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           00000000000000000000803F0000803F
         }
-        Tag = 0
       end>
     left = 144
     top = 16
@@ -1165,4 +1165,4 @@ object Form1: TForm1
     left = 16
     top = 176
   end
-end
+end

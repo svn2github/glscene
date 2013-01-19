@@ -58,7 +58,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, VectorTypes, FileUtil;
+uses VectorGeometry, VectorTypes, GLUtils;
 
 var
   FadeOutCount: integer;
@@ -66,15 +66,8 @@ var
   OriginalColor: TVector4f;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   BitmapFont.Glyphs.LoadFromFile('toonfont.bmp');
 end;
 
@@ -114,4 +107,4 @@ begin
 end;
 
 end.
-
+

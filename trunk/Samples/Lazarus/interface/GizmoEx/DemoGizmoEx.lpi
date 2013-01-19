@@ -37,7 +37,6 @@
       <Unit0>
         <Filename Value="DemoGizmoEx.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -53,10 +52,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="DemoGizmoForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="133"/>
-        <CursorPos X="50" Y="141"/>
+        <TopLine Value="474"/>
+        <CursorPos X="31" Y="495"/>
         <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -106,15 +106,43 @@
         <UsageCount Value="10"/>
       </Unit6>
     </Units>
-    <JumpHistory Count="1" HistoryIndex="0">
+    <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="DemoGizmoForm.pas"/>
-        <Caret Line="141" Column="50" TopLine="133"/>
+        <Caret Line="141" Column="50" TopLine="172"/>
       </Position1>
+      <Position2>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="188" Column="30" TopLine="176"/>
+      </Position2>
+      <Position3>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="187" Column="33" TopLine="167"/>
+      </Position3>
+      <Position4>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="188" Column="33" TopLine="168"/>
+      </Position4>
+      <Position5>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="207" Column="27" TopLine="195"/>
+      </Position5>
+      <Position6>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="188" Column="33" TopLine="168"/>
+      </Position6>
+      <Position7>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="207" Column="30" TopLine="187"/>
+      </Position7>
+      <Position8>
+        <Filename Value="DemoGizmoForm.pas"/>
+        <Caret Line="240" Column="45" TopLine="358"/>
+      </Position8>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="DemoGizmoEx"/>
@@ -160,4 +188,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

@@ -36,7 +36,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="7">
       <Unit0>
         <Filename Value="GLConsoleDemo.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -44,7 +44,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="31" Y="10"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
@@ -58,9 +58,9 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="63"/>
-        <CursorPos X="7" Y="66"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="102"/>
+        <CursorPos X="1" Y="133"/>
+        <UsageCount Value="22"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -74,24 +74,93 @@
         <UsageCount Value="10"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\..\Source\GLTexture.pas"/>
+        <UnitName Value="GLTexture"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1875"/>
+        <CursorPos X="1" Y="1895"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\..\Source\GLUtils.pas"/>
+        <UnitName Value="GLUtils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="693"/>
+        <CursorPos X="15" Y="726"/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="E:\lazarus\components\lazutils\fileutil.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="99"/>
+        <CursorPos X="3" Y="104"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="E:\lazarus\components\lazutils\fileutil.pas"/>
+        <UnitName Value="FileUtil"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="202"/>
+        <CursorPos X="18" Y="222"/>
+        <UsageCount Value="10"/>
+      </Unit6>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
+    <JumpHistory Count="12" HistoryIndex="11">
       <Position1>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="15" Column="2" TopLine="5"/>
+        <Caret Line="263" Column="1" TopLine="226"/>
       </Position1>
       <Position2>
-        <Filename Value="GLConsoleDemo.lpr"/>
-        <Caret Line="10" Column="33" TopLine="1"/>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="124" Column="1" TopLine="102"/>
       </Position2>
       <Position3>
         <Filename Value="uMainForm.pas"/>
-        <Caret Line="263" Column="1" TopLine="226"/>
+        <Caret Line="124" Column="30" TopLine="102"/>
       </Position3>
+      <Position4>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="124" Column="1" TopLine="102"/>
+      </Position4>
+      <Position5>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="126" Column="1" TopLine="102"/>
+      </Position5>
+      <Position6>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="124" Column="1" TopLine="102"/>
+      </Position6>
+      <Position7>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="124" Column="1" TopLine="102"/>
+      </Position7>
+      <Position8>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="126" Column="1" TopLine="102"/>
+      </Position8>
+      <Position9>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="127" Column="1" TopLine="102"/>
+      </Position9>
+      <Position10>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="128" Column="1" TopLine="102"/>
+      </Position10>
+      <Position11>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="129" Column="1" TopLine="102"/>
+      </Position11>
+      <Position12>
+        <Filename Value="uMainForm.pas"/>
+        <Caret Line="132" Column="1" TopLine="102"/>
+      </Position12>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="GLConsoleDemo"/>
@@ -136,4 +205,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

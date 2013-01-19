@@ -65,7 +65,7 @@ implementation
 
 {$R *.lfm}
 
-uses Dialogs;
+uses Dialogs, GLScreen;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
@@ -78,7 +78,7 @@ var
    cp : TPoint;
 begin
 	// get what is under the mouse
-   GetCursorPos(cp);
+   GLGetCursorPos(cp);
    cp:=GLSceneViewer1.ScreenToClient(cp);
 	currentPick:=(GLSceneViewer1.Buffer.GetPickedObject(cp.x, cp.y) as TGLCustomSceneObject);
    TIPickTimer.Enabled:=False;
@@ -120,4 +120,4 @@ begin
 	end;
 end;
 
-end.
+end.

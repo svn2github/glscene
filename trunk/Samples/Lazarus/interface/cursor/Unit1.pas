@@ -77,18 +77,11 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil;
+uses GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // hide the Windows cursor for the GLSceneViewer
   GLSceneViewer1.Cursor := crNone;
   // and load my ugly cursor (size adjusted in design props)
@@ -112,6 +105,7 @@ begin
       HSBitmap.Position.X := Width / 2;
       HSBitmap.Position.Y := Height / 2;
     end;
+    HSBitmap.Material.Texture.Disabled := False;
     Screen.Cursor := crDefault;
   end;
 end;
@@ -196,4 +190,4 @@ begin
 end;
 
 end.
-
+
