@@ -591,7 +591,11 @@ begin
   if FLogFileMaxSize > 0 then
   begin
     FCheckLogSizeThread := TLogCheckSizeThread.Create(Self);
+{$IFDEF GLS_DELPHI_2009_DOWN}
+    FCheckLogSizeThread.Resume();
+{$ELSE}
     FCheckLogSizeThread.Start();
+{$ENDIF}
   end
   else
   begin
@@ -825,7 +829,11 @@ begin
   if (FBuffered) then
   begin
     FBufferProcessingThread := TLogBufferFlushThread.Create(Self);
+{$IFDEF GLS_DELPHI_2009_DOWN}
+    FBufferProcessingThread.Resume();
+{$ELSE}
     FBufferProcessingThread.Start();
+{$ENDIF}
   end
   else
   begin

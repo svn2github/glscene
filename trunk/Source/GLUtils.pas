@@ -721,8 +721,9 @@ var
   path: UTF8String;
   p: Integer;
 begin
-   path := ExtractFilePath({$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF});
-   p := Pos('Samples', path);
+   path := {$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF};
+   path := LowerCase(ExtractFilePath(path));
+   p := Pos('samples', path);
    Delete(path, p+7, Length(path));
    path := IncludeTrailingPathDelimiter(path) + 'media';
    {$IFDEF FPC}SetCurrentDirUTF8(path);{$ELSE}SetCurrentDir(path);{$ENDIF}
