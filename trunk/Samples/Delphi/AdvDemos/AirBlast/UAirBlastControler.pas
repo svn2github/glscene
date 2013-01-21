@@ -364,7 +364,7 @@ begin
    terrain:=Airplane.ABEngine.TerrainRenderer;
    while t<=timeLapse do begin
       p:=VectorCombine(Mobile.Position, Mobile.Velocity, 1, t);
-      h:=p[2]-terrain.InterpolatedHeight(p)-margin;
+      h:=p.V[2]-terrain.InterpolatedHeight(p)-margin;
       if h<=0 then begin
          timeLapse:=t;
          Result:=True;
@@ -552,9 +552,9 @@ procedure TABControlerRecorder.Steer(roll, pitch, yaw : Single);
 var
    newSteer : TAffineVector;
 begin
-   newSteer[0]:=roll;
-   newSteer[1]:=pitch;
-   newSteer[2]:=yaw;
+   newSteer.V[0]:=roll;
+   newSteer.V[1]:=pitch;
+   newSteer.V[2]:=yaw;
    if not VectorEquals(newSteer, FLastSteer) then begin
       DoLog(Format('"Steer=%g,%g,%g"', [roll, pitch, yaw]));
       FLastSteer:=newSteer;
@@ -691,7 +691,7 @@ begin
             buf:=sl.Values['Steer'];
             if buf<>'' then begin
                rpy:=StringToVector3(buf);
-               PlaybackControler.Steer(rpy[0], rpy[1], rpy[2]);
+               PlaybackControler.Steer(rpy.V[0], rpy.V[1], rpy.V[2]);
             end;
             buf:=sl.Values['Throttle'];
             if buf<>'' then begin
@@ -791,9 +791,9 @@ begin
    yaw:=ClampValue(-targetBearing*0.5, -1, 1);
 
    leftVector:=Airplane.LeftVector;
-   if (leftVector[2]=0) and (Airplane.Up[2]<0) then
+   if (leftVector.V[2]=0) and (Airplane.Up.V[2]<0) then
       niceRoll:=Random(3)-1
-   else niceRoll:=leftVector[2];
+   else niceRoll:=leftVector.V[2];
 
    Steer(Lerp(niceRoll, roll, ClampValue(Abs(roll), 0, 1)), pitch, yaw);
 end;
@@ -805,8 +805,8 @@ var
    pitch, roll : Single;
 begin
    // basically shoot skyward
-   pitch:=ClampValue((1-Mobile.Direction[2])*Sign(Mobile.Up[2]), -1, 1);
-   roll:=-Mobile.RightVector[2];
+   pitch:=ClampValue((1-Mobile.Direction.V[2])*Sign(Mobile.Up.V[2]), -1, 1);
+   roll:=-Mobile.RightVector.V[2];
 
    Steer(roll, pitch, 0);
 end;
@@ -1540,10 +1540,10 @@ end;
 //
 procedure TABControlerAI.PerformAIBreakOff(const deltaTime : Double);
 begin
-   FBreakOffCommand[2]:=FBreakOffCommand[2]-deltaTime;
-   if FBreakOffCommand[2]<0 then
+   FBreakOffCommand.V[2]:=FBreakOffCommand.V[2]-deltaTime;
+   if FBreakOffCommand.V[2]<0 then
       FAIState:=aisNone;
-   Steer(FBreakOffCommand[0], FBreakOffCommand[1], 0);
+   Steer(FBreakOffCommand.V[0], FBreakOffCommand.V[1], 0);
    Throttle(1);
 end;
 
@@ -1719,10 +1719,10 @@ procedure TABControlerAI.DoRandomBreakOff(duration : Single);
 begin
    FAIState:=aisBreakOff;
    if Random<FBreakOffAIRoll then
-      FBreakOffCommand[0]:=Random-0.5
-   else FBreakOffCommand[0]:=0;
-   FBreakOffCommand[1]:=Sign(Random-0.3); // favor pull up
-   FBreakOffCommand[2]:=duration*(1+Random)*FBreakOffAIMultiplier;
+      FBreakOffCommand.V[0]:=Random-0.5
+   else FBreakOffCommand.V[0]:=0;
+   FBreakOffCommand.V[1]:=Sign(Random-0.3); // favor pull up
+   FBreakOffCommand.V[2]:=duration*(1+Random)*FBreakOffAIMultiplier;
 //   FAirplane.ABEngine.AddMessage('Breaking off!', Airplane, nil);
 end;
 

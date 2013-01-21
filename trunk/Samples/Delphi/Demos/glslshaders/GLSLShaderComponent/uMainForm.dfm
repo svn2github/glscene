@@ -1,9 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
-  Width = 657
-  Height = 483
-  Caption = 'GLSL Shader Test Application'
+  Caption = 'GLSL Shader Component'
+  ClientHeight = 439
+  ClientWidth = 649
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object GLSLTestForm: TGLSLTestForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -19,22 +20,22 @@ object GLSLTestForm: TGLSLTestForm
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 641
-    Height = 416
+    Width = 649
+    Height = 410
     Camera = Camera
     Buffer.BackgroundColor = clBackground
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 145.291946411132800000
+    FieldOfView = 144.815155029296900000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 416
-    Width = 641
+    Top = 410
+    Width = 649
     Height = 29
     Align = alBottom
     TabOrder = 1
@@ -201,7 +202,7 @@ object GLSLTestForm: TGLSLTestForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = Viewer
-    FormCaption = 'GLSL Shader Test Application - %FPS'
+    FormCaption = 'GLSL Shader Component - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]

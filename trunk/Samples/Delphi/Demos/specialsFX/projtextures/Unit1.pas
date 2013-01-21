@@ -1,31 +1,3 @@
-{: Projected Textures example.<p>
-
-   Controls:
-     Left Mouse Button: Rotate
-     Right Mouse Button: Adjust Distance
-     'S': Change styles
-
-   The TGLProjectedTextures object can be used to simulate
-   projected lights or other special effects. To use it, add
-   it to the scene and set all objects that should receive
-   the projected textures as children. Then, add a number
-   of TGLTextureEmitter and load the texture that should
-   be projected into it. Add this emitter to the "emitters"
-   list of the projtex and that's it.
-
-   There are two styles of projection: original and inverse.
-   On the original method (developed by Tom Nuyens of
-   www.delphi3d.net) the scene is rendered and the textures
-   are projected into it. This is useful to simulate all
-   kinds of special effects from bullet holes, to shadow
-   maps (using tmBlend texture mode).
-
-   On the inverse method, first all emitters are rendered,
-   creating an "illumination mask". Then the scene is blended
-   to this mask, so that only lit pixels are drawn. This can
-   be used to create a projected-texture only illumination system.
-
-}
 unit Unit1;
 
 interface
@@ -34,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLWin32Viewer, glTexture, tga, GLObjects,
   VectorGeometry, ExtCtrls, glProjectedTextures,
-  GLHUDObjects, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLHUDObjects, jpeg, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLSimpleNavigation, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,7 +21,6 @@ type
     scenery: TGLDummyCube;
     GLSphere1: TGLSphere;
     matLib: TGLMaterialLibrary;
-    Timer1: TTimer;
     Light: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLCube1: TGLCube;
@@ -59,10 +31,10 @@ type
     ProjLight: TGLProjectedTextures;
     emitter1: TGLTextureEmitter;
     emitter2: TGLTextureEmitter;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure viewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure viewerMouseUp(Sender: TObject; Button: TMouseButton;
@@ -87,8 +59,26 @@ implementation
 
 {$R *.DFM}
 
-uses
-  GLUtils;
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  SetGLSceneMediaDir();
+  matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
+  matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
+
+  emitter1.Material.MaterialLibrary:= matLib;
+  emitter1.Material.LibMaterialName:= 'spot';
+
+  emitter2.Material.MaterialLibrary:= matLib;
+  emitter2.Material.LibMaterialName:= 'spot2';
+  emitter2.FOVy:= 40;
+
+  GLPlane1.Material.Texture.Image.LoadFromFile('cm_front.jpg');
+  GLPlane2.Material.Texture.Image.LoadFromFile('cm_left.jpg');
+  GLPlane3.Material.Texture.Image.LoadFromFile('cm_bottom.jpg');
+
+  projLight.Emitters.AddEmitter(emitter1);
+  projLight.Emitters.AddEmitter(emitter2);
+end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
@@ -101,33 +91,6 @@ begin
      light2.pitch(deltatime*20);
 
      viewer.invalidate;
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-     SetGLSceneMediaDir();
-     matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
-     matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
-
-     emitter1.Material.MaterialLibrary:= matLib;
-     emitter1.Material.LibMaterialName:= 'spot';
-
-     emitter2.Material.MaterialLibrary:= matLib;
-     emitter2.Material.LibMaterialName:= 'spot2';
-     emitter2.FOVy:= 40;
-
-     GLPlane1.Material.Texture.Image.LoadFromFile('cm_front.jpg');
-     GLPlane2.Material.Texture.Image.LoadFromFile('cm_left.jpg');
-     GLPlane3.Material.Texture.Image.LoadFromFile('cm_bottom.jpg');
-
-     projLight.Emitters.AddEmitter(emitter1);
-     projLight.Emitters.AddEmitter(emitter2);
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-     form1.caption:= format('%f', [viewer.framespersecond]);
-     viewer.resetperformancemonitor;
 end;
 
 procedure TForm1.viewerMouseDown(Sender: TObject; Button: TMouseButton;

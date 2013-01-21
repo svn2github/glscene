@@ -326,8 +326,8 @@ begin
    if Collision=nil then
       TCollisionVolume.Create(Self);
    engine:=(GameEngine as TAirBlastEngine);
-   PosX:=FBasePosition[0]+2*(Random-0.5)*RespawnDispersion;
-   PosY:=FBasePosition[1]+2*(Random-0.5)*RespawnDispersion;
+   PosX:=FBasePosition.V[0]+2*(Random-0.5)*RespawnDispersion;
+   PosY:=FBasePosition.V[1]+2*(Random-0.5)*RespawnDispersion;
    PosZ:=engine.TerrainRenderer.InterpolatedHeight(Position);
    FModel:=TGLDummyCube(engine.SortedSceneRoot.AddNewChild(TGLDummyCube));
    FModel.ObjectsSorting:=osNone;

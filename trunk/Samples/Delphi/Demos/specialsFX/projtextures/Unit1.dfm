@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 202
   Top = 106
-  Width = 692
-  Height = 488
-  Caption = 'Form1'
+  Caption = 'Projected Textures'
+  ClientHeight = 444
+  ClientWidth = 684
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,21 +18,20 @@ object Form1: TForm1
   object viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 676
-    Height = 450
+    Width = 684
+    Height = 444
     Camera = camera
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.DepthPrecision = dp32bits
-    FieldOfView = 154.942382812500000000
+    FieldOfView = 154.614669799804700000
     Align = alClient
     OnMouseDown = viewerMouseDown
-    OnMouseMove = viewerMouseMove
     OnMouseUp = viewerMouseUp
     TabOrder = 0
   end
   object scene: TGLScene
-    Left = 40
+    Left = 56
     Top = 24
     object ProjLight: TGLProjectedTextures
       Emitters = <>
@@ -131,8 +130,8 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = scene
     OnProgress = GLCadencer1Progress
-    Left = 120
-    Top = 24
+    Left = 56
+    Top = 200
   end
   object matLib: TGLMaterialLibrary
     Materials = <
@@ -154,12 +153,28 @@ object Form1: TForm1
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
       end>
-    Left = 80
-    Top = 24
+    TexturePaths = '..\..\..\..\media\'
+    Left = 56
+    Top = 88
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 160
-    Top = 24
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = viewer
+    FormCaption = 'Projected Textures - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 56
+    Top = 144
   end
 end

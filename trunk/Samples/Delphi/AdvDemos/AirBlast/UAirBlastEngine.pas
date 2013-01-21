@@ -658,13 +658,13 @@ begin
          FPFXThrust.ParticleSize:=f;
          for j:=0 to EngineCount-1 do begin
             SetVector(p, Engines[j].Position);
-            pb2:=p[2];
+            pb2:=p.V[2];
             for i:=0 to 2 do begin
-               p[2]:=pb2-i*f-Random*0.5;
+               p.V[2]:=pb2-i*f-Random*0.5;
                FPFXThrust.Particles[i+3*j].Position:=SyncObject.LocalToAbsolute(p);
             end;
          end;
-      end;    
+      end;
    end;
 end;
 
@@ -929,7 +929,7 @@ begin
          FDamagePoint:=ABEngine.CreateFirePoint(SyncObject);
          relPos:=VectorSubtract(absolutePosition, Position);
          FDamagePoint.Position.SetPoint(ClampValue(-VectorDotProduct(RightVector, relPos),
-                                                   -Collision.Size[0], Collision.Size[0]),
+                                                   -Collision.Size.V[0], Collision.Size.V[0]),
                                         0, -2);
 //         ABEngine.AdjustFirePointIntensity(FDamagePoint, ClampValue(Sqrt(FFireDamage)*0.3, 1, 2));
       end;
@@ -1299,8 +1299,8 @@ end;
 procedure TABAirplane.RenderWeaponsLoadout(var rci : TRenderContextInfo;
                                     canvas : TGLCanvas; posX, posY, scale : Single);
 const
-   cHullColor100 : TColorVector = (0.6, 0.6, 1, 1);
-   cHullColor0 : TColorVector = (1, 0.6, 0.6, 1);
+   cHullColor100 : TColorVector = (X:0.6; Y:0.6; Z:1; W:1);
+   cHullColor0 : TColorVector = (X:1; Y:0.6; Z:0.6; W:1);
 var
    i, j : Integer;
    libMat : TGLLibMaterial;
@@ -1324,8 +1324,8 @@ begin
       for j:=0 to EquipmentCount-1 do begin
          eqpt:=Equipments[j];
          if eqpt.GroupName=WeaponGroups[i] then begin
-            eqptPosX:=posX-eqpt.Position[0]*s;
-            eqptPosY:=posY-eqpt.Position[2]*s;
+            eqptPosX:=posX-eqpt.Position.V[0]*s;
+            eqptPosY:=posY-eqpt.Position.V[2]*s;
             if eqpt is TABEqptGun then begin
                canvas.MoveTo(eqptPosX, eqptPosY);
                canvas.PenWidth:=2;
@@ -1547,7 +1547,7 @@ var
    h : Single;
 begin
    h:=TerrainRenderer.InterpolatedHeight(mobile.Position);
-   if mobile.Position[2]-h<mobile.Collision.Radius then begin
+   if mobile.Position.V[2]-h<mobile.Collision.Radius then begin
       mobile.Notification(nil, goCollide);
    end;
 end;
@@ -2151,9 +2151,9 @@ procedure TAirBlastEngine.MakeBoom(position : TVector; coreParticles, nbDebris :
    procedure SetupParticle(particle : TGLParticle; posDisp, velDisp : Single;
                            timeOffset : Single);
    begin
-      particle.PosX:=position[0]+posDisp*(Random-0.5);
-      particle.PosY:=position[1]+posDisp*(Random-0.5);
-      particle.PosZ:=position[2]+posDisp*(Random-0.5);
+      particle.PosX:=position.V[0]+posDisp*(Random-0.5);
+      particle.PosY:=position.V[1]+posDisp*(Random-0.5);
+      particle.PosZ:=position.V[2]+posDisp*(Random-0.5);
       particle.VelX:=(Random-0.5)*velDisp;
       particle.VelY:=(Random-0.5)*velDisp;
       particle.VelZ:=(Random-0.5)*velDisp;
@@ -2227,7 +2227,7 @@ begin
    n:=2+Random(3);
    while n>0 do begin
       part:=PFXDust.CreateParticle;
-      part.Position:=AffineVectorMake(position[0], position[1], TerrainRenderer.InterpolatedHeight(position)+5);
+      part.Position:=AffineVectorMake(position.V[0], position.V[1], TerrainRenderer.InterpolatedHeight(position)+5);
       part.Velocity:=AffineVectorMake(10*(Random-0.5), 10*(Random-0.5), 10*Random);
       part.CreationTime:=Cadencer.CurrentTime;
       Dec(n);
@@ -3090,8 +3090,8 @@ begin
    camAbs:=FCamera.AbsolutePosition;
    terrain:=(GameEngine as TAirBlastEngine).TerrainRenderer;
    f:=terrain.InterpolatedHeight(camAbs)+30;
-   if camAbs[2]<f then begin
-      camAbs[2]:=f;
+   if camAbs.V[2]<f then begin
+      camAbs.V[2]:=f;
       FCamera.AbsolutePosition:=camAbs;
    end;
 end;

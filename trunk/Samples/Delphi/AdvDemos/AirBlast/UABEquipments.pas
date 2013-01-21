@@ -504,21 +504,21 @@ begin
          canvas.PenColor:=clLime
       else canvas.PenColor:=clRed;
       screenPos:=TGLSceneBuffer(rci.buffer).WorldToScreen(mobile.Position);
-      screenPos[1]:=canvas.CanvasSizeY-screenPos[1];
+      screenPos.V[1]:=canvas.CanvasSizeY-screenPos.V[1];
       s:=canvas.CanvasSizeX div 64;
 
       canvas.PenWidth:=5;
-      canvas.MoveTo(screenPos[0], screenPos[1]);
+      canvas.MoveTo(screenPos.V[0], screenPos.V[1]);
       RenderCornersQuad(canvas, s);
       if mobile is TABAirplane then begin
          with TABAirplane(mobile) do
             f:=HullResistance/BaseHullResistance;
-         canvas.MoveTo(screenPos[0]-s, screenPos[1]-s*1.5);
+         canvas.MoveTo(screenPos.V[0]-s, screenPos.V[1]-s*1.5);
          canvas.LineToRel(f*2*s, 0);
       end;
       canvas.PenWidth:=1;
       canvas.PenColor:=clWhite;
-      canvas.MoveTo(screenPos[0], screenPos[1]);
+      canvas.MoveTo(screenPos.V[0], screenPos.V[1]);
       RenderCornersQuad(canvas, s);
       canvas.Free;
    end;
@@ -549,14 +549,14 @@ begin
    end;
    canvas.StopPrimitive;
 
-   h:=Airplane.Position[2]-Airplane.ABEngine.TerrainRenderer.InterpolatedHeight(Airplane.Position);
+   h:=Airplane.Position.V[2]-Airplane.ABEngine.TerrainRenderer.InterpolatedHeight(Airplane.Position);
    with Airplane.ABEngine.SmallFont do begin
       TextOut(rci, 512-200-10, 384-8, Format('%.3d', [Round(Airplane.Speed*vSpeedScaleUp)]), hudColor);
       if Airplane.Throttle<=1 then
          TextOut(rci, 512-200-15, 384+24, Format('%3d%%', [Round(Airplane.Throttle*100)]), hudColor)
       else TextOut(rci, 512-200-15, 384+24, ' AB', hudColor);
       TextOut(rci, 512+200-13, 384-8, Format('%.4d', [Round(h)]), hudColor);
-      buf:=Format('%.3d', [Round(Airplane.Velocity[2]*vSpeedScaleUp)]);
+      buf:=Format('%.3d', [Round(Airplane.Velocity.V[2]*vSpeedScaleUp)]);
       if buf[1]<>'-' then buf:='+'+buf;
       TextOut(rci, 512+200-13, 384-8+20, buf, hudColor);
 
@@ -575,8 +575,8 @@ end;
 //
 procedure TABEqptInstruments.RenderWeaponsSelection(var rci : TRenderContextInfo; canvas : TGLCanvas);
 const
-   cHullColor100 : TColorVector = (0.6, 0.6, 1, 1);
-   cHullColor0 : TColorVector = (1, 0.6, 0.6, 1);
+   cHullColor100 : TColorVector = (X:0.6; Y:0.6; Z:1; W:1);
+   cHullColor0 : TColorVector = (X:1; Y:0.6; Z:0.6; W:1);
 var
    i : Integer;
    screenPos : TVector;
@@ -617,11 +617,11 @@ begin
       if groupName[1]='!' then
          groupName:=Copy(groupName, 2, MaxInt);
       groupName:=groupName+' x'+IntToStr(weaponAmmo);
-      screenPos[0]:=posX;
-      screenPos[1]:=canvas.CanvasSizeY-35;
-      screenPos[2]:=0;
+      screenPos.V[0]:=posX;
+      screenPos.V[1]:=canvas.CanvasSizeY-35;
+      screenPos.V[2]:=0;
       with Airplane.ABEngine.SmallFont do
-         TextOut(rci, screenPos[0]-TextWidth(groupName) div 2, screenPos[1], groupName, clrWhite);
+         TextOut(rci, screenPos.V[0]-TextWidth(groupName) div 2, screenPos.V[1], groupName, clrWhite);
    end;
 
    // Decoy Status
@@ -703,13 +703,13 @@ begin
       end else continue;
 
       p:=VectorNormalize(Airplane.AbsoluteToRelative(mobile.Position));
-      if p[0]>0 then begin
-         x:=posX-p[1]*fFront;
-         y:=posY-p[2]*fFront;
+      if p.V[0]>0 then begin
+         x:=posX-p.V[1]*fFront;
+         y:=posY-p.V[2]*fFront;
       end else begin
-         f:=r*RLength(p[1], p[2]);
-         x:=posX-p[1]*f+p[1]*fBack;
-         y:=posY-p[2]*f+p[2]*fBack;
+         f:=r*RLength(p.V[1], p.V[2]);
+         x:=posX-p.V[1]*f+p.V[1]*fBack;
+         y:=posY-p.V[2]*f+p.V[2]*fBack;
       end;
       canvas.PlotPixel(x, y);
    end;
@@ -915,11 +915,11 @@ begin
 
    range:=BestAimEstimate(p, 2);
    if (range=0) or ((range>0) and (not Airplane.IsAhead(p))) then begin
-      pScreen[0]:=buffer.Width*0.5;
-      pScreen[1]:=buffer.Height*0.5;
+      pScreen.V[0]:=buffer.Width*0.5;
+      pScreen.V[1]:=buffer.Height*0.5;
    end else begin
       pScreen:=buffer.WorldToScreen(p);
-      pScreen[1]:=buffer.Height-pScreen[1];
+      pScreen.V[1]:=buffer.Height-pScreen.V[1];
    end;
 
    canvas:=TGLCanvas.Create(buffer.Width, buffer.Height);
@@ -937,11 +937,11 @@ begin
          PenColor:=clWhite;
       end;
       if (range>0) and (range<1) then begin
-         MoveTo(pScreen[0], pScreen[1]);
+         MoveTo(pScreen.V[0], pScreen.V[1]);
          MoveToRel(-f,  -f); LineToRel(f2, f2);    MoveToRel(f, f); LineToRel(f2, f2);
          MoveToRel(-2*f, 0); LineToRel(f2,-f2);    MoveToRel(f,-f); LineToRel(f2,-f2);
       end else begin
-         MoveTo(pScreen[0], pScreen[1]);
+         MoveTo(pScreen.V[0], pScreen.V[1]);
          MoveToRel(-f,  -f); LineToRel(2*f, 2*f);
          MoveToRel(-2*f, 0); LineToRel(2*f,-2*f);
       end;
@@ -963,14 +963,14 @@ begin
                                target.Position, target.Velocity);
       p:=VectorCombine(target.Position, target.Velocity, 1, t);
       // compensate gravity
-      p[2]:=p[2]+(0.5*10)*Sqr(t);
+      p.V[2]:=p.V[2]+(0.5*10)*Sqr(t);
       Result:=t/TimeToLive;
    end else begin
 {      p:=VectorCombine3(Airplane.Position, Airplane.Velocity, Airplane.Direction,
                         1, TimeToLive, TimeToLive*InitialVelocity[2]);
       p[2]:=p[2]-(0.5*10)*Sqr(TimeToLive); }
       p:=VectorCombine(Airplane.Position, Airplane.Direction,
-                       1, TimeToLive*InitialVelocity[2]);
+                       1, TimeToLive*InitialVelocity.V[2]);
       Result:=0;
    end;
 end;
@@ -1256,14 +1256,14 @@ begin
       SinCos(LockAngle, s, c);
       p:=VectorCombine3(Airplane.Position, Airplane.Direction, Airplane.Up, 1, c, s);
       p:=TGLSceneBuffer(rci.buffer).WorldToScreen(p);
-      r:=VectorLength(p[0]-(canvas.CanvasSizeX div 2), p[1]-(canvas.CanvasSizeY div 2));
+      r:=VectorLength(p.V[0]-(canvas.CanvasSizeX div 2), p.V[1]-(canvas.CanvasSizeY div 2));
       canvas.PenColor:=clWhite;
       if LockingTarget then begin
          if TargetLocked then
             canvas.PenColor:=clRed;
          canvas.PenWidth:=2;
          p:=TGLSceneBuffer(rci.buffer).WorldToScreen(Airplane.CurrentTarget.Position);
-         canvas.MoveTo(p[0], canvas.CanvasSizeY-p[1]);
+         canvas.MoveTo(p.V[0], canvas.CanvasSizeY-p.V[1]);
          RenderLosange(canvas, Round(r*0.1+5));
       end;
       canvas.Ellipse(canvas.CanvasSizeX div 2, canvas.CanvasSizeY div 2, r, r);

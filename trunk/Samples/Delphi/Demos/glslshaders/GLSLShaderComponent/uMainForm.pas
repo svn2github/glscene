@@ -23,7 +23,7 @@ uses
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
   GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLUtils,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage;
@@ -77,13 +77,16 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
-
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
 begin
+  //First load scripts from shader directory
+  GLSLShader.LoadShaderPrograms('Shaders\Shader.Vert','Shaders\Shader.Frag');
+  GLSLShader.Enabled := True;
+
+
+  //Second load models from media directory
   SetGLSceneMediaDir();
-  // First load models.
+
   Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
@@ -101,9 +104,6 @@ begin
   // Then load textures.
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
 
-  // Shader.
-  GLSLShader.LoadShaderPrograms('Shader.Vert', 'Shader.Frag');
-  GLSLShader.Enabled := True;
 end;
 
 procedure TGLSLTestForm.ShadeEnabledCheckBoxClick(Sender: TObject);

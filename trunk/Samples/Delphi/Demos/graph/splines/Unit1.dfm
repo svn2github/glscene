@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 198
   Top = 140
-  Width = 353
-  Height = 372
   BorderWidth = 5
-  Caption = 'Form1'
+  Caption = 'Splines'
+  ClientHeight = 345
+  ClientWidth = 460
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,46 +12,49 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 335
-    Height = 333
+    Width = 460
+    Height = 345
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBlack
+    Buffer.BackgroundColor = clTeal
+    FieldOfView = 163.507354736328100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     Left = 16
     Top = 16
     object Lines1: TGLLines
       AntiAliased = True
-      LineWidth = 6
+      LineWidth = 6.000000000000000000
       Nodes = <
         item
-          X = -1
-          Y = -1
+          X = -1.000000000000000000
+          Y = -1.000000000000000000
         end
         item
           Color.Color = {0000803F0000803F000000000000803F}
         end
         item
-          X = 1
-          Y = 1
+          X = 1.000000000000000000
+          Y = 1.000000000000000000
           Color.Color = {0000803F00000000000000000000803F}
         end>
       NodesAspect = lnaCube
-      NodeSize = 0.5
+      NodeSize = 0.500000000000000000
       SplineMode = lsmCubicSpline
       Options = [loUseNodeColorForLines]
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 25
+      DepthOfView = 100.000000000000000000
+      FocalLength = 25.000000000000000000
       TargetObject = Lines1
       CameraStyle = csOrthogonal
       Position.Coordinates = {00000000000000000000A0400000803F}

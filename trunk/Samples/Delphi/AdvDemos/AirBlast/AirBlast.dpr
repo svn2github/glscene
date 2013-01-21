@@ -24,9 +24,9 @@ uses
 {$R *.res}
 
 begin
-   Application.Initialize;
-   DecimalSeparator:='.';
-   Application.Title := 'AirBlast';
+  Application.Initialize;
+  System.SysUtils.FormatSettings.DecimalSeparator := '.';
+  Application.Title := 'AirBlast';
   Application.CreateForm(TDMToolBox, DMToolBox);
   Application.CreateForm(TMain, Main);
   Application.CreateForm(TConfigControls, ConfigControls);

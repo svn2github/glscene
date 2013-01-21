@@ -5,7 +5,11 @@ unit UGameEngine;
 
 interface
 
-uses Classes, PersistentClasses, VectorGeometry;
+uses
+  Classes,
+  PersistentClasses,
+  VectorTypes,
+  VectorGeometry;
 
 type
 
@@ -25,24 +29,26 @@ type
 		protected
          { Protected Properties }
          procedure SetName(const val : String); virtual;
+         function GetName: String; virtual;
          procedure SetDisabled(val : Boolean); virtual;
+         function GetDisabled: Boolean; virtual;
 
 		public
          { Public Properties }
          procedure Progress(const deltaTime : Double); virtual;
 
-         procedure SaveToStrings(data : TStrings); dynamic;
-         procedure LoadFromStrings(data : TStrings); dynamic;
-         procedure Loaded; dynamic;
+         procedure SaveToStrings(data : TStrings); virtual;
+         procedure LoadFromStrings(data : TStrings); virtual;
+         procedure Loaded; virtual;
 
          procedure SaveToFile(const fileName : String);
          procedure LoadFromFile(const fileName : String);
          function  SaveToString : String;
          procedure LoadFromString(const data : String);
 
-         property Name : String read FName write SetName;
+         property Name : String read GetName write SetName;
          {: Disabled objects shouldn't receive progression events.<br> }
-         property Disabled : Boolean read FDisabled write SetDisabled;
+         property Disabled : Boolean read GetDisabled write SetDisabled;
    end;
 
    // TGameEngine3DObject
@@ -56,7 +62,17 @@ type
 
 		protected
          { Protected Properties }
+         function GetPosition: TVector;
+         procedure SetPosition(const aVector: TVector);
+         function GetPosXYZ(const AIndex: Integer): Single;
+         procedure SetPosX(const aIndex: Integer; const aValue: Single);
+         procedure SetPosY(const aIndex: Integer; const aValue: Single);
+         procedure SetPosZ(const aIndex: Integer; const aValue: Single);
 
+         function GetDirection: TVector;
+         procedure SetDirection(const aVector: TVector);
+         function GetUp: TVector;
+         procedure SetUp(const aVector: TVector);
 		public
          { Public Properties }
          procedure SaveToStrings(data : TStrings); override;
@@ -70,13 +86,13 @@ type
          function AbsoluteToRelative(const p : TVector) : TVector;
          procedure BearingElevation(const p : TVector; var bearing, elevation : Single);
 
-         property Position : TVector read FPosition write FPosition;
-         property PosX : Single read FPosition[0] write FPosition[0];
-         property PosY : Single read FPosition[1] write FPosition[1];
-         property PosZ : Single read FPosition[2] write FPosition[2];
+         property Position : TVector read GetPosition write SetPosition;
+         property PosX : Single index 0 read GetPosXYZ write SetPosX;
+         property PosY : Single index 1 read GetPosXYZ write SetPosY;
+         property PosZ : Single index 2 read GetPosXYZ write SetPosZ;
 
-         property Direction : TVector read FDirection write FDirection;
-         property Up : TVector read FUp write FUp;
+         property Direction : TVector read GetDirection write SetDirection;
+         property Up : TVector read GetUp write SetUp;
          function RightVector : TVector;
          function Leftvector : TVector;
    end;
@@ -101,7 +117,12 @@ type
 
 		protected
          { Protected Properties }
+         function GetSize: TAffineVector;
+         function GetMobile: TMobile;
          procedure SetSize(const val : TAffineVector);
+         function GetCollType: TMobileCollisionType;
+         procedure SetCollType(const val : TMobileCollisionType);
+         function GetRadius: Single;
 
 		public
          { Public Properties }
@@ -111,10 +132,10 @@ type
          procedure SaveToStrings(data : TStrings); override;
          procedure LoadFromStrings(data : TStrings); override;
 
-         property Mobile : TMobile read FMobile;
-         property CollType : TMobileCollisionType read FCollType write FCollType;
-         property Size : TAffineVector read FSize write SetSize;
-         property Radius : Single read FRadius;
+         property Mobile : TMobile read GetMobile;
+         property CollType : TMobileCollisionType read GetCollType write SetCollType;
+         property Size : TAffineVector read GetSize write SetSize;
+         property Radius : Single read GetRadius;
    end;
 
    // TGameOperation
@@ -138,7 +159,19 @@ type
 		protected
          { Protected Properties }
          procedure SetName(const val : String); override;
+
+         function GetGameEngine: TGameEngine;
+         procedure SetGameEngine(const aGameEngine : TGameEngine);
+         function GetController: TControler;
+         procedure SetController(const aControler : TControler);
+         function GetVelocity: TVector;
          procedure SetVelocity(const aVelocity : TVector);
+         function GetSpeed: Single;
+         function GetTeam: Integer;
+         procedure SetTeam(const aTeam : Integer);
+         function GetCollision: TCollisionVolume;
+         function GetDetonate: Boolean;
+         procedure SetDetonate(const AValue : Boolean);
 
 		public
          { Public Properties }
@@ -157,14 +190,14 @@ type
 
          function BestCaseInterceptTime(target : TMobile; quality : Integer) : Single;
 
-         property GameEngine : TGameEngine read FGameEngine write FGameEngine;
-         property Collision : TCollisionVolume read FCollision;
-         property Controler : TControler read FControler write FControler;
-         property Team : Integer read FTeam write FTeam;
+         property GameEngine : TGameEngine read GetGameEngine write SetGameEngine;
+         property Collision : TCollisionVolume read GetCollision;
+         property Controler : TControler read GetController write SetController;
+         property Team : Integer read GetTeam write SetTeam;
 
-         property Velocity : TVector read FVelocity write SetVelocity;
-         property Speed : Single read FSpeed;
-         property Detonate : Boolean read FDetonate write FDetonate;
+         property Velocity : TVector read GetVelocity write SetVelocity;
+         property Speed : Single read GetSpeed;
+         property Detonate : Boolean read GetDetonate write SetDetonate;
    end;
 
    TMobileClass = class of TMobile;
@@ -180,18 +213,21 @@ type
 
 		protected
          { Protected Properties }
+         function GetMobile: TMobile; virtual;
          procedure SetMobile(aMobile : TMobile); virtual;
+         function GetControler: TControler; virtual;
+         procedure SetControler(aControler : TControler); virtual;
 
 		public
-         { Public Properties }
-         destructor Destroy; override;
+      { Public Properties }
+      destructor Destroy; override;
 
-         procedure Progress(const deltaTime : Double); override;
-         procedure Notification(aMobile : TMobile; operation : TGameOperation); virtual;
+      procedure Progress(const deltaTime : Double); override;
+      procedure Notification(aMobile : TMobile; operation : TGameOperation); virtual;
 
-         property Controler : TControler read FControler write FControler;
-         property Mobile : TMobile read FMobile write SetMobile;
-         function GameEngine : TGameEngine;
+      property Controler : TControler read GetControler write SetControler;
+      property Mobile : TMobile read GetMobile write SetMobile;
+      function GameEngine : TGameEngine;
    end;
 
    TControlerClass = class of TControler;
@@ -225,6 +261,13 @@ type
          { Protected Properties }
          procedure SetDisabled(val : Boolean); override;
 
+         function GetGameEngine: TGameEngine;
+         procedure SetGameEngine(const aGameEngine : TGameEngine);
+         function GetEventTime: Integer;
+         procedure SetEventTime(const aEventTime : Integer);
+         function GetCompleted: Boolean;
+         procedure SetCompleted(const aCompleted : Boolean);
+
 		public
          { Public Properties }
          function  Triggered : Boolean; virtual;
@@ -233,9 +276,9 @@ type
          procedure SaveToStrings(data : TStrings); override;
          procedure LoadFromStrings(data : TStrings); override;
 
-         property GameEngine : TGameEngine read FGameEngine write FGameEngine;
-         property EventTime : Integer read FEventTime write FEventTime;
-         property Completed : Boolean read FCompleted write FCompleted;
+         property GameEngine : TGameEngine read GetGameEngine write SetGameEngine;
+         property EventTime : Integer read GetEventTime write SetEventTime;
+         property Completed : Boolean read GetCompleted write SetCompleted;
    end;
 
    TGameEventClass = class of TGameEvent;
@@ -247,15 +290,14 @@ type
       private
          { Private Properties }
          FList : TPersistentObjectList;
-
 		protected
          { Protected Properties }
-
+         function GetList: TPersistentObjectList;
+         procedure SetList(const aList : TPersistentObjectList);
 		public
          { Public Properties }
          procedure Trigger; override;
-
-         property List : TPersistentObjectList read FList write FList;
+         property List : TPersistentObjectList read GetList write SetList;
    end;
 
    // TGameMessage
@@ -289,11 +331,22 @@ type
 
 		protected
          { Protected Properties }
+         function GetTicks : Integer;
+         function GetOptions : TStrings;
+         procedure SetOptions(const aOptions : TStrings);
+
          function GetMobile(index : Integer) : TMobile;
+         function GetMessageLog : TGameMessages;
 
-         property Events : TPersistentObjectList read FEvents write FEvents;
+         function GetEvents : TPersistentObjectList;
+         procedure SetEvents(const aEvents : TPersistentObjectList);
 
-		public
+         function GetStatus : TGameEngineStatus;
+         function GetGameEndCountDown : Double;
+         procedure SetGameEndCountDown(const aGameEndCountDown : Double);
+
+         property Events : TPersistentObjectList read GetEvents write SetEvents;
+ 		public
          { Public Properties }
          constructor Create;
          destructor Destroy; override;
@@ -316,9 +369,9 @@ type
          procedure EnumerateMobiles(mobileClass : TMobileClass; destList : TPersistentObjectList);
          procedure Clear; dynamic;
 
-         property Status : TGameEngineStatus read FStatus;
-         property Ticks : Integer read FTicks;
-         property GameEndCountDown : Double read FGameEndCountDown write FGameEndCountDown;
+         property Status : TGameEngineStatus read GetStatus;
+         property Ticks : Integer read GetTicks;
+         property GameEndCountDown : Double read GetGameEndCountDown write SetGameEndCountDown;
          procedure DoGameCountDown(secondsRemaining : Integer); virtual;
 
          property Mobiles[index : Integer] : TMobile read GetMobile;
@@ -328,7 +381,7 @@ type
          function MobileByName(const aName : String) : TMobile;
          function MobileCount : Integer;
 
-         property  MessageLog : TGameMessages read FMessageLog;
+         property  MessageLog : TGameMessages read GetMessageLog;
          procedure AddMessage(const text : String; fromMobile, toMobile : TMobile); overload;
          procedure CleanMessageLog(const olderThanTicks : Integer = MaxInt);
          procedure FilterMessagesTo(toMobile : TMobile; minTicks : Integer; destList : TStrings);
@@ -336,7 +389,7 @@ type
          procedure RegisterEvent(gameEvent : TGameEvent);
          function  EventByName(const aName : String) : TGameEvent;
 
-         property Options : TStrings read FOptions write FOptions;
+         property Options : TStrings read GetOptions write SetOptions;
    end;
 
 var
@@ -519,6 +572,16 @@ end;
 
 // Loaded
 //
+function TGameEngineObject.GetDisabled: Boolean;
+begin
+  Result := FDisabled;
+end;
+
+function TGameEngineObject.GetName: String;
+begin
+  Result := FName;
+end;
+
 procedure TGameEngineObject.Loaded;
 begin
    // nothing
@@ -638,7 +701,7 @@ begin
    // integrate velocity
    f:=deltaTime*vSpeedScaleUp;
    CombineVector(FPosition, Velocity, f);
-   FPosition[3]:=1;
+   FPosition.V[3]:=1;
 end;
 
 // DoDetonate
@@ -646,6 +709,41 @@ end;
 procedure TMobile.DoDetonate;
 begin
    Free;
+end;
+
+function TMobile.GetCollision: TCollisionVolume;
+begin
+  Result := FCollision;
+end;
+
+function TMobile.GetController: TControler;
+begin
+  Result := FControler;
+end;
+
+function TMobile.GetDetonate: Boolean;
+begin
+  Result := FDetonate;
+end;
+
+function TMobile.GetGameEngine: TGameEngine;
+begin
+  Result := FGameEngine;
+end;
+
+function TMobile.GetSpeed: Single;
+begin
+  Result := FSpeed;
+end;
+
+function TMobile.GetTeam: Integer;
+begin
+  Result := FTeam;
+end;
+
+function TMobile.GetVelocity: TVector;
+begin
+  Result := FVelocity;
 end;
 
 // Notification
@@ -690,6 +788,11 @@ begin
    FUp:=VectorNormalize(VectorCrossProduct(rightVector, Direction));
 end;
 
+procedure TMobile.SetTeam(const aTeam: Integer);
+begin
+  FTeam := aTeam;
+end;
+
 // BestCaseInterceptTime
 //
 function TMobile.BestCaseInterceptTime(target : TMobile; quality : Integer) : Single;
@@ -703,12 +806,27 @@ end;
 procedure TMobile.SetVelocity(const aVelocity : TVector);
 begin
    FVelocity:=aVelocity;
-   FVelocity[3]:=0;
+   FVelocity.V[3]:=0;
    FSpeed:=VectorLength(FVelocity);
 end;
 
 // SetName
 //
+procedure TMobile.SetController(const aControler: TControler);
+begin
+  FControler := aControler;
+end;
+
+procedure TMobile.SetDetonate(const AValue: Boolean);
+begin
+  FDetonate := AValue;
+end;
+
+procedure TMobile.SetGameEngine(const aGameEngine: TGameEngine);
+begin
+  FGameEngine := aGameEngine;
+end;
+
 procedure TMobile.SetName(const val : String);
 var
    i : Integer;
@@ -770,6 +888,22 @@ procedure TGameEngine.Startup;
 begin
    FStatus:=gesPlaying;
 end;
+
+procedure TGameEngine.SetEvents(const aEvents: TPersistentObjectList);
+begin
+  FEvents := aEvents;
+end;
+
+procedure TGameEngine.SetGameEndCountDown(const aGameEndCountDown: Double);
+begin
+  FGameEndCountDown := aGameEndCountDown;
+end;
+
+procedure TGameEngine.SetOptions(const aOptions: TStrings);
+begin
+  FOptions := aOptions;
+end;
+
 
 // Pause
 //
@@ -1143,11 +1277,41 @@ begin
    Result:=nil;
 end;
 
+function TGameEngine.GetTicks: Integer;
+begin
+  Result := FTicks;
+end;
+
+function TGameEngine.GetEvents: TPersistentObjectList;
+begin
+  Result := FEvents;
+end;
+
+function TGameEngine.GetGameEndCountDown: Double;
+begin
+  Result := FGameEndCountDown;
+end;
+
+function TGameEngine.GetMessageLog: TGameMessages;
+begin
+  Result := FMessageLog;
+end;
+
 // GetMobile
 //
 function TGameEngine.GetMobile(index : Integer) : TMobile;
 begin
    Result:=TMobile(FMobiles[index]);
+end;
+
+function TGameEngine.GetOptions: TStrings;
+begin
+  Result := FOptions;
+end;
+
+function TGameEngine.GetStatus: TGameEngineStatus;
+begin
+  Result := FStatus;
 end;
 
 // ------------------
@@ -1185,6 +1349,21 @@ begin
    if Assigned(Mobile) then
       Result:=Mobile.GameEngine
    else Result:=nil;
+end;
+
+function TControler.GetControler: TControler;
+begin
+  Result := FControler;
+end;
+
+function TControler.GetMobile: TMobile;
+begin
+  Result := FMobile;
+end;
+
+procedure TControler.SetControler(aControler: TControler);
+begin
+ FControler := aControler;
 end;
 
 // SetMobile
@@ -1228,6 +1407,39 @@ begin
    inherited;
 end;
 
+procedure TGameEngine3DObject.SetDirection(const aVector: TVector);
+begin
+  FDirection := aVector;
+end;
+
+procedure TGameEngine3DObject.SetUp(const aVector: TVector);
+begin
+  FUp := aVector;
+end;
+
+procedure TGameEngine3DObject.SetPosition(const aVector: TVector);
+begin
+  FPosition := aVector;
+end;
+
+procedure TGameEngine3DObject.SetPosX(const aIndex: Integer;
+  const aValue: Single);
+begin
+  FPosition.V[AIndex] := AValue;
+end;
+
+procedure TGameEngine3DObject.SetPosY(const aIndex: Integer;
+  const aValue: Single);
+begin
+  FPosition.V[AIndex] := AValue;
+end;
+
+procedure TGameEngine3DObject.SetPosZ(const aIndex: Integer;
+  const aValue: Single);
+begin
+  FPosition.V[AIndex] := AValue;
+end;
+
 // LoadFromStrings
 //
 procedure TGameEngine3DObject.LoadFromStrings(data : TStrings);
@@ -1266,6 +1478,26 @@ begin
    Result:=VectorDistance2(Position, obj.Position);
 end;
 
+function TGameEngine3DObject.GetDirection: TVector;
+begin
+  Result := FDirection;
+end;
+
+function TGameEngine3DObject.GetUp: TVector;
+begin
+  Result := FUp;
+end;
+
+function TGameEngine3DObject.GetPosition: TVector;
+begin
+  Result := FPosition;
+end;
+
+function TGameEngine3DObject.GetPosXYZ(const AIndex: Integer): Single;
+begin
+  Result := FPosition.V[AIndex];
+end;
+
 // AbsoluteToRelative
 //
 function TGameEngine3DObject.AbsoluteToRelative(const p : TVector) : TVector;
@@ -1273,10 +1505,10 @@ var
    pRel : TVector;
 begin
    pRel:=VectorSubtract(p, Position);
-   Result[0]:=VectorDotProduct(Direction, pRel);
-   Result[1]:=VectorDotProduct(LeftVector, pRel);
-   Result[2]:=VectorDotProduct(Up, pRel);
-   Result[3]:=1;
+   Result.V[0]:=VectorDotProduct(Direction, pRel);
+   Result.V[1]:=VectorDotProduct(LeftVector, pRel);
+   Result.V[2]:=VectorDotProduct(Up, pRel);
+   Result.V[3]:=1;
 end;
 
 // BearingElevation
@@ -1289,8 +1521,8 @@ begin
    locP:=AbsoluteToRelative(p);
 
    // then determinate bearing and elevation relatively to ourself (in rad)
-   bearing:=ClampValue(ArcTan2(locP[1], locP[0]), -3, 3);
-   elevation:=ArcTan2(locP[2], locP[0]);
+   bearing:=ClampValue(ArcTan2(locP.V[1], locP.V[0]), -3, 3);
+   elevation:=ArcTan2(locP.V[2], locP.V[0]);
 end;
 
 // RightVector
@@ -1333,12 +1565,34 @@ begin
    data.Values['Time']:=FloatToStr(EventTime*0.01);
 end;
 
+function TGameEvent.GetCompleted: Boolean;
+begin
+  Result := FCompleted;
+end;
+
+function TGameEvent.GetEventTime: Integer;
+begin
+  Result := FEventTime;
+end;
+
+function TGameEvent.GetGameEngine: TGameEngine;
+begin
+  Result := FGameEngine;
+end;
+
 // LoadFromStrings
 //
 procedure TGameEvent.LoadFromStrings(data : TStrings);
 begin
    inherited;
    EventTime:=Round(StrToFloatDef(data.Values['Time'], 0)*100);
+end;
+
+// SetCompleted
+//
+procedure TGameEvent.SetCompleted(const aCompleted: Boolean);
+begin
+  FCompleted := aCompleted;
 end;
 
 // SetDisabled
@@ -1354,9 +1608,30 @@ begin
    end;
 end;
 
+procedure TGameEvent.SetEventTime(const aEventTime: Integer);
+begin
+  FEventTime := aEventTime;
+end;
+
+procedure TGameEvent.SetGameEngine(const aGameEngine: TGameEngine);
+begin
+  if not Assigned(FGameEngine) then
+    FGameEngine := aGameEngine;
+end;
+
 // ------------------
 // ------------------ TGameEventTerminator ------------------
 // ------------------
+
+function TGameEventTerminator.GetList: TPersistentObjectList;
+begin
+  Result := FList;
+end;
+
+procedure TGameEventTerminator.SetList(const aList: TPersistentObjectList);
+begin
+  FList := aList;
+end;
 
 // Trigger
 //
@@ -1390,6 +1665,26 @@ begin
       FMobile.FCollision:=nil;
 end;
 
+function TCollisionVolume.GetCollType: TMobileCollisionType;
+begin
+  Result := FCollType;
+end;
+
+function TCollisionVolume.GetMobile: TMobile;
+begin
+  Result := FMobile;
+end;
+
+function TCollisionVolume.GetRadius: Single;
+begin
+  Result := FRadius;
+end;
+
+function TCollisionVolume.GetSize: TAffineVector;
+begin
+  Result := FSize;
+end;
+
 const
    cCollType : array [TMobileCollisionType] of String =
                   ('Static', 'Mobile', 'Ammo', 'Immaterial');
@@ -1421,10 +1716,15 @@ end;
 
 // SetSize
 //
+procedure TCollisionVolume.SetCollType(const val: TMobileCollisionType);
+begin
+   FCollType:=val;
+end;
+
 procedure TCollisionVolume.SetSize(const val : TAffineVector);
 begin
    FSize:=val;
-   FRadius:=MaxFloat(val[0], val[1], val[2]);
+   FRadius:=MaxFloat(val.V[0], val.V[1], val.V[2]);
 end;
 
 // ------------------------------------------------------------------
@@ -1440,3 +1740,6 @@ finalization
    FreeAndNil(vRegisteredControlers);
 
 end.
+
+
+

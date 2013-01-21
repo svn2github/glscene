@@ -1,7 +1,7 @@
 object Main: TMain
   Left = 168
   Top = 111
-  Caption = 'Main'
+  Caption = 'AirBlast'
   ClientHeight = 395
   ClientWidth = 600
   Color = clWhite
@@ -42,7 +42,7 @@ object Main: TMain
     TabOrder = 0
   end
   object GLScene: TGLScene
-    Left = 16
+    Left = 40
     Top = 16
     object SkyBox: TGLSkyBox
       Direction.Coordinates = {2CBD3BB3000080BF0000000000000000}
@@ -163,23 +163,25 @@ object Main: TMain
       Position.Coordinates = {0000964300001643000000000000803F}
       Width = 512.000000000000000000
       Height = 128.000000000000000000
+      Rotation = 0.000000000000000000
     end
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
       item
         Name = 'Terrain'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.MinFilter = miLinearMipmapNearest
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'Detail'
         Shader = GLTexCombineShader
       end
       item
         Name = 'Detail'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.MinFilter = miLinearMipmapNearest
         Material.Texture.TextureMode = tmModulate
@@ -187,11 +189,11 @@ object Main: TMain
         Material.Texture.Compression = tcStandard
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {00002442000024420000803F00000000}
       end
       item
         Name = 'Detail2'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
         Material.Texture.MinFilter = miLinearMipmapNearest
         Material.Texture.TextureMode = tmModulate
@@ -202,63 +204,63 @@ object Main: TMain
         Material.Texture.MappingSCoordinates.Coordinates = {0000003F000000000000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000003F0000000000000000}
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Title'
+        Tag = 0
         Material.BlendingMode = bmAdditive
         Material.Texture.ImageAlpha = tiaAlphaFromIntensity
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Victory'
+        Tag = 0
         Material.BlendingMode = bmAdditive
         Material.Texture.ImageAlpha = tiaAlphaFromIntensity
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Defeat'
+        Tag = 0
         Material.BlendingMode = bmAdditive
         Material.Texture.ImageAlpha = tiaAlphaFromIntensity
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
-        Tag = 0
       end>
-    Left = 64
-    Top = 16
+    Left = 200
+    Top = 128
   end
   object ApplicationFileIO: TApplicationFileIO
     OnFileStream = ApplicationFileIOFileStream
     OnFileStreamExists = ApplicationFileIOFileStreamExists
-    Left = 128
+    Left = 200
     Top = 16
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
     MaxDeltaTime = 0.500000000000000000
     OnProgress = GLCadencerProgress
-    Left = 184
+    Left = 112
     Top = 16
   end
   object HTF: TGLHeightTileFileHDS
     MaxPoolSize = 0
-    Left = 128
-    Top = 56
+    Left = 40
+    Top = 72
   end
   object MLSkyBox: TGLMaterialLibrary
     Materials = <
       item
         Name = 'north'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -268,10 +270,10 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'east'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -281,10 +283,10 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'south'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -294,10 +296,10 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'west'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -307,10 +309,10 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'top'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -320,10 +322,9 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end>
-    Left = 64
-    Top = 56
+    Left = 112
+    Top = 72
   end
   object GLTexCombineShader: TGLTexCombineShader
     Combiners.Strings = (
@@ -333,8 +334,8 @@ object Main: TMain
     DesignTimeEnabled = False
     MaterialLibrary = MaterialLibrary
     LibMaterial3Name = 'Detail2'
-    Left = 184
-    Top = 56
+    Left = 120
+    Top = 256
   end
   object PFXSmoke: TGLPerlinPFXManager
     Cadencer = GLCadencer
@@ -362,8 +363,8 @@ object Main: TMain
         LifeTime = 5.000000000000000000
         SizeScale = 16.000000000000000000
       end>
-    Left = 184
-    Top = 128
+    Left = 40
+    Top = 192
   end
   object PFXFire: TGLPerlinPFXManager
     Cadencer = GLCadencer
@@ -386,22 +387,22 @@ object Main: TMain
         LifeTime = 0.500000000000000000
         SizeScale = 5.000000000000000000
       end>
-    Left = 224
-    Top = 128
+    Left = 200
+    Top = 192
   end
   object GLSMFMOD: TGLSMFMOD
     MasterVolume = 1.000000000000000000
     Sources = <>
     Cadencer = GLCadencer
     RollOffFactor = 0.009999999776482582
-    Left = 64
+    Left = 40
     Top = 128
     Doppler = 0.100000001490116100
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 280
-    Top = 16
+    Left = 112
+    Top = 128
   end
   object PFXDust: TGLCustomSpritePFXManager
     Cadencer = GLCadencer
@@ -423,13 +424,13 @@ object Main: TMain
         LifeTime = 4.000000000000000000
         SizeScale = 5.000000000000000000
       end>
-    Left = 184
-    Top = 168
+    Left = 120
+    Top = 192
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 280
-    Top = 56
+    Left = 400
+    Top = 16
   end
   object WBFMenu: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -437,21 +438,21 @@ object Main: TMain
     Font.Height = 30
     Font.Name = 'Courier New'
     Font.Style = [fsBold]
-    Left = 280
-    Top = 128
+    Left = 200
+    Top = 72
   end
   object TIMenuVoiceDelay: TTimer
     Enabled = False
     Interval = 350
     OnTimer = TIMenuVoiceDelayTimer
-    Left = 328
-    Top = 56
+    Left = 464
+    Top = 16
   end
   object TISplash: TTimer
     Enabled = False
     Interval = 100
     OnTimer = TISplashTimer
-    Left = 376
-    Top = 56
+    Left = 544
+    Top = 16
   end
 end

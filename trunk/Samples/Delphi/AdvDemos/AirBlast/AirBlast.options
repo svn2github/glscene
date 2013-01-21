@@ -12,3 +12,4 @@ Joystick=N
 JoystickDeadZone=10
 VSync=Y
 MusicVolume=100
+TutorialPassed=Y

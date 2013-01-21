@@ -38,9 +38,9 @@ begin
    end else begin
       p1:=Pos(',', str);
       p2:=LastDelimiter(',', str);
-      Result[0]:=StrToFloat(Copy(str, 1, p1-1));
-      Result[1]:=StrToFloat(Copy(str, p1+1, p2-p1-1));
-      Result[2]:=StrToFloat(Copy(str, p2+1, MaxInt));
+      Result.V[0]:=StrToFloat(Copy(str, 1, p1-1));
+      Result.V[1]:=StrToFloat(Copy(str, p1+1, p2-p1-1));
+      Result.V[2]:=StrToFloat(Copy(str, p2+1, MaxInt));
    end;
 end;
 
@@ -55,7 +55,7 @@ end;
 //
 function Vector3ToString(const v : TAffineVector) : String;
 begin
-   Result:=Format('%f,%f,%f', [v[0], v[1], v[2]]);
+   Result:=Format('%f,%f,%f', [v.V[0], v.V[1], v.V[2]]);
 end;
 
 // FindInPaths

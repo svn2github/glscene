@@ -1,16 +1,3 @@
-{:
-  GLSL Diffuse Specular Shader Demo<p>
-
-  A demo that shows how to use the TGLSLDiffuseSpecularShader component.
-
-  Version history:
-    24/07/09 - DaStr - Added fog support
-    02/07/07 - DaStr - Removed old Timer leftovers
-                       (GLSimpleNavigation component now does this stuff)
-    20/03/07 - DaStr - Initial version
-
-
-}
 unit uMainForm;
 
 interface
@@ -24,10 +11,10 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLGraph,
-  VectorTypes, GLUserShader, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
+  VectorTypes, GLUserShader, GLContext, VectorGeometry, GLGeomObjects,
   GLVectorFileObjects, GLSLDiffuseSpecularShader, GLSLShader, GLCustomShader,
   GLSimpleNavigation, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-
+  GLUtils,
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage;
 
@@ -86,8 +73,8 @@ implementation
 
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
   // First load models.
+  SetGLSceneMediaDir();
   Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
@@ -115,6 +102,7 @@ begin
 
   // Disable fog.
   EnableFogCheckBoxClick(nil);
+
 end;
 
 procedure TGLSLTestForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: double);

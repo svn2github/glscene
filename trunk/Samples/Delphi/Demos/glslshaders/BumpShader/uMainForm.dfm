@@ -1,10 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
-  AutoScroll = False
-  Caption = 'GLSL Bump Shader Demo'
-  ClientHeight = 447
-  ClientWidth = 641
+  Caption = 'GLSL Bump Shader'
+  ClientHeight = 455
+  ClientWidth = 645
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,15 +20,15 @@ object GLSLTestForm: TGLSLTestForm
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 641
-    Height = 400
+    Width = 645
+    Height = 408
     Camera = Camera
     Buffer.BackgroundColor = clBackground
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 143.991683959960900000
+    FieldOfView = 144.653381347656300000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -37,8 +36,8 @@ object GLSLTestForm: TGLSLTestForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 400
-    Width = 641
+    Top = 408
+    Width = 645
     Height = 47
     Align = alBottom
     TabOrder = 1
@@ -104,14 +103,16 @@ object GLSLTestForm: TGLSLTestForm
       TabOrder = 5
       OnClick = UseNormalTextureCheckBoxClick
     end
-    object ShowUnsupportedSceneObjectsCheckBox: TCheckBox
+    object ShowNotGLSceneObjectsCheckBox: TCheckBox
       Left = 456
       Top = 8
       Width = 185
       Height = 17
-      Caption = 'Show unsupported scene objects'
+      Caption = 'Show not GLScene objects'
+      Checked = True
+      State = cbChecked
       TabOrder = 6
-      OnClick = ShowUnsupportedSceneObjectsCheckBoxClick
+      OnClick = ShowNotGLSceneObjectsCheckBoxClick
     end
   end
   object Scene: TGLScene
@@ -186,6 +187,7 @@ object GLSLTestForm: TGLSLTestForm
     end
     object WorldCube: TGLDummyCube
       ObjectsSorting = osRenderBlendedLast
+      ShowAxes = True
       CubeSize = 1.000000000000000000
       object Sphere_little: TGLActor
         Material.MaterialLibrary = MaterialLibrary

@@ -1,7 +1,6 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
-  AutoScroll = False
   Caption = 'GLSL Diffuse Specular Shader'
   ClientHeight = 445
   ClientWidth = 641
@@ -13,6 +12,7 @@ object GLSLTestForm: TGLSLTestForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -71,6 +71,8 @@ object GLSLTestForm: TGLSLTestForm
       Width = 137
       Height = 17
       Caption = 'Turn-Pitch-Roll Enabled'
+      Checked = True
+      State = cbChecked
       TabOrder = 2
     end
     object RealisticSpecularCheckBox: TCheckBox
@@ -254,7 +256,7 @@ object GLSLTestForm: TGLSLTestForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = Viewer
-    FormCaption = 'GLSL Diffuse Specular Shade Demo  -   %FPS'
+    FormCaption = 'GLSL Diffuse Specular Shader  -   %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]

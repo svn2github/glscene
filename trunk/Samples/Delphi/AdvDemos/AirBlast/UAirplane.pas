@@ -229,9 +229,9 @@ begin
    // torquy lift (hmphhhh....)
    pitch:=pitch+LiftPerMSec*Speed*ClampValue(fStraight, 0, 1)*1e-4;
    // make plane go down at low speed or high-alt
-   pitch:=pitch-Up[2]*( Direction[2]/(1+speed2)
-                       +ClampValue(Position[2]-vAltitudeLimit, 0, vAltitudeLimitMargin)/(vAltitudeLimitMargin*10));
-   yaw:=yaw-1*rightVector[2]/(1+speed2);
+   pitch:=pitch-Up.V[2]*( Direction.V[2]/(1+speed2)
+                       +ClampValue(Position.V[2]-vAltitudeLimit, 0, vAltitudeLimitMargin)/(vAltitudeLimitMargin*10));
+   yaw:=yaw-1*rightVector.V[2]/(1+speed2);
 
    // attitude inertia (sort of)
    f:=0.05;
@@ -263,7 +263,7 @@ begin
       if LiftPerMSec>0 then
          CombineVector(accel, Up, f)
       else if VectorNorm(thrust)>0 then
-         accel[2]:=0;
+         accel.V[2]:=0;
    end;
    // integrate thrust and gravity
    f:=10*deltaTime/Mass;

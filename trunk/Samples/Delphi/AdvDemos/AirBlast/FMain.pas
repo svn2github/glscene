@@ -7,12 +7,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, FMod,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
+  Dialogs,  ExtCtrls, GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
   GLVectorFileObjects, GLTexture, ApplicationFileIO, UAirplane, GLCadencer,
   GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS, GLSkyBox, GLFileWAV,
   GLFileMP3, GLTexCombineShader, UAirBlastEngine, UAirBlastControler,
   UABControlerUI, GLParticleFX, GLPerlinPFX, UGameEngine, GLCanvas, GLSound,
-  GLSMFMOD, UABVoice, DToolBox, GLBitmapFont, GLWindowsFont, ExtCtrls,
+  GLSMFMOD, UABVoice, DToolBox, GLBitmapFont, GLWindowsFont,
   GLGameMenu, GLHUDObjects, GLMaterial, GLCoordinates, GLCrossPlatform,
   BaseClasses;
 
@@ -49,10 +49,6 @@ type
     AbortGameMenu: TGLGameMenu;
     DCSortedRoot: TGLDummyCube;
     procedure FormCreate(Sender: TObject);
-    function ApplicationFileIOFileStream(const fileName: string;
-      mode: Word): TStream;
-    function ApplicationFileIOFileStreamExists(
-      const fileName: string): Boolean;
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormDestroy(Sender: TObject);
@@ -66,6 +62,9 @@ type
     procedure TISplashTimer(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure GameMenuSelectedChanged(Sender: TObject);
+    procedure ApplicationFileIOFileStream(const fileName: string; mode: Word;
+      var stream: TStream);
+    function ApplicationFileIOFileStreamExists(const fileName: string): Boolean;
   private
     { Private declarations }
     procedure GameEngineSpawn(engine: TAirBlastEngine; airplane: TABAirplane);
@@ -89,11 +88,9 @@ var
 implementation
 
 {$R *.dfm}
-
 uses
-  GLFile3DS, JPEG, GLKeyboard,
-  FConfigControls, FOptionsDlg, UABUtils,
-  GLScreen, GLContext;
+GLFile3DS, JPEG, GLKeyboard, FConfigControls,
+FOptionsDlg, UABUtils, GLScreen, GLContext;
 
 const
   cPaths = 'Terrains;Models;Skymap;Textures;Missions;Sounds;Voices;Music';
@@ -113,6 +110,8 @@ end;
 procedure TMain.FormCreate(Sender: TObject);
 var
   searchRec: TSearchRec;
+  ExePath : String;
+
 begin
   //   FDebugMode:=True;
 
@@ -135,11 +134,15 @@ begin
   SetTexImageName(MLSkyBox, 'west', 'West.jpg');
   SetTexImageName(MLSkyBox, 'top', 'Top.jpg');
 
+  ExePath := ExtractFilePath(ParamStr(0));
+  SetCurrentDir(ExePath);
+
+
 {$WARNINGS OFF}
-  FindFirst('Sounds\*.*', faArchive, searchRec);
+  FindFirst(ExePath+'Sounds\*.*', faArchive, searchRec);
 {$WARNINGS ON}
   repeat
-    GLSoundLibrary.Samples.AddFile('Sounds\' + searchRec.Name,
+    GLSoundLibrary.Samples.AddFile(ExePath+'Sounds\' + searchRec.Name,
       ChangeFileExt(searchRec.Name, ''))
   until FindNext(searchRec) <> 0;
   FindClose(searchRec);
@@ -175,13 +178,13 @@ begin
     IMLogo.Picture.LoadFromFile('Textures\GLScene.bmp');
     IMLogo.Left := (ClientWidth - IMLogo.Width) div 2;
     IMLogo.Top := (ClientHeight - IMLogo.Height) div 2;
-    StartGame('Demo.mis');
+    StartGame(ExePath+'Missions\Demo.mis');
     GameMenuMainMenu;
   end
   else
   begin
     FGameEngine.SetupEventsDebugStuff;
-    StartGame('Endurance.mis');
+    StartGame(ExePath+'Endurance.mis');
   end;
 end;
 
@@ -401,7 +404,6 @@ begin
 
   FGameEngine.Clear;
   FGameEngine.LoadFromFile(fileName);
-
   with FGameEngine.AddViewerCam do
   begin
     ViewerBuffer := SceneViewer.Buffer;
@@ -421,10 +423,10 @@ begin
   TIMenuVoiceDelay.Enabled := False;
 end;
 
-function TMain.ApplicationFileIOFileStream(const fileName: string;
-  mode: Word): TStream;
+procedure TMain.ApplicationFileIOFileStream(const fileName: string; mode: Word;
+  var stream: TStream);
 begin
-  Result := TFileStream.Create(FindInPaths(fileName, cPaths), mode);
+  TFileStream.Create(FindInPaths(fileName, cPaths), mode);
 end;
 
 function TMain.ApplicationFileIOFileStreamExists(
@@ -488,8 +490,8 @@ var
 begin
   playerMobile := FGameEngine.MobileByName('Player');
   if playerMobile <> nil then
-    Caption := Format('%.1f, %.1f, %.1f / ', [playerMobile.Position[0],
-      playerMobile.Position[1], playerMobile.Position[2]])
+    Caption := Format('%.1f, %.1f, %.1f / ', [playerMobile.Position.V[0],
+      playerMobile.Position.V[1], playerMobile.Position.V[2]])
   else
     Caption := '';
   Caption := Caption + SceneViewer.FramesPerSecondText + ' / ' +
@@ -505,6 +507,7 @@ var
   sl: TStrings;
 begin
   case Key of
+
     VK_F2: DoOptionsDlg;
     VK_ESCAPE:
       begin
@@ -644,4 +647,6 @@ begin
 end;
 
 end.
+
+
 
