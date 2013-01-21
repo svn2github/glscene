@@ -37,7 +37,6 @@ requires
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
-  dynodegl in '..\Source\dynodegl.pas',
   GLODERegister in '..\Source\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
   GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
