@@ -135,16 +135,16 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
       glActiveTextureARB(GL_TEXTURE0_ARB);
     }
     GLSLProg[CurrShad]->Uniform1f["u_invRad"]= 0.001;
-    vec.Coord[0]= 0.42200005; vec.Coord[1]= -0.04999996; vec.Coord[2]= 0;
-    GLSLProg[CurrShad]->Uniform3f["cBumpSize"]= vec;
+	vec.V[0]= 0.42200005; vec.V[1]= -0.04999996; vec.V[2]= 0;
+	GLSLProg[CurrShad]->Uniform3f["cBumpSize"]= vec;
   }
   if ((CurrShad == 9))
   {
-    VecCol1.Coord[0]= 0.5; VecCol1.Coord[1]= 0.25; VecCol1.Coord[2]= 0.2;
-    GLSLProg[CurrShad]->Uniform3f["DiffuseColor"]= VecCol1;
-    VecCol2.Coord[0]= 0.95; VecCol2.Coord[1]= 0.45; VecCol2.Coord[2]= 0.3;
-    GLSLProg[CurrShad]->Uniform3f["PhongColor"]= VecCol2;
-    GLSLProg[CurrShad]->Uniform1f["Edge"]= 0.25;
+	VecCol1.V[0]= 0.5; VecCol1.V[1]= 0.25; VecCol1.V[2]= 0.2;
+	GLSLProg[CurrShad]->Uniform3f["DiffuseColor"]= VecCol1;
+	VecCol2.V[0]= 0.95; VecCol2.V[1]= 0.45; VecCol2.V[2]= 0.3;
+	GLSLProg[CurrShad]->Uniform3f["PhongColor"]= VecCol2;
+	GLSLProg[CurrShad]->Uniform1f["Edge"]= 0.25;
     GLSLProg[CurrShad]->Uniform1f["Phong"]= 0.5540001;
   }
 }
@@ -312,7 +312,7 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled)
 {
-  Cam->AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
+  Cam->AdjustDistanceToTarget(System::Math::Power(1.1, WheelDelta / 120));
 }
 //---------------------------------------------------------------------------
 
