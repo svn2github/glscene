@@ -28,7 +28,6 @@
 #pragma link "DDSImage"
 #pragma link "GLFileMS3D"
 
-
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

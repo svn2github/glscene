@@ -52,7 +52,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
   if (IsKeyDown('2'))
   {
     CurrShadName= "Lambert";
-    CurrShad= 1; } else
+	CurrShad= 1; } else
   if (IsKeyDown('3'))
   {
     CurrShadName= "Phong";
@@ -81,7 +81,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
   if (IsKeyDown('9'))
   {
     CurrShadName= "TEST TEXTURE BUMP";
-    CurrShad= 8;
+	CurrShad= 8;
   }
   if (IsKeyDown('0'))
   {
@@ -110,7 +110,7 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
   if ((CurrShad == 8))
   {
     // initialize the heightmap
-    libMat = MatLib->LibMaterialByName("Brick01");
+	libMat = MatLib->LibMaterialByName("Brick01");
     {
       libMat->PrepareBuildList();
 	  glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -158,7 +158,7 @@ void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass,
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
   Caption=Format("Simple GLSL Shader [%.2f FPS]", ARRAYOFCONST((GLSceneViewer1->FramesPerSecond())));
-  GLHUDText1->Text= "GLKeyboard [ 1,2,3,4,5,6,7,8,9,0 ] Current Shader: "+CurrShadName;
+  GLHUDText1->Text= "GLKeyboard [1,2,3,4,5,6,7,8,9,0 ] Current Shader: "+CurrShadName;
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------
@@ -203,10 +203,6 @@ void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
   }
 }
 
-
-//---------------------------------------------------------------------------
-
-
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
@@ -216,11 +212,11 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 
   if (! ShaderActived)
   {
-    if ((! (GL_ARB_shader_objects && GL_ARB_vertex_program && GL_ARB_vertex_shader && GL_ARB_fragment_shader)))
-    {
-      ShowMessage("Your hardware/driver doesn't support GLSL and can't execute this demo!");
-      return (void) NULL;
-    }
+	if ((! (GL_ARB_shader_objects && GL_ARB_vertex_program && GL_ARB_vertex_shader && GL_ARB_fragment_shader)))
+	{
+	  ShowMessage("Your hardware does not support GLSL to execute this demo!");
+	  //	  return (void) NULL; <- It's not necessary
+	}
     //Blinn Shader
     GLSLProg[0] = new TGLProgramHandle(true);
     GLSLProg[0]->AddShader(__classid(TGLVertexShaderHandle), LoadAnsiStringFromFile("Shaders\\vertex.glsl"),true);
@@ -261,6 +257,7 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 	GLSLProg[9]= new TGLProgramHandle(true);
 	GLSLProg[9]->AddShader(__classid(TGLVertexShaderHandle), LoadAnsiStringFromFile("Shaders\\toon.vert"),true);
 	GLSLProg[9]->AddShader(__classid(TGLFragmentShaderHandle), LoadAnsiStringFromFile("Shaders\\toon.frag"),true);
+
 	for (int i=0; i<MAXSHADERS; i++)
 	{
 	  if (! GLSLProg[i]->LinkProgram())
@@ -280,37 +277,37 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 	  glPushMatrix();
 	  glColor4fv(GLSphere1->Material->FrontProperties->Diffuse->AsAddress());
 	  GLSphere1->DoRender(rci,true,false);
-      glPopMatrix();
-      glPushMatrix();
-      glTranslatef(1, 0, 0);
+	  glPopMatrix();
+	  glPushMatrix();
+	  glTranslatef(1, 0, 0);
 	  glColor4fv(GLCone1->Material->FrontProperties->Diffuse->AsAddress());
-      GLCone1->DoRender(rci,true,false);
-      glPopMatrix();
-      glPushMatrix();
-      glTranslatef(0, -1, 0);
-      glScalef(0.015,0.015,0.015);
-      glRotatef(90,-1,0,0);
-      glColor4fv(GLFreeForm1->Material->FrontProperties->Diffuse->AsAddress());
-      GLFreeForm1->DoRender(rci,true,false);
-      glPopMatrix();
-      glPushMatrix();
-      glTranslatef(-1, 0, 0);
-      glColor4fv(GLCube1->Material->FrontProperties->Diffuse->AsAddress());
-      GLCube1->DoRender(rci,true,false);
-      glPopMatrix();
-    }
-    else
-    {
-      glPushMatrix();
-      GLCube1->DoRender(rci,true,false);
-      glPopMatrix();
+	  GLCone1->DoRender(rci,true,false);
+	  glPopMatrix();
+	  glPushMatrix();
+	  glTranslatef(0, -1, 0);
+	  glScalef(0.015,0.015,0.015);
+	  glRotatef(90,-1,0,0);
+	  glColor4fv(GLFreeForm1->Material->FrontProperties->Diffuse->AsAddress());
+	  GLFreeForm1->DoRender(rci,true,false);
+	  glPopMatrix();
+	  glPushMatrix();
+	  glTranslatef(-1, 0, 0);
+	  glColor4fv(GLCube1->Material->FrontProperties->Diffuse->AsAddress());
+	  GLCube1->DoRender(rci,true,false);
+	  glPopMatrix();
+	}
+	else
+	{
+	  glPushMatrix();
+	  GLCube1->DoRender(rci,true,false);
+	  glPopMatrix();
    }
  }
  GLUserShader1DoUnApply(this, 0, rci, Continue);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
-          TPoint &MousePos, bool &Handled)
+		  TPoint &MousePos, bool &Handled)
 {
   Cam->AdjustDistanceToTarget(System::Math::Power(1.1, WheelDelta / 120));
 }
