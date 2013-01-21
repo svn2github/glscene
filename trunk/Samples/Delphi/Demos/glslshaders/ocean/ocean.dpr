@@ -1,4 +1,4 @@
-program ocean;
+program Ocean;
 
 uses
   Forms,

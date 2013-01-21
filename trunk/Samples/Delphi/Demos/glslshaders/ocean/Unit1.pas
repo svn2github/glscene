@@ -15,6 +15,7 @@ uses
   GLScene,
   GLTexture,
   GLObjects,
+  GLUtils,
   ComCtrls,
   GLContext,
   Jpeg,
@@ -32,7 +33,8 @@ uses
   GLMaterial,
   GLCoordinates,
   BaseClasses,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)
@@ -42,7 +44,6 @@ type
     MatLib: TGLMaterialLibrary;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
-    Timer1: TTimer;
     GLSphere1: TGLSphere;
     DOInitialize: TGLDirectOpenGL;
     GLUserShader1: TGLUserShader;
@@ -53,6 +54,7 @@ type
     GLEarthSkyDome1: TGLEarthSkyDome;
     GLSphere2: TGLSphere;
     DOOceanPlane: TGLDirectOpenGL;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure DOInitializeRender(Sender: TObject;
       var rci: TRenderContextInfo);
@@ -60,7 +62,6 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure Timer1Timer(Sender: TObject);
     procedure GLUserShader1DoApply(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
@@ -71,9 +72,9 @@ type
       var rci: TRenderContextInfo);
     procedure GLMemoryViewer1BeforeRender(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my, dmx, dmy: Integer;
     programObject: TGLProgramHandle;
   end;
@@ -85,23 +86,21 @@ implementation
 
 uses
   GLTextureFormat,
-  OpenGLTokens,
-  GLUtils;
+  GLColor,
+  OpenGLTokens;
 
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-
   // Load the cube map which is used both for environment and as reflection texture
-
-  with matLib.LibMaterialByName('water').Material.Texture do
+  with MatLib.LibMaterialByName('water').Material.Texture do
   begin
     Image.LoadFromFile('noise.bmp');
   end;
 
-  with matLib.LibMaterialByName('cubeMap').Material.Texture do
+  with MatLib.LibMaterialByName('cubeMap').Material.Texture do
   begin
     ImageClassName := TGLCubeMapImage.ClassName;
     with Image as TGLCubeMapImage do
@@ -203,12 +202,6 @@ begin
     dmy := 0;
   end;
   GLSceneViewer1.Invalidate;
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-  Caption := GLSceneViewer1.FramesPerSecondText;
-  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 63
   Top = 64
-  Width = 676
-  Height = 471
-  Caption = 'Form1'
+  Caption = 'GLSL Ocean'
+  ClientHeight = 365
+  ClientWidth = 515
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,26 +11,26 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 660
-    Height = 433
+    Width = 515
+    Height = 365
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.FaceCulling = False
     Buffer.Lighting = False
-    FieldOfView = 164.221740722656300000
+    FieldOfView = 161.330001831054700000
     Align = alClient
-    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 16
+    Left = 56
     Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -103,25 +103,20 @@ object Form1: TForm1
         Material.Texture.MappingMode = tmmCubeMapNormal
         Material.Texture.Disabled = False
       end>
-    Left = 16
-    Top = 56
+    Left = 56
+    Top = 72
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 136
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 16
-    Top = 176
+    Left = 200
+    Top = 16
   end
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
     OnDoUnApply = GLUserShader1DoUnApply
-    Left = 16
-    Top = 96
+    Left = 128
+    Top = 72
   end
   object GLMemoryViewer1: TGLMemoryViewer
     Camera = CameraCubeMap
@@ -130,11 +125,11 @@ object Form1: TForm1
     BeforeRender = GLMemoryViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
-    Left = 64
-    Top = 56
+    Left = 296
+    Top = 16
   end
   object GLScene2: TGLScene
-    Left = 64
+    Left = 128
     Top = 16
     object GLEarthSkyDome1: TGLEarthSkyDome
       Direction.Coordinates = {FEFF7F27000080A7FFFF7F3F00000000}
@@ -154,5 +149,25 @@ object Form1: TForm1
       FocalLength = 50.000000000000000000
       Direction.Coordinates = {00000000000000800000803F00000000}
     end
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'GLSL Ocean - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 296
+    Top = 72
   end
 end

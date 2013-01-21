@@ -1,12 +1,3 @@
-{: Post Shader Demo<p>
-
-  A demo that demostrates how to use different post shaders together.
-  More post shaders will be added to it later on.
-
-  Version history:
-    12/06/07 - DaStr - Small cosmetic fixes
-    05/04/07 - DaStr - Initial version
-}
 unit UMainForm;
 
 interface
@@ -81,8 +72,8 @@ implementation
 
 procedure TPostShaderDemoForm.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
   // First load models.
+  SetGLSceneMediaDir();
   Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);
   Fighter.AnimationMode := aamLoop;
@@ -132,11 +123,6 @@ begin
   end;
 end;
 
-procedure TPostShaderDemoForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  Cadencer.Enabled := False;
-end;
-
 procedure TPostShaderDemoForm.LightCubeProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
@@ -159,6 +145,11 @@ begin
   if ShaderCheckListBox.Items.Count <> 0 then
     for I := 0 to ShaderCheckListBox.Items.Count - 1 do
       TGLShader(ShaderCheckListBox.Items.Objects[I]).Enabled := ShaderCheckListBox.Checked[I];
+end;
+
+procedure TPostShaderDemoForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Cadencer.Enabled := False;
 end;
 
 end.

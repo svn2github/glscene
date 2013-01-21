@@ -1,8 +1,7 @@
 object PostShaderDemoForm: TPostShaderDemoForm
   Left = 261
   Top = 176
-  AutoScroll = False
-  Caption = 'Post Shader demo'
+  Caption = 'GLSL Post Shader'
   ClientHeight = 445
   ClientWidth = 623
   Color = clBtnFace
@@ -241,7 +240,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = Viewer
-    FormCaption = 'Post Shader Demo - %FPS'
+    FormCaption = 'GLSL Post Shader  - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
