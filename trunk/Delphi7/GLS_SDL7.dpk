@@ -29,6 +29,7 @@ package GLS_SDL7;
 
 requires
   vcl,
+  rtl,
   GLScene7;
 
 contains
