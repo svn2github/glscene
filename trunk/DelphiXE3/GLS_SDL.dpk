@@ -33,6 +33,7 @@ package GLS_SDL;
 
 requires
   vcl,
+  rtl,
   GLScene_RunTime;
 
 contains
