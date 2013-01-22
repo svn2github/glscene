@@ -1,25 +1,10 @@
-{: Basic demo for using the SDLViewer in GLScene.<p>
-
-   The SDL Viewer allows to use SDL for setting up OpenGL, but still render
-   with GLScene. The main differences are that SDL has no design-time preview
-   and that  only one OpenGL window may exists throughout the application's
-   lifetime (you may have standard forms around it, but as soon as the SDL
-   window is closed, the application terminates.<p>
-
-   The SDL viewer is more suited for games or simple apps that aim for
-   cross-platform support, for SDL is available on multiple platforms.
-   SDL also provides several game-related support APIs for sound, controlers,
-   video etc. (see http://www.libsdl.org).<p>
-
-   The rendered scene is similar to the one in the materials/cubemap demo.
-}
 unit Unit1;
 
 interface
 
 uses
   Forms, SysUtils, Classes, GLScene, GLObjects, GLSDLContext, SDL,
-  GLTeapot, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLTeapot, GLCrossPlatform, GLCoordinates, BaseClasses, GLColor;
 
 type
   TDataModule1 = class(TDataModule)
@@ -45,7 +30,12 @@ implementation
 
 {$R *.dfm}
 
-uses GLContext, Dialogs, GLTexture, Jpeg, GLUtils;
+uses
+  GLContext,
+  Dialogs,
+  GLTexture,
+  Jpeg,
+  GLUtils;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin
@@ -65,7 +55,9 @@ end;
 
 procedure TDataModule1.GLSDLViewer1EventPollDone(Sender: TObject);
 begin
-   if not firstPassDone then begin
+   SetGLSceneMediaDir();
+   if not firstPassDone then
+   begin
       // Loads a texture map for the teapot
       // (see materials/cubemap for details on that)
       //
@@ -79,11 +71,13 @@ begin
         if not GL.ARB_texture_cube_map then
            ShowMessage('Your graphics board does not support cube maps...'#13#10
                        +'So, no cube maps for ya...')
-        else begin
-           SetGLSceneMediaDir();
-           with Teapot1.Material.Texture do begin
+        else
+        begin
+           with Teapot1.Material.Texture do
+           begin
               ImageClassName:=TGLCubeMapImage.ClassName;
-              with Image as TGLCubeMapImage do begin
+              with Image as TGLCubeMapImage do
+              begin
                  Picture[cmtPX].LoadFromFile('cm_left.jpg');
                  Picture[cmtNX].LoadFromFile('cm_right.jpg');
                  Picture[cmtPY].LoadFromFile('cm_top.jpg');

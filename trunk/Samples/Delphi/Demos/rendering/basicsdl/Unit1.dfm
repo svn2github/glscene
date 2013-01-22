@@ -1,8 +1,6 @@
 object DataModule1: TDataModule1
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 248
-  Top = 107
   Height = 150
   Width = 215
   object GLScene1: TGLScene
