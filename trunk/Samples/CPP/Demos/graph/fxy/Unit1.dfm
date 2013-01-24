@@ -122,47 +122,47 @@ object Form1: TForm1
       ShowAxes = True
       Up.Coordinates = {0000803FEDAD09A72EBD3BB300000000}
       XSamplingScale.Min = -1.000000000000000000
-      XSamplingScale.max = 1.000000000000000000
-      XSamplingScale.step = 0.019999999552965160
+      XSamplingScale.Max = 1.000000000000000000
+      XSamplingScale.Step = 0.019999999552965160
       YSamplingScale.Min = -1.000000000000000000
-      YSamplingScale.max = 1.000000000000000000
-      YSamplingScale.step = 0.019999999552965160
+      YSamplingScale.Max = 1.000000000000000000
+      YSamplingScale.Step = 0.019999999552965160
       object XYGrid: TGLXYZGrid
         LineColor.Color = {00000000000000000000803F0000803F}
         XSamplingScale.Min = -1.000000000000000000
-        XSamplingScale.max = 1.000000000000000000
-        XSamplingScale.step = 0.100000001490116100
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
         YSamplingScale.Min = -1.000000000000000000
-        YSamplingScale.max = 1.000000000000000000
-        YSamplingScale.step = 0.100000001490116100
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
         ZSamplingScale.Min = -1.000000000000000000
-        ZSamplingScale.max = 1.000000000000000000
-        ZSamplingScale.step = 0.100000001490116100
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
       end
       object XZGrid: TGLXYZGrid
         LineColor.Color = {000000000000803F000000000000803F}
         XSamplingScale.Min = -1.000000000000000000
-        XSamplingScale.max = 1.000000000000000000
-        XSamplingScale.step = 0.100000001490116100
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
         YSamplingScale.Min = -1.000000000000000000
-        YSamplingScale.max = 1.000000000000000000
-        YSamplingScale.step = 0.100000001490116100
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
         ZSamplingScale.Min = -1.000000000000000000
-        ZSamplingScale.max = 1.000000000000000000
-        ZSamplingScale.step = 0.100000001490116100
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
         Parts = [gpX, gpZ]
       end
       object YZGrid: TGLXYZGrid
         LineColor.Color = {0000803F00000000000000000000803F}
         XSamplingScale.Min = -1.000000000000000000
-        XSamplingScale.max = 1.000000000000000000
-        XSamplingScale.step = 0.100000001490116100
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.100000001490116100
         YSamplingScale.Min = -1.000000000000000000
-        YSamplingScale.max = 1.000000000000000000
-        YSamplingScale.step = 0.100000001490116100
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
         ZSamplingScale.Min = -1.000000000000000000
-        ZSamplingScale.max = 1.000000000000000000
-        ZSamplingScale.step = 0.100000001490116100
+        ZSamplingScale.Max = 1.000000000000000000
+        ZSamplingScale.Step = 0.100000001490116100
         Parts = [gpY, gpZ]
       end
     end

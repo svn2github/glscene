@@ -7,14 +7,15 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
 #include "GLScene.hpp"
+
 #include "GLWin32Viewer.hpp"
 #include <ComCtrls.hpp>
 #include "GLGraph.hpp"
 #include "GLObjects.hpp"
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
-#include <Vcl.ExtCtrls.hpp>
 #include "GLCrossPlatform.hpp"
 
 //---------------------------------------------------------------------------

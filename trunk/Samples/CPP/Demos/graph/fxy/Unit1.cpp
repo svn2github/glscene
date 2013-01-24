@@ -6,13 +6,6 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLScene"
-#pragma link "GLWin32Viewer"
-#pragma link "GLGraph"
-#pragma link "GLObjects"
-#pragma link "BaseClasses"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
