@@ -1,9 +1,9 @@
 package GLScene5;
 
 {$R *.RES}
-{$R '..\Source\DesignTime\GLSceneObjects.dcr'}
-{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
-{$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
+{$R '..\Source\GLSceneObjects.dcr'}
+{$R '..\Source\GLSceneVCL.dcr'}
+{$R '..\Source\nonGLSceneVCL.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -36,19 +36,19 @@ requires
 {%File '..\Source\GLScene.inc'}
 
 contains
-  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
   GLMaterial in '..\Source\GLMaterial.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
-  GLScreen in '..\Source\Platform\GLScreen.pas',
-  VectorGeometry in '..\Source\Base\VectorGeometry.pas',
-  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
-  PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
-  PlugInManager in '..\Source\PlugIn\PlugInManager.pas',
-  Info in '..\Source\PropertyEditors\Info.pas' {InfoForm},
-  PlugInManagerPropEditor in '..\Source\PlugIn\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
-  Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
+  GLScreen in '..\Source\GLScreen.pas',
+  VectorGeometry in '..\Source\VectorGeometry.pas',
+  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditForm},
+  PlugInIntf in '..\Source\PlugInIntf.pas',
+  PlugInManager in '..\Source\PlugInManager.pas',
+  Info in '..\Source\Info.pas' {InfoForm},
+  PlugInManagerPropEditor in '..\Source\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
+  Utils3DS in '..\Source\Utils3DS.pas',
   File3DS in '..\Source\FileFormats\File3DS.pas',
   FileMD2 in '..\Source\FileFormats\FileMD2.pas',
   TypesMD2 in '..\Source\FileFormats\TypesMD2.pas',

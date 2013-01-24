@@ -33,9 +33,9 @@ uses
   Classes,
   SysUtils,
   GLContext,
-  SDLWindow,
+  GLSDLWindow,
   GLScene,
-  SDL;
+  GLSDL;
 
 type
 

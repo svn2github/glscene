@@ -32,14 +32,15 @@ package GLS_SDL;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
+  vcl,
+  vclimg,
   GLScene_RunTime;
 
 contains
   GLSDLContext in '..\Source\GLSDLContext.pas',
-  SDLWindow in '..\Source\SDLWindow.pas',
-  sdl in '..\Source\sdl.pas';
+  GLSDL in '..\Source\GLSDL.pas',
+  GLSDLWindow in '..\Source\GLSDLWindow.pas';
 
 end.
 

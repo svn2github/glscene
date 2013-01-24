@@ -34,7 +34,7 @@ requires
 
 contains
   GLSDLContext in '..\Source\GLSDLContext.pas',
-  SDLWindow in '..\Source\SDLWindow.pas',
-  SDL in '..\Source\sdl.pas';
+  GLSDLWindow in '..\Source\GLSDLWindow.pas',
+  GLSDL in '..\Source\GLSDL.pas';
 
 end.

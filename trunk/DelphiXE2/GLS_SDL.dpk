@@ -1,7 +1,6 @@
 package GLS_SDL;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneVCLSDL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
@@ -34,12 +33,13 @@ package GLS_SDL;
 
 requires
   vcl,
+  rtl,
   GLScene_RunTime;
 
 contains
   GLSDLContext in '..\Source\GLSDLContext.pas',
-  SDLWindow in '..\Source\SDLWindow.pas',
-  sdl in '..\Source\sdl.pas';
+  GLSDLWindow in '..\Source\GLSDLWindow.pas',
+  GLSDL in '..\Source\GLSDL.pas';
 
 end.
 

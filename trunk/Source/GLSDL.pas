@@ -4,6 +4,8 @@
 {: SDL<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/13 - PW - Supplied with CPPB compatibility by suppressing
+                     $EXTERNALSYM ... directives
       <li>17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -12,7 +14,7 @@
                                                          (BugTracekrID=1681585)
 	</ul></font>
 }
-unit SDL;
+unit GLSDL;
 {******************************************************************************}
 {                                                                              }
 {       Borland Delphi SDL - Simple DirectMedia Layer                          }
@@ -186,80 +188,51 @@ const
 
   // SDL.h constants
   SDL_INIT_TIMER = $00000001;
-{$EXTERNALSYM SDL_INIT_TIMER}
   SDL_INIT_AUDIO = $00000010;
-{$EXTERNALSYM SDL_INIT_AUDIO}
   SDL_INIT_VIDEO = $00000020;
-{$EXTERNALSYM SDL_INIT_VIDEO}
   SDL_INIT_CDROM = $00000100;
-{$EXTERNALSYM SDL_INIT_CDROM}
   SDL_INIT_JOYSTICK = $00000200;
-{$EXTERNALSYM SDL_INIT_JOYSTICK}
   SDL_INIT_NOPARACHUTE = $00100000; // Don't catch fatal signals
-{$EXTERNALSYM SDL_INIT_NOPARACHUTE}
   SDL_INIT_EVENTTHREAD = $01000000; // Not supported on all OS's
-{$EXTERNALSYM SDL_INIT_EVENTTHREAD}
   SDL_INIT_EVERYTHING = $0000FFFF;
-{$EXTERNALSYM SDL_INIT_EVERYTHING}
 
   // SDL_error.h constants
   ERR_MAX_STRLEN = 128;
-{$EXTERNALSYM ERR_MAX_STRLEN}
   ERR_MAX_ARGS = 5;
-{$EXTERNALSYM ERR_MAX_ARGS}
 
   // SDL_types.h constants
   SDL_PRESSED = $01;
-{$EXTERNALSYM SDL_PRESSED}
   SDL_RELEASED = $00;
-{$EXTERNALSYM SDL_RELEASED}
 
   // SDL_timer.h constants
   // This is the OS scheduler timeslice, in milliseconds
   SDL_TIMESLICE = 10;
-{$EXTERNALSYM SDL_TIMESLICE}
   // This is the maximum resolution of the SDL timer on all platforms
   TIMER_RESOLUTION = 10; // Experimentally determined
-{$EXTERNALSYM TIMER_RESOLUTION}
 
   // SDL_audio.h constants
   AUDIO_U8 = $0008; // Unsigned 8-bit samples
-{$EXTERNALSYM AUDIO_U8}
   AUDIO_S8 = $8008; // Signed 8-bit samples
-{$EXTERNALSYM AUDIO_S8}
   AUDIO_U16LSB = $0010; // Unsigned 16-bit samples
-{$EXTERNALSYM AUDIO_U16LSB}
   AUDIO_S16LSB = $8010; // Signed 16-bit samples
-{$EXTERNALSYM AUDIO_S16LSB}
   AUDIO_U16MSB = $1010; // As above, but big-endian byte order
-{$EXTERNALSYM AUDIO_U16MSB}
   AUDIO_S16MSB = $9010; // As above, but big-endian byte order
-{$EXTERNALSYM AUDIO_S16MSB}
   AUDIO_U16 = AUDIO_U16LSB;
-{$EXTERNALSYM AUDIO_U16}
   AUDIO_S16 = AUDIO_S16LSB;
-{$EXTERNALSYM AUDIO_S16}
-
 
   // SDL_cdrom.h constants
   // The maximum number of CD-ROM tracks on a disk
   SDL_MAX_TRACKS = 99;
-{$EXTERNALSYM SDL_MAX_TRACKS}
   // The types of CD-ROM track possible
   SDL_AUDIO_TRACK = $00;
-{$EXTERNALSYM SDL_AUDIO_TRACK}
   SDL_DATA_TRACK = $04;
-{$EXTERNALSYM SDL_DATA_TRACK}
 
   // Conversion functions from frames to Minute/Second/Frames and vice versa
   CD_FPS = 75;
-{$EXTERNALSYM CD_FPS}
   // SDL_byteorder.h constants
   // The two types of endianness
   SDL_LIL_ENDIAN = 1234;
-{$EXTERNALSYM SDL_LIL_ENDIAN}
   SDL_BIG_ENDIAN = 4321;
-{$EXTERNALSYM SDL_BIG_ENDIAN}
 
 {$IFDEF WIN32}
   {$DEFINE IA32}
@@ -272,42 +245,29 @@ const
 {$IFDEF IA32}
 
   SDL_BYTEORDER = SDL_LIL_ENDIAN;
-{$EXTERNALSYM SDL_BYTEORDER}
   // Native audio byte ordering
   AUDIO_U16SYS = AUDIO_U16LSB;
-{$EXTERNALSYM AUDIO_U16SYS}
   AUDIO_S16SYS = AUDIO_S16LSB;
-{$EXTERNALSYM AUDIO_S16SYS}
 
 {$ELSE}
 
   SDL_BYTEORDER = SDL_BIG_ENDIAN;
-{$EXTERNALSYM SDL_BYTEORDER}
   // Native audio byte ordering
   AUDIO_U16SYS = AUDIO_U16MSB;
-{$EXTERNALSYM AUDIO_U16SYS}
   AUDIO_S16SYS = AUDIO_S16MSB;
-{$EXTERNALSYM AUDIO_S16SYS}
 
 {$ENDIF}
 
 
   SDL_MIX_MAXVOLUME = 128;
-{$EXTERNALSYM SDL_MIX_MAXVOLUME}
 
   // SDL_joystick.h constants
   MAX_JOYSTICKS = 2; // only 2 are supported in the multimedia API
-{$EXTERNALSYM MAX_JOYSTICKS}
   MAX_AXES = 6; // each joystick can have up to 6 axes
-{$EXTERNALSYM MAX_AXES}
   MAX_BUTTONS = 32; // and 32 buttons
-{$EXTERNALSYM MAX_BUTTONS}
   AXIS_MIN = -32768; // minimum value for axis coordinate
-{$EXTERNALSYM AXIS_MIN}
   AXIS_MAX = 32767; // maximum value for axis coordinate
-{$EXTERNALSYM AXIS_MAX}
   JOY_AXIS_THRESHOLD = (((AXIS_MAX) - (AXIS_MIN)) / 100); // 1% motion
-{$EXTERNALSYM JOY_AXIS_THRESHOLD}
   //JOY_BUTTON_FLAG(n)        (1<<n)
   // array to hold joystick ID values
   //static UInt        SYS_JoystickID[MAX_JOYSTICKS];
@@ -316,131 +276,76 @@ const
   { Get the current state of a POV hat on a joystick
     The return value is one of the following positions: }
   SDL_HAT_CENTERED = $00;
-{$EXTERNALSYM SDL_HAT_CENTERED}
   SDL_HAT_UP = $01;
-{$EXTERNALSYM SDL_HAT_UP}
   SDL_HAT_RIGHT = $02;
-{$EXTERNALSYM SDL_HAT_RIGHT}
   SDL_HAT_DOWN = $04;
-{$EXTERNALSYM SDL_HAT_DOWN}
   SDL_HAT_LEFT = $08;
-{$EXTERNALSYM SDL_HAT_LEFT}
   SDL_HAT_RIGHTUP = SDL_HAT_RIGHT or SDL_HAT_UP;
-{$EXTERNALSYM SDL_HAT_RIGHTUP}
   SDL_HAT_RIGHTDOWN = SDL_HAT_RIGHT or SDL_HAT_DOWN;
-{$EXTERNALSYM SDL_HAT_RIGHTDOWN}
   SDL_HAT_LEFTUP = SDL_HAT_LEFT or SDL_HAT_UP;
-{$EXTERNALSYM SDL_HAT_LEFTUP}
   SDL_HAT_LEFTDOWN = SDL_HAT_LEFT or SDL_HAT_DOWN;
-{$EXTERNALSYM SDL_HAT_LEFTDOWN}
 
   // SDL_verion.h constants
   // Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
   SDL_MAJOR_VERSION = 1;
-{$EXTERNALSYM SDL_MAJOR_VERSION}
   SDL_MINOR_VERSION = 2;
-{$EXTERNALSYM SDL_MINOR_VERSION}
   SDL_PATCHLEVEL = 3;
-{$EXTERNALSYM SDL_PATCHLEVEL}
 
   // SDL_events.h constants
   SDL_NOEVENT = 0; // Unused (do not remove)
-{$EXTERNALSYM SDL_NOEVENT}
   SDL_ACTIVEEVENT = 1; // Application loses/gains visibility
-{$EXTERNALSYM SDL_ACTIVEEVENT}
   SDL_KEYDOWN = 2; // Keys pressed
-{$EXTERNALSYM SDL_KEYDOWN}
   SDL_KEYUP = 3; // Keys released
-{$EXTERNALSYM SDL_KEYUP}
   SDL_MOUSEMOTION = 4; // Mouse moved
-{$EXTERNALSYM SDL_MOUSEMOTION}
   SDL_MOUSEBUTTONDOWN = 5; // Mouse button pressed
-{$EXTERNALSYM SDL_MOUSEBUTTONDOWN}
   SDL_MOUSEBUTTONUP = 6; // Mouse button released
-{$EXTERNALSYM SDL_MOUSEBUTTONUP}
   SDL_JOYAXISMOTION = 7; // Joystick axis motion
-{$EXTERNALSYM SDL_JOYAXISMOTION}
   SDL_JOYBALLMOTION = 8; // Joystick trackball motion
-{$EXTERNALSYM SDL_JOYBALLMOTION}
   SDL_JOYHATMOTION = 9; // Joystick hat position change
-{$EXTERNALSYM SDL_JOYHATMOTION}
   SDL_JOYBUTTONDOWN = 10; // Joystick button pressed
-{$EXTERNALSYM SDL_JOYBUTTONDOWN}
   SDL_JOYBUTTONUP = 11; // Joystick button released
-{$EXTERNALSYM SDL_JOYBUTTONUP}
   SDL_QUITEV = 12; // User-requested quit ( Changed due to procedure conflict )
-{$EXTERNALSYM SDL_QUIT}
   SDL_SYSWMEVENT = 13; // System specific event
-{$EXTERNALSYM SDL_SYSWMEVENT}
   SDL_EVENT_RESERVEDA = 14; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVEDA}
   SDL_EVENT_RESERVED = 15; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED}
   SDL_VIDEORESIZE = 16; // User resized video mode
-{$EXTERNALSYM SDL_VIDEORESIZE}
   SDL_VIDEOEXPOSE = 17; // Screen needs to be redrawn
-{$EXTERNALSYM SDL_VIDEOEXPOSE}
   SDL_EVENT_RESERVED2 = 18; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED2}
   SDL_EVENT_RESERVED3 = 19; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED3}
   SDL_EVENT_RESERVED4 = 20; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED4}
   SDL_EVENT_RESERVED5 = 21; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED5}
   SDL_EVENT_RESERVED6 = 22; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED6}
   SDL_EVENT_RESERVED7 = 23; // Reserved for future use..
-{$EXTERNALSYM SDL_EVENT_RESERVED7}
   // Events SDL_USEREVENT through SDL_MAXEVENTS-1 are for your use
   SDL_USEREVENT = 24;
-{$EXTERNALSYM SDL_USEREVENT}
   // This last event is only for bounding internal arrays
   // It is the number of bits in the event mask datatype -- UInt32
   SDL_NUMEVENTS = 32;
-{$EXTERNALSYM SDL_NUMEVENTS}
 
   SDL_ALLEVENTS = $FFFFFFFF;
-{$EXTERNALSYM SDL_ALLEVENTS}
 
   SDL_ACTIVEEVENTMASK = 1 shl SDL_ACTIVEEVENT;
-{$EXTERNALSYM SDL_ACTIVEEVENTMASK}
   SDL_KEYDOWNMASK = 1 shl SDL_KEYDOWN;
-{$EXTERNALSYM SDL_KEYDOWNMASK}
   SDL_KEYUPMASK = 1 shl SDL_KEYUP;
-{$EXTERNALSYM SDL_KEYUPMASK}
   SDL_MOUSEMOTIONMASK = 1 shl SDL_MOUSEMOTION;
-{$EXTERNALSYM SDL_MOUSEMOTIONMASK}
   SDL_MOUSEBUTTONDOWNMASK = 1 shl SDL_MOUSEBUTTONDOWN;
-{$EXTERNALSYM SDL_MOUSEBUTTONDOWNMASK}
   SDL_MOUSEBUTTONUPMASK = 1 shl SDL_MOUSEBUTTONUP;
-{$EXTERNALSYM SDL_MOUSEBUTTONUPMASK}
   SDL_MOUSEEVENTMASK = 1 shl SDL_MOUSEMOTION or
     1 shl SDL_MOUSEBUTTONDOWN or
     1 shl SDL_MOUSEBUTTONUP;
-{$EXTERNALSYM SDL_MOUSEEVENTMASK}
   SDL_JOYAXISMOTIONMASK = 1 shl SDL_JOYAXISMOTION;
-{$EXTERNALSYM SDL_JOYAXISMOTIONMASK}
   SDL_JOYBALLMOTIONMASK = 1 shl SDL_JOYBALLMOTION;
-{$EXTERNALSYM SDL_JOYBALLMOTIONMASK}
   SDL_JOYHATMOTIONMASK = 1 shl SDL_JOYHATMOTION;
-{$EXTERNALSYM SDL_JOYHATMOTIONMASK}
   SDL_JOYBUTTONDOWNMASK = 1 shl SDL_JOYBUTTONDOWN;
-{$EXTERNALSYM SDL_JOYBUTTONDOWNMASK}
   SDL_JOYBUTTONUPMASK = 1 shl SDL_JOYBUTTONUP;
-{$EXTERNALSYM SDL_JOYBUTTONUPMASK}
   SDL_JOYEVENTMASK = 1 shl SDL_JOYAXISMOTION or
     1 shl SDL_JOYBALLMOTION or
     1 shl SDL_JOYHATMOTION or
     1 shl SDL_JOYBUTTONDOWN or
     1 shl SDL_JOYBUTTONUP;
-{$EXTERNALSYM SDL_JOYEVENTMASK}
   SDL_VIDEORESIZEMASK = 1 shl SDL_VIDEORESIZE;
-{$EXTERNALSYM SDL_VIDEORESIZEMASK}
   SDL_QUITMASK = 1 shl SDL_QUITEV;
-{$EXTERNALSYM SDL_QUITMASK}
   SDL_SYSWMEVENTMASK = 1 shl SDL_SYSWMEVENT;
-{$EXTERNALSYM SDL_SYSWMEVENTMASK}
 
   { This function allows you to set the state of processing certain events.
     If 'state' is set to SDL_IGNORE, that event will be automatically dropped
@@ -450,18 +355,13 @@ const
     current processing state of the specified event. }
 
   SDL_QUERY = -1;
-{$EXTERNALSYM SDL_QUERY}
   SDL_IGNORE = 0;
-{$EXTERNALSYM SDL_IGNORE}
   SDL_DISABLE = 0;
-{$EXTERNALSYM SDL_DISABLE}
   SDL_ENABLE = 1;
-{$EXTERNALSYM SDL_ENABLE}
 
   //SDL_keyboard.h constants
   // This is the mask which refers to all hotkey bindings
   SDL_ALL_HOTKEYS = $FFFFFFFF;
-{$EXTERNALSYM SDL_ALL_HOTKEYS}
 
 { Enable/Disable keyboard repeat.  Keyboard repeat defaults to off.
   'delay' is the initial delay in ms between the time when a key is
@@ -469,576 +369,305 @@ const
   'interval' is the time in ms between keyboard repeat events. }
 
   SDL_DEFAULT_REPEAT_DELAY = 500;
-{$EXTERNALSYM SDL_DEFAULT_REPEAT_DELAY}
   SDL_DEFAULT_REPEAT_INTERVAL = 30;
-{$EXTERNALSYM SDL_DEFAULT_REPEAT_INTERVAL}
 
   // The keyboard syms have been cleverly chosen to map to ASCII
   SDLK_UNKNOWN = 0;
-{$EXTERNALSYM SDLK_UNKNOWN}
   SDLK_FIRST = 0;
-{$EXTERNALSYM SDLK_FIRST}
   SDLK_BACKSPACE = 8;
-{$EXTERNALSYM SDLK_BACKSPACE}
   SDLK_TAB = 9;
-{$EXTERNALSYM SDLK_TAB}
   SDLK_CLEAR = 12;
-{$EXTERNALSYM SDLK_CLEAR}
   SDLK_RETURN = 13;
-{$EXTERNALSYM SDLK_RETURN}
   SDLK_PAUSE = 19;
-{$EXTERNALSYM SDLK_PAUSE}
   SDLK_ESCAPE = 27;
-{$EXTERNALSYM SDLK_ESCAPE}
   SDLK_SPACE = 32;
-{$EXTERNALSYM SDLK_SPACE}
   SDLK_EXCLAIM = 33;
-{$EXTERNALSYM SDLK_EXCLAIM}
   SDLK_QUOTEDBL = 34;
-{$EXTERNALSYM SDLK_QUOTEDBL}
   SDLK_HASH = 35;
-{$EXTERNALSYM SDLK_HASH}
   SDLK_DOLLAR = 36;
-{$EXTERNALSYM SDLK_DOLLAR}
   SDLK_AMPERSAND = 38;
-{$EXTERNALSYM SDLK_AMPERSAND}
   SDLK_QUOTE = 39;
-{$EXTERNALSYM SDLK_QUOTE}
   SDLK_LEFTPAREN = 40;
-{$EXTERNALSYM SDLK_LEFTPAREN}
   SDLK_RIGHTPAREN = 41;
-{$EXTERNALSYM SDLK_RIGHTPAREN}
   SDLK_ASTERISK = 42;
-{$EXTERNALSYM SDLK_ASTERISK}
   SDLK_PLUS = 43;
-{$EXTERNALSYM SDLK_PLUS}
   SDLK_COMMA = 44;
-{$EXTERNALSYM SDLK_COMMA}
   SDLK_MINUS = 45;
-{$EXTERNALSYM SDLK_MINUS}
   SDLK_PERIOD = 46;
-{$EXTERNALSYM SDLK_PERIOD}
   SDLK_SLASH = 47;
-{$EXTERNALSYM SDLK_SLASH}
   SDLK_0 = 48;
-{$EXTERNALSYM SDLK_0}
   SDLK_1 = 49;
-{$EXTERNALSYM SDLK_1}
   SDLK_2 = 50;
-{$EXTERNALSYM SDLK_2}
   SDLK_3 = 51;
-{$EXTERNALSYM SDLK_3}
   SDLK_4 = 52;
-{$EXTERNALSYM SDLK_4}
   SDLK_5 = 53;
-{$EXTERNALSYM SDLK_5}
   SDLK_6 = 54;
-{$EXTERNALSYM SDLK_6}
   SDLK_7 = 55;
-{$EXTERNALSYM SDLK_7}
   SDLK_8 = 56;
-{$EXTERNALSYM SDLK_8}
   SDLK_9 = 57;
-{$EXTERNALSYM SDLK_9}
   SDLK_COLON = 58;
-{$EXTERNALSYM SDLK_COLON}
   SDLK_SEMICOLON = 59;
-{$EXTERNALSYM SDLK_SEMICOLON}
   SDLK_LESS = 60;
-{$EXTERNALSYM SDLK_LESS}
   SDLK_EQUALS = 61;
-{$EXTERNALSYM SDLK_EQUALS}
   SDLK_GREATER = 62;
-{$EXTERNALSYM SDLK_GREATER}
   SDLK_QUESTION = 63;
-{$EXTERNALSYM SDLK_QUESTION}
   SDLK_AT = 64;
-{$EXTERNALSYM SDLK_AT}
 
   { Skip uppercase letters }
 
   SDLK_LEFTBRACKET = 91;
-{$EXTERNALSYM SDLK_LEFTBRACKET}
   SDLK_BACKSLASH = 92;
-{$EXTERNALSYM SDLK_BACKSLASH}
   SDLK_RIGHTBRACKET = 93;
-{$EXTERNALSYM SDLK_RIGHTBRACKET}
   SDLK_CARET = 94;
-{$EXTERNALSYM SDLK_CARET}
   SDLK_UNDERSCORE = 95;
-{$EXTERNALSYM SDLK_UNDERSCORE}
   SDLK_BACKQUOTE = 96;
-{$EXTERNALSYM SDLK_BACKQUOTE}
   SDLK_a = 97;
-{$EXTERNALSYM SDLK_a}
   SDLK_b = 98;
-{$EXTERNALSYM SDLK_b}
   SDLK_c = 99;
-{$EXTERNALSYM SDLK_c}
   SDLK_d = 100;
-{$EXTERNALSYM SDLK_d}
   SDLK_e = 101;
-{$EXTERNALSYM SDLK_e}
   SDLK_f = 102;
-{$EXTERNALSYM SDLK_f}
   SDLK_g = 103;
-{$EXTERNALSYM SDLK_g}
   SDLK_h = 104;
-{$EXTERNALSYM SDLK_h}
   SDLK_i = 105;
-{$EXTERNALSYM SDLK_i}
   SDLK_j = 106;
-{$EXTERNALSYM SDLK_j}
   SDLK_k = 107;
-{$EXTERNALSYM SDLK_k}
   SDLK_l = 108;
-{$EXTERNALSYM SDLK_l}
   SDLK_m = 109;
-{$EXTERNALSYM SDLK_m}
   SDLK_n = 110;
-{$EXTERNALSYM SDLK_n}
   SDLK_o = 111;
-{$EXTERNALSYM SDLK_o}
   SDLK_p = 112;
-{$EXTERNALSYM SDLK_p}
   SDLK_q = 113;
-{$EXTERNALSYM SDLK_q}
   SDLK_r = 114;
-{$EXTERNALSYM SDLK_r}
   SDLK_s = 115;
-{$EXTERNALSYM SDLK_s}
   SDLK_t = 116;
-{$EXTERNALSYM SDLK_t}
   SDLK_u = 117;
-{$EXTERNALSYM SDLK_u}
   SDLK_v = 118;
-{$EXTERNALSYM SDLK_v}
   SDLK_w = 119;
-{$EXTERNALSYM SDLK_w}
   SDLK_x = 120;
-{$EXTERNALSYM SDLK_x}
   SDLK_y = 121;
-{$EXTERNALSYM SDLK_y}
   SDLK_z = 122;
-{$EXTERNALSYM SDLK_z}
   SDLK_DELETE = 127;
-{$EXTERNALSYM SDLK_DELETE}
   // End of ASCII mapped keysyms
 
   // International keyboard syms
   SDLK_WORLD_0 = 160; // 0xA0
-{$EXTERNALSYM SDLK_WORLD_0}
   SDLK_WORLD_1 = 161;
-{$EXTERNALSYM SDLK_WORLD_1}
   SDLK_WORLD_2 = 162;
-{$EXTERNALSYM SDLK_WORLD_2}
   SDLK_WORLD_3 = 163;
-{$EXTERNALSYM SDLK_WORLD_3}
   SDLK_WORLD_4 = 164;
-{$EXTERNALSYM SDLK_WORLD_4}
   SDLK_WORLD_5 = 165;
-{$EXTERNALSYM SDLK_WORLD_5}
   SDLK_WORLD_6 = 166;
-{$EXTERNALSYM SDLK_WORLD_6}
   SDLK_WORLD_7 = 167;
-{$EXTERNALSYM SDLK_WORLD_7}
   SDLK_WORLD_8 = 168;
-{$EXTERNALSYM SDLK_WORLD_8}
   SDLK_WORLD_9 = 169;
-{$EXTERNALSYM SDLK_WORLD_9}
   SDLK_WORLD_10 = 170;
-{$EXTERNALSYM SDLK_WORLD_10}
   SDLK_WORLD_11 = 171;
-{$EXTERNALSYM SDLK_WORLD_11}
   SDLK_WORLD_12 = 172;
-{$EXTERNALSYM SDLK_WORLD_12}
   SDLK_WORLD_13 = 173;
-{$EXTERNALSYM SDLK_WORLD_13}
   SDLK_WORLD_14 = 174;
-{$EXTERNALSYM SDLK_WORLD_14}
   SDLK_WORLD_15 = 175;
-{$EXTERNALSYM SDLK_WORLD_15}
   SDLK_WORLD_16 = 176;
-{$EXTERNALSYM SDLK_WORLD_16}
   SDLK_WORLD_17 = 177;
-{$EXTERNALSYM SDLK_WORLD_17}
   SDLK_WORLD_18 = 178;
-{$EXTERNALSYM SDLK_WORLD_18}
   SDLK_WORLD_19 = 179;
-{$EXTERNALSYM SDLK_WORLD_19}
   SDLK_WORLD_20 = 180;
-{$EXTERNALSYM SDLK_WORLD_20}
   SDLK_WORLD_21 = 181;
-{$EXTERNALSYM SDLK_WORLD_21}
   SDLK_WORLD_22 = 182;
-{$EXTERNALSYM SDLK_WORLD_22}
   SDLK_WORLD_23 = 183;
-{$EXTERNALSYM SDLK_WORLD_23}
   SDLK_WORLD_24 = 184;
-{$EXTERNALSYM SDLK_WORLD_24}
   SDLK_WORLD_25 = 185;
-{$EXTERNALSYM SDLK_WORLD_25}
   SDLK_WORLD_26 = 186;
-{$EXTERNALSYM SDLK_WORLD_26}
   SDLK_WORLD_27 = 187;
-{$EXTERNALSYM SDLK_WORLD_27}
   SDLK_WORLD_28 = 188;
-{$EXTERNALSYM SDLK_WORLD_28}
   SDLK_WORLD_29 = 189;
-{$EXTERNALSYM SDLK_WORLD_29}
   SDLK_WORLD_30 = 190;
-{$EXTERNALSYM SDLK_WORLD_30}
   SDLK_WORLD_31 = 191;
-{$EXTERNALSYM SDLK_WORLD_31}
   SDLK_WORLD_32 = 192;
-{$EXTERNALSYM SDLK_WORLD_32}
   SDLK_WORLD_33 = 193;
-{$EXTERNALSYM SDLK_WORLD_33}
   SDLK_WORLD_34 = 194;
-{$EXTERNALSYM SDLK_WORLD_34}
   SDLK_WORLD_35 = 195;
-{$EXTERNALSYM SDLK_WORLD_35}
   SDLK_WORLD_36 = 196;
-{$EXTERNALSYM SDLK_WORLD_36}
   SDLK_WORLD_37 = 197;
-{$EXTERNALSYM SDLK_WORLD_37}
   SDLK_WORLD_38 = 198;
-{$EXTERNALSYM SDLK_WORLD_38}
   SDLK_WORLD_39 = 199;
-{$EXTERNALSYM SDLK_WORLD_39}
   SDLK_WORLD_40 = 200;
-{$EXTERNALSYM SDLK_WORLD_40}
   SDLK_WORLD_41 = 201;
-{$EXTERNALSYM SDLK_WORLD_41}
   SDLK_WORLD_42 = 202;
-{$EXTERNALSYM SDLK_WORLD_42}
   SDLK_WORLD_43 = 203;
-{$EXTERNALSYM SDLK_WORLD_43}
   SDLK_WORLD_44 = 204;
-{$EXTERNALSYM SDLK_WORLD_44}
   SDLK_WORLD_45 = 205;
-{$EXTERNALSYM SDLK_WORLD_45}
   SDLK_WORLD_46 = 206;
-{$EXTERNALSYM SDLK_WORLD_46}
   SDLK_WORLD_47 = 207;
-{$EXTERNALSYM SDLK_WORLD_47}
   SDLK_WORLD_48 = 208;
-{$EXTERNALSYM SDLK_WORLD_48}
   SDLK_WORLD_49 = 209;
-{$EXTERNALSYM SDLK_WORLD_49}
   SDLK_WORLD_50 = 210;
-{$EXTERNALSYM SDLK_WORLD_50}
   SDLK_WORLD_51 = 211;
-{$EXTERNALSYM SDLK_WORLD_51}
   SDLK_WORLD_52 = 212;
-{$EXTERNALSYM SDLK_WORLD_52}
   SDLK_WORLD_53 = 213;
-{$EXTERNALSYM SDLK_WORLD_53}
   SDLK_WORLD_54 = 214;
-{$EXTERNALSYM SDLK_WORLD_54}
   SDLK_WORLD_55 = 215;
-{$EXTERNALSYM SDLK_WORLD_55}
   SDLK_WORLD_56 = 216;
-{$EXTERNALSYM SDLK_WORLD_56}
   SDLK_WORLD_57 = 217;
-{$EXTERNALSYM SDLK_WORLD_57}
   SDLK_WORLD_58 = 218;
-{$EXTERNALSYM SDLK_WORLD_58}
   SDLK_WORLD_59 = 219;
-{$EXTERNALSYM SDLK_WORLD_59}
   SDLK_WORLD_60 = 220;
-{$EXTERNALSYM SDLK_WORLD_60}
   SDLK_WORLD_61 = 221;
-{$EXTERNALSYM SDLK_WORLD_61}
   SDLK_WORLD_62 = 222;
-{$EXTERNALSYM SDLK_WORLD_62}
   SDLK_WORLD_63 = 223;
-{$EXTERNALSYM SDLK_WORLD_63}
   SDLK_WORLD_64 = 224;
-{$EXTERNALSYM SDLK_WORLD_64}
   SDLK_WORLD_65 = 225;
-{$EXTERNALSYM SDLK_WORLD_65}
   SDLK_WORLD_66 = 226;
-{$EXTERNALSYM SDLK_WORLD_66}
   SDLK_WORLD_67 = 227;
-{$EXTERNALSYM SDLK_WORLD_67}
   SDLK_WORLD_68 = 228;
-{$EXTERNALSYM SDLK_WORLD_68}
   SDLK_WORLD_69 = 229;
-{$EXTERNALSYM SDLK_WORLD_69}
   SDLK_WORLD_70 = 230;
-{$EXTERNALSYM SDLK_WORLD_70}
   SDLK_WORLD_71 = 231;
-{$EXTERNALSYM SDLK_WORLD_71}
   SDLK_WORLD_72 = 232;
-{$EXTERNALSYM SDLK_WORLD_72}
   SDLK_WORLD_73 = 233;
-{$EXTERNALSYM SDLK_WORLD_73}
   SDLK_WORLD_74 = 234;
-{$EXTERNALSYM SDLK_WORLD_74}
   SDLK_WORLD_75 = 235;
-{$EXTERNALSYM SDLK_WORLD_75}
   SDLK_WORLD_76 = 236;
-{$EXTERNALSYM SDLK_WORLD_76}
   SDLK_WORLD_77 = 237;
-{$EXTERNALSYM SDLK_WORLD_77}
   SDLK_WORLD_78 = 238;
-{$EXTERNALSYM SDLK_WORLD_78}
   SDLK_WORLD_79 = 239;
-{$EXTERNALSYM SDLK_WORLD_79}
   SDLK_WORLD_80 = 240;
-{$EXTERNALSYM SDLK_WORLD_80}
   SDLK_WORLD_81 = 241;
-{$EXTERNALSYM SDLK_WORLD_81}
   SDLK_WORLD_82 = 242;
-{$EXTERNALSYM SDLK_WORLD_82}
   SDLK_WORLD_83 = 243;
-{$EXTERNALSYM SDLK_WORLD_83}
   SDLK_WORLD_84 = 244;
-{$EXTERNALSYM SDLK_WORLD_84}
   SDLK_WORLD_85 = 245;
-{$EXTERNALSYM SDLK_WORLD_85}
   SDLK_WORLD_86 = 246;
-{$EXTERNALSYM SDLK_WORLD_86}
   SDLK_WORLD_87 = 247;
-{$EXTERNALSYM SDLK_WORLD_87}
   SDLK_WORLD_88 = 248;
-{$EXTERNALSYM SDLK_WORLD_88}
   SDLK_WORLD_89 = 249;
-{$EXTERNALSYM SDLK_WORLD_89}
   SDLK_WORLD_90 = 250;
-{$EXTERNALSYM SDLK_WORLD_90}
   SDLK_WORLD_91 = 251;
-{$EXTERNALSYM SDLK_WORLD_91}
   SDLK_WORLD_92 = 252;
-{$EXTERNALSYM SDLK_WORLD_92}
   SDLK_WORLD_93 = 253;
-{$EXTERNALSYM SDLK_WORLD_93}
   SDLK_WORLD_94 = 254;
-{$EXTERNALSYM SDLK_WORLD_94}
   SDLK_WORLD_95 = 255; // 0xFF
-{$EXTERNALSYM SDLK_WORLD_95}
 
   // Numeric keypad
   SDLK_KP0 = 256;
-{$EXTERNALSYM SDLK_KP0}
   SDLK_KP1 = 257;
-{$EXTERNALSYM SDLK_KP1}
   SDLK_KP2 = 258;
-{$EXTERNALSYM SDLK_KP2}
   SDLK_KP3 = 259;
-{$EXTERNALSYM SDLK_KP3}
   SDLK_KP4 = 260;
-{$EXTERNALSYM SDLK_KP4}
   SDLK_KP5 = 261;
-{$EXTERNALSYM SDLK_KP5}
   SDLK_KP6 = 262;
-{$EXTERNALSYM SDLK_KP6}
   SDLK_KP7 = 263;
-{$EXTERNALSYM SDLK_KP7}
   SDLK_KP8 = 264;
-{$EXTERNALSYM SDLK_KP8}
   SDLK_KP9 = 265;
-{$EXTERNALSYM SDLK_KP9}
   SDLK_KP_PERIOD = 266;
-{$EXTERNALSYM SDLK_KP_PERIOD}
   SDLK_KP_DIVIDE = 267;
-{$EXTERNALSYM SDLK_KP_DIVIDE}
   SDLK_KP_MULTIPLY = 268;
-{$EXTERNALSYM SDLK_KP_MULTIPLY}
   SDLK_KP_MINUS = 269;
-{$EXTERNALSYM SDLK_KP_MINUS}
   SDLK_KP_PLUS = 270;
-{$EXTERNALSYM SDLK_KP_PLUS}
   SDLK_KP_ENTER = 271;
-{$EXTERNALSYM SDLK_KP_ENTER}
   SDLK_KP_EQUALS = 272;
-{$EXTERNALSYM SDLK_KP_EQUALS}
 
   // Arrows + Home/End pad
   SDLK_UP = 273;
-{$EXTERNALSYM SDLK_UP}
   SDLK_DOWN = 274;
-{$EXTERNALSYM SDLK_DOWN}
   SDLK_RIGHT = 275;
-{$EXTERNALSYM SDLK_RIGHT}
   SDLK_LEFT = 276;
-{$EXTERNALSYM SDLK_LEFT}
   SDLK_INSERT = 277;
-{$EXTERNALSYM SDLK_INSERT}
   SDLK_HOME = 278;
-{$EXTERNALSYM SDLK_HOME}
   SDLK_END = 279;
-{$EXTERNALSYM SDLK_END}
   SDLK_PAGEUP = 280;
-{$EXTERNALSYM SDLK_PAGEUP}
   SDLK_PAGEDOWN = 281;
-{$EXTERNALSYM SDLK_PAGEDOWN}
 
   // Function keys
   SDLK_F1 = 282;
-{$EXTERNALSYM SDLK_F1}
   SDLK_F2 = 283;
-{$EXTERNALSYM SDLK_F2}
   SDLK_F3 = 284;
-{$EXTERNALSYM SDLK_F3}
   SDLK_F4 = 285;
-{$EXTERNALSYM SDLK_F4}
   SDLK_F5 = 286;
-{$EXTERNALSYM SDLK_F5}
   SDLK_F6 = 287;
-{$EXTERNALSYM SDLK_F6}
   SDLK_F7 = 288;
-{$EXTERNALSYM SDLK_F7}
   SDLK_F8 = 289;
-{$EXTERNALSYM SDLK_F8}
   SDLK_F9 = 290;
-{$EXTERNALSYM SDLK_F9}
   SDLK_F10 = 291;
-{$EXTERNALSYM SDLK_F10}
   SDLK_F11 = 292;
-{$EXTERNALSYM SDLK_F11}
   SDLK_F12 = 293;
-{$EXTERNALSYM SDLK_F12}
   SDLK_F13 = 294;
-{$EXTERNALSYM SDLK_F13}
   SDLK_F14 = 295;
-{$EXTERNALSYM SDLK_F14}
   SDLK_F15 = 296;
-{$EXTERNALSYM SDLK_F15}
 
   // Key state modifier keys
   SDLK_NUMLOCK = 300;
-{$EXTERNALSYM SDLK_NUMLOCK}
   SDLK_CAPSLOCK = 301;
-{$EXTERNALSYM SDLK_CAPSLOCK}
   SDLK_SCROLLOCK = 302;
-{$EXTERNALSYM SDLK_SCROLLOCK}
   SDLK_RSHIFT = 303;
-{$EXTERNALSYM SDLK_RSHIFT}
   SDLK_LSHIFT = 304;
-{$EXTERNALSYM SDLK_LSHIFT}
   SDLK_RCTRL = 305;
-{$EXTERNALSYM SDLK_RCTRL}
   SDLK_LCTRL = 306;
-{$EXTERNALSYM SDLK_LCTRL}
   SDLK_RALT = 307;
-{$EXTERNALSYM SDLK_RALT}
   SDLK_LALT = 308;
-{$EXTERNALSYM SDLK_LALT}
   SDLK_RMETA = 309;
-{$EXTERNALSYM SDLK_RMETA}
   SDLK_LMETA = 310;
-{$EXTERNALSYM SDLK_LMETA}
   SDLK_LSUPER = 311; // Left "Windows" key
-{$EXTERNALSYM SDLK_LSUPER}
   SDLK_RSUPER = 312; // Right "Windows" key
-{$EXTERNALSYM SDLK_RSUPER}
   SDLK_MODE = 313; // "Alt Gr" key
-{$EXTERNALSYM SDLK_MODE}
   SDLK_COMPOSE = 314; // Multi-key compose key
-{$EXTERNALSYM SDLK_COMPOSE}
 
   // Miscellaneous function keys
   SDLK_HELP = 315;
-{$EXTERNALSYM SDLK_HELP}
   SDLK_PRINT = 316;
-{$EXTERNALSYM SDLK_PRINT}
   SDLK_SYSREQ = 317;
-{$EXTERNALSYM SDLK_SYSREQ}
   SDLK_BREAK = 318;
-{$EXTERNALSYM SDLK_BREAK}
   SDLK_MENU = 319;
-{$EXTERNALSYM SDLK_MENU}
   SDLK_POWER = 320; // Power Macintosh power key
-{$EXTERNALSYM SDLK_POWER}
   SDLK_EURO = 321; // Some european keyboards
-{$EXTERNALSYM SDLK_EURO}
 
   // Enumeration of valid key mods (possibly OR'd together)
   KMOD_NONE = $0000;
-{$EXTERNALSYM KMOD_NONE}
   KMOD_LSHIFT = $0001;
-{$EXTERNALSYM KMOD_LSHIFT}
   KMOD_RSHIFT = $0002;
-{$EXTERNALSYM KMOD_RSHIFT}
   KMOD_LCTRL = $0040;
-{$EXTERNALSYM KMOD_LCTRL}
   KMOD_RCTRL = $0080;
-{$EXTERNALSYM KMOD_RCTRL}
   KMOD_LALT = $0100;
-{$EXTERNALSYM KMOD_LALT}
   KMOD_RALT = $0200;
-{$EXTERNALSYM KMOD_RALT}
   KMOD_LMETA = $0400;
-{$EXTERNALSYM KMOD_LMETA}
   KMOD_RMETA = $0800;
-{$EXTERNALSYM KMOD_RMETA}
   KMOD_NUM = $1000;
-{$EXTERNALSYM KMOD_NUM}
   KMOD_CAPS = $2000;
-{$EXTERNALSYM KMOD_CAPS}
   KMOD_MODE = 44000;
-{$EXTERNALSYM KMOD_MODE}
   KMOD_RESERVED = $8000;
-{$EXTERNALSYM KMOD_RESERVED}
 
   KMOD_CTRL = (KMOD_LCTRL or KMOD_RCTRL);
-{$EXTERNALSYM KMOD_CTRL}
   KMOD_SHIFT = (KMOD_LSHIFT or KMOD_RSHIFT);
-{$EXTERNALSYM KMOD_SHIFT}
   KMOD_ALT = (KMOD_LALT or KMOD_RALT);
-{$EXTERNALSYM KMOD_ALT}
   KMOD_META = (KMOD_LMETA or KMOD_RMETA);
-{$EXTERNALSYM KMOD_META}
 
   //SDL_video.h constants
   // Transparency definitions: These define alpha as the opacity of a surface */
   SDL_ALPHA_OPAQUE = 255;
-{$EXTERNALSYM SDL_ALPHA_OPAQUE}
   SDL_ALPHA_TRANSPARENT = 0;
-{$EXTERNALSYM SDL_ALPHA_TRANSPARENT}
 
   // These are the currently supported flags for the SDL_surface
   // Available for SDL_CreateRGBSurface() or SDL_SetVideoMode()
   SDL_SWSURFACE = $00000000; // Surface is in system memory
-{$EXTERNALSYM SDL_SWSURFACE}
   SDL_HWSURFACE = $00000001; // Surface is in video memory
-{$EXTERNALSYM SDL_HWSURFACE}
   SDL_ASYNCBLIT = $00000004; // Use asynchronous blits if possible
-{$EXTERNALSYM SDL_ASYNCBLIT}
   // Available for SDL_SetVideoMode()
   SDL_ANYFORMAT = $10000000; // Allow any video depth/pixel-format
-{$EXTERNALSYM SDL_ANYFORMAT}
   SDL_HWPALETTE = $20000000; // Surface has exclusive palette
-{$EXTERNALSYM SDL_HWPALETTE}
   SDL_DOUBLEBUF = $40000000; // Set up double-buffered video mode
-{$EXTERNALSYM SDL_DOUBLEBUF}
   SDL_FULLSCREEN = $80000000; // Surface is a full screen display
-{$EXTERNALSYM SDL_FULLSCREEN}
   SDL_OPENGL = $00000002; // Create an OpenGL rendering context
-{$EXTERNALSYM SDL_OPENGL}
   SDL_OPENGLBLIT = $00000002; // Create an OpenGL rendering context
-{$EXTERNALSYM SDL_OPENGLBLIT}
   SDL_RESIZABLE = $00000010; // This video mode may be resized
-{$EXTERNALSYM SDL_RESIZABLE}
   SDL_NOFRAME = $00000020; // No window caption or edge frame
-{$EXTERNALSYM SDL_NOFRAME}
   // Used internally (read-only)
   SDL_HWACCEL = $00000100; // Blit uses hardware acceleration
-{$EXTERNALSYM SDL_HWACCEL}
   SDL_SRCCOLORKEY = $00001000; // Blit uses a source color key
-{$EXTERNALSYM SDL_SRCCOLORKEY}
   SDL_RLEACCELOK = $00002000; // Private flag
-{$EXTERNALSYM SDL_RLEACCELOK}
   SDL_RLEACCEL = $00004000; // Colorkey blit is RLE accelerated
-{$EXTERNALSYM SDL_RLEACCEL}
   SDL_SRCALPHA = $00010000; // Blit uses source alpha blending
-{$EXTERNALSYM SDL_SRCALPHA}
   SDL_SRCCLIPPING = $00100000; // Blit uses source clipping
-{$EXTERNALSYM SDL_SRCCLIPPING}
   SDL_PREALLOC = $01000000; // Surface uses preallocated memory
-{$EXTERNALSYM SDL_PREALLOC}
 
   { The most common video overlay formats.
     For an explanation of these pixel formats, see:
@@ -1048,21 +677,14 @@ const
    http://www.neuro.sfc.keio.ac.jp/~aly/polygon/info/color-space-faq.html }
 
   SDL_YV12_OVERLAY = $32315659; // Planar mode: Y + V + U  (3 planes)
-{$EXTERNALSYM SDL_YV12_OVERLAY}
   SDL_IYUV_OVERLAY = $56555949; // Planar mode: Y + U + V  (3 planes)
-{$EXTERNALSYM SDL_IYUV_OVERLAY}
   SDL_YUY2_OVERLAY = $32595559; // Packed mode: Y0+U0+Y1+V0 (1 plane)
-{$EXTERNALSYM SDL_YUY2_OVERLAY}
   SDL_UYVY_OVERLAY = $59565955; // Packed mode: U0+Y0+V0+Y1 (1 plane)
-{$EXTERNALSYM SDL_UYVY_OVERLAY}
   SDL_YVYU_OVERLAY = $55595659; // Packed mode: Y0+V0+Y1+U0 (1 plane)
-{$EXTERNALSYM SDL_YVYU_OVERLAY}
 
   // flags for SDL_SetPalette()
   SDL_LOGPAL = $01;
-{$EXTERNALSYM SDL_LOGPAL}
   SDL_PHYSPAL = $02;
-{$EXTERNALSYM SDL_PHYSPAL}
 
   //SDL_mouse.h constants
   { Used as a mask when testing buttons in buttonstate
@@ -1071,37 +693,26 @@ const
     Button 3:   Right mouse button
   }
   SDL_BUTTON_LEFT = 1;
-{$EXTERNALSYM SDL_BUTTON_LEFT}
   SDL_BUTTON_MIDDLE = 2;
-{$EXTERNALSYM SDL_BUTTON_MIDDLE}
   SDL_BUTTON_RIGHT = 3;
-{$EXTERNALSYM SDL_BUTTON_RIGHT}
   SDL_BUTTON_LMASK = SDL_PRESSED shl (SDL_BUTTON_LEFT - 1);
-{$EXTERNALSYM SDL_BUTTON_LMASK}
   SDL_BUTTON_MMASK = SDL_PRESSED shl (SDL_BUTTON_MIDDLE - 1);
-{$EXTERNALSYM SDL_BUTTON_MMASK}
   SDL_BUTTON_RMask = SDL_PRESSED shl (SDL_BUTTON_RIGHT - 1);
-{$EXTERNALSYM SDL_BUTTON_RMask}
 
   // SDL_active.h constants
   // The available application states
   SDL_APPMOUSEFOCUS = $01; // The app has mouse coverage
-{$EXTERNALSYM SDL_APPMOUSEFOCUS}
   SDL_APPINPUTFOCUS = $02; // The app has input focus
-{$EXTERNALSYM SDL_APPINPUTFOCUS}
   SDL_APPACTIVE = $04; // The application is active
-{$EXTERNALSYM SDL_APPACTIVE}
 
   // SDL_mutex.h constants
   // Synchronization functions which can time out return this value
   //  they time out.
 
   SDL_MUTEX_TIMEDOUT = 1;
-{$EXTERNALSYM SDL_MUTEX_TIMEDOUT}
 
   // This is the timeout value which corresponds to never time out
   SDL_MUTEX_MAXWAIT = not Cardinal(0);
-{$EXTERNALSYM SDL_MUTEX_MAXWAIT}
 
 
 type
@@ -1113,22 +724,17 @@ type
   PUInt8Array = ^TUInt8Array;
   PUInt8 = ^UInt8;
   UInt8 = Byte;
-{$EXTERNALSYM UInt8}
   TUInt8Array = array [0..MAXINT shr 1] of UInt8;
 
   PUInt16 = ^UInt16;
   UInt16 = word;
-{$EXTERNALSYM UInt16}
-  
+
   SInt16 = smallint;
-{$EXTERNALSYM SInt16}
 
   PUInt32 = ^UInt32;
   UInt32 = Cardinal;
-{$EXTERNALSYM UInt32}
 
   SInt32 = Integer;
-{$EXTERNALSYM SInt32}
 
   PInt = ^Integer;
 
@@ -1137,14 +743,12 @@ type
     hi: UInt32;
     lo: UInt32;
   end;
-{$EXTERNALSYM UInt64}
 
   PSInt64 = ^SInt64;
   SInt64 = record
     hi: UInt32;
     lo: UInt32;
   end;
-{$EXTERNALSYM SInt64}
 
   // SDL_error.h types
   TSDL_errorcode = (
@@ -1155,7 +759,6 @@ type
     SDL_LASTERROR);
 
   SDL_errorcode = TSDL_errorcode;
-{$EXTERNALSYM SDL_errorcode}
 
   TArg = record
     case Byte of
@@ -1233,7 +836,6 @@ type
   end;
 
   SDL_RWops = TSDL_RWops;
-{$EXTERNALSYM SDL_RWops}
 
 
   // SDL_timer.h types
@@ -1598,7 +1200,6 @@ typedef struct {
   end;
 
   SDL_Rect = TSDL_Rect;
-{$EXTERNALSYM SDL_Rect}
 
   PSDL_Color = ^TSDL_Color;
   TSDL_Color = record
@@ -1893,7 +1494,7 @@ typedef struct {
       0: (Left, Top, Right, Bottom: Integer);
       1: (TopLeft, BottomRight: TPoint);
   end;
-  
+
 {------------------------------------------------------------------------------}
 { initialization                                                               }
 {------------------------------------------------------------------------------}
@@ -1904,39 +1505,32 @@ typedef struct {
   signal handlers for some commonly ignored fatal signals (like SIGSEGV) }
 
 function SDL_Init(flags: UInt32): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_Init}
 
 // This function initializes specific SDL subsystems
 function SDL_InitSubSystem(flags: UInt32): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_InitSubSystem}
 
 // This function cleans up specific SDL subsystems
 procedure SDL_QuitSubSystem( flags : UInt32 ); cdecl; external LibName;
-{$EXTERNALSYM SDL_QuitSubSystem}
 
 { This function returns mask of the specified subsystems which have
   been initialized.
   If 'flags' is 0, it returns a mask of all initialized subsystems. }
 
 function SDL_WasInit( flags : UInt32 ): UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_WasInit}
 
 { This function cleans up all initialized subsystems and unloads the
   dynamically linked library.  You should call it upon all exit conditions. }
 procedure SDL_Quit; cdecl; external LibName;
-{$EXTERNALSYM SDL_Quit}
 
 {$IFDEF MSWINDOWS}
 // This should be called from your WinMain() function, if any
 function SDL_RegisterApp(name: PAnsiChar; style: UInt32; h_Inst: Pointer):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_RegisterApp}
 {$ENDIF}
 
 {$IFDEF MACINTOSH}
 // This should be called from your main() function, if any
 procedure SDL_InitQuickDraw(the_qd: TQDGlobals); cdecl; external LibName;
-{$EXTERNALSYM SDL_InitQuickDraw}
 {$ENDIF}
 
 
@@ -1945,23 +1539,17 @@ procedure SDL_InitQuickDraw(the_qd: TQDGlobals); cdecl; external LibName;
 {------------------------------------------------------------------------------}
 // The number of elements in a table
 function SDL_TABLESIZE(table: PAnsiChar): Integer;
-{$EXTERNALSYM SDL_TABLESIZE}
-
 
 {------------------------------------------------------------------------------}
 { error-handling }
 {------------------------------------------------------------------------------}
 // Public functions
 function SDL_GetError: PAnsiChar; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetError}
 procedure SDL_SetError(fmt: PAnsiChar); cdecl; external LibName;
-{$EXTERNALSYM SDL_SetError}
 procedure SDL_ClearError; cdecl; external LibName;
-{$EXTERNALSYM SDL_ClearError}
 
 {$IFNDEF MSWINDOWS}
 procedure SDL_Error(Code: TSDL_errorcode); cdecl; external LibName;
-{$EXTERNALSYM SDL_Error}
 {$ENDIF}
 
 // Private error message function - used internally
@@ -1974,33 +1562,23 @@ procedure SDL_OutOfMemory;
 
 function SDL_RWFromFile(filename, mode: PAnsiChar): PSDL_RWops; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_RWFromFile}
 procedure SDL_FreeRW(area: PSDL_RWops); cdecl; external LibName;
-{$EXTERNALSYM SDL_FreeRW}
 
 //fp is FILE *fp ???
 function SDL_RWFromFP(fp: Pointer; autoclose: Integer): PSDL_RWops; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_RWFromFP}
 function SDL_RWFromMem(mem: Pointer; size: Integer): PSDL_RWops; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_RWFromMem}
 function SDL_AllocRW: PSDL_RWops; cdecl; external LibName;
-{$EXTERNALSYM SDL_AllocRW}
 
 function SDL_RWSeek(context: PSDL_RWops; offset: Integer; whence: Integer)
   : Integer;
-{$EXTERNALSYM SDL_RWSeek}
 function SDL_RWTell(context: PSDL_RWops): Integer;
-{$EXTERNALSYM SDL_RWTell}
 function SDL_RWRead(context: PSDL_RWops; ptr: Pointer; size: Integer; n:
   Integer): Integer;
-{$EXTERNALSYM SDL_RWRead}
 function SDL_RWWrite(context: PSDL_RWops; ptr: Pointer; size: Integer; n:
   Integer): Integer;
-{$EXTERNALSYM SDL_RWWrite}
 function SDL_RWClose(context: PSDL_RWops): Integer;
-{$EXTERNALSYM SDL_RWClose}
 
 {------------------------------------------------------------------------------}
 { time-handling                                                                }
@@ -2009,27 +1587,22 @@ function SDL_RWClose(context: PSDL_RWops): Integer;
 { Get the number of milliseconds since the SDL library initialization. }
 { Note that this value wraps if the program runs for more than ~49 days. }
 function SDL_GetTicks: UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetTicks}
 
 // Wait a specified number of milliseconds before returning
 procedure SDL_Delay(msec: UInt32); cdecl; external LibName;
-{$EXTERNALSYM SDL_Delay}
 
 { Add a new timer to the pool of timers already running. }
 { Returns a timer ID, or NULL when an error occurs.      }
 function SDL_AddTimer(interval: UInt32; callback: TSDL_NewTimerCallback; param
   : Pointer): PSDL_TimerID; cdecl; external LibName;
-{$EXTERNALSYM SDL_AddTimer}
 
 { Remove one of the multiple timers knowing its ID. }
 { Returns a boolean value indicating success. }
 function SDL_RemoveTimer(t: PSDL_TimerID): TSDL_Bool; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_RemoveTimer}
 
 function SDL_SetTimer(interval: UInt32; callback: TSDL_TimerCallback):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetTimer}
 
 {------------------------------------------------------------------------------}
 { audio-routines                                                               }
@@ -2041,9 +1614,7 @@ Integer; cdecl; external LibName;
 
 function SDL_AudioInit(driver_name: PAnsiChar): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_AudioInit}
 procedure SDL_AudioQuit; cdecl; external LibName;
-{$EXTERNALSYM SDL_AudioQuit}
 
 { This function fills the given character buffer with the name of the
   current audio driver, and returns a Pointer to it if the audio driver has
@@ -2051,7 +1622,6 @@ procedure SDL_AudioQuit; cdecl; external LibName;
 
 function SDL_AudioDriverName(namebuf: PAnsiChar; maxlen: Integer): PAnsiChar;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_AudioDriverName}
 
 { This function opens the audio device with the desired parameters, and
   returns 0 if successful, placing the actual hardware parameters in the
@@ -2095,11 +1665,9 @@ cdecl; external LibName;
 
 function SDL_OpenAudio(desired, obtained: PSDL_AudioSpec): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_OpenAudio}
 
 { Get the current audio state: }
 function SDL_GetAudioStatus: TSDL_Audiostatus; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetAudioStatus}
 
 { This function pauses and unpauses the audio callback processing.
   It should be called with a parameter of 0 after opening the audio
@@ -2108,7 +1676,6 @@ function SDL_GetAudioStatus: TSDL_Audiostatus; cdecl; external LibName;
   Silence will be written to the audio device during the pause. }
 
 procedure SDL_PauseAudio(pause_on: Integer); cdecl; external LibName;
-{$EXTERNALSYM SDL_PauseAudio}
 
 { This function loads a WAVE from the data source, automatically freeing
   that source if 'freesrc' is non-zero.  For example, to load a WAVE file,
@@ -2129,17 +1696,14 @@ procedure SDL_PauseAudio(pause_on: Integer); cdecl; external LibName;
 function SDL_LoadWAV_RW(src: PSDL_RWops; freesrc: Integer; spec:
   PSDL_AudioSpec; audio_buf: PUInt8; audiolen: PUInt32): PSDL_AudioSpec;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_LoadWAV_RW}
 
 // Compatibility convenience function -- loads a WAV from a file
 function SDL_LoadWAV(filename: PAnsiChar; spec: PSDL_AudioSpec; audio_buf:
   PUInt8; audiolen: PUInt32): PSDL_AudioSpec;
-{$EXTERNALSYM SDL_LoadWAV}
 
 { This function frees data previously allocated with SDL_LoadWAV_RW() }
 
 procedure SDL_FreeWAV(audio_buf: PUInt8); cdecl; external LibName;
-{$EXTERNALSYM SDL_FreeWAV}
 
 { This function takes a source format and rate and a destination format
   and rate, and initializes the 'cvt' structure with information needed
@@ -2149,7 +1713,6 @@ procedure SDL_FreeWAV(audio_buf: PUInt8); cdecl; external LibName;
 function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT; src_format: UInt16;
   src_channels: UInt8; src_rate: Integer; dst_format: UInt16; dst_channels: UInt8;
   dst_rate: Integer): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_BuildAudioCVT}
 
 { Once you have initialized the 'cvt' structure using SDL_BuildAudioCVT(),
   created an audio buffer cvt->buf, and filled it with cvt->len bytes of
@@ -2160,7 +1723,6 @@ function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT; src_format: UInt16;
   SDL_BuildAudioCVT(), and should be cvt->len*cvt->len_mult bytes long. }
 function SDL_ConvertAudio(cvt: PSDL_AudioCVT): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_ConvertAudio}
 
 { This takes two audio buffers of the playing audio format and mixes
   them, performing addition, volume adjustment, and overflow clipping.
@@ -2170,21 +1732,17 @@ LibName;
 
 procedure SDL_MixAudio(dst, src: PUInt8; len: UInt32; volume: Integer);
 cdecl; external LibName;
-{$EXTERNALSYM SDL_MixAudio}
 
 { The lock manipulated by these functions protects the callback function.
   During a LockAudio/UnlockAudio pair, you can be guaranteed that the
   callback function is not running.  Do not call these from the callback
   function or you will cause deadlock. }
 procedure SDL_LockAudio; cdecl; external LibName;
-{$EXTERNALSYM SDL_LockAudio}
 procedure SDL_UnlockAudio; cdecl; external LibName;
-{$EXTERNALSYM SDL_UnlockAudio}
 
 { This function shuts down audio processing and closes the audio device. }
 
 procedure SDL_CloseAudio; cdecl; external LibName;
-{$EXTERNALSYM SDL_CloseAudio}
 
 {------------------------------------------------------------------------------}
 { CD-routines }
@@ -2194,7 +1752,6 @@ procedure SDL_CloseAudio; cdecl; external LibName;
   SDL_Init() has not been called with the SDL_INIT_CDROM flag. }
 
 function SDL_CDNumDrives: Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDNumDrives}
 
 { Returns a human-readable, system-dependent identifier for the CD-ROM.
    Example:
@@ -2203,7 +1760,6 @@ function SDL_CDNumDrives: Integer; cdecl; external LibName;
    "/dev/disk/ide/1/master" }
 
 function SDL_CDName(drive: Integer): PAnsiChar; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDName}
 
 { Opens a CD-ROM drive for access.  It returns a drive handle on success,
   or NULL if the drive was invalid or busy.  This newly opened CD-ROM
@@ -2212,7 +1768,6 @@ function SDL_CDName(drive: Integer): PAnsiChar; cdecl; external LibName;
   Drives are numbered starting with 0.  Drive 0 is the system default CD-ROM. }
 
 function SDL_CDOpen(drive: Integer): PSDL_CD; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDOpen}
 
 { This function returns the current status of the given drive.
   If the drive has a CD in it, the table of contents of the CD and current
@@ -2220,7 +1775,6 @@ function SDL_CDOpen(drive: Integer): PSDL_CD; cdecl; external LibName;
 
 function SDL_CDStatus(cdrom: PSDL_CD): TSDL_CDStatus; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_CDStatus}
 
 {  Play the given CD starting at 'start_track' and 'start_frame' for 'ntracks'
    tracks and 'nframes' frames.  If both 'ntrack' and 'nframe' are 0, play
@@ -2247,46 +1801,35 @@ LibName;
 function SDL_CDPlayTracks(cdrom: PSDL_CD; start_track: Integer; start_frame:
   Integer; ntracks: Integer; nframes: Integer): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_CDPlayTracks}
-
 
 {  Play the given CD starting at 'start' frame for 'length' frames.
    It returns 0, or -1 if there was an error. }
 
 function SDL_CDPlay(cdrom: PSDL_CD; start: Integer; length: Integer):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDPlay}
 
 // Pause play -- returns 0, or -1 on error
 function SDL_CDPause(cdrom: PSDL_CD): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDPause}
 
 // Resume play -- returns 0, or -1 on error
 function SDL_CDResume(cdrom: PSDL_CD): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDResume}
 
 // Stop play -- returns 0, or -1 on error
 function SDL_CDStop(cdrom: PSDL_CD): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDStop}
 
 // Eject CD-ROM -- returns 0, or -1 on error
 function SDL_CDEject(cdrom: PSDL_CD): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CDEject}
 
 // Closes the handle for the CD-ROM drive
 procedure SDL_CDClose(cdrom: PSDL_CD); cdecl; external LibName;
-{$EXTERNALSYM SDL_CDClose}
 
 // Given a status, returns true if there's a disk in the drive
 function SDL_CDInDrive( status : TSDL_CDStatus ) : LongBool;
-{$EXTERNALSYM SDL_CDInDrive}
 
 // Conversion functions from frames to Minute/Second/Frames and vice versa
 procedure FRAMES_TO_MSF(frames: Integer; var M: Integer; var S: Integer; var
   F: Integer);
-{$EXTERNALSYM FRAMES_TO_MSF}
 function MSF_TO_FRAMES(M: Integer; S: Integer; F: Integer): Integer;
-{$EXTERNALSYM MSF_TO_FRAMES}
 
 {------------------------------------------------------------------------------}
 { JoyStick-routines                                                            }
@@ -2294,13 +1837,11 @@ function MSF_TO_FRAMES(M: Integer; S: Integer; F: Integer): Integer;
 
 { Count the number of joysticks attached to the system }
 function SDL_NumJoysticks: Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_NumJoysticks}
 
 { Get the implementation dependent name of a joystick.
   This can be called before any joysticks are opened.
   If no name can be found, this function returns NULL. }
 function SDL_JoystickName(index: Integer): PAnsiChar; cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickName}
 
 { Open a joystick for use - the index passed as an argument refers to
   the N'th joystick on the system.  This index is the value which will
@@ -2309,47 +1850,38 @@ function SDL_JoystickName(index: Integer): PAnsiChar; cdecl; external LibName;
   This function returns a joystick identifier, or NULL if an error occurred. }
 function SDL_JoystickOpen(index: Integer): PSDL_Joystick; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_JoystickOpen}
 
 { Returns 1 if the joystick has been opened, or 0 if it has not. }
 function SDL_JoystickOpened(index: Integer): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_JoystickOpened}
 
 { Get the device index of an opened joystick. }
 function SDL_JoystickIndex(joystick: PSDL_Joystick): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_JoystickIndex}
 
 { Get the number of general axis controls on a joystick }
 function SDL_JoystickNumAxes(joystick: PSDL_Joystick): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_JoystickNumAxes}
 
 { Get the number of trackballs on a joystick
   Joystick trackballs have only relative motion events associated
   with them and their state cannot be polled. }
 function SDL_JoystickNumBalls(joystick: PSDL_Joystick): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_JoystickNumBalls}
-
 
 { Get the number of POV hats on a joystick }
 function SDL_JoystickNumHats(joystick: PSDL_Joystick): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_JoystickNumHats}
 
 { Get the number of buttons on a joystick }
 function SDL_JoystickNumButtons(joystick: PSDL_Joystick): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_JoystickNumButtons}
 
 { Update the current state of the open joysticks.
   This is called automatically by the event loop if any joystick
   events are enabled. }
 
 procedure SDL_JoystickUpdate; cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickUpdate;}
 
 { Enable/disable joystick event polling.
   If joystick events are disabled, you must call SDL_JoystickUpdate()
@@ -2359,7 +1891,6 @@ procedure SDL_JoystickUpdate; cdecl; external LibName;
 
 function SDL_JoystickEventState(state: Integer): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_JoystickEventState}
 
 { Get the current state of an axis control on a joystick
   The state is a value ranging from -32768 to 32767.
@@ -2367,13 +1898,11 @@ LibName;
 
 function SDL_JoystickGetAxis(joystick: PSDL_Joystick; axis: Integer):
 SInt16; cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickGetAxis}
 
 { The hat indices start at index 0. }
 
 function SDL_JoystickGetHat(joystick: PSDL_Joystick; hat: Integer): UInt8;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickGetHat}
 
 { Get the ball axis change since the last poll
   This returns 0, or -1 if you passed it invalid parameters.
@@ -2381,18 +1910,15 @@ cdecl; external LibName;
 
 function SDL_JoystickGetBall(joystick: PSDL_Joystick; ball: Integer; var dx:
    Integer; var dy: Integer): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickGetBall}
 
 { Get the current state of a button on a joystick
   The button indices start at index 0. }
 function SDL_JoystickGetButton( joystick: PSDL_Joystick; Button: Integer):
 UInt8; cdecl; external LibName;
-{$EXTERNALSYM SDL_JoystickGetButton}
 
 { Close a joystick previously opened with SDL_JoystickOpen() }
 procedure SDL_JoystickClose(joystick: PSDL_Joystick); cdecl; external
 LibName;
-{$EXTERNALSYM SDL_JoystickClose}
 
 {------------------------------------------------------------------------------}
 { event-handling }
@@ -2403,7 +1929,6 @@ LibName;
   This should only be run in the thread that sets the video mode. }
 
 procedure SDL_PumpEvents; cdecl; external LibName;
-{$EXTERNALSYM SDL_PumpEvents;}
 
 { Checks the event queue for messages and optionally returns them.
   If 'action' is SDL_ADDEVENT, up to 'numevents' events will be added to
@@ -2420,24 +1945,20 @@ procedure SDL_PumpEvents; cdecl; external LibName;
 function SDL_PeepEvents(events: PSDL_Event; numevents: Integer; action:
   TSDL_eventaction;
   mask: UInt32): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_PeepEvents}
 
 { Polls for currently pending events, and returns 1 if there are any pending
    events, or 0 if there are none available.  If 'event' is not NULL, the next
    event is removed from the queue and stored in that area. }
 
 function SDL_PollEvent(event: PSDL_Event): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_PollEvent}
 
 {  Waits indefinitely for the next available event, returning 1, or 0 if there
    was an error while waiting for events.  If 'event' is not NULL, the next
    event is removed from the queue and stored in that area. }
 
 function SDL_WaitEvent(event: PSDL_Event): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_WaitEvent}
 
 function SDL_PushEvent( event : PSDL_Event ) : Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_PushEvent}
 
 { If the filter returns 1, then the event will be added to the internal queue.
   If it returns 0, then the event will be dropped from the queue, but the
@@ -2455,13 +1976,11 @@ function SDL_PushEvent( event : PSDL_Event ) : Integer; cdecl; external LibName;
   internal queue and be delivered to the application at the next event poll. }
 procedure SDL_SetEventFilter( filter : TSDL_EventFilter ); cdecl; external
 LibName;
-{$EXTERNALSYM SDL_SetEventFilter}
 
 { Return the current event filter - can be used to "chain" filters.
   If there is no event filter set, this function returns NULL. }
 
 function SDL_GetEventFilter: TSDL_EventFilter; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetEventFilter}
 
 { This function allows you to set the state of processing certain events.
   If 'state' is set to SDL_IGNORE, that event will be automatically dropped
@@ -2472,7 +1991,6 @@ function SDL_GetEventFilter: TSDL_EventFilter; cdecl; external LibName;
 
 function SDL_EventState(type_: UInt8; state: Integer): UInt8; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_EventState}
 
 {------------------------------------------------------------------------------}
 { Version Routines }
@@ -2482,30 +2000,25 @@ LibName;
   version of the SDL library. }
 
 procedure SDL_VERSION(var X: TSDL_Version);
-{$EXTERNALSYM SDL_VERSION}
 
 { This macro turns the version numbers into a numeric value:
    (1,2,3) -> (1203)
    This assumes that there will never be more than 100 patchlevels }
 
 function SDL_VERSIONNUM(X, Y, Z: Integer): Integer;
-{$EXTERNALSYM SDL_VERSIONNUM}
 
 // This is the version number macro for the current SDL version
 function SDL_COMPILEDVERSION: Integer;
-{$EXTERNALSYM SDL_COMPILEDVERSION}
 
 // This macro will evaluate to true if compiled with SDL at least X.Y.Z
 function SDL_VERSION_ATLEAST(X: Integer; Y: Integer; Z: Integer):
 LongBool;
-{$EXTERNALSYM SDL_VERSION_ATLEAST}
 
 { This function gets the version of the dynamically linked SDL library.
   it should NOT be used to fill a version structure, instead you should
   use the SDL_Version() macro. }
 
 function SDL_Linked_Version: TSDL_version; cdecl; external LibName;
-{$EXTERNALSYM SDL_Linked_Version}
 
 {------------------------------------------------------------------------------}
 { video                                                                        }
@@ -2526,9 +2039,7 @@ function SDL_Linked_Version: TSDL_version; cdecl; external LibName;
 
 function SDL_VideoInit(driver_name: PAnsiChar; flags: UInt32): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_VideoInit}
 procedure SDL_VideoQuit; cdecl; external LibName;
-{$EXTERNALSYM SDL_VideoQuit}
 
 { This function fills the given character buffer with the name of the
   video driver, and returns a pointer to it if the video driver has
@@ -2536,7 +2047,6 @@ procedure SDL_VideoQuit; cdecl; external LibName;
 
 function SDL_VideoDriverName(namebuf: PAnsiChar; maxlen: Integer): PAnsiChar;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_VideoDriverName}
 
 { This function returns a pointer to the current display surface.
   If SDL is doing format conversion on the display surface, this
@@ -2544,14 +2054,12 @@ cdecl; external LibName;
   surface. }
 
 function SDL_GetVideoSurface: PSDL_Surface; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetVideoSurface}
 
 { This function returns a read-only pointer to information about the
   video hardware.  If this is called before SDL_SetVideoMode(), the 'vfmt'
   member of the returned structure will contain the pixel format of the
   "best" video mode. }
 function SDL_GetVideoInfo: PSDL_VideoInfo; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetVideoInfo}
 
 { Check to see if a particular video mode is supported.
   It returns 0 if the requested mode is not supported under any bit depth,
@@ -2565,7 +2073,6 @@ function SDL_GetVideoInfo: PSDL_VideoInfo; cdecl; external LibName;
 
 function SDL_VideoModeOK(width, height, bpp: Integer; flags: UInt32): Integer;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_VideoModeOK}
 
 { Return a pointer to an array of available screen dimensions for the
   given format and video flags, sorted largest to smallest.  Returns
@@ -2577,8 +2084,6 @@ cdecl; external LibName;
 
 function SDL_ListModes(format: PSDL_PixelFormat; flags: UInt32): PPSDL_Rect;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_ListModes}
-
 
 { Set up a video mode with the specified width, height and bits-per-pixel.
 
@@ -2624,8 +2129,6 @@ cdecl; external LibName;
 
 function SDL_SetVideoMode(width, height, bpp: Integer; flags: UInt32):
 PSDL_Surface; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetVideoMode}
-
 
 { Makes sure the given list of rectangles is updated on the given screen.
   If 'x', 'y', 'w' and 'h' are all 0, SDL_UpdateRect will update the entire
@@ -2634,10 +2137,8 @@ PSDL_Surface; cdecl; external LibName;
 
 procedure SDL_UpdateRects(screen: PSDL_Surface; numrects: Integer; rects:
   PSDL_Rect); cdecl; external LibName;
-{$EXTERNALSYM SDL_UpdateRects}
 procedure SDL_UpdateRect(screen: PSDL_Surface; x, y: SInt32; w, h: UInt32);
 cdecl; external LibName;
-{$EXTERNALSYM SDL_UpdateRect}
 
 
 { On hardware that supports double-buffering, this function sets up a flip
@@ -2650,7 +2151,6 @@ cdecl; external LibName;
   This function returns 0 if successful, or -1 if there was an error.}
 
 function SDL_Flip(screen: PSDL_Surface): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_Flip}
 
 { Set the gamma correction for each of the color channels.
   The gamma values range (approximately) between 0.1 and 10.0
@@ -2661,7 +2161,6 @@ function SDL_Flip(screen: PSDL_Surface): Integer; cdecl; external LibName;
 
 function SDL_SetGamma(redgamma: single; greengamma: single; bluegamma: single
   ): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetGamma}
 
 { Set the gamma translation table for the red, green, and blue channels
   of the video hardware.  Each table is an array of 256 16-bit quantities,
@@ -2676,7 +2175,6 @@ function SDL_SetGamma(redgamma: single; greengamma: single; bluegamma: single
 
 function SDL_SetGammaRamp( redtable: PUInt16; greentable: PUInt16;
   bluetable: PUInt16): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetGammaRamp}
 
 { Retrieve the current values of the gamma translation tables.
 
@@ -2688,7 +2186,6 @@ function SDL_SetGammaRamp( redtable: PUInt16; greentable: PUInt16;
 
 function SDL_GetGammaRamp( redtable: PUInt16; greentable: PUInt16;
   bluetable: PUInt16): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetGammaRamp}
 
 { Sets a portion of the colormap for the given 8-bit surface.  If 'surface'
   is not a palettized surface, this function does nothing, returning 0.
@@ -2708,7 +2205,6 @@ function SDL_GetGammaRamp( redtable: PUInt16; greentable: PUInt16;
 function SDL_SetColors(surface: PSDL_Surface; colors: PSDL_Color; firstcolor
   : Integer;
   ncolors: Integer): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetColors}
 
 { Sets a portion of the colormap for a given 8-bit surface.
   'flags' is one or both of:
@@ -2728,27 +2224,22 @@ function SDL_SetColors(surface: PSDL_Surface; colors: PSDL_Color; firstcolor
 function SDL_SetPalette(surface: PSDL_Surface; flags: Integer; colors:
   PSDL_Color; firstcolor: Integer; ncolors: Integer): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_SetPalette}
 
 { Maps an RGB triple to an opaque pixel value for a given pixel format }
 function SDL_MapRGB(format: PSDL_PixelFormat; r: UInt8; g: UInt8; b: UInt8)
   : UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_MapRGB}
 
 { Maps an RGBA quadruple to a pixel value for a given pixel format }
 function SDL_MapRGBA(format: PSDL_PixelFormat; r: UInt8; g: UInt8; b:
   UInt8; a: UInt8): UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_MapRGBA}
 
 { Maps a pixel value into the RGB components for a given pixel format }
 procedure SDL_GetRGB(pixel: UInt32; fmt: PSDL_PixelFormat; r: PUInt8; g:
   PUInt8; b: PUInt8); cdecl; external LibName;
-{$EXTERNALSYM SDL_GetRGB}
 
 { Maps a pixel value into the RGBA components for a given pixel format }
 procedure SDL_GetRGBA(pixel: UInt32; fmt: PSDL_PixelFormat; r: PUInt8; g:
   PUInt8; b: PUInt8; a: UInt8); cdecl; external LibName;
-{$EXTERNALSYM SDL_GetRGBA}
 
 { Allocate and free an RGB surface (must be called after SDL_SetVideoMode)
   If the depth is 4 or 8 bits, an empty palette is allocated for the surface.
@@ -2785,19 +2276,14 @@ procedure SDL_GetRGBA(pixel: UInt32; fmt: PSDL_PixelFormat; r: PUInt8; g:
 
 function SDL_AllocSurface(flags: UInt32; width, height, depth: Integer;
   RMask, GMask, BMask, AMask: UInt32): PSDL_Surface;
-{$EXTERNALSYM SDL_AllocSurface}
 function SDL_CreateRGBSurface(flags: UInt32; width, height, depth: Integer;
   RMask, GMask, BMask, AMask: UInt32): PSDL_Surface; cdecl; external LibName;
-{$EXTERNALSYM SDL_CreateRGBSurface}
 function SDL_CreateRGBSurfaceFrom(pixels: Pointer; width, height, depth, pitch
   : Integer; RMask, GMask, BMask, AMask: UInt32): PSDL_Surface; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_CreateRGBSurfaceFrom}
 procedure SDL_FreeSurface(surface: PSDL_Surface); cdecl; external LibName;
-{$EXTERNALSYM SDL_FreeSurface}
 
 function SDL_MustLock(Surface: PSDL_Surface): Boolean;
-{$EXTERNALSYM SDL_MustLock}
 { SDL_LockSurface() sets up a surface for directly accessing the pixels.
   Between calls to SDL_LockSurface()/SDL_UnlockSurface(), you can write
   to and read from 'surface->pixels', using the pixel format stored in
@@ -2816,9 +2302,7 @@ function SDL_MustLock(Surface: PSDL_Surface): Boolean;
   SDL_LockSurface() returns 0, or -1 if the surface couldn't be locked. }
 function SDL_LockSurface(surface: PSDL_Surface): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_LockSurface}
 procedure SDL_UnlockSurface(surface: PSDL_Surface); cdecl; external LibName;
-{$EXTERNALSYM SDL_UnlockSurface}
 
 { Load a surface from a seekable SDL data source (memory or file.)
   If 'freesrc' is non-zero, the source will be closed after being read.
@@ -2826,11 +2310,9 @@ procedure SDL_UnlockSurface(surface: PSDL_Surface); cdecl; external LibName;
   The new surface should be freed with SDL_FreeSurface(). }
 function SDL_LoadBMP_RW(src: PSDL_RWops; freesrc: Integer): PSDL_Surface;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_LoadBMP_RW}
 
 // Convenience macro -- load a surface from a file
 function SDL_LoadBMP(filename: PAnsiChar): PSDL_Surface;
-{$EXTERNALSYM SDL_LoadBMP}
 
 { Save a surface to a seekable SDL data source (memory or file.)
   If 'freedst' is non-zero, the source will be closed after being written.
@@ -2838,11 +2320,9 @@ function SDL_LoadBMP(filename: PAnsiChar): PSDL_Surface;
 
 function SDL_SaveBMP_RW(surface: PSDL_Surface; dst: PSDL_RWops; freedst:
   Integer): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SaveBMP_RW}
 
 // Convenience macro -- save a surface to a file
 function SDL_SaveBMP(surface: PSDL_Surface; filename: PAnsiChar): Integer;
-{$EXTERNALSYM SDL_SaveBMP}
 
 { Sets the color key (transparent pixel) in a blittable surface.
   If 'flag' is SDL_SRCCOLORKEY (optionally OR'd with SDL_RLEACCEL),
@@ -2854,7 +2334,6 @@ function SDL_SaveBMP(surface: PSDL_Surface; filename: PAnsiChar): Integer;
 
 function SDL_SetColorKey(surface: PSDL_Surface; flag, key: UInt32):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetColorKey}
 
 { This function sets the alpha value for the entire surface, as opposed to
   using the alpha component of each pixel. This value measures the range
@@ -2871,7 +2350,6 @@ Integer; cdecl; external LibName;
 
 function SDL_SetAlpha(surface: PSDL_Surface; flag: UInt32; alpha: UInt8):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SetAlpha}
 
 { Sets the clipping rectangle for the destination surface in a blit.
 
@@ -2885,14 +2363,12 @@ Integer; cdecl; external LibName;
   and destination surfaces. }
 procedure SDL_SetClipRect(surface: PSDL_Surface; rect: PSDL_Rect); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_SetClipRect}
 
 { Gets the clipping rectangle for the destination surface in a blit.
   'rect' must be a pointer to a valid rectangle which will be filled
   with the correct values. }
 procedure SDL_GetClipRect(surface: PSDL_Surface; rect: PSDL_Rect); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_GetClipRect}
 
 { Creates a new surface of the specified format, and then copies and maps
   the given surface to it so the blit of the converted surface will be as
@@ -2907,7 +2383,6 @@ external LibName;
 
 function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
   flags: UInt32): PSDL_Surface; cdecl; external LibName;
-{$EXTERNALSYM SDL_ConvertSurface}
 
 {
   This performs a fast blit from the source surface to the destination
@@ -2916,12 +2391,12 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
   surface (src or dst) is copied.  The final blit rectangles are saved
   in 'srcrect' and 'dstrect' after all clipping is performed.
   If the blit is successful, it returns 0, otherwise it returns -1.
- 
+
   The blit function should not be called on a locked surface.
- 
+
   The blit semantics for surfaces with and without alpha and colorkey
   are defined as follows:
- 
+
   RGBA->RGB:
       SDL_SRCALPHA set:
    alpha-blend (using alpha-channel).
@@ -2931,7 +2406,7 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
    if SDL_SRCCOLORKEY set, only copy the pixels matching the
    RGB values of the source colour key, ignoring alpha in the
    comparison.
- 
+
   RGB->RGBA:
       SDL_SRCALPHA set:
    alpha-blend (using the source per-surface alpha value);
@@ -2941,7 +2416,7 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
       both:
    if SDL_SRCCOLORKEY set, only copy the pixels matching the
    source colour key.
- 
+
   RGBA->RGBA:
       SDL_SRCALPHA set:
    alpha-blend (using the source alpha channel) the RGB values;
@@ -2952,7 +2427,7 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
    if SDL_SRCCOLORKEY set, only copy the pixels matching the
    RGB values of the source colour key, ignoring alpha in the
    comparison.
- 
+
   RGB->RGB:
       SDL_SRCALPHA set:
    alpha-blend (using the source per-surface alpha value).
@@ -2961,7 +2436,7 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
       both:
    if SDL_SRCCOLORKEY set, only copy the pixels matching the
    source colour key.
- 
+
   If either of the surfaces were in video memory, and the blit returns -2,
   the video memory was lost, so it should be reloaded with artwork and
   re-blitted:
@@ -2983,20 +2458,17 @@ function SDL_ConvertSurface(src: PSDL_Surface; fmt: PSDL_PixelFormat;
 function SDL_BlitSurface(src: PSDL_Surface; srcrect: PSDL_Rect; dst:
   PSDL_Surface;
   dstrect: PSDL_Rect): Integer;
-{$EXTERNALSYM SDL_BlitSurface}
 
 {  This is the public blit function, SDL_BlitSurface(), and it performs
    rectangle validation and clipping before passing it to SDL_LowerBlit() }
 function SDL_UpperBlit(src: PSDL_Surface; srcrect: PSDL_Rect; dst:
   PSDL_Surface;
   dstrect: PSDL_Rect): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_UpperBlit}
 
 { This is a semi-private blit function and it performs low-level surface
   blitting only. }
 function SDL_LowerBlit(src: PSDL_Surface; srcrect: PSDL_Rect; dst:
   PSDL_Surface; dstrect: PSDL_Rect): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_LowerBlit}
 
 { This function performs a fast fill of the given rectangle with 'color'
   The given rectangle is clipped to the destination surface clip area
@@ -3008,7 +2480,6 @@ function SDL_LowerBlit(src: PSDL_Surface; srcrect: PSDL_Rect; dst:
 
 function SDL_FillRect(dst: PSDL_Surface; dstrect: PSDL_Rect; color: UInt32)
   : Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_FillRect}
 
 { This function takes a surface and copies it to a new surface of the
   pixel format and colors of the video framebuffer, suitable for fast
@@ -3022,7 +2493,6 @@ function SDL_FillRect(dst: PSDL_Surface; dstrect: PSDL_Rect; color: UInt32)
 
 function SDL_DisplayFormat(surface: PSDL_Surface): PSDL_Surface; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_DisplayFormat}
 
 { This function takes a surface and copies it to a new surface of the
   pixel format and colors of the video framebuffer (if possible),
@@ -3038,7 +2508,6 @@ external LibName;
 
 function SDL_DisplayFormatAlpha(surface: PSDL_Surface): PSDL_Surface; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_DisplayFormatAlpha}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 //* YUV video surface overlay functions                                       */
@@ -3051,15 +2520,12 @@ external LibName;
 
 function SDL_CreateYUVOverlay(width: Integer; height: Integer; format:
   UInt32; display: PSDL_Surface): PSDL_Overlay; cdecl; external LibName;
-{$EXTERNALSYM SDL_CreateYUVOverlay}
 
 // Lock an overlay for direct access, and unlock it when you are done
 function SDL_LockYUVOverlay(Overlay: PSDL_Overlay): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_LockYUVOverlay}
 procedure SDL_UnlockYUVOverlay(Overlay: PSDL_Overlay); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_UnlockYUVOverlay}
 
 
 { Blit a video overlay to the display surface.
@@ -3070,11 +2536,9 @@ external LibName;
 
 function SDL_DisplayYUVOverlay(Overlay: PSDL_Overlay; dstrect: PSDL_Rect):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_DisplayYUVOverlay}
 
 // Free a video overlay
 procedure SDL_FreeYUVOverlay(Overlay: PSDL_Overlay); cdecl; external LibName;
-{$EXTERNALSYM SDL_FreeYUVOverlay}
 
 {------------------------------------------------------------------------------}
 { OpenGL Routines                                                              }
@@ -3092,16 +2556,13 @@ procedure SDL_FreeYUVOverlay(Overlay: PSDL_Overlay); cdecl; external LibName;
 
 function SDL_GL_LoadLibrary(filename: PChar): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_GL_LoadLibrary}
 
 { Get the address of a GL function (for extension functions) }
 function SDL_GL_GetProcAddress(procname: PChar) : Pointer; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_GetProcAddress}
 
 { Set an attribute of the OpenGL subsystem before intialization. }
 function SDL_GL_SetAttribute(attr: TSDL_GLAttr; value: Integer):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_SetAttribute}
 
 { Get an attribute of the OpenGL subsystem from the windowing
   interface, such as glX. This is of course different from getting
@@ -3113,23 +2574,18 @@ Integer; cdecl; external LibName;
 
 function SDL_GL_GetAttribute(attr: TSDL_GLAttr; var value: Integer):
 Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_GetAttribute}
 
 { Swap the OpenGL buffers, if double-buffering is supported. }
 
 procedure SDL_GL_SwapBuffers; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_SwapBuffers;}
 
 { Internal functions that should not be called unless you have read
   and understood the source code for these functions. }
 
 procedure SDL_GL_UpdateRects(numrects: Integer; rects: PSDL_Rect); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_GL_UpdateRects}
 procedure SDL_GL_Lock; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_Lock;}
 procedure SDL_GL_Unlock; cdecl; external LibName;
-{$EXTERNALSYM SDL_GL_Unlock;}
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
 {* These functions allow interaction with the window manager, if any.        *}
@@ -3138,9 +2594,7 @@ procedure SDL_GL_Unlock; cdecl; external LibName;
 { Sets/Gets the title and icon text of the display window }
 procedure SDL_WM_GetCaption(var title: PAnsiChar; var icon: PAnsiChar); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_WM_GetCaption}
 procedure SDL_WM_SetCaption(title, icon: PAnsiChar); cdecl; external LibName;
-{$EXTERNALSYM SDL_WM_SetCaption}
 
 { Sets the icon for the display window.
   This function must be called before the first call to SDL_SetVideoMode().
@@ -3148,14 +2602,12 @@ procedure SDL_WM_SetCaption(title, icon: PAnsiChar); cdecl; external LibName;
   If 'mask' is NULL, the entire icon surface will be used as the icon. }
 procedure SDL_WM_SetIcon(icon: PSDL_Surface; mask: UInt8); cdecl; external
 LibName;
-{$EXTERNALSYM SDL_WM_SetIcon}
 
 { This function iconifies the window, and returns 1 if it succeeded.
   If the function succeeds, it generates an SDL_APPACTIVE loss event.
   This function is a noop and returns 0 in non-windowed environments. }
 
 function SDL_WM_IconifyWindow: Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_WM_IconifyWindow}
 
 { Toggle fullscreen mode without changing the contents of the screen.
   If the display surface does not require locking before accessing
@@ -3173,7 +2625,6 @@ function SDL_WM_IconifyWindow: Integer; cdecl; external LibName;
 
 function SDL_WM_ToggleFullScreen(surface: PSDL_Surface): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_WM_ToggleFullScreen}
 
 { Grabbing means that the mouse is confined to the application window,
   and nearly all keyboard input is passed directly to the application,
@@ -3181,7 +2632,6 @@ external LibName;
 
 function SDL_WM_GrabInput(mode: TSDL_GrabMode): TSDL_GrabMode; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_WM_GrabInput}
 
 {------------------------------------------------------------------------------}
 { mouse-routines }
@@ -3194,7 +2644,6 @@ external LibName;
 
 function SDL_GetMouseState(var x: Integer; var y: Integer): UInt8; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_GetMouseState}
 
 { Retrieve the current state of the mouse.
   The current button state is returned as a button bitmask, which can
@@ -3202,11 +2651,9 @@ external LibName;
   mouse deltas since the last call to SDL_GetRelativeMouseState(). }
 function SDL_GetRelativeMouseState(var x: Integer; var y: Integer): UInt8;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_GetRelativeMouseState}
 
 { Set the position of the mouse cursor (generates a mouse motion event) }
 procedure SDL_WarpMouse(x, y: UInt16); cdecl; external LibName;
-{$EXTERNALSYM SDL_WarpMouse}
 
 { Create a cursor using the specified data and mask (in MSB format).
   The cursor width must be a multiple of 8 bits.
@@ -3221,21 +2668,17 @@ procedure SDL_WarpMouse(x, y: UInt16); cdecl; external LibName;
   Cursors created with this function must be freed with SDL_FreeCursor(). }
 function SDL_CreateCursor(data, mask: PUInt8; w, h, hot_x, hot_y: Integer):
 PSDL_Cursor; cdecl; external LibName;
-{$EXTERNALSYM SDL_CreateCursor}
 
 { Set the currently active cursor to the specified one.
   If the cursor is currently visible, the change will be immediately
   represented on the display. }
 procedure SDL_SetCursor(cursor: PSDL_Cursor); cdecl; external LibName;
-{$EXTERNALSYM SDL_SetCursor}
 
 { Returns the currently active cursor. }
 function SDL_GetCursor: PSDL_Cursor; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetCursor}
 
 { Deallocates a cursor created with SDL_CreateCursor(). }
 procedure SDL_FreeCursor(cursor: PSDL_Cursor); cdecl; external LibName;
-{$EXTERNALSYM SDL_FreeCursor}
 
 { Toggle whether or not the cursor is shown on the screen.
   The cursor start off displayed, but can be turned off.
@@ -3243,7 +2686,6 @@ procedure SDL_FreeCursor(cursor: PSDL_Cursor); cdecl; external LibName;
   before the call, or 0 if it was not.  You can query the current
   state by passing a 'toggle' value of -1. }
 function SDL_ShowCursor(toggle: Integer): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_ShowCursor}
 
 function SDL_BUTTON( Button : Integer ) : Integer;
 
@@ -3259,12 +2701,10 @@ function SDL_BUTTON( Button : Integer ) : Integer;
   It returns the previous state of keyboard translation. }
 function SDL_EnableUNICODE(enable: Integer): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_EnableUNICODE}
 
 { If 'delay' is set to 0, keyboard repeat is disabled. }
 function SDL_EnableKeyRepeat(delay: Integer; interval: Integer): Integer;
 cdecl; external LibName;
-{$EXTERNALSYM SDL_EnableKeyRepeat}
 
 { Get a snapshot of the current state of the keyboard.
   Returns an array of keystates, indexed by the SDLK_* syms.
@@ -3274,20 +2714,16 @@ cdecl; external LibName;
   if ( keystate[SDLK_RETURN] ) ... <RETURN> is pressed }
 
 function SDL_GetKeyState(numkeys: PInt): PUInt8; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetKeyState}
 
 { Get the current key modifier state }
 function SDL_GetModState: TSDLMod; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetModState}
 
 { Set the current key modifier state
   This does not change the keyboard state, only the key modifier flags. }
 procedure SDL_SetModState(modstate: TSDLMod); cdecl; external LibName;
-{$EXTERNALSYM SDL_SetModState}
 
 { Get the name of an SDL virtual keysym }
 function SDL_GetKeyName(key: TSDLKey): PAnsiChar; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetKeyName}
 
 {------------------------------------------------------------------------------}
 { Active Routines                                                              }
@@ -3299,34 +2735,26 @@ function SDL_GetKeyName(key: TSDLKey): PAnsiChar; cdecl; external LibName;
   see your application, otherwise it has been iconified or disabled. }
 
 function SDL_GetAppState: UInt8; cdecl; external LibName;
-{$EXTERNALSYM SDL_GetAppState}
-
 
 { Mutex functions }
 
 { Create a mutex, initialized unlocked }
 
 function SDL_CreateMutex: PSDL_Mutex; cdecl; external LibName;
-{$EXTERNALSYM SDL_CreateMutex}
 
 { Lock the mutex  (Returns 0, or -1 on error) }
 
 function SDL_mutexP(mutex: PSDL_mutex): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_mutexP}
 
 function SDL_LockMutex(mutex: PSDL_mutex): Integer;
-{$EXTERNALSYM SDL_LockMutex}
 
 { Unlock the mutex  (Returns 0, or -1 on error) }
 function SDL_mutexV(mutex: PSDL_mutex): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_mutexV}
 
 function SDL_UnlockMutex(mutex: PSDL_mutex): Integer;
-{$EXTERNALSYM SDL_UnlockMutex}
 
 { Destroy a mutex }
 procedure SDL_DestroyMutex(mutex: PSDL_mutex); cdecl; external LibName;
-{$EXTERNALSYM SDL_DestroyMutex}
 
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 { Semaphore functions                                           }
@@ -3334,25 +2762,21 @@ procedure SDL_DestroyMutex(mutex: PSDL_mutex); cdecl; external LibName;
 { Create a semaphore, initialized with value, returns NULL on failure. }
 function SDL_CreateSemaphore(initial_value: UInt32): PSDL_Sem; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_CreateSemaphore}
 
 
 { Destroy a semaphore }
 procedure SDL_DestroySemaphore(sem: PSDL_sem); cdecl; external LibName;
-{$EXTERNALSYM SDL_DestroySemaphore}
 
 { This function suspends the calling thread until the semaphore pointed
   to by sem has a positive count. It then atomically decreases the semaphore
   count. }
 
 function SDL_SemWait(sem: PSDL_sem): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SemWait}
 
 { Non-blocking variant of SDL_SemWait(), returns 0 if the wait succeeds,
    SDL_MUTEX_TIMEDOUT if the wait would block, and -1 on error. }
 
 function SDL_SemTryWait(sem: PSDL_sem): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SemTryWait}
 
 { Variant of SDL_SemWait() with a timeout in milliseconds, returns 0 if
    the wait succeeds, SDL_MUTEX_TIMEDOUT if the wait does not succeed in
@@ -3362,42 +2786,35 @@ function SDL_SemTryWait(sem: PSDL_sem): Integer; cdecl; external LibName;
 
 function SDL_SemWaitTimeout(sem: PSDL_sem; ms: UInt32): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_SemTryWait}
 
 { Atomically increases the semaphore's count (not blocking), returns 0,
    or -1 on error. }
 
 function SDL_SemPost(sem: PSDL_sem): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_SemTryWait}
 
 { Returns the current count of the semaphore }
 
 function SDL_SemValue(sem: PSDL_sem): UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_SemValue}
 
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 { Condition variable functions                                  }
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 { Create a condition variable }
 function SDL_CreateCond: PSDL_Cond; cdecl; external LibName;
-{$EXTERNALSYM SDL_CreateCond}
 
 { Destroy a condition variable }
 procedure SDL_DestroyCond(cond: PSDL_Cond); cdecl; external LibName;
-{$EXTERNALSYM SDL_DestroyCond}
 
 { Restart one of the threads that are waiting on the condition variable,
    returns 0 or -1 on error. }
 
 function SDL_CondSignal(cond: PSDL_cond): Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CondSignal}
 
 { Restart all threads that are waiting on the condition variable,
   returns 0 or -1 on error. }
 
 function SDL_CondBroadcast(cond: PSDL_cond): Integer; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_CondBroadcast}
 
 
 { Wait on the condition variable, unlocking the provided mutex.
@@ -3406,7 +2823,6 @@ LibName;
 
 function SDL_CondWait(cond: PSDL_cond; mut: PSDL_mutex): Integer; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_CondWait}
 
 { Waits for at most 'ms' milliseconds, and returns 0 if the condition
   variable is signaled, SDL_MUTEX_TIMEDOUT if the condition is not
@@ -3416,7 +2832,6 @@ external LibName;
 
 function SDL_CondWaitTimeout(cond: PSDL_cond; mut: PSDL_mutex; ms: UInt32)
   : Integer; cdecl; external LibName;
-{$EXTERNALSYM SDL_CondWaitTimeout}
 
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 { Condition variable functions                                  }
@@ -3425,17 +2840,14 @@ function SDL_CondWaitTimeout(cond: PSDL_cond; mut: PSDL_mutex; ms: UInt32)
 { Create a thread }
 function SDL_CreateThread(fn: PInt; data: Pointer): PSDL_Thread; cdecl;
 external LibName;
-{$EXTERNALSYM SDL_CreateThread}
 
 { Get the 32-bit thread identifier for the current thread }
 function SDL_ThreadID: UInt32; cdecl; external LibName;
-{$EXTERNALSYM SDL_ThreadID}
 
 { Get the 32-bit thread identifier for the specified thread,
   equivalent to SDL_ThreadID() if the specified thread is NULL. }
 function SDL_GetThreadID(thread: PSDL_Thread): UInt32; cdecl; external
 LibName;
-{$EXTERNALSYM SDL_GetThreadID}
 
 { Wait for a thread to finish.
   The return code for the thread function is placed in the area
@@ -3443,11 +2855,9 @@ LibName;
 
 procedure SDL_WaitThread(thread: PSDL_Thread; var status: Integer); cdecl;
 external LibName;
-{$EXTERNALSYM SDL_WaitThread}
 
 { Forcefully kill a thread without worrying about its state }
 procedure SDL_KillThread(thread: PSDL_Thread); cdecl; external LibName;
-{$EXTERNALSYM SDL_KillThread}
 
 {------------------------------------------------------------------------------}
 { Get Environment Routines                                                     }
@@ -3459,12 +2869,10 @@ function _putenv( const variable : PAnsiChar ): integer; cdecl;
 { Put a variable of the form "name=value" into the environment }
 //function SDL_putenv(const variable: PAnsiChar): integer; cdecl; external LibName;
 function SDL_putenv(const variable: PAnsiChar): integer;
-{$EXTERNALSYM SDL_putenv}
 
 // The following function has been commented out to encourage developers to use
 // SDL_putenv as it it more portable
 //function putenv(const variable: PAnsiChar): integer;
-//{$EXTERNALSYM putenv}
 
 {$IFDEF MSWINDOWS}
 function getenv( const name : PAnsiChar ): PAnsiChar; cdecl;
@@ -3473,17 +2881,14 @@ function getenv( const name : PAnsiChar ): PAnsiChar; cdecl;
 {* Retrieve a variable named "name" from the environment }
 //function SDL_getenv(const name: PAnsiChar): PAnsiChar; cdecl; external LibName;
 function SDL_getenv(const name: PAnsiChar): PAnsiChar;
-{$EXTERNALSYM SDL_getenv}
 
 // The following function has been commented out to encourage developers to use
 // SDL_getenv as it it more portable
 //function getenv(const name: PAnsiChar): PAnsiChar;
-//{$EXTERNALSYM getenv}
 
 {------------------------------------------------------------------------------}
 
 function SDL_Swap32(D: Uint32): Uint32;
-{$EXTERNALSYM SDL_Swap32}
 
 { FreeAndNil frees the given TObject instance and sets the variable reference
   to nil.  Be careful to only pass TObjects to this routine. }

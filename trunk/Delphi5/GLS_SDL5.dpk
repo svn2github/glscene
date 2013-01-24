@@ -1,7 +1,7 @@
 package GLS_SDL5;
 
 {$R *.res}
-{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$R '..\Source\GLSceneVCLSDL.dcr'}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -31,8 +31,8 @@ requires
   GLScene5;
 
 contains
-  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  SDL in '..\Source\GameAPIs\sdl.pas';
+  GLSDLContext in '..\Source\GLSDLContext.pas',
+  GLSDLWindow in '..\Source\GLSDLWindow.pas',
+  GLSDL in '..\Source\GLSDL.pas';
 
 end.
