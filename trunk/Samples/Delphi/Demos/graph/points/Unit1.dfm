@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 239
   Top = 88
-  Width = 418
-  Height = 394
-  Caption = 'Form1'
+  Caption = 'Points'
+  ClientHeight = 405
+  ClientWidth = 529
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,29 +11,40 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 402
-    Height = 331
+    Width = 529
+    Height = 380
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 146.379318237304700000
+    FieldOfView = 150.512878417968700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 410
+    ExplicitHeight = 325
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 402
+    Width = 529
     Height = 25
     Align = alTop
     TabOrder = 1
+    ExplicitWidth = 410
+    object LabelFPS: TLabel
+      Left = 288
+      Top = 6
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object CBPointParams: TCheckBox
       Left = 8
       Top = 4

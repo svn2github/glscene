@@ -1,25 +1,3 @@
-{: Advenced for the TGLHeightField object.<p>
-
-   Check the fxy sample first.<p>
-
-   This sample shows a few more tricks : how to switch formulas at run-time,
-   effects of base grid extents and resolution change as well as color and
-   lighting options of the TGLHeightField.<p>
-
-   Note that maxed out grid size and minimum step (high resolution) will bring
-   most of todays cards to their knees (if they do not just crash, that is).<p>
-
-   Used formulas :<p>
-
-   The Formula1 is of type Sin(d)/(1+d), with d=sqr(x)+sqr(y), you may note
-   the interesting sampling-interference effect with big step values (low res)
-   and remember your math teacher's warnings on graph-plotting :)<p>
-
-   Formula2 is a more classic sin*cos mix<p>
-
-   Dynamic is the third formula, if you pick it, a small ball will appear and
-   move around, the plotted formula being the square distance to the ball.
-}
 unit Unit1;
 
 interface
@@ -37,21 +15,23 @@ type
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     HeightField1: TGLHeightField;
-    TrackBar1: TTrackBar;
-    TrackBar2: TTrackBar;
-    Label1: TLabel;
-    Label2: TLabel;
-    CheckBox1: TCheckBox;
-    Label3: TLabel;
-    TrackBar3: TTrackBar;
-    RadioGroup1: TRadioGroup;
     Timer1: TTimer;
-    Label4: TLabel;
-    ComboBox1: TComboBox;
     Sphere1: TGLSphere;
     GLCadencer1: TGLCadencer;
     Lines1: TGLLines;
+    Panel1: TPanel;
+    Label1: TLabel;
+    TrackBar1: TTrackBar;
+    Label2: TLabel;
+    TrackBar2: TTrackBar;
+    Label3: TLabel;
+    TrackBar3: TTrackBar;
+    RadioGroup1: TRadioGroup;
+    CheckBox1: TCheckBox;
+    Label4: TLabel;
+    ComboBox1: TComboBox;
     CheckBox2: TCheckBox;
+    LabelFPS: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -67,8 +47,10 @@ type
     procedure Sphere1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure CheckBox2Click(Sender: TObject);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Déclarations privées }
+    { Private declarations }
     procedure Formula1(const x, y: Single; var z: Single;
       var color: TColorVector; var texPoint: TTexPoint);
     procedure Formula2(const x, y: Single; var z: Single;
@@ -76,7 +58,7 @@ type
     procedure Formula3(const x, y: Single; var z: Single;
       var color: TColorVector; var texPoint: TTexPoint);
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 
@@ -93,20 +75,6 @@ begin
    HeightField1.OnGetHeight:=Formula1;
    // no per-vertex coloring
    ComboBox1.ItemIndex:=0;
-end;
-
-procedure TForm1.RadioGroup1Click(Sender: TObject);
-begin
-   Sphere1.Visible:=False;
-   // switch between formulas
-   case RadioGroup1.ItemIndex of
-      0 : HeightField1.OnGetHeight:=Formula1;
-      1 : HeightField1.OnGetHeight:=Formula2;
-      2 : begin
-         HeightField1.OnGetHeight:=Formula3;
-         Sphere1.Visible:=True;
-      end;
-   end;
 end;
 
 procedure TForm1.Formula1(const x, y: Single; var z: Single;
@@ -134,6 +102,20 @@ begin
    if ((Round(x*4)+Round(y*4)) and 1)=1 then
       color:=clrBlue
    else color:=clrYellow;
+end;
+
+procedure TForm1.RadioGroup1Click(Sender: TObject);
+begin
+   Sphere1.Visible:=False;
+   // switch between formulas
+   case RadioGroup1.ItemIndex of
+      0 : HeightField1.OnGetHeight:=Formula1;
+      1 : HeightField1.OnGetHeight:=Formula2;
+      2 : begin
+         HeightField1.OnGetHeight:=Formula3;
+         Sphere1.Visible:=True;
+      end;
+   end;
 end;
 
 procedure TForm1.Sphere1Progress(Sender: TObject; const deltaTime,
@@ -201,7 +183,7 @@ begin
    // Display number of triangles used in the mesh
    // You will note that this number quickly gets out of hand if you are
    // using large high-resolution grids
-   Caption:=Format('%d Triangles - %.2f FPS',
+   LabelFPS.Caption:=Format('%d Triangles - %.2f FPS',
                    [HeightField1.TriangleCount, GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
@@ -222,6 +204,13 @@ begin
       GLCamera1.MoveAroundTarget(my-y, mx-x);
       mx:=x; my:=y;
    end;
+end;
+
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   GLCamera1 := GLSceneViewer1.Camera;
+   GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta / 150));
 end;
 
 end.
