@@ -24,7 +24,7 @@
   <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
   <li>21/02/01 - EG - Now XOpenGL based (multitexture)
   <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
-  to workaround the float property default value bug.
+                 to workaround the float property default value bug.
   <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
   <li>15/07/00 - EG - Added TXYGrid
   <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
@@ -72,7 +72,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    { : Returns the base value for step browsing.<p>
+    { : Returns the Base value for Step browsing.<p>
       ie. the lowest value (superior to Min) that verifies
       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
@@ -81,15 +81,15 @@ type
 
     function IsValid: Boolean;
 
-    procedure SetBaseStepMaxToVars(var base, step, max: Single;
+    procedure SetBaseStepMaxToVars(var Base, Step, Max: Single;
       samplingEnabled: Boolean = True);
 
   published
     { Published Declarations }
     property Min: Single read FMin write SetMin;
-    property max: Single read FMax write SetMax;
+    property Max: Single read FMax write SetMax;
     property Origin: Single read FOrigin write SetOrigin;
-    property step: Single read FStep write SetStep;
+    property Step: Single read FStep write SetStep;
   end;
 
   THeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
@@ -184,7 +184,7 @@ type
   // TXYZGridLinesStyle
   //
   { : Rendering Style for grid lines.<p>
-    - glsLine : a single line is used for each grid line (from min to max),
+    - glsLine : a single line is used for each grid line (from Min to Max),
     this provides the fastest rendering<br>
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
@@ -359,7 +359,7 @@ end;
 
 function TGLSamplingScale.MaxStepCount: Integer;
 begin
-  Result := Round(0.5 + (max - Min) / step);
+  Result := Round(0.5 + (Max - Min) / Step);
 end;
 
 // IsValid
@@ -367,25 +367,25 @@ end;
 
 function TGLSamplingScale.IsValid: Boolean;
 begin
-  Result := (max <> Min);
+  Result := (Max <> Min);
 end;
 
 // SetBaseStepMaxToVars
 //
 
-procedure TGLSamplingScale.SetBaseStepMaxToVars(var base, step, max: Single;
+procedure TGLSamplingScale.SetBaseStepMaxToVars(var Base, Step, Max: Single;
   samplingEnabled: Boolean = True);
 begin
-  step := FStep;
+  Step := FStep;
   if samplingEnabled then
   begin
-    base := StepBase;
-    max := FMax + ((FMax - base) / step) * 1E-6; // add precision loss epsilon
+    Base := StepBase;
+    Max := FMax + ((FMax - Base) / Step) * 1E-6; // add precision loss epsilon
   end
   else
   begin
-    base := FOrigin;
-    max := base;
+    Base := FOrigin;
+    Max := Base;
   end;
 end;
 
@@ -513,9 +513,9 @@ begin
   try
     // precompute grid values
     xBase := XSamplingScale.StepBase;
-    xStep := XSamplingScale.step;
+    xStep := XSamplingScale.Step;
     invXStep := 1 / xStep;
-    yStep := YSamplingScale.step;
+    yStep := YSamplingScale.Step;
     invYStep := 1 / yStep;
     // get through the grid
     if (hfoTwoSided in Options) or (ColorMode <> hfcmNone) then
@@ -543,14 +543,14 @@ begin
     y := YSamplingScale.StepBase;
     y1 := y;
     y2 := y;
-    while y <= YSamplingScale.max do
+    while y <= YSamplingScale.Max do
     begin
       rowTop := rowMid;
       rowMid := rowBottom;
       rowBottom := row[nx mod 3];
       x := xBase;
       m := 0;
-      while x <= XSamplingScale.max do
+      while x <= XSamplingScale.Max do
       begin
         with rowBottom^[m] do
         begin
@@ -839,7 +839,7 @@ begin
         else
         begin
           GL.Vertex3f(XSamplingScale.Min, y, z);
-          GL.Vertex3f(XSamplingScale.max, y, z);
+          GL.Vertex3f(XSamplingScale.Max, y, z);
         end;
         GL.End_;
         z := z + zStep;
@@ -869,7 +869,7 @@ begin
         else
         begin
           GL.Vertex3f(x, YSamplingScale.Min, z);
-          GL.Vertex3f(x, YSamplingScale.max, z);
+          GL.Vertex3f(x, YSamplingScale.Max, z);
         end;
         GL.End_;
         z := z + zStep;
@@ -899,7 +899,7 @@ begin
         else
         begin
           GL.Vertex3f(x, y, ZSamplingScale.Min);
-          GL.Vertex3f(x, y, ZSamplingScale.max);
+          GL.Vertex3f(x, y, ZSamplingScale.Max);
         end;
         GL.End_;
         y := y + yStep;
