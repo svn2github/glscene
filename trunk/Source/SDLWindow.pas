@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : SDLWindow<p>
+{ : GLSDLWindow<p>
 
   Non visual wrapper around basic SDL window features.<p>
 
@@ -26,13 +26,13 @@
   <li>11/12/01 - Egg - Creation
   </ul></font>
 }
-unit SDLWindow;
+unit GLSDLWindow;
 
 interface
 
 {$I GLScene.inc}
 
-uses Classes, SysUtils, SDL;
+uses Classes, SysUtils, GLSDL;
 
 type
 
@@ -410,8 +410,7 @@ end;
 //
 procedure TSDLWindow.CreateOrRecreateSDLSurface;
 const
-  cPixelDepthToBpp: array [Low(TSDLWindowPixelDepth)
-    .. High(TSDLWindowPixelDepth)] of Integer = (16, 24);
+  cPixelDepthToBpp: array [Low(TSDLWindowPixelDepth)..High(TSDLWindowPixelDepth)] of Integer = (16, 24);
 var
   videoFlags: Integer;
 begin
@@ -443,22 +442,22 @@ begin
     SDL_putenv('SDL_VIDEODRIVER=windib');
     envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
 {$ELSE} // Not Windows.
-{$IFDEF UNIX}
-{$IFDEF KYLIX}
-    envVal := 'SDL_WINDOWID=' + IntToStr(QWidget_WinId(FWindowHandle));
-{$ELSE} // Unix, but not Kylix.
-{$IFDEF FPC}
-    SDL_putenv('SDL_VIDEODRIVER=windib');
-    envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
-{$ELSE}
-    .. .Unsupported UNIX target.implement your target code here ! .. .
-{$ENDIF}
-{$ENDIF}
-{$ELSE}
+   {$IFDEF UNIX}
+      {$IFDEF KYLIX}
+         EnvVal := 'SDL_WINDOWID=' + IntToStr(QWidget_WinId(FWindowHandle));
+      {$ELSE} // Unix, but not Kylix.
+        {$IFDEF FPC}
+           SDL_putenv('SDL_VIDEODRIVER=windib');
+           EnvVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
+        {$ELSE}
+         .. .Unsupported UNIX target.implement your target code here ! .. .
+        {$ENDIF}  //FPC
+      {$ENDIF} //KYLIX
+   {$ELSE}
       .. .Unsupported target.implement your target code here ! .. .
-{$ENDIF}
-{$ENDIF}
-      SDL_putenv(PAnsiChar(AnsiString(envVal)));
+   {$ENDIF} //UNIX
+{$ENDIF} //MSWINDOWS
+    SDL_putenv(PAnsiChar(AnsiString(envVal)));
   end;
 end;
 
