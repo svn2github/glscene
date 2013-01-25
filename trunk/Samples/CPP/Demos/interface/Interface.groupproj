@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E9E3BD2F-D698-44A7-A85C-84DEC315027B}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="bmpfont\Bmpfont.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="camera\Camera.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Bmpfont">
+        <MSBuild Projects="bmpfont\Bmpfont.cbproj"/>
+    </Target>
+    <Target Name="Bmpfont:Clean">
+        <MSBuild Projects="bmpfont\Bmpfont.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Bmpfont:Make">
+        <MSBuild Projects="bmpfont\Bmpfont.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Camera">
+        <MSBuild Projects="camera\Camera.cbproj"/>
+    </Target>
+    <Target Name="Camera:Clean">
+        <MSBuild Projects="camera\Camera.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Camera:Make">
+        <MSBuild Projects="camera\Camera.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Bmpfont;Camera"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Bmpfont:Clean;Camera:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Bmpfont:Make;Camera:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
