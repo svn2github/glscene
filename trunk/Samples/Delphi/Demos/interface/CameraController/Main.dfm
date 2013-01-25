@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 138
   Top = 176
-  Width = 1070
-  Height = 629
-  Caption = 'CameraController Demo'
+  Caption = 'Camera Controller'
+  ClientHeight = 591
+  ClientWidth = 738
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,13 +11,14 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 608
+    Left = 292
     Top = 0
     Width = 446
     Height = 556
@@ -283,15 +284,15 @@ object Form1: TForm1
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
       TabOrder = 7
       OnClick = btnSafeOrbitAndZoomToPosClick
     end
     object btnOrbitToPosAdv: TButton
-      Left = 25
-      Top = 495
-      Width = 224
+      Left = 255
+      Top = 455
+      Width = 186
       Height = 34
       Caption = 'OrbitToPosAdv (will not zoom in to pos)'
       TabOrder = 8
@@ -472,7 +473,37 @@ object Form1: TForm1
       end
     end
     object btSmoothOrbit: TButton
-      Left = 257
+      Left = 255
+      Top = 375
+      Width = 184
+      Height = 34
+      Caption = 'Smooth Orbit'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 10
+      OnClick = btSmoothOrbitClick
+    end
+    object btSmoothOrbitAndZoom: TButton
+      Left = 255
+      Top = 335
+      Width = 184
+      Height = 34
+      Caption = 'Smooth OrbitToPos and Zoom'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 12
+      OnClick = btSmoothOrbitAndZoomClick
+    end
+    object btSmoothOrbitToPosAdv: TButton
+      Left = 255
       Top = 415
       Width = 184
       Height = 34
@@ -481,50 +512,20 @@ object Form1: TForm1
       Font.Color = clWindowText
       Font.Height = -11
       Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 10
-      OnClick = btSmoothOrbitClick
-    end
-    object btSmoothOrbitToPosAdv: TButton
-      Left = 254
-      Top = 495
-      Width = 184
-      Height = 34
-      Caption = 'Smooth OrbitToPosAdv'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
       TabOrder = 11
       OnClick = btSmoothOrbitToPosAdvClick
-    end
-    object btSmoothOrbitAndZoom: TButton
-      Left = 257
-      Top = 455
-      Width = 184
-      Height = 34
-      Caption = 'Smooth OrbitToPos and Zoom'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      ParentFont = False
-      TabOrder = 12
-      OnClick = btSmoothOrbitAndZoomClick
     end
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 608
+    Width = 292
     Height = 556
     Camera = GLCamera
     VSync = vsmSync
-    FieldOfView = 133.304656982421900000
+    FieldOfView = 101.165214538574200000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -613,7 +614,7 @@ object Form1: TForm1
   object Panel6: TPanel
     Left = 0
     Top = 556
-    Width = 1054
+    Width = 738
     Height = 35
     Align = alBottom
     BevelOuter = bvNone
@@ -641,8 +642,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 40
+    Left = 40
+    Top = 32
     object dcMovingParent: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLCamera: TGLCamera
@@ -713,12 +714,12 @@ object Form1: TForm1
         Position.Coordinates = {000000000000F0C1000000000000803F}
         LineColor.Color = {E9E8683E8786063FD2D1513F0000803F}
         XSamplingScale.Min = -150.000000000000000000
-        XSamplingScale.max = 150.000000000000000000
-        XSamplingScale.step = 5.000000000000000000
-        YSamplingScale.step = 0.100000001490116100
+        XSamplingScale.Max = 150.000000000000000000
+        XSamplingScale.Step = 5.000000000000000000
+        YSamplingScale.Step = 0.100000001490116100
         ZSamplingScale.Min = -150.000000000000000000
-        ZSamplingScale.max = 150.000000000000000000
-        ZSamplingScale.step = 5.000000000000000000
+        ZSamplingScale.Max = 150.000000000000000000
+        ZSamplingScale.Step = 5.000000000000000000
         Parts = [gpX, gpZ]
       end
       object GLPlane1: TGLPlane
@@ -753,22 +754,22 @@ object Form1: TForm1
         Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
       end>
-    Left = 40
-    Top = 40
+    Left = 128
+    Top = 32
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     FixedDeltaTime = 0.010000000000000000
     SleepLength = 0
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 72
+    Left = 40
+    Top = 80
   end
   object Timer1: TTimer
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 104
+    Left = 224
+    Top = 88
   end
   object GLCameraController1: TGLCameraController
     Camera = GLCamera
@@ -777,8 +778,8 @@ object Form1: TForm1
     soTimeToSafePlacement = 1.000000000000000000
     soTimeToOrbit = 2.000000000000000000
     soTimeToZoomBackIn = 1.000000000000000000
-    Left = 40
-    Top = 72
+    Left = 128
+    Top = 80
   end
   object GLSmoothNavigator: TGLSmoothNavigator
     MoveAroundParams.Inertia = 0.500000000000000000
@@ -786,7 +787,7 @@ object Form1: TForm1
     MoveAroundParams.PitchSpeed = 50.000000000000000000
     MoveAroundParams.TurnSpeed = 50.000000000000000000
     AdjustDistanceParams.Inertia = 1000.000000000000000000
-    Left = 40
-    Top = 104
+    Left = 224
+    Top = 32
   end
 end

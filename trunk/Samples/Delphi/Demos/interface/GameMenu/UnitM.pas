@@ -1,11 +1,3 @@
-{
-  A simple demo that shows how to use the TGLGameMenu component
-
-  Version history:
-    20/02/07 - DaStr - Initial version
-    03/07/07 - DaStr - Keyboard renamed to GLKeyboard (BugTracker ID = 1678646)
-
-}
 unit UnitM;
 
 interface
@@ -20,7 +12,8 @@ uses
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
 
   // File forrmats
-  JPEG, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  JPEG, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -59,9 +52,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

@@ -1,21 +1,3 @@
-{: Displaying alpha-blended 2D bitmaps with GLScene.<p>
-
-   This sample is a very basic picture viewer, using OpenGL for displaying
-   images and maintaining a cursor with alpha-blended trail.<p>
-
-   TGLHUDSprite objects are used to display the bitmap and the cursor/trail. The
-   cursor/trail bitmaps share a single material stored in the material library.<p>
-
-   The trail uses a particle-system component to track trail bitmaps, each time
-   the mouse is moved on the scene viewer, the HSCursor sprite is moved accordingly
-   and a new trail bitmap is created and initialized. Trail bitmaps have a slowly
-   decreasing alpha channel value and take 5 seconds to go from fully opaque to
-   fully invisible, and when invisibility is reached, they are killed.<p>
-
-   When trails are not active (toggled on/off by a menu item), the status bar
-   displays the color (RGB) of the point below the cursor, by using the
-   GetPixelColor function.<p>
-}
 unit Unit1;
 
 interface
@@ -24,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtDlgs, Menus, ComCtrls, GLScene, GLObjects, GLParticles, GLTexture,
   GLCadencer, ExtCtrls, GLHudObjects, GLWin32Viewer, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses;
+  GLMaterial, GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,6 +30,7 @@ type
     MITrail: TMenuItem;
     N1: TMenuItem;
     MIExit: TMenuItem;
+    miFPS: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
@@ -63,10 +46,10 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
+    { Private declarations }
     handleMouseMoves : Boolean;
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -76,11 +59,11 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg, GLUtils;
+uses Jpeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
+   SetGLSceneMediaDir();
    // hide the Windows cursor for the GLSceneViewer
    GLSceneViewer1.Cursor:=crNone;
    // and load my ugly cursor (size adjusted in design props)
@@ -123,9 +106,9 @@ begin
                                  [x, y, GetRValue(color), GetGValue(color), GetBValue(color)]);
    // Add a trail particle
    if MITrail.Checked then
-      GLParticles1.CreateParticle;
+      GLParticles1.CreateParticle();
    // Update things now
-   GLCadencer1.Progress;
+   GLCadencer1.Progress();
 end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
@@ -136,7 +119,7 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   GLSceneViewer1.Invalidate;
+   GLSceneViewer1.Invalidate();
 end;
 
 procedure TForm1.HSParticleProgress(Sender: TObject; const deltaTime,
@@ -166,7 +149,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // update FPS and sprite count
-   Caption:=Format('%.1f FPS - %d Cursor Sprites',
+   miFPS.Caption:=Format('%.1f FPS - %d Cursor Sprites',
                    [GLSceneViewer1.FramesPerSecond, GLParticles1.Count]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;

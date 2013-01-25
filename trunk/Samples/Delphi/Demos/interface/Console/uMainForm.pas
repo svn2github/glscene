@@ -1,13 +1,3 @@
-{
-
-GLConsole demo
-
-See the interface part of GLConsole.pas for details...
-
-History:
-    07/02/07 - DaStr - Initial version
-
-}
 unit uMainForm;
 
 interface
@@ -16,13 +6,14 @@ interface
 
 uses
   //VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
-  ExtCtrls,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls,
+  Forms, Dialogs, StdCtrls,  ExtCtrls,
 
   //GLScene
-  GLTexture, GLBitmapFont, GLWindowsFont, GLScene, GLObjects,
-  GLCadencer, GLWin32Viewer, GLBehaviours, GLConsole, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLScene, GLObjects,  GLCadencer, GLWin32Viewer, BaseClasses,
+  GLCrossPlatform, GLTexture, GLBitmapFont, GLWindowsFont,
+  GLBehaviours, GLConsole, GLCoordinates, GLSimpleNavigation,
+  GLUtils;
 
 type
   TMainForm = class(TForm)
@@ -30,7 +21,7 @@ type
     GLCadencer1: TGLCadencer;
     Scene: TGLScene;
     GLCamera1: TGLCamera;
-    font1:     TGLWindowsBitmapFont;
+    Font1: TGLWindowsBitmapFont;
     GLCube1:   TGLCube;
     GLLightSource1: TGLLightSource;
     Splitter1: TSplitter;
@@ -48,6 +39,7 @@ type
     Label2: TLabel;
     Button6: TButton;
     Button7: TButton;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: char);
@@ -59,17 +51,16 @@ type
     procedure CheckBox3Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     procedure OnHelloCommand(const Sender: TGLConsoleCommand;
-     const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
+          const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
   public
     procedure OnCommand(const Sender: TGLConsoleCommand;
-     const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
+          const Console: TGLCustomConsole;  var Command: TGLUserInputCommand);
   end;
 
 var
@@ -81,8 +72,12 @@ implementation
 
 {$R *.DFM}
 
-uses
-  GLUtils;
+procedure TMainForm.OnHelloCommand(const Sender: TGLConsoleCommand;
+  const Console: TGLCustomConsole;
+  var Command: TGLUserInputCommand);
+begin
+  Console.AddLine('Hi, dude!');
+end;
 
 procedure TMainForm.OnCommand(const Sender: TGLConsoleCommand;
   const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
@@ -110,27 +105,20 @@ begin
   end;
 
   if Command.UnknownCommand then
-    Console.AddLine(' - Current supported external commands are:' +
+    Console.AddLine('Current supported external commands are:' +
                     '"echo" and "exit"!');
-end;
-
-
-procedure TMainForm.GLCadencer1Progress(Sender: TObject;
-  const deltaTime, newTime: double);
-begin
-  Viewer.Invalidate;
 end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
   Console := TGLConsole.CreateAsChild(Scene.Objects);
   Console.Visible := False;
   Console.SceneViewer := Viewer;
   Console.Font := Font1;
 
   //optional stuff:
+  SetGLSceneMediaDir();
   Console.HudSprite.Material.Texture.Image.LoadFromFile('GLScene.bmp');
   Console.AddLine('Console started');
   Console.HUDSpriteColor := clWhite;
@@ -157,16 +145,22 @@ begin
   end;
 end;
 
+procedure TMainForm.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: double);
+begin
+  Viewer.Invalidate();
+end;
+
 
 procedure TMainForm.FormKeyPress(Sender: TObject; var Key: char);
 begin
-  Console.ProcessKeyPress(key);
+  Console.ProcessKeyPress(Key);
 end;
 
 
 procedure TMainForm.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 begin
-  Console.ProcessKeyDown(key);
+  Console.ProcessKeyDown(Key);
 end;
 
 
@@ -179,7 +173,7 @@ end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
-  Console.RefreshHudSize;
+  Console.RefreshHudSize();
 end;
 
 procedure TMainForm.CheckBox1Click(Sender: TObject);
@@ -189,7 +183,7 @@ begin
   else
     Console.Options := Console.Options - [coAutoCompleteCommandsOnKeyPress];
 
-  Viewer.SetFocus;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.CheckBox2Click(Sender: TObject);
@@ -199,7 +193,7 @@ begin
   else
     Console.Options := Console.Options - [coAutoCompleteCommandsOnEnter];
 
-  Viewer.SetFocus;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.CheckBox3Click(Sender: TObject);
@@ -209,38 +203,32 @@ begin
   else
     Console.Options := Console.Options - [coShowConsoleHelpIfUnknownCommand];
 
-  Viewer.SetFocus;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
   Console.TypedCommands.SaveToFile('saved_typed_commands.ini');
-  Viewer.SetFocus;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
   Console.ColsoleLog.SaveToFile('saved_console_output.ini');
-  Viewer.SetFocus;
-end;
-
-procedure TMainForm.Timer1Timer(Sender: TObject);
-begin
-  Caption := 'GLConsole Demo    ' + Viewer.FramesPerSecondText;
-  Viewer.ResetPerformanceMonitor;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.Button6Click(Sender: TObject);
 begin
   Console.TypedCommands.LoadFromFile('saved_typed_commands.ini');
-  Viewer.SetFocus;
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.Button7Click(Sender: TObject);
 begin
   Console.ColsoleLog.LoadFromFile('saved_console_output.ini');
-  Console.RefreshHudSize;
-  Viewer.SetFocus;
+  Console.RefreshHudSize();
+  Viewer.SetFocus();
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -249,11 +237,5 @@ begin
   Console.Destroy;
 end;
 
-procedure TMainForm.OnHelloCommand(const Sender: TGLConsoleCommand;
-  const Console: TGLCustomConsole;
-  var Command: TGLUserInputCommand);
-begin
-  Console.AddLine(' - Hi, dude!');
-end;
 
 end.

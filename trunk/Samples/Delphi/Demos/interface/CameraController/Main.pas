@@ -1,9 +1,3 @@
-{: GLCameraController demo.<p>
-
-   This demo shows how the TGLCameraController can be used to control the
-   camera's movement around a target using minimal code.
-
-}
 unit Main;
 
 interface
@@ -177,6 +171,42 @@ begin
   end;
 end;
 
+function TForm1.OnGetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector): TVector;
+begin
+  if ASender = FCameraSmoothAnimator_AbsPos then
+    Result := GLCamera.AbsolutePosition
+  else
+    Result := GLCamera.Position.DirectVector;
+end;
+
+procedure TForm1.OnSetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector; const AValue: TVector);
+begin
+  if ASender = FCameraSmoothAnimator_AbsPos then
+    GLCamera.AbsolutePosition := AValue
+  else
+    GLCamera.Position.AsVector := AValue;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  FGLCameraController := GLCameraController1;
+
+  FCameraSmoothAnimator_AbsPos := TGLNavigatorSmoothChangeVector.Create(GLSmoothNavigator.CustomAnimatedItems);
+  FCameraSmoothAnimator_AbsPos.Enabled := False;
+  FCameraSmoothAnimator_AbsPos.Inertia := 0.6;
+  FCameraSmoothAnimator_AbsPos.Speed := 1;
+  FCameraSmoothAnimator_AbsPos.SpeedLimit := 5000;
+  FCameraSmoothAnimator_AbsPos.Cutoff := 0.0001;
+  FCameraSmoothAnimator_AbsPos.OnGetCurrentValue := OnGetCameraPosition;
+  FCameraSmoothAnimator_AbsPos.OnSetCurrentValue := OnSetCameraPosition;
+
+  FCameraSmoothAnimator_RelPos := TGLNavigatorSmoothChangeVector.Create(GLSmoothNavigator.CustomAnimatedItems);
+  FCameraSmoothAnimator_RelPos.Assign(FCameraSmoothAnimator_AbsPos);
+
+  GLSmoothNavigator.MovingObject := GLCamera;
+  GLSmoothNavigator.MoveAroundParams.TargetObject := GLCamera.TargetObject;
+end;
+
 //MoveToPos Usage
 procedure TForm1.btnMoveToPosClick(Sender: TObject);
 begin
@@ -199,7 +229,7 @@ begin
   GetInput(TButton(Sender));
   lTargetPosition := dcSphere.LocalToAbsolute(PointMake(DextX, DextY, DextZ));
 
-  FGLCameraController.OrbitToPos(lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z, Time);
+  FGLCameraController.OrbitToPos(lTargetPosition.V[0], lTargetPosition.V[1], lTargetPosition.V[2], Time);
 end;
 
 procedure TForm1.btnOrbitToPosAdvClick(Sender: TObject);
@@ -208,7 +238,7 @@ var
 begin
   GetInput(TButton(Sender));
   lTargetPosition := dcSphere.LocalToAbsolute(PointMake(DextX, DextY, DextZ));
-  FGLCameraController.OrbitToPosAdvanced(lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z, Time, UpAxis.Checked);
+  FGLCameraController.OrbitToPosAdvanced(lTargetPosition.V[0], lTargetPosition.V[1], lTargetPosition.V[2], Time, UpAxis.Checked);
 end;
 
 
@@ -234,13 +264,13 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
 begin
   if cbMoveParent.Checked then
   begin
-    dcMovingParent.Position.X := Sin(NewTime * 1.5) * 8;
+    dcMovingParent.Position.X := Sin(newTime * 1.5) * 8;
   end;
 
   // For btSmoothOrbitAndZoomClick Order of these commands is important.
   GLSmoothNavigator.AdjustDistanceToTarget(0, deltaTime);
 
-  FGLCameraController.Step(deltaTime, newtime);
+  FGLCameraController.Step(deltaTime, newTime);
 
   // This component requires FixedDeltaTime higher than FMaxExpectedDeltatime.
   GLSmoothNavigator.AnimateCustomItems(deltaTime);
@@ -265,19 +295,19 @@ begin
 
   if Shift=[ssLeft] then
   begin
-    GLCamera.MoveAroundTarget(my-y, mx-x);
-    mx:=x; my:=y;
-    caption:= 'CameraController Demo - camera position = ' +
-      formatfloat('0.##',glcamera.position.x)+'/'+
-      formatfloat('0.##',glcamera.position.y)+'/'+
-      formatfloat('0.##',glcamera.position.z);
+    GLCamera.MoveAroundTarget(my-Y, mx-X);
+    mx:=X; my:=Y;
+    Caption:= 'Camera Controller - camera position = ' +
+      FormatFloat('0.##',GLCamera.Position.X)+'/'+
+      FormatFloat('0.##',GLCamera.Position.Y)+'/'+
+      FormatFloat('0.##',GLCamera.Position.Z);
   end;
 end;
 
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  caption:= 'CameraController Demo';
+  Caption:= 'Camera Controller';
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
@@ -295,27 +325,6 @@ procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   GLCadencer1.Enabled := False;
 end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  FGLCameraController := GLCameraController1;
-
-  FCameraSmoothAnimator_AbsPos := TGLNavigatorSmoothChangeVector.Create(GLSmoothNavigator.CustomAnimatedItems);
-  FCameraSmoothAnimator_AbsPos.Enabled := False;
-  FCameraSmoothAnimator_AbsPos.Inertia := 0.6;
-  FCameraSmoothAnimator_AbsPos.Speed := 1;
-  FCameraSmoothAnimator_AbsPos.SpeedLimit := 5000;
-  FCameraSmoothAnimator_AbsPos.Cutoff := 0.0001;
-  FCameraSmoothAnimator_AbsPos.OnGetCurrentValue := OnGetCameraPosition;
-  FCameraSmoothAnimator_AbsPos.OnSetCurrentValue := OnSetCameraPosition;
-
-  FCameraSmoothAnimator_RelPos := TGLNavigatorSmoothChangeVector.Create(GLSmoothNavigator.CustomAnimatedItems);
-  FCameraSmoothAnimator_RelPos.Assign(FCameraSmoothAnimator_AbsPos);
-
-  GLSmoothNavigator.MovingObject := GLCamera;
-  GLSmoothNavigator.MoveAroundParams.TargetObject := GLCamera.TargetObject;
-end;
-
 
 procedure TForm1.btSmoothOrbitClick(Sender: TObject);
 var
@@ -373,28 +382,11 @@ begin
   FCameraSmoothAnimator_AbsPos.TargetValue.DirectVector := GLCamera.AbsolutePosition;
   FCameraSmoothAnimator_AbsPos.Enabled := True;
   FGLCameraController.OrbitToPosAdvancedSmooth(
-    lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z,
+    lTargetPosition.V[0], lTargetPosition.V[1], lTargetPosition.V[2],
     lTime, FCameraSmoothAnimator_AbsPos);
 end;
 
-function TForm1.OnGetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector): TVector;
-begin
-  if ASender = FCameraSmoothAnimator_AbsPos then
-    Result := GLCamera.AbsolutePosition
-  else
-    Result := GLCamera.Position.DirectVector;
-end;
-
-procedure TForm1.OnSetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector; const AValue: TVector);
-begin
-  if ASender = FCameraSmoothAnimator_AbsPos then
-    GLCamera.AbsolutePosition := AValue
-  else
-    GLCamera.Position.AsVector := AValue;
-end;
-
-
 initialization
-  DecimalSeparator := '.';
+  System.SysUtils.FormatSettings.DecimalSeparator := '.';
 
 end.

@@ -1,4 +1,13 @@
-program FontColor;
+{: Demo for color modulation and fade-in/out for bitmap fonts.<p>
+
+   The bitmap Font used in this demo is obtained from<p>
+   http://www.algonet.se/~guld1/freefont.htm<p>
+   and was modified by me to have a red background so that I can have the
+   character itself in black.<p>
+   Nelson Chu
+   cpegnel@ust.hk
+}
+program Fontcolor;
 
 uses
   Forms,

@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 346
-  Top = 205
-  Width = 515
-  Height = 504
+  Left = 182
+  Top = 91
   Caption = 'Gui Paint'
+  ClientHeight = 446
+  ClientWidth = 499
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -44,6 +44,7 @@ object Form1: TForm1
     object GuiRoot: TGLBaseControl
       Autosize = False
       RedrawAtOnce = False
+      Rotation = 0.000000000000000000
       NoZWrite = False
       DoChangesOnProgress = False
       Width = 10000.000000000000000000
@@ -53,6 +54,7 @@ object Form1: TForm1
         RedrawAtOnce = False
         GuiLayout = GLGuiLayout1
         GuiLayoutName = 'form'
+        Rotation = 0.000000000000000000
         AlphaChannel = 0.500000000000000000
         NoZWrite = False
         DoChangesOnProgress = False
@@ -72,6 +74,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 40.000000000000000000
@@ -99,6 +102,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 40.000000000000000000
@@ -126,6 +130,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 280.000000000000000000
@@ -138,6 +143,7 @@ object Form1: TForm1
             RedrawAtOnce = False
             GuiLayout = GLGuiLayout1
             GuiLayoutName = 'button'
+            Rotation = 0.000000000000000000
             NoZWrite = False
             DoChangesOnProgress = False
             Width = 274.000000000000000000
@@ -163,6 +169,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 20.000000000000000000
@@ -189,6 +196,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 20.000000000000000000
@@ -215,6 +223,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 20.000000000000000000
@@ -241,6 +250,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 20.000000000000000000
@@ -267,6 +277,7 @@ object Form1: TForm1
           RedrawAtOnce = False
           GuiLayout = GLGuiLayout1
           GuiLayoutName = 'button'
+          Rotation = 0.000000000000000000
           NoZWrite = False
           DoChangesOnProgress = False
           Width = 20.000000000000000000
@@ -324,7 +335,7 @@ object Form1: TForm1
     object File1: TMenuItem
       Caption = '&File'
       object Open1: TMenuItem
-        Caption = '&Open'
+        Caption = '&Open...'
         OnClick = Open1Click
       end
       object Save1: TMenuItem
@@ -335,9 +346,12 @@ object Form1: TForm1
     object Font1: TMenuItem
       Caption = 'Font'
       object WindowsFont1: TMenuItem
-        Caption = 'Set New Font'
+        Caption = 'Set New Font...'
         OnClick = WindowsFont1Click
       end
+    end
+    object miFPS: TMenuItem
+      Caption = 'FPS'
     end
   end
   object FontDialog1: TFontDialog
@@ -769,7 +783,7 @@ object Form1: TForm1
         Name = 'Gui'
         Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\..\..\media\defaultskin.bmp'
+        Material.Texture.Image.PictureFileName = 'defaultskin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
@@ -779,7 +793,7 @@ object Form1: TForm1
         Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\..\..\media\brush.bmp'
+        Material.Texture.Image.PictureFileName = 'brush.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
@@ -789,7 +803,7 @@ object Form1: TForm1
         Tag = 0
         Material.BlendingMode = bmTransparency
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\..\..\media\pen.bmp'
+        Material.Texture.Image.PictureFileName = 'pen.bmp'
         Material.Texture.ImageAlpha = tiaTopLeftPointColorTransparent
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
@@ -823,6 +837,7 @@ object Form1: TForm1
         Tag = 0
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
+    TexturePaths = '..\..\..\..\media\'
     Left = 144
     Top = 16
   end

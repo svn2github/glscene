@@ -1,15 +1,3 @@
-{: Demo for color modulation and fade-in/out for bitmap fonts.<p>
-
-   The bitmap Font used in this demo is obtained from<p>
-
-   http://www.algonet.se/~guld1/freefont.htm<p>
-
-   and was modified by me to have a red background so that I can have the
-   character itself in black.<p>
-
-   Nelson Chu
-   cpegnel@ust.hk
-}
 unit Unit1;
 
 interface
@@ -18,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLWin32Viewer, GLScene, GLObjects, GLHUDObjects,
   GLBitmapFont, GLCadencer, GLTimeEventsMgr, GLTeapot, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -54,7 +42,7 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, VectorTypes, GLUtils;
+uses VectorGeometry, VectorTypes;
 
 var
   FadeOutCount : integer;

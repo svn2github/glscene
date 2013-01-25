@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 258
   Top = 155
-  Width = 659
-  Height = 461
-  Caption = 'GLConsole Demo'
+  Caption = 'Console'
+  ClientHeight = 417
+  ClientWidth = 651
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,21 +22,22 @@ object MainForm: TMainForm
   object Splitter1: TSplitter
     Left = 209
     Top = 0
-    Width = 434
-    Height = 423
+    Width = 442
+    Height = 417
     Align = alClient
     Beveled = True
     MinSize = 40
+    ExplicitHeight = 434
   end
   object Viewer: TGLSceneViewer
     Left = 209
     Top = 0
-    Width = 434
-    Height = 423
+    Width = 442
+    Height = 417
     Camera = GLCamera1
     Buffer.BackgroundColor = clMoneyGreen
     Buffer.AmbientColor.Color = {9A99993E9A99993E9A99993E0000803F}
-    FieldOfView = 153.398193359375000000
+    FieldOfView = 153.029327392578100000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     TabOrder = 0
@@ -45,7 +46,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 209
-    Height = 423
+    Height = 417
     Align = alLeft
     Caption = 'Panel1'
     TabOrder = 1
@@ -53,14 +54,15 @@ object MainForm: TMainForm
       Left = 1
       Top = 233
       Width = 207
-      Height = 189
+      Height = 183
       Align = alClient
+      ExplicitHeight = 200
     end
     object GroupBox1: TGroupBox
       Left = 1
       Top = 233
       Width = 207
-      Height = 189
+      Height = 183
       Align = alClient
       Caption = 'Console options'
       TabOrder = 0
@@ -179,6 +181,9 @@ object MainForm: TMainForm
         '  Click anywhere'
         '   to actiate the console'
         ''
+        'Type "Help" and press Enter'
+        'to get started'
+        ''
         'Controls:'
         '  Up-down one line: Home <-> End '
         '  Up-down 1 page PageUp <-> PageDown'
@@ -186,7 +191,6 @@ object MainForm: TMainForm
         '  Next-Prev command: Up <-> Down'
         '  Auto-Complete Command = Ctrl'
         ''
-        'Type "Help" to get started'
         'Have fun!'
         ''
         'Da Stranger')
@@ -197,18 +201,18 @@ object MainForm: TMainForm
   object GLCadencer1: TGLCadencer
     Scene = Scene
     OnProgress = GLCadencer1Progress
-    Left = 256
-    Top = 8
+    Left = 240
+    Top = 80
   end
   object Scene: TGLScene
-    Left = 224
-    Top = 8
+    Left = 240
+    Top = 16
     object GLCube1: TGLCube
       Position.Coordinates = {000000000000003F0000A0C00000803F}
       BehavioursData = {
-        0458434F4C02010201060B54474C42496E657274696102000600020002000500
-        00000000000080FF3F0200080500000000000000A002400500000000000000A0
-        0140050000000000000080004009020008020008}
+        0458434F4C02010201060B54474C42496E657274696102001200000000020002
+        00050000000000000080FF3F0200080500000000000000A00240050000000000
+        0000A00140050000000000000080004009020008020008}
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -221,7 +225,7 @@ object MainForm: TMainForm
       end
     end
   end
-  object font1: TGLWindowsBitmapFont
+  object Font1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11
@@ -233,12 +237,31 @@ object MainForm: TMainForm
         StopASCII = #255
         StartGlyphIdx = 0
       end>
-    Left = 192
-    Top = 8
+    Left = 472
+    Top = 16
   end
   object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 288
-    Top = 8
+    Left = 472
+    Top = 80
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = Viewer
+    FormCaption = 'Console - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 344
+    Top = 16
   end
 end

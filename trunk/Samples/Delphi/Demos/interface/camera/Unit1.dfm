@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 299
   Top = 129
-  Width = 512
-  Height = 512
   BorderWidth = 6
-  Caption = 'Basics camera'
+  Caption = 'Camera'
+  ClientHeight = 420
+  ClientWidth = 465
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,19 +15,19 @@ object Form1: TForm1
   OnKeyPress = FormKeyPress
   OnMouseWheel = FormMouseWheel
   DesignSize = (
-    484
-    462)
+    465
+    420)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 484
-    Height = 462
+    Width = 465
+    Height = 420
     Camera = GLCamera1
     VSync = vsmSync
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 155.573440551757800000
+    Buffer.BackgroundColor = clTeal
+    FieldOfView = 153.215011596679700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -35,7 +35,7 @@ object Form1: TForm1
   end
   object RadioGroup1: TRadioGroup
     Left = 4
-    Top = 384
+    Top = 348
     Width = 181
     Height = 73
     Anchors = [akLeft, akBottom]
@@ -50,8 +50,8 @@ object Form1: TForm1
     OnClick = RadioGroup1Click
   end
   object RadioGroup2: TRadioGroup
-    Left = 336
-    Top = 400
+    Left = 309
+    Top = 364
     Width = 145
     Height = 57
     Anchors = [akRight, akBottom]
@@ -64,7 +64,7 @@ object Form1: TForm1
     OnClick = RadioGroup2Click
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 32
     Top = 8
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -95,7 +95,7 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 48
+    Left = 112
+    Top = 8
   end
 end

@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 337
-  Top = 235
-  Width = 320
-  Height = 240
-  Caption = 'Form1'
+  Left = 182
+  Top = 91
+  Caption = 'Gui Demo'
+  ClientHeight = 358
+  ClientWidth = 511
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,11 +20,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 304
-    Height = 182
+    Width = 511
+    Height = 358
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 122.426765441894500000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 148.786758422851600000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -33,7 +33,7 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 16
+    Left = 40
     Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -45,6 +45,7 @@ object Form1: TForm1
       RedrawAtOnce = False
       GuiLayout = GLGuiLayout1
       GuiLayoutName = 'form'
+      Rotation = 0.000000000000000000
       AlphaChannel = 0.500000000000000000
       NoZWrite = False
       DoChangesOnProgress = False
@@ -63,6 +64,7 @@ object Form1: TForm1
         RedrawAtOnce = False
         GuiLayout = GLGuiLayout1
         GuiLayoutName = 'panel'
+        Rotation = 0.000000000000000000
         NoZWrite = False
         DoChangesOnProgress = False
         Width = 140.000000000000000000
@@ -86,6 +88,7 @@ object Form1: TForm1
         RedrawAtOnce = False
         GuiLayout = GLGuiLayout1
         GuiLayoutName = 'panel'
+        Rotation = 0.000000000000000000
         NoZWrite = False
         DoChangesOnProgress = False
         Width = 180.000000000000000000
@@ -105,6 +108,7 @@ object Form1: TForm1
         Autosize = False
         RedrawAtOnce = False
         GuiLayout = GLGuiLayout1
+        Rotation = 0.000000000000000000
         NoZWrite = False
         DoChangesOnProgress = False
         Width = 80.000000000000000000
@@ -130,13 +134,13 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 48
+    Left = 40
+    Top = 80
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 80
+    Left = 376
+    Top = 16
   end
   object WindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -144,18 +148,21 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = '@Arial Unicode MS'
     Font.Style = []
-    Left = 48
-    Top = 48
+    Left = 40
+    Top = 136
   end
   object MainMenu1: TMainMenu
-    Left = 112
-    Top = 48
+    Left = 440
+    Top = 88
     object Font1: TMenuItem
       Caption = 'Font'
       object WindowsFont1: TMenuItem
         Caption = 'Set New Font'
         OnClick = WindowsFont1Click
       end
+    end
+    object miFPS: TMenuItem
+      Caption = 'FPS'
     end
   end
   object FontDialog1: TFontDialog
@@ -164,7 +171,7 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 112
+    Left = 440
     Top = 16
   end
   object GLGuiLayout1: TGLGuiLayout
@@ -577,8 +584,8 @@ object Form1: TForm1
           end>
         Name = 'edit'
       end>
-    FileName = 'default.layout'
-    Left = 176
+    FileName = '..\..\media\default.layout'
+    Left = 280
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
@@ -587,11 +594,12 @@ object Form1: TForm1
         Name = 'Gui'
         Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\..\..\media\DefaultSkin.bmp'
+        Material.Texture.Image.PictureFileName = 'DefaultSkin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.Disabled = False
       end>
-    Left = 144
+    TexturePaths = '..\..\..\..\media\'
+    Left = 120
     Top = 16
   end
 end

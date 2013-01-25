@@ -1,10 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 114
-  AutoScroll = False
-  Caption = 'TGLMenu demo '
-  ClientHeight = 502
-  ClientWidth = 605
+  Caption = 'Game Menu'
+  ClientHeight = 449
+  ClientWidth = 558
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,11 +18,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 605
-    Height = 475
+    Width = 558
+    Height = 422
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
-    FieldOfView = 156.222686767578100000
+    FieldOfView = 153.337402343750000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -31,8 +30,8 @@ object Form1: TForm1
   end
   object MainPanel: TPanel
     Left = 0
-    Top = 475
-    Width = 605
+    Top = 422
+    Width = 558
     Height = 27
     Align = alBottom
     TabOrder = 1
@@ -58,8 +57,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 112
-    Top = 48
+    Left = 40
+    Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLCube1: TGLCube
@@ -84,14 +83,14 @@ object Form1: TForm1
     Font.Height = -32
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 152
-    Top = 48
+    Left = 128
+    Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 184
-    Top = 48
+    Left = 40
+    Top = 72
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -100,7 +99,7 @@ object Form1: TForm1
         Tag = 0
         Material.Texture.Disabled = False
       end>
-    Left = 216
-    Top = 48
+    Left = 128
+    Top = 72
   end
 end

@@ -1,28 +1,13 @@
-{: A bare-bones sample for TGLHUDText.<p>
-
-   To use a TGLHUDText, you must first place a TGLBitmapFont component and specify
-   a font bitmap and it character ranges (ie. which tile represents which
-   character). The component allows for a wide variety of fixed-width font
-   bitmaps, and you can reuse many of the old bitmap fonts sets that were
-   written for Atari, Amiga etc.<p>
-
-   The TGLHUDText can then be placed in the hierarchy: just link it to the
-   TGLBitmapFont, specify a text, alignment, layout, scale and position to
-   whatever suits your need and that's all.<p>
-
-   Clicking on the viewer will hide/show the teapot (when teapot is on, the
-   framerate is much lower, f.i. on my GF3 / K7 1.2, the rating can reach
-   1050FPS with teapot off)
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
-  GLBitmapFont, GLWin32Viewer, GLTeapot, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls,
+  Forms, Dialogs, ExtCtrls,
+  GLScene, GLHUDObjects, GLObjects, GLCadencer,
+  GLBitmapFont, GLWin32Viewer, GLTeapot, GLCrossPlatform,
+  GLCoordinates,  BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -37,15 +22,16 @@ type
     HUDText2: TGLHUDText;
     HUDText3: TGLHUDText;
     Teapot1: TGLTeapot;
+    HUDTextFPS: TGLHUDText;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1Click(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -55,13 +41,10 @@ implementation
 
 {$R *.DFM}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   // Load the font bitmap from media dir
    SetGLSceneMediaDir();
-   // Load the font bitmap
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
    // sorry, couldn't resist...
    HUDText1.Text:='Hello World !'#13#10#13#10
@@ -82,7 +65,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
