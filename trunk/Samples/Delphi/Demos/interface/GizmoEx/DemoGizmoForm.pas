@@ -1,23 +1,15 @@
-{: GLGizmoEx component demo.
-
-  Version History:
-
-  29/09/2007 - DaStr - Initial version.
-  07/10/2009 - Predator - Updated version.
-
-}
 unit DemoGizmoForm;
 
 interface
 
 uses
   // VCL
-  SysUtils, Classes, windows,
-  Controls,  Forms, StdCtrls, ExtCtrls,Buttons, ComCtrls,
+  SysUtils, Classes, Windows,
+  Controls,  Forms, StdCtrls, ExtCtrls, Buttons, ComCtrls,
 
   // GLScene
   GLScene, GLCadencer, GLObjects,
-  GLWin32Viewer,glkeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
+  GLWin32Viewer, GLKeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
   BaseClasses,  VectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
 
@@ -142,7 +134,6 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SpeedButton1Click(Sender: TObject);
-    Procedure UpdateTreeView;
     procedure ComboBox3Change(Sender: TObject);
     function MouseWorldPos(const X, Y: Integer; isy: boolean = false): TVector;
     procedure ComboBox4Change(Sender: TObject);
@@ -164,7 +155,7 @@ type
     MouseMoving: boolean;
     pos: TVector;
     FObj: TGLBaseSceneObject;
-
+    procedure UpdateTreeView;
   end;
 
 var
@@ -177,15 +168,15 @@ implementation
 
 {$R *.dfm}
 
-Procedure SettingsObj(Obj: TGLBaseSceneObject; Step: Integer; Length: TVector);
+procedure SettingsObj(Obj: TGLBaseSceneObject; Step: Integer; Length: TVector);
 begin
   if (Obj is TGLCube) then
   with (Obj as TGLCube) do
     case Step of
       0:
       begin
-        CubeWidth := Length.X*2;
-        CubeDepth := Length.Z*2;
+        CubeWidth := Length.V[0]*2;
+        CubeDepth := Length.V[2]*2;
       end;
       1: CubeHeight := FVectorLength;
       2:  FCreationScenarious := -1;
@@ -203,8 +194,8 @@ begin
     case Step of
       0:
       begin
-        Width := Length.X*2;
-        Height := Length.Z*2;
+        Width := Length.V[0]*2;
+        Height := Length.V[2]*2;
       end;
       1: FCreationScenarious := -1;
     end;
@@ -234,18 +225,21 @@ begin
   SetVector(v, X, InvertedY, 0);
  if not isy then
   Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ
-   (v, GLTargetCamera.AbsolutePosition.Y, Result)
+   (v, GLTargetCamera.AbsolutePosition.V[1], Result)
    else
      Viewer.Buffer.ScreenVectorIntersectWithPlaneXY
-       (v, GLTargetCamera.AbsolutePosition.Z, Result)
+       (v, GLTargetCamera.AbsolutePosition.V[2], Result)
 end;
 
-Procedure TForm1.UpdateTreeView;
-   { .: AddNodes :. }
+procedure TForm1.UpdateTreeView;
+var
+   I: Integer;
+   ObjectNode: TTreeNode;
+   CurrentNode: TTreeNode;
+
    function AddNodes(ANode: TTreeNode; AObject: TGLBaseSceneObject): TTreeNode;
    var
      I: Integer;
-     CurrentNode: TTreeNode;
    begin
      if IsSubComponent(AObject) then
      begin
@@ -260,11 +254,8 @@ Procedure TForm1.UpdateTreeView;
      end;
    end;
 
- var
-   I: Integer;
-    ObjectNode: TTreeNode;
  begin
- TreeView1.Items.Clear;
+   TreeView1.Items.Clear;
     // -- add two root nodes --
    ObjectNode := TreeView1.Items.AddFirst(nil, 'RootTempObjects');
    // -- get the object's tree --
@@ -305,7 +296,7 @@ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
-  viewer.invalidate;
+  Viewer.Invalidate;
 end;
 
 procedure TForm1.OptPickModeClick(Sender: TObject);
@@ -394,7 +385,7 @@ procedure TForm1.ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: T
 begin
   mx := X;
   my := Y;
-  gizmo.viewerMouseDown(X, Y);
+  Gizmo.viewerMouseDown(X, Y);
   if SpeedButton15.Down or SpeedButton18.Down  then
   begin
     if SpeedButton15.Down then
@@ -491,8 +482,8 @@ begin
         else
           MousePos := MouseWorldPos(x, y, true);
       MousePos := VectorSubtract(LostMousePos,MousePos);
-      MousePos.X:= -MousePos.X*0.4 ;
-      MousePos.Z:= -MousePos.Z*0.4 ;
+      MousePos.V[0]:= -MousePos.V[0]*0.4 ;
+      MousePos.V[2]:= -MousePos.V[2]*0.4 ;
       GLTargetCamera.Position.AsVector := Vectoradd(pos, MousePos);
     end;
     if SpeedButton16.Down or SpeedButton19.Down or SpeedButton20.Down then
@@ -703,14 +694,14 @@ end;
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  gizmo.CanAddObjToSelectionList:=(key=VK_Control);
-  gizmo. CanRemoveObjFromSelectionList:=(Key=VK_MENU);
+  Gizmo.CanAddObjToSelectionList:=(key=VK_Control);
+  Gizmo. CanRemoveObjFromSelectionList:=(Key=VK_MENU);
 end;
 
 procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-    gizmo.CanAddObjToSelectionList:=false;
-  gizmo. CanRemoveObjFromSelectionList:=false;
+  Gizmo.CanAddObjToSelectionList:=false;
+  Gizmo. CanRemoveObjFromSelectionList:=false;
 end;
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -722,7 +713,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Viewer.FramesPerSecondText();
+  Panel1.Caption := Viewer.FramesPerSecondText();
   Viewer.ResetPerformanceMonitor;
 
   if GLScene1.IsUpdating then UpdateTreeView;

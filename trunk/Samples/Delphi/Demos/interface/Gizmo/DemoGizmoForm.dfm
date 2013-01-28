@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 211
   Top = 170
-  Width = 977
-  Height = 857
-  Caption = 'Demo GLGizmoEx'
+  Caption = 'Gizmo'
+  ClientHeight = 616
+  ClientWidth = 582
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,36 +11,31 @@ object Form1: TForm1
   Font.Name = 'MS Shell Dlg 2'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Label9: TLabel
-    Left = 16
-    Top = 274
-    Width = 66
-    Height = 13
-    Caption = 'Rotate Coef :'
-  end
   object Viewer: TGLSceneViewer
     Left = 201
     Top = 0
-    Width = 768
-    Height = 830
-    Camera = camera
+    Width = 381
+    Height = 616
+    Camera = Camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 165.162704467773400000
+    FieldOfView = 150.586914062500000000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
     OnMouseUp = ViewerMouseUp
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 201
-    Height = 830
+    Height = 616
     Align = alLeft
     TabOrder = 1
     object Bevel1: TBevel
@@ -87,18 +82,11 @@ object Form1: TForm1
       Caption = 'Zoom Factor'
     end
     object Label6: TLabel
-      Left = 24
-      Top = 277
+      Left = 23
+      Top = 276
       Width = 59
       Height = 13
       Caption = 'Move Coef :'
-    end
-    object Label7: TLabel
-      Left = 17
-      Top = 299
-      Width = 66
-      Height = 13
-      Caption = 'Rotate Coef :'
     end
     object Label8: TLabel
       Left = 5
@@ -128,6 +116,13 @@ object Form1: TForm1
       Height = 13
       Caption = 'Gizmo Thickness'
     end
+    object Label7: TLabel
+      Left = 16
+      Top = 301
+      Width = 66
+      Height = 13
+      Caption = 'Rotate Coef :'
+    end
     object CheckBox1: TCheckBox
       Tag = 1
       Left = 8
@@ -154,7 +149,6 @@ object Form1: TForm1
       Width = 89
       Height = 21
       Enabled = False
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 2
       Text = 'None'
@@ -184,7 +178,6 @@ object Form1: TForm1
       Width = 89
       Height = 21
       Enabled = False
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 4
       Text = 'None'
@@ -296,7 +289,6 @@ object Form1: TForm1
       Height = 22
       DefaultColorColor = clWhite
       Selected = clWhite
-      ItemHeight = 16
       TabOrder = 13
       OnChange = ColorBox1Change
     end
@@ -307,7 +299,6 @@ object Form1: TForm1
       Width = 188
       Height = 22
       Selected = clYellow
-      ItemHeight = 16
       TabOrder = 14
       OnChange = ColorBox1Change
     end
@@ -318,7 +309,6 @@ object Form1: TForm1
       Width = 188
       Height = 22
       Selected = clYellow
-      ItemHeight = 16
       TabOrder = 15
       OnChange = ColorBox1Change
     end
@@ -332,7 +322,7 @@ object Form1: TForm1
       OnChange = edAutoZoomFactorChange
       OnKeyPress = edAutoZoomFactorKeyPress
     end
-    object edzoomfactor: TEdit
+    object edZoomFactor: TEdit
       Left = 115
       Top = 484
       Width = 73
@@ -340,7 +330,7 @@ object Form1: TForm1
       Enabled = False
       TabOrder = 17
       Text = '0.35'
-      OnChange = edzoomfactorChange
+      OnChange = edZoomFactorChange
       OnKeyPress = edAutoZoomFactorKeyPress
     end
     object CheckBox12: TCheckBox
@@ -410,14 +400,14 @@ object Form1: TForm1
       TabOrder = 23
       OnClick = CheckBox12Click
     end
-    object edtGizmoThickness: TEdit
+    object edGizmoThickness: TEdit
       Left = 88
       Top = 248
       Width = 73
       Height = 21
       TabOrder = 24
       Text = '1'
-      OnChange = edtGizmoThicknessChange
+      OnChange = edGizmoThicknessChange
     end
     object OptPickMode: TRadioGroup
       Left = 8
@@ -434,14 +424,14 @@ object Form1: TForm1
       OnClick = OptPickModeClick
     end
   end
-  object edtScaleCoef: TEdit
+  object edScaleCoef: TEdit
     Left = 88
     Top = 319
     Width = 73
     Height = 21
     TabOrder = 2
     Text = '0,1'
-    OnChange = edtScaleCoefChange
+    OnChange = edScaleCoefChange
     OnKeyPress = edAutoZoomFactorKeyPress
   end
   object GLScene1: TGLScene
@@ -500,7 +490,7 @@ object Form1: TForm1
     object RootGizmo: TGLDummyCube
       CubeSize = 1.000000000000000000
     end
-    object camera: TGLCamera
+    object Camera: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
       TargetObject = GLDummyCube1

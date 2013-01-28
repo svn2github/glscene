@@ -1,22 +1,17 @@
-{: GLGizmo component demo.
-
-  Version History:
-
-  29/09/2007 - DaStr - Initial version.
-
-}
 unit DemoGizmoForm;
 
 interface
 
 uses
   // VCL
-  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, Dialogs, ExtCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
+  Dialogs, ExtCtrls,
 
   // GLScene
-  GLScene, GLCadencer, GLObjects, GLSpaceText, GLPolyhedron, GLWin32Viewer,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects, GLGeomObjects, GLGizmo,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLScene, GLCadencer, GLObjects, GLSpaceText, GLPolyhedron,
+  GLWin32Viewer,  GLBitmapFont, GLWindowsFont, GLHUDObjects,
+  GLGeomObjects, GLGizmo, GLCrossPlatform, GLCoordinates,
+  BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -52,10 +47,9 @@ type
     Label4: TLabel;
     edAutoZoomFactor: TEdit;
     Label5: TLabel;
-    edzoomfactor: TEdit;
+    edZoomFactor: TEdit;
     CheckBox12: TCheckBox;
     Label6: TLabel;
-    Label7: TLabel;
     edMoveCoef: TEdit;
     edRotateCoef: TEdit;
     CheckBox13: TCheckBox;
@@ -65,15 +59,15 @@ type
     GLDodecahedron3: TGLDodecahedron;
     GLArrowLine3: TGLArrowLine;
     GLArrowLine4: TGLArrowLine;
-    Label9: TLabel;
-    edtScaleCoef: TEdit;
+    edScaleCoef: TEdit;
     Label10: TLabel;
     Label11: TLabel;
-    edtGizmoThickness: TEdit;
+    edGizmoThickness: TEdit;
     GLSphere1: TGLSphere;
     GLCube1: TGLCube;
     OptPickMode: TRadioGroup;
     WindowsBitmapFont: TGLWindowsBitmapFont;
+    Label7: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -86,10 +80,10 @@ type
     procedure edMoveCoefChange(Sender: TObject);
     procedure edRotateCoefChange(Sender: TObject);
     procedure edAutoZoomFactorChange(Sender: TObject);
-    procedure edzoomfactorChange(Sender: TObject);
+    procedure edZoomFactorChange(Sender: TObject);
     procedure ColorBox1Change(Sender: TObject);
-    procedure edtScaleCoefChange(Sender: TObject);
-    procedure edtGizmoThicknessChange(Sender: TObject);
+    procedure edScaleCoefChange(Sender: TObject);
+    procedure edGizmoThicknessChange(Sender: TObject);
     procedure OptPickModeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -114,7 +108,7 @@ implementation
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
-  viewer.invalidate;
+  Viewer.Invalidate;
 end;
 
 procedure TForm1.OptPickModeClick(Sender: TObject);
@@ -126,7 +120,7 @@ procedure TForm1.ViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: T
 begin
   mx := X;
   my := Y;
-  gizmo.viewerMouseDown(X, Y);
+  Gizmo.ViewerMouseDown(X, Y);
 end;
 
 procedure TForm1.ViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -141,10 +135,10 @@ begin
       Camera.AdjustDistanceToTarget(1.05)
     else
       Camera.AdjustDistanceToTarget(0.95);
-    gizmo.MoveCoef := Camera.DistanceToTarget / 1000;
+    Gizmo.MoveCoef := Camera.DistanceToTarget / 1000;
   end
   else
-    gizmo.viewerMouseMove(X, Y);
+    Gizmo.ViewerMouseMove(X, Y);
 
   mx := X;
   my := Y;
@@ -152,7 +146,7 @@ end;
 
 procedure TForm1.ViewerMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  gizmo.viewerMouseUp(X, Y);
+  Gizmo.ViewerMouseUp(X, Y);
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -181,7 +175,7 @@ end;
 
 procedure TForm1.edAutoZoomFactorKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not (key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
+  if not (Key in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', ',']) then
     key := #0;
 
 end;
@@ -304,15 +298,15 @@ begin
     Gizmo.RotationCoef := StrToFloat(edRotateCoef.Text);
 end;
 
-procedure TForm1.edtGizmoThicknessChange(Sender: TObject);
+procedure TForm1.edGizmoThicknessChange(Sender: TObject);
 begin
-  Gizmo.GizmoThickness := StrToFloat(edtGizmoThickness.Text);
+  Gizmo.GizmoThickness := StrToFloat(edGizmoThickness.Text);
 end;
 
-procedure TForm1.edtScaleCoefChange(Sender: TObject);
+procedure TForm1.edScaleCoefChange(Sender: TObject);
 begin
-  if edtScaleCoef.Text <> '' then
-    Gizmo.ScaleCoef := StrToFloat(edtScaleCoef.Text);
+  if edScaleCoef.Text <> '' then
+    Gizmo.ScaleCoef := StrToFloat(edScaleCoef.Text);
 end;
 
 procedure TForm1.edAutoZoomFactorChange(Sender: TObject);
@@ -321,7 +315,7 @@ begin
     Gizmo.AutoZoomFactor := StrToFloat(edAutoZoomFactor.Text);
 end;
 
-procedure TForm1.edzoomfactorChange(Sender: TObject);
+procedure TForm1.edZoomFactorChange(Sender: TObject);
 begin
   if edZoomFactor.Text <> '' then
     Gizmo.ZoomFactor := StrToFloat(edZoomFactor.Text);

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 153
   Top = 148
-  Width = 832
-  Height = 606
-  Caption = 'GizmoEx'
+  Caption = 'Gizmo Expanded'
+  ClientHeight = 562
+  ClientWidth = 824
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -31,11 +31,11 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 213
     Top = 35
-    Width = 418
-    Height = 497
+    Width = 426
+    Height = 491
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 153.091491699218800000
+    FieldOfView = 153.578933715820300000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -46,7 +46,7 @@ object Form1: TForm1
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 816
+    Width = 824
     Height = 35
     Align = alTop
     BevelOuter = bvNone
@@ -1148,7 +1148,6 @@ object Form1: TForm1
       Top = 8
       Width = 145
       Height = 21
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'View'
@@ -1618,12 +1617,16 @@ object Form1: TForm1
     Left = 0
     Top = 35
     Width = 213
-    Height = 497
-    ActivePage = TabSheet1
+    Height = 491
+    ActivePage = TabSheet3
     Align = alLeft
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label10: TLabel
         Left = 0
         Top = 118
@@ -1876,7 +1879,6 @@ object Form1: TForm1
         Width = 106
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         ItemIndex = 1
         TabOrder = 16
         Text = 'ilcChangeRate'
@@ -1977,6 +1979,10 @@ object Form1: TForm1
     object TabSheet2: TTabSheet
       Caption = 'Colors Settings'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 5
         Top = 6
@@ -2012,7 +2018,6 @@ object Form1: TForm1
         Height = 22
         DefaultColorColor = clWhite
         Selected = clWhite
-        ItemHeight = 16
         TabOrder = 0
         OnChange = ColorBox1Change
       end
@@ -2023,7 +2028,6 @@ object Form1: TForm1
         Width = 188
         Height = 22
         Selected = clYellow
-        ItemHeight = 16
         TabOrder = 1
         OnChange = ColorBox1Change
       end
@@ -2034,7 +2038,6 @@ object Form1: TForm1
         Width = 188
         Height = 22
         Selected = clYellow
-        ItemHeight = 16
         TabOrder = 2
         OnChange = ColorBox1Change
       end
@@ -2044,7 +2047,6 @@ object Form1: TForm1
         Top = 168
         Width = 187
         Height = 22
-        ItemHeight = 16
         TabOrder = 3
         OnChange = ColorBox1Change
       end
@@ -2052,6 +2054,10 @@ object Form1: TForm1
     object TabSheet3: TTabSheet
       Caption = 'About'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label8: TLabel
         Left = 5
         Top = 3
@@ -2074,8 +2080,8 @@ object Form1: TForm1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 532
-    Width = 816
+    Top = 526
+    Width = 824
     Height = 36
     Align = alBottom
     BevelOuter = bvNone
@@ -2645,10 +2651,10 @@ object Form1: TForm1
     end
   end
   object Panel3: TPanel
-    Left = 631
+    Left = 639
     Top = 35
     Width = 185
-    Height = 497
+    Height = 491
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 5
@@ -2666,14 +2672,14 @@ object Form1: TForm1
       Left = 0
       Top = 255
       Width = 185
-      Height = 242
+      Height = 236
       Align = alClient
       TabOrder = 1
       object GroupBox1: TGroupBox
         Left = 1
         Top = 1
         Width = 183
-        Height = 240
+        Height = 234
         Align = alClient
         Caption = 'Create Object'
         TabOrder = 0
@@ -2741,14 +2747,14 @@ object Form1: TForm1
       end
       object GLXYZGrid1: TGLXYZGrid
         XSamplingScale.Min = -5.000000000000000000
-        XSamplingScale.max = 5.000000000000000000
-        XSamplingScale.step = 1.000000000000000000
+        XSamplingScale.Max = 5.000000000000000000
+        XSamplingScale.Step = 1.000000000000000000
         YSamplingScale.Min = -5.000000000000000000
-        YSamplingScale.max = 5.000000000000000000
-        YSamplingScale.step = 1.000000000000000000
+        YSamplingScale.Max = 5.000000000000000000
+        YSamplingScale.Step = 1.000000000000000000
         ZSamplingScale.Min = -5.000000000000000000
-        ZSamplingScale.max = 5.000000000000000000
-        ZSamplingScale.step = 1.000000000000000000
+        ZSamplingScale.Max = 5.000000000000000000
+        ZSamplingScale.Step = 1.000000000000000000
         Parts = [gpX, gpZ]
       end
     end
