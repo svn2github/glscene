@@ -9,6 +9,30 @@
         <Projects Include="camera\Camera.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="CameraController\CameraController.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Console\Console.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="cursor\Cursor.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="fadingintf\Fading.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="fontcolor\Fontcolor.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GameMenu\GameMenu.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Gizmo\Gizmo.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GizmoEx\GizmoEx.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +59,86 @@
     <Target Name="Camera:Make">
         <MSBuild Projects="camera\Camera.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="CameraController">
+        <MSBuild Projects="CameraController\CameraController.cbproj"/>
+    </Target>
+    <Target Name="CameraController:Clean">
+        <MSBuild Projects="CameraController\CameraController.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="CameraController:Make">
+        <MSBuild Projects="CameraController\CameraController.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Console">
+        <MSBuild Projects="Console\Console.cbproj"/>
+    </Target>
+    <Target Name="Console:Clean">
+        <MSBuild Projects="Console\Console.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Console:Make">
+        <MSBuild Projects="Console\Console.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Cursor">
+        <MSBuild Projects="cursor\Cursor.cbproj"/>
+    </Target>
+    <Target Name="Cursor:Clean">
+        <MSBuild Projects="cursor\Cursor.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Cursor:Make">
+        <MSBuild Projects="cursor\Cursor.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Fading">
+        <MSBuild Projects="fadingintf\Fading.cbproj"/>
+    </Target>
+    <Target Name="Fading:Clean">
+        <MSBuild Projects="fadingintf\Fading.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Fading:Make">
+        <MSBuild Projects="fadingintf\Fading.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Fontcolor">
+        <MSBuild Projects="fontcolor\Fontcolor.cbproj"/>
+    </Target>
+    <Target Name="Fontcolor:Clean">
+        <MSBuild Projects="fontcolor\Fontcolor.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Fontcolor:Make">
+        <MSBuild Projects="fontcolor\Fontcolor.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="GameMenu">
+        <MSBuild Projects="GameMenu\GameMenu.cbproj"/>
+    </Target>
+    <Target Name="GameMenu:Clean">
+        <MSBuild Projects="GameMenu\GameMenu.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GameMenu:Make">
+        <MSBuild Projects="GameMenu\GameMenu.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Gizmo">
+        <MSBuild Projects="Gizmo\Gizmo.cbproj"/>
+    </Target>
+    <Target Name="Gizmo:Clean">
+        <MSBuild Projects="Gizmo\Gizmo.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Gizmo:Make">
+        <MSBuild Projects="Gizmo\Gizmo.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="GizmoEx">
+        <MSBuild Projects="GizmoEx\GizmoEx.cbproj"/>
+    </Target>
+    <Target Name="GizmoEx:Clean">
+        <MSBuild Projects="GizmoEx\GizmoEx.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GizmoEx:Make">
+        <MSBuild Projects="GizmoEx\GizmoEx.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Bmpfont;Camera"/>
+        <CallTarget Targets="Bmpfont;Camera;CameraController;Console;Cursor;Fading;Fontcolor;GameMenu;Gizmo;GizmoEx"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Bmpfont:Clean;Camera:Clean"/>
+        <CallTarget Targets="Bmpfont:Clean;Camera:Clean;CameraController:Clean;Console:Clean;Cursor:Clean;Fading:Clean;Fontcolor:Clean;GameMenu:Clean;Gizmo:Clean;GizmoEx:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Bmpfont:Make;Camera:Make"/>
+        <CallTarget Targets="Bmpfont:Make;Camera:Make;CameraController:Make;Console:Make;Cursor:Make;Fading:Make;Fontcolor:Make;GameMenu:Make;Gizmo:Make;GizmoEx:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
