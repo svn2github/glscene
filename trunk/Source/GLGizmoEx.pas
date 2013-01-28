@@ -13,6 +13,8 @@
    contributed to GLScene. This is how TGLGizmoEx was born.
 
    <b>History : </b><font size=-1><ul>
+      <li>28/01/13 - PW - Added CPP compatibility, moved function
+                          IsPointInPolygon to Vectorgeometry unit;
       <li>24/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>31/05/10 - Yar - Fixed warnings
       <li>22/04/10 - Yar - Fixes after GLState revision
@@ -51,15 +53,15 @@
 //   Web Site        : http://GLScene.ru
 //   EMail           : Predator_Rust@_#_antispam_#_@mail.ru
 //   Date            : 07/10/2009
-// - Полностью переделан код для удобства работы с обьектами
-// - Получившейся код менее совместим с предедущим но более функционален
-// Известные баги
+// - The code fully new made for convenience to work with objects
+// - So the code less compatible but more functional
+// Knowing bugs
 //  1) GLLines
-//   Альфаканал нода не действует до тех пор пока
-//   не назначить альфаканал в свойстве    lineColor.Alpha
+//   to use alpha it's need to activate property lineColor.Alpha
 //   (см GLObjects->procedure TGLLineBase.SetupLineStyle)
-//  2) В режыме рейкаста массовое выделение будет тормозить из за
-//  cканирования лучем, тогда как в GetPickedobj можно задать область рамки
+//  2) In raycast mode multiple selections will slow down execution
+//  of scan rays, whereas in GetPickedObj it's possible to define
+//  rectangle framework
 //  3) Does not work in lazarus
 //------------------------------------------------------------------------------
 
@@ -182,7 +184,7 @@ type
   TGLGizmoExAxisSelected = procedure(Sender: TObject; var Axis: TGLGizmoExAxis) of object;
   TGLGizmoExPickMode = (pmGetPickedObjects, pmRayCast);
 
-  //Элементы
+  //Gizmo objects
 
   TGLGizmoExUIFrustrum = class(TGLFrustrum)
   private
@@ -220,7 +222,7 @@ type
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
-  TGLGizmoExUIPolyGon = class(TGLPolyGon)
+  TGLGizmoExUIPolygon = class(TGLPolygon)
   private
     FNoZWrite: Boolean;
   public
@@ -355,9 +357,9 @@ type
     moving: Boolean;
     mx, my: Integer;
 
-    fcursorPos: TGLPoint;
-    flastcursorPos: TGLPoint;
-    fchangerate: TAffineVector;   //сумарный угол вращения - масштабированая
+    fCursorPos: TGLPoint;
+    fLastCursorPos: TGLPoint;
+    fChangeRate: TAffineVector;   //total rotate angle
     FEnableLoopCursorMoving: Boolean;
 
     lastMousePos: TVector;
@@ -512,8 +514,7 @@ type
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
 
-    {: Для того что бы отключить гизмо и при этом сделать невидимым используйте свойство
-        OperationMode=gomNone}
+    {: Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
     property Enabled: Boolean read FEnabled write FEnabled default True;
 
     property LabelFont: TGLCustomBitmapFont read FLabelFont write SetLabelFont default nil;
@@ -569,15 +570,14 @@ begin
 end;
 
 //-------------------------------------------------------------------
-//                 Математические функции для Канвы
+//                 Mathematical functions for canvas
 //-------------------------------------------------------------------
-
 function Det(const a, b, c, d: real): real;
 begin
   Det := a * d - b * c;
 end;
 
-//Поиск расстаяния между точками
+//Distance between two points
 function Dist(const P1, P2: TPoint): real;
 begin
   Result := Sqrt(Sqr(P1.X - P2.X) + Sqr(P1.Y - P2.Y));
@@ -589,29 +589,27 @@ begin
     (abs(p1.Y - p.Y) + abs(p2.Y - p.Y) = abs(p2.Y - p1.Y));
 end;
 
-//Поиск пересечения между прямыми, причем все что не касается будет false
-function IsLinetoLine(p11, p12, p21, p22: TPoint; var p: Tpoint): Boolean;  // координаты второго отрезка
+//Intersection between two lines, return true or false
+//converted from http://doc-for-prog.narod.ru/topics/math/crossing.html
+function IsLineIntLine(p11, p12, p21, p22: TPoint; var p: TPoint): Boolean;  // координаты второго отрезка
 var
   Z, ca, cb, ua, ub: Single;
 begin
-  //функция конфертирована с сайта
-  //http://doc-for-prog.narod.ru/topics/math/crossing.html
-
-  // знаменатель
+  // demominator
   Z := (p12.Y - p11.Y) * (p21.X - p22.X) - (p21.Y - p22.Y) * (p12.X - p11.X);
-  // числитель 1
+  // numerator 1
   Ca := (p12.Y - p11.Y) * (p21.X - p11.X) - (p21.Y - p11.Y) * (p12.X - p11.X);
-  // числитель 2
+  // numerator 2
   Cb := (p21.Y - p11.Y) * (p21.X - p22.X) - (p21.Y - p22.Y) * (p21.X - p11.X);
 
-  // если числители и знаменатель = 0, прямые совпадают
+  // if  numerator and demominator = 0, then coincide lines
   if (Z = 0) and (Ca = 0) and (Cb = 0) then
   begin
     Result := False;
     Exit;
   end
   else
-  // если знаменатель = 0, прямые параллельны
+  // if demominator = 0, then parallel lines
   if Z = 0 then
   begin
     Result := False;
@@ -621,31 +619,30 @@ begin
   Ua := Ca / Z;
   Ub := Cb / Z;
 
-  // если 0<=Ua<=1 и 0<=Ub<=1, точка пересечения в пределах отрезков
+  // if 0<=Ua<=1 and 0<=Ub<=1, then the intersection point is inside intervals
   if (0 <= Ua) and (Ua <= 1) and (0 <= Ub) and (Ub <= 1) then
   begin
     p.X := round(p11.X + (p12.X - p11.X) * Ub);
     p.Y := round(p11.Y + (p12.Y - p11.Y) * Ub);
     Result := True;
   end
-  // иначе точка пересечения за пределами отрезков
+  // otherwise the intersection point is outside intervals
   else
     Result := False;
 end;
 
-//функция пересечения прямой и окружности
-function IsLinetoCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
+//Intersection of line and circle
+function IsLineIntCirlce(CR: Single; CC: TPoint; LP1, LP2: TPoint; var PIL1, PIL2: TPoint): Smallint;
 var
   d, K, b: Single;
 begin
 
   K := (LP1.Y - LP2.Y) / (LP1.X - LP2.X);
   b := LP1.Y - K * LP1.X;
-  //находим дискременант квадратного уравнения
+  //determine decrement of quadratic equation
 
   d := (power((2 * K * b - 2 * CC.X - 2 * CC.Y * K), 2) - (4 + 4 * K * K) * (b * b - cr * cr + CC.X * CC.X + CC.Y * CC.Y - 2 * CC.Y * b));
-  //если он равен 0, уравнение не имеет решения
-  //Прямая и окружность не пересекаются
+  //if decrement = 0, then no decision and line and circle do not intersect
   if (d < 0) then
   begin
     Result := -1;
@@ -653,12 +650,12 @@ begin
     PIL2 := point(0, 0);
     Exit;
   end;
-  //иначе находим корни квадратного уравнения
+  //otherwise find roots of quadratic equation
 
   PIL1.X := round((-(2 * K * b - 2 * CC.X - 2 * CC.Y * K) - sqrt(d)) / (2 + 2 * K * K));
   PIL2.X := round((-(2 * K * b - 2 * CC.X - 2 * CC.Y * K) + sqrt(d)) / (2 + 2 * K * K));
-  //если абсциссы точек совпадают, то пересечение только в одной точке
-  //Прямая и окружность имеют точку касания
+  //if abscissas of points are coinside, then the intersection is only in one point
+  //and line and circle have a point of contact
   if (PIL1.X = PIL2.X) then
   begin
     Result := 0;
@@ -667,36 +664,10 @@ begin
 
     Exit;
   end;
-  //иначе находим ординаты точек пересечения
+  //otherwise find ordinates of intersection points
   PIL1.Y := round(K * PIL1.X + b);
   PIL2.Y := round(K * PIL2.X + b);
   Result := 1;
-end;
-
-function IsPointtoPolygon(Polygon: array of Tpoint; p: TPoint): Boolean;
-var
-  A:      array of TPoint;
-  n, I:   Integer;
-  inside: Boolean;
-begin
-  n := High(Polygon) + 1;
-  SetLength(A, n + 2);
-  A[0] := p;
-  for I := 1 to n do
-    A[I] := Polygon[I - 1];
-  A[n + 1] := A[0];
-  inside := True;
-
-  for I := 1 to n do
-  begin
-    if (A[0].Y > A[I].Y) xor (A[0].Y <= A[I + 1].Y) then
-      Continue;
-    if (A[0].X - A[I].X) < ((A[0].Y - A[I].Y) * (A[I + 1].X - A[I].X) / (A[I + 1].Y - A[I].Y)) then
-      inside := not inside;
-  end;
-  inside := not inside;
-
-  Result := Inside;
 end;
 
 constructor TGLGizmoExUIArrowLine.Create(AOwner: TComponent);
@@ -1406,7 +1377,7 @@ begin
   with FUIRotateLineZ do
   begin
     Options := [loUseNodeColorForLines];
-    //Для исправления проблем с прозрачностью
+    //to correct transparency problem
     lineColor.Alpha := 0.1;
     Nodecolor.Color := clrBlue;
     Nodecolor.Alpha := 0.1;
@@ -2153,18 +2124,17 @@ begin
   if (not Enabled) or (RootGizmo = nil) or (RootObjects = nil) then
     Exit;
 
-  //здесь происходит отображение на канве прямых и коружностей
-  //в зависимости от режыма
-  //жалко GLCanvas очень ограничен ато бы развернулся...
+  //here takes place rendering of lines and circles on canvas
+  //according to modes, it's a pity that canvas has restrictions
   if FShowMultiSelecting then
   begin
     glc := TGLCanvas.Create(Viewer.Width, Viewer.Height);
     glc.PenColor := FSelectionRegionColor.AsWinColor;
     glc.PenWidth := 1;
-    LastCurPosX := flastcursorPos.X;
-    LastCurPosY := flastcursorPos.Y;
-    CurPosX := fcursorPos.X;
-    CurPosY := fcursorPos.Y;
+    LastCurPosX := fLastCursorPos.X;
+    LastCurPosY := fLastCursorPos.Y;
+    CurPosX := fCursorPos.X;
+    CurPosY := fCursorPos.Y;
     with glc do
       case FSelectionRegion of
         gsrRectangular: FrameRect(LastCurPosX, LastCurPosY, CurPosX, CurPosY);
@@ -2179,14 +2149,10 @@ begin
             else
               cLine(glc, FSelectionRec[I], fcursorPos);
 
-          //glc.PenWidth толщина прямоугольника
-          //необходимо что бы показать пользователю
-          //что начало фигуры состыловалась с концом :)
-          //Сервис мутерфукер! \m/
-          //суть этого куска кода в том что когда курсор находится
-          //поблизости от начала массива рисуется квадратик
-          //показывающий пользователю что он правильно тычит
-          //это зделано что бы пользователь не раздражался постоянному протыкиванию
+          //glc.PenWidth thickness of rectangle
+          //it's necessary to show that the begining and the end
+          // of a figure are joining and when cursor is near begining of array
+          // then appears square, that show to user that he picked right object
           if High(FSelectionRec) > 0 then
             with FSelectionRec[Low(FSelectionRec)] do
               if IsInRange(CurPosX, X + 2, X - 2) and IsInRange(CurPosY, Y + 2, Y - 2) then
@@ -2195,9 +2161,8 @@ begin
         end;
         gsrLasso:
         begin
-          //суть этого куска кода в том что рисутеся масив лайнов
-          //в котором рисутеся дополнительный лайн образованный точками
-          //начала и конца массива
+          //here showing arrays of lines
+          //when additional line formed by begining and and of array
           for I := Low(FSelectionRec) to High(FSelectionRec) do
             if I <> High(FSelectionRec) then
               cLine(glc, FSelectionRec[I], FSelectionRec[I + 1])
@@ -2246,8 +2211,7 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo
     end;
   end;
 
-  //Тест#12 Результат положытелен, но вычесления ведутся в 2д
-  //Это не приемлемо, данное направление замарожено до лучших времен
+  //test#12 result is positive, but only for 2d
   //
   procedure ShowText(const Text: UnicodeString; Position: Tvector; Scale: TVector; Color: Tvector);
   var
@@ -2670,7 +2634,6 @@ end;
 
 procedure TGLGizmoEx.MultiSelMouseDown(X, Y: Integer);
 begin
-  //устанавливаются координаты отсчета
   flastcursorPos := Point(X, Y);
   fcursorPos := point(X, Y);
 
@@ -2683,15 +2646,9 @@ end;
 
 procedure TGLGizmoEx.MultiSelMouseMove(X, Y: Integer);
 begin
-  //тут происходит самое интересное
-
-  //суть условия в том что какие быто нибыло расчеты начнутся в том случае
-  //если будет нажата кнопка мыши не будет рендерится канва
-  //и расстояние от начала нажатия кнопки мышы будет больше 10и
-  //старт расчетов множественного выбора
-
+  //calculation starts when the mouse button is down
+  //ans distance from pick pisition is not more then 10
   if Moving and not FShowMultiSelecting and
-    //растояние между двумя точками что бы отсчет сразу не стартовал
     (Dist(point(X, Y), flastcursorPos) > 10) then
   begin
     FShowMultiSelecting := True;
@@ -2705,10 +2662,9 @@ begin
   if FShowMultiSelecting then
   begin
     fcursorPos := point(X, Y);
-    //при перемещении мыши каждые 20 создается лайн
+    //creating lines when moving mouse
     if (fSelectionRegion = gsrLasso) and
-      //растяние между двумя точками
-      //что бы выглядело как в 3DStudioMaxe
+      //clculate distance between two points to view as in 3D Max
       (Dist(point(X, Y), flastcursorPos) > 20) then
     begin
       flastcursorPos := point(X, Y);
@@ -2766,7 +2722,7 @@ begin
       FSelectedObjects.Clear;
 
     for I := 0 to viewer.Height - 1 do
-      if IsLinetoCirlce(Maxfloat(abs(CurPosX - LastCurPosX),
+      if IsLineIntCirlce(Maxfloat(abs(CurPosX - LastCurPosX),
         abs(CurPosY - LastCurPosY)),
         flastcursorPos, point(0, I), point(viewer.Width, I), p1, p2) >= 0 then
         if (I mod 2 = 0) then
@@ -2782,12 +2738,11 @@ begin
 
   if (fSelectionRegion = gsrFence) and (high(FSelectionRec) > 0) then
     with FSelectionRec[Low(FSelectionRec)] do
-      //проверяем на нахождение рядом с точкой
-      //, для того что бы не тыкать и не искать центр
+      //verify if a pick is near point, not to seek a centre
       if IsInRange(CurPosX, X + 2, X - 2) and IsInRange(CurPosY, Y + 2, Y - 2) then
       begin
         FShowMultiSelecting := False;
-        //соеденяем начало и конец, логически.
+        //connect the begining and end
         SetLength(FSelectionRec, Length(FSelectionRec) + 1);
         FSelectionRec[high(FSelectionRec)] := point(X, Y);
 
@@ -2796,16 +2751,16 @@ begin
         for J := 0 to viewer.Height - 1 do
           for I := 0 to viewer.Width - 1 do
           begin
-            if IsPointtoPolygon(FSelectionRec, point(I, J)) then
+            if IsPointInPolygon(FSelectionRec, point(I, J)) then
             begin
-              if not IsPointtoPolygon(FSelectionRec, point(I + 1, J)) then
+              if not IsPointInPolygon(FSelectionRec, point(I + 1, J)) then
               begin
                 SetLength(line, Length(line) + 1);
                 line[high(line)] := point(I, J);
               end;
             end
             else
-            if IsPointtoPolygon(FSelectionRec, point(I + 1, J)) then
+            if IsPointInPolygon(FSelectionRec, point(I + 1, J)) then
             begin
               SetLength(line, Length(line) + 1);
               line[high(line)] := point(I, J);
@@ -2820,7 +2775,7 @@ begin
           end;
         if Assigned(onSelect) then
           onSelect(self, FSelectedObjects);
-        //после всех действий обнуляем массив
+        //nulling of array
         SetLength(line, 0);
         SetLength(FSelectionRec, 0);
       end;
@@ -2837,16 +2792,16 @@ begin
     for J := 0 to viewer.Height - 1 do
       for I := 0 to viewer.Width - 1 do
       begin
-        if IsPointtoPolygon(FSelectionRec, point(I, J)) then
+        if IsPointInPolygon(FSelectionRec, point(I, J)) then
         begin
-          if not IsPointtoPolygon(FSelectionRec, point(I + 1, J)) then
+          if not IsPointInPolygon(FSelectionRec, point(I + 1, J)) then
           begin
             SetLength(line, Length(line) + 1);
             line[high(line)] := point(I, J);
           end;
         end
         else
-        if IsPointtoPolygon(FSelectionRec, point(I + 1, J)) then
+        if IsPointInPolygon(FSelectionRec, point(I + 1, J)) then
         begin
           SetLength(line, Length(line) + 1);
           line[high(line)] := point(I, J);
@@ -3059,7 +3014,7 @@ begin
       minY := MinInteger(Y1, Y2);
       for J := minY to maxY do
         for I := minX to maxX do
-          //разргрузка, что бы приложение не подвысало :)
+          //uploading to exclude hanging of application :)
           if (I mod 4 = 0) or (J mod 4 = 0) then
             AddObjectToPicklList(RootObjects, Result, I, J);
       AddObjectToPicklList(RootGizmo, Result, round((x1 + x2) * 0.5), round((y1 + y2) * 0.5));
@@ -3634,7 +3589,7 @@ var
     end;
     SubtractVector(vec1, vec2);
 
-    //Контроль улетания обьекта в бесконечность
+    //Control of object flying to infinity
     if (VectorLength(Vec1) > 5) then
       Exit;// prevents NAN problems
 

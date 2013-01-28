@@ -7,7 +7,8 @@
   under GLScene (usefull for an Editor).<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+  <li>10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;
+                 replaced uppercase characters in prefixes for enum types to lower case
   <li>22/04/10 - Yar - Fixes after GLState revision
   <li>14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
   <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
@@ -125,16 +126,16 @@ type
       write SetItems; default;
   end;
 
-  TGLGizmoElement = (GeMove, GeRotate, GeScale, GeAxisLabel, GeObjectInfos,
-    GeBoundingBox);
+  TGLGizmoElement = (geMove, geRotate, geScale, geAxisLabel, geObjectInfos,
+    geBoundingBox);
   TGLGizmoElements = set of TGLGizmoElement;
 
-  TGLGizmoVisibleInfoLabel = (VliName, VliOperation, VliCoords);
+  TGLGizmoVisibleInfoLabel = (vliName, vliOperation, vliCoords);
   TGLGizmoVisibleInfoLabels = set of TGLGizmoVisibleInfoLabel;
 
-  TGLGizmoAxis = (GaNone, GaX, GaY, GaZ, GaXY, GaXZ, GaYZ);
+  TGLGizmoAxis = (gaNone, gaX, gaY, gaZ, gaXY, gaXZ, gaYZ);
 
-  TGLGizmoOperation = (GopMove, GopRotate, GopScale, GopNone, GpMoveGizmo,
+  TGLGizmoOperation = (gopMove, gopRotate, gopScale, gopNone, gpMoveGizmo,
     GpRotateGizmo);
 
   TGLGizmoAcceptEvent = procedure(Sender: TObject; var Obj: TGLBaseSceneObject;
@@ -143,7 +144,7 @@ type
     Axis: TGLGizmoAxis; Operation: TGLGizmoOperation; var Vector: TVector)
     of object;
 
-  TGLGizmoPickMode = (PmGetPickedObjects, PmRayCast);
+  TGLGizmoPickMode = (pmGetPickedObjects, pmRayCast);
 
   TGLGizmoRayCastHitData = class(TPersistent)
   public
@@ -215,8 +216,8 @@ type
     Mx, My: Integer;
     Rx, Ry: Integer;
 
-    DglEnable, DglDisable, DgtEnable, DgtDisable, DgcEnable, DgcDisable,
-      DglaEnable, DglaDisable, DgliEnable, DgliDisable: TGLDirectOpenGL;
+    dglEnable, dglDisable, dgtEnable, dgtDisable, dgcEnable, dgcDisable,
+      dglaEnable, dglaDisable, dgliEnable, dgliDisable: TGLDirectOpenGL;
 
     LastMousePos: TVector;
     ObjDimensions: TVector;
