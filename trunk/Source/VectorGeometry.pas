@@ -32,8 +32,8 @@
 
 	<b>History : </b><font size=-1><ul>
 
-      <li>20/11/12 - PW - Added CPP compatibility: for correct header generation by Delphi compiler
-                           and vector arrays converted to records
+      <li>20/11/12 - PW - Added CPP compatibility using records instead arrays for vectors,
+                          moved IsPointInPolygon from GLGizmoEx;
       <li>05/06/12 - Maverick - Added SegmentPlaneIntersection routine
       <li>10/05/12 - Maverick - Added quad/disk intersection routines,
                                 c3PIdiv2 constant, some asm blocks
@@ -1599,6 +1599,7 @@ function VectorAffineFltToDbl(const v : TAffineVector) : TAffineDblVector;
 function VectorFltToDbl(const v : TVector): THomogeneousDblVector;
 
 function PointInPolygon(var xp, yp : array of Single; x, y : Single) : Boolean;
+function IsPointInPolygon(Polygon: array of TPoint; p: TPoint): Boolean;
 
 procedure DivMod(Dividend: Integer; Divisor: Word; var Result, Remainder: Word);
 
@@ -2121,9 +2122,9 @@ asm
          mov   [eax+8], edx
 {$else}
 begin
-   v.V[0]:=0;
-   v.V[1]:=0;
-   v.V[2]:=0;
+   v.Coord[0]:=0;
+   v.Coord[1]:=0;
+   v.Coord[2]:=0;
 {$endif}
 end;
 
@@ -2139,10 +2140,10 @@ asm
          mov   [eax+12], edx
 {$else}
 begin
-   v.V[0]:=0;
-   v.V[1]:=0;
-   v.V[2]:=0;
-   v.V[3]:=0;
+   v.Coord[0]:=0;
+   v.Coord[1]:=0;
+   v.Coord[2]:=0;
+   v.Coord[3]:=0;
 {$endif}
 end;
 
@@ -2162,8 +2163,8 @@ asm
       FSTP DWORD PTR [ECX+4]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]+v2.V[0];
-   Result.V[1]:=v1.V[1]+v2.V[1];
+   Result.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]+v2.Coord[1];
 {$endif}
 end;
 
@@ -2186,9 +2187,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]+v2.V[0];
-   Result.V[1]:=v1.V[1]+v2.V[1];
-   Result.V[2]:=v1.V[2]+v2.V[2];
+   Result.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -2211,9 +2212,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   vr.V[0]:=v1.V[0]+v2.V[0];
-   vr.V[1]:=v1.V[1]+v2.V[1];
-   vr.V[2]:=v1.V[2]+v2.V[2];
+   vr.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -2236,9 +2237,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   vr^.V[0]:=v1.V[0]+v2.V[0];
-   vr^.V[1]:=v1.V[1]+v2.V[1];
-   vr^.V[2]:=v1.V[2]+v2.V[2];
+   vr^.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr^.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr^.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -2277,10 +2278,10 @@ asm
          FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]+v2.V[0];
-   Result.V[1]:=v1.V[1]+v2.V[1];
-   Result.V[2]:=v1.V[2]+v2.V[2];
-   Result.V[3]:=v1.V[3]+v2.V[3];
+   Result.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   Result.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -2319,10 +2320,10 @@ asm
          FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   vr.V[0]:=v1.V[0]+v2.V[0];
-   vr.V[1]:=v1.V[1]+v2.V[1];
-   vr.V[2]:=v1.V[2]+v2.V[2];
-   vr.V[3]:=v1.V[3]+v2.V[3];
+   vr.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   vr.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -2373,9 +2374,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]+v2.V[0];
-   v1.V[1]:=v1.V[1]+v2.V[1];
-   v1.V[2]:=v1.V[2]+v2.V[2];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -2397,9 +2398,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]+v2.V[0];
-   v1.V[1]:=v1.V[1]+v2.V[1];
-   v1.V[2]:=v1.V[2]+v2.V[2];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -2436,10 +2437,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]+v2.V[0];
-   v1.V[1]:=v1.V[1]+v2.V[1];
-   v1.V[2]:=v1.V[2]+v2.V[2];
-   v1.V[3]:=v1.V[3]+v2.V[3];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   v1.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -2659,9 +2660,9 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do begin
-      dest^[i].V[0]:=src^[i].V[0]+delta.V[0];
-      dest^[i].V[1]:=src^[i].V[1]+delta.V[1];
-      dest^[i].V[2]:=src^[i].V[2]+delta.V[2];
+      dest^[i].Coord[0]:=src^[i].Coord[0]+delta.Coord[0];
+      dest^[i].Coord[1]:=src^[i].Coord[1]+delta.Coord[1];
+      dest^[i].Coord[2]:=src^[i].Coord[2]+delta.Coord[2];
    end;
 {$endif}
 end;
@@ -2685,9 +2686,9 @@ asm
       FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]-v2.V[0];
-   Result.V[1]:=v1.V[1]-v2.V[1];
-   Result.V[2]:=v1.V[2]-v2.V[2];
+   Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2707,8 +2708,8 @@ asm
       FSTP DWORD PTR [ECX+4]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]-v2.V[0];
-   Result.V[1]:=v1.V[1]-v2.V[1];
+   Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
 {$endif}
 end;
 
@@ -2731,9 +2732,9 @@ asm
       FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   result.V[0]:=v1.V[0]-v2.V[0];
-   result.V[1]:=v1.V[1]-v2.V[1];
-   result.V[2]:=v1.V[2]-v2.V[2];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2758,10 +2759,10 @@ asm
       mov   [ECX+12], eax
 {$else}
 begin
-   result.V[0]:=v1.V[0]-v2.V[0];
-   result.V[1]:=v1.V[1]-v2.V[1];
-   result.V[2]:=v1.V[2]-v2.V[2];
-   result.V[3]:=0;
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=0;
 {$endif}
 end;
 
@@ -2786,10 +2787,10 @@ asm
       mov   [ECX+12], edx
 {$else}
 begin
-   result.V[0]:=v1.V[0]-v2.V[0];
-   result.V[1]:=v1.V[1]-v2.V[1];
-   result.V[2]:=v1.V[2]-v2.V[2];
-   result.V[3]:=v1.V[0];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=v1.Coord[0];
 {$endif}
 end;
 
@@ -2827,10 +2828,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   Result.V[0]:=v1.V[0]-v2.V[0];
-   Result.V[1]:=v1.V[1]-v2.V[1];
-   Result.V[2]:=v1.V[2]-v2.V[2];
-   Result.V[3]:=v1.V[3]-v2.V[3];
+   Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   Result.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 
@@ -2868,10 +2869,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   result.V[0]:=v1.V[0]-v2.V[0];
-   result.V[1]:=v1.V[1]-v2.V[1];
-   result.V[2]:=v1.V[2]-v2.V[2];
-   result.V[3]:=v1.V[3]-v2.V[3];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 
@@ -2894,9 +2895,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   result.V[0]:=v1.V[0]-v2.V[0];
-   result.V[1]:=v1.V[1]-v2.V[1];
-   result.V[2]:=v1.V[2]-v2.V[2];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2937,9 +2938,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]-v2.V[0];
-   v1.V[1]:=v1.V[1]-v2.V[1];
-   v1.V[2]:=v1.V[2]-v2.V[2];
+   v1.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2958,8 +2959,8 @@ asm
          FSTP DWORD PTR [EAX+4]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]-v2.V[0];
-   v1.V[1]:=v1.V[1]-v2.V[1];
+   v1.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]-v2.Coord[1];
 {$endif}
 end;
 
@@ -2996,10 +2997,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v1.V[0]:=v1.V[0]-v2.V[0];
-   v1.V[1]:=v1.V[1]-v2.V[1];
-   v1.V[2]:=v1.V[2]-v2.V[2];
-   v1.V[3]:=v1.V[3]-v2.V[3];
+   v1.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   v1.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 
@@ -3025,9 +3026,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr.V[0]:=vr.V[0]+v.V[0]*f;
-   vr.V[1]:=vr.V[1]+v.V[1]*f;
-   vr.V[2]:=vr.V[2]+v.V[2]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
 {$endif}
 end;
 
@@ -3053,9 +3054,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr.V[0]:=vr.V[0]+v.V[0]*pf^;
-   vr.V[1]:=vr.V[1]+v.V[1]*pf^;
-   vr.V[2]:=vr.V[2]+v.V[2]*pf^;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*pf^;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*pf^;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*pf^;
 {$endif}
 end;
 
@@ -3136,10 +3137,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   vr.V[0]:=vr.V[0]+v.V[0]*f;
-   vr.V[1]:=vr.V[1]+v.V[1]*f;
-   vr.V[2]:=vr.V[2]+v.V[2]*f;
-   vr.V[3]:=vr.V[3]+v.V[3]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
+   vr.Coord[3]:=vr.Coord[3]+v.Coord[3]*f;
 {$endif}
 end;
 
@@ -3165,9 +3166,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr.V[0]:=vr.V[0]+v.V[0]*f;
-   vr.V[1]:=vr.V[1]+v.V[1]*f;
-   vr.V[2]:=vr.V[2]+v.V[2]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
 {$endif}
 end;
 
@@ -3257,10 +3258,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   vr.V[0]:=(F1 * V1.V[0]) + (F2 * V2.V[0]);
-   vr.V[1]:=(F1 * V1.V[1]) + (F2 * V2.V[1]);
-   vr.V[2]:=(F1 * V1.V[2]) + (F2 * V2.V[2]);
-   vr.V[3]:=(F1 * V1.V[3]) + (F2 * V2.V[3]);
+   vr.Coord[0]:=(F1 * V1.Coord[0]) + (F2 * V2.Coord[0]);
+   vr.Coord[1]:=(F1 * V1.Coord[1]) + (F2 * V2.Coord[1]);
+   vr.Coord[2]:=(F1 * V1.Coord[2]) + (F2 * V2.Coord[2]);
+   vr.Coord[3]:=(F1 * V1.Coord[3]) + (F2 * V2.Coord[3]);
 {$endif}
 end;
 
@@ -3319,10 +3320,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin      // 201283
-   vr.V[0]:=V1.V[0] + (F2 * V2.V[0]);
-   vr.V[1]:=V1.V[1] + (F2 * V2.V[1]);
-   vr.V[2]:=V1.V[2] + (F2 * V2.V[2]);
-   vr.V[3]:=V1.V[3] + (F2 * V2.V[3]);
+   vr.Coord[0]:=V1.Coord[0] + (F2 * V2.Coord[0]);
+   vr.Coord[1]:=V1.Coord[1] + (F2 * V2.Coord[1]);
+   vr.Coord[2]:=V1.Coord[2] + (F2 * V2.Coord[2]);
+   vr.Coord[3]:=V1.Coord[3] + (F2 * V2.Coord[3]);
 {$endif}
 end;
 
@@ -3418,7 +3419,7 @@ asm
 end;
 {$else}
 begin
-   Result:=V1.V[0]*V2.V[0]+V1.V[1]*V2.V[1];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1];
 end;
 {$endif}
 
@@ -3441,7 +3442,7 @@ asm
 end;
 {$else}
 begin
-   Result:=V1.V[0]*V2.V[0]+V1.V[1]*V2.V[1]+V1.V[2]*V2.V[2];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+V1.Coord[2]*V2.Coord[2];
 end;
 {$endif}
 
@@ -3466,8 +3467,8 @@ asm
          FADDP
 {$else}
 begin
-   Result:=V1.V[0]*V2.V[0]+V1.V[1]*V2.V[1]+
-           V1.V[2]*V2.V[2]+V1.V[3]*V2.V[3];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+
+           V1.Coord[2]*V2.Coord[2]+V1.Coord[3]*V2.Coord[3];
 {$endif}
 end;
 
@@ -3489,7 +3490,7 @@ asm
          FADDP
 {$else}
 begin
-  Result:=V1.V[0]*V2.V[0]+V1.V[1]*V2.V[1]+V1.V[2]*V2.V[2];
+  Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+V1.Coord[2]*V2.Coord[2];
 {$endif}
 end;
 
@@ -3512,9 +3513,9 @@ asm
       fadd
 {$else}
 begin
-   Result:= direction.V[0]*(p.V[0]-origin.V[0])
-           +direction.V[1]*(p.V[1]-origin.V[1])
-           +direction.V[2]*(p.V[2]-origin.V[2]);
+   Result:= direction.Coord[0]*(p.Coord[0]-origin.Coord[0])
+           +direction.Coord[1]*(p.Coord[1]-origin.Coord[1])
+           +direction.Coord[2]*(p.Coord[2]-origin.Coord[2]);
 {$endif}
 end;
 
@@ -3537,9 +3538,9 @@ asm
       fadd
 {$else}
 begin
-   Result:= direction.V[0]*(p.V[0]-origin.V[0])
-           +direction.V[1]*(p.V[1]-origin.V[1])
-           +direction.V[2]*(p.V[2]-origin.V[2]);
+   Result:= direction.Coord[0]*(p.Coord[0]-origin.Coord[0])
+           +direction.Coord[1]*(p.Coord[1]-origin.Coord[1])
+           +direction.Coord[2]*(p.Coord[2]-origin.Coord[2]);
 {$endif}
 end;
 
@@ -3573,9 +3574,9 @@ asm
     fstp  dword ptr [ecx+$8]
 {$else}
 begin
-   Result.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   Result.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   Result.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
+   Result.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   Result.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   Result.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 {$endif}
 end;
 
@@ -3612,10 +3613,10 @@ asm
     mov   [ecx+$c], eax
 {$else}
 begin
-   Result.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   Result.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   Result.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
-   Result.V[W]:=0;
+   Result.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   Result.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   Result.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   Result.Coord[W]:=0;
 {$endif}
 end;
 
@@ -3652,10 +3653,10 @@ asm
     mov   [ecx+$c], eax
 {$else}
 begin
-   vr.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   vr.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   vr.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
-   vr.V[W]:=0;
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   vr.Coord[W]:=0;
 {$endif}
 end;
 
@@ -3692,10 +3693,10 @@ asm
     mov   [ecx+$c], eax
 {$else}
 begin
-   vr.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   vr.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   vr.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
-   vr.V[W]:=0;
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   vr.Coord[W]:=0;
 {$endif}
 end;
 
@@ -3729,9 +3730,9 @@ asm
     fstp  dword ptr [ecx+$8]
 {$else}
 begin
-   vr.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   vr.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   vr.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 {$endif}
 end;
 
@@ -3765,9 +3766,9 @@ asm
     fstp  dword ptr [ecx+$8]
 {$else}
 begin
-   vr.V[X]:=v1.V[Y]*v2.V[Z]-v1.V[Z]*v2.V[Y];
-   vr.V[Y]:=v1.V[Z]*v2.V[X]-v1.V[X]*v2.V[Z];
-   vr.V[Z]:=v1.V[X]*v2.V[Y]-v1.V[Y]*v2.V[X];
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 {$endif}
 end;
 
@@ -3848,9 +3849,9 @@ asm
    ffree st(0)
 {$else}
 begin
-   Result.V[X]:=V1.V[X]+(V2.V[X]-V1.V[X])*t;
-   Result.V[Y]:=V1.V[Y]+(V2.V[Y]-V1.V[Y])*t;
-   Result.V[Z]:=V1.V[Z]+(V2.V[Z]-V1.V[Z])*t;
+   Result.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   Result.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   Result.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
 {$endif}
 end;
 
@@ -3889,9 +3890,9 @@ asm
       ffree st(0)
 {$else}
 begin
-   vr.V[X]:=V1.V[X]+(V2.V[X]-V1.V[X])*t;
-   vr.V[Y]:=V1.V[Y]+(V2.V[Y]-V1.V[Y])*t;
-   vr.V[Z]:=V1.V[Z]+(V2.V[Z]-V1.V[Z])*t;
+   vr.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   vr.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   vr.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
 {$endif}
 end;
 
@@ -4308,7 +4309,7 @@ asm
        FSQRT
 {$else}
 begin
-   Result:=Sqrt(VectorNorm(v.V[0], v.V[1]));
+   Result:=Sqrt(VectorNorm(v.Coord[0], v.Coord[1]));
 {$endif}
 end;
 
@@ -4380,7 +4381,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=v.V[0]*v.V[0]+v.V[1]*v.V[1]+v.V[2]*v.V[2];
+   Result:=v.Coord[0]*v.Coord[0]+v.Coord[1]*v.Coord[1]+v.Coord[2]*v.Coord[2];
 {$endif}
 end;
 
@@ -4401,7 +4402,7 @@ asm
       FADD
 {$else}
 begin
-  Result:=v.V[0]*v.V[0]+v.V[1]*v.V[1]+v.V[2]*v.V[2];
+  Result:=v.Coord[0]*v.Coord[0]+v.Coord[1]*v.Coord[1]+v.Coord[2]*v.Coord[2];
 {$endif}
 end;
 
@@ -4463,11 +4464,11 @@ var
   invLen : Single;
   vn : single;
 begin
-  vn:=VectorNorm(v.V);
+  vn:=VectorNorm(v.Coord);
   if vn>0 then begin
     invLen:=RSqrt(vn);
-    v.V[0]:=v.V[0]*invLen;
-    v.V[1]:=v.V[1]*invLen;
+    v.Coord[0]:=v.Coord[0]*invLen;
+    v.Coord[1]:=v.Coord[1]*invLen;
     end;
 {$endif}
 end;
@@ -4538,9 +4539,9 @@ begin
   vn:=VectorNorm(v);
   if vn>0 then begin
    invLen:=RSqrt(vn);
-   v.V[0]:=v.V[0]*invLen;
-   v.V[1]:=v.V[1]*invLen;
-   v.V[2]:=v.V[2]*invLen;
+   v.Coord[0]:=v.Coord[0]*invLen;
+   v.Coord[1]:=v.Coord[1]*invLen;
+   v.Coord[2]:=v.Coord[2]*invLen;
   end;
 {$endif}
 end;
@@ -4630,9 +4631,9 @@ begin
     setvector(result, v)
   else begin
     invLen:=RSqrt(vn);
-    result.V[0]:=v.V[0]*invLen;
-    result.V[1]:=v.V[1]*invLen;
-    result.V[2]:=v.V[2]*invLen;
+    result.Coord[0]:=v.Coord[0]*invLen;
+    result.Coord[1]:=v.Coord[1]*invLen;
+    result.Coord[2]:=v.Coord[2]*invLen;
     end;
 {$endif}
 end;
@@ -4787,11 +4788,11 @@ begin
   vn:=VectorNorm(v);
   if vn>0 then begin
     invLen:=RSqrt(vn);
-    v.V[0]:=v.V[0]*invLen;
-    v.V[1]:=v.V[1]*invLen;
-    v.V[2]:=v.V[2]*invLen;
+    v.Coord[0]:=v.Coord[0]*invLen;
+    v.Coord[1]:=v.Coord[1]*invLen;
+    v.Coord[2]:=v.Coord[2]*invLen;
   end;
-  v.V[3]:=0;
+  v.Coord[3]:=0;
 {$endif}
 end;
 
@@ -4867,11 +4868,11 @@ begin
     setvector(result, v)
   else begin
     invLen:=RSqrt(vn);
-    Result.V[0]:=v.V[0]*invLen;
-    Result.V[1]:=v.V[1]*invLen;
-    Result.V[2]:=v.V[2]*invLen;
+    Result.Coord[0]:=v.Coord[0]*invLen;
+    Result.Coord[1]:=v.Coord[1]*invLen;
+    Result.Coord[2]:=v.Coord[2]*invLen;
 	end;
-  Result.V[3]:=0;
+  Result.Coord[3]:=0;
 {$endif}
 end;
 
@@ -4977,9 +4978,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   Result.V[0]:=-Vector.V[0];
-   Result.V[1]:=-Vector.V[1];
-   Result.V[2]:=-Vector.V[2];
+   Result.Coord[0]:=-v.Coord[0];
+   Result.Coord[1]:=-v.Coord[1];
+   Result.Coord[2]:=-v.Coord[2];
 {$endif}
 end;
 
@@ -5004,10 +5005,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   Result.V[0]:=-Vector.V[0];
-   Result.V[1]:=-Vector.V[1];
-   Result.V[2]:=-Vector.V[2];
-   Result.V[3]:=-Vector.V[3];
+   Result.Coord[0]:=-v.Coord[0];
+   Result.Coord[1]:=-v.Coord[1];
+   Result.Coord[2]:=-v.Coord[2];
+   Result.Coord[3]:=-v.Coord[3];
 {$endif}
 end;
 
@@ -5028,9 +5029,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v.V[0]:=-v.V[0];
-   v.V[1]:=-v.V[1];
-   v.V[2]:=-v.V[2];
+   v.Coord[0]:=-v.Coord[0];
+   v.Coord[1]:=-v.Coord[1];
+   v.Coord[2]:=-v.Coord[2];
 {$endif}
 end;
 
@@ -5054,10 +5055,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v.V[0]:=-v.V[0];
-   v.V[1]:=-v.V[1];
-   v.V[2]:=-v.V[2];
-   v.V[3]:=-v.V[3];
+   v.Coord[0]:=-v.Coord[0];
+   v.Coord[1]:=-v.Coord[1];
+   v.Coord[2]:=-v.Coord[2];
+   v.Coord[3]:=-v.Coord[3];
 {$endif}
 end;
 
@@ -5097,8 +5098,8 @@ asm
       FSTP DWORD PTR [EAX+4]
 {$else}
 begin
-   v.V[0]:=v.V[0]*factor;
-   v.V[1]:=v.V[1]*factor;
+   v.Coord[0]:=v.Coord[0]*factor;
+   v.Coord[1]:=v.Coord[1]*factor;
 {$endif}
 end;
 
@@ -5118,9 +5119,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v.V[0]:=v.V[0]*factor;
-   v.V[1]:=v.V[1]*factor;
-   v.V[2]:=v.V[2]*factor;
+   v.Coord[0]:=v.Coord[0]*factor;
+   v.Coord[1]:=v.Coord[1]*factor;
+   v.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -5166,10 +5167,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v.V[0]:=v.V[0]*factor;
-   v.V[1]:=v.V[1]*factor;
-   v.V[2]:=v.V[2]*factor;
-   v.V[3]:=v.V[3]*factor;
+   v.Coord[0]:=v.Coord[0]*factor;
+   v.Coord[1]:=v.Coord[1]*factor;
+   v.Coord[2]:=v.Coord[2]*factor;
+   v.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -5205,8 +5206,8 @@ asm
       FSTP DWORD PTR [EDX+4]
 {$else}
 begin
-   Result.V[0]:=v.V[0]*factor;
-   Result.V[1]:=v.V[1]*factor;
+   Result.Coord[0]:=v.Coord[0]*factor;
+   Result.Coord[1]:=v.Coord[1]*factor;
 {$endif}
 end;
 
@@ -5226,9 +5227,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   Result.V[0]:=v.V[0]*factor;
-   Result.V[1]:=v.V[1]*factor;
-   Result.V[2]:=v.V[2]*factor;
+   Result.Coord[0]:=v.Coord[0]*factor;
+   Result.Coord[1]:=v.Coord[1]*factor;
+   Result.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -5248,9 +5249,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   vr.V[0]:=v.V[0]*factor;
-   vr.V[1]:=v.V[1]*factor;
-   vr.V[2]:=v.V[2]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -5273,10 +5274,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   Result.V[0]:=v.V[0]*factor;
-   Result.V[1]:=v.V[1]*factor;
-   Result.V[2]:=v.V[2]*factor;
-   Result.V[3]:=v.V[3]*factor;
+   Result.Coord[0]:=v.Coord[0]*factor;
+   Result.Coord[1]:=v.Coord[1]*factor;
+   Result.Coord[2]:=v.Coord[2]*factor;
+   Result.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -5299,10 +5300,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   vr.V[0]:=v.V[0]*factor;
-   vr.V[1]:=v.V[1]*factor;
-   vr.V[2]:=v.V[2]*factor;
-   vr.V[3]:=v.V[3]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
+   vr.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -5322,9 +5323,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   vr.V[0]:=v.V[0]*factor;
-   vr.V[1]:=v.V[1]*factor;
-   vr.V[2]:=v.V[2]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -5428,8 +5429,8 @@ asm
       xor eax, eax
 {$else}
 begin
-   Result:=(v1.V[0]=v2.V[0]) and (v1.V[1]=v2.V[1]) and
-           (v1.V[2]=v2.V[2]) and (v1.V[3]=v2.V[3]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and
+           (v1.Coord[2]=v2.Coord[2]) and (v1.Coord[3]=v2.Coord[3]);
 {$endif}
 end;
 
@@ -5457,7 +5458,7 @@ asm
 @@End:
 {$else}
 begin
-   Result:=(v1.V[0]=v2.V[0]) and (v1.V[1]=v2.V[1]) and (v1.V[2]=v2.V[2]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and (v1.Coord[2]=v2.Coord[2]);
 {$endif}
 end;
 
@@ -5484,7 +5485,7 @@ asm
       xor eax, eax
 {$else}
 begin
-   Result:=(v1.V[0]=v2.V[0]) and (v1.V[1]=v2.V[1]) and (v1.V[2]=v2.V[2]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and (v1.Coord[2]=v2.Coord[2]);
 {$endif}
 end;
 
@@ -5544,7 +5545,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Abs(v2.V[0]-v1.V[0])+Abs(v2.V[1]-v1.V[1])+Abs(v2.V[2]-v1.V[2]);
+   Result:=Abs(v2.Coord[0]-v1.Coord[0])+Abs(v2.Coord[1]-v1.Coord[1])+Abs(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -5573,7 +5574,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Abs(v2.V[0]-v1.V[0])+Abs(v2.V[1]-v1.V[1])+Abs(v2.V[2]-v1.V[2])+Abs(v2.V[3]-v1.V[3]);
+   Result:=Abs(v2.Coord[0]-v1.Coord[0])+Abs(v2.Coord[1]-v1.Coord[1])+Abs(v2.Coord[2]-v1.Coord[2])+Abs(v2.Coord[3]-v1.Coord[3]);
 {$endif}
 end;
 
@@ -5599,7 +5600,7 @@ asm
       FSQRT
 {$else}
 begin
-   Result:=Sqrt(Sqr(v2.V[0]-v1.V[0])+Sqr(v2.V[1]-v1.V[1])+Sqr(v2.V[2]-v1.V[2]));
+   Result:=Sqrt(Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]));
 {$endif}
 end;
 
@@ -5625,7 +5626,7 @@ asm
       FSQRT
 {$else}
 begin
-   Result:=Sqrt(Sqr(v2.V[0]-v1.V[0])+Sqr(v2.V[1]-v1.V[1])+Sqr(v2.V[2]-v1.V[2]));
+   Result:=Sqrt(Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]));
 {$endif}
 end;
 
@@ -5650,7 +5651,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Sqr(v2.V[0]-v1.V[0])+Sqr(v2.V[1]-v1.V[1])+Sqr(v2.V[2]-v1.V[2]);
+   Result:=Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -5675,7 +5676,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Sqr(v2.V[0]-v1.V[0])+Sqr(v2.V[1]-v1.V[1])+Sqr(v2.V[2]-v1.V[2]);
+   Result:=Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -10096,6 +10097,35 @@ begin
       end;
    end;
 end;
+
+// IsPointInPolygon
+//
+function IsPointInPolygon(Polygon: array of TPoint; p: TPoint): Boolean;
+var
+  A:      array of TPoint;
+  n, I:   Integer;
+  inside: Boolean;
+begin
+  n := High(Polygon) + 1;
+  SetLength(A, n + 2);
+  A[0] := p;
+  for I := 1 to n do
+    A[I] := Polygon[I - 1];
+  A[n + 1] := A[0];
+  inside := True;
+
+  for I := 1 to n do
+  begin
+    if (A[0].Y > A[I].Y) xor (A[0].Y <= A[I + 1].Y) then
+      Continue;
+    if (A[0].X - A[I].X) < ((A[0].Y - A[I].Y) * (A[I + 1].X - A[I].X) / (A[I + 1].Y - A[I].Y)) then
+      inside := not inside;
+  end;
+  inside := not inside;
+
+  Result := Inside;
+end;
+
 
 // DivMod
 //
