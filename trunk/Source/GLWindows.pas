@@ -6,7 +6,8 @@
   OpenGL windows management classes and structures<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,
+                          renamed lowercase sender and accept to uppercase Sender and Accept
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>11/06/10 - YP - Link GUI elements to their parent
@@ -153,7 +154,7 @@ type
   TGLMouseAction = (ma_mouseup, ma_mousedown, ma_mousemove);
 
   TGLAcceptMouseQuery = procedure(Sender: TGLBaseControl; Shift: TShiftState;
-    Action: TGLMouseAction; Button: TGLMouseButton; X, Y: Integer; var accept:
+    Action: TGLMouseAction; Button: TGLMouseButton; X, Y: Integer; var Accept:
     boolean) of object;
   TGLBaseControl = class(TGLBaseComponent)
   private
@@ -287,7 +288,7 @@ type
   end;
 
   TGLCustomControl = class;
-  TGLCustomRenderEvent = procedure(sender: TGLCustomControl; Bitmap: TGLBitmap)
+  TGLCustomRenderEvent = procedure(Sender: TGLCustomControl; Bitmap: TGLBitmap)
     of object;
   TGLCustomControl = class(TGLFocusControl)
   private
