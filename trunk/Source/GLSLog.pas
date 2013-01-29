@@ -8,8 +8,9 @@
   To obtain it, call UserLog() function from any unit.<p>
 
   <b>Historique : </b><font size=-1><ul>
+  <li>30/01/13 - DaStr - Added "save-old-logs" option
   <li>09/01/13 - DaStr - Added Log buffering and auto-splitting options
-                        Other misc changes.
+                         Other misc changes.
   <li>18/01/11 - Yar - Added message sending to IDE memo in design time
   <li>07/01/10 - Yar - Added formated string logging
   <li>29/11/10 - Yar - Added log raising in Linux
@@ -39,6 +40,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  Dialogs,
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
@@ -162,6 +164,7 @@ type
     procedure PrintLogStatistics();
     function AttachLogFile(const AFileName: string; const AResetFile: Boolean = True): Boolean;
     procedure ClearOldLogs();
+    procedure SaveOldLogs(const ACurrentLogFileName: string);
     procedure CreateNewLogFileIfNeeded();
 
     { : Appends a string to log. Thread-safe. }
@@ -180,7 +183,7 @@ type
     constructor Init(const AFileName: string;
       const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
       const ALogThreadId: Boolean = True; const ABuffered: Boolean = False;
-      const AMaxSize: Integer = 0); virtual;
+      const AMaxSize: Integer = 0; const ASaveOldLogs: Boolean = False); virtual;
 
     { : Destructor }
     destructor Destroy; override;
@@ -286,6 +289,8 @@ function ReadLine(var TextFile: Text): string;
 function GLSLogger(): TLogSession;
 procedure UseCustomGLSLogger(const ALogger: TLogSession);
 
+function ConstArrayToString(const Elements: array of const): String;
+
 var
   vIDELogProc: TIDELogProc;
 
@@ -321,7 +326,6 @@ end;
 
 const
 //VarRec -> String
-  Bool2Str  :     Array[Boolean] of string = ('False', 'True');
   vTypeDesc :     Array[0..16] of String = ('vtInteger','vtBoolean','vtChar',
                   'vtExtended','vtString','vtPointer','vtPChar','vtObject', 'vtClass',
                   'vtWideChar','vtPWideChar','vtAnsiString','vtCurrency','vtVariant',
@@ -348,7 +352,7 @@ Begin
     With vr Do
     Case VType of
        vtInteger:    result := result + IntToStr(VInteger);
-       vtBoolean:    result := result + Bool2Str[VBoolean];
+       vtBoolean:    result := result + BoolToStr(VBoolean, True);
        vtChar:       Result := Result + string(VChar);
        vtExtended:   Result := Result + FloatToStr(VExtended^);
        vtString:     result := result + string(VString^);
@@ -401,9 +405,7 @@ Begin
 End;
 
 {: Function from HotLog by Olivier Touzot "QnnO".}
-type TVarRecStyle = (vsNone, vsBasic, vsExtended);
-function ConstArrayToString(const Elements: array of const;
-                            style:TVarRecStyle=vsBasic): String;
+function ConstArrayToString(const Elements: array of const): String;
 // -2-> Returns à string, surrounded by parenthesis : '(elts[0]; ...; elts[n-1]);'
 //      ("Basic infos" only.)
 Var i: Integer;
@@ -416,18 +418,14 @@ Begin
       Exit;
     end;
 
-    If style = vsBasic Then
-    Begin
-      Result := '(';
-      sep := '; ';
-    End Else sep := '';
+    Result := '(';
+    sep := '; ';
     For i:= Low(Elements) to High(Elements) do
     Begin
       s := VarRecToStr(Elements[I]);
       Result := Result + GetBasicValue(s,Elements[i].VType) + sep;
     End;
-    If style = vsBasic Then
-       Result := LeftStr(Result, length(result)-2) + ');' ;      // replaces last ", " by final ");".
+    Result := LeftStr(Result, length(result)-2) + ');' ;      // replaces last ", " by final ");".
 
   EXCEPT result := '[#HLvrConvert]';
   END;
@@ -566,6 +564,43 @@ end;
 // ------------------ TLogSession ------------------
 // ------------------
 
+procedure TLogSession.SaveOldLogs(const ACurrentLogFileName: string);
+var
+  sRec: TSearchRec;
+  lLogOriginalDir: string;
+  lLogSaveDir: string;
+  lLogExt: string;
+
+  procedure SaveCurrentFile();
+  begin
+    if not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) then
+      ShowMessage('RenameFile failed with error : ' + IntToStr(GetLastError));
+  end;
+
+begin
+  lLogExt := ExtractFileExt(ACurrentLogFileName);
+  lLogOriginalDir := ExtractFilePath(ACurrentLogFileName);
+  lLogSaveDir := lLogOriginalDir + FormatDateTime('yyyy-mm-dd  hh-nn-ss', Now);
+
+  if not CreateDir(lLogSaveDir) then Exit;
+  lLogSaveDir := lLogSaveDir + SysUtils.PathDelim;
+
+  If FindFirst(lLogOriginalDir + '*' + lLogExt, faAnyfile, sRec) = 0 then
+  begin
+    try
+      SaveCurrentFile();
+    except
+    end;
+
+    while ( FindNext(sRec) = 0 ) do
+    try
+      SaveCurrentFile();
+    except
+    end;
+    FindClose(sRec);
+  end;
+end;
+
 procedure TLogSession.SetBuffered(const Value: Boolean);
 begin
   if FBuffered = Value then Exit;
@@ -585,7 +620,7 @@ end;
 
 procedure TLogSession.SetLogFileMaxSize(const Value: Integer);
 begin
-  if FLogFileMaxSize = Value then Exit; 
+  if FLogFileMaxSize = Value then Exit;
   FLogFileMaxSize := Value;
 
   if FLogFileMaxSize > 0 then
@@ -693,7 +728,7 @@ end;
 constructor TLogSession.Init(const AFileName: string;
   const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
   const ALogThreadId: Boolean = True; const ABuffered: Boolean = False;
-  const AMaxSize: Integer = 0);
+  const AMaxSize: Integer = 0; const ASaveOldLogs: Boolean = False);
 var
   i: Integer;
   ModeStr: string;
@@ -733,7 +768,10 @@ begin
     lfElapsed:
       ModeStr := 'elapsed time mode.';
   end;
- 
+
+  if ASaveOldLogs then
+    SaveOldLogs(AFileName);
+
   // Attach log file.
   FUsedLogFileNames := TStringList.Create();
   FOriginalLogFileName := AFileName;
@@ -749,11 +787,11 @@ begin
     FLogKindCount[TLogLevel(i)] := 0;
    
   // Print some initial logs.
-  Log('Log subsystem started in ' + ModeStr, lkNotice);
+  Log('Log subsystem started in ' + ModeStr, lkInfo);
   PrintLogLevels();
-  Log('Buffered mode: ' + BoolToStr(FBuffered, True), lkNotice);
+  Log('Buffered mode: ' + BoolToStr(FBuffered, True), lkInfo);
 
-  // Start loggin thread.
+  // Start BufferProcessing thread.
   if FBuffered then
     ChangeBufferedState();
 end;
@@ -784,7 +822,7 @@ begin
   ModeStr := ModeStr + ']';
   if FLogLevels = [] then
     ModeStr := 'nothing';
-  Log('Logging ' + ModeStr, lkNotice);
+  Log('Logging ' + ModeStr, lkInfo);
 end;
 
 procedure TLogSession.PrintLogStatistics;
@@ -919,9 +957,9 @@ begin
   Log('Log session shutdown');
 
   SetBuffered(False);
-  DoWriteBufferToLog();
+  DoWriteBufferToLog(); // Terminates TLogBufferFlushThread.
   FBuffer.Free;
-
+  SetLogFileMaxSize(0); // Terminates TLogCheckSizeThread.
 
   // Display log?
   for I := Low(TLogLevel) to High(TLogLevel) do
