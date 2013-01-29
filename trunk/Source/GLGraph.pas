@@ -6,6 +6,8 @@
   Graph plotting objects for GLScene<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>25/01/13 - PW - Added compatibility with Cppb, changed 
+                      properties with characters in lowercase to uppercase
   <li>07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
@@ -82,7 +84,7 @@ type
     function IsValid: Boolean;
 
     procedure SetBaseStepMaxToVars(var Base, Step, Max: Single;
-      samplingEnabled: Boolean = True);
+      SamplingEnabled: Boolean = True);
 
   published
     { Published Declarations }
@@ -93,9 +95,9 @@ type
   end;
 
   THeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
-    var color: TColorVector; var texPoint: TTexPoint) of object;
+    var Color: TColorVector; var TexPoint: TTexPoint) of object;
   THeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
-    var z: Single; var color: TColorVector; var texPoint: TTexPoint) of object;
+    var z: Single; var Color: TColorVector; var TexPoint: TTexPoint) of object;
 
   // THeightFieldOptions
   //
@@ -139,9 +141,9 @@ type
     procedure SetColorMode(const val: THeightFieldColorMode);
 
     procedure DefaultHeightField(const x, y: Single; var z: Single;
-      var color: TColorVector; var texPoint: TTexPoint);
+      var Color: TColorVector; var TexPoint: TTexPoint);
     procedure Height2Field(const x, y: Single; var z: Single;
-      var color: TColorVector; var texPoint: TTexPoint);
+      var Color: TColorVector; var texPoint: TTexPoint);
 
   public
     { Public Declarations }
@@ -443,10 +445,10 @@ end;
 procedure TGLHeightField.BuildList(var rci: TRenderContextInfo);
 type
   TRowData = packed record
-    color: TColorVector;
-    z: Single;
-    texPoint: TTexPoint;
-    normal: TAffineVector;
+    Color: TColorVector;
+    Z: Single;
+    TexPoint: TTexPoint;
+    Normal: TAffineVector;
   end;
 
   TRowDataArray = array [0 .. Maxint shr 6] of TRowData;
