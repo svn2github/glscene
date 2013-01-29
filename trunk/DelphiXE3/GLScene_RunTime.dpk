@@ -221,6 +221,7 @@ contains
   GLSLProjectedTextures in '..\Source\GLSLProjectedTextures.pas',
   GLViewer in '..\Source\GLViewer.pas',
   GLGizmo in '..\Source\GLGizmo.pas',
+  GLGizmoEx in '..\Source\GLGizmoEx.pas',
   GLFile3DSSceneObjects in '..\Source\GLFile3DSSceneObjects.pas',
   GLTextureSharingShader in '..\Source\GLTextureSharingShader.pas',
   GLColor in '..\Source\GLColor.pas',
