@@ -4978,9 +4978,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   Result.V[0]:=-v.V[0];
-   Result.V[1]:=-v.V[1];
-   Result.V[2]:=-v.V[2];
+   Result.V[0]:=-Vector.V[0];
+   Result.V[1]:=-Vector.V[1];
+   Result.V[2]:=-Vector.V[2];
 {$endif}
 end;
 
@@ -5005,10 +5005,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   Result.V[0]:=-v.V[0];
-   Result.V[1]:=-v.V[1];
-   Result.V[2]:=-v.V[2];
-   Result.V[3]:=-v.V[3];
+   Result.V[0]:=-Vector.V[0];
+   Result.V[1]:=-Vector.V[1];
+   Result.V[2]:=-Vector.V[2];
+   Result.V[3]:=-Vector.V[3];
 {$endif}
 end;
 
