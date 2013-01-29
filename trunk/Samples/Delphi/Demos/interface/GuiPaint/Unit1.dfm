@@ -34,7 +34,7 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 16
+    Left = 32
     Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -312,13 +312,13 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 48
+    Left = 32
+    Top = 80
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 80
+    Left = 304
+    Top = 16
   end
   object WindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -326,28 +326,28 @@ object Form1: TForm1
     Font.Height = -12
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 56
-    Top = 48
+    Left = 224
+    Top = 16
   end
   object MainMenu1: TMainMenu
-    Left = 112
-    Top = 48
+    Left = 368
+    Top = 16
     object File1: TMenuItem
       Caption = '&File'
-      object Open1: TMenuItem
+      object miOpen1: TMenuItem
         Caption = '&Open...'
-        OnClick = Open1Click
+        OnClick = miOpen1Click
       end
-      object Save1: TMenuItem
-        Caption = '&Save'
-        OnClick = Save1Click
+      object miSave1: TMenuItem
+        Caption = '&Save...'
+        OnClick = miSave1Click
       end
     end
     object Font1: TMenuItem
       Caption = 'Font'
-      object WindowsFont1: TMenuItem
+      object miWindowsFont1: TMenuItem
         Caption = 'Set New Font...'
-        OnClick = WindowsFont1Click
+        OnClick = miWindowsFont1Click
       end
     end
     object miFPS: TMenuItem
@@ -360,7 +360,7 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 112
+    Left = 440
     Top = 16
   end
   object GLGuiLayout1: TGLGuiLayout
@@ -773,9 +773,9 @@ object Form1: TForm1
           end>
         Name = 'edit'
       end>
-    FileName = '..\..\media\default.layout'
-    Left = 184
-    Top = 16
+    FileName = 'Default.layout'
+    Left = 32
+    Top = 144
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -838,21 +838,21 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
     TexturePaths = '..\..\..\..\media\'
-    Left = 144
+    Left = 120
     Top = 16
   end
   object OpenDialog1: TOpenDialog
     DefaultExt = 'bmp'
     Filter = 'Bitmaps|*.bmp'
     Title = 'Open Bitmap'
-    Left = 16
-    Top = 128
+    Left = 448
+    Top = 80
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = 'bmp'
     Filter = 'Bitmaps|*.bmp'
     Title = 'Save Bitmap'
-    Left = 16
-    Top = 176
+    Left = 448
+    Top = 136
   end
 end

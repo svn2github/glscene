@@ -157,7 +157,7 @@ object Form1: TForm1
     object Font1: TMenuItem
       Caption = 'Font'
       object WindowsFont1: TMenuItem
-        Caption = 'Set New Font'
+        Caption = 'Set New Font...'
         OnClick = WindowsFont1Click
       end
     end
@@ -584,7 +584,7 @@ object Form1: TForm1
           end>
         Name = 'edit'
       end>
-    FileName = '..\..\media\default.layout'
+    FileName = 'Default.layout'
     Left = 280
     Top = 16
   end

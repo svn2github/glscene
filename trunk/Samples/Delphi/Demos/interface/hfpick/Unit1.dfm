@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 133
   Top = 72
-  Width = 558
-  Height = 362
-  Caption = 'Form1'
+  Caption = 'Heightfield Pick'
+  ClientHeight = 449
+  ClientWidth = 577
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,20 +17,21 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 440
-    Height = 324
+    Width = 475
+    Height = 449
     Camera = GLCamera1
-    FieldOfView = 145.695159912109400000
+    Buffer.BackgroundColor = clTeal
+    FieldOfView = 154.888351440429700000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 440
+    Left = 475
     Top = 0
     Width = 102
-    Height = 324
+    Height = 449
     Align = alRight
     BevelOuter = bvLowered
     Font.Charset = DEFAULT_CHARSET
@@ -45,7 +46,7 @@ object Form1: TForm1
       Top = 8
       Width = 82
       Height = 18
-      Caption = 'HeightField'
+      Caption = 'Last Coord.'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -56,9 +57,9 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 24
       Top = 32
-      Width = 51
+      Width = 32
       Height = 18
-      Caption = 'picking'
+      Caption = 'X   Y'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -98,21 +99,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 40
-    object HeightField: TGLHeightField
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Scale.Coordinates = {9A99193F9A99193F0000003F00000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
-      XSamplingScale.Min = -5.500000000000000000
-      XSamplingScale.max = 5.500000000000000000
-      XSamplingScale.step = 0.200000002980232200
-      YSamplingScale.Min = -5.500000000000000000
-      YSamplingScale.max = 5.500000000000000000
-      YSamplingScale.step = 0.200000002980232200
-      ColorMode = hfcmAmbientAndDiffuse
-      OnGetHeight = HeightFieldGetHeight
-    end
+    Left = 40
+    Top = 32
     object GLLightSource1: TGLLightSource
       Ambient.Color = {9A99193E9A99193E9A99193E0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -125,6 +113,19 @@ object Form1: TForm1
       FocalLength = 50.000000000000000000
       TargetObject = HeightField
       Position.Coordinates = {0000A04000008040000040400000803F}
+    end
+    object HeightField: TGLHeightField
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Scale.Coordinates = {9A99193F9A99193F0000003F00000000}
+      Up.Coordinates = {0000000000000000000080BF00000000}
+      XSamplingScale.Min = -5.500000000000000000
+      XSamplingScale.Max = 5.500000000000000000
+      XSamplingScale.Step = 0.200000002980232200
+      YSamplingScale.Min = -5.500000000000000000
+      YSamplingScale.Max = 5.500000000000000000
+      YSamplingScale.Step = 0.200000002980232200
+      ColorMode = hfcmAmbientAndDiffuse
+      OnGetHeight = HeightFieldGetHeight
     end
   end
 end

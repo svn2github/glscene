@@ -46,9 +46,9 @@ type
       Shift: TShiftState);
     procedure GLButton1ButtonClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     constructor Create(AOwner: TComponent); override;
   end;
 

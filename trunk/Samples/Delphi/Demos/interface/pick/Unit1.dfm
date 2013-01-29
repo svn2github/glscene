@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 96
   BorderStyle = bsDialog
   Caption = 'Pick'
-  ClientHeight = 191
-  ClientWidth = 280
+  ClientHeight = 250
+  ClientWidth = 357
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,14 +17,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 280
-    Height = 191
+    Width = 357
+    Height = 250
     Camera = GLCamera1
-    FieldOfView = 124.730468750000000000
+    FieldOfView = 136.397186279296900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 280
+    ExplicitHeight = 191
   end
   object GLScene1: TGLScene
     Left = 32

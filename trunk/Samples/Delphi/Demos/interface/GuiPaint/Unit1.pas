@@ -20,7 +20,7 @@ type
     WindowsBitmapFont1: TGLWindowsBitmapFont;
     MainMenu1: TMainMenu;
     Font1: TMenuItem;
-    WindowsFont1: TMenuItem;
+    miWindowsFont1: TMenuItem;
     FontDialog1: TFontDialog;
     GLGuiLayout1: TGLGuiLayout;
     GLForm1: TGLForm;
@@ -36,15 +36,15 @@ type
     BlueButton: TGLButton;
     GuiRoot: TGLBaseControl;
     File1: TMenuItem;
-    Open1: TMenuItem;
-    Save1: TMenuItem;
+    miOpen1: TMenuItem;
+    miSave1: TMenuItem;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
     miFPS: TMenuItem;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
-    procedure WindowsFont1Click(Sender: TObject);
+    procedure miWindowsFont1Click(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -75,8 +75,8 @@ type
       Shift: TShiftState; Action: TGLMouseAction; Button: TGLMouseButton; X,
       Y: Integer; var accept: Boolean);
     procedure GLForm1Moving(Sender: TGLForm; var Left, Top: Single);
-    procedure Open1Click(Sender: TObject);
-    procedure Save1Click(Sender: TObject);
+    procedure miOpen1Click(Sender: TObject);
+    procedure miSave1Click(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -118,7 +118,7 @@ begin
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-procedure TForm1.WindowsFont1Click(Sender: TObject);
+procedure TForm1.miWindowsFont1Click(Sender: TObject);
 begin
    FontDialog1.Font:=WindowsBitmapFont1.Font;
    if FontDialog1.Execute then
@@ -163,15 +163,15 @@ end;
 procedure TForm1.GLCanvasMouseDown(Sender: TObject;
   Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = mbLeft then
-  Begin
+  if Button = mbLeft then
+  begin
     // Make sure all mouse events are sent to the canvas before other GuiComponents, see GLCanvasAcceptMouseQuery.
     GuiRoot.ActiveControl := GLCanvas;
     // Set a status not to send mouse message to child components if any, see GLCanvasAcceptMouseQuery.
     GLCanvas.KeepMouseEvents := True;
     StartX := X;
     StartY := Y;
-  End;
+  end;
 end;
 
 procedure TForm1.GLCanvasMouseMove(Sender: TObject;
@@ -184,28 +184,38 @@ end;
 procedure TForm1.GLCanvasMouseUp(Sender: TObject;
   Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = mbLeft then
-  Begin
+  if Button = mbLeft then
+  begin
     StartX := -1;
     StartY := -1;
     // Set normal mouse message handling, see GLCanvasAcceptMouseQuery.
     GuiRoot.ActiveControl := Nil;
     // Set that childs are allowed to get mouse events, meant for then, see GLCanvasAcceptMouseQuery.
     GLCanvas.KeepMouseEvents := False;
-  End;
+  end;
 end;
 
-procedure TForm1.GLCanvasRender(sender: TGLCustomControl; Bitmap: TBitmap);
+procedure TForm1.GLCanvasRender(Sender: TGLCustomControl; Bitmap: TBitmap);
 begin
-  Bitmap.Width := Round(GLCanvas.width);
-  Bitmap.Height := Round(GLCanvas.height);
-  If StartX <> -1 then
-  Begin
+  Bitmap.Width := Round(GLCanvas.Width);
+  Bitmap.Height := Round(GLCanvas.Height);
+  if StartX <> -1 then
+  begin
     Bitmap.Canvas.MoveTo(StartX-Round(Sender.Position.X),StartY-Round(Sender.Position.Y));
     Bitmap.Canvas.LineTo(CurrentX-Round(Sender.Position.X),CurrentY-Round(Sender.Position.Y));
     StartX := CurrentX;
     StartY := CurrentY;
-  End;
+  end;
+end;
+
+procedure TForm1.PenButtonButtonClick(Sender: TObject);
+begin
+  GLCanvas.Bitmap.Canvas.Pen.Width := 1;
+end;
+
+procedure TForm1.BrushButtonButtonClick(Sender: TObject);
+begin
+  GLCanvas.Bitmap.Canvas.Pen.Width := 5;
 end;
 
 procedure TForm1.WhiteButtonButtonClick(Sender: TObject);
@@ -233,56 +243,42 @@ begin
   GLCanvas.Bitmap.Canvas.Pen.Color := clBlue;
 end;
 
-procedure TForm1.PenButtonButtonClick(Sender: TObject);
-begin
-  GLCanvas.Bitmap.Canvas.Pen.Width := 1;
-end;
-
-procedure TForm1.BrushButtonButtonClick(Sender: TObject);
-begin
-  GLCanvas.Bitmap.Canvas.Pen.Width := 5;
-end;
-
 procedure TForm1.GLCanvasAcceptMouseQuery(Sender: TGLBaseControl;
   Shift: TShiftState; Action: TGLMouseAction; Button: TGLMouseButton; X,
   Y: Integer; var accept: Boolean);
 begin
 // Sender.KeepMouseEvents is set when drawing,
 // if drawing this component, gets mouse events even if they are out of bounds!
-  If Sender.KeepMouseEvents then Accept := True;
+  if Sender.KeepMouseEvents then Accept := True;
 end;
 
 procedure TForm1.GLForm1Moving(Sender: TGLForm; var Left, Top: Single);
 begin
 // make sure the form isn't moved out of bounds...
 
-  If Left > GLSceneViewer1.width-32 then
+  if Left > GLSceneViewer1.width-32 then
     Left := GLSceneViewer1.width-32;
 
-  If Left+Sender.width < 32 then
+  if Left+Sender.width < 32 then
     Left := 32-Sender.Width;
 
-  If Top > GLSceneViewer1.Height-32 then
+  if Top > GLSceneViewer1.Height-32 then
     Top := GLSceneViewer1.Height-32;
 
-  If Top < 0 then
+  if Top < 0 then
     Top := 0;
 end;
 
-procedure TForm1.Open1Click(Sender: TObject);
+procedure TForm1.miOpen1Click(Sender: TObject);
 begin
-  If OpenDialog1.Execute then
-  begin
+  if OpenDialog1.Execute then
     GLCanvas.Bitmap.LoadFromFile(OpenDialog1.FileName);
-  End;
 end;
 
-procedure TForm1.Save1Click(Sender: TObject);
+procedure TForm1.miSave1Click(Sender: TObject);
 begin
-  If SaveDialog1.Execute then
-  begin
+  if SaveDialog1.Execute then
     GLCanvas.Bitmap.SaveToFile(SaveDialog1.FileName);
-  End;
 end;
 
 end.
