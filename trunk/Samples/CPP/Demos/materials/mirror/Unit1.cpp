@@ -113,7 +113,6 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
    else if (Shift.Contains(ssRight))
 	  GLCamera1->RotateTarget(my-Y, mx-X, 0);
    mx=X; my=Y;
-
 }
 
 //---------------------------------------------------------------------------
