@@ -2218,9 +2218,9 @@ begin
   begin
     FEnableSampleMask := Value;
     if Value then
-      GL.Enable(GL_SAMPLE_MASK)
+      GL.Enable(GL_SAMPLE_ALPHA_TO_ONE)
     else
-      GL.Disable(GL_SAMPLE_MASK);
+      GL.Disable(GL_SAMPLE_ALPHA_TO_ONE);
   end;
 end;
 
