@@ -2190,7 +2190,7 @@ end;
 
 procedure TGLStateCache.SetEnableSampleCoverage(const Value: TGLboolean);
 begin
-  if Value <> FEnableSampleAlphaToCoverage then
+  if Value <> FEnableSampleCoverage then
   begin
     FEnableSampleCoverage := Value;
     if Value then
@@ -2214,9 +2214,9 @@ end;
 
 procedure TGLStateCache.SetEnableSampleAlphaToOne(const Value: TGLboolean);
 begin
-  if Value <> FEnableSampleMask then
+  if Value <> FEnableSampleAlphaToOne then
   begin
-    FEnableSampleMask := Value;
+    FEnableSampleAlphaToOne := Value;
     if Value then
       GL.Enable(GL_SAMPLE_ALPHA_TO_ONE)
     else
