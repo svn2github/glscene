@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 135
   Top = 85
-  Width = 316
-  Height = 334
-  Caption = 'Form1'
+  Caption = 'Cube Map'
+  ClientHeight = 364
+  ClientWidth = 415
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,12 +16,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 300
-    Height = 296
+    Width = 415
+    Height = 364
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 52.517318725585940000
+    Buffer.BackgroundColor = clTeal
+    FieldOfView = 62.487583160400390000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

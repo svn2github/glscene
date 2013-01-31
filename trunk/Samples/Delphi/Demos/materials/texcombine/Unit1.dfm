@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 117
   Top = 103
   BorderStyle = bsDialog
-  Caption = 'TGLTexCombineShader demo'
+  Caption = 'Texure Combine'
   ClientHeight = 422
   ClientWidth = 581
   Color = clBtnFace
@@ -37,11 +37,11 @@ object Form1: TForm1
     Stretch = True
   end
   object Label1: TLabel
-    Left = 8
-    Top = 6
-    Width = 149
+    Left = 264
+    Top = 22
+    Width = 69
     Height = 19
-    Caption = 'Texture Combiners'
+    Caption = 'Textures'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -17
@@ -157,7 +157,7 @@ object Form1: TForm1
   object CBTex1: TCheckBox
     Left = 152
     Top = 64
-    Width = 57
+    Width = 73
     Height = 16
     Caption = 'Tex1'
     Checked = True
@@ -246,6 +246,7 @@ object Form1: TForm1
       Position.Coordinates = {0000B4420000B442000000000000803F}
       Width = 128.000000000000000000
       Height = 128.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object GLCamera: TGLCamera
       DepthOfView = 100.000000000000000000

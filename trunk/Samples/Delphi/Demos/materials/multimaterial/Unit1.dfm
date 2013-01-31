@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 225
   Top = 115
-  Width = 382
-  Height = 304
-  Caption = 'Form1'
+  Caption = 'Multi Material'
+  ClientHeight = 260
+  ClientWidth = 374
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,17 +18,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 366
-    Height = 266
+    Width = 374
+    Height = 260
     Camera = GLCamera1
-    FieldOfView = 138.793518066406300000
+    FieldOfView = 137.924972534179700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 24
     Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -56,31 +56,33 @@ object Form1: TForm1
         Tag = 0
         Shader = GLMultiMaterialShader1
       end>
-    Left = 40
+    TexturePaths = '..\..\..\..\media\'
+    Left = 120
     Top = 8
   end
   object GLMaterialLibrary2: TGLMaterialLibrary
-    Left = 40
-    Top = 40
+    TexturePaths = '..\..\..\..\media\'
+    Left = 192
+    Top = 8
   end
   object GLMultiMaterialShader1: TGLMultiMaterialShader
     MaterialLibrary = GLMaterialLibrary2
     VisibleAtDesignTime = False
     ShaderStyle = ssReplace
-    Left = 8
-    Top = 40
+    Left = 304
+    Top = 64
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 72
+    Left = 24
+    Top = 64
   end
   object GLTexCombineShader1: TGLTexCombineShader
     Combiners.Strings = (
       'Tex0:=PrimaryColor dot3 Tex0;')
     DesignTimeEnabled = False
-    Left = 40
-    Top = 72
+    Left = 304
+    Top = 8
   end
 end

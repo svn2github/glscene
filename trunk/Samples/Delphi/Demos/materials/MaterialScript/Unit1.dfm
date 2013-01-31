@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 90
   Top = 97
-  Width = 799
-  Height = 500
-  Caption = 'Form1'
+  Caption = 'Material Script'
+  ClientHeight = 456
+  ClientWidth = 791
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,10 +16,10 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 394
+    Left = 402
     Top = 0
     Width = 389
-    Height = 462
+    Height = 456
     Align = alRight
     TabOrder = 0
     object Label1: TLabel
@@ -88,11 +88,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 394
-    Height = 462
+    Width = 402
+    Height = 456
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 151.517288208007800000
+    FieldOfView = 152.061691284179700000
     Align = alClient
     TabOrder = 1
   end

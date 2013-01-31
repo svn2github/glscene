@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 200
   Top = 110
-  Width = 511
-  Height = 367
-  Caption = 'Form1'
+  Caption = 'Transparency'
+  ClientHeight = 323
+  ClientWidth = 503
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,104 +13,114 @@ object Form1: TForm1
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 312
-    Top = 8
-    Width = 175
-    Height = 117
-    Caption = 
-      'With Transparency and  Z-Buffering, '#13#10'ordering your objects is i' +
-      'mportant.'#13#10#13#10'In this sample, only the spheres are'#13#10'transparent.'#13 +
-      #10#13#10'Try the various options and see the'#13#10'differences ordering and' +
-      ' blending'#13#10'mode make.'
-  end
-  object Label2: TLabel
-    Left = 312
-    Top = 136
-    Width = 94
-    Height = 13
-    Caption = 'Central objects :'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label3: TLabel
-    Left = 312
-    Top = 240
-    Width = 101
-    Height = 13
-    Caption = 'Orbiting spheres :'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 297
-    Height = 313
+    Left = 0
+    Top = 0
+    Width = 304
+    Height = 323
     Camera = GLCamera1
     Buffer.BackgroundColor = 13224393
-    FieldOfView = 135.998596191406300000
+    FieldOfView = 136.918045043945300000
+    Align = alClient
     TabOrder = 0
   end
-  object RBSTC: TRadioButton
-    Left = 328
-    Top = 160
-    Width = 137
-    Height = 17
-    Caption = 'Sphere, Torus, Cone'
+  object Panel1: TPanel
+    Left = 304
+    Top = 0
+    Width = 199
+    Height = 323
+    Align = alRight
+    Caption = ' '
     TabOrder = 1
-    OnClick = RBSTCClick
-  end
-  object RBTSC: TRadioButton
-    Left = 328
-    Top = 184
-    Width = 137
-    Height = 17
-    Caption = 'Torus, Sphere, Cone'
-    TabOrder = 2
-    OnClick = RBTSCClick
-  end
-  object RBTCS: TRadioButton
-    Left = 328
-    Top = 208
-    Width = 137
-    Height = 17
-    Caption = 'Torus, Cone, Sphere'
-    Checked = True
-    TabOrder = 3
-    TabStop = True
-    OnClick = RBTCSClick
-  end
-  object CBSorting: TCheckBox
-    Left = 328
-    Top = 288
-    Width = 97
-    Height = 17
-    Caption = 'osFarthestFirst'
-    Checked = True
-    State = cbChecked
-    TabOrder = 4
-    OnClick = CBSortingClick
-  end
-  object CBAdditive: TCheckBox
-    Left = 328
-    Top = 264
-    Width = 105
-    Height = 17
-    Caption = 'Additive blending'
-    TabOrder = 5
-    OnClick = CBAdditiveClick
+    object Label1: TLabel
+      Left = 13
+      Top = 8
+      Width = 175
+      Height = 117
+      Caption = 
+        'With Transparency and  Z-Buffering, '#13#10'ordering your objects is i' +
+        'mportant.'#13#10#13#10'In this sample, only the spheres are'#13#10'transparent.'#13 +
+        #10#13#10'Try the various options and see the'#13#10'differences ordering and' +
+        ' blending'#13#10'mode make.'
+    end
+    object Label2: TLabel
+      Left = 21
+      Top = 136
+      Width = 94
+      Height = 13
+      Caption = 'Central objects :'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label3: TLabel
+      Left = 24
+      Top = 240
+      Width = 101
+      Height = 13
+      Caption = 'Orbiting spheres :'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object RBSTC: TRadioButton
+      Left = 51
+      Top = 160
+      Width = 137
+      Height = 17
+      Caption = 'Sphere, Torus, Cone'
+      TabOrder = 0
+      OnClick = RBSTCClick
+    end
+    object RBTSC: TRadioButton
+      Left = 51
+      Top = 184
+      Width = 137
+      Height = 17
+      Caption = 'Torus, Sphere, Cone'
+      TabOrder = 1
+      OnClick = RBTSCClick
+    end
+    object RBTCS: TRadioButton
+      Left = 51
+      Top = 208
+      Width = 137
+      Height = 17
+      Caption = 'Torus, Cone, Sphere'
+      Checked = True
+      TabOrder = 2
+      TabStop = True
+      OnClick = RBTCSClick
+    end
+    object CBAdditive: TCheckBox
+      Left = 53
+      Top = 264
+      Width = 105
+      Height = 17
+      Caption = 'Additive blending'
+      TabOrder = 3
+      OnClick = CBAdditiveClick
+    end
+    object CBSorting: TCheckBox
+      Left = 53
+      Top = 288
+      Width = 97
+      Height = 17
+      Caption = 'osFarthestFirst'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+      OnClick = CBSortingClick
+    end
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 24
     Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -140,8 +150,10 @@ object Form1: TForm1
           Material.FrontProperties.Emission.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
           Direction.Coordinates = {000000000000803F2EBD3BB300000000}
           Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-          MajorRadius = 0.800000011920928900
+          MajorRadius = 0.800000011920929000
           MinorRadius = 0.100000001490116100
+          StopAngle = 360.000000000000000000
+          Parts = [toSides, toStartDisk, toStopDisk]
         end
         object Cone1: TGLCone
           Material.FrontProperties.Diffuse.Color = {FBFA7A3FA5A4243EF9F8F83D0000803F}
@@ -170,7 +182,7 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 48
+    Left = 96
+    Top = 16
   end
 end

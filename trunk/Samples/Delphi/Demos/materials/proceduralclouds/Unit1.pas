@@ -1,4 +1,3 @@
-{: Procedural Texture Demo / Tobias Peirick }
 unit Unit1;
 
 interface
@@ -15,7 +14,6 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     Panel1: TPanel;
-    Label1: TLabel;
     CBFormat: TComboBox;
     Label2: TLabel;
     Label3: TLabel;
@@ -46,6 +44,7 @@ type
     Label61: TLabel;
     OpenDialog1: TOpenDialog;
     SaveDialog1: TSaveDialog;
+    LabelFPS: TLabel;
     procedure GLSceneViewer1AfterRender(Sender: TObject);
     procedure CBFormatChange(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -56,9 +55,9 @@ type
     procedure CloudFileOpenBtnClick(Sender: TObject);
     procedure MakeAndSaveCloudNoiseFileClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     newSelection : Boolean;
   end;
 
@@ -94,7 +93,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=GLSceneViewer1.FramesPerSecondText;
+   LabelFPS.Caption:=GLSceneViewer1.FramesPerSecondText;
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

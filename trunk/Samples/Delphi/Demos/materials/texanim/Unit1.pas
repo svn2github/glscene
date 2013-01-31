@@ -1,12 +1,3 @@
-{: This samples shows how to use a material library for texture animation.<p>
-
-   Texture animation is best handled via material switching (from a material
-   library). Directly updating the texture image can get slow because of the
-   overhead induces by preparing and uploading the texture to the 3D board.<p>
-
-   In this sample, we prepare a set of textures in a material library,
-   then simply switch between them in a cadencer's "Progress" event.
-}
 unit Unit1;
 
 interface
@@ -18,7 +9,6 @@ uses
 
 type
   TForm1 = class(TForm)
-    Button1: TButton;
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLMaterialLibrary1: TGLMaterialLibrary;
@@ -27,7 +17,10 @@ type
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
+    Panel1: TPanel;
+    Button1: TButton;
     CBAnimate: TCheckBox;
+    LabelFPS: TLabel;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -106,7 +99,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // standard FPS
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   LabelFPS.Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

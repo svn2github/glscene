@@ -1,31 +1,3 @@
-{:
-  A demo for using Alex Denissov's Graphics32 library (http://www.g32.org)
-  to generate 2D texture for use with GLScene.<p>
-
-  By Nelson Chu<p>
-
-  Try lighting the white line near the bottom of the window with your mouse
-  pointer and see the fire spreads. Press ESC to quit.<p>
-
-  To use Graphics32 with GLScene:<p>
-
-  1. Make sure GLS_Graphics32_SUPPORT is defined in GLSCene.inc. Recompile if
-     needed.<br>
-  2. In your program, use code like:<br>
-
-       GLTexture.Image.GetBitmap32(0).assign(Bitmap32);<br>
-       GLTexture.Image.NotifyChange(self);<br>
-
-     to assign the Bitmap32 to your GLScene texture and notify GLScene.<p>
-
-  To get fast assignment, remember to make the dimensions of your Bitmap32 equal
-  to a power of two, so that GLScene doesn't need to do conversion internally.<p>
-
-  In this sample program, a 256 x 256 Graphics32 TByteMap is used to generate a
-  "fire" image. At each frame, the fire image is first "visualized" in a
-  Graphics32 Bitmap32. Then, the TBitmap32 is copied to the texture of a Cube.
-}
-
 unit MainUnit;
 
 interface
@@ -34,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, StdCtrls, ComCtrls, GR32, GR32_OrdinalMaps, AsyncTimer, GLScene,
   GLObjects, GLHUDObjects, GLWin32Viewer, GR32_Image, GLCadencer,
-  GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLCoordinates, GLCrossPlatform, BaseClasses, OpenGLTokens;
 
 type
   TForm1 = class(TForm)
@@ -103,11 +75,12 @@ uses OpenGL1x;
 
 { TForm1 }
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
-{$ifndef GLS_Graphics32_SUPPORT}
-   Please rebuild this demo with Graphics32 support (see GLScene.inc)
-{$endif}
+{$IFNDEF GLS_Graphics32_SUPPORT}
+   Please rebuild this demo with
+   ($DEFINE GLS_Graphics32_SUPPORT} in GLScene.inc
+{$ENDIF}
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
@@ -118,7 +91,7 @@ begin
    // Assign our TBitmap32 to the texture, this is done in two steps
    with Cube1.Material.Texture.Image do begin
       // Update the internal TGLBitmap32 with the TBitmap32
-      GetBitmap32(GL_TEXTURE_2D).Assign(PaintBox32.Buffer);
+      GetBitmap32.Assign(PaintBox32.Buffer);
       // And notify a change occured (you could perform other operations on the
       // TGLBitmap32 before this notification, f.i. adjusting the Alpha channel)
       NotifyChange(self);
@@ -509,7 +482,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('2D Fire Demo - %.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   Caption:=Format('Fire 2D - %.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

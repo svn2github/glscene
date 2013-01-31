@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 202
   Top = 116
-  Width = 532
-  Height = 381
-  Caption = 'Form1'
+  Caption = 'Procedural Clouds'
+  ClientHeight = 337
+  ClientWidth = 524
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,100 +18,83 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 316
-    Height = 352
+    Height = 337
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
+    FieldOfView = 179.274749755859400000
     Align = alClient
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 316
     Top = 0
     Width = 208
-    Height = 352
+    Height = 337
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
-    object Label1: TLabel
-      Left = 1
-      Top = 1
-      Width = 206
-      Height = 64
-      Align = alTop
-      Alignment = taCenter
-      AutoSize = False
-      Caption = 'Procedural Clouds'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
-      Layout = tlCenter
-      WordWrap = True
-    end
     object Label2: TLabel
       Left = 16
-      Top = 148
+      Top = 116
       Width = 32
       Height = 13
       Caption = 'Format'
     end
     object Label3: TLabel
       Left = 16
-      Top = 180
+      Top = 148
       Width = 60
       Height = 13
       Caption = 'Compression'
     end
     object Label5: TLabel
       Left = 16
-      Top = 272
+      Top = 240
       Width = 58
       Height = 13
       Caption = 'Render Size'
     end
     object LAUsedMemory: TLabel
       Left = 16
-      Top = 228
+      Top = 196
       Width = 65
       Height = 13
       Caption = 'Used Memory'
     end
     object LARGB32: TLabel
       Left = 16
-      Top = 212
+      Top = 180
       Width = 65
       Height = 13
       Caption = 'Used Memory'
     end
     object LACompression: TLabel
       Left = 16
-      Top = 244
+      Top = 212
       Width = 65
       Height = 13
       Caption = 'Used Memory'
     end
     object Label4: TLabel
       Left = 16
-      Top = 96
+      Top = 64
       Width = 36
       Height = 13
       Caption = 'MinCut:'
     end
     object Label6: TLabel
       Left = 16
-      Top = 72
+      Top = 40
       Width = 53
       Height = 13
       Caption = 'Sharpness:'
     end
     object CBFormat: TComboBox
       Left = 88
-      Top = 144
+      Top = 112
       Width = 105
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 0
       OnChange = CBFormatChange
       Items.Strings = (
@@ -122,11 +105,10 @@ object Form1: TForm1
     end
     object CBCompression: TComboBox
       Left = 88
-      Top = 176
+      Top = 144
       Width = 105
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 1
       OnChange = CBFormatChange
       Items.Strings = (
@@ -137,7 +119,7 @@ object Form1: TForm1
     end
     object RBDefault: TRadioButton
       Left = 88
-      Top = 270
+      Top = 238
       Width = 57
       Height = 17
       Caption = '100 %'
@@ -148,7 +130,7 @@ object Form1: TForm1
     end
     object RBDouble: TRadioButton
       Left = 87
-      Top = 294
+      Top = 262
       Width = 58
       Height = 17
       Caption = '200 %'
@@ -157,7 +139,7 @@ object Form1: TForm1
     end
     object RBQuad: TRadioButton
       Left = 87
-      Top = 318
+      Top = 286
       Width = 58
       Height = 17
       Caption = '400 %'
@@ -166,7 +148,7 @@ object Form1: TForm1
     end
     object CheckBox1: TCheckBox
       Left = 120
-      Top = 120
+      Top = 88
       Width = 73
       Height = 17
       Caption = 'Animated'
@@ -174,7 +156,7 @@ object Form1: TForm1
     end
     object SpinEdit1: TSpinEdit
       Left = 88
-      Top = 96
+      Top = 64
       Width = 105
       Height = 22
       MaxValue = 255
@@ -185,7 +167,7 @@ object Form1: TForm1
     end
     object SpinEdit2: TSpinEdit
       Left = 88
-      Top = 72
+      Top = 40
       Width = 105
       Height = 22
       MaxValue = 90
@@ -196,7 +178,7 @@ object Form1: TForm1
     end
     object CheckBox2: TCheckBox
       Left = 16
-      Top = 120
+      Top = 88
       Width = 81
       Height = 17
       Caption = 'Seamless'
@@ -212,18 +194,19 @@ object Form1: TForm1
     object GLPlane1: TGLPlane
       Material.Texture.ImageClassName = 'TGLProcTextureNoise'
       Material.Texture.Image.MinCut = 0
-      Material.Texture.Image.NoiseSharpness = 0.990000009536743
+      Material.Texture.Image.NoiseSharpness = 0.990000009536743200
       Material.Texture.Image.Seamless = False
+      Material.Texture.Image.NoiseRandSeed = 371356655
       Material.Texture.Disabled = False
-      Height = 50
-      Width = 50
+      Height = 50.000000000000000000
+      Width = 50.000000000000000000
       XTiles = 2
       YTiles = 2
       Style = [psTileTexture]
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 1
+      DepthOfView = 100.000000000000000000
+      FocalLength = 1.000000000000000000
       CameraStyle = csOrthogonal
       Position.Coordinates = {0000000000000000000070410000803F}
       Left = 256

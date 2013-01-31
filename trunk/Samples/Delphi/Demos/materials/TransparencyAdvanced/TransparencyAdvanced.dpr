@@ -1,9 +1,4 @@
-{$IFDEF VER200}
-  {$DEFINE DELPHI2009UP}
-  {$DEFINE DELPHI2007}
-  {$DEFINE D2005UP}
-{$ENDIF}
-program oit;
+program TransparencyAdvanced;
 
 uses
   Forms,

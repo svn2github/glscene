@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 407
   Top = 201
-  Width = 599
-  Height = 406
-  Caption = 'Form1'
+  Caption = 'Dynamic Texture'
+  ClientHeight = 362
+  ClientWidth = 591
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,17 +19,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 583
-    Height = 368
+    Width = 591
+    Height = 362
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
-    FieldOfView = 149.595184326171900000
+    FieldOfView = 149.115112304687500000
     Align = alClient
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 544
-    Top = 48
+    Left = 64
+    Top = 16
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
       OnRender = GLDirectOpenGL1Render
@@ -61,19 +61,19 @@ object Form1: TForm1
         Tag = 0
         Material.Texture.TextureMode = tmReplace
       end>
-    Left = 544
-    Top = 96
+    Left = 160
+    Top = 16
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 544
-    Top = 136
+    Left = 64
+    Top = 88
   end
   object Timer1: TTimer
     Interval = 3000
     OnTimer = Timer1Timer
-    Left = 544
-    Top = 176
+    Left = 496
+    Top = 16
   end
 end

@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 144
   Top = 81
   BorderStyle = bsSingle
-  Caption = 'Multitexture'
+  Caption = 'Multi Texture'
   ClientHeight = 409
   ClientWidth = 559
   Color = clBtnFace
@@ -56,7 +56,7 @@ object Form1: TForm1
   object Label4: TLabel
     Left = 432
     Top = 8
-    Width = 93
+    Width = 94
     Height = 19
     Caption = 'MultiTexture'
     Font.Charset = ANSI_CHARSET
@@ -129,11 +129,12 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 48
-    Top = 64
+    TexturePaths = '..\..\..\..\media\'
+    Left = 152
+    Top = 32
   end
   object OpenPictureDialog1: TOpenPictureDialog
-    Left = 480
-    Top = 8
+    Left = 264
+    Top = 32
   end
 end

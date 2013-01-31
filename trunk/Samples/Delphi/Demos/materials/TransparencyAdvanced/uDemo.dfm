@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 304
   Top = 111
-  Width = 816
-  Height = 678
-  Caption = 'Form1'
+  Caption = 'Transparency Advanced'
+  ClientHeight = 634
+  ClientWidth = 808
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,15 +18,15 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 800
-    Height = 640
+    Width = 808
+    Height = 634
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
     Buffer.BackgroundColor = 10776320
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha, roNoColorBufferClear, roNoDepthBufferClear]
     Buffer.FaceCulling = False
     Buffer.ShadeModel = smFlat
-    FieldOfView = 162.238677978515600000
+    FieldOfView = 162.073303222656300000
     Align = alClient
     TabOrder = 0
   end
@@ -152,11 +152,13 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Final'
       Visible = False
+      Rotation = 0.000000000000000000
     end
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000A0400000A040000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
       Text = '1'
+      Rotation = 0.000000000000000000
     end
   end
   object GLCadencer1: TGLCadencer
@@ -229,7 +231,7 @@ object Form1: TForm1
     Form = Owner
     GLSceneViewer = GLSceneViewer1
     ZoomSpeed = 1.000000000000000000
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Transparency Advanced - %FPS'
     Options = [snoShowFPS]
     KeyCombinations = <
       item

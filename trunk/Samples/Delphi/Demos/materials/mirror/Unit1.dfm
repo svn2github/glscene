@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 215
   Top = 104
-  Width = 498
-  Height = 318
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Mirror'
+  ClientHeight = 268
+  ClientWidth = 484
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,19 +19,21 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 379
-    Height = 283
+    Height = 268
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    FieldOfView = 139.075454711914100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 379
     Top = 0
     Width = 105
-    Height = 283
+    Height = 268
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -43,17 +45,17 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    object Label1: TLabel
-      Left = 24
-      Top = 8
-      Width = 59
-      Height = 24
-      Caption = 'Mirror'
+    object LabelFPS: TLabel
+      Left = 6
+      Top = 16
+      Width = 26
+      Height = 16
+      Caption = 'FPS'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -21
+      Font.Height = -13
       Font.Name = 'Arial'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
     end
     object CBOpaque: TCheckBox
@@ -105,55 +107,53 @@ object Form1: TForm1
     Top = 8
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000003F0000003F0000003F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000C8420000B4420000A0420000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCNonReflectingStuff: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Cylinder: TGLTorus
+        Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
+        Material.FrontProperties.Diffuse.Color = {000000008180003F000000000000803F}
         ObjectsSorting = osNone
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000000080BF000000000000803F}
         Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
         Hint = '0'
-        Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
-        Material.FrontProperties.Diffuse.Color = {000000008180003F000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        MajorRadius = 4
-        MinorRadius = 0.5
+        MajorRadius = 4.000000000000000000
+        MinorRadius = 0.500000000000000000
         Rings = 24
         Sides = 12
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
         object Cylinder2: TGLCylinder
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {000000008180003F000000000000803F}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          BottomRadius = 0.200000002980232
-          Height = 7
+          BottomRadius = 0.200000002980232200
+          Height = 7.000000000000000000
           Slices = 12
           Stacks = 1
-          TopRadius = 0.200000002980232
+          TopRadius = 0.200000002980232200
         end
       end
     end
     object ReflectingObjects: TGLDummyCube
       ObjectsSorting = osNone
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object CylinderThroughMirror: TGLCylinder
         Position.Coordinates = {0000000000000000000000C00000803F}
         Up.Coordinates = {F404353FF204353F0000000000000000}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        BottomRadius = 0.200000002980232
-        Height = 3
+        BottomRadius = 0.200000002980232200
+        Height = 3.000000000000000000
         Slices = 12
         Stacks = 1
-        TopRadius = 0.200000002980232
+        TopRadius = 0.200000002980232200
       end
       object Sphere: TGLSphere
         ObjectsSorting = osNone
         Position.Coordinates = {000000000000803F000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 0.5
+        Radius = 0.500000000000000000
         Slices = 12
         Stacks = 6
         Top = 0
@@ -162,84 +162,81 @@ object Form1: TForm1
           Direction.Coordinates = {000000000000803F2EBD3BB300000000}
           Position.Coordinates = {00000000CDCCCCBD6666663F0000803F}
           Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          BottomRadius = 0.100000001490116
-          Height = 1
+          BottomRadius = 0.100000001490116100
+          Height = 1.000000000000000000
           Slices = 8
           Stacks = 1
-          TopRadius = 0.100000001490116
+          TopRadius = 0.100000001490116100
         end
         object Teapot1: TGLTeapot
+          Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
           Position.Coordinates = {000000000000003F000000000000803F}
           Scale.Coordinates = {00000040000000400000004000000000}
-          Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
-          Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         end
       end
     end
     object GLMirror: TGLMirror
-      ObjectsSorting = osNone
-      Direction.Coordinates = {000000800000803F0000000000000000}
-      Up.Coordinates = {00000000000000000000803F00000000}
       Material.FrontProperties.Ambient.Color = {00000000000000000000803F0000803F}
       Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F9A99993E}
       Material.BlendingMode = bmTransparency
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+      ObjectsSorting = osNone
+      Direction.Coordinates = {000000800000803F0000000000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
       MirrorObject = ReflectingObjects
       MirrorOptions = [moUseStencil, moMirrorPlaneClip, moClearZBuffer]
-      Height = 6
-      Width = 6
+      Height = 6.000000000000000000
+      Width = 6.000000000000000000
+      Radius = 1.000000000000000000
       object Cadre: TGLExtrusionSolid
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Direction.Coordinates = {00000000000000800000803F00000000}
         Contours = <
           item
             Nodes = <
               item
-                X = 3.09999990463257
-                Y = -3.09999990463257
+                X = 3.099999904632568000
+                Y = -3.099999904632568000
               end
               item
-                X = 3.09999990463257
-                Y = 3.09999990463257
+                X = 3.099999904632568000
+                Y = 3.099999904632568000
               end
               item
-                X = -3.09999990463257
-                Y = 3.09999990463257
+                X = -3.099999904632568000
+                Y = 3.099999904632568000
               end
               item
-                X = -3.09999990463257
-                Y = -3.09999990463257
+                X = -3.099999904632568000
+                Y = -3.099999904632568000
               end>
           end
           item
             Nodes = <
               item
-                X = 2.90000009536743
-                Y = 2.90000009536743
+                X = 2.900000095367432000
+                Y = 2.900000095367432000
               end
               item
-                X = -2.90000009536743
-                Y = 2.90000009536743
+                X = -2.900000095367432000
+                Y = 2.900000095367432000
               end
               item
-                X = -2.90000009536743
-                Y = -2.90000009536743
+                X = -2.900000095367432000
+                Y = -2.900000095367432000
               end
               item
-                X = 2.90000009536743
-                Y = -2.90000009536743
+                X = 2.900000095367432000
+                Y = -2.900000095367432000
               end>
           end>
         Parts = [espOutside, espStartPolygon, espStopPolygon]
-        Height = 0.100000001490116
-        MinSmoothAngle = 5
+        Height = 0.100000001490116100
+        MinSmoothAngle = 5.000000000000000000
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = ReflectingObjects
       Position.Coordinates = {0000A0400000C040000010410000803F}
       Left = 192
@@ -253,7 +250,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    MaxDeltaTime = 0.05
+    MaxDeltaTime = 0.050000000000000000
     OnProgress = GLCadencer1Progress
     Left = 8
     Top = 40

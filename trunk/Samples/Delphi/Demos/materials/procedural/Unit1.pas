@@ -1,4 +1,3 @@
-{: Procedural Texture Demo / Tobias Peirick }
 unit Unit1;
 
 interface
@@ -15,7 +14,6 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     Panel1: TPanel;
-    Label1: TLabel;
     CBFormat: TComboBox;
     Label2: TLabel;
     Label3: TLabel;

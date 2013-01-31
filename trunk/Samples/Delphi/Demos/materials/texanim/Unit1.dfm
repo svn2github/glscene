@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 221
   Top = 109
-  Width = 361
-  Height = 385
-  Caption = 'Form1'
+  Caption = 'Texture Animation'
+  ClientHeight = 389
+  ClientWidth = 441
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,36 +14,52 @@ object Form1: TForm1
   OnCloseQuery = FormCloseQuery
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 8
-    Top = 8
-    Width = 137
-    Height = 25
-    Caption = 'Generate Anim Frames'
-    TabOrder = 0
-    OnClick = Button1Click
-  end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 48
-    Width = 329
-    Height = 297
+    Left = 0
+    Top = 41
+    Width = 441
+    Height = 348
     Camera = GLCamera1
-    FieldOfView = 102.117973327636700000
-    TabOrder = 1
+    FieldOfView = 110.815422058105500000
+    Align = alClient
+    TabOrder = 0
   end
-  object CBAnimate: TCheckBox
-    Left = 200
-    Top = 16
-    Width = 97
-    Height = 17
-    Caption = 'Animate'
-    Enabled = False
-    TabOrder = 2
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 441
+    Height = 41
+    Align = alTop
+    TabOrder = 1
+    object LabelFPS: TLabel
+      Left = 320
+      Top = 13
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
+    object Button1: TButton
+      Left = 8
+      Top = 8
+      Width = 137
+      Height = 25
+      Caption = 'Generate Anim Frames'
+      TabOrder = 0
+      OnClick = Button1Click
+    end
+    object CBAnimate: TCheckBox
+      Left = 176
+      Top = 12
+      Width = 97
+      Height = 17
+      Caption = 'Animate'
+      Enabled = False
+      TabOrder = 1
+    end
   end
   object GLScene1: TGLScene
-    Left = 16
-    Top = 56
+    Left = 32
+    Top = 80
     object Cube1: TGLCube
     end
     object GLLightSource1: TGLLightSource
@@ -61,18 +77,18 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 48
-    Top = 56
+    Left = 40
+    Top = 200
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 32
-    Top = 88
+    Top = 136
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
     Left = 32
-    Top = 136
+    Top = 256
   end
 end

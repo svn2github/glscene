@@ -1,3 +1,6 @@
+//
+{: Procedural Textures for Clouds / Tobias Peirick }
+//
 program ProceduralClouds;
 
 uses

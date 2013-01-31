@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 208
   Top = 104
-  Width = 413
-  Height = 371
-  Caption = 'Form1'
+  Caption = 'Dynamic Cube Map'
+  ClientHeight = 327
+  ClientWidth = 405
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,12 +16,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 397
-    Height = 308
+    Width = 405
+    Height = 302
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 144.025329589843800000
+    FieldOfView = 143.357925415039100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -30,17 +30,24 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 397
+    Width = 405
     Height = 25
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
+    object LabelFPS: TLabel
+      Left = 288
+      Top = 8
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object CBDynamic: TCheckBox
       Left = 8
       Top = 4
       Width = 273
       Height = 17
-      Caption = 'Animate && Dynamically generate cube map'
+      Caption = 'Animate and dynamically generate cube map'
       Checked = True
       State = cbChecked
       TabOrder = 0
@@ -93,6 +100,8 @@ object Form1: TForm1
       MinorRadius = 0.300000011920929000
       Rings = 32
       Sides = 12
+      StopAngle = 360.000000000000000000
+      Parts = [toSides, toStartDisk, toStopDisk]
       object Cylinder1: TGLCylinder
         Material.FrontProperties.Emission.Color = {00000000000000000000803F0000803F}
         Direction.Coordinates = {000000800000803F0000000000000000}

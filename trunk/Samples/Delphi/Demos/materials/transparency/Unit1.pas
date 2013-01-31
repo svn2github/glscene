@@ -1,32 +1,3 @@
-{: A basic sample to demonstrate how transparency & Z-buffer work/fight together.<p>
-
-   In this sample, only the sphere are transparent. The form has a few options
-   that allow to adjust in which order objects are rendered, and what kind of
-   transparency is used.<p>
-
-   Transparency in GLScene is activated by setting Material.Blending to either
-   'bmTransparency' or 'bmAdditive', AND giving a <1.0 value to the Diffuse
-   color alpha channel (alpha = 0.0 means absolute transparency, alpha = 1.0
-   means absolute opacity).<p>
-
-   How do Z-Buffer & transparency work ? When point has to be rendered, OpenGL
-   first checks its distance to the camera, the "Z" axis. If the distance
-   check is successfull (the new point is closer), it is rendered, and if
-   the point is part of a "transparent" object, then OpenGL will mix the existing
-   point's color with our new point's color. If the Z check fails, OpenGL doesn't
-   even bother about checking transparency.<p>
-
-   This is why, if you want to render transparent objects, you must make sure
-   you render the farthest objects first, to give transparency a chance.
-   However this effect can be usefull if you want to render mixed, half-transparent
-   half-opaque objects.<p>
-
-   They are two ways to order objects in GLScene :<ul>
-   <li>ordering : can be done at design-time in the editor or at runtime with
-      MoveUp/MoveDown methods
-   <li>sorting : adjust the ObjectSorting property (see help for more details)
-   </ul>
-}
 unit Unit1;
 
 interface
@@ -35,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, StdCtrls, GLCadencer, GLBehaviours, GLTexture,
   VectorGeometry, GLWin32Viewer, GLGeomObjects, GLCoordinates, GLCrossPlatform,
-  BaseClasses, GLMaterial, GLRenderContextInfo;
+  BaseClasses, GLMaterial, GLRenderContextInfo, Vcl.ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -47,18 +18,19 @@ type
     DCCentral: TGLDummyCube;
     CentralSphere: TGLSphere;
     Torus1: TGLTorus;
+    OrbitingSphere1: TGLSphere;
+    GLCadencer1: TGLCadencer;
+    BaseDummyCube: TGLDummyCube;
+    OrbitingSphere2: TGLSphere;
+    Panel1: TPanel;
     Label1: TLabel;
+    Label2: TLabel;
     RBSTC: TRadioButton;
     RBTSC: TRadioButton;
     RBTCS: TRadioButton;
-    OrbitingSphere1: TGLSphere;
-    GLCadencer1: TGLCadencer;
-    Label2: TLabel;
     Label3: TLabel;
-    CBSorting: TCheckBox;
     CBAdditive: TCheckBox;
-    BaseDummyCube: TGLDummyCube;
-    OrbitingSphere2: TGLSphere;
+    CBSorting: TCheckBox;
     procedure RBSTCClick(Sender: TObject);
     procedure RBTSCClick(Sender: TObject);
     procedure RBTCSClick(Sender: TObject);

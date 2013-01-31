@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 339
   Top = 205
-  Width = 565
-  Height = 425
-  Caption = 'Form1'
+  Caption = 'Procedural Clouds'
+  ClientHeight = 406
+  ClientWidth = 537
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,41 +17,23 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 341
-    Height = 387
+    Width = 329
+    Height = 406
     Camera = GLCamera1
     AfterRender = GLSceneViewer1AfterRender
-    Buffer.BackgroundColor = clInactiveCaptionText
-    FieldOfView = 179.327911376953100000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 179.303405761718800000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 341
+    Left = 329
     Top = 0
     Width = 208
-    Height = 387
+    Height = 406
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
-    object Label1: TLabel
-      Left = 1
-      Top = 1
-      Width = 206
-      Height = 64
-      Align = alTop
-      Alignment = taCenter
-      AutoSize = False
-      Caption = 'Procedural Clouds'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -27
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
-      Layout = tlCenter
-      WordWrap = True
-    end
     object Label2: TLabel
       Left = 16
       Top = 148
@@ -136,6 +118,15 @@ object Form1: TForm1
       Width = 40
       Height = 22
       Hint = 'Make And Save Cloud'
+      Glyph.Data = {
+        F6000000424DF600000000000000760000002800000010000000100000000100
+        0400000000008000000074120000741200001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00077777F07777
+        77F0F07777F077777F077F0000000000F077770330000D030777770330000D03
+        07777703300000030777FF03333333330FFF000300000003000077030FFFFF03
+        077777030FFFFF03077777030FFFFF03077777030FFFFF0F07777F0000000000
+        0777F07777F0777770F7077777F07777770F777777F077777770}
       OnClick = MakeAndSaveCloudNoiseFileClick
     end
     object Label61: TLabel
@@ -145,13 +136,19 @@ object Form1: TForm1
       Height = 13
       Caption = '0'
     end
+    object LabelFPS: TLabel
+      Left = 16
+      Top = 24
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object CBFormat: TComboBox
       Left = 88
       Top = 144
       Width = 105
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 0
       OnChange = CBFormatChange
       Items.Strings = (
@@ -166,7 +163,6 @@ object Form1: TForm1
       Width = 105
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 1
       OnChange = CBFormatChange
       Items.Strings = (
@@ -292,7 +288,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 40
     Top = 16
     object GLPlane1: TGLPlane
       Material.FrontProperties.Ambient.Color = {00000000000000000000000000000000}
@@ -325,21 +321,21 @@ object Form1: TForm1
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 40
-    Top = 16
+    Top = 64
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 40
-    Top = 48
+    Left = 264
+    Top = 16
   end
   object OpenDialog1: TOpenDialog
-    Left = 420
-    Top = 355
+    Left = 116
+    Top = 11
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = 'rnd'
     Filter = 'Cloud base (*.clb)|*.clb'
-    Left = 460
-    Top = 357
+    Left = 188
+    Top = 13
   end
 end
