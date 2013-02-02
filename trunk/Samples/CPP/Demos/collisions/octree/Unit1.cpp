@@ -22,13 +22,7 @@ TForm1 *Form1;
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   __int64 t;
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  String SubStr = "Samples";
-  int I = MediaPath.Pos(SubStr);
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	SetCurrentDir(MediaPath+"Media\\");
-  }
+  SetGLSceneMediaDir();
   // Load high poly mesh (10,000 triangles).
   FreeForm1->LoadFromFile("HighPolyObject.3ds");
 

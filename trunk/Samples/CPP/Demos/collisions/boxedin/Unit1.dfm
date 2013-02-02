@@ -34,44 +34,44 @@ object Form1: TForm1
     BevelOuter = bvNone
     TabOrder = 1
     object Label1: TLabel
-      Left = 424
-      Top = 8
+      Left = 344
+      Top = 11
       Width = 32
       Height = 13
       Caption = 'Label1'
     end
     object Label2: TLabel
-      Left = 424
-      Top = 24
+      Left = 344
+      Top = 26
       Width = 32
       Height = 13
       Caption = 'Label2'
     end
     object Label3: TLabel
-      Left = 424
-      Top = 40
+      Left = 344
+      Top = 43
       Width = 32
       Height = 13
       Caption = 'Label3'
     end
     object Label4: TLabel
-      Left = 216
+      Left = 192
       Top = 8
       Width = 37
       Height = 13
       Caption = 'Velocity'
     end
     object LabelFPS: TLabel
-      Left = 608
-      Top = 24
+      Left = 440
+      Top = 26
       Width = 20
       Height = 13
       Caption = 'FPS'
     end
     object TrackBar1: TTrackBar
       Left = 112
-      Top = 24
-      Width = 265
+      Top = 27
+      Width = 201
       Height = 25
       Max = 50
       Position = 1

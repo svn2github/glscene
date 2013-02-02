@@ -20,6 +20,8 @@
 #include <GLVectorFileObjects.hpp>
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
+#include "GLUtils.hpp"
+
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {

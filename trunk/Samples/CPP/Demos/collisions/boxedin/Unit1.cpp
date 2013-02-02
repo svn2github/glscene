@@ -35,15 +35,16 @@ float random()
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
-  FreeForm1->LoadFromFile("..\\..\\..\\..\\..\\..\\media\\BoxedIn.3ds");
+  SetGLSceneMediaDir();
+  FreeForm1->LoadFromFile("BoxedIn.3ds");
 
   FreeForm1->BuildOctree(3);
   Label1->Caption =
-    "Octree Nodes    : " + IntToStr(FreeForm1->Octree->NodeCount);
+	"Octree Nodes    : " + IntToStr(FreeForm1->Octree->NodeCount);
   Label2->Caption =
-    "Tri Count Octree: " + IntToStr(FreeForm1->Octree->TriCountOctree);
+	"Tri Count Octree: " + IntToStr(FreeForm1->Octree->TriCountOctree);
   Label3->Caption =
-    "Tri Count Mesh  : " + IntToStr(FreeForm1->Octree->TriCountMesh);
+	"Tri Count Mesh  : " + IntToStr(FreeForm1->Octree->TriCountMesh);
 
   Lines1->AddNode(0, 0, 0);
   Lines1->ObjectStyle = Lines1->ObjectStyle << osDirectDraw;
@@ -132,9 +133,8 @@ void __fastcall TForm1::Timer1Timer(TObject * Sender)
 	t = colTotalTime * 1000 / colCount;
   else
 	t = 0;
-	//s.printf("%.2f FPS - %.3f ms for collisions/frame",
-	//	   (GLSceneViewer2->FramesPerSecond(), t));
-	LabelFPS->Caption = Format("%.2f FPS for collisions/frame", ARRAYOFCONST((GLSceneViewer2->FramesPerSecond())));
+	LabelFPS->Caption = Format("%.2f FPS for collisions/frame",
+	  ARRAYOFCONST((GLSceneViewer2->FramesPerSecond())));
 	GLSceneViewer2->ResetPerformanceMonitor();
 	colTotalTime = 0;
 	colCount = 0;

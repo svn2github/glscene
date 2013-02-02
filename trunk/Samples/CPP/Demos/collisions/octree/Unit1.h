@@ -17,6 +17,8 @@
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"         // Pascal unit
+#include "GLUtils.hpp"         // Pascal unit
+
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {
