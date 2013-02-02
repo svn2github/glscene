@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 219
-  Top = 156
-  Width = 521
-  Height = 296
+  Left = 170
+  Top = 79
   AutoSize = True
-  Caption = 'Form1'
+  Caption = 'Ray Cast'
+  ClientHeight = 258
+  ClientWidth = 513
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -53,7 +53,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 505
+    Width = 513
     Height = 49
     Align = alTop
     BevelOuter = bvNone
@@ -61,7 +61,7 @@ object Form1: TForm1
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 505
+      Width = 513
       Height = 22
       Align = alTop
       Alignment = taCenter
@@ -74,6 +74,7 @@ object Form1: TForm1
       Font.Style = [fsBold]
       ParentFont = False
       Layout = tlCenter
+      ExplicitWidth = 505
     end
     object Label2: TLabel
       Left = 8

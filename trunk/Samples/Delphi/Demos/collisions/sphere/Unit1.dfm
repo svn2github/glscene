@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 197
   Top = 104
-  Width = 458
-  Height = 362
-  Caption = 'Form1'
+  Caption = 'Sphere Collision'
+  ClientHeight = 318
+  ClientWidth = 450
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,17 +16,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 442
-    Height = 279
+    Width = 450
+    Height = 273
     Camera = GLCamera1
-    FieldOfView = 140.562316894531200000
+    FieldOfView = 139.764404296875000000
     Align = alClient
     TabOrder = 0
   end
   object TrackBar1: TTrackBar
     Left = 0
-    Top = 279
-    Width = 442
+    Top = 273
+    Width = 450
     Height = 45
     Align = alBottom
     Max = 20
@@ -62,15 +62,15 @@ object Form1: TForm1
       Position.Coordinates = {0000000000000000000000400000803F}
       Radius = 0.500000000000000000
       BehavioursData = {
-        58434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C69
-        73696F6E4D616E616765723102010200}
+        0458434F4C02010201060D54474C42436F6C6C6973696F6E0202020012000000
+        0002000611436F6C6C6973696F6E4D616E616765723102010200}
     end
     object Sphere2: TGLSphere
       Material.FrontProperties.Diffuse.Color = {00000000F8FEFE3E0000803F0000803F}
       Radius = 0.500000000000000000
       BehavioursData = {
-        58434F4C02010201060D54474C42436F6C6C6973696F6E02010611436F6C6C69
-        73696F6E4D616E616765723102010200}
+        0458434F4C02010201060D54474C42436F6C6C6973696F6E0202020012000000
+        0002000611436F6C6C6973696F6E4D616E616765723102010200}
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000

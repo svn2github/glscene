@@ -1,3 +1,22 @@
+{: Face vs Face collision detection.<p>
+
+   This sample illustrates:<ul>
+   <li>collisions between FreeForm Objects (Triangle-based)
+   <li>collisions between Cubes
+   <li>basic user-driven camera movements.
+   <li>picking Objects
+   <li>moving Objects
+   </ul></li><p>
+
+   Usage:<ul>
+   <li>left Mouse will move Camera
+   <li>right Mouse will move an object
+   <li>left Mouse + shift will roll and pitch the object
+   <li>Wheel scroll will zoom in/out
+   </ul><p>
+   Bernd Klaiber.
+   (modified by DanB 08/07/2003)
+}
 program facevsface;
 
 uses

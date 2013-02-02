@@ -9,9 +9,9 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = boxedin.exe BoxSphereIntersectDemo.exe facevsface.exe meshhit.exe \
-  OcclusionQueryDemo.exe octreedemo.exe RayBox.exe raycast.exe sphere.exe \
-  TriangleBoxIntersectDemo.exe
+PROJECTS = boxedin.exe BoxSphere.exe facevsface.exe meshhit.exe \
+  OcclusionQuery.exe octreedemo.exe RayBox.exe raycast.exe sphere.exe \
+  TriangleBox.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ default: $(PROJECTS)
 boxedin.exe: boxedin\boxedin.dpr
   $(DCC)
 
-BoxSphereIntersectDemo.exe: BoxSphere\BoxSphereIntersectDemo.dpr
+BoxSphere.exe: BoxSphere\BoxSphere.dpr
   $(DCC)
 
 facevsface.exe: facevsface\facevsface.dpr
@@ -28,7 +28,7 @@ facevsface.exe: facevsface\facevsface.dpr
 meshhit.exe: meshhit\meshhit.dpr
   $(DCC)
 
-OcclusionQueryDemo.exe: OcclusionQuery\OcclusionQueryDemo.dpr
+OcclusionQuery.exe: OcclusionQuery\OcclusionQuery.dpr
   $(DCC)
 
 octreedemo.exe: octree\octreedemo.dpr
@@ -43,7 +43,7 @@ raycast.exe: raycast\raycast.dpr
 sphere.exe: sphere\sphere.dpr
   $(DCC)
 
-TriangleBoxIntersectDemo.exe: TriangleBox\TriangleBoxIntersectDemo.dpr
+TriangleBox.exe: TriangleBox\TriangleBox.dpr
   $(DCC)
 
 

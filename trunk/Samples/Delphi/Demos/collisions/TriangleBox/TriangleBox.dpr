@@ -1,9 +1,10 @@
-{: RayCastBoxIntersect example demo <p>
+{
+  TriangleBoxIntersect Demo
 
   History:
-  22/01/07 - DaStr - Initial version (by dikoe Kenguru)
- }
-program RayBox;
+  29/01/07 - DaStr - Initial version (by dikoe Kenguru)
+}
+program TriangleBox;
 
 uses
   Forms,

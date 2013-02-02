@@ -1,9 +1,3 @@
-{
-  SphereBoxIntersect Demo
-
-  History:
-  29/01/07 - DaStr - Initial version (by dikoe Kenguru)
-}
 unit Unit1;
 
 interface
@@ -159,9 +153,9 @@ begin
 
   // Draw GLCube1 and GLSphere1.
   GLCube1.Matrix := BoxMatrix;
-  GLCube1.CubeWidth := BoxScale.X;
-  GLCube1.CubeHeight := BoxScale.Y;
-  GLCube1.CubeDepth := BoxScale.Z;
+  GLCube1.CubeWidth := BoxScale.V[0];
+  GLCube1.CubeHeight := BoxScale.V[1];
+  GLCube1.CubeDepth := BoxScale.V[2];
   DCCube1.Matrix := GLCube1.Matrix;
   DCCube1.Scale.SetVector(BoxScale);
   GLSphere1.Position.SetPoint(SpherePos);
@@ -183,22 +177,21 @@ var
   I:      Integer;
 begin
   // Save scale.
-  aScale.X := VectorLength(aMatrix.X);
-  aScale.Y := VectorLength(aMatrix.Y);
-  aScale.Z := VectorLength(aMatrix.Z);
+  for I := 0 to 2 do
+    aScale.V[I] := VectorLength(aMatrix.V[I]);
   // Generate two not equal random vectors.
-  Result.W := aMatrix.W;
+  Result.V[3] := aMatrix.V[3];
   repeat
     repeat
-      Result.X := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result.X) > 10e-6;
+      Result.V[0] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.V[0]) > 10e-6;
     repeat
-      Result.Y := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result.Y) > 10e-6;
-  until VectorNorm(VectorSubtract(Result.X, Result.Y)) > 10e-6;
+      Result.V[1] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.V[1]) > 10e-6;
+  until VectorNorm(VectorSubtract(Result.V[0], Result.V[1])) > 10e-6;
   // Calculate two perpendicular vectors.
-  Result.Z := VectorCrossProduct(Result.X, Result.Y);
-  Result.Y := VectorCrossProduct(Result.X, Result.Z);
+  Result.V[2] := VectorCrossProduct(Result.V[0], Result.V[1]);
+  Result.V[1] := VectorCrossProduct(Result.V[0], Result.V[2]);
   // Restore scale.
   for I := 0 to 2 do
   begin

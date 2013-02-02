@@ -1,10 +1,3 @@
-{
-  TriangleBoxIntersect Demo
-
-  History:
-  29/01/07 - DaStr - Initial version (by dikoe Kenguru)
-}
-
 unit Unit1;
 
 interface
@@ -50,15 +43,15 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure Button2Click(Sender: TObject);
-    procedure MakeRandomData;
     procedure Button1Click(Sender: TObject);
-    procedure DrawResult;
     procedure CheckBox4Click(Sender: TObject);
   private
     mdx, mdy : Integer;
     BoxPos, BoxScale,
     MinExtend, MaxExtend : TAffineVector;
     TriangePos           : array [0..2] of TAffineVector;
+    procedure MakeRandomData;
+    procedure DrawResult;
   public
   end;
 

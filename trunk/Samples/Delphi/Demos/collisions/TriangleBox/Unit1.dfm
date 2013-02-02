@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 281
   Top = 112
-  Width = 568
-  Height = 394
-  Caption = 'TriangleBoxIntersect Demo'
+  Caption = 'Triangle and Box Intersection'
+  ClientHeight = 396
+  ClientWidth = 568
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,18 +21,20 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 175
     Top = 0
-    Width = 385
-    Height = 367
+    Width = 393
+    Height = 396
     Camera = GLCamera1
-    FieldOfView = 149.516189575195300000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 151.447769165039100000
     Align = alClient
     OnMouseMove = ViewerMouseMove
+    TabOrder = 0
   end
   object Panel2: TPanel
     Left = 0
     Top = 0
     Width = 175
-    Height = 367
+    Height = 396
     Align = alLeft
     TabOrder = 1
     object CheckBox6: TCheckBox
@@ -119,8 +121,8 @@ object Form1: TForm1
     end
   end
   object GLScene: TGLScene
-    Left = 8
-    Top = 224
+    Left = 216
+    Top = 16
     object DCCamTarget: TGLDummyCube
       CubeSize = 1.000000000000000000
       VisibleAtRunTime = True
@@ -190,7 +192,7 @@ object Form1: TForm1
     object GLPoints1: TGLPoints
       NoZWrite = False
       Static = False
-      Size = 6.000000000000000000
+      size = 6.000000000000000000
     end
     object GLLines2: TGLLines
       LineWidth = 2.000000000000000000
@@ -214,7 +216,7 @@ object Form1: TForm1
   object GLCadencer: TGLCadencer
     Scene = GLScene
     OnProgress = GLCadencerProgress
-    Left = 40
-    Top = 224
+    Left = 216
+    Top = 64
   end
 end

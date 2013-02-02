@@ -1,20 +1,3 @@
-{: Demo/sample/testbed for RayCastIntersect.<p>
-
-   The RayCastIntersect aims at determining an as precise as possible collision
-   detection between a ray and and object. With the intersection point is also
-   returned the normal (which can be used for things like bouncing).<p>
-
-   In this sample, this mechanism is used to implement a two-cents-worth
-   raytracer, simply by throwing rays for each point in a raster image.
-   That is what raytracers do, but they go beyond throwing simple rays ;)
-   The intersection's normal and intersected  object's material are then used
-   to calculate a basic lighting.<p>
-
-   To calculate the raytraced/raycasted image, just hit the "cast" button.<p>
-
-   Note: the quadric solver used for calculating torus intersection lacks
-         precision and may demonstrate small holes...
-}
 unit Unit1;
 
 interface
@@ -51,9 +34,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations  }
   end;
 
 var
@@ -63,7 +46,9 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, Polynomials;
+uses
+  VectorGeometry,
+  Polynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var

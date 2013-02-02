@@ -1,22 +1,3 @@
-{: Face vs Face collision detection.<p>
-
-   This sample illustrates:<ul>
-   <li>collisions between FreeForm Objects (Triangle-based)
-   <li>collisions between Cubes
-   <li>basic user-driven camera movements.
-   <li>picking Objects
-   <li>moving Objects
-   </ul></li><p>
-
-   Usage:<ul>
-   <li>left Mouse will move Camera
-   <li>right Mouse will move an object
-   <li>left Mouse + shift will roll and pitch the object
-   <li>Wheel scroll will zoom in/out
-   </ul><p>
-   Bernd Klaiber.
-   (modified by DanB 08/07/2003)
-}
 unit Unit1;
 
 interface
@@ -25,7 +6,7 @@ uses
   Windows, Forms, GLScene, GLObjects, Classes, Controls, SysUtils, Graphics,
   GLWin32Viewer, ExtCtrls, VectorGeometry, StdCtrls, GLSpaceText,
   ComCtrls, GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists,
-  Grids, GLFile3DS, GLCoordinates, BaseClasses;
+  Grids, GLFile3DS, GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -76,7 +57,7 @@ type
     procedure cbCollisionModeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     mdx, mdy : Integer;
     CollisionDetected : Boolean;
   public
@@ -93,7 +74,7 @@ implementation
 
 {$R *.DFM}
 
-uses Math, GLUtils;
+uses Math;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -148,6 +129,13 @@ begin
 
 end;
 
+procedure TForm1.cbCollisionModeClick(Sender: TObject);
+begin
+   TGLBCollision(TeaPot1.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
+   TGLBCollision(TeaPot2.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
+   TGLBCollision(Bar.Behaviours[0]).BoundingMode:=cbmCube;
+end;
+
 procedure TForm1.FormShow(Sender: TObject);
 begin
    //initialize
@@ -192,13 +180,6 @@ begin
             '  -  '+Object2.Name+'('+StringNames[Ord(TGLBCollision(object2.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+') ** BB collision **');
 
    end;
-end;
-
-procedure TForm1.cbCollisionModeClick(Sender: TObject);
-begin
-   TGLBCollision(TeaPot1.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
-   TGLBCollision(TeaPot2.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
-   TGLBCollision(Bar.Behaviours[0]).BoundingMode:=cbmCube;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

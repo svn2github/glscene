@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 62
   Top = 15
-  Width = 705
-  Height = 574
-  Caption = 'Form1'
+  Caption = 'Boxedin'
+  ClientHeight = 423
+  ClientWidth = 568
   Color = clGray
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,61 +11,69 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer2: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 689
-    Height = 471
+    Width = 568
+    Height = 358
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
     Buffer.ShadeModel = smFlat
-    FieldOfView = 156.026565551757800000
+    FieldOfView = 148.786758422851600000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 689
+    Width = 568
     Height = 65
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object Label1: TLabel
-      Left = 424
-      Top = 8
+      Left = 282
+      Top = 5
       Width = 32
       Height = 13
       Caption = 'Label1'
     end
     object Label2: TLabel
-      Left = 424
+      Left = 282
       Top = 24
       Width = 32
       Height = 13
       Caption = 'Label2'
     end
     object Label3: TLabel
-      Left = 424
-      Top = 40
+      Left = 282
+      Top = 43
       Width = 32
       Height = 13
       Caption = 'Label3'
     end
     object Label4: TLabel
-      Left = 216
-      Top = 8
+      Left = 160
+      Top = 5
       Width = 37
       Height = 13
       Caption = 'Velocity'
     end
-    object TrackBar1: TTrackBar
-      Left = 112
+    object LabelFPS: TLabel
+      Left = 424
       Top = 24
-      Width = 265
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
+    object TrackBar1: TTrackBar
+      Left = 89
+      Top = 24
+      Width = 176
       Height = 25
       Max = 50
       Position = 1
@@ -82,7 +90,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 72
+    Left = 48
     Top = 88
     object GLLightSource1: TGLLightSource
       Ambient.Color = {000000001283003F9CC4403F0000803F}
@@ -163,12 +171,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
+    Left = 136
     Top = 88
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 40
+    Left = 488
     Top = 88
   end
 end

@@ -1,13 +1,3 @@
-{: Basic Octree/Collision demo.<p>
-
-Robert Hayes, March 2002.
-
-This demo uses the new Octree class to quickly detect triangle-level collisions with a sphere.
-
-See Octree.SphereIntersect() for detailed comments.
-
-}
-
 unit Unit1;
 
 interface
@@ -16,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms, GLKeyboard, VectorGeometry, 
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLCadencer, ExtCtrls, StdCtrls, GLNavigator, ComCtrls, GLGeomObjects,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLCoordinates, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -41,6 +31,7 @@ type
     TrackBar1: TTrackBar;
     Button1: TButton;
     Lines1: TGLLines;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -63,7 +54,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLFile3DS, GLUtils;
+uses GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -152,9 +143,9 @@ begin
    if colCount>0 then
       t:=colTotalTime*1000/colCount
    else t:=0;
-	Caption:=Format('%.2f FPS - %.3f ms for collisions/frame',
+ 	LabelFPS.Caption:=Format('%.2f FPS - %.3f ms for collisions/frame',
                    [GLSceneViewer2.FramesPerSecond, t]);
-	GLSceneViewer2.ResetPerformanceMonitor;
+  GLSceneViewer2.ResetPerformanceMonitor;
    colTotalTime:=0;
    colCount:=0;
 end;

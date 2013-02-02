@@ -1,9 +1,3 @@
-{: Basic raycast/mesh sample.<p>
-
-   Demonstrating how to find the intersection point between eye-screen ray
-   and a simple mesh in orthogonal and perspective views (click on the mushroom
-   and intersection point and normal will be calculated).<p>
-}
 unit Unit1;
 
 interface
@@ -11,7 +5,8 @@ interface
 uses
   Windows, SysUtils, Classes, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -49,12 +44,12 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, GLFile3DS, GLUtils;
+uses VectorGeometry, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetGLSceneMediaDir();
    // Load mushroom mesh
+   SetGLSceneMediaDir();
    FreeForm1.LoadFromFile('mushroom.3ds');
 end;
 

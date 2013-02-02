@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 194
   Top = 119
-  Caption = 'Form1'
-  ClientHeight = 545
-  ClientWidth = 693
+  Caption = 'Occlusion Query'
+  ClientHeight = 441
+  ClientWidth = 561
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,20 +18,24 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 41
-    Width = 693
-    Height = 504
+    Width = 561
+    Height = 400
     Camera = GLCamera1
-    FieldOfView = 157.555084228515600000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 151.927505493164100000
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 563
+    ExplicitHeight = 403
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 693
+    Width = 561
     Height = 41
     Align = alTop
     TabOrder = 1
+    ExplicitWidth = 693
     object Label1: TLabel
       Left = 112
       Top = 3
@@ -47,17 +51,24 @@ object Form1: TForm1
       Caption = 'Label2'
     end
     object Label3: TLabel
-      Left = 288
-      Top = 1
-      Width = 389
-      Height = 39
-      Caption = 'Test objects are hidden!!!!!'
+      Left = 200
+      Top = 6
+      Width = 259
+      Height = 29
+      Caption = 'Test objects are hidden!'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -32
+      Font.Height = -24
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+    end
+    object LabelFPS: TLabel
+      Left = 9
+      Top = 22
+      Width = 18
+      Height = 13
+      Caption = 'FPS'
     end
     object CheckBox1: TCheckBox
       Left = 9
@@ -70,7 +81,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 24
     Top = 48
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -99,8 +110,10 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
       object GLTorus1: TGLTorus
         Material.FrontProperties.Ambient.Color = {0000803F00000000000000000000803F}
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLCone1: TGLCone
         Material.FrontProperties.Ambient.Color = {0000803F00000000000000000000803F}
@@ -126,12 +139,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 80
+    Left = 88
+    Top = 48
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 112
+    Left = 152
+    Top = 48
   end
 end

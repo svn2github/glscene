@@ -1,15 +1,3 @@
-{: Octree raycast/mesh sample.<p>
-
-   Demonstrating how to find the intersection point between eye-screen ray
-   and a high poly mesh with an Octree property.
-
-   To see the performance difference:
-
-   -move mouse around on the scene with octree disabled (default)
-   -check the "octree enabled" box.  Note the frame-rate difference.
-
-   .<p>
-}
 unit Unit1;
 
 interface
@@ -18,7 +6,7 @@ uses
   Windows, SysUtils, Classes, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLCadencer, ExtCtrls, StdCtrls, GLGeomObjects, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -41,6 +29,7 @@ type
     CheckBox1: TCheckBox;
     CBOctree: TCheckBox;
     Label4: TLabel;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer2MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -63,14 +52,14 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, VectorLists, GLFile3DS, GLUtils;
+uses VectorGeometry, VectorLists, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    t : Int64;
 begin
-   SetGLSceneMediaDir();
    // Load high poly mesh (10,000 triangles).
+   SetGLSceneMediaDir();
    FreeForm1.LoadFromFile('HighPolyObject.3ds');
 
    t:=StartPrecisionTimer;
@@ -138,9 +127,9 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // Show FPS Rating
-	Caption:=Format('%.2f FPS', [GLSceneViewer2.FramesPerSecond]);
+	LabelFPS.Caption:=Format('%.2f FPS', [GLSceneViewer2.FramesPerSecond]);
 	GLSceneViewer2.ResetPerformanceMonitor;
-   // Not doing so causes ugly flickering and a significant decrease in FPS...
+  // Not doing so causes ugly flickering and a significant decrease in FPS...
    with Label4 do Caption:=Hint;
    with Label5 do Caption:=Hint;
 end;

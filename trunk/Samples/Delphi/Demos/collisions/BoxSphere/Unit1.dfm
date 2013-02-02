@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 281
   Top = 115
-  Width = 568
-  Height = 514
-  Caption = 'SphereBoxIntersect Demo'
+  Caption = 'Box Sphere Intersection'
+  ClientHeight = 470
+  ClientWidth = 560
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,10 +21,11 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 180
     Top = 0
-    Width = 372
-    Height = 476
+    Width = 380
+    Height = 470
     Camera = GLCamera1
-    FieldOfView = 149.907211303710900000
+    Buffer.BackgroundColor = clTeal
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -34,7 +35,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 180
-    Height = 476
+    Height = 470
     Align = alLeft
     TabOrder = 1
     object Label5: TLabel
@@ -321,8 +322,8 @@ object Form1: TForm1
     end
   end
   object GLScene: TGLScene
-    Left = 8
-    Top = 408
+    Left = 216
+    Top = 16
     object DCCamTarget: TGLDummyCube
       CubeSize = 0.100000001490116100
       VisibleAtRunTime = True
@@ -356,12 +357,12 @@ object Form1: TForm1
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -10.000000000000000000
-      XSamplingScale.max = 10.000000000000000000
-      XSamplingScale.step = 3.000000000000000000
+      XSamplingScale.Max = 10.000000000000000000
+      XSamplingScale.Step = 3.000000000000000000
       YSamplingScale.Min = -10.000000000000000000
-      YSamplingScale.max = 10.000000000000000000
-      YSamplingScale.step = 3.000000000000000000
-      ZSamplingScale.step = 0.100000001490116100
+      YSamplingScale.Max = 10.000000000000000000
+      YSamplingScale.Step = 3.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
     end
     object GLLines1: TGLLines
       Visible = False
@@ -414,7 +415,7 @@ object Form1: TForm1
   object GLCadencer: TGLCadencer
     Scene = GLScene
     OnProgress = GLCadencerProgress
-    Left = 40
-    Top = 408
+    Left = 280
+    Top = 16
   end
 end

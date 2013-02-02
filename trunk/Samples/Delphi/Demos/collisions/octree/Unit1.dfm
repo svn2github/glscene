@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 175
   Top = 104
-  Width = 562
-  Height = 429
-  Caption = 'Form1'
+  Caption = 'Octree Demo'
+  ClientHeight = 385
+  ClientWidth = 554
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,18 +11,19 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer2: TGLSceneViewer
     Left = 0
     Top = 49
-    Width = 546
-    Height = 342
+    Width = 554
+    Height = 336
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 147.402404785156300000
+    FieldOfView = 146.851989746093800000
     Align = alClient
     OnMouseDown = GLSceneViewer2MouseDown
     OnMouseMove = GLSceneViewer2MouseMove
@@ -31,28 +32,28 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 546
+    Width = 554
     Height = 49
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
     object Label1: TLabel
-      Left = 360
-      Top = 0
+      Left = 312
+      Top = 1
       Width = 32
       Height = 13
       Caption = 'Label1'
     end
     object Label2: TLabel
-      Left = 360
+      Left = 312
       Top = 16
       Width = 32
       Height = 13
       Caption = 'Label2'
     end
     object Label3: TLabel
-      Left = 360
-      Top = 32
+      Left = 311
+      Top = 30
       Width = 32
       Height = 13
       Caption = 'Label3'
@@ -77,6 +78,13 @@ object Form1: TForm1
       Width = 32
       Height = 13
       Caption = 'Label4'
+    end
+    object LabelFPS: TLabel
+      Left = 472
+      Top = 16
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
     end
     object CheckBox1: TCheckBox
       Left = 168

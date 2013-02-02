@@ -1,8 +1,3 @@
-{: RayCastBoxIntersect example demo <p>
-
-  History:
-  22/01/07 - DaStr - Initial version (by dikoe Kenguru)
- }
 unit Unit1;
 
 interface
@@ -37,6 +32,7 @@ type
     CheckBox2: TCheckBox;
     GLDummyCube1: TGLDummyCube;
     DCCube1: TGLDummyCube;
+    LabelFPS: TLabel;
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
@@ -57,14 +53,19 @@ type
   end;
 
 var
+  Form1 : TForm1;
   BoxPos, BoxScale,
   RayStart, RayDir : TAffineVector;
-  Form1 : TForm1;
 
 implementation
 
 {$R *.DFM}
 
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Randomize;
+  RayStart := AffineVectorMake(Random*2 -1, Random *2 -1, Random *2 -1);
+end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
@@ -100,18 +101,12 @@ begin
     @iPnt)
   then begin
     Label1.Caption :=
-       Format('Intersect point: %.3f %.3f %.3f', [iPnt.X, iPnt.Y, iPnt.Z]);
+       Format('Intersect point: %.3f %.3f %.3f', [iPnt.V[0], iPnt.V[1], iPnt.V[2]]);
     GLPoints1.Positions.Add(iPnt);
     beep;
   end else begin
     Label1.Caption := 'no intersection';
   end;
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  Randomize;
-  RayStart := AffineVectorMake(Random*2 -1, Random *2 -1, Random *2 -1);
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
@@ -127,7 +122,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.1f FPS', [Viewer.FramesPerSecond]);
+  LabelFPS.Caption := Format('%.1f FPS', [Viewer.FramesPerSecond]);
   Viewer.ResetPerformanceMonitor;
 end;
 

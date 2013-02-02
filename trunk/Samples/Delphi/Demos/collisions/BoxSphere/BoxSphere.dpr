@@ -1,9 +1,9 @@
-{: RayCastBoxIntersect example demo <p>
-
-  History:
-  22/01/07 - DaStr - Initial version (by dikoe Kenguru)
- }
-program RayBox;
+{
+  SphereBoxIntersect Demo
+   History:
+  29/01/07 - DaStr - Initial version (created by dikoe Kenguru)
+}
+program BoxSphere;
 
 uses
   Forms,

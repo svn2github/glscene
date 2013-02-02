@@ -1,3 +1,11 @@
+{: Ultra-basic collision detection sample.<p>
+
+   Two sphere have been placed in the scene, both have a TGLBCollision behaviour
+   linked to the collision manager component.<p>
+
+   Move them and click the button, if they collide, you will get a message, if
+   not, nothing will happen.
+}
 program sphere;
 
 uses

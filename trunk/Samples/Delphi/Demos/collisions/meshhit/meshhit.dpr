@@ -1,3 +1,9 @@
+{: Basic raycast/mesh sample.<p>
+
+   Demonstrating how to find the intersection point between eye-screen ray
+   and a simple mesh in orthogonal and perspective views (click on the mushroom
+   and intersection point and normal will be calculated).<p>
+}
 program meshhit;
 
 uses

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 281
   Top = 118
-  Width = 568
-  Height = 442
-  Caption = 'Form1'
+  Caption = 'Ray Box'
+  ClientHeight = 398
+  ClientWidth = 560
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,10 +21,11 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 41
-    Width = 552
-    Height = 363
+    Width = 560
+    Height = 357
     Camera = GLCamera1
-    FieldOfView = 149.196136474609400000
+    Buffer.BackgroundColor = clBlack
+    FieldOfView = 148.703598022460900000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -33,16 +34,23 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 552
+    Width = 560
     Height = 41
     Align = alTop
     TabOrder = 1
     object Label1: TLabel
-      Left = 308
-      Top = 14
+      Left = 296
+      Top = 12
       Width = 33
       Height = 14
       Caption = 'Result:'
+    end
+    object LabelFPS: TLabel
+      Left = 488
+      Top = 12
+      Width = 19
+      Height = 14
+      Caption = 'FPS'
     end
     object Button1: TButton
       Left = 8
@@ -77,8 +85,33 @@ object Form1: TForm1
     end
   end
   object GLScene: TGLScene
-    Left = 480
-    Top = 8
+    Left = 24
+    Top = 56
+    object GLCamera1: TGLCamera
+      DepthOfView = 500.000000000000000000
+      FocalLength = 50.000000000000000000
+      NearPlaneBias = 0.100000001490116100
+      TargetObject = DCCamTarg
+      Position.Coordinates = {0000A04000000040000040400000803F}
+      Direction.Coordinates = {000000000000803F0000008000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
+      Left = 256
+      Top = 144
+    end
+    object GLLightSource1: TGLLightSource
+      ConstAttenuation = 1.000000000000000000
+      Position.Coordinates = {00007A4400004844000016440000803F}
+      SpotCutOff = 180.000000000000000000
+    end
+    object GLLightSource2: TGLLightSource
+      ConstAttenuation = 1.000000000000000000
+      Position.Coordinates = {0000FAC30000C8C3000096C30000803F}
+      SpotCutOff = 180.000000000000000000
+    end
+    object GLDummyCube1: TGLDummyCube
+      CubeSize = 0.100000001490116100
+      VisibleAtRunTime = True
+    end
     object DCCamTarg: TGLDummyCube
       CubeSize = 1.000000000000000000
       object DCCube1: TGLDummyCube
@@ -99,45 +132,20 @@ object Form1: TForm1
       Static = False
       size = 7.000000000000000000
     end
-    object GLDummyCube1: TGLDummyCube
-      CubeSize = 0.100000001490116100
-      VisibleAtRunTime = True
-    end
-    object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1.000000000000000000
-      Position.Coordinates = {00007A4400004844000016440000803F}
-      SpotCutOff = 180.000000000000000000
-    end
-    object GLLightSource2: TGLLightSource
-      ConstAttenuation = 1.000000000000000000
-      Position.Coordinates = {0000FAC30000C8C3000096C30000803F}
-      SpotCutOff = 180.000000000000000000
-    end
-    object GLCamera1: TGLCamera
-      DepthOfView = 500.000000000000000000
-      FocalLength = 50.000000000000000000
-      NearPlaneBias = 0.100000001490116100
-      TargetObject = DCCamTarg
-      Position.Coordinates = {0000A04000000040000040400000803F}
-      Direction.Coordinates = {000000000000803F0000008000000000}
-      Up.Coordinates = {00000000000000000000803F00000000}
-      Left = 256
-      Top = 144
-    end
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
     OnProgress = GLCadencerProgress
-    Left = 512
-    Top = 8
+    Left = 80
+    Top = 56
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 480
-    Top = 40
+    Left = 24
+    Top = 112
   end
   object GLMaterialLibrary: TGLMaterialLibrary
-    Left = 512
-    Top = 40
+    Left = 88
+    Top = 112
   end
 end

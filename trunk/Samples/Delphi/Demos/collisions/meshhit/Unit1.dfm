@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 108
   Top = 101
-  Width = 567
-  Height = 306
-  Caption = 'Form1'
+  Caption = 'Mesh Hit'
+  ClientHeight = 285
+  ClientWidth = 558
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -41,8 +41,8 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLSceneViewer2: TGLSceneViewer
-    Left = 280
-    Top = 24
+    Left = 285
+    Top = 27
     Width = 265
     Height = 241
     Camera = GLCamera2
@@ -53,8 +53,8 @@ object Form1: TForm1
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 16
-    Top = 16
+    Left = 56
+    Top = 48
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000048420000704200008C420000803F}
