@@ -6,6 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/02/13 - Yar - Added master's scale transformation to TGLProxyObject (thanks to Dmitriy aka buh)
       <li>20/11/12 - PW - Added CPP compatibility: changed arrays of vectors to records with arrays
       <li>15/10/11 - YP - Don't set GLSelection buffer size, it's automatically done in the repeat until loop
       <li>02/09/11 - Yar - Added csPerspectiveKeepFOV to TGLCamera.CameraStyle (thanks benok1)
@@ -795,7 +796,7 @@ type
        <i>with</i> scale accounted for, in the object's coordinates
        (not in absolute coordinates).<p>
        Default value is half the object's Scale.<br> }
-    function AxisAlignedDimensions: TVector;
+    function AxisAlignedDimensions: TVector; virtual;
     function AxisAlignedDimensionsUnscaled: TVector; virtual;
 
     {: Calculates and return the AABB for the object.<p>
@@ -1418,6 +1419,7 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
 
     function BarycenterAbsolutePosition: TVector; override;
+    function AxisAlignedDimensions: TVector; override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -6992,6 +6994,20 @@ end;
 
 // AxisAlignedDimensions
 //
+
+function TGLProxyObject.AxisAlignedDimensions: TVector;
+begin
+  If Assigned(FMasterObject) then
+  begin
+    Result := FMasterObject.AxisAlignedDimensionsUnscaled;
+    If (pooTransformation in ProxyOptions) then
+      ScaleVector(Result,FMasterObject.Scale.AsVector)
+    else
+      ScaleVector(Result, Scale.AsVector);
+  end
+  else
+    Result := inherited AxisAlignedDimensions;
+end;
 
 function TGLProxyObject.AxisAlignedDimensionsUnscaled: TVector;
 begin
