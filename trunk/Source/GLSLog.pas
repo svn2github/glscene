@@ -574,7 +574,8 @@ var
   procedure SaveCurrentFile();
   begin
     if not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) then
-      ShowMessage('RenameFile failed with error : ' + IntToStr(GetLastError));
+      ShowMessage('RenameFile failed with error : ' + IntToStr(
+        {$IFDEF FPC}GetLastOSError{$ELSE}GetLastError{$ENDIF}));
   end;
 
 begin
