@@ -3,10 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
+  Windows, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
+
+
   GLScene, GLObjects, GLExtrusion, GLCadencer, VectorGeometry,
-  GLTexture, ExtCtrls, GLWin32Viewer, GLColor, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLTexture,  GLWin32Viewer, GLColor, GLCrossPlatform,
+  GLCoordinates,  BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -52,10 +54,11 @@ var
 begin
    // prepare the TGLPipe objects (add node, set props...)
    for k:=0 to DCBase.Count-1 do
-     if (DCBase[k] is TGLPipe) then
+     if (DCBase.Children[k] is TGLPipe) then
      begin
-      pipe:=TGLPipe(DCBase[k]);
-      with pipe do begin
+      pipe:=TGLPipe(DCBase.Children[k]);
+      with pipe do
+      begin
          Nodes.Clear;
          for i:=1 to cNbNodes do
             Nodes.AddNode(0, i/8, 0);
@@ -80,9 +83,9 @@ var
 begin
    t:=newTime;
    for k:=0 to DCBase.Count-1 do
-   if (DCBase[k] is TGLPipe) then
+   if (DCBase.Children[k] is TGLPipe) then
    begin
-      pipe:=TGLPipe(DCBase[k]);
+      pipe:=TGLPipe(DCBase.Children[k]);
       with pipe.Nodes do begin
          BeginUpdate;
          for i:=0 to Count-1 do
