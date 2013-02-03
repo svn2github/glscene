@@ -1,3 +1,15 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : GLGeomObjects<p>
+
+  Geometric objects.<p>
+
+  <b>History : </b><font size=-1><ul>
+  <li>03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
+  <li>02/09/10 - Yar - Creation
+  </ul></font>
+}
 unit GLSelection;
 
 interface
@@ -9,8 +21,8 @@ uses
   OpenGLTokens, GLContext, VectorLists, VectorGeometry,
   BaseClasses, PersistentClasses;
 
-const
-  MAX_OBJECT_STACK_DEPTH = 4096;
+ const
+  MAX_OBJECT_STACK_DEPTH = 512;
 
 type
 
@@ -57,9 +69,11 @@ type
 
   TGLBaseSelectTechnique = class
   protected
-    FObjectStack: array[0..MAX_OBJECT_STACK_DEPTH-1] of TObject;
-    FNameStack: array[0..255] of TGLuint;   FCurrentName: TGLuint;
-    FStackPosition: Integer;      FObjectCountGuess: Integer;
+    FObjectStack: array of TObject;
+    FNameStack: array[0..255] of TGLuint;
+    FCurrentName: TGLuint;
+    FStackPosition: Integer;
+    FObjectCountGuess: Integer;
     FHits: Integer;
     function GetObject: TObject; virtual; abstract;
     procedure SetObject(Value: TObject); virtual; abstract;
@@ -282,6 +296,7 @@ begin
   GL.RenderMode(GL_SELECT);
   GL.InitNames;
   FCurrentName := 0;
+  SetLength(FObjectStack, MAX_OBJECT_STACK_DEPTH);
   FStackPosition := 0;
   GL.PushName(0);
 end;
@@ -330,6 +345,8 @@ begin
       AList.AddHit(FObjectStack[FBuffer[current + 3]], subObj, szmin, szmax);
     end;
   end;
+  // Restore initial object stack length
+  SetLength(FObjectStack, MAX_OBJECT_STACK_DEPTH);
 end;
 
 function TGLSelectRenderModeTechnique.GetObject: TObject;
@@ -339,6 +356,9 @@ end;
 
 procedure TGLSelectRenderModeTechnique.SetObject(Value: TObject);
 begin
+  // Grow Object stack length if needed
+  if FCurrentName >= Length(FObjectStack) then
+    SetLength(FObjectStack, Length(FObjectStack) * 2);
   FObjectStack[FCurrentName] := Value;
   GL.LoadName(FCurrentName);
   Inc(FCurrentName);

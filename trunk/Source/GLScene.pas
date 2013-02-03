@@ -8907,15 +8907,21 @@ function TGLSceneBuffer.WorldToScreen(const aPoint: TAffineVector):
 var
   rslt: TVector;
 begin
-  if Assigned(FCamera)
-    and Project(
-    VectorMake(aPoint),
-    RenderingContext.PipelineTransformation.ViewProjectionMatrix,
-    TVector4i(FViewPort),
-    rslt) then
-    Result := Vector3fMake(rslt)
-  else
-    Result := aPoint;
+  RenderingContext.Activate;
+  try
+    PrepareRenderingMatrices(FViewPort, FRenderDPI);
+    if Assigned(FCamera)
+      and Project(
+      VectorMake(aPoint),
+      RenderingContext.PipelineTransformation.ViewProjectionMatrix,
+      TVector4i(FViewPort),
+      rslt) then
+      Result := Vector3fMake(rslt)
+    else
+      Result := aPoint;
+  finally
+    RenderingContext.Deactivate;
+  end;
 end;
 
 // WorldToScreen
