@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 192
   Top = 106
-  Caption = 'GLTree Editor'
+  Caption = 'Tree Editor'
   ClientHeight = 503
   ClientWidth = 728
   Color = clBtnFace
@@ -13,6 +13,7 @@ object Form1: TForm1
   Menu = MainMenu1
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -283,7 +284,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 160
+    Left = 192
     Top = 8
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000000000020400000803F}
@@ -317,10 +318,10 @@ object Form1: TForm1
         Tag = 0
       end>
     Left = 192
-    Top = 8
+    Top = 72
   end
   object MainMenu1: TMainMenu
-    Left = 224
+    Left = 368
     Top = 8
     object File1: TMenuItem
       Caption = '&File'
@@ -374,31 +375,31 @@ object Form1: TForm1
   object OpenDialog1: TOpenDialog
     Filter = 'GLTree files (*.gltr)|*.gltr'
     FilterIndex = 0
-    Left = 160
-    Top = 40
+    Left = 368
+    Top = 56
   end
   object SaveDialog1: TSaveDialog
     Filter = 'GLTree files (*.gltr)|*.gltr'
     FilterIndex = 0
-    Left = 160
-    Top = 72
+    Left = 456
+    Top = 56
   end
   object SaveDialog2: TSaveDialog
     Filter = 'GLScene Mesh files (*.glsm)|*.glsm'
     FilterIndex = 0
     Title = 'Export Mesh'
-    Left = 192
-    Top = 72
+    Left = 456
+    Top = 104
   end
   object SaveDialog3: TSaveDialog
     Filter = 'GLScene Material Library files (*.glml)|*.glml'
     FilterIndex = 0
     Title = 'Export Material Library'
-    Left = 224
-    Top = 72
+    Left = 456
+    Top = 160
   end
   object OpenPictureDialog1: TOpenPictureDialog
-    Left = 192
-    Top = 40
+    Left = 464
+    Top = 8
   end
 end

@@ -5,29 +5,17 @@
 #pragma hdrstop
 
 #include "Unit1.h"
+#include "tga.hpp"
+#include "jpeg.hpp"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLVectorFileObjects"
-#pragma link "GLTexture"
-#pragma link "GLTree"
-#pragma link "GLWin32Viewer"
-#pragma link "GLObjects"
-#pragma link "GLScene"
-#pragma link "GLFileJPEG"
-#pragma link "VectorLists"
-#pragma link "BaseClasses"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
-#pragma link "TGA"
+#pragma link "tga"
 
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
-float random(void)
-{
-  return (float)(rand() & 0x1FFF) / (float)0x1FFF;
-}
 
 void TForm1::AlignControlsToTree()
 {
@@ -60,22 +48,16 @@ void TForm1::NewTree()
   GLTree1->BranchRadius = 0.08;
   GLTree1->BranchNoise = 0.5;
 
-  randomize();
-  GLTree1->Seed = Round((2 * random() - 1) * (MaxInt - 1));
+  Randomize();
+  GLTree1->Seed = Round((2 * Random() - 1) * (MaxInt - 1));
 
   AlignControlsToTree();
 }
 
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  int I = MediaPath.Pos("Samples");
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	MediaPath += "Media\\";
-	SetCurrentDir(MediaPath);
-  }
-
+  SetGLSceneMediaDir();
+//  GLMaterialLibrary1->TexturePaths = MediaPath;
   // Set up default textures
   TGLLibMaterial *lm =
 	GLMaterialLibrary1->AddTextureMaterial("LeafFront", "maple_multi.tga", true);
@@ -108,12 +90,12 @@ void __fastcall TForm1::GLSceneViewer1MouseDown(TObject * Sender,
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
-                                                TShiftState Shift, int X, int Y)
+												TShiftState Shift, int X, int Y)
 {
   if(Shift.Contains(ssLeft))
-    GLCamera1->MoveAroundTarget(my - Y, mx - X);
+	GLCamera1->MoveAroundTarget(my - Y, mx - X);
   else if(Shift.Contains(ssRight))
-    GLCamera1->AdjustDistanceToTarget(1 + (my - Y) * 0.01);
+	GLCamera1->AdjustDistanceToTarget(1 + (my - Y) * 0.01);
   mx = X;
   my = Y;
 }
@@ -122,14 +104,14 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
 
 void __fastcall TForm1::TrackBar1Change(TObject * Sender)
 {
-  GLTree1->Depth = TrackBar1->Position;
+  GLTree1->Depth = (float) TrackBar1->Position;
 }
 
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::TrackBar2Change(TObject * Sender)
 {
-  GLTree1->BranchTwist = TrackBar2->Position;
+  GLTree1->BranchTwist = (float)TrackBar2->Position;
 }
 
 //---------------------------------------------------------------------------
@@ -185,7 +167,7 @@ void __fastcall TForm1::TrackBar9Change(TObject * Sender)
 
 void __fastcall TForm1::TrackBar10Change(TObject * Sender)
 {
-  GLTree1->BranchFacets = TrackBar10->Position;
+  GLTree1->BranchFacets = (float)TrackBar10->Position;
 }
 
 //---------------------------------------------------------------------------

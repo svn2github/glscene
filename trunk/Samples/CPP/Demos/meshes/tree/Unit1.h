@@ -2,6 +2,10 @@
 
 #ifndef Unit1H
 #define Unit1H
+
+#include <vcl.h>
+#include <tchar.h>
+
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Controls.hpp>
@@ -12,21 +16,19 @@
 #include <ExtDlgs.hpp>
 #include <Menus.hpp>
 
-#include <GLVectorFileObjects.hpp>      // Pascal unit
-#include <GLTexture.hpp>        // Pascal unit
-#include <GLTree.hpp>           // Pascal unit
-#include <GLWin32Viewer.hpp>    // Pascal unit
-#include <GLObjects.hpp>        // Pascal unit
+#include <GLVectorFileObjects.hpp>
+#include <GLTexture.hpp>
+#include <GLTree.hpp>
+#include <GLWin32Viewer.hpp>
+#include <GLObjects.hpp>
 #include <GLScene.hpp>
 #include <ComCtrls.hpp>
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "GLMaterial.hpp"            // Pascal unit
-#include "GLFileTGA.hpp"
+#include "GLMaterial.hpp"
 #include "TGA.hpp"
-#include "JPEG.hpp"
-
+#include "GLUtils.hpp"
 
 
 //---------------------------------------------------------------------------
