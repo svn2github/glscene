@@ -6,6 +6,7 @@
    Win32 specific Scene viewer.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
       <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
       <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
       <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
@@ -54,6 +55,7 @@ uses
   GLContext;
 
 type
+  TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
 
   // TGLSceneViewer
   //
@@ -75,15 +77,21 @@ type
     FOnMouseEnter, FOnMouseLeave: TNotifyEvent;
     FMouseInControl: Boolean;
     FLastScreenPos: TPoint;
+    FOnTouchMove: TTouchEvent;
+    FOnTouchUp: TTouchEvent;
+    FOnTouchDown: TTouchEvent;
 
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMGetDglCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-
+{$IFDEF GLS_DELPHI_2010_UP}
+    procedure WMTouch(var Message: TMessage); message WM_TOUCH;
+{$ENDIF}
     procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
@@ -109,6 +117,7 @@ type
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
 
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -129,6 +138,9 @@ type
     procedure ResetPerformanceMonitor;
 
     function CreateSnapShotBitmap: TBitmap;
+
+    procedure RegisterTouch;
+    procedure UnregisterTouch;
 
     property RenderDC: HDC read FOwnDC;
     property MouseInControl: Boolean read FMouseInControl;
@@ -166,6 +178,10 @@ type
 
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+
+    property OnTouchMove: TTouchEvent read FOnTouchMove write FOnTouchMove;
+    property OnTouchUp: TTouchEvent read FOnTouchUp write FOnTouchUp;
+    property OnTouchDown: TTouchEvent read FOnTouchDown write FOnTouchDown;
 
     property Align;
     property Anchors;
@@ -273,6 +289,13 @@ begin
   inherited;
 end;
 
+procedure TGLSceneViewer.RegisterTouch;
+begin
+{$IFDEF GLS_DELPHI_2010_UP}
+  RegisterTouchWindow(Handle, 0);
+{$ENDIF}
+end;
+
 // SetBeforeRender
 //
 
@@ -295,6 +318,13 @@ end;
 procedure TGLSceneViewer.SetPostRender(const val: TNotifyEvent);
 begin
   FBuffer.PostRender := val;
+end;
+
+procedure TGLSceneViewer.UnregisterTouch;
+begin
+{$IFDEF GLS_DELPHI_2010_UP}
+  UnregisterTouchWindow(Handle);
+{$ENDIF}
 end;
 
 // GetPostRender
@@ -405,6 +435,62 @@ begin
   inherited;
   FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
+
+{$IFDEF GLS_DELPHI_2010_UP}
+procedure TGLSceneViewer.WMTouch(var Message: TMessage);
+
+  function TouchPointToPoint(const TouchPoint: TTouchInput): TPoint;
+  begin
+    Result := Point(TOUCH_COORD_TO_PIXEL(TouchPoint.X), TOUCH_COORD_TO_PIXEL(TouchPoint.Y));
+    PhysicalToLogicalPoint(Handle, Result);
+    Result:=ScreenToClient(Result);
+  end;
+
+var
+  TouchInputs: array of TTouchInput;
+  TouchInput: TTouchInput;
+  Handled: Boolean;
+  Point: TPoint;
+  Multitouch : boolean;
+begin
+  Handled := False;
+  SetLength(TouchInputs, Message.WParam);
+  Multitouch := Message.WParam > 1;
+  GetTouchInputInfo(Message.LParam, Message.WParam, @TouchInputs[0],
+    SizeOf(TTouchInput));
+  try
+    for TouchInput in TouchInputs do
+    begin
+      Point := TouchPointToPoint(TouchInput);
+
+      if (TouchInput.dwFlags AND TOUCHEVENTF_MOVE) > 0 then
+      if Assigned(OnTouchMove) then
+      begin
+        OnTouchMove(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
+      end;
+
+      if (TouchInput.dwFlags AND TOUCHEVENTF_DOWN) > 0 then
+      if Assigned(OnTouchDown) then
+      begin
+        OnTouchDown(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
+      end;
+
+      if (TouchInput.dwFlags AND TOUCHEVENTF_UP) > 0 then
+      if Assigned(OnTouchUp) then
+      begin
+        OnTouchUp(Point.X, Point.Y, TouchInput.cxContact, TouchInput.cyContact, TouchInput.dwID, Multitouch);
+      end;
+    end;
+
+    Handled := True;
+  finally
+    if Handled then
+      CloseTouchInputHandle(Message.LParam)
+    else
+      inherited;
+  end;
+end;
+{$ENDIF}
 
 // WMPaint
 //
