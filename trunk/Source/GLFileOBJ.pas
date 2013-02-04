@@ -170,7 +170,7 @@ var
   {: If enabled, main mesh will be splitted into multiple mesh from facegroup
      data.}
 
-  vGLFileOBJ_SplitMesh: boolean = True;
+  vGLFileOBJ_SplitMesh: boolean = False;
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
