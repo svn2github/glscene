@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 173
   Top = 110
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Point To'
   ClientHeight = 266
   ClientWidth = 443
   Color = clBtnFace
