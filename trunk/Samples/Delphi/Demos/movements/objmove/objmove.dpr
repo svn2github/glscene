@@ -1,3 +1,13 @@
+{ : Moving objects with the mouse.<p>
+
+  In this demo you can move the two cubes around by picking and dragging
+  them. This showcases the use of ScreenVectorIntersectXxxx functions.<p>
+
+  You can also use the numeric keypad to move/zoom the camera and the arrow
+  to move the selected object around.<p>
+
+  (Based on Rado Stoyanov's test project)
+}
 program ObjMove;
 
 uses

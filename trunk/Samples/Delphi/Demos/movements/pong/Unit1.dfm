@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 117
   Top = 93
-  Width = 500
-  Height = 246
   BorderWidth = 5
-  Caption = 'Form1'
+  Caption = 'Pong'
+  ClientHeight = 192
+  ClientWidth = 482
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,19 +18,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 474
-    Height = 198
+    Width = 482
+    Height = 192
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 126.407836914062500000
+    FieldOfView = 124.975997924804700000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 40
+    Left = 32
+    Top = 8
     object GLShadowVolume: TGLShadowVolume
       Lights = <
         item
@@ -144,19 +144,19 @@ object Form1: TForm1
         Tag = 0
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
-    Left = 8
+    Left = 40
     Top = 72
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
+    Left = 344
     Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     MaxDeltaTime = 0.050000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 40
-    Top = 24
+    Left = 120
+    Top = 8
   end
 end

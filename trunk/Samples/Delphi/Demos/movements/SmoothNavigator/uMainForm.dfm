@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 318
   Top = 150
-  Width = 650
-  Height = 554
-  Caption = 'GLSmoothNavigator Demo'
+  Caption = 'Smooth Navigator'
+  ClientHeight = 510
+  ClientWidth = 642
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,11 +20,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 634
-    Height = 469
+    Width = 642
+    Height = 463
     Camera = GLCamera1
-    Buffer.BackgroundColor = clMoneyGreen
-    FieldOfView = 155.927307128906300000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 155.624618530273400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -32,8 +32,8 @@ object Form1: TForm1
   end
   object Panel3: TPanel
     Left = 0
-    Top = 469
-    Width = 634
+    Top = 463
+    Width = 642
     Height = 47
     Align = alBottom
     BevelOuter = bvNone
@@ -115,7 +115,7 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 8
+    Left = 16
     Top = 8
     object scene: TGLDummyCube
       CubeSize = 500.000000000000000000
@@ -167,12 +167,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 40
+    Left = 80
     Top = 8
   end
   object FPSTimer: TTimer
     OnTimer = FPSTimerTimer
-    Left = 72
+    Left = 152
     Top = 8
   end
 end

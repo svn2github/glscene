@@ -1,11 +1,3 @@
-{: This demo is a remake of good old pong game...<p>
-
-	Aim of the game is to prevent the ball from bouncing out of the board,
-	each time the ball bumps on your pad you score a frag (er... point ;).<br>
-	Move the pad with your mouse.<p>
-
-   The demo makes use of stencil-based shadow volumes.
-}
 unit Unit1;
 
 interface
@@ -40,13 +32,13 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-	 { Déclarations privées }
+	 { Private declarations }
 	 ballVector : TAffineVector;
 	 score : Integer;
 	 gameOver : Boolean;
 	 procedure ResetGame;
   public
-	 { Déclarations publiques }
+	 { Public declarations }
   end;
 
 var
@@ -108,20 +100,20 @@ begin
 		// ( note : VectorCombine(v1, v2, f1, f2)=v1*f1+v2*f2 )
 		newBallPos:=VectorCombine(Ball.Position.AsVector, ballVector, 1, deltaTime);
 		// check collision with edges
-		if newBallPos.X<-7.05 then
-			ballVector.X:=-ballVector.X
-		else if newBallPos.X>7.05 then
-			ballVector.X:=-ballVector.X
-		else if newBallPos.Y>4.55 then
-			ballVector.Y:=-ballVector.Y;
+		if newBallPos.V[0]<-7.05 then
+			ballVector.V[0]:=-ballVector.V[0]
+		else if newBallPos.V[0]>7.05 then
+			ballVector.V[0]:=-ballVector.V[0]
+		else if newBallPos.V[1]>4.55 then
+			ballVector.V[1]:=-ballVector.V[1];
 		// check collision with pad
-		if newBallPos.Y<-4 then begin
-			if (newBallPos.X>Pad.Position.X-1.25) and (newBallPos.X<Pad.Position.X+1.25) then begin
+		if newBallPos.V[1]<-4 then begin
+			if (newBallPos.V[0]>Pad.Position.X-1.25) and (newBallPos.V[0]<Pad.Position.X+1.25) then begin
 				// when ball bumps the pad, it is accelerated and the vector
 				// is slightly randomized
-				ballVector.Y:=-ballVector.Y;
-				ballVector.X:=ballVector.X+(Random(100)-50)/50;
-				ballVector.Y:=ballVector.Y+0.1;
+				ballVector.V[1]:=-ballVector.V[1];
+				ballVector.V[0]:=ballVector.V[0]+(Random(100)-50)/50;
+				ballVector.V[1]:=ballVector.V[1]+0.1;
 				// ...and of course a point is scored !
 				Inc(score);
 				SpaceText1.Text:=Format('%.3d', [score]);
@@ -140,7 +132,8 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
 	// update performance monitor
-	Caption:=Format('%s : %.2f FPS', [Name, GLSceneViewer1.FramesPerSecond]);
+  //%s : Name,
+	Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
 	GLSceneViewer1.ResetPerformanceMonitor;
 	// display score window when game is over and the ball is well out of the board
 	if gameOver and (Ball.Position.Y<-6) then begin

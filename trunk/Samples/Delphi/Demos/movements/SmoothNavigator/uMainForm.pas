@@ -1,16 +1,3 @@
-{: GLSmoothNavigator Demo<p>
-
-  A demo that shows what all classes inside the GLSmoothNavigator.pas unit
-  are capable of.
-
-  Note: there are lines commented out. These were used to manually set mouse
-  position (useful in some cases).
-
-  Version history:
-    23/02/07 - DaStr - Initial version (contributed to GLScene)
-
-}
-
 unit uMainForm;
 
 interface
@@ -49,7 +36,6 @@ type
     Panel1: TPanel;
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure FPSTimerTimer(Sender: TObject);
-    procedure checkcontrols(DeltaTime, newtime: Double);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -65,6 +51,14 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     { Private declarations }
+    UI:  TGLSmoothUserInterface;
+    Navigator: TGLSmoothNavigator;
+    //  RealPos: TPoint;
+
+    ShiftState: TShiftState;
+    xx, yy: Integer;
+    NewXX, NewYY: Integer;
+    procedure CheckControls(DeltaTime, newTime: Double);
   public
     { Public declarations }
   end;
@@ -72,18 +66,36 @@ type
 var
   Form1: TForm1;
 
-  UI:  TGLSmoothUserInterface;
-  Navigator: TGLSmoothNavigator;
-//  RealPos: TPoint;
-
-  ShiftState: TShiftState;
-  xx, yy: Integer;
-  NewXX, NewYY: Integer;
-
 implementation
 
 
 {$R *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  Navigator := TGLSmoothNavigator.Create(Self);
+  Navigator.AngleLock := False;
+  Navigator.AutoUpdateObject := False;
+  Navigator.InvertHorizontalSteeringWhenUpsideDown := True;
+  Navigator.MoveUpWhenMovingForward := True;
+  Navigator.UseVirtualUp := True;
+  Navigator.VirtualUp.AsAffineVector := YVector;
+  Navigator.MovingObject := GLCamera1;
+
+  Navigator.InertiaParams.MovementAcceleration := 7;
+  Navigator.InertiaParams.MovementInertia := 200;
+  Navigator.InertiaParams.MovementSpeed := 200;
+
+  Navigator.InertiaParams.TurnInertia := 150;
+  Navigator.InertiaParams.TurnSpeed := 40;
+  Navigator.InertiaParams.TurnMaxAngle := 0.5;
+
+  Navigator.MoveAroundParams.TargetObject := GLArrowLine1;
+
+  UI := TGLSmoothUserInterface.Create(Self);
+//  UI.AutoUpdateMouse := False;
+  UI.SmoothNavigator := Navigator;
+end;
 
 procedure TForm1.CheckControls(DeltaTime, newtime: Double);
 var
@@ -135,58 +147,9 @@ end;
 
 procedure TForm1.FPSTimerTimer(Sender: TObject);
 begin
-  Caption := 'GLSmoothNavigator Demo  -  ' + GLSceneViewer1.FramesPerSecondText;
-
+  Caption := 'Smooth Navigator  -  ' + GLSceneViewer1.FramesPerSecondText;
   Navigator.AutoScaleParameters(GLSceneViewer1.FramesPerSecond);
   GLSceneViewer1.ResetPerformanceMonitor;
-end;
-
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  Navigator := TGLSmoothNavigator.Create(Self);
-  Navigator.AngleLock := False;
-  Navigator.AutoUpdateObject := False;
-  Navigator.InvertHorizontalSteeringWhenUpsideDown := True;
-  Navigator.MoveUpWhenMovingForward := True;
-  Navigator.UseVirtualUp := True;
-  Navigator.VirtualUp.AsAffineVector := YVector;
-  Navigator.MovingObject := GLCamera1;
-
-  Navigator.InertiaParams.MovementAcceleration := 7;
-  Navigator.InertiaParams.MovementInertia := 200;
-  Navigator.InertiaParams.MovementSpeed := 200;
-
-  Navigator.InertiaParams.TurnInertia := 150;
-  Navigator.InertiaParams.TurnSpeed := 40;
-  Navigator.InertiaParams.TurnMaxAngle := 0.5;
-
-  Navigator.MoveAroundParams.TargetObject := GLArrowLine1;
-
-  UI := TGLSmoothUserInterface.Create(Self);
-//  UI.AutoUpdateMouse := False;
-  UI.SmoothNavigator := Navigator;
-end;
-
-
-procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
-begin
-  if Key = Char(VK_SPACE) then
-    MouseLookCheckBoxCLick(Self);
-  if Key = Char(VK_ESCAPE) then
-    Close;
-end;
-
-
-procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-  GLSceneViewer1.Enabled := False;
-  GLCadencer1.Enabled := False;
-  FPSTimer.Enabled := False;
-
-  FreeAndNil(UI);
-  FreeAndNil(Navigator);
-  GLShowCursor(True);
 end;
 
 
@@ -211,6 +174,27 @@ begin
     GLCamera1.TargetObject := GLArrowLine1;
   end;
 end;
+
+procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = Char(VK_SPACE) then
+    MouseLookCheckBoxClick(Self);
+  if Key = Char(VK_ESCAPE) then
+    Close;
+end;
+
+
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  GLSceneViewer1.Enabled := False;
+  GLCadencer1.Enabled := False;
+  FPSTimer.Enabled := False;
+
+  FreeAndNil(UI);
+  FreeAndNil(Navigator);
+  GLShowCursor(True);
+end;
+
 
 procedure TForm1.RadioButton6Click(Sender: TObject);
 begin

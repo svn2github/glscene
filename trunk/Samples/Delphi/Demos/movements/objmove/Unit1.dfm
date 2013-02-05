@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 87
   Top = 128
-  Width = 696
-  Height = 414
   Caption = 'Moving Objects with Mouse'
+  ClientHeight = 407
+  ClientWidth = 571
   Color = clBtnFace
   ParentFont = True
   KeyPreview = True
@@ -18,11 +18,11 @@ object Form1: TForm1
   object Scn: TGLSceneViewer
     Left = 161
     Top = 0
-    Width = 519
-    Height = 376
+    Width = 410
+    Height = 407
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 50.347049713134770000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 53.929431915283200000
     Align = alClient
     OnMouseDown = ScnMouseDown
     OnMouseMove = ScnMouseMove
@@ -32,7 +32,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 161
-    Height = 376
+    Height = 407
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 1
@@ -45,6 +45,7 @@ object Form1: TForm1
       Caption = 'Select and move with the mouse any of the two cubes.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 158
     end
     object Label1: TLabel
       Left = 0
@@ -55,6 +56,7 @@ object Form1: TForm1
       Caption = 'Author: Rado Stoyanov'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 114
     end
     object Label3: TLabel
       Left = 0
@@ -65,6 +67,7 @@ object Form1: TForm1
       Caption = 'Default movement is on the XY plane.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 150
     end
     object Label4: TLabel
       Left = 0
@@ -75,6 +78,7 @@ object Form1: TForm1
       Caption = 'Shift + Drag moves on the XZ plane.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 145
     end
     object Label5: TLabel
       Left = 0
@@ -85,6 +89,7 @@ object Form1: TForm1
       Caption = 'radostoyanov@softhome.net'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 142
     end
     object Button1: TButton
       Left = 618
@@ -239,11 +244,13 @@ object Form1: TForm1
       Position.Coordinates = {0000A0400000A040000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
       Text = 'TopText'
+      Rotation = 0.000000000000000000
     end
     object ObjText: TGLHUDText
       Position.Coordinates = {0000C0400000A841000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
       Text = 'ObjText'
+      Rotation = 0.000000000000000000
     end
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont

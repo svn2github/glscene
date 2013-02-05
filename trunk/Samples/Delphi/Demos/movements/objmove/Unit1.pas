@@ -1,23 +1,15 @@
-{ : Moving objects with the mouse.<p>
-
-  In this demo you can move the two cubes around by picking and dragging
-  them. This showcases the use of ScreenVectorIntersectXxxx functions.<p>
-
-  You can also use the numeric keypad to move/zoom the camera and the arrow
-  to move the selected object around.<p>
-
-  (Based on Rado Stoyanov's test project)
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Forms, Dialogs, SysUtils, GLScene, GLObjects, Classes, Controls,
-  GLGraph,
-  GLCollision, GLTexture, StdCtrls, ExtCtrls, VectorGeometry, Graphics,
-  GLVectorFileObjects, GLWin32Viewer, GLSpaceText, GLGeomObjects, GLColor,
-  GLCrossPlatform, GLCoordinates, BaseClasses, GLBitmapFont, GLWindowsFont,
+  Windows, Forms, Dialogs, SysUtils, Classes, Controls,
+  Graphics, StdCtrls, ExtCtrls,
+
+  GLScene, GLObjects, GLGraph, GLCollision, GLTexture,
+  VectorGeometry, GLVectorFileObjects, GLWin32Viewer,
+  GLSpaceText, GLGeomObjects, GLColor, GLCrossPlatform,
+  GLCoordinates, BaseClasses, GLBitmapFont, GLWindowsFont,
   GLHUDObjects;
 
 type
@@ -68,7 +60,7 @@ type
   end;
 
 const
-  SelectionColor: TColorVector = (X: 0.243; Y:0.243; Z:0.243; W:1.000);
+  SelectionColor: TColorVector = (X : 0.243; Y : 0.243; Z: 0.243; W : 1.000);
 
 var
   Form1: TForm1;
@@ -211,7 +203,7 @@ begin
 
     TopText.Text := Format(
       'New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
-      [objPos.X, objPos.Y, objPos.Z]);
+      [objPos.V[0], objPos.V[1], objPos.V[2]]);
 
     winPos := Scn.Buffer.WorldToScreen(objPos);
 
@@ -219,8 +211,8 @@ begin
     begin
       Visible := true;
       Text := CurrentPick.Name;
-      Position.X := winPos.X + 10;
-      Position.Y := Scn.Height - winPos.Y + 10;
+      Position.X := winPos.V[0] + 10;
+      Position.Y := Scn.Height - winPos.V[1] + 10;
     end;
   end
   else

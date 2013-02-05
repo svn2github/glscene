@@ -27,9 +27,9 @@ type
     procedure GLTimeEventsMGR1Events4Event(event: TTimeEvent);
     procedure GLTimeEventsMGR1Events5Event(event: TTimeEvent);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -43,38 +43,38 @@ uses SysUtils;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-	Caption:=Format('TIME: %.4f', [GLCadencer1.CurrentTime]);
+	Caption:= 'Events ' + Format('  TIME: %.4f', [GLCadencer1.CurrentTime]);
 	GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events0Event(event: TTimeEvent);
 begin
-   cube1.RollAngle:=event.ElapsedTime*180/3;
+   Cube1.RollAngle:=event.ElapsedTime*180/3;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events1Event(event: TTimeEvent);
 begin
-   cube2.RollAngle:=event.TickCount/499*180;
+   Cube2.RollAngle:=event.TickCount/499*180;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events2Event(event: TTimeEvent);
 begin
-   cube3.RollAngle:=90;
+   Cube3.RollAngle:=90;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events3Event(event: TTimeEvent);
 begin
-   cube1.RollAngle:=event.TickCount/4*90;
+   Cube1.RollAngle:=event.TickCount/4*90;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events4Event(event: TTimeEvent);
 begin
-   cube2.RollAngle:=event.TickCount/20*90;
+   Cube2.RollAngle:=event.TickCount/20*90;
 end;
 
 procedure TForm1.GLTimeEventsMGR1Events5Event(event: TTimeEvent);
 begin
-   cube3.RollAngle:=event.TickCount/200*90;
+   Cube3.RollAngle:=event.TickCount/200*90;
 end;
 
 end.

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 204
   Top = 101
-  Width = 457
-  Height = 343
-  Caption = 'Form1'
+  Caption = 'Hierarchy'
+  ClientHeight = 413
+  ClientWidth = 544
   Color = clBtnFace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 320
@@ -16,28 +16,27 @@ object Form1: TForm1
   OnCloseQuery = FormCloseQuery
   OnResize = FormResize
   DesignSize = (
-    441
-    305)
+    544
+    413)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 433
-    Height = 273
+    Left = 0
+    Top = 0
+    Width = 544
+    Height = 388
     Camera = GLCamera1
-    VSync = vsmSync
     Buffer.BackgroundColor = clSilver
-    FieldOfView = 107.546936035156300000
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 125.461059570312500000
+    Align = alClient
     TabOrder = 0
   end
   object TrackBar: TTrackBar
-    Left = 56
-    Top = 288
-    Width = 385
+    Left = 0
+    Top = 388
+    Width = 544
     Height = 25
-    Anchors = [akLeft, akRight, akBottom]
+    Align = alBottom
     Max = 360
     PageSize = 10
     Frequency = 10
@@ -46,8 +45,8 @@ object Form1: TForm1
     OnChange = TrackBarChange
   end
   object CBPlay: TCheckBox
-    Left = 8
-    Top = 292
+    Left = 5
+    Top = 390
     Width = 41
     Height = 17
     Anchors = [akLeft, akBottom]

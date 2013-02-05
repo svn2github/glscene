@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 203
   Top = 102
-  Width = 219
-  Height = 369
   BorderWidth = 5
-  Caption = 'Form1'
+  Caption = 'Column'
+  ClientHeight = 341
+  ClientWidth = 406
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,16 +18,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 201
-    Height = 313
+    Width = 406
+    Height = 324
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 116.627265930175800000
     Align = alClient
+    TabOrder = 0
+    ExplicitWidth = 263
+    ExplicitHeight = 308
   end
   object StaticText1: TStaticText
     Left = 0
-    Top = 313
-    Width = 201
+    Top = 324
+    Width = 406
     Height = 17
     Align = alBottom
     Alignment = taCenter
@@ -35,29 +39,31 @@ object Form1: TForm1
     BorderStyle = sbsSingle
     Caption = '???.? FPS'
     TabOrder = 1
+    ExplicitTop = 308
+    ExplicitWidth = 263
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 24
     Top = 8
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 100
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {0000A04100002041000020410000803F}
     end
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 40
+    Left = 208
+    Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 72
+    Left = 104
+    Top = 8
   end
 end

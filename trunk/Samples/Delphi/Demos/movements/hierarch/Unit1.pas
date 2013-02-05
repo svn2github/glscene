@@ -1,15 +1,3 @@
-{: This Form demonstrates basic "hierarchical" movements.<p>
-
-	Our visible (cube) objects are children of TGLDummyCube object and we move
-	them through rotations of the DummyCubes.<br>
-	Movements in this demo differs from the "manual" demo : "earth" now spins,
-	"moon" has an inclined orbit and spins too.<p>
-
-	You may use any GLScene object when building hierarchical scenes, but it
-	is recommended to use TGLDummyCube for structural (regroupment only) objects,
-	since dummycube are just "virtual" at run-time and cost no OpenGL setup or
-	rendering time.
-}
 unit Unit1;
 
 interface
@@ -39,9 +27,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
+    { Private declarations  }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
