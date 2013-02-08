@@ -45,7 +45,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 		cube->CubeHeight = cubeSize;
 		cube->CubeDepth = cubeSize;
 		cube->Material->FrontProperties->Diffuse->Color =
-  		  VectorLerp(clrYellow, clrRed, (x * x + y * y + z * z)%(cSize * cSize * 3));
+  		  VectorLerp(clrYellow, clrRed, (float)(x * x + y * y + z * z)/(cSize * cSize * 3));
 
 	  // uncomment following lines to stress OpenGL with more color changes calls
 
