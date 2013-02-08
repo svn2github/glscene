@@ -4,19 +4,19 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="GLS_SDL_BCB6.bpl"/>
-    <OBJFILES value="GLS_SDL_BCB6.obj ..\Source\Platform\GLSDLContext.obj 
-      ..\Source\GameAPIs\sdl.obj ..\Source\GameAPIs\SDLWindow.obj"/>
-    <RESFILES value="GLS_SDL_BCB6.res ..\Source\GameAPIs\GLSceneVCLSDL.dcr"/>
+    <OBJFILES value="GLS_SDL_BCB6.obj ..\Source\GLSDLContext.obj ..\Source\GLSDL.obj 
+      ..\Source\GLSDLWindow.obj"/>
+    <RESFILES value="GLS_SDL_BCB6.res ..\Source\GLSceneVCLSDL.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
-    <LIBFILES value="..\Source\GameAPIs\msvcrt.lib ..\Source\GameAPIs\sdl.lib"/>
+    <LIBFILES value="..\Source\msvcrt.lib ..\Source\sdl.lib"/>
     <LIBRARIES value=""/>
     <SPARELIBS value="rtl.lib"/>
-    <PACKAGES value="vcl.bpi rtl.bpi GLSceneBCB6.bpi"/>
+    <PACKAGES value="GLSceneBCB6.bpi vcl.bpi rtl.bpi"/>
     <PATHCPP value=".;"/>
-    <PATHPAS value=".;..\Source\Platform;..\Source\GameAPIs"/>
+    <PATHPAS value=".;..\Source;..\Source;..\Source"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
@@ -25,16 +25,13 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="GLS_SDL_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\Source;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\Source -I..\Source\Base -I..\Source\Platform -I..\Source\FileFormats 
-      -I..\Source\Shaders -I..\Source\PhysicsAPIs -I..\Source\SoundAPIs 
-      -I..\Source\VideoAPIs -I..\Source\GameAPIs -I..\Source\CgShaders 
-      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
+    <IDLCFLAGS value="-I..\Source -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tWM"/>
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
@@ -54,12 +51,12 @@
       <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\GLSceneVCLSDL.dcr" FORMNAME="" UNITNAME="GLSceneVCLSDL" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\Platform\GLSDLContext.pas" FORMNAME="" UNITNAME="GLSDLContext" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\sdl.pas" FORMNAME="" UNITNAME="SDL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\SDLWindow.pas" FORMNAME="" UNITNAME="SDLWindow" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\msvcrt.lib" FORMNAME="" UNITNAME="msvcrt" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\sdl.lib" FORMNAME="" UNITNAME="sdl" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSceneVCLSDL.dcr" FORMNAME="" UNITNAME="GLSceneVCLSDL" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSDLContext.pas" FORMNAME="" UNITNAME="GLSDLContext" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSDL.pas" FORMNAME="" UNITNAME="GLSDL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSDLWindow.pas" FORMNAME="" UNITNAME="GLSDLWindow" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\msvcrt.lib" FORMNAME="" UNITNAME="msvcrt" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\sdl.lib" FORMNAME="" UNITNAME="sdl" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

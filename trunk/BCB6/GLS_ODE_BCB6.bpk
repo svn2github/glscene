@@ -6,19 +6,25 @@
     <PROJECT value="GLS_ODE_BCB6.bpl"/>
     <OBJFILES value="GLS_ODE_BCB6.obj ..\Source\GLODESkeletonColliders.obj 
       ..\Source\GLODECustomColliders.obj ..\Source\GLODEManager.obj 
-      ..\Source\DesignTime\GLODERegister.obj ..\Source\PhysicsAPIs\dynodegl.obj 
-      ..\Source\PhysicsAPIs\dynode.obj ..\Source\PhysicsAPIs\GLSModuleLoader.obj"/>
-    <RESFILES value="GLS_ODE_BCB6.res ..\Source\PhysicsAPIs\GLSceneVCLODE.dcr"/>
+      ..\Source\GLODERegister.obj ..\Source\ODEImport.obj ..\Source\ODEGL.obj 
+      ..\Source\GLSModuleLoader.obj ..\Source\GLODERagdoll.obj"/>
+    <RESFILES value="GLS_ODE_BCB6.res ..\Source\GLSceneVCLODE.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
     <LIBFILES value=""/>
-    <LIBRARIES value=""/>
-    <SPARELIBS value="rtl.lib"/>
-    <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
+    <LIBRARIES value="dbxcds.lib dbexpress.lib dclocx.lib bcbsmp.lib dsnapcon.lib dsnapcrba.lib 
+      visualdbclx.lib teeqr.lib dss.lib tee.lib teedb.lib teeui.lib qrpt.lib 
+      bdecds.lib dsnap.lib cds.lib ibxpress.lib vcldbx.lib bdertl.lib adortl.lib 
+      dbrtl.lib vcldb.lib"/>
+    <SPARELIBS value="rtl.lib vcldb.lib dbrtl.lib adortl.lib bdertl.lib vcldbx.lib ibxpress.lib 
+      cds.lib dsnap.lib bdecds.lib qrpt.lib teeui.lib teedb.lib tee.lib dss.lib 
+      teeqr.lib visualdbclx.lib dsnapcrba.lib dsnapcon.lib bcbsmp.lib dclocx.lib 
+      dbexpress.lib dbxcds.lib"/>
+    <PACKAGES value="rtl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
-    <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs;..\Source\VideoAPIs"/>
+    <PATHPAS value=".;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
@@ -27,16 +33,14 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="GLS_ODE_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
-    <LIBPATH value="..\..\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <INCLUDEPATH value="..\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <LIBPATH value="..\Source\Lib;..\Source;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\Source\DesignTime -I..\Source\Base -I..\Source\PhysicsAPIs 
-      -I..\Source -I..\Source\Platform -I..\Source\FileFormats 
-      -I$(BCB)\Source\Toolsapi -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix 
-      cpp -boa"/>
+    <IDLCFLAGS value="-I..\Source -I$(BCB)\Source\Toolsapi -I$(BCB)\include -I$(BCB)\include\vcl 
+      -src_suffix cpp -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tWM"/>
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
@@ -53,16 +57,17 @@
   <FILELIST>
       <FILE FILENAME="GLS_ODE_BCB6.res" FORMNAME="" UNITNAME="GLS_ODE_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLS_ODE_BCB6.cpp" FORMNAME="" UNITNAME="GLS_ODE_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\PhysicsAPIs\GLSceneVCLODE.dcr" FORMNAME="" UNITNAME="GLSceneVCLODE" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSceneVCLODE.dcr" FORMNAME="" UNITNAME="GLSceneVCLODE" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLODESkeletonColliders.pas" FORMNAME="" UNITNAME="GLODESkeletonColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLODECustomColliders.pas" FORMNAME="" UNITNAME="GLODECustomColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLODEManager.pas" FORMNAME="" UNITNAME="GLODEManager" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\DesignTime\GLODERegister.pas" FORMNAME="" UNITNAME="GLODERegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\PhysicsAPIs\dynodegl.pas" FORMNAME="" UNITNAME="dynodegl" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\PhysicsAPIs\dynode.pas" FORMNAME="" UNITNAME="dynode" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\PhysicsAPIs\GLSModuleLoader.pas" FORMNAME="" UNITNAME="GLSModuleLoader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLODERegister.pas" FORMNAME="" UNITNAME="GLODERegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\ODEImport.pas" FORMNAME="" UNITNAME="ODEImport" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\ODEGL.pas" FORMNAME="" UNITNAME="ODEGL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSModuleLoader.pas" FORMNAME="" UNITNAME="GLSModuleLoader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLODERagdoll.pas" FORMNAME="" UNITNAME="GLODERagdoll" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

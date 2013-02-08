@@ -4,8 +4,10 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="GLSS_FMOD_BCB6.bpl"/>
-    <OBJFILES value="GLSS_FMOD_BCB6.obj ..\Source\SoundAPIs\fmod.obj ..\Source\GLSMFMOD.obj"/>
-    <RESFILES value="GLSS_FMOD_BCB6.res ..\Source\SoundAPIs\GLSceneVCLFMod.dcr"/>
+    <OBJFILES value="GLSS_FMOD_BCB6.obj ..\Source\fmod.obj ..\Source\GLSMFMOD.obj 
+      ..\Source\fmodtypes.obj ..\Source\fmoddyn.obj ..\Source\fmoderrors.obj 
+      ..\Source\fmodpresets.obj"/>
+    <RESFILES value="GLSS_FMOD_BCB6.res ..\Source\GLSceneVCLFMod.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
@@ -15,7 +17,7 @@
     <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
-    <PATHPAS value=".;..\Source\SoundAPIs;..\Source"/>
+    <PATHPAS value=".;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
@@ -24,15 +26,13 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="GLSS_FMOD_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source;..\Source\SoundAPIs;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="..\..\Lib;..\Source;..\Source\SoundAPIs;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\Source;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\Source\Lib;..\Source;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-I..\Source\SoundAPIs -I..\Source -I..\Source\Base -I..\Source\Platform 
-      -I..\Source\FileFormats -I..\Source\Shaders -I..\Source\PhysicsAPIs 
-      -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
+    <IDLCFLAGS value="-I..\Source -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tWM"/>
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
@@ -49,12 +49,16 @@
   <FILELIST>
       <FILE FILENAME="GLSS_FMOD_BCB6.res" FORMNAME="" UNITNAME="GLSS_FMOD_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLSS_FMOD_BCB6.cpp" FORMNAME="" UNITNAME="GLSS_FMOD_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\SoundAPIs\fmod.pas" FORMNAME="" UNITNAME="FMod" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\SoundAPIs\GLSceneVCLFMod.dcr" FORMNAME="" UNITNAME="GLSceneVCLFMod" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\fmod.pas" FORMNAME="" UNITNAME="FMod" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSceneVCLFMod.dcr" FORMNAME="" UNITNAME="GLSceneVCLFMod" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLSMFMOD.pas" FORMNAME="" UNITNAME="GLSMFMOD" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\fmodtypes.pas" FORMNAME="" UNITNAME="fmodtypes" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\fmoddyn.pas" FORMNAME="" UNITNAME="fmoddyn" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\fmoderrors.pas" FORMNAME="" UNITNAME="fmoderrors" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\fmodpresets.pas" FORMNAME="" UNITNAME="fmodpresets" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
