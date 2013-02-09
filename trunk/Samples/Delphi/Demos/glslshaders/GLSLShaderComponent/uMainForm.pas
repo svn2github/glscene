@@ -62,6 +62,8 @@ type
     procedure GLSLShaderInitialize(Shader: TGLCustomGLSLShader);
     procedure GLSLShaderUnApply(Shader: TGLCustomGLSLShader;
       var ThereAreMorePasses: Boolean);
+    procedure GLSLShaderApplyEx(Shader: TGLCustomGLSLShader;
+      Sender: TObject);
   private
     { Private declarations }
 
@@ -80,7 +82,8 @@ implementation
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
 begin
   //First load scripts from shader directory
-  GLSLShader.LoadShaderPrograms('Shaders\Shader.Vert','Shaders\Shader.Frag');
+  SetGLSceneMediaDir();
+  GLSLShader.LoadShaderPrograms('Shader.Vert','Shader.Frag');
   GLSLShader.Enabled := True;
 
 
@@ -103,6 +106,7 @@ begin
 
   // Then load textures.
   MaterialLibrary.LibMaterialByName('Earth').Material.Texture.Image.LoadFromFile('Earth.jpg');
+  MaterialLibrary.LibMaterialByName('WasteSkin').Material.Texture.Image.LoadFromFile('waste.jpg');
 
 end;
 
@@ -113,12 +117,27 @@ end;
 
 procedure TGLSLTestForm.GLSLShaderApply(Shader: TGLCustomGLSLShader);
 begin
+{*  Old variant of Apply
   with Shader do
   begin
     Param['DiffuseColor'].AsVector4f := VectorMake(1, 1, 1, 1);
     Param['AmbientColor'].AsVector4f := VectorMake(0.2, 0.2, 0.2, 1);
     Param['LightIntensity'].AsVector1f := 1;
-    Param['MainTexture'].AsTexture2D[0] := MaterialLibrary.LibMaterialByName('Earth').Material.Texture;
+    Param['MainTexture'].AsTexture2D[0] :=
+      MaterialLibrary.LibMaterialByName('Earth').Material.Texture;
+  end;
+*}
+end;
+
+procedure TGLSLTestForm.GLSLShaderApplyEx(Shader: TGLCustomGLSLShader;
+  Sender: TObject);
+begin
+  with Shader do
+  begin
+    Param['DiffuseColor'].AsVector4f := VectorMake(1, 1, 1, 1);
+    Param['AmbientColor'].AsVector4f := VectorMake(0.2, 0.2, 0.2, 1);
+    Param['LightIntensity'].AsVector1f := 1;
+    Param['MainTexture'].AsTexture2D[0] := TGLLibMaterial(Sender).Material.Texture;
   end;
 end;
 
@@ -164,6 +183,7 @@ begin
   if LightMovingCheckBox.Checked then
     LightCube.MoveObjectAround(Camera.TargetObject, sin(NewTime) * deltaTime * 10, deltaTime * 20);
 end;
+
 
 end.
 

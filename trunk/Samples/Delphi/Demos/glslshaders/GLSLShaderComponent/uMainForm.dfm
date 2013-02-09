@@ -1,9 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
+  Width = 665
+  Height = 477
   Caption = 'GLSL Shader Component'
-  ClientHeight = 439
-  ClientWidth = 649
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -93,14 +93,14 @@ object GLSLTestForm: TGLSLTestForm
         Position.Coordinates = {00000000000000000000A0C10000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -200.000000000000000000
-        XSamplingScale.max = 200.000000000000000000
-        XSamplingScale.step = 20.000000000000000000
+        XSamplingScale.Max = 200.000000000000000000
+        XSamplingScale.Step = 20.000000000000000000
         YSamplingScale.Min = -200.000000000000000000
-        YSamplingScale.max = 200.000000000000000000
-        YSamplingScale.step = 20.000000000000000000
+        YSamplingScale.Max = 200.000000000000000000
+        YSamplingScale.Step = 20.000000000000000000
         ZSamplingScale.Min = -200.000000000000000000
-        ZSamplingScale.max = 200.000000000000000000
-        ZSamplingScale.step = 20.000000000000000000
+        ZSamplingScale.Max = 200.000000000000000000
+        ZSamplingScale.Step = 20.000000000000000000
         Parts = [gpX, gpZ]
       end
     end
@@ -124,7 +124,7 @@ object GLSLTestForm: TGLSLTestForm
       CubeSize = 1.000000000000000000
       object Fighter: TGLActor
         Material.MaterialLibrary = MaterialLibrary
-        Material.LibMaterialName = 'ShaderMaterial'
+        Material.LibMaterialName = 'WasteSkin'
         Position.Coordinates = {0000164300000000000000000000803F}
         Up.Coordinates = {00000000000080BF0000008000000000}
         Interval = 100
@@ -132,21 +132,21 @@ object GLSLTestForm: TGLSLTestForm
       end
       object Teapot: TGLActor
         Material.MaterialLibrary = MaterialLibrary
-        Material.LibMaterialName = 'ShaderMaterial'
+        Material.LibMaterialName = 'Earth'
         Position.Coordinates = {000016C300000000000000000000803F}
         Interval = 100
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
       end
       object Sphere_big: TGLActor
         Material.MaterialLibrary = MaterialLibrary
-        Material.LibMaterialName = 'ShaderMaterial'
+        Material.LibMaterialName = 'Earth'
         Position.Coordinates = {00000000000016C3000000000000803F}
         Interval = 100
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
       end
       object Sphere_little: TGLActor
         Material.MaterialLibrary = MaterialLibrary
-        Material.LibMaterialName = 'ShaderMaterial'
+        Material.LibMaterialName = 'Earth'
         Position.Coordinates = {0000000000001643000000000000803F}
         Interval = 100
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
@@ -174,18 +174,13 @@ object GLSLTestForm: TGLSLTestForm
       item
         Name = 'Earth'
         Tag = 0
-        Material.FrontProperties.Ambient.Color = {BFBEBE3EBBBABA3EBBBABA3E0000803F}
-        Material.FrontProperties.Emission.Color = {B1B0B03DB1B0B03DB1B0B03D0000803F}
-        Material.FrontProperties.Specular.Color = {8988083E8180003E8988083E0000803F}
-        Material.BlendingMode = bmTransparency
-        Material.Texture.TextureMode = tmModulate
-        Material.Texture.Disabled = False
-      end
-      item
-        Name = 'ShaderMaterial'
-        Tag = 0
         Material.FrontProperties.Emission.Color = {A1A0A03D9190903D8180803D0000803F}
         Material.FrontProperties.Specular.Color = {DEDD5D3FDCDB5B3FDCDB5B3F0000803F}
+        Shader = GLSLShader
+      end
+      item
+        Name = 'WasteSkin'
+        Tag = 0
         Shader = GLSLShader
       end>
     Left = 88
@@ -194,8 +189,10 @@ object GLSLTestForm: TGLSLTestForm
   object GLSLShader: TGLSLShader
     Enabled = False
     OnApply = GLSLShaderApply
+    OnApplyEx = GLSLShaderApplyEx
     OnUnApply = GLSLShaderUnApply
     OnInitialize = GLSLShaderInitialize
+    ShaderStyle = ssReplace
     Left = 152
     Top = 16
   end
