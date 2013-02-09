@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/02/13 - Yar - Added OnApplyEx event where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>18/02/11 - Yar - Fixed transform feedback varyings activation
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -86,6 +87,8 @@ type
   TGLSLShaderEvent = procedure(Shader: TGLCustomGLSLShader) of object;
   TGLSLShaderUnApplyEvent = procedure(Shader: TGLCustomGLSLShader;
                                      var ThereAreMorePasses: Boolean) of object;
+  TGLSLShaderEventEx = procedure(Shader: TGLCustomGLSLShader;
+    Sender: TObject) of object;
 
   TGLActiveAttrib = record
     Name: string;
@@ -106,7 +109,7 @@ type
     FOnInitialize: TGLSLShaderEvent;
     FOnApply: TGLSLShaderEvent;
     FOnUnApply: TGLSLShaderUnApplyEvent;
-
+    FOnApplyEx: TGLSLShaderEventEx;
 
     function GetParam(const Index: string): TGLSLShaderParameter;
     function GetDirectParam(const Index: Cardinal): TGLSLShaderParameter;
@@ -115,6 +118,7 @@ type
     property OnApply: TGLSLShaderEvent read FOnApply write FOnApply;
     property OnUnApply: TGLSLShaderUnApplyEvent read FOnUnApply write FOnUnApply;
     property OnInitialize: TGLSLShaderEvent read FOnInitialize write FOnInitialize;
+    property OnApplyEx: TGLSLShaderEventEx read FOnApplyEx write FOnApplyEx;
 
     procedure DoInitialPass; virtual;
 
@@ -204,6 +208,7 @@ type
     property GeometryProgram;    
 
     property OnApply;
+    property OnApplyEx;
     property OnUnApply;
     property OnInitialize;
 
@@ -227,6 +232,8 @@ begin
   FGLSLProg.UseProgramObject;
   if Assigned(FOnApply) then
     FOnApply(Self);
+  if Assigned(FOnApplyEx) then
+    FOnApplyEx(Self, Sender);
 end;
 
 
