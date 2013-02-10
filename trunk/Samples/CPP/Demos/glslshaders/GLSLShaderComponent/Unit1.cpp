@@ -35,16 +35,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-  //First load scripts from shader directory in project dir
-  SetCurrentDir(ExtractFilePath(Application->ExeName));
-  GLSLShader->LoadShaderPrograms("Shaders\\Shader.Vert","Shaders\\Shader.Frag");
+  //First load scripts from media directory in project dir
+  SetGLSceneMediaDir();
+  GLSLShader->LoadShaderPrograms("Shader.Vert","Shader.Frag");
   GLSLShader->Enabled = true;
 
 
   //Second load models from media directory
-  SetGLSceneMediaDir();
-
-  Fighter->LoadFromFile("waste.md2"); //Fighter
+   Fighter->LoadFromFile("waste.md2"); //Fighter
   Fighter->SwitchToAnimation(0, true);
   Fighter->AnimationMode = aamLoop;
   Fighter->Scale->Scale(3);
