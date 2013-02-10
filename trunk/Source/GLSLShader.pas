@@ -6,7 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>09/02/13 - Yar - Added OnApplyEx event where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
+      <li>09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>18/02/11 - Yar - Fixed transform feedback varyings activation
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -109,6 +109,7 @@ type
     FOnInitialize: TGLSLShaderEvent;
     FOnApply: TGLSLShaderEvent;
     FOnUnApply: TGLSLShaderUnApplyEvent;
+    FOnInitializeEx: TGLSLShaderEventEx;
     FOnApplyEx: TGLSLShaderEventEx;
 
     function GetParam(const Index: string): TGLSLShaderParameter;
@@ -118,9 +119,8 @@ type
     property OnApply: TGLSLShaderEvent read FOnApply write FOnApply;
     property OnUnApply: TGLSLShaderUnApplyEvent read FOnUnApply write FOnUnApply;
     property OnInitialize: TGLSLShaderEvent read FOnInitialize write FOnInitialize;
+    property OnInitializeEx: TGLSLShaderEventEx read FOnInitializeEx write FOnInitializeEx;
     property OnApplyEx: TGLSLShaderEventEx read FOnApplyEx write FOnApplyEx;
-
-    procedure DoInitialPass; virtual;
 
     function GetGLSLProg: TGLProgramHandle; virtual;
     function GetCurrentParam: TGLSLShaderParameter; virtual;
@@ -211,6 +211,7 @@ type
     property OnApplyEx;
     property OnUnApply;
     property OnInitialize;
+    property OnInitializeEx;
 
     property ShaderStyle;
     property FailedInitAction;
@@ -311,7 +312,18 @@ begin
   finally
     if Enabled then
     try
-      DoInitialPass;
+      if Assigned(FOnInitialize) then
+      begin
+        FGLSLProg.UseProgramObject;
+        FOnInitialize(Self);
+        FGLSLProg.EndUseProgramObject;
+      end;
+      if Assigned(FOnInitializeEx) then
+      begin
+        FGLSLProg.UseProgramObject;
+        FOnInitializeEx(Self, Sender);
+        FGLSLProg.EndUseProgramObject;
+      end;
       if (not FGLSLProg.ValidateProgram) then
         raise EGLSLShaderException.Create(FGLSLProg.InfoLog);
     except
@@ -473,16 +485,6 @@ end;
 procedure TGLCustomGLSLShader.OnChangeActiveVarying(Sender: TObject);
 begin
   NotifyChange(Self);
-end;
-
-procedure TGLCustomGLSLShader.DoInitialPass;
-begin
-  if Assigned(FOnInitialize) then
-  begin
-    FGLSLProg.UseProgramObject;
-    FOnInitialize(Self);
-    FGLSLProg.EndUseProgramObject;
-  end;
 end;
 
 { TGLSLShaderParameter }
