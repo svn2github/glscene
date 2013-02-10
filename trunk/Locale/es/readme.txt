@@ -1,7 +1,7 @@
-The directory for GLScene's po files with translations of captions, text strings and hints 
+The directory for GLScene's help manuals and po files with translations of captions, text strings and hints 
 from english to other languages using GNU Gettext tools for Delphi, C++ and Lazarus.
 
-This po files were created and could be edited and used in the next way: 
+The po files could be created, edited and used in the next way: 
 - Download dxgettext-1.2.2.exe from http://sourceforge.net/projects/dxgettext/ 
   and install it on your computer. For Windows users there will be corresponding items 
   inserted to Explorer's menu. 
@@ -20,7 +20,7 @@ This po files were created and could be edited and used in the next way:
 - Choose a necessary language while setup or running your application and get localised version of your software interface,
   that should include also GLScene's text strings and messages.
 
-05.01.13
+10.02.13
 --------
 GLS Team
 
