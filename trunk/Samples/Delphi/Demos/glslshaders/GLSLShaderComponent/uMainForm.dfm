@@ -192,6 +192,7 @@ object GLSLTestForm: TGLSLTestForm
     OnApplyEx = GLSLShaderApplyEx
     OnUnApply = GLSLShaderUnApply
     OnInitialize = GLSLShaderInitialize
+    OnInitializeEx = GLSLShaderInitializeEx
     ShaderStyle = ssReplace
     Left = 152
     Top = 16

@@ -64,6 +64,8 @@ type
       var ThereAreMorePasses: Boolean);
     procedure GLSLShaderApplyEx(Shader: TGLCustomGLSLShader;
       Sender: TObject);
+    procedure GLSLShaderInitializeEx(Shader: TGLCustomGLSLShader;
+      Sender: TObject);
   private
     { Private declarations }
 
@@ -146,6 +148,16 @@ begin
   with Shader do
   begin
     // Nothing.
+  end;
+end;
+
+procedure TGLSLTestForm.GLSLShaderInitializeEx(Shader: TGLCustomGLSLShader;
+  Sender: TObject);
+begin
+  with Shader do
+  begin
+    // For AMD's shaders validation
+    Param['MainTexture'].AsTexture2D[0] := TGLLibMaterial(Sender).Material.Texture;
   end;
 end;
 
