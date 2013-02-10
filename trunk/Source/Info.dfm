@@ -30,7 +30,7 @@ object InfoForm: TInfoForm
     Top = 0
     Width = 457
     Height = 341
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -2823,6 +2823,7 @@ object InfoForm: TInfoForm
           'Mike Lischke'
           'Nelson Chu'
           'overkrik'
+          'Pavel Vassiliev'
           'Paul van Dinther'
           'Peirick'
           'Phil Scadden'
@@ -2843,6 +2844,8 @@ object InfoForm: TInfoForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
+        ExplicitLeft = -3
+        ExplicitTop = 1
       end
     end
     object TabSheet4: TTabSheet
