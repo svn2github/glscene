@@ -1,38 +1,13 @@
-{: Generates a 3D mesh from a height-field function.<p>
-
-   The left viewer shows a triangle-based mesh, the right viewer uses a
-   triangle-strip-based mesh, both mesh are based on the same height-field and
-   have the same resolution.<p>
-
-   This sample wants to demonstrate a few things :<ul>
-   <li>how to define a mesh (triangle & triangle strip)
-   <li>what the default normal calculations looks like
-   <li>TriangleStrips are faster, but slightly more complex to use
-   </ul>
-
-   In triangle mode, the normals are computed on a triangle basis, hence the
-   facetted look, for triangle-strip, they are computed for each vertex based
-   on the triangle it completes (smooth along strip-direction).<br>
-
-   The reader may make the "good" looking version (ie. smooth aspect in all
-   direction) by calculating the proper normal from the formula instead of
-   using standard normal calculations.<br>
-
-   Sample framerates (K6-400 + Sofware OpenGL), 5000 triangles (cResolution=25) :<br>
-   -  mmTriangles : 9.6 FPS<br>
-   -  mmTriangleStrip : 17.2 FPS<p>
-   Sample framerates (K7-500 + GeForce 256), 20000 triangles (cResolution=50) :<br>
-   -  mmTriangles : 53 FPS<br>
-   -  mmTriangleStrip : 202 FPS
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, VectorGeometry, GLTexture, ExtCtrls, GLCadencer,
-  StdCtrls, GLMesh, GLWin32Viewer, GLState, GLColor, GLCrossPlatform,
+  ExtCtrls, StdCtrls,
+
+  GLScene, GLObjects, VectorGeometry, GLTexture,  GLCadencer,
+  GLMesh, GLWin32Viewer, GLState, GLColor, GLCrossPlatform,
   GLCoordinates, BaseClasses;
 
 type
@@ -60,10 +35,14 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Déclarations privées }
+    { Private declarations }
     mx, my : Integer;
+    invRes1, invRes2 : Single;
+    function MakeVect(const aX, aY : Single) : TAffineVector;
+    procedure AddTriangle(const p1, p2, p3 : TAffineVector;
+                          const color : TColorVector);
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -77,31 +56,30 @@ const
    // half-grid resolution, grid width is actually cResolution*2 of "quads"
    cResolution = 50;
 
+function TForm1.MakeVect(const aX, aY : Single) : TAffineVector;
+begin
+  SetVector(Result, aX*invRes1, sin((aX*aX+aY*aY)*invRes2), aY*invRes1);
+end;
+
+procedure TForm1.AddTriangle(const p1, p2, p3 : TAffineVector;
+                         const color : TColorVector);
+begin
+  with Mesh1.Vertices do begin
+     AddVertex(p1, NullVector, color);
+     AddVertex(p2, NullVector, color);
+     AddVertex(p3, NullVector, color);
+  end;
+end;
+
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
    x, y : Integer;
    pTopLeft, pTopRight, pBottomRight, pBottomLeft : TAffineVector;
-   invRes, invRes2 : Single;
-
-   function MakeVect(const x, y : Single) : TAffineVector;
-   begin
-      SetVector(Result, x*invRes, sin((x*x+y*y)*invRes2), y*invRes);
-   end;
-
-   procedure AddTriangle(const p1, p2, p3 : TAffineVector;
-                         const color : TColorVector);
-   begin
-      with Mesh1.Vertices do begin
-         AddVertex(p1, NullVector, color);
-         AddVertex(p2, NullVector, color);
-         AddVertex(p3, NullVector, color);
-      end;
-   end;
-
 begin
    // scaling precalcs for our math func
-   invRes:=10/cResolution;
-   invRes2:=0.1*Sqr(invRes);
+   invRes1:=10/cResolution;
+   invRes2:=0.1*Sqr(invRes1);
    //
    // Triangles
    //
@@ -160,7 +138,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // nb of triangles in scene
-   Caption:=Format('%d Triangles', [2*(cResolution*2)*(cResolution*2)]);
+   Caption:= 'Formula ' + Format('%d Triangles', [2*(cResolution*2)*(cResolution*2)]);
    // calculate & display triangles framerate
    with GLSceneViewer1 do begin
       // we render twice to get a fair FPS rating
@@ -182,15 +160,15 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   mx:=x; my:=y;
+   mx:=X; my:=Y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
    if ssLeft in Shift then begin
-      TGLSceneViewer(Sender).Camera.MoveAroundTarget(my-y, mx-x);
-      my:=y; mx:=x;
+      TGLSceneViewer(Sender).Camera.MoveAroundTarget(my-Y, mx-X);
+      my:=Y; mx:=X;
    end;
 end;
 
