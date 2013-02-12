@@ -1775,7 +1775,7 @@ end;
 
 function TGLFixedFunctionProperties.Blended: Boolean;
 begin
-  Result := not (FBlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100]);
+  Result := not (FBlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100, bmCustom]);
 end;
 
 constructor TGLFixedFunctionProperties.Create(AOwner: TPersistent);

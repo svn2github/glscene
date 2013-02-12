@@ -1874,7 +1874,7 @@ begin
     Result := currentLibMaterial.Blended
   end
   else
-    Result := not (BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100]);
+    Result := not (BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100, bmCustom]);
 end;
 
 // HasSecondaryTexture
