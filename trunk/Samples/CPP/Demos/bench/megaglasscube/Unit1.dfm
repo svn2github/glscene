@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Mega Glass Cube'
-  ClientHeight = 325
-  ClientWidth = 466
+  ClientHeight = 405
+  ClientWidth = 528
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,13 +17,15 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 466
-    Height = 325
+    Width = 528
+    Height = 405
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBackground
-    FieldOfView = 145.794540405273400000
+    Buffer.BackgroundColor = clBlack
+    FieldOfView = 152.260620117187500000
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 466
+    ExplicitHeight = 325
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone

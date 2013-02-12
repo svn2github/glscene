@@ -43,8 +43,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 		cube->CubeWidth = cubeSize;
 		cube->CubeHeight = cubeSize;
 		cube->CubeDepth = cubeSize;
-		cube->Material->FrontProperties->Diffuse->Color = VectorLerp(clrYellow, clrRed, (x * x + y * y + z * z)/
-		   (cSize * cSize ));
+		cube->Material->BlendingMode = bmTransparency;
+		cube->Material->FrontProperties->Diffuse->Color =
+		  VectorLerp(clrBlue, clrWhite, (float)(x * x + y * y + z * z)/(cSize * cSize * 3));
 		cube->Material->FrontProperties->Diffuse->Alpha = 0.5;
 	  }
 }
