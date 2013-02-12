@@ -139,7 +139,8 @@ begin
 
   // Read in the Tags
   SetLength(Tags,ModelHeader.numFrames*ModelHeader.numTags);
-  aStream.Read(Tags[0],sizeof(TMD3Tag)*ModelHeader.numFrames*ModelHeader.numTags);
+  if ModelHeader.numTags > 0 then 
+     aStream.Read(Tags[0],sizeof(TMD3Tag)*ModelHeader.numFrames*ModelHeader.numTags);
 
   // Read in the Mesh data
   meshOffset:=aStream.Position;
