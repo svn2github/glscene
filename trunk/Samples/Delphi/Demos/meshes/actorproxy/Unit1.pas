@@ -1,23 +1,15 @@
-// THIS DEMO IS PART OF THE GLSCENE PROJECT
-{
-  Version History:
-    30.01.2008 - mrqzzz - Initial version.
-    06.02.2008 - mrqzzz - Added  "RayCastIntersect" for Actorproxy in demo.
-    15.03.2008 - DaStr  - Updated RayCastIntersect stuff because of changes in
-                          the TGLActorProxy component.
-
-}
 unit Unit1;
-
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLProxyObjects, GLVectorFileObjects, GLObjects,
-  VectorGeometry, ExtCtrls, GLCadencer, GLTexture, GLGeomObjects, GLWin32Viewer,
-  GLFileSMD,JPEG, StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  Dialogs, ExtCtrls, StdCtrls,
+
+  GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects,
+  GLProxyObjects,  GLGeomObjects, VectorGeometry, GLCadencer,
+  GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
+  BaseClasses, GLFileSMD, JPEG;
 
 type
   TForm1 = class(TForm)
@@ -46,7 +38,7 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
   private
-    mousex,mousey:integer;
+    mouseX, mouseY : Integer;
     procedure DoRaycastStuff;
     { Private declarations }
   public
@@ -65,55 +57,38 @@ uses
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   i:integer;
+  i : Integer;
 begin
-     SetGLSceneMediaDir();
-     MasterActor.LoadFromFile('TRINITYrage.smd');
-     MasterActor.AddDataFromFile('run.smd');
-     MasterActor.AddDataFromFile('jump.smd');
+  SetGLSceneMediaDir();
+  MasterActor.LoadFromFile('TRINITYrage.smd');
+  MasterActor.AddDataFromFile('run.smd');
+  MasterActor.AddDataFromFile('jump.smd');
 
-     MasterActor.Animations.Items[0].Name:='still';
-     MasterActor.Animations.Items[1].Name:='walk';
-     MasterActor.Animations.Items[2].Name:='jump';
+  MasterActor.Animations.Items[0].Name:='still';
+  MasterActor.Animations.Items[1].Name:='walk';
+  MasterActor.Animations.Items[2].Name:='jump';
 
-     for i := 0 to MasterActor.Animations.Count-1 do
-     begin
-          MasterActor.Animations[i].MakeSkeletalTranslationStatic;
-          MasterActor.SwitchToAnimation(i); // forces animations to be initialized for ActorsProxies
-     end;
-     MasterActor.SwitchToAnimation(0);   // revert back to empty animation (not necessary)
-     MasterActor.AnimationMode:=aamLoop; // animationmode is shared between proxies.
+  for i := 0 to MasterActor.Animations.Count-1 do
+  begin
+      MasterActor.Animations[i].MakeSkeletalTranslationStatic;
+      MasterActor.SwitchToAnimation(i); // forces animations to be initialized for ActorsProxies
+  end;
+  MasterActor.SwitchToAnimation(0);   // revert back to empty animation (not necessary)
+  MasterActor.AnimationMode:=aamLoop; // animationmode is shared between proxies.
 
-     GLActorProxy1.StoreBonesMatrix:=true;
-     GLActorProxy2.StoreBonesMatrix:=true;
+  GLActorProxy1.StoreBonesMatrix:=true;
+  GLActorProxy2.StoreBonesMatrix:=true;
 
 
-     GLActorProxy1.Animation := MasterActor.Animations[1].Name;
-     GLActorProxy2.Animation := MasterActor.Animations[2].Name;
-end;
-
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
-begin
-     // Align object to hand
-     GLArrowLine1.Matrix := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
-     GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
-
-     // turn actors
-     if cbActorsAreTurning.Checked then
-     begin
-       GLActorProxy1.Turn(-deltaTime *130);
-       GLActorProxy2.Turn(deltaTime *100);
-     end;
-
-     DoRaycastStuff;
+  GLActorProxy1.Animation := MasterActor.Animations[1].Name;
+  GLActorProxy2.Animation := MasterActor.Animations[2].Name;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-     mousex:=x;
-     mouseY:=y;
+     mouseX := X;
+     mouseY := Y;
 end;
 
 procedure TForm1.DoRaycastStuff;
@@ -121,7 +96,8 @@ var
    rayStart, rayVector, iPoint, iNormal : TVector;
 begin
      SetVector(rayStart, GLCamera1.AbsolutePosition);
-     SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(AffineVectorMake(mousex, GLSceneViewer1.Height-mousey, 0)));
+     SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(
+               AffineVectorMake(mouseX, GLSceneViewer1.Height-mouseY, 0)));
      NormalizeVector(rayVector);
 
      if GLActorProxy1.RayCastIntersect(rayStart,rayVector,@iPoint,@iNormal) then
@@ -142,9 +118,26 @@ begin
      end;
 end;
 
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+     // Align object to hand
+     GLArrowLine1.Matrix := GLActorProxy1.BoneMatrix('Bip01 R Finger1');
+     GLArrowLine2.Matrix := GLActorProxy2.BoneMatrix('Bip01 R Finger1');
+
+     // turn actors
+     if cbActorsAreTurning.Checked then
+     begin
+       GLActorProxy1.Turn(-deltaTime *130);
+       GLActorProxy2.Turn(deltaTime *100);
+     end;
+
+     DoRaycastStuff;
+end;
+
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-     Caption:=GLSceneViewer1.FramesPerSecondText(0);
+     Panel1.Caption:=GLSceneViewer1.FramesPerSecondText(0);
      GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

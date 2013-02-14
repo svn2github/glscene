@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 285
   Top = 192
-  Width = 647
-  Height = 542
-  Caption = 'Form1'
+  Caption = 'Actor Proxy'
+  ClientHeight = 437
+  ClientWidth = 590
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,22 +17,24 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 631
-    Height = 477
+    Width = 590
+    Height = 410
     Camera = GLCamera1
     Buffer.BackgroundColor = 4194304
-    FieldOfView = 156.319564819335900000
+    FieldOfView = 152.586074829101600000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 477
-    Width = 631
+    Top = 410
+    Width = 590
     Height = 27
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = 471
+    ExplicitWidth = 639
     object cbActorsAreTurning: TCheckBox
       Left = 13
       Top = 5
@@ -46,7 +48,7 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     Left = 48
-    Top = 88
+    Top = 24
     object InvisibleDummyCube: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
       Visible = False
@@ -1267,18 +1269,18 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 48
-    Top = 120
+    Left = 160
+    Top = 24
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 48
-    Top = 152
+    Top = 96
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 48
-    Top = 184
+    Left = 160
+    Top = 96
   end
 end
