@@ -39,13 +39,13 @@ requires
   VclSmp;
 
 contains
-  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
-  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditorForm},
-  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
-  GLSceneFormDesign in '..\Source\DesignTime\GLSceneFormDesign.pas',
-  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form};
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
+  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
+  RegisterXCollection in '..\Source\RegisterXCollection.pas',
+  FShaderMemo in '..\Source\FShaderMemo.pas',
+  GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {layouts_form};
 
 end.
 
