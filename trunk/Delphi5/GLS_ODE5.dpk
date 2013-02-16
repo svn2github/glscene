@@ -32,8 +32,8 @@ requires
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
-  dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
-  GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
+  dynodegl in '..\Source\dynodegl.pas',
+  GLODERegister in '..\Source\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas';
 
 end.

@@ -31,10 +31,10 @@ requires
   GLScene5;
 
 contains
-  cgGL in '..\Source\CgShaders\cgGL.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  cg in '..\Source\CgShaders\cg.pas',
-  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas';
+  cgGL in '..\Source\cgGL.pas',
+  GLCgShader in '..\Source\GLCgShader.pas',
+  cg in '..\Source\cg.pas',
+  GLCgRegister in '..\Source\GLCgRegister.pas',
+  GLCgBombShader in '..\Source\GLCgBombShader.pas';
 
 end.
