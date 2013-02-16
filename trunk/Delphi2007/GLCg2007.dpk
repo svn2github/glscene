@@ -31,10 +31,10 @@ requires
   GLScene2007;
 
 contains
-  cgGL in '..\Source\CgShaders\cgGL.pas',
-  cg in '..\Source\CgShaders\cg.pas',
-  GLCgShader in '..\Source\CgShaders\GLCgShader.pas',
-  GLCgRegister in '..\Source\CgShaders\GLCgRegister.pas',
-  GLCgBombShader in '..\Source\CgShaders\GLCgBombShader.pas';
+  cgGL in '..\Source\cgGL.pas',
+  cg in '..\Source\cg.pas',
+  GLCgShader in '..\Source\GLCgShader.pas',
+  GLCgRegister in '..\Source\GLCgRegister.pas',
+  GLCgBombShader in '..\Source\GLCgBombShader.pas';
 
 end.
