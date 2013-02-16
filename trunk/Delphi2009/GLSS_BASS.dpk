@@ -33,6 +33,6 @@ requires
 
 contains
   GLSMBASS in '..\Source\GLSMBASS.pas',
-  Bass in '..\Source\SoundAPIs\Bass.pas';
+  Bass in '..\Source\Bass.pas';
 
 end.

@@ -33,11 +33,11 @@ requires
   rtl;
 
 contains
-  fmod in '..\Source\SoundAPIs\fmod.pas',
+  fmod in '..\Source\fmod.pas',
   GLSMFMOD in '..\Source\GLSMFMOD.pas',
-  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
-  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
-  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas',
-  fmoddyn in '..\Source\SoundAPIs\fmoddyn.pas';
+  fmodpresets in '..\Source\fmodpresets.pas',
+  fmodtypes in '..\Source\fmodtypes.pas',
+  fmoderrors in '..\Source\fmoderrors.pas',
+  fmoddyn in '..\Source\fmoddyn.pas';
 
 end.
