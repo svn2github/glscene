@@ -38,13 +38,13 @@ requires
 {%File '..\Source\GLScene.inc'}
 
 contains
-  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
   GLScene in '..\Source\GLScene.pas',
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
   GLScreen in '..\Source\GLScreen.pas',
   VectorGeometry in '..\Source\VectorGeometry.pas',
-  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
+  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugInManager.pas',
   Info in '..\Source\Info.pas' {InfoForm},
@@ -69,8 +69,8 @@ contains
   GLBehaviours in '..\Source\GLBehaviours.pas',
   ScreenSaver in '..\Source\ScreenSaver.pas',
   GLCadencer in '..\Source\GLCadencer.pas',
-  RegisterXCollection in '..\Source\DesignTime\RegisterXCollection.pas',
-  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  RegisterXCollection in '..\Source\RegisterXCollection.pas',
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
   XCollection in '..\Source\XCollection.pas',
   GLParticles in '..\Source\GLParticles.pas',
   GLObjects in '..\Source\GLObjects.pas',
@@ -288,10 +288,10 @@ contains
   GLSLParameter in '..\Source\GLSLParameter.pas',
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
   FRUniformEditor in '..\Source\FRUniformEditor.pas',
-  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas',
+  FShaderMemo in '..\Source\FShaderMemo.pas',
   GLSMemo in '..\Source\GLSMemo.pas',
   GLFileBMP in '..\Source\GLFileBMP.pas',
   GLFileTGA in '..\Source\GLFileTGA.pas',
-  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {layouts_form};
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {layouts_form};
 
 end.
