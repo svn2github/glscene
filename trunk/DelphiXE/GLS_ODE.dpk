@@ -34,11 +34,11 @@ requires
 
 contains
   GLODEManager in '..\Source\GLODEManager.pas',
-  dynodegl in '..\Source\PhysicsAPIs\dynodegl.pas',
-  GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
+  dynodegl in '..\Source\dynodegl.pas',
+  GLODERegister in '..\Source\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
   GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
-  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
+  ODEImport in '..\Source\ODEImport.pas',
   ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
   GLODERagdoll in '..\Source\GLODERagdoll.pas';
 

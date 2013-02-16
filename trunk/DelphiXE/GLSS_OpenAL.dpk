@@ -34,6 +34,6 @@ requires
 
 contains
   GLSMOpenAL in '..\Source\GLSMOpenAL.pas',
-  openal in '..\Source\SoundAPIs\openal.pas';
+  openal in '..\Source\openal.pas';
 
 end.
