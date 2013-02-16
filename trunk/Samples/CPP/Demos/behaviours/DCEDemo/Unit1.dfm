@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
@@ -39,8 +40,10 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object Terrain: TGLTerrainRenderer
+      Material.MaterialLibrary = GLMatLib
       HeightDataSource = GLBitmapHDS1
       TilesPerTexture = 1.000000000000000000
+      MaterialLibrary = GLMatLib
       BehavioursData = {
         0458434F4C02010201060C54474C444345537461746963020102001200000000
         0200060D474C4443454D616E61676572310203020009090F0000A0410F000000
@@ -48,6 +51,7 @@ object Form1: TForm1
     end
     object Ground: TGLPlane
       Material.FrontProperties.Diffuse.Color = {D3D2D23EC7C6463FC7C6C63E0000803F}
+      Material.MaterialLibrary = GLMatLib
       Direction.Coordinates = {000000000000803F0000000000000000}
       Position.Coordinates = {00000000000010C0000000000000803F}
       Scale.Coordinates = {0000FA430000FA430000803F00000000}
@@ -80,6 +84,7 @@ object Form1: TForm1
     end
     object GLCube1: TGLCube
       Material.FrontProperties.Diffuse.Color = {B1B0B03D9998183F8180003D0000803F}
+      Material.MaterialLibrary = GLMatLib
       Direction.Coordinates = {00000000CAA8073FAE19593F00000000}
       PitchAngle = 32.000000000000000000
       Position.Coordinates = {0000804000000000000020410000803F}
@@ -114,6 +119,7 @@ object Form1: TForm1
         end
       end
       object GLActor1: TGLActor
+        Material.MaterialLibrary = GLMatLib
         Interval = 100
       end
       object GLSphere1: TGLSphere
@@ -183,12 +189,13 @@ object Form1: TForm1
     Left = 496
     Top = 16
   end
-  object GLMaterialLibrary1: TGLMaterialLibrary
+  object GLMatLib: TGLMaterialLibrary
     Materials = <
       item
         Name = 'LibMaterial'
         Tag = 0
       end>
+    TexturePaths = '..\\..\\..\\..\\media\\'
     Left = 120
     Top = 72
   end

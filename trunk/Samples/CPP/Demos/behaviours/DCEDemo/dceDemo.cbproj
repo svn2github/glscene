@@ -83,6 +83,9 @@
         <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <FinalOutputDir>.</FinalOutputDir>
         <LinkPackageImports>rtl.bpi;vcl.bpi;GLScene_RunTime.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -93,9 +96,6 @@
         <CppCompile Include="dceDemo.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
-        <None Include="dceDemo.h">
-            <BuildOrder>2</BuildOrder>
-        </None>
         <CppCompile Include="Unit1.cpp">
             <Form>Form1</Form>
             <FormType>dfm</FormType>
@@ -158,10 +158,7 @@
                     <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
                     <VersionInfoKeys Name="CFBundleExecutable"/>
                 </VersionInfoKeys>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE3.bpl">File C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE3.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE2.bpl">File C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE2.bpl not found</Excluded_Packages>
-                </Excluded_Packages>
+                <Excluded_Packages/>
                 <ProjectProperties>
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>

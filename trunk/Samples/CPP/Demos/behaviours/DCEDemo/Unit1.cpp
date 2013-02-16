@@ -6,30 +6,33 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+
+#pragma link "GLScene"
+#pragma link "GLCadencer"
 #pragma link "BaseClasses"
 #pragma link "GLBitmapFont"
-#pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLDCE"
 #pragma link "GLHeightData"
 #pragma link "GLHUDObjects"
-#pragma link "GLMaterial"
-#pragma link "GLObjects"
-#pragma link "GLScene"
 #pragma link "GLTerrainRenderer"
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
 #pragma link "GLFile3DS"
 #pragma link "GLFileMD2"
+#pragma link "GLProxyObjects"
+
 
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
 const
-  Single cForce = 250;
+  float cForce = 250.0;
+const
   int cSpread = 200;
+const
   int cNbMushrooms = 20;
 
 float random(void)
@@ -44,25 +47,20 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-void TForm1::Load(void)
+void TForm1::Load()
 {
   SetGLSceneMediaDir();
   //Load Materials
-  GLMaterialLibrary1->AddTextureMaterial("Terrain", "snow512.jpg", true);
-  GLMaterialLibrary1->AddTextureMaterial("Terrain", "snow512.jpg", true);
-
-//  GLMaterialLibrary1->Materials->Items[0]->Material->Texture->Image->
-//	LoadFromFile("waste.jpg");
-
-  GLMaterialLibrary1->AddTextureMaterial("Actor", "waste.jpg", true);
+  GLMatLib->AddTextureMaterial("Terrain", "snow512.jpg");
+  GLMatLib->AddTextureMaterial("Actor", "waste.jpg");
 
   //Load Terrain
   GLBitmapHDS1->MaxPoolSize = 8 * 1024 * 1024;
   GLBitmapHDS1->Picture->LoadFromFile("terrain.bmp");
-  Terrain->Direction->SetVector(0, 1, 0);
+  Terrain->Direction->SetVector(0.0, 1.0, 0.0);
   Terrain->Material->LibMaterialName = "Terrain";
   Terrain->TilesPerTexture = 256 / Terrain->TileSize;
-  Terrain->Scale->SetVector(1, 1, 0.02);
+  Terrain->Scale->SetVector(1.0, 1.0, 0.02);
 
   Ground->Material->LibMaterialName = "Terrain";
 
@@ -70,15 +68,15 @@ void TForm1::Load(void)
   //Always use AutoScaling property or you may get some problems
   moMushroom->AutoScaling->SetPoint(0.1, 0.1, 0.1);
   moMushroom->LoadFromFile("Mushroom.3ds");
-  moMushroom->Direction->SetVector(0, 1, 0);
+  moMushroom->Direction->SetVector(0.0, 1.0, 0.0);
   moMushroom->BuildOctree();
 
   //Load player
-  Player->Position->SetPoint(0, 3, 0);
+  Player->Position->SetPoint(0.0, 3.0, 0.0);
   //Actor
   GLActor1->LoadFromFile("Waste.md2");
-  GLActor1->Direction->SetVector(0, 1, 0);
-  GLActor1->Up->SetVector(1, 0, 0);
+  GLActor1->Direction->SetVector(0.0, 1.0, 0.0);
+  GLActor1->Up->SetVector(1.0, 0.0, 0.0);
   GLActor1->Scale->SetVector(0.05, 0.05, 0.05);
   GLActor1->Material->LibMaterialName = "Actor";
   GLActor1->Animations->LoadFromFile("Quake2Animations.aaf");
@@ -89,26 +87,79 @@ void TForm1::Load(void)
 
   //DCE Behaviour
   GLSphere1->Scale->Assign(GetOrCreateDCEDynamic(Player)->Size);
-//  GetOrCreateDCEDynamic(Player)->OnCollision = PlayerBehaviours0Collision();
+  GetOrCreateDCEDynamic(Player)->OnCollision = PlayerBehaviours0Collision;
 }
-
-void TForm1::HandleKeys(void)
+//---------------------------------------------------------------------------
+void TForm1::AddBall()
 {
-  TAffineVector *Force;
-  Force = &NullVector;
-  if (IsKeyDown('W') || IsKeyDown('Z'))
-	Force->V[2] = cForce;
-  if (IsKeyDown('S'))
-	Force->V[2] = -cForce;
-  if (IsKeyDown('A') || IsKeyDown('Q'))
-	Force->V[0] = cForce;
-  if (IsKeyDown('D'))
-	Force->V[0] = -cForce;
+  TGLSphere *Ball;
+  float S;
+  float pX,pY,pZ;
+  float cR,cG,cB;
 
-  GetOrCreateDCEDynamic(Player)->ApplyAccel(*Force);
+  Ball = (TGLSphere *)(Balls->AddNewChild(__classid(TGLSphere)));
+  //with Ball do
+  Ball->Tag = 1; //set the identifier of a ball
+  Ball->Radius = 1.0;
+  S = (float)(100.0 + random(900.0))/ 500.0;
+  Ball->Scale->SetVector(S, S, S);
+  pX = random(40.0) - random(40.0);
+  pY = 4.0 + random(10.0);
+  pZ = random(40.0) - random(40.0);
+  Ball->Position->SetPoint(pX, pY, pZ);
+  cR = (float)(100.0 + random(900.0))/1000;
+  cG = (float)(100.0 + random(900.0))/1000;
+  cB = (float)(100.0 + random(900.0))/1000;
+  Ball->Material->FrontProperties->Diffuse->SetColor(cR, cG, cB);
+  GetOrCreateDCEDynamic(Ball)->Manager = GLDCEManager1;
+  GetOrCreateDCEDynamic(Ball)->BounceFactor = 0.75;
+  GetOrCreateDCEDynamic(Ball)->Friction = 0.1;
+  GetOrCreateDCEDynamic(Ball)->SlideOrBounce =   csbBounce;
+  GetOrCreateDCEDynamic(Ball)->Size->Assign(Ball->Scale);
 }
 
-void TForm1::HandleAnimation(void)
+//---------------------------------------------------------------------------
+
+void TForm1::AddMushrooms()
+{
+  int i;
+  TGLFreeFormProxy *Proxy;
+  Vectorgeometry::TVector s;
+  float f;
+
+  // spawn some more mushrooms using proxy objects
+  for (i = 0; i < cNbMushrooms - 1; i++) {
+	// create a new Proxy and set its MasterObject property
+	Proxy = (TGLFreeFormProxy *)(Mushrooms->AddNewChild(__classid(TGLFreeFormProxy)));
+	Proxy->ProxyOptions = Proxy->ProxyOptions << pooObjects;
+	Proxy->MasterObject = moMushroom;
+	// retrieve reference attitude
+	Proxy->Direction = moMushroom->Direction;
+	Proxy->Up = moMushroom->Up;
+	// randomize scale
+	s = moMushroom->Scale->AsVector;
+	f = 2.0 * random() + 1.0;
+	ScaleVector(s, f);
+	Proxy->Scale->AsVector = s;
+	// randomize position
+	Proxy->Position->SetPoint(
+		 (random(cSpread) - (float)(cSpread / 2.0)),
+		 (moMushroom->Position->Z + 1.5 * f),
+		 (random(cSpread) - (float)(cSpread / 2.0)));
+	// randomize orientation
+	Proxy->RollAngle = random(360.0);
+	Proxy->TransformationChanged();
+
+	GetOrCreateDCEStatic(Proxy)->Manager = GLDCEManager1;
+	GetOrCreateDCEStatic(Proxy)->BounceFactor = 0.75;
+	GetOrCreateDCEStatic(Proxy)->Friction = 10.0;
+	GetOrCreateDCEStatic(Proxy)->Shape = csFreeform;
+  }
+}
+
+//---------------------------------------------------------------------------
+
+void TForm1::HandleAnimation()
 {
   String anim;
   if (VectorNorm(GetOrCreateDCEDynamic(Player)->Speed) > 0.1)
@@ -116,96 +167,90 @@ void TForm1::HandleAnimation(void)
   else
 	anim = "stand";
 
-  if (Jumped==true) {
+  if (Jumped==true)
+  {
 	if (!GetOrCreateDCEDynamic(Player)->InGround)
 	  anim = "jump";
 	else
-	  Jumped = False;
+	  Jumped = false;
   }
   if (anim == "jump")
 	GLActor1->Interval = 500;
   else
 	GLActor1->Interval = 100;
-
   if (GLActor1->CurrentAnimation() != anim)
 	GLActor1->SwitchToAnimation(anim);
 }
 
-void TForm1::AddBall()
-{
-  TGLSphere *Ball;
-  Single S;
-  Single Px,Py,Pz;
-  Single cR, cG, cB;
 
-  Ball = (TGLSphere *)(Balls->AddNewChild(__classid(TGLSphere)));
-  //with Ball do
-	Ball->Tag = 1; //set the identifier of a ball
-	Ball->Radius = 1;
-	S = random(900.0);
-	S = (100.0 + random(900.0)/ 500.0);
-	Ball->Scale->SetVector(S, S, S);
-	Px = random(40.0) - random(40.0);
-	Py = 4.0 + random(10.0);
-	Pz = random(40.0) - random(40.0);
-	Ball->Position->SetPoint(Px, Py, Pz);
-	cR = (100.0 + random(900.0))/1000.0;
-	cG = (100.0 + random(900.0))/1000.0;
-	cB = (100.0 + random(900.0))/1000.0;
-	Ball->Material->FrontProperties->Diffuse->SetColor(cR, cG, cB);
-//  with GetOrCreateDCEDynamic(Ball) do
-	GetOrCreateDCEDynamic(Ball)->Manager = GLDCEManager1;
-	GetOrCreateDCEDynamic(Ball)->BounceFactor = 0.75;
-	GetOrCreateDCEDynamic(Ball)->Friction = 0.1;
-	GetOrCreateDCEDynamic(Ball)->SlideOrBounce = csbBounce;
-	GetOrCreateDCEDynamic(Ball)->Size->Assign(Ball->Scale);
+//---------------------------------------------------------------------------
+
+void TForm1::HandleKeys()
+{
+  TAffineVector Force;
+  Force = NullVector;
+
+  if (IsKeyDown(VK_ESCAPE)) Close();
+
+  if (IsKeyDown('w') || IsKeyDown('W') || IsKeyDown(VK_UP))
+	Force.V[2] = cForce;
+  if (IsKeyDown('s') || IsKeyDown('S') || IsKeyDown(VK_DOWN))
+	Force.V[2] = -cForce;
+  if (IsKeyDown('a') || IsKeyDown('A') || IsKeyDown(VK_LEFT))
+	Force.V[0] = cForce;
+  if (IsKeyDown('d') || IsKeyDown('D') || IsKeyDown(VK_RIGHT))
+	Force.V[0] = -cForce;
+  GetOrCreateDCEDynamic(Player)->ApplyAccel(Force);
 }
-void TForm1::AddMushrooms(void)
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
 {
   int i;
-  TGLFreeFormProxy *Proxy;
-  Vectorgeometry::TVector s;
-  Single f;
-  Single Px, Py, Pz;
 
-  // spawn some more mushrooms using proxy objects
-  for (i = 0; i < cNbMushrooms - 1;i++) {
-	// create a new Proxy and set its MasterObject property
-	Proxy = (TGLFreeFormProxy *)(Mushrooms->AddNewChild(__classid(TGLFreeFormProxy)));
-	//with Proxy do
-	  Proxy->ProxyOptions = Proxy->ProxyOptions << pooObjects;
-	  Proxy->MasterObject = moMushroom;
-	  // retrieve reference attitude
-	  Proxy->Direction = moMushroom->Direction;
-	  Proxy->Up = moMushroom->Up;
-	  // randomize scale
-	  s = moMushroom->Scale->AsVector;
-	  f = (2 * random() + 1);
-	  ScaleVector(s, f);
-	  Proxy->Scale->AsVector = s;
-	  // randomize position
-	  Px = random(cSpread) - (cSpread / 2);
-	  Py = moMushroom->Position->Z + 1.5 * f;
-	  Pz = random(cSpread) - (cSpread / 2);
-	  Proxy->Position->SetPoint(Px, Py, Pz);
-	  // randomize orientation
-	  Proxy->RollAngle = random(360);
-	  Proxy->TransformationChanged();
+  if (Key == VK_F1)
+	AddBall();
+  if (Key == VK_F2)
+	for (i = 1; i <= 10; i++)
+	  AddBall();
+  if (Key == VK_F3)
+	AddMushrooms();
+  if (Key == VK_SPACE)
+  {
+	GetOrCreateDCEDynamic(Player)->Jump(1.0, 20.0);
+	Jumped = true;
+  }
+  if (Key == VK_F4)
+  {
+	Terrain->Visible = false;
+	Ground->Visible = true;
+	GetOrCreateDCEStatic(Terrain)->Active = false;
+	GetOrCreateDCEStatic(Ground)->Active = true;
+  }
+  if (Key == VK_F5)
+	GLDCEManager1->ManualStep = !GLDCEManager1->ManualStep;
 
-	//with GetOrCreateDCEStatic(Proxy) do
-	  GetOrCreateDCEStatic(Proxy)->Manager = GLDCEManager1;
-	  GetOrCreateDCEStatic(Proxy)->BounceFactor = 0.75;
-	  GetOrCreateDCEStatic(Proxy)->Friction = 10;
-	  GetOrCreateDCEStatic(Proxy)->Shape = csFreeform;
+  if (Key = VK_RETURN) {
+	Player->Position->SetPoint(0.0, 3.0, 0.0);
+	Balls->DeleteChildren();
+	Mushrooms->DeleteChildren();
+	Help->ModulateColor->Alpha = 1.0;
+	Terrain->Visible = true;
+	Ground->Visible = false;
+	GetOrCreateDCEStatic(Terrain)->Active = true;
+	GetOrCreateDCEStatic(Ground)->Active = false;
   }
 }
 
+//---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift,
 		  int X, int Y)
 {
   //Mouse look
-  if (Shift.Contains(ssLeft)) {
+  if (Shift.Contains(ssLeft))
+  {
 	GLCamera1->MoveAroundTarget((my - Y), 0);
 	Player->Turn(-(mx - X));
   }
@@ -236,14 +281,14 @@ void __fastcall TForm1::FormShow(TObject *Sender)
   Load();
   GLCadencer1->Enabled = true;
   Help->Text =
-   "Mouse Drag - Look\r\
-	A,W,S,D - movement\r\
-	SPACE - Jump\r\
-	F1 - Add one ball\r\
-	F2 - Add 10 balls\r\
-	F3 - Add 20 mushrooms\r\
-	F4 - Change ground to box\r\
-	F5 - Toggle step mode\r\
+   "Mouse Drag - Look\n\r\
+	A,W,S,D - movement\n\r\
+	SPACE - Jump\n\r\
+	F1 - Add one ball\n\r\
+	F2 - Add 10 balls\n\r\
+	F3 - Add 20 mushrooms\n\r\
+	F4 - Change ground to box\n\r\
+	F5 - Toggle step mode\n\r\
 	RETURN - Reset";
 }
 //---------------------------------------------------------------------------
@@ -268,52 +313,17 @@ void __fastcall TForm1::PlayerBehaviours0Collision(TObject *Sender,
   //Use some kind of identifier to know what object you are colliding
   //You can use the Tag, TagFloat, Name, Class
   TAffineVector v;
-  if (ObjectCollided->Tag == 1) {
+  if (ObjectCollided->Tag == 1)
+  {
 	v = AffineVectorMake(VectorSubtract(ObjectCollided->AbsolutePosition, Player->AbsolutePosition));
 	NormalizeVector(v);
-	ScaleVector(v, 400);
+	ScaleVector(v, 400.0);
 	GetOrCreateDCEDynamic(ObjectCollided)->StopAbsAccel();
 	GetOrCreateDCEDynamic(ObjectCollided)->ApplyAbsAccel(v);
   }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
-
-{
-  int i;
-  if (Key == VK_F1)
-	AddBall();
-  if (Key == VK_F2)
-	for (i = 1; i < 10; i++)
-	  AddBall();
-  if (Key == VK_F3)
-	AddMushrooms();
-  if (Key == VK_SPACE) {
-	GetOrCreateDCEDynamic(Player)->Jump(1, 20);
-	Jumped = true;
-  }
-  if (Key == VK_F4) {
-	Terrain->Visible = false;
-	Ground->Visible = true;
-	GetOrCreateDCEStatic(Terrain)->Active = false;
-	GetOrCreateDCEStatic(Ground)->Active = true;
-  }
-  if (Key == VK_F5)
-	GLDCEManager1->ManualStep = !GLDCEManager1->ManualStep;
-
-  if (Key = VK_RETURN) {
-	Player->Position->SetPoint(0, 3, 0);
-	Balls->DeleteChildren();
-	Mushrooms->DeleteChildren();
-	Help->ModulateColor->Alpha = 1;
-	Terrain->Visible = true;
-	Ground->Visible = false;
-	GetOrCreateDCEStatic(Terrain)->Active = true;
-	GetOrCreateDCEStatic(Ground)->Active = false;
-  }
-}
-//---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
 
@@ -325,35 +335,32 @@ void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInf
   //GLEllipseCollision.pas, if you do, don't forget to clear the
   //triangle list! -> SetLength(debug_tri,0);
 
-/*
-  rci->GLStates->PointSize = 5.0;
-  GL->Color3f(0, 1, 0);
+  rci.GLStates->PointSize = 5.0;
+  glColor3f(0.0, 1.0, 0.0);
 
-  for (i = 0; i < High(debug_tri); i++) {
-  //	with debug_tri[i] do
-	  GL->Color3f(0, 0, 0);
-	  GL.Begin_(GL_LINE_STRIP);
-	  GL.Vertex3f(p1.V[0], p1.V[1], p1.V[2]);
-	  GL.Vertex3f(p2.V[0], p2.V[1], p2.V[2]);
-	  GL.Vertex3f(p3.V[0], p3.V[1], p3.V[2]);
-	  GL.End_;
-	  CalcPlaneNormal(p1, p2, p3, n);
-	  ScaleVector(n, 0.25);
-	  p.V[0] := (p1.V[0] + p2.V[0] + p3.V[0]) / 3;
-	  p.V[1] := (p1.V[1] + p2.V[1] + p3.V[1]) / 3;
-	  p.V[2] := (p1.V[2] + p2.V[2] + p3.V[2]) / 3;
-	  GL.Color3f(0, 0, 1);
-	  GL.Begin_(GL_LINE_STRIP);
-	  GL.Vertex3f(p.V[0], p.V[1], p.V[2]);
-	  GL.Vertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
-	  GL.End_;
-	  GL.Begin_(GL_POINTS);
-	  GL.Vertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
-	  GL.End_;
-
+  for (i = 0; i < debug_tri.High; i++) {
+	glColor3f(0.0, 0.0, 0.0);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(debug_tri[i].p1.V[0], debug_tri[i].p1.V[1], debug_tri[i].p1.V[2]);
+	glVertex3f(debug_tri[i].p2.V[0], debug_tri[i].p2.V[1], debug_tri[i].p2.V[2]);
+	glVertex3f(debug_tri[i].p3.V[0], debug_tri[i].p3.V[1], debug_tri[i].p3.V[2]);
+	glEnd;
+	CalcPlaneNormal(debug_tri[i].p1, debug_tri[i].p2, debug_tri[i].p3, n);
+	ScaleVector(n, 0.25);
+	p.V[0] = (debug_tri[i].p1.V[0] + debug_tri[i].p2.V[0] + debug_tri[i].p3.V[0]) / 3.0;
+	p.V[1] = (debug_tri[i].p1.V[1] + debug_tri[i].p2.V[1] + debug_tri[i].p3.V[1]) / 3.0;
+	p.V[2] = (debug_tri[i].p1.V[2] + debug_tri[i].p2.V[2] + debug_tri[i].p3.V[2]) / 3.0;
+	glColor3f(0.0, 0.0, 1.0);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(p.V[0], p.V[1], p.V[2]);
+	glVertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
+	glEnd;
+	glBegin(GL_POINTS);
+	glVertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
+	glEnd;
 	}
-  SetLength(debug_tri, 0);
-*/
+  debug_tri.Length = 0.0;
 }
 //---------------------------------------------------------------------------
+
 

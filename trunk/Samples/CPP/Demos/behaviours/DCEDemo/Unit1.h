@@ -3,29 +3,47 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <tchar.h>
+//---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
-#include "GLBitmapFont.hpp"
-#include "GLCadencer.hpp"
-#include "GLCoordinates.hpp"
-#include "GLCrossPlatform.hpp"
-#include "GLDCE.hpp"
-#include "GLHeightData.hpp"
-#include "GLHUDObjects.hpp"
-#include "GLMaterial.hpp"
-#include "GLObjects.hpp"
 #include "GLScene.hpp"
+#include "GLObjects.hpp"
+#include "GLCadencer.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLDCE.hpp"
+#include "GLMaterial.hpp"
+#include "GLTexture.hpp"
+#include "GLHeightData.hpp"
 #include "GLTerrainRenderer.hpp"
 #include "GLVectorFileObjects.hpp"
-#include "GLWin32Viewer.hpp"
+#include "GLBitmapFont.hpp"
 #include "GLWindowsFont.hpp"
+#include "GLHUDObjects.hpp"
+#include "GLCrossPlatform.hpp"
+#include "GLCoordinates.hpp"
+#include "BaseClasses.hpp"
+#include "GLRenderContextInfo.hpp"
 #include "GLKeyBoard.hpp"
+#include "GLState.hpp"
+
+#include "OpenGL1x.hpp"
 #include "Jpeg.hpp"
+
+#include "VectorGeometry.hpp"
+#include "OpenGLTokens.hpp"
+#include "GLContext.hpp"
+#include "GLEllipseCollision.hpp"
+#include "GLUtils.hpp"
+
+
+
+
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -54,7 +72,7 @@ __published:	// IDE-managed Components
 	TGLBitmapHDS *GLBitmapHDS1;
 	TGLWindowsBitmapFont *GLWindowsBitmapFont1;
 	TTimer *Timer1;
-	TGLMaterialLibrary *GLMaterialLibrary1;
+	TGLMaterialLibrary *GLMatLib;
 	void __fastcall GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift, int X,
           int Y);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
@@ -62,17 +80,18 @@ __published:	// IDE-managed Components
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall PlayerBehaviours0Collision(TObject *Sender,
 	  TGLBaseSceneObject *ObjectCollided, TDCECollision &CollisionInfo);
-	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
+
 
 private:	// User declarations
 	int mx, my;
 	bool Jumped;
-	void Load(void);
-	void HandleKeys(void);
-	void HandleAnimation(void);
-	void AddBall(void);
-	void AddMushrooms(void);
+	void Load();
+	void HandleKeys();
+	void HandleAnimation();
+	void AddBall();
+	void AddMushrooms();
 
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
