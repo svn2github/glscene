@@ -35,11 +35,11 @@ requires
 
 contains
   GLDWS2Objects in '..\Source\GLDWS2Objects.pas',
-  dws2HelperFunc in '..\Source\ScriptingAPIs\dws2HelperFunc.pas',
-  dws2Classes in '..\Source\ScriptingAPIs\dws2Classes.pas',
-  dws2VectorGeometry in '..\Source\ScriptingAPIs\dws2VectorGeometry.pas',
-  dws2GLScene in '..\Source\ScriptingAPIs\dws2GLScene.pas',
-  dws2OpenGLAdapter in '..\Source\ScriptingAPIs\dws2OpenGLAdapter.pas',
+  dws2HelperFunc in '..\Source\dws2HelperFunc.pas',
+  dws2Classes in '..\Source\dws2Classes.pas',
+  dws2VectorGeometry in '..\Source\dws2VectorGeometry.pas',
+  dws2GLScene in '..\Source\dws2GLScene.pas',
+  dws2OpenGLAdapter in '..\Source\dws2OpenGLAdapter.pas',
   GLScriptDWS2 in '..\Source\GLScriptDWS2.pas';
 
 end.

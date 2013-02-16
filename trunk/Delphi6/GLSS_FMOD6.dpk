@@ -31,7 +31,7 @@ requires
   GLScene6;
 
 contains
-  FMOD in '..\Source\SoundAPIs\fmod.pas',
+  FMOD in '..\Source\fmod.pas',
   GLSMFMOD in '..\Source\GLSMFMOD.pas';
 
 end.
