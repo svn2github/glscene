@@ -6,6 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/10/10 - Yar - Bugfixed memory leak
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -395,7 +396,8 @@ begin
 end;
 
 
-procedure GetMLVertexProgramCode(const Code: TStrings);
+procedure GetMLVertexProgramCode(const Code: TStrings;
+  AFogSupport: Boolean; var rci: TRenderContextInfo);
 begin
   with Code do
   begin
@@ -403,6 +405,10 @@ begin
     Add('varying vec3 Normal; ');
     Add('varying vec3 LightVector; ');
     Add('varying vec3 ViewDirection; ');
+    if AFogSupport then
+    begin
+      Add('varying float fogFactor; ');
+    end;
     Add(' ');
     Add(' ');
     Add('void main(void) ');
@@ -411,11 +417,37 @@ begin
     Add('  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0; ');
     Add('  Normal = normalize(gl_NormalMatrix * gl_Normal); ');
     Add('  ViewDirection = (gl_ModelViewMatrix * gl_Vertex).xyz; ');
+
+    if AFogSupport then
+    begin
+    Add('  const float LOG2 = 1.442695; ');
+    Add('  gl_FogFragCoord = length(ViewDirection); ');
+
+    case TGLSceneBuffer(rci.buffer).FogEnvironment.FogMode of
+      fmLinear:
+        Add('  fogFactor = (gl_Fog.end - gl_FogFragCoord) * gl_Fog.scale; ');
+      fmExp, // Yep, I don't know about this type, so I use fmExp2.
+      fmExp2:
+      begin
+        Add('  fogFactor = exp2( -gl_Fog.density * ');
+        Add('  				   gl_Fog.density * ');
+        Add('  				   gl_FogFragCoord * ');
+        Add('  				   gl_FogFragCoord * ');
+        Add('  				   LOG2 ); ');
+      end;
+    else
+      Assert(False, glsUnknownType);
+    end;
+
+      Add('  fogFactor = clamp(fogFactor, 0.0, 1.0); ');
+    end;
+
     Add('} ');
   end;
 end;
 
-procedure GetMLFragmentProgramCodeBeg(const Code: TStrings);
+procedure GetMLFragmentProgramCodeBeg(const Code: TStrings;
+  const AFogSupport: Boolean);
 begin
   with Code do
   begin
@@ -426,6 +458,10 @@ begin
     Add(' ');
     Add('varying vec3 Normal; ');
     Add('varying vec3 ViewDirection; ');
+    if AFogSupport then
+    begin
+      Add('varying float fogFactor; ');
+    end;
     Add(' ');
     Add('void main(void) ');
     Add('{ ');
@@ -454,7 +490,11 @@ begin
   end;
 end;
 
-procedure GetMLFragmentProgramCodeEnd(const Code: TStrings; const FLightCount: Integer; const FLightCompensation: Single; const FRealisticSpecular: Boolean);
+procedure GetMLFragmentProgramCodeEnd(const Code: TStrings;
+  const FLightCount: Integer;
+  const FLightCompensation: Single;
+  const FRealisticSpecular: Boolean;
+  AFogSupport: Boolean);
 var
   Temp: AnsiString;
 begin
@@ -475,6 +515,9 @@ begin
       else
         Add('  gl_FragColor =  LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib  + SpecContrib) * ' + string(Temp) + '; ');
     end;
+
+    if AFogSupport then
+      Add('  gl_FragColor = mix(gl_Fog.color, gl_FragColor, fogFactor );');
 
     Add('  gl_FragColor.a = TextureContrib.a; ');
     Add('} ');
@@ -708,16 +751,17 @@ procedure TGLCustomGLSLMLDiffuseSpecularShader.DoInitialize(var rci: TRenderCont
 var
   I: Integer;
 begin
-  GetMLVertexProgramCode(VertexProgram.Code);
+  GetMLVertexProgramCode(VertexProgram.Code, IsFogEnabled(FFogSupport, rci), rci);
   with FragmentProgram.Code do
   begin
-    GetMLFragmentProgramCodeBeg(FragmentProgram.Code);
+    GetMLFragmentProgramCodeBeg(FragmentProgram.Code, IsFogEnabled(FFogSupport, rci));
 
     // Repeat for all lights.
     for I := 0 to FLightCount - 1 do
       GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
 
-    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount, FLightCompensation, FRealisticSpecular);
+    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount,
+      FLightCompensation, FRealisticSpecular, IsFogEnabled(FFogSupport, rci));
   end;
   VertexProgram.Enabled := True;
   FragmentProgram.Enabled := True;
@@ -754,16 +798,17 @@ procedure TGLCustomGLSLMLDiffuseSpecularShaderMT.DoInitialize(var rci: TRenderCo
 var
   I: Integer;
 begin
-  GetMLVertexProgramCode(VertexProgram.Code);
+  GetMLVertexProgramCode(VertexProgram.Code, IsFogEnabled(FFogSupport, rci), rci);
   with FragmentProgram.Code do
   begin
-    GetMLFragmentProgramCodeBeg(FragmentProgram.Code);
+    GetMLFragmentProgramCodeBeg(FragmentProgram.Code, IsFogEnabled(FFogSupport, rci));
 
     // Repeat for all lights.
     for I := 0 to FLightCount - 1 do
       GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
 
-    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount, FLightCompensation, FRealisticSpecular);
+    GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount,
+      FLightCompensation, FRealisticSpecular, IsFogEnabled(FFogSupport, rci));
   end;
   VertexProgram.Enabled := True;
   FragmentProgram.Enabled := True;
