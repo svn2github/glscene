@@ -6,6 +6,7 @@
    Skydome object<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>17/02/13 - Yar - Added SetSunAtTime method (thanks to Dimitriy) 
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>24/03/11 - Yar - Added esoDepthTest to TEarthSkydomeOption
                            (Drawing sky dome latest with depth test reduce pixels overdraw)
@@ -185,14 +186,9 @@ type
     procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
 
     {: Adds nb random stars of the given color.<p>
-       Stars are homogenously scattered on the complete sphere, not only the
-       band defined or visible dome. }
-    procedure AddRandomStars(const nb: Integer; const color: TColor;
-      const limitToTopDome: Boolean = False); overload;
-    procedure AddRandomStars(const nb: Integer; const ColorMin, ColorMax:
-      TVector3b;
-      const Magnitude_min, Magnitude_max: Single;
-      const limitToTopDome: Boolean = False); overload;
+       Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
+    procedure AddRandomStars(const nb: Integer; const color: TColor; const limitToTopDome: Boolean = False); overload;
+    procedure AddRandomStars(const nb: Integer; const ColorMin, ColorMax:TVector3b; const Magnitude_min, Magnitude_max: Single;const limitToTopDome: Boolean = False); overload;
 
     {: Load a 'stars' file, which is made of TGLStarRecord.<p>
        Not that '.stars' files should already be sorted by magnitude and color. }
@@ -272,7 +268,7 @@ type
     FDeepColor: TGLColor;
     FSlices, FStacks: Integer;
     FExtendedOptions: TEarthSkydomeOptions;
-
+    FMorning: boolean;
   protected
     { Protected Declarations }
     procedure Loaded; override;
@@ -301,25 +297,22 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo); override;
 
+    procedure SetSunAtTime(HH, MM: Single);
+
   published
     { Published Declarations }
       {: Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
-    {: Expresses the purity of air.<p>
-       Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
+    {: Expresses the purity of air.<p> Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
     property Turbidity: Single read FTurbidity write SetTurbidity;
 
-    property SunZenithColor: TGLColor read FSunZenithColor write
-      SetSunZenithColor;
+    property SunZenithColor: TGLColor read FSunZenithColor write SetSunZenithColor;
     property SunDawnColor: TGLColor read FSunDawnColor write SetSunDawnColor;
     property HazeColor: TGLColor read FHazeColor write SetHazeColor;
     property SkyColor: TGLColor read FSkyColor write SetSkyColor;
     property NightColor: TGLColor read FNightColor write SetNightColor;
     property DeepColor: TGLColor read FDeepColor write SetDeepColor;
-
-    property ExtendedOptions: TEarthSkydomeOptions read FExtendedOptions write
-      FExtendedOptions;
-
+    property ExtendedOptions: TEarthSkydomeOptions read FExtendedOptions write FExtendedOptions;
     property Slices: Integer read FSlices write SetSlices default 24;
     property Stacks: Integer read FStacks write SetStacks default 48;
   end;
@@ -400,8 +393,7 @@ end;
 procedure TSkyDomeBand.SetStartAngle(const val: Single);
 begin
   FStartAngle := ClampValue(val, -90, 90);
-  if FStartAngle > FStopAngle then
-    FStopAngle := FStartAngle;
+  if FStartAngle > FStopAngle then FStopAngle := FStartAngle;
   TSkyDomeBands(Collection).NotifyChange;
 end;
 
@@ -587,8 +579,7 @@ end;
 
 procedure TSkyDomeBands.NotifyChange;
 begin
-  if Assigned(owner) and (owner is TGLBaseSceneObject) then
-    TGLBaseSceneObject(owner).StructureChanged;
+  if Assigned(owner) and (owner is TGLBaseSceneObject) then TGLBaseSceneObject(owner).StructureChanged;
 end;
 
 // BuildList
@@ -598,8 +589,7 @@ procedure TSkyDomeBands.BuildList(var rci: TRenderContextInfo);
 var
   i: Integer;
 begin
-  for i := 0 to Count - 1 do
-    Items[i].BuildList(rci);
+  for i := 0 to Count - 1 do Items[i].BuildList(rci);
 end;
 
 // ------------------
@@ -1027,18 +1017,15 @@ end;
 constructor TGLEarthSkyDome.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FMorning:=true;
   Bands.Clear;
   FSunElevation := 75;
   FTurbidity := 15;
   FSunZenithColor := TGLColor.CreateInitialized(Self, clrWhite, OnColorChanged);
-  FSunDawnColor := TGLColor.CreateInitialized(Self, Vectormake(1, 0.5, 0, 0),
-    OnColorChanged);
-  FHazeColor := TGLColor.CreateInitialized(Self, VectorMake(0.9, 0.95, 1, 0),
-    OnColorChanged);
-  FSkyColor := TGLColor.CreateInitialized(Self, VectorMake(0.45, 0.6, 0.9, 0),
-    OnColorChanged);
-  FNightColor := TGLColor.CreateInitialized(Self, clrTransparent,
-    OnColorChanged);
+  FSunDawnColor := TGLColor.CreateInitialized(Self, Vectormake(1, 0.5, 0, 0),OnColorChanged);
+  FHazeColor := TGLColor.CreateInitialized(Self, VectorMake(0.9, 0.95, 1, 0),OnColorChanged);
+  FSkyColor := TGLColor.CreateInitialized(Self, VectorMake(0.45, 0.6, 0.9, 0),OnColorChanged);
+  FNightColor := TGLColor.CreateInitialized(Self, clrTransparent,OnColorChanged);
   FDeepColor := TGLColor.CreateInitialized(Self, VectorMake(0, 0.2, 0.4, 0));
   FStacks := 24;
   FSlices := 48;
@@ -1172,10 +1159,7 @@ end;
 
 procedure TGLEarthSkyDome.SetSlices(const val: Integer);
 begin
-  if val > 6 then
-    FSlices := val
-  else
-    FSlices := 6;
+  if val>6 then FSlices:=val else FSlices:=6;
   StructureChanged;
 end;
 
@@ -1184,10 +1168,7 @@ end;
 
 procedure TGLEarthSkyDome.SetStacks(const val: Integer);
 begin
-  if val > 1 then
-    FStacks := val
-  else
-    FStacks := 1;
+  if val>1 then FStacks:=val else FStacks:=1;
   StructureChanged;
 end;
 
@@ -1237,6 +1218,74 @@ begin
   PreCalculate;
 end;
 
+procedure TGLEarthSkyDome.SetSunAtTime(HH, MM: Single);
+const
+  cHourToElevation1: array[0..23] of Single =
+  (-45, -67.5, -90, -57.5, -45, -22.5, 0, 11.25, 22.5, 33.7, 45, 56.25, 67.5,
+   78.75, 90, 78.75, 67.5, 56.25, 45, 33.7, 22.5, 11.25, 0, -22.5);
+  cHourToElevation2: array[0..23] of Single =
+  (-0.375, -0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375,
+    0.375, 0.375, 0.375, 0.375, 0.375, -0.375, -0.375, -0.375, -0.375,
+    -0.375, -0.375, -0.375, -0.375, -0.375);
+var
+  ts:Single;
+  fts:Single;
+  i:integer;
+  color:TColor;
+begin
+  HH:=Round(HH);
+  if HH<0 then HH:=0;
+  if HH>23 then HH:=23;
+  if MM<0 then MM:=0;
+  if MM>=60 then
+  begin
+    MM:=0;
+    HH:=HH+1;
+    if HH>23 then HH:=0;
+  end;
+  FSunElevation := cHourToElevation1[Round(HH)] + cHourToElevation2[Round(HH)]*MM;
+
+  ts := DegToRad(90 - FSunElevation);
+  // Mix base colors
+  fts := exp(-6 * (PI / 2 - ts));
+  VectorLerp(SunZenithColor.Color, SunDawnColor.Color, fts, FCurSunColor);
+  fts := Power(1 - cos(ts - 0.5), 2);
+  VectorLerp(HazeColor.Color, NightColor.Color, fts, FCurHazeColor);
+  VectorLerp(SkyColor.Color, NightColor.Color, fts, FCurSkyColor);
+  // Precalculate Turbidity factors
+  FCurHazeTurbid := -sqrt(121 - Turbidity) * 2;
+  FCurSunSkyTurbid := -(121 - Turbidity);
+
+  //fade stars if required
+  if SunElevation>-40 then ts:=power(1-(SunElevation+40)/90,11)else ts:=1;
+  color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
+  if esoFadeStarsWithSun in ExtendedOptions then for i:=0 to Stars.Count-1 do stars[i].Color:=color;
+
+
+  if esoRotateOnTwelveHours in ExtendedOptions then // spining arounf blue orb
+  begin
+    if (HH>=14) and (FMorning=true) then
+    begin
+      roll(180);
+      for i:=0 to Stars.Count-1 do stars[i].RA:=Stars[i].RA+180;
+      FMorning:=false;
+    end;
+
+    if (HH>=2) and (HH<14) and (FMorning=false) then
+    begin
+      roll(180);
+      for i:=0 to Stars.Count-1 do stars[i].RA:=Stars[i].RA+180;
+      FMorning:=true;
+    end;
+  end;
+  StructureChanged;
+end;
+
+
+
+
+
+
 // PreCalculate
 //
 
@@ -1259,8 +1308,8 @@ begin
   FCurSunSkyTurbid := -(121 - Turbidity);
 
   //fade stars if required
-  if SunElevation > 0 then
-    ts := power(1 - SunElevation / 90, 11)
+  if SunElevation>-40 then
+    ts := power(1 - (SunElevation+40) / 90, 11)
   else
     ts := 1;
   color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
@@ -1461,4 +1510,4 @@ initialization
   RegisterClasses([TGLSkyDome, TGLEarthSkyDome]);
 
 end.
-
+
