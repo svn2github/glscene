@@ -1,9 +1,3 @@
-{: Early mesh subdivision refinement demo.<p>
-
-   Yes, it's slow, the edge data construction is not optimized, and the MD2
-   format isn't really suited for refinement (that's approx 200 frames we have
-   to subdivide and keep in memory... but it's good for benchmarking!).<p>
-}
 unit Unit1;
 
 interface
@@ -59,18 +53,32 @@ implementation
 
 {$R *.dfm}
 
-uses MeshUtils, VectorGeometry, Jpeg, TGA, GLFileObj,
-     GLFile3DS, GLFileMD2, GLFileSMD, GLUtils;
+uses
+  MeshUtils, VectorGeometry,
+  Jpeg, TGA, GLFileObj, GLUtils,
+  GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    BUSubdivide.Enabled:=True;
 
-   SetGLSceneMediaDir();
+//   GLFreeForm1.LoadFromFile('polyhedron.3ds');
+//   GLFreeForm1.LoadFromFile('mushroom.3ds');
+//   GLFreeForm1.LoadFromFile('trinityrage.smd');
+//   GLFreeForm1.LoadFromFile('HighPolyObject.3ds');
+
+{
+   GLActor1.LoadFromFile('trinityrage.smd');
+   GLActor1.AddDataFromFile('run.smd');
+   GLActor1.Animations[1].MakeSkeletalTranslationStatic;
+   GLActor1.SwitchToAnimation(GLActor1.Animations[1]);
+}
+
    GLActor1.LoadFromFile('waste.md2');
    GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
    GLActor1.Material.Texture.Enabled:=True;
-   GLActor1.SwitchToAnimation(GLActor1.Animations[0]); 
+   GLActor1.SwitchToAnimation(GLActor1.Animations[0]);
 
    CBAnimateClick(Self);
 end;
@@ -88,11 +96,11 @@ begin
    Screen.Cursor:=crHourGlass;
    t:=StartPrecisionTimer;
 
-   for i:=0 to GLActor1.MeshObjects.Count-1 do begin
+   for i:=0 to GLActor1.MeshObjects.Count-1 do
+   begin
       tex:=TAffineVectorList.Create;
-      with GLActor1.MeshObjects[i] do begin
+      with GLActor1.MeshObjects[i] do
          tris:=ExtractTriangles(tex);
-      end;
       indices:=BuildVectorCountOptimizedIndices(tris);
       firstRemap:=TIntegerList(indices.CreateClone);
       RemapAndCleanupReferences(tris, indices);

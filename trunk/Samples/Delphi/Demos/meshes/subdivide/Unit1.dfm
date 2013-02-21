@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 173
   Top = 100
-  Width = 511
-  Height = 357
   BorderWidth = 2
-  Caption = 'Form1'
+  Caption = 'Subdivide'
+  ClientHeight = 309
+  ClientWidth = 499
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,32 +16,33 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 374
+    Left = 382
     Top = 0
     Width = 2
-    Height = 315
+    Height = 309
     Align = alRight
     AutoSize = False
+    ExplicitHeight = 324
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 374
-    Height = 315
+    Width = 382
+    Height = 309
     Camera = GLCamera1
     Buffer.BackgroundColor = 13619151
     Buffer.FaceCulling = False
-    FieldOfView = 144.774841308593800000
+    FieldOfView = 144.134292602539100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 376
+    Left = 384
     Top = 0
     Width = 115
-    Height = 315
+    Height = 309
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -114,7 +115,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 40
     Top = 16
     object GLActor1: TGLActor
       Material.Texture.TextureMode = tmReplace
@@ -137,18 +138,18 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 48
+    Left = 128
     Top = 16
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 80
+    Left = 216
     Top = 16
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 40
-    Top = 56
+    Top = 72
   end
 end

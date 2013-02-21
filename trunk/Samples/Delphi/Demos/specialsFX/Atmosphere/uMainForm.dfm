@@ -1,9 +1,9 @@
 object MainForm: TMainForm
   Left = 244
   Top = 109
-  Width = 659
-  Height = 544
-  Caption = 'GLAtmosphere Demo'
+  Caption = 'Atmosphere'
+  ClientHeight = 485
+  ClientWidth = 650
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,133 +15,143 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 8
-    Top = 312
-    Width = 41
-    Height = 13
-    Caption = 'Controls:'
-  end
-  object Label2: TLabel
-    Left = 5
-    Top = 328
-    Width = 103
-    Height = 13
-    Caption = 'Mouse Wheel = zoom'
-  end
-  object Label3: TLabel
-    Left = 3
-    Top = 344
-    Width = 120
-    Height = 13
-    Caption = 'Hold Mouse and Move = '
-  end
-  object Label4: TLabel
-    Left = 51
-    Top = 360
-    Width = 68
-    Height = 13
-    Caption = ' = turn camera'
-  end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 125
-    Top = 23
-    Width = 510
-    Height = 474
+    Left = 153
+    Top = 0
+    Width = 497
+    Height = 485
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 165.571472167968700000
+    FieldOfView = 165.895385742187500000
+    Align = alClient
     TabOrder = 0
   end
-  object Button1: TButton
-    Left = 21
-    Top = 24
-    Width = 74
-    Height = 25
-    Caption = 'Rotate Planet'
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 153
+    Height = 485
+    Align = alLeft
     TabOrder = 1
-    OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 13
-    Top = 152
-    Width = 88
-    Height = 25
-    Caption = 'Move Sun Right'
-    TabOrder = 2
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 13
-    Top = 184
-    Width = 88
-    Height = 25
-    Caption = 'Move Sun Left'
-    TabOrder = 3
-    OnClick = Button3Click
-  end
-  object Button4: TButton
-    Left = 5
-    Top = 72
-    Width = 108
-    Height = 25
-    Caption = 'Move Planet Right'
-    TabOrder = 4
-    OnClick = Button4Click
-  end
-  object Button5: TButton
-    Left = 5
-    Top = 104
-    Width = 108
-    Height = 25
-    Caption = 'Move Planet Left'
-    TabOrder = 5
-    OnClick = Button5Click
-  end
-  object Button6: TButton
-    Left = 0
-    Top = 448
-    Width = 121
-    Height = 25
-    Caption = 'ON/Off atmosphere'
-    TabOrder = 6
-    OnClick = Button6Click
-  end
-  object Button8: TButton
-    Left = 0
-    Top = 472
-    Width = 121
-    Height = 25
-    Caption = 'Change Blending Mode'
-    TabOrder = 7
-    OnClick = Button8Click
-  end
-  object Button9: TButton
-    Left = 21
-    Top = 232
-    Width = 74
-    Height = 25
-    Hint = 'Mouse Wheel Can change zoom too'
-    Caption = 'Zoom in'
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 8
-    OnClick = Button9Click
-  end
-  object Button10: TButton
-    Left = 21
-    Top = 264
-    Width = 74
-    Height = 25
-    Hint = 'Mouse Wheel Can change zoom too'
-    Caption = 'Zoom out'
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 9
-    OnClick = Button10Click
+    object Label1: TLabel
+      Left = 13
+      Top = 368
+      Width = 41
+      Height = 13
+      Caption = 'Controls:'
+    end
+    object Label2: TLabel
+      Left = 13
+      Top = 387
+      Width = 103
+      Height = 13
+      Caption = 'Mouse Wheel = zoom'
+    end
+    object Label3: TLabel
+      Left = 13
+      Top = 406
+      Width = 120
+      Height = 13
+      Caption = 'Hold Mouse and Move = '
+    end
+    object Label4: TLabel
+      Left = 19
+      Top = 425
+      Width = 68
+      Height = 13
+      Caption = ' = turn camera'
+    end
+    object Button1: TButton
+      Left = 13
+      Top = 15
+      Width = 74
+      Height = 25
+      Caption = 'Rotate Planet'
+      TabOrder = 0
+      OnClick = Button1Click
+    end
+    object Button4: TButton
+      Left = 13
+      Top = 64
+      Width = 108
+      Height = 25
+      Caption = 'Move Planet Right'
+      TabOrder = 1
+      OnClick = Button4Click
+    end
+    object Button5: TButton
+      Left = 13
+      Top = 95
+      Width = 108
+      Height = 25
+      Caption = 'Move Planet Left'
+      TabOrder = 2
+      OnClick = Button5Click
+    end
+    object Button2: TButton
+      Left = 13
+      Top = 144
+      Width = 88
+      Height = 25
+      Caption = 'Move Sun Right'
+      TabOrder = 3
+      OnClick = Button2Click
+    end
+    object Button3: TButton
+      Left = 13
+      Top = 175
+      Width = 88
+      Height = 25
+      Caption = 'Move Sun Left'
+      TabOrder = 4
+      OnClick = Button3Click
+    end
+    object Button9: TButton
+      Left = 13
+      Top = 224
+      Width = 74
+      Height = 25
+      Hint = 'Mouse Wheel Can change zoom too'
+      Caption = 'Zoom in'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      OnClick = Button9Click
+    end
+    object Button10: TButton
+      Left = 13
+      Top = 255
+      Width = 74
+      Height = 25
+      Hint = 'Mouse Wheel Can change zoom too'
+      Caption = 'Zoom out'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 6
+      OnClick = Button10Click
+    end
+    object Button6: TButton
+      Left = 13
+      Top = 286
+      Width = 121
+      Height = 25
+      Caption = 'ON/Off atmosphere'
+      TabOrder = 7
+      OnClick = Button6Click
+    end
+    object Button8: TButton
+      Left = 13
+      Top = 317
+      Width = 121
+      Height = 25
+      Caption = 'Change Blending Mode'
+      TabOrder = 8
+      OnClick = Button8Click
+    end
   end
   object GLScene1: TGLScene
-    Left = 24
+    Left = 176
+    Top = 16
     object GLSkyDome1: TGLSkyDome
       Bands = <
         item
@@ -3063,15 +3073,13 @@ object MainForm: TMainForm
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 56
-  end
-  object Timer1: TTimer
-    Left = 88
+    Left = 248
+    Top = 16
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'GLAtmosphere Demo - %FPS'
+    FormCaption = 'Atmosphere - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -3085,6 +3093,7 @@ object MainForm: TMainForm
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 120
+    Left = 336
+    Top = 16
   end
 end

@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 176
   Top = 84
-  Width = 557
-  Height = 468
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Thor'
+  ClientHeight = 446
+  ClientWidth = 546
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,23 +13,22 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
-  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 543
-    Height = 342
+    Width = 546
+    Height = 355
     Camera = GLCamera1
+    FieldOfView = 148.535995483398400000
     Align = alClient
-    OnMouseDown = GLSceneViewer1MouseDown
-    OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 342
-    Width = 543
+    Top = 355
+    Width = 546
     Height = 91
     Align = alBottom
     TabOrder = 1
@@ -105,16 +104,12 @@ object Form1: TForm1
       Height = 16
       Max = 20
       Min = 1
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 5
       SelEnd = 20
       SelStart = 1
       TabOrder = 0
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = DistanceBarChange
     end
     object GSbar: TTrackBar
@@ -123,16 +118,11 @@ object Form1: TForm1
       Width = 115
       Height = 16
       Max = 50
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 10
       SelEnd = 20
-      SelStart = 0
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = GSbarChange
     end
     object GAbar: TTrackBar
@@ -141,16 +131,11 @@ object Form1: TForm1
       Width = 115
       Height = 16
       Max = 50
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 15
       SelEnd = 50
-      SelStart = 0
       TabOrder = 2
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = GAbarChange
     end
     object WildBar: TTrackBar
@@ -159,16 +144,11 @@ object Form1: TForm1
       Width = 115
       Height = 16
       Max = 20
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 4
       SelEnd = 20
-      SelStart = 0
       TabOrder = 3
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = WildBarChange
     end
     object VibBar: TTrackBar
@@ -177,16 +157,10 @@ object Form1: TForm1
       Width = 115
       Height = 16
       Max = 20
-      Orientation = trHorizontal
-      Frequency = 1
-      Position = 0
       SelEnd = 20
-      SelStart = 0
       TabOrder = 4
       TabStop = False
       ThumbLength = 10
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
       OnChange = VibBarChange
     end
     object SpinBox: TCheckBox
@@ -269,42 +243,42 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 8
+    Left = 24
     Top = 8
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000803F000000800000000000000000}
       Bands = <
         item
-          StartAngle = -90
+          StartAngle = -90.000000000000000000
           StartColor.Color = {0000000000000000000000000000803F}
-          StopAngle = -30
+          StopAngle = -30.000000000000000000
           StopColor.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
           Slices = 9
         end
         item
-          StartAngle = -30
+          StartAngle = -30.000000000000000000
           StartColor.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
-          StopAngle = -15
+          StopAngle = -15.000000000000000000
           StopColor.Color = {9A99993E9A99993E9A99993E0000803F}
           Slices = 9
         end
         item
-          StartAngle = -15
+          StartAngle = -15.000000000000000000
           StartColor.Color = {9A99993E9A99993E9A99993E0000803F}
           StopColor.Color = {B5B4343EE4E4E43EBEBD3D3F0000803F}
           Slices = 9
         end
         item
           StartColor.Color = {B5B4343EE5E4E43EBEBD3D3F0000803F}
-          StopAngle = 15
+          StopAngle = 15.000000000000000000
           StopColor.Color = {B6B5353FD1D0503FEFEE6E3F0000803F}
           Slices = 9
         end
         item
-          StartAngle = 15
+          StartAngle = 15.000000000000000000
           StartColor.Color = {8FC2353F60E5503F17D96E3F0000803F}
-          StopAngle = 90
+          StopAngle = 90.000000000000000000
           StopColor.Color = {B2B1313FC8C7473FF2F1713F0000803F}
           Slices = 9
           Stacks = 3
@@ -312,51 +286,48 @@ object Form1: TForm1
       Stars = <>
     end
     object HeightField1: TGLHeightField
+      Material.Texture.MinFilter = miNearestMipmapNearest
+      Material.Texture.TextureMode = tmModulate
+      Material.Texture.Disabled = False
       Direction.Coordinates = {000000000000803F0000000000000000}
       Position.Coordinates = {00000000000040C0000000000000803F}
       Scale.Coordinates = {00002041000020410000803F00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
-      Material.Texture.MinFilter = miNearestMipmapNearest
-      Material.Texture.TextureMode = tmModulate
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Material.Texture.Disabled = False
-      XSamplingScale.Min = -1
-      XSamplingScale.Max = 1
-      XSamplingScale.Step = 0.200000002980232
-      YSamplingScale.Min = -1
-      YSamplingScale.Max = 1
-      YSamplingScale.Step = 0.200000002980232
+      XSamplingScale.Min = -1.000000000000000000
+      XSamplingScale.Max = 1.000000000000000000
+      XSamplingScale.Step = 0.200000002980232200
+      YSamplingScale.Min = -1.000000000000000000
+      YSamplingScale.Max = 1.000000000000000000
+      YSamplingScale.Step = 0.200000002980232200
       Options = [hfoTextureCoordinates]
       OnGetHeight = HeightField1GetHeight
     end
     object Objects: TGLDummyCube
       ObjectsSorting = osRenderBlendedLast
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object TargetCube: TGLCube
-        Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8180803E8180803E0000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000404000000000000000000000803F}
       end
       object ThorCube: TGLCube
-        Position.Coordinates = {000040C000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8180803E8180803E0000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003E0000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {000040C000000000000000000000803F}
         EffectsData = {
-          0201060A54474C4254686F72465802000610474C54686F7246584D616E616765
-          7231}
+          0458434F4C02010201060A54474C4254686F7246580201020012000000000200
+          02000610474C54686F7246584D616E6167657231}
       end
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         LightStyle = lsOmni
-        SpotCutOff = 180
+        SpotCutOff = 180.000000000000000000
         SpotDirection.Coordinates = {00000000000080BF0000000000000000}
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Objects
       Position.Coordinates = {00004040000000400000A0400000803F}
       Left = 152
@@ -365,27 +336,42 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    Left = 40
-    Top = 8
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 8
-    Top = 40
+    Left = 24
+    Top = 72
   end
   object GLThorFXManager1: TGLThorFXManager
     Target.Coordinates = {0000C040000000000000000000000000}
     Cadencer = GLCadencer1
     Maxpoints = 64
-    GlowSize = 0.200000002980232
+    GlowSize = 0.200000002980232200
     InnerColor.Color = {0000803F0000803F0000803F9A99993E}
     OuterColor.Color = {00000000000000000000803F00000000}
     Disabled = False
     Core = True
     Glow = True
-    Wildness = 1
+    Wildness = 1.000000000000000000
     OnCalcPoint = GLThorFXManager1CalcPoint
-    Left = 72
+    Left = 128
     Top = 8
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Thor - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 128
+    Top = 72
   end
 end

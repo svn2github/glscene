@@ -1,19 +1,3 @@
-{
-  GLAtmosphere Demo.
-
-  Note: object "Not_a_planet" is used to test atmosphere transparency issues.
-
-  Version history:
-    26/01/10 - Yar - Added GLColor to uses
-    20/08/07 - DaStr - Now demo correctly displays FPS
-    15/08/07 - LC - Added GLBehaviours to "uses" section to
-                    prevent run-time error.
-    03/04/07 - DaStr - Cleaned up "uses" section
-    02/03/07 - DaStr - Fixed LensFlare object sorting issue
-                       Updated GLSimpleNavigation component
-    07/02/07 - DaStr - Initial version
-
-}
 unit uMainForm;
 
 interface
@@ -42,25 +26,25 @@ type
     GLLightSource1: TGLLightSource;
     GLSphere1:  TGLSphere;
     GLDummyCube1: TGLDummyCube;
-    Button1:    TButton;
-    Button2:    TButton;
-    Button3:    TButton;
-    Button4:    TButton;
-    Button5:    TButton;
-    Timer1:     TTimer;
-    Button6:    TButton;
     Not_a_planet: TGLSphere;
-    Button8:    TButton;
     CameraTarget: TGLDummyCube;
-    Button9:    TButton;
-    Button10:   TButton;
     GLSkyDome1: TGLSkyDome;
+    GLSimpleNavigation1: TGLSimpleNavigation;
+    World: TGLDummyCube;
+    Panel1: TPanel;
+    Button1: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button9: TButton;
+    Button10: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    GLSimpleNavigation1: TGLSimpleNavigation;
-    World: TGLDummyCube;
+    Button6: TButton;
+    Button8: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);

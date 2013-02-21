@@ -1,3 +1,6 @@
+// The ThorFX special effect basic sample by René Lindsay. 10/3/2001
+// The code is largely based on the FireFX code.
+
 program Thor;
 
 uses

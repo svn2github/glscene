@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 174
   Top = 93
-  Width = 582
-  Height = 462
-  Caption = 'Form1'
+  Caption = 'Mesh Explosion'
+  ClientHeight = 418
+  ClientWidth = 574
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,22 +14,23 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object viewer: TGLSceneViewer
+  object Viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 566
-    Height = 327
+    Width = 574
+    Height = 321
     Camera = Camera1
-    FieldOfView = 145.991653442382800000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 145.393615722656300000
     Align = alClient
-    OnMouseDown = viewerMouseDown
-    OnMouseMove = viewerMouseMove
+    OnMouseDown = ViewerMouseDown
+    OnMouseMove = ViewerMouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
-    Top = 327
-    Width = 566
+    Top = 321
+    Width = 574
     Height = 97
     Align = alBottom
     BevelOuter = bvNone
@@ -105,14 +106,14 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 80
     Top = 16
     object mesh: TGLFreeForm
       Scale.Coordinates = {CDCCCC3ECDCCCC3ECDCCCC3E00000000}
       NormalsOrientation = mnoInvert
       EffectsData = {
-        0458434F4C02010201060F54474C424578706C6F73696F6E4658020006000200
-        0200}
+        0458434F4C02010201060F54474C424578706C6F73696F6E4658020012000000
+        0002000200}
     end
     object Camera1: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -133,7 +134,7 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 48
+    Left = 80
+    Top = 72
   end
 end
