@@ -6,7 +6,6 @@
       <MainUnit Value="0"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
-      <Icon Value="0"/>
       <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
@@ -61,8 +60,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="43" Y="1"/>
+        <TopLine Value="43"/>
+        <CursorPos X="23" Y="68"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -76,7 +75,7 @@
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Target>
       <Filename Value="project1"/>
     </Target>
