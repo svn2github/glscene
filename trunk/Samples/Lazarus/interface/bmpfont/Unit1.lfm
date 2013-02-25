@@ -9,7 +9,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 403
@@ -17,7 +17,7 @@ object Form1: TForm1
     Width = 513
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 152.128311157226
+    FieldOfView = 152.128311157227
     Align = alClient
     OnClick = GLSceneViewer1Click
     TabOrder = 0
@@ -139,4 +139,4 @@ object Form1: TForm1
     left = 16
     top = 80
   end
-end
+end

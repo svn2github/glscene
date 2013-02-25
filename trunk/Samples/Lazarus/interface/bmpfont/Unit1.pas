@@ -57,18 +57,11 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil;
+uses GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // Load the font bitmap
   BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
   // sorry, couldn't resist...
@@ -98,4 +91,4 @@ begin
 end;
 
 end.
-
+

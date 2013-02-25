@@ -9,8 +9,9 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'Tahoma'
   OnClose = FormClose
+  OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object Panel1: TPanel
     Left = 533
     Height = 553
@@ -30,25 +31,25 @@ object Form1: TForm1
       TabOrder = 0
       object Label1: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 57
-        Width = 66
+        Width = 64
         Caption = 'Destination X'
         ParentColor = False
       end
       object Label2: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 105
-        Width = 66
+        Width = 64
         Caption = 'Destination Y'
         ParentColor = False
       end
       object Label3: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 153
-        Width = 66
+        Width = 64
         Caption = 'Destination Z'
         ParentColor = False
       end
@@ -68,7 +69,7 @@ object Form1: TForm1
       end
       object eDestX: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 72
         Width = 121
         TabOrder = 0
@@ -76,7 +77,7 @@ object Form1: TForm1
       end
       object eDestY: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 122
         Width = 121
         TabOrder = 1
@@ -84,7 +85,7 @@ object Form1: TForm1
       end
       object eDestZ: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 168
         Width = 121
         TabOrder = 2
@@ -101,9 +102,9 @@ object Form1: TForm1
       TabOrder = 1
       object Label6: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 25
-        Width = 43
+        Width = 42
         Caption = 'Distance'
         ParentColor = False
       end
@@ -123,7 +124,7 @@ object Form1: TForm1
       end
       object eDistance: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 40
         Width = 121
         TabOrder = 0
@@ -140,7 +141,7 @@ object Form1: TForm1
       TabOrder = 2
       object Label7: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 41
         Width = 75
         Caption = 'soSafeDistance'
@@ -148,7 +149,7 @@ object Form1: TForm1
       end
       object Label8: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 137
         Width = 70
         Caption = 'soTimeToOrbit'
@@ -156,7 +157,7 @@ object Form1: TForm1
       end
       object Label10: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 89
         Width = 117
         Caption = 'soTimeToSafePlacement'
@@ -178,7 +179,7 @@ object Form1: TForm1
       end
       object Label12: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 177
         Width = 104
         Caption = 'soTimeToZoomBackIn'
@@ -186,7 +187,7 @@ object Form1: TForm1
       end
       object eSafeDistance: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 56
         Width = 121
         TabOrder = 0
@@ -194,7 +195,7 @@ object Form1: TForm1
       end
       object eTimeToSafePlacement: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 106
         Width = 121
         TabOrder = 1
@@ -202,7 +203,7 @@ object Form1: TForm1
       end
       object eTimeToOrbit: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 152
         Width = 121
         TabOrder = 2
@@ -210,7 +211,7 @@ object Form1: TForm1
       end
       object eTimeToZoomBackIn: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 192
         Width = 121
         TabOrder = 3
@@ -227,9 +228,9 @@ object Form1: TForm1
       TabOrder = 3
       object Label13: TLabel
         Left = 6
-        Height = 13
+        Height = 14
         Top = 49
-        Width = 25
+        Width = 23
         Caption = 'Time'
         ParentColor = False
       end
@@ -249,7 +250,7 @@ object Form1: TForm1
       end
       object eTime: TEdit
         Left = 6
-        Height = 22
+        Height = 21
         Top = 64
         Width = 121
         TabOrder = 0
@@ -306,7 +307,6 @@ object Form1: TForm1
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsItalic]
-      OnClick = btnStopMovementClick
       ParentFont = False
       TabOrder = 8
     end
@@ -317,7 +317,7 @@ object Form1: TForm1
     Top = 0
     Width = 533
     Camera = GLCamera
-    FieldOfView = 131.517700195312
+    FieldOfView = 131.517700195313
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -400,9 +400,9 @@ object Form1: TForm1
     end
     object Label4: TLabel
       Left = 32
-      Height = 13
+      Height = 14
       Top = 6
-      Width = 104
+      Width = 103
       Caption = 'TGLCameraController'
       ParentColor = False
     end
@@ -469,8 +469,8 @@ object Form1: TForm1
           00000000D7B35D3FFFFFFFBE00000000
         }
         BottomRadius = 0.20000000298023
-        Height = 4.19999980926513
-        TopRadius = 0.05000000074505
+        Height = 4.19999980926514
+        TopRadius = 0.05000000074506
       end
       object GLSphere2: TGLSphere
         TagFloat = 0
@@ -482,7 +482,7 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        Radius = 0.30000001192092
+        Radius = 0.30000001192093
       end
       object GLSphere3: TGLSphere
         TagFloat = 0
@@ -494,7 +494,7 @@ object Form1: TForm1
         }
         RollAngle = 0
         TurnAngle = 0
-        Radius = 0.30000001192092
+        Radius = 0.30000001192093
       end
     end
     object GLCamera: TGLCamera
@@ -519,28 +519,28 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'transparent blue'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           FBFAFA3EF7F6F63E0000803F9A99193F
         }
         Material.BlendingMode = bmTransparency
-        Tag = 0
       end    
       item
         Name = 'opaque green'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {
           000000000000803FF3F2F23E0000803F
         }
-        Tag = 0
       end    
       item
         Name = 'opaque red'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {
           0000803F0000803F0000803F0000803F
         }
         Material.FrontProperties.Diffuse.Color = {
           0000803F00000000000000000000803F
         }
-        Tag = 0
       end>
     left = 48
     top = 48
@@ -554,7 +554,6 @@ object Form1: TForm1
   end
   object GLCameraController1: TGLCameraController
     Camera = GLCamera
-    Cadencer = GLCadencer1
     soSafeDistance = 10
     soTimeToSafePlacement = 1
     soTimeToOrbit = 2
@@ -562,4 +561,4 @@ object Form1: TForm1
     left = 48
     top = 80
   end
-end
+end
