@@ -59,22 +59,13 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil, MeshUtils, VectorGeometry, TGA, GLFileOBJ,
+uses GLUtils, MeshUtils, VectorGeometry, TGA, GLFileOBJ,
      GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
    BUSubdivide.Enabled:=True;
-
-   GLMaterialLibrary1.TexturePaths:= path;
 
    GLActor1.LoadFromFile('waste.md2');
    GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
@@ -267,4 +258,4 @@ begin
    end;
 end;
 
-end.
+end.

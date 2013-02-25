@@ -77,7 +77,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils, GLKeyboard, FileUtil, LCLType;
+uses VectorGeometry, SysUtils, GLKeyboard, GLUtils, LCLType;
 
 const
   cWalkStep = 6;   // this is our walking speed, in 3D units / second
@@ -88,15 +88,8 @@ const
   cNbMushrooms = 15;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
 
    // Load mushroom mesh
    FreeForm1.LoadFromFile('mushroom.3ds');

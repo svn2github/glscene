@@ -28,12 +28,15 @@ unit MainFormUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG,
-  GLLCLViewer, GLObjects, GLTexture, GLFile3ds, ExtCtrls, ComCtrls,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG, GLLCLViewer,
+  GLObjects, GLTexture, GLFile3ds, ExtCtrls, ComCtrls, GLCrossPlatform,
+  GLMaterial, GLCoordinates, BaseClasses, GLState, GLSimpleNavigation;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLFreeForm1: TGLFreeForm;
@@ -43,6 +46,7 @@ type
     GLFreeForm2: TGLFreeForm;
     GLFreeForm3: TGLFreeForm;
     GLLightSource1: TGLLightSource;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     Panel1: TPanel;
     Button1: TButton;
     Button2: TButton;
@@ -81,7 +85,8 @@ var
 
 implementation
 
-uses VectorGeometry;
+uses VectorGeometry, GLUtils;
+
 {$R *.lfm}
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -123,11 +128,12 @@ end;
            
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   // scaled 40
-  GLFreeForm1.LoadFromFile('..\..\media\polyhedron.3ds');
+  GLFreeForm1.LoadFromFile('polyhedron.3ds');
 
   // scaled 20, position.x = 16
-  GLFreeForm2.LoadFromFile('..\..\media\polyhedron.3ds');
+  GLFreeForm2.LoadFromFile('polyhedron.3ds');
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);

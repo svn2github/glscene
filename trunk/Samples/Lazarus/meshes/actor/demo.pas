@@ -86,18 +86,11 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils, FileUtil;
+uses VectorGeometry, SysUtils, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
    // Load Actor into GLScene
    Actor1.LoadFromFile('waste.md2');
    Actor1.Material.Texture.Image.LoadFromFile('waste.jpg');

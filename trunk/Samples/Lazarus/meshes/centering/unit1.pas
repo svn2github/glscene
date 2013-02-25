@@ -45,20 +45,13 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil;
+uses GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 const
    cFileName = 'polyhedron.3ds';
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
 
    // left one
    FreeForm3.AutoCentering:=[macCenterX, macCenterZ];

@@ -6,7 +6,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Forms, Interfaces,
+  Forms, glscene_runtime, GLSS_BASS, Interfaces,
   Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}

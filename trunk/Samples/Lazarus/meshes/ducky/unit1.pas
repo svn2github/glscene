@@ -53,19 +53,13 @@ implementation
 
 {$R *.lfm}
 
-uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists, FileUtil;
+uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   cp: TAffineVectorList;
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   // Load the nurbs data
   GLActor1.LoadFromFile('duck1.nurbs');

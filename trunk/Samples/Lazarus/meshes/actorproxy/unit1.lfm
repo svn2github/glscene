@@ -192,6 +192,7 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'Mat1'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {
           0A544A706567496D616765D10A0000FFD8FFE000104A46494600010101006400
           640000FFDB00430006040506050406060506070706080A100A0A09090A140E0F
@@ -283,10 +284,10 @@ object Form1: TForm1
         }
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Mat2'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {
           0A544A706567496D6167656C810000FFD8FFE000104A46494600010100000100
           010000FFDB004300020101010101020101010202020202040302020202050404
@@ -1327,7 +1328,6 @@ object Form1: TForm1
         }
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     left = 48
     top = 120
