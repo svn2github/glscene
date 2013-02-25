@@ -13,14 +13,15 @@ object Form1: TForm1
   OnKeyPress = FormKeyPress
   OnMouseWheel = FormMouseWheel
   OnResize = FormResize
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object Viewer: TGLSceneViewer
     Left = 0
     Height = 401
     Top = 41
     Width = 568
     Camera = GLCamera1
-    FieldOfView = 151.994766235351
+    Buffer.BackgroundColor = clBlack
+    FieldOfView = 151.994766235352
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -37,9 +38,9 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 308
-      Height = 12
+      Height = 15
       Top = 14
-      Width = 31
+      Width = 34
       Caption = 'Result:'
       ParentColor = False
     end
@@ -55,9 +56,9 @@ object Form1: TForm1
     end
     object CheckBox1: TCheckBox
       Left = 99
-      Height = 22
+      Height = 19
       Top = 12
-      Width = 62
+      Width = 67
       Caption = 'View box'
       Checked = True
       OnClick = CheckBox1Click
@@ -66,9 +67,9 @@ object Form1: TForm1
     end
     object CheckBox2: TCheckBox
       Left = 178
-      Height = 22
+      Height = 19
       Top = 12
-      Width = 99
+      Width = 107
       Caption = 'Change pos scale'
       Checked = True
       State = cbChecked
@@ -123,7 +124,7 @@ object Form1: TForm1
       PitchAngle = 0
       RollAngle = 0
       TurnAngle = 0
-      CubeSize = 0.10000000149011
+      CubeSize = 0.10000000149012
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource
@@ -152,7 +153,7 @@ object Form1: TForm1
       TagFloat = 0
       DepthOfView = 500
       FocalLength = 50
-      NearPlaneBias = 0.10000000149011
+      NearPlaneBias = 0.10000000149012
       TargetObject = DCCamTarg
       Position.Coordinates = {
         0000A04000000040000040400000803F
@@ -185,4 +186,4 @@ object Form1: TForm1
     left = 512
     top = 40
   end
-end
+end

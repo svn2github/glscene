@@ -119,18 +119,18 @@ begin
   GLLines3.Nodes.Clear;
 
   // Calc data.
-  BoxMatrix[3, 0] := UpDown1.Position * EditorsScale;
-  BoxMatrix[3, 1] := UpDown2.Position * EditorsScale;
-  BoxMatrix[3, 2] := UpDown3.Position * EditorsScale;
-  BoxMatrix[3, 3] := 1;
+  BoxMatrix.V[3].V[0] := UpDown1.Position * EditorsScale;
+  BoxMatrix.V[3].V[1] := UpDown2.Position * EditorsScale;
+  BoxMatrix.V[3].V[2] := UpDown3.Position * EditorsScale;
+  BoxMatrix.V[3].V[3] := 1;
 
-  BoxScale[0] := UpDown4.Position * EditorsScale;
-  BoxScale[1] := UpDown5.Position * EditorsScale;
-  BoxScale[2] := UpDown6.Position * EditorsScale;
+  BoxScale.V[0] := UpDown4.Position * EditorsScale;
+  BoxScale.V[1] := UpDown5.Position * EditorsScale;
+  BoxScale.V[2] := UpDown6.Position * EditorsScale;
 
-  SpherePos[0] := UpDown7.Position * EditorsScale;
-  SpherePos[1] := UpDown8.Position * EditorsScale;
-  SpherePos[2] := UpDown9.Position * EditorsScale;
+  SpherePos.V[0] := UpDown7.Position * EditorsScale;
+  SpherePos.V[1] := UpDown8.Position * EditorsScale;
+  SpherePos.V[2] := UpDown9.Position * EditorsScale;
 
   SphereRadius := UpDown10.Position * EditorsScale;
 
@@ -161,9 +161,9 @@ begin
 
   // Draw GLCube1 and GLSphere1.
   GLCube1.Matrix := BoxMatrix;
-  GLCube1.CubeWidth := BoxScale[0];
-  GLCube1.CubeHeight := BoxScale[1];
-  GLCube1.CubeDepth := BoxScale[2];
+  GLCube1.CubeWidth := BoxScale.V[0];
+  GLCube1.CubeHeight := BoxScale.V[1];
+  GLCube1.CubeDepth := BoxScale.V[2];
   DCCube1.Matrix := GLCube1.Matrix;
   DCCube1.Scale.SetVector(BoxScale);
   GLSphere1.Position.SetPoint(SpherePos);
@@ -186,25 +186,25 @@ var
 begin
   // Save scale.
   for I := 0 to 2 do
-    aScale[I] := VectorLength(aMatrix[I]);
+    aScale.V[I] := VectorLength(aMatrix.V[I]);
   // Generate two not equal random vectors.
-  Result[3] := aMatrix[3];
+  Result.V[3] := aMatrix.V[3];
   repeat
     repeat
-      Result[0] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result[0]) > 10e-6;
+      Result.V[0] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.V[0]) > 10e-6;
     repeat
-      Result[1] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result[1]) > 10e-6;
-  until VectorNorm(VectorSubtract(Result[0], Result[1])) > 10e-6;
+      Result.V[1] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.V[1]) > 10e-6;
+  until VectorNorm(VectorSubtract(Result.V[0], Result.V[1])) > 10e-6;
   // Calculate two perpendicular vectors.
-  Result[2] := VectorCrossProduct(Result[0], Result[1]);
-  Result[1] := VectorCrossProduct(Result[0], Result[2]);
+  Result.V[2] := VectorCrossProduct(Result.V[0], Result.V[1]);
+  Result.V[1] := VectorCrossProduct(Result.V[0], Result.V[2]);
   // Restore scale.
   for I := 0 to 2 do
   begin
-    NormalizeVector(Result[I]);
-    ScaleVector(Result[I], aScale[I]);
+    NormalizeVector(Result.V[I]);
+    ScaleVector(Result.V[I], aScale.V[I]);
   end;
 end;
 
@@ -252,4 +252,4 @@ begin
 end;
 
 end.
-
+

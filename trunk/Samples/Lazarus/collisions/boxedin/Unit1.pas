@@ -63,18 +63,11 @@ implementation
 
 {$R *.lfm}
 
-uses GLFile3DS, FileUtil, LCLType;
+uses GLFile3DS, GLUtils, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   FreeForm1.LoadFromFile('BoxedIn.3ds');
 
   FreeForm1.BuildOctree;
@@ -198,4 +191,4 @@ begin
 end;
 
 end.
-
+
