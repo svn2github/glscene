@@ -59,8 +59,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="126"/>
-        <CursorPos X="48" Y="143"/>
+        <TopLine Value="90"/>
+        <CursorPos X="14" Y="104"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -68,7 +68,6 @@
       <Unit2>
         <Filename Value="../../../Source/Base/ApplicationFileIO.pas"/>
         <UnitName Value="ApplicationFileIO"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="187"/>
         <CursorPos X="1" Y="206"/>
@@ -76,7 +75,6 @@
         <Bookmarks Count="1">
           <Item0 X="64" Y="233" ID="1"/>
         </Bookmarks>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -175,7 +173,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="umainform.pas"/>
         <Caret Line="149" Column="1" TopLine="124"/>
@@ -200,10 +198,18 @@
         <Filename Value="glslbumpshaderdemo.lpr"/>
         <Caret Line="8" Column="19" TopLine="1"/>
       </Position6>
+      <Position7>
+        <Filename Value="umainform.pas"/>
+        <Caret Line="104" Column="23" TopLine="90"/>
+      </Position7>
+      <Position8>
+        <Filename Value="umainform.pas"/>
+        <Caret Line="106" Column="1" TopLine="85"/>
+      </Position8>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

@@ -10,7 +10,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   WindowState = wsMaximized
   object Viewer: TGLSceneViewer
     Left = 0
@@ -139,17 +139,17 @@ object PostShaderDemoForm: TPostShaderDemoForm
           00000000000000000000803F00000000
         }
         XSamplingScale.Min = -200
-        XSamplingScale.Max = 200
+        XSamplingScale.max = 200
         XSamplingScale.Origin = 0
-        XSamplingScale.Step = 20
+        XSamplingScale.step = 20
         YSamplingScale.Min = -200
-        YSamplingScale.Max = 200
+        YSamplingScale.max = 200
         YSamplingScale.Origin = 0
-        YSamplingScale.Step = 20
+        YSamplingScale.step = 20
         ZSamplingScale.Min = -200
-        ZSamplingScale.Max = 200
+        ZSamplingScale.max = 200
         ZSamplingScale.Origin = 0
-        ZSamplingScale.Step = 20
+        ZSamplingScale.step = 20
         Parts = [gpX, gpZ]
       end
     end
@@ -290,11 +290,12 @@ object PostShaderDemoForm: TPostShaderDemoForm
     Materials = <    
       item
         Name = 'Noise'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end    
       item
         Name = 'Fighter'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {
           BFBEBE3EBBBABA3EBBBABA3E0000803F
         }
@@ -307,10 +308,10 @@ object PostShaderDemoForm: TPostShaderDemoForm
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Earth'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {
           E7E6E63EEBEAEA3EEBEAEA3E0000803F
         }
@@ -323,17 +324,16 @@ object PostShaderDemoForm: TPostShaderDemoForm
         Material.BlendingMode = bmTransparency
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end    
       item
         Name = 'Snow'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end    
       item
         Name = 'FireGrade'
-        Material.Texture.Disabled = False
         Tag = 0
+        Material.Texture.Disabled = False
       end>
     left = 24
     top = 88

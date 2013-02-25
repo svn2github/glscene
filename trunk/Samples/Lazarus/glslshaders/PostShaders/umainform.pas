@@ -17,7 +17,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLViewer, GLScene, GLPostEffects,
-  GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects,
+  GLGraph, GLContext, VectorGeometry, GLGeomObjects,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
   // GlScene shaders
@@ -76,18 +76,11 @@ implementation
 {$R *.lfm}
 
 uses
-  FileUtil;
+  GLUtils;
 
 procedure TPostShaderDemoForm.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // First load models.
   Fighter.LoadFromFile('waste.md2'); //Fighter
   Fighter.SwitchToAnimation(0, True);

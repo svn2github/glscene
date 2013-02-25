@@ -51,7 +51,7 @@
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
-        <Filename Value="UMainForm.pas"/>
+        <Filename Value="umainform.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="PostShaderDemoForm"/>
         <HasResources Value="True"/>
@@ -60,14 +60,14 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="109"/>
-        <CursorPos X="5" Y="112"/>
+        <TopLine Value="1"/>
+        <CursorPos X="46" Y="30"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="14" HistoryIndex="13">
+    <JumpHistory Count="15" HistoryIndex="14">
       <Position1>
         <Filename Value="UMainForm.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
@@ -124,11 +124,29 @@
         <Filename Value="UMainForm.pas"/>
         <Caret Line="103" Column="30" TopLine="95"/>
       </Position14>
+      <Position15>
+        <Filename Value="umainform.pas"/>
+        <Caret Line="83" Column="22" TopLine="64"/>
+      </Position15>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <Linking>
+      <Debugging>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+    </Linking>
     <Other>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

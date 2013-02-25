@@ -44,7 +44,6 @@
       <Unit0>
         <Filename Value="diffusespecularshaderdemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
@@ -59,10 +58,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="umainform"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="91"/>
-        <CursorPos X="48" Y="111"/>
+        <TopLine Value="12"/>
+        <CursorPos X="30" Y="25"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -116,7 +116,7 @@
         <UsageCount Value="10"/>
       </Unit6>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="diffusespecularshaderdemo.lpr"/>
         <Caret Line="7" Column="6" TopLine="1"/>
@@ -233,10 +233,14 @@
         <Filename Value="umainform.pas"/>
         <Caret Line="116" Column="1" TopLine="28"/>
       </Position29>
+      <Position30>
+        <Filename Value="umainform.pas"/>
+        <Caret Line="91" Column="22" TopLine="70"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Other>
       <CompilerPath Value="$(CompPath)"/>

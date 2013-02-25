@@ -65,7 +65,7 @@ var
 implementation
 
 uses
-  GLTextureFormat, FileUtil;
+  GLTextureFormat, GLUtils;
 
 {$R *.lfm}
 
@@ -191,15 +191,8 @@ const
 
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
    // Load the cube map which is used both for environment and as reflection texture
 
