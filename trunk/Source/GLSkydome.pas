@@ -1224,9 +1224,9 @@ const
   (-45, -67.5, -90, -57.5, -45, -22.5, 0, 11.25, 22.5, 33.7, 45, 56.25, 67.5,
    78.75, 90, 78.75, 67.5, 56.25, 45, 33.7, 22.5, 11.25, 0, -22.5);
   cHourToElevation2: array[0..23] of Single =
-  (-0.375, -0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375, 0.375,
-    0.375, 0.375, 0.375, 0.375, 0.375, -0.375, -0.375, -0.375, -0.375,
-    -0.375, -0.375, -0.375, -0.375, -0.375);
+  (-0.375, -0.375, 0.375, 0.375, 0.375, 0.375, 0.1875, 0.1875, 0.1875, 0.1875,  
+     0.1875, 0.1875, 0.1875, 0.1875, -0.1875, -0.1875, -0.1875, -0.1875, -0.1875,
+     -0.1875, -0.1875, -0.1875, -0.375, -0.375);
 var
   ts:Single;
   fts:Single;
@@ -1262,7 +1262,7 @@ begin
   if esoFadeStarsWithSun in ExtendedOptions then for i:=0 to Stars.Count-1 do stars[i].Color:=color;
 
 
-  if esoRotateOnTwelveHours in ExtendedOptions then // spining arounf blue orb
+  if esoRotateOnTwelveHours in ExtendedOptions then // spining around blue orb
   begin
     if (HH>=14) and (FMorning=true) then
     begin
