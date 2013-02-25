@@ -89,9 +89,9 @@ begin
     begin
       a := DegToRad(4.0 * i) + ab;
       SinCos(a, sa, ca);
-      v[0] := 2 * ca;
-      v[1] := 2 * Cos(f * a);
-      v[2] := 2 * sa;
+      v.V[0] := 2 * ca;
+      v.V[1] := 2 * Cos(f * a);
+      v.V[2] := 2 * sa;
       p[i] := v;
     end;
     // replicate points in second set
