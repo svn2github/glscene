@@ -1,10 +1,10 @@
 object MainFm: TMainFm
   Left = 135
   Top = 57
-  Width = 569
-  Height = 479
   AutoSize = True
-  Caption = 'MainFm'
+  Caption = 'Shadows'
+  ClientHeight = 441
+  ClientWidth = 553
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -244,6 +244,8 @@ object MainFm: TMainFm
       Width = 105
       Height = 17
       Caption = 'Rotate the Torus'
+      Checked = True
+      State = cbChecked
       TabOrder = 1
       OnClick = RotateBoxClick
     end
@@ -400,11 +402,11 @@ object MainFm: TMainFm
         Scale.Coordinates = {00002041000020410000004000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -1.000000000000000000
-        XSamplingScale.max = 1.000000000000000000
-        XSamplingScale.step = 0.070000000298023220
+        XSamplingScale.Max = 1.000000000000000000
+        XSamplingScale.Step = 0.070000000298023220
         YSamplingScale.Min = -1.000000000000000000
-        YSamplingScale.max = 1.000000000000000000
-        YSamplingScale.step = 0.070000000298023220
+        YSamplingScale.Max = 1.000000000000000000
+        YSamplingScale.Step = 0.070000000298023220
         Options = [hfoTextureCoordinates]
       end
       object Cube1: TGLCube
@@ -422,18 +424,18 @@ object MainFm: TMainFm
         StopAngle = 360.000000000000000000
         Parts = [toSides, toStartDisk, toStopDisk]
         BehavioursData = {
-          0458434F4C02010201060B54474C42496E657274696102000600020002000500
-          00000000000080FF3F0200080500000000000000000000050000000000000000
-          00000500000000000000A0034009020008020008}
+          0458434F4C02010201060B54474C42496E657274696102001200000000020002
+          00050000000000000080FF3F0200080500000000000000000000050000000000
+          00000000000500000000000000A0034009020008020008}
       end
       object Teapot1: TGLTeapot
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BeigeMarble'
         Scale.Coordinates = {9A99D93F9A99D93F9A99D93F00000000}
         BehavioursData = {
-          0458434F4C02010201060B54474C42496E657274696102000600020002000500
-          00000000000080FF3F0200080500000000000000A00340050000000000000000
-          0000050000000000000000000008020008020008}
+          0458434F4C02010201060B54474C42496E657274696102001200000000020002
+          00050000000000000080FF3F0200080500000000000000A00340050000000000
+          0000000000050000000000000000000008020008020008}
       end
     end
     object Shadows1: TGLZShadows

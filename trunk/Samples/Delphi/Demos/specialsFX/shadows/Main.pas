@@ -1,17 +1,17 @@
-{: Shadow casting with GLzBuffer by Rene Lindsay.
-
-}
 unit Main;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
-  ComCtrls,jpeg, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
+  ExtCtrls, StdCtrls, ComCtrls,
+
+  //GLScene
+  GLScene, GLGraph, GLObjects, GLTexture,
+  JPeg, GLGraphics, VectorTypes, VectorGeometry, GLHUDObjects,
   GLzBuffer, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLBehaviours;
+  GLBehaviours, GLUtils;
 
 type
   TMainFm = class(TForm)
@@ -102,14 +102,24 @@ implementation
 
 {$R *.DFM}
 
-uses
-  GLUtils;
+procedure TMainFm.FormCreate(Sender: TObject);
+begin
+ SetGLSceneMediaDir();
+ GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('marbletiles.jpg');
+ GLMaterialLibrary1.Materials[2].Material.texture.disabled:=false;
+
+ GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('beigemarble.jpg');
+ GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
+
+ RotateBoxClick(Sender);
+end;
+
 
 procedure TMainFm.ViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  mx:=x; my:=y;
- MainFm.ActiveControl:=DistanceBar;
+ ActiveControl:=DistanceBar;
 end;
 
 procedure TMainFm.ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -126,7 +136,7 @@ procedure TMainFm.CasterMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
  mx2:=x; my2:=y;
- MainFm.ActiveControl:=DistanceBar2;
+ ActiveControl:=DistanceBar2;
 end;
 
 procedure TMainFm.CasterMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -143,50 +153,43 @@ begin
 end;
 
 procedure TMainFm.DistanceBarChange(Sender: TObject);
-var Dist, NewDist :single;
+var
+  Dist, NewDist :single;
 begin
- With GLCamera1 do begin
-    Dist:=DistanceToTarget;
-   NewDist:=Sqr(DistanceBar.position/4)+1;
-   position.AsAffineVector:=VectorScale(position.AsAffineVector,NewDist/dist);
+ with GLCamera1 do begin
+   Dist:=DistanceToTarget;
+   NewDist:=Sqr(DistanceBar.Position/4)+1;
+   Position.AsAffineVector:=VectorScale(Position.AsAffineVector,NewDist/dist);
  end;
 end;
 
 procedure TMainFm.DistanceBar2Change(Sender: TObject);
-var Dist, NewDist :single;
+var
+  Dist, NewDist :single;
 begin
- With GLCamera2 do begin
+ with GLCamera2 do begin
    Dist:=DistanceToTarget;
-   NewDist:=Sqr(DistanceBar2.position/4)+1;
-   position.AsAffineVector:=VectorScale(position.AsAffineVector,NewDist/dist);
+   NewDist:=Sqr(DistanceBar2.Position/4)+1;
+   Position.AsAffineVector:=VectorScale(Position.AsAffineVector,NewDist/Dist);
  end;
  Shadows1.CastShadow;
  Caster.Refresh;
 end;
 
-procedure TMainFm.FormCreate(Sender: TObject);
-begin
- SetGLSceneMediaDir();
- GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('marbletiles.jpg');
- GLMaterialLibrary1.Materials[2].Material.texture.disabled:=false;
-
- GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('beigemarble.jpg');
- GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
-end;
-
 procedure TMainFm.CastBtnClick(Sender: TObject);
-var RefTime :double;
+var
+  RefTime :Double;
 begin
  RefTime:=GLCadencer1.GetcurrentTime;
  Shadows1.CastShadow;
- Viewer.refresh;
- TimeLbl.Caption:=IntToStr(Round((GLCadencer1.GetCurrentTime-refTime)*100));
+ Viewer.Refresh;
+ TimeLbl.Caption := IntToStr(Round((GLCadencer1.GetCurrentTime - RefTime)*1000.00));
 end;
 
 procedure TMainFm.ViewerMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-Viewer.Visible:=True;
+  Viewer.Visible:=True;
 end;
 
 procedure TMainFm.CasterMouseUp(Sender: TObject; Button: TMouseButton;
@@ -197,23 +200,23 @@ end;
 
 procedure TMainFm.FadeBoxClick(Sender: TObject);
 begin
-Shadows1.DepthFade:=FadeBox.checked;
+  Shadows1.DepthFade:=FadeBox.Checked;
 end;
 
 procedure TMainFm.HeightField1GetHeight(const x, y: Single; var z: Single;
   var color: TVector4f; var texPoint: TTexPoint);
 begin
-z:=0;
+  z:=0;
 end;
 
 procedure TMainFm.FrustBoxClick(Sender: TObject);
 begin
-Shadows1.FrustShadow:=FrustBox.Checked;
+  Shadows1.FrustShadow:=FrustBox.Checked;
 end;
 
 procedure TMainFm.AsyncTimer1Timer(Sender: TObject);
 begin
-  Caption:=Format('%.2f FPS', [Viewer.FramesPerSecond]);
+  Caption:='Shadows ' + Format('%.2f FPS', [Viewer.FramesPerSecond]);
   Viewer.ResetPerformanceMonitor;
 end;
 
@@ -225,7 +228,7 @@ end;
 
 procedure TMainFm.ShadowOnBoxClick(Sender: TObject);
 begin
-Shadows1.Visible:=ShadowOnBox.Checked;
+  Shadows1.Visible:=ShadowOnBox.Checked;
 end;
 
 procedure TMainFm.SoftBoxClick(Sender: TObject);
@@ -251,14 +254,14 @@ procedure TMainFm.dovBarChange(Sender: TObject);
 begin
  GLCamera2.DepthOfView:=DovBar.Position;
  MemView.Render;
- Caster.refresh;
+ Caster.Refresh;
  Shadows1.CastShadow;
- Viewer.refresh;
+ Viewer.Refresh;
 end;
 
 procedure TMainFm.AlphaBarChange(Sender: TObject);
 begin
-Shadows1.Color.Alpha:=AlphaBar.Position/256;
+  Shadows1.Color.Alpha:=AlphaBar.Position/256;
 end;
 
 procedure TMainFm.GLCadencer1Progress(Sender: TObject; const deltaTime,
