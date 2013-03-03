@@ -6,6 +6,7 @@
               FreeForms and Actors.
 
   History :
+    <li>03/03/13 - Yar - Added textures loading (thanks to Tamahome)
     <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
     <li>21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
@@ -17,7 +18,7 @@ interface
 
 uses
   Classes, SysUtils, GLVectorFileObjects, GLMaterial, ApplicationFileIO,
-  VectorGeometry, FileMD3;
+  VectorGeometry, FileMD3, GLTexture;
 
 type
 
@@ -70,17 +71,43 @@ var
     result.V[2]:=cos(lng);
   end;
 
-  procedure AllocateMaterial(meshname:string);
+  procedure AllocateMaterial(meshname:string; texName:string);
   var
     LibMat : TGLLibMaterial;
+    matLib : TGLMaterialLibrary;
+    textureFilename: string;
   begin
     // If a material library is assigned to the actor/freeform the
     // mesh name will be added as a material.
-    if Assigned(Owner.MaterialLibrary) then with Owner.MaterialLibrary do begin
-      if Assigned(Materials.GetLibMaterialByName(meshname)) then exit;
-      LibMat:=Materials.Add;
-      LibMat.name:=meshname;
-      LibMat.Material.Texture.Disabled:=False;
+    if Assigned(Owner.MaterialLibrary) then begin
+      matLib:=Owner.MaterialLibrary;
+      if Assigned(matLib.Materials.GetLibMaterialByName(meshname)) then exit;
+        LibMat:=matlib.Materials.Add;
+        LibMat.name:=meshname;
+        // load texture from md3 file. TODO: check and parsing shader file
+        if texName <> '' then begin
+          try
+            texName:= ExtractFileName(texName); // get only file name
+            // add material lib path or use current directory
+            if matLib.TexturePaths = EmptyStr then
+              textureFilename := texName
+            else
+              textureFilename := IncludeTrailingPathDelimiter(matLib.TexturePaths) + texName;
+            with libMat.Material.Texture do begin
+              Image.LoadFromFile(textureFilename);
+
+              Disabled := False;
+              TextureMode := tmModulate;
+              libMat.Material.MaterialOptions := [moNoLighting];
+            end;
+          except
+              on E: ETexture do begin
+            // no need raise - for continue mesh loading
+              if not TGLBaseMesh(GetOwner).IgnoreMissingTextures then
+                raise;
+              end;
+          end;
+        end;
     end;
   end;
 
@@ -91,12 +118,22 @@ begin
     for i:=0 to MD3File.ModelHeader.numMeshes-1 do begin
       mesh:=TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Name:=trim(string(MD3File.MeshData[i].MeshHeader.strName));
+      // add text coords, vertex and normals to mesh (added in to facesgroup)
+{
+      for j:=0 to MD3File.MeshData[i].MeshHeader.numVertices-1 do begin
+        mesh.TexCoords.Add(MD3File.MeshData[i].TexCoords[j].textureCoord.V[0]*0.75,1-MD3File.MeshData[i].TexCoords[j].textureCoord.V[1],0);
+        mesh.Vertices.Add(MD3File.MeshData[i].Vertices[j].vertex.X/64,MD3File.MeshData[i].Vertices[j].vertex.Y/64,MD3File.MeshData[i].Vertices[j].vertex.Z/64);
+        mesh.Binormals.AddVector(GetNormalFromMD3Normal(MD3File.MeshData[i].Vertices[j].normal.V));
+      end;
+}
       with mesh, MD3File do begin
         Mode:=momFaceGroups;
         faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
         with faceGroup do begin
-          AllocateMaterial(mesh.Name);
           MaterialName:=mesh.Name;
+          if(Length(MeshData[i].Skins)>0) then
+            AllocateMaterial(mesh.Name,MeshData[i].Skins[0].strName)
+          else AllocateMaterial(mesh.Name,'');
           numTris:=MeshData[i].MeshHeader.numTriangles;
           VertexIndices.Capacity:=numTris*3;
           TexCoords.Capacity:=numTris*3;
@@ -105,13 +142,13 @@ begin
             with MeshData[i].Triangles[j] do begin
               Add(vertexIndices.V[0],
                   MeshData[i].TexCoords[vertexIndices.V[0]].textureCoord.V[0],
-                  1-MeshData[i].TexCoords[vertexIndices.V[0]].textureCoord.V[1]);
+                  (1-MeshData[i].TexCoords[vertexIndices.V[0]].textureCoord.V[1]));
               Add(vertexIndices.V[2],
                   MeshData[i].TexCoords[vertexIndices.V[2]].textureCoord.V[0],
-                  1-MeshData[i].TexCoords[vertexIndices.V[2]].textureCoord.V[1]);
+                  (1-MeshData[i].TexCoords[vertexIndices.V[2]].textureCoord.V[1]));
               Add(vertexIndices.V[1],
                   MeshData[i].TexCoords[vertexIndices.V[1]].textureCoord.V[0],
-                  1-MeshData[i].TexCoords[vertexIndices.V[1]].textureCoord.V[1]);
+                  (1-MeshData[i].TexCoords[vertexIndices.V[1]].textureCoord.V[1]));
             end;
           end;
         end;
@@ -131,6 +168,7 @@ begin
               GetNormalFromMD3Normal(MeshData[i].Vertices[k].normal.V));
           end;
         end;
+
       end;
       if mesh.MorphTargets.Count>0 then
         mesh.MorphTo(0);
