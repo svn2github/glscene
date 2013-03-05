@@ -50,7 +50,7 @@ echo ************************************************
 echo _
 
 
-del *.res /s
+rem del *.res /s
 rem del *.cfg /s  animations
 
 
