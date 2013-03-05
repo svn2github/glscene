@@ -1,43 +1,16 @@
-{: Using the GLBumpShader for object space bump mapping.<p>
-
-   The bump shader runs an ambient light pass and a pass for 
-   each light shining in the scene. There are currently 2 
-   bump methods: a dot3 texture combiner and a basic ARB 
-   fragment program.<p> 
-   
-   The dot3 texture combiner only supports diffuse lighting 
-   but is fast and works on lower end graphics adapters.<p>
-
-   The basic ARBFP method supports diffuse and specular 
-   lighting<p>
-   
-   Both methods pick up the light and material options 
-   through the OpenGL state.<p>
-
-   The normal map is expected as the primary texture.<p>
-
-   Diffuse textures are supported through the secondary
-   texture and can be enabled using the boDiffuseTexture2
-   bump option.<p>
-
-   Specular textures are supported through the tertiary
-   texture and can be enabled using the boSpecularTexture3
-   bump option and setting the SpecularMode to smBlinn or
-   smPhong (smOff will disable specular in the shader).<p>
-   
-   With the boLightAttenutation flag set the shader will
-   use the OpenGL light attenuation coefficients when
-   calculating light intensity.<p>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLTexture, GLBumpShader, GLScene,
-  GLVectorFileObjects, GLCadencer, GLWin32Viewer, JPEG, ExtCtrls,
-  StdCtrls, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  Dialogs, ExtCtrls, StdCtrls,
+
+  //GLScene
+  GLScene, GLObjects, GLTexture, GLBumpShader,
+  GLVectorFileObjects, GLCadencer, GLWin32Viewer, JPEG,
+  AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -67,6 +40,7 @@ type
     CheckBox4: TCheckBox;
     ComboBox2: TComboBox;
     Label2: TLabel;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -98,12 +72,11 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry, GLContext, GLUtils;
+uses VectorGeometry, GLContext;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-
   // Load the bunny mesh and scale for viewing
   Bunny.LoadFromFile('bunny.glsm');
   Bunny.Scale.Scale(2/Bunny.BoundingSphereRadius);
@@ -199,7 +172,7 @@ end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Form1.Caption:='GLBumpShader Demo - '+GLSceneViewer1.FramesPerSecondText;
+  LabelFPS.Caption := GLSceneViewer1.FramesPerSecondText;
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

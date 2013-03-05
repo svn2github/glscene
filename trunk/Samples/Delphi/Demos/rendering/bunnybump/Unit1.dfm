@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 107
-  Width = 475
-  Height = 466
-  Caption = 'GLBumpShader Demo'
+  Caption = 'Bunny Bump Shader'
+  ClientHeight = 437
+  ClientWidth = 562
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
@@ -19,12 +20,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 57
-    Width = 459
-    Height = 371
+    Width = 562
+    Height = 380
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 149.829803466796900000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -33,7 +34,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 459
+    Width = 562
     Height = 57
     Align = alTop
     TabOrder = 1
@@ -51,13 +52,19 @@ object Form1: TForm1
       Height = 13
       Caption = 'Specular Mode'
     end
+    object LabelFPS: TLabel
+      Left = 512
+      Top = 27
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object ComboBox1: TComboBox
       Left = 8
       Top = 24
       Width = 145
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'Per-Vertex'
@@ -138,7 +145,6 @@ object Form1: TForm1
       Width = 73
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 3
       Text = 'smOff'
@@ -150,8 +156,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 64
+    Left = 40
+    Top = 72
     object DCLights: TGLDummyCube
       CubeSize = 1.000000000000000000
       object WhiteLight: TGLLightSource
@@ -196,8 +202,8 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 96
+    Left = 40
+    Top = 136
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -209,8 +215,8 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Shader = GLBumpShader1
       end>
-    Left = 40
-    Top = 64
+    Left = 136
+    Top = 72
   end
   object GLBumpShader1: TGLBumpShader
     BumpMethod = bmDot3TexCombiner
@@ -219,18 +225,18 @@ object Form1: TForm1
     SpecularMode = smOff
     DesignTimeEnabled = False
     ParallaxOffset = 0.039999999105930330
-    Left = 40
-    Top = 96
+    Left = 136
+    Top = 136
   end
   object ColorDialog1: TColorDialog
-    Left = 216
-    Top = 16
+    Left = 352
+    Top = 72
   end
   object AsyncTimer1: TAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpNormal
-    Left = 8
-    Top = 128
+    Left = 248
+    Top = 72
   end
 end
