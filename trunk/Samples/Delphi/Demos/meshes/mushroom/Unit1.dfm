@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 180
   Top = 93
-  Width = 414
-  Height = 291
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Mushroom'
+  ClientHeight = 295
+  ClientWidth = 467
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,30 +15,32 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnResize = FormResize
   DesignSize = (
-    392
-    247)
+    467
+    295)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 392
-    Height = 247
+    Width = 467
+    Height = 295
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {CECD4D3FCECD4D3FCECD4D3F0000803F}
     Buffer.FogEnvironment.FogStart = 30.000000000000000000
     Buffer.FogEnvironment.FogEnd = 90.000000000000000000
     Buffer.BackgroundColor = 13487565
     Buffer.FogEnable = True
-    FieldOfView = 135.918060302734400000
+    FieldOfView = 142.548431396484400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 400
+    ExplicitHeight = 241
   end
   object Button1: TButton
     Left = 144
-    Top = 223
+    Top = 277
     Width = 137
     Height = 17
     Anchors = [akLeft, akBottom]
@@ -51,6 +53,7 @@ object Form1: TForm1
     ParentFont = False
     TabOrder = 1
     OnClick = Button1Click
+    ExplicitTop = 223
   end
   object GLScene1: TGLScene
     VisibilityCulling = vcObjectBased
@@ -100,13 +103,13 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 48
+    Left = 248
     Top = 16
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 48
+    Left = 96
+    Top = 16
   end
 end

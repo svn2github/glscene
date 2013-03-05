@@ -1,26 +1,14 @@
-{: Mushroom frenzy : demonstrates loading 3DS files and using proxy objects.<p>
-
-   In this sample, we have a single 3DS mesh (a mushroom), and we want to display
-   a whole bunch of mushrooms. To reach this goal, we use a TGLFreeForm and load
-   the 3DS mesh with its "LoadFromFile" method.<p>
-
-   The other mushrooms are obtained with proxy objects (see "AddMushrooms"),
-   our freeform is used as MasterObject, the scale and position are then randomized
-   and scattered around our ground (a textured disk).<p>
-
-   This results could also have been obtained by creating FreeForms instead of
-   ProxyObjects, but using ProxyObjects avoids duplicating mesh data and helps
-   in sustaining better framerates (the same data and build list is shared among
-   all mushrooms).
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls,
+  Forms, Dialogs, StdCtrls, ExtCtrls,
+
+  //GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLBehaviours, GLCadencer,
-  StdCtrls, ExtCtrls, GLWin32Viewer, GLGeomObjects, GLCrossPlatform,
+  GLWin32Viewer, GLGeomObjects, GLCrossPlatform,
   GLCoordinates, BaseClasses;
 
 type
@@ -46,12 +34,12 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
+    { Private declarations }
     procedure AddMushrooms;
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
-    mushroomCounter : Integer;
+    MushRoomCounter : Integer;
   end;
 
 var
@@ -61,15 +49,21 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, GLTexture, JPeg, GLFile3DS, GLUtils;
+uses
+  VectorGeometry,
+  GLTexture,
+  JPeg,
+  GLFile3DS,
+  GLUtils;
 
 const
-   cSpread = 90;
-   cNbMushrooms = 10;
+  cSpread = 90;
+  cNbMushrooms = 10;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetGLSceneMediaDir();
+  SetGLSceneMediaDir();
+//   Randomize;
    // Load mushroom mesh
    FreeForm1.LoadFromFile('mushroom.3ds');
    // Load ground texture
@@ -128,7 +122,7 @@ end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   AddMushrooms;
+   AddMushRooms;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
