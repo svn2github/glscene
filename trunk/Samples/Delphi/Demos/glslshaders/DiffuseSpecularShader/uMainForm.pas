@@ -43,11 +43,11 @@ type
     RealisticSpecularCheckBox: TCheckBox;
     LightCube2: TGLDummyCube;
     Light2: TGLLightSource;
-    GLSphere2: TGLSphere;
     MultiLightShaderCheckBox: TCheckBox;
 
     DiffuseSpecularShader: TGLSLDiffuseSpecularShader;    GLSimpleNavigation1: TGLSimpleNavigation;
     EnableFogCheckBox: TCheckBox;
+    GLArrowLine2: TGLArrowLine;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime, newTime: double);
     procedure LightCubeProgress(Sender: TObject; const deltaTime,

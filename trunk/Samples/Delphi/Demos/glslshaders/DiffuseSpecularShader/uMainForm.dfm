@@ -1,9 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
+  Width = 657
+  Height = 483
   Caption = 'GLSL Diffuse Specular Shader'
-  ClientHeight = 445
-  ClientWidth = 641
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -27,7 +27,7 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.FogEnvironment.FogEnd = 5000.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clBackground
-    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roDebugContext]
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
@@ -125,14 +125,14 @@ object GLSLTestForm: TGLSLTestForm
         Position.Coordinates = {00000000000000000000A0C10000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
         XSamplingScale.Min = -200.000000000000000000
-        XSamplingScale.max = 200.000000000000000000
-        XSamplingScale.step = 20.000000000000000000
+        XSamplingScale.Max = 200.000000000000000000
+        XSamplingScale.Step = 20.000000000000000000
         YSamplingScale.Min = -200.000000000000000000
-        YSamplingScale.max = 200.000000000000000000
-        YSamplingScale.step = 20.000000000000000000
+        YSamplingScale.Max = 200.000000000000000000
+        YSamplingScale.Step = 20.000000000000000000
         ZSamplingScale.Min = -200.000000000000000000
-        ZSamplingScale.max = 200.000000000000000000
-        ZSamplingScale.step = 20.000000000000000000
+        ZSamplingScale.Max = 200.000000000000000000
+        ZSamplingScale.Step = 20.000000000000000000
         Parts = [gpX, gpZ]
       end
     end
@@ -143,6 +143,7 @@ object GLSLTestForm: TGLSLTestForm
       CubeSize = 1.000000000000000000
       object Light: TGLLightSource
         ConstAttenuation = 1.000000000000000000
+        Position.Coordinates = {0000803F00000000000000000000803F}
         LightStyle = lsOmni
         Specular.Color = {0000803F0000803F0000803F0000803F}
         SpotCutOff = 180.000000000000000000
@@ -154,22 +155,33 @@ object GLSLTestForm: TGLSLTestForm
       end
     end
     object LightCube2: TGLDummyCube
-      Position.Coordinates = {000048430000C8C2000096430000803F}
+      Position.Coordinates = {000096430000C842000096430000803F}
       Visible = False
       CubeSize = 1.000000000000000000
       object Light2: TGLLightSource
         Ambient.Color = {CDCCCC3DCDCCCC3DCDCCCC3D0000803F}
         ConstAttenuation = 1.000000000000000000
         Diffuse.Color = {DCD8583FC6BF3F3FDCD8583F0000803F}
+        LightStyle = lsParallel
         Shining = False
         Specular.Color = {0000803F0000003F0000003F0000803F}
         SpotCutOff = 180.000000000000000000
+        SpotDirection.Coordinates = {0000C842000096430000C84200000000}
       end
-      object GLSphere2: TGLSphere
-        Material.FrontProperties.Ambient.Color = {F6F5753FCDCC4C3ECDCC4C3E0000803F}
-        Material.FrontProperties.Diffuse.Color = {EAE9693FCDCC4C3FCDCC4C3F0000803F}
-        Material.FrontProperties.Emission.Color = {F0EF6F3F00000000000000000000803F}
-        Radius = 10.000000000000000000
+      object GLArrowLine2: TGLArrowLine
+        Material.FrontProperties.Ambient.Color = {1904763FCDCC4C3ECDCC4C3E0000803F}
+        Material.FrontProperties.Diffuse.Color = {E7FB693FCDCC4C3FCDCC4C3F0000803F}
+        Material.FrontProperties.Emission.Color = {1904763FCDCC4C3ECDCC4C3E0000803F}
+        Direction.Coordinates = {B25F9ABE8B8F67BFB25F9ABE00000000}
+        Scale.Coordinates = {00004842000048420000484200000000}
+        Up.Coordinates = {F7BC23BF4A51DA3EF7BC23BF00000000}
+        BottomRadius = 0.100000001490116100
+        Height = 2.000000000000000000
+        TopRadius = 0.100000001490116100
+        TopArrowHeadHeight = 0.500000000000000000
+        TopArrowHeadRadius = 0.200000002980232200
+        BottomArrowHeadHeight = 0.500000000000000000
+        BottomArrowHeadRadius = 0.200000002980232200
       end
     end
     object WorldCube: TGLDummyCube
