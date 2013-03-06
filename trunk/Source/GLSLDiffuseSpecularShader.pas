@@ -6,6 +6,7 @@
     This is a collection of GLSL diffuse-specular shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
       <li>17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>23/10/10 - Yar - Bugfixed memory leak
@@ -299,8 +300,218 @@ begin
   end;
 end;
 
-procedure GetFragmentProgramCode(const Code: TStrings; const ARealisticSpecular: Boolean;
-  const AFogSupport: Boolean);
+procedure GetMLVertexProgramCode(const Code: TStrings;
+  AFogSupport: Boolean; var rci: TRenderContextInfo);
+begin
+  with Code do
+  begin
+    Clear;
+    Add('varying vec3 Normal; ');
+    Add('varying vec4 Position; ');
+    if AFogSupport then
+    begin
+      Add('varying float fogFactor; ');
+    end;
+    Add(' ');
+    Add(' ');
+    Add('void main(void) ');
+    Add('{ ');
+    Add('  gl_Position = ftransform(); ');
+    Add('  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0; ');
+    Add('  Normal = normalize(gl_NormalMatrix * gl_Normal); ');
+    Add('  Position = gl_ModelViewMatrix * gl_Vertex; ');
+
+    if AFogSupport then
+    begin
+    Add('  const float LOG2 = 1.442695; ');
+    Add('  gl_FogFragCoord = length(Position.xyz); ');
+
+    case TGLSceneBuffer(rci.buffer).FogEnvironment.FogMode of
+      fmLinear:
+        Add('  fogFactor = (gl_Fog.end - gl_FogFragCoord) * gl_Fog.scale; ');
+      fmExp, // Yep, I don't know about this type, so I use fmExp2.
+      fmExp2:
+      begin
+        Add('  fogFactor = exp2( -gl_Fog.density * ');
+        Add('  				   gl_Fog.density * ');
+        Add('  				   gl_FogFragCoord * ');
+        Add('  				   gl_FogFragCoord * ');
+        Add('  				   LOG2 ); ');
+      end;
+    else
+      Assert(False, glsUnknownType);
+    end;
+
+      Add('  fogFactor = clamp(fogFactor, 0.0, 1.0); ');
+    end;
+
+    Add('} ');
+  end;
+end;
+
+procedure AddLightSub(const Code: TStrings);
+begin
+  with Code do
+  begin
+    Add('void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)');
+    Add('{');
+    Add('   float nDotVP;       // normal . light direction');
+    Add('   float nDotHV;       // normal . light half vector');
+    Add('   float pf;           // power factor');
+    Add('   float attenuation;  // computed attenuation factor');
+    Add('   float d;            // distance from surface to light source');
+    Add('   vec3  VP;           // direction from surface to light position');
+    Add('   vec3  halfVector;   // direction of maximum highlights');
+    Add(' ');
+    Add('   // Compute vector from surface to light position');
+    Add('   VP = vec3 (gl_LightSource[i].position) - ecPosition3;');
+    Add(' ');
+    Add('   // Compute distance between surface and light position');
+    Add('   d = length(VP);');
+    Add(' ');
+    Add('   // Normalize the vector from surface to light position');
+    Add('   VP = normalize(VP);');
+    Add(' ');
+    Add('   // Compute attenuation');
+    Add('   attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +');
+    Add('       gl_LightSource[i].linearAttenuation * d +');
+    Add('       gl_LightSource[i].quadraticAttenuation * d * d);');
+    Add(' ');
+    Add('   halfVector = normalize(VP + eye);');
+    Add(' ');
+    Add('   nDotVP = max(0.0, dot(normal, VP));');
+    Add('   nDotHV = max(0.0, dot(normal, halfVector));');
+    Add(' ');
+    Add('   if (nDotVP == 0.0)');
+    Add('   {');
+    Add('       pf = 0.0;');
+    Add('   }');
+    Add('   else');
+    Add('   {');
+    Add('       pf = pow(nDotHV, SpecPower);');
+    Add(' ');
+    Add('   }');
+    Add('   Ambient  += gl_LightSource[i].ambient * attenuation;');
+    Add('   Diffuse  += gl_LightSource[i].diffuse * nDotVP * attenuation;');
+    Add('   Specular += gl_LightSource[i].specular * pf * attenuation;');
+    Add('}');
+    Add(' ');
+    Add('void directionalLight(in int i, in vec3 normal)');
+    Add('{');
+    Add('   float nDotVP;         // normal . light direction');
+    Add('   float nDotHV;         // normal . light half vector');
+    Add('   float pf;             // power factor');
+    Add(' ');
+    Add('   nDotVP = max(0.0, dot(normal, normalize(vec3 (gl_LightSource[i].position))));');
+    Add('   nDotHV = max(0.0, dot(normal, vec3 (gl_LightSource[i].halfVector)));');
+    Add(' ');
+    Add('   if (nDotVP == 0.0)');
+    Add('   {');
+    Add('       pf = 0.0;');
+    Add('   }');
+    Add('   else');
+    Add('   {');
+    Add('       pf = pow(nDotHV, SpecPower);');
+    Add(' ');
+    Add('   }');
+    Add('   Ambient  += gl_LightSource[i].ambient;');
+    Add('   Diffuse  += gl_LightSource[i].diffuse * nDotVP;');
+    Add('   Specular += gl_LightSource[i].specular * pf;');
+    Add('}');
+    Add('void spotLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)');
+    Add('{');
+    Add('   float nDotVP;            // normal . light direction');
+    Add('   float nDotHV;            // normal . light half vector');
+    Add('   float pf;                // power factor');
+    Add('   float spotDot;           // cosine of angle between spotlight');
+    Add('   float spotAttenuation;   // spotlight attenuation factor');
+    Add('   float attenuation;       // computed attenuation factor');
+    Add('   float d;                 // distance from surface to light source');
+    Add('   vec3  VP;                // direction from surface to light position');
+    Add('   vec3  halfVector;        // direction of maximum highlights');
+    Add(' ');
+    Add('   // Compute vector from surface to light position');
+    Add('   VP = vec3 (gl_LightSource[i].position) - ecPosition3;');
+    Add(' ');
+    Add('   // Compute distance between surface and light position');
+    Add('   d = length(VP);');
+    Add(' ');
+    Add('   // Normalize the vector from surface to light position');
+    Add('   VP = normalize(VP);');
+    Add(' ');
+    Add('   // Compute attenuation');
+    Add('   attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +');
+    Add('       gl_LightSource[i].linearAttenuation * d +');
+    Add('       gl_LightSource[i].quadraticAttenuation * d * d);');
+    Add(' ');
+    Add('   // See if point on surface is inside cone of illumination');
+    Add('   spotDot = dot(-VP, normalize(gl_LightSource[i].spotDirection));');
+    Add(' ');
+    Add('   if (spotDot < gl_LightSource[i].spotCosCutoff)');
+    Add('   {');
+    Add('       spotAttenuation = 0.0; // light adds no contribution');
+    Add('   }');
+    Add('   else');
+    Add('   {');
+    Add('       spotAttenuation = pow(spotDot, gl_LightSource[i].spotExponent);');
+    Add(' ');
+    Add('   }');
+    Add('   // Combine the spotlight and distance attenuation.');
+    Add('   attenuation *= spotAttenuation;');
+    Add(' ');
+    Add('   halfVector = normalize(VP + eye);');
+    Add(' ');
+    Add('   nDotVP = max(0.0, dot(normal, VP));');
+    Add('   nDotHV = max(0.0, dot(normal, halfVector));');
+    Add(' ');
+    Add('   if (nDotVP == 0.0)');
+    Add('   {');
+    Add('       pf = 0.0;');
+    Add('   }');
+    Add('   else');
+    Add('   {');
+    Add('       pf = pow(nDotHV, SpecPower);');
+    Add(' ');
+    Add('   }');
+    Add('   Ambient  += gl_LightSource[i].ambient * attenuation;');
+    Add('   Diffuse  += gl_LightSource[i].diffuse * nDotVP * attenuation;');
+    Add('   Specular += gl_LightSource[i].specular * pf * attenuation;');
+    Add(' ');
+    Add('}');
+    Add('void infiniteSpotLight(in int i, in vec3 normal)');
+    Add('{');
+    Add('   float nDotVP;         // normal . light direction');
+    Add('   float nDotHV;         // normal . light half vector');
+    Add('   float pf;             // power factor');
+    Add('   float spotAttenuation;');
+    Add('   vec3  Ppli;');
+    Add('   vec3  Sdli;');
+    Add(' ');
+    Add('   nDotVP = max(0.0, dot(normal, normalize(vec3 (gl_LightSource[i].position))));');
+    Add('   nDotHV = max(0.0, dot(normal, vec3 (gl_LightSource[i].halfVector)));');
+    Add(' ');
+    Add('   Ppli = -normalize(vec3(gl_LightSource[i].position));');
+    Add('   Sdli = normalize(vec3(gl_LightSource[i].spotDirection));');
+    Add(' ');
+    Add('   spotAttenuation = pow(dot(Ppli, Sdli), gl_LightSource[i].spotExponent);');
+    Add('   if (nDotVP == 0.0)');
+    Add('   {');
+    Add('       pf = 0.0;');
+    Add('   }');
+    Add('   else');
+    Add('   {');
+    Add('       pf = pow(nDotHV, SpecPower);');
+    Add(' ');
+    Add('   }');
+    Add('   Ambient  += gl_LightSource[i].ambient * spotAttenuation;');
+    Add('   Diffuse  += gl_LightSource[i].diffuse * nDotVP * spotAttenuation;');
+    Add('   Specular += gl_LightSource[i].specular * pf * spotAttenuation;');
+    Add('}');
+  end;
+end;
+
+procedure GetFragmentProgramCode(const Code: TStrings;
+  const ARealisticSpecular: Boolean; const AFogSupport: Boolean);
 begin
   with Code do
   begin
@@ -395,98 +606,63 @@ begin
   end;
 end;
 
-
-procedure GetMLVertexProgramCode(const Code: TStrings;
-  AFogSupport: Boolean; var rci: TRenderContextInfo);
-begin
-  with Code do
-  begin
-    Clear;
-    Add('varying vec3 Normal; ');
-    Add('varying vec3 LightVector; ');
-    Add('varying vec3 ViewDirection; ');
-    if AFogSupport then
-    begin
-      Add('varying float fogFactor; ');
-    end;
-    Add(' ');
-    Add(' ');
-    Add('void main(void) ');
-    Add('{ ');
-    Add('  gl_Position = ftransform(); ');
-    Add('  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0; ');
-    Add('  Normal = normalize(gl_NormalMatrix * gl_Normal); ');
-    Add('  ViewDirection = (gl_ModelViewMatrix * gl_Vertex).xyz; ');
-
-    if AFogSupport then
-    begin
-    Add('  const float LOG2 = 1.442695; ');
-    Add('  gl_FogFragCoord = length(ViewDirection); ');
-
-    case TGLSceneBuffer(rci.buffer).FogEnvironment.FogMode of
-      fmLinear:
-        Add('  fogFactor = (gl_Fog.end - gl_FogFragCoord) * gl_Fog.scale; ');
-      fmExp, // Yep, I don't know about this type, so I use fmExp2.
-      fmExp2:
-      begin
-        Add('  fogFactor = exp2( -gl_Fog.density * ');
-        Add('  				   gl_Fog.density * ');
-        Add('  				   gl_FogFragCoord * ');
-        Add('  				   gl_FogFragCoord * ');
-        Add('  				   LOG2 ); ');
-      end;
-    else
-      Assert(False, glsUnknownType);
-    end;
-
-      Add('  fogFactor = clamp(fogFactor, 0.0, 1.0); ');
-    end;
-
-    Add('} ');
-  end;
-end;
-
 procedure GetMLFragmentProgramCodeBeg(const Code: TStrings;
   const AFogSupport: Boolean);
 begin
   with Code do
   begin
     Clear;
+    Add('uniform sampler2D MainTexture;');
     Add('uniform float LightIntensity; ');
     Add('uniform float SpecPower; ');
-    Add('uniform sampler2D MainTexture; ');
     Add(' ');
-    Add('varying vec3 Normal; ');
-    Add('varying vec3 ViewDirection; ');
+    Add('varying vec3 Normal;');
+    Add('varying vec4 Position;');
     if AFogSupport then
     begin
-      Add('varying float fogFactor; ');
+      Add('varying float fogFactor;');
     end;
+    Add('vec4 Ambient;');
+    Add('vec4 Diffuse;');
+    Add('vec4 Specular;');
     Add(' ');
+    AddLightSub(Code);
+
     Add('void main(void) ');
     Add('{ ');
-    Add('  vec3 LightVector; ');
-    Add('  vec3 reflect_vec; ');
-    Add('  float Temp; ');
     Add('  vec4 TextureContrib = texture2D(MainTexture, gl_TexCoord[0].st); ');
-    Add('  vec3 CameraVector = normalize(ViewDirection); ');
     Add(' ');
-    Add('  vec4 DiffuseContrib = vec4(0, 0, 0, 0); ');
-    Add('  vec4 SpecContrib    = vec4(0, 0, 0, 0); ');
-    Add('  vec4 AmbientContrib = vec4(0, 0, 0, 0); ');
+    Add('  vec3 eye = vec3(0.0, 0.0, 1.0); ');
+    Add('  Diffuse = vec4(0.0); ');
+    Add('  Specular = vec4(0.0); ');
+    Add('  Ambient = vec4(0.0); ');
+    Add('  vec3 Pos = Position.xyz; ');
+    Add('  vec3 N = normalize(Normal); ');
   end;
 end;
 
-procedure GetMLFragmentProgramCodeMid(const Code: TStrings; const CurrentLight: Integer);
+procedure GetMLFragmentProgramCodeMid(const Code: TStrings;
+  const CurrentLight: Integer; aRci: TRenderContextInfo);
 begin
   with Code do
   begin
-    Add('  LightVector = normalize(gl_LightSource[' + IntToStr(CurrentLight) + '].position.xyz - ViewDirection); ');
-    Add('  AmbientContrib = AmbientContrib + gl_LightSource[' + IntToStr(CurrentLight) + '].ambient; ');
-    Add('  DiffuseContrib = min(DiffuseContrib + clamp(gl_LightSource[' + IntToStr(CurrentLight) + '].diffuse * dot(LightVector, Normal), 0.0, 1.0), 1.0); ');
-    Add('  reflect_vec = reflect(CameraVector, -Normal); ');
-    Add('  Temp = max(dot(reflect_vec, LightVector), 0.0); ');
-    Add('  SpecContrib = min(SpecContrib + gl_LightSource[' + IntToStr(CurrentLight) + '].specular * clamp(pow(Temp, SpecPower), 0.0, 0.95), 1.0); ');
+    if ARci.GLStates.LightEnabling[CurrentLight] then
+    begin
+      if  ARci.GLStates.LightPosition[CurrentLight].W = 1.0 then
+      begin
+        if ARci.GLStates.LightSpotCutoff[CurrentLight] = 180.0 then
+          Add(Format('  pointLight(%d, N, eye, Pos); ', [CurrentLight]))
+        else
+          Add(Format('  spotLight(%d, N, eye, Pos); ', [CurrentLight]));
+      end
+      else
+      begin
+        if ARci.GLStates.LightSpotCutoff[CurrentLight] = 180.0 then
+          Add(Format('  directionalLight(%d, N); ', [CurrentLight]))
+        else
+          Add(Format('  infiniteSpotLight(%d, N); ', [CurrentLight]));
+      end;
+    end;
   end;
 end;
 
@@ -503,17 +679,17 @@ begin
     if (FLightCount = 1) or (FLightCompensation = 1) then
     begin
       if FRealisticSpecular then
-        Add('  gl_FragColor = LightIntensity * (TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib); ')
+        Add('  gl_FragColor = LightIntensity * (TextureContrib * (Ambient + Diffuse) + Specular); ')
       else
-        Add('  gl_FragColor = LightIntensity * TextureContrib  * (AmbientContrib + DiffuseContrib  + SpecContrib); ');
+        Add('  gl_FragColor = LightIntensity * TextureContrib  * (Ambient + Diffuse  + Specular); ');
     end
     else
     begin
       Str((1 + (FLightCount  - 1) * FLightCompensation) / FLightCount: 1: 1, Temp);
       if FRealisticSpecular then
-        Add('  gl_FragColor = (LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib) + SpecContrib) * ' + string(Temp) + '; ')
+        Add('  gl_FragColor = (LightIntensity * TextureContrib * (Ambient + Diffuse) + Specular) * ' + string(Temp) + '; ')
       else
-        Add('  gl_FragColor =  LightIntensity * TextureContrib * (AmbientContrib + DiffuseContrib  + SpecContrib) * ' + string(Temp) + '; ');
+        Add('  gl_FragColor =  LightIntensity * TextureContrib * (Ambient + Diffuse  + Specular) * ' + string(Temp) + '; ');
     end;
 
     if AFogSupport then
@@ -758,14 +934,15 @@ begin
 
     // Repeat for all lights.
     for I := 0 to FLightCount - 1 do
-      GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
+      GetMLFragmentProgramCodeMid(FragmentProgram.Code, I, rci);
 
     GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount,
       FLightCompensation, FRealisticSpecular, IsFogEnabled(FFogSupport, rci));
+    SaveToFile('shader.txt');
   end;
   VertexProgram.Enabled := True;
   FragmentProgram.Enabled := True;
-  inherited;
+  inherited DoInitialize(rci, Sender);
 end;
 
 procedure TGLCustomGLSLMLDiffuseSpecularShader.SetLightCompensation(
@@ -805,7 +982,7 @@ begin
 
     // Repeat for all lights.
     for I := 0 to FLightCount - 1 do
-      GetMLFragmentProgramCodeMid(FragmentProgram.Code, I);
+      GetMLFragmentProgramCodeMid(FragmentProgram.Code, I, rci);
 
     GetMLFragmentProgramCodeEnd(FragmentProgram.Code, FLightCount,
       FLightCompensation, FRealisticSpecular, IsFogEnabled(FFogSupport, rci));
