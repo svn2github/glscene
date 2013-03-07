@@ -17,7 +17,7 @@ uses
   GLShadowVolume,
   GLGeomObjects,
   ExtCtrls,
-  GLFile3DS,
+  GLUtils,
   GLFileLMTS,
   GLContext,
   VectorGeometry,
@@ -66,10 +66,8 @@ implementation
 {$R *.dfm}
 
 uses
-  GLFileOBJ,
   JPEG,
-  TGA,
-  GLUtils;
+  TGA;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 var
@@ -78,16 +76,16 @@ begin
   for I := 1 to glslProjectedTextures1.Emitters.Count - 1 do
     glslProjectedTextures1.Emitters[I].Emitter.turn(DeltaTime * (I + 1) * 10);
 
-  GLSceneViewer1.invalidate;
-  GLArrowLine1.position.Y := GLArrowLine1.position.Y + sdir * DeltaTime;
-  if GLArrowLine1.position.Y > 20 then
+  GLSceneViewer1.Invalidate;
+  GLArrowLine1.Position.Y := GLArrowLine1.Position.Y + sdir * DeltaTime;
+  if GLArrowLine1.Position.Y > 20 then
   begin
-    GLArrowLine1.position.Y := 20;
+    GLArrowLine1.Position.Y := 20;
     sdir := -10;
   end;
-  if GLArrowLine1.position.Y < 10 then
+  if GLArrowLine1.Position.Y < 10 then
   begin
-    GLArrowLine1.position.Y := 10;
+    GLArrowLine1.Position.Y := 10;
     sdir := 10;
   end;
 
@@ -95,8 +93,9 @@ end;
 
 procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle; Width, Height, DPI: Integer; var viewPortRadius: Single);
 begin
-  CurrentGlContext.PipelineTransformation.ProjectionMatrix :=
-    CreatePerspectiveMatrix(GLCamera1.GetFieldOfView(Width)/2, Width / Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
+  CurrentGLContext.PipelineTransformation.ProjectionMatrix :=
+    CreatePerspectiveMatrix(GLCamera1.GetFieldOfView(Width)/2, Width / Height,
+                            GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -122,26 +121,27 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := GLSceneViewer1.FramesPerSecondText();
+  Caption := 'GLSL Projected Texture ' +GLSceneViewer1.FramesPerSecondText();
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  I: Integer;
+  I : Integer;
 begin
-  randomize;
+  Randomize;
   sdir := -10;
   GLCamera1.CameraStyle := cscustom;
 
   SetGLSceneMediaDir();
-  glslProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
-  glslProjectedTextures1.Material.Texture.Disabled := False;
-  glslProjectedTextures1.Material.Texture.TextureWrap := twNone;
-  glslProjectedTextures1.Material.Texture.MinFilter := miLinear;
-  glslProjectedTextures1.Material.Texture.MagFilter := maLinear;
-  glslProjectedTextures1.UseLightmaps := True;
-  glcube1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
-  glcube1.Material.Texture.Disabled := False;
+
+  GLSLProjectedTextures1.Material.Texture.Image.LoadFromFile('flare1.bmp');
+  GLSLProjectedTextures1.Material.Texture.Disabled := False;
+  GLSLProjectedTextures1.Material.Texture.TextureWrap := twNone;
+  GLSLProjectedTextures1.Material.Texture.MinFilter := miLinear;
+  GLSLProjectedTextures1.Material.Texture.MagFilter := maLinear;
+  GLSLProjectedTextures1.UseLightmaps := True;
+  GLCube1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+  GLCube1.Material.Texture.Disabled := False;
 
 
   GLFreeForm1.LoadFromFile('groundtest.lmts');

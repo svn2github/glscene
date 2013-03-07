@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 440
   Top = 264
-  Width = 648
-  Height = 477
-  Caption = 'Form1'
+  Caption = 'GLSL Projected Texture'
+  ClientHeight = 433
+  ClientWidth = 640
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   DesignSize = (
-    632
-    439)
+    640
+    433)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -88,7 +88,7 @@ object Form1: TForm1
           Aspect = 1.000000000000000000
           Style = ptsShadow
           Attenuation = 100.000000000000000000
-          Brightness = 0.800000011920929000
+          Brightness = 0.800000011920928900
           Color.Color = {0000803F0000803F0000803F0000803F}
           UseAttenuation = False
           UseQuadraticAttenuation = False

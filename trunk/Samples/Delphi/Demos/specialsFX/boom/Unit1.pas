@@ -1,21 +1,3 @@
-{: An FireFX demo showcasing use of explosions.<p>
-
-   In this sample, a small sphere is thrusted upward (with a gravity-like
-   deceleration) with a small fire trail, explodes (in one of two styles,
-   isotropic or ring, chosen at random), and falls back followed by a smoke
-   trail.<br>
-   The explosion takes place in 3D, to help you visualize it, hold the mouse
-   button down and move around.<p>
-
-   Two FireFXManager components are used, one for the fire, the other for
-   the smoke. The explosion is triggered by calling IsotropicExplosion, which
-   generates and "isotropic" population of particles that move away from the
-   object position.<p>
-
-   Note that to have trail effects, you must adjust the Reference property of
-   a FireFX manager. It is unadjusted, the particles will not be "left behind",
-   which is convenient for static fireplaces, but not for trials.
-}
 unit Unit1;
 
 interface
@@ -49,9 +31,9 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations  }
     mx, my : Integer;
   end;
 
@@ -110,7 +92,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // standard issue framerate & particle count update
-   Caption:=Format('%.1f FPS - %d Particles',
+   Caption:='Boom - '+Format('%.1f FPS - %d Particles',
                    [GLSceneViewer1.FramesPerSecond, FireFX.ParticleCount+SmokeFX.ParticleCount]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
@@ -124,8 +106,8 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-   mx:=x;
-   my:=y;
+   mx:=X;
+   my:=Y;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
