@@ -1465,7 +1465,7 @@ type
      <li>lsParallel : a parallel light, oriented as the light source is (this
         type of light can help speed up rendering)
       </ul> }
-  TLightStyle = (lsSpot, lsOmni, lsParallel);
+  TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   // TGLLightSource
   //
@@ -7847,7 +7847,7 @@ begin
             if FixedFunctionPipeLight then
             begin
               RebuildMatrix;
-              if LightStyle = lsParallel then
+              if LightStyle in [lsParallel, lsParallelSpot] then
               begin
                 ModelMatrix := AbsoluteMatrix;
                 GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
@@ -7857,7 +7857,7 @@ begin
                 ModelMatrix := Parent.AbsoluteMatrix;
                 GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
-              if LightStyle = lsSpot then
+              if LightStyle in [lsSpot, lsParallelSpot] then
               begin
                 if FSpotCutOff <> 180 then
                   GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
@@ -7865,7 +7865,7 @@ begin
             end;
 
             lPos := lightSource.AbsolutePosition;
-            if LightStyle = lsParallel then
+            if LightStyle in [lsParallel, lsParallelSpot] then
               lPos.V[3] := 0.0
             else
               lPos.V[3] := 1.0;
