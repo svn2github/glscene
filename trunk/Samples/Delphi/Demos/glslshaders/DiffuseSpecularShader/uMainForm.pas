@@ -97,8 +97,6 @@ begin
 
   // This is how a shader is created in runtime.
   MultiLightShader := TGLSLMLDiffuseSpecularShader.Create(Self);
-  MultiLightShader.LightCompensation := 0.7;
-  MultiLightShader.LightCount := 2;
 
   // Disable fog.
   EnableFogCheckBoxClick(nil);
@@ -139,13 +137,13 @@ begin
   MultiLightShader.RealisticSpecular := RealisticSpecularCheckBox.Checked;
   if DiffuseSpecularShader.RealisticSpecular then
   begin
-    DiffuseSpecularShader.SpecularPower := 20;
-    MultiLightShader.SpecularPower := 20;
+    MaterialLibrary.Materials[0].Material.FrontProperties.Shininess := 20;
+    MaterialLibrary.Materials[1].Material.FrontProperties.Shininess := 20;
   end
   else
   begin
-    DiffuseSpecularShader.SpecularPower := 8;
-    MultiLightShader.SpecularPower := 8;
+    MaterialLibrary.Materials[0].Material.FrontProperties.Shininess := 8;
+    MaterialLibrary.Materials[1].Material.FrontProperties.Shininess := 8;
   end;
 end;
 

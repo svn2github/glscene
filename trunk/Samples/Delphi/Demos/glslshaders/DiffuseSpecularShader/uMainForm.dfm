@@ -260,7 +260,6 @@ object GLSLTestForm: TGLSLTestForm
     Top = 88
   end
   object DiffuseSpecularShader: TGLSLDiffuseSpecularShader
-    SpecularPower = 8.000000000000000000
     LightPower = 1.000000000000000000
     Left = 56
     Top = 16
