@@ -1,22 +1,3 @@
-{: This is a basic use for TGLBInertia behaviour.<p>
-
-	There are three objects, which we assign three different dampings, and we
-	apply a torque to the object under the mouse pointer, other are left along
-	with their inertia (and damping makes them progressively reduce their speed).<br>
-	There is also a checkbox to double the objects mass.<p>
-
-	Notice how the constant damping stops abruptly the dodecahedron, while the
-	the octahedron, once spinned, is slowing down but never really stops.<br>
-	However, don't show this sample to your science teacher, since our "torque"
-	is actually an angular acceleration in degrees that gets affected by the
-	object's mass... Anyway, it looks like a real torque is applied.<p>
-
-	Note that the inertia behaviour could have been accessed directly with a
-	TGLBInertia(Behaviours[0]) for all objects in this sample, but using the
-	helper function GetOrCreateInertia is a more convenient (and resilient) way,
-	since it will automatically add an inertia behaviour to our object if it
-	doesn't have one.
-}
 unit Unit1;
 
 interface
@@ -32,16 +13,21 @@ type
 	 GLScene1: TGLScene;
 	 GLCamera1: TGLCamera;
 	 GLLightSource1: TGLLightSource;
-	 Cube: TGLCube;
-	 Dodecahedron: TGLDodecahedron;
-	 Octahedron: TGLSphere;
-	 Label1: TLabel;
-	 Label2: TLabel;
-	 Label3: TLabel;
-	 Label4: TLabel;
-    CheckBox1: TCheckBox;
+    Hexahedron: TGLCube;
     DummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
+    Panel1: TPanel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    CheckBox1: TCheckBox;
+    Panel2: TPanel;
+    Label1: TLabel;
+    Label5: TLabel;
+  	Dodecahedron: TGLDodecahedron;
+    Icosahedron: TGLIcosahedron;
+    Octahedron: TGLOctahedron;
+    Tetrahedron: TGLTetrahedron;
 	 procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
 		X, Y: Integer);
 	 procedure FormCreate(Sender: TObject);
@@ -49,11 +35,10 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-	 { Déclarations privées }
 	 lastTime : Double;
 	 pickedObject : TGLBaseSceneObject;
   public
-	 { Déclarations publiques }
+	 //
   end;
 
 var
@@ -71,7 +56,7 @@ begin
 	lastTime:=Now*3600*24;
 	// Initialize rotation dampings...
 	// ...using properties...
-	with GetOrCreateInertia(Cube.Behaviours).RotationDamping do begin
+	with GetOrCreateInertia(Hexahedron.Behaviours).RotationDamping do begin
 		Constant:=1;
 		Linear:=1;
 		Quadratic:=0;
@@ -79,7 +64,9 @@ begin
 	// ...using helper function on the TGLBehaviours...
 	GetOrCreateInertia(Dodecahedron.Behaviours).RotationDamping.SetDamping(10, 0, 0.01);
 	// ...or using helper function directly on the TGLBaseSceneObject
-	GetOrCreateInertia(Octahedron).RotationDamping.SetDamping(0, 0, 0.01);
+	GetOrCreateInertia(Octahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
+	GetOrCreateInertia(Icosahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
+	GetOrCreateInertia(Tetrahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
@@ -104,7 +91,8 @@ var
 begin
 	if CheckBox1.Checked then
 		mass:=2
-	else mass:=1;
+	else
+    mass:=1;
 	// all our objects are child of the DummyCube1
 	for i:=0 to DummyCube1.Count-1 do
 		GetOrCreateInertia(DummyCube1.Children[i]).Mass:=mass;
