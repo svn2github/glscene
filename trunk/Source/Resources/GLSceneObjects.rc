@@ -41,6 +41,8 @@ TGLDisk BITMAP objects\basic_geometry\TGLDisk.bmp
 TGLDodecahedron BITMAP objects\basic_geometry\TGLDodecahedron.bmp
 TGLFrustrum BITMAP objects\basic_geometry\TGLFrustrum.bmp
 TGLIcosahedron BITMAP objects\basic_geometry\TGLIcosahedron.bmp
+TGLTetrahedron BITMAP objects\basic_geometry\TGLTetrahedron.bmp
+TGLOctahedron BITMAP objects\basic_geometry\TGLOctahedron.bmp
 TGLLines BITMAP objects\basic_geometry\TGLLines.bmp
 TGLPlane BITMAP objects\basic_geometry\TGLPlane.bmp
 TGLPoints BITMAP objects\basic_geometry\TGLPoints.bmp

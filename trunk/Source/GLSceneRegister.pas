@@ -7,6 +7,7 @@
       IDE experts.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>10/03/13 - PW - Added TGLOctahedron and TGLTetrahedron registration
       <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
       <li>04/06/10 - Yar - Added GLSArchiveManager
       <li>20/04/10 - Yar - Added GLSLanguage
@@ -2538,6 +2539,8 @@ initialization
     RegisterSceneObject(TGLCapsule, 'Capsule', glsOCBasicGeometry, HInstance);
     RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', glsOCBasicGeometry, HInstance);
     RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry, HInstance);
+    RegisterSceneObject(TGLOctahedron, 'Octahedron', glsOCBasicGeometry, HInstance);
+    RegisterSceneObject(TGLTetrahedron, 'Tetrahedron', glsOCBasicGeometry, HInstance);
 
     //Advanced geometry
     RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', glsOCAdvancedGeometry, HInstance);

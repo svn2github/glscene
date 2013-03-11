@@ -13,6 +13,7 @@
   objects can be found GLGeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>10/03/13 - PW - Added OctahedronBuildList and TetrahedronBuildList
   <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
                  getter and a setter methods
   <li>23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
@@ -915,13 +916,19 @@ type
 
   end;
 
-  { : Issues OpenGL for a unit-size cube stippled wireframe. }
+{ : Issues OpenGL for a unit-size cube stippled wireframe. }
 procedure CubeWireframeBuildList(var rci: TRenderContextInfo; size: TGLFloat;
   stipple: Boolean; const Color: TColorVector);
 { : Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
 { : Issues OpenGL for a unit-size icosahedron. }
 procedure IcosahedronBuildList;
+{ : Issues OpenGL for a unit-size octahedron. }
+procedure OctahedronBuildList;
+{ : Issues OpenGL for a unit-size tetrahedron. }
+procedure TetrahedronBuildList;
+
+
 
 var
   TangentAttributeName: AnsiString = 'Tangent';
@@ -1001,7 +1008,6 @@ end;
 
 // DodecahedronBuildList
 //
-
 procedure DodecahedronBuildList;
 const
   A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
@@ -1053,7 +1059,6 @@ end;
 
 // IcosahedronBuildList
 //
-
 procedure IcosahedronBuildList;
 const
   A = 0.5;
@@ -1076,6 +1081,83 @@ var
   faceIndices: PByteArray;
 begin
   for i := 0 to 19 do
+  begin
+    faceIndices := @triangles[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+    GL.Begin_(GL_TRIANGLES);
+    for j := 0 to 2 do
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
+  end;
+end;
+
+// OctahedronBuildList
+//
+procedure OctahedronBuildList;
+const
+  Vertices: packed array [0 .. 5] of TAffineVector =
+      ((X: 1.0; Y: 0.0; Z: 0.0),
+       (X: -1.0; Y: 0.0; Z: 0.0),
+       (X: 0.0; Y: 1.0; Z: 0.0),
+       (X: 0.0; Y: -1.0; Z: 0.0),
+       (X: 0.0; Y: 0.0; Z: 1.0),
+       (X: 0.0; Y: 0.0; Z: -1.0));
+
+  Triangles: packed array [0 .. 7] of packed array [0 .. 2]
+    of Byte = ((0, 4, 2), (1, 2, 4), (0, 3, 4), (1, 4, 3),
+               (0, 2, 5), (1, 5, 2), (0, 5, 3), (1, 3, 5));
+
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 7 do
+  begin
+    faceIndices := @triangles[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+    GL.Begin_(GL_TRIANGLES);
+    for j := 0 to 2 do
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
+  end;
+end;
+
+// TetrahedronBuildList
+//
+procedure TetrahedronBuildList;
+const
+  TetT = 1.73205080756887729;
+const
+  Vertices: packed array [0 .. 3] of TAffineVector =
+{
+       ((X: TetT;  Y: TetT;  Z: TetT),
+        (X: TetT;  Y: -TetT; Z: -TetT),
+        (X: -TetT; Y: TetT;  Z: -TetT),
+        (X: -TetT; Y: -TetT; Z: TetT));
+}
+       ((X: 1.0;  Y: 1.0;  Z: 1.0),
+        (X: 1.0;  Y: -1.0; Z: -1.0),
+        (X: -1.0; Y: 1.0;  Z: -1.0),
+        (X: -1.0; Y: -1.0; Z: 1.0));
+
+  Triangles: packed array [0 .. 3] of packed array [0 .. 2]
+    of Byte = ((0, 1, 3), (2, 1, 0), (3, 2, 0), (1, 2, 3));
+
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 3 do
   begin
     faceIndices := @triangles[i, 0];
 
