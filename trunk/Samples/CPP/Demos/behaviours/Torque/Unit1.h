@@ -3,6 +3,7 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <tchar.h>
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -27,13 +28,17 @@ __published:	// IDE-managed Components
 	TLabel *Label3;
 	TLabel *Label4;
 	TLabel *Label1;
+	TLabel *Label5;
 	TCheckBox *CheckBox1;
+	TPanel *Panel2;
 	TGLScene *GLScene1;
 	TGLLightSource *GLLightSource1;
 	TGLDummyCube *DummyCube1;
-	TGLCube *Cube;
+	TGLTetrahedron *Tetrahedron;
+	TGLOctahedron *Octahedron;
+	TGLCube *Hexahedron;
 	TGLDodecahedron *Dodecahedron;
-	TGLSphere *Octahedron;
+	TGLIcosahedron *Icosahedron;
 	TGLCamera *GLCamera1;
 	TGLCadencer *GLCadencer1;
 	void __fastcall FormCreate(TObject *Sender);

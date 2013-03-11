@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Torque'
-  ClientHeight = 179
-  ClientWidth = 683
+  ClientHeight = 288
+  ClientWidth = 840
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,10 +17,10 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 78
-    Width = 683
-    Height = 101
+    Width = 840
+    Height = 169
     Camera = GLCamera1
-    FieldOfView = 53.587551116943360000
+    FieldOfView = 80.395622253417970000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
@@ -28,40 +28,53 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 683
+    Width = 840
     Height = 78
     Align = alTop
     TabOrder = 1
     object Label2: TLabel
-      Left = 8
+      Left = 280
       Top = 8
-      Width = 125
-      Height = 26
+      Width = 114
+      Height = 39
       Alignment = taCenter
-      Caption = 'Cube has a small constant'#13#10'and linear damping'
+      Caption = 'Hexahedron has a small constant'#13#10'and linear damping'
+      WordWrap = True
     end
     object Label3: TLabel
-      Left = 152
+      Left = 472
       Top = 8
       Width = 99
       Height = 39
       Alignment = taCenter
       Caption = 'Dodecahedron has a'#13#10'small constant and'#13#10'quadratic damping'
+      WordWrap = True
     end
     object Label4: TLabel
-      Left = 288
+      Left = 128
       Top = 8
-      Width = 111
-      Height = 26
+      Width = 86
+      Height = 39
       Alignment = taCenter
       Caption = 'Octahedron has a'#13#10'only quadratic damping'
+      WordWrap = True
     end
     object Label1: TLabel
-      Left = 443
-      Top = 8
-      Width = 91
+      Left = 8
+      Top = 10
+      Width = 86
       Height = 39
-      Caption = 'Move your mouse'#13#10'over an object and'#13#10'it will start spinning'
+      Caption = 'Tetrahedron has an only quadratic damping'
+      WordWrap = True
+    end
+    object Label5: TLabel
+      Left = 604
+      Top = 8
+      Width = 115
+      Height = 39
+      Alignment = taCenter
+      Caption = 'Icosahedron has a small constant'#13#10'and linear damping'
+      WordWrap = True
     end
     object CheckBox1: TCheckBox
       Left = 8
@@ -73,6 +86,15 @@ object Form1: TForm1
       OnClick = CheckBox1Click
     end
   end
+  object Panel2: TPanel
+    Left = 0
+    Top = 247
+    Width = 840
+    Height = 41
+    Align = alBottom
+    Caption = 'Move your mouse over an object and it will start spinning'
+    TabOrder = 2
+  end
   object GLScene1: TGLScene
     Left = 16
     Top = 80
@@ -83,19 +105,32 @@ object Form1: TForm1
     end
     object DummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
-      object Cube: TGLCube
-        Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
+      object Tetrahedron: TGLTetrahedron
+        Material.FrontProperties.Diffuse.Color = {EBE0E03EE4DB5B3FE4DB5B3F0000803F}
+        Direction.Coordinates = {2EF9E43E000000002EF9643F00000000}
+        Position.Coordinates = {0000000000000000000080400000803F}
+        Scale.Coordinates = {0000003F0000003F0000003F00000000}
+        Up.Coordinates = {000000000000803F0000008000000000}
+      end
+      object Octahedron: TGLOctahedron
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3FF8FEFE3EACC8483E0000803F}
         Position.Coordinates = {0000000000000000000000400000803F}
+        Scale.Coordinates = {CDCC4C3FCDCC4C3FCDCC4C3F00000000}
+      end
+      object Hexahedron: TGLCube
+        Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
+        Direction.Coordinates = {0000003F00000000D7B35D3F00000000}
+        TurnAngle = 30.000000000000000000
       end
       object Dodecahedron: TGLDodecahedron
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-      end
-      object Octahedron: TGLSphere
-        Material.FrontProperties.Diffuse.Color = {ABAA2A3FABAA2A3F0000803F0000803F}
         Position.Coordinates = {0000000000000000000000C00000803F}
-        Radius = 0.500000000000000000
-        Slices = 4
-        Stacks = 2
+        Scale.Coordinates = {9A99993F9A99993F9A99993F00000000}
+      end
+      object Icosahedron: TGLIcosahedron
+        Material.FrontProperties.Diffuse.Color = {14AE073F8FC2F53DD7A3F03E0000803F}
+        Position.Coordinates = {0000000000000000000080C00000803F}
+        Scale.Coordinates = {9A99993F9A99993F9A99993F00000000}
       end
     end
     object GLCamera1: TGLCamera
