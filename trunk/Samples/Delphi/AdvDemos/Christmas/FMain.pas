@@ -1,21 +1,3 @@
-{: GLScene Christmas 2002 "ScreenSaver".<p>
-
-   Won't save your screen from anything though ;)<p>
-
-   The scene is made up from a few meshes, some GLScene objects, several
-   lens-flares and particle effects components, and a 2 text. BASS is used
-   for the sound part (3D positionned fire loop, and mp3 playback).<br>
-   Wrapped gifts appear around christmas every year.<p>
-
-   Assembled from bits from the web, should be royalty free, but I don't have
-   the means to check... so if you have clues about any of them:<p>
-
-   Models: from 3DCafe.com<br>
-   Textures: various origins, some from 3dtextures.fr.st, others made by me<br>
-   Music: unknown origin, was in a "royalty free" download package<br>
-
-   http://glscene.org
-}
 unit FMain;
 
 interface
@@ -115,12 +97,17 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, Bass;
+uses
+  Jpeg,
+  Bass;
 
 procedure TMain.FormCreate(Sender: TObject);
+var
+  DataPath : String;
 begin
    Randomize;
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'data');
+   DataPath := ExtractFilePath(ParamStr(0))+'data';
+   SetCurrentDir(DataPath);
    FFFirTree.LoadFromFile('firtree.3ds');
    FFFirePlace.LoadFromFile('fireplace.3ds');
    fireLight:=0.5;
@@ -151,35 +138,42 @@ begin
    Caption:=Format('%.1f FPS', [Viewer.FramesPerSecond]);
    Viewer.ResetPerformanceMonitor;
 
-   if GLSMBASS.Active and (bStream=0) then begin
+   if GLSMBASS.Active and (bStream=0) then
+   begin
       bStream:=BASS_StreamCreateFile(false, PAnsiChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
       BASS_ChannelPlay(bStream, False);
    end;
 
    DecodeDate(Now, y, m, d);
    t:=EncodeDate(y, 12, 25)-Now;
-   if t<0 then begin
+   if t<0 then
       FTCountDown.Text:='Merry Christmas!';
-   end;
    if (t<1) and (t>-1) then
       DCGifts.Visible:=True;
-   if t>=2 then begin
+   if t>=2 then
+   begin
       buf:=IntToStr(Trunc(t))+' days, ';
       i:=Round(Frac(t)*24);
       if i>1 then
          buf:=buf+IntToStr(i)+' hours...'
-      else buf:=buf+IntToStr(i)+' hour...';
+      else
+        buf:=buf+IntToStr(i)+' hour...';
       FTCountDown.Text:=buf;
-   end else begin
+   end
+   else
+   begin
       t:=t*24;
-      if t>1 then begin
-         buf:=IntToStr(Trunc(t))+' hours, ';
-         i:=Round(Frac(t)*60);
-         if i>1 then
-            buf:=buf+IntToStr(i)+' minutes...'
-         else buf:=buf+IntToStr(i)+' minute...';
-         FTCountDown.Text:=buf;
-      end else begin
+      if t>1 then
+      begin
+        buf:=IntToStr(Trunc(t))+' hours, ';
+        i:=Round(Frac(t)*60);
+        if i>1 then
+          buf:=buf+IntToStr(i)+' minutes...'
+        else buf:=buf+IntToStr(i)+' minute...';
+        FTCountDown.Text:=buf;
+      end
+      else
+      begin
          t:=t*60;
          FTCountDown.Text:= IntToStr(Trunc(t))+' minutes, '
                            +IntToStr(Round(Frac(t)*60))+' seconds...';
@@ -198,8 +192,10 @@ begin
 
    if inPreview then
       HSGLScene.Visible:=False;
-   with HSGLScene do if Visible then begin
-      with Material.FrontProperties.Diffuse do begin
+   if Visible then
+   begin
+      with HSGLScene.Material.FrontProperties.Diffuse do
+      begin
          Alpha:=Alpha-deltaTime*0.15;
          if Alpha<0.01 then
             Visible:=False;
@@ -210,8 +206,8 @@ end;
 procedure TMain.FormResize(Sender: TObject);
 begin
    GLCamera.SceneScale:=Width/640;
-   with HSGLScene do if Visible then
-      Position.X:=Self.Width-200;
+   if Visible then
+      HSGLScene.Position.X:=Self.Width-200;
    if (Width>=Screen.Width) then
       ViewerDblClick(Self);
 end;
@@ -224,7 +220,8 @@ end;
 
 procedure TMain.ViewerDblClick(Sender: TObject);
 begin
-   if (not inPreview) and (not inSaver) and (not Application.Terminated) and (BorderStyle<>bsNone) then begin
+   if (not inPreview) and (not inSaver) and (not Application.Terminated) and (BorderStyle<>bsNone) then
+   begin
       BorderStyle:=bsNone;
       FormStyle:=fsStayOnTop;
       Align:=alClient;
@@ -250,7 +247,7 @@ end;
 
 procedure TMain.ScreenSaverPropertiesRequested(Sender: TObject);
 begin
-   ShowMessage( 'GLScene Christmas 2002'#13#10#13#10
+   ShowMessage( 'GLScene Christmas 2014'#13#10#13#10
                +'http://glscene.org');
 end;
 
