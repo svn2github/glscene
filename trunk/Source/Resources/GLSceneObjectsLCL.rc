@@ -35,6 +35,9 @@ objects\basic_geometry\TGLPoints.bmp
 objects\basic_geometry\TGLPolygon.bmp
 objects\basic_geometry\TGLSphere.bmp
 objects\basic_geometry\TGLSprite.bmp
+objects\basic_geometry\TGLOctahedron.bmp
+objects\basic_geometry\TGLTetrahedron.bmp
+objects\basic_geometry\TGLSuperellipsoid.bmp
 objects\doodad_objects\TGLSpaceText.bmp
 objects\doodad_objects\TGLTeapot.bmp
 objects\doodad_objects\TGLTree.bmp

@@ -2541,6 +2541,7 @@ initialization
     RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry, HInstance);
     RegisterSceneObject(TGLOctahedron, 'Octahedron', glsOCBasicGeometry, HInstance);
     RegisterSceneObject(TGLTetrahedron, 'Tetrahedron', glsOCBasicGeometry, HInstance);
+    RegisterSceneObject(TGLSuperellipsoid, 'Superellipsoid', glsOCBasicGeometry, HInstance);
 
     //Advanced geometry
     RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', glsOCAdvancedGeometry, HInstance);

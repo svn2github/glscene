@@ -86,7 +86,7 @@ type
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMGetDglCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-{$IFDEF GLS_DELPHI_2010_UP}
+{$IFDEF GLS_DELPHI_XE_UP}
     procedure WMTouch(var Message: TMessage); message WM_TOUCH;
 {$ENDIF}
     procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
@@ -436,7 +436,7 @@ begin
   FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
-{$IFDEF GLS_DELPHI_2010_UP}
+{$IFDEF GLS_DELPHI_XE_UP}
 procedure TGLSceneViewer.WMTouch(var Message: TMessage);
 
   function TouchPointToPoint(const TouchPoint: TTouchInput): TPoint;
