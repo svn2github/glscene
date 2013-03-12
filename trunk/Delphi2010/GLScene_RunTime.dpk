@@ -41,7 +41,7 @@ contains
   VectorGeometry in '..\Source\VectorGeometry.pas',
   PlugInIntf in '..\Source\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugInManager.pas',
-  Info in '..\Source\PropertyEditors\Info.pas' {InfoForm},
+  Info in '..\Source\Info.pas' {InfoForm},
   PlugInManagerPropEditor in '..\Source\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
   Utils3DS in '..\Source\Utils3DS.pas',
   File3DS in '..\Source\File3DS.pas',
