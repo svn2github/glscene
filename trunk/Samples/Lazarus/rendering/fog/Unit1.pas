@@ -8,7 +8,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, StdCtrls, GLScene, GLObjects, GLCadencer,
   GLLCLViewer, GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates,
   BaseClasses;
@@ -63,6 +63,8 @@ var
 implementation
 
 {$R *.lfm}
+
+uses GLUtils;
 
 // applyfogsettings
 //
@@ -148,7 +150,8 @@ var
   Cube : TGLCube;
 
 begin
-  GLMaterialLibrary1.AddTextureMaterial('glscene', '..\..\media\glscene.bmp');
+  SetGLSceneMediaDir();
+  GLMaterialLibrary1.AddTextureMaterial('glscene', 'glscene.bmp');
   for X := -cNb to cNb do
     for Y := -cNb to cNb do
       for Z := -cNb to cNb do

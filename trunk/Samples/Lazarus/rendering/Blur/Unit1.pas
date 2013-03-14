@@ -62,18 +62,11 @@ implementation
 {$R *.lfm}
 
 uses
-  FileUtil, GLFileJPEG, GLCompositeImage;
+  GLUtils, GLFileJPEG, GLCompositeImage;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // Add GLBlur to scene
   B := TGLBlur.Create(self);
   GLCube1.AddChild(B);
@@ -119,4 +112,4 @@ begin
 end;
 
 end.
-
+

@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnActivate = FormActivate
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 430
@@ -25,7 +25,7 @@ object Form1: TForm1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa2x
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 151.37791442871
+    FieldOfView = 151.377914428711
     Align = alClient
     OnDblClick = GLSceneViewer1DblClick
     OnMouseMove = GLSceneViewer1MouseMove
@@ -109,7 +109,7 @@ object Form1: TForm1
         }
         TurnAngle = 0
         BottomRadius = 0.5
-        Height = 1.20000004768371
+        Height = 1.20000004768372
         Slices = 32
         Stacks = 1
         TopRadius = 0.5
@@ -201,7 +201,7 @@ object Form1: TForm1
     Gamma = 1.39999997615814
     NoiseScale = 200
     NoiseAmplitude = 100
-    ParticleSize = 0.30000001192092
+    ParticleSize = 0.30000001192093
     ColorInner.Color = {
       0000803F0000803F0000803F00000000
     }
@@ -216,7 +216,7 @@ object Form1: TForm1
         ColorOuter.Color = {
           0000803F0000803F0000803F00000000
         }
-        LifeTime = 0.10000000149011
+        LifeTime = 0.10000000149012
         SizeScale = 1
         RotateAngle = 0
       end    
@@ -254,7 +254,7 @@ object Form1: TForm1
     Friction = 1
     BlendingMode = bmTransparency
     NbSides = 5
-    ParticleSize = 0.02999999932944
+    ParticleSize = 0.02999999932945
     ColorInner.Color = {
       0000803F000000000000000000000000
     }
@@ -287,4 +287,4 @@ object Form1: TForm1
     left = 152
     top = 16
   end
-end
+end

@@ -10,7 +10,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Height = 362
@@ -19,7 +19,7 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.BackgroundColor = 8421440
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 149.115112304687
+    FieldOfView = 149.115112304688
     Align = alClient
     TabOrder = 0
   end
@@ -33,9 +33,9 @@ object Form1: TForm1
     TabOrder = 1
     object CBShadows: TCheckBox
       Left = 16
-      Height = 24
+      Height = 19
       Top = 8
-      Width = 75
+      Width = 64
       Caption = 'Shadows'
       Checked = True
       OnClick = CBShadowsClick
@@ -44,9 +44,9 @@ object Form1: TForm1
     end
     object CBStencil: TCheckBox
       Left = 16
-      Height = 24
+      Height = 19
       Top = 32
-      Width = 100
+      Width = 83
       Caption = 'Stencil Buffer'
       Checked = True
       OnClick = CBStencilClick
@@ -102,10 +102,13 @@ object Form1: TForm1
         Up.Coordinates = {
           00000000441DAF3EB28F70BF00000000
         }
-        MajorRadius = 0.30000001192092
-        MinorRadius = 0.10000000149011
+        MajorRadius = 0.30000001192093
+        MinorRadius = 0.10000000149012
         Rings = 24
         Sides = 12
+        StartAngle = 0
+        StopAngle = 360
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
     end
     object DCLight: TGLDummyCube
@@ -138,7 +141,7 @@ object Form1: TForm1
           PitchAngle = 0
           RollAngle = 0
           TurnAngle = 0
-          Radius = 0.10000000149011
+          Radius = 0.10000000149012
           Slices = 8
           Stacks = 8
         end
@@ -251,12 +254,12 @@ object Form1: TForm1
     Materials = <    
       item
         Name = 'Marble'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {
           CDCC4C3ECDCC4C3ECDCC4C3E0000803F
         }
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
         TextureScale.Coordinates = {
           0000003F0000003F0000803F00000000
         }
@@ -264,4 +267,4 @@ object Form1: TForm1
     left = 304
     top = 8
   end
-end
+end

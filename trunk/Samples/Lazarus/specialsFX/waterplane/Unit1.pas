@@ -6,7 +6,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLLCLViewer, GLWaterPlane,
   GLCadencer, ExtCtrls, GLTexture, GLUserShader, OpenGL1x,
   VectorGeometry, GLGraph, VectorTypes, GLState, GLCrossPlatform, GLMaterial,
@@ -28,28 +28,27 @@ type
     GLHeightField1: TGLHeightField;
     GLLightSource1: TGLLightSource;
     procedure Timer1Timer(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure FormCreate(Sender: TObject);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
-    procedure GLUserShader1DoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
+      X, Y: integer);
+    procedure GLUserShader1DoApply(Sender: TObject; var rci: TRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
-    procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLHeightField1GetHeight(const x, y: single; var z: single;
       var color: TVector4f; var texPoint: TTexPoint);
-    procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+    procedure GLUserShader1DoUnApply(Sender: TObject; Pass: integer;
+      var rci: TRenderContextInfo; var Continue: boolean);
   private
     { Private declarations }
   public
     { Public declarations }
-    mx, my : Integer;
-    reflectionToggle : Boolean;
-    procedure ClickWater(x, y : Integer);
+    mx, my: integer;
+    reflectionToggle: boolean;
+    procedure ClickWater(x, y: integer);
   end;
 
 var
@@ -59,66 +58,74 @@ implementation
 
 {$R *.lfm}
 
-procedure TForm1.ClickWater(x, y : Integer);
-var
-   ip : TVector;
-begin
-   // create a ripple in the pond on a right-mousebutton click
+uses GLUtils, OpenGLTokens, GLContext;
 
-   GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXZ(
-                           VectorMake(x, GLSceneViewer1.Height-y, 0),
-                           GLWaterPlane1.Position.Y, ip);
-   GLWaterPlane1.CreateRippleAtWorldPos(ip);
+procedure TForm1.ClickWater(x, y: integer);
+var
+  ip: TVector;
+begin
+  // create a ripple in the pond on a right-mousebutton click
+
+  GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXZ(
+    VectorMake(x, GLSceneViewer1.Height - y, 0),
+    GLWaterPlane1.Position.Y, ip);
+  GLWaterPlane1.CreateRippleAtWorldPos(ip);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+  SetGLSceneMediaDir();
 
-   // Load the cube map which is used both for environment and as reflection texture
+  // Load the cube map which is used both for environment and as reflection texture
 
-   with GLMaterialLibrary1.Materials[0].Material.Texture do begin
-      ImageClassName:=TGLCubeMapImage.ClassName;
-      with Image as TGLCubeMapImage do begin
-         // Load all 6 texture map components of the cube map
-         // The 'PX', 'NX', etc. refer to 'positive X', 'negative X', etc.
-         // and follow the RenderMan specs/conventions
-         Picture[cmtPX].LoadFromFile('cm_left.jpg');
-         Picture[cmtNX].LoadFromFile('cm_right.jpg');
-         Picture[cmtPY].LoadFromFile('cm_top.jpg');
-         Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
-         Picture[cmtPZ].LoadFromFile('cm_back.jpg');
-         Picture[cmtNZ].LoadFromFile('cm_front.jpg');
-      end;
-   end;
+  with GLMaterialLibrary1.Materials[0].Material.Texture do
+  begin
+    ImageClassName := TGLCubeMapImage.ClassName;
+    with Image as TGLCubeMapImage do
+    begin
+      // Load all 6 texture map components of the cube map
+      // The 'PX', 'NX', etc. refer to 'positive X', 'negative X', etc.
+      // and follow the RenderMan specs/conventions
+      Picture[cmtPX].LoadFromFile('cm_left.jpg');
+      Picture[cmtNX].LoadFromFile('cm_right.jpg');
+      Picture[cmtPY].LoadFromFile('cm_top.jpg');
+      Picture[cmtNY].LoadFromFile('cm_bottom.jpg');
+      Picture[cmtPZ].LoadFromFile('cm_back.jpg');
+      Picture[cmtNZ].LoadFromFile('cm_front.jpg');
+    end;
+  end;
 
-   GLWaterPlane1.Mask.LoadFromFile('basinMask.bmp');
-   GLHeightField1.Material.Texture.Image.LoadFromFile('clover.jpg');
+  GLWaterPlane1.Mask.LoadFromFile('basinMask.bmp');
+  GLHeightField1.Material.Texture.Image.LoadFromFile('clover.jpg');
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 begin
-   mx:=x; my:=y;
-   if ssRight in Shift then
-      ClickWater(x, y);
+  mx := x;
+  my := y;
+  if ssRight in Shift then
+    ClickWater(x, y);
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
-   if ssLeft in Shift then begin
-      GLCamera1.MoveAroundTarget(my-y, mx-x);
-      // pseudo-fresnel
-      with GLMaterialLibrary1.LibMaterialByName('CubeMap').Material do
-         FrontProperties.Diffuse.Alpha:=0.3+0.5*Sqr(1-GLCamera1.Position.Y/GLCamera1.DistanceToTarget);
-   end else if ssRight in Shift then
-      ClickWater(x, y);
-   mx:=x; my:=y;
+  if ssLeft in Shift then
+  begin
+    GLCamera1.MoveAroundTarget(my - y, mx - x);
+    // pseudo-fresnel
+    with GLMaterialLibrary1.LibMaterialByName('CubeMap').Material do
+      FrontProperties.Diffuse.Alpha :=
+        0.3 + 0.5 * Sqr(1 - GLCamera1.Position.Y / GLCamera1.DistanceToTarget);
+  end
+  else if ssRight in Shift then
+    ClickWater(x, y);
+  mx := x;
+  my := y;
 end;
 
-procedure TForm1.GLUserShader1DoApply(Sender: TObject;
-  var rci: TRenderContextInfo);
+procedure TForm1.GLUserShader1DoApply(Sender: TObject; var rci: TRenderContextInfo);
 var
    cubeMapMode : Integer;
 begin
@@ -133,46 +140,46 @@ begin
       rci.GLStates.Disable(stBlend);
    end;
 
-   glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
-   glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
-   glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
+   GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
 
    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 end;
 
-procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: integer;
+  var rci: TRenderContextInfo; var Continue: boolean);
 begin
-   rci.GLStates.Disable(stBlend);
+  rci.GLStates.Disable(stBlend);
 end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-   reflectionToggle:=False;   // toggle for environment sphere
+  reflectionToggle := False;   // toggle for environment sphere
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 begin
-   reflectionToggle:=True;    // toggle for pond/water plane
+  reflectionToggle := True;    // toggle for pond/water plane
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:= GLSceneViewer1.FramesPerSecondText
-            +Format(' / %.3f ms', [GLWaterPlane1.LastIterationStepTime*1000]);
-   GLSceneViewer1.ResetPerformanceMonitor;
+  Caption := GLSceneViewer1.FramesPerSecondText + Format(
+    ' / %.3f ms', [GLWaterPlane1.LastIterationStepTime * 1000]);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-   GLSceneViewer1.Invalidate;
+  GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
+procedure TForm1.GLHeightField1GetHeight(const x, y: single; var z: single;
   var color: TVector4f; var texPoint: TTexPoint);
 begin
-   z:=0.5-(GLWaterPlane1.Mask.Bitmap.Canvas.Pixels[Round(x+64), Round(y+64)] and $FF)/255;
+  z := 0.5 - (GLWaterPlane1.Mask.Bitmap.Canvas.Pixels[Round(x + 64), Round(y + 64)] and
+    $FF) / 255;
 end;
 
 end.

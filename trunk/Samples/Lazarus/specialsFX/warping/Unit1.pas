@@ -19,7 +19,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLGraph, ExtDlgs, Menus, GLObjects, VectorGeometry, VectorTypes,
   GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
 
@@ -53,12 +53,12 @@ type
     MISpin: TMenuItem;
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenImageFileClick(Sender: TObject);
-    procedure HeightFieldGetHeight(const x, y: Single; var z: Single;
+    procedure HeightFieldGetHeight(const x, y: single; var z: single;
       var color: TVector4f; var texPoint: TTexPoint);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+      X, Y: integer);
     procedure FormCreate(Sender: TObject);
     procedure MIQualityOptionClick(Sender: TObject);
     procedure MISaveCurrentImageClick(Sender: TObject);
@@ -66,7 +66,7 @@ type
     procedure MIZoomEffectClick(Sender: TObject);
   private
     { Déclarations privées }
-    warpX, warpY, warpRadius, warpEffect : Integer;
+    warpX, warpY, warpRadius, warpEffect: integer;
   public
     { Déclarations publiques }
   end;
@@ -80,136 +80,141 @@ implementation
 
 uses GLGraphics;
 
-procedure TForm1.HeightFieldGetHeight(const x, y: Single; var z: Single;
+procedure TForm1.HeightFieldGetHeight(const x, y: single; var z: single;
   var color: TVector4f; var texPoint: TTexPoint);
 var
-   d, dx, dy : Single;
-   vec : TAffineVector;
+  d, dx, dy: single;
+  vec: TAffineVector;
 begin
-   // Here is the warping function
-   // it basicly converts current pixel coords (x, y) to deformed coords (dx, dy)
+  // Here is the warping function
+  // it basicly converts current pixel coords (x, y) to deformed coords (dx, dy)
 
-   case warpEffect of
-      0 : begin // the "zoom" effect
-         d:=1-exp(-Sqrt(Sqr(x-warpX)+Sqr(y-warpY))/warpRadius);
-         dx:=x*d+warpX*(1-d);
-         dy:=y*d+warpY*(1-d);
-      end;
-      1 : begin // the "spin" effect
-         vec[0]:=x-warpX;
-         vec[1]:=0;
-         vec[2]:=y-warpY;
-         d:=VectorNorm(vec);
-         RotateVectorAroundY(vec, Sqr(warpRadius)/(d+1));
-         dx:=warpX+vec[0];
-         dy:=warpY+vec[2];
-      end;
-   else
-      raise Exception.Create('Unknown warp effect '+IntToStr(warpEffect));
-   end;
+  case warpEffect of
+    0:
+    begin // the "zoom" effect
+      d := 1 - exp(-Sqrt(Sqr(x - warpX) + Sqr(y - warpY)) / warpRadius);
+      dx := x * d + warpX * (1 - d);
+      dy := y * d + warpY * (1 - d);
+    end;
+    1:
+    begin // the "spin" effect
+      vec.X := x - warpX;
+      vec.Y := 0;
+      vec.Z := y - warpY;
+      d := VectorNorm(vec);
+      RotateVectorAroundY(vec, Sqr(warpRadius) / (d + 1));
+      dx := warpX + vec.X;
+      dy := warpY + vec.Z;
+    end;
+    else
+      raise Exception.Create('Unknown warp effect ' + IntToStr(warpEffect));
+  end;
 
-   // apply tex coord
-   texPoint.S:=dx/HeightField.XSamplingScale.Max;
-   texPoint.T:=dy/HeightField.YSamplingScale.Max;
+  // apply tex coord
+  texPoint.S := dx / HeightField.XSamplingScale.Max;
+  texPoint.T := dy / HeightField.YSamplingScale.Max;
 end;
 
 procedure TForm1.MIOpenImageFileClick(Sender: TObject);
 var
-   picture : TPicture;
+  picture: TPicture;
 begin
-   if OpenPictureDialog.Execute then begin
-      picture:=TPicture.Create;
-      try
-         // load picture
-         picture.LoadFromFile(OpenPictureDialog.FileName);
-         // adjust HeightField
-         HeightField.XSamplingScale.Max:=picture.Width+0.1;
-         HeightField.YSamplingScale.Max:=picture.Height+0.1;
-         HeightField.Material.Texture.Image.Assign(picture);
-         // resize main window
-         Width:=Width-GLSceneViewer.Width+picture.Width;
-         Height:=Height-GLSceneViewer.Height+picture.Height;
-         // adjust camera
-         GLCamera.Position.X:=picture.Width/2;
-         GLCamera.Position.Y:=picture.Height/2;
-         GLCamera.FocalLength:=100/picture.Width;
-      finally
-         picture.Free;
-      end;
-   end;
+  if OpenPictureDialog.Execute then
+  begin
+    picture := TPicture.Create;
+    try
+      // load picture
+      picture.LoadFromFile(OpenPictureDialog.FileName);
+      // adjust HeightField
+      HeightField.XSamplingScale.Max := picture.Width + 0.1;
+      HeightField.YSamplingScale.Max := picture.Height + 0.1;
+      HeightField.Material.Texture.Image.Assign(picture);
+      // resize main window
+      Width := Width - GLSceneViewer.Width + picture.Width;
+      Height := Height - GLSceneViewer.Height + picture.Height;
+      // adjust camera
+      GLCamera.Position.X := picture.Width / 2;
+      GLCamera.Position.Y := picture.Height / 2;
+      GLCamera.FocalLength := 100 / picture.Width;
+    finally
+      picture.Free;
+    end;
+  end;
 end;
 
 procedure TForm1.MISaveCurrentImageClick(Sender: TObject);
 var
-   bmp32 : TGLBitmap32;
-   bmp : TBitmap;
+  bmp32: TGLBitmap32;
+  bmp: TBitmap;
 begin
-   bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
-   try
-      if SaveDialog.Execute then begin
-         bmp:=bmp32.Create32BitsBitmap;
-         try
-            bmp.SaveToFile(SaveDialog.FileName);
-         finally
-            bmp.Free;
-         end;
+  bmp32 := GLSceneViewer.Buffer.CreateSnapShot;
+  try
+    if SaveDialog.Execute then
+    begin
+      bmp := bmp32.Create32BitsBitmap;
+      try
+        bmp.SaveToFile(SaveDialog.FileName);
+      finally
+        bmp.Free;
       end;
-   finally
-      bmp32.Free;
-   end;
+    end;
+  finally
+    bmp32.Free;
+  end;
 end;
 
 procedure TForm1.MIExitClick(Sender: TObject);
 begin
-   Close;
+  Close;
 end;
 
-procedure TForm1.GLSceneViewerMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: integer);
 begin
-   warpX:=x;
-   warpY:=GLSceneViewer.Height-y;
-   HeightField.StructureChanged;
+  warpX := x;
+  warpY := GLSceneViewer.Height - y;
+  HeightField.StructureChanged;
 end;
 
-procedure TForm1.GLSceneViewerMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: integer);
 begin
-   if Shift<>[] then begin
-      warpX:=x;
-      warpY:=GLSceneViewer.Height-y;
-      HeightField.StructureChanged;
-      GLSceneViewer.Refresh;
-   end;
+  if Shift <> [] then
+  begin
+    warpX := x;
+    warpY := GLSceneViewer.Height - y;
+    HeightField.StructureChanged;
+    GLSceneViewer.Refresh;
+  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   warpX:=-1000;
-   warpY:=-1000;
-   warpRadius:=20;
+  warpX := -1000;
+  warpY := -1000;
+  warpRadius := 20;
 end;
 
 procedure TForm1.MIQualityOptionClick(Sender: TObject);
 begin
-   (Sender as TMenuItem).Checked:=True;
-   HeightField.XSamplingScale.Step:=(Sender as TMenuItem).Tag;
-   HeightField.YSamplingScale.Step:=(Sender as TMenuItem).Tag;
-   HeightField.StructureChanged;
+  (Sender as TMenuItem).Checked := True;
+  HeightField.XSamplingScale.Step := (Sender as TMenuItem).Tag;
+  HeightField.YSamplingScale.Step := (Sender as TMenuItem).Tag;
+  HeightField.StructureChanged;
 end;
 
 procedure TForm1.MIRadiusSettingClick(Sender: TObject);
 begin
-   (Sender as TMenuItem).Checked:=True;
-   warpRadius:=(Sender as TMenuItem).Tag;
-   HeightField.StructureChanged;
+  (Sender as TMenuItem).Checked := True;
+  warpRadius := (Sender as TMenuItem).Tag;
+  HeightField.StructureChanged;
 end;
 
 procedure TForm1.MIZoomEffectClick(Sender: TObject);
 begin
-   (Sender as TMenuItem).Checked:=True;
-   warpEffect:=(Sender as TMenuItem).Tag;
-   HeightField.StructureChanged;
+  (Sender as TMenuItem).Checked := True;
+  warpEffect := (Sender as TMenuItem).Tag;
+  HeightField.StructureChanged;
 end;
 
 end.

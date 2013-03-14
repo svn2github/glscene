@@ -6,10 +6,10 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
-  GLzBuffer, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
+  GLzBuffer, GLCadencer, AsyncTimer, GLLCLViewer, GLTeapot,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
   GLBehaviours;
 
@@ -100,7 +100,9 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
+
+uses GLUtils;
 
 procedure TMainFm.ViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
@@ -163,10 +165,11 @@ end;
 
 procedure TMainFm.FormCreate(Sender: TObject);
 begin
- GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('..\..\media\marbletiles.jpg');
+ SetGLSceneMediaDir();
+ GLMaterialLibrary1.Materials[2].Material.texture.Image.loadFromFile('marbletiles.jpg');
  GLMaterialLibrary1.Materials[2].Material.texture.disabled:=false;
 
- GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('..\..\media\beigemarble.jpg');
+ GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('beigemarble.jpg');
  GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
 end;
 

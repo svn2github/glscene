@@ -98,18 +98,11 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, GLContext, FileUtil;
+uses VectorGeometry, GLContext, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   // Load the bunny mesh and scale for viewing
   Bunny.LoadFromFile('bunny.glsm');
   Bunny.Scale.Scale(2 / Bunny.BoundingSphereRadius);
@@ -255,4 +248,4 @@ begin
 end;
 
 end.
-
+

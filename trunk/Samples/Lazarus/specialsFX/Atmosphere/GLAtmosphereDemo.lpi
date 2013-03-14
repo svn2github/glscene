@@ -41,7 +41,7 @@
       <Unit0>
         <Filename Value="GLAtmosphereDemo.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="31" Y="7"/>
@@ -54,9 +54,10 @@
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
         <UnitName Value="uMainForm"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="13"/>
+        <TopLine Value="119"/>
         <CursorPos X="13" Y="32"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -65,13 +66,10 @@
       <Unit2>
         <Filename Value="..\..\..\Source\GLLensFlare.pas"/>
         <UnitName Value="GLLensFlare"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="547"/>
         <CursorPos X="20" Y="565"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
     </Units>
@@ -91,7 +89,7 @@
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="GLAtmosphereDemo"/>
@@ -136,4 +134,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

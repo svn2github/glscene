@@ -61,19 +61,13 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil;
+uses GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   exp: TGLBExplosionFx;
-  path: UTF8String;
-  p: Integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p+5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
   //load mesh
   mesh.LoadFromFile('mushroom.3ds');
   //cache information
@@ -136,4 +130,4 @@ begin
 end;
 
 end.
-
+

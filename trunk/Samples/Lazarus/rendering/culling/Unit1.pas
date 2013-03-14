@@ -71,21 +71,15 @@ implementation
 
 {$R *.lfm}
 
-uses GLFileMD2, FileUtil;
+uses GLFileMD2, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
    newSphere : TGLSphere;
    newActor : TGLActor;
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
    // Spheres are used as standalone, high-polycount objects
    // that are highly T&L friendly
    for i:=-4 to 4 do for j:=-4 to 4 do begin
@@ -135,4 +129,4 @@ begin
    else GLScene.VisibilityCulling:=vcNone;
 end;
 
-end.
+end.

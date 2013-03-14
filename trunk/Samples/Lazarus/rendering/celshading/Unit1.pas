@@ -45,19 +45,13 @@ implementation
 {$R *.lfm}
 
 uses
-  GLFileMD2, GLKeyboard, FileUtil, LCLType;
+  GLFileMD2, GLKeyboard, GLUtils, LCLType;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r: single;
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   GLActor1.LoadFromFile('waste.md2');
   r := GLActor1.BoundingSphereRadius;

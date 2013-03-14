@@ -56,18 +56,11 @@ implementation
 
 {$R *.lfm}
 
-uses FileUtil;
+uses GLUtils;
 
 procedure TForm1.FormActivate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
 
    GLFreeForm1.LoadFromFile('beer.3ds');
 
@@ -95,4 +88,4 @@ begin
    GLCadencer1.Enabled:=not GLCadencer1.Enabled;
 end;
 
-end.
+end.

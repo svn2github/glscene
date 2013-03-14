@@ -50,9 +50,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="uParticleMasking"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="238"/>
+        <TopLine Value="234"/>
         <CursorPos X="3" Y="13"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -62,17 +63,14 @@
       <Unit2>
         <Filename Value="..\..\..\Source\Base\AsyncTimer.pas"/>
         <UnitName Value="AsyncTimer"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="74"/>
         <CursorPos X="26" Y="81"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\..\..\..\..\..\share\fpcsrc\2.4.2\rtl\objpas\classes\classesh.inc"/>
+        <Filename Value="F:\share\fpcsrc\2.4.2\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1482"/>
         <CursorPos X="3" Y="1465"/>
@@ -80,27 +78,15 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
         <Filename Value="uParticleMasking.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
-      <Position2>
-        <Filename Value="uParticleMasking.pas"/>
-        <Caret Line="13" Column="3" TopLine="238"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Source\Base\AsyncTimer.pas"/>
-        <Caret Line="95" Column="25" TopLine="75"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\..\..\Source\Base\AsyncTimer.pas"/>
-        <Caret Line="81" Column="26" TopLine="74"/>
-      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="9"/>
+    <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="ParticleMasksManagerDemo"/>
@@ -145,4 +131,4 @@
       </Item3>
     </Exceptions>
   </Debugging>
-</CONFIG>
+</CONFIG>

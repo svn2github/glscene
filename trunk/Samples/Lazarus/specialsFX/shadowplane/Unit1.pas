@@ -19,7 +19,7 @@ unit Unit1;
 interface
 
 uses
-  Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLShadowPlane, GLScene, GLViewer, GLObjects,
   GLCadencer, StdCtrls, VectorGeometry, ExtCtrls, GLTexture, GLGeomObjects,
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
@@ -66,18 +66,11 @@ implementation
 {$R *.lfm}
 
 uses
-  FileUtil;
+  GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  path: UTF8String;
-  p: Integer;
 begin
-   path := ExtractFilePath(ParamStrUTF8(0));
-   p := Pos('DemosLCL', path);
-   Delete(path, p+5, Length(path));
-   path := IncludeTrailingPathDelimiter(path) + 'media';
-   SetCurrentDirUTF8(path);
+   SetGLSceneMediaDir();
    GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
 end;
 
@@ -112,4 +105,4 @@ begin
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-end.
+end.

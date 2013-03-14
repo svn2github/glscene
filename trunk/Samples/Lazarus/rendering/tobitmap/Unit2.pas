@@ -3,7 +3,7 @@ unit Unit2;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls;
 
 type

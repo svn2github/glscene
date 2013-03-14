@@ -3,7 +3,7 @@ unit fOctreeDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLLCLViewer, VectorGeometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
   ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
@@ -68,8 +68,11 @@ implementation
 
 {$R *.lfm}
 
+uses OpenGlTokens, GLContext;
+
 var
   mx, my : integer;
+
 procedure TfrmOctreeDemo.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -131,9 +134,9 @@ begin
   GLBaseSceneObject := aGLBaseSceneObject;
 
   // Set them all off in the same direction
-  Direction[0] := random;
-  Direction[1] := random;
-  Direction[2] := random;//}
+  Direction.X := random;
+  Direction.Y := random;
+  Direction.Z := random;//}
 
   NormalizeVector(Direction);
 
@@ -154,33 +157,33 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
-    glColor3f(r,g,b);
+    GL.Color3f(r,g,b);
     rci.GLStates.LineWidth := w;
 
-    glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+    GL.Begin_(GL_LINE_STRIP);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
 
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-    glEnd;
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+    GL.End_;
 
-    glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+    GL.Begin_(GL_LINES);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
 
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
 
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-    glEnd;
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+    GL.End_;
   end;
 
   procedure RenderOctreeNode(Node : TSectorNode);
@@ -213,7 +216,6 @@ begin
   MakeVector(AABB.max,  cBOX_SIZE,  cBOX_SIZE,  cBOX_SIZE);
   RenderAABB(AABB,2, 0,0,0);
   RenderOctreeNode(Octree.RootNode);
-  rci.GLStates.PopAttrib;
 end;
 
 procedure TfrmOctreeDemo.FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -248,9 +250,9 @@ begin
   begin
     Leaf := TGLSpacePartitionLeaf(Octree.Leaves[i]);
     Cube := TGLCube(Leaf.GLBaseSceneObject);
-    Cube.Position.X := TestMove(Cube.Position.X, Leaf.Direction[0]);
-    Cube.Position.Y := TestMove(Cube.Position.Y, Leaf.Direction[1]);
-    Cube.Position.Z := TestMove(Cube.Position.Z, Leaf.Direction[2]);
+    Cube.Position.X := TestMove(Cube.Position.X, Leaf.Direction.X);
+    Cube.Position.Y := TestMove(Cube.Position.Y, Leaf.Direction.Y);
+    Cube.Position.Z := TestMove(Cube.Position.Z, Leaf.Direction.Z);
 
     Leaf.Changed;
   end;//}

@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  LCLVersion = '0.9.29'
+  LCLVersion = '0.9.31'
   Visible = True
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
@@ -122,7 +122,7 @@ object Form1: TForm1
           Aspect = 1
           Style = ptsShadow
           Attenuation = 100
-          Brightness = 0.80000001192092
+          Brightness = 0.80000001192093
           Color.Color = {
             0000803F0000803F0000803F0000803F
           }
@@ -143,7 +143,7 @@ object Form1: TForm1
       TagFloat = 0
       DepthOfView = 1000
       FocalLength = 50
-      NearPlaneBias = 0.00100000004749
+      NearPlaneBias = 0.0010000000475
       TargetObject = GLDummyCube3
       OnCustomPerspective = GLCamera1CustomPerspective
       Position.Coordinates = {
@@ -153,7 +153,7 @@ object Form1: TForm1
         TagFloat = 0
         ConstAttenuation = 1
         LinearAttenuation = 0
-        QuadraticAttenuation = 0.00100000004749
+        QuadraticAttenuation = 0.0010000000475
         Specular.Color = {
           0000803F0000803F0000803F0000803F
         }
@@ -182,4 +182,4 @@ object Form1: TForm1
       end>
     left = 376
   end
-end
+end

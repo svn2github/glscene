@@ -31,8 +31,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLCadencer, GLScene, GLWin32Viewer, glTexture, tga, GLObjects,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  GLCadencer, GLScene, GLLCLViewer, glTexture, tga, GLObjects,
   VectorGeometry, ExtCtrls, glProjectedTextures,
   GLHUDObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
@@ -59,18 +59,16 @@ type
     ProjLight: TGLProjectedTextures;
     emitter1: TGLTextureEmitter;
     emitter2: TGLTextureEmitter;
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: double);
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure viewerMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure viewerMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure viewerMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure FormKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+      Shift: TShiftState; X, Y: integer);
+    procedure viewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
   private
     { Private declarations }
   public
@@ -85,89 +83,89 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.lfm}
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+uses GLUtils, LCLType;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, newTime: double);
 begin
-     ang:= ang + deltatime*20;
+  ang := ang + deltatime * 20;
 
-     Light.Position.Y:= sin(degToRad(ang));
-     light.position.x:= cos(degToRad(ang));
+  Light.Position.Y := sin(degToRad(ang));
+  light.position.x := cos(degToRad(ang));
 
-     light2.pitch(deltatime*20);
+  light2.pitch(deltatime * 20);
 
-     viewer.invalidate;
+  viewer.invalidate;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-     SetCurrentDir('..\..\media');
-     matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
-     matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
+  SetGLSceneMediaDir();
+  matLib.Materials[0].Material.Texture.Image.LoadFromFile('projector.tga');
+  matLib.Materials[1].Material.Texture.Image.LoadFromFile('flare1.bmp');
 
-     emitter1.Material.MaterialLibrary:= matLib;
-     emitter1.Material.LibMaterialName:= 'spot';
+  emitter1.Material.MaterialLibrary := matLib;
+  emitter1.Material.LibMaterialName := 'spot';
 
-     emitter2.Material.MaterialLibrary:= matLib;
-     emitter2.Material.LibMaterialName:= 'spot2';
-     emitter2.FOVy:= 40;
+  emitter2.Material.MaterialLibrary := matLib;
+  emitter2.Material.LibMaterialName := 'spot2';
+  emitter2.FOVy := 40;
 
-     GLPlane1.Material.Texture.Image.LoadFromFile('cm_front.jpg');
-     GLPlane2.Material.Texture.Image.LoadFromFile('cm_left.jpg');
-     GLPlane3.Material.Texture.Image.LoadFromFile('cm_bottom.jpg');
+  GLPlane1.Material.Texture.Image.LoadFromFile('cm_front.jpg');
+  GLPlane2.Material.Texture.Image.LoadFromFile('cm_left.jpg');
+  GLPlane3.Material.Texture.Image.LoadFromFile('cm_bottom.jpg');
 
-     projLight.Emitters.AddEmitter(emitter1);
-     projLight.Emitters.AddEmitter(emitter2);
+  projLight.Emitters.AddEmitter(emitter1);
+  projLight.Emitters.AddEmitter(emitter2);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-     form1.caption:= format('%f', [viewer.framespersecond]);
-     viewer.resetperformancemonitor;
+  form1.Caption := format('%f', [viewer.framespersecond]);
+  viewer.resetperformancemonitor;
 end;
 
 procedure TForm1.viewerMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 begin
-     mk:= 1;
-     mx:= x;
-     my:= y;
+  mk := 1;
+  mx := x;
+  my := y;
 end;
 
 procedure TForm1.viewerMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 begin
-     mk:= 0;
+  mk := 0;
 end;
 
-procedure TForm1.viewerMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TForm1.viewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 begin
-     if mk = 1 then begin
-          if shift = [ssLeft] then
-               camera.MoveAroundTarget(y - my, x - mx)
-          else if shift = [ssRight] then
-               camera.AdjustDistanceToTarget(1.0 + (y - my) / 100);
-     end;
+  if mk = 1 then
+  begin
+    if shift = [ssLeft] then
+      camera.MoveAroundTarget(y - my, x - mx)
+    else if shift = [ssRight] then
+      camera.AdjustDistanceToTarget(1.0 + (y - my) / 100);
+  end;
 
-     mx:= x;
-     my:= y;
+  mx := x;
+  my := y;
 end;
 
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
 begin
-     if key = VK_ADD then
-          emitter1.FOVy:= emitter1.FOVy + 5
-     else if key = VK_SUBTRACT then
-          emitter1.FOVy:= emitter1.FOVy - 5;
+  if key = VK_ADD then
+    emitter1.FOVy := emitter1.FOVy + 5
+  else if key = VK_SUBTRACT then
+    emitter1.FOVy := emitter1.FOVy - 5;
 
-     if chr(Key) = 'S' then
-          if ProjLight.style = ptsOriginal then
-               ProjLight.style:= ptsInverse
-          else
-               ProjLight.style:= ptsOriginal;
+  if chr(Key) = 'S' then
+    if ProjLight.style = ptsOriginal then
+      ProjLight.style := ptsInverse
+    else
+      ProjLight.style := ptsOriginal;
 end;
 
 end.

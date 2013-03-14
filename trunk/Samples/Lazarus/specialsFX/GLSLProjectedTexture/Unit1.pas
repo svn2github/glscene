@@ -23,7 +23,6 @@ uses
   GLSLProjectedTextures,
   GLGeomObjects,
   ExtCtrls,
-  GLUtils,
   GLFile3DS,
   GLFileLMTS,
   GLContext,
@@ -73,7 +72,7 @@ implementation
 
 {$R *.lfm}
 
-uses SysUtils, FileUtil;
+uses SysUtils, GLUtils;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: double);
 var
@@ -102,11 +101,8 @@ procedure TForm1.GLCamera1CustomPerspective(const viewport: TRectangle;
 var
   PM: TMatrix;
 begin
-  PM := CreatePerspectiveMatrix(
-    GLCamera1.FocalLength,
-    Width / Height,
-    GLCamera1.NearPlaneBias,
-    GLCamera1.DepthOfView);
+  PM := CreatePerspectiveMatrix(GLCamera1.FocalLength, Width /
+    Height, GLCamera1.NearPlaneBias, GLCamera1.DepthOfView);
   CurrentGLContext.PipelineTransformation.ProjectionMatrix := PM;
 end;
 
@@ -142,14 +138,8 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var
   I: integer;
-  path: UTF8String;
-  p: integer;
 begin
-  path := ExtractFilePath(ParamStrUTF8(0));
-  p := Pos('DemosLCL', path);
-  Delete(path, p + 5, Length(path));
-  path := IncludeTrailingPathDelimiter(path) + 'media';
-  SetCurrentDirUTF8(path);
+  SetGLSceneMediaDir();
 
   randomize;
   sdir := -10;
@@ -172,4 +162,7 @@ begin
 end;
 
 end.
-
+
+
+
+

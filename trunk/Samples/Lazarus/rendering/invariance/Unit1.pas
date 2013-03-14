@@ -8,6 +8,9 @@ uses
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
@@ -21,6 +24,7 @@ type
     GLCylinder1: TGLCylinder;
     GLArrowLine1: TGLArrowLine;
     DCOrientationInvariant: TGLDummyCube;
+    procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -39,10 +43,20 @@ implementation
 
 {$R *.lfm}
 
+uses GLUtils;
+
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
    mx:=x; my:=y;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  SetGLSceneMediaDir();
+  GLMaterialLibrary.TextureByName('walkway').Image.LoadFromFile('walkway.jpg');
+  GLMaterialLibrary.TextureByName('rawwall').Image.LoadFromFile('rawwall.jpg');
+  GLMaterialLibrary.TextureByName('marbletiles').Image.LoadFromFile('marbletiles.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;

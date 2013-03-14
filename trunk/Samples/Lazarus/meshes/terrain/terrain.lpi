@@ -58,8 +58,8 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="278"/>
-        <CursorPos X="57" Y="294"/>
+        <TopLine Value="277"/>
+        <CursorPos X="79" Y="296"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -68,16 +68,18 @@
       <Unit2>
         <Filename Value="..\..\..\..\Lazarus\GLSS_BASS.pas"/>
         <UnitName Value="GLSS_BASS"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="6"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\GLScene.pas"/>
         <UnitName Value="GLScene"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="337"/>
         <CursorPos X="10" Y="368"/>
@@ -87,7 +89,7 @@
       </Unit3>
       <Unit4>
         <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="304"/>
         <CursorPos X="1" Y="325"/>
@@ -95,7 +97,7 @@
         <Loaded Value="True"/>
       </Unit4>
     </Units>
-    <JumpHistory Count="6" HistoryIndex="5">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
         <Filename Value="unit1.pas"/>
         <Caret Line="104" Column="24" TopLine="79"/>
@@ -120,6 +122,22 @@
         <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
         <Caret Line="476" Column="1" TopLine="455"/>
       </Position6>
+      <Position7>
+        <Filename Value="..\..\..\..\Lazarus\GLSS_BASS.pas"/>
+        <Caret Line="6" Column="3" TopLine="1"/>
+      </Position7>
+      <Position8>
+        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
+        <Caret Line="476" Column="1" TopLine="455"/>
+      </Position8>
+      <Position9>
+        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
+        <Caret Line="325" Column="1" TopLine="304"/>
+      </Position9>
+      <Position10>
+        <Filename Value="F:\Lazarus\lcl\include\winapi.inc"/>
+        <Caret Line="476" Column="1" TopLine="455"/>
+      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

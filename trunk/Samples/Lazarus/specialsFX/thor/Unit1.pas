@@ -6,10 +6,7 @@ unit Unit1;
 interface
 
 uses
-  {$IFDEF MSWINDOWS}
-  Windows,
-  {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours, ExtCtrls,
   VectorGeometry, GLThorFX, GLSkydome, StdCtrls, ComCtrls, GLGraph, VectorTypes,
   GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
@@ -82,9 +79,8 @@ uses
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
-   HeightField1.Material.Texture.Image.
-   LoadFromFile('..'+PathDelim+'..'+PathDelim+'media'+PathDelim+'marbletiles.jpg');
+   SetGLSceneMediaDir();
+   HeightField1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -182,4 +178,4 @@ begin
    Z:=0;
 end;
 
-end.
+end.

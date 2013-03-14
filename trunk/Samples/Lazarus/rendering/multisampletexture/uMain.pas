@@ -3,7 +3,7 @@ unit uMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
   // GLScene Units
   GLScene, GLObjects, GLLCLViewer, GLCrossPlatform, GLCoordinates,
   BaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
@@ -47,8 +47,8 @@ implementation
 {$R *.lfm}
 
 uses
-  GLState, OpenGL1X,
-  GLKeyboard, GLMultisampleImage;
+  GLState,
+  GLKeyboard, GLMultisampleImage, GLContext, LCLType;
 
 procedure TGLDemoForm.FormCreate(Sender: TObject);
 begin
@@ -122,7 +122,7 @@ end;
 
 procedure TGLDemoForm.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
 begin
-  if not GL_EXT_framebuffer_multisample then
+  if not GL.EXT_framebuffer_multisample then
   begin
     ShowMessage
       ('Sorry, your hardware do not support Multisampling');

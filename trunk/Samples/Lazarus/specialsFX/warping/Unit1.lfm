@@ -1,33 +1,33 @@
 object Form1: TForm1
   Left = 204
+  Height = 338
   Top = 99
   Width = 433
-  Height = 338
   Caption = 'Form1'
+  ClientHeight = 318
+  ClientWidth = 433
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '0.9.31'
   object GLSceneViewer: TGLSceneViewer
     Left = 0
+    Height = 318
     Top = 0
-    Width = 425
-    Height = 289
+    Width = 433
     Camera = GLCamera
+    FieldOfView = 179.6396484375
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
   end
   object MainMenu1: TMainMenu
-    Left = 8
-    Top = 8
+    left = 8
+    top = 8
     object MIFile: TMenuItem
       Caption = 'File'
       object MIOpenImageFile: TMenuItem
@@ -128,38 +128,47 @@ object Form1: TForm1
     end
   end
   object OpenPictureDialog: TOpenPictureDialog
-    Left = 64
-    Top = 8
+    left = 64
+    top = 8
   end
   object GLScene: TGLScene
-    Left = 8
-    Top = 56
+    left = 8
+    top = 56
     object HeightField: TGLHeightField
-      Direction.Coordinates = {00000000000000800000803F00000000}
+      TagFloat = 0
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
+      PitchAngle = 0
+      RollAngle = 0
+      TurnAngle = 0
+      XSamplingScale.Min = 0
       XSamplingScale.Max = 16
+      XSamplingScale.Origin = 0
       XSamplingScale.Step = 8
+      YSamplingScale.Min = 0
       YSamplingScale.Max = 16
+      YSamplingScale.Origin = 0
       YSamplingScale.Step = 8
       Options = [hfoTextureCoordinates, hfoTwoSided]
       OnGetHeight = HeightFieldGetHeight
     end
     object GLCamera: TGLCamera
+      TagFloat = 0
       DepthOfView = 100
       FocalLength = 0.5
       CameraStyle = csOrthogonal
-      Position.Coordinates = {0000803F0000803F000020410000803F}
-      Left = 256
-      Top = 152
+      Position.Coordinates = {
+        0000803F0000803F000020410000803F
+      }
+      left = 256
+      top = 152
     end
   end
   object SaveDialog: TSaveDialog
-    DefaultExt = 'bmp'
+    DefaultExt = '.bmp'
     Filter = 'Bitmaps (*.bmp)|*.bmp|All files (*.*)|*.*'
-    Left = 104
-    Top = 8
+    left = 104
+    top = 8
   end
 end
