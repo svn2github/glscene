@@ -18,7 +18,7 @@ interface
 uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLObjects, StdCtrls, GLTexture, GLCadencer, GLWin32Viewer, GLSpaceText,
-  GLGeomObjects, GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLGeomObjects, GLCoordinates, GLCrossPlatform, BaseClasses, GLBehaviours;
 
 type
   TForm2 = class(TForm)
@@ -40,12 +40,12 @@ type
 		Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Button2Click(Sender: TObject);
   private
-	 { Déclarations privées }
+	 { Private declarations  }
 	 FLastHotNb : Integer;
 	 procedure SetSelected(nb : Integer);
 	 procedure SetHot(nb : Integer);
   public
-	 { Déclarations publiques }
+	 { Public declarations }
   end;
 
 var
@@ -58,10 +58,12 @@ implementation
 
 {$R *.DFM}
 
-uses Registry, ScreenSaver;
+uses
+  Registry,
+  ScreenSaver;
 
 const
-	cSaverRegistryKey = 'Software\GLScene\Samples\ScreenSaver';
+	cSaverRegistryKey = 'Software\GLScene\Samples\Delphi\Demos\ScreenSaver';
 	cSaverRegistryMeshResolutions = 'MeshResolutions';
 
 function GetMeshResolutions : Integer;
