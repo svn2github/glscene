@@ -60,7 +60,7 @@ implementation
 
 uses
   Registry,
-  ScreenSaver;
+  GLScreenSaver;
 
 const
 	cSaverRegistryKey = 'Software\GLScene\Samples\Delphi\Demos\ScreenSaver';

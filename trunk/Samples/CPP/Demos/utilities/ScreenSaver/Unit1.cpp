@@ -17,7 +17,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
-#pragma link "ScreenSaver"
+#pragma link "GLScreenSaver"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -57,13 +57,13 @@ void __fastcall TForm1::FormResize(TObject *Sender)
 	GLCamera1->FocalLength = (float)50*Width/400;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::ScreenSaver1PropertiesRequested(TObject *Sender)
+
+void __fastcall TForm1::GLScreenSaver1PropertiesRequested(TObject *Sender)
 {
 	// we create the dialog dans display it
 	// we do not need to free it (TApplication will take care of this)
 	Application->CreateForm(__classid(TForm2), &Form2);
 	Form2->ShowModal();
-
 }
 //---------------------------------------------------------------------------
 

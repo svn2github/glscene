@@ -7,7 +7,7 @@ uses
   Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, VectorGeometry,
   GLLensFlare, GLSound, GLSMBASS, GLBitmapFont, GLWindowsFont, GLHUDObjects,
-  ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
+  GLScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
   GLCoordinates, BaseClasses, GLCrossPlatform, GLColor, GLFileWAV;
 
 type
@@ -58,12 +58,13 @@ type
     DCGifts: TGLDummyCube;
     GLCube2: TGLCube;
     HSGLScene: TGLHUDSprite;
-    ScreenSaver: TScreenSaver;
+//    ScreenSaver: TScreenSaver;
     GLShadowPlane: TGLShadowPlane;
     DCTree: TGLDummyCube;
     GLCube3: TGLCube;
     GLCube4: TGLCube;
     DCFire: TGLDummyCube;
+    GLScreenSaver1: TGLScreenSaver;
     procedure FormCreate(Sender: TObject);
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -75,11 +76,15 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure ViewerDblClick(Sender: TObject);
-    procedure ScreenSaverCloseQuery(Sender: TObject;
-      var CanClose: Boolean);
-    procedure ScreenSaverPreview(Sender: TObject; previewHwnd: HWND);
-    procedure ScreenSaverExecute(Sender: TObject);
-    procedure ScreenSaverPropertiesRequested(Sender: TObject);
+    procedure GLScreenSaver1CloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure GLScreenSaver1Execute(Sender: TObject);
+    procedure GLScreenSaver1Preview(Sender: TObject; previewHwnd: HWND);
+    procedure GLScreenSaver1PropertiesRequested(Sender: TObject);
+//    procedure ScreenSaverCloseQuery(Sender: TObject;
+//      var CanClose: Boolean);
+//    procedure ScreenSaverPreview(Sender: TObject; previewHwnd: HWND);
+//    procedure ScreenSaverExecute(Sender: TObject);
+//    procedure ScreenSaverPropertiesRequested(Sender: TObject);
   private
     { Private declarations }
   public
@@ -228,27 +233,29 @@ begin
    end;
 end;
 
-procedure TMain.ScreenSaverCloseQuery(Sender: TObject;
+procedure TMain.GLScreenSaver1CloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
    Application.Terminate;
    CanClose:=False;
 end;
 
-procedure TMain.ScreenSaverPreview(Sender: TObject; previewHwnd: HWND);
-begin
-   inPreview:=True;
-end;
-
-procedure TMain.ScreenSaverExecute(Sender: TObject);
+procedure TMain.GLScreenSaver1Execute(Sender: TObject);
 begin
    inSaver:=True;
 end;
 
-procedure TMain.ScreenSaverPropertiesRequested(Sender: TObject);
+procedure TMain.GLScreenSaver1Preview(Sender: TObject; previewHwnd: HWND);
+begin
+   inPreview:=True;
+end;
+
+procedure TMain.GLScreenSaver1PropertiesRequested(Sender: TObject);
 begin
    ShowMessage( 'GLScene Christmas 2014'#13#10#13#10
                +'http://glscene.org');
 end;
+
+
 
 end.

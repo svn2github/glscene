@@ -26,10 +26,11 @@
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLWindowsFont.hpp"
-#include "ScreenSaver.hpp"
+#include "GLScreenSaver.hpp"
 #include "GLSMBASS.hpp"
 #include "GLFileWAV.hpp"
 #include "Jpeg.hpp"
+
 //#include "Bass.hpp"
 
 //---------------------------------------------------------------------------
@@ -87,7 +88,8 @@ __published:	// IDE-managed Components
 	TGLSoundLibrary *GLSoundLibrary;
 	TGLPolygonPFXManager *PFXTree;
 	TGLWindowsBitmapFont *GLWindowsBitmapFont;
-	TScreenSaver *ScreenSaver;
+	TGLScreenSaver *GLScreenSaver1;
+//	TScreenSaver *ScreenSaver;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ViewerMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
@@ -96,11 +98,15 @@ __published:	// IDE-managed Components
 	void __fastcall GLCadencerProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall FormResize(TObject *Sender);
 	void __fastcall FormKeyPress(TObject *Sender, System::WideChar &Key);
-	void __fastcall ScreenSaverCloseQuery(TObject *Sender, bool &CanClose);
-	void __fastcall ScreenSaverPreview(TObject *Sender, HWND previewHwnd);
-	void __fastcall ScreenSaverExecute(TObject *Sender);
+//	void __fastcall ScreenSaverCloseQuery(TObject *Sender, bool &CanClose);
+//	void __fastcall ScreenSaverPreview(TObject *Sender, HWND previewHwnd);
+//	void __fastcall ScreenSaverExecute(TObject *Sender);
+//	void __fastcall ScreenSaverPropertiesRequested(TObject *Sender);
 	void __fastcall ViewerDblClick(TObject *Sender);
-	void __fastcall ScreenSaverPropertiesRequested(TObject *Sender);
+	void __fastcall GLScreenSaver1CloseQuery(TObject *Sender, bool &CanClose);
+	void __fastcall GLScreenSaver1Execute(TObject *Sender);
+	void __fastcall GLScreenSaver1Preview(TObject *Sender, HWND previewHwnd);
+	void __fastcall GLScreenSaver1PropertiesRequested(TObject *Sender);
 
 
 private:	// User declarations

@@ -4,13 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, ScreenSaver, GLObjects, GLBehaviours, GLCadencer,
+
+  //GLScene
+  GLScene, GLScreenSaver, GLObjects, GLBehaviours, GLCadencer,
   GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
 
 type
   TForm1 = class(TForm)
-    ScreenSaver1: TScreenSaver;
-	 GLScene1: TGLScene;
+	  GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     DummyCube1: TGLDummyCube;
@@ -22,10 +23,11 @@ type
     GLLightSource3: TGLLightSource;
     Torus1: TGLTorus;
     GLCadencer1: TGLCadencer;
-    procedure ScreenSaver1PropertiesRequested(Sender: TObject);
-	 procedure FormResize(Sender: TObject);
+    GLScreenSaver1: TGLScreenSaver;
+ 	  procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
-	 procedure FormCreate(Sender: TObject);
+	  procedure FormCreate(Sender: TObject);
+    procedure GLScreenSaver1PropertiesRequested(Sender: TObject);
   private
 	 { Private declarations  }
   public
@@ -63,7 +65,7 @@ begin
 	GLCadencer1.Enabled:=True;
 end;
 
-procedure TForm1.ScreenSaver1PropertiesRequested(Sender: TObject);
+procedure TForm1.GLScreenSaver1PropertiesRequested(Sender: TObject);
 begin
 	// we create the dialog dans display it
 	// we do not need to free it (TApplication will take care of this)

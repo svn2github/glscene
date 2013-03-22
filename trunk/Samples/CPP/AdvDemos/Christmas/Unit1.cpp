@@ -24,11 +24,12 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
-#pragma link "ScreenSaver"
+#pragma link "GLScreenSaver"
 #pragma link "GLSMBASS"
 #pragma link "GLFile3DS"
 #pragma link "GLFileWAV"
 
+#pragma link "GLScreenSaver"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -177,26 +178,27 @@ void __fastcall TForm1::ViewerDblClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::ScreenSaverCloseQuery(TObject *Sender, bool &CanClose)
+void __fastcall TForm1::GLScreenSaver1CloseQuery(TObject *Sender, bool &CanClose)
+
 {
    Application->Terminate();
    CanClose = false;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::ScreenSaverPreview(TObject *Sender, HWND previewHwnd)
-{
-   inPreview = true;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TForm1::ScreenSaverExecute(TObject *Sender)
+void __fastcall TForm1::GLScreenSaver1Execute(TObject *Sender)
 {
    inSaver = true;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::ScreenSaverPropertiesRequested(TObject *Sender)
+void __fastcall TForm1::GLScreenSaver1Preview(TObject *Sender, HWND previewHwnd)
+{
+   inPreview = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::GLScreenSaver1PropertiesRequested(TObject *Sender)
 {
    ShowMessage( "GLScene Christmas 2014\r\http://glscene.org");
 }

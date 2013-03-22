@@ -28,11 +28,6 @@ object Form1: TForm1
     Align = alClient
     TabOrder = 0
   end
-  object ScreenSaver1: TScreenSaver
-    OnPropertiesRequested = ScreenSaver1PropertiesRequested
-    Left = 224
-    Top = 8
-  end
   object GLScene1: TGLScene
     Left = 24
     Top = 8
@@ -107,6 +102,11 @@ object Form1: TForm1
     Scene = GLScene1
     SleepLength = 1
     Left = 128
+    Top = 8
+  end
+  object GLScreenSaver1: TGLScreenSaver
+    OnPropertiesRequested = GLScreenSaver1PropertiesRequested
+    Left = 240
     Top = 8
   end
 end

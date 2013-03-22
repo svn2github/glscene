@@ -16,8 +16,6 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnResize = FormResize
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object Viewer: TGLSceneViewer
@@ -3718,14 +3716,12 @@ object Form1: TForm1
     Left = 168
     Top = 8
   end
-  object ScreenSaver: TScreenSaver
-    Options = []
-    AboutString = 'GLScene - Christmas 2014 '
-    OnPropertiesRequested = ScreenSaverPropertiesRequested
-    OnExecute = ScreenSaverExecute
-    OnPreview = ScreenSaverPreview
-    OnCloseQuery = ScreenSaverCloseQuery
+  object GLScreenSaver1: TGLScreenSaver
+    OnPropertiesRequested = GLScreenSaver1PropertiesRequested
+    OnExecute = GLScreenSaver1Execute
+    OnPreview = GLScreenSaver1Preview
+    OnCloseQuery = GLScreenSaver1CloseQuery
     Left = 168
-    Top = 40
+    Top = 64
   end
 end

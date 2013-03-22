@@ -17,7 +17,7 @@
 #include "GLScene.hpp"
 #include "GLSpaceText.hpp"
 #include "GLWin32Viewer.hpp"
-#include "ScreenSaver.hpp"
+#include "GLScreenSaver.hpp"
 #include "Registry.hpp"
 
 
