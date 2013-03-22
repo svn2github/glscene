@@ -10,9 +10,9 @@
       ..\Source\Base\CurvesAndSurfaces.obj ..\Source\Base\GeometryBB.obj 
       ..\Source\Base\GLTextureCombiners.obj ..\Source\Base\OpenGL1x.obj 
       ..\Source\GLContext.obj ..\Source\Base\HeightTileFile.obj 
-      ..\Source\Base\MeshUtils.obj ..\Source\Base\Joystick.obj 
+      ..\Source\Base\MeshUtils.obj ..\Source\Base\GLJoystick.obj 
       ..\Source\Base\GLKeyboard.obj ..\Source\Base\Octree.obj 
-      ..\Source\Base\Polynomials.obj ..\Source\Base\ScreenSaver.obj 
+      ..\Source\Base\Polynomials.obj ..\Source\Base\GLScreenSaver.obj 
       ..\Source\Base\VectorTypes.obj ..\Source\Base\Spline.obj 
       ..\Source\Base\VectorGeometry.obj ..\Source\Base\VectorLists.obj 
       ..\Source\Base\VerletClasses.obj ..\Source\Base\XCollection.obj 
