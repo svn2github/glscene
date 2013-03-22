@@ -19,7 +19,7 @@
 	NB : The password stuff does NOT work under NT, dll references I found in
 			Tom's sample simply did not exist under my NT4...
 }
-unit ScreenSaver;
+unit GLScreenSaver;
 
 interface
 
@@ -87,7 +87,7 @@ type
 		</ul><br>
 		There is no real difference between execution and preview modes, except
 		for the events fired... and the size of the form :). }
-	TScreenSaver = class (TComponent)
+	TGLScreenSaver = class (TComponent)
 		private
 			{ Private Declarations }
 			mouseEventsToIgnore : Integer;
@@ -221,7 +221,7 @@ end;
 
 // Create
 //
-constructor TScreenSaver.Create(AOwner : TComponent);
+constructor TGLScreenSaver.Create(AOwner : TComponent);
 begin
 	inherited;
 	mouseEventsToIgnore:=5;
@@ -232,7 +232,7 @@ end;
 
 // Destroy
 //
-destructor TScreenSaver.Destroy;
+destructor TGLScreenSaver.Destroy;
 begin
    // mouseTimer is owned, it'll be automatically destroyed if created
 
@@ -242,7 +242,7 @@ end;
 
 // Loaded
 //
-procedure TScreenSaver.Loaded;
+procedure TGLScreenSaver.Loaded;
 var
 	param : String;
 begin
@@ -268,7 +268,7 @@ end;
 
 // ConfigureSaver
 //
-procedure TScreenSaver.ConfigureSaver;
+procedure TGLScreenSaver.ConfigureSaver;
 begin
 	if Assigned(FOnPropertiesRequested) then begin
 		OnPropertiesRequested(Self);
@@ -279,14 +279,14 @@ end;
 
 // SetPassword
 //
-procedure TScreenSaver.SetPassword;
+procedure TGLScreenSaver.SetPassword;
 begin
 	SetScreenSaverPassword;
 end;
 
 // PreviewSaver
 //
-procedure TScreenSaver.PreviewSaver;
+procedure TGLScreenSaver.PreviewSaver;
 var
 	frm : TForm;
 	previewHwnd : HWND;
@@ -314,7 +314,7 @@ end;
 
 // ExecuteSaver
 //
-procedure TScreenSaver.ExecuteSaver;
+procedure TGLScreenSaver.ExecuteSaver;
 var
 	frm : TForm;
 begin
@@ -351,7 +351,7 @@ end;
 
 // CloseSaver
 //
-function TScreenSaver.CloseSaver : Boolean;
+function TGLScreenSaver.CloseSaver : Boolean;
 type
 	TPwdProc = function(Parent : THandle): Boolean; stdcall;
 const
@@ -395,7 +395,7 @@ end;
 
 // FormMouseMove
 //
-procedure TScreenSaver.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
+procedure TGLScreenSaver.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
 	if mouseEventsToIgnore<=0 then
@@ -405,14 +405,14 @@ end;
 
 // FormKeyPress
 //
-procedure TScreenSaver.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TGLScreenSaver.FormKeyPress(Sender: TObject; var Key: Char);
 begin
 	CloseSaver;
 end;
 
 // OnMouseTimer
 //
-procedure TScreenSaver.OnMouseTimer(Sender: TObject);
+procedure TGLScreenSaver.OnMouseTimer(Sender: TObject);
 var
    mousePos : TPoint;
 begin
@@ -426,6 +426,6 @@ end;
 
 initialization
 
-  RegisterClasses([TScreenSaver]);
+  RegisterClasses([TGLScreenSaver]);
 
 end.

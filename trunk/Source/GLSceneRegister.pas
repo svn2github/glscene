@@ -695,8 +695,8 @@ uses
   GLSound,
   GLSoundFileObjects,
   GLSpaceText,
-  Joystick,
-  ScreenSaver,
+  GLJoystick,
+  GLScreenSaver,
   GLFullScreenViewer;
 
 var
@@ -2323,14 +2323,14 @@ begin
 
   RegisterComponents('GLScene Utils',
     [TAsyncTimer, TGLStaticImposterBuilder,
-    TCollisionManager, TGLAnimationControler,
+     TCollisionManager, TGLAnimationControler,
       TAVIRecorder, TGLDCEManager, TGLFPSMovementManager,
       TGLMaterialScripter, TGLUserInterface, TGLNavigator,
       TGLSmoothNavigator, TGLSmoothUserInterface,
       TGLTimeEventsMGR, TApplicationFileIO, TGLVfsPAK,
       TGLSimpleNavigation, TGLGizmo, TGLCameraController,
       TGLSLanguage, TGLSLogger, TGLSArchiveManager,
-      TJoystick, TScreenSaver, TGLSSynHiMemo
+      TGLJoystick, TGLScreenSaver, TGLSSynHiMemo
     ]);
 
   RegisterComponents('GLScene Terrain',

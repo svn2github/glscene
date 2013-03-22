@@ -24,7 +24,7 @@ interface
 uses
    Classes, GLSceneRegisterLCL, GLStrings,
    GLSpaceText,
-   GLAVIRecorder, Joystick, ScreenSaver, GLSMWaveOut, LResources;
+   GLAVIRecorder, GLJoystick, GLScreenSaver, GLSMWaveOut, LResources;
 
 procedure Register;
 
@@ -37,7 +37,7 @@ begin
                         ]);
 
    RegisterComponents('GLScene Utils',
-                      [TAVIRecorder,  TJoystick, TScreenSaver
+                      [TAVIRecorder,  TGLJoystick, TGLScreenSaver
                       ]);
 
 end;

@@ -14,7 +14,7 @@
 	   <li>20/03/00 - Egg - Creation from GLScene's TGLJoystick
 	</ul></font>
 }
-unit Joystick;
+unit GLJoystick;
 
 interface
 
@@ -46,7 +46,7 @@ type
 	// TJoystick
 	//
    {: A component interfacing the Joystick via the (regular) windows API. }
-	TJoystick = class (TComponent)
+	TGLJoystick = class (TComponent)
 	   private
 	      { Private Declarations }
          FWindowHandle : HWND;
@@ -129,7 +129,7 @@ resourcestring
 
 // Create
 //
-constructor TJoystick.Create(AOwner: TComponent);
+constructor TGLJoystick.Create(AOwner: TComponent);
 begin
    inherited;
    FWindowHandle := AllocateHWnd(WndProc);
@@ -144,7 +144,7 @@ end;
 
 // Destroy
 //
-destructor TJoystick.Destroy;
+destructor TGLJoystick.Destroy;
 begin
    DeallocateHWnd(FWindowHandle);
    inherited;
@@ -152,7 +152,7 @@ end;
 
 // WndProc
 //
-procedure TJoystick.WndProc(var Msg: TMessage);
+procedure TGLJoystick.WndProc(var Msg: TMessage);
 begin
    with Msg do begin
       case FJoystickID of
@@ -196,7 +196,7 @@ end;
 
 // Loaded
 //
-procedure TJoystick.Loaded;
+procedure TGLJoystick.Loaded;
 begin
    inherited;
    ReapplyCapture(FJoystickID);
@@ -204,13 +204,13 @@ end;
 
 // Assign
 //
-procedure TJoystick.Assign(Source: TPersistent);
+procedure TGLJoystick.Assign(Source: TPersistent);
 begin
-   if Source is TJoystick then begin
-      FInterval := TJoystick(Source).FInterval;
-      FThreshold := TJoystick(Source).FThreshold;
-      FCapture := TJoystick(Source).FCapture;
-      FJoystickID := TJoystick(Source).FJoystickID;
+   if Source is TGLJoystick then begin
+      FInterval := TGLJoystick(Source).FInterval;
+      FThreshold := TGLJoystick(Source).FThreshold;
+      FCapture := TGLJoystick(Source).FCapture;
+      FJoystickID := TGLJoystick(Source).FJoystickID;
       try
          ReapplyCapture(FJoystickID);
       except
@@ -223,7 +223,7 @@ end;
 
 // MakeJoyButtons
 //
-function TJoystick.MakeJoyButtons(Param: UINT): TJoystickButtons;
+function TGLJoystick.MakeJoyButtons(Param: UINT): TJoystickButtons;
 begin
    Result := [];
    if (Param and JOY_BUTTON1) > 0 then Include(Result, jbButton1);
@@ -242,7 +242,7 @@ end;
 
 // ReapplyCapture
 //
-procedure TJoystick.ReapplyCapture(AJoystick: TJoystickID);
+procedure TGLJoystick.ReapplyCapture(AJoystick: TJoystickID);
 var
    jc : TJoyCaps;
 begin
@@ -263,7 +263,7 @@ end;
 
 // DoJoystickCapture
 //
-procedure TJoystick.DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
+procedure TGLJoystick.DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
 var
    res : Cardinal;
 begin
@@ -284,7 +284,7 @@ end;
 
 // DoJoystickRelease
 //
-procedure TJoystick.DoJoystickRelease(AJoystick: TJoystickID);
+procedure TGLJoystick.DoJoystickRelease(AJoystick: TJoystickID);
 begin
    if AJoystick <> jidNoJoystick then
       joyReleaseCapture(cJoystickIDToNative[AJoystick]);
@@ -292,7 +292,7 @@ end;
 
 // SetCapture
 //
-procedure TJoystick.SetCapture(AValue: Boolean);
+procedure TGLJoystick.SetCapture(AValue: Boolean);
 begin
    if FCapture <> AValue then begin
       FCapture := AValue;
@@ -309,7 +309,7 @@ end;
 
 // SetInterval
 //
-procedure TJoystick.SetInterval(AValue: Cardinal);
+procedure TGLJoystick.SetInterval(AValue: Cardinal);
 begin
    if FInterval <> AValue then begin
       FInterval := AValue;
@@ -320,7 +320,7 @@ end;
 
 // SetJoystickID
 //
-procedure TJoystick.SetJoystickID(AValue: TJoystickID);
+procedure TGLJoystick.SetJoystickID(AValue: TJoystickID);
 begin
    if FJoystickID <> AValue then begin
       try
@@ -338,7 +338,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TJoystick.SetThreshold(AValue: Cardinal);
+procedure TGLJoystick.SetThreshold(AValue: Cardinal);
 
 begin
   if FThreshold <> AValue then
@@ -383,7 +383,7 @@ end;
 
 // DoXYMove
 //
-procedure TJoystick.DoXYMove(Buttons: Word; XPos, YPos: Integer);
+procedure TGLJoystick.DoXYMove(Buttons: Word; XPos, YPos: Integer);
 var
    I: Integer;
    dX, dY: Integer;
@@ -418,7 +418,7 @@ end;
 
 // DoZMove
 //
-procedure TJoystick.DoZMove(Buttons: Word; ZPos: Integer);
+procedure TGLJoystick.DoZMove(Buttons: Word; ZPos: Integer);
 begin
    if FLastZ = -1 then
       FLastZ := Round(ZPos * 100 / 65536);
@@ -427,6 +427,6 @@ end;
 
 initialization
 
-  RegisterClasses([TJoystick]);
+  RegisterClasses([TGLJoystick]);
 
 end.
