@@ -8,6 +8,7 @@
   To obtain it, call UserLog() function from any unit.<p>
 
   <b>Historique : </b><font size=-1><ul>
+  <li>25/03/13 - DaStr - Added WriteInternalMessages and DisplayErrorDialogs options
   <li>30/01/13 - DaStr - Added "save-old-logs" option
   <li>09/01/13 - DaStr - Added Log buffering and auto-splitting options
                          Other misc changes.
@@ -40,11 +41,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Dialogs,
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
-  StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
+  Dialogs, Controls, StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
 {$IFDEF LINUX} , Process {$ENDIF};
 
@@ -123,7 +123,7 @@ type
   end;
 
   {: Abstract Logger class }
-  TLogSession = class
+  TLogSession = class(TPersistent)
   private
     FBuffer: TStringList;
     FBuffered: Boolean;
@@ -131,6 +131,7 @@ type
     FCheckLogSizeThread: TLogCheckSizeThread;
     FFlushBufferPeriod: Integer;
     FLogFile: Text; // TextFile.
+    FDestroying: Boolean;
 
     FOriginalLogFileName: string;   // Original name
     FCurrentLogFileName: string;    // Current log file, if original exceeded certain size limit.
@@ -151,6 +152,8 @@ type
     FLogFileMaxSize: Integer;
     FCheckFileSizePeriod: Integer;
     FDisplayLogOnExitIfItContains: TLogLevels;
+    FWriteInternalMessages: Boolean;
+    FDisplayErrorDialogs: Boolean;
 {$IFNDEF GLS_LOGGING}
     constructor OnlyCreate;
 {$ENDIF}
@@ -163,8 +166,8 @@ type
     procedure PrintLogLevels();
     procedure PrintLogStatistics();
     function AttachLogFile(const AFileName: string; const AResetFile: Boolean = True): Boolean;
-    procedure ClearOldLogs();
-    procedure SaveOldLogs(const ACurrentLogFileName: string);
+    procedure ClearLogsInTheSameDir();
+    procedure BackUpOldLogs(const ACurrentLogFileName: string);
     procedure CreateNewLogFileIfNeeded();
 
     { : Appends a string to log. Thread-safe. }
@@ -183,7 +186,8 @@ type
     constructor Init(const AFileName: string;
       const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
       const ALogThreadId: Boolean = True; const ABuffered: Boolean = False;
-      const AMaxSize: Integer = 0; const ASaveOldLogs: Boolean = False); virtual;
+      const AMaxSize: Integer = 0; const ABackUpOldLogs: Boolean = False;
+      const AClearOldLogs: Boolean = True; const AWriteInternalMessages: Boolean = True); virtual;
 
     { : Destructor }
     destructor Destroy; override;
@@ -217,15 +221,19 @@ type
     procedure FlushBuffer(); // If log is buffered, calling this will flush the buffer.
 
     { : Set of levels which to include in the log }
-    property LogLevels: TLogLevels read FLogLevels write SetMode;
-    property Enabled: Boolean read FEnabled write SetEnabled;
+    property LogLevels: TLogLevels read FLogLevels write SetMode
+      default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
+    property Enabled: Boolean read FEnabled write SetEnabled default True;
     property Buffered: Boolean read FBuffered write SetBuffered default False;
-    property FlushBufferPeriod: Integer read FFlushBufferPeriod write FFlushBufferPeriod; // In ms.
-    property LogThreadId: Boolean read FLogThreadId write FLogThreadId;
+    property FlushBufferPeriod: Integer read FFlushBufferPeriod write FFlushBufferPeriod default 5000; // In ms.
+    property LogThreadId: Boolean read FLogThreadId write FLogThreadId default True;
+    property DisplayErrorDialogs: Boolean read FDisplayErrorDialogs write FDisplayErrorDialogs default True;
     property MessageLimitAction: TLogMessageLimitAction read FMessageLimitAction write FMessageLimitAction default mlaHalt;
+    property WriteInternalMessages: Boolean read FWriteInternalMessages write FWriteInternalMessages default True;
 
     {: To always display log, put all log types. To never display log, leave this empty. }
-    property DisplayLogOnExitIfItContains: TLogLevels read FDisplayLogOnExitIfItContains write FDisplayLogOnExitIfItContains;
+    property DisplayLogOnExitIfItContains: TLogLevels read FDisplayLogOnExitIfItContains write FDisplayLogOnExitIfItContains
+      default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
 
 
     {: If LogFileMaxSize is not 0, then:
@@ -233,8 +241,8 @@ type
        2) All logs wil be periodically cheked for FileSize.
           New log file will be created when this size exceeds limit.
     }
-    property LogFileMaxSize: Integer  read FLogFileMaxSize  write SetLogFileMaxSize; // In bytes, limited to 2Gb.
-    property CheckFileSizePeriod: Integer read FCheckFileSizePeriod write FCheckFileSizePeriod; // In ms.
+    property LogFileMaxSize: Integer  read FLogFileMaxSize  write SetLogFileMaxSize default 0; // In bytes, limited to 2Gb.
+    property CheckFileSizePeriod: Integer read FCheckFileSizePeriod write FCheckFileSizePeriod default 4000; // In ms.
   end;
 
   // TGLSLoger
@@ -440,6 +448,15 @@ begin
     Result := nil;
 end;
 
+function RemovePathAndExt(const aFileName: string): string;
+var
+  lExtIndex: Integer;
+begin
+  Result := ExtractFileName(aFileName);
+  lExtIndex := Pos(ExtractFileExt(Result), Result);
+  Result := Copy(Result, 1, lExtIndex - 1);
+end;
+
 {$IFDEF FPC}
 
 procedure LogedAssert(const Message, FileName: ShortString; LineNumber: Integer;
@@ -564,29 +581,45 @@ end;
 // ------------------ TLogSession ------------------
 // ------------------
 
-procedure TLogSession.SaveOldLogs(const ACurrentLogFileName: string);
+procedure TLogSession.BackUpOldLogs(const ACurrentLogFileName: string);
 var
   sRec: TSearchRec;
+  lLogFileName: string;
   lLogOriginalDir: string;
   lLogSaveDir: string;
   lLogExt: string;
 
   procedure SaveCurrentFile();
+  var
+    lErrorMessage: string;
+    lFile: File;
   begin
-    if not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) then
-      ShowMessage('RenameFile failed with error : ' + IntToStr(
-        {$IFDEF FPC}GetLastOSError{$ELSE}GetLastError{$ENDIF}));
+    if not FDisplayErrorDialogs then
+      RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name)
+    else
+    begin
+      lErrorMessage := 'Renaming of "%s" failed with error : %d. Try again?';
+      while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
+      begin
+        if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name, 
+          {$IFDEF FPC}GetLastOSError{$ELSE}GetLastError{$ENDIF}]),
+          mtWarning, mbYesNo, -1, mbYes) = mrNo then Break;
+        AssignFile(lFile, lLogOriginalDir + sRec.Name);
+        CloseFile(lFile);
+      end;
+    end;
   end;
 
 begin
   lLogExt := ExtractFileExt(ACurrentLogFileName);
+  lLogFileName := RemovePathAndExt(ACurrentLogFileName);
   lLogOriginalDir := ExtractFilePath(ACurrentLogFileName);
   lLogSaveDir := lLogOriginalDir + FormatDateTime('yyyy-mm-dd  hh-nn-ss', Now);
 
   if not CreateDir(lLogSaveDir) then Exit;
   lLogSaveDir := lLogSaveDir + SysUtils.PathDelim;
-
-  If FindFirst(lLogOriginalDir + '*' + lLogExt, faAnyfile, sRec) = 0 then
+    
+  If FindFirst(lLogOriginalDir + lLogFileName + '*' + lLogExt, faAnyfile, sRec) = 0 then
   begin
     try
       SaveCurrentFile();
@@ -729,7 +762,8 @@ end;
 constructor TLogSession.Init(const AFileName: string;
   const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
   const ALogThreadId: Boolean = True; const ABuffered: Boolean = False;
-  const AMaxSize: Integer = 0; const ASaveOldLogs: Boolean = False);
+  const AMaxSize: Integer = 0; const ABackUpOldLogs: Boolean = False;
+  const AClearOldLogs: Boolean = True; const AWriteInternalMessages: Boolean = True);
 var
   i: Integer;
   ModeStr: string;
@@ -745,7 +779,9 @@ begin
   FTimeFormat := ATimeFormat;
   FLogLevels := ALevels;
   FMessageLimitAction := mlaHalt;
+  FDisplayErrorDialogs := True;
   FDisplayLogOnExitIfItContains := [lkError, lkFatalError];
+  FWriteInternalMessages := AWriteInternalMessages;
 
   // Set up strings.
   FModeTitles[lkDebug] := 'debug info';
@@ -770,17 +806,17 @@ begin
       ModeStr := 'elapsed time mode.';
   end;
 
-  if ASaveOldLogs then
-    SaveOldLogs(AFileName);
+  if ABackUpOldLogs then
+    BackUpOldLogs(AFileName);
 
   // Attach log file.
   FUsedLogFileNames := TStringList.Create();
   FOriginalLogFileName := AFileName;
-  FEnabled := AttachLogFile(AFileName, True);
+  FEnabled := AttachLogFile(AFileName, AClearOldLogs);
 
   // Clear all logs and set log max size.
   if AMaxSize > 0 then
-    ClearOldLogs();
+    ClearLogsInTheSameDir();
   Self.SetLogFileMaxSize(AMaxSize);
 
   // Reset log counters.
@@ -788,9 +824,12 @@ begin
     FLogKindCount[TLogLevel(i)] := 0;
    
   // Print some initial logs.
-  Log('Log subsystem started in ' + ModeStr, lkInfo);
-  PrintLogLevels();
-  Log('Buffered mode: ' + BoolToStr(FBuffered, True), lkInfo);
+  if FWriteInternalMessages then
+  begin
+    Log('Log subsystem started in ' + ModeStr, lkInfo);
+    PrintLogLevels();
+    Log('Buffered mode: ' + BoolToStr(FBuffered, True), lkInfo);
+  end;
 
   // Start BufferProcessing thread.
   if FBuffered then
@@ -843,20 +882,28 @@ begin
   try
     lPath := ExtractFilePath(AFileName);
     if Length(lPath) > 0 then
-      FCurrentLogFileName := AFileName
+    begin
+      FCurrentLogFileName := AFileName;
+      ForceDirectories(lPath);
+    end
     else
       FCurrentLogFileName := IncludeTrailingPathDelimiter(GetCurrentDir) + AFileName;
 
     FFileAccessCriticalSection.Enter;
     AssignFile(FLogFile, FCurrentLogFileName);
     FFileAccessCriticalSection.Leave;
-
     FUsedLogFileNames.Add(FCurrentLogFileName);
-
-    if not AResetFile then
-      Result := True
+    
+    if not FileExists(FCurrentLogFileName) then
+      Result := DoResetLog()
     else
-      Result := DoResetLog();
+    begin  
+      if not AResetFile then
+        Result := True
+      else
+        Result := DoResetLog();    
+    end;
+
   except
     FFileAccessCriticalSection.Leave;
     Result := False;
@@ -886,18 +933,22 @@ begin
   end;
 end;
 
-procedure TLogSession.ClearOldLogs;
+procedure TLogSession.ClearLogsInTheSameDir;
 var
   sRec: TSearchRec;
+  lFilePath: string;
 
   procedure DeleteCurrentFile();
   begin
-    if FCurrentLogFileName <> ExtractFilePath(FCurrentLogFileName) + sRec.Name then
-      DeleteFile(ExtractFilePath(FCurrentLogFileName) + sRec.Name);
+    if FCurrentLogFileName <> lFilePath + sRec.Name then
+      DeleteFile(lFilePath + sRec.Name);
   end;
   
 begin
-  If FindFirst(ExtractFilePath(FCurrentLogFileName) + '*' + ExtractFileExt(FCurrentLogFileName), faAnyfile, sRec) = 0 then
+  lFilePath := ExtractFilePath(FCurrentLogFileName);
+
+  If FindFirst(lFilePath + RemovePathAndExt(FCurrentLogFileName) +
+    '*' + ExtractFileExt(FCurrentLogFileName), faAnyfile, sRec) = 0 then
   begin
     try
       DeleteCurrentFile()
@@ -942,6 +993,11 @@ begin
     until
       not FileExists(lNewFileName);
 
+    if FWriteInternalMessages then
+    begin
+      Log(Format('Creating new log file "%s" because old one became too big (%d bytes)',
+        [lNewFileName, lFileSize]));
+    end;
     AttachLogFile(lNewFileName, True);
   end;
 end;
@@ -950,12 +1006,17 @@ destructor TLogSession.Destroy;
 var
   I: TLogLevel;
 begin
+  FDestroying := True;
 {$IFNDEF GLS_LOGGING}
   if Self = v_GLSLogger then
     Exit;
 {$ENDIF}
-  PrintLogStatistics();
-  Log('Log session shutdown');
+
+  if FWriteInternalMessages then
+  begin
+    PrintLogStatistics();
+    Log('Log session shutdown');
+  end;
 
   SetBuffered(False);
   DoWriteBufferToLog(); // Terminates TLogBufferFlushThread.
@@ -1214,7 +1275,7 @@ end;
 
 procedure TLogCheckSizeThread.Execute;
 begin
-  while (not Terminated) do
+  while (not Terminated and not FParent.FDestroying) do
   begin
     FParent.CreateNewLogFileIfNeeded();
     Sleep(FParent.FCheckFileSizePeriod);
