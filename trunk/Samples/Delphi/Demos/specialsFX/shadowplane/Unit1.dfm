@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 228
   Top = 89
-  Width = 471
-  Height = 362
-  Caption = 'Form1'
+  Caption = 'Shadow Plane'
+  ClientHeight = 318
+  ClientWidth = 463
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,12 +17,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 455
-    Height = 324
+    Width = 463
+    Height = 318
     Camera = GLCamera1
     Buffer.BackgroundColor = 8421440
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 145.695159912109400000
+    FieldOfView = 145.086883544921900000
     Align = alClient
     TabOrder = 0
   end
@@ -56,7 +56,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 344
+    Left = 304
     Top = 8
     object DCShadowing: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -151,12 +151,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 384
-    Top = 8
+    Left = 304
+    Top = 64
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 424
+    Left = 392
     Top = 8
   end
   object GLMaterialLibrary: TGLMaterialLibrary
@@ -165,11 +165,14 @@ object Form1: TForm1
         Name = 'Marble'
         Tag = 0
         Material.FrontProperties.Emission.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'BeigeMarble.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {0000003F0000003F0000803F00000000}
       end>
-    Left = 304
+    TexturePaths = '..\..\..\..\media'
+    Left = 192
     Top = 8
   end
 end

@@ -1,19 +1,3 @@
-{: Simple projective shadows.<p>
-
-   The TGLShadowPlane component allows to render simple projective shadows.
-   They have the benefit of being quite fast, but as the name says, your shadows
-   will be projected only on a plane and  must be (entirely) on the same side
-   of the plane as the light (the side pointed by the plane's direction).<p>
-   Note that stenciling is required for proper operation (it is an option of
-   the Viewer.Buffer.ContextOptions), which should be available on all modern
-   graphics hardware. When stenciling is not activated, the ShadowPlane will
-   use opaque shadows and you may see shadows appear beyond the plane limits...<p>
-
-   The higher quality lighting on the marble planes is obtained by specifying
-   Tiles in the plane and removing 'psSingleQuad' from the style. Lighting
-   is computed per-vertex, this changes increase drastically the number of
-   vertices that make up the planes, thus allowing for better lighting.
-}
 unit Unit1;
 
 interface
@@ -65,12 +49,13 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, GLUtils;
+uses
+  Jpeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetGLSceneMediaDir();
-   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('BeigeMarble.jpg');
+  SetGLSceneMediaDir();
+  GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('BeigeMarble.jpg');
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -100,7 +85,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   Caption := 'Shadow Plane - ' + Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
