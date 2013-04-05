@@ -1,6 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+//  05/04/13 - Yar - Fixes TLWChunkList.Create for FPC (thanks to VIT)
 //  20/05/10 - Yar - Fixes for Linux x64
 //  16/10/08 - UweR - Compatibility fix for Delphi 2009
 //  30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
@@ -1254,6 +1255,7 @@ end;
 }
 constructor TLWChunkList.Create(AOwnsItems: boolean; AOwner: TObject);
 begin
+  inherited Create;
   FOwnsItems := AOwnsItems;
   FOwner := AOwner;
 end;
