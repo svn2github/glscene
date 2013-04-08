@@ -1,9 +1,9 @@
 object Main: TMain
   Left = 188
   Top = 87
-  Width = 588
-  Height = 479
   Caption = 'Main'
+  ClientHeight = 413
+  ClientWidth = 580
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,19 +22,19 @@ object Main: TMain
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 572
+    Width = 580
     Height = 24
     Caption = 'ToolBar'
     Images = ImageList
     TabOrder = 0
     object ToolButton1: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Action = ACOpen
     end
     object ToolButton2: TToolButton
       Left = 23
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 1
@@ -42,37 +42,37 @@ object Main: TMain
     end
     object ToolButton6: TToolButton
       Left = 31
-      Top = 2
+      Top = 0
       Action = ACShadeSmooth
       Grouped = True
     end
     object ToolButton7: TToolButton
       Left = 54
-      Top = 2
+      Top = 0
       Action = ACFlatShading
       Grouped = True
     end
     object ToolButton13: TToolButton
       Left = 77
-      Top = 2
+      Top = 0
       Action = ACFlatLined
       Grouped = True
     end
     object ToolButton8: TToolButton
       Left = 100
-      Top = 2
+      Top = 0
       Action = ACHiddenLines
       Grouped = True
     end
     object ToolButton9: TToolButton
       Left = 123
-      Top = 2
+      Top = 0
       Action = ACWireframe
       Grouped = True
     end
     object ToolButton5: TToolButton
       Left = 146
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton5'
       ImageIndex = 4
@@ -80,17 +80,17 @@ object Main: TMain
     end
     object ToolButton12: TToolButton
       Left = 154
-      Top = 2
+      Top = 0
       Action = ACTexturing
     end
     object TBLighting: TToolButton
       Left = 177
-      Top = 2
+      Top = 0
       Action = ACLighting
     end
     object ToolButton11: TToolButton
       Left = 200
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton11'
       ImageIndex = 4
@@ -98,24 +98,24 @@ object Main: TMain
     end
     object ToolButton10: TToolButton
       Left = 208
-      Top = 2
+      Top = 0
       Action = ACResetView
     end
     object ToolButton3: TToolButton
       Left = 231
-      Top = 2
+      Top = 0
       Action = ACZoomIn
     end
     object ToolButton4: TToolButton
       Left = 254
-      Top = 2
+      Top = 0
       Action = ACZoomOut
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 402
-    Width = 572
+    Top = 394
+    Width = 580
     Height = 19
     Panels = <
       item
@@ -133,15 +133,15 @@ object Main: TMain
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 24
-    Width = 572
-    Height = 378
+    Width = 580
+    Height = 370
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     AfterRender = GLSceneViewerAfterRender
     Buffer.BackgroundColor = 14540253
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
-    FieldOfView = 150.363708496093800000
+    FieldOfView = 149.751983642578100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove

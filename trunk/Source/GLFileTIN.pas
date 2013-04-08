@@ -5,6 +5,7 @@
 
 	TIN (Triangular Irregular Network) vector file format implementation.<p>
   <b>History :</b><font size=-1><ul>
+      <li>08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
       <li>17/11/05 - PW - Added support for ascii TIN files with materials
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
@@ -130,12 +131,10 @@ begin
         repeat
           Inc(i); Inc(j);
           tl.DelimitedText := sl[i];
-
           n1 := StrToInt(tl[0]); n2 := StrToInt(tl[1]); n3 := StrToInt(tl[2]);
-          SetVector(v1, VertArr[n1].X, VertArr[n1].Y, VertArr[n1].Z);
-          SetVector(v2, VertArr[n2].X, VertArr[n2].Y, VertArr[n2].Z);
-          SetVector(v3, VertArr[n3].X, VertArr[n3].Y, VertArr[n3].Z);
-
+          SetVector(v1, VertArr[n1-1].X, VertArr[n1-1].Y, VertArr[n1-1].Z);
+          SetVector(v2, VertArr[n2-1].X, VertArr[n2-1].Y, VertArr[n2-1].Z);
+          SetVector(v3, VertArr[n3-1].X, VertArr[n3-1].Y, VertArr[n3-1].Z);
           mesh.Vertices.Add(v1, v2, v3);
           n := CalcPlaneNormal(v1, v2, v3);
           mesh.Normals.Add(n, n, n);

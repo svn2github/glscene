@@ -14,7 +14,7 @@ uses
   Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
   GLTexture, GLContext, ExtDlgs, VectorLists, GLCadencer,
-  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
+  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses, System.Actions;
 
 type
   TMain = class(TForm)
@@ -331,12 +331,12 @@ end;
 procedure TMain.MIAboutClick(Sender: TObject);
 begin
    ShowMessage( 'GLSViewer - Simple OpenGL Mesh Viewer'#13#10
-               +'Copyright 2002 Eric Grange'#13#10#13#10
+               +'Copyright 2002, 2013 Eric Grange'#13#10#13#10
                +'A freeware Delphi program based on...'#13#10#13#10
                +'GLScene: 3D view, 3D file formats support'#13#10
                +'http://glscene.org'#13#10#13#10
-               +'GraphicEx: 2D image file formats support'#13#10
-               +'http://www.delphi-gems.com/')
+               +'Graphics32: 2D image file formats support'#13#10
+               +'http://graphics32.org')
 end;
 
 procedure TMain.DoResetCamera;
@@ -528,9 +528,9 @@ begin
 
    FreeForm.GetExtents(min, max);
    with CubeExtents do begin
-      CubeWidth:=max[0]-min[0];
-      CubeHeight:=max[1]-min[1];
-      CubeDepth:=max[2]-min[2];
+      CubeWidth:=max.X-min.X;
+      CubeHeight:=max.Y-min.Y;
+      CubeDepth:=max.Z-min.Z;
       Position.AsAffineVector:=VectorLerp(min, max, 0.5);
    end;
 
