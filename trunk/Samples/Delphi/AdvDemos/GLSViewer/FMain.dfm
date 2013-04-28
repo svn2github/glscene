@@ -1,19 +1,135 @@
 object Main: TMain
   Left = 188
   Top = 87
-  Caption = 'Main'
-  ClientHeight = 413
-  ClientWidth = 580
+  Caption = 'GLScene Viewer'
+  ClientHeight = 490
+  ClientWidth = 668
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  Icon.Data = {
+    0000010002002020000001000800A80800002600000010100000010008006805
+    0000CE0800002800000020000000400000000100080000000000800400000000
+    0000000000000000000000000000000000000000800000800000008080008000
+    00008000800080800000C0C0C000C0DCC000F0CAA60004040400080808000C0C
+    0C0011111100161616001C1C1C002222220029292900555555004D4D4D004242
+    420039393900807CFF005050FF009300D600FFECCC00C6D6EF00D6E7E70090A9
+    AD000000330000006600000099000000CC000033000000333300003366000033
+    99000033CC000033FF00006600000066330000666600006699000066CC000066
+    FF00009900000099330000996600009999000099CC000099FF0000CC000000CC
+    330000CC660000CC990000CCCC0000CCFF0000FF660000FF990000FFCC003300
+    00003300330033006600330099003300CC003300FF0033330000333333003333
+    6600333399003333CC003333FF00336600003366330033666600336699003366
+    CC003366FF00339900003399330033996600339999003399CC003399FF0033CC
+    000033CC330033CC660033CC990033CCCC0033CCFF0033FF330033FF660033FF
+    990033FFCC0033FFFF00660000006600330066006600660099006600CC006600
+    FF00663300006633330066336600663399006633CC006633FF00666600006666
+    330066666600666699006666CC00669900006699330066996600669999006699
+    CC006699FF0066CC000066CC330066CC990066CCCC0066CCFF0066FF000066FF
+    330066FF990066FFCC00CC00FF00FF00CC009999000099339900990099009900
+    CC009900000099333300990066009933CC009900FF0099660000996633009933
+    6600996699009966CC009933FF009999330099996600999999009999CC009999
+    FF0099CC000099CC330066CC660099CC990099CCCC0099CCFF0099FF000099FF
+    330099CC660099FF990099FFCC0099FFFF00CC00000099003300CC006600CC00
+    9900CC00CC0099330000CC333300CC336600CC339900CC33CC00CC33FF00CC66
+    0000CC66330099666600CC669900CC66CC009966FF00CC990000CC993300CC99
+    6600CC999900CC99CC00CC99FF00CCCC0000CCCC3300CCCC6600CCCC9900CCCC
+    CC00CCCCFF00CCFF0000CCFF330099FF6600CCFF9900CCFFCC00CCFFFF00CC00
+    3300FF006600FF009900CC330000FF333300FF336600FF339900FF33CC00FF33
+    FF00FF660000FF663300CC666600FF669900FF66CC00CC66FF00FF990000FF99
+    3300FF996600FF999900FF99CC00FF99FF00FFCC0000FFCC3300FFCC6600FFCC
+    9900FFCCCC00FFCCFF00FFFF3300CCFF6600FFFF9900FFFFCC006666FF0066FF
+    660066FFFF00FF666600FF66FF00FFFF66002100A5005F5F5F00777777008686
+    860096969600CBCBCB00B2B2B200D7D7D700DDDDDD00E3E3E300EAEAEA00F1F1
+    F100F8F8F800F0FBFF00A4A0A000808080000000FF0000FF000000FFFF00FF00
+    0000FF00FF00FFFF0000FFFFFF00000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    000000000000000000000000000000000000000000000000000000000007F800
+    0000000000000000000000000000000000000000000000000000000707FEFCF8
+    F80000000000000000000000000000000000000000000000000707FEFEFEFCFC
+    FCF8F800000000000000000000000000000000000000000707FEFEFEFE74F8FC
+    FCFCFCF8F8000000000000000000000000000000000707FEFEFEFE7474FEFCF8
+    F8FCFCFCFCF8F80000000000000000000000000707FEFEFEFE7474FEFEFEFCFC
+    FCF8F8FCFCFCFCF8F800000000000000000707FEFEFEFE7474FEFEFEFE74F8FC
+    FCFCFCF8F8FCFCFCFCF8F8000000000707FEFEFEFE7474FEFEFEFE7474FEFCF8
+    F8FCFCFCFCF8F8FCFCFCFCF8F80007FEFEFEFE7474FEFEFEFE7474FEFEFEFCFC
+    FCF8F8FCFCFCFCF8F8FCFCFCFCF807FEFE7474FEFEFEFE7474FEFEFEFE74F8FC
+    FCFCFCF8F8FCFCFCFCF8F8FCFCF8000774FEFEFEFE7474FEFEFEFE7474FEFCF8
+    F8FCFCFCFCF8F8FCFCFCFCF8F800000007FEFE7474FEFEFEFE7474FEFEFEFCFC
+    FCF8F8FCFCFCFCF8F8FCFCF800000000000774FEFEFEFE7474FEFEFEFE74F8FC
+    FCFCFCF8F8FCFCFCFCF8F80000000000000007FEFE7474FEFEFEFE7474FEFCF8
+    F8FCFCFCFCF8F8FCFCF80000000000000000000774FEFEFEFE7474FEFEFEFCFC
+    FCF8F8FCFCFCFCF8F8000000000000000000000007FEFE7474FEFEFEFE74F8FC
+    FCFCFCF8F8FCFCF8000000000000000000000000000774FEFEFEFE7474FEFCF8
+    F8FCFCFCFCF8F80000000000000000000000000707FE07FEFE7474FEFEFEFCFC
+    FCF8F8FCFCF800000000000000000000000707FEFEFEFC0774FEFEFEFE74F8FC
+    FCFCFCF8F8000000000000000000000707FEFEFE7474F8F807FEFE7474FEFCF8
+    F8FCFCF80000000000000000000007FEFEFE7474FEFEFCFCFC0774FEFEFEFCFC
+    FCF8F800000000000000000000000007FE74FEFE7474F8F8FCFC07FEFE74F8FC
+    FCF800000000000007F800000000000007FE7474FEFEFCFCF8F8FC0774FEFCF8
+    F800000000000707FEFCF8F8000000000007FEFE7474F8F8FCFCF80007FEFCF8
+    000000000707FEFE74F8FCFCF8F8000000000774FEFEFCFCF8F800000007F800
+    0000000007FE7474FEFCF8F8FCF8000000000007FE74F8FCF800000000000000
+    000000000007FEFE74F8FCFCF80000000000000007FEFCF80000000000000000
+    0000000000000774FEFCF8F800000000000000000007F8000000000000000000
+    000000000000000774F8F8000000000000000000000000000000000000000000
+    000000000000000007F800000000000000000000000000000000000000000000
+    0000000000000000000000000000FFFFFFFFFFFFFFFFFFFE7FFFFFF81FFFFFE0
+    07FFFF8001FFFE00007FF800001FE00000078000000100000000000000008000
+    0001C0000003E0000007F000000FF800001FFC00003FFE00007FF80000FFE000
+    01FF800003FF000007FF80000FCFC0001F03E0043C00F00E7C00F81FFE01FC3F
+    FF03FE7FFF87FFFFFFCFFFFFFFFF280000001000000020000000010008000000
+    0000400100000000000000000000000000000000000000000000800000006699
+    000080808000C0C00000C0C0C000408000004080C000C0000000FFFF0000FF00
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    0000000000000000000000000000000000000000000000000000000000000000
+    00000000000000000000000005040A0300000000000000000000050404090A0A
+    0A0300000000000005040409050503030A0A0A03000005040409050509090A0A
+    03030A0A0A030409050509090505030A0A0A03030A0A05050909050509090A03
+    030A0A0A03030005050509090505030A0A03030A030000000505050509090A03
+    030A0A03000000000504050909050A0A0A0303000000050404090A0505090303
+    0A0300000000040909050A0805090A0A03000005050000040509030A03050A03
+    000504050303000005090A0300050300000509090A0300000005030000000000
+    00000509030000000000000000000000000000050000FFFF0000FC3F0000F00F
+    0000C003000000000000000000000000000080010000C0030000C0070000000F
+    00000019000080200000C2600000E7F10000FFFB0000}
   Menu = MainMenu
   OldCreateOrder = False
   Position = poDesktopCenter
   ShowHint = True
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
@@ -22,15 +138,17 @@ object Main: TMain
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 580
+    Width = 668
     Height = 24
     Caption = 'ToolBar'
+    Color = clBtnFace
     Images = ImageList
+    ParentColor = False
     TabOrder = 0
     object ToolButton1: TToolButton
       Left = 0
       Top = 0
-      Action = ACOpen
+      Action = acOpen
     end
     object ToolButton2: TToolButton
       Left = 23
@@ -43,31 +161,31 @@ object Main: TMain
     object ToolButton6: TToolButton
       Left = 31
       Top = 0
-      Action = ACShadeSmooth
+      Action = acShadeSmooth
       Grouped = True
     end
     object ToolButton7: TToolButton
       Left = 54
       Top = 0
-      Action = ACFlatShading
+      Action = acFlatShading
       Grouped = True
     end
     object ToolButton13: TToolButton
       Left = 77
       Top = 0
-      Action = ACFlatLined
+      Action = acFlatLined
       Grouped = True
     end
     object ToolButton8: TToolButton
       Left = 100
       Top = 0
-      Action = ACHiddenLines
+      Action = acHiddenLines
       Grouped = True
     end
     object ToolButton9: TToolButton
       Left = 123
       Top = 0
-      Action = ACWireframe
+      Action = acWireframe
       Grouped = True
     end
     object ToolButton5: TToolButton
@@ -81,12 +199,12 @@ object Main: TMain
     object ToolButton12: TToolButton
       Left = 154
       Top = 0
-      Action = ACTexturing
+      Action = acTexturing
     end
     object TBLighting: TToolButton
       Left = 177
       Top = 0
-      Action = ACLighting
+      Action = acLighting
     end
     object ToolButton11: TToolButton
       Left = 200
@@ -99,23 +217,23 @@ object Main: TMain
     object ToolButton10: TToolButton
       Left = 208
       Top = 0
-      Action = ACResetView
+      Action = acResetView
     end
     object ToolButton3: TToolButton
       Left = 231
       Top = 0
-      Action = ACZoomIn
+      Action = acZoomIn
     end
     object ToolButton4: TToolButton
       Left = 254
       Top = 0
-      Action = ACZoomOut
+      Action = acZoomOut
     end
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 394
-    Width = 580
+    Top = 471
+    Width = 668
     Height = 19
     Panels = <
       item
@@ -133,15 +251,15 @@ object Main: TMain
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 24
-    Width = 580
-    Height = 370
+    Width = 668
+    Height = 447
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     AfterRender = GLSceneViewerAfterRender
     Buffer.BackgroundColor = 14540253
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
-    FieldOfView = 149.751983642578100000
+    FieldOfView = 154.779571533203100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
@@ -149,68 +267,69 @@ object Main: TMain
     TabOrder = 2
   end
   object MainMenu: TMainMenu
+    AutoHotkeys = maManual
     Images = ImageList
-    Left = 8
+    Left = 224
     Top = 32
-    object MIFile: TMenuItem
+    object miFile: TMenuItem
       Caption = 'File'
-      OnClick = MIFileClick
-      object Open1: TMenuItem
-        Action = ACOpen
+      OnClick = miFileClick
+      object miOpen: TMenuItem
+        Action = acOpen
       end
-      object MIOpenTexLib: TMenuItem
+      object miOpenTexLib: TMenuItem
         Caption = 'Open texture library...'
         Enabled = False
-        OnClick = MIOpenTexLibClick
+        OnClick = miOpenTexLibClick
       end
-      object MIPickTexture: TMenuItem
+      object miPickTexture: TMenuItem
         Caption = 'Pick texture...'
-        OnClick = MIPickTextureClick
+        OnClick = miPickTextureClick
       end
       object N4: TMenuItem
         Caption = '-'
       end
-      object Saveas1: TMenuItem
-        Action = ACSaveAs
+      object miSaveas: TMenuItem
+        Action = acSaveAs
       end
-      object Savetextures1: TMenuItem
-        Action = ACSaveTextures
+      object miSavetextures: TMenuItem
+        Action = acSaveTextures
       end
       object N1: TMenuItem
         Caption = '-'
       end
-      object Exit1: TMenuItem
-        Action = ACExit
+      object miExit: TMenuItem
+        Action = acExit
       end
     end
-    object MIView: TMenuItem
+    object miView: TMenuItem
       Caption = 'View'
-      object Smoothshading1: TMenuItem
-        Action = ACShadeSmooth
+      object miSmoothshading: TMenuItem
+        Action = acShadeSmooth
         AutoCheck = True
         GroupIndex = 1
         RadioItem = True
       end
-      object Flatshading1: TMenuItem
-        Action = ACFlatShading
+      object miFlatshading: TMenuItem
+        Action = acFlatShading
         AutoCheck = True
         GroupIndex = 1
         RadioItem = True
       end
-      object FlatShadingwithlines1: TMenuItem
-        Action = ACFlatLined
+      object miFlatShadingwithlines: TMenuItem
+        Action = acFlatLined
         AutoCheck = True
         GroupIndex = 1
         RadioItem = True
       end
-      object Hiddenlines1: TMenuItem
-        Action = ACHiddenLines
+      object miHiddenlines: TMenuItem
+        Action = acHiddenLines
         AutoCheck = True
         GroupIndex = 1
         RadioItem = True
       end
-      object Wireframe1: TMenuItem
-        Action = ACWireframe
+      object miWireframe: TMenuItem
+        Action = acWireframe
         AutoCheck = True
         GroupIndex = 1
         RadioItem = True
@@ -219,250 +338,263 @@ object Main: TMain
         Caption = '-'
         GroupIndex = 1
       end
-      object ZoomIn1: TMenuItem
-        Action = ACZoomIn
+      object miZoomIn: TMenuItem
+        Action = acZoomIn
         GroupIndex = 1
       end
-      object ZoomOut1: TMenuItem
-        Action = ACZoomOut
+      object miZoomOut: TMenuItem
+        Action = acZoomOut
         GroupIndex = 1
       end
-      object Resetview1: TMenuItem
-        Action = ACResetView
+      object miResetview: TMenuItem
+        Action = acResetView
         GroupIndex = 1
       end
     end
-    object MIActions: TMenuItem
+    object miActions: TMenuItem
       Caption = 'Actions'
-      object Optimize1: TMenuItem
-        Action = ACOptimize
+      object miOptimize: TMenuItem
+        Action = acOptimize
       end
       object N5: TMenuItem
         Caption = '-'
       end
-      object InvertNormals1: TMenuItem
-        Action = ACInvertNormals
+      object miInvertNormals: TMenuItem
+        Action = acInvertNormals
       end
-      object ReverseRenderingOrder1: TMenuItem
-        Action = ACReverseRenderingOrder
+      object miReverseRenderingOrder: TMenuItem
+        Action = acReverseRenderingOrder
       end
       object N6: TMenuItem
         Caption = '-'
       end
-      object ConverttoIndexedTriangles1: TMenuItem
-        Action = ACConvertToIndexedTriangles
+      object miConverttoIndexedTriangles: TMenuItem
+        Action = acConvertToIndexedTriangles
       end
-      object Stripify1: TMenuItem
-        Action = ACStripify
+      object miStripify: TMenuItem
+        Action = acStripify
       end
     end
-    object MIOptions: TMenuItem
-      Caption = 'Options'
-      object Faceculling1: TMenuItem
-        Action = ACCullFace
+    object miTools: TMenuItem
+      Caption = 'Tools'
+      object miOption: TMenuItem
+        Action = acOption
       end
-      object MIAntiAlias: TMenuItem
+      object miFaceculling: TMenuItem
+        Action = acCullFace
+      end
+      object miAntiAlias: TMenuItem
         Caption = 'Antialiasing'
-        object MIAADefault: TMenuItem
+        object miAADefault: TMenuItem
           Caption = 'Default'
           Checked = True
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object MSAA2X: TMenuItem
+        object miMSAA2X: TMenuItem
           Caption = 'MSAA 2X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object MSAA4X: TMenuItem
+        object miMSAA4X: TMenuItem
           Caption = 'MSAA 4X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object MSAA8X: TMenuItem
+        object miMSAA8X: TMenuItem
           Caption = 'MSAA 8X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object MSAA16X: TMenuItem
+        object miMSAA16X: TMenuItem
           Caption = 'MSAA 16X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object CSAA8X: TMenuItem
+        object miCSAA8X: TMenuItem
           Caption = 'CSAA 8X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
-        object CSAA16X: TMenuItem
+        object miCSAA16X: TMenuItem
           Caption = 'CSAA 16X'
           RadioItem = True
-          OnClick = MIAADefaultClick
+          OnClick = miAADefaultClick
         end
       end
       object MITexturing: TMenuItem
-        Action = ACTexturing
+        Action = acTexturing
       end
       object Lighting1: TMenuItem
-        Action = ACLighting
-      end
-      object FramesPerSecond1: TMenuItem
-        Action = ACFPS
+        Action = acLighting
       end
       object N3: TMenuItem
         Caption = '-'
       end
-      object MIBgColor: TMenuItem
-        Caption = 'Background color'
-        OnClick = MIBgColorClick
+      object miFPS: TMenuItem
+        Action = acFPS
+        Caption = 'Show FPS'
       end
     end
-    object MIAbout: TMenuItem
-      Caption = '?'
-      OnClick = MIAboutClick
+    object miHelp: TMenuItem
+      Caption = 'Help'
+      object miAbout: TMenuItem
+        Caption = 'About...'
+        OnClick = miAboutClick
+      end
     end
   end
   object ActionList: TActionList
     Images = ImageList
-    Left = 40
-    Top = 32
-    object ACOpen: TAction
+    Left = 224
+    Top = 88
+    object acOpen: TAction
       Category = 'File'
       Caption = 'Open...'
       ImageIndex = 0
-      OnExecute = ACOpenExecute
+      OnExecute = acOpenExecute
     end
-    object ACExit: TAction
+    object acExit: TAction
       Category = 'File'
       Caption = 'Exit'
       ImageIndex = 1
-      OnExecute = ACExitExecute
+      OnExecute = acExitExecute
     end
-    object ACSaveAs: TAction
+    object acSaveAs: TAction
       Category = 'File'
       Caption = 'Save as...'
       ImageIndex = 4
-      OnExecute = ACSaveAsExecute
-      OnUpdate = ACSaveAsUpdate
+      OnExecute = acSaveAsExecute
+      OnUpdate = acSaveAsUpdate
     end
-    object ACZoomIn: TAction
+    object acZoomIn: TAction
       Category = 'View'
       Caption = 'Zoom In'
       ImageIndex = 2
-      OnExecute = ACZoomInExecute
+      OnExecute = acZoomInExecute
     end
-    object ACZoomOut: TAction
+    object acZoomOut: TAction
       Category = 'View'
       Caption = 'Zoom Out'
       ImageIndex = 3
-      OnExecute = ACZoomOutExecute
+      OnExecute = acZoomOutExecute
     end
-    object ACResetView: TAction
+    object acResetView: TAction
       Category = 'View'
       Caption = 'Reset view'
       ImageIndex = 5
-      OnExecute = ACResetViewExecute
+      OnExecute = acResetViewExecute
     end
-    object ACShadeSmooth: TAction
+    object acShadeSmooth: TAction
       Category = 'View'
       AutoCheck = True
       Caption = 'Smooth shading'
       Checked = True
       GroupIndex = 1
       ImageIndex = 9
-      OnExecute = ACShadeSmoothExecute
+      OnExecute = acShadeSmoothExecute
     end
-    object ACFlatShading: TAction
+    object acFlatShading: TAction
       Category = 'View'
       AutoCheck = True
       Caption = 'Flat shading'
       GroupIndex = 1
       ImageIndex = 7
-      OnExecute = ACShadeSmoothExecute
+      OnExecute = acShadeSmoothExecute
     end
-    object ACFlatLined: TAction
+    object acFlatLined: TAction
       Category = 'View'
       AutoCheck = True
       Caption = 'Flat Shading with lines'
       GroupIndex = 1
       ImageIndex = 11
-      OnExecute = ACShadeSmoothExecute
+      OnExecute = acShadeSmoothExecute
     end
-    object ACHiddenLines: TAction
+    object acHiddenLines: TAction
       Category = 'View'
       AutoCheck = True
       Caption = 'Hidden lines'
       GroupIndex = 1
       ImageIndex = 8
-      OnExecute = ACShadeSmoothExecute
+      OnExecute = acShadeSmoothExecute
     end
-    object ACWireframe: TAction
+    object acWireframe: TAction
       Category = 'View'
       AutoCheck = True
       Caption = 'Wireframe'
       GroupIndex = 1
       ImageIndex = 6
-      OnExecute = ACShadeSmoothExecute
+      OnExecute = acShadeSmoothExecute
     end
-    object ACCullFace: TAction
-      Category = 'Options'
+    object acOption: TAction
+      Category = 'Tools'
+      Caption = 'Option...'
+      OnExecute = acOptionExecute
+    end
+    object acCullFace: TAction
+      Category = 'Tools'
       Caption = 'Face culling'
-      OnExecute = ACCullFaceExecute
+      OnExecute = acCullFaceExecute
     end
-    object ACTexturing: TAction
-      Category = 'Options'
+    object acTexturing: TAction
+      Category = 'Tools'
       Caption = 'Texturing'
       Checked = True
       ImageIndex = 10
-      OnExecute = ACTexturingExecute
+      OnExecute = acTexturingExecute
     end
-    object ACInvertNormals: TAction
+    object acInvertNormals: TAction
       Category = 'Actions'
       Caption = 'Invert Normals'
-      OnExecute = ACInvertNormalsExecute
+      OnExecute = acInvertNormalsExecute
     end
-    object ACReverseRenderingOrder: TAction
+    object acReverseRenderingOrder: TAction
       Category = 'Actions'
       Caption = 'Reverse Rendering Order'
-      OnExecute = ACReverseRenderingOrderExecute
+      OnExecute = acReverseRenderingOrderExecute
     end
-    object ACConvertToIndexedTriangles: TAction
+    object acConvertToIndexedTriangles: TAction
       Category = 'Actions'
       Caption = 'Convert to Indexed Triangles'
-      OnExecute = ACConvertToIndexedTrianglesExecute
+      OnExecute = acConvertToIndexedTrianglesExecute
     end
-    object ACFPS: TAction
-      Category = 'Options'
-      Caption = 'Show Frames Per Second'
-      OnExecute = ACFPSExecute
-    end
-    object ACSaveTextures: TAction
-      Category = 'File'
-      Caption = 'Save textures...'
-      Enabled = False
-      OnExecute = ACSaveTexturesExecute
-    end
-    object ACOptimize: TAction
-      Category = 'Actions'
-      Caption = 'Optimize Mesh'
-      OnExecute = ACOptimizeExecute
-    end
-    object ACStripify: TAction
-      Category = 'Actions'
-      Caption = 'Stripify'
-      OnExecute = ACStripifyExecute
-    end
-    object ACLighting: TAction
-      Category = 'Options'
+    object acLighting: TAction
+      Category = 'Tools'
       Caption = 'Lighting'
       Checked = True
       ImageIndex = 12
-      OnExecute = ACLightingExecute
+      OnExecute = acLightingExecute
+    end
+    object acFPS: TAction
+      Category = 'Tools'
+      Caption = 'Show Frames Per Second'
+      OnExecute = acFPSExecute
+    end
+    object acSaveTextures: TAction
+      Category = 'File'
+      Caption = 'Save textures...'
+      Enabled = False
+      OnExecute = acSaveTexturesExecute
+    end
+    object acOptimize: TAction
+      Category = 'Actions'
+      Caption = 'Optimize Mesh'
+      OnExecute = acOptimizeExecute
+    end
+    object acStripify: TAction
+      Category = 'Actions'
+      Caption = 'Stripify'
+      OnExecute = acStripifyExecute
+    end
+    object acShowAxes: TAction
+      Category = 'View'
+      Caption = 'Show Axes'
+      OnExecute = acShowAxesExecute
     end
   end
   object ImageList: TImageList
-    Left = 8
-    Top = 64
+    Left = 120
+    Top = 168
     Bitmap = {
       494C01010D000E00080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
@@ -1000,7 +1132,7 @@ object Main: TMain
       000000000000}
   end
   object GLScene: TGLScene
-    Left = 112
+    Left = 32
     Top = 32
     object DCTarget: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -1042,31 +1174,10 @@ object Main: TMain
       SpotDirection.Coordinates = {3ACD133F3ACD133F3ACD133F00000000}
     end
   end
-  object OpenDialog: TOpenDialog
-    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 112
-    Top = 120
-  end
   object GLMaterialLibrary: TGLMaterialLibrary
     OnTextureNeeded = GLMaterialLibraryTextureNeeded
-    Left = 160
+    Left = 120
     Top = 32
-  end
-  object ColorDialog: TColorDialog
-    Color = 14540253
-    Options = [cdFullOpen, cdAnyColor]
-    Left = 160
-    Top = 120
-  end
-  object OpenPictureDialog: TOpenPictureDialog
-    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 160
-    Top = 152
-  end
-  object SaveDialog: TSaveDialog
-    Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 80
-    Top = 120
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
@@ -1074,30 +1185,16 @@ object Main: TMain
     Mode = cmApplicationIdle
     OnProgress = GLCadencerProgress
     Left = 40
-    Top = 64
+    Top = 88
   end
   object Timer: TTimer
     Enabled = False
     OnTimer = TimerTimer
-    Left = 72
-    Top = 64
+    Left = 328
+    Top = 32
   end
   object GLLightmapLibrary: TGLMaterialLibrary
-    Left = 160
-    Top = 64
-  end
-  object SDTextures: TSaveDialog
-    DefaultExt = 'glml'
-    Filter = 'GLScene Material Library (*.glml)|*.glml|All files (*.*)|*.*'
-    Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 80
-    Top = 152
-  end
-  object ODTextures: TOpenDialog
-    DefaultExt = 'glml'
-    Filter = 'GLScene Material Library (*.glml)|*.glml|All files (*.*)|*.*'
-    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 112
-    Top = 152
+    Left = 120
+    Top = 88
   end
 end
