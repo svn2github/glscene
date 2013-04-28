@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 106
   Top = 75
-  Width = 808
-  Height = 513
-  Caption = 'Form1'
+  Caption = 'Blur Advanced'
+  ClientHeight = 469
+  ClientWidth = 800
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,20 +17,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 464
-    Height = 475
+    Width = 472
+    Height = 469
     Camera = GLCamera1
     Buffer.BackgroundColor = 4333056
-    FieldOfView = 155.675598144531300000
+    FieldOfView = 155.927307128906300000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 464
+    Left = 472
     Top = 0
     Width = 328
-    Height = 475
+    Height = 469
     Align = alRight
     Caption = ' '
     TabOrder = 1
@@ -41,32 +41,32 @@ object Form1: TForm1
       Height = 225
     end
     object Label1: TLabel
-      Left = 24
+      Left = 16
       Top = 51
       Width = 91
       Height = 13
       Caption = 'AdvancedBlurAmp:'
     end
     object Label2: TLabel
-      Left = 28
+      Left = 16
       Top = 203
-      Width = 103
+      Width = 109
       Height = 13
-      Caption = 'AdvancedBlurPasses:'
+      Caption = 'Advanced blur Passes:'
     end
     object Label3: TLabel
-      Left = 24
+      Left = 16
       Top = 83
-      Width = 108
+      Width = 114
       Height = 13
-      Caption = 'AdvancedBlurHiClamp:'
+      Caption = 'Advanced blur HiClamp:'
     end
     object Label4: TLabel
-      Left = 24
+      Left = 16
       Top = 139
-      Width = 110
+      Width = 116
       Height = 13
-      Caption = 'AdvancedBlurLoClamp:'
+      Caption = 'Advanced blur LoClamp:'
     end
     object Label5: TLabel
       Left = 16
@@ -80,6 +80,13 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+    end
+    object LabelFPS: TLabel
+      Left = 224
+      Top = 51
+      Width = 18
+      Height = 13
+      Caption = 'FPS'
     end
     object edtAdvancedBlurAmp: TEdit
       Left = 121
@@ -127,7 +134,8 @@ object Form1: TForm1
         'Explanation:'
         'Only visible objects inside GLBlur1.TargetObject '
         '(GLDummyCube1 and its children) are internally rendered '
-        'to a texture, and then this texture is blurred and displayed '
+        'to a texture, and then this texture is blurred and '
+        'displayed '
         'over all objects.'
         ''
         'The Sphere:'
@@ -139,7 +147,8 @@ object Form1: TForm1
         'does not occlude the objects behind it.'
         ''
         'The Torus: '
-        'The Torus instead looks like it should: it seems to cover the '
+        'The Torus instead looks like it should: it seems to cover '
+        'the '
         'blur coming from objects behind it.'
         'This works works because the when the blur TargetObject '
         'is rendered in the texture, the TorusImpostor is rendered '
@@ -151,7 +160,8 @@ object Form1: TForm1
         'events).'
         'For this reason the TorusImpostor is not visible when the '
         'normal scene is rendered( saving CPU and GPU).'
-        'Also note that the TorusImpostor has lower resolution (less '
+        'Also note that the TorusImpostor has lower resolution '
+        '(less '
         'sides) since it is only needed to occlude objects behind it.')
       ScrollBars = ssVertical
       TabOrder = 4
@@ -722,6 +732,7 @@ object Form1: TForm1
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFF}
       Material.Texture.Disabled = False
+      Rotation = 0.000000000000000000
       Blur = bAdvanced
       RenderWidth = 64
       RenderHeight = 64
@@ -750,8 +761,8 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 40
-    Top = 64
+    Left = 128
+    Top = 32
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
@@ -763,16 +774,21 @@ object Form1: TForm1
       item
         Name = 'matCube'
         Tag = 0
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'beigemarble.jpg'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end
       item
         Name = 'matAnnulus'
         Tag = 0
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'moon.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 40
-    Top = 128
+    TexturePaths = '..\..\..\..\media'
+    Left = 224
+    Top = 32
   end
 end

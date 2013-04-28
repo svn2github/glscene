@@ -8,7 +8,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,GLWin32Viewer, GLScene, GLObjects, GLHUDObjects,
-  GLGeomObjects, GLCadencer, ExtCtrls, glBlur, GLTexture,JPEG, ComCtrls,
+  GLGeomObjects, GLCadencer, ExtCtrls, glBlur, GLTexture, JPEG, ComCtrls,
   StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
 
 type
@@ -39,6 +39,7 @@ type
     TorusImpostor: TGLTorus;
     Memo1: TMemo;
     GLTorus2: TGLTorus;
+    LabelFPS: TLabel;
     procedure Timer1Timer(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
@@ -70,14 +71,14 @@ uses
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-     SetGLSceneMediaDir();
-     // Blur GLDummyCube1and it's children
-     GLBlur1.TargetObject:=GLDummyCube1;
-     // point to GLDummyCube1
-     GLCamera1.TargetObject:=GLDummyCube1;
-     // load materials
-     GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
-     GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('moon.bmp');
+  SetGLSceneMediaDir();
+  // Blur GLDummyCube1and it's children
+  GLBlur1.TargetObject:=GLDummyCube1;
+  // point to GLDummyCube1
+  GLCamera1.TargetObject:=GLDummyCube1;
+  // load materials
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+  GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('moon.bmp');
 end;
 
 
@@ -101,17 +102,17 @@ end;
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-     if (ssRight in Shift) and (y>10) then
-        GLCamera1.AdjustDistanceToTarget(my/y);
+     if (ssRight in Shift) and (Y > 10) then
+        GLCamera1.AdjustDistanceToTarget(my/Y);
      if ssLeft in Shift then
-        GLCamera1.MoveAroundTarget(my-y,mx-x);
-     mx:=x;
-     my:=y;
+        GLCamera1.MoveAroundTarget(my-Y,mx-X);
+     mx:=X;
+     my:=Y;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-     caption :=GLSceneViewer1.FramesPerSecondText(0);
+     LabelFPS.Caption :=GLSceneViewer1.FramesPerSecondText(0);
      GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
