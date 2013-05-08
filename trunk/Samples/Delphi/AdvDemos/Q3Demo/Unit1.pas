@@ -1,8 +1,3 @@
-{
-Demo for loading and controlling a Quake 3 model
-
-By Stuart Gooding and Marcus Oblak (aka MRQZZZ)
-}
 unit Unit1;
 
 interface
@@ -339,7 +334,7 @@ begin
   //
   for j:=0 to 3 do
     for i:=0 to 3 do
-      Result[i][j]:=m1[i][j]+(m2[i][j]-m1[i][j])*delta;
+      Result.V[i].V[j]:=m1.V[i].V[j]+(m2.V[i].V[j]-m1.V[i].V[j])*delta;
 end;
 
 procedure TForm1.ComboSkinChange(Sender: TObject);

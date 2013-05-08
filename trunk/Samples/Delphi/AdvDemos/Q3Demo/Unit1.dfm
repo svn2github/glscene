@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 35
-  Top = 37
-  Width = 725
-  Height = 539
+  Left = 196
+  Top = 143
   Caption = 'Quake3 Actor Demo'
+  ClientHeight = 495
+  ClientWidth = 717
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 709
+    Width = 717
     Height = 73
     Align = alTop
     TabOrder = 0
@@ -64,7 +64,6 @@ object Form1: TForm1
       Width = 169
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 0
       OnChange = ComboBox1Change
     end
@@ -74,7 +73,6 @@ object Form1: TForm1
       Width = 145
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 1
       OnChange = ComboBox2Change
     end
@@ -119,7 +117,6 @@ object Form1: TForm1
       Top = 36
       Width = 85
       Height = 21
-      ItemHeight = 13
       TabOrder = 6
       Text = 'Default'
       OnChange = ComboSkinChange
@@ -132,12 +129,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 73
-    Width = 709
-    Height = 428
+    Width = 717
+    Height = 422
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 56.293563842773440000
+    FieldOfView = 55.623294830322270000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -182,17 +179,17 @@ object Form1: TForm1
             object GunSmoke: TGLDummyCube
               CubeSize = 1.000000000000000000
               EffectsData = {
-                0201061254474C536F7572636550465845666665637402010617474C506F696E
-                744C696768745046584D616E6167657231050000000000000080FF3F02060200
-                08020008020008050000000000CDCCCCFA3F050000000000CDCCCCFA3F050000
-                000000CDCCCCFA3F02000200090500000000000000000000080200}
+                0458434F4C02010201061254474C536F75726365504658456666656374020202
+                001200000000020002000617474C506F696E744C696768745046584D616E6167
+                657231050000000000000080FF3F0206020008020008020008050000000000CD
+                CCCCFA3F050000000000CDCCCCFA3F050000000000CDCCCCFA3F020002000905
+                00000000000000000000080200}
             end
           end
         end
       end
     end
     object GLShadowPlane1: TGLShadowPlane
-      Material.DepthProperties.DepthWrite = False
       Position.Coordinates = {0000000000000000000080BF0000803F}
       Height = 10.000000000000000000
       Width = 10.000000000000000000

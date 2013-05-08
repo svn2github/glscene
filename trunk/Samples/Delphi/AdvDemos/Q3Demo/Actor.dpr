@@ -1,3 +1,8 @@
+{
+Demo for loading and controlling a Quake 3 model
+By Stuart Gooding and Marcus Oblak (aka MRQZZZ)
+}
+
 program Actor;
 
 uses
