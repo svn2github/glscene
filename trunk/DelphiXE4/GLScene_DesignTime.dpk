@@ -1,0 +1,55 @@
+package GLScene_DesignTime;
+
+{$R *.res}
+{$R *.otares}
+{$R '..\Source\GLSceneObjects.dcr'}
+{$R '..\Source\GLSceneVCL.dcr'}
+{$R '..\Source\nonGLSceneVCL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$LIBSUFFIX 'XE4'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  GLScene_RunTime,
+  vclimg,
+  vcl,
+  VclSmp;
+
+contains
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
+  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
+  RegisterXCollection in '..\Source\RegisterXCollection.pas',
+  FShaderMemo in '..\Source\FShaderMemo.pas',
+  GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {layouts_form};
+
+end.
+

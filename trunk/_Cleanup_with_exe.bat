@@ -27,8 +27,8 @@ echo _
 attrib +R "AdvDemos/Q3Demo/Model/animation.cfg"
 attrib +R "Source/DesignTime/Resources/lazres.exe"
 
-del *.exe /s
-del *.cfg /s
+rem del *.exe /s
+rem del *.cfg /s
 
 attrib -R "AdvDemos/Q3Demo/Model/animation.cfg"
 attrib -R "Source/DesignTime/Resources/lazres.exe"
