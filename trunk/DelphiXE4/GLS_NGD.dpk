@@ -1,7 +1,6 @@
 package GLS_NGD;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneVCLNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}

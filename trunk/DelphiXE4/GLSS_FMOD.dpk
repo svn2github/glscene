@@ -1,7 +1,6 @@
 package GLSS_FMOD;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneVCLFMod.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}

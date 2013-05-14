@@ -1,7 +1,6 @@
 package GLCg_DesignTime;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneVCLCg.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}

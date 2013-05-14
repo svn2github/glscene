@@ -1,7 +1,6 @@
 package GLScene_DesignTime;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneObjects.dcr'}
 {$R '..\Source\GLSceneVCL.dcr'}
 {$R '..\Source\nonGLSceneVCL.dcr'}

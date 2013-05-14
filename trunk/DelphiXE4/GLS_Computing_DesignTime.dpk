@@ -1,7 +1,6 @@
 package GLS_Computing_DesignTime;
 
 {$R *.res}
-{$R *.otares}
 {$R '..\Source\GLSceneVCLCUDA.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
