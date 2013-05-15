@@ -258,7 +258,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses FMain, GLTexture, dynodegl, GLParticleFX, GLSound, GLUtils;
+uses FMain, GLTexture, odegl, GLParticleFX, GLSound, GLUtils;
 
 // ParseTheBallMap
 //
@@ -397,12 +397,12 @@ end;
 procedure TTBTableText.Parse(const vals : TStringList);
 begin
    inherited;
-   FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
-   FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.01);
-   FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
-   FOrientation[0]:=StrToFloatDef(vals.Values['OX'], 1);
-   FOrientation[1]:=StrToFloatDef(vals.Values['OY'], 0);
-   FOrientation[2]:=StrToFloatDef(vals.Values['OZ'], 0);
+   FPosition.X:=StrToFloatDef(vals.Values['X'], 0);
+   FPosition.Y:=StrToFloatDef(vals.Values['Y'], 0.01);
+   FPosition.Z:=StrToFloatDef(vals.Values['Z'], 0);
+   FOrientation.X:=StrToFloatDef(vals.Values['OX'], 1);
+   FOrientation.Y:=StrToFloatDef(vals.Values['OY'], 0);
+   FOrientation.Z:=StrToFloatDef(vals.Values['OZ'], 0);
    NormalizeVector(FOrientation);
    FSize:=StrToFloatDef(vals.Values['Size'], 1)*0.01;
    FColor:=StrToIntDef(vals.Values['Color'], 0);
@@ -454,12 +454,12 @@ end;
 procedure TTBCubeArea.Parse(const vals : TStringList);
 begin
    inherited;
-   FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
-   FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.5);
-   FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
-   FSize[0]:=StrToFloatDef(vals.Values['SX'], 1);
-   FSize[1]:=StrToFloatDef(vals.Values['SY'], 1);
-   FSize[2]:=StrToFloatDef(vals.Values['SZ'], 1);
+   FPosition.X:=StrToFloatDef(vals.Values['X'], 0);
+   FPosition.Y:=StrToFloatDef(vals.Values['Y'], 0.5);
+   FPosition.Z:=StrToFloatDef(vals.Values['Z'], 0);
+   FSize.X:=StrToFloatDef(vals.Values['SX'], 1);
+   FSize.Y:=StrToFloatDef(vals.Values['SY'], 1);
+   FSize.Z:=StrToFloatDef(vals.Values['SZ'], 1);
 end;
 
 // Instantiate
@@ -542,12 +542,12 @@ begin
 
    for i:=1 to FNB do begin
       spike:=TGLCone(FDummy.AddNewChild(TGLCone));
-      spike.Height:=(Random*0.4+0.6)*FSize[1];
-      spike.Position.X:=(Random-0.5)*2*FSize[0];
+      spike.Height:=(Random*0.4+0.6)*FSize.Y;
+      spike.Position.X:=(Random-0.5)*2*FSize.X;
       spike.Position.Y:=spike.Height*0.5;
-      spike.Position.Z:=(Random-0.5)*2*FSize[2];
+      spike.Position.Z:=(Random-0.5)*2*FSize.Z;
       spike.Parts:=[coSides];
-      spike.BottomRadius:=0.1*VectorLength(FSize[0], FSize[1]);
+      spike.BottomRadius:=0.1*VectorLength(FSize.X, FSize.Y);
       spike.Stacks:=1;
       spike.Slices:=Random(4)+6;
       spike.Material.MaterialLibrary:=main.MaterialLibrary;
@@ -658,8 +658,8 @@ begin
    FPlane:=TGLPlane(ParentObject.AddNewChild(TGLPlane));
    FPlane.Direction.AsVector:=YHmgVector;
    FPlane.Position.AsAffineVector:=Position;
-   FPlane.Width:=FSize[0];
-   FPlane.Height:=FSize[2];
+   FPlane.Width:=FSize.X;
+   FPlane.Height:=FSize.Z;
    FPlane.Material.MaterialLibrary:=Main.MaterialLibrary;
    FPlane.Material.LibMaterialName:='chrome';
 
@@ -691,9 +691,9 @@ begin
    if t<=FTimeOn then begin
       src.ParticleInterval:=0.03;
       v:=FPlane.AbsoluteToLocal(Main.DCBallAbsolute.Position.AsVector);
-      if (Abs(v[0])<FSize[0]) and (Abs(v[1])<FSize[2]) and (v[2]>=0) then begin
-         if v[2]<FStrength*0.3 then
-            Main.verticalForce:=Main.verticalForce+FStrength*(1-(v[2]/(FStrength*0.3)))*0.7;
+      if (Abs(v.X)<FSize.X) and (Abs(v.Y)<FSize.Z) and (v.Z>=0) then begin
+         if v.Z<FStrength*0.3 then
+            Main.verticalForce:=Main.verticalForce+FStrength*(1-(v.Z/(FStrength*0.3)))*0.7;
       end;
    end else src.ParticleInterval:=0.5;
 end;
@@ -804,12 +804,12 @@ procedure TTBBlock.Instantiate;
 begin
    FBlock:=TGLCube(ParentObject.AddNewChild(TGLCube));
    FBlock.Position.AsAffineVector:=FPosition;
-   FBlock.CubeWidth:=FSize[0];
-   FBlock.CubeHeight:=FSize[1];
-   FBlock.CubeDepth:=FSize[2];
+   FBlock.CubeWidth:=FSize.X;
+   FBlock.CubeHeight:=FSize.Y;
+   FBlock.CubeDepth:=FSize.Z;
    FBlock.Parts:=FBlock.Parts-[cpBottom];
 
-   FBlockGeom:=dCreateBox(Main.space, FSize[0], FSize[1], FSize[2]);
+   FBlockGeom:=dCreateBox(Main.space, FSize.X, FSize.Y, FSize.Z);
    CopyPosFromGeomToGL(FBlockGeom, FBlock);
 end;
 

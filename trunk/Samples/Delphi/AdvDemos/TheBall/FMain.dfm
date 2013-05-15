@@ -1,13 +1,13 @@
 object Main: TMain
   Left = 213
   Top = 107
-  Width = 545
-  Height = 435
   Caption = 'Main'
+  ClientHeight = 388
+  ClientWidth = 527
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -14
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
@@ -15,25 +15,29 @@ object Main: TMain
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   OnResize = FormResize
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 120
+  TextHeight = 16
   object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 529
-    Height = 397
+    Width = 527
+    Height = 388
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Camera = Camera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 151.723861694335900000
+    FieldOfView = 151.095138549804700000
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseUp = SceneViewerMouseUp
     TabOrder = 0
   end
   object Scene: TGLScene
-    Left = 8
+    Left = 40
     Top = 8
     object SkyDome: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -66,6 +70,13 @@ object Main: TMain
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {2B87163F2B87163F2B87163F00000000}
         Material.BlendingMode = bmTransparency
+        Material.Texture.ImageClassName = 'TGLBlankImage'
+        Material.Texture.Image.Width = 64
+        Material.Texture.Image.Height = 64
+        Material.Texture.Image.ColorFormat = 6408
+        Material.Texture.MagFilter = maNearest
+        Material.Texture.MinFilter = miNearest
+        Material.Texture.Compression = tcNone
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {000000000AD723BC000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
@@ -128,6 +139,13 @@ object Main: TMain
           object ALStart: TGLArrowLine
             Material.FrontProperties.Emission.Color = {F0A7463FF0A7463F000000000000803F}
             Material.BlendingMode = bmTransparency
+            Material.Texture.ImageClassName = 'TGLBlankImage'
+            Material.Texture.Image.Width = 64
+            Material.Texture.Image.Height = 64
+            Material.Texture.Image.ColorFormat = 6408
+            Material.Texture.MagFilter = maNearest
+            Material.Texture.MinFilter = miNearest
+            Material.Texture.Compression = tcNone
             Direction.Coordinates = {00000000000080BF0000000000000000}
             Position.Coordinates = {000080BF000040400000803F0000803F}
             Up.Coordinates = {00000000000000000000803F00000000}
@@ -709,6 +727,7 @@ object Main: TMain
         Visible = False
         Width = 5.000000000000000000
         Height = 5.000000000000000000
+        Rotation = 0.000000000000000000
       end
     end
     object DCBallLag: TGLDummyCube
@@ -718,12 +737,14 @@ object Main: TMain
       Visible = False
       BitmapFont = WindowsBitmapFont
       Text = 'You'#39've fallen into the pit of Doom!'
+      Rotation = 0.000000000000000000
       Alignment = taCenter
       Layout = tlCenter
       ModulateColor.Color = {0000000000000000000000000000803F}
       object HUDText2: TGLHUDText
         BitmapFont = WindowsBitmapFont
         Text = 'You'#39've fallen into the pit of Doom!'
+        Rotation = 0.000000000000000000
         Alignment = taCenter
         Layout = tlCenter
       end
@@ -734,9 +755,11 @@ object Main: TMain
       Position.Coordinates = {000070420000B041000000000000803F}
       Width = 100.000000000000000000
       Height = 24.000000000000000000
+      Rotation = 0.000000000000000000
       object HTTimer: TGLHUDText
         Position.Coordinates = {0000704100002041000000000000803F}
         BitmapFont = WindowsBitmapFont
+        Rotation = 0.000000000000000000
         ModulateColor.Color = {0000803F0000803F000000000000803F}
       end
     end
@@ -751,6 +774,7 @@ object Main: TMain
     Materials = <
       item
         Name = 'theball'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {CDCCCC3ECDCCCC3ECDCCCC3E0000803F}
@@ -764,10 +788,10 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'marbleblock'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {9A99993E9A99993E9A99993E0000803F}
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D616765D10A0000FFD8FFE000104A46494600010101006400
@@ -860,10 +884,10 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingTCoordinates.Coordinates = {00000000000000000000000000000000}
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'chrome'
+        Tag = 0
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
@@ -1807,10 +1831,10 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingMode = tmmCubeMapReflection
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'glassblock'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3F0000803FCDCCCC3D}
         Material.BlendingMode = bmTransparency
         Material.Texture.Image.Picture.Data = {
@@ -2753,10 +2777,10 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingMode = tmmSphere
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'wood'
+        Tag = 0
         Material.FrontProperties.Emission.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D61676553240000FFD8FFE000104A46494600010101004800
@@ -3053,22 +3077,21 @@ object Main: TMain
           FFD9}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Tag = 0
       end>
-    Left = 40
+    Left = 120
     Top = 8
   end
   object Cadencer: TGLCadencer
     Scene = Scene
     FixedDeltaTime = 0.001000000000000000
     OnProgress = CadencerProgress
-    Left = 72
-    Top = 8
+    Left = 40
+    Top = 56
   end
   object Timer: TTimer
     OnTimer = TimerTimer
-    Left = 8
-    Top = 40
+    Left = 440
+    Top = 128
   end
   object WindowsBitmapFont: TGLWindowsBitmapFont
     Font.Charset = ANSI_CHARSET
@@ -3076,8 +3099,8 @@ object Main: TMain
     Font.Height = -19
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Left = 40
-    Top = 40
+    Left = 304
+    Top = 8
   end
   object PFXExit: TGLPointLightPFXManager
     Cadencer = Cadencer
@@ -3098,7 +3121,7 @@ object Main: TMain
         SizeScale = 1.000000000000000000
       end>
     Left = 40
-    Top = 96
+    Top = 112
   end
   object PFXFire: TGLPointLightPFXManager
     Cadencer = Cadencer
@@ -3114,8 +3137,8 @@ object Main: TMain
         LifeTime = 1.000000000000000000
         SizeScale = 1.000000000000000000
       end>
-    Left = 72
-    Top = 96
+    Left = 104
+    Top = 112
   end
   object GLSMBASS: TGLSMBASS
     Active = True
@@ -3128,8 +3151,8 @@ object Main: TMain
     DistanceFactor = 0.100000001490116100
     RollOffFactor = 0.100000001490116100
     Algorithm3D = algFull
-    Left = 72
-    Top = 40
+    Left = 440
+    Top = 64
     Doppler = 0.100000001490116100
   end
   object SoundLibrary: TGLSoundLibrary
@@ -4489,8 +4512,8 @@ object Main: TMain
           2F2F7777772E676F6C64776176652E636F6D0000494352440B00000031393938
           2D30362D3138000049454E470400000072617900}
       end>
-    Left = 128
-    Top = 24
+    Left = 440
+    Top = 8
   end
   object PFXSteam: TGLPolygonPFXManager
     Cadencer = Cadencer
@@ -4509,7 +4532,7 @@ object Main: TMain
         LifeTime = 1.000000000000000000
         SizeScale = 1.000000000000000000
       end>
-    Left = 72
-    Top = 136
+    Left = 40
+    Top = 168
   end
 end
