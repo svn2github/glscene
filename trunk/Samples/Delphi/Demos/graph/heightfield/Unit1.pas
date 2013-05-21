@@ -74,7 +74,8 @@ begin
    // start with first formula
    HeightField1.OnGetHeight:=Formula1;
    // no per-vertex coloring
-   ComboBox1.ItemIndex:=0;
+   ComboBox1.ItemIndex:=1; //emission
+   ComboBox1Change(Sender);
 end;
 
 procedure TForm1.Formula1(const x, y: Single; var z: Single;

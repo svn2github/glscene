@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 94
   BorderWidth = 4
   Caption = 'Height Field'
-  ClientHeight = 388
-  ClientWidth = 483
+  ClientHeight = 380
+  ClientWidth = 475
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,21 +20,21 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 316
-    Height = 388
+    Width = 308
+    Height = 380
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 115.339630126953100000
+    FieldOfView = 114.004592895507800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 316
+    Left = 308
     Top = 0
     Width = 167
-    Height = 388
+    Height = 380
     Align = alRight
     TabOrder = 1
     object Label1: TLabel
@@ -165,6 +165,7 @@ object Form1: TForm1
     Top = 24
     object HeightField1: TGLHeightField
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
+      Scale.Coordinates = {00004040000040400000404000000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       XSamplingScale.Min = -1.000000000000000000
       XSamplingScale.Max = 1.000000000000000000

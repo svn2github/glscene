@@ -23,18 +23,21 @@ type
     TBXYPosition: TTrackBar;
     TBYZPosition: TTrackBar;
     TBXZPosition: TTrackBar;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure CBCenteredClick(Sender: TObject);
     procedure TBXYPositionChange(Sender: TObject);
-    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
-      var color: TVector4f; var texPoint: TTexPoint);
     procedure TBYZPositionChange(Sender: TObject);
     procedure TBXZPositionChange(Sender: TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
+      var Color: TVector4f; var TexPoint: TTexPoint);
   private
     { Private declarations }
   public
@@ -52,8 +55,8 @@ implementation
 procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
   var color: TVector4f; var texPoint: TTexPoint);
 begin
-   Z:=VectorNorm(x, y);
-   Z:=cos(z*12)/(2*(z*6.28+1));
+   z:=VectorNorm(x, y);
+   z:=cos(z*12)/(2*(z*6.28+1));
 end;
 
 procedure TForm1.CBCenteredClick(Sender: TObject);
@@ -61,9 +64,11 @@ begin
    if CBCentered.Checked then begin
       XZGrid.YSamplingScale.Origin:=0;
       YZGrid.XSamplingScale.Origin:=0;
+      XYGrid.ZSamplingScale.Origin:=0;
    end else begin
       XZGrid.YSamplingScale.Origin:=-1;
       YZGrid.XSamplingScale.Origin:=-1;
+      XYGrid.ZSamplingScale.Origin:=-1;
    end;
 end;
 
@@ -71,8 +76,6 @@ procedure TForm1.TBXYPositionChange(Sender: TObject);
 begin
    XYGrid.ZSamplingScale.Origin:=-(TBXYPosition.Position/10);
 end;
-
-
 
 procedure TForm1.TBYZPositionChange(Sender: TObject);
 begin
