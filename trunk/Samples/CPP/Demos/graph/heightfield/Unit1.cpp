@@ -22,6 +22,17 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+   // start with first formula
+   HeightField1->OnGetHeight = Formula1;
+   // no per-vertex coloring
+   ComboBox1->ItemIndex = 1;
+   ComboBox1Change(Sender);
+}
+
+//---------------------------------------------------------------------------
 void __fastcall TForm1::Formula1(const float x, const float y, float &z,
 		  TVector4f &color, TTexPoint &texPoint)
 { // first formula
@@ -30,6 +41,7 @@ void __fastcall TForm1::Formula1(const float x, const float y, float &z,
    VectorLerp(clrBlue, clrRed, (z+1)/2, color);
 }
 
+//---------------------------------------------------------------------------
 void __fastcall TForm1::Formula2(const float x, const float y, float &z,
 		  TVector4f &color, TTexPoint &texPoint)
 {
@@ -38,6 +50,7 @@ void __fastcall TForm1::Formula2(const float x, const float y, float &z,
    VectorLerp(clrBlue, clrRed, (z+1)/2, color);
 }
 
+//---------------------------------------------------------------------------
 void __fastcall TForm1::Formula3(const float x, const float y, float &z,
 		  TVector4f &color, TTexPoint &texPoint)
 {
@@ -49,14 +62,6 @@ void __fastcall TForm1::Formula3(const float x, const float y, float &z,
 	  color=clrYellow;
 }
 
-//---------------------------------------------------------------------------
-void __fastcall TForm1::FormCreate(TObject *Sender)
-{
-   // start with first formula
-   HeightField1->OnGetHeight = Formula1;
-   // no per-vertex coloring
-   ComboBox1->ItemIndex = 0;
-}
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::Sphere1Progress(TObject *Sender, const double deltaTime, const double newTime)
@@ -110,8 +115,8 @@ void __fastcall TForm1::TrackBar2Change(TObject *Sender)
 void __fastcall TForm1::TrackBar3Change(TObject *Sender)
 {
    // adjust grid steps (resolution)
-  HeightField1->XSamplingScale->Step = TrackBar3->Position/1000;
-  HeightField1->YSamplingScale->Step = TrackBar3->Position/1000;
+  HeightField1->XSamplingScale->Step = (float)TrackBar3->Position/1000;
+  HeightField1->YSamplingScale->Step = (float)TrackBar3->Position/1000;
 }
 
 //---------------------------------------------------------------------------
@@ -166,4 +171,12 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
 //---------------------------------------------------------------------------
 
 
+
+void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled)
+{
+  GLCamera1->
+   AdjustDistanceToTarget(Power(1.1, (float)((float)WheelDelta / 120.0)));
+}
+//---------------------------------------------------------------------------
 

@@ -92,9 +92,6 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <ItemGroup>
-        <PCHCompile Include="C:\Documents and Settings\Администратор.OBSNILGIT\Мои документы\RAD Studio\Projects\fxyPCH1.h">
-            <BuildOrder>1</BuildOrder>
-        </PCHCompile>
         <CppCompile Include="fxy.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>

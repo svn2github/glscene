@@ -9,12 +9,52 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-int mx, my;
-
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
 }
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Formula0(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint)
+{
+   // 0ro formula
+   z = VectorNorm(x, y);
+   z = x*y;
+   VectorLerp(clrBlue, clrRed, (z+1)/2, color);
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Formula1(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint)
+{
+	// 1st formula
+   z = VectorNorm(x, y);
+   z = x*y*z;
+  // z = (x*x)*(y*y);
+   VectorLerp(clrBlue, clrRed, (z+1)/2, color);
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Formula2(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint)
+{
+   // 2nd formula
+  z = VectorNorm(x, y);
+  z = sin(z*12)/(2*(z*6.28+1));
+   VectorLerp(clrBlue, clrRed, (z+1)/2, color);
+}
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::Formula3(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint)
+{
+   // 3rd formula
+   z = VectorNorm(x, y);
+   z = (pow(x,2) + pow(y,2)) * sin(8*atan2(x,y));
+   VectorLerp(clrBlue, clrRed, (z+1)/2, color);
+}
+
 
 //---------------------------------------------------------------------------
 
@@ -83,4 +123,27 @@ void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int W
   GLCamera1->
    AdjustDistanceToTarget(Power(1.1, (float)((float)WheelDelta / 120.0)));
 }
+
 //---------------------------------------------------------------------------
+
+
+
+void __fastcall TForm1::RadioGroup1Click(TObject *Sender)
+{
+  switch (RadioGroup1->ItemIndex) {
+	 case 0: GLHeightField1->OnGetHeight = Formula0; break;
+	 case 1: GLHeightField1->OnGetHeight = Formula1; break;
+	 case 2: GLHeightField1->OnGetHeight = Formula2; break;
+	 case 3: GLHeightField1->OnGetHeight = Formula3; break;
+   default:
+	  ;
+  }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+  RadioGroup1Click(Sender);
+}
+//---------------------------------------------------------------------------
+

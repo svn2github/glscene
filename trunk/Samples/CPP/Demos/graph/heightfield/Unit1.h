@@ -3,6 +3,7 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <tchar.h>
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -58,6 +59,8 @@ __published:	// IDE-managed Components
 	void __fastcall RadioGroup1Click(TObject *Sender);
 	void __fastcall CheckBox2Click(TObject *Sender);
 	void __fastcall Timer1Timer(TObject *Sender);
+	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled);
 
 private:	// User declarations
 	int mx,my;

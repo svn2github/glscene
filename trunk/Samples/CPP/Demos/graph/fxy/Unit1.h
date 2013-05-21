@@ -36,6 +36,7 @@ __published:                   // IDE-managed Components
 	TTrackBar *TrackBar3;
 	TLabel *Label1;
 	TCheckBox *CheckBox1;
+	TRadioGroup *RadioGroup1;
   void __fastcall CheckBox1Click(TObject * Sender);
   void __fastcall TrackBar1Change(TObject * Sender);
   void __fastcall GLSceneViewer1MouseDown(TObject * Sender, TMouseButton Button,
@@ -46,7 +47,19 @@ __published:                   // IDE-managed Components
 	void __fastcall TrackBar3Change(TObject *Sender);
 	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled);
+	void __fastcall RadioGroup1Click(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
 private:                       // User declarations
+	int mx,my;
+	void __fastcall Formula0(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint);
+	void __fastcall Formula1(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint);
+	void __fastcall Formula2(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint);
+	void __fastcall Formula3(const float x, const float y, float &z,
+		  TVector4f &color, TTexPoint &texPoint);
+
 public:                        // User declarations
     __fastcall TForm1(TComponent * Owner);
 };

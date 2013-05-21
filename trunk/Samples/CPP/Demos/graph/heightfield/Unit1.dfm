@@ -11,7 +11,9 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -162,6 +164,7 @@ object Form1: TForm1
     Top = 24
     object HeightField1: TGLHeightField
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
+      Scale.Coordinates = {00004040000040400000404000000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       XSamplingScale.Min = -1.000000000000000000
       XSamplingScale.Max = 1.000000000000000000
