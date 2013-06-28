@@ -7,6 +7,7 @@
 
  <b>History :</b><font size=-1><ul>
 
+      <li>28/06/13 - YP - Added support for vector color
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>11/07/12 - YP - Added BarycenterPosition and BarycenterOffset
                           New centering option macRestorePosition
@@ -6858,6 +6859,7 @@ var
   vertexPool: PAffineVectorArray;
   normalPool: PAffineVectorArray;
   texCoordPool: PAffineVectorArray;
+  colorPool: PVectorArray;
   normalIdxList, texCoordIdxList, vertexIdxList: PIntegerVector;
 begin
   Assert(((TexCoordIndices.Count = 0) or (VertexIndices.Count <=
@@ -6866,6 +6868,7 @@ begin
       NormalIndices.Count)));
   vertexPool := Owner.Owner.Vertices.List;
   normalPool := Owner.Owner.Normals.List;
+  colorPool := Owner.Owner.Colors.List;
   texCoordPool := Owner.Owner.TexCoords.List;
   case Mode of
     fgmmTriangles, fgmmFlatTriangles: GL.Begin_(GL_TRIANGLES);
@@ -6883,23 +6886,17 @@ begin
     texCoordIdxList := TexCoordIndices.List
   else
     texCoordIdxList := vertexIdxList;
-  if Assigned(texCoordPool) then
+
+  for i := 0 to VertexIndices.Count - 1 do
   begin
-    for i := 0 to VertexIndices.Count - 1 do
-    begin
-      GL.Normal3fv(@normalPool[normalIdxList^[i]]);
+    GL.Normal3fv(@normalPool[normalIdxList^[i]]);
+    if Assigned(colorPool) then
+      GL.Color4fv(@colorPool[vertexIdxList^[i]]);
+    if Assigned(texCoordPool) then
       xgl.TexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
-      GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
-    end;
-  end
-  else
-  begin
-    for i := 0 to VertexIndices.Count - 1 do
-    begin
-      GL.Normal3fv(@normalPool[normalIdxList^[i]]);
-      GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
-    end;
+    GL.Vertex3fv(@vertexPool[vertexIdxList^[i]]);
   end;
+
   GL.End_;
 end;
 

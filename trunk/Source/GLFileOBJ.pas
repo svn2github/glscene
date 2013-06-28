@@ -10,6 +10,7 @@
 
  <b>History : </b><font size=-1><ul>
 
+      <li>28/06/13 - YP - Added support for vector color
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
 
       <li>26/06/12 - YP - Split groups in their own mesh instead of a new facegroup
@@ -325,6 +326,8 @@ var
   VertexPool: PAffineVectorArray;
   NormalPool: PAffineVectorArray;
   TexCoordPool: PAffineVectorArray;
+  ColorPool: PVectorArray;
+  GotColor: Boolean;
 
   procedure BuildPolygons;
   var
@@ -345,6 +348,9 @@ var
           idx := NormalIndices.List^[Index];
           if idx >= 0 then
             GL.Normal3fv(@NormalPool[idx]);
+
+          if GotColor then
+            GL.Color4fv(@ColorPool[VertexIndices.List^[Index]]);
 
           if Assigned(TexCoordPool) then
           begin
@@ -430,10 +436,14 @@ begin
   { Shorthand notations. }
   VertexPool := Owner.Owner.Vertices.List;
   NormalPool := Owner.Owner.Normals.List;
+  ColorPool := Owner.Owner.Colors.List;
+
   if TexCoordIndices.Count = 0 then
     TexCoordPool := nil
   else
     TexCoordPool := Owner.Owner.TexCoords.List;
+
+  GotColor := (Owner.Owner.Vertices.Count = Owner.Owner.Colors.Count);
 
   case FMode of
     objfgmmPolygons: BuildPolygons;
