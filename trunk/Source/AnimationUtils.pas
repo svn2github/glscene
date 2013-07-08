@@ -22,6 +22,7 @@ uses
   SysUtils,
   Classes,
   GLCrossPlatform,
+  VectorTypes,
   VectorGeometry;
 
 type
@@ -70,6 +71,7 @@ type
 
   function Tweener(Current, Target: TAffineVector; Time, Duration: Single; EaseType: TEaseType): TAffineVector; overload;
   function Tweener(Current, Target: TVector; Time, Duration: Single; EaseType: TEaseType): TVector; overload;
+  function Tweener(Current, Target: TVector2f; Time, Duration: Single; EaseType: TEaseType): TVector2f; overload;
   function Tweener(Current, Target: Single; Time, Duration: Single; EaseType: TEaseType): Single; overload;
 
 implementation
@@ -943,6 +945,21 @@ begin
   end;
 end;
 
+function Tweener(Current, Target: TVector2f; Time, Duration: Single; EaseType: TEaseType): TVector2f;
+var
+  i: integer;
+  EaseFunction : TEaseFunction;
+begin
+  if Time > Duration then
+    Time := Duration;
+
+  EaseFunction := GetEaseFunctionFromType(EaseType);
+  for i := 0 to 1 do
+  begin
+    Target.V[i] := Target.V[i]-Current.V[i];
+    Result.V[i] := EaseFunction(Time, Current.V[i], Target.V[i], Duration);
+  end;
+end;
 
 function Tweener(Current, Target: Single; Time, Duration: Single; EaseType: TEaseType): Single;
 var
