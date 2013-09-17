@@ -10,6 +10,7 @@
 
  <b>History : </b><font size=-1><ul>
 
+      <li>17/09/13 - YP - Added support for self-illumination (using Texture2Name)
       <li>28/06/13 - YP - Added support for vector color
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
 
@@ -150,6 +151,7 @@ type
      <li>*map_Kd command defines the diffuse texture image
      <li>*Ka/map_Ka define the ambient color and texmap
      <li>*Ks/map_Ks define the specular color and texmap
+     <li>*Ke/map_Ke define the self-illumination/lightmap texmap
      <li>map_Bump specifies the bump map
      <li>*d specifies transparency (alpha-channel, range [0; 1])
      <li>map_d specifies the opcaity texture map
@@ -356,7 +358,18 @@ var
           begin
             idx := TexCoordIndices.List^[Index];
             if idx >= 0 then
-              GL.TexCoord2fv(@TexCoordPool[idx]);
+            begin
+              if GL.ARB_multitexture and (not xgl.SecondTextureUnitForbidden) then
+              begin
+                GL.MultiTexCoord2fv(GL_TEXTURE0, @TexCoordPool[idx]);
+                GL.MultiTexCoord2fv(GL_TEXTURE1, @TexCoordPool[idx]);
+              end
+                else
+              begin
+                GL.TexCoord2fv(@TexCoordPool[idx]);
+              end;
+            end;
+
           end;
 
           GL.Vertex3fv(@VertexPool[VertexIndices.List^[Index]]);
@@ -885,7 +898,7 @@ var
     fs: TStream;
     objMtl: TGLMTLFile;
     matLib: TGLMaterialLibrary;
-    libMat: TGLLibMaterial;
+    libMat, libMat2: TGLLibMaterial;
     texName: string;
     libFilename: string;
   begin
@@ -964,6 +977,34 @@ var
                   end;
                 end;
               end;
+              // setup lightmap (self-illumination) texture
+              texName := objMtl.MaterialStringProperty(matName, 'map_Ke');
+              if texName <> '' then
+              begin
+                // spawn a new material
+                libMat2 := matLib.Materials.Add;
+                libMat2.Name := matName + '_lm';
+                // Use the GLScene built-in second texture support (note: the mesh LightmapProperty MUST be empty)
+                libMat.Texture2Name := libMat2.Name;
+                try
+                  with libMat2.Material.Texture do
+                  begin
+                    Image.LoadFromFile(texName);
+                    Disabled := False;
+                    minFilter := miLinear;
+                    TextureWrap := twNone;
+                    TextureFormat := tfRGB;
+                    TextureMode := tmModulate;
+                  end;
+                except
+                  on E: ETexture do
+                  begin
+                    if not Owner.IgnoreMissingTextures then
+                      raise;
+                  end;
+                end;
+              end;
+
             finally
               objMtl.Free;
               fs.Free;
