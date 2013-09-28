@@ -1,0 +1,58 @@
+package GLS_Computing_RunTime;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene - Computing'}
+{$LIBSUFFIX 'XE5'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vclimg,
+  vcl,
+  xmlrtl,
+  GLScene_RunTime;
+
+contains
+  GLS_CL_Platform in '..\Source\GLS_CL_Platform.pas',
+  GLS_CL in '..\Source\GLS_CL.pas',
+  GLS_CL_GL in '..\Source\GLS_CL_GL.pas',
+  GLS_CUDA_API in '..\Source\GLS_CUDA_API.pas',
+  GLS_CUDA_RunTime in '..\Source\GLS_CUDA_RunTime.pas',
+  GLS_CUDA_FourierTransform in '..\Source\GLS_CUDA_FourierTransform.pas',
+  GLS_CUDA_Utility in '..\Source\GLS_CUDA_Utility.pas',
+  GLSCUDA in '..\Source\GLSCUDA.pas',
+  GLSCUDACompiler in '..\Source\GLSCUDACompiler.pas',
+  GLSCUDAContext in '..\Source\GLSCUDAContext.pas',
+  GLSCUDAFFTPlan in '..\Source\GLSCUDAFFTPlan.pas',
+  GLSCUDAGraphics in '..\Source\GLSCUDAGraphics.pas',
+  GLSCUDAParser in '..\Source\GLSCUDAParser.pas',
+  GLFilePGM in '..\Source\GLFilePGM.pas',
+  GLSCUDADataAccess in '..\Source\GLSCUDADataAccess.pas';
+
+end.
+
