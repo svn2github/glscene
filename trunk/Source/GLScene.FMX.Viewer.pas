@@ -6,6 +6,7 @@
   FireMonkey fit GLScene viewer.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>27/09/13 - Wassail - Added FMX.Controls and FMX.Graphics in uses, changed TFMXHandle to TWindowHandle
   <li>08/09/11 - Yar - Creation
   </ul></font>
 }
@@ -26,18 +27,18 @@ uses
   System.UITypes,
   System.SysUtils,
   // FireMonkey
-  FMX.Types, FMX.Types3D,
+  FMX.Types, FMX.Types3D, FMX.Controls, FMX.Graphics,
   // GLScene
   GLScene,
   GLContext;
 
 type
 
-  TGLSceneViewport = class(FMX.Types.TControl)
+  TGLSceneViewport = class(FMX.Controls.TControl)
   private
     { Private Declarations }
     FGLSBuffer: TGLSceneBuffer;
-    FFMXBuffer: FMX.Types.TBitmap;
+    FFMXBuffer: FMX.Graphics.TBitmap;
     FFMXContext: FMX.Types3D.TContext3D;
     FMultisample: FMX.Types3D.TMultisample;
     FParentHandle: HWND;
@@ -103,7 +104,7 @@ uses
 
 constructor TGLSceneViewport.Create(AOwner: TComponent);
 var
-  FMXH: TFmxHandle;
+  FMXH: TWindowHandle;
 begin
   inherited Create(AOwner);
   FGLSBuffer := TGLSceneBuffer.Create(Self);
@@ -118,11 +119,11 @@ begin
   end;
   Width := 100;
   Height := 100;
-  FFMXBuffer := FMX.Types.TBitmap.Create(100, 100);
+  FFMXBuffer := FMX.Graphics.TBitmap.Create(100, 100);
   FMultisample := TMultisample.msNone;
 
   {$IFDEF GLS_COMPILER_XE3_UP}
-  FFMXContext := TContextManager.DefaultContextClass.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
+  FFMXContext := TContextManager.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
   {$ELSE}
   FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); 
   {$ENDIF}
