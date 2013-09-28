@@ -1,144 +1,244 @@
 <html>
 
 <head>
-<meta http-equiv="Content-Type"
-content="text/html; charset=iso-8859-1">
-<meta name="description"
-content="readme.htm for GLScene, the OpenGL solution for Delphi.">
-<meta name="keywords"
-content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, programming, windows, tutorial, 3DS, component, library, tools, IDE, Inprise, real-time, animation, rendering">
-<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 12 (filtered)">
 <title>GLScene</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+p
+	{margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+.MsoChpDefault
+	{font-size:10.0pt;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:2.0cm 42.5pt 2.0cm 3.0cm;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+<meta name=description
+content="readme.htm for GLScene, the OpenGL solution for Delphi.">
+<meta name=keywords
+content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, programming, windows, tutorial, 3DS, component, library, tools, IDE, Inprise, real-time, animation, rendering">
 </head>
 
-<body bgcolor="#FFFFFF">
-<div align="center"><center>
+<body bgcolor=white lang=RU link=blue vlink=purple>
 
-<table border="0" width="100%">
-    <tr>
-        <td width="15%"><font size="1" face="Arial">website:<br>
-        </font><a href="http://glscene.org"><font size="1"
-        face="Arial">http://glscene.org</font></a></td>
-        <td align="center" width="70%"><font color="#FF8000"
-        size="7" face="Arial"><strong>GLScene</strong></font><font
-        color="#FF8000" face="Arial"><strong><br>
-        OpenGL Solution for Delphi</strong></font></td>
-        <td align="right" width="15%"><font size="1" face="Arial">maintained
-        by<br>
-        </font><a href="mailto:egrange@infonie.fr"><font size="1"
-        face="Arial">Eric Grange</font></a></td>
-    </tr>
+<div class=Section1>
+
+<div align=center>
+
+<table class=MsoNormalTable border=0 cellpadding=0 width="100%"
+ style='width:100.0%'>
+ <tr>
+  <td width="15%" style='width:15.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;font-family:"Arial","sans-serif"'>website:<br>
+  </span><span style='font-size:8.0pt'><a href="http://glscene.org"><span
+  style='font-family:"Arial","sans-serif"'>http://glscene.org</span></a></span></p>
+  <p class=MsoNormal><span style='font-size:8.0pt;font-family:"Arial","sans-serif"'>Project
+  page:<span class=MsoHyperlink><span style='font-family:"Arial","sans-serif"'><a
+  href="http://sourceforge/projects/glscene/">http://sourceforge/projects/glscene/</a></span></span></span></p>
+  </td>
+  <td width="70%" style='width:70.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><strong><span
+  lang=EN-US style='font-size:36.0pt;font-family:"Arial","sans-serif";
+  color:#FF8000'>GLScene</span></strong><b><span lang=EN-US style='font-family:
+  "Arial","sans-serif";color:#FF8000'><br>
+  <strong><span style='font-family:"Arial","sans-serif"'>OpenGL Solution for
+  Delphi, C++Builder and Lazarus</span></strong></span></b></p>
+  </td>
+  <td width="15%" style='width:15.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=right style='text-align:right'><span
+  style='font-size:8.0pt;font-family:"Arial","sans-serif"'>maintained by<br>
+  </span><span style='font-size:8.0pt'><a href="mailto:egrange@infonie.fr"><span
+  style='font-family:"Arial","sans-serif"'>Eric Grange</span></a></span></p>
+  <p class=MsoNormal align=right style='text-align:right'><span lang=EN-US
+  style='font-size:8.0pt;font-family:"Arial","sans-serif"'>and<i> </i></span><span
+  style='font-size:8.0pt;font-family:"Arial","sans-serif"'><a
+  href="mk:@MSITStore:C:\Library\GLSceneSVN\trunk\Help\GLSceneSys.chm::/Contributors.html"><span
+  lang=EN-US>GLS Team</span></a></span><span lang=EN-US style='font-size:8.0pt;
+  font-family:"Arial","sans-serif"'>, based on Mike Lischke's GLScene</span></p>
+  </td>
+ </tr>
 </table>
-</center></div>
 
-<hr size="1" color="#FF8000">
-<div align="center"><center>
+</div>
 
-<table border="0" width="90%">
-    <tr>
-        <td width="100%">GLScene is an <a
-        href="http://www.opengl.org">OpenGL</a> based 3D library
-        for Delphi. It provides visual components and objects
-        allowing description and rendering of 3D scenes in an
-        easy, no-hassle, yet powerfull manner.<p>GLScene is not
-        just an OpenGL wrapper or utility library, it has grown
-        to become a set of founding classes for a generic 3D
-        engine with Rapid Application Development in mind.
-        GLScene allows you to quickly design and render 3D scenes
-        without having to learn the intricacies of OpenGL: if you
-        know how to design a TForm, you'll easily master the
-        basic operation of TGLScene. Make sure to checkout the
-        introduction tutorial included in the help folder.<br>
-        GLScene includes more than many components and a variety
-        of founding classes. The library comes with a comfortable
-        set of demos showcasing the ease of use and demonstrating
-        RAD wasn't done at the expense of CPU horsepower.
-        Advanced demos and samples can be found in the <a
-        href="http://glscene.org">GLScene site</a>.</p>
-        <p>The GLScene Sound System allows positionnal 3D audio
-        via low-level APIs like <a href="http://www.fmod.org">FMOD</a>
-        and <a href="http://www.un4seen.com/music/">BASS</a>.</p>
-        </td>
-    </tr>
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="100%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div align=center>
+
+<table class=MsoNormalTable border=0 cellpadding=0 width="90%"
+ style='width:90.0%'>
+ <tr>
+  <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US>GLScene is an </span><a
+  href="http://www.opengl.org"><span lang=EN-US>OpenGL</span></a><span
+  lang=EN-US> based 3D library for Delphi, C++Builder and Lazarus. It provides
+  visual components and objects allowing description and rendering of 3D scenes
+  in an easy, no-hassle, yet powerfull manner.</span></p>
+  <p><span lang=EN-US>GLScene is not just an OpenGL wrapper or utility library,
+  it has grown to become a set of founding classes for a generic 3D engine with
+  Rapid Application Development in mind. GLScene allows you to quickly design
+  and render 3D scenes without having to learn the intricacies of OpenGL: if
+  you know how to design a TForm, you'll easily master the basic operation of
+  TGLScene. Make sure to checkout the introduction tutorial included in the
+  help folder.<br>
+  GLScene includes more than many components and a variety of founding classes.
+  The library comes with a comfortable set of demos showcasing the ease of use
+  and demonstrating RAD wasn't done at the expense of CPU horsepower. Advanced
+  demos and samples can be found in the project repository at </span><span
+  class=MsoHyperlink><a href="http://sourceforge/projects/glscene/"><span
+  lang=EN-US>http://sourceforge/projects/glscene/</span></a></span></p>
+  <p><span lang=EN-US>The GLScene Sound System allows positionnal 3D audio via
+  low-level APIs like </span><a href="http://www.fmod.org"><span lang=EN-US>FMOD</span></a><span
+  lang=EN-US> and </span><a href="http://www.un4seen.com/music/"><span
+  lang=EN-US>BASS</span></a><span lang=EN-US>.</span></p>
+  </td>
+ </tr>
 </table>
-</center></div>
 
-<hr size="1" width="66%" color="#FF8000">
-<div align="center"><center>
+</div>
 
-<table border="0" width="90%">
-    <tr>
-        <td width="100%">Installing GLScene :<ul>
-            <li>Delphi 7 : install the GLScene7.dpk as usual, if
-                you want positionnal sound support via FMOD/BASS,
-                also install the GLSS_FMOD7.dpk/GLSS_BASS7.dpk
-                package, and GLS_SDL7.dpk for <a
-                href="http://www.libsdl.org">SDL</a> support.</li>
-            <li>Delphi 6 : install the GLScene6.dpk as usual, if
-                you want positionnal sound support via FMOD/BASS,
-                also install the GLSS_FMOD6.dpk/GLSS_BASS6.dpk
-                package, and GLS_SDL6.dpk for <a
-                href="http://www.libsdl.org">SDL</a> support.</li>
-            <li>Delphi 5 : install the GLScene5.dpk as usual, if
-                you want positionnal sound support via FMOD/BASS,
-                also install the GLSS_FMOD5.dpk/GLSS_BASS5.dpk
-                package, and GLS_SDL5.dpk for <a
-                href="http://www.libsdl.org">SDL</a> support.</li>
-            <li>Delphi 4 : install the GLScene4.dpk as usual, if
-                you want positionnal sound support via FMOD/BASS,
-                also install the GLSS_FMOD4.dpk/GLSS_BASS4.dpk
-                package, and GLS_SDL4.dpk for <a
-                href="http://www.libsdl.org">SDL</a> support.</li>
-        </ul>
-        <p>Up-to-date compiling instructions and details may be
-        found in the &quot;readme.htm&quot; of the &quot;Sources&quot;
-        directory.</p>
-        <p>GLScene does not support Delphi 3 and previous, and
-        was not compiled/used/tested under CPPBuilder.</p>
-        <p>If you installed a previous version, make sure no
-        files of the previous version remains, some file may have
-        been renamed, moved or removed in between versions. Don't
-        forget to check for stray previous-version &quot;.BPL&quot;
-        files in your system directories if you placed any there.</p>
-        </td>
-    </tr>
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div align=center>
+
+<table class=MsoNormalTable border=0 cellpadding=0 width="90%"
+ style='width:90.0%'>
+ <tr>
+  <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal>Installing GLScene :</p>
+  <ul type=disc>
+   <li class=MsoNormal><span lang=EN-US>Use screenshots from GLScene\_Installation
+       directory</span></li>
+   <li class=MsoNormal><span lang=EN-US>Setup Environment Options for Delphi
+       and C++Builder compilers as shown in an appropriate screenshot dialogs.</span></li>
+   <li class=MsoNormal><span lang=EN-US>Create a project group GLScene and add
+       existing *.dpk projects with right order as in ProjectManager_GLScene_groupproj.jpg</span></li>
+   <li class=MsoNormal><span lang=EN-US>Setup Delphi compiler for all *.dpk projects
+       to generate C++Builder files and packages as shown in ProjectOptions_DelphiCompiler_OutputCPP.jpg</span></li>
+   <li class=MsoNormal><span lang=EN-US>Setup all necessary updated DLLs using
+       bat file from ..\Source\external directory.</span></li>
+   <li class=MsoNormal><span lang=EN-US>Build the list of projects and install
+       GLScene’s components from DesignTime packages.</span></li>
+   <li class=MsoNormal><span lang=EN-US>For sound support via FMOD/BASS/OpenAL
+       and Phisics also install appropriate .dpk packages.</span></li>
+  </ul>
+  <p><span lang=EN-US>Up-to-date compiling instructions and details may be
+  found in the &quot;readme.htm&quot; of the &quot;Sources&quot; directory.</span></p>
+  <p><span lang=EN-US>GLScene supports Delphi 7 and previous.</span></p>
+  <p><span lang=EN-US>If you installed a previous version, make sure no files
+  of the previous version remains, some file may have been renamed, moved or
+  removed in between versions. Use MassReplace utility to update old versions
+  to current one.</span></p>
+  </td>
+ </tr>
 </table>
-</center></div>
 
-<hr size="1" width="66%" color="#FF8000">
-<div align="center"><center>
+</div>
 
-<table border="0" width="90%">
-    <tr>
-        <td width="100%">GLScene is released to the public as
-        open-source under <a href="http://www.mozilla.org/MPL">Mozilla
-        Public Licence</a>.<p>Some Delphi units, API headers and
-        DLLs are included in the GLScene package for convenience
-        but are not part of GLScene, may use different licensing
-        scheme and have different copyight owners, such files
-        have an explicit notice attached to them or placed in
-        their directory.</p>
-        <p>See <a href="http://glscene.org">http://glscene.org</a>
-        for more details.</p>
-        </td>
-    </tr>
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div align=center>
+
+<table class=MsoNormalTable border=0 cellpadding=0 width="90%"
+ style='width:90.0%'>
+ <tr>
+  <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span lang=EN-US>GLScene is released to the public as
+  open-source under </span><a href="http://www.mozilla.org/MPL"><span
+  lang=EN-US>Mozilla Public Licence</span></a><span lang=EN-US>.</span></p>
+  <p><span lang=EN-US>Some Delphi units, API headers and DLLs are included in
+  the GLScene package for convenience but are not part of GLScene, may use
+  different licensing scheme and have different copyight owners, such files
+  have an explicit notice attached to them or placed in their directory.</span></p>
+  <p><span lang=EN-US>See </span><a href="http://glscene.org"><span lang=EN-US>http://glscene.org</span></a><span
+  lang=EN-US> for more details.</span></p>
+  </td>
+ </tr>
 </table>
-</center></div>
 
-<hr size="1" width="66%" color="#FF8000">
+</div>
 
-<p align="center"><font size="2">Copyright 2000-2002, </font><a
-href="mailto:egrange@infonie.fr"><font size="2">Eric Grange</font></a><font
-size="2">, based on previous work by </font><a
-href="mailto:public@lischke-online.de"><font size="2">Mike
-Lischke</font></a><font size="2">.</font></p>
+<div class=MsoNormal align=center style='text-align:center'>
 
-<hr size="1" color="#FF8000">
+<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
 
-<hr size="1" width="66%" color="#FF8000">
+</div>
 
-<hr size="1" width="33%" color="#FF8000">
+<p align=center style='text-align:center'><span lang=EN-US style='font-size:
+10.0pt'>Copyright 2000-2014, </span><a href="mailto:egrange@infonie.fr"><span
+lang=EN-US style='font-size:10.0pt'>Eric Grange</span></a> <span lang=EN-US
+style='font-size:10.0pt'>and</span><span lang=EN-US> </span><span
+style='font-size:8.0pt;font-family:"Arial","sans-serif"'><a
+href="mk:@MSITStore:C:\Library\GLSceneSVN\trunk\Help\GLSceneSys.chm::/Contributors.html"><span
+lang=EN-US>GLS Team</span></a></span><span lang=EN-US style='font-size:10.0pt'>,
+based on previous work by </span><a href="mailto:public@lischke-online.de"><span
+lang=EN-US style='font-size:10.0pt'>Mike Lischke</span></a><span lang=EN-US
+style='font-size:10.0pt'>.</span></p>
 
-<hr size="1" width="11%" color="#FF8000">
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="100%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="66%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="33%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+<div class=MsoNormal align=center style='text-align:center'>
+
+<hr size=1 width="11%" noshade style='color:#FF8000' align=center>
+
+</div>
+
+</div>
+
 </body>
+
 </html>
