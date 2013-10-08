@@ -30,7 +30,7 @@ type
     X: Single;
     Y: Single;
     public
-      constructor Create(X, Y : Single);
+      function Create(X, Y : Single): TGLPoint2D; static;
       procedure SetPosition(const X, Y : Single);
       function Add(const APoint2D: TGLPoint2D): TGLPoint2D;
       function Length: Single; //distance to origin
@@ -44,7 +44,7 @@ type
     Y: Single;
     Z: Single;
     public
-      constructor Create(X, Y, Z: Single);
+      function Create(X, Y, Z: Single): TGLPoint3D; static;
       procedure SetPosition(const X, Y, Z : Single);
       function Add(const AGLPoint3D: TGLPoint3D): TGLPoint3D;
       function Length: Single; //distance to origin
@@ -84,7 +84,7 @@ type
       function Add(const AVector2D: TGLVector2D): TGLVector2D;
       function Norm: Single;
     public
-      constructor Create(const AX, AY, AW : Single);
+      function Create(const AX, AY, AW : Single): TGLVector2D; static;
       function Length: Single;
     case Integer of
       0: (V: TGLVector2DType;);
@@ -98,7 +98,7 @@ type
       function Add(const AVector3D: TGLVector3D): TGLVector3D;
       function Norm: Single;
     public
-      constructor Create(const AX, AY, AZ, AW : Single);
+      function Create(const AX, AY, AZ, AW : Single): TGLVector3D; static;
       function Length: Single;
     case Integer of
       0: (V: TGLVector3DType;);
@@ -177,10 +177,10 @@ implementation
 
 { TGLPoint2D }
 
-constructor TGLPoint2D.Create(X, Y : Single);
+function TGLPoint2D.Create(X, Y : Single): TGLPoint2D;
 begin
-  Self.X := X;
-  Self.Y := Y;
+  Result.X := X;
+  Result.Y := Y;
 end;
 
 procedure TGLPoint2D.SetPosition(const X, Y: Single);
@@ -212,11 +212,11 @@ end;
 
 { TGLPoint3D }
 
-constructor TGLPoint3D.Create(X, Y, Z: Single);
+function TGLPoint3D.Create(X, Y, Z: Single): TGLPoint3D;
 begin
-  Self.X := X;
-  Self.Y := Y;
-  Self.Z := Z;
+  Result.X := X;
+  Result.Y := Y;
+  Result.Z := Z;
 end;
 
 function TGLPoint3D.Add(const AGLPoint3D: TGLPoint3D): TGLPoint3D;
@@ -252,11 +252,11 @@ end;
 
 { TGLVector2D }
 
-constructor TGLVector2D.Create(const AX, AY, AW: Single);
+function TGLVector2D.Create(const AX, AY, AW: Single): TGLVector2D;
 begin
-  Self.X := AX;
-  Self.Y := AY;
-  Self.W := AW;
+  Result.X := AX;
+  Result.Y := AY;
+  Result.W := AW;
 end;
 
 function TGLVector2D.Add(const AVector2D: TGLVector2D): TGLVector2D;
@@ -278,12 +278,12 @@ end;
 
 { TGLVector3D }
 
-constructor TGLVector3D.Create(const AX, AY, AZ, AW: Single);
+function TGLVector3D.Create(const AX, AY, AZ, AW: Single): TGLVector3D;
 begin
-  Self.X := X;
-  Self.Y := Y;
-  Self.Z := Z;
-  Self.W := W;
+  Result.X := AX;
+  Result.Y := AY;
+  Result.Z := AZ;
+  Result.W := AW;
 end;
 
 function TGLVector3D.Add(const AVector3D: TGLVector3D): TGLVector3D;
@@ -305,4 +305,4 @@ begin
 end;
 
 
-end.
+end.

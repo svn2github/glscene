@@ -158,4 +158,4 @@ initialization
 
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
 
-end.
+end.

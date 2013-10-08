@@ -36,7 +36,7 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF FPC}
-  LCLIntf, LCLType, Types, LCLProc, LazUTF8,
+  LCLIntf, LCLType, Types, LCLProc, //LazUTF8,
 {$ENDIF}
   GLBitmapFont,
   GLRenderContextInfo,
@@ -480,4 +480,4 @@ initialization
   RegisterClasses([TGLWindowsBitmapFont]);
 
 end.
-
+
