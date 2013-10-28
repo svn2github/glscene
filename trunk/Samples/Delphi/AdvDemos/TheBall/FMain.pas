@@ -15,7 +15,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
-  odeimport, odegl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
+  ODEimport, ODEgl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
   GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects, GLMaterial,
   GLCoordinates, GLCrossPlatform, BaseClasses, GLColor, GLFileWAV;

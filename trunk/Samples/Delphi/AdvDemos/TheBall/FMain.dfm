@@ -2,12 +2,12 @@ object Main: TMain
   Left = 213
   Top = 107
   Caption = 'Main'
-  ClientHeight = 388
-  ClientWidth = 527
+  ClientHeight = 315
+  ClientWidth = 428
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
@@ -15,22 +15,18 @@ object Main: TMain
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   OnResize = FormResize
-  PixelsPerInch = 120
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 527
-    Height = 388
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Width = 428
+    Height = 315
     Camera = Camera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 151.095138549804700000
+    FieldOfView = 144.774841308593800000
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseUp = SceneViewerMouseUp
@@ -80,6 +76,7 @@ object Main: TMain
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {000000000AD723BC000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
+        Visible = False
         MirrorObject = DCObstacles
         MirrorOptions = [moUseStencil, moClearZBuffer]
         Height = 10.000000000000000000
@@ -752,6 +749,13 @@ object Main: TMain
     object HSTimerBkGnd: TGLHUDSprite
       Material.FrontProperties.Diffuse.Color = {00000000000000001283203F0000003F}
       Material.BlendingMode = bmTransparency
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
       Position.Coordinates = {000070420000B041000000000000803F}
       Width = 100.000000000000000000
       Height = 24.000000000000000000
@@ -788,6 +792,7 @@ object Main: TMain
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end
       item
         Name = 'marbleblock'
@@ -884,6 +889,7 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingTCoordinates.Coordinates = {00000000000000000000000000000000}
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end
       item
         Name = 'chrome'
@@ -1831,6 +1837,7 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingMode = tmmCubeMapReflection
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end
       item
         Name = 'glassblock'
@@ -2777,6 +2784,7 @@ object Main: TMain
         Material.Texture.TextureMode = tmModulate
         Material.Texture.MappingMode = tmmSphere
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end
       item
         Name = 'wood'
@@ -3077,6 +3085,7 @@ object Main: TMain
           FFD9}
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end>
     Left = 120
     Top = 8
