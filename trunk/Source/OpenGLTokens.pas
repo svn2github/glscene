@@ -4,6 +4,7 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
+<li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
       <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
                            to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
       <li>21/08/11 - Yar - Added OpenGL ES
@@ -160,6 +161,14 @@ type
   PGLvoid = Pointer;
 
   PGLPointer = ^Pointer;
+
+  // GL_ARB_cl_event
+  { These incomplete types let us declare types compatible with OpenCL's
+    cl_context and cl_event }
+  _cl_context = record end;
+  _cl_event = record end;
+  p_cl_context = ^_cl_context;
+  p_cl_event = ^_cl_event;
 
   // the size of these depend on platform (32bit or 64bit)
 {$IFDEF FPC}
@@ -3151,8 +3160,427 @@ const
   GL_RESET_NOTIFICATION_STRATEGY_ARB = $8256;
   GL_NO_RESET_NOTIFICATION_ARB = $8261;
 
-  // ARB Extension #106 - GL_ARB_shader_stencil_export
-  // (no new tokens)
+  // ARB Extension #110 - GL_ARB_compressed_texture_pixel_storage
+  GL_UNPACK_COMPRESSED_BLOCK_WIDTH  = $09127;
+  GL_UNPACK_COMPRESSED_BLOCK_HEIGHT = $09128;
+  GL_UNPACK_COMPRESSED_BLOCK_DEPTH  = $09129;
+  GL_UNPACK_COMPRESSED_BLOCK_SIZE   = $0912A;
+  GL_PACK_COMPRESSED_BLOCK_WIDTH    = $0912B;
+  GL_PACK_COMPRESSED_BLOCK_HEIGHT   = $0912C;
+  GL_PACK_COMPRESSED_BLOCK_DEPTH    = $0912D;
+  GL_PACK_COMPRESSED_BLOCK_SIZE     = $0912E;
+
+  // ARB Extension #112 - GL_ARB_internalformat_query
+  GL_NUM_SAMPLE_COUNTS              = $09380;
+
+  // ARB Extension #113 - GL_ARB_map_buffer_alignment
+  GL_MIN_MAP_BUFFER_ALIGNMENT       = $090BC;
+
+  // ARB Extension #114 - GL_ARB_shader_atomic_counters
+  GL_ATOMIC_COUNTER_BUFFER          = $92C0;
+  GL_ATOMIC_COUNTER_BUFFER_BINDING  = $92C1;
+  GL_ATOMIC_COUNTER_BUFFER_START    = $92C2;
+  GL_ATOMIC_COUNTER_BUFFER_SIZE     = $92C3;
+  GL_ATOMIC_COUNTER_BUFFER_DATA_SIZE = $92C4;
+  GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTERS = $92C5;
+  GL_ATOMIC_COUNTER_BUFFER_ACTIVE_ATOMIC_COUNTER_INDICES = $92C6;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_VERTEX_SHADER = $92C7;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_CONTROL_SHADER = $92C8;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_TESS_EVALUATION_SHADER = $92C9;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_GEOMETRY_SHADER = $92CA;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_FRAGMENT_SHADER = $92CB;
+  GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS = $92CC;
+  GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS = $92CD;
+  GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS = $92CE;
+  GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS = $92CF;
+  GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS = $92D0;
+  GL_MAX_COMBINED_ATOMIC_COUNTER_BUFFERS = $92D1;
+  GL_MAX_VERTEX_ATOMIC_COUNTERS     = $92D2;
+  GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS = $92D3;
+  GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS = $92D4;
+  GL_MAX_GEOMETRY_ATOMIC_COUNTERS   = $92D5;
+  GL_MAX_FRAGMENT_ATOMIC_COUNTERS   = $92D6;
+  GL_MAX_COMBINED_ATOMIC_COUNTERS   = $92D7;
+  GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE = $92D8;
+  GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS = $92DC;
+  GL_ACTIVE_ATOMIC_COUNTER_BUFFERS  = $92D9;
+  GL_UNIFORM_ATOMIC_COUNTER_BUFFER_INDEX = $92DA;
+  GL_UNSIGNED_INT_ATOMIC_COUNTER    = $92DB;
+
+  // ARB Extension #115 - GL_ARB_shader_image_load_store
+  GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT = $00000001;
+  GL_ELEMENT_ARRAY_BARRIER_BIT      = $00000002;
+  GL_UNIFORM_BARRIER_BIT            = $00000004;
+  GL_TEXTURE_FETCH_BARRIER_BIT      = $00000008;
+  GL_SHADER_IMAGE_ACCESS_BARRIER_BIT = $00000020;
+  GL_COMMAND_BARRIER_BIT            = $00000040;
+  GL_PIXEL_BUFFER_BARRIER_BIT       = $00000080;
+  GL_TEXTURE_UPDATE_BARRIER_BIT     = $00000100;
+  GL_BUFFER_UPDATE_BARRIER_BIT      = $00000200;
+  GL_FRAMEBUFFER_BARRIER_BIT        = $00000400;
+  GL_TRANSFORM_FEEDBACK_BARRIER_BIT = $00000800;
+  GL_ATOMIC_COUNTER_BARRIER_BIT     = $00001000;
+  GL_ALL_BARRIER_BITS               = $FFFFFFFF;
+  GL_MAX_IMAGE_UNITS                = $8F38;
+  GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS = $8F39;
+  GL_IMAGE_BINDING_NAME             = $8F3A;
+  GL_IMAGE_BINDING_LEVEL            = $8F3B;
+  GL_IMAGE_BINDING_LAYERED          = $8F3C;
+  GL_IMAGE_BINDING_LAYER            = $8F3D;
+  GL_IMAGE_BINDING_ACCESS           = $8F3E;
+  GL_IMAGE_1D                       = $904C;
+  GL_IMAGE_2D                       = $904D;
+  GL_IMAGE_3D                       = $904E;
+  GL_IMAGE_2D_RECT                  = $904F;
+  GL_IMAGE_CUBE                     = $9050;
+  GL_IMAGE_BUFFER                   = $9051;
+  GL_IMAGE_1D_ARRAY                 = $9052;
+  GL_IMAGE_2D_ARRAY                 = $9053;
+  GL_IMAGE_CUBE_MAP_ARRAY           = $9054;
+  GL_IMAGE_2D_MULTISAMPLE           = $9055;
+  GL_IMAGE_2D_MULTISAMPLE_ARRAY     = $9056;
+  GL_INT_IMAGE_1D                   = $9057;
+  GL_INT_IMAGE_2D                   = $9058;
+  GL_INT_IMAGE_3D                   = $9059;
+  GL_INT_IMAGE_2D_RECT              = $905A;
+  GL_INT_IMAGE_CUBE                 = $905B;
+  GL_INT_IMAGE_BUFFER               = $905C;
+  GL_INT_IMAGE_1D_ARRAY             = $905D;
+  GL_INT_IMAGE_2D_ARRAY             = $905E;
+  GL_INT_IMAGE_CUBE_MAP_ARRAY       = $905F;
+  GL_INT_IMAGE_2D_MULTISAMPLE       = $9060;
+  GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY = $9061;
+  GL_UNSIGNED_INT_IMAGE_1D          = $9062;
+  GL_UNSIGNED_INT_IMAGE_2D          = $9063;
+  GL_UNSIGNED_INT_IMAGE_3D          = $9064;
+  GL_UNSIGNED_INT_IMAGE_2D_RECT     = $9065;
+  GL_UNSIGNED_INT_IMAGE_CUBE        = $9066;
+  GL_UNSIGNED_INT_IMAGE_BUFFER      = $9067;
+  GL_UNSIGNED_INT_IMAGE_1D_ARRAY    = $9068;
+  GL_UNSIGNED_INT_IMAGE_2D_ARRAY    = $9069;
+  GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY = $906A;
+  GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE = $906B;
+  GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY = $906C;
+  GL_MAX_IMAGE_SAMPLES              = $906D;
+  GL_IMAGE_BINDING_FORMAT           = $906E;
+  GL_IMAGE_FORMAT_COMPATIBILITY_TYPE = $90C7;
+  GL_IMAGE_FORMAT_COMPATIBILITY_BY_SIZE = $90C8;
+  GL_IMAGE_FORMAT_COMPATIBILITY_BY_CLASS = $90C9;
+  GL_MAX_VERTEX_IMAGE_UNIFORMS      = $90CA;
+  GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS = $90CB;
+  GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS = $90CC;
+  GL_MAX_GEOMETRY_IMAGE_UNIFORMS    = $90CD;
+  GL_MAX_FRAGMENT_IMAGE_UNIFORMS    = $90CE;
+  GL_MAX_COMBINED_IMAGE_UNIFORMS    = $90CF;
+
+  // ARB Extension #117 - GL_ARB_texture_storage
+  GL_TEXTURE_IMMUTABLE_FORMAT       = $912F;
+
+  GL_COMPRESSED_RGBA_ASTC_4x4_KHR = $93B0;
+  GL_COMPRESSED_RGBA_ASTC_5x4_KHR = $93B1;
+  GL_COMPRESSED_RGBA_ASTC_5x5_KHR = $93B2;
+  GL_COMPRESSED_RGBA_ASTC_6x5_KHR = $93B3;
+  GL_COMPRESSED_RGBA_ASTC_6x6_KHR = $93B4;
+  GL_COMPRESSED_RGBA_ASTC_8x5_KHR = $93B5;
+  GL_COMPRESSED_RGBA_ASTC_8x6_KHR = $93B6;
+  GL_COMPRESSED_RGBA_ASTC_8x8_KHR = $93B7;
+  GL_COMPRESSED_RGBA_ASTC_105_KHR = $93B8;
+  GL_COMPRESSED_RGBA_ASTC_106_KHR = $93B9;
+  GL_COMPRESSED_RGBA_ASTC_108_KHR = $93BA;
+  GL_COMPRESSED_RGBA_ASTC_110_KHR = $93BB;
+  GL_COMPRESSED_RGBA_ASTC_12x10_KHR = $93BC;
+  GL_COMPRESSED_RGBA_ASTC_12x12_KHR = $93BD;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR = $93D0;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR = $93D1;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR = $93D2;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR = $93D3;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR = $93D4;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR = $93D5;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR = $93D6;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR = $93D7;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR = $93D8;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR = $93D9;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR = $93DA;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR = $93DB;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR = $93DC;
+  GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR = $93DD;
+
+  // ARB Extension #119 - GL_KHR_debug
+  GL_DEBUG_OUTPUT_SYNCHRONOUS       = $8242;
+  GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH = $8243;
+  GL_DEBUG_CALLBACK_FUNCTION        = $8244;
+  GL_DEBUG_CALLBACK_USER_PARAM      = $8245;
+  GL_DEBUG_SOURCE_API               = $8246;
+  GL_DEBUG_SOURCE_WINDOW_SYSTEM     = $8247;
+  GL_DEBUG_SOURCE_SHADER_COMPILER   = $8248;
+  GL_DEBUG_SOURCE_THIRD_PARTY       = $8249;
+  GL_DEBUG_SOURCE_APPLICATION       = $824A;
+  GL_DEBUG_SOURCE_OTHER             = $824B;
+  GL_DEBUG_TYPE_ERROR               = $824C;
+  GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR = $824D;
+  GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  = $824E;
+  GL_DEBUG_TYPE_PORTABILITY         = $824F;
+  GL_DEBUG_TYPE_PERFORMANCE         = $8250;
+  GL_DEBUG_TYPE_OTHER               = $8251;
+  GL_DEBUG_TYPE_MARKER              = $8268;
+  GL_DEBUG_TYPE_PUSH_GROUP          = $8269;
+  GL_DEBUG_TYPE_POP_GROUP           = $826A;
+  GL_DEBUG_SEVERITY_NOTIFICATION    = $826B;
+  GL_MAX_DEBUG_GROUP_STACK_DEPTH    = $826C;
+  GL_DEBUG_GROUP_STACK_DEPTH        = $826D;
+  GL_BUFFER                         = $82E0;
+  GL_SHADER                         = $82E1;
+  GL_PROGRAM                        = $82E2;
+  GL_QUERY                          = $82E3;
+  GL_PROGRAM_PIPELINE               = $82E4;
+  GL_SAMPLER                        = $82E6;
+  GL_DISPLAY_LIST                   = $82E7;
+  GL_MAX_LABEL_LENGTH               = $82E8;
+  GL_MAX_DEBUG_MESSAGE_LENGTH       = $9143;
+  GL_MAX_DEBUG_LOGGED_MESSAGES      = $9144;
+  GL_DEBUG_LOGGED_MESSAGES          = $9145;
+  GL_DEBUG_SEVERITY_HIGH            = $9146;
+  GL_DEBUG_SEVERITY_MEDIUM          = $9147;
+  GL_DEBUG_SEVERITY_LOW             = $9148;
+  GL_DEBUG_OUTPUT                   = $92E0;
+  GL_CONTEXT_FLAG_DEBUG_BIT         = $00000002;
+  GL_COMPUTE_SHADER                 = $91B9;
+  GL_MAX_COMPUTE_UNIFORM_BLOCKS     = $91BB;
+  GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS = $91BC;
+  GL_MAX_COMPUTE_IMAGE_UNIFORMS     = $91BD;
+  GL_MAX_COMPUTE_SHARED_MEMORY_SIZE = $8262;
+  GL_MAX_COMPUTE_UNIFORM_COMPONENTS = $8263;
+  GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS = $8264;
+  GL_MAX_COMPUTE_ATOMIC_COUNTERS    = $8265;
+  GL_MAX_COMBINED_COMPUTE_UNIFORM_COMPONENTS = $8266;
+  GL_MAX_COMPUTE_LOCAL_INVOCATIONS  = $90EB;
+  GL_MAX_COMPUTE_WORK_GROUP_COUNT   = $91BE;
+  GL_MAX_COMPUTE_WORK_GROUP_SIZE    = $91BF;
+  GL_COMPUTE_LOCAL_WORK_SIZE        = $8267;
+  GL_UNIFORM_BLOCK_REFERENCED_BY_COMPUTE_SHADER = $90EC;
+  GL_ATOMIC_COUNTER_BUFFER_REFERENCED_BY_COMPUTE_SHADER = $90ED;
+  GL_DISPATCH_INDIRECT_BUFFER       = $90EE;
+  GL_DISPATCH_INDIRECT_BUFFER_BINDING = $90EF;
+  GL_COMPUTE_SHADER_BIT             = $00000020;
+  GL_COMPRESSED_RGB8_ETC2           = $9274;
+  GL_COMPRESSED_SRGB8_ETC2          = $9275;
+  GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2 = $9276;
+  GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2 = $9277;
+  GL_COMPRESSED_RGBA8_ETC2_EAC      = $9278;
+  GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC = $9279;
+  GL_COMPRESSED_R11_EAC             = $9270;
+  GL_COMPRESSED_SIGNED_R11_EAC      = $9271;
+  GL_COMPRESSED_RG11_EAC            = $9272;
+  GL_COMPRESSED_SIGNED_RG11_EAC     = $9273;
+  GL_PRIMITIVE_RESTART_FIXED_INDEX  = $8D69;
+  GL_ANY_SAMPLES_PASSED_CONSERVATIVE = $8D6A;
+  GL_MAX_ELEMENT_INDEX              = $8D6B;
+  GL_MAX_UNIFORM_LOCATIONS          = $826E;
+  GL_FRAMEBUFFER_DEFAULT_WIDTH      = $9310;
+  GL_FRAMEBUFFER_DEFAULT_HEIGHT     = $9311;
+  GL_FRAMEBUFFER_DEFAULT_LAYERS     = $9312;
+  GL_FRAMEBUFFER_DEFAULT_SAMPLES    = $9313;
+  GL_FRAMEBUFFER_DEFAULT_FIXED_SAMPLE_LOCATIONS = $9314;
+  GL_MAX_FRAMEBUFFER_WIDTH          = $9315;
+  GL_MAX_FRAMEBUFFER_HEIGHT         = $9316;
+  GL_MAX_FRAMEBUFFER_LAYERS         = $9317;
+  GL_MAX_FRAMEBUFFER_SAMPLES        = $9318;
+  GL_INTERNALFORMAT_SUPPORTED       = $826F;
+  GL_INTERNALFORMAT_PREFERRED       = $8270;
+  GL_INTERNALFORMAT_RED_SIZE        = $8271;
+  GL_INTERNALFORMAT_GREEN_SIZE      = $8272;
+  GL_INTERNALFORMAT_BLUE_SIZE       = $8273;
+  GL_INTERNALFORMAT_ALPHA_SIZE      = $8274;
+  GL_INTERNALFORMAT_DEPTH_SIZE      = $8275;
+  GL_INTERNALFORMAT_STENCIL_SIZE    = $8276;
+  GL_INTERNALFORMAT_SHARED_SIZE     = $8277;
+  GL_INTERNALFORMAT_RED_TYPE        = $8278;
+  GL_INTERNALFORMAT_GREEN_TYPE      = $8279;
+  GL_INTERNALFORMAT_BLUE_TYPE       = $827A;
+  GL_INTERNALFORMAT_ALPHA_TYPE      = $827B;
+  GL_INTERNALFORMAT_DEPTH_TYPE      = $827C;
+  GL_INTERNALFORMAT_STENCIL_TYPE    = $827D;
+  GL_MAX_WIDTH                      = $827E;
+  GL_MAX_HEIGHT                     = $827F;
+  GL_MAX_DEPTH                      = $8280;
+  GL_MAX_LAYERS                     = $8281;
+  GL_MAX_COMBINED_DIMENSIONS        = $8282;
+  GL_COLOR_COMPONENTS               = $8283;
+  GL_DEPTH_COMPONENTS               = $8284;
+  GL_STENCIL_COMPONENTS             = $8285;
+  GL_COLOR_RENDERABLE               = $8286;
+  GL_DEPTH_RENDERABLE               = $8287;
+  GL_STENCIL_RENDERABLE             = $8288;
+  GL_FRAMEBUFFER_RENDERABLE         = $8289;
+  GL_FRAMEBUFFER_RENDERABLE_LAYERED = $828A;
+  GL_FRAMEBUFFER_BLEND              = $828B;
+  GL_READ_PIXELS                    = $828C;
+  GL_READ_PIXELS_FORMAT             = $828D;
+  GL_READ_PIXELS_TYPE               = $828E;
+  GL_TEXTURE_IMAGE_FORMAT           = $828F;
+  GL_TEXTURE_IMAGE_TYPE             = $8290;
+  GL_GET_TEXTURE_IMAGE_FORMAT       = $8291;
+  GL_GET_TEXTURE_IMAGE_TYPE         = $8292;
+  GL_MIPMAP                         = $8293;
+  GL_MANUAL_GENERATE_MIPMAP         = $8294;
+  GL_AUTO_GENERATE_MIPMAP           = $8295;
+  GL_COLOR_ENCODING                 = $8296;
+  GL_SRGB_READ                      = $8297;
+  GL_SRGB_WRITE                     = $8298;
+  GL_SRGB_DECODE_ARB                = $8299;
+  GL_FILTER                         = $829A;
+  GL_VERTEX_TEXTURE                 = $829B;
+  GL_TESS_CONTROL_TEXTURE           = $829C;
+  GL_TESS_EVALUATION_TEXTURE        = $829D;
+  GL_GEOMETRY_TEXTURE               = $829E;
+  GL_FRAGMENT_TEXTURE               = $829F;
+  GL_COMPUTE_TEXTURE                = $82A0;
+  GL_TEXTURE_SHADOW                 = $82A1;
+  GL_TEXTURE_GATHER                 = $82A2;
+  GL_TEXTURE_GATHER_SHADOW          = $82A3;
+  GL_SHADER_IMAGE_LOAD              = $82A4;
+  GL_SHADER_IMAGE_STORE             = $82A5;
+  GL_SHADER_IMAGE_ATOMIC            = $82A6;
+  GL_IMAGE_TEXEL_SIZE               = $82A7;
+  GL_IMAGE_COMPATIBILITY_CLASS      = $82A8;
+  GL_IMAGE_PIXEL_FORMAT             = $82A9;
+  GL_IMAGE_PIXEL_TYPE               = $82AA;
+  GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_TEST = $82AC;
+  GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_TEST = $82AD;
+  GL_SIMULTANEOUS_TEXTURE_AND_DEPTH_WRITE = $82AE;
+  GL_SIMULTANEOUS_TEXTURE_AND_STENCIL_WRITE = $82AF;
+  GL_TEXTURE_COMPRESSED_BLOCK_WIDTH = $82B1;
+  GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT = $82B2;
+  GL_TEXTURE_COMPRESSED_BLOCK_SIZE  = $82B3;
+  GL_CLEAR_BUFFER                   = $82B4;
+  GL_TEXTURE_VIEW                   = $82B5;
+  GL_VIEW_COMPATIBILITY_CLASS       = $82B6;
+  GL_FULL_SUPPORT                   = $82B7;
+  GL_CAVEAT_SUPPORT                 = $82B8;
+  GL_IMAGE_CLASS_4_X_32             = $82B9;
+  GL_IMAGE_CLASS_2_X_32             = $82BA;
+  GL_IMAGE_CLASS_1_X_32             = $82BB;
+  GL_IMAGE_CLASS_4_X_16             = $82BC;
+  GL_IMAGE_CLASS_2_X_16             = $82BD;
+  GL_IMAGE_CLASS_1_X_16             = $82BE;
+  GL_IMAGE_CLASS_4_X_8              = $82BF;
+  GL_IMAGE_CLASS_2_X_8              = $82C0;
+  GL_IMAGE_CLASS_1_X_8              = $82C1;
+  GL_IMAGE_CLASS_11_11_10           = $82C2;
+  GL_IMAGE_CLASS_10_10_10_2         = $82C3;
+  GL_VIEW_CLASS_128_BITS            = $82C4;
+  GL_VIEW_CLASS_96_BITS             = $82C5;
+  GL_VIEW_CLASS_64_BITS             = $82C6;
+  GL_VIEW_CLASS_48_BITS             = $82C7;
+  GL_VIEW_CLASS_32_BITS             = $82C8;
+  GL_VIEW_CLASS_24_BITS             = $82C9;
+  GL_VIEW_CLASS_16_BITS             = $82CA;
+  GL_VIEW_CLASS_8_BITS              = $82CB;
+  GL_VIEW_CLASS_S3TC_DXT1_RGB       = $82CC;
+  GL_VIEW_CLASS_S3TC_DXT1_RGBA      = $82CD;
+  GL_VIEW_CLASS_S3TC_DXT3_RGBA      = $82CE;
+  GL_VIEW_CLASS_S3TC_DXT5_RGBA      = $82CF;
+  GL_VIEW_CLASS_RGTC1_RED           = $82D0;
+  GL_VIEW_CLASS_RGTC2_RG            = $82D1;
+  GL_VIEW_CLASS_BPTC_UNORM          = $82D2;
+  GL_VIEW_CLASS_BPTC_FLOAT          = $82D3;
+  GL_UNIFORM                        = $92E1;
+  GL_UNIFORM_BLOCK                  = $92E2;
+  GL_PROGRAM_INPUT                  = $92E3;
+  GL_PROGRAM_OUTPUT                 = $92E4;
+  GL_BUFFER_VARIABLE                = $92E5;
+  GL_SHADER_STORAGE_BLOCK           = $92E6;
+  GL_VERTEX_SUBROUTINE              = $92E8;
+  GL_TESS_CONTROL_SUBROUTINE        = $92E9;
+  GL_TESS_EVALUATION_SUBROUTINE     = $92EA;
+  GL_GEOMETRY_SUBROUTINE            = $92EB;
+  GL_FRAGMENT_SUBROUTINE            = $92EC;
+  GL_COMPUTE_SUBROUTINE             = $92ED;
+  GL_VERTEX_SUBROUTINE_UNIFORM      = $92EE;
+  GL_TESS_CONTROL_SUBROUTINE_UNIFORM = $92EF;
+  GL_TESS_EVALUATION_SUBROUTINE_UNIFORM = $92F0;
+  GL_GEOMETRY_SUBROUTINE_UNIFORM    = $92F1;
+  GL_FRAGMENT_SUBROUTINE_UNIFORM    = $92F2;
+  GL_COMPUTE_SUBROUTINE_UNIFORM     = $92F3;
+  GL_TRANSFORM_FEEDBACK_VARYING     = $92F4;
+  GL_ACTIVE_RESOURCES               = $92F5;
+  GL_MAX_NAME_LENGTH                = $92F6;
+  GL_MAX_NUM_ACTIVE_VARIABLES       = $92F7;
+  GL_MAX_NUM_COMPATIBLE_SUBROUTINES = $92F8;
+  GL_NAME_LENGTH                    = $92F9;
+  GL_TYPE                           = $92FA;
+  GL_ARRAY_SIZE                     = $92FB;
+  GL_OFFSET                         = $92FC;
+  GL_BLOCK_INDEX                    = $92FD;
+  GL_ARRAY_STRIDE                   = $92FE;
+  GL_MATRIX_STRIDE                  = $92FF;
+  GL_IS_ROW_MAJOR                   = $9300;
+  GL_ATOMIC_COUNTER_BUFFER_INDEX    = $9301;
+  GL_BUFFER_BINDING                 = $9302;
+  GL_BUFFER_DATA_SIZE               = $9303;
+  GL_NUM_ACTIVE_VARIABLES           = $9304;
+  GL_ACTIVE_VARIABLES               = $9305;
+  GL_REFERENCED_BY_VERTEX_SHADER    = $9306;
+  GL_REFERENCED_BY_TESS_CONTROL_SHADER = $9307;
+  GL_REFERENCED_BY_TESS_EVALUATION_SHADER = $9308;
+  GL_REFERENCED_BY_GEOMETRY_SHADER  = $9309;
+  GL_REFERENCED_BY_FRAGMENT_SHADER  = $930A;
+  GL_REFERENCED_BY_COMPUTE_SHADER   = $930B;
+  GL_TOP_LEVEL_ARRAY_SIZE           = $930C;
+  GL_TOP_LEVEL_ARRAY_STRIDE         = $930D;
+  GL_LOCATION                       = $930E;
+  GL_LOCATION_INDEX                 = $930F;
+  GL_IS_PER_PATCH                   = $92E7;
+  GL_SHADER_STORAGE_BUFFER          = $90D2;
+  GL_SHADER_STORAGE_BUFFER_BINDING  = $90D3;
+  GL_SHADER_STORAGE_BUFFER_START    = $90D4;
+  GL_SHADER_STORAGE_BUFFER_SIZE     = $90D5;
+  GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS = $90D6;
+  GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS = $90D7;
+  GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS = $90D8;
+  GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS = $90D9;
+  GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS = $90DA;
+  GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS = $90DB;
+  GL_MAX_COMBINED_SHADER_STORAGE_BLOCKS = $90DC;
+  GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS = $90DD;
+  GL_MAX_SHADER_STORAGE_BLOCK_SIZE  = $90DE;
+  GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT = $90DF;
+  GL_SHADER_STORAGE_BARRIER_BIT     = $2000;
+  GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES = GL_MAX_COMBINED_IMAGE_UNITS_AND_FRAGMENT_OUTPUTS;
+  GL_DEPTH_STENCIL_TEXTURE_MODE     = $90EA;
+  GL_TEXTURE_BUFFER_OFFSET          = $919D;
+  GL_TEXTURE_BUFFER_SIZE            = $919E;
+  GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT = $919F;
+  GL_TEXTURE_VIEW_MIN_LEVEL         = $82DB;
+  GL_TEXTURE_VIEW_NUM_LEVELS        = $82DC;
+  GL_TEXTURE_VIEW_MIN_LAYER         = $82DD;
+  GL_TEXTURE_VIEW_NUM_LAYERS        = $82DE;
+  GL_TEXTURE_IMMUTABLE_LEVELS       = $82DF;
+  GL_VERTEX_ATTRIB_BINDING          = $82D4;
+  GL_VERTEX_ATTRIB_RELATIVE_OFFSET  = $82D5;
+  GL_VERTEX_BINDING_DIVISOR         = $82D6;
+  GL_VERTEX_BINDING_OFFSET          = $82D7;
+  GL_VERTEX_BINDING_STRIDE          = $82D8;
+  GL_MAX_VERTEX_ATTRIB_RELATIVE_OFFSET = $82D9;
+  GL_MAX_VERTEX_ATTRIB_BINDINGS     = $82DA;
+
+  GL_MAX_VERTEX_ATTRIB_STRIDE         = $82E5;
+  GL_MAP_PERSISTENT_BIT               = $0040;
+  GL_MAP_COHERENT_BIT                 = $0080;
+  GL_DYNAMIC_STORAGE_BIT              = $0100;
+  GL_CLIENT_STORAGE_BIT               = $0200;
+  GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT = $00004000;
+  GL_BUFFER_IMMUTABLE_STORAGE       	= $821F;
+  GL_BUFFER_STORAGE_FLAGS           	= $8220;
+  GL_CLEAR_TEXTURE                  	= $9365;
+  GL_LOCATION_COMPONENT             	= $934A;
+  GL_TRANSFORM_FEEDBACK_BUFFER_INDEX 	= $934B;
+  GL_TRANSFORM_FEEDBACK_BUFFER_STRIDE = $934C;
+  GL_QUERY_BUFFER                   	= $9192;
+  GL_QUERY_BUFFER_BARRIER_BIT       	= $00008000;
+  GL_QUERY_BUFFER_BINDING           	= $9193;
+  GL_QUERY_RESULT_NO_WAIT           	= $9194;
+  GL_MIRROR_CLAMP_TO_EDGE           	= $8743;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -6943,6 +7371,128 @@ const
   // GL_ARB_shader_stencil_export (ARB #106)
   // (no entry points)
 
+  // GL_KHR_debug (ARB #119)
+  PFNGLPushDebugGroup = procedure(source : GLenum; id : GLuint; length : GLsizei; const message_ : PGLchar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPopDebugGroup = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLObjectLabel = procedure(identifier : GLenum; name : GLuint; length : GLsizei; const label_ : PGLCHar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetObjectLabel = procedure(identifier : GLenum; name : GLuint; bufsize : GLsizei; length : PGLsizei; label_ : PGLCHar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLObjectPtrLabel = procedure(const ptr : Pointer; length : GLsizei; const label_ : PGLCHar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetObjectPtrLabel = procedure(const ptr : Pointer; bufSize : GLsizei; length : PGLsizei; label_ : PGLCHar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_clear_buffer_object (ARB #121)
+  PFNGLClearBufferData = procedure(target : GLenum; internalformat : GLenum; format : GLEnum; type_ : GLEnum; const data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLClearBufferSubData = procedure(target : GLenum; internalformat : GLenum; offset : GLintptr; size : GLsizeiptr; format : GLenum; type_ : GLenum; const data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLClearNamedBufferData = procedure(buffer : GLuint; internalformat : GLenum; format : GLEnum; type_ : GLEnum; const data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLClearNamedBufferSubData = procedure(buffer : GLuint; internalformat : GLenum; format : GLenum; type_ : GLenum; offset : GLsizeiptr; size : GLsizeiptr; const data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_compute_shader (ARB #122)
+  PFNGLDispatchCompute = procedure(num_groups_x : GLuint; num_groups_y : GLuint; num_groups_z : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDispatchComputeIndirect = procedure(indirect : GLintptr); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_copy_image (ARB #123)
+  PFNGLCopyImageSubData = procedure(srcName : GLUInt; srcTarget : GLenum; srcLevel : GLint; srcX : GLint; srcY : GLint; srcZ : GLint; dstName : GLUInt; dstTarget : GLEnum; dstLevel : GLInt; dstX : GLInt; dstY : GLint; dstZ : GLint; srcWidth : GLsizei; srcHeight : GLsizei; srcDepth : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_debug_group
+  // ARB_debug_group reuses entry points from KHR_debug
+
+  // GL_ARB_debug_label
+  // ARB_debug_label reuses entry points from KHR_debug
+
+  // GL_ARB_debug_output2
+
+  // GL_ARB_ES3_compatibility
+
+  // GL_ARB_explicit_uniform_location
+
+  // GL_ARB_fragment_layer_viewport
+
+  // GL_ARB_framebuffer_no_attachments (ARB #130)
+  PFNGLFramebufferParameteri = procedure(target : GLenum; pname : GLenum; param : GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetFramebufferParameteriv = procedure(target : GLenum; pname : GLenum; params : PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLNamedFramebufferParameteri = procedure(framebuffer : GLUInt; pname : GLenum; param : GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetNamedFramebufferParameteriv = procedure(framebuffer : GLUInt; pname : GLenum; param : GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_internalformat_query2 (ARB #131)
+  PFNGLGetInternalformati64v = procedure(target : GLenum; internalformat : GLenum; pname : GLenum; bufSize : GLsizei; params : PGLint64); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_invalidate_subdata (ARB #132)
+  PFNGLInvalidateTexSubImage = procedure(texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLInvalidateTexImage = procedure(texture : GLuint; level : GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLInvalidateBufferSubData = procedure(buffer : GLuint; offset : GLintptr; length : GLsizeiptr); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLInvalidateBufferData = procedure(buffer : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLInvalidateFramebuffer = procedure(target : GLenum; numAttachments : GLsizei; const attachments : PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLInvalidateSubFramebuffer = procedure(target : GLenum; numAttachments : GLsizei; const attachments : PGLenum; x : GLint; y : GLint; width : GLsizei; height : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_multi_draw_indirect (ARB #133)
+  PFNGLMultiDrawArraysIndirect = procedure(mode : GLenum; const indirect : Pointer; drawcount : GLsizei; stride : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMultiDrawElementsIndirect = procedure(mode : GLenum; type_ : GLenum; const indirect : Pointer; drawcount : GLsizei; stride : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_program_interface_query (ARB #134)
+  PFNGLGetProgramInterfaceiv = procedure(program_ : GLUInt;programInterface : GLenum; pname : GLenum; params : PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetProgramResourceIndex = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLUInt; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetProgramResourceName = procedure(program_ : GLUInt;programInterface : GLenum; index : GLuint; bufSize : GLsizei; length : PGLsizei; name : PGLchar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetProgramResourceiv = procedure(program_ : GLUInt;programInterface : GLenum; index : GLuint; propCount : GLsizei; const props : PGLenum; bufSize : GLsizei; length : PGLsizei; params : PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetProgramResourceLocation = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLInt; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGetProgramResourceLocationIndex = function(program_ : GLUInt;programInterface : GLenum; const name : PGLchar) : GLInt; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_robust_buffer_access_behavior (ARB #135)
+  // (no entry points)
+
+  // GL_ARB_shader_image_size (ARB #136)
+  // (no entry points)
+
+  // GL_ARB_shader_storage_buffer_object (ARB #137)
+  PFNGLShaderStorageBlockBinding = procedure(program_ : GLuint; storageBlockIndex : GLuint; storageBlockBinding : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_stencil_texturing (ARB #138)
+  // (no entry points)
+
+  // GL_ARB_texture_buffer_range (ARB #139)
+  PFNGLTexBufferRange = procedure(target : GLenum; internalformat : GLenum; buffer : GLuint; offset :GLintptr; size : GLsizeiptr); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTextureBufferRange = procedure(texture : GLuint; target : GLenum; internalformat : GLenum; buffer : GLuint; offset : GLintptr; size : GLsizeiptr); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_texture_query_levels (ARB #140)
+  // (no entry points)
+
+  // GL_ARB_texture_storage_multisample (ARB #141)
+  PFNGLTexStorage2DMultisample = procedure(target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTexStorage3DMultisample = procedure(target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTextureStorage2DMultisample = procedure(texture : GLuint; target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTextureStorage3DMultisample = procedure(texture : GLuint; target : GLenum; samples : GLsizei; internalformat : GLenum; width : GLsizei; height : GLsizei; depth : GLsizei; fixedsamplelocations : GLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  PFNGLBufferStorage = procedure(target : GLenum; size : GLsizeiptr; const data : pointer; flags : GLbitfield); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLClearTexImage = procedure(texture : GLuint; level : GLint; format : GLenum; _type : GLenum; const data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLClearTexSubImage = procedure(texture : GLuint; level : GLint; xoffset : GLint; yoffset : GLint; zoffset : GLint; width : GLsizei; height : GLsizei; depth : GLsizei; format : GLenum; _type : GLenum; const Data : Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindBuffersBase = procedure(target : GLenum; first : GLuint; count : GLsizei; const buffers : PGLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindBuffersRange = procedure(target : GLenum; first : GLuint; count : GLsizei; const buffers : PGLuint; const offsets : GLintptr; const sizes : GLsizeiptr); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindTextures = procedure(first : GLuint; count : GLsizei; const textures : PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindSamplers = procedure(first : GLuint; count : GLsizei; const samplers : PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindImageTextures = procedure(first : GLuint; count : GLsizei; const textures : PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBindVertexBuffers = procedure(first : GLuint; count : GLsizei; const buffers : GLuint; const offsets : GLintptr; const strides : PGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_texture_view (ARB #124)
+  PFNGLTextureView = procedure(texture : GLuint; target : GLenum; origtexture : GLuint; internalformat : GLenum; minlevel : GLuint; numlevels : GLuint; minlayer : GLuint; numlayers : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_vertex_attrib_binding (ARB #125)
+  PFNGLBindVertexBuffer = procedure(bindingindex : GLuint; buffer : GLuint; offset : GLintptr; stride : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexAttribFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; normalized : GLboolean; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexAttribIFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexAttribLFormat = procedure(attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexAttribBinding = procedure(attribindex : GLuint; bindingindex : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexBindingDivisor = procedure(bindingindex : GLuint; divisor : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayBindVertexBuffer = procedure(vaobj : GLuint; bindingindex : GLuint; buffer : GLuint; offset : GLintptr; stride : GLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayVertexAttribFormat = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; normalized : GLboolean; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayVertexAttribIFormat = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayVertexAttribLFormat = procedure(vaobj : GLuint; attribindex : GLuint; size : GLInt; type_ : GLEnum; relativeoffset : GLUint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayVertexAttribBinding = procedure(vaobj : GLuint; attribindex : GLuint; bindingindex : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVertexArrayVertexBindingDivisor = procedure(vaobj : GLuint; bindingindex : GLuint; divisor : GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+  // GL_ARB_robustness_isolation (ARB #126)
+  // (no entry points)
+
+  // GL_ARB_cl_event (ARB #103)
+  PFNGLCreateSyncFromCLevent = function(context: p_cl_context; event: p_cl_event; flags: GLbitfield): GLsync; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
   // EXT/Vendor extensions
 
   // Unknown Vendor/EXT functions
@@ -7493,4 +8043,4 @@ begin
 end;
 {$ENDIF EGL_SUPPORT}
 
-end.
+end.

@@ -3,6 +3,7 @@
 { : OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
   <li>08/09/11 - Yar - Added WGL_NV_DX_interop
   <li>21/08/11 - Yar - Added OpenGL ES
   <li>31/07/11 - Yar - Added GL_NV_Path_rendering
@@ -115,7 +116,17 @@ type
     ARB_vertex_array_object, ARB_vertex_blend, ARB_vertex_buffer_object,
     ARB_vertex_program, ARB_vertex_shader, ARB_vertex_type_2_10_10_10_rev,
     ARB_window_pos, ARB_texture_compression_bptc, ARB_get_program_binary,
-    ARB_separate_shader_objects,
+    ARB_separate_shader_objects, ARB_shader_stencil_export, KHR_debug,
+    ARB_clear_buffer_object, ARB_compute_shader, ARB_copy_image, ARB_debug_group,
+    ARB_debug_label, ARB_debug_output2, ARB_ES3_compatibility,
+    ARB_explicit_uniform_location, ARB_fragment_layer_viewport,
+    ARB_framebuffer_no_attachments, ARB_internalformat_query2,
+    ARB_invalidate_subdata, ARB_multi_draw_indirect,
+    ARB_program_interface_query,
+    ARB_shader_image_size, ARB_shader_storage_buffer_object,
+    ARB_stencil_texturing, ARB_texture_buffer_range, ARB_texture_query_levels,
+    ARB_texture_storage_multisample, ARB_texture_view, ARB_vertex_attrib_binding,
+    ARB_robustness_isolation, ARB_cl_event,
 
     // Vendor/EXT OpenGL extension checks
     _3DFX_multisample, _3DFX_tbuffer, _3DFX_texture_compression_FXT1,
@@ -1884,7 +1895,7 @@ type
     StencilFuncSeparate: PFNGLSTENCILFUNCSEPARATEPROC;
     StencilMaskSeparate: PFNGLSTENCILMASKSEPARATEPROC;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Vertex buffer object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Buffer objects'}{$ENDIF}
     LockArrays: PFNGLLOCKARRAYSEXTPROC; // EXT only
     UnlockArrays: PFNGLUNLOCKARRAYSEXTPROC; // EXT only
     BindBuffer: PFNGLBINDBUFFERPROC;
@@ -2054,6 +2065,30 @@ type
     GetUniformui64vNV: PFNGLGETUNIFORMUI64VNVPROC;
     ProgramUniformui64NV: PFNGLPROGRAMUNIFORMUI64NVPROC;
     ProgramUniformui64vNV: PFNGLPROGRAMUNIFORMUI64VNVPROC;
+    ClearBufferData: PFNGLClearBufferData;
+    ClearBufferSubData: PFNGLClearBufferSubData;
+    ClearNamedBufferData: PFNGLClearNamedBufferData;
+    ClearNamedBufferSubData: PFNGLClearNamedBufferSubData;
+    InvalidateTexSubImage: PFNGLInvalidateTexSubImage;
+    InvalidateTexImage: PFNGLInvalidateTexImage;
+    InvalidateBufferSubData: PFNGLInvalidateBufferSubData;
+    InvalidateBufferData: PFNGLInvalidateBufferData;
+    InvalidateFramebuffer: PFNGLInvalidateFramebuffer;
+    InvalidateSubFramebuffer: PFNGLInvalidateSubFramebuffer;
+    MultiDrawArraysIndirect: PFNGLMultiDrawArraysIndirect;
+    MultiDrawElementsIndirect: PFNGLMultiDrawElementsIndirect;
+    BindVertexBuffer: PFNGLBindVertexBuffer;
+    VertexAttribFormat: PFNGLVertexAttribFormat;
+    VertexAttribIFormat: PFNGLVertexAttribIFormat;
+    VertexAttribLFormat: PFNGLVertexAttribLFormat;
+    VertexAttribBinding: PFNGLVertexAttribBinding;
+    VertexBindingDivisor: PFNGLVertexBindingDivisor;
+    VertexArrayBindVertexBuffer: PFNGLVertexArrayBindVertexBuffer;
+    VertexArrayVertexAttribFormat: PFNGLVertexArrayVertexAttribFormat;
+    VertexArrayVertexAttribIFormat: PFNGLVertexArrayVertexAttribIFormat;
+    VertexArrayVertexAttribLFormat: PFNGLVertexArrayVertexAttribLFormat;
+    VertexArrayVertexAttribBinding: PFNGLVertexArrayVertexAttribBinding;
+    VertexArrayVertexBindingDivisor: PFNGLVertexArrayVertexBindingDivisor;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Shader object'}{$ENDIF}
     DeleteObject: PFNGLDELETEOBJECTARBPROC; // ARB only
@@ -2176,6 +2211,9 @@ type
     ProgramUniformMatrix4x3dv: PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC;
     ValidateProgramPipeline: PFNGLVALIDATEPROGRAMPIPELINEPROC;
     GetProgramPipelineInfoLog: PFNGLGETPROGRAMPIPELINEINFOLOGPROC;
+    DispatchCompute: PFNGLDispatchCompute;
+    DispatchComputeIndirect: PFNGLDispatchComputeIndirect;
+    ShaderStorageBlockBinding: PFNGLShaderStorageBlockBinding;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Framebuffer object'}{$ENDIF}
     IsRenderbuffer: PFNGLISRENDERBUFFERPROC;
@@ -2200,6 +2238,10 @@ type
     GetFramebufferAttachmentParameteriv: PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC;
     BlitFramebuffer: PFNGLBLITFRAMEBUFFERPROC;
     GenerateMipmap: PFNGLGENERATEMIPMAPPROC;
+    FramebufferParameteri: PFNGLFramebufferParameteri;
+    NamedFramebufferParameteri: PFNGLNamedFramebufferParameteri;
+    GetNamedFramebufferParameteriv: PFNGLGetNamedFramebufferParameteriv;
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Queries object'}{$ENDIF}
     GenQueries: PFNGLGENQUERIESPROC;
@@ -2213,8 +2255,16 @@ type
     QueryCounter: PFNGLQUERYCOUNTERPROC;
     GetQueryObjecti64v: PFNGLGETQUERYOBJECTI64VPROC;
     GetQueryObjectui64v: PFNGLGETQUERYOBJECTUI64VPROC;
+    GetInternalformati64v: PFNGLGetInternalformati64v;
+    GetProgramInterfaceiv: PFNGLGetProgramInterfaceiv;
+    GetProgramResourceIndex: PFNGLGetProgramResourceIndex;
+    GetProgramResourceName: PFNGLGetProgramResourceName;
+    GetProgramResourceiv: PFNGLGetProgramResourceiv;
+    GetProgramResourceLocation: PFNGLGetProgramResourceLocation;
+    GetProgramResourceLocationIndex: PFNGLGetProgramResourceLocationIndex;
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Sampler object'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Texture & Sampler object'}{$ENDIF}
     // promoted to core v1.3 from GL_ARB_multitexture (#1)
     ActiveTexture: PFNGLACTIVETEXTUREPROC;
     SampleCoverage: PFNGLSAMPLECOVERAGEPROC;
@@ -2309,6 +2359,24 @@ type
     GetSamplerParameterIiv: PFNGLGETSAMPLERPARAMETERIIVPROC;
     GetSamplerParameterfv: PFNGLGETSAMPLERPARAMETERFVPROC;
     GetSamplerParameterIfv: PFNGLGETSAMPLERPARAMETERIFVPROC;
+    CopyImageSubData: PFNGLCopyImageSubData;
+    TexBufferRange: PFNGLTexBufferRange;
+    TextureBufferRange: PFNGLTextureBufferRange;
+    TexStorage2DMultisample: PFNGLTexStorage2DMultisample;
+    TexStorage3DMultisample: PFNGLTexStorage3DMultisample;
+    TextureStorage2DMultisample: PFNGLTextureStorage2DMultisample;
+    TextureStorage3DMultisample: PFNGLTextureStorage3DMultisample;
+    BufferStorage: PFNGLBufferStorage;
+    ClearTexImage: PFNGLClearTexImage;
+    ClearTexSubImage: PFNGLClearTexSubImage;
+    BindBuffersBase: PFNGLBindBuffersBase;
+    BindBuffersRange: PFNGLBindBuffersRange;
+    BindTextures: PFNGLBindTextures;
+    BindSamplers: PFNGLBindSamplers;
+    BindImageTextures: PFNGLBindImageTextures;
+    BindVertexBuffers: PFNGLBindVertexBuffers;
+    TextureView: PFNGLTextureView;
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Direct access'}{$ENDIF}
     ClientAttribDefault: PFNGLCLIENTATTRIBDEFAULTEXTPROC;
@@ -2475,9 +2543,13 @@ type
     DebugMessageEnableAMDX:
     procedure(category: GLenum; severity: GLenum; Count: GLSizei;
       var ids: GLuint; Enabled: boolean);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+
+    PushDebugGroup: PFNGLPushDebugGroup;
+    PopDebugGroup: PFNGLPopDebugGroup;
+    ObjectLabel: PFNGLObjectLabel;
+    GetObjectLabel: PFNGLGetObjectLabel;
+    ObjectPtrLabel: PFNGLObjectPtrLabel;
+    GetObjectPtrLabel: PFNGLGetObjectPtrLabel;
     DebugMessageCallbackAMDX:
     procedure(callback: TDebugProcAMD; userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
@@ -2509,6 +2581,7 @@ type
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'Interrop'}{$ENDIF}
+    CreateSyncFromCLevent: PFNGLCreateSyncFromCLevent;
 {$IFDEF LINUX}
     VDPAUInitNV:
     procedure(const vdpDevice: Pointer; const getProcAddress: Pointer);
@@ -3819,7 +3892,32 @@ begin
   ARB_texture_compression_bptc := CheckExtension('GL_ARB_texture_compression_bptc');
   ARB_get_program_binary := CheckExtension('GL_ARB_get_program_binary');
   ARB_separate_shader_objects := CheckExtension('GL_ARB_separate_shader_objects');
-
+  ARB_shader_stencil_export := CheckExtension('GL_ARB_shader_stencil_export');
+  KHR_debug := CheckExtension('GL_KHR_debug');
+  ARB_clear_buffer_object := CheckExtension('GL_ARB_clear_buffer_object');
+  ARB_compute_shader := CheckExtension('GL_ARB_compute_shader');
+  ARB_copy_image := CheckExtension('GL_ARB_copy_image');
+  ARB_debug_group := CheckExtension('GL_ARB_debug_group');
+  ARB_debug_label := CheckExtension('GL_ARB_debug_label');
+  ARB_debug_output2 := CheckExtension('GL_ARB_debug_output2');
+  ARB_ES3_compatibility := CheckExtension('GL_ARB_ES3_compatibility');
+  ARB_explicit_uniform_location := CheckExtension('GL_ARB_explicit_uniform_location');
+  ARB_fragment_layer_viewport := CheckExtension('GL_ARB_fragment_layer_viewport');
+  ARB_framebuffer_no_attachments := CheckExtension('GL_ARB_framebuffer_no_attachments');
+  ARB_internalformat_query2 := CheckExtension('GL_ARB_internalformat_query2');
+  ARB_invalidate_subdata := CheckExtension('GL_ARB_invalidate_subdata');
+  ARB_multi_draw_indirect := CheckExtension('GL_ARB_multi_draw_indirect');
+  ARB_program_interface_query := CheckExtension('GL_ARB_program_interface_query');
+  ARB_shader_image_size := CheckExtension('GL_ARB_shader_image_size');
+  ARB_shader_storage_buffer_object := CheckExtension('GL_ARB_shader_storage_buffer_object');
+  ARB_stencil_texturing := CheckExtension('GL_ARB_stencil_texturing');
+  ARB_texture_buffer_range := CheckExtension('GL_ARB_texture_buffer_range');
+  ARB_texture_query_levels := CheckExtension('GL_ARB_texture_query_levels');
+  ARB_texture_storage_multisample := CheckExtension('GL_ARB_texture_storage_multisample');
+  ARB_texture_view := CheckExtension('GL_ARB_texture_view');
+  ARB_vertex_attrib_binding := CheckExtension('GL_ARB_vertex_attrib_binding');
+  ARB_robustness_isolation := CheckExtension('GL_ARB_robustness_isolation');
+  ARB_cl_event := CheckExtension('GL_ARB_cl_event');
   // check Vendor/EXT OpenGL extensions
   _3DFX_multisample := CheckExtension('GL_3DFX_multisample');
   _3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
@@ -4903,7 +5001,6 @@ begin
   TextureRenderbuffer := GetAddress('TextureRenderbuffer');
   MultiTexRenderbuffer := GetAddress('MultiTexRenderbuffer');
 
-
   FrameTerminatorGREMEDY := GetAddress('FrameTerminatorGREMEDY');
   StringMarkerGREMEDY := GetAddress('StringMarkerGREMEDY');
   DebugMessageEnableAMDX := GetAddressNoSuffixes('DebugMessageEnableAMDX');
@@ -4912,6 +5009,83 @@ begin
   DebugMessageInsert := GetAddress('DebugMessageInsert');
   DebugMessageCallback := GetAddress('DebugMessageCallback');
   GetDebugMessageLog := GetAddress('GetDebugMessageLog');
+
+  PushDebugGroup := GetAddress('PushDebugGroup');
+  PopDebugGroup := GetAddress('PopDebugGroup');
+  ObjectLabel := GetAddress('ObjectLabel');
+  GetObjectLabel := GetAddress('GetObjectLabel');
+  ObjectPtrLabel := GetAddress('ObjectPtrLabel');
+  GetObjectPtrLabel := GetAddress('GetObjectPtrLabel');
+
+  ClearBufferData := GetAddress('ClearBufferData');
+  ClearBufferSubData := GetAddress('ClearBufferSubData');
+  ClearNamedBufferData := GetAddress('ClearNamedBufferData');
+  ClearNamedBufferSubData := GetAddress('ClearNamedBufferSubData');
+
+  DispatchCompute := GetAddress('DispatchCompute');
+  DispatchComputeIndirect := GetAddress('DispatchComputeIndirect');
+
+  CopyImageSubData := GetAddress('CopyImageSubData');
+
+  FramebufferParameteri := GetAddress('FramebufferParameteri');
+  NamedFramebufferParameteri := GetAddress('NamedFramebufferParameteri');
+  GetNamedFramebufferParameteriv := GetAddress('GetNamedFramebufferParameteriv');
+
+  GetInternalformati64v := GetAddress('GetInternalformati64v');
+
+  InvalidateTexSubImage := GetAddress('InvalidateTexSubImage');
+  InvalidateTexImage := GetAddress('InvalidateTexImage');
+  InvalidateBufferSubData := GetAddress('InvalidateBufferSubData');
+  InvalidateBufferData := GetAddress('InvalidateBufferData');
+  InvalidateFramebuffer := GetAddress('InvalidateFramebuffer');
+  InvalidateSubFramebuffer := GetAddress('InvalidateSubFramebuffer');
+
+  MultiDrawArraysIndirect := GetAddress('MultiDrawArraysIndirect');
+  MultiDrawElementsIndirect := GetAddress('MultiDrawElementsIndirect');
+
+  GetProgramInterfaceiv := GetAddress('GetProgramInterfaceiv');
+  GetProgramResourceIndex := GetAddress('GetProgramResourceIndex');
+  GetProgramResourceName := GetAddress('GetProgramResourceName');
+  GetProgramResourceiv := GetAddress('GetProgramResourceiv');
+  GetProgramResourceLocation := GetAddress('GetProgramResourceLocation');
+  GetProgramResourceLocationIndex := GetAddress('GetProgramResourceLocationIndex');
+
+  ShaderStorageBlockBinding := GetAddress('ShaderStorageBlockBinding');
+
+  TexBufferRange := GetAddress('TexBufferRange');
+  TextureBufferRange := GetAddress('TextureBufferRange');
+
+  TexStorage2DMultisample := GetAddress('TexStorage2DMultisample');
+  TexStorage3DMultisample := GetAddress('TexStorage3DMultisample');
+  TextureStorage2DMultisample := GetAddress('TextureStorage2DMultisample');
+  TextureStorage3DMultisample := GetAddress('TextureStorage3DMultisample');
+
+  BufferStorage := GetAddress('BufferStorage');
+  ClearTexImage := GetAddress('ClearTexImage');
+  ClearTexSubImage := GetAddress('ClearTexSubImage');
+  BindBuffersBase := GetAddress('BindBuffersBase');
+  BindBuffersRange := GetAddress('BindBuffersRange');
+  BindTextures := GetAddress('BindTextures');
+  BindSamplers := GetAddress('BindSamplers');
+  BindImageTextures := GetAddress('BindImageTextures');
+  BindVertexBuffers := GetAddress('BindVertexBuffers');
+
+  TextureView := GetAddress('TextureView');
+
+  BindVertexBuffer := GetAddress('BindVertexBuffer');
+  VertexAttribFormat := GetAddress('VertexAttribFormat');
+  VertexAttribIFormat := GetAddress('VertexAttribIFormat');
+  VertexAttribLFormat := GetAddress('VertexAttribLFormat');
+  VertexAttribBinding := GetAddress('VertexAttribBinding');
+  VertexBindingDivisor := GetAddress('VertexBindingDivisor');
+  VertexArrayBindVertexBuffer := GetAddress('VertexArrayBindVertexBuffer');
+  VertexArrayVertexAttribFormat := GetAddress('VertexArrayVertexAttribFormat');
+  VertexArrayVertexAttribIFormat := GetAddress('VertexArrayVertexAttribIFormat');
+  VertexArrayVertexAttribLFormat := GetAddress('VertexArrayVertexAttribLFormat');
+  VertexArrayVertexAttribBinding := GetAddress('VertexArrayVertexAttribBinding');
+  VertexArrayVertexBindingDivisor := GetAddress('VertexArrayVertexBindingDivisor');
+
+  CreateSyncFromCLevent := GetAddress('CreateSyncFromCLevent');
 
 {$IFDEF LINUX}
   VDPAUInitNV := GetAddressNoSuffixes('VDPAUInitNV');
@@ -5110,6 +5284,32 @@ begin
   ARB_texture_compression_bptc := False;
   ARB_get_program_binary := False;
   ARB_separate_shader_objects := False;
+  ARB_shader_stencil_export := False;
+  KHR_debug := False;
+  ARB_clear_buffer_object := False;
+  ARB_compute_shader := False;
+  ARB_copy_image := False;
+  ARB_debug_group := False;
+  ARB_debug_label := False;
+  ARB_debug_output2 := False;
+  ARB_ES3_compatibility := False;
+  ARB_explicit_uniform_location := False;
+  ARB_fragment_layer_viewport := False;
+  ARB_framebuffer_no_attachments := False;
+  ARB_internalformat_query2 := False;
+  ARB_invalidate_subdata := False;
+  ARB_multi_draw_indirect := False;
+  ARB_program_interface_query := False;
+  ARB_shader_image_size := False;
+  ARB_shader_storage_buffer_object := False;
+  ARB_stencil_texturing := False;
+  ARB_texture_buffer_range := False;
+  ARB_texture_query_levels := False;
+  ARB_texture_storage_multisample := False;
+  ARB_texture_view := False;
+  ARB_vertex_attrib_binding := False;
+  ARB_robustness_isolation := False;
+  ARB_cl_event := False;
 
   // check Vendor/EXT OpenGL extensions
   _3DFX_multisample := False;
@@ -6188,6 +6388,83 @@ begin
   DebugMessageCallback := GetCapAddress();
   GetDebugMessageLog := GetCapAddress();
 
+  PushDebugGroup := GetCapAddress();
+  PopDebugGroup := GetCapAddress();
+  ObjectLabel := GetCapAddress();
+  GetObjectLabel := GetCapAddress();
+  ObjectPtrLabel := GetCapAddress();
+  GetObjectPtrLabel := GetCapAddress();
+
+  ClearBufferData := GetCapAddress();
+  ClearBufferSubData := GetCapAddress();
+  ClearNamedBufferData := GetCapAddress();
+  ClearNamedBufferSubData := GetCapAddress();
+
+  DispatchCompute := GetCapAddress();
+  DispatchComputeIndirect := GetCapAddress();
+
+  CopyImageSubData := GetCapAddress();
+
+  FramebufferParameteri := GetCapAddress();
+  NamedFramebufferParameteri := GetCapAddress();
+  GetNamedFramebufferParameteriv := GetCapAddress();
+
+  GetInternalformati64v := GetCapAddress();
+
+  InvalidateTexSubImage := GetCapAddress();
+  InvalidateTexImage := GetCapAddress();
+  InvalidateBufferSubData := GetCapAddress();
+  InvalidateBufferData := GetCapAddress();
+  InvalidateFramebuffer := GetCapAddress();
+  InvalidateSubFramebuffer := GetCapAddress();
+
+  MultiDrawArraysIndirect := GetCapAddress();
+  MultiDrawElementsIndirect := GetCapAddress();
+
+  GetProgramInterfaceiv := GetCapAddress();
+  GetProgramResourceIndex := GetCapAddress();
+  GetProgramResourceName := GetCapAddress();
+  GetProgramResourceiv := GetCapAddress();
+  GetProgramResourceLocation := GetCapAddress();
+  GetProgramResourceLocationIndex := GetCapAddress();
+
+  ShaderStorageBlockBinding := GetCapAddress();
+
+  TexBufferRange := GetCapAddress();
+  TextureBufferRange := GetCapAddress();
+
+  TexStorage2DMultisample := GetCapAddress();
+  TexStorage3DMultisample := GetCapAddress();
+  TextureStorage2DMultisample := GetCapAddress();
+  TextureStorage3DMultisample := GetCapAddress();
+
+  BufferStorage := GetCapAddress();
+  ClearTexImage := GetCapAddress();
+  ClearTexSubImage := GetCapAddress();
+  BindBuffersBase := GetCapAddress();
+  BindBuffersRange := GetCapAddress();
+  BindTextures := GetCapAddress();
+  BindSamplers := GetCapAddress();
+  BindImageTextures := GetCapAddress();
+  BindVertexBuffers := GetCapAddress();
+
+  TextureView := GetCapAddress();
+
+  BindVertexBuffer := GetCapAddress();
+  VertexAttribFormat := GetCapAddress();
+  VertexAttribIFormat := GetCapAddress();
+  VertexAttribLFormat := GetCapAddress();
+  VertexAttribBinding := GetCapAddress();
+  VertexBindingDivisor := GetCapAddress();
+  VertexArrayBindVertexBuffer := GetCapAddress();
+  VertexArrayVertexAttribFormat := GetCapAddress();
+  VertexArrayVertexAttribIFormat := GetCapAddress();
+  VertexArrayVertexAttribLFormat := GetCapAddress();
+  VertexArrayVertexAttribBinding := GetCapAddress();
+  VertexArrayVertexBindingDivisor := GetCapAddress();
+
+  CreateSyncFromCLevent := GetCapAddress();
+
   GenPathsNV := GetCapAddress();
   DeletePathsNV := GetCapAddress();
   IsPathNV := GetCapAddress();
@@ -6914,4 +7191,4 @@ finalization
 
   CloseOpenGL;
 
-end.
+end.
