@@ -6,7 +6,7 @@
   FireMonkey fit GLScene viewer.<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>27/09/13 - Wassail - Added FMX.Controls and FMX.Graphics in uses, changed TFMXHandle to TWindowHandle
+  <li>27/09/13 - PW - Added FMX.Controls and FMX.Graphics in uses, changed TFMXHandle to TWindowHandle
   <li>08/09/11 - Yar - Creation
   </ul></font>
 }
