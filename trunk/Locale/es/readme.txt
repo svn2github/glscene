@@ -1,5 +1,5 @@
 The directory for GLScene's help manuals and po files with translations of captions, text strings and hints 
-from english to other languages using GNU Gettext tools for Delphi, C++ and Lazarus.
+from English to Spanish language using GNU Gettext tools for Delphi, C++ and Lazarus.
 
 The po files could be created, edited and used in the next way: 
 - Download dxgettext-1.2.2.exe from http://sourceforge.net/projects/dxgettext/ 
