@@ -86,6 +86,8 @@ object Form1: TForm1
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 1
+    ExplicitLeft = 2
+    ExplicitTop = 8
   end
   object GLScene1: TGLScene
     Left = 32
@@ -100,6 +102,13 @@ object Form1: TForm1
       Material.FrontProperties.Ambient.Color = {00000000000000000000803F0000803F}
       Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803FBE9F9A3E}
       Material.BlendingMode = bmTransparency
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
       ObjectsSorting = osNone
       Direction.Coordinates = {000000000000803F0000008000000000}
       Up.Coordinates = {00000000000000000000803F00000000}

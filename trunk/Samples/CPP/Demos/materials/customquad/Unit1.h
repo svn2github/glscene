@@ -3,6 +3,9 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <tchar.h>
+//---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -22,6 +25,7 @@
 #include "GLState.hpp"
 #include "GLUtils.hpp"
 #include "JPeg.hpp"
+#include "OpenGL1x.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

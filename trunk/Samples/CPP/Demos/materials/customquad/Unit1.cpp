@@ -1,6 +1,4 @@
 //---------------------------------------------------------------------------
-
-#include <vcl.h>
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -16,6 +14,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
+#pragma link "GLContext"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
