@@ -3411,10 +3411,8 @@ function IsVersionMet(MajorVersion, MinorVersion, actualMajorVersion,
 implementation
 
 uses
-{$IFDEF FPC}
-  Math,
-{$ENDIF}
-  GLSLog;
+ {$IFDEF FPC} Math, {$ENDIF}
+ {$IFDEF GLS_LOGGING}  GLSLog; {$ENDIF}
 
 resourcestring
   rstrOpenGLError = 'OpenGL error - %s';

@@ -69,8 +69,8 @@ uses
   VectorGeometry,
   SysUtils,
   OpenGLTokens,
-  GLTextureFormat,
-  GLSLog;
+  GLTextureFormat
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 const
   GLS_VERTEX_ATTR_NUM = 16;

@@ -4,6 +4,7 @@
 { : GLSCUDAFFTPlan <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
   <li>04/05/11 - Yar - Fixed Source/Destination size checking
   <li>05/03/11 - Yar - Refactored
   <li>19/03/10 - Yar - Creation
@@ -14,10 +15,14 @@ unit GLSCUDAFFTPlan;
 
 interface
 
+{$I GLScene.inc}
+
 uses
   Classes, SysUtils,
   GLSCUDAContext,
-  GLSCUDA, GLS_CUDA_API, GLS_CUDA_FourierTransform;
+  GLSCUDA, GLS_CUDA_API, GLS_CUDA_FourierTransform,
+  GLStrings
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
 
@@ -73,9 +78,6 @@ type
   end;
 
 implementation
-
-uses
-  GLSLog, GLStrings;
 
 resourcestring
   cudasRequireFreeThread = 'CUFFT functions require context-free thread';

@@ -170,9 +170,9 @@ implementation
 
 uses
   GLGraphics,
-  GLTextureFormat,
-  GLSLog
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLTextureFormat
+  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF}
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 { TGLRenderbuffer }
 

@@ -4,7 +4,7 @@
 {: OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
-<li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
+      <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
       <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
                            to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
       <li>21/08/11 - Yar - Added OpenGL ES

@@ -847,7 +847,10 @@ implementation
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
-uses GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils, GLSLog;
+uses
+  GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 resourcestring
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';

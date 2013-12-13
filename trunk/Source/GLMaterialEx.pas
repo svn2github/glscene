@@ -1325,7 +1325,9 @@ procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 implementation
 
 uses
-  GLSLog, ApplicationFileIO, GLStrings, ImageUtils, GLUtils, XOpenGL;
+  ApplicationFileIO, GLStrings, ImageUtils, GLUtils, XOpenGL
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 const
   cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =

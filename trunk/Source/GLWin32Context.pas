@@ -196,16 +196,15 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms,
-{$ELSE}
+ {$IFDEF GLS_DELPHI_XE2_UP} VCL.Forms, {$ELSE}
   Forms,
-{$ENDIF}
+ {$ENDIF}
   Messages,
   GLCrossPlatform,
   GLState,
-  GLSLog,
-  VectorGeometry;
+  VectorGeometry
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 var
   vTrackingCount: Integer;

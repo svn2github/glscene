@@ -29,13 +29,15 @@ uses
   Classes,
   SysUtils,
   BaseClasses
-{$IFDEF FPC}
+  {$IFDEF FPC}
   ,
   LResources
-{$ELSE}
+  {$ELSE}
   ,
   Windows
-{$ENDIF};
+  {$ENDIF}
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 const
   GLS_RC_DDS_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'DDS'{$ENDIF};
@@ -175,8 +177,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-uses
-  GLSLog;
 
 var
   vAFIO: TApplicationFileIO = nil;

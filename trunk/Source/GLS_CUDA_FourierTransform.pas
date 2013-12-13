@@ -4,6 +4,7 @@
 { : GLS_CUDA_FourierTransform<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
   <li>14/02/11 - Yar - Added debug mode
   <li>28/01/10 - Yar - Creation
   </ul></font>
@@ -48,11 +49,14 @@ unit GLS_CUDA_FourierTransform;
 
 interface
 
-uses
-{$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME;
+{$I GLScene.inc}
+{$I Cuda.inc}
 
-{$I cuda.inc}
+uses
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 const
 {$IFDEF WIN32}
@@ -247,9 +251,6 @@ function IsCUFFTInitialized: Boolean;
 function Get_CUDA_FFT_Error_String(AError: TcufftResult): string;
 
 implementation
-
-uses
-  GLSLog;
 
 resourcestring
   cudasFFTFuncRetErr = '%s return error: %s';

@@ -32,7 +32,7 @@ interface
 
 uses
   Classes, VectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
-  GLMaterial, GLRenderContextInfo, GLState, GLSLog;
+  GLMaterial, GLRenderContextInfo, GLState;
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -226,7 +226,9 @@ uses
   OpenGLTokens,
   GLTextureFormat,
   {$IFDEF GLS_DELPHI} VectorTypes, {$ENDIF}
-  GLMultisampleImage;
+  GLMultisampleImage
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 { TGLFBORenderer }
 

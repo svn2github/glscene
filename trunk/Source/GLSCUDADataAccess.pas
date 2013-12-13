@@ -4,6 +4,7 @@
 { : GLSCUDADataAccess<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
   <li>24/02/11 - Yar - Creation
   </ul></font><p>
 }
@@ -11,8 +12,12 @@ unit GLSCUDADataAccess;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  GLCrossPlatform;
+  GLCrossPlatform,
+  SysUtils
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
 
@@ -64,9 +69,6 @@ resourcestring
   cudasSizeMismatch = 'Element size mismatch';
 
 implementation
-
-uses
-  SysUtils, GLSLog;
 
 threadvar
   vElementAccessAddress: PByte;

@@ -20,7 +20,8 @@ interface
 
 uses
   Classes, SysUtils, LCLType,
-  GLCrossPlatform, GLContext,{$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
+  GLCrossPlatform, GLContext,
+  {$IFDEF GLS_LOGGING}GLSLog,{$ENDIF}
 
   // Operation System
 {$IFDEF MSWINDOWS}

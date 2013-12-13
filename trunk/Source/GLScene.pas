@@ -2534,12 +2534,13 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  GLSLog,
   GLStrings,
   XOpenGL,
   VectorTypes,
   ApplicationFileIO,
-  GLUtils;
+  GLUtils
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 var
   vCounterFrequency: Int64;

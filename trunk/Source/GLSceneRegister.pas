@@ -614,7 +614,6 @@ uses
   GLSLanguage,
   GLSLBumpShader,
   GLSLDiffuseSpecularShader,
-  GLSLog,
   GLSLPostBlurShader,
   GLSLProjectedTextures,
   GLSLShader,
@@ -640,9 +639,7 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLViewer,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  GLScene.FMX.Viewer,
-{$ENDIF}
+  {$IFDEF GLS_DELPHI_XE2_UP} GLScene.FMX.Viewer, {$ENDIF}
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,
@@ -697,7 +694,8 @@ uses
   GLSpaceText,
   GLJoystick,
   GLScreenSaver,
-  GLFullScreenViewer;
+  GLFullScreenViewer
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 var
   vObjectManager: TObjectManager;

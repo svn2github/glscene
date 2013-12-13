@@ -261,18 +261,10 @@ function crc32(crc: Longint; const buf; len: Integer): Longint;
 implementation
 
 Uses
-  {$IFDEF GLS_LOGGING}
-  GLSLog,
-  {$ENDIF}
-  {$IFDEF MSWINDOWS}
-  Windows;
-  {$ENDIF}
-  {$IFDEF GLS_X11_SUPPORT}
-   x,
-  {$ENDIF}
-  {$IFDEF UNIX}
-   dynlibs;
-  {$ENDIF}
+  {$IFDEF GLS_LOGGING}  GLSLog, {$ENDIF}
+  {$IFDEF MSWINDOWS}  Windows;  {$ENDIF}
+  {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
+  {$IFDEF UNIX} dynlibs; {$ENDIF}
 
 {*****************************************************************************
 *  link zlib code                                                            *

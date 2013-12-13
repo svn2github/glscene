@@ -529,8 +529,8 @@ implementation
 
 uses
   GLStrings,
-  GLUtils,
-  GLSLog;
+  GLUtils
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 const
   cAddressMode: array [TCuAddresMode] of TCUaddress_mode =

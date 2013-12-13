@@ -4,6 +4,7 @@
 { : GLSCUDAContext <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
@@ -22,7 +23,8 @@ uses
   GLS_CUDA_RunTime,
   GLS_CL_Platform,
   GLContext,
-  GLSGenerics;
+  GLSGenerics
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
 
@@ -217,9 +219,6 @@ type
   end;
 
 implementation
-
-uses
-  GLSLog;
 
 resourcestring
   cudasInvalidContextReg = 'Invalid context registration.';

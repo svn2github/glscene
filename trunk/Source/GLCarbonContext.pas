@@ -1,4 +1,4 @@
-{: GLCarbonContext<p>
+﻿{: GLCarbonContext<p>
 
    Carbon specific Context.<p>
 
@@ -87,8 +87,8 @@ implementation
 // ------------------------------------------------------------------
 // -----------------------------------------------------------------
 uses
-  GLState, GLSLog;
-
+  GLState
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 
 resourcestring

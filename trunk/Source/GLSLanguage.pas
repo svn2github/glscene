@@ -140,9 +140,7 @@ type
 implementation
 
 uses
-  {$IFDEF GLS_LOGGING}
-  GLSLog,
-  {$ENDIF}
+  {$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
   {$IFDEF FPC}
   FileUtil, LConvEncoding,
   {$ENDIF}

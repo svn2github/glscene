@@ -56,7 +56,6 @@ type
 implementation
 
 uses
-  GLSLog,
 {$IFNDEF FPC}
   GLSJPG,
 {$ELSE}
@@ -77,7 +76,9 @@ uses
   jdatasrc,
   jmemmgr,
 {$ENDIF}
-  VectorGeometry;
+  VectorGeometry
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 // ------------------
 // ------------------ TGLJPEGImage ------------------

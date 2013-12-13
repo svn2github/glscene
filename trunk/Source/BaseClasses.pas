@@ -108,8 +108,8 @@ implementation
 
 uses
   SysUtils,
-  GLStrings,
-  GLSLog;
+  GLStrings
+ {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 {$IFDEF GLS_REGIONS}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
 //---------------------- TGLUpdateAbleObject -----------------------------------------

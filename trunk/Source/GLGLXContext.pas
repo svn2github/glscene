@@ -105,7 +105,8 @@ implementation
 // -----------------------------------------------------------------
 {$IFDEF SUPPORT_GLX}
 uses
-  GLState, GLSLog;
+  GLState
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 resourcestring
   cForwardContextFailed = 'Can not create OpenGL 3.x Forward Context';

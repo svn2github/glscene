@@ -20,21 +20,11 @@ interface
 {$WARNINGS OFF}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
-  x,
-{$ENDIF}
-{$IFDEF UNIX}
-  dynlibs,
-{$ENDIF}
-{$IFDEF GLS_LOGGING}
-  GLSLog,
-{$ENDIF}
-{$IFDEF FPC}
-  GLSZLibExAPI,
-{$ENDIF}
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
+  {$IFDEF UNIX} dynlibs, {$ENDIF}
+  {$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
+  {$IFDEF FPC} GLSZLibExAPI, {$ENDIF}
   Classes, SysUtils, VectorGeometry, GLCrossPlatform;
 
 const

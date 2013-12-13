@@ -4,6 +4,7 @@
 { : GLS_CUDA_API<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
   <li>07/02/11 - Yar - Added debug mode
   <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
   <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
@@ -55,7 +56,8 @@ interface
 uses
 {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   GLCrossPlatform,
-  GLS_CL_Platform;
+  GLS_CL_Platform
+ {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 const
   CUDAAPIDLL = 'nvcuda.dll';
@@ -1424,9 +1426,6 @@ function IsCUDAInitialized: Boolean;
 function Get_CUDA_API_Error_String(AError: TCUresult): string;
 
 implementation
-
-uses
-  GLSLog;
 
 resourcestring
   cudasFuncRetErr = '%s return error: %s';

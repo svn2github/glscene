@@ -266,8 +266,8 @@ implementation
 uses
   SysUtils,
   GLStrings,
-  GLTextureFormat,
-  GLSLog;
+  GLTextureFormat
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 resourcestring
   cudasFailToBindArrayToTex = 'Unable to bind CUDA array to OpenGL unmaped t' +

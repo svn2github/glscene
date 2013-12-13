@@ -22,7 +22,11 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes, Forms, GLSCUDAParser;
+  Classes,
+  Forms,
+  GLSCUDAParser
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
 
 type
   TGLSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);
@@ -136,7 +140,7 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}Windows, {$ENDIF}
-  SysUtils, Dialogs, ApplicationFileIO, GLSLog,
+  SysUtils, Dialogs, ApplicationFileIO,
   ShellAPI,
 {$IFNDEF FPC}
   TlHelp32

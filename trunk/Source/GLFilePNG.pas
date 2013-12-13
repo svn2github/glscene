@@ -26,8 +26,8 @@ uses
   GLContext,
   GLGraphics,
   GLTextureFormat,
-  ApplicationFileIO,
-  GLSLog;
+  ApplicationFileIO
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
 

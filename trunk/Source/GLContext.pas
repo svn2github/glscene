@@ -115,8 +115,8 @@ uses
   VectorTypes,
   GLState,
   GLPipelineTransformation,
-  GLTextureFormat,
-  GLSLog;
+  GLTextureFormat
+ {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const

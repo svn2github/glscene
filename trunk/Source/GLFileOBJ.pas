@@ -192,8 +192,8 @@ uses
   XOpenGL,
   GLContext,
   MeshUtils,
-  GLUtils,
-  GLSLog;
+  GLUtils
+ {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 // StreamEOF
 //

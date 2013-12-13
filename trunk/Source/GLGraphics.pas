@@ -505,8 +505,8 @@ implementation
 uses
   VectorGeometry,
   GLStrings,
-  GLSLog,
-  SyncObjs;
+  SyncObjs
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 resourcestring
   glsCantConvertImg = '%s: can''t convert image to RGBA8 format';

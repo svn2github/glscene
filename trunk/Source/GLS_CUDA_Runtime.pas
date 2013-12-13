@@ -4,6 +4,7 @@
 { : GLS_CUDA_Runtime<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
   <li>28/01/10 - Yar - Creation
   </ul></font>
 }
@@ -47,6 +48,9 @@ unit GLS_CUDA_Runtime;
 
 interface
 
+{$I GLScene.inc}
+{$I Cuda.inc}
+
 uses
 {$IFDEF MSWINDOWS}
   Windows,
@@ -54,9 +58,9 @@ uses
   GLCrossPlatform,
   GLS_CL_Platform,
   GLS_CUDA_API,
-  OpenGLTokens;
+  OpenGLTokens
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
-{$I cuda.inc}
 
 const
 {$IFDEF WIN32}
@@ -884,9 +888,6 @@ function InitCUDARTFromLibrary(const LibName: WideString): Boolean;
 function IsCUDARTInitialized: Boolean;
 
 implementation
-
-uses
-  GLSLog;
 
 function cudaGetLastErrorString: string;
 begin
