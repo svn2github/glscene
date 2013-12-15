@@ -472,8 +472,6 @@
       {$DEFINE GLS_DELPHI_XE2_DOWN}
     {$ENDIF}
   {$ENDIF}
-
-
  {$endif}
 
 // need to check VERXXX prior to Delphi 6, when conditional expressions
@@ -492,28 +490,13 @@
   {$ENDIF}
 {$ENDIF}
 
-// C++ Builder 4
-{$IFDEF VER125}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
 // Delphi 4
 {$IFDEF VER120}
   {$DEFINE GLS_UNSUPPORTED}
 {$ENDIF}
 
-// C++ Builder 3
-{$IFDEF VER110}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
 // Delphi 3
 {$IFDEF VER100}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
-// C++ Builder (1)
-{$IFDEF VER93}
   {$DEFINE GLS_UNSUPPORTED}
 {$ENDIF}
 

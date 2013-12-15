@@ -44,7 +44,12 @@ uses
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
 {$ENDIF}
-  Dialogs, Controls, StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.Dialogs, VCL.Controls,
+{$ELSE}
+  Dialogs, Controls,
+{$ENDIF}
+ StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
 {$IFDEF LINUX} , Process {$ENDIF};
 
