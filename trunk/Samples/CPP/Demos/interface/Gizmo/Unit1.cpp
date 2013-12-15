@@ -92,7 +92,7 @@ void __fastcall TForm1::FillPickableObjectsList(TGLBaseSceneObject *root, bool d
   for (t = 0; t < root->Count - 1; t++)
   {
 	Gizmo->PickableObjectsWithRayCast->Add(&root[t]);
-	FillPickableObjectsList(&root[t], false);
+ // FillPickableObjectsList(&root[t], false);  // raised exception with stack overflow
   }
 }
 //---------------------------------------------------------------------------

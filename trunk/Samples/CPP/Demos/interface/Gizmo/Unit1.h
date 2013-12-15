@@ -3,6 +3,9 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <tchar.h>
+//---------------------------------------------------------------------------
 #include <System.SysUtils.hpp>
 #include <System.Classes.hpp>
 #include <Vcl.Graphics.hpp>
@@ -51,7 +54,6 @@ __published:	// IDE-managed Components
 	TLabel *Label4;
 	TLabel *Label5;
 	TLabel *Label6;
-	TLabel *Label8;
 	TLabel *Label10;
 	TLabel *Label11;
 	TLabel *Label7;

@@ -1,5 +1,7 @@
 //
-//  22/01/13 - PW - First draft of conversion to Cpp
+// GLGizmo - the initial Delphi code by Adirex, Degiovani, Delauney, Mrqzzz
+//
+//  22/01/13 - PW - Conversion to CPP
 //
 //---------------------------------------------------------------------------
 
