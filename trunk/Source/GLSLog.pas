@@ -606,10 +606,16 @@ var
       lErrorMessage := 'Renaming of "%s" failed with error : %d. Try again?';
       while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
       begin
+        {$IFDEF FPC}
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-          {$IFDEF FPC}GetLastOSError{$ELSE}GetLastError{$ENDIF}]),
-          mtWarning, mbYesNo, -1 {$IFNDEF FPC}, mbYes{$ENDIF}) = mrNo
+          GetLastOSErrorGetLastError]),
+          mtWarning, mbYesNo, -1, mbYes = mrNo
           then Break;
+        {$ELSE}
+        if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
+          GetLastError]), mtWarning, [mbNo], 0) = mrNo
+          then Break;
+        {$ENDIF}
         AssignFile(lFile, lLogOriginalDir + sRec.Name);
         CloseFile(lFile);
       end;

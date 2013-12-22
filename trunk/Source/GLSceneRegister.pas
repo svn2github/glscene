@@ -639,7 +639,11 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLViewer,
-  {$IFDEF GLS_DELPHI_XE2_UP} GLScene.FMX.Viewer, {$ENDIF}
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    GLScene.FMX.Viewer,
+    GLType,
+    GLFileTIN,
+  {$ENDIF}
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,
@@ -673,7 +677,6 @@ uses
   GLFileQ3BSP,
   GLFileSMD,
   GLFileSTL,
-  GLFileTIN,
   GLFileVRML,
 
   // Sound file formats

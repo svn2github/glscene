@@ -44,6 +44,10 @@ uses
 {$IFDEF DARWIN}
   MacOSAll,
 {$ENDIF}
+
+{$IFDEF FPC} Math, {$ENDIF}
+{$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
+
   OpenGLTokens,
   VectorGeometry,
   VectorTypes,
@@ -3409,10 +3413,6 @@ function IsVersionMet(MajorVersion, MinorVersion, actualMajorVersion,
   actualMinorVersion: integer): boolean;
 
 implementation
-
-uses
- {$IFDEF FPC} Math, {$ENDIF}
- {$IFDEF GLS_LOGGING}  GLSLog; {$ENDIF}
 
 resourcestring
   rstrOpenGLError = 'OpenGL error - %s';
