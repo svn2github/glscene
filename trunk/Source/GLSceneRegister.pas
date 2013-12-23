@@ -641,7 +641,7 @@ uses
   GLViewer,
   {$IFDEF GLS_DELPHI_XE2_UP}
     GLScene.FMX.Viewer,
-    GLType,
+    GLTypes,
     GLFileTIN,
   {$ENDIF}
   GLWaterPlane,
