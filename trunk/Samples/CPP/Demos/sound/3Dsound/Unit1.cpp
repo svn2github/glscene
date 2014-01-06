@@ -91,6 +91,8 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 	mngName = "BASS";
   else if(dynamic_cast < TGLSMFMOD * >(sm))
 	mngName = "FMOD";
+  else if (dynamic_cast < TGLSMOpenAL * >(sm))
+	  mngName = "OpenAL";
   else
 	mngName = "";
   if(sm)
@@ -100,7 +102,6 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
   else
 	LabelFPS->Caption = "No active sound manager.";
   GLSceneViewer->ResetPerformanceMonitor();
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::RBFMODClick(TObject *Sender)
