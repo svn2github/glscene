@@ -13,7 +13,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
-                              sound source and with sscSample in aSource.Changes  
+                              sound source and with sscSample in aSource.Changes
       <li>17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
       <li>15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
       <li>07/06/07 - DaStr - Added $I GLScene.inc
@@ -36,7 +36,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLSound, GLScene;
+uses
+  Classes, SysUtils,
+
+  //GLScene
+  GLSound, GLScene, VectorGeometry,
+  FMod, FmodTypes, FmodPresets;
 
 type
 
@@ -89,8 +94,6 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, {$IFNDEF FPC}FMod{$ELSE}FModdyn{$ENDIF}, fmodtypes, fmodpresets, VectorGeometry;
-
 type
    TFMODInfo =  record
       channel : Integer;
@@ -107,9 +110,9 @@ end;
 //
 procedure VectorToFMODVector(const aVector : TVector; var aFMODVector : TFSoundVector);
 begin
-   aFMODVector.x:=aVector.V[0];
-   aFMODVector.y:=aVector.V[1];
-   aFMODVector.z:=-aVector.V[2];
+  aFMODVector.x:=aVector.X;
+  aFMODVector.y:=aVector.Y;
+  aFMODVector.z:=-aVector.Z;
 end;
 
 // ------------------

@@ -12,6 +12,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/01/14 - PW - Updated to BASS 2.4 thanks to Ian Luck
       <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
                               sound source and with sscSample in aSource.Changes
       <li>07/11/09 - DaStr - Improved FPC compatibility
@@ -31,9 +32,12 @@ unit GLSMBASS;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF UNIX}
 
-uses Classes, GLSound, GLScene {$IFDEF FPC} ,Controls{$ENDIF};
+uses
+  Classes, SysUtils, Forms,
+
+  //GLScene
+  GLSound, GLScene, Bass, VectorGeometry;
 
 type
 
@@ -89,8 +93,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses Forms, SysUtils, Bass, VectorGeometry, Dialogs;
-
 type
    TBASSInfo =  record
       channel : HCHANNEL;
@@ -107,11 +109,9 @@ end;
 //
 procedure VectorToBASSVector(const aVector : TVector; var aBASSVector : BASS_3DVECTOR);
 begin
-   with aBASSVector do begin
-      x:=aVector.V[0];
-      y:=aVector.V[1];
-      z:=-aVector.V[2];
-   end;
+  aBASSVector.x:=aVector.X;
+  aBASSVector.y:=aVector.Y;
+  aBASSVector.z:=-aVector.Z;
 end;
 
 // ------------------
@@ -123,7 +123,7 @@ end;
 constructor TGLSMBASS.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
-  BASS_Load(BASS_DLL);
+  BASS_Load(bassdll);
    MaxChannels:=32;
 end;
 
@@ -142,13 +142,13 @@ const
    c3DAlgo : array [algDefault..algLight] of Integer =
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
 begin
-   assert(bass_isloaded,'BASS DLL is not present');
-
+   Assert(bass_isloaded,'BASS DLL is not present');
    {$IFDEF FPC}
-   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, TWinControl(Owner).Handle,nil) then begin
+   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, TWinControl(Owner).Handle,nil) then
    {$ELSE}
-   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then begin
+   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then
    {$ENDIF}
+   begin
       Result:=False;
       Exit;
    end;
@@ -239,7 +239,7 @@ begin
    begin
      KillSource(aSource);
    end;
-   
+
    if (aSource.Sample=nil) or (aSource.Sample.Data=nil) or
       (aSource.Sample.Data.WAVDataSize=0) then Exit;
    if aSource.ManagerTag<>0 then begin
@@ -276,7 +276,6 @@ begin
    VectorToBASSVector(objVel, velocity);
    VectorToBASSVector(objOri, orientation);
    if p.channel=0 then begin
-//      p.channel:=BASS_SamplePlay3D(p.sample, position, orientation, velocity);
       p.channel:=BASS_SampleGetChannel(p.sample,false);
       Assert(p.channel<>0);
       BASS_ChannelSet3DPosition(p.channel,position, orientation, velocity);
@@ -289,16 +288,18 @@ begin
         BASS_ChannelPlay(p.channel,true);
 
    end else BASS_ChannelSet3DPosition(p.channel, position, orientation, velocity);
+
    if p.channel<>0 then
    begin
+      res := BASS_ChannelSetAttribute(p.channel, BASS_ATTRIB_FREQ, 0);
+      Assert(res);
       if aSource.Mute then
-        res := BASS_ChannelSetAttributes(p.channel, aSource.Frequency, 0, -101)
+        res := BASS_ChannelSetAttribute(p.channel, BASS_ATTRIB_VOL, 0)
       else
-        res := BASS_ChannelSetAttributes(p.channel, aSource.Frequency, Round(aSource.Volume*100), -101);
+        res := BASS_ChannelSetAttribute(p.channel, BASS_ATTRIB_VOL, aSource.Volume);
       Assert(res);
    end else aSource.Free;
-
-   inherited UpdateSource(aSource);   
+   inherited UpdateSource(aSource);
 end;
 
 // MuteSource
@@ -311,8 +312,8 @@ begin
    if aSource.ManagerTag<>0 then begin
       p:=PBASSInfo(aSource.ManagerTag);
       if muted then
-         res:=BASS_ChannelSetAttributes(p.channel, -1, 0, -101)
-      else res:=BASS_ChannelSetAttributes(p.channel, -1, Round(aSource.Volume*100), -101);
+         res:=BASS_ChannelSetAttribute(p.channel,  BASS_ATTRIB_VOL, 0)
+      else res:=BASS_ChannelSetAttribute(p.channel, BASS_ATTRIB_VOL, aSource.Volume);
       Assert(res);
    end;
 end;
