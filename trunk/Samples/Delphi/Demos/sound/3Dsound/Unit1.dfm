@@ -87,7 +87,9 @@ object Form1: TForm1
       Width = 57
       Height = 17
       Caption = 'BASS'
+      Checked = True
       TabOrder = 0
+      TabStop = True
       OnClick = RBFMODClick
     end
     object RBFMOD: TRadioButton
@@ -116,7 +118,6 @@ object Form1: TForm1
       Height = 25
       Anchors = [akTop, akRight]
       Caption = 'Howl (MP3)'
-      Enabled = False
       TabOrder = 3
       OnClick = btnHowlClick
     end
@@ -126,9 +127,7 @@ object Form1: TForm1
       Width = 65
       Height = 17
       Caption = 'OpenAL'
-      Checked = True
       TabOrder = 4
-      TabStop = True
       OnClick = RBFMODClick
     end
   end
@@ -141,6 +140,7 @@ object Form1: TForm1
     Top = 80
   end
   object GLSMBASS: TGLSMBASS
+    Active = True
     MaxChannels = 32
     MasterVolume = 1.000000000000000000
     Listener = Mickey
@@ -150,7 +150,6 @@ object Form1: TForm1
     Top = 80
   end
   object GLSMOpenAL: TGLSMOpenAL
-    Active = True
     MaxChannels = 32
     MasterVolume = 1.000000000000000000
     Listener = Mickey

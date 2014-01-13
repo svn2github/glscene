@@ -19,9 +19,10 @@ type
     DummyCube: TGLDummyCube;
     Sphere: TGLSphere;
     GLLightSource: TGLLightSource;
+    GLSoundLibrary: TGLSoundLibrary;
+    GLSMBASS: TGLSMBASS;
     GLSMFMOD: TGLSMFMOD;
     GLSMOpenAL: TGLSMOpenAL;
-    GLSoundLibrary: TGLSoundLibrary;
     GLCadencer1: TGLCadencer;
     Timer: TTimer;
     Mickey: TGLSphere;
@@ -33,7 +34,6 @@ type
     Disk1: TGLDisk;
     Torus1: TGLTorus;
     TrackBar1: TTrackBar;
-    GLSMBASS: TGLSMBASS;
     Panel1: TPanel;
     Label1: TLabel;
     RBBass: TRadioButton;
@@ -139,7 +139,7 @@ begin
    else
    begin
      newManager:=GLSMOpenAL;
-     btnHowl.Enabled:=false;
+     btnHowl.Enabled:=false; //mp3 not supported
    end;
    if newManager<>ActiveSoundManager then begin
       // shut down current one, and activate the new one

@@ -6,7 +6,7 @@ uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, ComCtrls, Controls, StdCtrls, GLWin32Viewer,
   GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
-  GLFileMP3, GLUtils;
+  GLFileMP3;
 
 type
   TForm1 = class(TForm)
@@ -57,8 +57,18 @@ implementation
 uses VectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  MediaPath : String;
+  I : Integer;
 begin
-   SetGLSceneMediaDir();
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos(UpperCase('Samples'), UpperCase(MediaPath));
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    MediaPath := MediaPath+'Media\';
+    SetCurrentDir(MediaPath);
+  end;
    // Load our sound sample
    GLSoundLibrary.Samples.AddFile('drumloop.wav','drumloop.wav');
    GLSoundLibrary.Samples.AddFile('chimes.wav','chimes.wav');
