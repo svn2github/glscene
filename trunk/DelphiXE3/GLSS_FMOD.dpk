@@ -41,6 +41,5 @@ contains
   fmodpresets in '..\Source\fmodpresets.pas',
   fmodtypes in '..\Source\fmodtypes.pas',
   fmoderrors in '..\Source\fmoderrors.pas',
-  fmoddyn in '..\Source\fmoddyn.pas';
 
 end.

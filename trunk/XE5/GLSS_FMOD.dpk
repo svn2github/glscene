@@ -40,7 +40,6 @@ contains
   GLSMFMOD in '..\Source\GLSMFMOD.pas',
   fmodpresets in '..\Source\fmodpresets.pas',
   fmodtypes in '..\Source\fmodtypes.pas',
-  fmoderrors in '..\Source\fmoderrors.pas',
-  fmoddyn in '..\Source\fmoddyn.pas';
+  fmoderrors in '..\Source\fmoderrors.pas';
 
 end.
