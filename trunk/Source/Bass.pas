@@ -11,6 +11,7 @@
   NOTE: Delphi users should use the BASS_UNICODE flag where possible
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/01/14 - PW - Attained C++Builder compatibility with MMSYSTEM.H in XE or UP
       <li>14/01/14 - PW - Updated to BASS 2.4 with thanks to Ian Luck
       <li>21/03/08 - DanB - Updated to BASS 2.3
       <li>06/06/07 - DaStr - Added $I GLScene.inc
@@ -25,6 +26,8 @@
 unit Bass;
 
 interface
+
+{$I GLScene.inc}
 
 {$IFDEF MSWINDOWS}
 uses
@@ -160,6 +163,7 @@ const
   DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED;    // device driver has been certified by Microsoft
 
   // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
+  {$IFDEF GLS_DELPHI_XE_DOWN}
   WAVE_FORMAT_1M08       = $00000001;      // 11.025 kHz, Mono,   8-bit
   WAVE_FORMAT_1S08       = $00000002;      // 11.025 kHz, Stereo, 8-bit
   WAVE_FORMAT_1M16       = $00000004;      // 11.025 kHz, Mono,   16-bit
@@ -172,7 +176,7 @@ const
   WAVE_FORMAT_4S08       = $00000200;      // 44.1   kHz, Stereo, 8-bit
   WAVE_FORMAT_4M16       = $00000400;      // 44.1   kHz, Mono,   16-bit
   WAVE_FORMAT_4S16       = $00000800;      // 44.1   kHz, Stereo, 16-bit
-
+  {$ENDIF}
   BASS_SAMPLE_8BITS       = 1;   // 8 bit
   BASS_SAMPLE_FLOAT       = 256; // 32-bit floating-point
   BASS_SAMPLE_MONO        = 2;   // mono
