@@ -802,9 +802,9 @@ uses
   {$IFDEF LINUX}
   Libc,
   {$ENDIF}
-  dynlibs
+  dynlibs,
 {$ENDIF}
-{$IFNDEF GLS_LOGGING}; {$ELSE} GLSLog; {$ENDIF}
+  GLSLog;
 
 const
 {$IFDEF LINUX}
