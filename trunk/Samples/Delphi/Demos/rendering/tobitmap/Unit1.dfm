@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 195
   Top = 103
-  Width = 465
-  Height = 335
-  Caption = 'Form1'
+  Caption = 'Render to Bitmap'
+  ClientHeight = 344
+  ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,22 +18,24 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 336
-    Height = 297
+    Width = 378
+    Height = 344
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 142.783203125000000000
+    FieldOfView = 147.581954956054700000
     Align = alClient
     TabOrder = 0
+    ExplicitLeft = -8
   end
   object Panel1: TPanel
-    Left = 336
+    Left = 378
     Top = 0
     Width = 113
-    Height = 297
+    Height = 344
     Align = alRight
     TabOrder = 1
+    ExplicitLeft = 370
     object BUSnapShot: TButton
       Left = 8
       Top = 40
@@ -80,8 +82,8 @@ object Form1: TForm1
       OnClick = BUBitmap300Click
     end
     object BUViewerSnapShot: TButton
-      Left = 8
-      Top = 8
+      Left = 6
+      Top = 9
       Width = 97
       Height = 25
       Caption = 'Viewer SnapShot'
@@ -90,8 +92,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 8
+    Left = 32
+    Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000B4420000B442000048420000803F}
@@ -101,6 +103,7 @@ object Form1: TForm1
     object HUDSprite1: TGLHUDSprite
       Material.Texture.MinFilter = miLinear
       Material.Texture.Disabled = False
+      Rotation = 0.000000000000000000
     end
     object Plane1: TGLPlane
       Material.Texture.MinFilter = miLinear
@@ -154,7 +157,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    Left = 40
-    Top = 8
+    Left = 104
+    Top = 16
   end
 end

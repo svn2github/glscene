@@ -1,28 +1,15 @@
-{: Render To Bitmap sample.<p>
-
-   This demo illustrates the two ways to obtain a 3D scene in a bitmap.<br>
-   The first, which is also the fastest, is to use CreateSnapShot. It allows
-   to obtain what you see on the screen, as it was rendered by the 3D acceleration
-   device if any is available.<br>
-   The second is to use RenderToBitmap. This makes use of Software OpenGL
-   rendering and is significantly slower, but you can render to any size,
-   including to bitmap much larger than the screen which are suited for use
-   in printed documents for instance.<p>
-
-   Note that since RenderToBitmap uses software OpenGL, the output may be
-   different from what you get with hardware acceleration, not only because
-   the rasterizer is different, but also because the software implementation
-   may not support the same feature set. 
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  GLCadencer, GLObjects, GLScene, ExtCtrls, GLWin32Viewer,
-  GLHUDObjects, StdCtrls, GLSpaceText, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  ExtCtrls, StdCtrls, Jpeg,
+
+  //GLScene
+  GLCadencer, GLObjects, GLScene, GLWin32Viewer,
+  GLHUDObjects, GLSpaceText, GLCrossPlatform, GLCoordinates,
+  BaseClasses, GLGraphics, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -67,8 +54,8 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, Unit2, GLGraphics, GLUtils;
-
+uses
+  Unit2;
 {
    A utility function, this takes the bitmap and uses Form2 to display it with
    a regular TImage component.
@@ -91,6 +78,19 @@ begin
    f.Image1.Height:=aBitmap.Height;
    f.Show;
 end;
+
+//
+// Utility stuff: load textures, animate the sphere and support resizing.
+//
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+   SetGLSceneMediaDir();
+   HUDSprite1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+   Plane1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+   Sphere1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+end;
+
 
 procedure TForm1.BUViewerSnapShotClick(Sender: TObject);
 var
@@ -178,18 +178,6 @@ procedure TForm1.BUBitmap600Click(Sender: TObject);
 begin
    // Screen is "magic" 96 dpi, this gives us our scale
    RenderToBitmap(600/96);
-end;
-
-//
-// Utility stuff: load textures, animate the sphere and support resizing.
-//
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-   SetGLSceneMediaDir();
-   HUDSprite1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
-   Plane1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
-   Sphere1.Material.Texture.Image.LoadFromFile('marbletiles.jpg');
 end;
 
 procedure TForm1.Sphere1Progress(Sender: TObject; const deltaTime,

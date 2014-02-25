@@ -3,8 +3,7 @@ unit Unit2;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls;
+  Windows, Forms, Classes, Controls, ExtCtrls;
 
 type
   TForm2 = class(TForm)
