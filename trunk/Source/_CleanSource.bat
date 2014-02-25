@@ -13,6 +13,6 @@ del *.a /s
 echo **************************************
 echo   DELETE AUTO-GENERATED CPP FILES 
 echo **************************************
-rem del *.hpp
-rem del *.bpi
-rem del *.lib
+del *.hpp /s
+del *.bpi /s
+del *.lib /s

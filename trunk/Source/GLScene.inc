@@ -4,6 +4,7 @@
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
 // History:
+// 25/02/14 - PW - Added GLS_FMX option
 // 10/11/12 - PW - Added support for Delphi and C++Builder with
 //                 GLS_DELPHI and GLS_CPPB defines
 // 02/04/10 - Yar - Added GLS_NO_INLINE option
@@ -36,6 +37,9 @@
 
 // Activate combined support for Delphi and C++Builder
 {$DEFINE GLS_DELPHI_OR_CPPB}
+
+// Activate FireMonkey support of FMX instead of VCL
+{.$DEFINE GLS_FMX}
 
 // Activate support for png images (using pngimage.pas library)
 // GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
@@ -292,24 +296,8 @@
   {$ifend}
 
 
-  {$if CompilerVersion>13.0}
-    {$DEFINE GLS_COMPILER_5_UP}
-  {$elseif CompilerVersion=13.0}
-    {$DEFINE GLS_COMPILER_5}
-    {$DEFINE GLS_COMPILER_5_UP}
-    {$DEFINE GLS_COMPILER_5_DOWN}
-  {$elseif CompilerVersion<13.0}
-    {$DEFINE GLS_COMPILER_5_DOWN}
-  {$ifend}
-
-   // We've already determined it's Delphi 5+
-  {$DEFINE GLS_COMPILER_5_UP}
-
   // Friendly names
   {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_5}
-      {$DEFINE GLS_CPPB_5}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_6}
       {$DEFINE GLS_CPPB_6}
     {$ENDIF}
@@ -326,12 +314,6 @@
       {$DEFINE GLS_CPPB_2010}
     {$ENDIF}
   {$ELSE}
-    {$IFDEF GLS_COMPILER_5}
-      {$DEFINE GLS_DELPHI_5}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_6}
-      {$DEFINE GLS_DELPHI_6}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_7}
       {$DEFINE GLS_DELPHI_7}
     {$ENDIF}
@@ -366,9 +348,6 @@
 
   // UP Declarations
   {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_5_UP}
-      {$DEFINE GLS_CPPB_5_UP}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_6_UP}
       {$DEFINE GLS_CPPB_6_UP}
     {$ENDIF}
@@ -385,12 +364,6 @@
       {$DEFINE GLS_CPPB_2010_UP}
     {$ENDIF}
   {$ELSE}
-    {$IFDEF GLS_COMPILER_5_UP}
-      {$DEFINE GLS_DELPHI_5_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_6_UP}
-      {$DEFINE GLS_DELPHI_6_UP}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_7_UP}
       {$DEFINE GLS_DELPHI_7_UP}
     {$ENDIF}
@@ -441,9 +414,6 @@
       {$DEFINE GLS_CPPB_2010_DOWN}
     {$ENDIF}
   {$ELSE}
-    {$IFDEF GLS_COMPILER_6_DOWN}
-      {$DEFINE GLS_DELPHI_6_DOWN}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_7_DOWN}
       {$DEFINE GLS_DELPHI_7_DOWN}
     {$ENDIF}
@@ -474,42 +444,6 @@
   {$ENDIF}
  {$endif}
 
-// need to check VERXXX prior to Delphi 6, when conditional expressions
-// were introduced
-
-// Delphi 5 & C++ Builder 5
-{$IFDEF VER130}
-  {$DEFINE GLS_COMPILER_5}
-  {$DEFINE GLS_COMPILER_5_UP}
-  {$IFDEF BCB}
-    {$DEFINE GLS_CPPB_5}
-    {$DEFINE GLS_CPPB_5_UP}
-  {$ELSE}
-    {$DEFINE GLS_DELPHI_5}
-    {$DEFINE GLS_DELPHI_5_UP}
-  {$ENDIF}
-{$ENDIF}
-
-// Delphi 4
-{$IFDEF VER120}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
-// Delphi 3
-{$IFDEF VER100}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
-// Delphi 2
-{$IFDEF VER90}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
-// Delphi (1)
-{$IFDEF VER80}
-  {$DEFINE GLS_UNSUPPORTED}
-{$ENDIF}
-
 {$IFNDEF GLS_CPPB}
   {$IFNDEF GLS_DELPHI}
     { Don't know what the hell it is.  Could be new version, or could be old BP. }
@@ -529,8 +463,6 @@
   {$DEFINE GLS_COMPILER_2005_DOWN}
   {$DEFINE GLS_COMPILER_8_DOWN}
   {$DEFINE GLS_COMPILER_7_DOWN}
-  {$DEFINE GLS_COMPILER_6_DOWN}
-  {$DEFINE GLS_COMPILER_5_DOWN}
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_5}
@@ -543,8 +475,6 @@
   {$DEFINE GLS_DELPHI_2005_DOWN}
   {$DEFINE GLS_DELPHI_8_DOWN}
   {$DEFINE GLS_DELPHI_7_DOWN}
-  {$DEFINE GLS_DELPHI_6_DOWN}
-  {$DEFINE GLS_DELPHI_5_DOWN}
 {$ENDIF}
 
 //CPP Defines
