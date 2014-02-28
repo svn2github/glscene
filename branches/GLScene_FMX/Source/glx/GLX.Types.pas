@@ -7,7 +7,7 @@
    compatibility between Delphi and C+Builder
   </p>
 	<b>History : </b><font size=-1><ul>
-    <li>24/12/13 - PW - Started cross-platform support of GLScene on the base of FMX
+    <li>24/12/13 - PW - Upgraded to support FireMonkey application platform
     <li>12/12/12 - PW - Added TGLVector's and TGLMatrix's types
     <li>11/11/11 - PW - Creation. Defined TGLPoint, TGLPolygon and TGLPolyhedron types
   </ul>

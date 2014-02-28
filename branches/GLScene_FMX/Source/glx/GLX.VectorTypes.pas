@@ -18,7 +18,8 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
-    <li>24/12/13 - PW - Removed to here THalfFloat from GLCrossPlatform unit
+    <li>28/02/14 - PW - Upgraded to support FireMonkey application platform
+    <li>24/12/13 - PW - Removed here THalfFloat from GLCrossPlatform unit
     <li>18/12/12 - PW - Restored CPP compatibility: changed arrays to records
     <li>21/02/11 - Yar - Added half and signed byte vectors
     <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
