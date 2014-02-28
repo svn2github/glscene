@@ -4,9 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLFBORenderer, GLScene, GLObjects, GLCoordinates, GLSimpleNavigation,
-  GLMaterial, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses,
-  GLRenderContextInfo, StdCtrls, ExtCtrls, AsyncTimer;
+  Dialogs, StdCtrls, ExtCtrls,
+
+  //GLScene
+  GLScene, GLWin32Viewer, GLFBORenderer, GLObjects, GLCoordinates, GLSimpleNavigation,
+  GLMaterial, GLCadencer,  GLCrossPlatform, BaseClasses,
+  GLRenderContextInfo, GLContext, AsyncTimer;
 
 type
   TForm1 = class(TForm)
@@ -26,6 +29,7 @@ type
     Timer1: TTimer;
     RadioGroup1: TRadioGroup;
     RadioGroup2: TRadioGroup;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
@@ -54,9 +58,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLContext;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Triger := False;
@@ -67,7 +68,6 @@ end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

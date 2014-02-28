@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Width = 816
-  Height = 518
-  Caption = 'Form1'
+  Caption = 'Render To Texture'
+  ClientHeight = 480
+  ClientWidth = 800
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -165,12 +165,32 @@ object Form1: TForm1
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
       end>
-    Left = 88
+    Left = 160
     Top = 24
   end
   object Timer1: TTimer
     OnTimer = AsyncTimer1Timer
-    Left = 32
-    Top = 120
+    Left = 160
+    Top = 80
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'RenderToTexture - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 288
+    Top = 24
   end
 end
