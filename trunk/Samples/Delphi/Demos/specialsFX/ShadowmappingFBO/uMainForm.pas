@@ -1,46 +1,18 @@
-{
-Demo of the new FBO Renderer component.
-
-Version History:
-  30/04/2010 - Yar - Fixed for ATI
-  12/11/2009 - DaStr - Initial version (by YarUnderoaker)
-
-}
 unit uMainForm;
 
 interface
 
 uses
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLScene,
-  GLContext,
-  GLObjects,
-  GLHUDObjects,
-  GLMaterial,
-  GLTexture,
-  GLWin32Viewer,
-  GLGeomObjects,
-  StdCtrls,
-  ExtCtrls,
-  GLFBORenderer,
-  GLCadencer,
-  GLCustomShader,
-  GLSLShader,
-  VectorGeometry,
-  GLPolyhedron,
-  GLCoordinates,
-  GLCrossPlatform,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLSimpleNavigation,
-  GLVectorFileObjects,
-  GLState;
+  SysUtils,  Variants,  Classes,  Graphics,  Controls,  Forms,  Dialogs,
+  StdCtrls,  ExtCtrls,
+
+  //GLScene
+  GLScene,  GLContext,  GLObjects,  GLHUDObjects,  GLMaterial,  GLTexture,
+  GLWin32Viewer,  GLGeomObjects,  GLFBORenderer,  GLCadencer,  GLCustomShader,
+  GLSLShader,  VectorGeometry,  GLPolyhedron,  GLCoordinates,  GLCrossPlatform,
+  BaseClasses,  GLRenderContextInfo,  GLSimpleNavigation,  GLVectorFileObjects,
+  OpenGLTokens,  GLFileMD2,  DDSImage,  JPEG,  GLFileObj,  GLGraphics,
+  VectorTypes,  GLState, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -94,16 +66,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  OpenGLTokens,
-  GLFileMD2,
-  DDSImage,
-  JPEG,
-  GLFileObj,
-  GLGraphics,
-  VectorTypes,
-  GLUtils;
 
 procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
 begin

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 273
   Top = 234
-  Width = 673
-  Height = 518
-  Caption = 'Form1'
+  Caption = 'Shadow Mapping FBO'
+  ClientHeight = 479
+  ClientWidth = 657
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,11 +19,11 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 657
-    Height = 480
+    Height = 479
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 156.463424682617200000
+    FieldOfView = 156.415664672851600000
     Align = alClient
     TabOrder = 0
   end
@@ -118,6 +118,7 @@ object Form1: TForm1
       Position.Coordinates = {0000804200008042000000000000803F}
       Width = 128.000000000000000000
       Height = 128.000000000000000000
+      Rotation = 0.000000000000000000
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
@@ -203,7 +204,7 @@ object Form1: TForm1
   object GLNavigation: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Shadow Mapping FBO - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
