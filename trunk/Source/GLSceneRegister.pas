@@ -124,13 +124,10 @@ uses
 {$IFDEF GLS_DELPHI_7_UP}
   ToolsAPI,
 {$ENDIF}
-{$IFDEF GLS_DELPHI_6_UP}
   DesignIntf,
   DesignEditors,
   VCLEditors
-{$ELSE}
-  DsgnIntf
-{$ENDIF};
+;
 
 type
 
@@ -313,27 +310,14 @@ type
      here for the same reason...), the "protected" wasn't meant just to lure
      programmers into code they can't reuse... Arrr! and he did that again
      in D6! Grrr... }
-{$IFDEF GLS_DELPHI_6_UP}
   TReuseableDefaultEditor = class(TComponentEditor, IDefaultEditor)
-{$ELSE}
-  TReuseableDefaultEditor = class(TComponentEditor)
-{$ENDIF}
   protected
     { Protected Declarations }
-{$IFDEF GLS_DELPHI_6_UP}
     FFirst: IProperty;
     FBest: IProperty;
     FContinue: Boolean;
     procedure CheckEdit(const Prop: IProperty);
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); virtual;
-{$ELSE}
-    FFirst: TPropertyEditor;
-    FBest: TPropertyEditor;
-    FContinue: Boolean;
-    procedure CheckEdit(PropertyEditor: TPropertyEditor);
-    procedure EditProperty(PropertyEditor: TPropertyEditor;
-      var Continue, FreeEditor: Boolean); virtual;
-{$ENDIF}
 
   public
     { Public Declarations }
@@ -343,13 +327,9 @@ type
   // TGLMaterialLibraryEditor
   //
   {: Editor for material library.<p> }
-  TGLMaterialLibraryEditor = class(TReuseableDefaultEditor{$IFDEF GLS_DELPHI_6_UP}, IDefaultEditor{$ENDIF})
+  TGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
-{$IFDEF GLS_DELPHI_6_UP}
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-{$ELSE}
-    procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
-{$ENDIF}
   public
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -388,11 +368,7 @@ type
   {: Editor for GLScene Archive Manager.<p> }
   TGLSArchiveManagerEditor = class(TReuseableDefaultEditor{$IFDEF GLS_DELPHI_6_UP}, IDefaultEditor{$ENDIF})
   protected
-{$IFDEF GLS_DELPHI_6_UP}
     procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-{$ELSE}
-    procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
-{$ENDIF}
   public
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
@@ -1349,34 +1325,15 @@ end;
 
 // CheckEdit
 //
-{$IFDEF GLS_DELPHI_6_UP}
 
 procedure TReuseableDefaultEditor.CheckEdit(const Prop: IProperty);
 begin
   if FContinue then
     EditProperty(Prop, FContinue);
 end;
-{$ELSE}
-
-procedure TReuseableDefaultEditor.CheckEdit(PropertyEditor: TPropertyEditor);
-var
-  FreeEditor: Boolean;
-begin
-  FreeEditor := True;
-  try
-    if FContinue then
-      EditProperty(PropertyEditor, FContinue, FreeEditor);
-  finally
-    if FreeEditor then
-      PropertyEditor.Free;
-  end;
-end;
-{$ENDIF}
 
 // EditProperty
 //
-{$IFDEF GLS_DELPHI_6_UP}
-
 procedure TReuseableDefaultEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 var
@@ -1408,48 +1365,9 @@ begin
       if CompareText(PropName, 'ONCLICK') = 0 then
         ReplaceBest;
 end;
-{$ELSE}
-
-procedure TReuseableDefaultEditor.EditProperty(PropertyEditor: TPropertyEditor;
-  var Continue, FreeEditor: Boolean);
-var
-  PropName: string;
-  BestName: string;
-
-  procedure ReplaceBest;
-  begin
-    FBest.Free;
-    FBest := PropertyEditor;
-    if FFirst = FBest then
-      FFirst := nil;
-    FreeEditor := False;
-  end;
-
-begin
-  if not Assigned(FFirst) and (PropertyEditor is TMethodProperty) then
-  begin
-    FreeEditor := False;
-    FFirst := PropertyEditor;
-  end;
-  PropName := PropertyEditor.GetName;
-  BestName := '';
-  if Assigned(FBest) then
-    BestName := FBest.GetName;
-  if CompareText(PropName, 'ONCREATE') = 0 then
-    ReplaceBest
-  else if CompareText(BestName, 'ONCREATE') <> 0 then
-    if CompareText(PropName, 'ONCHANGE') = 0 then
-      ReplaceBest
-    else if CompareText(BestName, 'ONCHANGE') <> 0 then
-      if CompareText(PropName, 'ONCLICK') = 0 then
-        ReplaceBest;
-end;
-{$ENDIF}
 
 // Edit
 //
-{$IFDEF GLS_DELPHI_6_UP}
-
 procedure TReuseableDefaultEditor.Edit;
 var
   Components: IDesignerSelections;
@@ -1471,34 +1389,6 @@ begin
     FBest := nil;
   end;
 end;
-{$ELSE}
-
-procedure TReuseableDefaultEditor.Edit;
-var
-  Components: TDesignerSelectionList;
-begin
-  Components := TDesignerSelectionList.Create;
-  try
-    FContinue := True;
-    Components.Add(Component);
-    FFirst := nil;
-    FBest := nil;
-    try
-      GetComponentProperties(Components, tkAny, Designer, CheckEdit);
-      if FContinue then
-        if Assigned(FBest) then
-          FBest.Edit
-        else if Assigned(FFirst) then
-          FFirst.Edit;
-    finally
-      FFirst.Free;
-      FBest.Free;
-    end;
-  finally
-    Components.Free;
-  end;
-end;
-{$ENDIF}
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -1506,8 +1396,6 @@ end;
 
 // EditProperty
 //
-{$IFDEF GLS_DELPHI_6_UP}
-
 procedure TGLMaterialLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
 begin
   if CompareText(Prop.GetName, 'MATERIALS') = 0 then
@@ -1515,19 +1403,6 @@ begin
     FBest := Prop;
   end;
 end;
-{$ELSE}
-
-procedure TGLMaterialLibraryEditor.EditProperty(PropertyEditor: TPropertyEditor;
-  var Continue, FreeEditor: Boolean);
-begin
-  if CompareText(PropertyEditor.GetName, 'MATERIALS') = 0 then
-  begin
-    FBest.Free;
-    FBest := PropertyEditor;
-    FreeEditor := False;
-  end;
-end;
-{$ENDIF}
 
 procedure TGLMaterialLibraryEditor.ExecuteVerb(Index: Integer);
 begin
@@ -1676,7 +1551,6 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSArchiveManagerEditor'}{$ENDIF}
 
-{$IFDEF GLS_DELPHI_6_UP}
 
 procedure TGLSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
@@ -1686,19 +1560,6 @@ begin
     FBest := Prop;
   end;
 end;
-{$ELSE}
-
-procedure TGLSArchiveManagerEditor.EditProperty(
-  PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean);
-begin
-  if CompareText(PropertyEditor.GetName, 'ARCHIVES') = 0 then
-  begin
-    FBest.Free;
-    FBest := PropertyEditor;
-    FreeEditor := False;
-  end;
-end;
-{$ENDIF}
 
 procedure TGLSArchiveManagerEditor.ExecuteVerb(Index: Integer);
 begin

@@ -3548,3 +3548,4 @@ finalization
   FreeAndNil(vRasterFileFormats);
 
 end.
+

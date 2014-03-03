@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLCrossPlatform<p>
@@ -367,7 +367,7 @@ var
 
 function GLPoint(const x, y: Integer): TGLPoint;
 {: Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b: Byte): TColor;{$NODEFINE RGB}
+function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
 function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;{$NODEFINE GLRect}
 {: Increases or decreases the width and height of the specified rectangle.<p>
    Adds dx units to the left and right ends of the rectangle and dy units to

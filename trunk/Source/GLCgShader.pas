@@ -899,7 +899,7 @@ end;
 
 procedure TCgParameter.CheckAllScalarTypes;
 begin
-  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
+  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED, CG_BOOL]);
 end;
 
 procedure TCgParameter.CheckAllTextureTypes;

@@ -296,6 +296,19 @@
   {$ifend}
 
 
+  {$if CompilerVersion>13.0}
+    {$DEFINE GLS_COMPILER_5_UP}
+  {$elseif CompilerVersion=13.0}
+    {$DEFINE GLS_COMPILER_5}
+    {$DEFINE GLS_COMPILER_5_UP}
+    {$DEFINE GLS_COMPILER_5_DOWN}
+  {$elseif CompilerVersion<13.0}
+    {$DEFINE GLS_COMPILER_5_DOWN}
+  {$ifend}
+
+   // We've already determined it's Delphi 5+
+  {$DEFINE GLS_COMPILER_5_UP}
+
   // Friendly names
   {$IFDEF BCB}
     {$IFDEF GLS_COMPILER_6}
@@ -348,6 +361,9 @@
 
   // UP Declarations
   {$IFDEF BCB}
+    {$IFDEF GLS_COMPILER_5_UP}
+      {$DEFINE GLS_CPPB_5_UP}
+    {$ENDIF}
     {$IFDEF GLS_COMPILER_6_UP}
       {$DEFINE GLS_CPPB_6_UP}
     {$ENDIF}
@@ -364,6 +380,12 @@
       {$DEFINE GLS_CPPB_2010_UP}
     {$ENDIF}
   {$ELSE}
+    {$IFDEF GLS_COMPILER_5_UP}
+      {$DEFINE GLS_DELPHI_5_UP}
+    {$ENDIF}
+    {$IFDEF GLS_COMPILER_6_UP}
+      {$DEFINE GLS_DELPHI_6_UP}
+    {$ENDIF}
     {$IFDEF GLS_COMPILER_7_UP}
       {$DEFINE GLS_DELPHI_7_UP}
     {$ENDIF}
@@ -414,6 +436,9 @@
       {$DEFINE GLS_CPPB_2010_DOWN}
     {$ENDIF}
   {$ELSE}
+    {$IFDEF GLS_COMPILER_6_DOWN}
+      {$DEFINE GLS_DELPHI_6_DOWN}
+    {$ENDIF}
     {$IFDEF GLS_COMPILER_7_DOWN}
       {$DEFINE GLS_DELPHI_7_DOWN}
     {$ENDIF}
@@ -443,6 +468,23 @@
     {$ENDIF}
   {$ENDIF}
  {$endif}
+
+// need to check VERXXX prior to Delphi 6, when conditional expressions
+// were introduced
+
+// Delphi 5 & C++ Builder 5
+{$IFDEF VER130}
+  {$DEFINE GLS_COMPILER_5}
+  {$DEFINE GLS_COMPILER_5_UP}
+  {$IFDEF BCB}
+    {$DEFINE GLS_CPPB_5}
+    {$DEFINE GLS_CPPB_5_UP}
+  {$ELSE}
+    {$DEFINE GLS_DELPHI_5}
+    {$DEFINE GLS_DELPHI_5_UP}
+  {$ENDIF}
+{$ENDIF}
+
 
 {$IFNDEF GLS_CPPB}
   {$IFNDEF GLS_DELPHI}

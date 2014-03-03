@@ -1,9 +1,9 @@
 object XCollectionEditor: TXCollectionEditor
   Left = 352
   Top = 151
-  Width = 304
-  Height = 389
   Caption = 'XCollectionEditor'
+  ClientHeight = 350
+  ClientWidth = 288
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,9 +19,9 @@ object XCollectionEditor: TXCollectionEditor
   TextHeight = 13
   object ListView: TListView
     Left = 0
-    Top = 32
+    Top = 29
     Width = 288
-    Height = 319
+    Height = 321
     Align = alClient
     Columns = <
       item
@@ -38,11 +38,14 @@ object XCollectionEditor: TXCollectionEditor
     TabOrder = 0
     ViewStyle = vsReport
     OnChange = ListViewChange
+    ExplicitTop = 32
+    ExplicitHeight = 319
   end
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
     Width = 288
+    Height = 29
     AutoSize = True
     BorderWidth = 1
     Caption = 'ToolBar1'
@@ -143,7 +146,7 @@ object XCollectionEditor: TXCollectionEditor
     Left = 104
     Top = 64
     Bitmap = {
-      494C010104000900080010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101040009000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

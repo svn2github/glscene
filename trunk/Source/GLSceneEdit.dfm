@@ -1,10 +1,10 @@
 object GLSceneEditorForm: TGLSceneEditorForm
   Left = 402
   Top = 98
-  Width = 421
-  Height = 526
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
+  ClientHeight = 487
+  ClientWidth = 405
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -152,15 +152,16 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 191
     Top = 57
     Width = 4
-    Height = 431
+    Height = 430
     Align = alRight
     Visible = False
+    ExplicitHeight = 431
   end
   object Tree: TTreeView
     Left = 0
     Top = 57
     Width = 191
-    Height = 431
+    Height = 430
     Align = alClient
     HideSelection = False
     Indent = 19
@@ -175,6 +176,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     OnKeyDown = TreeKeyDown
     OnMouseDown = TreeMouseDown
     OnMouseMove = TreeMouseMove
+    ExplicitHeight = 431
   end
   object ToolBar: TToolBar
     Left = 0
@@ -310,12 +312,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 195
     Top = 57
     Width = 210
-    Height = 431
+    Height = 430
     Align = alRight
     Caption = 'PABehaviours'
     Constraints.MinWidth = 1
     TabOrder = 2
     Visible = False
+    ExplicitHeight = 431
     object Splitter3: TSplitter
       Left = 1
       Top = 154
@@ -327,7 +330,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label1: TLabel
       Left = 1
       Top = 30
-      Width = 208
+      Width = 55
       Height = 14
       Align = alTop
       Alignment = taCenter
@@ -336,7 +339,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label2: TLabel
       Left = 1
       Top = 158
-      Width = 208
+      Width = 35
       Height = 14
       Align = alTop
       Alignment = taCenter
@@ -586,7 +589,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 16
     Top = 120
     Bitmap = {
-      494C01010F001800340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

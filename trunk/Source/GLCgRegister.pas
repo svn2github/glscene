@@ -21,11 +21,7 @@ uses
   // VCL
   Classes,
   {$IFNDEF FPC}
-    {$IFDEF GLS_DELPHI_6_UP}
-      DesignIntf, DesignEditors, VCLEditors,
-    {$ELSE}
-      DsgnIntf,
-    {$ENDIF}
+    DesignIntf, DesignEditors, VCLEditors,
     GLSceneRegister,
   {$ELSE FPC}
     propedits, GLSceneRegisterLCL,

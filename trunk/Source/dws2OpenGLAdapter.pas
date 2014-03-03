@@ -18,7 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, {$IFDEF GLS_DELPHI_6_UP}Variants,{$ENDIF}
+  Classes, Variants,
   dws2Exprs, dws2Symbols, dws2Comp;
 
 type

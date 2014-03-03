@@ -22,7 +22,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, XCollection, Messages, Classes, GLCrossPlatform,
+  Windows, XCollection, Messages, Classes, GLCrossPlatform, System.Actions,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList,
   VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
@@ -30,7 +30,7 @@ uses
   Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
-{$IFDEF GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$ELSE} DsgnIntf {$ENDIF};
+ DesignEditors, DesignIntf;
 
 type
   TXCollectionEditor = class(TForm)
@@ -69,8 +69,7 @@ type
     { Déclarations privées }
     FXCollection: TXCollection;
     // ownerComponent : TComponent;
-    FDesigner: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner
-    {$ENDIF};
+    FDesigner: IDesigner;
     updatingListView: Boolean;
     procedure PrepareListView;
     procedure PrepareXCollectionItemPopup(parent: TMenuItem);
@@ -82,8 +81,7 @@ type
       Operation: TOperation); override;
   public
     { Déclarations publiques }
-    procedure SetXCollection(aXCollection: TXCollection; designer:
-      {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF});
+    procedure SetXCollection(aXCollection: TXCollection; designer: IDesigner );
   end;
 
 function XCollectionEditor: TXCollectionEditor;
@@ -157,8 +155,7 @@ end;
 
 // SetXCollection
 //
-procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection;
-  designer: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF});
+procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection; designer: IDesigner);
 begin
   // if Assigned(ownerComponent) then
   // ownerComponent.RemoveFreeNotification(Self);
