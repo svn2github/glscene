@@ -1,3 +1,6 @@
+{:
+   GLScene Multisample texture demo
+}
 program MultiSampleTextures;
 
 uses

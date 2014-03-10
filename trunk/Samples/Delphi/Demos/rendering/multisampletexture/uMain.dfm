@@ -1,9 +1,9 @@
 object GLDemoForm: TGLDemoForm
   Left = 404
   Top = 280
-  Width = 557
-  Height = 381
-  Caption = 'GLScene Multisample Texture Demo'
+  Caption = 'Multisample Texture'
+  ClientHeight = 337
+  ClientWidth = 549
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,14 +18,14 @@ object GLDemoForm: TGLDemoForm
   object MainViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 541
-    Height = 343
+    Width = 549
+    Height = 337
     Camera = MainCamera
     BeforeRender = MainViewerBeforeRender
     Buffer.FogEnvironment.FogStart = 10.000000000000000000
     Buffer.FogEnvironment.FogEnd = 100.000000000000000000
     Buffer.BackgroundColor = clGray
-    FieldOfView = 124.620697021484400000
+    FieldOfView = 123.784454345703100000
     Align = alClient
     TabOrder = 0
   end
@@ -70,12 +70,16 @@ object GLDemoForm: TGLDemoForm
         MajorRadius = 3.000000000000000000
         MinorRadius = 0.600000023841857900
         Sides = 32
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLTorus2: TGLTorus
         Material.FrontProperties.Diffuse.Color = {C6BF3F3FDCD8583FDCD8583F0000803F}
         MajorRadius = 3.000000000000000000
         MinorRadius = 0.600000023841857900
         Sides = 32
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLCone1: TGLCone
         Material.FrontProperties.Diffuse.Color = {E4DB5B3FEBE0E03EE4DB5B3F0000803F}
@@ -112,9 +116,11 @@ object GLDemoForm: TGLDemoForm
     object GLScreenQuad: TGLHUDSprite
       Material.MaterialLibrary = MainMaterialLibrary
       Material.LibMaterialName = 'Result'
+      Rotation = 0.000000000000000000
     end
     object GLHUDText1: TGLHUDText
       BitmapFont = GLWindowsBitmapFont1
+      Rotation = 0.000000000000000000
     end
   end
   object MainCadencer: TGLCadencer
@@ -127,19 +133,19 @@ object GLDemoForm: TGLDemoForm
     Materials = <
       item
         Name = 'MultisampledColor'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Depth'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.Image.ColorFormat = 6408
         Material.Texture.TextureFormat = tfExtended
         Material.Texture.TextureFormatEx = tfDEPTH_COMPONENT32
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'Result'
@@ -193,7 +199,7 @@ object GLDemoForm: TGLDemoForm
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = MainViewer
-    FormCaption = 'GLScene Multisample Texture Demo - %FPS'
+    FormCaption = 'Multisample Texture - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
