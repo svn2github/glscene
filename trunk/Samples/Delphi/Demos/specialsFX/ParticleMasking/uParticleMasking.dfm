@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 250
   Top = 151
-  Width = 782
-  Height = 644
-  Caption = 'Form1'
+  Caption = 'Particle Masking'
+  ClientHeight = 605
+  ClientWidth = 766
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -19,17 +20,18 @@ object Form1: TForm1
     Left = 576
     Top = 0
     Width = 8
-    Height = 570
+    Height = 569
     Align = alRight
     Beveled = True
     MinSize = 200
     ResizeStyle = rsLine
+    ExplicitHeight = 570
   end
   object MaskBox: TGroupBox
     Left = 584
     Top = 0
     Width = 182
-    Height = 570
+    Height = 569
     Align = alRight
     Caption = 'Particle Masks'
     TabOrder = 0
@@ -107,17 +109,17 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 576
-    Height = 570
+    Height = 569
     Camera = Camera
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 175.980895996093800000
+    FieldOfView = 175.973831176757800000
     Align = alClient
     OnMouseMove = SceneViewerMouseMove
     TabOrder = 1
   end
   object Panel1: TPanel
     Left = 0
-    Top = 570
+    Top = 569
     Width = 766
     Height = 36
     Align = alBottom
@@ -211,11 +213,13 @@ object Form1: TForm1
       OnChange = Edit5Change
     end
     object CheckBox1: TCheckBox
-      Left = 552
-      Top = 8
+      Left = 551
+      Top = 6
       Width = 97
       Height = 17
       Caption = 'Target Sphere'
+      Checked = True
+      State = cbChecked
       TabOrder = 6
       OnClick = CheckBox1Click
     end
@@ -227,10 +231,10 @@ object Form1: TForm1
     object Target: TGLDummyCube
       CubeSize = 1.000000000000000000
       EffectsData = {
-        0201061254474C536F7572636550465845666665637402010609504C4D616E61
-        676572050000000000000080FF3F020602000802000802000805000000000000
-        000000000500000000000000000000050000000000FAEDEBF43F020002000905
-        00000000000000000000080200}
+        0458434F4C02010201061254474C536F75726365504658456666656374020202
+        001200000000020002000609504C4D616E61676572050000000000000080FF3F
+        0206020008020008020008050000000000000000000005000000000000000000
+        00050000000000FAEDEBF43F02000200090500000000000000000000080200}
     end
     object XPlane: TGLPlane
       Material.MaterialLibrary = MatLib
@@ -306,30 +310,30 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'XMask'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {07544269746D617000000000}
         Material.Texture.ImageAlpha = tiaInverseLuminance
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'YMask'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {07544269746D617000000000}
         Material.Texture.ImageAlpha = tiaInverseLuminance
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'ZMask'
+        Tag = 0
         Material.Texture.Image.Picture.Data = {07544269746D617000000000}
         Material.Texture.ImageAlpha = tiaInverseLuminance
         Material.Texture.MagFilter = maNearest
         Material.Texture.MinFilter = miNearest
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 40
     Top = 8

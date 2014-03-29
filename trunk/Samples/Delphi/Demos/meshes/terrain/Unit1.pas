@@ -1,41 +1,3 @@
-{: Basic terrain rendering demo.<p>
-
-   This demo showcases the TerrainRenderer, some of the SkyDome features
-   and bits of 3D sound 'cause I got carried over ;)<br>
-   The terrain HeightData is provided by a TGLBitmapHDS (HDS stands for
-   "Height Data Source"), and displayed by a TGLTerrainRenderer.<p>
-
-   The base terrain renderer uses a hybrid ROAM/brute-force approach to
-   rendering terrain, by requesting height data tiles, then rendering them
-   using either triangle strips (for those below "QualityDistance") or ROAM
-   tessellation.<br>
-   Note that if the terrain is wrapping in this sample (to reduce the required
-   datasets size), the engine is *not* aware of it and does not exploit this
-   fact in any way: it considers just an infinite terrain.<p>
-
-   Controls:<ul>
-   <li>Direction keys move the came nora (shift to speedup)
-   <li>PageUp/PageDown move the camera up and down
-   <li>Orient the camera freely by holding down the left button
-   <li>Toggle wireframe mode with 'w'
-   <li>Increase/decrease the viewing distance with '+'/'-'.
-   <li>Increase/decrease CLOD precision with '*' and '/'.
-   <li>Increase/decrease QualityDistance with '9' and '8'.
-   <li>'n' turns on 'night' mode, 'd' turns back to 'day' mode.
-   <li>Toggle star twinkle with 't' (night mode only)
-   <li>'l' turns on/off the lens flares 
-   </ul><p>
-
-   When increasing the range, or moving after having increased the range you
-   may notice a one-time slowdown, this originates in the base height data
-   being duplicated to create the illusion of an "infinite" terrain (at max
-   range the visible area covers 1024x1024 height samples, and with tiles of
-   size 16 or less, this is a lot of tiles to prepare).<p>
-
-   Misc. note: since the whole viewer is fully repainted at each frame,
-   it was possible to set roNoColorBufferClear in the Viewer.Buffer.ContextOptions,
-   which allows to gain a few more frames per second (try unsetting it). 
-}
 unit Unit1;
 
 interface
@@ -43,11 +5,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData, GLColor,
-  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
+ {$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Imaging.GIFImg,
+  {$ELSE}
+  Windows, Messages, SysUtils, Classes, ExtCtrls, StdCtrls,
+  Graphics, Controls, Forms, Dialogs, GIFImg,
+  {$ENDIF}
+  //GLScene
+  GLScene, GLTerrainRenderer, GLObjects, Jpeg, GLHeightData, GLColor,
+  GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont, GLKeyboard,
   GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3;
+  GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3,
+  GLUtils, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -83,9 +54,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure TISoundTimer(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
     fullScreen : Boolean;
     FCamHeight : Single;
@@ -97,8 +68,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -189,6 +158,9 @@ begin
 end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+var
+ Color: TGIFColor;
+
 begin
    case Key of
       'w', 'W' : with GLMaterialLibrary1.Materials[0].Material do begin
@@ -220,15 +192,22 @@ begin
          if QualityDistance<1000 then QualityDistance:=Round(QualityDistance*1.2);
       'n', 'N' : with SkyDome1 do if Stars.Count=0 then begin
          // turn on 'night' mode
-         Bands[1].StopColor.AsWinColor:=RGB(0, 0, 16);
-         Bands[1].StartColor.AsWinColor:=RGB(0, 0, 8);
-         Bands[0].StopColor.AsWinColor:=RGB(0, 0, 8);
-         Bands[0].StartColor.AsWinColor:=RGB(0, 0, 0);
+         Color.Red := 0; Color.Green := 0; Color.Blue := 8;
+         Bands[0].StopColor.AsWinColor:=TGIFColorMap.RGB2Color(Color);
+         Color.Red := 0; Color.Green := 0; Color.Blue := 0;
+         Bands[0].StartColor.AsWinColor:=TGIFColorMap.RGB2Color(Color);
+         Color.Red := 0; Color.Green := 0; Color.Blue := 16;
+         Bands[1].StopColor.AsWinColor:= TGIFColorMap.RGB2Color(Color);
+         Color.Red := 0; Color.Green := 0; Color.Blue := 8;
+         Bands[1].StartColor.AsWinColor:=TGIFColorMap.RGB2Color(Color);
          with Stars do begin
             AddRandomStars(700, clWhite, True);   // many white stars
-            AddRandomStars(100, RGB(255, 200, 200), True);  // some redish ones
-            AddRandomStars(100, RGB(200, 200, 255), True);  // some blueish ones
-            AddRandomStars(100, RGB(255, 255, 200), True);  // some yellowish ones
+            Color.Red := 255; Color.Green := 100; Color.Blue := 100;
+            AddRandomStars(100, TGIFColorMap.RGB2Color(Color), True);  // some redish ones
+            Color.Red := 100; Color.Green := 100; Color.Blue := 255;
+            AddRandomStars(100, TGIFColorMap.RGB2Color(Color), True);  // some blueish ones
+            Color.Red := 255; Color.Green := 255; Color.Blue := 100;
+            AddRandomStars(100, TGIFColorMap.RGB2Color(Color), True);  // some yellowish ones
          end;
          GLSceneViewer1.Buffer.BackgroundColor:=clBlack;
          with GLSceneViewer1.Buffer.FogEnvironment do begin
@@ -283,9 +262,9 @@ begin
       // wolf howl at some distance, at ground level
       wolfPos:=GLCamera1.AbsolutePosition;
       SinCos(Random*c2PI, 100+Random(1000), s, c);
-      wolfPos.X:=wolfPos.X+c;
-      wolfPos.Z:=wolfPos.Z+s;
-      wolfPos.Y:=TerrainRenderer1.InterpolatedHeight(wolfPos);
+      wolfPos.V[0]:=wolfPos.V[0]+c;
+      wolfPos.V[2]:=wolfPos.V[2]+s;
+      wolfPos.V[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);
       DCSound.Position.AsVector:=wolfPos;
       with GetOrCreateSoundEmitter(DCSound) do begin
          Source.SoundLibrary:=GLSoundLibrary;

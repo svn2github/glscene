@@ -1,19 +1,14 @@
-{
-Demo of GLEParticleMasksManager unit.
-
-Version History:
-  29/01/2007 - DaStr - Initial version (a bit modified demo by Kenneth Poulter) 
-
-}
 unit uParticleMasking;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ComCtrls, GLBitmapFont, GLWindowsFont, GLTexture,
-  GLCadencer, GLWin32Viewer, GLScene, StdCtrls, GLObjects,
-  GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
+  Dialogs, ExtCtrls, ComCtrls, StdCtrls,
+
+  //GLScene
+  GLBitmapFont, GLWindowsFont, GLTexture,  GLCadencer, GLWin32Viewer, GLScene,
+  GLObjects,  GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
   GLGeomObjects, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
   BaseClasses;
 
@@ -97,12 +92,67 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.GLCadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
+procedure TForm1.RefreshMask;
+var
+  Rect:   TRect;
+  Mat:    TGLLibMaterial;
+  Letter: Char;
+  Depth:  Integer;
+
 begin
-  Sphere.TurnAngle := -newTime * 20;
-  Sphere.Position.X := Cos(DegToRad(newTime * 20)) * 1.5;
-  Sphere.Position.Z := Sin(DegToRad(newTime * 20)) * 1.5;
-  SceneViewer.Invalidate;
+  Letter := Edit2.Text[1];
+  Depth := StrToIntDef(Edit1.Text, 50);
+
+  XPlane.Position.X := -PlaneOffSets;
+  XPlane.Height := PlaneHeights;
+  XPlane.Width := PlaneWidths;
+
+  YPlane.Position.Y := -PlaneOffSets;
+  YPlane.Height := PlaneHeights;
+  YPlane.Width := PlaneWidths;
+
+  ZPlane.Position.Z := -PlaneOffSets;
+  ZPlane.Height := PlaneHeights;
+  ZPlane.Width := PlaneWidths;
+
+  Rect.Left := 0;
+  Rect.Top := 0;
+  Rect.Bottom := XImage.Height;
+  Rect.Right := XImage.Width;
+
+  XImage.Canvas.Font.Name := 'Arial';
+  XImage.Canvas.Font.Size := 180;
+  XImage.Canvas.Font.Color := clWhite;
+  XImage.Canvas.Pen.Color := clBlack;
+  XImage.Canvas.Pen.Style := psSolid;
+  XImage.Canvas.Brush.Color := clBlack;
+  XImage.Canvas.Brush.Style := bsSolid;
+
+  XImage.Canvas.FillRect(Rect);
+
+  XImage.Canvas.TextOut(round((XImage.Width - XImage.Canvas.TextWidth(Letter)) / 2), round((XImage.Height - XImage.Canvas.TextHeight(Letter)) / 2), Letter);
+
+  Mat := MatLib.LibMaterialByName('XMask');
+  with Mat.Material.Texture.Image as TGLPersistentImage do
+  begin
+    Picture.Bitmap.Height := XImage.Height;
+    Picture.Bitmap.Width := XImage.Width;
+    Picture.Bitmap.Canvas.Draw(0, 0, XImage.Picture.Graphic);
+  end;
+
+  // this is a very recent implementation, the ability to generate other masks from 1 mask, so it satisfies
+  // the requirements for the particle mask manager. useful for text and making basic shapes (cylinders etc)
+
+  GLEParticleMasksManager1.ParticleMaskByName('mask').GenerateMaskFromProjection(pptXMask, pptYMask, Depth);
+  GLEParticleMasksManager1.ParticleMaskByName('mask').GenerateMaskFromProjection(pptXMask, pptZMask, Depth);
+
+  Mat := MatLib.LibMaterialByName('YMask');
+  with Mat.Material.Texture.Image as TGLPersistentImage do
+    YImage.Canvas.Draw(0, 0, Picture.Graphic);
+
+  Mat := MatLib.LibMaterialByName('ZMask');
+  with Mat.Material.Texture.Image as TGLPersistentImage do
+    ZImage.Canvas.Draw(0, 0, Picture.Graphic);
 end;
 
 // with formcreate, we are just drawing some pre-rendered masks
@@ -110,6 +160,15 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   RefreshMask;
+  Sphere.Visible := CheckBox1.Checked;
+end;
+
+procedure TForm1.GLCadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
+begin
+  Sphere.TurnAngle := -newTime * 20;
+  Sphere.Position.X := Cos(DegToRad(newTime * 20)) * 1.5;
+  Sphere.Position.Z := Sin(DegToRad(newTime * 20)) * 1.5;
+  SceneViewer.Invalidate;
 end;
 
 procedure TForm1.SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -200,72 +259,8 @@ end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Caption := FormatFloat('FPS: 0.0', SceneViewer.FramesPerSecond) + ' Particle Count: ' + IntToStr(PLManager.ParticleCount);
+  Caption := FormatFloat('Particle Masking - ' +'FPS: 0.0', SceneViewer.FramesPerSecond) + ' Particle Count: ' + IntToStr(PLManager.ParticleCount);
   SceneViewer.ResetPerformanceMonitor;
-end;
-
-procedure TForm1.RefreshMask;
-var
-  Rect:   TRect;
-  Mat:    TGLLibMaterial;
-  Letter: Char;
-  Depth:  Integer;
-
-begin
-
-  Letter := Edit2.Text[1];
-  Depth := StrToIntDef(Edit1.Text, 50);
-
-  XPlane.Position.X := -PlaneOffSets;
-  XPlane.Height := PlaneHeights;
-  XPlane.Width := PlaneWidths;
-
-  YPlane.Position.Y := -PlaneOffSets;
-  YPlane.Height := PlaneHeights;
-  YPlane.Width := PlaneWidths;
-
-  ZPlane.Position.Z := -PlaneOffSets;
-  ZPlane.Height := PlaneHeights;
-  ZPlane.Width := PlaneWidths;
-
-  Rect.Left := 0;
-  Rect.Top := 0;
-  Rect.Bottom := XImage.Height;
-  Rect.Right := XImage.Width;
-
-  XImage.Canvas.Font.Name := 'Arial';
-  XImage.Canvas.Font.Size := 180;
-  XImage.Canvas.Font.Color := clWhite;
-  XImage.Canvas.Pen.Color := clBlack;
-  XImage.Canvas.Pen.Style := psSolid;
-  XImage.Canvas.Brush.Color := clBlack;
-  XImage.Canvas.Brush.Style := bsSolid;
-
-  XImage.Canvas.FillRect(Rect);
-
-  XImage.Canvas.TextOut(round((XImage.Width - XImage.Canvas.TextWidth(Letter)) / 2), round((XImage.Height - XImage.Canvas.TextHeight(Letter)) / 2), Letter);
-
-  Mat := MatLib.LibMaterialByName('XMask');
-  with Mat.Material.Texture.Image as TGLPersistentImage do
-  begin
-    Picture.Bitmap.Height := XImage.Height;
-    Picture.Bitmap.Width := XImage.Width;
-    Picture.Bitmap.Canvas.Draw(0, 0, XImage.Picture.Graphic);
-  end;
-
-  // this is a very recent implementation, the ability to generate other masks from 1 mask, so it satisfies
-  // the requirements for the particle mask manager. useful for text and making basic shapes (cylinders etc)
-
-  GLEParticleMasksManager1.ParticleMaskByName('mask').GenerateMaskFromProjection(pptXMask, pptYMask, Depth);
-  GLEParticleMasksManager1.ParticleMaskByName('mask').GenerateMaskFromProjection(pptXMask, pptZMask, Depth);
-
-  Mat := MatLib.LibMaterialByName('YMask');
-  with Mat.Material.Texture.Image as TGLPersistentImage do
-    YImage.Canvas.Draw(0, 0, Picture.Graphic);
-
-  Mat := MatLib.LibMaterialByName('ZMask');
-  with Mat.Material.Texture.Image as TGLPersistentImage do
-    ZImage.Canvas.Draw(0, 0, Picture.Graphic);
 end;
 
 procedure TForm1.Edit2Change(Sender: TObject);

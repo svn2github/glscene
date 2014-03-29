@@ -1,3 +1,13 @@
+{: A simple ODE-based game of a ball rolling on a plane you can incline.<p>
+
+   Under construction, missing:
+   - main screen and time/score charts
+   - levels and levels ordering
+   - additionnal structures
+
+   Eric Grange (egrange@glscene.org)
+   http://glscene.org
+}
 program TheBall;
 
 uses

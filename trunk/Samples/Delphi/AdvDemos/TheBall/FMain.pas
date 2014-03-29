@@ -1,27 +1,20 @@
-{: A simple ODE-based game of a ball rolling on a plane you can incline.<p>
-
-   Under construction, missing:
-   - main screen and time/score charts
-   - levels and levels ordering
-   - additionnal structures
-
-   Eric Grange (egrange@glscene.org)
-   http://glscene.org
-}
 unit FMain;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
-  GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
-  ODEimport, ODEgl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
-  GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor, GLFileWAV;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, StdCtrls,
+
+  //GLScene
+  GLScene,  GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
+  ODEimport, ODEgl, GLCadencer,  Jpeg, VectorGeometry, GLSkydome,
+  GLBitmapFont, GLWindowsFont, GLHUDObjects, UTheBallStructures,
+  GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, GLGeomObjects, GLMaterial,
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor, GLFileWAV, GLUtils;
 
 type
-   TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
+   TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost);
 
   TMain = class(TForm)
     Scene: TGLScene;
@@ -117,8 +110,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses GLUtils;
 
 const
    cCameraPos : TVector = (X:10; Y:6; Z:0; W:1);
@@ -571,7 +562,7 @@ end;
 
 procedure TMain.TimerTimer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [SceneViewer.FramesPerSecond]);
+   Caption:=Format('The Ball ' + '%.1f FPS', [SceneViewer.FramesPerSecond]);
    SceneViewer.ResetPerformanceMonitor;
 end;
 
@@ -586,11 +577,11 @@ begin
    else Screen.Cursor:=crDefault;
 
    GetCursorPos(mp);
-   mouseDownX:=mp.X;
-   mouseDownY:=mp.Y;
+   mouseDownX := mp.X;
+   mouseDownY := mp.Y;
 
    if gameStatus=gsLevelPreview then
-      LevelWarmup;
+      LevelWarmUp;
 end;
 
 procedure TMain.SceneViewerMouseUp(Sender: TObject; Button: TMouseButton;

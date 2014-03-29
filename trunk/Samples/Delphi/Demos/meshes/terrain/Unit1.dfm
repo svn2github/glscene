@@ -38,13 +38,13 @@ object Form1: TForm1
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
-    Left = 56
+    Left = 224
     Top = 16
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 56
+    Left = 32
+    Top = 16
     object InitialRenderPoint: TGLRenderPoint
     end
     object SkyDome1: TGLSkyDome
@@ -81,6 +81,7 @@ object Form1: TForm1
         Visible = False
         Width = 30.000000000000000000
         Height = 30.000000000000000000
+        Rotation = 0.000000000000000000
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -95,6 +96,7 @@ object Form1: TForm1
         Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60.000000000000000000
         Height = 60.000000000000000000
+        Rotation = 0.000000000000000000
       end
     end
     object DummyCube1: TGLDummyCube
@@ -123,6 +125,7 @@ object Form1: TForm1
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
+      Rotation = 0.000000000000000000
     end
     object DCSound: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -142,14 +145,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 96
+    Left = 32
+    Top = 152
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 16
+    Left = 120
+    Top = 72
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -173,8 +176,8 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {00000043000000430000004300000000}
       end>
-    Left = 16
-    Top = 56
+    Left = 120
+    Top = 16
   end
   object BitmapFont1: TGLBitmapFont
     GlyphsIntervalX = 1
@@ -187,8 +190,8 @@ object Form1: TForm1
       end>
     CharWidth = 30
     CharHeight = 30
-    Left = 16
-    Top = 96
+    Left = 32
+    Top = 72
   end
   object GLSMBASS1: TGLSMBASS
     Active = True
@@ -199,19 +202,19 @@ object Form1: TForm1
     Cadencer = GLCadencer1
     Environment = seForest
     Algorithm3D = algFull
-    Left = 96
-    Top = 16
+    Left = 224
+    Top = 72
     Doppler = 0.000000000000000000
   end
   object TISound: TTimer
     Interval = 3000
     OnTimer = TISoundTimer
-    Left = 16
-    Top = 136
+    Left = 112
+    Top = 152
   end
   object GLSoundLibrary: TGLSoundLibrary
     Samples = <>
-    Left = 96
-    Top = 56
+    Left = 304
+    Top = 16
   end
 end
