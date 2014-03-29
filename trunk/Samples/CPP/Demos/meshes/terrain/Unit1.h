@@ -9,6 +9,7 @@
 #include <Forms.hpp>
 #include <StdCtrls.hpp>         // Pascal unit
 #include <ExtCtrls.hpp>         // Pascal unit
+#include <GIFImg.hpp>
 
 #include <GLLensFlare.hpp>      // Pascal unit
 #include <VectorGeometry.hpp>   // Pascal unit
@@ -30,6 +31,7 @@
 #include "GLMaterial.hpp"
 #include "GLFileMP3.hpp"
 #include "Jpeg.hpp"
+#include "GLUtils.hpp"
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {

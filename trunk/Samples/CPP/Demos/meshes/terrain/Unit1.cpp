@@ -3,6 +3,7 @@
 #include <vcl.h>
 #include <GLKeyboard.hpp>
 #include <stdlib.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -40,13 +41,7 @@ float random(void)
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  int I = MediaPath.Pos("Samples");
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	MediaPath += "Media\\";
-	SetCurrentDir(MediaPath);
-  }
+  SetGLSceneMediaDir();
   // 8 MB height data cache
   // Note this is the data size in terms of elevation samples, it does not
   // take into account all the data required/allocated by the renderer
@@ -131,9 +126,9 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
 {
   if(Shift.Contains(ssLeft))
   {
-    GLCamera1->MoveAroundTarget((my - Y) * 0.5, (mx - X) * 0.5);
-    mx = X;
-    my = Y;
+	GLCamera1->MoveAroundTarget((my - Y) * 0.5, (mx - X) * 0.5);
+	mx = X;
+	my = Y;
   }
 }
 
@@ -143,9 +138,9 @@ void __fastcall TForm1::Timer1Timer(TObject * Sender)
 {
   String s;
 //  s.printf("%.1f FPS - %d", GLSceneViewer1->FramesPerSecond(),
-//		   TerrainRenderer1->LastTriangleCount);
-//  HUDText1->Text = s;
-//  GLSceneViewer1->ResetPerformanceMonitor();
+//		   TerrainRenderer1->LastTriangleCount());
+  HUDText1->Text = s;
+  GLSceneViewer1->ResetPerformanceMonitor();
 }
 
 //---------------------------------------------------------------------------
@@ -154,11 +149,13 @@ void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
 {
   TGLMaterial *fp;
   TGLFogEnvironment *fe;
+  TGIFColor  Color;
+
   switch (Key)
   {
   case 'w':
   case 'W':
-    fp = GLMaterialLibrary1->Materials->Items[0]->Material;
+	fp = GLMaterialLibrary1->Materials->Items[0]->Material;
 	if(fp->PolygonMode == pmLines)
 	  fp->PolygonMode = pmFill;
 	else
@@ -180,61 +177,64 @@ void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
       fe = GLSceneViewer1->Buffer->FogEnvironment;
       fe->FogEnd = fe->FogEnd / 1.2;
       fe->FogStart = fe->FogStart / 1.2;
-    }
+	}
     break;
   case '*':
-    if(TerrainRenderer1->CLODPrecision > 20)
-      TerrainRenderer1->CLODPrecision =
+	if(TerrainRenderer1->CLODPrecision > 20)
+	  TerrainRenderer1->CLODPrecision =
 		Round(TerrainRenderer1->CLODPrecision * 0.8);
-    break;
+	break;
   case '/':
 	if(TerrainRenderer1->CLODPrecision < 1000)
-      TerrainRenderer1->CLODPrecision =
-        Round(TerrainRenderer1->CLODPrecision * 1.2);
-    break;
+	  TerrainRenderer1->CLODPrecision =
+		Round(TerrainRenderer1->CLODPrecision * 1.2);
+	break;
   case '8':
-    if(TerrainRenderer1->QualityDistance > 40)
-      TerrainRenderer1->QualityDistance =
-        Round(TerrainRenderer1->QualityDistance * 0.8);
-    break;
+	if(TerrainRenderer1->QualityDistance > 40)
+	  TerrainRenderer1->QualityDistance =
+		Round(TerrainRenderer1->QualityDistance * 0.8);
+	break;
   case '9':
-    if(TerrainRenderer1->QualityDistance < 1000)
-      TerrainRenderer1->QualityDistance =
-        Round(TerrainRenderer1->QualityDistance * 1.2);
+	if(TerrainRenderer1->QualityDistance < 1000)
+	  TerrainRenderer1->QualityDistance =
+		Round(TerrainRenderer1->QualityDistance * 1.2);
 	break;
   case 'n':
   case 'N':
-    if(SkyDome1->Stars->Count == 0)
-    {
-      // turn on 'night' mode
-      SkyDome1->Bands->Items[1]->StopColor->AsWinColor =
-        (Graphics::TColor) RGB(0, 0, 16);
-      SkyDome1->Bands->Items[1]->StartColor->AsWinColor =
-        (Graphics::TColor) RGB(0, 0, 8);
-      SkyDome1->Bands->Items[0]->StopColor->AsWinColor =
-        (Graphics::TColor) RGB(0, 0, 8);
-      SkyDome1->Bands->Items[0]->StartColor->AsWinColor =
-		(Graphics::TColor) RGB(0, 0, 0);
+	if(SkyDome1->Stars->Count == 0)
+	{
+	  // turn on 'night' mode
+	  Color.Red = 0; Color.Green = 0; Color.Blue = 8;
+	  SkyDome1->Bands->Items[0]->StopColor->AsWinColor = TGIFColorMap::RGB2Color(Color);
+	  Color.Red = 0; Color.Green = 0; Color.Blue = 0;
+	  SkyDome1->Bands->Items[0]->StartColor->AsWinColor = TGIFColorMap::RGB2Color(Color);
+	  Color.Red = 0; Color.Green = 0; Color.Blue = 16;
+	  SkyDome1->Bands->Items[1]->StopColor->AsWinColor =  TGIFColorMap::RGB2Color(Color);
+	  Color.Red = 0; Color.Green = 0; Color.Blue = 8;
+	  SkyDome1->Bands->Items[1]->StartColor->AsWinColor =  TGIFColorMap::RGB2Color(Color);
 
-      SkyDome1->Stars->AddRandomStars(700, clWhite, True);      // many white stars
-	  SkyDome1->Stars->AddRandomStars(100, (Graphics::TColor) RGB(255, 200, 200), True);        // some redish ones
-      SkyDome1->Stars->AddRandomStars(100, (Graphics::TColor) RGB(200, 200, 255), True);        // some blueish ones
-      SkyDome1->Stars->AddRandomStars(100, (Graphics::TColor) RGB(255, 255, 200), True);        // some yellowish ones
+	  SkyDome1->Stars->AddRandomStars(700, clWhite, True);      // many white stars
+	  Color.Red = 255; Color.Green = 100; Color.Blue = 100;
+	  SkyDome1->Stars->AddRandomStars(100, TGIFColorMap::RGB2Color(Color), True); // some redish ones
+	  Color.Red = 100; Color.Green = 100; Color.Blue = 255;
+	  SkyDome1->Stars->AddRandomStars(100, TGIFColorMap::RGB2Color(Color), True); // some blueish ones
+	  Color.Red = 255; Color.Green = 255; Color.Blue = 100;
+	  SkyDome1->Stars->AddRandomStars(100, TGIFColorMap::RGB2Color(Color), True); // some yellowish ones
 
-      GLSceneViewer1->Buffer->BackgroundColor = Graphics::clBlack;
-      fe = GLSceneViewer1->Buffer->FogEnvironment;
-      fe->FogColor->AsWinColor = Graphics::clBlack;
-      fe->FogStart = -fe->FogStart;     // Fog is used to make things darker
+	  GLSceneViewer1->Buffer->BackgroundColor = Graphics::clBlack;
+	  fe = GLSceneViewer1->Buffer->FogEnvironment;
+	  fe->FogColor->AsWinColor = Graphics::clBlack;
+	  fe->FogStart = -fe->FogStart;     // Fog is used to make things darker
 
-      SPMoon->Visible = True;
-      SPSun->Visible = False;
-      GLLensFlare->Visible = False;
-    }
-    break;
+	  SPMoon->Visible = True;
+	  SPSun->Visible = False;
+	  GLLensFlare->Visible = False;
+	}
+	break;
   case 'd':
   case 'D':
     if(SkyDome1->Stars->Count > 0)
-    {
+	{
       // turn on 'day' mode
       SkyDome1->Bands->Items[1]->StopColor->Color = clrNavy;
       SkyDome1->Bands->Items[1]->StartColor->Color = clrBlue;
@@ -254,7 +254,7 @@ void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
   case 't':
     if(SkyDome1->Options.Contains(sdoTwinkle))
       SkyDome1->Options = SkyDome1->Options << sdoTwinkle;
-    else
+	else
       SkyDome1->Options = SkyDome1->Options >> sdoTwinkle;
     break;
   case 'l':
@@ -287,16 +287,16 @@ void __fastcall TForm1::TISoundTimer(TObject * Sender)
     // wolf howl at some distance, at ground level
     wolfPos = GLCamera1->AbsolutePosition;
     SinCos(random() * Vectorgeometry::c2PI, 100 + random(1000), s, c);
-	wolfPos.V[0] = wolfPos.V[0] + c;
-	wolfPos.V[2] = wolfPos.V[2] + s;
-	wolfPos.V[1] = TerrainRenderer1->InterpolatedHeight(wolfPos);
-    DCSound->Position->AsVector = wolfPos;
-    be = GetOrCreateSoundEmitter(DCSound);
-    be->Source->SoundLibrary = GLSoundLibrary;
-    be->Source->SoundName = GLSoundLibrary->Samples->Items[1]->Name;
-    be->Source->MinDistance = 100;
-    be->Source->MaxDistance = 4000;
-    be->Playing = True;
+	wolfPos.X = wolfPos.X + c;
+	wolfPos.Z = wolfPos.Z + s;
+	wolfPos.Y = TerrainRenderer1->InterpolatedHeight(wolfPos);
+	DCSound->Position->AsVector = wolfPos;
+	be = GetOrCreateSoundEmitter(DCSound);
+	be->Source->SoundLibrary = GLSoundLibrary;
+	be->Source->SoundName = GLSoundLibrary->Samples->Items[1]->Name;
+	be->Source->MinDistance = 100;
+	be->Source->MaxDistance = 4000;
+	be->Playing = True;
   }
   TISound->Enabled = False;
   TISound->Interval = 10000 + random(10000);
