@@ -608,9 +608,8 @@ var
       begin
         {$IFDEF FPC}
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-          GetLastOSErrorGetLastError]),
-          mtWarning, mbYesNo, -1, mbYes = mrNo
-          then Break;
+           GetLastOSError]), mtWarning, mbYesNo, -1) = mrNo
+           then Break;
         {$ELSE}
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
           GetLastError]), mtWarning, [mbNo], 0) = mrNo
