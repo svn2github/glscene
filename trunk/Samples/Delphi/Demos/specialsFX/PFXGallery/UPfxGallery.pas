@@ -1,17 +1,17 @@
-// Simple effects gallery.
-
 unit UPfxGallery;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  VectorGeometry,GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
-  GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
-  GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
-  ExtCtrls, GLGeomObjects, GLKeyboard, GLSpaceText,
-  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  ExtCtrls, StdCtrls,
+
+  //GLScene
+  VectorGeometry, GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
+  GLVectorFileObjects, VectorTypes, GLObjects, GLBitmapFont,
+  GLUtils,GLCadencer,  GLTexture, JPeg, GLNavigator,
+   GLGeomObjects, GLKeyboard, GLSpaceText, GLBehaviours,GLPerlinPFX, GLBlur,
+   GLCrossPlatform, GLCoordinates, BaseClasses;
 
 const
      cRunBoost = 10;
@@ -53,17 +53,19 @@ type
     chkFloor: TCheckBox;
     GLBlur1: TGLBlur;
     chkBlur: TCheckBox;
+    Label1: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
     procedure chkMouseLookClick(Sender: TObject);
     procedure chkFloorClick(Sender: TObject);
     procedure chkBlurClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     procedure HandleKeys(const deltaTime: Double);
-    { Private declarations }
+    // Private declarations
   public
-    { Public declarations }
+    // Public declarations
 
   end;
 
@@ -74,18 +76,20 @@ implementation
 
 {$R *.dfm}
 
-
+procedure TFrmMain.FormCreate(Sender: TObject);
+begin
+  chkFloorClick(Sender);
+end;
 
 procedure TFrmMain.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
      HandleKeys(deltaTime);
-     GLUserInterface1.Mouselook;
+     GLUserInterface1.Mouselook();
 
-     GLSceneViewer1.Invalidate;
-     GLUserInterface1.MouseUpdate;
-
-     GLSceneViewer1.Invalidate;
+     GLSceneViewer1.Invalidate();
+     GLUserInterface1.MouseUpdate();
+     GLSceneViewer1.Invalidate();
 end;
 
 
@@ -98,42 +102,30 @@ begin
       chkMouseLookClick(self);
    end;
 
-   if IsKeyDown(VK_SHIFT) then begin
+   if IsKeyDown(VK_SHIFT) then
       boost:=cRunBoost*deltaTime
-   end else
-   if IsKeyDown(VK_CONTROL) then begin
+   else
+   if IsKeyDown(VK_CONTROL) then
       boost:=cRunBoost*0.01*deltaTime
-   end else
-   begin
+   else
       boost:=deltaTime;
-   end;
 
-   if IsKeyDown('W') then begin
+   if IsKeyDown('W') then
       GLCamera1.Move(cWalkStep*boost);
-   end;
-   if IsKeyDown('S') then begin
+   if IsKeyDown('S') then
       GLCamera1.Move(-cWalkStep*boost);
-   end;
 
-   if IsKeyDown('A') then begin
-          GLCamera1.Slide(-cStrafeStep*boost)
-   end;
-   if IsKeyDown('D') then begin
+   if IsKeyDown('A') then
+          GLCamera1.Slide(-cStrafeStep*boost);
+   if IsKeyDown('D') then
           GLCamera1.Slide(cStrafeStep*boost)
-   end;
 end;
 
 procedure TFrmMain.Timer1Timer(Sender: TObject);
 begin
-     Caption := Inttostr(Round(GLSceneViewer1.FramesPerSecond))+' FPS';
+     Caption := 'PFXGallery ' + Inttostr(Round(GLSceneViewer1.FramesPerSecond))+' FPS';
      GLSceneViewer1.ResetPerformanceMonitor;
 end;
-
-
-
-
-
-
 
 procedure TFrmMain.chkMouseLookClick(Sender: TObject);
 begin

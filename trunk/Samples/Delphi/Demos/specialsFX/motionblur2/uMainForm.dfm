@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 238
   Top = 119
-  Width = 640
-  Height = 480
-  Caption = 'blur demo by Dave Gravel.'
+  Caption = 'Motion Blur2'
+  ClientHeight = 335
+  ClientWidth = 472
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,18 +18,20 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 632
-    Height = 453
+    Width = 472
+    Height = 335
     Camera = Cam
     Buffer.BackgroundColor = clWhite
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aaNone
-    FieldOfView = 147.975616455078100000
+    FieldOfView = 137.581542968750000000
     Align = alClient
+    TabOrder = 0
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
+    Left = 56
     Top = 16
     object Light: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -57,6 +59,8 @@ object Form1: TForm1
         Position.Coordinates = {000040C00000A0400000803F0000803F}
         MajorRadius = 0.699999988079071000
         MinorRadius = 0.300000011920929000
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
       object GLIcosahedron1: TGLIcosahedron
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
@@ -99,7 +103,8 @@ object Form1: TForm1
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Top = 48
+    Left = 144
+    Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -107,11 +112,13 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Tag = 0
       end>
-    Top = 112
+    Left = 56
+    Top = 80
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Motion Blur2 - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -125,7 +132,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 32
+    Left = 360
     Top = 16
   end
 end

@@ -1,10 +1,3 @@
-{: A Demo of the TGLMotionBlur component
-
-  Version history
-    02/03/07 - DaStr - Updated GLSimpleNavigation component
-    25/02/07 - DaStr - Initial version (based on demo by Dave Gravel)
-
-}
 unit uMainForm;
 
 interface
