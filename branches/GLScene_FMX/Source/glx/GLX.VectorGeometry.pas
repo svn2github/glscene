@@ -209,7 +209,7 @@ interface
 uses
   System.Types,
 
-  //GLSceneX
+  //GLX.Scene
   GLX.VectorTypes;
 
 const
