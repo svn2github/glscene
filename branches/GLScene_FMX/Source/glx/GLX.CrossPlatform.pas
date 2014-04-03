@@ -84,9 +84,6 @@ interface
 
 {$I GLScene.inc}
 
-//   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
-//         these files in uses clauses.
-
 uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
@@ -100,7 +97,8 @@ uses
   System.Classes,  System.SysUtils, System.UITypes,  System.UIConsts,
   System.StrUtils, System.Types,
 
-  FMX.Consts,  FMX.Graphics,  FMX.Controls,  FMX.Forms,  FMX.Dialogs;
+  FMX.Consts, VCL.Graphics, FMX.Graphics, FMX.PixelFormats,
+  FMX.Controls,  FMX.Forms,  FMX.Dialogs;
 
 const
   FPC_VERSION = 0;
@@ -132,19 +130,21 @@ type
   PGLRect = ^TGLRect;
   TDelphiColor = TColor;
 
+{
   TGLPicture = TPicture;
   TGLGraphic = TGraphic;
-  TGLBitmap = TBitmap;
   TGraphicClass = class of TGraphic;
+  TGLMouseMoveEvent = TMouseMoveEvent;
+  TGLKeyEvent = TKeyEvent;
+  TGLKeyPressEvent = TKeyPressEvent;
+}
+  TGLBitmap = TBitmap;
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
   TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
   TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
     Shift: TShiftState; X, Y: Integer) of object;
-  TGLMouseMoveEvent = TMouseMoveEvent;
-  TGLKeyEvent = TKeyEvent;
-  TGLKeyPressEvent = TKeyPressEvent;
 
   TPlatformInfo = record
     Major: DWORD;
@@ -192,12 +192,6 @@ type
 
   TGLComponent = class(TComponent);
 
-  DWORD = Types.DWORD; {$NODEFINE DWORD}  //Windows.DWORD ?
-  TPoint = Types.TPoint;{$NODEFINE TPoint}
-  PPoint = Types.PPoint;{$NODEFINE PPoint}
-  TRect = Types.TRect;  {$NODEFINE TRect}
-  PRect = Types.PRect;  {$NODEFINE PRect}
-
   TProjectTargetNameFunc = function(): string;
 
   THalfFloat = type Word;
@@ -235,7 +229,7 @@ const
 
   // Several define from unit Consts
 const
-  glsAllFilter: string = sAllFilter;
+  glsAllFilter: string = 'All Filer'; // sAllFilter;
 
 {$IFDEF GLS_COMPILER_2009_UP}
   GLS_FONT_CHARS_COUNT = 2024;
@@ -370,18 +364,18 @@ end;
 
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 begin
-  Result := StrUtils.AnsiStartsText(ASubText, AText);
+  Result := AnsiStartsText(ASubText, AText);
 end;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
 begin
-  Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
+  Result := MessageBox(0, PChar(Text), PChar(Caption), MB_OK);
 end;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 begin
 {$IFDEF MSWINDOWS}
-  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
+//  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
 {$ENDIF}
 {$IFDEF UNIX}
   ABitmap.LoadFromResourceName(Instance, PChar(AName));
@@ -561,7 +555,7 @@ end;
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 begin
   case aPixelFormat of
-    pfCustom{$IFDEF WIN32}, pfDevice{$ENDIF}: // use current color depth
+    pfCustom {$IFDEF WIN32}, pfDevice{$ENDIF}: // use current color depth
       Result := GetCurrentColorDepth;
     pf1bit: Result := 1;
 {$IFDEF WIN32}
