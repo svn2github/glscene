@@ -4,7 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLSCUDAContext, GLSCUDA, GLSCUDACompiler, StdCtrls, GLFilePGM;
+  Dialogs, StdCtrls,
+
+  GLUtils,
+  GLSCUDAContext, GLSCUDA, GLSCUDACompiler,  GLFilePGM,
+  GLS_CUDA_Utility, GLGraphics, GLTextureFormat;
 
 type
   TForm1 = class(TForm)
@@ -37,11 +41,8 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLS_CUDA_Utility, GLGraphics, GLTextureFormat;
-
 const
-  TestFileName = '..\..\media\lena_bw.pgm';
+  TestFileName = 'lena_bw.pgm';
   OutFileName  = 'lena_bw_out.pgm';
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -81,6 +82,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir();
   pgm := TGLPGMImage.Create;
 end;
 

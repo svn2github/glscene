@@ -379,7 +379,7 @@ object Form1: TForm1
   end
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\\bin\'
-    CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
+    CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 12.0\VC\bin\'
     ProjectModule = 'scalarProd_kernel.cu'
     Left = 200
     Top = 248

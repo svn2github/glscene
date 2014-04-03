@@ -721,7 +721,7 @@ object Form1: TForm1
   end
   object GLSCUDACompiler1: TGLSCUDACompiler
     NVCCPath = 'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v3.2\\bin\'
-    CppCompilerPath = 'C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\'
+    CppCompilerPath = 'C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\'
     ProjectModule = 'postProcessGL_kernel.cu'
     Left = 448
     Top = 120

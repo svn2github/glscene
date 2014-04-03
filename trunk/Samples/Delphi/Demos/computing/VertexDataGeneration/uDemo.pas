@@ -4,7 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses, GLScene,
+  Dialogs,
+  //GLScene
+  GLScene, VectorGeometry, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses,
   GLSimpleNavigation, GLObjects, GLCoordinates, GLSCUDA, GLSCUDACompiler,
   GLSCUDAContext, GLContext, GLSCUDAGraphics, GLMaterial, GLCustomShader,
   GLSLShader;
@@ -45,9 +47,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  VectorGeometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

@@ -208,7 +208,6 @@ object Form1: TForm1
     end
   end
   object GLSCUDA1: TGLSCUDA
-    ComputingDevice = GLSCUDADevice1
     Left = 24
     Top = 104
     object Signal1D: TCUDAMemData
@@ -244,7 +243,7 @@ object Form1: TForm1
     end
   end
   object GLSCUDADevice1: TGLSCUDADevice
-    SelectDevice = 'GeForce GTX 260 (1)'
+    SelectDevice = 'GeForce GT 630M (1)'
     Left = 24
     Top = 56
   end

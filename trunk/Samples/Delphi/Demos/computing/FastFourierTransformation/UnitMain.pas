@@ -3,8 +3,13 @@ unit UnitMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
-  StdCtrls, ExtCtrls, Types, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
+  Windows, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, Types, Math,
+
+  //GLScene
+  GLUtils,
+  GLFilePGM, GLGraphics, GLS_CUDA_Utility, GLSCUDADataAccess,
+  VectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
 
 type
   TDemoMode = (dmNone, dm1D, dm2D, dmLena);
@@ -60,10 +65,6 @@ var
   Form1: TForm1;
 
 implementation
-
-uses
-  Math, GLFilePGM, GLGraphics, GLS_CUDA_Utility, Dialogs, GLSCUDADataAccess,
-  VectorTypes;
 
 {$R *.dfm}
 // ============================== 1D CASE ===========================
@@ -360,7 +361,7 @@ begin
   pgm := TGLPGMImage.Create;
   img := TGLImage.Create;
   try
-    pgm.LoadFromFile('..\..\media\lena_bw.pgm');
+    pgm.LoadFromFile('lena_bw.pgm');
     img.Assign(pgm);
     img.DownSampleByFactor2;
     img.VerticalReverseOnAssignFromBitmap := True;
@@ -424,6 +425,7 @@ var
   bmp: TBitmap;
   pPal: PLogPalette;
 begin
+  SetGLSceneMediaDir();
   if not InitCUTIL then
   begin
     MessageDlg('Can''t load cutil32.dll', mtError, [mbOk], 0);
@@ -431,7 +433,7 @@ begin
   end;
 
   cutCreateTimer( FTimer );
-  
+
   DemoMode := dmNone;
   GetMem(pPal, 1028);
   // create a gray custom bitmap and assign it to both images

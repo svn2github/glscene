@@ -4,14 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs,
+  Dialogs, ComCtrls,
+
   // GLScene
-  GLObjects, GLGeomObjects, GLScene, GLTeapot, GLCoordinates,
+  GLScene, GLTeapot, GLCoordinates, GLObjects, GLGeomObjects,
   GLMaterial, GLSimpleNavigation, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   BaseClasses, GLFBORenderer, GLHUDObjects, GLSCUDA, GLSCUDAGraphics,
   GLSCUDACompiler, GLSCUDAContext, GLState,
   GLRenderContextInfo, GLContext, GLCustomShader, GLSLShader,
-  GLTexture, ComCtrls;
+  GLTexture, OpenGLTokens;
 
 type
   TForm1 = class(TForm)
@@ -77,9 +78,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  OpenGLTokens;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
