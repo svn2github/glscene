@@ -1,5 +1,5 @@
 //
-// 01/02/13 - PW - First draft of conversion from Delphi to C++
+// 01/04/14 - PW - Conversion from Delphi to C++
 //
 //---------------------------------------------------------------------------
 

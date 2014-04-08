@@ -3,9 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, Classes, Controls, SysUtils, Graphics,
-  GLWin32Viewer, ExtCtrls, VectorGeometry, StdCtrls, GLSpaceText,
-  ComCtrls, GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists,
+  Windows, Forms,  Classes, Controls, SysUtils, Graphics, StdCtrls,
+  ExtCtrls, ComCtrls,
+
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer,  VectorGeometry,  GLSpaceText,
+  GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists,
   Grids, GLFile3DS, GLCoordinates, BaseClasses, GLUtils;
 
 type

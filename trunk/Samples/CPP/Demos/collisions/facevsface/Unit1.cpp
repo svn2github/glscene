@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -83,9 +85,11 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::cbCollisionModeClick(TObject *Sender)
 {
-//   TGLBCollision(TeaPot1->Behaviours->Items[0])->BoundingMode = TCollisionBoundingMode(cbCollisionMode->ItemIndex);
-//   TGLBCollision(TeaPot2->Behaviours[0])->BoundingMode = TCollisionBoundingMode(cbCollisionMode->ItemIndex);
-//   TGLBCollision(Bar->Behaviours[0])->BoundingMode = cbmCube;
+   ((TGLBCollision *)(TeaPot1->Behaviours->Items[0]))->BoundingMode =
+	 ((TCollisionBoundingMode)(cbCollisionMode->ItemIndex));
+   ((TGLBCollision *)(TeaPot2->Behaviours->Items[0]))->BoundingMode =
+	 ((TCollisionBoundingMode)(cbCollisionMode->ItemIndex));
+   ((TGLBCollision *)(Bar->Behaviours->Items[0]))->BoundingMode = cbmCube;
 }
 //---------------------------------------------------------------------------
 
@@ -126,17 +130,21 @@ void __fastcall TForm1::CollisionManager1Collision(TObject *Sender, TGLBaseScene
    if (Sender=CollisionManager1)
    {
    CollisionDetected = true;
-	 Memo1->Lines->Add(object1->Name+/*"("+StringNames[(TGLBCollision(object1->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/ +
-		"  -  "+object2->Name/*+"("+StringNames[(TGLBCollision(object2->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/);
+	 Memo1->Lines->Add(object1->Name+
+	 /*"("+StringNames[((TGLBCollision*)(object1->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/ +
+		"  -  "+object2->Name
+	 /*+"("+StringNames[((TGLBCollision*)(object2->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/);
    }
    else
-	 Memo1->Lines->Add(object1->Name+/*"("+StringNames[(TGLBCollision(object1->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/ +
-		"  -  "+object2->Name/*+"("+StringNames[(TGLBCollision(object2->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+") ** BB collision **"*/);
+	 Memo1->Lines->Add(object1->Name+
+	 /*"("+StringNames[((TGLBCollision*)(object1->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+")"*/ +
+		"  -  "+object2->Name
+	 /*+"("+StringNames[((TGLBCollision*)(object2->Behaviours->GetByClass(TGLBCollision))->BoundingMode)]+") ** BB collision **"*/);
    ;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+		  TShiftState Shift, int X, int Y)
 {
    TGLCustomSceneObject *pick;
 
