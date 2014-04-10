@@ -16,3 +16,4 @@ echo **************************************
 del *.hpp /s
 del *.bpi /s
 del *.lib /s
+for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
