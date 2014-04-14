@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 125
   Top = 65
-  Width = 611
-  Height = 483
-  Caption = 'Form1'
+  Caption = 'Shaded Terrain'
+  ClientHeight = 445
+  ClientWidth = 595
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnShow = FormShow
@@ -94,7 +95,7 @@ object Form1: TForm1
       Max = 100
       PageSize = 1
       Frequency = 10
-      Position = 100
+      Position = 40
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
@@ -143,6 +144,7 @@ object Form1: TForm1
         Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60.000000000000000000
         Height = 60.000000000000000000
+        Rotation = 0.000000000000000000
       end
     end
     object DummyCube1: TGLDummyCube
@@ -448,12 +450,12 @@ object Form1: TForm1
     Top = 136
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
-    MaxPoolSize = 0
+    MaxPoolSize = 20
     HeightDataSource = GLBitmapHDS1
     Active = True
     BumpmapLibrary = GLMaterialLibrary1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
-    BumpScale = 0.100000001490116100
+    BumpScale = 0.001000000047497451
     MaxTextures = 0
     Left = 96
     Top = 96

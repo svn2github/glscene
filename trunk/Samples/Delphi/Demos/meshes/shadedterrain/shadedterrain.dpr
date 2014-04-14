@@ -1,9 +1,9 @@
+{: Shaded terrain rendering demo.<p>}
 program ShadedTerrain;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1},
-  GLBumpmapHDS in '..\..\..\Source\GLBumpmapHDS.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.RES}
 

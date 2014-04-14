@@ -7,6 +7,10 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+#include <ComCtrls.hpp>
+#include <ExtCtrls.hpp>
+
+
 #include "OpenGL1x.hpp"
 #include "GLTexCombineShader.hpp"
 #include "GLBumpmapHDS.hpp"
@@ -17,16 +21,17 @@
 #include "GLTexture.hpp"
 #include "GLCadencer.hpp"
 #include "GLHeightData.hpp"
-#include "jpeg.hpp"
 #include "GLObjects.hpp"
 #include "GLTerrainRenderer.hpp"
 #include "GLScene.hpp"
-#include <ComCtrls.hpp>
-#include <ExtCtrls.hpp>
 #include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
+
+#include "GLKeyBoard.hpp"
+#include <jpeg.hpp>             // Pascal unit
+
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {

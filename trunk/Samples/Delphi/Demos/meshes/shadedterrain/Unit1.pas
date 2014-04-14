@@ -1,16 +1,16 @@
-{: Shaded terrain rendering demo.<p>
-
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData,
+  Jpeg, ExtCtrls,  ComCtrls,
+
+  //GLScene
+  GLScene, GLTerrainRenderer, GLObjects, GLHeightData,
   GLCadencer, StdCtrls, GLTexture, GLSkydome, GLWin32Viewer, VectorGeometry,
-  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, ExtCtrls,
-  ComCtrls, GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses, GLState;
+  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, GLMaterial, GLCoordinates,
+  GLCrossPlatform, BaseClasses, GLState, GLKeyboard, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -52,9 +52,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure TBIntensityChange(Sender: TObject);
   private
-    { Déclarations privées }
+    { Privite Declarations }
   public
-    { Déclarations publiques }
+    { Publique Declarations }
     mx, my : Integer;
     fullScreen : Boolean;
     FCamHeight : Single;
@@ -66,8 +66,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses GLKeyboard, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -170,7 +168,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=GLSceneViewer1.FramesPerSecondText;
+   Caption:='Shaded Terrain '+ GLSceneViewer1.FramesPerSecondText;
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

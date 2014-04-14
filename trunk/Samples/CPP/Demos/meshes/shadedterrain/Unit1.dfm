@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 235
   Top = 117
-  Caption = 'Form1'
+  Caption = 'Shaded Terrain'
   ClientHeight = 439
   ClientWidth = 603
   Color = clBtnFace
@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnKeyPress = FormKeyPress
   OnShow = FormShow
   PixelsPerInch = 96
@@ -52,7 +53,6 @@ object Form1: TForm1
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
-    ExplicitWidth = 490
     object Label1: TLabel
       Left = 8
       Top = 8
@@ -127,7 +127,7 @@ object Form1: TForm1
       Max = 100
       PageSize = 1
       Frequency = 10
-      Position = 100
+      Position = 40
       TabOrder = 1
       TabStop = False
       ThumbLength = 10
@@ -137,13 +137,13 @@ object Form1: TForm1
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
-    Left = 56
-    Top = 96
+    Left = 264
+    Top = 160
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 136
+    Left = 40
+    Top = 88
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
@@ -217,14 +217,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 176
+    Left = 496
+    Top = 88
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 96
+    Left = 40
+    Top = 160
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -464,8 +464,8 @@ object Form1: TForm1
         Material.Texture.EnvColor.Color = {0000003F0000003F0000003F0000003F}
         Material.Texture.Disabled = False
       end>
-    Left = 16
-    Top = 136
+    Left = 264
+    Top = 88
   end
   object GLTexCombineShader1: TGLTexCombineShader
     Combiners.Strings = (
@@ -477,17 +477,18 @@ object Form1: TForm1
     MaterialLibrary = GLMaterialLibrary1
     LibMaterial3Name = 'detail'
     LibMaterial4Name = 'texture'
-    Left = 96
-    Top = 136
+    Left = 144
+    Top = 160
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
     MaxPoolSize = 0
+    HeightDataSource = GLBitmapHDS1
     Active = True
     BumpmapLibrary = GLMaterialLibrary1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
     BumpScale = 0.100000001490116100
     MaxTextures = 0
-    Left = 96
-    Top = 96
+    Left = 144
+    Top = 88
   end
 end

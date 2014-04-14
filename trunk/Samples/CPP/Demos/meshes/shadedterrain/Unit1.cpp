@@ -1,37 +1,21 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include <GLKeyboard.hpp>
 #pragma hdrstop
 
 #include "Unit1.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "OpenGL1x"
-#pragma link "GLTexCombineShader"
-#pragma link "GLBumpmapHDS"
-#pragma link "GLLensFlare"
-#pragma link "VectorGeometry"
-#pragma link "GLWin32Viewer"
-#pragma link "GLSkydome"
-#pragma link "GLTexture"
-#pragma link "GLCadencer"
-#pragma link "GLHeightData"
-#pragma link "jpeg"
-#pragma link "GLObjects"
-#pragma link "GLTerrainRenderer"
-#pragma link "GLScene"
-#pragma link "GLKeyboard"
-#pragma link "BaseClasses"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
+
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
-  SetCurrentDir(ExtractFilePath(Application->ExeName) + "..\\..\\media");
+  SetGLSceneMediaDir();
   // 8 MB height data cache
   // Note this is the data size in terms of elevation samples, it does not
   // take into account all the data required/allocated by the renderer
@@ -42,7 +26,7 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 
   // load the texture maps
   GLMaterialLibrary1->LibMaterialByName("details")->Material->Texture->Image->
-    LoadFromFile("detailmap.jpg");
+	LoadFromFile("detailmap.jpg");
   SPSun->Material->Texture->Image->LoadFromFile("flare1.bmp");
 
   // apply texture map scale (our heightmap size is 256)
@@ -68,9 +52,9 @@ void __fastcall TForm1::FormShow(TObject * Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
-                                                     THeightData * heightData,
-                                                     TGLLibMaterial *
-                                                     normalMapMaterial)
+													 THeightData * heightData,
+													 TGLLibMaterial *
+													 normalMapMaterial)
 {
   Vectorgeometry::TVector n;
 
@@ -78,11 +62,11 @@ void __fastcall TForm1::GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
   normalMapMaterial->Texture2Name = "contrast";
   normalMapMaterial->Shader = GLTexCombineShader1;
   normalMapMaterial->Material->MaterialOptions =
-    normalMapMaterial->Material->MaterialOptions << moNoLighting;
+	normalMapMaterial->Material->MaterialOptions << moNoLighting;
   n = VectorNormalize(SPSun->AbsolutePosition);
   ScaleVector(n, 0.5);
-  n.Coord[1] = -n.Coord[1];
-  n.Coord[2] = -n.Coord[2];
+  n.V[1] = -n.V[1];
+  n.V[2] = -n.V[2];
   AddVector(n, 0.5);
   normalMapMaterial->Material->FrontProperties->Diffuse->Color = n;
 }
@@ -90,26 +74,26 @@ void __fastcall TForm1::GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLCadencer1Progress(TObject * Sender,
-                                            const double deltaTime,
-                                            const double newTime)
+											const double deltaTime,
+											const double newTime)
 {
   float speed;
 
   // handle keypresses
   if(IsKeyDown(VK_SHIFT))
-    speed = 5 * deltaTime;
+	speed = 5 * deltaTime;
   else
-    speed = deltaTime;
+	speed = deltaTime;
 
   TGLCoordinates *p = GLCamera1->Position;
   if(IsKeyDown(VK_UP))
-    DummyCube1->Translate(-p->X * speed, 0, -p->Z * speed);
+	DummyCube1->Translate(-p->X * speed, 0, -p->Z * speed);
   if(IsKeyDown(VK_DOWN))
-    DummyCube1->Translate(p->X * speed, 0, p->Z * speed);
+	DummyCube1->Translate(p->X * speed, 0, p->Z * speed);
   if(IsKeyDown(VK_LEFT))
-    DummyCube1->Translate(-p->Z * speed, 0, p->X * speed);
+	DummyCube1->Translate(-p->Z * speed, 0, p->X * speed);
   if(IsKeyDown(VK_RIGHT))
-    DummyCube1->Translate(p->Z * speed, 0, -p->X * speed);
+	DummyCube1->Translate(p->Z * speed, 0, -p->X * speed);
   if(IsKeyDown(VK_PRIOR))
     FCamHeight = FCamHeight + 10 * speed;
   if(IsKeyDown(VK_NEXT))
@@ -159,14 +143,14 @@ void __fastcall TForm1::Timer1Timer(TObject * Sender)
 
 void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
 {
-  TGLFaceProperties *fp;
+  TGLMaterial *fp;
   TGLFogEnvironment *fe;
   switch (Key)
   {
   case 'w':
   case 'W':
-    fp = GLMaterialLibrary1->Materials->Items[0]->Material->FrontProperties;
-    if(fp->PolygonMode == pmLines)
+	fp = GLMaterialLibrary1->Materials->Items[0]->Material;
+	if(fp->PolygonMode == pmLines)
       fp->PolygonMode = pmFill;
     else
       fp->PolygonMode = pmLines;
@@ -176,7 +160,7 @@ void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
     {
       GLCamera1->DepthOfView = GLCamera1->DepthOfView * 1.2;
       fe = GLSceneViewer1->Buffer->FogEnvironment;
-      fe->FogEnd = fe->FogEnd * 1.2;
+	  fe->FogEnd = fe->FogEnd * 1.2;
       fe->FogStart = fe->FogStart * 1.2;
     }
     break;
@@ -190,7 +174,7 @@ void __fastcall TForm1::FormKeyPress(TObject * Sender, char &Key)
     }
     break;
   case '*':
-    if(TerrainRenderer1->CLODPrecision > 10)
+	if(TerrainRenderer1->CLODPrecision > 10)
       TerrainRenderer1->CLODPrecision =
         Round(TerrainRenderer1->CLODPrecision * 0.8);
     break;
@@ -219,7 +203,7 @@ void __fastcall TForm1::TBSubSamplingChange(TObject * Sender)
 {
   GLBumpmapHDS1->SubSampling = (1 << TBSubSampling->Position);
   String s;
-  s.printf("(%d) -> BumpMaps are %dx",
+  s.printf(L"(%d) -> BumpMaps are %dx",
            GLBumpmapHDS1->SubSampling,
            TerrainRenderer1->TileSize / GLBumpmapHDS1->SubSampling);
   LASubFactor->Caption = s;
@@ -243,8 +227,8 @@ void __fastcall TForm1::TBIntensityChange(TObject * Sender)
     bmp->Width = 1;
     bmp->Height = 1;
     i = 255;
-    bmp->Canvas->Pixels[0][0] = (Graphics::TColor) RGB(i, i, i);
-    m->Texture->Image->Assign(bmp);
+	bmp->Canvas->Pixels[0][0] = (Graphics::TColor) RGB(i, i, i);
+	m->Texture->Image->Assign(bmp);
   }
   __finally
   {
@@ -257,4 +241,4 @@ void __fastcall TForm1::TBIntensityChange(TObject * Sender)
 }
 
 //---------------------------------------------------------------------------
- 
+
