@@ -1,52 +1,52 @@
 object Form1: TForm1
-  Left = 90
-  Top = 97
+  Left = 0
+  Top = 0
   Caption = 'Material Script'
-  ClientHeight = 456
-  ClientWidth = 791
+  ClientHeight = 508
+  ClientWidth = 735
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 402
+    Left = 346
     Top = 0
     Width = 389
-    Height = 456
+    Height = 508
     Align = alRight
     TabOrder = 0
+    ExplicitHeight = 456
     object Label1: TLabel
       Left = 16
       Top = 240
-      Width = 51
+      Width = 52
       Height = 13
       Caption = 'Step One :'
     end
     object Label2: TLabel
       Left = 16
       Top = 272
-      Width = 48
+      Width = 50
       Height = 13
       Caption = 'Step two :'
     end
     object Label3: TLabel
       Left = 16
       Top = 296
-      Width = 234
+      Width = 247
       Height = 13
       Caption = 'Debugging(this is not nessessary, just extra info)  :'
     end
     object Label4: TLabel
       Left = 8
       Top = 8
-      Width = 68
+      Width = 69
       Height = 13
       Caption = 'Script Editing :'
     end
@@ -88,16 +88,16 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 402
-    Height = 456
+    Width = 346
+    Height = 508
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 152.061691284179700000
+    FieldOfView = 147.759582519531300000
     Align = alClient
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 24
+    Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
@@ -665,14 +665,14 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 120
-    Top = 80
+    Left = 88
+    Top = 16
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Text Files|*.txt|All Files|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 120
-    Top = 24
+    Left = 176
+    Top = 16
   end
   object GLMaterialScripter1: TGLMaterialScripter
     MaterialLibrary = GLMaterialLibrary1
@@ -680,12 +680,12 @@ object Form1: TForm1
     MaterialLibraries = <>
     AppendToMaterialLibrary = True
     OverwriteToMaterialLibrary = False
-    Left = 26
-    Top = 80
+    Left = 18
+    Top = 72
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    Left = 224
-    Top = 24
+    Left = 248
+    Top = 16
   end
 end

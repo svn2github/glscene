@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLTexture, GLScene, GLObjects, GLWin32Viewer, StdCtrls,
-  ExtCtrls, GLMaterialScript, GLCadencer, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  Dialogs, StdCtrls, ExtCtrls, Jpeg,
+
+  //GLScene
+  GLTexture, GLScene, GLObjects, GLWin32Viewer, GLMaterialScript, GLCadencer,
+  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -45,8 +47,6 @@ implementation
 
 {$R *.dfm}
 
-uses JPEG;
-
 procedure TForm1.Button1Click(Sender: TObject);
 begin
    OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
@@ -70,5 +70,6 @@ begin
    GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
    SetCurrentDir(ExtractFilePath(Application.ExeName));
 end;
+
 
 end.
