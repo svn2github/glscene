@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTexture,
+  Dialogs, JPEG,
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer, GLTexture, VectorGeometry,
   GLCadencer, GLMultiMaterialShader, GLTexCombineShader, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -28,6 +30,8 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     { Private declarations }
   public
@@ -42,52 +46,48 @@ implementation
 
 {$R *.dfm}
 
-uses JPEG, GLUtils;
-
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
 
-  with GLMaterialLibrary1 do begin
-    // Add the specular pass
-    with AddTextureMaterial('specular','glscene_alpha.bmp') do begin
+  // Add the specular pass
+  with GLMaterialLibrary1.AddTextureMaterial('specular','glscene_alpha.bmp') do
+  begin
       // tmBlend for shiny background
       //Material.Texture.TextureMode:=tmBlend;
       // tmModulate for shiny text
       Material.Texture.TextureMode:=tmModulate;
       Material.BlendingMode:=bmAdditive;
       Texture2Name:='specular_tex2';
-    end;
-    with AddTextureMaterial('specular_tex2','chrome_buckle.bmp') do begin
+  end;
+  with GLMaterialLibrary1.AddTextureMaterial('specular_tex2','chrome_buckle.bmp') do
+  begin
       Material.Texture.MappingMode:=tmmCubeMapReflection;
       Material.Texture.ImageBrightness:=0.3;
-    end;
-
   end;
 
   // GLMaterialLibrary2 is the source of the GLMultiMaterialShader
   // passes.
-  with GLMaterialLibrary2 do begin
     // Pass 1 : Base texture
-    AddTextureMaterial('Pass1','glscene.bmp');//}
+  GLMaterialLibrary2.AddTextureMaterial('Pass1','glscene.bmp');//}
 
     // Pass 2 : Add a bit of detail
-    with AddTextureMaterial('Pass2','detailmap.jpg') do begin
+  with GLMaterialLibrary2.AddTextureMaterial('Pass2','detailmap.jpg') do
+  begin
       Material.Texture.TextureMode:=tmBlend;
       Material.BlendingMode:=bmAdditive;
-    end;//}
+  end;//}
 
     // Pass 3 : And a little specular reflection
-    with TGLLibMaterial.Create(GLMaterialLibrary2.Materials) do begin
+  with TGLLibMaterial.Create(GLMaterialLibrary2.Materials) do
+  begin
       Material.MaterialLibrary:=GLMaterialLibrary1;
       Material.LibMaterialName:='specular';
-    end;//}
+  end;//}
 
     // This isn't limited to 3, try adding some more passes!
-  end;
-
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -102,8 +102,15 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
 begin
   if ssLeft in shift then
     GLCamera1.MoveAroundTarget(my-y,mx-x);
-  mx:=x;
-  my:=y;
+  mx:=X;
+  my:=Y;
+end;
+
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+	GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
+  Handled := true
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

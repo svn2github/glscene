@@ -1,15 +1,14 @@
 object Form1: TForm1
-  Left = 144
-  Top = 81
-  BorderStyle = bsSingle
-  Caption = 'Multi Texture'
-  ClientHeight = 409
-  ClientWidth = 559
+  Left = 0
+  Top = 0
+  Caption = 'MultiTexture'
+  ClientHeight = 415
+  ClientWidth = 550
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
@@ -17,7 +16,7 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Image1: TImage
-    Left = 416
+    Left = 411
     Top = 56
     Width = 128
     Height = 128
@@ -25,7 +24,7 @@ object Form1: TForm1
     OnClick = Image1Click
   end
   object Image2: TImage
-    Left = 416
+    Left = 411
     Top = 208
     Width = 128
     Height = 128
@@ -35,21 +34,21 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 416
     Top = 40
-    Width = 69
+    Width = 70
     Height = 13
     Caption = 'Texture Map 1'
   end
   object Label2: TLabel
     Left = 416
     Top = 192
-    Width = 69
+    Width = 70
     Height = 13
     Caption = 'Texture Map 2'
   end
   object Label3: TLabel
     Left = 416
     Top = 368
-    Width = 60
+    Width = 57
     Height = 13
     Caption = 'Map 2 Scale'
   end
@@ -77,8 +76,8 @@ object Form1: TForm1
     TabOrder = 0
   end
   object TrackBar1: TTrackBar
-    Left = 416
-    Top = 384
+    Left = 413
+    Top = 378
     Width = 126
     Height = 25
     Max = 30
@@ -95,7 +94,6 @@ object Form1: TForm1
     Height = 17
     Caption = 'Clamp Texture 2'
     TabOrder = 2
-    OnClick = CBClampTex2Click
   end
   object GLScene1: TGLScene
     Left = 48

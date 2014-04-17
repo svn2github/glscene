@@ -1,14 +1,14 @@
 object Form1: TForm1
-  Left = 225
-  Top = 115
-  Caption = 'Multi Material'
-  ClientHeight = 369
-  ClientWidth = 467
+  Left = 0
+  Top = 0
+  Caption = 'MultiMaterial'
+  ClientHeight = 410
+  ClientWidth = 526
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
@@ -20,10 +20,10 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 467
-    Height = 369
+    Width = 526
+    Height = 410
     Camera = GLCamera1
-    FieldOfView = 149.673782348632800000
+    FieldOfView = 152.586074829101600000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

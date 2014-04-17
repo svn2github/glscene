@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLTexture, ComCtrls, StdCtrls, ExtCtrls,
-  ExtDlgs, GLWin32Viewer, GLMaterial, GLCoordinates, GLCrossPlatform,
-  BaseClasses;
+  ComCtrls, StdCtrls, ExtCtrls, ExtDlgs, Jpeg,
+
+  //GLScene
+  GLScene, GLObjects, GLTexture, GLWin32Viewer, GLMaterial, GLCoordinates, GLCrossPlatform,
+  BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -41,8 +43,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses Jpeg, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
