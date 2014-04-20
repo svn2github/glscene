@@ -39,13 +39,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-  GLHeightData,
-  GLGraphics,
-  VectorGeometry,
-  GLTexture,
-  SyncObjs,
-  GLMaterial;
+  Classes, SysUtils,
+
+  GLHeightData, GLGraphics, VectorGeometry,
+  GLTexture,   GLMaterial,  SyncObjs,  OpenGLTokens,
+  GLUtils{$IFDEF GLS_DELPHI},
+  VectorTypes{$ENDIF};
+
+
 
 type
   TGLBumpmapHDS = class;
@@ -120,12 +121,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  SysUtils,
-  OpenGLTokens,
-  GLUtils{$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
 
 const
   cDefaultBumpScale = 0.01;
@@ -287,7 +282,7 @@ procedure TGLBumpmapHDS.GenerateNormalMap(heightData: THeightData;
   normalMap: TGLBitmap32;
   scale: Single);
 var
-  mapSize: integer;
+  MapSize: integer;
   HD: THeightData;
   x, y: integer;
   scaleVec: TAffineVector;
@@ -296,16 +291,16 @@ var
   px, py: integer;
 begin
   HD := HeightData;
-  MapSize := (HD.Size - 1);
-  mapSize := mapSize div SubSampling;
-  normalMap.Height := mapSize;
-  normalMap.Width := mapSize;
+  MapSize := (HD.Size-1);
+  MapSize := MapSize div SubSampling;
+  normalMap.Height := MapSize;
+  normalMap.Width := MapSize;
   normalMap.Blank := false;
   SetVector(ScaleVec, 1, 1, FBumpScale);
-  for y := 0 to mapSize - 1 do
+  for y := 0 to MapSize - 1 do
   begin
     nmRow := normalMap.ScanLine[mapSize - 1 - y];
-    for x := 0 to mapSize - 1 do
+    for x := 0 to MapSize - 1 do
     begin
       px := x * subsampling;
       py := y * subsampling;

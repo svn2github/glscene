@@ -6,6 +6,8 @@
  Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
+       <li>04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove
+                           a memory leak (thanks to Lars Nebel)
        <li>04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from GLColor unit to here
        <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
                            restored definition of TGLCubeMapTarget as integer type
@@ -1400,6 +1402,7 @@ end;
 
 destructor TGLBlankImage.Destroy;
 begin
+  ReleaseBitmap32;
   inherited Destroy;
 end;
 
