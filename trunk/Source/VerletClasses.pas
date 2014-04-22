@@ -52,8 +52,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLCrossPlatform, VectorGeometry, SysUtils, VectorLists, SpatialPartitioning,
-  GeometryBB;
+uses
+  Classes, SysUtils,
+
+  //GLScene
+  GLCrossPlatform, VectorGeometry, VectorLists, SpatialPartitioning,
+  GeometryBB, VectorTypes;
 
 const
    G_DRAG = 0.0001;
@@ -858,8 +862,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses
-  VectorTypes;
 // ------------------
 // ------------------ TVerletNode ------------------
 // ------------------

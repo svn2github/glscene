@@ -284,36 +284,8 @@
     {$DEFINE GLS_COMPILER_7_DOWN}
   {$ifend}
 
-  // Delphi 6 & C++ Builder 6
-  {$if CompilerVersion>14.0}
-    {$DEFINE GLS_COMPILER_6_UP}
-  {$elseif CompilerVersion=14.0}
-    {$DEFINE GLS_COMPILER_6}
-    {$DEFINE GLS_COMPILER_6_UP}
-    {$DEFINE GLS_COMPILER_6_DOWN}
-  {$elseif CompilerVersion<14.0}
-    {$DEFINE GLS_COMPILER_6_DOWN}
-  {$ifend}
-
-
-  {$if CompilerVersion>13.0}
-    {$DEFINE GLS_COMPILER_5_UP}
-  {$elseif CompilerVersion=13.0}
-    {$DEFINE GLS_COMPILER_5}
-    {$DEFINE GLS_COMPILER_5_UP}
-    {$DEFINE GLS_COMPILER_5_DOWN}
-  {$elseif CompilerVersion<13.0}
-    {$DEFINE GLS_COMPILER_5_DOWN}
-  {$ifend}
-
-   // We've already determined it's Delphi 5+
-  {$DEFINE GLS_COMPILER_5_UP}
-
   // Friendly names
   {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_6}
-      {$DEFINE GLS_CPPB_6}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_2006}
       {$DEFINE GLS_CPPB_2006}
     {$ENDIF}
@@ -361,15 +333,6 @@
 
   // UP Declarations
   {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_5_UP}
-      {$DEFINE GLS_CPPB_5_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_6_UP}
-      {$DEFINE GLS_CPPB_6_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2006_UP}
-      {$DEFINE GLS_CPPB_2006_UP}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_2007_UP}
       {$DEFINE GLS_CPPB_2007_UP}
     {$ENDIF}
@@ -380,12 +343,6 @@
       {$DEFINE GLS_CPPB_2010_UP}
     {$ENDIF}
   {$ELSE}
-    {$IFDEF GLS_COMPILER_5_UP}
-      {$DEFINE GLS_DELPHI_5_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_6_UP}
-      {$DEFINE GLS_DELPHI_6_UP}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_7_UP}
       {$DEFINE GLS_DELPHI_7_UP}
     {$ENDIF}
@@ -467,56 +424,13 @@
       {$DEFINE GLS_DELPHI_XE2_DOWN}
     {$ENDIF}
   {$ENDIF}
- {$endif}
-
-// need to check VERXXX prior to Delphi 6, when conditional expressions
-// were introduced
-
-// Delphi 5 & C++ Builder 5
-{$IFDEF VER130}
-  {$DEFINE GLS_COMPILER_5}
-  {$DEFINE GLS_COMPILER_5_UP}
-  {$IFDEF BCB}
-    {$DEFINE GLS_CPPB_5}
-    {$DEFINE GLS_CPPB_5_UP}
-  {$ELSE}
-    {$DEFINE GLS_DELPHI_5}
-    {$DEFINE GLS_DELPHI_5_UP}
-  {$ENDIF}
-{$ENDIF}
-
+ {$ENDIF}
 
 {$IFNDEF GLS_CPPB}
   {$IFNDEF GLS_DELPHI}
     { Don't know what the hell it is.  Could be new version, or could be old BP. }
     {$DEFINE GLS_UNKNOWN_COMPILER}
   {$ENDIF}
-{$ENDIF}
-
-//_DOWN Defines
-
-{$IFDEF GLS_COMPILER_5}
-  {$DEFINE GLS_COMPILER_XE2_DOWN}
-  {$DEFINE GLS_COMPILER_XE_DOWN}
-  {$DEFINE GLS_COMPILER_2010_DOWN}
-  {$DEFINE GLS_COMPILER_2009_DOWN}
-  {$DEFINE GLS_COMPILER_2007_DOWN}
-  {$DEFINE GLS_COMPILER_2006_DOWN}
-  {$DEFINE GLS_COMPILER_2005_DOWN}
-  {$DEFINE GLS_COMPILER_8_DOWN}
-  {$DEFINE GLS_COMPILER_7_DOWN}
-{$ENDIF}
-
-{$IFDEF GLS_DELPHI_5}
-  {$DEFINE GLS_COMPILER_XE2_DOWN}
-  {$DEFINE GLS_DELPHI_XE_DOWN}
-  {$DEFINE GLS_DELPHI_2010_DOWN}
-  {$DEFINE GLS_DELPHI_2009_DOWN}
-  {$DEFINE GLS_DELPHI_2007_DOWN}
-  {$DEFINE GLS_DELPHI_2006_DOWN}
-  {$DEFINE GLS_DELPHI_2005_DOWN}
-  {$DEFINE GLS_DELPHI_8_DOWN}
-  {$DEFINE GLS_DELPHI_7_DOWN}
 {$ENDIF}
 
 //CPP Defines

@@ -265,7 +265,7 @@ begin
   for face := 0 to faceCount - 1 do
   begin
     if offset > 0 then
-      stream.Seek(offset, {$IFDEF GLS_DELPHI_5}Ord(soCurrent){$ELSE}soCurrent{$ENDIF});
+      stream.Seek(offset, soCurrent);
     for level := 0 to fLevelCount - 1 do
     begin
       stream.Read(GetLevelAddress(level, face)^, GetLevelSizeInByte(level) div faceCount);

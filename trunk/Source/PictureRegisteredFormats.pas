@@ -41,8 +41,6 @@ uses
 {$ENDIF}
   GLCrossPlatform;
 
-{$ifdef GLS_DELPHI_5} {$define PRF_HACK_PASSES}  {$endif}// Delphi 5
-{$ifdef GLS_DELPHI_6} {$define PRF_HACK_PASSES}  {$endif}// Delphi 6
 {$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif}// Delphi 7
 // skip Delphi 8
 {$ifdef GLS_DELPHI_2005_UP} {$define PRF_HACK_PASSES} {$endif}// Delphi 2005+

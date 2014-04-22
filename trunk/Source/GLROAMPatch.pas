@@ -1,6 +1,6 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {: GLROAMPatch<p>
 
    Class for managing a ROAM (square) patch.<p>
@@ -32,7 +32,10 @@ interface
 
 {$I GLScene.inc}
 
-uses VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext, SysUtils;
+uses
+  SysUtils,
+  VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext,
+  OpenGLTokens, XOpenGL;
 
 type
 
@@ -48,12 +51,12 @@ type
     leftChild, rightChild: PROAMTriangleNode;
   end;
 
-  // TROAMRenderPoint
-
-  TROAMRenderPoint = packed record
-    X, Y: integer;
-    idx: integer;
-  end;
+   // TROAMRenderPoint
+   //
+   TROAMRenderPoint = packed record
+      X, Y : Integer;
+      idx : Integer;
+   end;
 
   // TGLROAMPatch
 
@@ -80,12 +83,10 @@ type
     FOcclusionSkip, FOcclusionCounter: integer;
     FLastOcclusionTestPassed: boolean;
 
-
-
-  protected
-    { Protected Declarations }
-    procedure SetHeightData(val: THeightData);
-    procedure SetOcclusionSkip(val: integer);
+	   protected
+	      { Protected Declarations }
+         procedure SetHeightData(val : THeightData);
+         procedure SetOcclusionSkip(val : Integer);
 
     procedure RenderROAM(vertices: TAffineVectorList;
       vertexIndices: TIntegerList;
@@ -101,7 +102,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure ComputeVariance(variance: integer);
+    procedure ComputeVariance(variance: Integer);
 
     procedure ResetTessellation;
     procedure ConnectToTheWest(westPatch: TGLROAMPatch);
@@ -147,7 +148,7 @@ type
     property TextureScale: TAffineVector read FTextureScale write FTextureScale;
     property TextureOffset: TAffineVector read FTextureOffset write FTextureOffset;
 
-    property HighRes: boolean read FHighRes write FHighRes;
+    property HighRes: Boolean read FHighRes write FHighRes;
 
     {: Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: integer read FOcclusionSkip write SetOcclusionSkip;
@@ -157,17 +158,17 @@ type
          {: Result for the last occlusion test.<p>
             Note that this value is updated upon rendering the tile in
             non-high-res mode only. }
-    property LastOcclusionTestPassed: boolean read FLastOcclusionTestPassed;
+    property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;
 
-    property ID: integer read FID;
-    property TriangleCount: integer read FTriangleCount;
-    property Tag: integer read FTag write FTag;
+    property ID: Integer read FID;
+    property TriangleCount: Integer read FTriangleCount;
+    property Tag: Integer read FTag write FTag;
   end;
 
 
 {: Specifies the maximum number of ROAM triangles that may be allocated. }
-procedure SetROAMTrianglesCapacity(nb: integer);
-function GetROAMTrianglesCapacity: integer;
+procedure SetROAMTrianglesCapacity(nb: Integer);
+function GetROAMTrianglesCapacity: Integer;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -176,8 +177,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses OpenGLTokens, XOpenGL;
 
 var
   FVBOVertHandle, FVBOTexHandle: TGLVBOArrayBufferHandle;
@@ -290,7 +289,7 @@ end;
 
 function Split(tri: PROAMTriangleNode): boolean;
 var
-  n: integer;
+  n: Integer;
   lc, rc: PROAMTriangleNode;
   Shift: int64;
 begin
@@ -411,7 +410,7 @@ end;
 
 // SetOcclusionSkip
 
-procedure TGLROAMPatch.SetOcclusionSkip(val: integer);
+procedure TGLROAMPatch.SetOcclusionSkip(val: Integer);
 begin
   if val < 0 then
     val := 0;
@@ -455,14 +454,14 @@ begin
 end;
 
 // ComputeVariance
-
-procedure TGLROAMPatch.ComputeVariance(variance: integer);
+//
+procedure TGLROAMPatch.ComputeVariance(variance: Integer);
 var
   raster: PSmallIntRaster;
   currentVariance: PIntegerArray;
-  maxVarianceDepth: integer;
-  maxNonNullIndex: integer;
-  invVariance: single;
+  maxVarianceDepth: Integer;
+  maxNonNullIndex: Integer;
+  invVariance: Single;
 
   function ROAMVariancePoint(anX, anY: integer): TROAMVariancePoint;
   begin
@@ -521,7 +520,7 @@ var
   end;
 
 var
-  s, p: integer;
+  s, p: Integer;
 begin
   invVariance := 1 / variance;
   s := Sqr(FPatchSize);
@@ -568,7 +567,7 @@ begin
 end;
 
 // Tessellate
-
+//
 var
   tessMaxVariance: cardinal;
   tessMaxDepth: cardinal;
@@ -653,7 +652,7 @@ var
   end;
 
 var
-  s: integer;
+  s: Integer;
 begin
   tessMaxDepth := FMaxDepth;
   tessObserverPosX := Round(FObserverPosition.V[0]);
@@ -723,7 +722,7 @@ end;
 procedure TGLROAMPatch.RenderHighRes(vertices: TAffineVectorList;
   vertexIndices: TIntegerList;
   texCoords: TTexPointList;
-  forceROAM: boolean);
+  forceROAM: Boolean);
 var
   primitive: TGLEnum;
 begin
@@ -774,8 +773,8 @@ procedure TGLROAMPatch.RenderAccum(vertices: TAffineVectorList;
   texCoords: TTexPointList;
   autoFlushVertexCount: integer);
 var
-  occlusionPassed: boolean;
-  n, nb, nvi: integer;
+  occlusionPassed: Boolean;
+  n, nb, nvi: Integer;
 begin
   // CLOD tiles are rendered via ROAM
   if (FOcclusionSkip > 0) and FOcclusionQuery.IsSupported then
@@ -865,7 +864,7 @@ begin
 end;
 
 // RenderROAM
-
+//
 var
   renderRaster: PSmallIntRaster;
   renderIndices: PIntegerArray;
@@ -934,7 +933,7 @@ begin
 end;
 
 // RenderAsStrips
-
+//
 procedure TGLROAMPatch.RenderAsStrips(vertices: TAffineVectorList;
   vertexIndices: TIntegerList;
   texCoords: TTexPointList);

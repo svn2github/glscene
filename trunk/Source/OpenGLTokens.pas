@@ -127,11 +127,11 @@ type
 
   GLubyte = Byte;
   TGLubyte = Byte;
-  PGLubyte = {$IFDEF GLS_DELPHI_5}Windows.PByte{$ELSE}System.PByte{$ENDIF};
+  PGLubyte = System.PByte;
 
   GLushort = Word;
   TGLushort = Word;
-  PGLushort = {$IFDEF GLS_DELPHI_5}Windows.PWord{$ELSE}System.PWord{$ENDIF};
+  PGLushort = System.PWord;
 
   GLuint = UINT;
   TGLuint = UINT;
@@ -139,7 +139,7 @@ type
 
   GLfloat = Single;
   TGLfloat = Single;
-  PGLfloat = {$IFDEF GLS_DELPHI_5}Windows.PSingle{$ELSE}System.PSingle{$ENDIF};
+  PGLfloat = System.PSingle;
 
   GLclampf = Single;
   TGLclampf = Single;
@@ -147,7 +147,7 @@ type
 
   GLdouble = Double;
   TGLdouble = Double;
-  PGLdouble = {$IFDEF GLS_DELPHI_5}Windows.PDouble{$ELSE}System.PDouble{$ENDIF};
+  PGLdouble = System.PDouble;
 
   GLclampd = Double;
   TGLclampd = Double;

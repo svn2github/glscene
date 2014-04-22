@@ -86,12 +86,7 @@ uses
   StdCtrls,
 {$ENDIF}
 
-{$IFDEF GLS_DELPHI_6_UP}
-  DesignIntf, VCLEditors
-{$ELSE}
-  DsgnIntf
-{$ENDIF}
-  ;
+  DesignIntf, VCLEditors, System.Actions;
 
 const
   SCENE_SELECTED = 0;
@@ -214,7 +209,7 @@ type
 
     FScene: TGLScene;
     FObjectNode, FSceneObjects: TTreeNode;
-    FCurrentDesigner: {$IFDEF GLS_DELPHI_6_UP}IDesigner{$ELSE}IFormDesigner{$ENDIF};
+    FCurrentDesigner: IDesigner;
     FLastMouseDownPos: TPoint;
 
 {$IFDEF GLS_DELPHI_6_UP}
@@ -259,7 +254,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
   public
-    procedure SetScene(Scene: TGLScene; Designer: {$IFDEF GLS_DELPHI_6_UP}IDesigner{$ELSE}IFormDesigner{$ENDIF});
+    procedure SetScene(Scene: TGLScene; Designer: IDesigner);
 
   end;
 
@@ -377,14 +372,10 @@ end;
 //
 
 procedure TGLSceneEditorForm.SetScene(Scene: TGLScene;
-  Designer: {$IFDEF GLS_DELPHI_6_UP}IDesigner{$ELSE}IFormDesigner{$ENDIF});
+  Designer: IDesigner);
 begin
   if Assigned(FScene) then
-{$IFDEF GLS_DELPHI_5_UP}
-    FScene.RemoveFreeNotification(Self);
-{$ELSE}
-    FScene.Notification(Self, opRemove);
-{$ENDIF}
+  FScene.RemoveFreeNotification(Self);
   FScene := Scene;
   FCurrentDesigner := Designer;
   ResetTree;

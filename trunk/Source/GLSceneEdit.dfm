@@ -150,18 +150,18 @@ object GLSceneEditorForm: TGLSceneEditorForm
   TextHeight = 14
   object Splitter: TSplitter
     Left = 191
-    Top = 57
+    Top = 56
     Width = 4
-    Height = 430
+    Height = 431
     Align = alRight
     Visible = False
-    ExplicitHeight = 431
+    ExplicitTop = 57
   end
   object Tree: TTreeView
     Left = 0
-    Top = 57
+    Top = 56
     Width = 191
-    Height = 430
+    Height = 431
     Align = alClient
     HideSelection = False
     Indent = 19
@@ -176,13 +176,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
     OnKeyDown = TreeKeyDown
     OnMouseDown = TreeMouseDown
     OnMouseMove = TreeMouseMove
-    ExplicitHeight = 431
   end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
     Width = 405
-    Height = 57
+    Height = 56
     AutoSize = True
     BorderWidth = 1
     ButtonWidth = 28
@@ -193,17 +192,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
     TabOrder = 1
     object ToolButton8: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Action = ACLoadScene
     end
     object ToolButton9: TToolButton
       Left = 28
-      Top = 2
+      Top = 0
       Action = ACSaveScene
     end
     object TBEffectsPanel: TToolButton
       Left = 56
-      Top = 2
+      Top = 0
       Hint = 'Show Behaviours/Effects'
       Caption = 'Show Behaviours/Effects'
       ImageIndex = 11
@@ -212,19 +211,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object TBStayOnTop: TToolButton
       Left = 84
-      Top = 2
+      Top = 0
       Hint = 'Stay on top'
       Action = ACStayOnTop
       Style = tbsCheck
     end
     object ToolButton11: TToolButton
       Left = 112
-      Top = 2
+      Top = 0
       Action = ACInfo
     end
     object ToolButton2: TToolButton
       Left = 140
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 2
@@ -232,19 +231,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ToolButton1: TToolButton
       Left = 148
-      Top = 2
+      Top = 0
       Action = ACAddCamera
     end
     object TBAddObjects: TToolButton
       Left = 176
-      Top = 2
+      Top = 0
       Action = ACAddObject
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
     object ToolButton3: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton3'
       ImageIndex = 2
@@ -253,17 +252,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ToolButton4: TToolButton
       Left = 0
-      Top = 29
+      Top = 30
       Action = ACMoveUp
     end
     object ToolButton7: TToolButton
       Left = 28
-      Top = 29
+      Top = 30
       Action = ACMoveDown
     end
     object ToolButton6: TToolButton
       Left = 56
-      Top = 29
+      Top = 30
       Width = 8
       Caption = 'ToolButton6'
       ImageIndex = 4
@@ -271,27 +270,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ToolButton12: TToolButton
       Left = 64
-      Top = 29
+      Top = 30
       Action = ACCut
     end
     object ToolButton13: TToolButton
       Left = 92
-      Top = 29
+      Top = 30
       Action = ACCopy
     end
     object ToolButton14: TToolButton
       Left = 120
-      Top = 29
+      Top = 30
       Action = ACPaste
     end
     object ToolButton5: TToolButton
       Left = 148
-      Top = 29
+      Top = 30
       Action = ACDeleteObject
     end
     object ToolButton10: TToolButton
       Left = 176
-      Top = 29
+      Top = 30
       Width = 8
       Caption = 'ToolButton10'
       ImageIndex = 5
@@ -299,26 +298,25 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ToolButton15: TToolButton
       Left = 184
-      Top = 29
+      Top = 30
       Action = ACExpand
     end
     object ToolButton16: TToolButton
       Left = 212
-      Top = 29
+      Top = 30
       Action = ACColapse
     end
   end
   object PABehaviours: TPanel
     Left = 195
-    Top = 57
+    Top = 56
     Width = 210
-    Height = 430
+    Height = 431
     Align = alRight
     Caption = 'PABehaviours'
     Constraints.MinWidth = 1
     TabOrder = 2
     Visible = False
-    ExplicitHeight = 431
     object Splitter3: TSplitter
       Left = 1
       Top = 154
@@ -330,20 +328,22 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label1: TLabel
       Left = 1
       Top = 30
-      Width = 55
+      Width = 208
       Height = 14
       Align = alTop
       Alignment = taCenter
       Caption = 'Behaviours'
+      ExplicitWidth = 55
     end
     object Label2: TLabel
       Left = 1
       Top = 158
-      Width = 35
+      Width = 208
       Height = 14
       Align = alTop
       Alignment = taCenter
       Caption = 'Effects'
+      ExplicitWidth = 35
     end
     object BehavioursListView: TListView
       Left = 1
@@ -396,7 +396,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Top = 1
       Width = 208
       Height = 29
-      ButtonWidth = 62
+      ButtonHeight = 30
+      ButtonWidth = 68
       Caption = 'ToolBar1'
       ParentShowHint = False
       ShowCaptions = True
@@ -404,7 +405,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       TabOrder = 2
       object TBAddBehaviours: TToolButton
         Left = 0
-        Top = 2
+        Top = 0
         Action = ACAddBehaviour
         Caption = 'Behaviours'
         DropdownMenu = PMBehavioursToolbar
@@ -413,8 +414,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
         Style = tbsDropDown
       end
       object TBAddEffects: TToolButton
-        Left = 77
-        Top = 2
+        Left = 83
+        Top = 0
         Hint = 'Add effect'
         Action = ACAddEffect
         Caption = 'Effects'
@@ -589,7 +590,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 16
     Top = 120
     Bitmap = {
-      494C01010F001800380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800440010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -7048,12 +7048,7 @@ procedure TGLProxyObject.Notification(AComponent: TComponent; Operation:
   TOperation);
 begin
   if (Operation = opRemove) and (AComponent = FMasterObject) then
-{$IFDEF GLS_COMPILER_4}
-    FMasterObject := nil;
-  StructureChanged;
-{$ELSE}
     MasterObject := nil;
-{$ENDIF}
   inherited;
 end;
 

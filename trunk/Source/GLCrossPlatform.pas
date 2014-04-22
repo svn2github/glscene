@@ -9,6 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
+      <li>22/04/14 - PW -  Ceased support of GLS_DELPHI_5 and GLS_COMPILER_5 or DOWN
       <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
       <li>30/06/11 - DaStr - Added CharToWideChar()
@@ -83,9 +84,6 @@ interface
 
 {$INCLUDE GLScene.inc}
 
-//   Tips: Delphi 5 doesn't contain StrUtils.pas, Types.pas, so don't include
-//         these files in uses clauses.
-
 uses
 {$IFDEF MSWINDOWS}
   Windows,
@@ -96,34 +94,16 @@ uses
 {$IFDEF GLS_X11_SUPPORT}
   xlib,
 {$ENDIF}
-  Classes,
-  SysUtils,
 
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Consts,
-  VCL.Graphics,
-  VCL.Controls,
-  VCL.Forms,
-  VCL.Dialogs
+{$IFDEF GLS_DELPHI_XE2_UP}
+   System.Classes, System.SysUtils, System.StrUtils, Types, VCL.Consts,   VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs
   {$ELSE}
   {$IFDEF FPC}
-  LCLVersion,
-  LCLType,
-  FileUtil,
-  {$ELSE}
-  Consts,
+    LCLVersion,  LCLType,  FileUtil,
   {$ENDIF}
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs
-  {$ENDIF}
-
-
-{$IFNDEF GLS_COMPILER_5_DOWN},
-  StrUtils,
-  Types
-  {$ENDIF}
+   Classes, SysUtils, StrUtils, Types, Consts, Graphics,  Controls,
+   Forms,  Dialogs,
+{$ENDIF}
   ;
 
 {$IFNDEF FPC}
@@ -150,7 +130,7 @@ type
 
   // DaStr: Actually, there is a way around, see TPenStyle for example.
 
-  TGLPoint = TPoint; 
+  TGLPoint = TPoint;
 
   PGLPoint = ^TGLPoint;
   TGLRect = TRect;
@@ -213,78 +193,15 @@ type
       pvAppleMacOSX
     );
 
-{$IFDEF GLS_DELPHI_5}
-  EGLOSError = EWin32Error;
-
-  // DaStr: Don't know if these exist in Delphi6.
-  TAssertErrorProc = procedure (const Message, Filename: string;
-    LineNumber: Integer; ErrorAddr: Pointer);
-
-  PLongint      = Windows.PLongint;
-  PInteger      = Windows.PInteger;
-  PWord         = Windows.PWord;
-  PSmallInt     = Windows.PSmallInt;
-  PByte         = Windows.PByte;
-  PShortInt     = Windows.PShortInt;
-  PLongWord     = Windows.PLongWord;
-  PSingle       = Windows.PSingle;
-  PDouble       = Windows.PDouble;
-  PCardinal     = ^Cardinal;
-{
-  PShortInt     = ^ShortInt;
-  PInt64        = ^Int64;
-  PPWideChar    = ^PWideChar;
-  PPChar        = ^PChar;
-  PPAnsiChar    = PPChar;
-  PExtended     = ^Extended;
-  PComp         = ^Comp;
-  PCurrency     = ^Currency;
-  PVariant      = ^Variant;
-  POleVariant   = ^OleVariant;
-  PPointer      = ^Pointer;
-  PBoolean      = ^Boolean;
-}
-  UInt64 = Int64; // Actually, not correct, but it might work.
-  TSeekOrigin = (soBeginning, soCurrent, soEnd);
-
-const
-  PathDelim  = {$IFDEF MSWINDOWS} '\'; {$ELSE} '/'; {$ENDIF}
-  HoursPerDay   = 24;
-  MinsPerHour   = 60;
-  SecsPerMin    = 60;
-  MSecsPerSec   = 1000;
-  MinsPerDay    = HoursPerDay * MinsPerHour;
-  SecsPerDay    = MinsPerDay * SecsPerMin;
-  MSecsPerDay   = SecsPerDay * MSecsPerSec;  
-type
-
-{$ELSE}
   EGLOSError = EOSError;
   //   {$IFDEF FPC}
   //      EGLOSError = EWin32Error;
   //   {$ELSE}
   //      EGLOSError = EOSError;
   //   {$ENDIF}
-{$ENDIF}
 
-{$IFDEF GLS_DELPHI_5_DOWN}
-  IInterface = IUnknown;
-{$ENDIF}
-
-  // A work-around a Delphi5 interface bug.
-{$IFDEF GLS_DELPHI_5_DOWN}
-  TGLComponent = class(TComponent, IInterface);
-{$ELSE}
   TGLComponent = class(TComponent);
-{$ENDIF}
 
-{$IFDEF GLS_DELPHI_5_DOWN}
-  DWORD = Windows.DWORD;
-  TPoint = Windows.TPoint;
-  PPoint = Windows.PPoint;
-  TRect = Windows.TRect;
-  PRect = Windows.PRect;
-{$ELSE}
 {$IFDEF FPC}
   DWORD = System.DWORD;
   TPoint = Types.TPoint;
@@ -299,7 +216,6 @@ type
   TRect = Types.TRect;  {$NODEFINE TRect}
   PRect = Types.PRect;  {$NODEFINE PRect}
 {$ENDIF}
-{$ENDIF}
 
   TProjectTargetNameFunc = function(): string;
 
@@ -307,11 +223,6 @@ type
   PHalfFloat = ^THalfFloat;
 
 const
-{$IFDEF GLS_DELPHI_5_DOWN}
-  S_OK = Windows.S_OK;
-  E_NOINTERFACE = Windows.E_NOINTERFACE;
-{$ENDIF}
-
 {$IFDEF MSWINDOWS}
   glpf8Bit = pf8bit;
   glpf24bit = pf24bit;
@@ -389,16 +300,6 @@ function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 {: Returns the bitmap's scanline for the specified row. }
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 
-{$IFDEF GLS_DELPHI_5_DOWN}
-{: Suspends thread execution for length milliseconds.<p>
-   If length is zero, only the remaining time in the current thread's time
-   slice is relinquished. }
-procedure Sleep(length: Cardinal);
-
-{: IncludeTrailingPathDelimiter returns the path without a PathDelimiter
-  ('\' or '/') at the end.  This function is MBCS enabled. }
-function IncludeTrailingPathDelimiter(const S: string): string;
-{$ENDIF}
 {: Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
 {: Remove if possible part of path witch leads to project executable. }
@@ -442,30 +343,12 @@ procedure SetExeDirectory;
 function GetDecimalSeparator: Char;
 procedure SetDecimalSeparator(AValue: Char);
 
-{$IFDEF GLS_DELPHI_5_DOWN}
-function ColorToString(Color: TColor): string;
-{$ENDIF}
-
 // StrUtils.pas
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 
 // Classes.pas
 function IsSubComponent(const AComponent: TComponent): Boolean;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
-
-{$IFDEF GLS_DELPHI_5_DOWN}
-// SysUtils.pas
-function StrToFloatDef(const S: string; const Default: Extended): Extended; overload;
-function TryStrToFloat(const S: string; out Value: Extended): Boolean; overload;
-function TryStrToFloat(const S: string; out Value: Double): Boolean; overload;
-function TryStrToFloat(const S: string; out Value: Single): Boolean; overload;
-
-// Math.pas
-function IsNan(const AValue: Double): Boolean; overload;
-function IsNan(const AValue: Single): Boolean; overload;
-function IsNan(const AValue: Extended): Boolean; overload;
-function IsInfinite(const AValue: Double): Boolean;
-{$ENDIF}
 
 {$IFDEF GLS_DELPHI_7_UP}
 function FindUnitName(anObject: TObject): string; overload;
@@ -506,114 +389,18 @@ var
 
 function IsSubComponent(const AComponent: TComponent): Boolean;
 begin
-{$IFDEF GLS_DELPHI_5_DOWN}
-  Result := False; // AFAIK Delphi 5 does not know what is a SubComponent.
-{$ELSE}
   Result := (csSubComponent in AComponent.ComponentStyle);
-{$ENDIF}
 end;
 
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 begin
-{$IFDEF GLS_DELPHI_5_DOWN}
-  // AFAIK Delphi 5 does not know what is a SubComponent, so ignore this.
-{$ELSE}
   AComponent.SetSubComponent(Value);
-{$ENDIF}
 end;
-
-{$IFDEF GLS_DELPHI_5_DOWN}
-
-function StrToFloatDef(const S: string; const Default: Extended): Extended;
-begin
-  if not TextToFloat(PChar(S), Result, fvExtended) then
-    Result := Default;
-end;
-
-function TryStrToFloat(const S: string; out Value: Extended): Boolean;
-begin
-  Result := TextToFloat(PChar(S), Value, fvExtended)
-end;
-
-function TryStrToFloat(const S: string; out Value: Double): Boolean;
-var
-  LValue: Extended;
-begin
-  Result := TextToFloat(PChar(S), LValue, fvExtended);
-  if Result then
-    Value := LValue;
-end;
-
-function TryStrToFloat(const S: string; out Value: Single): Boolean;
-var
-  LValue: Extended;
-begin
-  Result := TextToFloat(PChar(S), LValue, fvExtended);
-  if Result then
-    Value := LValue;
-end;
-
-function IsNan(const AValue: Single): Boolean;
-begin
-  Result := ((PLongWord(@AValue)^ and $7F800000) = $7F800000) and
-    ((PLongWord(@AValue)^ and $007FFFFF) <> $00000000);
-end;
-
-function IsNan(const AValue: Double): Boolean;
-begin
-  Result := ((PInt64(@AValue)^ and $7FF0000000000000) = $7FF0000000000000) and
-    ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
-end;
-
-function IsNan(const AValue: Extended): Boolean;
-type
-  TExtented = packed record
-    Mantissa: Int64;
-    Exponent: Word;
-  end;
-  PExtended = ^TExtented;
-begin
-  Result := ((PExtended(@AValue)^.Exponent and $7FFF) = $7FFF) and
-    ((PExtended(@AValue)^.Mantissa and $7FFFFFFFFFFFFFFF) <> 0);
-end;
-
-function IsInfinite(const AValue: Double): Boolean;
-begin
-  Result := ((PInt64(@AValue)^ and $7FF0000000000000) = $7FF0000000000000) and
-    ((PInt64(@AValue)^ and $000FFFFFFFFFFFFF) = $0000000000000000);
-end;
-{$ENDIF}
-
-{$IFDEF GLS_DELPHI_5_DOWN}
-
-function ColorToString(Color: TColor): string;
-begin
-  // Taken from Delphi7 Graphics.pas
-  if not ColorToIdent(Color, Result) then
-    FmtStr(Result, '%s%.8x', [HexDisplayPrefix, Color]);
-end;
-{$ENDIF}
 
 function AnsiStartsText(const ASubText, AText: string): Boolean;
-{$IFDEF GLS_DELPHI_5_DOWN}
-var
-  P: PChar;
-  L, L2: Integer;
 begin
-  P := PChar(AText);
-  L := Length(ASubText);
-  L2 := Length(AText);
-  if L > L2 then
-    Result := False
-  else
-    Result := CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE,
-      P, L, PChar(ASubText), L) = 2;
+  Result := System.StrUtils.AnsiStartsText(ASubText, AText);
 end;
-{$ELSE}
-begin
-  Result := StrUtils.AnsiStartsText(ASubText, AText);
-end;
-{$ENDIF}
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
 begin
@@ -830,24 +617,6 @@ begin
   Result := aBitmap.ScanLine[aRow];
 {$ENDIF}
 end;
-
-{$IFDEF GLS_DELPHI_5_DOWN}
-// Sleep
-//
-
-procedure Sleep(length: Cardinal);
-begin
-  Windows.Sleep(length);
-end;
-
-// IncludeTrailingPathDelimiter
-//
-
-function IncludeTrailingPathDelimiter(const S: string): string;
-begin
-  Result := IncludeTrailingBackslash(S);
-end;
-{$ENDIF} // GLS_DELPHI_5_DOWN
 
 procedure FixPathDelimiter(var S: string);
 var

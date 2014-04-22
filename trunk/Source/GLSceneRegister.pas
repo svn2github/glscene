@@ -217,12 +217,8 @@ type
 
   // TGLColorProperty
   //
-{$IFDEF GLS_COMPILER_5}
-  TGLColorProperty = class(TClassProperty)
-{$ELSE}
   TGLColorProperty = class(TClassProperty,
       ICustomPropertyDrawing, ICustomPropertyListDrawing)
-{$ENDIF}
   private
     { Private Declarations }
 
@@ -235,10 +231,6 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
     procedure Edit; override;
 
-{$IFDEF GLS_COMPILER_5}
-    procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-    procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-{$ELSE}
     // ICustomPropertyListDrawing  stuff
     procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
     procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
@@ -246,8 +238,6 @@ type
     // CustomPropertyDrawing
     procedure PropDrawName(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
     procedure PropDrawValue(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
-{$ENDIF}
-
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
@@ -474,16 +464,6 @@ type
 resourcestring
   { OpenGL property category }
   sOpenGLCategoryName = 'OpenGL';
-{$IFDEF GLS_DELPHI_5}
-  sOpenGLCategoryDescription = 'Properties dealing with OpenGL graphics';
-
-type
-  TOpenGLCategory = class(TPropertyCategory)
-  public
-    class function Name: string; override;
-    class function Description: string; override;
-  end;
-{$ENDIF}
 
 procedure Register;
 
@@ -722,19 +702,6 @@ end;
 {$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
-
-{$IFDEF GLS_DELPHI_5}
-
-class function TOpenGLCategory.Name: string;
-begin
-  Result := sOpenGLCategoryName;
-end;
-
-class function TOpenGLCategory.Description: string;
-begin
-  Result := sOpenGLCategoryDescription;
-end;
-{$ENDIF}
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -1060,50 +1027,6 @@ begin
     Result := ConvertColorVector(AColor);
 end;
 
-{$IFDEF GLS_COMPILER_5}
-
-procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas;
-  const ARect: TRect; ASelected: Boolean);
-var
-  vRight: Integer;
-  vOldPenColor,
-    vOldBrushColor: TColor;
-  Color: TColorVector;
-begin
-  vRight := (ARect.Bottom - ARect.Top) + ARect.Left;
-  with ACanvas do
-    try
-      vOldPenColor := Pen.Color;
-      vOldBrushColor := Brush.Color;
-
-      Pen.Color := Brush.Color;
-      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
-
-      Color := ColorManager.GetColor(Value);
-      Brush.Color := ConvertColorVector(Color);
-      Pen.Color := ColorToBorderColor(Color, ASelected);
-
-      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
-
-      Brush.Color := vOldBrushColor;
-      Pen.Color := vOldPenColor;
-    finally
-      inherited ListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom), ASelected);
-    end;
-end;
-
-procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
-begin
-  // draws the small color rectangle in the object inspector
-  if GetVisualValue <> '' then
-    ListDrawValue(GetVisualValue, ACanvas, ARect, True)
-  else
-    inherited PropDrawValue(ACanvas, ARect, ASelected);
-end;
-{$ENDIF}
-
-{$IFDEF GLS_COMPILER_6_UP}
-
 procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
 begin
   if GetVisualValue <> '' then
@@ -1160,7 +1083,6 @@ procedure TGLColorProperty.PropDrawName(ACanvas: TCanvas; const ARect: TRect;
 begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
-{$ENDIF GLS_COMPILER_6_UP}
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -1822,19 +1744,6 @@ end;
 //******************************************************************************
 
 procedure GLRegisterPropertiesInCategories;
-{$IFDEF GLS_DELPHI_5}
-{ The first parameter of RegisterPropertiesInCategory is of type
-  TPropertyCategoryClass in Delphi 5, but is a string in Delphi 6 and later.
-  Therefore, the sXxxxCategoryName resourcestring needs to be redeclared as a
-  TPropertyCategoryClass in Delphi 5. The same goes for other categories. }
-type
-  sOpenGLCategoryName = TOpenGLCategory;
-  sInputCategoryName = TInputCategory;
-  sLayoutCategoryName = TLayoutCategory;
-  sLinkageCategoryName = TLinkageCategory;
-  sLocalizableCategoryName = TLocalizableCategory;
-  sVisualCategoryName = TVisualCategory;
-{$ENDIF}
 begin
 
   { GLViewer }
