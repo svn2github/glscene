@@ -6,7 +6,7 @@
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>20/11/12 - PW - Added FBuffers.Free to TGLScene.Destroy to prevent memory leaks (by Nelson Chu)
+      <li>20/11/12 - PW - Added FreeAndNull(FBuffers) in TGLScene.Destroy to prevent memory leaks (by Nelson Chu)
       <li>03/02/13 - Yar - Added master's scale transformation to TGLProxyObject (thanks to Dmitriy aka buh)
       <li>20/11/12 - PW - Added CPP compatibility: changed arrays of vectors to records with arrays
       <li>15/10/11 - YP - Don't set GLSelection buffer size, it's automatically done in the repeat until loop
@@ -7381,8 +7381,7 @@ begin
   FObjects.DestroyHandles;
   FLights.Free;
   FObjects.Free;
-  if Assigned(FBuffers) then
-    FBuffers.Free;
+  if Assigned(FBuffers) then FreeAndNil(FBuffers);
   inherited Destroy;
 end;
 
