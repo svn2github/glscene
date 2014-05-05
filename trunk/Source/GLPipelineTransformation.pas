@@ -18,9 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  OpenGLTokens,
-  OpenGLAdapter,
-  VectorGeometry
+  OpenGLTokens, OpenGLAdapter,  VectorGeometry, VectorTypes
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 const

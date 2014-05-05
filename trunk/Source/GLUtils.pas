@@ -718,7 +718,7 @@ end;
 
 procedure SetGLSceneMediaDir();
 var
-  path: UTF8String;
+  {$IFDEF FPC}path: UTF8String{$ELSE}path: String {$ENDIF};
   p: Integer;
 begin
    path := {$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF};

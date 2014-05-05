@@ -6,44 +6,22 @@ interface
 
 uses
 {$IFDEF MSWINDOWS}
-  Windows,
+  Windows, ShellApi,
 {$ENDIF}
 {$IFDEF FPC}
-  LCLType, 
+  LCLType,
 {$ENDIF}
-  SysUtils,
-  Variants,
-  Classes,
+  SysUtils,  Variants,  Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-  VCL.Controls,
-  VCL.Forms,
-  VCL.Dialogs,
-  VCL.Buttons,
-  VCL.ExtDlgs,
-  VCL.StdCtrls,
-  VCL.ExtCtrls,
-  Vcl.Samples.Spin,
-  VCL.Grids,
+  VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
+  VCL.ExtDlgs,  VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
 {$ELSE}
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  Buttons,
-  ExtDlgs,
-  StdCtrls,
-  ExtCtrls,
-  Spin,
-  Grids,
+  Graphics,  Controls,  Forms,  Dialogs,  Buttons,  ExtDlgs,  StdCtrls,
+  ExtCtrls,  Spin,  Grids,
 {$ENDIF}
 
+  GLCrossPlatform,  BaseClasses,  GLGui
 
-  GLCrossPlatform,
-  BaseClasses,
-  GLGui
-
-{$IFDEF MSWINDOWS}, ShellApi{$ENDIF}
 {$IFDEF LINUX}, Process{$ENDIF};
 
 type
@@ -124,8 +102,7 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
+uses GLUtils;
 
 var
   vGUILayoutEditor: Tlayouts_form;

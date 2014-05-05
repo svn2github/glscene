@@ -94,15 +94,18 @@ uses
 {$IFDEF GLS_X11_SUPPORT}
   xlib,
 {$ENDIF}
-
+  Types,
 {$IFDEF GLS_DELPHI_XE2_UP}
-   System.Classes, System.SysUtils, System.StrUtils, Types, VCL.Consts,   VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs
-  {$ELSE}
-  {$IFDEF FPC}
-    LCLVersion,  LCLType,  FileUtil,
-  {$ENDIF}
-   Classes, SysUtils, StrUtils, Types, Consts, Graphics,  Controls,
-   Forms,  Dialogs,
+   System.Classes, System.SysUtils, System.StrUtils,
+   VCL.Consts,   VCL.Graphics,
+   VCL.Controls,  VCL.Forms,  VCL.Dialogs
+{$ELSE}
+   Classes, SysUtils, StrUtils, Consts, Graphics,  Controls,
+   Forms,  Dialogs
+{$ENDIF}
+
+{$IFDEF FPC}
+    ,LCLVersion,  LCLType,  FileUtil
 {$ENDIF}
   ;
 
@@ -350,10 +353,8 @@ function AnsiStartsText(const ASubText, AText: string): Boolean;
 function IsSubComponent(const AComponent: TComponent): Boolean;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
-{$IFDEF GLS_DELPHI_7_UP}
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
-{$ENDIF}
 
 {$IFNDEF GLS_COMPILER_2009_UP}
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
@@ -399,7 +400,7 @@ end;
 
 function AnsiStartsText(const ASubText, AText: string): Boolean;
 begin
-  Result := System.StrUtils.AnsiStartsText(ASubText, AText);
+  Result := AnsiStartsText(ASubText, AText);
 end;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
@@ -816,7 +817,6 @@ asm
 end;
 {$ENDIF}
 
-{$IFDEF GLS_DELPHI_7_UP}
 {$IFNDEF GLS_COMPILER_2009_UP}
 type
   PClassData = ^TClassData;
@@ -871,10 +871,8 @@ begin
     Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
 {$ENDIF}
-{$ENDIF}
 
 {$IFNDEF GLS_COMPILER_2009_UP}
-
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := C in CharSet;

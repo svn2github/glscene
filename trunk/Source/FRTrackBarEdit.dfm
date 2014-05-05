@@ -2,7 +2,7 @@ object RTrackBarEdit: TRTrackBarEdit
   Left = 0
   Top = 0
   Width = 193
-  Height = 20
+  Height = 21
   AutoSize = True
   TabOrder = 0
   object TrackBar: TTrackBar

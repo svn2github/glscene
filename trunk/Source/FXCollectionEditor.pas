@@ -22,7 +22,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, XCollection, Messages, Classes, GLCrossPlatform, System.Actions,
+  Windows, XCollection, Messages, Classes, GLCrossPlatform,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList,
   VCL.Menus, VCL.ComCtrls, VCL.ToolWin,

@@ -136,9 +136,6 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-{$IFDEF GLS_DELPHI_4_DOWN}
-    procedure RemoveFreeNotification(AComponent: TComponent);
-{$ENDIF}
     { : Access to currently pooled THeightData objects, and Thread locking }
     property Data: TThreadList read FData;
 
@@ -801,16 +798,6 @@ begin
   for i := 0 to High(FDataHash) do
     FDataHash[i].Free;
 end;
-
-{$IFDEF GLS_DELPHI_4_DOWN}
-
-// RemoveFreeNotification
-//
-procedure THeightDataSource.RemoveFreeNotification(AComponent: TComponent);
-begin
-  Notification(AComponent, opRemove);
-end;
-{$ENDIF}
 
 // Clear
 //
@@ -1913,11 +1900,7 @@ begin
   if FInfiniteWrap <> val then
   begin
     FInfiniteWrap := val;
-{$IFDEF GLS_DELPHI_4}
-    inherited MarkDirty;
-{$ELSE}
     MarkDirty;
-{$ENDIF}
   end;
 end;
 
@@ -1928,11 +1911,7 @@ begin
   if FInverted = val then
     Exit;
   FInverted := val;
-{$IFDEF GLS_DELPHI_4}
-  inherited MarkDirty;
-{$ELSE}
   MarkDirty;
-{$ENDIF}
 end;
 
 // MarkDirty

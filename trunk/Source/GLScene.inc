@@ -131,7 +131,6 @@
   {.$DEFINE GLS_PLATFORM_HAS_EXTENDED}
   {$IFDEF GLS_DELPHI_OR_CPPB}
     {$DEFINE GLS_CPPB}
-//    {$DEFINE BCB}  // for BCB6, Zlib, Cg
     // C++Builder requires hpp/obj files to use Delphi components in run-time packages.
     {$ObjExportAll On}
   {$ELSE}
@@ -175,102 +174,41 @@
 {$ifdef CONDITIONALEXPRESSIONS}
 
   // Delphi XE3 & C++ Builder XE3
-  {$if CompilerVersion>24}
+  {$IF CompilerVersion>24}
     {$DEFINE GLS_COMPILER_XE3_UP}
   {$elseif CompilerVersion=24}
     {$DEFINE GLS_COMPILER_2012}
     {$DEFINE GLS_COMPILER_XE3_UP}
-    {$DEFINE GLS_COMPILER_XE3_DOWN}
-  {$elseif CompilerVersion<25}
-    {$DEFINE GLS_COMPILER_XE3_DOWN}
-  {$ifend}
+  {$IFEND}
 
   // Delphi XE2 & C++ Builder XE2
-  {$if CompilerVersion>23}
+  {$IF CompilerVersion>23}
     {$DEFINE GLS_COMPILER_XE2_UP}
   {$elseif CompilerVersion=23}
-    {$DEFINE GLS_COMPILER_2011}
     {$DEFINE GLS_COMPILER_XE2_UP}
-    {$DEFINE GLS_COMPILER_XE2_DOWN}
-  {$elseif CompilerVersion<24}
-    {$DEFINE GLS_COMPILER_XE2_DOWN}
-  {$ifend}
+  {$IFEND}
 
   // Delphi XE & C++ Builder XE
   {$if CompilerVersion>22}
     {$DEFINE GLS_COMPILER_XE_UP}
   {$elseif CompilerVersion=22}
-    {$DEFINE GLS_COMPILER_2011}
     {$DEFINE GLS_COMPILER_XE_UP}
-    {$DEFINE GLS_COMPILER_XE_DOWN}
-  {$elseif CompilerVersion<23}
-    {$DEFINE GLS_COMPILER_XE_DOWN}
   {$ifend}
 
   // Delphi 2010 & C++ Builder 2010
   {$if CompilerVersion>21}
     {$DEFINE GLS_COMPILER_2010_UP}
   {$elseif CompilerVersion=21}
-    {$DEFINE GLS_COMPILER_2010}
     {$DEFINE GLS_COMPILER_2010_UP}
-    {$DEFINE GLS_COMPILER_2010_DOWN}
-  {$elseif CompilerVersion<21}
-    {$DEFINE GLS_COMPILER_2010_DOWN}
   {$ifend}
 
   // Delphi 2009 & C++ Builder 2009
   {$if CompilerVersion>20}
     {$DEFINE GLS_COMPILER_2009_UP}
   {$elseif CompilerVersion=20}
-    {$DEFINE GLS_COMPILER_2009}
-    {$DEFINE GLS_COMPILER_2009_UP}
     {$DEFINE GLS_COMPILER_2009_DOWN}
   {$elseif CompilerVersion<20}
     {$DEFINE GLS_COMPILER_2009_DOWN}
-  {$ifend}
-
-  // Delphi 2007 & C++ Builder 2007
-  {$if CompilerVersion>18.5}
-    {$DEFINE GLS_COMPILER_2007_UP}
-  {$elseif CompilerVersion=18.5}
-    {$DEFINE GLS_COMPILER_2007}
-    {$DEFINE GLS_COMPILER_2007_UP}
-    {$DEFINE GLS_COMPILER_2007_DOWN}
-  {$elseif CompilerVersion<18.5}
-    {$DEFINE GLS_COMPILER_2007_DOWN}
-  {$ifend}
-
-  // Delphi 2006 & C++ Builder 2006
-  {$if CompilerVersion>18.0}
-    {$DEFINE GLS_COMPILER_2006_UP}
-  {$elseif CompilerVersion=18.0}
-    {$DEFINE GLS_COMPILER_2006}
-    {$DEFINE GLS_COMPILER_2006_UP}
-    {$DEFINE GLS_COMPILER_2006_DOWN}
-  {$elseif CompilerVersion<18.0}
-    {$DEFINE GLS_COMPILER_2006_DOWN}
-  {$ifend}
-
-  // Delphi 2005
-  {$if CompilerVersion>17.0}
-    {$DEFINE GLS_COMPILER_2005_UP}
-  {$elseif CompilerVersion=17.0}
-    {$DEFINE GLS_COMPILER_2005}
-    {$DEFINE GLS_COMPILER_2005_UP}
-    {$DEFINE GLS_COMPILER_2005_DOWN}
-  {$elseif CompilerVersion<17.0}
-    {$DEFINE GLS_COMPILER_2005_DOWN}
-  {$ifend}
-
-  // Delphi 8
-  {$if CompilerVersion>16.0}
-    {$DEFINE GLS_COMPILER_8_UP}
-  {$elseif CompilerVersion=16.0}
-    {$DEFINE GLS_COMPILER_8}
-    {$DEFINE GLS_COMPILER_8_UP}
-    {$DEFINE GLS_COMPILER_8_DOWN}
-  {$elseif CompilerVersion<16.0}
-    {$DEFINE GLS_COMPILER_8_DOWN}
   {$ifend}
 
   // Delphi 7
@@ -279,37 +217,14 @@
   {$elseif CompilerVersion=15.0}
     {$DEFINE GLS_COMPILER_7}
     {$DEFINE GLS_COMPILER_7_UP}
-    {$DEFINE GLS_COMPILER_7_DOWN}
-  {$elseif CompilerVersion<15.0}
-    {$DEFINE GLS_COMPILER_7_DOWN}
   {$ifend}
 
   // Friendly names
-  {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_2006}
-      {$DEFINE GLS_CPPB_2006}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2007}
-      {$DEFINE GLS_CPPB_2007}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2009}
-      {$DEFINE GLS_CPPB_2009}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2010}
-      {$DEFINE GLS_CPPB_2010}
-    {$ENDIF}
-  {$ELSE}
     {$IFDEF GLS_COMPILER_7}
       {$DEFINE GLS_DELPHI_7}
     {$ENDIF}
-    {$IFDEF GLS_COMPILER_8}
-      {$DEFINE GLS_DELPHI_8}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_2005}
       {$DEFINE GLS_DELPHI_2005}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2006}
-      {$DEFINE GLS_DELPHI_2006}
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2007}
       {$DEFINE GLS_DELPHI_2007}
@@ -329,34 +244,10 @@
     {$IFDEF GLS_COMPILER_XE3}
       {$DEFINE GLS_DELPHI_XE3}
     {$ENDIF}
-  {$ENDIF}
 
   // UP Declarations
-  {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_2007_UP}
-      {$DEFINE GLS_CPPB_2007_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2009_UP}
-      {$DEFINE GLS_CPPB_2009_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2010_UP}
-      {$DEFINE GLS_CPPB_2010_UP}
-    {$ENDIF}
-  {$ELSE}
-    {$IFDEF GLS_COMPILER_7_UP}
-      {$DEFINE GLS_DELPHI_7_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_8_UP}
-      {$DEFINE GLS_DELPHI_8_UP}
-    {$ENDIF}
     {$IFDEF GLS_COMPILER_2005_UP}
       {$DEFINE GLS_DELPHI_2005_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2006_UP}
-      {$DEFINE GLS_DELPHI_2006_UP}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2007_UP}
-      {$DEFINE GLS_DELPHI_2007_UP}
     {$ENDIF}
     {$IFDEF GLS_COMPILER_2009_UP}
       {$DEFINE GLS_DELPHI_2009_UP}
@@ -373,72 +264,12 @@
     {$IFDEF GLS_COMPILER_XE3_UP}
       {$DEFINE GLS_DELPHI_XE3_UP}
     {$ENDIF}
-  {$ENDIF}
 
   // Down Declarations
-  {$IFDEF BCB}
-    {$IFDEF GLS_COMPILER_6_DOWN}
-      {$DEFINE GLS_CPPB_6_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2006_DOWN}
-      {$DEFINE GLS_CPPB_2006_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2007_DOWN}
-      {$DEFINE GLS_CPPB_2007_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2009_DOWN}
-      {$DEFINE GLS_CPPB_2009_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2010_DOWN}
-      {$DEFINE GLS_CPPB_2010_DOWN}
-    {$ENDIF}
-  {$ELSE}
-    {$IFDEF GLS_COMPILER_6_DOWN}
-      {$DEFINE GLS_DELPHI_6_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_7_DOWN}
-      {$DEFINE GLS_DELPHI_7_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_8_DOWN}
-      {$DEFINE GLS_DELPHI_8_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2005_DOWN}
-      {$DEFINE GLS_DELPHI_2005_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2006_DOWN}
-      {$DEFINE GLS_DELPHI_2006_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2007_DOWN}
-      {$DEFINE GLS_DELPHI_2007_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2009_DOWN}
+   {$IFDEF GLS_COMPILER_2009_DOWN}
       {$DEFINE GLS_DELPHI_2009_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_2010_DOWN}
-      {$DEFINE GLS_DELPHI_2010_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_XE_DOWN}
-      {$DEFINE GLS_DELPHI_XE_DOWN}
-    {$ENDIF}
-    {$IFDEF GLS_COMPILER_XE2_DOWN}
-      {$DEFINE GLS_DELPHI_XE2_DOWN}
-    {$ENDIF}
-  {$ENDIF}
+   {$ENDIF}
  {$ENDIF}
-
-{$IFNDEF GLS_CPPB}
-  {$IFNDEF GLS_DELPHI}
-    { Don't know what the hell it is.  Could be new version, or could be old BP. }
-    {$DEFINE GLS_UNKNOWN_COMPILER}
-  {$ENDIF}
-{$ENDIF}
-
-//CPP Defines
-
-{$IFDEF GLS_CPPB_6}
-  {$DEFINE GLS_CPPB_5_UP}
-  {$DEFINE GLS_CPPB_6_UP}
-{$ENDIF}
 
 // GLS_ENABLE_UNSAFE_WARNINGS.
 {$IFDEF GLS_COMPILER_7_UP}
@@ -462,6 +293,7 @@
 {$IFNDEF GLS_NO_INLINE}
   {$IFDEF GLS_COMPILER_2005_UP}
   {$DEFINE GLS_INLINE}
+
   {$ENDIF}
   {$IFDEF FPC}
   {$DEFINE GLS_INLINE}
@@ -483,9 +315,7 @@
 {$ENDIF}
 
 {$IFNDEF FPC}
-  {$IFDEF GLS_DELPHI_2007_DOWN}
-    {$UNDEF GLS_SERVICE_CONTEXT}
-  {$ENDIF}
+  {$UNDEF GLS_SERVICE_CONTEXT}
 {$ELSE}
   {$IFNDEF MSWINDOWS}
      {$UNDEF GLS_SERVICE_CONTEXT}

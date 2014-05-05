@@ -86,7 +86,7 @@ uses
   StdCtrls,
 {$ENDIF}
 
-  DesignIntf, VCLEditors, System.Actions;
+  DesignIntf, VCLEditors;
 
 const
   SCENE_SELECTED = 0;

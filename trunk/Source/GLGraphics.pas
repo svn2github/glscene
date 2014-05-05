@@ -1532,7 +1532,7 @@ begin
     fLevelCount := GetImageLodNumber(GetWidth, GetHeight, GetDepth, True);
     UpdateLevelsInfo;
     ReallocMem(FData, DataSize);
-    {$Message Hint 'TGLBaseImage.GenerateMipmap not yet implemented for volume images' }
+    {Message Hint 'TGLBaseImage.GenerateMipmap not yet implemented for volume images' }
   end
   else
   begin
@@ -3512,7 +3512,7 @@ begin
   oldLOD := FLOD;
   if IsVolume then
   begin
-    {$Message Hint 'TGLImage.DataConvertTask not yet implemented for volume images' }
+    {Message Hint 'TGLImage.DataConvertTask not yet implemented for volume images' }
   end
   else
   begin

@@ -1,9 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FRFaceEditor<p>
 
    Editor fram for a TGLFaceProperties.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>05/09/08 - DanB - Removed Kylix support   
+      <li>05/09/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
                              PoligonMode are now updated when FaceProperties are assigned
@@ -20,12 +23,13 @@ interface
 uses
   Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ImgList, VCL.Controls,
+  System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ImgList, VCL.Controls,
+  VCL.Graphics,
 {$ELSE}
-  Forms, ComCtrls, StdCtrls, ImgList, Controls,
+  Classes, Forms, ComCtrls, StdCtrls, ImgList, Controls,   Graphics,
 {$ENDIF}
   FRTrackBarEdit,  FRColorEditor,
-  Classes, GLTexture, GLMaterial, GLState;
+  GLTexture, GLMaterial, GLState;
 
 type
   TRFaceEditor = class(TFrame)
@@ -44,7 +48,7 @@ type
     procedure TBEShininessTrackBarChange(Sender: TObject);
 
   private
-    { Déclarations privées }
+    { Private declarations }
     FOnChange : TNotifyEvent;
     updating : Boolean;
     FFaceProperties : TGLFaceProperties;
@@ -52,7 +56,7 @@ type
     procedure OnColorChange(Sender : TObject);
 
   public
-    { Déclarations publiques }
+    { Public declarations }
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
 
@@ -64,13 +68,6 @@ type
 implementation
 
 {$R *.dfm}
-
-uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics;
-{$ELSE}
-  Graphics;
-{$ENDIF}
 
 constructor TRFaceEditor.Create(AOwner : TComponent);
 begin

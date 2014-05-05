@@ -23,11 +23,11 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, Vcl.Controls,
+  System.Classes, VCL.Graphics, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls,
+  Vcl.Controls,
 {$ELSE}
-  Forms, StdCtrls, ComCtrls, Controls,
+  Classes, Graphics, Forms, StdCtrls, ComCtrls, Controls,
 {$ENDIF}
-  Classes,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
   GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
   GLCrossPlatform, BaseClasses, GLMaterial;
@@ -35,8 +35,7 @@ uses
 
 type
   TRMaterialPreview = class(TFrame)
-    GLScene1: TGLScene;
-    SceneViewer: TGLSceneViewer;
+    GLScene: TGLScene;
     CBObject: TComboBox;
     Camera: TGLCamera;
     Cube: TGLCube;
@@ -50,6 +49,7 @@ type
     Light: TGLDummyCube;
     FireSphere: TGLSphere;
     GLMaterialLibrary: TGLMaterialLibrary;
+    GLSceneViewer: TGLSceneViewer;
     procedure CBObjectChange(Sender: TObject);
     procedure CBBackgroundChange(Sender: TObject);
     procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -87,24 +87,16 @@ implementation
 
 {$R *.dfm}
 
-
-uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics;
-{$ELSE}
-  Graphics;
-{$ENDIF}
-
 var
   MX, MY: Integer;
 
 constructor TRMaterialPreview.Create(AOwner : TComponent);
 begin
    inherited;
-   BackGroundSprite.Position.X := SceneViewer.Width div 2;
-   BackGroundSprite.Position.Y := SceneViewer.Height div 2;
-   BackGroundSprite.Width := SceneViewer.Width;
-   BackGroundSprite.Height := SceneViewer.Height;
+   BackGroundSprite.Position.X := GLSceneViewer.Width div 2;
+   BackGroundSprite.Position.Y := GLSceneViewer.Height div 2;
+   BackGroundSprite.Width := GLSceneViewer.Width;
+   BackGroundSprite.Height := GLSceneViewer.Height;
 
    CBObject.ItemIndex:=0;     CBObjectChange(Self);
    CBBackground.ItemIndex:=0; CBBackgroundChange(Self);

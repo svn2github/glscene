@@ -101,50 +101,30 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
-  Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  WinApi.Windows,
+  System.Classes,
   VCL.Forms,
   VCL.Controls,
   VCL.StdCtrls,
   VCL.Graphics,
 {$ELSE}
+  Windows,
+  Classes,
   Forms,
   Controls,
   StdCtrls,
   Graphics,
 {$ENDIF}
-  GLScene,
-  GLContext,
 
-  GLColor,
-  GLCrossPlatform,
-  GLObjectManager,
+  GLScene,  GLContext, GLColor,  GLCrossPlatform,  GLObjectManager,
 
-{$IFDEF GLS_DELPHI_7_UP}
   ToolsAPI,
-{$ENDIF}
   DesignIntf,
   DesignEditors,
-  VCLEditors
-;
+  VCLEditors;
 
 type
-
-{$IFDEF GLS_DELPHI_7_DOWN}
-
-  // TWideCharProperty
-  //
-  TWideCharProperty = class(TPropertyEditor)
-  public
-    { Public Declarations }
-    function GetAttributes: TPropertyAttributes; override;
-    function GetValue: string; override;
-    procedure SetValue(const Value: string); override;
-  end;
-
-{$ENDIF}
-
   // TGLLibMaterialNameProperty
   //
   TGLLibMaterialNameProperty = class(TStringProperty)
@@ -335,7 +315,6 @@ type
     procedure GetValues(proc: TGetStrProc); override;
   end;
 
-{$IFDEF GLS_DELPHI_7_UP}
   {: Selection editor for TGLSoundLibrary.<p>
      Allows units to be added to the uses clause automatically when
      sound files are loaded into a TGLSoundLibrary at design-time. }
@@ -351,7 +330,6 @@ type
   public
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
-{$ENDIF}
 
   // TGLSArchiveManagerEditor
   //
@@ -665,41 +643,6 @@ begin
     vObjectManager := TObjectManager.Create(nil);
   Result := vObjectManager;
 end;
-
-{$IFDEF GLS_DELPHI_7_DOWN}
-
-function TWideCharProperty.GetAttributes: TPropertyAttributes;
-begin
-  Result := [paAutoUpdate];
-end;
-
-function TWideCharProperty.GetValue: string;
-begin
-  Result := Format('#%d', [GetOrdValue]);
-end;
-
-procedure TWideCharProperty.SetValue(const Value: string);
-var
-  n, e: Integer;
-begin
-  if Length(Value) > 0 then
-  begin
-    if Value[1] = '#' then
-    begin
-      Val(Copy(Value, 2, MaxInt), n, e);
-      if e <> 0 then
-        exit;
-      n := ClampInteger(n, 0, $FFFF);
-      SetOrdValue(n);
-    end
-    else
-    begin
-      SetOrdValue(Ord(Value[1]));
-    end;
-  end;
-end;
-
-{$ENDIF}
 
 {$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
 
@@ -1418,8 +1361,6 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_DELPHI_7_UP}
-
 
 {$IFDEF GLS_REGION}{$REGION 'TGLBaseSceneObjectSelectionEditor'}{$ENDIF}
 
@@ -1467,7 +1408,6 @@ begin
     end;
   end;
 end;
-{$ENDIF}
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -2127,10 +2067,6 @@ begin
 
   GLRegisterPropertiesInCategories;
 
-{$IFDEF GLS_DELPHI_7_DOWN}
-  RegisterPropertyEditor(TypeInfo(WideChar), nil, '', TWideCharProperty);
-{$ENDIF}
-
   RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
   RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);
   RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '', TGLTextureImageProperty);
@@ -2158,10 +2094,8 @@ begin
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLFBORenderer, '', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLTextureSharingShaderMaterial, 'LibMaterialName', TGLLibMaterialNameProperty);
-{$IFDEF GLS_DELPHI_7_UP}
   RegisterSelectionEditor(TGLBaseSceneObject, TGLBaseSceneObjectSelectionEditor);
   RegisterSelectionEditor(TGLSoundLibrary, TGLSoundLibrarySelectionEditor);
-{$ENDIF}
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterialProperty, 'NextPass', TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibTextureName', TGLLibTextureNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLMaterialComponentName), TGLTextureProperties, 'LibSamplerName', TGLLibSamplerNameProperty);

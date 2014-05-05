@@ -44,25 +44,29 @@ object LibMaterialPicker: TLibMaterialPicker
     Top = 24
     Width = 75
     Height = 25
-    TabOrder = 2
     Kind = bkOK
+    NumGlyphs = 2
+    TabOrder = 2
   end
   object BBCancel: TBitBtn
     Left = 376
     Top = 56
     Width = 75
     Height = 25
-    TabOrder = 1
     Kind = bkCancel
+    NumGlyphs = 2
+    TabOrder = 1
   end
   inline MPPreview: TRMaterialPreview
     Left = 152
     Top = 22
     Width = 202
-    Height = 203
+    Height = 229
     AutoSize = True
     TabOrder = 3
-    inherited GLScene1: TGLScene
+    ExplicitLeft = 152
+    ExplicitTop = 22
+    inherited GLScene: TGLScene
       inherited World: TGLDummyCube
         inherited Cube: TGLCube
           Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}

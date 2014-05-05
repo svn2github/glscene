@@ -1,9 +1,9 @@
 object GUISkinEditor: TGUISkinEditor
   Left = 262
   Top = 321
-  Width = 780
-  Height = 398
   Caption = 'Skin Editor'
+  ClientHeight = 359
+  ClientWidth = 764
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object GUISkinEditor: TGUISkinEditor
   TextHeight = 13
   object StatusBar: TStatusBar
     Left = 0
-    Top = 341
+    Top = 340
     Width = 764
     Height = 19
     Panels = <
@@ -41,15 +41,17 @@ object GUISkinEditor: TGUISkinEditor
       item
         Width = 50
       end>
+    ExplicitTop = 341
   end
   object panBottom: TPanel
     Left = 0
-    Top = 309
+    Top = 308
     Width = 764
     Height = 32
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 309
     DesignSize = (
       764
       32)
@@ -78,10 +80,11 @@ object GUISkinEditor: TGUISkinEditor
     Left = 285
     Top = 0
     Width = 330
-    Height = 309
+    Height = 308
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitHeight = 309
     object imgFull: TImage
       Left = 1
       Top = 1
@@ -125,9 +128,10 @@ object GUISkinEditor: TGUISkinEditor
     Left = 615
     Top = 0
     Width = 149
-    Height = 309
+    Height = 308
     Align = alRight
     TabOrder = 3
+    ExplicitHeight = 309
     object Label5: TLabel
       Left = 12
       Top = 212
@@ -244,9 +248,10 @@ object GUISkinEditor: TGUISkinEditor
     Left = 0
     Top = 0
     Width = 285
-    Height = 309
+    Height = 308
     Align = alLeft
     TabOrder = 4
+    ExplicitHeight = 309
     object Bevel2: TBevel
       Left = 140
       Top = 212
@@ -383,7 +388,6 @@ object GUISkinEditor: TGUISkinEditor
       Width = 81
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 3
       OnChange = ComboBox1Change
       Items.Strings = (
@@ -476,10 +480,12 @@ object GUISkinEditor: TGUISkinEditor
       Visible = False
       Width = 512.000000000000000000
       Height = 512.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object GLPanel1: TGLPanel
       Autosize = False
       RedrawAtOnce = False
+      Rotation = 0.000000000000000000
       NoZWrite = False
       DoChangesOnProgress = False
       Visible = False

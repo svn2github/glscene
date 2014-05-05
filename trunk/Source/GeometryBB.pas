@@ -869,7 +869,6 @@ function PlaneAABBIntersection(const plane : THmgPlane;const AABB : TAABB) : TAf
 var
   i, j, annexe : Integer;
   index : array[0..2] of Integer;
-  dist, distnear : Single;
   vec, temp : TVector3f;
   box : array [0..1] of TVector3f;
   V: array [0..7] of TVector3f;
@@ -897,11 +896,9 @@ begin
       vec.V[j] := box[index[j]].V[j];
     end;
 
-    dist := PointPlaneDistance(vec, plane);
     // try to find the right orientation to proceed intersection
-    if (i = 0) or (dist<distnear) then
+    if (i = 0) then
     begin
-      distnear := dist;
       // prepare V 0 -> 7 array
       V[0] := vec;
       for j := 0 to 5 do

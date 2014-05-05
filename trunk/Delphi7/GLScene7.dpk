@@ -147,7 +147,6 @@ contains
   GLFileMD2 in '..\Source\GLFileMD2.pas',
   GLFile3DS in '..\Source\GLFile3DS.pas',
   GLFilePLY in '..\Source\GLFilePLY.pas',
-  GLFileTIN in '..\Source\GLFileTIN.pas',
   GLFileGTS in '..\Source\GLFileGTS.pas',
   GLTexCombineShader in '..\Source\GLTexCombineShader.pas',
   GLTextureCombiners in '..\Source\GLTextureCombiners.pas',

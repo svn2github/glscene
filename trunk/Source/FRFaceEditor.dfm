@@ -8,7 +8,7 @@ object RFaceEditor: TRFaceEditor
   object Label1: TLabel
     Left = 0
     Top = 6
-    Width = 45
+    Width = 44
     Height = 13
     Caption = 'Shininess'
   end
@@ -31,6 +31,7 @@ object RFaceEditor: TRFaceEditor
         Height = 95
         AutoSize = True
         TabOrder = 0
+        TabStop = True
       end
     end
     object TSDiffuse: TTabSheet
@@ -44,6 +45,7 @@ object RFaceEditor: TRFaceEditor
         Height = 95
         AutoSize = True
         TabOrder = 0
+        TabStop = True
       end
     end
     object TSEmission: TTabSheet
@@ -57,6 +59,7 @@ object RFaceEditor: TRFaceEditor
         Height = 95
         AutoSize = True
         TabOrder = 0
+        TabStop = True
       end
     end
     object TSSpecular: TTabSheet
@@ -70,6 +73,7 @@ object RFaceEditor: TRFaceEditor
         Height = 95
         AutoSize = True
         TabOrder = 0
+        TabStop = True
       end
     end
   end
@@ -80,6 +84,8 @@ object RFaceEditor: TRFaceEditor
     Height = 21
     AutoSize = True
     TabOrder = 1
+    ExplicitLeft = 52
+    ExplicitWidth = 201
     inherited TrackBar: TTrackBar
       Max = 128
       Frequency = 16
@@ -87,6 +93,7 @@ object RFaceEditor: TRFaceEditor
     end
     inherited Edit: TEdit
       Left = 160
+      ExplicitLeft = 160
     end
   end
   object ImageList: TImageList

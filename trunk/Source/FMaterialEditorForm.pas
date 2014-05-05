@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FMaterialEditorForm<p>
 
    Editor window for a material (with preview).<p>
@@ -22,20 +25,14 @@ interface
 uses
   Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.Controls, VCL.Buttons,
+  System.Classes, System.TypInfo, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
+  VCL.Controls, VCL.Buttons,
 {$ELSE}
-  Forms, ComCtrls, StdCtrls, Controls, Buttons,
+  Classes, TypInfo, Forms, ComCtrls, StdCtrls, Controls, Buttons,
 {$ENDIF}
-  FRMaterialPreview,
-  FRColorEditor,
-  FRFaceEditor,
-  Classes,
-  GLTexture,
-  TypInfo,
-  FRTextureEdit,
-  GLViewer,
-  GLMaterial,
-  GLState;
+  FRMaterialPreview, FRColorEditor, FRFaceEditor,
+  GLTexture,  FRTextureEdit,  GLViewer,
+  GLMaterial,  GLState;
 
 type
   TMaterialEditorForm = class(TForm)
@@ -147,7 +144,7 @@ begin
     BlendingMode := TBlendingMode(CBBlending.ItemIndex);
     PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
   end;
-  MPPreview.SceneViewer.Invalidate;
+  MPPreview.GLSceneViewer.Invalidate;
 end;
 
 // ------------------------------------------------------------------

@@ -106,7 +106,6 @@ type
   TGLint64EXT = Int64;
   PGLint64EXT = ^TGLint64EXT;
 
-{$IFNDEF GLS_DELPHI_7_DOWN}
   GLuint64 = UInt64;
   TGLuint64 = UInt64;
   PGLuint64 = ^TGLuint64;
@@ -114,16 +113,6 @@ type
   GLuint64EXT = UInt64;
   TGLuint64EXT = UInt64;
   PGLuint64EXT = ^TGLuint64EXT;
-{$ELSE}
-  // fake UInt64 by using Int64 for Delphi5 + 6
-  GLuint64 = Int64;
-  TGLuint64 = Int64;
-  PGLuint64 = ^TGLuint64;
-
-  GLuint64EXT = Int64;
-  TGLuint64EXT = Int64;
-  PGLuint64EXT = ^TGLuint64EXT;
-{$ENDIF}
 
   GLubyte = Byte;
   TGLubyte = Byte;

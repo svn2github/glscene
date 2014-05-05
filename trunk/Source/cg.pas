@@ -124,10 +124,6 @@ uses Windows;
 
 {$MINENUMSIZE 4}
 
-{$ifdef GLS_CPPB_6}
-  {$UNDEF COMPILER6_UP}
-{$endif}
-
 const
   {$IFDEF MSWINDOWS}
   CgLibrary = 'cg.dll';
@@ -197,9 +193,6 @@ type
   *)
 
   TCGtype = (
-  {$IFDEF BCB}
-    CG_Dummy
-  {$ELSE}
     CG_UNKNOWN_TYPE,
     CG_STRUCT,
     CG_ARRAY,
@@ -319,8 +312,6 @@ type
     CG_BOOL4x2,   // CG_DATATYPE_MACRO(Bool4x2,bool4x2,CG_BOOL4x2,4,2)
     CG_BOOL4x3,   // CG_DATATYPE_MACRO(Bool4x3,bool4x3,CG_BOOL4x3,4,3)
     CG_BOOL4x4    // CG_DATATYPE_MACRO(Bool4x4,bool4x4,CG_BOOL4x4,4,4)
-
-  {$ENDIF}
   );
   CGtype = TCGtype;
 
@@ -343,9 +334,6 @@ type
   *
   *)
   TCGresource = (
-  {$IFDEF BCB}
-    CG_DummyResource
-  {$ELSE}
     //# define CG_BINDLOCATION_MACRO(name,enum_name,compiler_name,\
     //                               enum_int,addressable,param_type) \
     //  enum_name = enum_int,
@@ -610,7 +598,6 @@ type
     CG_TESSFACTOR            =  3255, // CG_BINDLOCATION_MACRO(TessFactor,CG_TESSFACTOR,"TESSFACTOR",3255,0,cgConnectorMemberParam)
 
     CG_UNDEFINED
-  {$ENDIF}
   );
   CGresource = TCGresource;
 
@@ -633,9 +620,6 @@ type
   *
   *)
   TCGprofile = (
-  {$IFDEF BCB}
-    CG_Profile_Dummy
-  {$ELSE}
     CG_PROFILE_START = 6144,
     CG_PROFILE_UNKNOWN,
 
@@ -662,7 +646,6 @@ type
     CG_PROFILE_PS_2_X = 6163, // CG_PROFILE_MACRO(DX9Pixel2x,ps_2_x,PS_2_X,"ps_2_x",6163,0)
 
     CG_PROFILE_MAX = 7100
-  {$ENDIF}
   );
   CGprofile = TCGprofile;
 
@@ -682,11 +665,10 @@ type
   PCGerror = ^TCGerror;
   TCGerror = DWORD;
   CGerror = TCGerror;
-      
+
 const
   //# define CG_ERROR_MACRO(code, enum_name, new_enum_name, message) \
   //   new_enum_name = code,
-
   CG_NO_ERROR                       = 0;  // "No error has occurred."
   CG_COMPILER_ERROR                 = 1;  // "The compile returned an error."
   CG_INVALID_PARAMETER_ERROR        = 2;  // "The parameter used is invalid."
@@ -732,9 +714,6 @@ type
   TCGenum = (
   //todo: Insert code from here: # include <Cg/cg_enums.h>
   //todo: FIX BCB6 issues with {$IFDEF BCB}
-  {$IFDEF BCB}
-    CG_Enum_Dummy
-  {$ELSE}
     CG_UNKNOWN = 4096,
     CG_IN,
     CG_OUT,
@@ -763,7 +742,6 @@ type
     CG_CURRENT,
     CG_LITERAL,
     CG_VERSION
-  {$ENDIF}
   );
   CGenum = TCGenum;
 

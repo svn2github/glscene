@@ -2,29 +2,16 @@ object RMaterialPreview: TRMaterialPreview
   Left = 0
   Top = 0
   Width = 202
-  Height = 203
+  Height = 229
   AutoSize = True
   TabOrder = 0
-  object SceneViewer: TGLSceneViewer
-    Left = 0
-    Top = 26
-    Width = 201
-    Height = 177
-    Camera = Camera
-    FieldOfView = 64.597473144531250000
-    OnMouseDown = SceneViewerMouseDown
-    OnMouseMove = SceneViewerMouseMove
-    OnMouseWheel = SceneViewerMouseWheel
-    TabOrder = 0
-  end
   object CBObject: TComboBox
     Left = 0
     Top = 0
     Width = 60
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
-    TabOrder = 1
+    TabOrder = 0
     OnChange = CBObjectChange
     Items.Strings = (
       'Cube'
@@ -38,8 +25,7 @@ object RMaterialPreview: TRMaterialPreview
     Width = 142
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
-    TabOrder = 2
+    TabOrder = 1
     OnChange = CBBackgroundChange
     Items.Strings = (
       'on a pattern background'
@@ -49,7 +35,16 @@ object RMaterialPreview: TRMaterialPreview
       'on a red background'
       'on a green background')
   end
-  object GLScene1: TGLScene
+  object GLSceneViewer: TGLSceneViewer
+    Left = 0
+    Top = 26
+    Width = 202
+    Height = 203
+    Camera = Camera
+    FieldOfView = 71.615516662597660000
+    TabOrder = 2
+  end
+  object GLScene: TGLScene
     ObjectsSorting = osNone
     Left = 160
     Top = 32
@@ -126,6 +121,7 @@ object RMaterialPreview: TRMaterialPreview
         FFFF000000000000000088888888888888887777777777777777FFFFFFFFFFFF
         FFFF}
       Material.Texture.Disabled = False
+      Rotation = 0.000000000000000000
     end
     object World: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -138,7 +134,7 @@ object RMaterialPreview: TRMaterialPreview
       object Sphere: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary
         Material.LibMaterialName = 'LibMaterial'
-        Radius = 0.800000011920928900
+        Radius = 0.800000011920929000
       end
       object Cone: TGLCone
         Material.MaterialLibrary = GLMaterialLibrary

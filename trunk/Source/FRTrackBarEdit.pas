@@ -1,9 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FRTrackBarEdit<p>
 
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>05/10/08 - DanB - Removed Kylix support   
+      <li>05/10/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - Fixed bug in SetValue, SetValueMin, SetValueMax when
                              changing these values didn't change the Edit's Text
@@ -19,11 +22,11 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls,
+  System.Classes, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls
 {$ELSE}
-  Forms, StdCtrls, ComCtrls, Controls,
+  Classes, Forms, StdCtrls, ComCtrls, Controls
 {$ENDIF}
-  Classes;
+;
 
 type
   TRTrackBarEdit = class(TFrame)
