@@ -1,14 +1,3 @@
-{:
-  GLSL Shader Component Demo<p>
-
-  A demo that shows how to use the TGLSLShader component.
-
-  Version history:
-    30/03/07 - DaStr - Cleaned up "uses" section
-    20/03/07 - DaStr - Initial version
-
-
-}
 unit uMainForm;
 
 interface
@@ -26,7 +15,7 @@ uses
   GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLUtils,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage;
+  TGA, JPEG, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
 
 type
   TGLSLTestForm = class(TForm)

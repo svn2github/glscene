@@ -15,15 +15,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Variants, Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  System.SysUtils, System.Variants, System.Classes,
   VCL.Graphics, VCL.Controls, VCL.Forms,
   VCL.Dialogs, VCL.StdCtrls, VCL.ExtCtrls, VCL.Buttons,
 {$ELSE}
-  Graphics, Controls, Forms,
+  SysUtils, Variants, Classes,  Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons,
 {$ENDIF}
-  GLSLParameter, GLTextureFormat;
+  GLSLParameter, GLTextureFormat, VectorGeometry;
 
 type
   TShaderUniformEditor = class(TForm)
@@ -69,9 +69,6 @@ procedure ReleaseShaderUniformEditor;
 implementation
 
 {$R *.dfm}
-
-uses
-  VectorGeometry;
 
 var
   vShaderUniformEditor: TShaderUniformEditor;

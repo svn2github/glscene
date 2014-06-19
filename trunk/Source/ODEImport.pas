@@ -181,7 +181,7 @@ const
   //   If you choose to run in Double mode, you must deploy the double precision
   //   dll (named ode_double.dll and located in the dll directory)
 
-  {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
+  {define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
   {.$define cDEBUG}
 
   {$IFDEF MSWINDOWS}

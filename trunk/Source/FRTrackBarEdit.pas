@@ -22,9 +22,9 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls
+  System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls
 {$ELSE}
-  Classes, Forms, StdCtrls, ComCtrls, Controls
+  Classes, SysUtils, Forms, StdCtrls, ComCtrls, Controls
 {$ENDIF}
 ;
 
@@ -35,7 +35,7 @@ type
     procedure TrackBarChange(Sender: TObject);
     procedure EditChange(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private Declarations }
     procedure SetValue(const val : Integer);
     function GetValue : Integer;
     procedure SetValueMin(const val : Integer);
@@ -43,7 +43,7 @@ type
     procedure SetValueMax(const val : Integer);
     function GetValueMax : Integer;
   public
-    { Déclarations publiques }
+    { Public Declarations }
     property Value : Integer read GetValue write SetValue;
     property ValueMin : Integer read GetValueMin write SetValueMin;
     property ValueMax : Integer read GetValueMax write SetValueMax;
@@ -52,9 +52,6 @@ type
 implementation
 
 {$R *.dfm}
-
-uses
-  SysUtils; 
 
 procedure TRTrackBarEdit.TrackBarChange(Sender: TObject);
 begin

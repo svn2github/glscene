@@ -1,9 +1,9 @@
 object GLSLTestForm: TGLSLTestForm
   Left = 261
   Top = 176
-  Width = 657
-  Height = 483
   Caption = 'GLSL Diffuse Specular Shader'
+  ClientHeight = 375
+  ClientWidth = 544
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,8 +19,8 @@ object GLSLTestForm: TGLSLTestForm
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 641
-    Height = 400
+    Width = 544
+    Height = 330
     Camera = Camera
     Buffer.FogEnvironment.FogColor.Color = {ACC8483E9A99193FCDCC4C3F9A99993E}
     Buffer.FogEnvironment.FogStart = 50.000000000000000000
@@ -31,17 +31,21 @@ object GLSLTestForm: TGLSLTestForm
     Buffer.AntiAliasing = aaNone
     Buffer.DepthPrecision = dp24bits
     Buffer.ColorDepth = cd24bits
-    FieldOfView = 143.991683959960900000
+    FieldOfView = 136.997131347656300000
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 506
+    ExplicitHeight = 282
   end
   object Panel1: TPanel
     Left = 0
-    Top = 400
-    Width = 641
+    Top = 330
+    Width = 544
     Height = 45
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = -45
+    ExplicitWidth = 124
     object LightMovingCheckBox: TCheckBox
       Left = 8
       Top = 8

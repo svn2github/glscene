@@ -12,8 +12,14 @@ uses
   Controls,
   Forms,
   Dialogs,
+  StdCtrls,
+  ComCtrls,
+  ExtCtrls,
+
+  //GLScene
   GLODEManager,
-  odeimport,
+  GLKeyboard,
+  OdeImport,
   GLCadencer,
   GLScene,
   GLObjects,
@@ -22,9 +28,6 @@ uses
   BaseClasses,
   GLWin32Viewer,
   VectorGeometry,
-  StdCtrls,
-  ComCtrls,
-  ExtCtrls,
   GLSimpleNavigation;
 
 type
@@ -83,9 +86,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLKeyboard;
-
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   // Initialize default values from the one of DesignTime;
@@ -116,10 +116,10 @@ procedure TForm1.GLODEManager1Collision(Sender, Object1, Object2: TObject;
 begin
   if Object2 = GetOrCreateOdeStatic(ConveyorBelt1) then
   begin
-    Contact.fdir1[0] := FDirectionVector.V[0]; // x
-    Contact.fdir1[1] := FDirectionVector.V[1]; // y
-    Contact.fdir1[2] := FDirectionVector.V[2]; // z
-    Contact.fdir1[3] := FDirectionVector.V[3]; // not used
+    Contact.fdir1[0] := FDirectionVector.X;
+    Contact.fdir1[1] := FDirectionVector.Y;
+    Contact.fdir1[2] := FDirectionVector.Z;
+    Contact.fdir1[3] := FDirectionVector.W; // not used
   end;
 end;
 

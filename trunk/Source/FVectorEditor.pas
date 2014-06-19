@@ -20,11 +20,12 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
+  System.Classes, System.SysUtils, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
   VCL.ExtCtrls, VCL.Buttons, VCL.Graphics, VCL.Controls
 {$ELSE}
-  Classes, Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls
+  Classes, Forms, SysUtils, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls
 {$ENDIF}
+  ,VectorGeometry, GLUtils, VectorTypes
 ;
 
 type
@@ -87,9 +88,6 @@ implementation
 {$IFNDEF FPC}
 {$R *.dfm}
 {$ENDIF}
-
-uses
-  SysUtils, VectorGeometry, GLUtils, VectorTypes; 
 
 var
 	vVectorEditorForm : TVectorEditorForm;

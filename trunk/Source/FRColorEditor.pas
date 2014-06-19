@@ -20,12 +20,13 @@ interface
 uses
   Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes, System.SysUtils,
   VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls,
   VCL.Dialogs, VCL.Controls, VCL.Graphics,
 {$ELSE}
-  Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs, Controls, Graphics,
+  Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs, Controls, Graphics,
 {$ENDIF}
-  Classes, VectorGeometry, FRTrackBarEdit, SysUtils, GLColor;
+  VectorGeometry, FRTrackBarEdit, GLColor;
 
 type
 

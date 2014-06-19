@@ -27,11 +27,10 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+  System.Classes, System.TypInfo, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
 {$ELSE}
-  Forms, StdCtrls, Buttons, Controls,
+  Classes, TypInfo, Forms, StdCtrls, Buttons, Controls,
 {$ENDIF}
-  Classes, TypInfo,
   GLGraphics, GLTextureFormat, GLTexture;
 
 type

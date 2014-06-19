@@ -57,12 +57,12 @@ interface
 
 uses
   XCollection,
-  GLScene,
-  Classes,
-  SysUtils,
-  Registry,
   Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes,
+  System.SysUtils,
+  System.Actions,
+  System.Win.Registry,
   VCL.Controls,
   VCL.Forms,
   VCL.ComCtrls,
@@ -73,7 +73,12 @@ uses
   VCL.ToolWin,
   VCL.ExtCtrls,
   VCL.StdCtrls,
+  VCL.ClipBrd,
 {$ELSE}
+  Classes,
+  SysUtils,
+  Actions,
+  Registry,
   Controls,
   Forms,
   ComCtrls,
@@ -84,9 +89,13 @@ uses
   ToolWin,
   ExtCtrls,
   StdCtrls,
+  ClipBrd,
 {$ENDIF}
+  DesignIntf, VCLEditors,
 
-  DesignIntf, VCLEditors;
+  //GLScene
+  GLScene, GLViewer, GLSceneRegister, GLStrings, Info, GLCrossPlatform;
+
 
 const
   SCENE_SELECTED = 0;
@@ -270,18 +279,6 @@ implementation
 // ------------------------------------------------------------------
 
 {$R *.dfm}
-
-uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.ClipBrd,
-{$ELSE}
-  ClipBrd,
-{$ENDIF}
-  GLViewer,
-  GLSceneRegister,
-  GLStrings,
-  Info,
-  GLCrossPlatform;
 
 resourcestring
   cGLSceneEditor = 'GLScene Editor';

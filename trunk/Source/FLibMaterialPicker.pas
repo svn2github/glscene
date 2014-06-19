@@ -19,11 +19,11 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+  System.Classes, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
 {$ELSE}
-  Forms, StdCtrls, Buttons, Controls,
+  Classes, Forms, StdCtrls, Buttons, Controls,
 {$ENDIF}
-  FRMaterialPreview,  Classes, GLViewer,
+  FRMaterialPreview,  GLViewer,
   GLMaterial;
 
 type
