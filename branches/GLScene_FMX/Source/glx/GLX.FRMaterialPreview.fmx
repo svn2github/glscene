@@ -1,4 +1,4 @@
-object Frame2: TFrame2
+object RMaterialPreview: TRMaterialPreview
   Height = 248.000000000000000000
   Width = 241.000000000000000000
   TabOrder = 0
@@ -7,6 +7,7 @@ object Frame2: TFrame2
     Height = 22.000000000000000000
     TabOrder = 1
     Width = 100.000000000000000000
+    OnChange = CBObjectChange
   end
   object CBBackground: TComboBox
     DisableFocusEffect = False
@@ -14,6 +15,7 @@ object Frame2: TFrame2
     Position.X = 104.000000000000000000
     TabOrder = 0
     Width = 137.000000000000000000
+    OnChange = CBBackgroundChange
   end
   object GLSceneViewport: TGLSceneViewport
     Buffer.ContextOptions = [roRenderToWindow, roDestinationAlpha, roDebugContext]

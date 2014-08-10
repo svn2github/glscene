@@ -21,7 +21,10 @@ unit GLX.AsyncTimer;
 interface
 
 uses
-   System.Classes, System.SyncObjs;
+   System.Classes, System.SysUtils, System.SyncObjs,
+
+   //GLS
+   GLX.CrossPlatform;
 
 const
   cDEFAULT_TIMER_INTERVAL = 1000;
@@ -71,8 +74,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils, GLCrossPlatform;
 
 type
 

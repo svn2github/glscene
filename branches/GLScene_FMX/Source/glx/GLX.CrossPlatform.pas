@@ -97,8 +97,8 @@ uses
   System.Classes,  System.SysUtils, System.UITypes,  System.UIConsts,
   System.StrUtils, System.Types,
 
-  FMX.Consts, VCL.Graphics, FMX.Graphics, FMX.PixelFormats,
-  FMX.Controls,  FMX.Forms,  FMX.Dialogs;
+  //FMX
+  FMX.Consts, FMX.Graphics, FMX.Surfaces, FMX.Controls, FMX.Forms, FMX.Dialogs;
 
 const
   FPC_VERSION = 0;
@@ -138,7 +138,7 @@ type
   TGLKeyEvent = TKeyEvent;
   TGLKeyPressEvent = TKeyPressEvent;
 }
-  TGLBitmap = TBitmap;
+  TGLBitmap = TBitmapSurface;
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
@@ -198,12 +198,6 @@ type
   PHalfFloat = ^THalfFloat;
 
 const
-{$IFDEF MSWINDOWS}
-  glpf8Bit = pf8bit;
-  glpf24bit = pf24bit;
-  glpf32Bit = pf32bit;
-  glpfDevice = pfDevice;
-{$ENDIF}
 {$IFDEF UNIX}
   glpf8Bit = pf8bit;
   glpf24bit = pf32bit;
@@ -260,7 +254,7 @@ function GetDeviceLogicalPixelsX(device: HDC): Integer;
 {: Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth: Integer;
 {: Returns the number of color bits associated to the given pixel format. }
-function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
+function PixelFormatToColorBits(aPixelFormat: TPixelFormatDescriptor): Integer;
 
 {: Returns the bitmap's scanline for the specified row. }
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
@@ -315,15 +309,11 @@ function AnsiStartsText(const ASubText, AText: string): Boolean;
 function IsSubComponent(const AComponent: TComponent): Boolean;
 procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
-{$IFDEF GLS_DELPHI_7_UP}
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
-{$ENDIF}
 
-{$IFNDEF GLS_COMPILER_2009_UP}
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
 function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean; overload;
-{$ENDIF}
 
 function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
@@ -375,7 +365,7 @@ end;
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 begin
 {$IFDEF MSWINDOWS}
-//  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
+  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
 {$ENDIF}
 {$IFDEF UNIX}
   ABitmap.LoadFromResourceName(Instance, PChar(AName));
@@ -552,22 +542,9 @@ end;
 // PixelFormatToColorBits
 //
 
-function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
+function PixelFormatToColorBits(aPixelFormat: TPixelFormatDescriptor): Integer;
 begin
-  case aPixelFormat of
-    pfCustom {$IFDEF WIN32}, pfDevice{$ENDIF}: // use current color depth
-      Result := GetCurrentColorDepth;
-    pf1bit: Result := 1;
-{$IFDEF WIN32}
-    pf4bit: Result := 4;
-    pf15bit: Result := 15;
-{$ENDIF}
-    pf8bit: Result := 8;
-    pf16bit: Result := 16;
-    pf32bit: Result := 32;
-  else
-    Result := 24;
-  end;
+  Result := GetCurrentColorDepth;
 end;
 
 // BitmapScanLine
@@ -761,8 +738,6 @@ asm
    db $0f, $31
 end;
 
-{$IFDEF GLS_DELPHI_7_UP}
-{$IFNDEF GLS_COMPILER_2009_UP}
 type
   PClassData = ^TClassData;
   TClassData = record
@@ -771,54 +746,23 @@ type
     PropCount: SmallInt;
     UnitName: ShortString;
   end;
-{$ENDIF}
 
 function FindUnitName(anObject: TObject): string;
-{$IFDEF GLS_COMPILER_2009_UP}
 begin
   if Assigned(anObject) then
     Result := anObject.UnitName
   else
     Result := '';
 end;
-{$ELSE}
-var
-  LClassInfo: Pointer;
-begin
-  Result := '';
-  if anObject = nil then
-    Exit;
-
-  LClassInfo := anObject.ClassInfo;
-  if LClassInfo <> nil then
-    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
-end;
-{$ENDIF}
 
 function FindUnitName(aClass: TClass): string;
-{$IFDEF GLS_COMPILER_2009_UP}
 begin
   if Assigned(aClass) then
     Result := aClass.UnitName
   else
     Result := '';
 end;
-{$ELSE}
-var
-  LClassInfo: Pointer;
-begin
-  Result := '';
-  if aClass = nil then
-    Exit;
 
-  LClassInfo := aClass.ClassInfo;
-  if LClassInfo <> nil then
-    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
-end;
-{$ENDIF}
-{$ENDIF}
-
-{$IFNDEF GLS_COMPILER_2009_UP}
 
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
 begin
@@ -829,7 +773,6 @@ function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean;
 begin
   Result := (C < #$0100) and (AnsiChar(C) in CharSet);
 end;
-{$ENDIF}
 
 procedure SetExeDirectory;
 var
@@ -858,19 +801,12 @@ end;
 
 function GetDecimalSeparator: Char;
 begin
-  Result :=
- {$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
- {$ENDIF}
-  DecimalSeparator;
+  Result := FormatSettings.DecimalSeparator;
 end;
 
 procedure SetDecimalSeparator(AValue: Char);
 begin
- {$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
- {$ENDIF}
-  DecimalSeparator := AValue;
+  FormatSettings.DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;
