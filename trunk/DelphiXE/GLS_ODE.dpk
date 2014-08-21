@@ -38,7 +38,7 @@ contains
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
   GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
   ODEImport in '..\Source\ODEImport.pas',
-  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
+  ODEGL in '..\Source\ODEGL.pas',
   GLODERagdoll in '..\Source\GLODERagdoll.pas';
 
 end.
