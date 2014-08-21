@@ -42,7 +42,7 @@ contains
   GLODERegister in '..\Source\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
   GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
+  ODEImport in '..\Source\ODEImport.pas',
   ODEGL in '..\Source\ODEGL.pas',
-  ODEImport in '..\Source\ODEImport.pas';
-
+  GLODERagdoll in '..\Source\GLODERagdoll.pas',
 end.

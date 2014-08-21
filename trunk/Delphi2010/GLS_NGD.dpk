@@ -1,7 +1,7 @@
 package GLS_NGD;
 
 {$R *.res}
-{$R '..\Source\PhysicsAPIS\GLSceneVCLNGD.dcr'}
+{$R '..\Source\GLSceneVCLNGD.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

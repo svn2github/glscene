@@ -1,7 +1,7 @@
 package GLCg2006;
 
 {$R *.res}
-{$R '..\Source\CgShaders\GLSceneVCLCg.dcr'}
+{$R '..\Source\GLSceneVCLCg.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

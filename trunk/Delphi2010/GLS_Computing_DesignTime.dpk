@@ -1,7 +1,7 @@
 package GLS_Computing_DesignTime;
 
 {$R *.res}
-{$R '..\Source\ComputeAPIs\GLSceneVCLCUDA.dcr'}
+{$R '..\Source\GLSceneVCLCUDA.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
