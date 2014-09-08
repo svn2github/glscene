@@ -4,7 +4,7 @@
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
 // History:
-// 25/02/14 - PW - Added GLS_FMX option
+// 09/09/14 - PW - Dropped support for compilers older then Delphi7
 // 10/11/12 - PW - Added support for Delphi and C++Builder with
 //                 GLS_DELPHI and GLS_CPPB defines
 // 02/04/10 - Yar - Added GLS_NO_INLINE option
@@ -37,9 +37,6 @@
 
 // Activate combined support for Delphi and C++Builder
 {$DEFINE GLS_DELPHI_OR_CPPB}
-
-// Activate FireMonkey support of FMX instead of VCL
-{.$DEFINE GLS_FMX}
 
 // Activate support for png images (using pngimage.pas library)
 // GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
@@ -173,11 +170,17 @@
 // Conditional expressions were introduced in Delphi 6
 {$ifdef CONDITIONALEXPRESSIONS}
 
+  // Delphi XE7 & C++ Builder XE7
+  {$IF CompilerVersion>28}
+    {$DEFINE GLS_COMPILER_XE7_UP}
+  {$elseif CompilerVersion=28}
+    {$DEFINE GLS_COMPILER_XE7_UP}
+  {$IFEND}
+
   // Delphi XE3 & C++ Builder XE3
   {$IF CompilerVersion>24}
     {$DEFINE GLS_COMPILER_XE3_UP}
   {$elseif CompilerVersion=24}
-    {$DEFINE GLS_COMPILER_2012}
     {$DEFINE GLS_COMPILER_XE3_UP}
   {$IFEND}
 

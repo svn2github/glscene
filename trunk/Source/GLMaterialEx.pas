@@ -2678,7 +2678,7 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
     WriteInteger(Integer(FInternalFormat));
     WriteInteger(Integer(FCompression));
@@ -2687,7 +2687,7 @@ begin
     WriteFloat(FImageBrightness);
     WriteFloat(FImageGamma);
     WriteFloat(FHeightToNormalScale);
-    WriteWideString(FSourceFile);
+    WriteString(FSourceFile);
     WriteBoolean(FInternallyStored);
     WriteInteger(Integer(FMipGenMode));
     WriteBoolean(FUseStreaming);

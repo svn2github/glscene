@@ -17,10 +17,12 @@ interface
 
 {$I GLScene.inc}
 
-{$IFDEF GLS_DELPHI_XE2_UP}
-
 uses
+{$IFDEF MSWINDOWS}
   WinAPI.Windows,
+  FMX.Platform.Win,
+  GLWin32Context,
+{$ENDIF}
   // System
   System.Types,
   System.Classes,
@@ -28,8 +30,10 @@ uses
   System.SysUtils,
   // FireMonkey
   FMX.Types, FMX.Types3D, FMX.Controls, FMX.Graphics,
+  FMX.Forms,
+
   // GLScene
-  GLScene,
+  GLScene,  OpenGLTokens,  GLTextureFormat,
   GLContext;
 
 type
@@ -84,27 +88,14 @@ type
       write SetGLSceneCamera;
   end;
 
-{$ENDIF GLS_DELPHI_XE2_UP}
-
 implementation
-
-{$IFDEF GLS_DELPHI_XE2_UP}
-
-uses
-  OpenGLTokens,
-  GLTextureFormat,
-  FMX.Forms,
-{$IFDEF MSWINDOWS}
-  FMX.Platform.Win,
-  GLWin32Context
-{$ENDIF}
-  ;
 
 { TGLSceneViewport }
 
 constructor TGLSceneViewport.Create(AOwner: TComponent);
 var
   FMXH: TWindowHandle;
+  ATexture: TTexture;
 begin
   inherited Create(AOwner);
   FGLSBuffer := TGLSceneBuffer.Create(Self);
@@ -120,13 +111,21 @@ begin
   Width := 100;
   Height := 100;
   FFMXBuffer := FMX.Graphics.TBitmap.Create(100, 100);
-  FMultisample := TMultisample.msNone;
+  FMultisample := TMultisample.None;
 
-  {$IFDEF GLS_COMPILER_XE3_UP}
-  FFMXContext := TContextManager.CreateFromTexture(FFMXBuffer.Texture,FMultisample,False);
+  {$IFDEF GLS_COMPILER_XE7_UP}
+  ATexture.Create;
+  ATexture.Initialize;
+  ATexture.Assign(FFMXBuffer);
+  FFMXContext := TContextManager.CreateFromTexture(ATexture,FMultisample,False);
   {$ELSE}
-  FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False); 
+  {$IFDEF GLS_COMPILER_XE3_UP}
+  FFMXContext := TContextManager.CreateFromTexture(FFMXBuffer.Texure,FMultisample,False);
+  {$ELSE}
+  FFMXContext := DefaultContextClass.CreateFromBitmap(FFMXBuffer, FMultisample, False);
   {$ENDIF}
+  {$ENDIF}
+  ATexture.Destroy;
 end;
 
 destructor TGLSceneViewport.Destroy;
@@ -207,11 +206,11 @@ begin
     R := LocalRect;
     InflateRect(R, -0.5, -0.5);
     Canvas.StrokeThickness := 1;
-    Canvas.StrokeDash := TStrokeDash.sdDash;
-    Canvas.Stroke.Kind := TBrushKind.bkSolid;
+    Canvas.StrokeDash := TStrokeDash.Dash;
+    Canvas.Stroke.Kind := TBrushKind.Solid;
     Canvas.Stroke.color := $A0909090;
     Canvas.DrawRect(R, 0, 0, AllCorners, AbsoluteOpacity);
-    Canvas.StrokeDash := TStrokeDash.sdSolid;
+    Canvas.StrokeDash := TStrokeDash.Solid;
   end;
 
   if FDrawing then Exit;
@@ -228,7 +227,7 @@ begin
       FOwnDC := GetDC(FParentHandle);
       FGLSBuffer.CreateRC(FOwnDC, True, 1);
       FFMXContext.BeginScene;
-      FFMXContext.Clear([TClearTarget.ctColor], TAlphaColor($FF000000), 1.0, 0);
+      FFMXContext.Clear([TClearTarget.Color], TAlphaColor($FF000000), 1.0, 0);
       FFMXContext.EndScene;
       FDrawing := True;
       try
@@ -291,7 +290,5 @@ end;
 initialization
 
 RegisterFmxClasses([TGLSceneViewport]);
-
-{$ENDIF GLS_DELPHI_XE2_UP}
 
 end.
