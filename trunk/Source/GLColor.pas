@@ -27,7 +27,7 @@ uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,
 {$ELSE}
-  SysUtils, Classes, Dialogs, Graphics
+  SysUtils, Classes, Dialogs, Graphics,
 {$ENDIF}
 
   // GLScene
@@ -1123,4 +1123,4 @@ initialization
 finalization
 	vColorManager.Free;
 
-end.
+end.

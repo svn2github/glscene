@@ -15,7 +15,7 @@
 *    iztok kacin                                                             *
 *      2009.04.11  CONDITIONALEXPRESSIONS and CompilerVersion changes        *
 *****************************************************************************}
-
+{$ifndef FPC}
 {$ifndef CONDITIONALEXPRESSIONS}
 
   {$if CompilerVersion >= 15.0}         // delphi 7
@@ -75,10 +75,11 @@
   {$ifend}
 
 {$endif}
+{$endif}
 
 {$ifdef FPC}
   {$mode Delphi} // Needed for array of const
   {$H+} // use long strings
   {$PACKRECORDS C}
     {$define Version2005Plus}
-{$endif}
+{$endif}

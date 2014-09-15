@@ -100,7 +100,7 @@ uses
    VCL.Consts,   VCL.Graphics,
    VCL.Controls,  VCL.Forms,  VCL.Dialogs
 {$ELSE}
-   Classes, SysUtils, StrUtils, Consts, Graphics,  Controls,
+   Classes, SysUtils, StrUtils, Graphics,  Controls,
    Forms,  Dialogs
 {$ENDIF}
 
@@ -1345,4 +1345,4 @@ initialization
   Init_vProgStartSecond;
 {$ENDIF}
 {$ENDIF}
-end.
+end.
