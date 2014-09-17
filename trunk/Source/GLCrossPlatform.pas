@@ -100,6 +100,9 @@ uses
    VCL.Consts,   VCL.Graphics,
    VCL.Controls,  VCL.Forms,  VCL.Dialogs
 {$ELSE}
+{$IFNDEF FPC}
+   Consts,
+{$ENDIF}
    Classes, SysUtils, StrUtils, Graphics,  Controls,
    Forms,  Dialogs
 {$ENDIF}
