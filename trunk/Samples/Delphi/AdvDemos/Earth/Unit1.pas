@@ -1,19 +1,3 @@
-{: "Earth" Demo.<p>
-
-   See accompanying Readme.txt for user instructions.<p>
-
-   The atmospheric effect is rendered in GLDirectOpenGL1Render, which essentially
-   renders a disk, with color of the vertices computed via ray-tracing. Not that
-   the tesselation of the disk has been hand-optimized so as to reduce CPU use
-   while retaining quality. On anything >1 GHz, the rendering is fill-rate
-   limited on a GeForce 4 Ti 4200.<p>
-
-   Stars support is built into the TGLSkyDome, but constellations are rendered
-   via a TGLLines, which is filled in the LoadConstellationLines method.<p>
-
-   Eric Grange<br>
-   http://glscene.org
-}
 unit Unit1;
 
 interface
@@ -104,11 +88,12 @@ uses
   GLUtils,
   JPEG,
   OpenGLTokens,
+  OpenGL1x,
   VectorGeometry,
   GLContext,
-  GLTextureFormat;
+  GLTextureFormat,
 // accurate movements left for later... or the astute reader
-// USolarSystem;
+  USolarSystem;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -127,7 +112,7 @@ procedure TForm1.GLSceneViewerBeforeRender(Sender: TObject);
 begin
   GLLensFlare1.PreRender(Sender as TGLSceneBuffer);
   // if no multitexturing or no combiner support, turn off city lights
-  if GL.ARB_multitexture and GL.ARB_texture_env_combine then
+  if GL_ARB_multitexture and GL_ARB_texture_env_combine then
   begin
     GLMaterialLibrary.Materials[0].Shader := EarthCombiner;
     GLMaterialLibrary.Materials[0].Texture2Name := 'earthNight';
@@ -145,8 +130,8 @@ const
   cAtmosphereRadius: Single = 0.55;
   // use value slightly lower than actual radius, for antialiasing effect
   cPlanetRadius: Single = 0.495;
-  cLowAtmColor: TColorVector = (1, 1, 1, 1);
-  cHighAtmColor: TColorVector = (0, 0, 1, 1);
+  cLowAtmColor: TColorVector = (X:1; Y:1; Z:1; W:1);
+  cHighAtmColor: TColorVector = (X:0; Y:0; Z:1; W:1);
   cOpacity: Single = 5;
   cIntDivTable: array[2..20] of Single =
     (1 / 2, 1 / 3, 1 / 4, 1 / 5, 1 / 6, 1 / 7, 1 / 8, 1 / 9, 1 / 10,
@@ -185,19 +170,19 @@ var
         intensity := intensity * contrib;
         alt := (VectorLength(atmPoint) - cPlanetRadius) * invAtmosphereHeight;
         VectorLerp(cLowAtmColor, cHighAtmColor, alt, altColor);
-        Result[0] := Result[0] * decay + altColor[0] * intensity;
-        Result[1] := Result[1] * decay + altColor[1] * intensity;
-        Result[2] := Result[2] * decay + altColor[2] * intensity;
+        Result.X := Result.X * decay + altColor.X * intensity;
+        Result.Y := Result.Y * decay + altColor.Y * intensity;
+        Result.Z := Result.Z * decay + altColor.Z * intensity;
       end
       else
       begin
         // sample on the dark sid
-        Result[0] := Result[0] * decay;
-        Result[1] := Result[1] * decay;
-        Result[2] := Result[2] * decay;
+        Result.X := Result.X * decay;
+        Result.Y := Result.Y * decay;
+        Result.Z := Result.Z * decay;
       end;
     end;
-    Result[3] := n * contrib * cOpacity * 0.1;
+    Result.W := n * contrib * cOpacity * 0.1;
   end;
 
   function ComputeColor(var rayDest: TVector; mayHitGround: Boolean): TColorVector;
@@ -277,40 +262,40 @@ begin
     begin
       if i = 13 then
       begin
-        GL.Begin_(GL_QUAD_STRIP);
+        glBegin(GL_QUAD_STRIP);
         for j := cSlices downto 0 do
         begin
-          GL.Color4fv(@pColor[k1 + j]);
-          GL.Vertex3fv(@pVertex[k1 + j]);
-          GL.Color4fv(@clrTransparent);
-          GL.Vertex3fv(@pVertex[k0 + j]);
+          glColor4fv(@pColor[k1 + j]);
+          glVertex3fv(@pVertex[k1 + j]);
+          glColor4fv(@clrTransparent);
+          glVertex3fv(@pVertex[k0 + j]);
         end;
-        GL.End_;
+        glEnd;
       end
       else
       begin
-        GL.Begin_(GL_QUAD_STRIP);
+        glBegin(GL_QUAD_STRIP);
         for j := cSlices downto 0 do
         begin
-          GL.Color4fv(@pColor[k1 + j]);
-          GL.Vertex3fv(@pVertex[k1 + j]);
-          GL.Color4fv(@pColor[k0 + j]);
-          GL.Vertex3fv(@pVertex[k0 + j]);
+          glColor4fv(@pColor[k1 + j]);
+          glVertex3fv(@pVertex[k1 + j]);
+          glColor4fv(@pColor[k0 + j]);
+          glVertex3fv(@pVertex[k0 + j]);
         end;
-        GL.End_;
+        glEnd;
       end;
     end
     else if i = 1 then
     begin
-      GL.Begin_(GL_TRIANGLE_FAN);
-      GL.Color4fv(@pColor[k1]);
-      GL.Vertex3fv(@pVertex[k1]);
+      glBegin(GL_TRIANGLE_FAN);
+      glColor4fv(@pColor[k1]);
+      glVertex3fv(@pVertex[k1]);
       for j := k0 + cSlices downto k0 do
       begin
-        GL.Color4fv(@pColor[j]);
-        GL.Vertex3fv(@pVertex[j]);
+        glColor4fv(@pColor[j]);
+        glVertex3fv(@pVertex[j]);
       end;
-      GL.End_;
+      glEnd;
     end;
   end;
   rci.GLStates.DepthWriteMask := True;
@@ -328,9 +313,9 @@ var
   var
     f: Single;
   begin
-    SinCos(lat * (PI / 180), Result[1], f);
+    SinCos(lat * (PI / 180), Result.Y, f);
     SinCos(lon * (360 / 24 * PI / 180), f,
-      Result[0], Result[2]);
+      Result.X, Result.Z);
   end;
 
 var
@@ -356,7 +341,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-  Caption := Format('%.1f FPS', [GLSceneViewer.FramesPerSecond]);
+  Caption := Format('GLScene Earth ' + '%.1f FPS', [GLSceneViewer.FramesPerSecond]);
   GLSceneViewer.ResetPerformanceMonitor;
 end;
 
@@ -367,14 +352,14 @@ procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
 //   p : TAffineVector;
 begin
   //   d:=GMTDateTimeToJulianDay(Now-2+newTime*timeMultiplier);
-     // make earth rotate
+  // make earth rotate
   SPEarth.TurnAngle := SPEarth.TurnAngle + deltaTime * timeMultiplier;
 
   {   p:=ComputePlanetPosition(cSunOrbitalElements, d);
      ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius));
      LSSun.Position.AsAffineVector:=p; }
 
-     // moon rotates on itself and around earth (not sure about the rotation direction!)
+  // moon rotates on itself and around earth (not sure about the rotation direction!)
 
   {   p:=ComputePlanetPosition(cMoonOrbitalElements, d);
      ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius)); }
@@ -395,8 +380,7 @@ begin
   while cameraTimeSteps > 0.005 do
   begin
     GLCamera.Position.AsVector := VectorLerp(GLCamera.Position.AsVector,
-      GLCameraControler.Position.AsVector,
-      0.05);
+      GLCameraControler.Position.AsVector, 0.05);
     cameraTimeSteps := cameraTimeSteps - 0.005;
   end;
   // smooth constellation appearance/disappearance
