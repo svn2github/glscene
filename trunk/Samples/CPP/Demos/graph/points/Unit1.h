@@ -7,6 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
 #include "BaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -14,7 +15,7 @@
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include <Vcl.ExtCtrls.hpp>
+
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -33,14 +34,16 @@ __published:	// IDE-managed Components
 	TTimer *Timer1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
+	void __fastcall GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift, int X,
+          int Y);
 	void __fastcall CBAnimateClick(TObject *Sender);
 	void __fastcall CBPointParamsClick(TObject *Sender);
 	void __fastcall Timer1Timer(TObject *Sender);
-	void __fastcall FormMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
 
 private:	// User declarations
-    int mx, my;
+    int mx,my;
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 };
