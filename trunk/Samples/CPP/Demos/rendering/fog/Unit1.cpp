@@ -24,19 +24,28 @@ TForm1 *Form1;
 
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent* Owner)
-        : TForm(Owner)
+		: TForm(Owner)
 {
   int X, Y, Z;
   TGLCube *Cube;
 
-  GLMaterialLibrary1->AddTextureMaterial("glscene", "..\\..\\media\\glscene.bmp",true);
+  String MediaPath = ExtractFilePath(ParamStr(0));
+  int I = MediaPath.Pos("Samples");
+  if (I != 0) {
+	MediaPath.Delete(I+8,MediaPath.Length()-I);
+	MediaPath += "Media\\";
+	SetCurrentDir(MediaPath);
+  }
+
+
+  GLMaterialLibrary1->AddTextureMaterial("glscene", "glscene.bmp",true);
   for (X=-cNb; X<cNb; X++)
-    for (Y=-cNb; Y<cNb; Y++)
-      for (Z=-cNb; Z<cNb; Z++)
-        if ((X & Y & Z) != 0)
-        {
-          Cube = (TGLCube *) GLDummyCube1->AddNewChild(__classid(TGLCube));
-          Cube->Material->MaterialLibrary = GLMaterialLibrary1;
+	for (Y=-cNb; Y<cNb; Y++)
+	  for (Z=-cNb; Z<cNb; Z++)
+		if ((X & Y & Z) != 0)
+		{
+		  Cube = (TGLCube *) GLDummyCube1->AddNewChild(__classid(TGLCube));
+		  Cube->Material->MaterialLibrary = GLMaterialLibrary1;
           Cube->Material->LibMaterialName = "glscene";
           Cube->Position->SetPoint(X * cSpacing, Y * cSpacing, Z * cSpacing);
           Cube->CubeWidth = cEdgeLength;
@@ -76,7 +85,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender,
 {
   if (Shift.Contains(ssLeft))
   {
-    GLCamera1->MoveAroundTarget(my-Y, mx-X);
+	GLCamera1->MoveAroundTarget(my-Y, mx-X);
     mx = X;
     my = Y;
   }
@@ -132,6 +141,13 @@ void __fastcall TForm1::CBTextureIgnoreFogClick(TObject *Sender)
   else
     GLMaterialLibrary1->Materials->Items[0]->Material->MaterialOptions >> moIgnoreFog;
   ApplyFogSettings();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled)
+{
+ GLCamera1->AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
 }
 //---------------------------------------------------------------------------
 

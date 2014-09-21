@@ -8,20 +8,14 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "GLFileMD2"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   float r;
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  String SubStr = "Samples";
-  int I = MediaPath.Pos(SubStr);
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	SetCurrentDir(MediaPath+"Media\\");
-  }
-
+  SetGLSceneMediaDir();
   GLActor1->LoadFromFile("waste.md2");
   r = GLActor1->BoundingSphereRadius();
   GLActor1->Scale->SetVector(2.5 / r, 2.5 / r, 2.5 / r);

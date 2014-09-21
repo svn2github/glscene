@@ -1,11 +1,3 @@
-/*: Per-Pixel phong shading demo.<p>
-
-   The TGLPhongShader implements phong shading through the use of an
-   ARB vertex and fragment program. So far only the material and light
-   properties are supported, some form of texture support will be
-   added in future updates.<p>
-
-*/
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -14,20 +6,6 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "AsyncTimer"
-#pragma link "GLCadencer"
-#pragma link "GLObjects"
-#pragma link "GLPhongShader"
-#pragma link "GLScene"
-#pragma link "GLTeapot"
-#pragma link "GLTexture"
-#pragma link "GLWin32Viewer"
-#pragma link "BaseClasses"
-#pragma link "GLAsmShader"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
-#pragma link "GLCustomShader"
-#pragma link "GLMaterial"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

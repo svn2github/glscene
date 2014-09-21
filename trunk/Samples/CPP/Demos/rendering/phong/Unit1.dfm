@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 264
   Top = 142
-  Caption = 'Form1'
+  Caption = 'Phong'
   ClientHeight = 403
   ClientWidth = 479
   Color = clBtnFace
@@ -47,7 +47,7 @@ object Form1: TForm1
     OnClick = CheckBox1Click
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 32
     Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -78,25 +78,25 @@ object Form1: TForm1
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Shader = GLPhongShader1
       end>
-    Left = 40
-    Top = 8
+    Left = 32
+    Top = 144
   end
   object GLPhongShader1: TGLPhongShader
     Enabled = False
-    Left = 72
-    Top = 8
+    Left = 32
+    Top = 216
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 40
+    Left = 32
+    Top = 72
   end
   object AsyncTimer1: TAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpHigher
-    Left = 40
-    Top = 40
+    Left = 416
+    Top = 8
   end
 end

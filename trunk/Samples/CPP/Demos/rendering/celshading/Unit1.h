@@ -7,6 +7,7 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+
 #include <GLObjects.hpp>        // Pascal unit
 #include <GLTexture.hpp>        // Pascal unit
 #include <GLGeomObjects.hpp>    // Pascal unit
@@ -21,6 +22,10 @@
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"          // Pascal unit
 #include "GLKeyboard.hpp"
+#include "GLFileMD2.hpp"
+#include "GLUtils.hpp"
+
+
 
 //---------------------------------------------------------------------------
 class TForm1:public TForm
