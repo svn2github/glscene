@@ -4,8 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, InitialForm, StdCtrls, ExtCtrls,
+  Dialogs, StdCtrls, ExtCtrls,
 
+  //GLScene
   FGLForm;
 
 type
