@@ -131,7 +131,8 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
  <tr>
   <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
   <p><span lang=EN-US>The Instruction for installing GLScene library into
-  Embarcadero RAD Studio XE5 to work with Delphi &amp; C++Builder. </span></p>
+  Embarcadero RAD Studio XE* to work with Delphi &amp; C++Builder includes next
+  steps: </span></p>
   </td>
  </tr>
 </table>
@@ -154,18 +155,13 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   lang=EN-US style='font-size:7.0pt'> </span><span lang=EN-US>Download GLScene
   from the site </span><a href="http://sourceforge.net/projects/glscene"><span
   lang=EN-US>http://sourceforge.net/projects/glscene</span></a> <span
-  lang=EN-US>into directory D:\Library\GLSceneSVN. </span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>Archives of
-  all GLScene’s versions are on the page <a
+  lang=EN-US>to your work directory, e.g. D:\Library\GLSceneSVN. </span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>Find the whole
+  archives of GLScene’s versions on the page <a
   href="http://sourceforge.net/projects/glscene/files/">http://sourceforge.net/projects/glscene/files/</a></span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>The last
-  release of GLScene could be found in &nbsp;<a
-  href="http://sourceforge.net/projects/glscene/files/GLScene/">http://sourceforge.net/projects/glscene/files/GLScene/</a>
-  </span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>In addition,
-  you could checkout the current SVN version of GLScene using TortoiseSVN
-  client, where should be inserted the next url:
-  &nbsp;http://svn.code.sf.net/p/glscene/code/trunk</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>Checkout the
+  current SVN version of GLScene using TortoiseSVN client, where should be
+  inserted the next url: &nbsp;http://svn.code.sf.net/p/glscene/code/trunk</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>2.Make
   a copy of GLScene’s trunk in a separate directory, e.g. in the folder
@@ -177,11 +173,11 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   CG, ODE, Newton) in the directory C:\Windows\System32. Please, run setup.bat
   in&nbsp;D:\Library\GLScene\Source\external directory. Note: when using 64-bit
   OS Windows you may need to copy appropriate *.dll &nbsp;files in
-  C:\Windows\SysWOW64 directory by hands.</span></p>
+  C:\Windows\SysWOW64 directory manually.</span></p>
   <p class=MsoListParagraph><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>4.</span><span
   lang=EN-US style='font-size:7.0pt'> </span><span lang=EN-US>Specify
-  environment options of Embarcadero RAD Studio for autosave as shown in the
+  environment options for Embarcadero RAD Studio on Autosave as shown in the
   next figure. </span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=947
@@ -189,56 +185,47 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>5. Delphi
   Options. Add the directory D:\Library\GLScene\Source to search source files
-  of GLScene in the Library Path.</span></p>
+  for GLScene’s applications &nbsp;in the Library Path.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=946
   height=458 src="Options_Delphi_LibraryPaths.jpg"></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>6. C++
-  Options. Add D:\Library\GLScene\Source\include folder into Ordered list of
-  Include paths in Paths and Directories with header hpp files:</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>6. C++ Options.
+  Add D:\Library\GLScene\Source\include folder into Ordered list of Include
+  paths to find header hpp files by GLScene’s applications:</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=939
   height=473 src="Options_CPP_IncludePath.jpg"></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>7. C++
-  Options. Add D:\Library\GLScene\Source\lib folder to Ordered list of Library
-  paths in Paths and Directories with bpi/lib files.</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=948
-  height=503 src="Options_CPP_LibraryPath.jpg"></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>8. Open the
-  GLSceneXE5.groupproj file that is in D:\Library\GLScene\XE5 directory by
-  using menu item File|Open Project…(Ctrl+F11). In the Project Manager window you
-  need to have 12 projects, including GLS_SDL.dpk. Note: you may open, compile
-  and install every dpk project apart of the group project.</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>7. Open the
+  GLSceneXE*.groupproj file in your D:\Library\GLScene\XE* directory with using
+  menu item File|Open Project…(Ctrl+F11). In Project Manager window you must
+  have 12 projects. Note: you may open, compile and install every dpk project
+  apart from the project group.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=269
   height=356 src="ProjectManager_GLScene_groupproj.jpg"></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>9. Be sure,
-  that for every project in the group there are inserted correct Delphi
-  Compiler options (Projects|Options… Shift+Ctrl+F11) to output C/C++ files in
-  the include directory (HPP files) and the lib directory (bpi/lib files) and
-  should be generated all C++Builder files including bpl and package libs.</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>8. Set Delphi
+  Compiler options for every current project in GLScene’s project group
+  (Projects|Options… Shift+Ctrl+F11) to output C/C++ files into include
+  directory (HPP files) and library directory (BPI/LIB files). Generate all
+  C++Builder files (including package libs) for design time packages.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=904
   height=279 src="ProjectOptions_DelphiCompiler_OutputCPP.jpg"></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>10. Build
-  GLScene’s packages. Right click mouse button on the GLSceneXE5 group project
-  line in Project Manager window and then execute Build All command. After that
-  Install visual components into RAD Studio palette for all projects, except
-  GLS_SDL.dpk (still not upgraded for the current version). </span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>9. Build
+  GLScene’s packages. Right click mouse button on the GLSceneXE* group project
+  line in Project Manager window and execute Build All From Here command. Then choose
+  to Install… visual components into RAD Studio palette for all design time
+  packages (except SDL package that conflicts with XE studios).</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>The
-  installation is finished. You may work with GLScene’s component library now.
-  By following described steps above you can find useful samples for Delphi and
-  C++Builder in D:\Library\GLScene\Samples directory.</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>When the
+  installation is finished you can start to work with GLScene’s component
+  library and study samples for Delphi and C++Builder in ..\Samples directory.</span></p>
   <p><span lang=EN-US>&nbsp;</span></p>
   </td>
  </tr>
