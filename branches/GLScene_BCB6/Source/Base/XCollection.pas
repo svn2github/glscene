@@ -255,13 +255,14 @@ function FindXCollectionItemClass(const className : String) : TXCollectionItemCl
 var
 	i : Integer;
 begin
-	Result:=nil;
-	if Assigned(vXCollectionItemClasses) then
-		for i:=0 to vXCollectionItemClasses.Count-1 do
-			if TXCollectionItemClass(vXCollectionItemClasses[i]).ClassName=className then begin
-				Result:=TXCollectionItemClass(vXCollectionItemClasses[i]);
-				Break;
-			end;
+  Result := nil;
+  if Assigned(vXCollectionItemClasses) then
+    for i := 0 to vXCollectionItemClasses.Count - 1 do
+      if TXCollectionItemClass(vXCollectionItemClasses[i]).ClassName = ClassName then
+      begin
+        Result := TXCollectionItemClass(vXCollectionItemClasses[i]);
+        Break;
+      end;
 end;
 
 // GetXCollectionItemClassesList
@@ -302,20 +303,24 @@ end;
 //
 destructor TXCollectionItem.Destroy;
 begin
-	if Assigned(FOwner) then begin
-		FOwner.FList.Remove(Self);
-      FOwner.FCount:=FOwner.FList.Count;
-   end;
-	inherited Destroy;
+  if Assigned(FOwner) then
+  begin
+    FOwner.FList.Remove(Self);
+    FOwner.FCount := FOwner.FList.Count;
+  end;
+  inherited Destroy;
 end;
 
 // Assign
 //
 procedure TXCollectionItem.Assign(Source: TPersistent);
 begin
-   if Source is TXCollectionItem then begin
-      FName:=TXCollectionItem(Source).Name;
-   end else inherited Assign(Source);
+  if Source is TXCollectionItem then
+  begin
+    FName := TXCollectionItem(Source).Name;
+  end
+  else
+    inherited Assign(Source);
 end;
 
 // SetName
@@ -336,10 +341,11 @@ end;
 //
 procedure TXCollectionItem.WriteToFiler(writer : TWriter);
 begin
-   with writer do begin
-      WriteInteger(0); // Archive Version 0
-      WriteString(FName);
-   end;
+  with writer do
+  begin
+    WriteInteger(0); // Archive Version 0
+    WriteString(FName);
+  end;
 end;
 
 // ReadFromFiler
@@ -374,11 +380,12 @@ procedure TXCollectionItem.MoveUp;
 var
 	i : Integer;
 begin
-   if Assigned(Owner) then begin
-   	i:=Owner.FList.IndexOf(Self);
-	   if i>0 then
-		   Owner.FList.Exchange(i, i-1);
-   end;
+  if Assigned(Owner) then
+  begin
+    i := Owner.FList.IndexOf(Self);
+    if i > 0 then
+      Owner.FList.Exchange(i, i - 1);
+  end;
 end;
 
 // MoveDown
@@ -387,11 +394,12 @@ procedure TXCollectionItem.MoveDown;
 var
 	i : Integer;
 begin
-   if Assigned(Owner) then begin
-   	i:=Owner.FList.IndexOf(Self);
-	   if Cardinal(i)<Cardinal(Owner.FList.Count-1) then
-		   Owner.FList.Exchange(i, i+1);
-   end;
+  if Assigned(Owner) then
+  begin
+    i := Owner.FList.IndexOf(Self);
+    if cardinal(i) < cardinal(Owner.FList.Count - 1) then
+      Owner.FList.Exchange(i, i + 1);
+  end;
 end;
 
 // Index
@@ -407,15 +415,15 @@ end;
 //
 procedure TXCollectionItem.RaiseFilerException(const archiveVersion : Integer);
 begin
-	raise EFilerException.Create(ClassName+cUnknownArchiveVersion
-										  +IntToStr(archiveVersion));
+	raise EFilerException.Create(ClassName + cUnknownArchiveVersion +
+     IntToStr(archiveVersion));
 end;
 
 // FriendlyDescription
 //
 class function TXCollectionItem.FriendlyDescription : String;
 begin
-	Result:=FriendlyName;
+	Result := FriendlyName;
 end;
 
 // ItemCategory
@@ -471,17 +479,23 @@ var
    i : Integer;
    srcItem, newItem : TXCollectionItem;
 begin
-	if not Assigned(Source) then begin
+	if not Assigned(Source) then 
+	begin
 		Clear;
-	end else if Source.ClassType=Self.ClassType then begin
+	end
+	else if Source.ClassType=Self.ClassType then
+	begin
       Clear;
       FList.Capacity:=TXCollection(Source).FList.Count;
-      for i:=0 to TXCollection(Source).Count-1 do begin
+      for i:=0 to TXCollection(Source).Count-1 do 
+	  begin
          srcItem:=TXCollectionItem(TXCollection(Source).FList[i]);
          newItem:=TXCollectionItemClass(srcItem.ClassType).Create(Self);
          newItem.Assign(srcItem);
       end;
-	end else inherited Assign(Source);
+	end 
+	else 
+	inherited Assign(Source);
    FCount:=FList.Count;
 end;
 
@@ -512,15 +526,20 @@ begin
 	// more space, but would also increase dependencies, and this I don't want 8)
 	classList:=TList.Create;
 	try
-		with writer do begin
+		with writer do 
+		begin
 			WriteInteger(FList.Count);
-			for i:=0 to FList.Count-1 do begin
+			for i:=0 to FList.Count-1 do 
+			begin
 				XCollectionItem:=TXCollectionItem(FList[i]);
 				n:=classList.IndexOf(XCollectionItem.ClassType);
-				if n<0 then begin
+				if n < 0 then 
+				begin
 					WriteString(XCollectionItem.ClassName);
 					classList.Add(XCollectionItem.ClassType);
-				end else WriteInteger(n);
+				end 
+				else 
+				   WriteInteger(n);
             XCollectionItem.WriteToFiler(writer);
 			end;
 		end;
@@ -543,21 +562,23 @@ begin
 	Clear;
 	classList:=TList.Create;
 	try
-		with reader do begin
+		with reader do 
+		begin
 			for n:=1 to ReadInteger do begin
 				if NextValue in [vaString, vaLString] then begin
 					cName:=ReadString;
 					XCollectionItemClass:=FindXCollectionItemClass(cName);
-					Assert(Assigned(XCollectionItemClass),
-                      'Class '+cName+' unknown. Add the relevant unit to your "uses".');
+					Assert(Assigned(XCollectionItemClass),                      'Class '+cName+
+					' unknown. Add the relevant unit to your "uses".');
 					classList.Add(XCollectionItemClass);
 				end else XCollectionItemClass:=TXCollectionItemClass(classList[ReadInteger]);
 				XCollectionItem:=XCollectionItemClass.Create(Self);
-            XCollectionItem.ReadFromFiler(reader);
+                XCollectionItem.ReadFromFiler(reader);
 			end;
 		end;
-	finally
-		classList.Free;
+		
+		finally
+		  classList.Free;
 	end;
    FCount:=FList.Count;
 end;
@@ -590,9 +611,11 @@ var
    s : String;
 begin
    Result:=ClassName;
-   if GetOwner=nil then Exit;
+   if GetOwner=nil then 
+     Exit;
    s:=GetOwner.GetNamePath;
-   if s='' then Exit;
+   if s='' then 
+     Exit;
    Result:=s+'.XCollection';
 end;
 
@@ -602,7 +625,8 @@ function TXCollection.Add(anItem : TXCollectionItem) : Integer;
 begin
    Assert(anItem.InheritsFrom(ItemsClass));
 	Assert(CanAdd(TXCollectionItemClass(anItem.ClassType)));
-   if Assigned(anItem.FOwner) then begin
+   if Assigned(anItem.FOwner) then 
+   begin
       anItem.FOwner.FList.Remove(anItem);
       anItem.FOwner.FCount:=anItem.FOwner.FList.Count;
    end;
@@ -621,7 +645,8 @@ begin
 	i:=Self.IndexOfClass(anItem);
 	if i>=0 then
 		Result:=TXCollectionItem(Self[i])
-	else Result:=anItem.Create(Self);
+	else 
+	    Result:=anItem.Create(Self);
 end;
 
 // Delete
@@ -630,7 +655,8 @@ procedure TXCollection.Delete(index : Integer);
 begin
 	Assert(Cardinal(index)<Cardinal(FList.Count));
 	// doin' it the fast way
-	with TXCollectionItem(FList[index]) do begin
+	with TXCollectionItem(FList[index]) do 
+	begin
 		FOwner:=nil;
 		Free;
 	end;
@@ -645,7 +671,8 @@ var
 	i : Integer;
 begin
 	i:=IndexOf(anItem);
-	if i>=0 then Delete(i);
+	if i>=0 then 
+	  Delete(i);
 end;
 
 // Clear
@@ -656,7 +683,8 @@ var
 begin
 	// Fast kill of owned XCollection
 	for i:=0 to FList.Count-1 do
-		with TXCollectionItem(FList[i]) do begin
+		with TXCollectionItem(FList[i]) do 
+		begin
 			FOwner:=nil;
 			Free;
 		end;
@@ -679,7 +707,8 @@ var
 begin
 	Result:=-1;
 	for i:=0 to FList.Count-1 do
-		if TXCollectionItem(FList[i]) is aClass then begin
+		if TXCollectionItem(FList[i]) is aClass then 
+		begin
 			Result:=i;
 			Break;
 		end;
@@ -693,7 +722,8 @@ var
 begin
 	Result:=nil;
 	for i:=0 to FList.Count-1 do
-		if TXCollectionItem(FList[i]) is aClass then begin
+		if TXCollectionItem(FList[i]) is aClass then 
+		begin
 			Result:=TXCollectionItem(FList[i]);
 			Break;
 		end;
@@ -707,7 +737,8 @@ var
 begin
 	Result:=-1;
 	for i:=0 to FList.Count-1 do
-		if TXCollectionItem(FList[i]).Name=aName then begin
+		if TXCollectionItem(FList[i]).Name=aName then 
+		begin
 			Result:=i;
 			Break;
 		end;
@@ -723,22 +754,29 @@ begin
 	Result:=True;
 
   // Test if the class allows itself to be added to this collection
-  if not aClass.CanAddTo(Self) then begin
+  if not aClass.CanAddTo(Self) then 
+  begin
     Result:=False;
     Exit;
   end;  
   
 	// is the given class compatible with owned ones ?
-	if aClass.UniqueItem then for i:=0 to Count-1 do begin
-		if Items[i] is aClass then begin
+	if aClass.UniqueItem then 
+	for i:=0 to Count-1 do 
+	begin
+		if Items[i] is aClass then 
+		begin
 			Result:=False;
 			Break;
 		end;
 	end;
 	// are the owned classes compatible with the given one ?
-	if Result then for i:=0 to Count-1 do begin
+	if Result then 
+	  for i:=0 to Count-1 do 
+	  begin
 		XCollectionItemClass:=TXCollectionItemClass(Items[i].ClassType);
-		if (XCollectionItemClass.UniqueItem) and aClass.InheritsFrom(XCollectionItemClass) then begin
+		if (XCollectionItemClass.UniqueItem) and aClass.InheritsFrom(XCollectionItemClass) then
+		begin
 			Result:=False;
 			Break;
 		end;

@@ -49,17 +49,17 @@ type
    // the "almost cross-platform" units like Graphics/QGraphics etc.
    // Gives a little "alien" look to names, but that's the only way around :(
 
-   TGLPoint = TPoint;
    PGLPoint = ^TGLPoint;
-   TGLRect = TRect;
+   TGLPoint = TPoint;
    PGLRect = ^TGLRect;
+   TGLRect = TRect;
    TDelphiColor = TColor;
 
-   TGLPicture = TPicture;
-   TGLGraphic = TGraphic;
-   TGLBitmap = TBitmap;
-   (*$NODEFINE TGLBitmap*)
-   (*$HPPEMIT 'typedef Graphics::TBitmap TGLBitmap;'*)
+  TGLPicture = TPicture;
+  TGLGraphic = TGraphic;
+  TGLBitmap = TBitmap;
+  {$NODEFINE TGLBitmap}  //Used when generating header files for consumption by C++
+  {$HPPEMIT 'typedef Graphics::TBitmap TGLBitmap;'} //Adds a specified symbol to the header file generated for C++
 
    TGraphicClass = class of TGraphic;
 
@@ -156,18 +156,14 @@ const
 function GLPoint(const x, y : Integer) : TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }
-function RGB(const r, g, b : Byte) : TColor;
-(*$NODEFINE RGB*)
+function RGB(const r, g, b : Byte) : TColor; (*$NODEFINE RGB*)
 {: Converts 'magic' colors to their RGB values. }
-function ColorToRGB(color : TColor) : TColor;
+function ColorToRGB(color : TColor) : TColor;  // Now it's in System.UITypes.TColorRec.ColorToRGB
 (*$NODEFINE ColorToRGB*)
 
-function GetRValue(rgb: DWORD): Byte;
-(*$NODEFINE GetRValue*)
-function GetGValue(rgb: DWORD): Byte;
-(*$NODEFINE GetGValue*)
-function GetBValue(rgb: DWORD): Byte;
-(*$NODEFINE GetBValue*)
+function GetRValue(rgb: DWORD): Byte;(*$NODEFINE GetRValue*)
+function GetGValue(rgb: DWORD): Byte;(*$NODEFINE GetGValue*)
+function GetBValue(rgb: DWORD): Byte;(*$NODEFINE GetBValue*)
 procedure InitWinColors;
 
 function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;

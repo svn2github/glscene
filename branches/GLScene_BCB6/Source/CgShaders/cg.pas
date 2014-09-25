@@ -13,6 +13,7 @@
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
 {*     http://www.clootie.ru/                                                 *}
+{*       http://developer.nvidia.com/object/cg_download.html                  *}
 {*                                                                            *}
 {******************************************************************************}
 {                                                                              }
@@ -94,6 +95,10 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 18-Dec-12 - PW:
+//             Restored CPP compatibility, suppressed unnecessary directives 
+// 17-Nov-09 - Da Stranger
+//   - Improved Unix compatibility (thanks Predator) (BugtrackerID = 2893580)
 // 07-Sep-04 - Nelson Chu:
 //   - Added profiles vp40 and fp40 from Cg 1.3 beta 2 
 // XX-XX-04 - LR, YHC - BCB corrections:

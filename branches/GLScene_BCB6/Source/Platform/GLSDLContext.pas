@@ -21,7 +21,13 @@ unit GLSDLContext;
 
 interface
 
-uses Classes, SysUtils, GLContext, SDLWindow, GLScene, SDL;
+uses 
+  Classes, 
+  SysUtils, 
+  GLContext, 
+  GLSDLWindow,
+  GLScene,
+  GLSDL;
 
 type
 
@@ -158,10 +164,12 @@ end;
 //
 procedure TGLSDLViewer.PrepareGLContext;
 begin
-   with Buffer.RenderingContext as TGLSDLContext do begin
+   with Buffer.RenderingContext as TGLSDLContext do 
+   begin
       Width:=Self.Width;
       Height:=Self.Height;
-      with FSDLWin do begin
+      with FSDLWin do 
+	  begin
          Caption:=Self.Caption;
          OnOpen:=DoOnOpen;
          OnClose:=DoOnClose;
@@ -177,7 +185,8 @@ end;
 procedure TGLSDLViewer.Render(baseObject : TGLBaseSceneObject = nil);
 begin
    LoadOpenGL;
-   if Buffer.RenderingContext=nil then begin
+   if Buffer.RenderingContext=nil then 
+   begin
       Buffer.CreateRC(0, False);
    end;
    Buffer.Render(baseObject);
@@ -194,7 +203,8 @@ end;
 //
 procedure TGLSDLViewer.SetCaption(const val : String);
 begin
-   if val<>FCaption then begin
+   if val<>FCaption then 
+   begin
       FCaption:=val;
       if Buffer.RenderingContext<>nil then
          with Buffer.RenderingContext as TGLSDLContext do
@@ -221,7 +231,8 @@ end;
 //
 procedure TGLSDLViewer.DoOnResize(sender : TObject);
 begin
-   with Buffer.RenderingContext as TGLSDLContext do begin
+   with Buffer.RenderingContext as TGLSDLContext do 
+   begin
       Self.Width:=FSDLWin.Width;
       Self.Height:=FSDLWin.Height;
       Buffer.Resize(FSDLWin.Width, FSDLWin.Height);
@@ -283,18 +294,21 @@ var
    sdlOpt : TSDLWindowOptions;
 begin
    // Just in case it didn't happen already.
-   if not InitOpenGL then RaiseLastOSError;
+   if not InitOpenGL then 
+   RaiseLastOSError;
 
    FSDLWin.Width:=Width;
    FSDLWin.Height:=Height;
    if ColorBits>16 then
       FSDLWin.PixelDepth:=vpd24bits
-   else FSDLWin.PixelDepth:=vpd16bits;
+   else 
+	 FSDLWin.PixelDepth:=vpd16bits;
 
    sdlOpt:=[voOpenGL, voHardwareAccel];
    if FullScreen then
-      sdlOpt:=sdlOpt+[voFullScreen]
-   else sdlOpt:=sdlOpt+[voResizable];
+      sdlOpt:=sdlOpt+[voFullScreen] 
+   else 
+      sdlOpt:=sdlOpt+[voResizable];
    if rcoDoubleBuffered in Options then
       sdlOpt:=sdlOpt+[voDoubleBuffer];
    if StencilBits>0 then

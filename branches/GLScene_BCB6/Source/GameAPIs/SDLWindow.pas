@@ -54,7 +54,8 @@ type
    TSDLEvent = procedure (sender : TObject; const event : TSDL_Event) of object;
 
 const
-   cDefaultSDLWindowOptions = [voDoubleBuffer, voHardwareAccel, voOpenGL, voResizable];
+   cDefaultSDLWindowOptions = [voDoubleBuffer, voHardwareAccel, voOpenGL, 
+   voResizable];
 
 type
 
@@ -148,19 +149,24 @@ type
          property Height : Integer read FHeight write SetHeight default 480;
          {: PixelDepth of the SDL window.<p>
             To apply changes to an active window, call UpdateWindow. }
-         property PixelDepth : TSDLWindowPixelDepth read FPixelDepth write SetPixelDepth default vpd24bits;
+         property PixelDepth : TSDLWindowPixelDepth read FPixelDepth 
+  		    write SetPixelDepth default vpd24bits;
          {: Options for the SDL window.<p>
             To apply changes to an active window, call UpdateWindow. }
-         property Options : TSDLWindowOptions read FOptions write SetOptions default cDefaultSDLWindowOptions;
+         property Options : TSDLWindowOptions read FOptions write SetOptions 
+		    default cDefaultSDLWindowOptions;
          {: Caption of the SDL window }
          property Caption : String read FCaption write SetCaption;
 
          {: Controls automatic threaded event polling. }
-         property ThreadedEventPolling : Boolean read FThreadedEventPolling write SetThreadedEventPolling default True;
+         property ThreadedEventPolling : Boolean read FThreadedEventPolling 
+		    write SetThreadedEventPolling default True;
          {: Sleep length between pollings in the polling thread. }
-         property ThreadSleepLength : Integer read FThreadSleepLength write SetThreadSleepLength default 1;
+         property ThreadSleepLength : Integer read FThreadSleepLength 
+		    write SetThreadSleepLength default 1;
          {: Priority of the event polling thread. }
-         property ThreadPriority : TThreadPriority read FThreadPriority write SetThreadPriority default tpLower;
+         property ThreadPriority : TThreadPriority read FThreadPriority 
+		    write SetThreadPriority default tpLower;
 
          {: Fired whenever Open succeeds.<p>
             The SDL surface is defined and usable when the event happens. }
@@ -176,7 +182,8 @@ type
             they are passed via OnClose and OnResize respectively. }
          property OnSDLEvent : TSDLEvent read FOnSDLEvent write FOnSDLEvent;
          {: Fired whenever an event polling completes with no events left to poll. }
-         property OnEventPollDone : TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
+         property OnEventPollDone : TNotifyEvent read FOnEventPollDone 
+		   write FOnEventPollDone;
 	end;
 
    // ESDLError
@@ -221,7 +228,8 @@ procedure RaiseSDLError(const msg : String = '');
 begin
    if msg<>'' then
       raise ESDLError.Create(msg+#13#10+SDL_GetError)
-   else raise ESDLError.Create(SDL_GetError);
+	    else 
+		raise ESDLError.Create(SDL_GetError);
 end;
 
 // ------------------
@@ -233,7 +241,8 @@ end;
 procedure TSDLEventThread.Execute;
 begin
    try
-      while not Terminated do begin
+      while not Terminated do 
+	  begin
          vSDLCS.Enter;
          try
             SDL_Delay(Owner.ThreadSleepLength);
@@ -340,13 +349,17 @@ begin
       Result:=Result+SDL_RESIZABLE;
    if voFullScreen in Options then
       Result:=Result+SDL_FULLSCREEN;
-   if voHardwareAccel in Options then begin
+   if voHardwareAccel in Options then 
+   begin
       if videoInfo.hw_available<>0 then
          Result:=Result+SDL_HWPALETTE+SDL_HWSURFACE
-      else Result:=Result+SDL_SWSURFACE;
+	 else 
+	   Result:=Result+SDL_SWSURFACE;
       if videoInfo.blit_hw<>0 then
          Result:=Result+SDL_HWACCEL;
-   end else Result:=Result+SDL_SWSURFACE;
+	  end 
+	  else 
+	    Result:=Result+SDL_SWSURFACE;
 end;
 
 // SetSDLGLAttributes
@@ -354,13 +367,15 @@ end;
 procedure TSDLWindow.SetSDLGLAttributes;
 begin
    case PixelDepth of
-      vpd16bits : begin
+      vpd16bits : 
+	  begin
          SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    5);
          SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  6);
          SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   5);
          SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
       end;
-      vpd24bits : begin
+      vpd24bits : 
+	  begin
          SDL_GL_SetAttribute(SDL_GL_RED_SIZE,    8);
          SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,  8);
          SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,   8);
@@ -370,19 +385,20 @@ begin
       Assert(False);
    end;
    if voStencilBuffer in Options then
-      SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8)
-   else SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+      SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8) 
+	  else 
+	  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
    if voDoubleBuffer in Options then
       SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
-   else SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0)
+   else 
+	  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0)
 end;
 
 // CreateOrRecreateSDLSurface
 //
 procedure TSDLWindow.CreateOrRecreateSDLSurface;
 const
-   cPixelDepthToBpp : array [Low(TSDLWindowPixelDepth)..High(TSDLWindowPixelDepth)] of Integer =
-                      (16, 24);
+   cPixelDepthToBpp : array [Low(TSDLWindowPixelDepth)..High(TSDLWindowPixelDepth)] of Integer =(16, 24);
 var
    videoFlags : Integer;
 begin
@@ -390,8 +406,7 @@ begin
    if voOpenGL in Options then
       SetSDLGLAttributes;
 
-   FSDLSurface:=SDL_SetVideoMode(Width, Height,
-                                 cPixelDepthToBpp[PixelDepth],
+   FSDLSurface:=SDL_SetVideoMode(Width, Height, cPixelDepthToBpp[PixelDepth],
                                  videoflags);
    if not Assigned(FSDLSurface) then
       RaiseSDLError('Unable to create surface.');
@@ -408,7 +423,8 @@ procedure TSDLWindow.SetupSDLEnvironmentValues;
 var
    envVal : String;
 begin
-   if FWindowHandle<>0 then begin
+   if FWindowHandle<>0 then 
+   begin
       envVal:='';
       {$IFDEF WIN32}
          SDL_putenv('SDL_VIDEODRIVER=windib');
@@ -428,10 +444,12 @@ end;
 //
 procedure TSDLWindow.Open;
 begin
-   if Active then Exit;
+   if Active then 
+     Exit;
    if vSDLActive then
       raise ESDLError.Create('Only one SDL window can be opened at a time...')
-   else vSDLActive:=True;
+  else 
+    vSDLActive:=True;
    
    if SDL_Init(SDL_INIT_VIDEO)<0 then
       raise ESDLError.Create('Could not initialize SDL.');
@@ -454,7 +472,8 @@ end;
 //
 procedure TSDLWindow.Close;
 begin
-   if not Active then Exit;
+   if not Active then 
+   Exit;
    if Assigned(FOnClose) then
       FOnClose(Self);
    FActive:=False;
@@ -479,7 +498,8 @@ begin
    if Active then
       if voOpenGL in Options then
          SDL_GL_SwapBuffers
-      else SDL_Flip(Surface);
+	  else 
+	     SDL_Flip(Surface);
 end;
 
 // ResizeGLWindow
@@ -495,15 +515,17 @@ procedure TSDLWindow.SetActive(const val : Boolean);
 begin
    if val<>FActive then
       if val then
-         Open
-      else Close;
+         Open 
+	  else 
+	    Close;
 end;
 
 // SetCaption
 //
 procedure TSDLWindow.SetCaption(const val : String);
 begin
-   if FCaption<>val then begin
+   if FCaption<>val then 
+   begin
       FCaption:=val;
       if Active then
          SDL_WM_SetCaption(PChar(FCaption), nil);
@@ -531,12 +553,15 @@ end;
 //
 procedure TSDLWindow.SetThreadedEventPolling(const val : Boolean);
 begin
-   if FThreadedEventPolling<>val then begin
+   if FThreadedEventPolling<>val then 
+   begin
       FThreadedEventPolling:=val;
-      if ThreadedEventPolling then begin
+      if ThreadedEventPolling then 
+	  begin
          if Active and (not Assigned(FThread)) then
             StartThread;
-      end else if Assigned(FThread) then
+       end 
+	   else if Assigned(FThread) then
          StopThread;
    end;
 end;
@@ -545,7 +570,8 @@ end;
 //
 procedure TSDLWindow.StartThread;
 begin
-   if Active and ThreadedEventPolling and (not Assigned(FThread)) then begin
+   if Active and ThreadedEventPolling and (not Assigned(FThread)) then 
+   begin
       FThread:=TSDLEventThread.Create(True);
       TSDLEventThread(FThread).Owner:=Self;
       FThread.Priority:=ThreadPriority;
@@ -558,7 +584,8 @@ end;
 //
 procedure TSDLWindow.StopThread;
 begin
-   if Assigned(FThread) then begin
+   if Assigned(FThread) then 
+   begin
       vSDLCS.Enter;
       try
          TSDLEventThread(FThread).Owner:=nil;
@@ -575,19 +602,24 @@ procedure TSDLWindow.PollEvents;
 var
    event : TSDL_Event;
 begin
-   if Active then begin
-      while SDL_PollEvent(@event)>0 do begin
+   if Active then 
+   begin
+      while SDL_PollEvent(@event)>0 do 
+	  begin
          case event.type_ of
-            SDL_QUITEV : begin
+            SDL_QUITEV : 
+			begin
                Close;
                Break;
             end;
-            SDL_VIDEORESIZE : begin
+            SDL_VIDEORESIZE : 
+			begin
                FWidth:=event.resize.w;
                FHeight:=event.resize.h;
                if voOpenGL in Options then
-                  ReSizeGLWindow
-               else begin
+                  ReSizeGLWindow 
+			   else 
+			   begin
                   CreateOrRecreateSDLSurface;
                   if not Assigned(FSDLSurface) then
                      RaiseSDLError('Could not get a surface after resize.');
@@ -600,7 +632,8 @@ begin
                FOnSDLEvent(Self, event);
          end;
       end;
-      if Active then if Assigned(FOnEventPollDone) then
+	  if Active then 
+	  if Assigned(FOnEventPollDone) then
          FOnEventPollDone(Self);
    end;
 end;

@@ -1,5 +1,9 @@
-// GLImposter
-{: Imposter building and rendering implementation for GLScene.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLImposter<p>
+
+   Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
@@ -105,12 +109,14 @@ type
    TLoadingImposterEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
                                      destImposter : TImposter; var result : TGLBitmap32) of object;
    {$ELSE}
-   TLoadingImposterEvent = function (Sender : TObject; impostoredObject : TGLBaseSceneObject;
-                                     destImposter : TImposter) : TGLBitmap32 of object;
+   TLoadingImposterEvent = function (Sender : TObject; impostoredObject : 
+     TGLBaseSceneObject;
+     destImposter : TImposter) : TGLBitmap32 of object;
    {$ENDIF}
 
-   TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
-                                     destImposter : TImposter) of object;
+   TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject : 
+         TGLBaseSceneObject;
+         destImposter : TImposter) of object;
 
    // TImposterReference
    //
@@ -505,10 +511,13 @@ begin
       glAlphaFunc(GL_GEQUAL, Builder.AlphaTreshold);
    end else glDisable(GL_ALPHA_TEST);
 
-   if impoBlended in Builder.ImposterOptions then begin
+   if impoBlended in Builder.ImposterOptions then 
+   begin
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   end else glDisable(GL_BLEND);
+   end 
+   else 
+     glDisable(GL_BLEND);
 
    rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Texture.Handle);
 
@@ -665,19 +674,23 @@ var
    imp : TImposter;
    bmp32 : TGLBitmap32;
 begin
-   for i:=0 to ImposterRegister.Count-1 do begin
+   for i:=0 to ImposterRegister.Count-1 do 
+   begin
       imp:=TImposter(ImposterRegister[i]);
-      if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then begin
+      if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then 
+	  begin
          if Assigned(FOnLoadingImposter) then
-            {$IFDEF GLS_CPPB}
+         {$IFDEF GLS_CPPB}
             FOnLoadingImposter(Self, imp.ImpostoredObject, imp, bmp32)
-            {$ELSE}
+         {$ELSE}
             bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
-            {$ENDIF}
-         else bmp32:=nil;
-         if not Assigned(bmp32) then
+         {$ENDIF}
+		 else 
+		  bmp32:=nil;
+		     if not Assigned(bmp32) then
             DoPrepareImposter(rci, imp.ImpostoredObject, imp)
-         else begin
+		  else
+		  begin
             DoUserSpecifiedImposter(imp, bmp32);
             bmp32.Free;
          end;
@@ -1357,12 +1370,16 @@ begin
    // determine the texture size with the best fill ratio
    bestSurface:=MaxInt;
    texDim.X:=baseSize;
-   while texDim.X<=maxTexSize do begin
+   while texDim.X<=maxTexSize do 
+   begin
       texDim.Y:=baseSize;
-      while texDim.Y<=maxTexSize do begin
+      while texDim.Y<=maxTexSize do 
+	  begin
          currentSurface:=texDim.X*texDim.Y;
-         if currentSurface>=requiredSurface then begin
-            if currentSurface<bestSurface then begin
+         if currentSurface>=requiredSurface then 
+		 begin
+            if currentSurface<bestSurface then 
+			begin
                bestTexDim:=texDim;
                bestSurface:=currentSurface;
             end else if (currentSurface=bestSurface)
@@ -1532,7 +1549,8 @@ end;
 //
 procedure TGLDynamicImposterBuilder.SetMinDistance(const Value : Single);
 begin
-  if Value<>FMinDistance then begin
+  if Value<>FMinDistance then 
+  begin
     FMinDistance:=Value;
     NotifyChange(Self);
   end;
@@ -1563,7 +1581,8 @@ end;
 //
 procedure TGLImposter.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if Operation=opRemove then begin
+   if Operation=opRemove then 
+   begin
       if AComponent=Builder then Builder:=nil;
       if AComponent=ImpostoredObject then ImpostoredObject:=nil;
    end;
@@ -1578,9 +1597,11 @@ var
    camPos : TVector;
    imposter : TImposter;
 begin
-   if renderSelf and Assigned(Builder) and Assigned(ImpostoredObject) then begin
+   if renderSelf and Assigned(Builder) and Assigned(ImpostoredObject) then 
+   begin
       imposter:=Builder.ImposterFor(ImpostoredObject);
-      if Assigned(imposter) and (imposter.Texture.Handle<>0) then begin
+      if Assigned(imposter) and (imposter.Texture.Handle<>0) then 
+	  begin
          camPos:=AbsoluteToLocal(rci.cameraPosition);
          imposter.BeginRender(rci);
          imposter.Render(rci, NullHmgPoint, camPos, Scale.MaxXYZ);
@@ -1595,13 +1616,16 @@ end;
 //
 procedure TGLImposter.SetBuilder(const val : TGLImposterBuilder);
 begin
-   if val<>FBuilder then begin
-      if Assigned(FBuilder) then begin
+   if val<>FBuilder then 
+   begin
+      if Assigned(FBuilder) then 
+	  begin
          FBuilder.RemoveFreeNotification(Self);
          FBuilder.UnRequestImposterFor(ImpostoredObject);
       end;
       FBuilder:=val;
-      if Assigned(FBuilder) then begin
+      if Assigned(FBuilder) then 
+	  begin
          FBuilder.FreeNotification(Self);
          FBuilder.RequestImposterFor(ImpostoredObject);
       end;
@@ -1612,7 +1636,8 @@ end;
 //
 procedure TGLImposter.SetImpostoredObject(const val : TGLBaseSceneObject);
 begin
-   if val<>FImpostoredObject then begin
+   if val<>FImpostoredObject then 
+   begin
       if Assigned(Builder) then
          FBuilder.UnRequestImposterFor(ImpostoredObject);
       FImpostoredObject:=val;

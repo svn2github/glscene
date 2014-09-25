@@ -1,4 +1,6 @@
 del *.dcu /s
+del *.obj /s
+del *.hpp /s
 del *.ppu /s
 del *.o /s
 del *.~* /s
