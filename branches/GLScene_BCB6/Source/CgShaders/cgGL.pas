@@ -12,7 +12,6 @@
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
 {*     http://clootie.narod.ru                                                *}
-{*       http://developer.nvidia.com/object/cg_download.html                  *}
 {*                                                                            *}
 {******************************************************************************}
 {                                                                              }
@@ -94,8 +93,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
-
-
 // XX-XX-04 - LR, YHC - BCB corrections:
 //   - suppress the $NODEFINE, $HPPEMIT and $EXTERNALSYM directives
 // 23-Apr-04 - Nelson Chu:
@@ -106,9 +103,10 @@
 //   - Updated to Release 1.1 of Cg toolkit (published 04-Mar-2003)
 // 11-Jan-03 - Alexey Barkovoy:
 //   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
-unit cgGL;
-{$Include GLScene.inc}
 
+unit cgGL;
+
+{$Include GLScene.inc}
 {$ifdef GLS_DELPHI_6}
   {$DEFINE COMPILER6_UP}
 {$endif}

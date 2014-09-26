@@ -1,0 +1,1 @@
+The directory for DCU/OBJ files in some way used by GLScene and in Demos applications

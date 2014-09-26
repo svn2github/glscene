@@ -1,0 +1,1 @@
+The directory for external LIB/DLL libraries used by GLScene and Demos applications

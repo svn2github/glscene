@@ -182,9 +182,7 @@ begin
   FTimer.OnTimer := ShowFPS;
 
   //Detect form
-  
-  if AOwner is TCustomForm then
-    SetForm(TCustomForm(AOwner));
+  if AOwner is TCustomForm then SetForm(TCustomForm(AOwner));
 
   //Detect SceneViewer
   if FForm <> nil then
@@ -227,7 +225,8 @@ begin
 end;
 
 procedure TGLSimpleNavigation.FormMouseWheel(Sender: TObject;
-  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
 var
   Sign: SmallInt;
 begin

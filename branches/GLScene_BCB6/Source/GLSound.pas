@@ -93,8 +93,7 @@ type
 	      { Protected Declarations }
          procedure SetSamples(const val : TGLSoundSamples);
 
-         procedure Notification(AComponent: TComponent; Operation: TOperation); 
-		 override;
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
       public
 	      { Public Declarations }
@@ -182,8 +181,7 @@ type
 
 	   published
 	      { Published Declarations }
-         property SoundLibrary : TGLSoundLibrary read GetSoundLibrary write 
-		 SetSoundLibrary;
+         property SoundLibrary : TGLSoundLibrary read GetSoundLibrary write SetSoundLibrary;
          property SoundName : String read FSoundName write SetSoundName;
 
          {: Volume of the source, [0.0; 1.0] range }
@@ -298,8 +296,7 @@ type
          FRollOffFactor : Single;
          FDopplerFactor : Single;
          FSoundEnvironment : TGLSoundEnvironment;
-         FLastUpdateTime, FLastDeltaTime : Single; 
-		    // last time UpdateSources was fired, not persistent
+         FLastUpdateTime, FLastDeltaTime : Single; // last time UpdateSources was fired, not persistent
          FCadencer : TGLCadencer;
          procedure SetActive(const val : Boolean);
          procedure SetMute(const val : Boolean);
@@ -328,8 +325,7 @@ type
          procedure Loaded; override;
          procedure DefineProperties(Filer: TFiler); override;
          
-         procedure ListenerCoordinates(var position, velocity, direction, up : 
-		   TVector);
+         procedure ListenerCoordinates(var position, velocity, direction, up : TVector);
 
 	      function DoActivate : Boolean; dynamic;
          //: Invoked AFTER all sources have been stopped
@@ -401,8 +397,7 @@ type
             Note that most driver cannot dynamically adjust the output frequency
             (you need to de-ativate and re-activate the manager for this property
             to be taken into account). }
-         property OutputFrequency : Integer read FOutputFrequency write 
-		   SetOutputFrequency default 44100;
+         property OutputFrequency : Integer read FOutputFrequency write SetOutputFrequency default 44100;
 
          {: Request to mute all sounds.<p>
             All sound requests should be handled as if sound is unmuted though,
@@ -622,8 +617,7 @@ end;
 //
 procedure TGLSoundSample.Assign(Source: TPersistent);
 begin
-	if Source is TGLSoundSample then 
-	begin
+	if Source is TGLSoundSample then begin
       FName:=TGLSoundSample(Source).Name;
       FData.Free;
       FData:=TGLSoundFile(TGLSoundSample(Source).Data.CreateCopy(Self));
@@ -645,8 +639,7 @@ var
    n : Integer;
    clName : String;
 begin
-   with Stream do 
-   begin
+   with Stream do begin
       Read(n, SizeOf(Integer));
       SetLength(clName, n);
       if n>0 then
@@ -679,19 +672,13 @@ function TGLSoundSample.GetDisplayName : String;
 var
    s : String;
 begin
-   if Assigned(FData) then 
-   begin
-      if Data.Sampling.NbChannels>1 then 
-	    s:='s' 
-	  else 
-	    s:='';
+   if Assigned(FData) then begin
+      if Data.Sampling.NbChannels>1 then s:='s' else s:='';
    	Result:=Format('%s (%d Hz, %d bits, %d channel%s, %.2f sec)',
                      [Name, Data.Sampling.Frequency,
                       Data.Sampling.BitsPerSample,
                       Data.Sampling.NbChannels, s, LengthInSec])
-   end 
-   else 
-     Result:=Format('%s (empty)', [Name]);
+   end else Result:=Format('%s (empty)', [Name]);
 end;
 
 // LoadFromFile
@@ -702,8 +689,7 @@ var
 begin
    FData.Free;
    sfc:=GetGLSoundFileFormats.FindExt(ExtractFileExt(fileName));
-   if Assigned(sfc) then 
-   begin
+   if Assigned(sfc) then begin
       FData:=sfc.Create(Self);
       FData.LoadFromFile(fileName);
    end else FData:=nil;
@@ -724,8 +710,7 @@ function TGLSoundSample.Sampling : TGLSoundSampling;
 begin
    if Assigned(FData) then
       Result:=FData.Sampling
-   else 
-     Result:=nil;
+   else Result:=nil;
 end;
 
 // LengthInBytes
@@ -743,8 +728,7 @@ function TGLSoundSample.LengthInSamples : Integer;
 begin
    if Assigned(FData) then
       Result:=FData.LengthInSamples
-   else 
-      Result:=0;
+   else Result:=0;
 end;
 
 // LengthInSec
@@ -807,10 +791,8 @@ function TGLSoundSamples.GetByName(const aName : String) : TGLSoundSample;
 var
    i : Integer;
 begin
-   Result:=nil; 
-   for i:=0 to Count-1 do 
-     if CompareText(Items[i].Name, aName)=0 then 
-   begin
+   Result:=nil;
+   for i:=0 to Count-1 do if CompareText(Items[i].Name, aName)=0 then begin
       Result:=Items[i];
       Break;
    end;
@@ -818,8 +800,7 @@ end;
 
 // AddFile
 //
-function TGLSoundSamples.AddFile(const fileName : String; const sampleName : String 
- = '') : TGLSoundSample;
+function TGLSoundSamples.AddFile(const fileName : String; const sampleName : String = '') : TGLSoundSample;
 begin
    Result:=Add;
    Result.LoadFromFile(fileName);
@@ -870,8 +851,7 @@ begin
 	inherited Create(Collection);
    FChanges:=[sscTransformation, sscSample, sscStatus];
    FVolume:=1.0;
-      FMinDistance:=1.0; 
-	  FMaxDistance:=100.0;
+   FMinDistance:=1.0; FMaxDistance:=100.0;
    FInsideConeAngle:=360;
    FOutsideConeAngle:=360;
    FConeOutsideVolume:=0.0;
@@ -897,8 +877,7 @@ end;
 //
 procedure TGLBaseSoundSource.Assign(Source: TPersistent);
 begin
-   if Source is TGLBaseSoundSource then 
-   begin
+   if Source is TGLBaseSoundSource then begin
       FPriority:=TGLBaseSoundSource(Source).FPriority;
       FOrigin:=TGLBaseSoundSource(Source).FOrigin;
       FVolume:=TGLBaseSoundSource(Source).FVolume;
@@ -1096,8 +1075,7 @@ begin
    if val<>FPause then begin
       FPause:=val;
       if Collection<>nil then
-         TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self, 
-		 FPause);
+         TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self, FPause);
    end;
 end;
 
@@ -1362,8 +1340,7 @@ procedure TGLSoundManager.DoUnPause;
 var
    i : Integer;
 begin
-   for i:=0 to Sources.Count-1 do 
-   if not Sources[i].Pause then
+   for i:=0 to Sources.Count-1 do if not Sources[i].Pause then
       PauseSource(Sources[i], False);
 end;
 
@@ -1680,8 +1657,7 @@ end;
 procedure TGLBSoundEmitter.ReadFromFiler(reader : TReader);
 begin
    inherited;
-   with reader do 
-   begin
+   with reader do begin
       ReadInteger; // ignore archiveVersion
       FSource.ReadFromFiler(reader);
       FPlaying:=ReadBoolean;
@@ -1738,22 +1714,16 @@ procedure TGLBSoundEmitter.SetPlaying(const val : Boolean);
 begin
    if csDesigning in OwnerBaseSceneObject.ComponentState then
       FPlaying:=val
-   else if ActiveSoundManager<>nil then 
-   begin
-      if val<>Playing then 
-	  begin
-         if val then 
-		 begin
+   else if ActiveSoundManager<>nil then begin
+      if val<>Playing then begin
+         if val then begin
             FPlayingSource:=ActiveSoundManager.Sources.Add;
             FPlayingSource.FBehaviourToNotify:=Self;
             FPlayingSource.Assign(FSource);
             FPlayingSource.Origin:=OwnerBaseSceneObject;
-		 end 
-		 else 
-		 FPlayingSource.Free;
+         end else FPlayingSource.Free;
       end;
-	  end 
-	  else if vVerboseGLSMErrors then
+   end else if vVerboseGLSMErrors then
       InformationDlg('No Active Sound Manager.'#13#10'Make sure manager is created before emitter');
 end;
 
