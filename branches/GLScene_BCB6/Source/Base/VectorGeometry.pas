@@ -171,7 +171,7 @@ unit VectorGeometry;
 
 interface
 
-uses System.Types, VectorTypes;
+uses Types, VectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);

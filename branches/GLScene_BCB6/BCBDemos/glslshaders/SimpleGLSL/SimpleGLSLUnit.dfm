@@ -7,24 +7,24 @@ object Form1: TForm1
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -12
+  Font.Height = -10
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  PixelsPerInch = 110
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 944
-    Height = 619
+    Height = 622
     Camera = Cam
     Buffer.BackgroundColor = 4194304
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roDestinationAlpha]
-    FieldOfView = 151.014617919922
+    FieldOfView = 151.148574829102
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -88,8 +88,6 @@ object Form1: TForm1
     object GLHUDText1: TGLHUDText
       BitmapFont = GLWindowsBitmapFont1
       Text = 'Keyboard [ 1,2,3,4,5,6,7,8,9,0 ]'
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object Cam: TGLCamera
       DepthOfView = 1000

@@ -1114,7 +1114,8 @@ end;
 //
 procedure TGLExtrusionSolid.BuildList(var rci: TRenderContextInfo);
 var
-   deltaS, deltaZ : Single;
+   //deltaS : Single;
+   deltaZ : Single;
    lastNormal : TAffineVector;
 
    procedure CalcNormal(const Top, Bottom : TAffineVector; var normal : TAffineVector);
@@ -1216,7 +1217,7 @@ var
 begin
    if Outline.Count<1 then Exit;
    deltaZ:=FHeight/FStacks;
-   deltaS:=1/FStacks;
+   //deltaS:=1/FStacks;
    invertedNormals:=(FNormalDirection=ndInside);
    FTriangleCount:=0;
    // generate sides

@@ -4,24 +4,24 @@ object Form1: TForm1
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
-  ClientHeight = 492
-  ClientWidth = 742
+  ClientHeight = 400
+  ClientWidth = 603
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  PixelsPerInch = 110
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 742
-    Height = 492
+    Width = 603
+    Height = 400
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -31,22 +31,22 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.FogEnable = True
-    FieldOfView = 146.089370727539
+    FieldOfView = 138.887908935547
     Align = alClient
   end
   object PAProgress: TPanel
-    Left = 246
-    Top = 207
-    Width = 228
-    Height = 60
+    Left = 200
+    Top = 168
+    Width = 185
+    Height = 49
     BorderWidth = 6
     TabOrder = 1
     Visible = False
     object Label1: TLabel
       Left = 7
       Top = 7
-      Width = 214
-      Height = 24
+      Width = 171
+      Height = 19
       Align = alTop
       Alignment = taCenter
       AutoSize = False
@@ -54,9 +54,9 @@ object Form1: TForm1
     end
     object ProgressBar: TProgressBar
       Left = 7
-      Top = 31
-      Width = 214
-      Height = 22
+      Top = 26
+      Width = 171
+      Height = 16
       Align = alClient
       Min = 0
       Max = 16
@@ -131,14 +131,10 @@ object Form1: TForm1
     object HTFPS: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BFSmall
-      Alignment = taLeftJustify
-      Layout = tlTop
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTHelp: TGLHUDText
       BitmapFont = BFLarge
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
   end
   object Timer1: TTimer

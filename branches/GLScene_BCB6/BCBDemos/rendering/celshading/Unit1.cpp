@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
-#include <Keyboard.hpp>
+#include <GLKeyboard.hpp>
 #include <math.h>
 #pragma hdrstop
 
@@ -20,7 +20,7 @@
 #pragma link "GLScene"
 #pragma link "GLFileMD2"
 #pragma link "JPEG"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

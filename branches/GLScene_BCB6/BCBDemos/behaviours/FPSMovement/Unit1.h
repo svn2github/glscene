@@ -25,6 +25,7 @@
 #include <GLVectorFileObjects.hpp>      // Pascal unit
 #include <GLFPSMovement.hpp>
 #include <ExtCtrls.hpp>         // Pascal unit
+#include <GLKeyboard.hpp>
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {

@@ -9,10 +9,9 @@
       ..\Source\Base\BumpMapping.obj ..\Source\Base\CurvesAndSurfaces.obj 
       ..\Source\Base\GeometryBB.obj ..\Source\Base\GLCanvas.obj 
       ..\Source\Base\GLTextureCombiners.obj ..\Source\Base\HeightTileFile.obj 
-      ..\Source\Base\Joystick.obj ..\Source\Base\Keyboard.obj 
-      ..\Source\Base\MeshUtils.obj ..\Source\Base\Octree.obj 
-      ..\Source\Base\OpenGL1x.obj ..\Source\Base\PerlinNoise.obj 
-      ..\Source\Base\PersistentClasses.obj 
+      ..\Source\Base\Joystick.obj ..\Source\Base\MeshUtils.obj 
+      ..\Source\Base\Octree.obj ..\Source\Base\OpenGL1x.obj 
+      ..\Source\Base\PerlinNoise.obj ..\Source\Base\PersistentClasses.obj 
       ..\Source\Base\PictureRegisteredFormats.obj ..\Source\Base\Polynomials.obj 
       ..\Source\Base\ScreenSaver.obj ..\Source\Base\SpatialPartitioning.obj 
       ..\Source\Base\Spline.obj ..\Source\Base\VectorGeometry.obj 
@@ -111,7 +110,8 @@
       ..\Source\Shaders\GLOutlineShader.obj ..\Source\Shaders\GLPhongShader.obj 
       ..\Source\Shaders\GLShaderCombiner.obj 
       ..\Source\Shaders\GLTexCombineShader.obj 
-      ..\Source\Shaders\GLUserShader.obj ..\Source\VideoAPIs\vfw.obj"/>
+      ..\Source\Shaders\GLUserShader.obj ..\Source\VideoAPIs\vfw.obj 
+      ..\Source\Base\GLKeyboard.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <IDLFILES value=""/>
@@ -130,17 +130,19 @@
       ..\Source\DesignTime\GuiSkinEditorFormUnit.dfm 
       ..\Source\DesignTime\Info.dfm ..\Source\PlugIn\PlugInManagerPropEditor.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="dbxcds.lib dbexpress.lib dclocx.lib dsnapcon.lib dsnapcrba.lib 
-      visualdbclx.lib teeqr.lib dss.lib tee.lib teedb.lib teeui.lib qrpt.lib 
-      bdecds.lib dsnap.lib cds.lib ibxpress.lib vcldbx.lib bdertl.lib adortl.lib 
-      dbrtl.lib vcldb.lib"/>
+    <LIBRARIES value="GLSS_FMOD_BCB6.lib GLSS_BASS_BCB6.lib GLS_SDL_BCB6.lib GLS_ODE_BCB6.lib 
+      GLCg_BCB6.lib dbxcds.lib dbexpress.lib dclocx.lib dsnapcon.lib 
+      dsnapcrba.lib visualdbclx.lib teeqr.lib dss.lib tee.lib teedb.lib 
+      teeui.lib qrpt.lib bdecds.lib dsnap.lib cds.lib ibxpress.lib vcldbx.lib 
+      bdertl.lib adortl.lib dbrtl.lib vcldb.lib"/>
     <SPARELIBS value="rtl.lib vcldb.lib dbrtl.lib adortl.lib bdertl.lib vcldbx.lib ibxpress.lib 
       cds.lib dsnap.lib bdecds.lib qrpt.lib teeui.lib teedb.lib tee.lib dss.lib 
       teeqr.lib visualdbclx.lib dsnapcrba.lib dsnapcon.lib bcbsmp.lib dclocx.lib 
-      dbexpress.lib dbxcds.lib"/>
+      dbexpress.lib dbxcds.lib GLCg_BCB6.lib GLS_ODE_BCB6.lib GLS_SDL_BCB6.lib 
+      GLSS_BASS_BCB6.lib GLSS_FMOD_BCB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi bcbsmp.bpi bcbie.bpi designide.bpi"/>
     <PATHCPP value=".;"/>
-    <PATHPAS value=".;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source\GLSLShaders;..\Source\GLSLShaders;..\Source\GLSLShaders;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source\Platform;..\Source\Platform;..\Source\Platform;..\Source\Platform;..\Source\PlugIn;..\Source\PlugIn;..\Source\PlugIn;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\VideoAPIs"/>
+    <PATHPAS value=".;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\Base;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\DesignTime;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source\FileFormats;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source\GLSLShaders;..\Source\GLSLShaders;..\Source\GLSLShaders;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source;..\Source\Platform;..\Source\Platform;..\Source\Platform;..\Source\Platform;..\Source\PlugIn;..\Source\PlugIn;..\Source\PlugIn;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\Shaders;..\Source\VideoAPIs;..\Source\Base"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
@@ -150,7 +152,7 @@
     <SYSDEFINES value="NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="GLSceneBCB6.cpp"/>
     <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi"/>
-    <LIBPATH value="..\lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi"/>
+    <LIBPATH value="$(BCB)\Projects\Lib;..\lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\GLSLShaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -193,7 +195,6 @@
       <FILE FILENAME="..\Source\Base\GLTextureCombiners.pas" FORMNAME="" UNITNAME="GLTextureCombiners" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\HeightTileFile.pas" FORMNAME="" UNITNAME="HeightTileFile" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Joystick.pas" FORMNAME="" UNITNAME="Joystick" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\Base\Keyboard.pas" FORMNAME="" UNITNAME="Keyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\MeshUtils.pas" FORMNAME="" UNITNAME="MeshUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\Octree.pas" FORMNAME="" UNITNAME="Octree" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\OpenGL1x.pas" FORMNAME="" UNITNAME="OpenGL1x" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -383,6 +384,7 @@
       <FILE FILENAME="..\Source\Shaders\GLTexCombineShader.pas" FORMNAME="" UNITNAME="GLTexCombineShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Shaders\GLUserShader.pas" FORMNAME="" UNITNAME="GLUserShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\VideoAPIs\vfw.pas" FORMNAME="" UNITNAME="vfw" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\GLKeyboard.pas" FORMNAME="" UNITNAME="GLKeyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

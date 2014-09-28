@@ -7,20 +7,20 @@ object Form1: TForm1
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
   OnKeyPress = FormKeyPress
   OnShow = FormShow
-  PixelsPerInch = 110
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 80
+    Top = 65
     Width = 603
-    Height = 366
+    Height = 384
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -30,7 +30,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
-    FieldOfView = 149.436782836914
+    FieldOfView = 150.806854248047
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -39,43 +39,43 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 603
-    Height = 80
+    Height = 65
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
     object Label1: TLabel
-      Left = 10
-      Top = 10
-      Width = 148
-      Height = 16
+      Left = 8
+      Top = 8
+      Width = 113
+      Height = 13
       Caption = 'Bumpmap Sub-sampling'
     end
     object LASubFactor: TLabel
-      Left = 394
-      Top = 10
-      Width = 24
-      Height = 16
+      Left = 320
+      Top = 8
+      Width = 19
+      Height = 13
       Caption = 'Sub'
     end
     object Label2: TLabel
-      Left = 10
-      Top = 49
-      Width = 139
-      Height = 16
+      Left = 8
+      Top = 40
+      Width = 109
+      Height = 13
       Caption = 'Bumpmapping Intensity'
     end
     object LABumpIntensity: TLabel
-      Left = 394
-      Top = 49
-      Width = 99
-      Height = 16
+      Left = 320
+      Top = 40
+      Width = 79
+      Height = 13
       Caption = 'LABumpIntensity'
     end
     object TBSubSampling: TTrackBar
-      Left = 167
+      Left = 136
       Top = 1
-      Width = 218
-      Height = 36
+      Width = 177
+      Height = 29
       Max = 3
       Orientation = trHorizontal
       PageSize = 1
@@ -91,10 +91,10 @@ object Form1: TForm1
       OnChange = TBSubSamplingChange
     end
     object TBIntensity: TTrackBar
-      Left = 167
-      Top = 41
-      Width = 218
-      Height = 35
+      Left = 136
+      Top = 33
+      Width = 177
+      Height = 29
       Max = 100
       Orientation = trHorizontal
       PageSize = 1

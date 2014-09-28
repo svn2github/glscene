@@ -88,9 +88,10 @@ Item0=$(BCB)\include;$(BCB)\include\vcl;..\..\..\include
 Item1=$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\include
 
 [HistoryLists\hlLibraryPath]
-Count=2
-Item0=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib;..\..\..\dcu
-Item1=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu
+Count=3
+Item0=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib;..\..\..\dcu
+Item1=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib;..\..\..\dcu
+Item2=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu
 
 [HistoryLists\hlDebugSourcePath]
 Count=1

@@ -75,7 +75,7 @@ uses
   //VCL
   Classes, SysUtils, Windows, Graphics, StrUtils, TypInfo,
   //GLScene
-  GLScene, GLObjects, GLHUDObjects, GLWin32Viewer, GLBitmapFont, keyboard,
+  GLScene, GLObjects, GLHUDObjects, GLWin32Viewer, GLBitmapFont, GLKeyboard,
   VectorTypes, PersistentClasses, GLContext, GLTexture, GLUtils, GLStrings;
 
 const

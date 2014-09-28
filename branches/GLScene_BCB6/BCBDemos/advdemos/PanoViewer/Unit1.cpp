@@ -5,7 +5,7 @@
 
 #include "Unit1.h"
 #include <math.h>
-#include "KeyBoard.hpp"
+#include "GLKeyboard.hpp"
 #include "JPeg.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -15,7 +15,7 @@
 #pragma link "GLScene"
 #pragma link "GLTexture"
 #pragma link "GLWin32Viewer"
-#pragma link "KeyBoard"
+#pragma link "GLKeyboard"
 #pragma link "JPeg"
 #pragma resource "*.dfm"
 TForm1 *Form1;

@@ -29,6 +29,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
+    FieldOfView = 152.260620117187
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -78,8 +79,6 @@ object Form1: TForm1
         Width = 30
         Height = 30
         NoZWrite = True
-        MirrorU = False
-        MirrorV = False
       end
       object SPSun: TGLSprite
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -94,8 +93,6 @@ object Form1: TForm1
         Width = 60
         Height = 60
         NoZWrite = True
-        MirrorU = False
-        MirrorV = False
       end
     end
     object DummyCube1: TGLDummyCube
@@ -124,8 +121,6 @@ object Form1: TForm1
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
-      Alignment = taLeftJustify
-      Layout = tlTop
     end
     object DCSound: TGLDummyCube
       CubeSize = 1

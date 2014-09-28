@@ -5,7 +5,7 @@
 #pragma hdrstop
 
 #include "SimpleGLSLUnit.h"
-#include "Keyboard.hpp"
+#include "GLKeyboard.hpp"
 #include "GLContext.hpp"
 #include "GLFile3DS.hpp"
 #include <math.h>
@@ -24,7 +24,7 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma link "GLContext"
 #pragma link "GLFile3DS"
 #pragma resource "*.dfm"

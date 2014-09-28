@@ -11,8 +11,8 @@
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) Unit1.dfm"/>
     <LIBFILES value=""/>
-    <LIBRARIES value=""/>
-    <SPARELIBS value="rtl.lib vcl.lib"/>
+    <LIBRARIES value="GLSS_BASS_BCB6.lib GLSceneBCB6.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib GLSceneBCB6.lib GLSS_BASS_BCB6.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;"/>
@@ -25,7 +25,7 @@
     <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="terrain.cpp"/>
     <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;..\..\..\include"/>
-    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib;..\..\..\dcu"/>
+    <LIBPATH value="$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib;..\..\..\dcu"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>

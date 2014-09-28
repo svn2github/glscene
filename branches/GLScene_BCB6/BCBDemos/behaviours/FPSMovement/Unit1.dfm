@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 209
-  Top = 112
+  Left = 213
+  Top = 135
   Width = 590
   Height = 475
-  Caption = 'Form1'
+  Caption = 'FPSMovement'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

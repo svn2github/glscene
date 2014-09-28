@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "Unit1.h"
-#include "Keyboard.hpp"
+#include "GLKeyboard.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLWin32Viewer"
@@ -15,7 +15,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLAVIRecorder"
-#pragma link "Keyboard"
+#pragma link "GLKeyboard"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 bool UserAbort;
