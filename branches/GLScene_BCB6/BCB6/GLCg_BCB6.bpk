@@ -4,8 +4,7 @@
   <MACROS>
     <VERSION value="BCB.06.00"/>
     <PROJECT value="GLCg_BCB6.bpl"/>
-    <OBJFILES value="GLCg_BCB6.obj ..\Source\CgShaders\cg.obj ..\Source\CgShaders\cgGL.obj 
-      ..\Source\CgShaders\GLCgShader.obj"/>
+    <OBJFILES value="..\lib\GLCg_BCB6.obj ..\lib\cg.obj ..\lib\cgGL.obj ..\lib\GLCgShader.obj"/>
     <RESFILES value="GLCg_BCB6.res ..\Source\CgShaders\GLSceneVCLCg.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
@@ -26,7 +25,7 @@
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="GLCg_BCB6.cpp"/>
     <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;..\lib;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <LIBPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;..\external;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -34,10 +33,11 @@
     <IDLCFLAGS value="-I..\Source -I..\Source\Base -I..\Source\Platform -I..\Source\CgShaders 
       -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix cpp -boa"/>
     <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tWM"/>
-    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <PFLAGS value="-N2..\lib -N0..\lib -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;GLScene - Cg Shaders&quot; -aa -Tpp -x -Gn -Gl -Gi"/>
+    <LFLAGS value="-l$(BCB)\Projects\Lib -I..\lib -D&quot;GLScene - Cg Shaders&quot; -aa -Tpp -x -Gn 
+      -Gl -Gi"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -49,9 +49,9 @@
   <FILELIST>
       <FILE FILENAME="GLCg_BCB6.res" FORMNAME="" UNITNAME="GLCg_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLCg_BCB6.cpp" FORMNAME="" UNITNAME="GLCg_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="C:\GLS\GLSceneBCB6\lib\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="C:\GLS\GLSceneBCB6\lib\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="C:\GLS\GLSceneBCB6\lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\lib\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\lib\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cg.pas" FORMNAME="" UNITNAME="cg" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cgGL.pas" FORMNAME="" UNITNAME="cgGL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\GLSceneVCLCg.dcr" FORMNAME="" UNITNAME="GLSceneVCLCg" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -94,14 +94,21 @@ Count=1
 Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=3
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;..\lib;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item1=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;..\Source\external;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..\lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Count=2
+Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;..\external;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
 Count=1
 Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=..\lib
+
+[HistoryLists\hIBPIOutputDir]
+Count=1
+Item0=$(BCB)\Projects\Lib
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

@@ -169,8 +169,7 @@ function CreateFileStream(const fileName : String;
 begin
    if Assigned(vAFIOCreateFileStream) then
       Result:=vAFIOCreateFileStream(fileName, mode)
-   else
-   begin
+   else begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
          {$IFDEF GLS_CPPB}
@@ -178,12 +177,10 @@ begin
          {$ELSE}
          Result:=vAFIO.FOnFileStream(fileName, mode);
          {$ENDIF}
-      if not Assigned(Result) then 
-	  begin
+      if not Assigned(Result) then begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
             Result:=TFileStream.Create(fileName, mode)
-		 else 
-		 raise Exception.Create('File not found: "'+fileName+'"');
+         else raise Exception.Create('File not found: "'+fileName+'"');
       end;
    end;
 end;
@@ -258,10 +255,9 @@ end;
 //
 function TDataFile.CreateCopy(AOwner: TPersistent) : TDataFile;
 begin
-  if Self <> nil then
-    Result := TDataFileClass(Self.ClassType).Create(AOwner)
-  else
-    Result := nil;
+   if Self<>nil then
+      Result:=TDataFileClass(Self.ClassType).Create(AOwner)
+   else Result:=nil;
 end;
 
 // LoadFromFile

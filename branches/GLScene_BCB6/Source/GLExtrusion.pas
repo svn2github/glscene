@@ -1114,7 +1114,7 @@ end;
 //
 procedure TGLExtrusionSolid.BuildList(var rci: TRenderContextInfo);
 var
-   //deltaS : Single;
+   //deltaS,
    deltaZ : Single;
    lastNormal : TAffineVector;
 
