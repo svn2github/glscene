@@ -396,7 +396,7 @@ type
 
   { : Implements sectored space partitioning, sectored space partitions include
     Octrees, Quadtrees and  BSP-trees }
-  TGrowMethod = (GmNever, GmBestFit, GmIncreaseToFitAll);
+  TGrowMethod = (gmNever, gmBestFit, gmIncreaseToFitAll);
 
   TSectoredSpacePartition = class(TLeavedSpacePartition)
   private
@@ -1565,7 +1565,7 @@ begin
 
   if not FRootNode.AABBFitsInNode(ALeaf.FCachedAABB) then
   begin
-    if FGrowMethod in [GmBestFit, GmIncreaseToFitAll] then
+    if FGrowMethod in [gmBestFit, gmIncreaseToFitAll] then
       UpdateStructureSize(GrowGravy)
     else
       Assert(False, 'Node is outside Octree!');
@@ -1585,7 +1585,7 @@ begin
   FMaxTreeDepth := COctree_MAX_TREE_DEPTH;
 
   FRootNode := CreateNewNode(nil);
-  FGrowMethod := GmIncreaseToFitAll;
+  FGrowMethod := gmIncreaseToFitAll;
 
   FGrowGravy := COctree_GROW_GRAVY;
 
@@ -1655,7 +1655,7 @@ begin
     // Does this leaf still fit in the Octree?
     if not FRootNode.AABBFitsInNode(ALeaf.FCachedAABB) then
     begin
-      if FGrowMethod in [GmBestFit, GmIncreaseToFitAll] then
+      if FGrowMethod in [gmBestFit, gmIncreaseToFitAll] then
         UpdateStructureSize(COctree_GROW_GRAVY)
       else
         Assert(False, 'Node is outside Octree!');
@@ -1782,12 +1782,12 @@ begin
   MaxAABB := GetAABB;
   AABBSize := VectorSubtract(MaxAABB.Max, MaxAABB.Min);
 
-  if FGrowMethod = GmBestFit then
+  if FGrowMethod = gmBestFit then
   begin
     NewAABB.Min := VectorSubtract(MaxAABB.Min, VectorScale(AABBSize, Gravy));
     NewAABB.Max := VectorAdd(MaxAABB.Max, VectorScale(AABBSize, Gravy)); // }
   end
-  else if FGrowMethod = GmIncreaseToFitAll then
+  else if FGrowMethod = gmIncreaseToFitAll then
   begin
     NewAABB.Min := VectorSubtract(MaxAABB.Min, VectorScale(AABBSize, Gravy));
     NewAABB.Max := VectorAdd(MaxAABB.Max, VectorScale(AABBSize, Gravy)); // }

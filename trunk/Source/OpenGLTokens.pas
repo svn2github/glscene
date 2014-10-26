@@ -70,35 +70,43 @@ type
   PGLChar = PAnsiChar;
   TGLString = AnsiString;
 
-  GLenum = UINT;
-  TGLenum = UINT;
+  GLenum = Cardinal;
+ {$EXTERNALSYM GLenum}
+  TGLenum = Cardinal;
   PGLenum = ^TGLenum;
 
   GLboolean = BYTEBOOL;
+ {$EXTERNALSYM GLboolean}
   TGLboolean = BYTEBOOL;
   PGLboolean = ^TGLboolean;
 
   GLbitfield = UINT;
+ {$EXTERNALSYM GLbitfield}
   TGLbitfield = UINT;
   PGLbitfield = ^TGLbitfield;
 
   GLbyte = ShortInt;
+ {$EXTERNALSYM GLbyte}
   TGLbyte = ShortInt;
   PGLbyte = ^TGLbyte;
 
   GLshort = SmallInt;
+ {$EXTERNALSYM GLshort}
   TGLshort = SmallInt;
   PGLshort = ^TGLshort;
 
   GLint = Integer;
+ {$EXTERNALSYM GLint}
   TGLint = Integer;
   PGLint = ^Integer;
 
   GLsizei = Integer;
+ {$EXTERNALSYM GLsizei}
   TGLsizei = Integer;
   PGLsizei = ^TGLsizei;
 
   GLint64 = Int64;
+ {$EXTERNALSYM GLint64}
   TGLint64 = Int64;
   PGLint64 = ^TGLInt64;
 
@@ -115,26 +123,32 @@ type
   PGLuint64EXT = ^TGLuint64EXT;
 
   GLubyte = Byte;
+ {$EXTERNALSYM GLubyte}
   TGLubyte = Byte;
   PGLubyte = System.PByte;
 
   GLushort = Word;
+ {$EXTERNALSYM GLushort}
   TGLushort = Word;
   PGLushort = System.PWord;
 
   GLuint = UINT;
+ {$EXTERNALSYM GLuint}
   TGLuint = UINT;
   PGLuint = ^TGLuint;
 
   GLfloat = Single;
+ {$EXTERNALSYM GLfloat}
   TGLfloat = Single;
   PGLfloat = System.PSingle;
 
   GLclampf = Single;
+ {$EXTERNALSYM GLclampf}
   TGLclampf = Single;
   PGLclampf = ^TGLclampf;
 
   GLdouble = Double;
+ {$EXTERNALSYM GLdouble}
   TGLdouble = Double;
   PGLdouble = System.PDouble;
 
