@@ -1,7 +1,6 @@
-  BASS 1.6a Multimedia Library
+BASS 2.4.10
+Copyright (c) 1999-2013 Un4seen Developments Ltd. All rights reserved.
   -----------------------------
-  (c) 1999-2002 Ian Luck.
-  Please report bugs/suggestions/etc... to bass@un4seen.com
 
   Questions, suggestions, etc. regarding the Delphi API
   can be sent to magicrt@hotmail.com

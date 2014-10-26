@@ -43,9 +43,9 @@ interface
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  VCL.Graphics, VCL.Forms, VCL.Controls,
+  System.Types, VCL.Graphics, VCL.Forms, VCL.Controls,
 {$ELSE}
-  Windows, Messages,  Classes,  SysUtils,
+  Windows, Messages, Classes,  SysUtils, Types,
   Graphics, Forms, Controls,
 {$ENDIF}
 

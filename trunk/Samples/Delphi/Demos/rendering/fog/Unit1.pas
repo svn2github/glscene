@@ -1,17 +1,15 @@
-{ demo showing the use of fog in GLScene<p>
-
-  20/07/03 - php - started
-
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, GLScene, GLObjects, GLCadencer,
+  Windows, Messages, SysUtils, UITypes, Classes, Graphics, Controls, Forms,
+  Math, Dialogs, ExtCtrls, StdCtrls,
+
+  //GLScene
+  GLScene, GLObjects, GLCadencer,
   GLWin32Viewer, GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  BaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -20,23 +18,24 @@ type
     GLCadencer1: TGLCadencer;
     GLCamera1: TGLCamera;
     GLDummyCube1: TGLDummyCube;
+    ColorDialog1: TColorDialog;
+    GLMaterialLibrary1: TGLMaterialLibrary;
+    GLLightSource1: TGLLightSource;
+    Panel1: TPanel;
     CBFogEnable: TCheckBox;
-    RGFogDistance: TRadioGroup;
-    RGFogMode: TRadioGroup;
     LFogStart: TLabel;
     LFogEnd: TLabel;
-    LFogColor: TLabel;
-    SFogColor: TShape;
-    LFogDensity: TLabel;
-    ColorDialog1: TColorDialog;
-    CBApplyToBackground: TCheckBox;
+    EFogStart: TEdit;
+    EFogEnd: TEdit;
+    RGFogDistance: TRadioGroup;
+    RGFogMode: TRadioGroup;
     GBTexture: TGroupBox;
     CBTextureEnabled: TCheckBox;
     CBTextureIgnoreFog: TCheckBox;
-    GLMaterialLibrary1: TGLMaterialLibrary;
-    GLLightSource1: TGLLightSource;
-    EFogStart: TEdit;
-    EFogEnd: TEdit;
+    LFogColor: TLabel;
+    SFogColor: TShape;
+    CBApplyToBackground: TCheckBox;
+    LFogDensity: TLabel;
     EFogDensity: TEdit;
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -46,10 +45,11 @@ type
     procedure RGFogModeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CBApplyToBackgroundClick(Sender: TObject);
-    procedure SEFogDensityChange(Sender: TObject);
     procedure CBTextureEnabledClick(Sender: TObject);
     procedure CBTextureIgnoreFogClick(Sender: TObject);
     procedure EFogStartChange(Sender: TObject);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     MX: integer;
     MY: integer;
@@ -63,8 +63,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses GLUtils;
 
 // applyfogsettings
 //
@@ -166,15 +164,18 @@ begin
         end;
 end;
 
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+	GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
+  Handled := true
+end;
+
 // cbapplytobackgroundclick
 //
 procedure TForm1.CBApplyToBackgroundClick(Sender: TObject);
 begin
   ApplyFogSettings;
-end;
-
-procedure TForm1.SEFogDensityChange(Sender: TObject);
-begin
 end;
 
 // cbtextureenabledclick

@@ -1,17 +1,16 @@
-object frmOctreeDemo: TfrmOctreeDemo
-  Left = 309
-  Top = 207
+object Form1: TForm1
+  Left = 0
+  Top = 0
   Caption = 'Octree Demo'
-  ClientHeight = 553
-  ClientWidth = 770
+  ClientHeight = 549
+  ClientWidth = 738
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -19,24 +18,24 @@ object frmOctreeDemo: TfrmOctreeDemo
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 81
-    Width = 770
-    Height = 472
+    Width = 738
+    Height = 468
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
     Buffer.FaceCulling = False
-    FieldOfView = 144.739837646484400000
+    FieldOfView = 144.457351684570300000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 770
+    Width = 738
     Height = 81
     Align = alTop
     TabOrder = 1
     DesignSize = (
-      770
+      738
       81)
     object Label3: TLabel
       Left = 16
@@ -48,20 +47,21 @@ object frmOctreeDemo: TfrmOctreeDemo
     object Label2: TLabel
       Left = 120
       Top = 8
-      Width = 388
+      Width = 404
       Height = 13
       Caption = 
         '(Green = Colliding with other object, Red = inside query box/sph' +
         'ere, Yellow = both)'
     end
     object LabelCollisions: TLabel
-      Left = 527
+      Left = 495
       Top = 34
       Width = 43
       Height = 13
       Alignment = taRightJustify
       Anchors = [akTop, akRight]
       Caption = 'Collisions'
+      ExplicitLeft = 527
     end
     object TrackBar_LeafThreshold: TTrackBar
       Left = 8

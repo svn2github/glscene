@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 119
-  Width = 510
-  Height = 450
-  Caption = 'Form1'
+  Caption = 'Fog'
+  ClientHeight = 372
+  ClientWidth = 548
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,161 +11,168 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
-  DesignSize = (
-    494
-    412)
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
-  object LFogStart: TLabel
-    Left = 8
-    Top = 312
-    Width = 38
-    Height = 13
-    Caption = 'fog start'
-  end
-  object LFogEnd: TLabel
-    Left = 8
-    Top = 344
-    Width = 36
-    Height = 13
-    Caption = 'fog end'
-  end
-  object LFogColor: TLabel
-    Left = 344
-    Top = 288
-    Width = 41
-    Height = 13
-    Caption = 'fog color'
-  end
-  object SFogColor: TShape
-    Left = 392
-    Top = 288
-    Width = 57
-    Height = 16
-    OnMouseDown = SFogColorMouseDown
-  end
-  object LFogDensity: TLabel
-    Left = 344
-    Top = 336
-    Width = 144
-    Height = 13
-    Caption = 'fog density (for fmExp/fmExp2)'
-  end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 502
-    Height = 274
+    Left = 0
+    Top = 0
+    Width = 548
+    Height = 235
     Camera = GLCamera1
-    FieldOfView = 139.899520874023400000
-    Anchors = [akLeft, akTop, akRight]
+    FieldOfView = 133.897399902343800000
+    Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
-  object CBFogEnable: TCheckBox
-    Left = 8
-    Top = 288
-    Width = 73
-    Height = 17
-    Caption = 'fog on/off'
+  object Panel1: TPanel
+    Left = 0
+    Top = 235
+    Width = 548
+    Height = 137
+    Align = alBottom
     TabOrder = 1
-    OnClick = CBFogEnableClick
-  end
-  object RGFogDistance: TRadioGroup
-    Left = 120
-    Top = 288
-    Width = 105
-    Height = 73
-    Caption = '[ fog mode ]'
-    ItemIndex = 0
-    Items.Strings = (
-      'fdDefault'
-      'fdEyePlane'
-      'fdEyeRadial')
-    TabOrder = 2
-    OnClick = RGFogModeClick
-  end
-  object RGFogMode: TRadioGroup
-    Left = 232
-    Top = 288
-    Width = 105
-    Height = 73
-    Caption = '[ fog mode ]'
-    ItemIndex = 0
-    Items.Strings = (
-      'fmLinear'
-      'fmExp'
-      'fmExp2')
-    TabOrder = 3
-    OnClick = RGFogModeClick
-  end
-  object CBApplyToBackground: TCheckBox
-    Left = 376
-    Top = 304
-    Width = 105
-    Height = 17
-    Caption = 'background too ?'
-    Checked = True
-    State = cbChecked
-    TabOrder = 4
-    OnClick = CBApplyToBackgroundClick
-  end
-  object GBTexture: TGroupBox
-    Left = 120
-    Top = 368
-    Width = 217
-    Height = 41
-    Caption = '[ texture ]'
-    TabOrder = 5
-    object CBTextureEnabled: TCheckBox
+    object LFogStart: TLabel
       Left = 8
-      Top = 16
-      Width = 65
-      Height = 17
-      Caption = 'enabled'
-      Checked = True
-      State = cbChecked
-      TabOrder = 0
-      OnClick = CBTextureEnabledClick
+      Top = 68
+      Width = 38
+      Height = 13
+      Caption = 'fog start'
     end
-    object CBTextureIgnoreFog: TCheckBox
-      Left = 80
-      Top = 16
+    object LFogEnd: TLabel
+      Left = 10
+      Top = 103
+      Width = 36
+      Height = 13
+      Caption = 'fog end'
+    end
+    object LFogColor: TLabel
+      Left = 368
+      Top = 20
+      Width = 41
+      Height = 13
+      Caption = 'fog color'
+    end
+    object SFogColor: TShape
+      Left = 440
+      Top = 17
+      Width = 57
+      Height = 16
+      OnMouseDown = SFogColorMouseDown
+    end
+    object LFogDensity: TLabel
+      Left = 368
+      Top = 84
+      Width = 144
+      Height = 13
+      Caption = 'fog density (for fmExp/fmExp2)'
+    end
+    object CBFogEnable: TCheckBox
+      Left = 10
+      Top = 26
       Width = 73
       Height = 17
-      Caption = 'ignore fog'
-      TabOrder = 1
-      OnClick = CBTextureIgnoreFogClick
+      Caption = 'fog on/off'
+      TabOrder = 0
+      OnClick = CBFogEnableClick
     end
-  end
-  object EFogStart: TEdit
-    Left = 56
-    Top = 312
-    Width = 57
-    Height = 21
-    TabOrder = 6
-    Text = '-30'
-    OnChange = EFogStartChange
-  end
-  object EFogEnd: TEdit
-    Left = 56
-    Top = 344
-    Width = 57
-    Height = 21
-    TabOrder = 7
-    Text = '30'
-    OnChange = EFogStartChange
-  end
-  object EFogDensity: TEdit
-    Left = 392
-    Top = 352
-    Width = 57
-    Height = 21
-    TabOrder = 8
-    Text = '100'
-    OnChange = EFogStartChange
+    object EFogStart: TEdit
+      Left = 66
+      Top = 60
+      Width = 57
+      Height = 21
+      TabOrder = 1
+      Text = '-30'
+      OnChange = EFogStartChange
+    end
+    object EFogEnd: TEdit
+      Left = 66
+      Top = 100
+      Width = 57
+      Height = 21
+      TabOrder = 2
+      Text = '30'
+      OnChange = EFogStartChange
+    end
+    object RGFogDistance: TRadioGroup
+      Left = 129
+      Top = 8
+      Width = 105
+      Height = 73
+      Caption = '[ fog mode ]'
+      ItemIndex = 0
+      Items.Strings = (
+        'fdDefault'
+        'fdEyePlane'
+        'fdEyeRadial')
+      TabOrder = 3
+      OnClick = RGFogModeClick
+    end
+    object RGFogMode: TRadioGroup
+      Left = 240
+      Top = 8
+      Width = 105
+      Height = 73
+      Caption = '[ fog mode ]'
+      ItemIndex = 0
+      Items.Strings = (
+        'fmLinear'
+        'fmExp'
+        'fmExp2')
+      TabOrder = 4
+      OnClick = RGFogModeClick
+    end
+    object GBTexture: TGroupBox
+      Left = 129
+      Top = 87
+      Width = 217
+      Height = 41
+      Caption = '[ texture ]'
+      TabOrder = 5
+      object CBTextureEnabled: TCheckBox
+        Left = 8
+        Top = 16
+        Width = 65
+        Height = 17
+        Caption = 'enabled'
+        Checked = True
+        State = cbChecked
+        TabOrder = 0
+        OnClick = CBTextureEnabledClick
+      end
+      object CBTextureIgnoreFog: TCheckBox
+        Left = 80
+        Top = 16
+        Width = 73
+        Height = 17
+        Caption = 'ignore fog'
+        TabOrder = 1
+        OnClick = CBTextureIgnoreFogClick
+      end
+    end
+    object CBApplyToBackground: TCheckBox
+      Left = 424
+      Top = 39
+      Width = 105
+      Height = 17
+      Caption = 'background too ?'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
+      OnClick = CBApplyToBackgroundClick
+    end
+    object EFogDensity: TEdit
+      Left = 440
+      Top = 103
+      Width = 57
+      Height = 21
+      TabOrder = 7
+      Text = '100'
+      OnChange = EFogStartChange
+    end
   end
   object GLScene1: TGLScene
     Left = 16

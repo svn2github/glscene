@@ -4,10 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLScene, GLWin32Viewer, VectorGeometry, StdCtrls,
+  Dialogs, ExtCtrls, StdCtrls, OpenGL,
+
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
   GeometryBB, GLTexture, GLCadencer, SpatialPartitioning,
   ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
-  GLState, GLSimpleNavigation, GLMaterial;
+  GLState, GLSimpleNavigation, GLMaterial, GLContext;
 
 const
   cBOX_SIZE = 14.2;
@@ -22,15 +25,16 @@ type
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLCube1: TGLCube;
     GLCadencer1: TGLCadencer;
-    Label1: TLabel;
-    TrackBar_LeafThreshold: TTrackBar;
-    Label3: TLabel;
     GLSphere1: TGLSphere;
-    Label2: TLabel;
-    Button_ResetOctreeSize: TButton;
     GLPlane1: TGLPlane;
     GLSimpleNavigation1: TGLSimpleNavigation;
     GLMaterialLibrary1: TGLMaterialLibrary;
+    Panel1: TPanel;
+    Label3: TLabel;
+    TrackBar_LeafThreshold: TTrackBar;
+    Label2: TLabel;
+    Button_ResetOctreeSize: TButton;
+    LabelCollisions: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -44,9 +48,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-
     Octree : TOctreeSpacePartition;
-
     procedure CreateBox;
     procedure VerifySpacialMisc;
   end;
@@ -67,9 +69,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  OpenGLTokens, GLContext;
 
 procedure TfrmOctreeDemo.FormCreate(Sender: TObject);
 var
@@ -133,9 +132,9 @@ end;
 
 procedure TGLSpacePartitionLeaf.UpdateCachedAABBAndBSphere;
 begin
-  FCachedAABB := GLBaseSceneObject.AxisAlignedBoundingBox;
-  FCachedAABB.min := GLBaseSceneObject.LocalToAbsolute(FCachedAABB.min);
-  FCachedAABB.max := GLBaseSceneObject.LocalToAbsolute(FCachedAABB.max);
+  FCachedAABB := GLBaseSceneObject.AxisAlignedBoundingBox();
+  FCachedAABB.Min := GLBaseSceneObject.LocalToAbsolute(FCachedAABB.min);
+  FCachedAABB.Max := GLBaseSceneObject.LocalToAbsolute(FCachedAABB.max);
 
   FCachedBSphere.Radius := GLBaseSceneObject.BoundingSphereRadius;
   FCachedBSphere.Center := GLBaseSceneObject.Position.AsAffineVector;
@@ -145,36 +144,33 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
 
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
-    with GL do
-    begin
-      Color3f(r,g,b);
-      rci.GLStates.LineWidth := w;
+    glColor3f(r,g,b);
+    rci.GLStates.LineWidth := w;
 
-      Begin_(GL_LINE_STRIP);
-        Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
-        Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
-        Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
-        Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
-        Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
+    glBegin(GL_LINE_STRIP);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
 
-        Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
-        Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
-        Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
-        Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
-        Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
-      End_;
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+    glEnd();
 
-      Begin_(GL_LINES);
-        Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
-        Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
+    glBegin(GL_LINES);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
 
-        Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
-        Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
 
-        Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
-        Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
-      End_;
-    end;
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+    glEnd;
   end;
 
   procedure RenderOctreeNode(Node : TSectorNode);
@@ -219,9 +215,6 @@ end;
 procedure TfrmOctreeDemo.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 
-const
-  cSPEED = 2;
-
 var
   AABB : TAABB;
   BSphere : TBSphere;
@@ -230,12 +223,14 @@ var
   i, j, CollidingLeafCount : integer;
 
   function TestMove(pos : single; var dir : single) : single;
+  const
+    cSPEED = 2;
   begin
     if (abs(pos+dir*deltaTime*cSPEED)>=cBOX_SIZE)  then
       dir := -dir;
-
     result := pos + dir * deltaTime*cSPEED;
   end;
+
 begin
   for i := 0 to Octree.Leaves.Count-1 do
   begin
@@ -326,7 +321,7 @@ begin
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
 
-  Label1.Caption := Format('Nodes = %d, Colliding Leaves = %d',
+  LabelCollisions.Caption := Format('Nodes = %d, Colliding Leaves = %d',
     [Octree.GetNodeCount, CollidingLeafCount]);
 end;
 

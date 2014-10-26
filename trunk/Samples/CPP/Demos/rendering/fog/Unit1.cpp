@@ -29,15 +29,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
   int X, Y, Z;
   TGLCube *Cube;
 
-  String MediaPath = ExtractFilePath(ParamStr(0));
-  int I = MediaPath.Pos("Samples");
-  if (I != 0) {
-	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	MediaPath += "Media\\";
-	SetCurrentDir(MediaPath);
-  }
-
-
+  SetGLSceneMediaDir();
   GLMaterialLibrary1->AddTextureMaterial("glscene", "glscene.bmp",true);
   for (X=-cNb; X<cNb; X++)
 	for (Y=-cNb; Y<cNb; Y++)
@@ -62,7 +54,7 @@ void TForm1::ApplyFogSettings(void)
   fog->FogMode = (TFogMode) RGFogMode->ItemIndex;
   fog->FogDistance = (TFogDistance) RGFogDistance->ItemIndex;
   fog->FogColor->AsWinColor = SFogColor->Brush->Color;
-  fog->FogColor->Alpha = StrToInt(EFogDensity->Text) / 1000;
+  fog->FogColor->Alpha = (float)StrToInt(EFogDensity->Text) / 1000;
   if (CBApplyToBackground->Checked)
     GLSceneViewer1->Buffer->BackgroundColor = SFogColor->Brush->Color;
   fog->FogStart = StrToInt(EFogStart->Text);

@@ -1,3 +1,6 @@
+{ demo showing the use of fog in GLScene<p>
+   20/07/03 - php - started
+ }
 program fog;
 
 uses

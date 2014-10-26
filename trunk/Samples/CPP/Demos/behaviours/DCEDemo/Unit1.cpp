@@ -25,6 +25,21 @@
 #pragma link "GLProxyObjects"
 
 
+#pragma link "BaseClasses"
+#pragma link "GLBitmapFont"
+#pragma link "GLCadencer"
+#pragma link "GLCoordinates"
+#pragma link "GLCrossPlatform"
+#pragma link "GLDCE"
+#pragma link "GLHeightData"
+#pragma link "GLHUDObjects"
+#pragma link "GLMaterial"
+#pragma link "GLObjects"
+#pragma link "GLScene"
+#pragma link "GLTerrainRenderer"
+#pragma link "GLVectorFileObjects"
+#pragma link "GLWin32Viewer"
+#pragma link "GLWindowsFont"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
@@ -87,7 +102,7 @@ void TForm1::Load()
 
   //DCE Behaviour
   GLSphere1->Scale->Assign(GetOrCreateDCEDynamic(Player)->Size);
-  GetOrCreateDCEDynamic(Player)->OnCollision = PlayerBehaviours0Collision;
+//  GetOrCreateDCEDynamic(Player)->OnCollision = PlayerBehaviours0Collision;
 }
 //---------------------------------------------------------------------------
 void TForm1::AddBall()
@@ -193,13 +208,13 @@ void TForm1::HandleKeys()
   if (IsKeyDown(VK_ESCAPE)) Close();
 
   if (IsKeyDown('w') || IsKeyDown('W') || IsKeyDown(VK_UP))
-	Force.V[2] = cForce;
+	Force.Z = cForce;
   if (IsKeyDown('s') || IsKeyDown('S') || IsKeyDown(VK_DOWN))
-	Force.V[2] = -cForce;
+	Force.Z = -cForce;
   if (IsKeyDown('a') || IsKeyDown('A') || IsKeyDown(VK_LEFT))
-	Force.V[0] = cForce;
+	Force.X = cForce;
   if (IsKeyDown('d') || IsKeyDown('D') || IsKeyDown(VK_RIGHT))
-	Force.V[0] = -cForce;
+	Force.X = -cForce;
   GetOrCreateDCEDynamic(Player)->ApplyAccel(Force);
 }
 //---------------------------------------------------------------------------
@@ -341,22 +356,22 @@ void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInf
   for (i = 0; i < debug_tri.High; i++) {
 	glColor3f(0.0, 0.0, 0.0);
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(debug_tri[i].p1.V[0], debug_tri[i].p1.V[1], debug_tri[i].p1.V[2]);
-	glVertex3f(debug_tri[i].p2.V[0], debug_tri[i].p2.V[1], debug_tri[i].p2.V[2]);
-	glVertex3f(debug_tri[i].p3.V[0], debug_tri[i].p3.V[1], debug_tri[i].p3.V[2]);
+	glVertex3f(debug_tri[i].p1.X, debug_tri[i].p1.Y, debug_tri[i].p1.Z);
+	glVertex3f(debug_tri[i].p2.X, debug_tri[i].p2.Y, debug_tri[i].p2.Z);
+	glVertex3f(debug_tri[i].p3.X, debug_tri[i].p3.Y, debug_tri[i].p3.Z);
 	glEnd;
 	CalcPlaneNormal(debug_tri[i].p1, debug_tri[i].p2, debug_tri[i].p3, n);
 	ScaleVector(n, 0.25);
-	p.V[0] = (debug_tri[i].p1.V[0] + debug_tri[i].p2.V[0] + debug_tri[i].p3.V[0]) / 3.0;
-	p.V[1] = (debug_tri[i].p1.V[1] + debug_tri[i].p2.V[1] + debug_tri[i].p3.V[1]) / 3.0;
-	p.V[2] = (debug_tri[i].p1.V[2] + debug_tri[i].p2.V[2] + debug_tri[i].p3.V[2]) / 3.0;
+	p.X = (debug_tri[i].p1.X + debug_tri[i].p2.X + debug_tri[i].p3.X) / 3.0;
+	p.Y = (debug_tri[i].p1.Y + debug_tri[i].p2.Y + debug_tri[i].p3.Y) / 3.0;
+	p.Z = (debug_tri[i].p1.Z + debug_tri[i].p2.Z + debug_tri[i].p3.Z) / 3.0;
 	glColor3f(0.0, 0.0, 1.0);
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(p.V[0], p.V[1], p.V[2]);
-	glVertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
+	glVertex3f(p.X, p.Y, p.Z);
+	glVertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
 	glEnd;
 	glBegin(GL_POINTS);
-	glVertex3f(p.V[0] + n.V[0], p.V[1] + n.V[1], p.V[2] + n.V[2]);
+	glVertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
 	glEnd;
 	}
   debug_tri.Length = 0.0;

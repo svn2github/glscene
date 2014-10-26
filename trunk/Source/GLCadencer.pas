@@ -47,11 +47,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLScene, Classes, GLCrossPlatform, BaseClasses,
+  GLScene, GLCrossPlatform, BaseClasses,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms
+  System.Classes, System.Types, VCL.Forms
 {$ELSE}
-  Forms
+  Types,Forms
 {$ENDIF}
 
 {$IFDEF FPC}
@@ -428,7 +428,7 @@ begin
     FMutex.Release;
   end;
 {$ELSE}
-  FWindowHandle := Classes.AllocateHWnd(WndProc);
+  FWindowHandle := AllocateHWnd(WndProc);
   PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
 {$ENDIF} // FPC
 end;
@@ -449,7 +449,7 @@ begin
 {$ELSE}
   if FTimer <> 0 then
     KillTimer(FWindowHandle, FTimer);
-  Classes.DeallocateHWnd(FWindowHandle);
+  DeallocateHWnd(FWindowHandle);
 
 {$ENDIF}
   inherited Destroy;

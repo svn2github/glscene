@@ -11,6 +11,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.Jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLObjects.hpp"
@@ -33,16 +34,11 @@
 #include "GLState.hpp"
 
 #include "OpenGL1x.hpp"
-#include "Jpeg.hpp"
 
 #include "VectorGeometry.hpp"
-#include "OpenGLTokens.hpp"
 #include "GLContext.hpp"
 #include "GLEllipseCollision.hpp"
 #include "GLUtils.hpp"
-
-
-
 
 
 //---------------------------------------------------------------------------

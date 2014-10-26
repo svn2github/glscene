@@ -3,32 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  ComCtrls,
-  ExtCtrls,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls,
+  Forms, Dialogs, StdCtrls, ComCtrls, ExtCtrls,
 
   //GLScene
-  GLODEManager,
-  GLKeyboard,
-  OdeImport,
-  GLCadencer,
-  GLScene,
-  GLObjects,
-  GLCoordinates,
-  GLCrossPlatform,
-  BaseClasses,
-  GLWin32Viewer,
-  VectorGeometry,
-  GLSimpleNavigation;
+  GLODEManager, GLKeyboard, OdeImport, GLCadencer, GLScene, GLObjects,
+  GLCoordinates, GLCrossPlatform, BaseClasses, GLWin32Viewer,
+  VectorGeometry, GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)
@@ -161,10 +142,7 @@ begin
   AODEDynamic.Manager := GLODEManager1;
 
   // Set µs value to 1 (default=1000), just uses the one from the conveyor
-  with AODEDynamic.Surface do
-  begin
-    Mu := 1;
-  end;
+  AODEDynamic.Surface.Mu := 1;
 
   // Finally create physical data in this behaviour
   AODEElementBox := TODEElementBox(AODEDynamic.AddNewElement(TODEElementBox));
@@ -186,19 +164,19 @@ end;
 procedure TForm1.FDirChange(Sender: TObject);
 begin
   // Get back user data from GUI
-  FUserDirection.V[0] := StrToFloatDef(FDirX.Text, FUserDirection.V[0]); // x
-  FUserDirection.V[1] := StrToFloatDef(FDirY.Text, FUserDirection.V[0]); // y
-  FUserDirection.V[2] := StrToFloatDef(FDirZ.Text, FUserDirection.V[0]); // z
-  FUserDirection.V[3] := 0; // not used
+  FUserDirection.X := StrToFloatDef(FDirX.Text, FUserDirection.X); // x
+  FUserDirection.Y := StrToFloatDef(FDirY.Text, FUserDirection.Y); // y
+  FUserDirection.Z := StrToFloatDef(FDirZ.Text, FUserDirection.Z); // z
+  FUserDirection.W := 0; // not used
 
   // Copy user data and normalized it
   FDirectionVector := FUserDirection;
   NormalizeVector(FDirectionVector);
 
   // Now returned normalized data to user to understand the 1-unit thing
-  NormX.Caption := Format('Norm(X) = %.3f', [FDirectionVector.V[0]]);
-  NormY.Caption := Format('Norm(Y) = %.3f', [FDirectionVector.V[1]]);
-  NormZ.Caption := Format('Norm(Z) = %.3f', [FDirectionVector.V[2]]);
+  NormX.Caption := Format('Norm(X) = %.3f', [FDirectionVector.X]);
+  NormY.Caption := Format('Norm(Y) = %.3f', [FDirectionVector.Y]);
+  NormZ.Caption := Format('Norm(Z) = %.3f', [FDirectionVector.Z]);
 end;
 
 end.
