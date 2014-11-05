@@ -8,7 +8,9 @@ uses
   FGLForm in 'FGLForm.pas' {GLForm},
   FGLDialog in 'FGLDialog.pas' {GLDialog},
   FGLAbout in 'FGLAbout.pas' {GLAbout},
-  FGLOptions in 'FGLOptions.pas' {fmOptions};
+  FGLOptions in 'FGLOptions.pas' {fmOptions},
+  GLFileDXF in 'GLFileDXF.pas',
+  GLFileGRD in 'GLFileGRD.pas';
 
 {$R *.res}
 

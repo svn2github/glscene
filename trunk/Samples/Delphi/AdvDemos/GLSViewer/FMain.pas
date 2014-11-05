@@ -3,14 +3,19 @@ unit FMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMaterial,
-  GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
-  GLTexture, GLContext, ExtDlgs, VectorLists, GLCadencer,
-  ExtCtrls, GLCoordinates, GLCrossPlatform, BaseClasses, System.Actions,
-  IniFiles,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  System.IniFiles, System.Win.Registry,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin, Vcl.ComCtrls,
+  Vcl.ExtDlgs, Vcl.ExtCtrls,
 
-  FGLForm, GNUgettext, FGLOptions, DGLSViewer;
+  //GLScene
+  GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
+  GLTexture, GLContext,  VectorLists, GLCadencer,  GLCoordinates,  GLCrossPlatform,
+  BaseClasses, GLMeshOptimizer, GLState, GLRenderContextInfo, GLTextureFormat,
+  GLColor, GLKeyBoard, GLGraphics, PersistentClasses, MeshUtils,
+
+  FGLForm, FGLAbout, GNUgettext, FGLOptions, DGLSViewer;
 
 type
   TMain = class(TGLForm)
@@ -187,15 +192,9 @@ implementation
 {$R *.dfm}
 
 uses
-   GLColor, GLKeyBoard, GLGraphics, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFilePLY, GLFileGTS,
-   GLFileVRML, GLFileMD5, GLFileTIN,
-
-   GLMeshOptimizer, GLState,
-   GLRenderContextInfo, GLTextureFormat,
-
-   FGLAbout;
+   GLFileVRML, GLFileMD5, GLFileTIN, GLFileDXF, GLFileGRD;
 
 type
 
@@ -257,6 +256,7 @@ const
    cFriendlyKeyName : String = 'Applications\GLSViewer.exe';
 begin
    inherited;
+   Main.WindowState := wsMaximized;
    // instantiate our specific hidden-lines shader
    hlShader:=THiddenLineShader.Create(Self);
 

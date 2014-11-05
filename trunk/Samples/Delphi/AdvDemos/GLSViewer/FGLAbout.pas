@@ -53,7 +53,7 @@ end;
 procedure TGLAbout.BuiltWithDelphiDblClick(Sender: TObject);
 begin
   inherited;
-  GotoURL(Handle, 'http://www.codegear.com');
+  GotoURL(Handle, 'http://www.embarcadero.com');
 end;
 
 procedure TGLAbout.FormCreate(Sender: TObject);
