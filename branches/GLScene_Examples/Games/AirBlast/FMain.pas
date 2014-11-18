@@ -6,15 +6,18 @@ unit FMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, FMod,
-  Dialogs,  ExtCtrls, GLScene, GLObjects, GLWin32Viewer, VectorGeometry,
-  GLVectorFileObjects, GLTexture, ApplicationFileIO, UAirplane, GLCadencer,
+  Windows, Messages, SysUtils, Classes, Types, Graphics, Controls,
+  Forms, Dialogs,  ExtCtrls, Jpeg,
+
+  //GLScene
+  GLScene, GLObjects, GLKeyboard, GLWin32Viewer, GLVectorGeometry, FMod, GLSMFMOD,
+  GLSound, GLVectorFileObjects, GLTexture, GLApplicationFileIO, UAirplane, GLCadencer,
   GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS, GLSkyBox, GLFileWAV,
   GLFileMP3, GLTexCombineShader, UAirBlastEngine, UAirBlastControler,
-  UABControlerUI, GLParticleFX, GLPerlinPFX, UGameEngine, GLCanvas, GLSound,
-  GLSMFMOD, UABVoice, DToolBox, GLBitmapFont, GLWindowsFont,
+  UABControlerUI, GLParticleFX, GLPerlinPFX, UGameEngine, GLCanvas,
+  UABVoice, DToolBox, GLBitmapFont, GLWindowsFont, GLScreen, GLContext,
   GLGameMenu, GLHUDObjects, GLMaterial, GLCoordinates, GLCrossPlatform,
-  BaseClasses;
+  GLBaseClasses, GLFile3DS;
 
 type
   TMain = class(TForm)
@@ -22,7 +25,7 @@ type
     SceneViewer: TGLSceneViewer;
     LSSun: TGLLightSource;
     MaterialLibrary: TGLMaterialLibrary;
-    ApplicationFileIO: TApplicationFileIO;
+    GLApplicationFileIO: TGLApplicationFileIO;
     GLCadencer: TGLCadencer;
     HTF: TGLHeightTileFileHDS;
     TerrainRenderer: TGLTerrainRenderer;
@@ -89,8 +92,8 @@ implementation
 
 {$R *.dfm}
 uses
-GLFile3DS, JPEG, GLKeyboard, FConfigControls,
-FOptionsDlg, UABUtils, GLScreen, GLContext;
+  FConfigControls,
+  FOptionsDlg, UABUtils;
 
 const
   cPaths = 'Terrains;Models;Skymap;Textures;Missions;Sounds;Voices;Music';
@@ -102,7 +105,7 @@ var
   img: TGLPicFileImage;
 begin
   libMat := ml.LibMaterialByName(matName);
-  libMat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
+  libMat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName();
   img := TGLPicFileImage(libMat.Material.Texture.Image);
   img.PictureFileName := fileName;
 end;

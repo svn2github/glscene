@@ -5,9 +5,11 @@ unit UABEquipments;
 
 interface
 
-uses Classes, UGameEngine, UAirBlastEngine, VectorGeometry, PersistentClasses,
-   GLObjects, GLScene, GLTexture, GLCanvas, Graphics, GLSound,
-   GLRenderContextInfo, GLColor, GLMaterial;
+uses
+  Classes, SysUtils,
+  GLVectorGeometry, GLPersistentClasses, GLObjects, GLScene, GLTexture,
+  GLCanvas, Graphics, GLSound, GLRenderContextInfo, GLColor, GLMaterial,
+  UGameEngine, UAirBlastEngine;
 
 type
 
@@ -376,7 +378,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, UABUtils, UAirBlastControler, OpenGLTokens,
+  UABUtils, UAirBlastControler, OpenGLTokens,
   GLContext, GLCrossPlatform,
   GLBitmapFont, UABMobiles;
 

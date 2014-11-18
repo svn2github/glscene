@@ -10,7 +10,9 @@ unit UAirplane;
 
 interface
 
-uses Classes, UGameEngine, VectorGeometry;
+uses
+  Classes, SysUtils,
+  UGameEngine, GLVectorGeometry, GLApplicationFileIO;
 
 type
 
@@ -129,7 +131,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, UABUtils;
+uses
+  UABUtils;
 
 // ------------------
 // ------------------ TAirplaneEngine ------------------

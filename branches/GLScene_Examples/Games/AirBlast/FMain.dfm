@@ -238,7 +238,7 @@ object Main: TMain
     Left = 200
     Top = 128
   end
-  object ApplicationFileIO: TApplicationFileIO
+  object GLApplicationFileIO: TGLApplicationFileIO
     OnFileStream = ApplicationFileIOFileStream
     OnFileStreamExists = ApplicationFileIOFileStreamExists
     Left = 200

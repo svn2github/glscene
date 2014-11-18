@@ -5,11 +5,14 @@ unit UAirBlastEngine;
 
 interface
 
-uses Classes, UGameEngine, UAirplane, GLScene, VectorGeometry, GLVectorFileObjects,
-   PersistentClasses, GLParticleFX, GLPerlinPFX, GLCadencer, GLTexture, GLCanvas,
-   GLTerrainRenderer, GLSound, UABVoice, GLObjects, GLScreen, GLContext, Graphics,
-   GLWindowsFont, FMod, FModTypes, GLRenderContextInfo, GLMaterial, GLColor,
-   GLState;
+uses
+  Classes, Graphics,
+  //GLS
+  GLScene, GLVectorGeometry, GLVectorFileObjects,
+  GLPersistentClasses, GLParticleFX, GLPerlinPFX, GLCadencer, GLTexture, GLCanvas,
+  GLTerrainRenderer, GLSound, UABVoice, GLObjects, GLScreen, GLContext,
+  GLWindowsFont, FMod, FModTypes, GLRenderContextInfo, GLMaterial, GLColor,
+  GLState, UGameEngine, UAirplane;
 
 type
 
@@ -510,10 +513,11 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, ApplicationFileIO, UABUtils, UAirBlastControler, OpenGLTokens,
-   UABControlerUI, UABEquipments, GLBehaviours, DToolBox, XCollection,
-   GLBitmapFont, UABEvents, UABMobiles, GLCrossPlatform, UABActions,
-   VectorTypes;
+  SysUtils,
+  GLApplicationFileIO, GLBehaviours, GLBitmapFont, GLVectorTypes,
+  UABUtils, UAirBlastControler, OpenGLTokens,
+  UABControlerUI, UABEquipments, DToolBox, XCollection,
+  UABEvents, UABMobiles, GLCrossPlatform, UABActions;
 
 var
    vRegisteredEquipments : TStringList;
@@ -1385,7 +1389,7 @@ begin
       for i:=0 to sl.Count-1 do begin
          pMess:=PGameMessage(sl.Objects[i]);
          f:=pMess.Ticks*0.01;
-         buf:=Format('%.2d:%.2d - %s', [VectorGeometry.Trunc(f*(1/60)), VectorGeometry.Trunc(Frac(f*(1/60))*60), sl[i]]);
+         buf:=Format('%.2d:%.2d - %s', [GLVectorGeometry.Trunc(f*(1/60)), GLVectorGeometry.Trunc(Frac(f*(1/60))*60), sl[i]]);
          if (pMess.FromMobile=nil) then
             color:=clWhite
          else if pMess.FromMobile.Team=Team then

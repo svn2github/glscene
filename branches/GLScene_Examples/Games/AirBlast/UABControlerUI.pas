@@ -5,7 +5,9 @@ unit UABControlerUI;
 
 interface
 
-uses Windows, Classes, UAirBlastControler, VectorGeometry, MMSystem, UGameEngine;
+uses
+  Windows, Classes,
+  GLVectorGeometry, UAirBlastControler, MMSystem, UGameEngine;
 
 type
 

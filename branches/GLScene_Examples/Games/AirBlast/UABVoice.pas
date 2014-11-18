@@ -5,7 +5,9 @@ unit UABVoice;
 
 interface
 
-uses Classes, FMod, FModTypes;
+uses
+  Classes, SysUtils,
+  GLApplicationFileIO, FMod, FModTypes;
 
 type
 
@@ -50,8 +52,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils, ApplicationFileIO;
 
 // ------------------
 // ------------------ TVoice ------------------

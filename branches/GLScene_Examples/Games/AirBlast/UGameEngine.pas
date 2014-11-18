@@ -6,10 +6,11 @@ unit UGameEngine;
 interface
 
 uses
-  Classes,
-  PersistentClasses,
-  VectorTypes,
-  VectorGeometry;
+  Classes, SysUtils,
+  GLPersistentClasses,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLApplicationFileIO;
 
 type
 
@@ -420,7 +421,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, ApplicationFileIO, UABUtils;
+uses
+  UABUtils;
 
 var
    vRegisteredControlers : TStringList;

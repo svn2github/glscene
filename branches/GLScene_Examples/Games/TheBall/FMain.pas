@@ -4,14 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls,
+  Dialogs, ExtCtrls, StdCtrls, Jpeg,
 
   //GLScene
   GLScene,  GLObjects, GLShadowPlane, GLWin32Viewer, GLTexture, GLMirror,
-  ODEimport, ODEgl, GLCadencer,  Jpeg, VectorGeometry, GLSkydome,
+  ODEimport, ODEgl, GLCadencer,  GLVectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, UTheBallStructures,
   GLParticleFX, GLKeyBoard, GLSound, GLSMBASS, GLGeomObjects, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLColor, GLFileWAV, GLUtils;
+  GLCoordinates, GLCrossPlatform, GLBaseClasses, GLColor, GLFileWAV, GLUtils;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost);

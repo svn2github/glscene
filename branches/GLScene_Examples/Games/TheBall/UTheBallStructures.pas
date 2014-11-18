@@ -13,8 +13,8 @@ uses
   Classes, SysUtils,
 
   //GLScene
-  GLScene, GLObjects, VectorGeometry, OdeImport, OdeGL, GLBitmapFont,
-  GLGeomObjects, BaseClasses, GLColor, GLTexture,  GLParticleFX, GLSound, GLUtils;
+  GLScene, GLObjects, GLVectorGeometry, OdeImport, OdeGL, GLBitmapFont,
+  GLGeomObjects, GLBaseClasses, GLColor, GLTexture,  GLParticleFX, GLSound, GLUtils;
 
 type
 

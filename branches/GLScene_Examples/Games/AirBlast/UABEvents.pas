@@ -5,7 +5,9 @@ unit UABEvents;
 
 interface
 
-uses Classes, UAirBlastEngine, UGameEngine, PersistentClasses;
+uses
+  Classes, SysUtils,
+  UAirBlastEngine, UGameEngine, GLPersistentClasses;
 
 type
 
@@ -88,7 +90,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, UABUtils, UABActions;
+uses
+  UABUtils, UABActions;
 
 var
    vRegisteredConditions : TStringList;

@@ -1,7 +1,5 @@
 object DMToolBox: TDMToolBox
   OldCreateOrder = False
-  Left = 314
-  Top = 94
   Height = 150
   Width = 215
   object GLScene: TGLScene
@@ -14,8 +12,8 @@ object DMToolBox: TDMToolBox
       UseMeshMaterials = False
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       CameraStyle = csOrthogonal
     end
   end

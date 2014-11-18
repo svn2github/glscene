@@ -5,7 +5,9 @@ unit UABActions;
 
 interface
 
-uses Classes, UAirBlastEngine, UGameEngine;
+uses
+  Classes, SysUtils,
+  GLApplicationFileIO, UAirBlastEngine, UGameEngine;
 
 procedure PerformABActions(engine : TAirBlastEngine; const actionsCommaText : String;
                            envVars : TStrings); overload;
@@ -21,7 +23,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, UABUtils, ApplicationFileIO;
+uses
+  UABUtils;
 
 // PerformABActions
 //
