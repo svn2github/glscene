@@ -1,37 +1,16 @@
-{: Demo of Constructive Solid Geometry in GLScene.
-
-   Its kept very simple, you can use mouse to rotate view(drag)
-   and mousewheel to zoom/unzoom.<p>
-
-   The CSG system uses BSP to optimize what triangles it considers.
-   Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,
-   even the meshes allready had BSP optimization.
-
-   The demo uses the polyhedron.3ds, resource from the GLScene pack.
-
-   Author: Joen Joensen.
-   Contributed to the GLScene community.
-
-   Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
-
-	<b>History : </b><font size=-1><ul>
-      <li>29/11/03 - JAJ - Sometimes a single tri is messed up...
-                          (often(1/3) happends on 2 triangles in this demo when using intersection)
-	</ul></font>
-
-	<b>History : </b><font size=-1><ul>
-      <li>29/11/03 - JAJ - Created and Submitted to GLScene.
-	</ul></font>
-}
 unit MainFormUnit;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG,
-  GLWin32Viewer, GLObjects, GLTexture, GLFile3ds, ExtCtrls, ComCtrls,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState;
+  ExtCtrls, ComCtrls,  Dialogs,
+
+  //GLS
+  GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG,
+  GLWin32Viewer, GLObjects, GLTexture, GLFile3DS,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState,
+  GLVectorGeometry, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -43,13 +22,14 @@ type
     GLFreeForm2: TGLFreeForm;
     GLFreeForm3: TGLFreeForm;
     Panel1: TPanel;
-    Button1: TButton;
+    ButtonClear: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
     Button5: TButton;
     CheckBox1: TCheckBox;
     GLLightSource1: TGLLightSource;
+    GLDummyCube1: TGLDummyCube;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -62,7 +42,7 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
 // Demo starts here above is just navigation.
-    procedure Button1Click(Sender: TObject);
+    procedure ButtonClearClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
@@ -81,9 +61,18 @@ var
 
 implementation
 
-uses VectorGeometry, GLUtils;
-
 {$R *.dfm}
+
+// Demo starts here above is just navigation.
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  SetGLSceneMediaDir();
+  // scaled 40
+  GLFreeForm1.LoadFromFile('polyhedron.3ds');
+
+  // scaled 20, position.x = 16
+  GLFreeForm2.LoadFromFile('polyhedron.3ds');
+end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -94,18 +83,18 @@ end;
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  Drag := False;
+  Drag := false;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-  If drag then
-  Begin
-    GLCamera1.MoveAroundTarget(my-y,mx-x);
-  End;
-  mx := x;
-  my := y;
+  if Drag then
+  begin
+    GLCamera1.MoveAroundTarget(my-Y,mx-X);
+  end;
+  mx := X;
+  my := Y;
 end;
 
 procedure TForm1.FormMouseWheelDown(Sender: TObject; Shift: TShiftState;
@@ -120,19 +109,7 @@ begin
   GLCamera1.AdjustDistanceToTarget(1/1.1);
 end;
 
-// Demo starts here above is just navigation.
-           
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  SetGLSceneMediaDir();
-  // scaled 40
-  GLFreeForm1.LoadFromFile('polyhedron.3ds');
-
-  // scaled 20, position.x = 16
-  GLFreeForm2.LoadFromFile('polyhedron.3ds');
-end;
-
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.ButtonClearClick(Sender: TObject);
 begin
   GLFreeForm3.MeshObjects.Clear;
   GLFreeForm3.StructureChanged;
@@ -142,12 +119,12 @@ begin
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
-Var
+var
   Mesh : TMeshObject;
 begin
-  GLFreeForm3.MeshObjects.Clear;
+  ButtonClearClick(Sender);
 
-  If GLFreeForm3.MeshObjects.Count = 0 then
+  if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
@@ -160,12 +137,12 @@ begin
 end;
 
 procedure TForm1.Button3Click(Sender: TObject);
-Var
+var
   Mesh : TMeshObject;
 begin
-  GLFreeForm3.MeshObjects.Clear;
+  ButtonClearClick(Sender);
 
-  If GLFreeForm3.MeshObjects.Count = 0 then
+  if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
@@ -178,12 +155,12 @@ begin
 end;
 
 procedure TForm1.Button4Click(Sender: TObject);
-Var
+var
   Mesh : TMeshObject;
 begin
-  GLFreeForm3.MeshObjects.Clear;
+  ButtonClearClick(Sender);
 
-  If GLFreeForm3.MeshObjects.Count = 0 then
+  if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
@@ -196,12 +173,12 @@ begin
 end;
 
 procedure TForm1.Button5Click(Sender: TObject);
-Var
+var
   Mesh : TMeshObject;
 begin
-  GLFreeForm3.MeshObjects.Clear;
+  ButtonClearClick(Sender);
 
-  If GLFreeForm3.MeshObjects.Count = 0 then
+  if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
@@ -215,15 +192,16 @@ end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
-  If CheckBox1.Checked then
-  Begin
+  if CheckBox1.Checked then
+  begin
     GLMaterialLibrary1.Materials[0].Material.PolygonMode := pmFill;
     GLMaterialLibrary1.Materials[1].Material.PolygonMode := pmFill;
-  End else
-  Begin
+  end
+  else
+  begin
     GLMaterialLibrary1.Materials[0].Material.PolygonMode := pmLines;
     GLMaterialLibrary1.Materials[1].Material.PolygonMode := pmLines;
-  End;
+  end;
   GLFreeForm3.StructureChanged;
 end;
 

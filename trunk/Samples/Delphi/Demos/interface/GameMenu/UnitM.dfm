@@ -43,7 +43,7 @@ object Form1: TForm1
       Height = 13
       Caption = 'Press "W" or "S" to navigate or "Enter" to select '
     end
-    object ShoTitleCheckbox: TCheckBox
+    object ShowTitleCheckbox: TCheckBox
       Left = 8
       Top = 6
       Width = 81
@@ -52,7 +52,7 @@ object Form1: TForm1
       Checked = True
       State = cbChecked
       TabOrder = 0
-      OnClick = ShoTitleCheckboxClick
+      OnClick = ShowTitleCheckboxClick
       OnKeyPress = FormKeyPress
     end
   end

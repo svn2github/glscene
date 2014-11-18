@@ -4,9 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
-  AsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  Dialogs, Jpeg,
+  //GLS
+  GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
+  GLAsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLFileMD2, GLKeyboard;
 
 type
   TForm1 = class(TForm)
@@ -18,7 +21,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLActor1: TGLActor;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLTexturedCelShader: TGLCelShader;
     GLColoredCelShader: TGLCelShader;
     GLTorus1: TGLTorus;
@@ -44,14 +47,20 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLFileMD2, JPEG, GLKeyboard, GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
+
+  MediaPath : String;
+  I : Integer;
 begin
-  SetGLSceneMediaDir();
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos('Samples', MediaPath);
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    SetCurrentDir(MediaPath+'Media\');
+  end;
 
   GLActor1.LoadFromFile('waste.md2');
   r:=GLActor1.BoundingSphereRadius;
@@ -78,7 +87,7 @@ end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Form1.Caption:=Format('Cel Shading Demo - %.2f FPS',[GLSceneViewer1.FramesPerSecond]);
+  Form1.Caption:=Format('GLScene Cel Shading - %.2f FPS',[GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

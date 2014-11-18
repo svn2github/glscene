@@ -515,7 +515,7 @@ object MainFm: TMainFm
     Left = 152
     Top = 32
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     Interval = 700
     OnTimer = AsyncTimer1Timer

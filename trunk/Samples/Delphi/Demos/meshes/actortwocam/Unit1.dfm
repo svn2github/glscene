@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 77
   Top = 70
-  Width = 665
-  Height = 442
-  Caption = 'Form1'
+  Caption = 'Actor with Two Cameras'
+  ClientHeight = 398
+  ClientWidth = 657
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,18 +17,18 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 649
-    Height = 379
+    Width = 657
+    Height = 373
     Camera = GLCamera2
     Buffer.BackgroundColor = clGreen
-    FieldOfView = 124.358375549316400000
+    FieldOfView = 123.600204467773400000
     Align = alClient
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 649
+    Width = 657
     Height = 25
     Align = alTop
     BevelOuter = bvLowered
@@ -62,10 +62,10 @@ object Form1: TForm1
     object Label1: TLabel
       Left = 8
       Top = 6
-      Width = 331
+      Width = 324
       Height = 14
       Caption = 
-        'Move with arrow keys, strafe with CTRL, run with SHIFT, ESC to e' +
+        'Use arrow keys to move, CTRL to strafe , SHIFT to run , ESC to e' +
         'xit'
     end
     object CBMouseLook: TCheckBox
@@ -81,7 +81,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     ObjectsSorting = osNone
     Left = 40
-    Top = 32
+    Top = 56
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
@@ -169,25 +169,25 @@ object Form1: TForm1
     Scene = GLScene1
     SleepLength = 0
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 32
+    Left = 112
+    Top = 56
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 64
+    Left = 392
+    Top = 56
   end
   object GLNavigator1: TGLNavigator
     VirtualUp.Coordinates = {000000000000803F000000000000803F}
     MovingObject = DummyCube2
     UseVirtualUp = True
-    Left = 40
-    Top = 64
+    Left = 200
+    Top = 56
   end
   object GLUserInterface1: TGLUserInterface
     MouseSpeed = 20.000000000000000000
     GLNavigator = GLNavigator1
-    Left = 40
-    Top = 96
+    Left = 296
+    Top = 56
   end
 end

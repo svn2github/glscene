@@ -8,14 +8,14 @@
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <GLViewer.hpp>    // Pascal unit
-#include <VectorGeometry.hpp>   // Pascal unit
+#include <GLVectorGeometry.hpp>   // Pascal unit
 #include <GLBehaviours.hpp>     // Pascal unit
 #include <GLCadencer.hpp>       // Pascal unit
 #include <GLParticles.hpp>      // Pascal unit
 #include <GLObjects.hpp>        // Pascal unit
 #include <GLScene.hpp>
 #include <ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLViewer.hpp"

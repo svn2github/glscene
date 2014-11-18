@@ -20,7 +20,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLTexture, GLObjects, StdCtrls, ExtCtrls,
   GLLCLViewer, GLTexCombineShader, GLHUDObjects, GLMaterial,
-  GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -5,9 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls,
   Forms, Dialogs, ExtCtrls,
+  //GLS
   GLScene, GLHUDObjects, GLObjects, GLCadencer,
   GLBitmapFont, GLWin32Viewer, GLTeapot, GLCrossPlatform,
-  GLCoordinates,  BaseClasses, GLUtils;
+  GLCoordinates,  GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)

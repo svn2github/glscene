@@ -19,7 +19,6 @@ tools and libraries:
 
 - RAD Studio (http://edn.embarcadero.com/delphi/)
 - GLScene (http://glscene.net; http://sf.net/projects/glscene)
-- GraphicEx (http://www.delphi-gems.com)
 
 Enjoy.
 

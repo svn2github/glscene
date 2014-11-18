@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -18,6 +19,9 @@
 #pragma link "GLSkydome"
 #pragma link "GLUserShader"
 #pragma link "GLWin32Viewer"
+#pragma link "OpenGLTokens"
+#pragma link "OpenGLAdapter"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -55,7 +59,6 @@ void __fastcall TForm1::DOInitializeRender(TObject *Sender, TRenderContextInfo &
   if (DOInitialize->Tag != 0)
 	exit;
   DOInitialize->Tag = 1;
-
   GLSceneViewer1->Buffer->RenderingContext->Deactivate();
   GLMemoryViewer1->RenderCubeMapTextures(MatLib->LibMaterialByName("cubeMap")->Material->Texture);
   GLSceneViewer1->Buffer->RenderingContext->Activate();
@@ -87,7 +90,7 @@ void __fastcall TForm1::DOInitializeRender(TObject *Sender, TRenderContextInfo &
 void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender, TRenderContextInfo &rci)
 
 {
-  Vectorgeometry::TVector camPos;
+  Glvectorgeometry::TVector camPos;
 
   programObject->UseProgramObject();
   programObject->Uniform1f["Time"] = GLCadencer1->CurrentTime * 0.05;

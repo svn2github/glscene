@@ -1,13 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #include <math.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -94,6 +95,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	TrinityMatlib->Materials->Items[I]->Shader = MyBumpShader;
 
   ShowNotGLSceneObjectsCheckBoxClick(this);
+  MyBumpShader->Enabled = ShaderEnabledCheckBox->Checked;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::ShaderEnabledCheckBoxClick(TObject *Sender)
@@ -188,7 +190,7 @@ void __fastcall TForm1::ViewerMouseMove(TObject *Sender, TShiftState Shift, int 
           int Y)
 {
   if (Shift.Contains(ssRight) && Shift.Contains(ssLeft))
-	Camera->AdjustDistanceToTarget(Vectorgeometry::Power(1.01, Y - my));
+	Camera->AdjustDistanceToTarget(Glvectorgeometry::Power(1.01, Y - my));
   else
   if (Shift.Contains(ssRight) || Shift.Contains(ssLeft))
 	Camera->MoveAroundTarget(my - Y, mx - X);
@@ -208,7 +210,7 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled)
 {
-  Camera->AdjustDistanceToTarget(Vectorgeometry::Power(1.1, WheelDelta / 120));
+  Camera->AdjustDistanceToTarget(Glvectorgeometry::Power(1.1, WheelDelta / 120));
 }
 //---------------------------------------------------------------------------
 

@@ -6,16 +6,16 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLFullScreenViewer"
+#pragma link "GLWin32Viewer"
 #pragma link "GLCrossPlatform"
-#pragma link "VectorGeometry"
+#pragma link "GLVectorGeometry"
 #pragma link "GLBehaviours"
 #pragma link "GLViewer"
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLCadencer"
 #pragma link "GLParticleFX"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLFullScreenViewer"
 #pragma resource "*.dfm"
@@ -30,11 +30,10 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 void __fastcall TForm1::TimerTimer(TObject * Sender)
 {
 // Display FPS and particle count in the form's caption
-  Caption =
-    Format("%.1f FPS - %d Particles",
-           ARRAYOFCONST(((GLSceneViewer->FramesPerSecond()),
-                         (PFXRing->Particles->ItemCount() +
-                          PFXSpiral->Particles->ItemCount()))));
+  Caption = "Spiral - " +
+	Format("%d Particles - %.1f FPS",
+		   ARRAYOFCONST((PFXRing->Particles->ItemCount() +
+					  PFXSpiral->Particles->ItemCount(),GLSceneViewer->FramesPerSecond())));
   GLSceneViewer->ResetPerformanceMonitor();
 
   // Alternatively trigger a "sphere" or "ring" explosion
@@ -44,17 +43,17 @@ void __fastcall TForm1::TimerTimer(TObject * Sender)
   Timer->Tag = Timer->Tag + 1;
   if((Timer->Tag & 1) != 0)
   {
-    // "Sphere" explosion
-    e = GetOrCreateSourcePFX(DCBase,"");
-    e->VelocityDispersion = 1.5;
-    e->Burst(GLCadencer->CurrentTime, 200);
-    e->VelocityDispersion = 0;
+	// "Sphere" explosion
+	e = GetOrCreateSourcePFX(DCBase,"");
+	e->VelocityDispersion = 1.5;
+	e->Burst(GLCadencer->CurrentTime, 200);
+	e->VelocityDispersion = 0;
   }
   else
   {
-    // Ring explosion
-    GetOrCreateSourcePFX(DCBase,"")->RingExplosion(GLCadencer->CurrentTime, 1, 1.2,
-                                                150);
+	// Ring explosion
+	GetOrCreateSourcePFX(DCBase,"")->RingExplosion(GLCadencer->CurrentTime, 1, 1.2,
+												150);
   }
 }
 

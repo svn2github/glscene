@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "AsyncTimer"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBehaviours"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"

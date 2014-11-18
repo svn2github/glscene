@@ -17,7 +17,7 @@ interface
 uses
   Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
   AsyncTimer, Classes, Controls, GLCadencer, GLLCLViewer, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

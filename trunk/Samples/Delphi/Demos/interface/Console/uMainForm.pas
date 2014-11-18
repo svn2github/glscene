@@ -10,7 +10,7 @@ uses
   Forms, Dialogs, StdCtrls,  ExtCtrls,
 
   //GLScene
-  GLScene, GLObjects,  GLCadencer, GLWin32Viewer, BaseClasses,
+  GLScene, GLObjects,  GLCadencer, GLWin32Viewer, GLBaseClasses,
   GLCrossPlatform, GLTexture, GLBitmapFont, GLWindowsFont,
   GLBehaviours, GLConsole, GLCoordinates, GLSimpleNavigation,
   GLUtils;
@@ -68,7 +68,6 @@ var
   Console: TGLConsole;
 
 implementation
-
 
 {$R *.DFM}
 

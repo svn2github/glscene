@@ -33,8 +33,6 @@ object Form1: TForm1
     Height = 27
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 471
-    ExplicitWidth = 639
     object cbActorsAreTurning: TCheckBox
       Left = 13
       Top = 5

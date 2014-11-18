@@ -1,28 +1,15 @@
-{: This is more than a sample which demonstrates the use of the Gui system,
-   its an editor for combining several GUI-Component into one layout, using
-   the same texture for them all.<p>
-
-   The default layout image, is a modification based on Jan Horn's image in his
-   windows (opengl) release...  <p>
-
-   Be aware that for HUD purposes mip mapping should allways be disabled as the
-   result might become blurred by the mipmap... Reason unknown.<br>
-
-	<b>History : </b><font size=-1><ul>
-      <li>17/01/07 - DaStr - Fixed calls to GUIComponentDialog function (thanks Andreas)
-      <li>19/09/02 - JAJ - Submitted to GLScene. Open/Save/Import + Edit/Preview.
-	</ul></font>
-}
 unit MainFormUnit;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, GLGui, StdCtrls, GLScene, GLWin32Viewer,
-  GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont, ExtDlgs,
-  GLTexture, GuiSkinEditorFormUnit, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  Dialogs, Menus, StdCtrls, ExtDlgs,
+  //GLS
+  GLGui, GLScene, GLWin32Viewer,
+  GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont,
+  GLTexture, GLSkinEditor, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -89,13 +76,20 @@ implementation
 
 {$R *.dfm}
 
-uses GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  MediaPath : String;
+  I : Integer;
 begin
-   SetGLSceneMediaDir();
-   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
-      LoadFromFile('DefaultSkin.bmp');
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos(UpperCase('Samples'), UpperCase(MediaPath));
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    SetCurrentDir(MediaPath+'Media\');
+  end;
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.
+     LoadFromFile('DefaultSkin.bmp');
 end;
 
 procedure TForm1.Open1Click(Sender: TObject);

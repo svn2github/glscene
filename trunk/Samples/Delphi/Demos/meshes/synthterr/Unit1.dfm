@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 159
   Top = 120
-  Width = 611
-  Height = 429
-  Caption = 'Form1'
+  Caption = 'Synthetic Terrain'
+  ClientHeight = 357
+  ClientWidth = 495
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 595
-    Height = 391
+    Width = 495
+    Height = 357
     Camera = GLCamera1
     VSync = vsmSync
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -29,7 +29,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clBlack
     Buffer.FogEnable = True
     Buffer.Lighting = False
-    FieldOfView = 151.307739257812500000
+    FieldOfView = 148.703598022460900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -37,8 +37,8 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 56
+    Left = 40
+    Top = 24
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
       CubeSize = 1.000000000000000000
@@ -65,23 +65,23 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 96
+    Left = 256
+    Top = 24
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 16
+    Left = 152
+    Top = 24
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 16
-    Top = 56
+    Left = 40
+    Top = 88
   end
   object GLCustomHDS: TGLCustomHDS
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDSStartPreparingData
-    Left = 56
-    Top = 16
+    Left = 152
+    Top = 88
   end
 end

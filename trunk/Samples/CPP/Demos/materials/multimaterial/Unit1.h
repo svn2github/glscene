@@ -13,14 +13,14 @@
 #include "GLObjects.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLTexture.hpp"
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLCadencer.hpp"
 #include "GLMultiMaterialShader.hpp"
 #include "GLTexCombineShader.hpp"
 #include "GLMaterial.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLUtils.hpp"
 
 //---------------------------------------------------------------------------

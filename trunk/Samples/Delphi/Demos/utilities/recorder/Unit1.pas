@@ -1,22 +1,13 @@
-{: This sample demonstrates use of the TAVIRecorder to create an AVI file.<p>
-
-   The animation is taken from the "Hierarchy" sample, all the recording takes
-   place in Button1Click.<p>
-
-   Be aware that if you use default compression, you will likely get a lossless,
-   low compression codec (which may be good if you want the highest quality),
-   but you can specify a codec, for instance DiVX (www.divx.com) if you
-   installed it, for high compression video.<br>
-   The codec can be choosed with the Compressor property of TAVIRecorder.
-}
 unit Unit1;
 
 interface
 
 uses
-  Classes, Windows, Forms, Graphics, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
-  AsyncTimer, Controls, GLCadencer, GLAVIRecorder, GLWin32Viewer,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  Classes, Windows, Forms, Graphics, Controls,
+  ComCtrls, ExtCtrls, StdCtrls,
+  //GLS
+  GLScene, GLObjects, GLAsyncTimer,  GLCadencer, GLAVIRecorder, GLWin32Viewer,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -33,7 +24,7 @@ type
     DummyCube2: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     Button1: TButton;
-    AVIRecorder1: TAVIRecorder;
+    AVIRecorder1: TGLAVIRecorder;
     procedure TrackBarChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -41,10 +32,10 @@ type
     procedure AVIRecorder1PostProcessEvent(Sender: TObject;
       frame: TBitmap);
   private
-    { Déclarations privées }
+    { Private declarations }
      UserAbort : boolean;
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var

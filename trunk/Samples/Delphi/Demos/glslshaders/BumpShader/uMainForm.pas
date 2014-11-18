@@ -11,9 +11,9 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
-  GLVectorFileObjects, GLGraph, GLGeomObjects, VectorGeometry, GLSLBumpShader,
+  GLVectorFileObjects, GLGraph, GLGeomObjects, GLVectorGeometry, GLSLBumpShader,
   GLCustomShader, GLSLShader, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses,
+  GLBaseClasses,
 
   // FileFormats
   TGA, GLFileMS3D, GLFile3DS, JPEG, DDSImage, GLFileMD2, GLFileSMD;

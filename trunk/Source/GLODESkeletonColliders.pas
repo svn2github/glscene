@@ -22,7 +22,7 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects, ODEImport;
+  Classes, GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects, ODEImport;
 
 type
   

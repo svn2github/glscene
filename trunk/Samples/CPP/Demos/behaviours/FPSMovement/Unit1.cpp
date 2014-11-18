@@ -15,7 +15,7 @@
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLFPSMovement"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"

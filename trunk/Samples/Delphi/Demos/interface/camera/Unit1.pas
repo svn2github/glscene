@@ -3,9 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, Classes, Controls, GLTeapot,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, StdCtrls,
-  ExtCtrls, VectorGeometry, GLCadencer, GLKeyboard;
+  Windows, Forms, GLScene, GLObjects, Classes, Controls, StdCtrls, ExtCtrls, Math,
+  //GLS
+  GLTeapot, GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses,
+  GLVectorGeometry, GLCadencer, GLKeyboard, GLContext;
 
 type
   TForm1 = class(TForm)
@@ -45,8 +46,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses Math, GLContext;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

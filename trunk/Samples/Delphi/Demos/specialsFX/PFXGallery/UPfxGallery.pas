@@ -4,14 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls,
+  ExtCtrls, StdCtrls, JPeg,
 
   //GLScene
-  VectorGeometry, GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
-  GLVectorFileObjects, VectorTypes, GLObjects, GLBitmapFont,
-  GLUtils,GLCadencer,  GLTexture, JPeg, GLNavigator,
+  GLVectorGeometry, GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
+  GLVectorFileObjects, GLVectorTypes, GLObjects, GLBitmapFont,
+  GLUtils,GLCadencer,  GLTexture, GLNavigator,
    GLGeomObjects, GLKeyboard, GLSpaceText, GLBehaviours,GLPerlinPFX, GLBlur,
-   GLCrossPlatform, GLCoordinates, BaseClasses;
+   GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 const
      cRunBoost = 10;

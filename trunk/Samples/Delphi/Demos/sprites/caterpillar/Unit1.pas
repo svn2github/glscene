@@ -1,32 +1,14 @@
-{: Sample showing use of TGLSprite for "caterpillar" effect.<p>
-
-	A bunch of TGLSprite is created in FormCreate, all copied from Sprite2 (used
-	as "template"), then we move and resize them as they orbit a pulsating "star".<br>
-	Textures are loaded from a "flare1.bmp" file that is expected to be in the
-	same directory as the compiled EXE.<p>
-
-	There is nothing really fancy in this code, but in the objects props :<ul>
-		<li>blending is set to bmAdditive (for the color saturation effect)
-      <li>DepthTest is disabled
-		<li>ball color is determined with the Emission color
-	</ul><br>
-	The number of sprites is low to avoid stalling a software renderer
-	(texture alpha-blending is a costly effect), if you're using a 3D hardware,
-	you'll get FPS in the hundredths and may want to make the sprite count higher.<p>
-
-	A material library component is used to store the material (and texture) for
-	all the sprites, if we don't use it, sprites will all maintain their own copy
-	of the texture, which would just be a waste of resources. With the library,
-	only one texture exists (well, two, the sun has its own).
-}
 unit Unit1;
 
 interface
 
 uses
-  Forms, GLScene, GLObjects, StdCtrls, GLTexture, Classes, Controls,
-  ExtCtrls, GLCadencer, GLWin32Viewer, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses;
+  Forms, SysUtils, Classes, Controls, ExtCtrls, StdCtrls,
+  //GLS
+  GLScene, GLObjects, GLTexture, GLVectorGeometry,
+  GLCadencer, GLWin32Viewer, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLSimpleNavigation, GLProcTextures,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -37,17 +19,16 @@ type
     Sprite1: TGLSprite;
     Sprite2: TGLSprite;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    Timer1: TTimer;
     GLCadencer1: TGLCadencer;
+    GLSimpleNavigation1: TGLSimpleNavigation;
 	 procedure FormCreate(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-	 { Déclarations privées }
+	 { Private declarations }
   public
-	 { Déclarations publiques }
+	 { Public declatrations }
   end;
 
 var
@@ -57,24 +38,25 @@ implementation
 
 {$R *.DFM}
 
-uses SysUtils, VectorGeometry, GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 var
-	i : Integer;
-	spr : TGLSprite;
+	Spr : TGLSprite;
+  I : Integer;
+  MediaPath : String;
 begin
-  SetGLSceneMediaDir();
-	// Load texture for sprite2, this is the hand-coded way using a PersistentImage
+  SetGLSceneMediaDir;
+ 	// Load texture for sprite2, this is the hand-coded way using a PersistentImage
 	// Sprite1 uses a PicFileImage, and so the image is automagically loaded by
 	// GLScene when necessary (no code is required).
 	// (Had I used two PicFileImage, I would have avoided this code)
-	GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('flare1.bmp');
-  Sprite1.Material.Texture.Image.Assign(GLMaterialLibrary1.Materials[0].Material.Texture.Image);
+  GLMaterialLibrary1.TexturePaths := GetCurrentDir;
+  MediaPath := GLMaterialLibrary1.TexturePaths + '\';
+  Sprite1.Material.Texture.Image.LoadFromFile(MediaPath + 'Flare1.bmp');
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('Flare1.bmp');
 	// New sprites are created by duplicating the template "sprite2"
 	for i:=1 to 9 do begin
 		spr:=TGLSprite(DummyCube1.AddNewChild(TGLSprite));
-		spr.Assign(sprite2);
+		spr.Assign(Sprite2);
 	end;
 end;
 
@@ -97,20 +79,13 @@ begin
 			Position.X:=4*cos(a);
 			Position.Z:=4*sin(a);
          // ondulation
-         Position.Y:=2*cos(2.1*a);
+      Position.Y:=2*cos(2.1*a);
 			// sprite size change
 			SetSquareSize(2+cos(3*a));
 		end;
 	end;
 end;
 
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-	// update FPS count and reset counter
-	Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
-	GLSceneViewer1.ResetPerformanceMonitor;
-end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin

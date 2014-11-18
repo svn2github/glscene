@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 228
   Top = 89
   Caption = 'Shadow Plane'
-  ClientHeight = 318
-  ClientWidth = 463
+  ClientHeight = 473
+  ClientWidth = 612
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,12 +17,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 463
-    Height = 318
+    Width = 612
+    Height = 473
     Camera = GLCamera1
     Buffer.BackgroundColor = 8421440
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 145.086883544921900000
+    FieldOfView = 156.125030517578100000
     Align = alClient
     TabOrder = 0
   end

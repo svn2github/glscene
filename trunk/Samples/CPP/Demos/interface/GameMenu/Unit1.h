@@ -28,7 +28,7 @@
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
 #include "GLCoordinates.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLUtils.hpp"
 
 //---------------------------------------------------------------------------

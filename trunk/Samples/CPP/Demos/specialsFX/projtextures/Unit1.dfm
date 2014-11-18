@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 198
   Top = 138
-  Caption = 'Form1'
+  Caption = 'GLScene Projected Textures'
   ClientHeight = 444
   ClientWidth = 684
   Color = clBtnFace
@@ -24,7 +24,7 @@ object Form1: TForm1
     Margins.Top = 2
     Margins.Right = 2
     Margins.Bottom = 2
-    Camera = camera
+    Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.DepthPrecision = dp32bits
@@ -123,7 +123,7 @@ object Form1: TForm1
         end
       end
     end
-    object camera: TGLCamera
+    object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
       TargetObject = scenery

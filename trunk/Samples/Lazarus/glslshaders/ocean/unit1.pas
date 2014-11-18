@@ -7,9 +7,9 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLViewer, GLScene, GLTexture, GLObjects,
-  ComCtrls, GLContext, VectorGeometry, GLGeomObjects,
+  ComCtrls, GLContext, GLVectorGeometry, GLGeomObjects,
   GLCadencer, ExtCtrls, GLUserShader, GLGraph, GLSkydome,
-  VectorLists, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLVectorLists, GLCrossPlatform, GLMaterial, GLCoordinates,
   GLRenderContextInfo, GLColor, OpenGLTokens;
 
 type

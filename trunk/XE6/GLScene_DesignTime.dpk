@@ -39,8 +39,7 @@ requires
   GLScene_RunTime,
   vclimg,
   vcl,
-  VclSmp,
-  fmx;
+  VclSmp;
 
 contains
   FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
@@ -49,8 +48,7 @@ contains
   RegisterXCollection in '..\Source\RegisterXCollection.pas',
   FShaderMemo in '..\Source\FShaderMemo.pas',
   GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
-  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {layouts_form},
-  GLScene.FMX.Viewer in '..\Source\GLScene.FMX.Viewer.pas';
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {layouts_form};
 
 end.
 

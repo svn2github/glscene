@@ -1,4 +1,5 @@
 echo off
+del *.dproj /s
 del *.exe /s  
 del *.dcu /s 
 del *.ddp /s

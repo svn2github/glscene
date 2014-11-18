@@ -28,14 +28,14 @@
 #include "GLHUDObjects.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLCoordinates.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLRenderContextInfo.hpp"
 #include "GLKeyBoard.hpp"
 #include "GLState.hpp"
 
 #include "OpenGL1x.hpp"
 
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLContext.hpp"
 #include "GLEllipseCollision.hpp"
 #include "GLUtils.hpp"

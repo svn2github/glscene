@@ -9,7 +9,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLMaterial"

@@ -31,8 +31,8 @@ uses
 {$ENDIF}
 
   // GLScene
-  VectorTypes, VectorGeometry, GLCrossPlatform,
-  PersistentClasses, BaseClasses;
+  GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
+  GLPersistentClasses, GLBaseClasses;
 
 type
   PColorVector = ^TColorVector;

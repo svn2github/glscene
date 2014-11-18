@@ -60,11 +60,11 @@ object Form1: TForm1
       Material.MaterialLibrary = MatLib
       Material.LibMaterialName = 'water'
       XSamplingScale.Min = -100.000000000000000000
-      XSamplingScale.max = 100.000000000000000000
-      XSamplingScale.step = 2.000000000000000000
+      XSamplingScale.Max = 100.000000000000000000
+      XSamplingScale.Step = 2.000000000000000000
       YSamplingScale.Min = -100.000000000000000000
-      YSamplingScale.max = 100.000000000000000000
-      YSamplingScale.step = 2.000000000000000000
+      YSamplingScale.Max = 100.000000000000000000
+      YSamplingScale.Step = 2.000000000000000000
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLSphere2: TGLSphere

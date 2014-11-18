@@ -17,7 +17,7 @@
 #include "GLScene.hpp"
 #include "GLTexture.hpp"
 #include "GLWin32Viewer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLMaterial.hpp"
 #include "GLCrossPlatform.hpp"
@@ -30,12 +30,12 @@
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
-        TGLSceneViewer *GLSceneViewer1;
-        TPanel *Panel1;
-        TLabel *LabelYaw;
-        TLabel *LabelPitch;
-        TLabel *Label1;
-        TLabel *Label2;
+		TGLSceneViewer *GLSceneViewer1;
+		TPanel *Panel1;
+		TLabel *LabelYaw;
+		TLabel *LabelPitch;
+		TLabel *Label1;
+		TLabel *Label2;
         TButton *BtnLoad;
         TTrackBar *TrackBar1;
         TGLScene *GLScene1;

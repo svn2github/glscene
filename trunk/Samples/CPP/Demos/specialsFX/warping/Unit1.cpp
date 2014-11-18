@@ -7,13 +7,15 @@
 #include "math.h"
 #include "GLGraphics.hpp"
 #include "GLTexture.hpp"
+#include "jpeg.hpp"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLGraph"
-#pragma link "GLMisc"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
-#pragma link "jpeg"
+#pragma link "GLCoordinates"
+#pragma link "GLCrossPlatform"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -41,13 +43,13 @@ void __fastcall TForm1::HeightFieldGetHeight(const float x, const float y,
          break;
       }
       case 1 : { // the "spin" effect
-         vec.Coord[0] = x-warpX;
-         vec.Coord[1] = 0.0;
-         vec.Coord[2] = y-warpY;
-         d = VectorNorm(vec);
-         RotateVectorAroundY(vec, (warpRadius*warpRadius)/(d+1.0));
-         dx = warpX+vec.Coord[0];
-         dy = warpY+vec.Coord[2];
+		 vec.V[0] = x-warpX;
+		 vec.V[1] = 0.0;
+		 vec.V[2] = y-warpY;
+		 d = VectorNorm(vec);
+		 RotateVectorAroundY(vec, (warpRadius*warpRadius)/(d+1.0));
+		 dx = warpX+vec.V[0];
+		 dy = warpY+vec.V[2];
          break;
       }
       default :

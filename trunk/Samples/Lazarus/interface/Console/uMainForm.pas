@@ -20,7 +20,7 @@ uses
   //GLScene
   GLTexture, GLBitmapFont, GLWindowsFont, GLScene, GLObjects,
   GLCadencer, GLLCLViewer, GLBehaviours, GLConsole, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
   TMainForm = class(TForm)

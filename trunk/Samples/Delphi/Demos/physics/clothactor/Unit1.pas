@@ -3,15 +3,16 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, 
-  StdCtrls, ExtCtrls,
-  
-  GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer, 
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, Jpeg, OpenGL,
+
+  //GLS
+  GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
   GLShadowVolume,
-  
-  GLKeyboard, OpenGLTokens, VectorGeometry, GeometryBB, JPEG, VerletClasses,
-  SpatialPartitioning, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+
+  GLKeyboard, OpenGLTokens, GLVectorGeometry, GLGeometryBB, GLVerletTypes,
+  GLSpacePartition, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLState, GLContext, GLUtils;
 
 type
@@ -218,33 +219,33 @@ end;
 procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextInfo);
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
-    GL.Color3f(r,g,b);
-    rci.GLStates.LineWidth := w;
+    glColor3f(r,g,b);
+    glLineWidth(w);
 
-    GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
+    glBegin(GL_LINE_STRIP);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
 
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
-    GL.End_;
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+      glVertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+    glEnd;
 
-    GL.Begin_(GL_LINES);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
+    glBegin(GL_LINES);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
 
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
 
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
-    GL.End_;
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      glVertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+    glEnd;
   end;
 
   procedure RenderOctreeNode(Node : TSectorNode);
@@ -267,15 +268,17 @@ procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextI
         RenderOctreeNode(Node.Children[i]);
     end;
   end;
+
 begin
   if CheckBox_ShowOctree.Checked then
   begin
     if VerletWorld.SpacePartition is TOctreeSpacePartition then
     begin
-      rci.GLStates.PushAttrib([sttEnable, sttCurrent, sttLine, sttColorBuffer]);
-      rci.GLStates.Disable(stLighting);
+      glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
+      glDisable(GL_LIGHTING);
+
       RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition).RootNode);
-      rci.GLStates.PopAttrib;
+      glPopAttrib;
     end;
   end;
 end;

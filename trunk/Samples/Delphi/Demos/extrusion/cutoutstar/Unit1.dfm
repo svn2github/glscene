@@ -24,7 +24,6 @@ object Form1: TForm1
     FieldOfView = 141.372207641601600000
     Align = alClient
     TabOrder = 0
-    ExplicitTop = 8
   end
   object PanelFPS: TPanel
     Left = 248

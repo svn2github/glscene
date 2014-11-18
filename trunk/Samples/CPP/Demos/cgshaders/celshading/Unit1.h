@@ -7,8 +7,8 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "AsyncTimer.hpp"
-#include "BaseClasses.hpp"
+#include "GLAsyncTimer.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCgShader.hpp"
 #include "GLCoordinates.hpp"
@@ -36,7 +36,7 @@ __published:	// IDE-managed Components
 	TCgShader *CgCellShader;
 	TGLMaterialLibrary *GLMaterialLibrary1;
 	TGLCadencer *GLCadencer1;
-	TAsyncTimer *AsyncTimer1;
+	TGLAsyncTimer *AsyncTimer1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall CgCellShaderApplyVP(TCgProgram *CgProgram, TObject *Sender);
 	void __fastcall CgCellShaderInitialize(TCustomCgShader *CgShader);

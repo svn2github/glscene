@@ -1,69 +1,42 @@
-{: This bench stresses particle systems management in GLScene.<p>
-
-	This proggy basicly creates and moves the highest quantity its framerate
-	allows (one particle is created after each render, particles live for 3 sec).
-	Particles are made of a dummycube (used as axis, hosting an inertia) and a
-	child Sprite (untextured, unblended). Depth test is disabled.<p>
-
-	CPU	     OS	     Renderer	      Colors     Particles	 FPS		Rating
-
-   K7-1Ghz  Win98    GF2 Pro-23.11     32 bits      423    140.0      59200
-   ------ 24/01/02 : Structural improvements (memory use and access)
-   K7-1Ghz  Win98    GF2 Pro-23.11     32 bits      404    134.2      54200
-	------ 20/01/02 : Long time no bench
-   K7-1Ghz  Win98    GF2 Pro-12.41     32 bits      360    120.5      43200
-	------ 04/09/01 : Long time no bench
-	K7-500   Win98    GeForce-5.33      32 bits      255    120.2      30600
-	------ 13/01/00 : Another Matrix setup change
-	K6-400 	NT4	   V3-2000           16 bits		 151	  125.6      18965
-	------ 22/12/00 : Matrix setup change (gluProject compatibility)
-	K7-500   Win98    GeForce-5.22      32 bits      330    172.2      56826
-	K6-400 	NT4	   V3-2000           16 bits		 207	  117.6      24343
-	K6-400 	NT4	   Software OpenGL   24 bits		 220	  101.9      22418
-	------ 28/06/00 : BuildList optimization (osDirectDraw)
-	K6-400   Win98    V3-2000           16 bits		 161     71.2	    11463
-	------ 20/06/00 : Geometry.pas optimizations
-	K7-500   Win98    V3-2000           16 bits      183     68.8      12590
-	K6-400   Win98    V3-3000           16 bits		 154     59.1	     9101
-	K6-400 	NT4	   Software OpenGL   24 bits		 152		51.6       7843
-	------ 18/04/00 : DummyCube and GLParticles Render optimization (glCallList)
-	K7-500   Win98    V3-2000           16 bits      175     65.8      11515
-	------ 18/04/00 : various profiling optimizations
-	K6-400 	NT4	   Software OpenGL   24 bits		  98		32.5       3185
-	K6-400 	NT4	   V3-3000   		   16 bits		 148		53.9       7977
-	K7-500   Win98    V3-2000           16 bits      150     55.0       8250
-   ------ 17/04/00 : base stats
-}
 unit Unit1;
 
 interface
 
 uses
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, GLScene, GLTexture,
-  GLCadencer, GLObjects, GLParticles, ExtCtrls, GLBehaviours, VectorGeometry,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
+
+  //GLS
+  GLCrossPlatform, GLBaseClasses, GLScene,  GLVectorGeometry,
+  GLWin32Viewer, GLParticles, GLCadencer, GLObjects, GLCoordinates, GLBehaviours;
 
 type
   TForm1 = class(TForm)
-	 GLSceneViewer1: TGLSceneViewer;
-	 GLScene1: TGLScene;
-	 GLCadencer1: TGLCadencer;
-	 GLCamera1: TGLCamera;
-	 GLParticles1: TGLParticles;
-    Sprite1: TGLSprite;
+    GLSceneViewer1: TGLSceneViewer;
+    Panel1: TPanel;
     Timer1: TTimer;
+    GLCadencer1: TGLCadencer;
+    GLScene1: TGLScene;
+    GLParticles1: TGLParticles;
     DummyCube1: TGLDummyCube;
+    Sprite1: TGLSprite;
+    GLCamera1: TGLCamera;
+    procedure Timer1Timer(Sender: TObject);
+    procedure GLDummyCube1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
     procedure GLParticles1ActivateParticle(Sender: TObject;
       particle: TGLBaseSceneObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure DummyCube1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
-    { Déclarations privées }
+    { Private declarations }
+    mx, my : Integer;
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -71,7 +44,7 @@ var
 
 implementation
 
-{$R *.DFM}
+{$R *.dfm}
 
 procedure TForm1.GLParticles1ActivateParticle(Sender: TObject;
   particle: TGLBaseSceneObject);
@@ -88,7 +61,22 @@ begin
 	end;
 end;
 
-procedure TForm1.DummyCube1Progress(Sender: TObject; const deltaTime,
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+   mx:=x; my:=y;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+   if Shift<>[] then begin
+      GLCamera1.MoveAroundTarget(my-y, mx-x);
+      mx:=x; my:=y;
+   end;
+end;
+
+procedure TForm1.GLDummyCube1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
 	with TGLCustomSceneObject(Sender) do begin
@@ -99,7 +87,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-	Caption:=Format('%d particles, %.1f FPS',
+	Panel1.Caption:=Format('%d particles, %.1f FPS',
 						 [GLParticles1.Count, GLSceneViewer1.FramesPerSecond]);
 	GLSceneViewer1.ResetPerformanceMonitor;
 end;

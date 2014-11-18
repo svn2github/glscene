@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 73
   Top = 86
-  Width = 703
-  Height = 485
-  Caption = 'Form1'
+  Caption = 'Shadow Volumes'
+  ClientHeight = 441
+  ClientWidth = 695
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,22 +18,21 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 552
-    Height = 447
+    Width = 560
+    Height = 441
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 154.779571533203100000
+    FieldOfView = 154.447631835937500000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
-    OnMouseMove = GLSceneViewerMouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 552
+    Left = 560
     Top = 0
     Width = 135
-    Height = 447
+    Height = 441
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -46,7 +45,7 @@ object Form1: TForm1
     TabOrder = 1
     DesignSize = (
       135
-      447)
+      441)
     object Label1: TLabel
       Left = 8
       Top = 8
@@ -62,7 +61,7 @@ object Form1: TForm1
     end
     object Label2: TLabel
       Left = 16
-      Top = 416
+      Top = 368
       Width = 94
       Height = 14
       Anchors = [akLeft, akBottom]
@@ -146,7 +145,7 @@ object Form1: TForm1
     end
     object ScrollBar_ShadowResolution: TScrollBar
       Left = 16
-      Top = 432
+      Top = 388
       Width = 89
       Height = 17
       Anchors = [akLeft, akBottom]
@@ -168,7 +167,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 32
     Top = 16
     object DCLight1Turn: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -315,7 +314,7 @@ object Form1: TForm1
         Up.Coordinates = {0000803F000000000000000000000000}
         BottomRadius = 0.600000023841857900
         Height = 6.000000000000000000
-        TopRadius = 0.800000011920929000
+        TopRadius = 0.800000011920928900
       end
       object GLSphere4: TGLSphere
         Position.Coordinates = {00000000000000000000C0C00000803F}
@@ -340,16 +339,31 @@ object Form1: TForm1
     Scene = GLScene1
     Mode = cmApplicationIdle
     OnProgress = GLCadencer1Progress
-    Left = 56
-    Top = 16
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 96
+    Left = 112
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 16
-    Top = 56
+    Left = 32
+    Top = 80
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer
+    FormCaption = 'Shadow Volumes - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 208
+    Top = 16
   end
 end

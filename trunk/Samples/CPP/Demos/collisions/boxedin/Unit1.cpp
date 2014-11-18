@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #include <stdlib.h>
 #include <GLKeyboard.hpp>
 #pragma hdrstop
@@ -17,12 +19,11 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLScene"
 #pragma link "GLFile3DS"
-#pragma link "VectorGeometry"
+#pragma link "GLVectorGeometry"
 #pragma link "GLKeyboard"
-#pragma link "BaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma resource "*.dfm"
 TForm1 *Form1;
@@ -56,10 +57,10 @@ void __fastcall TForm1::GLCadencer1Progress(TObject * Sender,
 											const double deltaTime,
 											const double newTime)
 {
-  Vectorgeometry::TVector rayStart, rayVector;
+  Glvectorgeometry::TVector rayStart, rayVector;
   float velocity;
-  Vectorgeometry::TVector pPoint;
-  Vectorgeometry::TVector pNormal;
+  Glvectorgeometry::TVector pPoint;
+  Glvectorgeometry::TVector pNormal;
   __int64 t;
 
   if(IsKeyDown(VK_ESCAPE))
@@ -108,7 +109,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject * Sender,
 
 //---------------------------------------------------------------------------
 
-void TForm1::AddToTrail(const Vectorgeometry::TVector & p)
+void TForm1::AddToTrail(const Glvectorgeometry::TVector & p)
 {
   int i, k;
   Lines1->Nodes->Last()->AsVector = p;

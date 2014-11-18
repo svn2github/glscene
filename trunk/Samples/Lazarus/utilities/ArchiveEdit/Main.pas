@@ -13,7 +13,7 @@ uses
   {$IFDEF MSWINDOWS}Windows,{$ENDIF}LCLType, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StrUtils, Menus, ImgList, ExtCtrls, ComCtrls,
   GLSArchiveManager, GLFilePAK, GLFileZLIB, GLLCLViewer, GLCrossPlatform,
-  BaseClasses, GLScene, GLSimpleNavigation, GLMaterial, GLVectorFileObjects,
+  GLBaseClasses, GLScene, GLSimpleNavigation, GLMaterial, GLVectorFileObjects,
   GLObjects, GLCoordinates,GLGraphics, GLState, GLCompositeImage,
   //FileFormats 3D
   GLFileMS3D, GLFile3DS, GLFileMD2, GLFileMD3, GLFileLMTS, GLFileOBJ, GLFileSMD,

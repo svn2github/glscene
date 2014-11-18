@@ -23,7 +23,7 @@ interface
 
 uses
   SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
-  GLLCLViewer, OpenGLTokens, GLContext, GLTexture, VectorGeometry, GLGraph,
+  GLLCLViewer, OpenGLTokens, GLContext, GLTexture, GLVectorGeometry, GLGraph,
   GLGeomObjects, GLCrossPlatform, GLCoordinates,
   GLRenderContextInfo, GLState;
 

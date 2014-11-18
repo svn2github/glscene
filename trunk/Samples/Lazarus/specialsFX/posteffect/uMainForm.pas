@@ -18,9 +18,9 @@ uses
   Dialogs, StdCtrls, ExtCtrls, ComCtrls,
 
   // GLScene
-  GLScene, GLVectorFileObjects, GLObjects, GLTexture, VectorLists, GLCadencer,
+  GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLLCLViewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
-  MeshUtils, VectorGeometry, GLMaterial, GLCoordinates, BaseClasses,
+  MeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo;
 
 type

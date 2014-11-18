@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 412
   Top = 123
-  Width = 719
-  Height = 586
   BorderStyle = bsSizeToolWin
   Caption = 'Form1'
+  ClientHeight = 547
+  ClientWidth = 703
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,11 +23,11 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 703
-    Height = 548
+    Height = 547
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 147.447479248046900000
+    FieldOfView = 147.391128540039100000
     Align = alClient
     OnDblClick = GLSceneViewerDblClick
     OnMouseDown = GLSceneViewerMouseDown
@@ -126,7 +126,7 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
       object GLLensFlare1: TGLLensFlare
         Seed = 1465
-        FlareIsNotOccluded = True
+        FlareIsNotOccluded = False
       end
     end
   end
@@ -146,6 +146,7 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'earthDay'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D616765B29F0100FFD8FFE000104A46494600010101004800
@@ -3479,12 +3480,12 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         Texture2Name = 'earthNight'
         Shader = EarthCombiner
       end
       item
         Name = 'earthNight'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.BlendingMode = bmAdditive
         Material.Texture.Image.Picture.Data = {
@@ -5241,10 +5242,10 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
       end
       item
         Name = 'moon'
+        Tag = 0
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D616765CDD00000FFD8FFE000104A46494600010101004800
@@ -6922,7 +6923,6 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 56
     Top = 56

@@ -4,18 +4,20 @@
 #pragma hdrstop
 
 #include "Unit1.h"
-#include "GLKeyboard.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLWin32Viewer"
 #pragma link "GLAVIRecorder"
 #pragma link "GLCadencer"
-#pragma link "AsyncTimer"
-#pragma link "GLMisc"
+#pragma link "GLAsyncTimer"
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLAVIRecorder"
 #pragma link "GLKeyboard"
+#pragma link "GLBaseClasses"
+#pragma link "GLCoordinates"
+#pragma link "GLCrossPlatform"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
 bool UserAbort;

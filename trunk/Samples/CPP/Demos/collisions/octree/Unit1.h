@@ -14,7 +14,7 @@
 #include <GLVectorFileObjects.hpp>      // Pascal unit
 #include <GLScene.hpp>          // Pascal unit
 #include <ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"         // Pascal unit
 #include "GLUtils.hpp"         // Pascal unit

@@ -42,7 +42,7 @@ implementation
 
 uses
   Jpeg,
-  VectorLists;
+  GLVectorLists;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var

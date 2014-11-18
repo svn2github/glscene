@@ -44,7 +44,7 @@
                             changed PChar to Pointer where possible
       <li>12/10/08 - DanB - added nearClippingDistance to RCI
       <li>09/10/08 - DanB - removed TGLScene.RenderedObject, moved TGLProgressEvent
-                            to BaseClasses
+                            to GLBaseClasses
       <li>20/04/08 - DaStr - Added a AABB cauching mechanism to TGLBaseSceneObject
                              TGLDirectOpenGL's dimentions are now all all zeros
                              (all above changes were made by Pascal)
@@ -215,7 +215,7 @@
                            leaks related in TGLSceneViewer), dropped the TCanvas,
                            Added PixelRayToWorld (by Rene Lindsay)
       <li>06/07/01 - Egg - Fixed Turn/Roll/Pitch Angle Normalization issue
-      <li>04/07/01 - Egg - Minor VectorTypes related changes
+      <li>04/07/01 - Egg - Minor GLVectorTypes related changes
       <li>25/06/01 - Egg - Added osIgnoreDepthBuffer to TObjectStyles
       <li>20/03/01 - Egg - LoadFromFile & LoadFromStream fixes by Uwe Raabe
       <li>16/03/01 - Egg - SaveToFile/LoadFromFile additions/fixes by Uwe Raabe
@@ -350,19 +350,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-{$IFDEF GLS_DELPHI_OR_CPPB}
+ {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
-{$ENDIF}
-  Classes,
-  SysUtils,
-
+ {$ENDIF}
   {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-  VCL.Controls,
+    System.Classes, System.SysUtils,
+    VCL.Graphics,  VCL.Controls,
   {$ELSE}
-  Graphics,
-  Controls,
+    Classes, SysUtils, Graphics,  Controls,
   {$ENDIF}
 
 {$IFDEF FPC}
@@ -370,25 +365,10 @@ uses
 {$ENDIF}
 
   // GLScene
-  OpenGLTokens,
-  GLContext,
-  VectorGeometry,
-  XCollection,
-  GLSilhouette,
-  PersistentClasses,
-  GLState,
-  GLGraphics,
-  GeometryBB,
-  GLCrossPlatform,
-  VectorLists,
-  GLTexture,
-  GLColor,
-  BaseClasses,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLMaterial,
-  GLTextureFormat,
-  GLSelection;
+  OpenGLTokens, GLContext, GLVectorGeometry, XCollection, GLSilhouette,
+  GLPersistentClasses, GLState, GLGraphics, GLGeometryBB, GLCrossPlatform,
+  GLVectorLists, GLTexture, GLColor, GLBaseClasses, GLCoordinates,
+  GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection;
 
 type
 
@@ -2537,8 +2517,8 @@ implementation
 uses
   GLStrings,
   XOpenGL,
-  VectorTypes,
-  ApplicationFileIO,
+  GLVectorTypes,
+  GLApplicationFileIO,
   GLUtils
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 

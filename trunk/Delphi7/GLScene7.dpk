@@ -4,6 +4,7 @@ package GLScene7;
 {$R '..\Source\GLSceneObjects.dcr'}
 {$R '..\Source\GLSceneVCL.dcr'}
 {$R '..\Source\nonGLSceneVCL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -14,17 +15,19 @@ package GLScene7;
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
-{$OPTIMIZATION ON}
+{$OPTIMIZATION OFF}
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO OFF}
 {$SAFEDIVIDE OFF}
-{$STACKFRAMES OFF}
+{$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
@@ -39,8 +42,6 @@ requires
   VclSmp,
   vclx;
 
-{%File '..\Source\GLScene.inc'}
-
 contains
   GLSceneRegister in '..\Source\GLSceneRegister.pas',
   GLMaterial in '..\Source\GLMaterial.pas',
@@ -48,19 +49,19 @@ contains
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
   GLScreen in '..\Source\GLScreen.pas',
-  VectorGeometry in '..\Source\VectorGeometry.pas',
+  GLVectorGeometry in '..\Source\GLVectorGeometry.pas',
   GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditForm},
-  PlugInIntf in '..\Source\PlugInIntf.pas',
-  PlugInManager in '..\Source\PlugInManager.pas',
+  GLPlugInIntf in '..\Source\GLPlugInIntf.pas',
+  GLPlugInManager in '..\Source\GLPlugInManager.pas',
   Info in '..\Source\Info.pas' {InfoForm},
-  PlugInManagerPropEditor in '..\Source\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
+  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerPropForm},
   Utils3DS in '..\Source\Utils3DS.pas',
   File3DS in '..\Source\File3DS.pas',
   FileMD2 in '..\Source\FileMD2.pas',
   TypesMD2 in '..\Source\TypesMD2.pas',
   Types3DS in '..\Source\Types3DS.pas',
   Const3DS in '..\Source\Const3DS.pas',
-  AsyncTimer in '..\Source\AsyncTimer.pas',
+  GLAsyncTimer in '..\Source\GLAsyncTimer.pas',
   FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
   FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
   FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
@@ -81,12 +82,12 @@ contains
   GLParticles in '..\Source\GLParticles.pas',
   GLObjects in '..\Source\GLObjects.pas',
   GLCollision in '..\Source\GLCollision.pas',
-  Spline in '..\Source\Spline.pas',
+  GLSpline in '..\Source\GLSpline.pas',
   GLSoundFileObjects in '..\Source\GLSoundFileObjects.pas',
   GLSound in '..\Source\GLSound.pas',
   GLMesh in '..\Source\GLMesh.pas',
   GLGraph in '..\Source\GLGraph.pas',
-  VectorLists in '..\Source\VectorLists.pas',
+  GLVectorLists in '..\Source\GLVectorLists.pas',
   TypesSTL in '..\Source\TypesSTL.pas',
   GLFileSTL in '..\Source\GLFileSTL.pas',
   GLExtrusion in '..\Source\GLExtrusion.pas',
@@ -105,11 +106,11 @@ contains
   GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
   GLSVfw in '..\Source\GLSVfw.pas',
   GLThorFX in '..\Source\GLThorFX.pas',
-  PersistentClasses in '..\Source\PersistentClasses.pas',
-  VectorTypes in '..\Source\VectorTypes.pas',
-  GeometryBB in '..\Source\GeometryBB.pas',
+  GLPersistentClasses in '..\Source\GLPersistentClasses.pas',
+  GLVectorTypes in '..\Source\GLVectorTypes.pas',
+  GLGeometryBB in '..\Source\GLGeometryBB.pas',
   GLContext in '..\Source\GLContext.pas',
-  Polynomials in '..\Source\Polynomials.pas',
+  GLPolynomials in '..\Source\GLPolynomials.pas',
   GLWin32Context in '..\Source\GLWin32Context.pas',
   GLCrossPlatform in '..\Source\GLCrossPlatform.pas',
   GLParticleFX in '..\Source\GLParticleFX.pas',
@@ -117,10 +118,10 @@ contains
   GLMirror in '..\Source\GLMirror.pas',
   GLWin32Viewer in '..\Source\GLWin32Viewer.pas',
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
-  HeightTileFile in '..\Source\HeightTileFile.pas',
+  GLHeightTileFile in '..\Source\GLHeightTileFile.pas',
   GLSpaceText in '..\Source\GLSpaceText.pas',
   GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas',
-  Octree in '..\Source\Octree.pas',
+  GLOctree in '..\Source\GLOctree.pas',
   GLExplosionFX in '..\Source\GLExplosionFX.pas',
   GLGui in '..\Source\GLGui.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
@@ -128,7 +129,7 @@ contains
   TGA in '..\Source\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
   GLProcTextures in '..\Source\GLProcTextures.pas',
-  MeshUtils in '..\Source\MeshUtils.pas',
+  GLMeshUtils in '..\Source\GLMeshUtils.pas',
   GLHeightTileFileHDS in '..\Source\GLHeightTileFileHDS.pas',
   Q3BSP in '..\Source\Q3BSP.pas',
   FileOCT in '..\Source\FileOCT.pas',
@@ -151,7 +152,7 @@ contains
   GLTexCombineShader in '..\Source\GLTexCombineShader.pas',
   GLTextureCombiners in '..\Source\GLTextureCombiners.pas',
   GLShadowVolume in '..\Source\GLShadowVolume.pas',
-  ApplicationFileIO in '..\Source\ApplicationFileIO.pas',
+  GLApplicationFileIO in '..\Source\GLApplicationFileIO.pas',
   GLSilhouette in '..\Source\GLSilhouette.pas',
   GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
   GLStarRecord in '..\Source\GLStarRecord.pas',
@@ -162,18 +163,18 @@ contains
   GLFullScreenViewer in '..\Source\GLFullScreenViewer.pas',
   GLMultiMaterialShader in '..\Source\GLMultiMaterialShader.pas',
   GLUserShader in '..\Source\GLUserShader.pas',
-  CurvesAndSurfaces in '..\Source\CurvesAndSurfaces.pas',
+  GLCurvesAndSurfaces in '..\Source\GLCurvesAndSurfaces.pas',
   GLParametricSurfaces in '..\Source\GLParametricSurfaces.pas',
   GLFileNurbs in '..\Source\GLFileNurbs.pas',
-  VerletClasses in '..\Source\VerletClasses.pas',
-  SpatialPartitioning in '..\Source\SpatialPartitioning.pas',
+  GLSpacePartition in '..\Source\GLSpacePartition.pas',
   GLOutlineShader in '..\Source\GLOutlineShader.pas',
-  GLVerletClothify in '..\Source\GLVerletClothify.pas',
   GLMultiProxy in '..\Source\GLMultiProxy.pas',
   GLSkyBox in '..\Source\GLSkyBox.pas',
   GLTree in '..\Source\GLTree.pas',
   GLMeshCSG in '..\Source\GLMeshCSG.pas',
+  GLVerletClothify in '..\Source\GLVerletClothify.pas',
   GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
+  VerletClasses in '..\Source\VerletClasses.pas',
   GLHiddenLineShader in '..\Source\GLHiddenLineShader.pas',
   GLProxyObjects in '..\Source\GLProxyObjects.pas',
   GLState in '..\Source\GLState.pas',
@@ -184,7 +185,7 @@ contains
   GLImposter in '..\Source\GLImposter.pas',
   GLWaterPlane in '..\Source\GLWaterPlane.pas',
   GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
-  PerlinNoise in '..\Source\PerlinNoise.pas',
+  GLPerlinNoise3D in '..\Source\GLPerlinNoise3D.pas',
   GLTexLensFlare in '..\Source\GLTexLensFlare.pas',
   GLVfsPAK in '..\Source\GLVfsPAK.pas',
   TypesMDC in '..\Source\TypesMDC.pas',
@@ -246,8 +247,8 @@ contains
   GLFileGL2 in '..\Source\GLFileGL2.pas',
   GLFileLMTS in '..\Source\GLFileLMTS.pas',
   TypesB3D in '..\Source\TypesB3D.pas',
-  BumpMapping in '..\Source\BumpMapping.pas',
-  GeometryCoordinates in '..\Source\GeometryCoordinates.pas',
+  GLBumpMapping in '..\Source\GLBumpMapping.pas',
+  GLGeometryCoordinates in '..\Source\GeometryCoordinates.pas',
   VerletHairClasses in '..\Source\VerletHairClasses.pas',
   GLDynamicTexture in '..\Source\GLDynamicTexture.pas',
   GLGLUTesselation in '..\Source\GLGLUTesselation.pas',
@@ -262,12 +263,12 @@ contains
   DDSImage in '..\Source\DDSImage.pas',
   HDRImage in '..\Source\HDRImage.pas',
   O3TCImage in '..\Source\O3TCImage.pas',
-  RGBE in '..\Source\RGBE.pas',
+  GLS_RGBE in '..\Source\GLS_RGBE.pas',
   GLCompositeImage in '..\Source\GLCompositeImage.pas',
   GLFBO in '..\Source\GLFBO.pas',
   GLRenderContextInfo in '..\Source\GLRenderContextInfo.pas',
   GLCameraController in '..\Source\GLCameraController.pas',
-  BaseClasses in '..\Source\BaseClasses.pas',
+  GLBaseClasses in '..\Source\GLBaseClasses.pas',
   GLManager in '..\Source\GLManager.pas',
   GLObjectManager in '..\Source\GLObjectManager.pas',
   GLCoordinates in '..\Source\GLCoordinates.pas',
@@ -286,13 +287,13 @@ contains
   GLFileZLIB in '..\Source\GLFileZLIB.pas',
   GLSZLibEx in '..\Source\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\GLSZLibExApi.pas',
-  OpenGLAdapter in '..\Source\OpenGLAdapter.pas',
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
   GLPipelineTransformation in '..\Source\GLPipelineTransformation.pas',
   GLSCrossXML in '..\Source\GLSCrossXML.pas',
+  OpenGLAdapter in '..\Source\OpenGLAdapter.pas',
   OpenGLTokens in '..\Source\OpenGLTokens.pas',
   GLSelection in '..\Source\GLSelection.pas',
-  ImageUtils in '..\Source\ImageUtils.pas',
+  GLImageUtils in '..\Source\GLImageUtils.pas',
   GLSLog in '..\Source\GLSLog.pas',
   GLSLParameter in '..\Source\GLSLParameter.pas',
   GLMaterialEx in '..\Source\GLMaterialEx.pas',

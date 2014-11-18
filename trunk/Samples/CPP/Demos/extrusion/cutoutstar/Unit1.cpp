@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -32,12 +33,13 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    const int
 	  cSteps = 16;
    const int
-	  c2 = Vectorgeometry::c2PI;
+	  c2 = Glvectorgeometry::c2PI;
+      new TGLExtrusionSolid(ExtrusionSolid);
    // a small star contour
 	  for (i=0; i<cSteps; i++)
 	  {
 		 r =2+(i && 1)*2; //r :=2+(i and 1)*2;
-		 SinCos(i*c2/cSteps, y, x);
+		 SinCos(i*(float)c2/cSteps, y, x);
 		 ExtrusionSolid->Contours->Add()->Nodes->AddNode(x*r, y*r, 0);
 	  }
 	  // add an empty contour for the square cutout (see progress event)

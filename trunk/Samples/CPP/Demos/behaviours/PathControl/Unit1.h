@@ -9,7 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.Buttons.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

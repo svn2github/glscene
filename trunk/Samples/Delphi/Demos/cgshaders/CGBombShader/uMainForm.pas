@@ -6,15 +6,15 @@ interface
 
 uses
   // VCL
-  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls,
+  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls, Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLTexture, GLCadencer, GLSimpleNavigation,
   GLVectorFileObjects, GLFile3DS, GLGraph, GLCgBombShader, GLMaterial,
-  VectorGeometry,
+  GLVectorGeometry,
 
   // FileFormats
-  JPEG, GLFileMD2, GLCrossPlatform, GLCoordinates, BaseClasses,
+  GLFileMD2, GLCrossPlatform, GLCoordinates, GLBaseClasses,
   GLUtils;
 
 type

@@ -26,8 +26,6 @@ object Form1: TForm1
     FieldOfView = 144.774841308593800000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 339
-    ExplicitHeight = 196
   end
   object GLScene1: TGLScene
     ObjectsSorting = osRenderFarthestFirst

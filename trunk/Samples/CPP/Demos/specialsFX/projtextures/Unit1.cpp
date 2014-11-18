@@ -8,7 +8,9 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "tga"
 #pragma resource "*.dfm"
+
 TForm1 *Form1;
 float  ang;
 int  mx, my, mk;
@@ -39,7 +41,8 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   int I = MediaPath.Pos(SubStr);
   if (I != 0) {
 	MediaPath.Delete(I+8,MediaPath.Length()-I);
-	SetCurrentDir(MediaPath+"Media\\");
+	MediaPath += "Media\\";
+	SetCurrentDir(MediaPath);
   }
   matLib->Materials->Items[0]->Material->Texture->Image->LoadFromFile("projector.tga");
   matLib->Materials->Items[1]->Material->Texture->Image->LoadFromFile("flare1.bmp");
@@ -61,7 +64,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
-  Form1->Caption = Format("%f", ARRAYOFCONST((viewer->FramesPerSecond())));
+  Form1->Caption ="GLScene Projected Textures - "+ Format("%f", ARRAYOFCONST((viewer->FramesPerSecond())));
   viewer->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------
@@ -85,9 +88,9 @@ void __fastcall TForm1::viewerMouseMove(TObject *Sender, TShiftState Shift,
   if (mk == 1)
   {
     if (Shift.Contains(ssLeft))
-      camera->MoveAroundTarget(Y - my, X - mx);
-    else if (Shift.Contains(ssRight))
-      camera->AdjustDistanceToTarget(1.0 + (Y - my) / 100);
+	  GLCamera1->MoveAroundTarget(Y - my, X - mx);
+	else if (Shift.Contains(ssRight))
+	  GLCamera1->AdjustDistanceToTarget(1.0 + (Y - my) / 100);
   }
 
   mx = X;
@@ -95,17 +98,17 @@ void __fastcall TForm1::viewerMouseMove(TObject *Sender, TShiftState Shift,
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key,
-      TShiftState Shift)
+	  TShiftState Shift)
 {
   if (Key == VK_ADD)
-      emitter1->FOVy = emitter1->FOVy + 5;
+	  emitter1->FOVy = emitter1->FOVy + 5;
   else if (Key == VK_SUBTRACT)
-      emitter1->FOVy = emitter1->FOVy - 5;
+	  emitter1->FOVy = emitter1->FOVy - 5;
 
   if (Key == 'S')
-      if (ProjLight->Style == ptsOriginal)
-           ProjLight->Style = ptsInverse;
-      else
-           ProjLight->Style = ptsOriginal;
+	  if (ProjLight->Style == ptsOriginal)
+		   ProjLight->Style = ptsInverse;
+	  else
+		   ProjLight->Style = ptsOriginal;
 }
 //---------------------------------------------------------------------------

@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 237
   Top = 105
-  Width = 523
-  Height = 445
-  Caption = 'Form1'
+  Caption = 'Skeletal Animation'
+  ClientHeight = 401
+  ClientWidth = 515
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,27 +12,28 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 400
-    Height = 366
+    Width = 408
+    Height = 360
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.Lighting = False
-    FieldOfView = 149.436782836914100000
+    FieldOfView = 148.951782226562500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 400
+    Left = 408
     Top = 0
     Width = 107
-    Height = 366
+    Height = 360
     Align = alRight
     BevelOuter = bvNone
     Font.Charset = ANSI_CHARSET
@@ -42,19 +43,22 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    object Label1: TLabel
-      Left = 0
-      Top = 0
-      Width = 107
-      Height = 48
-      Align = alTop
+    DesignSize = (
+      107
+      360)
+    object LabelFPS: TLabel
+      Left = 32
+      Top = 24
+      Width = 26
+      Height = 16
       Alignment = taCenter
-      Caption = #13#10'Basic Skeletal'#13#10'Animation'
+      Anchors = []
+      Caption = 'FPS'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Arial'
-      Font.Style = [fsBold]
+      Font.Style = []
       ParentFont = False
     end
     object BULongJump: TButton
@@ -109,14 +113,14 @@ object Form1: TForm1
   end
   object Panel2: TPanel
     Left = 0
-    Top = 366
-    Width = 507
+    Top = 360
+    Width = 515
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
     DesignSize = (
-      507
+      515
       41)
     object TrackBar1: TTrackBar
       Left = 64
@@ -141,7 +145,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 16
+    Left = 32
     Top = 8
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000803F0000803F0000803F0000803F}
@@ -165,12 +169,12 @@ object Form1: TForm1
       Position.Coordinates = {00000000000090C1000000000000803F}
       LineColor.Color = {1283803E1283003F1283003F0000803F}
       XSamplingScale.Min = -12.000000000000000000
-      XSamplingScale.max = 12.000000000000000000
-      XSamplingScale.step = 4.000000000000000000
-      YSamplingScale.step = 1.000000000000000000
+      XSamplingScale.Max = 12.000000000000000000
+      XSamplingScale.Step = 4.000000000000000000
+      YSamplingScale.Step = 1.000000000000000000
       ZSamplingScale.Min = -20.000000000000000000
-      ZSamplingScale.max = 20.000000000000000000
-      ZSamplingScale.step = 4.000000000000000000
+      ZSamplingScale.Max = 20.000000000000000000
+      ZSamplingScale.Step = 4.000000000000000000
       Parts = [gpX, gpZ]
     end
     object GLCamera1: TGLCamera
@@ -185,22 +189,22 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 16
-    Top = 40
+    Left = 160
+    Top = 8
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
+    Left = 272
     Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 56
-    Top = 40
+    Left = 32
+    Top = 64
   end
   object AnimationControler1: TGLAnimationControler
-    Left = 40
-    Top = 80
+    Left = 160
+    Top = 64
   end
 end

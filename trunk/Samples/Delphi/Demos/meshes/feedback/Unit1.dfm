@@ -1,7 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 107
-  Caption = 'OpenGL Feedback into a GLFreeForm'
+  Caption = 'Feedback'
+  ClientHeight = 177
+  ClientWidth = 356
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,12 +16,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 405
-    Height = 294
+    Width = 356
+    Height = 177
     Camera = GLCamera1
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
     Buffer.FaceCulling = False
-    FieldOfView = 142.429962158203100000
+    FieldOfView = 121.069557189941400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -35,7 +37,7 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 40
     Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000

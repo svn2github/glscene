@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -18,6 +18,7 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLFileSMD"
+#pragma link "GLBaseClasses"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -68,7 +69,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shi
 
 void __fastcall TForm1::DoRaycastStuff()
 {
-   Vectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
+   Glvectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
 
    SetVector(rayStart, GLCamera1->AbsolutePosition);
    SetVector(rayVector, GLSceneViewer1->Buffer->ScreenToVector(

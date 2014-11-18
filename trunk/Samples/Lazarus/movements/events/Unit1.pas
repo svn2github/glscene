@@ -5,7 +5,7 @@ interface
 uses
   Classes, Graphics, Controls, Forms, GLScene, GLObjects, GLTexture,
   GLCadencer, ComCtrls, GLLCLViewer, GLTimeEventsMgr, ExtCtrls,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

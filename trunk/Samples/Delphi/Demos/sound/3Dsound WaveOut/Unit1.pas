@@ -3,10 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
-  GLSound, GLSMWaveOut, ComCtrls, Controls, StdCtrls, GLWin32Viewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
-  GLFileMP3, GLUtils;
+  Classes, Forms, ExtCtrls, ComCtrls, Controls, StdCtrls, SysUtils,
+
+  //GLScene
+  GLCadencer, GLScene, GLObjects,  GLSound, GLSMWaveOut, GLWin32Viewer, 
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
+  GLFileMP3, GLUtils, GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -16,7 +18,6 @@ type
     DummyCube: TGLDummyCube;
     Sphere: TGLSphere;
     GLLightSource: TGLLightSource;
-    GLSMWaveOut: TGLSMWaveOut;
     GLSoundLibrary: TGLSoundLibrary;
     GLCadencer1: TGLCadencer;
     Timer: TTimer;
@@ -29,6 +30,7 @@ type
     Disk1: TGLDisk;
     Torus1: TGLTorus;
     TrackBar1: TTrackBar;
+    GLSMWaveOut: TGLSMWaveOut;
     Panel1: TPanel;
     Button1: TButton;
     btnHowl: TButton;
@@ -42,9 +44,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure btnHowlClick(Sender: TObject);
   private
-    { Déclarations privées }
+    // Private declarations
   public
-    { Déclarations publiques }
+    // Public declarations
   end;
 
 var
@@ -53,8 +55,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses VectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

@@ -16,9 +16,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-  SysUtils,
-  BaseClasses,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+
+  GLBaseClasses,
   GLS_CUDA_API,
   GLS_CUDA_RunTime,
   GLS_CL_Platform,

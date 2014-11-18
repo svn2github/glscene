@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 160
   Top = 79
-  Width = 519
-  Height = 386
-  Caption = 'Form1'
+  Caption = 'Projection'
+  ClientHeight = 408
+  ClientWidth = 540
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -18,13 +19,13 @@ object Form1: TForm1
   object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 503
-    Height = 348
+    Width = 540
+    Height = 408
     Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.FaceCulling = False
     Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 141.948791503906300000
+    FieldOfView = 147.220916748046900000
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseMove = SceneViewerMouseMove
@@ -34,6 +35,12 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 24
     Top = 24
+    object GLCamera: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 60.000000000000000000
+      TargetObject = GLDummyCube
+      Position.Coordinates = {0000E0400000A040000040400000803F}
+    end
     object GLDummyCube: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLArrowLine1: TGLArrowLine
@@ -83,12 +90,6 @@ object Form1: TForm1
         YSamplingScale.Step = 0.500000000000000000
         ZSamplingScale.Step = 0.100000001490116100
       end
-    end
-    object GLCamera: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 60.000000000000000000
-      TargetObject = GLDummyCube
-      Position.Coordinates = {0000E0400000A040000040400000803F}
     end
   end
 end

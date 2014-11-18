@@ -52,7 +52,7 @@ implementation
 uses
   SysUtils, Dialogs, Graphics,
   // GLScene units
-  VectorGeometry, GLScene, GLViewer, GLFullScreenViewer, BaseClasses,
+  GLVectorGeometry, GLScene, GLViewer, GLFullScreenViewer, GLBaseClasses,
   GLStrings, GLCoordinates, GLTexture, GLMaterial, GLScreen,
   GLCadencer, GLTextureImageEditors, GLColor, GLCrossPlatform, GLMaterialEx,
   // GLScene - basic geometry
@@ -91,9 +91,9 @@ uses
   GLBumpShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLSLPostBlurShader,
   GLAsmShader, GLShaderCombiner, GLTextureSharingShader,
   // GLScene - other
-  GLImposter, GLFeedback, GLCollision, GLScriptBase, AsyncTimer, GLDCE,
+  GLImposter, GLFeedback, GLCollision, GLScriptBase, GLAsyncTimer, GLDCE,
   GLFPSMovement, GLMaterialScript, GLNavigator, GLSmoothNavigator,
-  GLTimeEventsMgr, ApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
+  GLTimeEventsMgr, GLApplicationFileIO, GLVfsPAK, GLSimpleNavigation,
   GLCameraController, GLGizmo, GLGizmoEx, GLFBORenderer,
   GLSoundFileObjects, GLSound, GLCompositeImage, GLSLog, GLSLanguage,
   GLSArchiveManager,
@@ -1198,10 +1198,10 @@ begin
     TGLFireFXManager, TGLThorFXManager, TGLEParticleMasksManager]);
 
   RegisterComponents('GLScene Utils',
-    [TAsyncTimer, TGLStaticImposterBuilder, TCollisionManager,
+    [TGLAsyncTimer, TGLStaticImposterBuilder, TGLCollisionManager,
     TGLAnimationControler, TGLDCEManager, TGLFPSMovementManager,
     TGLMaterialScripter, TGLUserInterface, TGLNavigator, TGLSmoothNavigator,
-    TGLSmoothUserInterface, TGLTimeEventsMGR, TApplicationFileIO,
+    TGLSmoothUserInterface, TGLTimeEventsMGR, TGLApplicationFileIO,
     TGLVfsPAK, TGLSimpleNavigation, TGLCameraController, TGLGizmo,
     TGLGizmoEx, TGLSLogger, TGLSLanguage, TGLSArchiveManager]);
 

@@ -8,13 +8,13 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "GLViewer"
-#pragma link "VectorGeometry"
+#pragma link "GLVectorGeometry"
 #pragma link "GLBehaviours"
 #pragma link "GLCadencer"
 #pragma link "GLParticles"
 #pragma link "GLObjects"
 #pragma link "GLScene"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLViewer"
@@ -37,7 +37,8 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 	MediaPath += "Media\\";
 	SetCurrentDir(MediaPath);
   }
-  randomize();
+  Sprite1->Material->Texture->Image->LoadFromFile(MediaPath+"Flare1.bmp");
+  Randomize();
 }
 
 //---------------------------------------------------------------------------
@@ -69,14 +70,14 @@ void __fastcall TForm1::Sprite1Progress(TObject * Sender,
   // calculate for how long we've been living
   life = (newTime - ((TGLSprite *) Sender)->TagFloat);
   if(life > 10)
-    // old particle to kill
-    GLParticles1->KillParticle((TGLSprite *) Sender);
+	// old particle to kill
+	GLParticles1->KillParticle((TGLSprite *) Sender);
   else if(life < 1)
-    // baby particles become brighter in their 1st second of life...
-    ((TGLSprite *) Sender)->Material->FrontProperties->Diffuse->Alpha = life;
-  else                          // ...and slowly disappear in the darkness
-    ((TGLSprite *) Sender)->Material->FrontProperties->Diffuse->Alpha =
-      (9.0 - life) / 9.0;
+	// baby particles become brighter in their 1st second of life...
+	((TGLSprite *) Sender)->Material->FrontProperties->Diffuse->Alpha = life;
+  else         // ...and slowly disappear in the darkness
+	((TGLSprite *) Sender)->Material->FrontProperties->Diffuse->Alpha =
+	  (9.0 - life) / 9.0;
 }
 
 //---------------------------------------------------------------------------
@@ -89,10 +90,9 @@ void __fastcall TForm1::Timer1Timer(TObject * Sender)
   c->Z = 3 * (random() - 0.5);
 
   // infos for the user
-  Caption =
-    Format("%d particles, %.1f FPS",
-           ARRAYOFCONST((GLParticles1->Count - 1,
-                         GLSceneViewer1->FramesPerSecond())));
+  Caption = "GLScene Particles - "+
+	Format("%d particles, %.1f FPS", ARRAYOFCONST((GLParticles1->Count - 1,
+			GLSceneViewer1->FramesPerSecond())));
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 

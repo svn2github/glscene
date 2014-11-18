@@ -32,10 +32,12 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, SysUtils, GLSDL;
+uses
+  Classes, SysUtils, SyncObjs,
+  //GLS
+  GLSDL;
 
 type
-
   // TSDLWindowPixelDepth
   //
   { : Pixel Depth options.<p>
@@ -69,7 +71,6 @@ const
     voResizable];
 
 type
-
   // TSDLWindow
   //
   { : A basic SDL-based window (non-visual component).<p>
@@ -213,7 +214,8 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses OpenGLAdapter, GLContext, SyncObjs, VectorGeometry;
+uses
+  OpenGLAdapter, GLContext, GLVectorGeometry;
 
 var
   vSDLCS: TCriticalSection;

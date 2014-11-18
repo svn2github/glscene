@@ -19,7 +19,7 @@ interface
 uses
   Classes, SysUtils,
   GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  ApplicationFileIO;
+  GLApplicationFileIO;
 
 type
 
@@ -76,7 +76,7 @@ uses
   jdatasrc,
   jmemmgr,
 {$ENDIF}
-  VectorGeometry
+  GLVectorGeometry
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 

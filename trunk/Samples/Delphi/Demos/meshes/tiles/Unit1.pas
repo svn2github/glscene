@@ -1,30 +1,15 @@
-{: TGLTilePlane demo.<p>
-
-   Illustrates the use of TGLTilePlane to render an area made of tiled
-   textures placed in a grid. The components links to a materiallibrary
-   (containing tile materials, referred by index) and renders the area
-   with quads sorted by material.<br>
-   The size of the area for TGLTilePlane is infinite (i.e. limited by
-   available memory) and adjusts itself dynamically.<p>
-
-   The tile overlap can be adjusted by the texture coordinates scaling
-   of the material, for instance, the "marbletiles" texture covers 4 tiles
-   and the "walkway" texture covers 2 tiles in this demo.<p>
-
-   Note that if you don't have a "pro" OpenGL card, the grid with its smoothed
-   lines may cost you a lot of FPS, so you may want to turn it off for
-   performance assessments.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, GLObjects, GLGraph, GLScene, GLWin32Viewer,
-  VectorGeometry, GLTilePlane, GLTexture, GLCadencer, Jpeg, StdCtrls,
-  OpenGLTokens, GLContext, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLRenderContextInfo, GLTextureFormat;
+  Dialogs, ExtCtrls, Jpeg, StdCtrls,
+  //GLS
+  GLObjects, GLGraph, GLScene, GLWin32Viewer, GLVectorGeometry, GLTilePlane,
+  GLTexture, GLCadencer, OpenGLTokens, GLContext, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLTextureFormat,
+  GLKeyboard, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -77,8 +62,6 @@ implementation
 
 {$R *.dfm}
 
-uses GLKeyboard, GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
@@ -90,12 +73,12 @@ begin
       GLTilePlane.Tiles[i, j]:=Random(GLMaterialLibrary.Materials.Count-1)+1;
 
    // set all tile materials to anisotropic,
-   // add them to the material selection combo      
-   for i:=1 to GLMaterialLibrary.Materials.Count-1 do
-      with GLMaterialLibrary.Materials[i] do begin
-         Material.Texture.FilteringQuality:=tfAnisotropic;
-         CBMaterial.Items.Add(Name);
-      end;
+   // add them to the material selection combo
+   for i:=0 to GLMaterialLibrary.Materials.Count-1 do
+   begin
+     GLMaterialLibrary.Materials[i].Material.Texture.FilteringQuality:=tfAnisotropic;
+     CBMaterial.Items.Add(GLMaterialLibrary.Materials[i].Name);
+   end;
    CBMaterial.ItemIndex:=0;
 end;
 
@@ -105,7 +88,7 @@ begin
    mx:=x;
    my:=y;
    if Shift=[ssLeft] then begin
-      GLTilePlane.Tiles[tileX, tileY]:=CBMaterial.ItemIndex+1;
+      GLTilePlane.Tiles[tileX, tileY]:=CBMaterial.ItemIndex;
       GLTilePlane.StructureChanged;
    end else if Shift=[ssRight] then begin
       GLTilePlane.Tiles[tileX, tileY]:=0;
@@ -155,7 +138,7 @@ begin
       end else begin
          translating:=False;
          if IsKeyDown(VK_LBUTTON) then begin
-            GLTilePlane.Tiles[tileX, tileY]:=CBMaterial.ItemIndex+1;
+            GLTilePlane.Tiles[tileX, tileY]:=CBMaterial.ItemIndex;
             GLTilePlane.StructureChanged;
          end;
          if IsKeyDown(VK_RBUTTON) then begin

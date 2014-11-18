@@ -1,30 +1,17 @@
-{: Shows how to use 1D palettes to visualize "intensity" on a mesh.<p>
-
-   Typical application is interactive representation of FEA (Finite Element
-   Analysis), the palette texture can be used with discrete colors
-   (use "nearest" filtering) or continuous colors (use "linear" filtering).
-   Palette scale and offset can then be adjusted via texture scaling/off.<p>
-
-   Representation uses a simple multipass shader to overlay the model's
-   wireframe using smoothed lines.<p>
-
-   Sample Data represents the Von Mises Stress (usually is used to predict
-   steel yelding) over the strucutre of a tubular tower for electrical
-   power lines. That stress is the result of the loads from cables,
-   transversal wind and self weigth.
-
-   (Sample Data contributed by Carlos Ferreira)
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
-  GLVectorFileObjects, GLWin32Viewer, GLMesh, GLTexture, GLUserShader,
-  StdCtrls, GLHUDObjects, VectorGeometry, GLContext, ComCtrls, GLObjects,
-  ExtCtrls, GLBitmapFont, GLWindowsFont, GLUtils, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLRenderContextInfo, GLGraphics;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  ComCtrls, StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLVectorFileObjects, GLWin32Viewer, GLMesh, GLTexture,
+  GLUserShader, GLHUDObjects, GLVectorGeometry, GLContext,  GLObjects,
+  GLBitmapFont, GLWindowsFont, GLUtils, GLMaterial, GLCoordinates,
+  GLCrossPlatform, GLBaseClasses, GLRenderContextInfo, GLGraphics,
+  GLState, GLTextureFormat;
+
 
 type
   TForm1 = class(TForm)
@@ -58,9 +45,9 @@ type
     procedure TBScaleChange(Sender: TObject);
   private
     { Private declarations }
+    mx, my : Integer;
   public
     { Public declarations }
-    mx, my : Integer;
   end;
 
 var
@@ -69,8 +56,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses GLState, GLTextureFormat;
 
 type
    // Structures used in our binary file

@@ -1,19 +1,14 @@
-{: Benchmark and stress test for PFX.<p>
-
-  Fires are made of additively blended particles, smoke of transparently
-  blended ones. Smokes of distinct fires should hide each other, and smoke
-  in a particular fire should hide its top flames a bit.<p>
-
-  02/03/2005 - GF3 / AXP 2 GHz - 53 FPS
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLCadencer, GLParticleFX, GLPerlinPFX, GLScene, GLObjects,
-  GLWin32Viewer, ExtCtrls, GLCrossPlatform, GLCoordinates, BaseClasses;
+  Dialogs, ExtCtrls,
+
+  //GLS
+  GLCadencer, GLParticleFX, GLPerlinPFX, GLScene, GLObjects,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLSimpleNavigation, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -27,6 +22,7 @@ type
     GLCadencer: TGLCadencer;
     DCTarget: TGLDummyCube;
     Timer: TTimer;
+    Panel1: TPanel;
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure TimerTimer(Sender: TObject);
@@ -52,7 +48,7 @@ end;
 
 procedure TForm1.TimerTimer(Sender: TObject);
 begin
-   Caption:= GLSceneViewer.FramesPerSecondText
+   Panel1.Caption := GLSceneViewer.FramesPerSecondText
             +Format(' - %d Particles - %.3f ms Sort',
                     [SmokePFX.ParticleCount+FlamePFX.ParticleCount,
                      ParticleFXRenderer.LastSortTime]);

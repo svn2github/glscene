@@ -1,7 +1,7 @@
-object Form7: TForm7
+object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'GLScene Motion Blur'
+  Caption = 'Motion Blur2'
   ClientHeight = 344
   ClientWidth = 501
   Color = clBtnFace
@@ -26,8 +26,6 @@ object Form7: TForm7
     FieldOfView = 138.596145629882800000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 440
-    ExplicitHeight = 267
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone

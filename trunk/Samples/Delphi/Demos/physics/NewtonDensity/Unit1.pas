@@ -3,31 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLNGDManager,
-  GLObjects,
-  GLScene,
-  GLCoordinates,
-  GLSimpleNavigation,
-  GLCadencer,
-  GLWin32Viewer,
-  GLCrossPlatform,
-  BaseClasses,
-  VectorGeometry,
-  StdCtrls,
-  GLHUDObjects,
-  GLBitmapFont,
-  GLWindowsFont,
-  Spin,
-  NewtonImport, GLGeomObjects;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls,  Spin,
+  //GLS
+  GLNGDManager, GLObjects, GLScene, GLCoordinates, GLSimpleNavigation, GLCadencer,
+  GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLVectorGeometry,
+  GLHUDObjects, GLBitmapFont, GLWindowsFont, NewtonImport, GLGeomObjects;
 
 type
   TForm1 = class(TForm)
@@ -61,9 +42,9 @@ type
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     procedure MyForceAndTorqueDensity(const cbody: PNewtonBody;
       timestep: NGDFloat; threadIndex: Integer);
 

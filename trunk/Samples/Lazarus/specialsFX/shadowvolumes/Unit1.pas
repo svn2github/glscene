@@ -18,8 +18,8 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLLCLViewer, GLShadowVolume,
   ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture,
-  GLGeomObjects, GLSilhouette, VectorGeometry, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  GLGeomObjects, GLSilhouette, GLVectorGeometry, GLMaterial, GLCoordinates,
+  GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -19,8 +19,8 @@ uses
   Classes, SysUtils,
 
   //GLScene
-  VectorGeometry, VectorTypes,  GLVectorFileObjects,
-  ApplicationFileIO, GLGraph, GLTypes;
+  GLVectorGeometry, GLVectorTypes,  GLVectorFileObjects,
+  GLApplicationFileIO, GLGraph, GLTypes;
 
 type
    // GLFileGRD
@@ -48,9 +48,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLUtils;
 
 // ------------------
 // ------------------ TGLGRDVectorFile ------------------

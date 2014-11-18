@@ -361,26 +361,26 @@ object Form1: TForm1
           ParentFont = False
           WordWrap = True
         end
-        object camDirX: TEdit
-          Left = 20
-          Top = 31
-          Width = 68
-          Height = 21
-          TabOrder = 0
-          Text = '0.0'
-        end
         object camDirY: TEdit
           Left = 20
           Top = 58
           Width = 68
           Height = 21
-          TabOrder = 1
+          TabOrder = 0
           Text = '0.0'
         end
         object camDirZ: TEdit
           Left = 20
           Top = 85
           Width = 68
+          Height = 21
+          TabOrder = 1
+          Text = '0.0'
+        end
+        object camDirX: TEdit
+          Left = 20
+          Top = 31
+          Width = 69
           Height = 21
           TabOrder = 2
           Text = '0.0'

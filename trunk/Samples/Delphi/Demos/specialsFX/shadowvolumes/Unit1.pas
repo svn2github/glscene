@@ -1,25 +1,16 @@
-{: Shadow volumes demo.<p>
-
-   This demo is under construction...
-
-   246 (what?)
-
-   <b>History : </b><font size=-1><ul>
-      <li>29/11/03 - MF - Items now self shadow, and a new cylinder was added.
-        Both changes are intended to demonstrate the problems of darkening.
-      <li>?/?/03 - EG - Creation (based on code from Mattias Fagerlund)
-   </ul></font>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLShadowVolume,
-  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture,
-  GLGeomObjects, GLSilhouette, VectorGeometry, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  Dialogs, ExtCtrls, StdCtrls,
+
+  //GLS
+  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLShadowVolume,
+  GLVectorFileObjects, GLFileSMD, GLTexture,
+  GLGeomObjects, GLSilhouette, GLVectorGeometry, GLMaterial, GLCoordinates,
+  GLCrossPlatform, GLSimpleNavigation, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -36,7 +27,6 @@ type
     GLPlane1: TGLPlane;
     GLPlane2: TGLPlane;
     GLPlane3: TGLPlane;
-    Timer1: TTimer;
     Panel1: TPanel;
     CBShowVolumes: TCheckBox;
     Label1: TLabel;
@@ -64,6 +54,7 @@ type
     ScrollBar_ShadowResolution: TScrollBar;
     Button_GenerateSilhouette: TButton;
     GLLines1: TGLLines;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -71,7 +62,6 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure Timer1Timer(Sender: TObject);
     procedure CBShowVolumesClick(Sender: TObject);
     procedure RBZFailClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -94,9 +84,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 const
    cSpacing = 1;
@@ -105,9 +92,17 @@ const
 var
    x, y, z : Integer;
    sphere : TGLSphere;
-begin
-   SetGLSceneMediaDir();
 
+   MediaPath : String;
+   I : Integer;
+begin
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos('Samples', MediaPath);
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I); //or MediaPath := Copy(MediaPath,1,I+7);
+    SetCurrentDir(MediaPath+'Media\');
+  end;
    // Dynamically construct an array of spheres, and make them shadow casters
    // Note that as the spheres are children of the shadowvolume component,
    // they are thus also shadow receivers. If they were created as child of
@@ -119,7 +114,7 @@ begin
             sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
             sphere.Position.SetPoint(x*cSpacing, y*cSpacing, z*cSpacing);
             sphere.Radius:=cRadius;
-            GLShadowVolume.Occluders.AddCaster(sphere, 0, scmParentVisible); 
+            GLShadowVolume.Occluders.AddCaster(sphere, 0, scmParentVisible);
          end;
    DCSpheres.MoveTo(GLShadowVolume);
    GLFreeForm.LoadFromFile('trinityrage.smd');
@@ -176,12 +171,6 @@ begin
       GLCadencer1.Progress;
    end;
    mx:=x; my:=y;
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer.FramesPerSecond]);
-   GLSceneViewer.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.FormResize(Sender: TObject);

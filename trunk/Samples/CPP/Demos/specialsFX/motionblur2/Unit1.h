@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBlur.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -21,7 +21,7 @@
 #include "GLTeapot.hpp"
 #include "GLWin32Viewer.hpp"
 //---------------------------------------------------------------------------
-class TForm7 : public TForm
+class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
 	TGLSceneViewer *GLSceneViewer1;
@@ -43,9 +43,9 @@ __published:	// IDE-managed Components
 
 private:	// User declarations
 public:		// User declarations
-	__fastcall TForm7(TComponent* Owner);
+	__fastcall TForm1(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm7 *Form7;
+extern PACKAGE TForm1 *Form1;
 //---------------------------------------------------------------------------
 #endif

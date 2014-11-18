@@ -19,7 +19,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLLCLViewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo, GLSimpleNavigation;
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLSimpleNavigation;
 
 type
 

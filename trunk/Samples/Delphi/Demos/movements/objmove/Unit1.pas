@@ -5,11 +5,11 @@ interface
 uses
   Windows, Forms, Dialogs, SysUtils, Classes, Controls,
   Graphics, StdCtrls, ExtCtrls,
-
+  //GLS
   GLScene, GLObjects, GLGraph, GLCollision, GLTexture,
-  VectorGeometry, GLVectorFileObjects, GLWin32Viewer,
+  GLVectorGeometry, GLVectorFileObjects, GLWin32Viewer,
   GLSpaceText, GLGeomObjects, GLColor, GLCrossPlatform,
-  GLCoordinates, BaseClasses, GLBitmapFont, GLWindowsFont,
+  GLCoordinates, GLBaseClasses, GLBitmapFont, GLWindowsFont,
   GLHUDObjects;
 
 type
@@ -203,7 +203,7 @@ begin
 
     TopText.Text := Format(
       'New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
-      [objPos.V[0], objPos.V[1], objPos.V[2]]);
+      [objPos.X, objPos.Y, objPos.Z]);
 
     winPos := Scn.Buffer.WorldToScreen(objPos);
 
@@ -211,8 +211,8 @@ begin
     begin
       Visible := true;
       Text := CurrentPick.Name;
-      Position.X := winPos.V[0] + 10;
-      Position.Y := Scn.Height - winPos.V[1] + 10;
+      Position.X := winPos.X + 10;
+      Position.Y := Scn.Height - winPos.Y + 10;
     end;
   end
   else

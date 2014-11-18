@@ -23,7 +23,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms, LCLType,
   Dialogs, GLScene, GLObjects, GLCoordinates, GLCadencer, GLNGDManager,
-  GLSimpleNavigation, GLViewer, GLCrossPlatform, BaseClasses,
+  GLSimpleNavigation, GLViewer, GLCrossPlatform, GLBaseClasses,
   GLVectorFileObjects, GLGeomObjects, GLHUDObjects;
 
 type
@@ -69,7 +69,7 @@ var
 implementation
 
 uses
-  GLFile3ds, VectorGeometry, GlMaterial, GLKeyboard;
+  GLFile3ds, GLVectorGeometry, GlMaterial, GLKeyboard;
 
 {$R *.lfm}
 

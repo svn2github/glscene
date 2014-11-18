@@ -7,25 +7,11 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-#pragma link "GLScene"
-#pragma link "GLCadencer"
-#pragma link "BaseClasses"
-#pragma link "GLBitmapFont"
-#pragma link "GLCoordinates"
-#pragma link "GLCrossPlatform"
-#pragma link "GLDCE"
-#pragma link "GLHeightData"
-#pragma link "GLHUDObjects"
-#pragma link "GLTerrainRenderer"
-#pragma link "GLVectorFileObjects"
-#pragma link "GLWin32Viewer"
-#pragma link "GLWindowsFont"
 #pragma link "GLFile3DS"
 #pragma link "GLFileMD2"
 #pragma link "GLProxyObjects"
 
-
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
@@ -139,7 +125,7 @@ void TForm1::AddMushrooms()
 {
   int i;
   TGLFreeFormProxy *Proxy;
-  Vectorgeometry::TVector s;
+  Glvectorgeometry::TVector s;
   float f;
 
   // spawn some more mushrooms using proxy objects

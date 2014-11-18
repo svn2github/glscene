@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -24,7 +25,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 
 const int
-  cSize = 5;
+  cSize = 10;
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   int x, y, z;
@@ -53,6 +54,6 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaTime,
           const double newTime)
 {
- DummyCube1->TurnAngle = 90 * newTime; // 90° per second
+ //DummyCube1->TurnAngle = 90 * newTime; // 90° per second
 }
 //---------------------------------------------------------------------------

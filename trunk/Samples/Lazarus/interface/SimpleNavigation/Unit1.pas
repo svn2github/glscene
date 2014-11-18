@@ -10,7 +10,7 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLLCLViewer, GLCadencer, GLSimpleNavigation,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

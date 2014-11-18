@@ -6,9 +6,9 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLLCLViewer, VectorGeometry, GLLensFlare, GLODEManager,
+  GLSkydome, GLLCLViewer, GLVectorGeometry, GLLensFlare, GLODEManager,
   GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses, GLState;
+  GLMaterial, GLCoordinates, GLBaseClasses, GLState;
 
 type
   TForm1 = class(TForm)

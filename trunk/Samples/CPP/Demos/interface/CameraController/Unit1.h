@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCameraController.hpp"
 #include "GLCoordinates.hpp"
@@ -65,7 +65,6 @@ __published:	// IDE-managed Components
 	TLabel *Label17;
 	TLabel *Label18;
 	TLabel *Label19;
-	TEdit *camDirX;
 	TEdit *camDirY;
 	TEdit *camDirZ;
 	TPanel *Panel9;
@@ -105,6 +104,7 @@ __published:	// IDE-managed Components
 	TTimer *Timer1;
 	TGLCameraController *GLCameraController1;
 	TGLSmoothNavigator *GLSmoothNavigator;
+	TEdit *camDirX;
 	void __fastcall btnMoveToPosClick(TObject *Sender);
 	void __fastcall btnZoomToDistanceClick(TObject *Sender);
 	void __fastcall btnOrbitToPosClick(TObject *Sender);
@@ -133,12 +133,12 @@ private:	// User declarations
 	TGLNavigatorSmoothChangeVector *FCameraSmoothAnimator_AbsPos;
 	TGLNavigatorSmoothChangeVector *FCameraSmoothAnimator_RelPos;
 	void __fastcall GetInput(TButton *Sender);
-//	Vectortypes::TVector4f __fastcall (__closure *TGLNavigatorSmoothChangeVectorGetEvent)
-//		(TGLNavigatorSmoothChangeVector* const ASender);
-	Vectorgeometry::TVector __fastcall OnGetCameraPosition(
+	Glvectortypes::TVector4f __fastcall (__closure *TGLNavigatorSmoothChangeVectorGetEvent)
+		(TGLNavigatorSmoothChangeVector* const ASender);
+	Glvectorgeometry::TVector __fastcall OnGetCameraPosition(
 					   TGLNavigatorSmoothChangeVector* const ASender);
 	void __fastcall OnSetCameraPosition(TGLNavigatorSmoothChangeVector* const ASender,
-					   const Vectortypes::TVector4f &AValue);
+					   const Glvectortypes::TVector4f &AValue);
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
 };

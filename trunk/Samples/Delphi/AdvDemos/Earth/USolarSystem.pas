@@ -13,7 +13,9 @@ unit USolarSystem;
 
 interface
 
-uses VectorGeometry;
+uses
+  SysUtils,
+  GLVectorGeometry;
 
 type
 
@@ -139,8 +141,6 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-uses SysUtils;
 
 // GMTDateTimeToJulianDay
 //

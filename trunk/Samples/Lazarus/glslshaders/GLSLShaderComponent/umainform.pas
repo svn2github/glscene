@@ -19,9 +19,9 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLViewer, GLScene, GLObjects,
-  GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
+  GLGraph, GLVectorLists, GLVectorTypes, GLVectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
 
   // FileFormats
   GLFileMD2, GLFileMS3D, GLFile3DS;

@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 140
   BorderWidth = 5
   Caption = 'Splines'
-  ClientHeight = 345
-  ClientWidth = 460
+  ClientHeight = 385
+  ClientWidth = 503
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,17 +12,16 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 460
-    Height = 345
+    Width = 503
+    Height = 385
     Camera = GLCamera1
     Buffer.BackgroundColor = clTeal
-    FieldOfView = 163.507354736328100000
+    FieldOfView = 165.200805664062500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

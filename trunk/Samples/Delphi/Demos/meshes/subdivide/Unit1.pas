@@ -3,10 +3,14 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, GLScene, GLVectorFileObjects, GLObjects, GLTexture,
-  GLWin32Viewer, VectorLists, ComCtrls, ExtCtrls, GLCadencer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState;
+  Windows, Messages, SysUtils, Classes, Jpeg, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls,
+
+  // GLS
+  GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLWin32Viewer,
+  GLMeshUtils, GLVectorGeometry, GLVectorLists, GLCadencer, GLCrossPlatform,
+  GLMaterial, GLCoordinates, GLState, GLBaseClasses, GLUtils,
+  TGA, GLFileObj, GLFile3DS, GLFileMD2, GLFileSMD;
 
 type
   TForm1 = class(TForm)
@@ -52,11 +56,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  MeshUtils, VectorGeometry,
-  Jpeg, TGA, GLFileObj, GLUtils,
-  GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);
 begin
@@ -151,7 +150,7 @@ begin
             bufRemap.Assign(firstRemap);
             RemapAndCleanupReferences(morphTris, bufRemap);
 
-            morphNorms:=MeshUtils.BuildNormals(morphTris, bufRemap);
+            morphNorms:=GLMeshUtils.BuildNormals(morphTris, bufRemap);
 
             SubdivideTriangles(TrackBar1.Position*0.1, morphTris, bufRemap, morphNorms);
 

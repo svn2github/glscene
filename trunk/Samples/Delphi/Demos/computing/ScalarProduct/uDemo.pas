@@ -4,7 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, GLSCUDACompiler, GLSCUDAContext, GLSCUDA;
+  Dialogs, StdCtrls,
+  //CUDA
+  GLSCUDACompiler, GLSCUDAContext, GLSCUDA, GLS_CUDA_Utility;
+
 
 type
   TForm1 = class(TForm)
@@ -41,9 +44,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLS_CUDA_Utility;
 
 const
   {: Total number of input vector pairs; arbitrary }

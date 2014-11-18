@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Jpeg, ExtCtrls,  ComCtrls,
+  Jpeg, ExtCtrls,  ComCtrls, StdCtrls,
 
   //GLScene
-  GLScene, GLTerrainRenderer, GLObjects, GLHeightData,
-  GLCadencer, StdCtrls, GLTexture, GLSkydome, GLWin32Viewer, VectorGeometry,
+  GLScene, GLObjects, GLKeyboard, GLTerrainRenderer, GLHeightData,
+  GLCadencer, GLTexture, GLSkydome, GLWin32Viewer, GLVectorGeometry,
   GLLensFlare, GLBumpmapHDS, GLTexCombineShader, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLState, GLKeyboard, GLUtils;
+  GLCrossPlatform, GLState, GLUtils, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -83,7 +83,7 @@ begin
    SPSun.Material.Texture.Image.LoadFromFile('flare1.bmp');
 
    // apply texture map scale (our heightmap size is 256)
-   TerrainRenderer1.TilesPerTexture:=1;//256/TerrainRenderer1.TileSize;
+   TerrainRenderer1.TilesPerTexture:=1; //256/TerrainRenderer1.TileSize;
    TerrainRenderer1.MaterialLibrary:=GLMaterialLibrary1;
 
    // Could've been done at design time, but then it hurts the eyes ;)
@@ -175,7 +175,7 @@ end;
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
    case Key of
-      'w', 'W' : with GLMaterialLibrary1.Materials[0].Material do begin
+       'w', 'W' : with GLMaterialLibrary1.Materials[0].Material do begin
          if PolygonMode=pmLines then
             PolygonMode:=pmFill
          else PolygonMode:=pmLines;

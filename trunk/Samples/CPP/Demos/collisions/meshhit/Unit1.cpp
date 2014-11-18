@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLGeomObjects"
@@ -34,7 +36,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button,
 		  TShiftState Shift, int X, int Y)
 {
-   Vectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
+   Glvectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
    // retrieve raycasting data:
    //    rayStart is obtained for camera and screen position
    //    rayVector is the camera direction (i.e direction to target since our camera is targeted)
@@ -69,7 +71,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shi
 void __fastcall TForm1::GLSceneViewer2MouseDown(TObject *Sender, TMouseButton Button,
 		  TShiftState Shift, int X, int Y)
 {
-   Vectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
+   Glvectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
    // retrieve raycasting data:
    //    rayStart is the eye (camera) position
    //    rayVector is computed from screen position

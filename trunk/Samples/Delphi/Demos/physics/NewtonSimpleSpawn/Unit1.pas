@@ -3,30 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLScene,
-  GLObjects,
-  GLCoordinates,
-  GLSimpleNavigation,
-  GLCadencer,
-  GLWin32Viewer,
-  GLCrossPlatform,
-  BaseClasses,
-  GLNGDManager,
-  StdCtrls,
-  GLGeomObjects,
-  GLBitmapFont,
-  GLWindowsFont,
-  GLHUDObjects,
-  ExtCtrls;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLCadencer, GLWin32Viewer,
+  GLCrossPlatform, GLBaseClasses, GLNGDManager, GLGeomObjects, GLBitmapFont,
+  GLWindowsFont, GLHUDObjects;
 
 type
   TForm1 = class(TForm)
@@ -56,9 +38,9 @@ type
     procedure Button5Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var

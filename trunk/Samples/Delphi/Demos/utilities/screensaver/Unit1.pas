@@ -7,7 +7,7 @@ uses
 
   //GLScene
   GLScene, GLScreenSaver, GLObjects, GLBehaviours, GLCadencer,
-  GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

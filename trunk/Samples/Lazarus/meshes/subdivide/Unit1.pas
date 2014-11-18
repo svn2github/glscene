@@ -11,8 +11,8 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, GLScene, GLVectorFileObjects, GLObjects, GLTexture,
-  GLLCLViewer, VectorLists, ComCtrls, ExtCtrls, GLCadencer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState;
+  GLLCLViewer, GLVectorLists, ComCtrls, ExtCtrls, GLCadencer,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState;
 
 type
   TForm1 = class(TForm)
@@ -59,7 +59,7 @@ implementation
 
 {$R *.lfm}
 
-uses GLUtils, MeshUtils, VectorGeometry, TGA, GLFileOBJ,
+uses GLUtils, MeshUtils, GLVectorGeometry, TGA, GLFileOBJ,
      GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);

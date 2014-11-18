@@ -12,7 +12,7 @@
 #include <Vcl.ExtCtrls.hpp>
 
 #include "AsyncTimer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBehaviours.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -72,7 +72,7 @@ __published:	// IDE-managed Components
 	TGLLightSource *GLLightSource1;
 	TGLMaterialLibrary *GLMaterialLibrary1;
 	TGLMemoryViewer *MemView;
-	TAsyncTimer *AsyncTimer1;
+	TGLAsyncTimer *AsyncTimer1;
 	TGLCadencer *GLCadencer1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ViewerMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,

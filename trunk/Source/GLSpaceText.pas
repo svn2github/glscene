@@ -58,7 +58,7 @@ uses
 {$ENDIF}
 
   // GLScene
-  GLScene, OpenGLTokens, GLTexture, GLContext, VectorGeometry, GLStrings,
+  GLScene, OpenGLTokens, GLTexture, GLContext, GLVectorGeometry, GLStrings,
   GLRenderContextInfo, GLState;
 
 type

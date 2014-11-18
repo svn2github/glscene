@@ -3,16 +3,15 @@ unit UnitM;
 interface
 
 uses
-  // VCL
   Windows, Messages, SysUtils, Graphics, Controls, Forms, ExtCtrls, Classes,
-  Dialogs, StdCtrls,
+  Dialogs, StdCtrls, Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLGeomObjects,
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
 
-  // File forrmats
-  JPEG, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  // File formats
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLUtils;
 
 type
@@ -27,7 +26,7 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCube1: TGLCube;
     MainPanel: TPanel;
-    ShoTitleCheckbox: TCheckBox;
+    ShowTitleCheckbox: TCheckBox;
     Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -37,7 +36,7 @@ type
       X, Y: Integer);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure ShoTitleCheckboxClick(Sender: TObject);
+    procedure ShowTitleCheckboxClick(Sender: TObject);
     procedure MainPanelResize(Sender: TObject);
   private
     { Private declarations }
@@ -48,6 +47,9 @@ type
 
 var
   Form1: TForm1;
+  sMessage: String = 'You have selected the item ';
+  sMenu: String = 'menu line ';
+
 
 implementation
 
@@ -64,12 +66,12 @@ begin
   GameMenu.TitleHeight := 80;
   GameMenu.TitleWidth := 200;
   GameMenu.Font := GLWindowsBitmapFont1;
-  GameMenu.Items.Add('test line 1');
-  GameMenu.Items.Add('test line 2');
-  GameMenu.Items.Add('test line 3');
-  GameMenu.Items.Add('test line 4');
-  GameMenu.Items.Add('test line 5');
-  GameMenu.Items.Add('test line 6');
+  GameMenu.Items.Add(sMenu+'1');
+  GameMenu.Items.Add(sMenu+'2');
+  GameMenu.Items.Add(sMenu+'3');
+  GameMenu.Items.Add(sMenu+'4');
+  GameMenu.Items.Add(sMenu+'5');
+  GameMenu.Items.Add(sMenu+'6');
   GameMenu.Spacing := 1;
   GameMenu.Selected := 0;
   GameMenu.Position.Y := 200;
@@ -78,11 +80,13 @@ end;
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if IsKeyDown('W') then GameMenu.SelectPrev;
+//  if IsKeyDown(VK_UP) then GameMenu.SelectPrev;
   if IsKeyDown('S') then GameMenu.SelectNext;
+//  if IsKeyDown(VK_DOWN) then GameMenu.SelectNext;
   if IsKeyDown(VK_RETURN) then
   begin
     if GameMenu.Selected <> -1 then
-      ShowMessage('You have selected option: ' + GameMenu.SelectedText);
+      ShowMessage(sMessage + '"'+GameMenu.SelectedText+ '"');
   end;
 end;
 
@@ -103,10 +107,10 @@ procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
 begin
   GameMenu.MouseMenuSelect(X, Y);
   if GameMenu.Selected <> -1 then
-    ShowMessage('You have selected option: ' + GameMenu.SelectedText);
+    ShowMessage(sMessage + '"'+GameMenu.SelectedText+'"');
 end;
 
-procedure TForm1.ShoTitleCheckboxClick(Sender: TObject);
+procedure TForm1.ShowTitleCheckboxClick(Sender: TObject);
 begin
   if GameMenu.TitleHeight = 0 then
     GameMenu.TitleHeight := 80

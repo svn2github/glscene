@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
   //GLScene
-  GLScene, VectorGeometry, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses,
-  GLSimpleNavigation, GLObjects, GLCoordinates, GLSCUDA, GLSCUDACompiler,
-  GLSCUDAContext, GLContext, GLSCUDAGraphics, GLMaterial, GLCustomShader,
-  GLSLShader;
+  GLScene, GLVectorGeometry, GLCadencer, GLWin32Viewer, GLCrossPlatform,
+  GLBaseClasses, GLSimpleNavigation, GLObjects, GLCoordinates, GLContext,
+  GLSCUDA, GLSCUDACompiler,  GLSCUDAContext, GLSCUDAGraphics,
+  GLMaterial, GLCustomShader, GLSLShader;
 
 type
   TForm1 = class(TForm)

@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 153
   Top = 28
-  Width = 520
-  Height = 541
   BorderIcons = [biSystemMenu, biMinimize]
-  Caption = 'Motion Blur Demo'
+  Caption = 'Motion Blur'
+  ClientHeight = 482
+  ClientWidth = 509
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,17 +20,26 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 504
-    Height = 503
+    Width = 509
+    Height = 447
     Camera = Camera
     VSync = vsmSync
     PostRender = GLSceneViewerPostRender
     Buffer.BackgroundColor = clNavy
-    FieldOfView = 157.511596679687500000
+    FieldOfView = 154.779571533203100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     TabOrder = 0
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 447
+    Width = 509
+    Height = 35
+    Align = alBottom
+    Caption = 'FPS'
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
@@ -48,8 +57,10 @@ object Form1: TForm1
       Up.Coordinates = {EF83843EE946773F0000008000000000}
       object Torus: TGLTorus
         Scale.Coordinates = {0000A0400000A0400000A04000000000}
-        MajorRadius = 0.400000005960464500
+        MajorRadius = 0.400000005960464400
         MinorRadius = 0.100000001490116100
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
       end
     end
     object DummyCube: TGLDummyCube
@@ -79,6 +90,7 @@ object Form1: TForm1
       Position.Coordinates = {0000804300008043000000000000803F}
       Width = 512.000000000000000000
       Height = 512.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object Camera: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -93,13 +105,13 @@ object Form1: TForm1
     Scene = GLScene1
     MaxDeltaTime = 1.000000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 40
+    Left = 88
     Top = 8
   end
   object Timer1: TTimer
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 40
+    Left = 304
+    Top = 16
   end
 end

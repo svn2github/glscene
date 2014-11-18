@@ -47,11 +47,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLScene, GLCrossPlatform, BaseClasses,
+  GLScene, GLCrossPlatform, GLBaseClasses,
 {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.Types, VCL.Forms
 {$ELSE}
-  Types,Forms
+  Classes, Types, Forms
 {$ENDIF}
 
 {$IFDEF FPC}

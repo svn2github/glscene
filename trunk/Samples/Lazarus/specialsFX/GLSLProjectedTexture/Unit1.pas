@@ -26,11 +26,11 @@ uses
   GLFile3DS,
   GLFileLMTS,
   GLContext,
-  VectorGeometry,
+  GLVectorGeometry,
   GLUserShader,
   GLProjectedTextures,
   GLCrossPlatform,
-  GLGraphics, GLMaterial, GLCoordinates, BaseClasses;
+  GLGraphics, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

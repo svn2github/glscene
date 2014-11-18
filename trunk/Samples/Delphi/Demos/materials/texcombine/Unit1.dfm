@@ -39,7 +39,7 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 264
     Top = 22
-    Width = 69
+    Width = 68
     Height = 19
     Caption = 'Textures'
     Font.Charset = DEFAULT_CHARSET

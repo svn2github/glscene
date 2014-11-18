@@ -13,7 +13,7 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLScene"
 #pragma link "GLFile3DS"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma resource "*.dfm"
@@ -49,7 +49,7 @@ void __fastcall TForm1::GLSceneViewer2MouseDown(TObject * Sender,
 												TMouseButton Button,
 												TShiftState Shift, int X, int Y)
 {
-  Vectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
+  Glvectorgeometry::TVector rayStart, rayVector, iPoint, iNormal;
   __int64 t;
 
   SetVector(rayStart, GLCamera2->AbsolutePosition);

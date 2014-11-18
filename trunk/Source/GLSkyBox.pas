@@ -34,11 +34,11 @@ uses
   Classes,
   GLScene,
   GLMaterial,
-  VectorGeometry,
+  GLVectorGeometry,
   OpenGLTokens,
   XOpenGL,
   GLRenderContextInfo
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 type
 

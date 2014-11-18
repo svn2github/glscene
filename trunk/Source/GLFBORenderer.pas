@@ -32,8 +32,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, VectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
-  GLMaterial, GLRenderContextInfo, GLState;
+  Classes, SysUtils,
+  //GLS
+  GLVectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
+  GLMaterial, GLRenderContextInfo, GLState, OpenGLTokens,
+  GLTextureFormat,
+  {$IFDEF GLS_DELPHI} GLVectorTypes, {$ENDIF}
+  GLMultisampleImage
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -234,14 +240,6 @@ type
   end;
 
 implementation
-
-uses
-  SysUtils,
-  OpenGLTokens,
-  GLTextureFormat,
-  {$IFDEF GLS_DELPHI} VectorTypes, {$ENDIF}
-  GLMultisampleImage
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 { TGLFBORenderer }
 

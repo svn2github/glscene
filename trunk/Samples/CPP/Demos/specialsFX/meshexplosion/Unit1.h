@@ -15,7 +15,7 @@
 #include "GLCadencer.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLCoordinates.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLExplosionFx.hpp"
 #include "GLVectorFileObjects.hpp"

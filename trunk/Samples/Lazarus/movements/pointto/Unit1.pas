@@ -13,8 +13,8 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLObjects, GLScene, StdCtrls, VectorGeometry, GLCadencer, GLLCLViewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLObjects, GLScene, StdCtrls, GLVectorGeometry, GLCadencer, GLLCLViewer,
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

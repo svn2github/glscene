@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -24,8 +25,6 @@ object Form1: TForm1
     FieldOfView = 152.260620117187500000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 466
-    ExplicitHeight = 325
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone

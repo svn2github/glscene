@@ -109,7 +109,7 @@ interface
 {.$define MULTITHREADOPENGL}
 
 uses
-  OpenGLTokens, VectorTypes, SysUtils,
+  SysUtils, OpenGLTokens, GLVectorTypes,
   {$IFDEF MSWINDOWS}
     Windows
   {$ENDIF }

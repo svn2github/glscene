@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 124
   Top = 96
-  Width = 618
-  Height = 445
-  Caption = 'Form1'
+  Caption = 'Tiles'
+  ClientHeight = 406
+  ClientWidth = 602
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -19,9 +20,9 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 474
-    Height = 407
+    Height = 406
     Camera = GLCamera
-    FieldOfView = 152.391708374023400000
+    FieldOfView = 152.326324462890600000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
@@ -30,7 +31,7 @@ object Form1: TForm1
     Left = 474
     Top = 0
     Width = 128
-    Height = 407
+    Height = 406
     Align = alRight
     BevelOuter = bvLowered
     Font.Charset = DEFAULT_CHARSET
@@ -64,7 +65,6 @@ object Form1: TForm1
       Width = 113
       Height = 22
       Style = csDropDownList
-      ItemHeight = 14
       TabOrder = 0
     end
     object BUPack: TButton
@@ -131,14 +131,14 @@ object Form1: TForm1
     object GLXYZGrid: TGLXYZGrid
       AntiAliased = True
       XSamplingScale.Min = -30.000000000000000000
-      XSamplingScale.max = 30.000000000000000000
-      XSamplingScale.step = 1.000000000000000000
+      XSamplingScale.Max = 30.000000000000000000
+      XSamplingScale.Step = 1.000000000000000000
       YSamplingScale.Min = -30.000000000000000000
-      YSamplingScale.max = 30.000000000000000000
-      YSamplingScale.step = 1.000000000000000000
+      YSamplingScale.Max = 30.000000000000000000
+      YSamplingScale.Step = 1.000000000000000000
       ZSamplingScale.Min = -10.000000000000000000
-      ZSamplingScale.max = 10.000000000000000000
-      ZSamplingScale.step = 1.000000000000000000
+      ZSamplingScale.Max = 10.000000000000000000
+      ZSamplingScale.Step = 1.000000000000000000
     end
     object DCSelection: TGLDummyCube
       CubeSize = 1.000000000000000000

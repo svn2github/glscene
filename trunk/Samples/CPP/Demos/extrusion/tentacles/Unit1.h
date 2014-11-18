@@ -13,13 +13,13 @@
 #include "GLObjects.hpp"
 #include "GLExtrusion.hpp"
 #include "GLCadencer.hpp"
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLTexture.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLColor.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLCoordinates.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

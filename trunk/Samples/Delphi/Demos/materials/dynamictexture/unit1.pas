@@ -1,17 +1,13 @@
 unit Unit1;
 
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
-
 interface
 
 uses
-  {$IFDEF LCL}lcltype, LResources, GLLCLViewer,{$ELSE}GLWin32Viewer,{$ENDIF}
-  {$IFDEF WIN32} Windows,{$ENDIF}
-  SysUtils, Classes, Controls, Forms, ExtCtrls,
-  GLScene, GLObjects, GLTexture, GLCadencer, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  Windows, SysUtils, Classes, Controls, Forms, ExtCtrls,
+  //GLScene
+  GLScene, GLWin32Viewer, GLObjects, GLTexture, GLCadencer,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLRenderContextInfo, GLContext, GLDynamicTexture, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -45,9 +41,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLUtils, GLContext, GLDynamicTexture;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -169,7 +162,8 @@ begin
     s := PBOText[img.UsePBO];
   end;
 
-  Caption := Format('%s - %s', [GLSceneViewer1.FramesPerSecondText, s]);
+  Caption := Format('Dynamic Texture '+'%s - %s',
+      [GLSceneViewer1.FramesPerSecondText, s + ' F2,F3,F4']);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

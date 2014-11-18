@@ -9,7 +9,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLLCLViewer, GLScene, GLObjects, GLHUDObjects,
   GLGeomObjects, GLCadencer, ExtCtrls, GLBlur, GLTexture, ComCtrls,
-  StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  StdCtrls, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

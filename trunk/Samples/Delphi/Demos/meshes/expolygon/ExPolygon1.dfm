@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 256
   Top = 188
-  Width = 783
-  Height = 540
-  Caption = 'Form1'
+  Caption = 'Extruded Polygon'
+  ClientHeight = 355
+  ClientWidth = 512
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,24 +11,25 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 767
-    Height = 502
+    Width = 512
+    Height = 355
     Camera = Camera
-    FieldOfView = 118.274116516113300000
+    FieldOfView = 99.599670410156250000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 720
-    Top = 40
+    Left = 48
+    Top = 32
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000FAC30000FAC3000048440000803F}
@@ -61,15 +62,15 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'MatSurface'
-        Material.FrontProperties.Diffuse.Color = {6666263F0000003F14AEC73E0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {6666263F0000003F14AEC73E0000803F}
       end
       item
         Name = 'MatInner'
-        Material.FrontProperties.Diffuse.Color = {C3F5683F5C8F423F6666263F0000803F}
         Tag = 0
+        Material.FrontProperties.Diffuse.Color = {C3F5683F5C8F423F6666263F0000803F}
       end>
-    Left = 720
-    Top = 72
+    Left = 144
+    Top = 32
   end
 end

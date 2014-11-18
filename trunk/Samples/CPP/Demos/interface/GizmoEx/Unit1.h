@@ -13,7 +13,7 @@
 #include <Vcl.Buttons.hpp>
 #include <Vcl.ComCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBitmapFont.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -143,9 +143,9 @@ __published:	// IDE-managed Components
 
 private:	// User declarations
 	int mx, my;
-	Vectorgeometry::TVector MousePos,LostMousePos;
+	Glvectorgeometry::TVector MousePos,LostMousePos;
 	bool MouseMoving;
-	Vectorgeometry::TVector pos;
+	Glvectorgeometry::TVector pos;
 	TGLBaseSceneObject *FObj;
 	TGLGizmoEx *Gizmo;
 	float FVectorLength;

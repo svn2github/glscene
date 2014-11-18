@@ -15,7 +15,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, GLColor,
   Dialogs, GLCadencer, GLScene, GLObjects, GLParticles, GLLCLViewer,
   ExtCtrls, GLMultiProxy, StdCtrls, GLTexture, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -56,7 +56,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry;
+uses GLVectorGeometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

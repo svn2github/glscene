@@ -773,7 +773,7 @@ object Form1: TForm1
   end
   object GLCameraController1: TGLCameraController
     Camera = GLCamera
-    CameraTarget = dcSphere
+    CameraTarget = GLCamera
     soSafeDistance = 10.000000000000000000
     soTimeToSafePlacement = 1.000000000000000000
     soTimeToOrbit = 2.000000000000000000

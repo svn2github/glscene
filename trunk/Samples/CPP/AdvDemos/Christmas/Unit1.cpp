@@ -7,7 +7,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
@@ -28,8 +28,8 @@
 #pragma link "GLSMBASS"
 #pragma link "GLFile3DS"
 #pragma link "GLFileWAV"
-
 #pragma link "GLScreenSaver"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -62,7 +62,7 @@ void __fastcall TForm1::ViewerMouseMove(TObject *Sender, TShiftState Shift, int 
 {
    if (Shift.Contains(ssLeft))
    {
-	  GLCamera->MoveAroundTarget(my-Y, mx-X);
+	  Camera->MoveAroundTarget(my-Y, mx-X);
 	  mx = X; my = Y;
    }
 }
@@ -79,18 +79,17 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
    Viewer->ResetPerformanceMonitor();
 
 
-/*
-   if (GLSMBASS->Active && (bStream=0))
+   if ((GLSMBASS->Active) && (bStream==0))
    {
 	  bStream = BASS_StreamCreateFile(false, PAnsiChar("Jingle_Bells_64.mp3"), 0, 0, BASS_STREAM_AUTOFREE);
 	  BASS_ChannelPlay(bStream, false);
    }
-*/
 
    DecodeDate(Now(), y, m, d);
-   t = EncodeDate(y, 12, 25) - Now();
+///   t = EncodeDate(y, 12, 25) - Now(); //Merry Christmas
+   t = EncodeDate(y+1, 01, 01) - Now(); //Happy New Year!
    if ((double)t<0)
-	  FTCountDown->Text = "Merry Christmas!";
+	  FTCountDown->text = "Merry Christmas!";
    if (((double)t<1) && ((double)t>-1))
 	  DCGifts->Visible = true;
    if ((double)t>=2)
@@ -101,7 +100,7 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 		 buf = buf + IntToStr(i)+" hours...";
 	  else
 		buf = buf + IntToStr(i)+" hour...";
-	  FTCountDown->Text = buf;
+	  FTCountDown->text = buf;
    }
    else
    {
@@ -114,12 +113,12 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 		  buf = buf + IntToStr(i)+" minutes...";
 		else
 		  buf = buf + IntToStr(i)+" minute...";
-		FTCountDown->Text = buf;
+		FTCountDown->text = buf;
 	  }
 	  else
 	  {
 		 t = (double)t*60;
-		 FTCountDown->Text = IntToStr(Trunc((double)t)) + " minutes, "
+		 FTCountDown->text = IntToStr(Trunc((double)t)) + " minutes, "
 						   + IntToStr(Round(System::Frac((double)t)*60)) + " seconds...";
 	  }
    }
@@ -142,15 +141,14 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender, const double deltaTi
 	  HSGLScene->Material->FrontProperties->Diffuse->Alpha =
 		 HSGLScene->Material->FrontProperties->Diffuse->Alpha-deltaTime*0.15;
 	  if (HSGLScene->Material->FrontProperties->Diffuse->Alpha < 0.01)
-		Visible = false;
+		HSGLScene->Visible = false;
    }
-
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::FormResize(TObject *Sender)
 {
-   GLCamera->SceneScale = (float)Width/640;
+   Camera->SceneScale = (float)Width/640;
    if (Visible)
 	  HSGLScene->Position->X = Width-200;
    if (Width>=Screen->Width)
@@ -198,9 +196,4 @@ void __fastcall TForm1::GLScreenSaver1Preview(TObject *Sender, HWND previewHwnd)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLScreenSaver1PropertiesRequested(TObject *Sender)
-{
-   ShowMessage( "GLScene Christmas 2014\r\http://glscene.org");
-}
-//---------------------------------------------------------------------------
 

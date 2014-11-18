@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLLCLViewer, GLTexture,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
 

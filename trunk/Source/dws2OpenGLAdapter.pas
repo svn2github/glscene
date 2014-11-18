@@ -40,7 +40,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, OpenGLTokens, OpenGLAdapter, GLContext, VectorGeometry;
+  dws2Functions, OpenGLTokens, OpenGLAdapter, GLContext, GLVectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)
@@ -2023,7 +2023,7 @@ begin
   inherited;
   FUnitName := 'OpenGLAdapter';
   FDependencies.Add('GLContext');
-  FDependencies.Add('VectorGeometry');
+  FDependencies.Add('GLVectorGeometry');
 end;
 
 // ----------

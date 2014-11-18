@@ -37,7 +37,7 @@ uses
   Classes, SysUtils, Forms,
 
   //GLScene
-  GLSound, GLScene, Bass, VectorGeometry;
+  GLSound, GLScene, Bass, GLVectorGeometry;
 
 type
 

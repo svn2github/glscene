@@ -1,8 +1,9 @@
 object Form1: TForm1
   Left = 333
   Top = 166
-  Width = 637
-  Height = 527
+  Caption = 'Archive Loader'
+  ClientHeight = 483
+  ClientWidth = 629
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,12 +17,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 621
-    Height = 489
+    Width = 629
+    Height = 483
     Camera = GLCamera
     VSync = vsmSync
     Buffer.AntiAliasing = aa4xHQ
-    FieldOfView = 156.884857177734400000
+    FieldOfView = 156.605575561523400000
     Align = alClient
     TabOrder = 0
   end
@@ -75,7 +76,6 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Tag = 0
       end>
-    TexturePaths = '..\..\..\media\'
     Left = 127
     Top = 128
   end

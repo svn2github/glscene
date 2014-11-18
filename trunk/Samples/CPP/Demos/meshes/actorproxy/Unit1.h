@@ -18,16 +18,17 @@
 #include "GLObjects.hpp"
 #include "GLGeomObjects.hpp"
 #include "GLProxyObjects.hpp"
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLCadencer.hpp"
 #include "GLTexture.hpp"
 #include "GLMaterial.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLFileSMD.hpp"
 #include "JPEG.hpp"
 #include "GLUtils.hpp"
+#include "GLBaseClasses.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

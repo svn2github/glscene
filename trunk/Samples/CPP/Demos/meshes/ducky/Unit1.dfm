@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 192
   Top = 119
-  Caption = 'Form1'
+  Caption = 'Ducky'
   ClientHeight = 420
   ClientWidth = 652
   Color = clBtnFace
@@ -20,7 +20,6 @@ object Form1: TForm1
     Height = 420
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 434
     object Label1: TLabel
       Left = 16
       Top = 32

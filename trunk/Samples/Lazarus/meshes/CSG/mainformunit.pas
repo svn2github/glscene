@@ -31,7 +31,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG, GLLCLViewer,
   GLObjects, GLTexture, GLFile3ds, ExtCtrls, ComCtrls, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses, GLState, GLSimpleNavigation;
+  GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLSimpleNavigation;
 
 type
 
@@ -85,7 +85,7 @@ var
 
 implementation
 
-uses VectorGeometry, GLUtils;
+uses GLVectorGeometry, GLUtils;
 
 {$R *.lfm}
 

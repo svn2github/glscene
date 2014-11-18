@@ -9,7 +9,7 @@
 #include <ExtCtrls.hpp>
 #include <Forms.hpp>
 #include "OpenGL1x.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -22,13 +22,13 @@
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLKeyboard.hpp"
-#include <GLGeomObjects.hpp>    // Pascal unit
-#include <VectorGeometry.hpp>   // Pascal unit
-#include <Octree.hpp>           // Pascal unit
-#include <VectorLists.hpp>      // Pascal unit
-#include <GLNavigator.hpp>      // Pascal unit
-#include <GLCollision.hpp>      // Pascal unit
-#include <GLTexture.hpp>        // Pascal unit
+#include "GLGeomObjects.hpp"
+#include "GLVectorGeometry.hpp"
+#include "GLOctree.hpp"
+#include "GLVectorLists.hpp"
+#include "GLNavigator.hpp"
+#include "GLCollision.hpp"
+#include "GLTexture.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1:public TForm

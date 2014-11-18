@@ -2,16 +2,24 @@ unit FMain;
 
 interface
 
+{$I GLScene.inc}
+
 uses
+  {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,  Vcl.Dialogs,
+  Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
+  {$ELSE}
+  Windows, Messages, SysUtils, Classes, Graphics, Controls,
+  Forms, Dialogs,  ExtCtrls, Jpeg,
+  {$ENDIF}
 
   //GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, VectorGeometry,
+  GLTexture, GLCadencer, GLSkydome, GLParticleFX, GLVectorGeometry,
   GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects,
   GLScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
-  GLCoordinates, BaseClasses, GLCrossPlatform, GLColor,  Jpeg,
+  GLCoordinates, GLBaseClasses, GLCrossPlatform, GLColor,
   GLSound, GLSMBASS, GLFileWAV, Bass;
 
 type
@@ -68,6 +76,7 @@ type
     ScreenSaver: TGLScreenSaver;
     Timer: TTimer;
     HUDSprite: TGLHUDSprite;
+    FTYear: TGLFlatText;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -82,7 +91,6 @@ type
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ViewerDblClick(Sender: TObject);
-    procedure ScreenSaverPropertiesRequested(Sender: TObject);
   private
     { Private declarations }
   public
@@ -188,9 +196,10 @@ begin
       bStream:=BASS_StreamCreateFile(false, PAnsiChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
       BASS_ChannelPlay(bStream, False);
    end;
-//   t:=EncodeDate(y, 12, 25)-Now;     //Merry Cristmas!
-//   t:=EncodeDate(2014, 01, 07)-Now;  //Merry Cristmas for Orthodox!
-   t:=EncodeDate(2014, 01, 01)-Now;    //Happy New Year!
+   DecodeDate(Now(), y, m, d);
+   FTYear.Text:= IntToStr(y+1)+' !';
+// t:=EncodeDate(y, 12, 25)-Now();     //Merry Cristmas!
+   t:=EncodeDate(y+1, 01, 01)-Now();    //Happy New Year!
    if (t<1) and (t>-1) then
       DCGifts.Visible:=True;
    if t>=2 then
@@ -224,7 +233,6 @@ begin
    end;
 end;
 
-
 procedure TMain.ScreenSaverCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
@@ -240,12 +248,6 @@ end;
 procedure TMain.ScreenSaverPreview(Sender: TObject; previewHwnd: HWND);
 begin
   inPreview:=True;
-end;
-
-procedure TMain.ScreenSaverPropertiesRequested(Sender: TObject);
-begin
-   ShowMessage( 'GLScene Merry Christmas and Happy New Year 2014'#13#10#13#10
-               +'http://www.sourceforge.net/projects/glscene');
 end;
 
 end.

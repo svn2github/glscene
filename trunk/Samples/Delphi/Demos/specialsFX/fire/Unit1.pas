@@ -1,26 +1,14 @@
-{: The fire special effect basic sample.<p>
-
-   If you look at the code you won't see anything fancy. The FireFX is a dynamic
-   special effect (driven by a cadencer). Making use of it means two things :<br>
-   - dropping a FirexFXManager, this one controls fire particle systems aspects<br>
-   - adding a FireFX effect to the object you want to see burning (here, a sphere)<br>
-   You may have multiple objects sharing the same FireFXManager, this means they
-   will all look the same, but also that the particle system calculations are
-   made only once.<p>
-
-   This effect looks cool but is fill-rate hungry, but un-textured fillrate
-   hungry, ie. video card memory bandwith is not an issue. Anyway, you can
-   always make it look nice with smaller and/or less particles.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours, ExtCtrls,
-  VectorGeometry, GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  ExtCtrls,
+  //GLS
+  GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours,
+  GLVectorGeometry, GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -41,9 +29,9 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 
@@ -71,7 +59,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   Caption:='GLScene Fire - '+Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

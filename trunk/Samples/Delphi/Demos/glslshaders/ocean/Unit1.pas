@@ -3,38 +3,14 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLWin32Viewer,
-  GLScene,
-  GLTexture,
-  GLObjects,
-  GLUtils,
-  ComCtrls,
-  GLContext,
-  Jpeg,
-  TGA,
-  VectorGeometry,
-  GLGeomObjects,
-  GLCadencer,
-  ExtCtrls,
-  GLUserShader,
-  GLGraph,
-  VectorTypes,
-  GLSkydome,
-  VectorLists,
-  GLCrossPlatform,
-  GLMaterial,
-  GLCoordinates,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLSimpleNavigation;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, Jpeg,
+  //GLS
+  GLWin32Viewer, GLScene, GLTexture, GLObjects, GLUtils, ComCtrls, GLContext,
+  GLVectorGeometry, GLGeomObjects, GLCadencer, GLUserShader, GLGraph,
+  GLVectorTypes, GLSkydome, GLVectorLists, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLSimpleNavigation,
+  GLTextureFormat, GLColor, OpenGLTokens, TGA;
 
 type
   TForm1 = class(TForm)
@@ -83,11 +59,6 @@ var
   Form1: TForm1;
 
 implementation
-
-uses
-  GLTextureFormat,
-  GLColor,
-  OpenGLTokens;
 
 {$R *.dfm}
 

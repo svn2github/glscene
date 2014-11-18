@@ -30,7 +30,7 @@ interface
 uses
   Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
   ExtCtrls, StdCtrls, GLCadencer, GLLCLViewer, GLColor, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -58,7 +58,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils;
+uses GLVectorGeometry, SysUtils;
 
 const
   cNbPlanes = 30;

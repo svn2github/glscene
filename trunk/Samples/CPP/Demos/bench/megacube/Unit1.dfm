@@ -20,7 +20,7 @@ object Form1: TForm1
     Width = 593
     Height = 408
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBackground
+    Buffer.BackgroundColor = clBlack
     FieldOfView = 152.456802368164100000
     Align = alClient
     TabOrder = 0

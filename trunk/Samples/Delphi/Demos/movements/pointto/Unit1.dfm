@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 110
   BorderWidth = 3
   Caption = 'Point To'
-  ClientHeight = 266
-  ClientWidth = 443
+  ClientHeight = 254
+  ClientWidth = 431
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,16 +12,17 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 443
-    Height = 266
+    Width = 431
+    Height = 254
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 138.793518066406300000
+    FieldOfView = 137.020797729492200000
     Align = alClient
     TabOrder = 0
   end

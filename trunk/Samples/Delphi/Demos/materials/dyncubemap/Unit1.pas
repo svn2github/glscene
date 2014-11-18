@@ -3,10 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLScene, GLWin32Viewer, StdCtrls, GLSkydome,
-  ExtCtrls, GLCadencer, GLParticleFX, OpenGL1x, GLTeapot, GLGeomObjects,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  Windows, Messages, SysUtils, OpenGL, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, StdCtrls,
+
+  //GLScene
+  GLObjects, GLScene, GLWin32Viewer, GLSkydome,
+  GLCadencer, GLParticleFX, GLTeapot, GLGeomObjects,
+  GLContext, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -51,9 +54,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLContext;
 
 procedure TForm1.GenerateCubeMap;
 begin

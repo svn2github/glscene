@@ -1,33 +1,14 @@
-{: Benchmark for GLCanvas.<p>
-
-   This project pits TGLCanvas against TCanvas in direct mode (hardware
-   acceleration should be available on both sides).<p>
-   You may usually bet on TGLCanvas being 3 to 5 times faster, but on fast 3D
-   hardware, or when PenWidth is not 1, the performance ratio can reach 1:100.<p>
-   However, this is not really an apples-to-apples comparison, because GDI
-   (or any other software implementations) are useless when it comes to drawing
-   to an OpenGL buffer, so, this is more to show that GLCanvas is far from
-   a "decelerator" if you have some 2D stuff to draw on your 3D Scene.<p>
-
-   Figures for PenWidth = 1, GLCanvas / GDI<p>
-
-   CPU         Graphics Board    Lines          Ellipses         Points       TextOut
-
-   Tbird 1.2   GF3 Ti200         5.2 / 227      64 /  756        27 / 408     75 / 208
-   ----29/09/02 - Added TextOut bench
-   Tbird 1.2   GF2 Pro           7.1 / 162       92 /  557       40 / 223
-   Duron 800   TNT2 M64        105.0 / 571      400 / 1148      126 / 676
-   ----21/01/02 - Initial
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, ExtCtrls, StdCtrls, GLWin32Viewer,
-  GLBitmapFont, GLWindowsFont, GLTexture, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLRenderContextInfo;
+  Dialogs, GLScene, ExtCtrls, StdCtrls,
+
+  //GLS
+  GLWin32Viewer, GLBitmapFont, GLWindowsFont, GLCoordinates, GLCrossPlatform,
+  GLBaseClasses, GLCanvas, GLTexture, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -68,8 +49,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses GLCanvas;
 
 type
    TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut, wArcs);
@@ -163,21 +142,19 @@ begin
                LineTo(Random(256), Random(256));
             end;
          end;
-         wEllipses : begin
+         wEllipses :
             for i:=1 to cNbEllipses do begin
                PenColor:=Random(256*256*256);
                EllipseBB(Random(256), Random(256),
                        Random(256), Random(256));
             end;
-         end;
-         wRects : begin
-            for i:=1 to cNbRects do begin
+         wRects :
+             for i:=1 to cNbRects do begin
                PenColor:=Random(256*256*256);
                r:=Rect(Random(256), Random(256),
                        Random(256), Random(256));
                FillRect(r.Left, r.Top, r.Right, r.Bottom);
             end;
-         end;
          wPoints : begin
             for i:=1 to cNbPoints do begin
                PenColor:=Random(256*256*256);

@@ -4,13 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, UITypes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls,
+  Dialogs, ExtCtrls, StdCtrls, Jpeg,
 
   //GLScene
   GLScene, GLObjects, GLTexture, GLBumpShader,
-  GLVectorFileObjects, GLCadencer, GLWin32Viewer, JPEG,
-  AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLUtils;
+  GLVectorFileObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLVectorGeometry, GLContext, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -36,7 +36,7 @@ type
     Shape3: TShape;
     ColorDialog1: TColorDialog;
     DCLights: TGLDummyCube;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     CheckBox4: TCheckBox;
     ComboBox2: TComboBox;
     Label2: TLabel;
@@ -71,8 +71,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses VectorGeometry, GLContext;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

@@ -141,7 +141,7 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
-    Left = 464
-    Top = 16
+    Left = 96
+    Top = 72
   end
 end

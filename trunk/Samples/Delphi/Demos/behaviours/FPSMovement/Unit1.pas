@@ -1,35 +1,23 @@
-//******************************************************************************
-//  SphereSweepAndSlide - Initial work by Dan Bartlett
-//  Shows how to use the FPS Movement behaviour
-//----------------------------------------
-//  Controls:
-//    W,A,S,D: Movement
-//    Mouse: Movement
-//    I,J,K,L,O,P: Movement (2nd sphere)
-//    F2, F3: First person, Third person
-//    F5: Toggle wireframe
-//    Space: Move upwards
-//    Esc: Quit
-//******************************************************************************
 unit Unit1;
 
 interface
 
 uses
-  glFPSMovement,
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLVectorFileObjects, GLScene, GLTexture, ExtCtrls, GLCadencer,
-  GLWin32Viewer, StdCtrls, GLObjects, jpeg, GLCollision,
-  GLNavigator, VectorLists, Octree, GLFile3DS, VectorGeometry,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
-  GLState;
+  Dialogs, Jpeg, ExtCtrls, StdCtrls,
+
+  //GLS
+  GLScene, GLTexture, GLCadencer,   GLFPSMovement, GLKeyboard,
+  GLWin32Viewer, GLObjects, GLCollision, GLVectorFileObjects,
+  GLNavigator, GLVectorLists, GLOctree, GLFile3DS, GLVectorGeometry,
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLState, GLSimpleNavigation, GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCadencer1: TGLCadencer;
-    Timer1: TTimer;
     FirstPersonCamera: TGLCamera;
     Map1: TGLFreeForm;
     GLMaterialLibrary1: TGLMaterialLibrary;
@@ -46,8 +34,8 @@ type
     BotSphere: TGLSphere;
     Navigator1: TGLNavigator;
     MovManager: TGLFPSMovementManager;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -64,9 +52,6 @@ var
 
 implementation
 
-uses
-  GLKeyboard, GLUtils;
-
 var
   yangle: double = 90;
   xangle: double = 0;
@@ -78,8 +63,9 @@ var
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
+
 begin
-  SetGLSceneMediaDir();
+  SetGLSceneMediaDir;
   Map1.LoadFromFile('map.3ds');
   Map1.BuildOctree();
   Map1.Up.SetVector(0, 1, 0);
@@ -92,12 +78,6 @@ begin
 
   behav := GetFPSMovement(player);
   behav2 := GetFPSMovement(bot);
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-  caption := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
-  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
@@ -143,9 +123,9 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
-  movementScale: single;
+  MovementScale: Single;
 begin
-  movementScale := Movmanager.movementScale;
+  MovementScale := Movmanager.MovementScale;
 
   //then update position according to keys being pressed
   if IsKeyDown('W') or IsKeyDown('Z') then

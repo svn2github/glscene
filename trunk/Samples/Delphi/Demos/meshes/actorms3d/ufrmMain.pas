@@ -4,12 +4,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Controls, Forms,
-  Dialogs, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses, GLScene,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+
+  //GLS
+  GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene,
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,
-  GLFileMS3D, GLMaterial, StdCtrls, ExtCtrls, GLCameraController, GLGraphics, TGA,
+  GLFileMS3D, GLMaterial, GLCameraController, GLGraphics, TGA,
   GLRenderContextInfo,  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane,
-  VectorGeometry,  GLSimpleNavigation, GLMesh, ComCtrls, GLGui, GLWindows, GLState,
-  GLSArchiveManager;
+  GLVectorGeometry,  GLSimpleNavigation, GLMesh, GLGui, GLWindows, GLState,
+  GLSArchiveManager, OpenGLTokens, GLContext, GLFileZLIB, GLCompositeImage,
+  GLFileJPEG, GLFilePNG;
 
 type
   TfrmMain = class(TForm)
@@ -85,11 +89,6 @@ var
 
 implementation
 
-uses
-  OpenGLTokens, GLContext,
-  GLFileZLIB, GLCompositeImage,
-  GLFileJPEG, GLFilePNG;
-
 {$R *.dfm}
 
 procedure TfrmMain.Actor1EndFrameReached(Sender: TObject);
@@ -109,13 +108,13 @@ begin
   begin
     Chair1.Visible := aniBox.itemindex = 6;
     Timer1.Enabled := False;
-    aniPos.Enabled := false;
+    aniPos.Enabled := False;
     Actor1.SwitchToAnimation(aniBox.ItemIndex + 1, false);
 
     aniPos.Min := 0;
     aniPos.Max := Actor1.EndFrame - Actor1.StartFrame;
     aniPos.Position := 0;
-    aniPos.Enabled := true;
+    aniPos.Enabled := True;
     btnStartStop.Caption := 'Start';
   end;
 
@@ -333,11 +332,9 @@ end;
 
 procedure TfrmMain.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
 begin
-  with Shader, MatLib do begin
-    Param['TextureMap'].AsTexture2D[0]:= TextureByName('floor_parquet');
-    Param['ShadowMap'].AsTexture2D[1]:= TextureByName(GLFrameBuffer.DepthTextureName);
-    Param['LightspotMap'].AsTexture2D[2]:= TextureByName('Lightspot');
-  end;
+  Shader.Param['TextureMap'].AsTexture2D[0]:= MatLib.TextureByName('floor_parquet');
+  Shader.Param['ShadowMap'].AsTexture2D[1]:= MatLib.TextureByName(GLFrameBuffer.DepthTextureName);
+  Shader.Param['LightspotMap'].AsTexture2D[2]:= MatLib.TextureByName('Lightspot');
 end;
 
 procedure TfrmMain.SetAppPath(const Value: string);

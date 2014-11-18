@@ -6,15 +6,13 @@ interface
 
 uses
   // VCL
-  Forms, StdCtrls, Classes, Controls, ExtCtrls,
+  Forms, StdCtrls, Classes, Controls, ExtCtrls, Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
-  GLTexture, GLSkydome, VectorGeometry, GLCrossPlatform,
-  GLAtmosphere, GLSimpleNavigation, GLBehaviours,
-
-  // File formats
-  Jpeg, GLCoordinates, BaseClasses;
+  GLTexture, GLSkydome, GLVectorGeometry, GLCrossPlatform,
+  GLAtmosphere, GLSimpleNavigation, GLBehaviours, GLCoordinates, GLBaseClasses,
+  GLColor;
 
 type
   TMainForm = class(TForm)
@@ -71,9 +69,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLColor;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin

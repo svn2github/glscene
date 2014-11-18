@@ -4,8 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLObjects, GLScene, StdCtrls, VectorGeometry, GLCadencer, GLWin32Viewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  StdCtrls,
+
+  //GLS
+  GLObjects, GLScene, GLVectorGeometry, GLCadencer, GLWin32Viewer,
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -26,9 +29,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var

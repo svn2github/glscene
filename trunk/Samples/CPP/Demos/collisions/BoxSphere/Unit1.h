@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -83,7 +83,7 @@ __published:	// IDE-managed Components
 private:	// User declarations
 	int mdx, mdy;
 	TAffineVector intersPoint, ResNormal, BoxScale, SpherePos;
-	Vectorgeometry::TMatrix BoxMatrix;
+	Glvectorgeometry::TMatrix BoxMatrix;
 	float SphereRadius;
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);

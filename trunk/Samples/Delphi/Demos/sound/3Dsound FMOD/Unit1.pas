@@ -7,8 +7,8 @@ uses
 
   //GLScene
   GLCadencer, GLScene, GLObjects, GLSound, GLSMFMOD, GLWin32Viewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
-  GLFileMP3, VectorGeometry, GLUtils;
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
+  GLFileMP3, GLVectorGeometry, GLUtils;
 
 
 type

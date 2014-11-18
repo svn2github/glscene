@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
@@ -139,6 +141,6 @@ object Form1: TForm1
   object Timer1: TTimer
     OnTimer = Timer1Timer
     Left = 112
-    Top = 88
+    Top = 96
   end
 end

@@ -6,10 +6,10 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   ExtCtrls, StdCtrls, Jpeg,
 
-  //GLScene
+  //GLS
   GLCadencer, GLObjects, GLScene, GLWin32Viewer,
   GLHUDObjects, GLSpaceText, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLGraphics, GLUtils;
+  GLGraphics, GLUtils, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

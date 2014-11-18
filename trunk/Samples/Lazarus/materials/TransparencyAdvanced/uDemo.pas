@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
-  GLCadencer, GLCrossPlatform, BaseClasses, GLLCLViewer, GLCustomShader,
+  GLCadencer, GLCrossPlatform, GLBaseClasses, GLLCLViewer, GLCustomShader,
   GLSLShader, GLTexture, GLFBORenderer,
   GLRenderContextInfo, GLGeomObjects, GLMesh, GLHUDObjects, GLBitmapFont,
   GLWindowsFont;
@@ -59,7 +59,7 @@ implementation
 {$R *.lfm}
 
 uses
-  VectorGeometry,
+  GLVectorGeometry,
   GLContext, GLState, OpenGLTokens, GLColor, GLKeyboard,
   GLCompositeImage, GLFileJPEG, GLUtils;
 

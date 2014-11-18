@@ -10,7 +10,7 @@
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
       <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Added VectorTypes to uses
+      <li>06/06/10 - Yar - Added "VectorTypes.pas" unit to uses
       <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
                           (thanks olkondr)
                           Replace Char to AnsiChar
@@ -44,11 +44,11 @@ uses
   GLScene,
   GLTexture,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
+  VCL.Graphics, System.Types, System.UITypes,
 {$ELSE}
-  Graphics,
+  Graphics, Types, UITypes,
 {$ENDIF}
-  VectorLists,
+  GLVectorLists,
   GLCrossPlatform;
 
 type
@@ -116,12 +116,12 @@ implementation
 
 uses
   GLUtils,
-  math,
+  Math,
   SysUtils,
-  VectorGeometry,
+  GLVectorGeometry,
   OpenGLTokens,
-  ApplicationFileIO
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  GLApplicationFileIO
+  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 const
   cDefaultLast = '}';

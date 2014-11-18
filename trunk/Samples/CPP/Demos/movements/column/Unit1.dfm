@@ -36,8 +36,6 @@ object Form1: TForm1
     BorderStyle = sbsSingle
     Caption = '???.? FPS'
     TabOrder = 1
-    ExplicitTop = 308
-    ExplicitWidth = 263
   end
   object GLScene1: TGLScene
     Left = 24

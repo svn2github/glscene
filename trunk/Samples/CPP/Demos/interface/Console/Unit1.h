@@ -13,7 +13,7 @@
 #include "GLObjects.hpp"
 #include "GLCadencer.hpp"
 #include "GLWin32Viewer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLTexture.hpp"
 #include "GLBitmapFont.hpp"

@@ -10,7 +10,7 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <signal.h>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

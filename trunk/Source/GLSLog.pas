@@ -45,9 +45,9 @@ uses
   Windows,
 {$ENDIF}
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs, VCL.Controls,
+  VCL.Dialogs, VCL.Controls, System.UITypes,
 {$ELSE}
-  Dialogs, Controls,
+  Dialogs, Controls, UITypes,
 {$ENDIF}
  StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}

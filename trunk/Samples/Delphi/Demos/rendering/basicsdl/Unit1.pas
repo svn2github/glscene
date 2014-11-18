@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Forms, SysUtils, Classes, GLScene, GLObjects, GLSDLContext, SDL,
-  GLTeapot, GLCrossPlatform, GLCoordinates, BaseClasses, GLColor;
+  Forms, SysUtils, Classes, GLScene, GLObjects, GLSDLContext, GLSDL,
+  GLTeapot, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLColor;
 
 type
   TDataModule1 = class(TDataModule)

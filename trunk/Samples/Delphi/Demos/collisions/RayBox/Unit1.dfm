@@ -130,7 +130,7 @@ object Form1: TForm1
     object GLPoints1: TGLPoints
       NoZWrite = False
       Static = False
-      size = 7.000000000000000000
+      Size = 7.000000000000000000
     end
   end
   object GLCadencer: TGLCadencer

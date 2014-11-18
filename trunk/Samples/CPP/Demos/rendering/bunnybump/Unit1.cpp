@@ -6,8 +6,8 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "AsyncTimer"
-#pragma link "BaseClasses"
+#pragma link "GLAsyncTimer"
+#pragma link "GLBaseClasses"
 #pragma link "GLBumpShader"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
@@ -17,6 +17,7 @@
 #pragma link "GLScene"
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
+#pragma link "GLAsyncTimer"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

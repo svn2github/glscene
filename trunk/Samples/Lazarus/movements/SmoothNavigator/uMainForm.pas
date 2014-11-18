@@ -20,9 +20,9 @@ uses
   Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
 
   // GLScene
-  GLCadencer, GLLCLViewer, GLKeyboard, VectorGeometry, GLGeomObjects,
+  GLCadencer, GLLCLViewer, GLKeyboard, GLVectorGeometry, GLGeomObjects,
   GLScene, GLObjects, GLGraph, GLCrossPlatform, GLSmoothNavigator,
-  GLCoordinates, BaseClasses, GLScreen;
+  GLCoordinates, GLBaseClasses, GLScreen;
 
 type
   TForm1 = class(TForm)

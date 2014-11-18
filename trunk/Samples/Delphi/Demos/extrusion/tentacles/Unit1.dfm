@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 218
   Top = 106
-  Width = 468
-  Height = 369
-  Caption = 'Form1'
+  Caption = 'Tentacles'
+  ClientHeight = 325
+  ClientWidth = 460
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,64 +18,68 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 460
-    Height = 340
+    Height = 325
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    FieldOfView = 145.794540405273400000
     Align = alClient
+    TabOrder = 0
+  end
+  object PanelFPS: TPanel
+    Left = 176
+    Top = 8
+    Width = 121
+    Height = 17
+    Caption = 'FPS'
+    TabOrder = 1
   end
   object GLScene1: TGLScene
     Left = 16
     Top = 16
     object DCBase: TGLDummyCube
       Position.Coordinates = {00000000000000C0000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object Sphere1: TGLSphere
-        Scale.Coordinates = {000000400000003F0000004000000000}
         Material.FrontProperties.Ambient.Color = {00000000CDCC4C3E000000000000803F}
         Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
         Material.FrontProperties.Emission.Color = {0000000039B4483E000000000000803F}
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 1
+        Scale.Coordinates = {000000400000003F0000004000000000}
+        Radius = 1.000000000000000000
         Slices = 32
         Stacks = 8
       end
       object Pipe1: TGLPipe
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
-        Radius = 1
+        Radius = 1.000000000000000000
       end
       object Pipe2: TGLPipe
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
-        Radius = 1
+        Radius = 1.000000000000000000
       end
       object Pipe3: TGLPipe
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
-        Radius = 1
+        Radius = 1.000000000000000000
       end
       object Pipe4: TGLPipe
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
-        Radius = 1
+        Radius = 1.000000000000000000
       end
       object Pipe5: TGLPipe
-        Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
-        Radius = 1
+        Radius = 1.000000000000000000
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00004842000020420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DCTarget: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = DCTarget
       Position.Coordinates = {0000C0400000A040000080400000803F}
     end

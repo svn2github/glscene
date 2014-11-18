@@ -9,7 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.Grids.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCollision.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -59,7 +59,7 @@ __published:	// IDE-managed Components
 	TGLCamera *GLCamera1;
 	TGLCamera *GLCamera3;
 	TTimer *Timer1;
-	TCollisionManager *CollisionManager1;
+	TGLCollisionManager *CollisionManager1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall cbCollisionModeClick(TObject *Sender);

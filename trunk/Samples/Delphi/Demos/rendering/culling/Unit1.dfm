@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 188
   Top = 112
-  Width = 544
-  Height = 340
-  Caption = 'Form1'
+  Caption = 'Culling'
+  ClientHeight = 419
+  ClientWidth = 581
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,110 +11,108 @@ object Form1: TForm1
   Font.Name = 'Arial'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
-  DesignSize = (
-    528
-    302)
   PixelsPerInch = 96
   TextHeight = 14
-  object Label1: TLabel
-    Left = 440
-    Top = 8
-    Width = 75
-    Height = 15
-    Anchors = [akTop, akRight]
-    Caption = 'Culling Mode:'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object Label2: TLabel
-    Left = 440
-    Top = 120
-    Width = 47
-    Height = 15
-    Anchors = [akTop, akRight]
-    Caption = 'Objects:'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object Viewer: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 425
-    Height = 297
+    Left = 0
+    Top = 0
+    Width = 449
+    Height = 419
     Camera = GLCamera1
     Buffer.BackgroundColor = 12040119
-    FieldOfView = 142.783203125000000000
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    FieldOfView = 153.153396606445300000
+    Align = alClient
     TabOrder = 0
   end
-  object RBNone: TRadioButton
-    Left = 440
-    Top = 32
-    Width = 89
-    Height = 17
-    Anchors = [akTop, akRight]
-    Caption = 'None'
-    Checked = True
+  object Panel2: TPanel
+    Left = 449
+    Top = 0
+    Width = 132
+    Height = 419
+    Align = alRight
     TabOrder = 1
-    TabStop = True
-    OnClick = RBNoneClick
-  end
-  object RBObject: TRadioButton
-    Left = 440
-    Top = 56
-    Width = 89
-    Height = 17
-    Anchors = [akTop, akRight]
-    Caption = 'Object based'
-    TabOrder = 2
-    OnClick = RBNoneClick
-  end
-  object RBHierarchical: TRadioButton
-    Left = 440
-    Top = 80
-    Width = 89
-    Height = 17
-    Anchors = [akTop, akRight]
-    Caption = 'Hierarchical'
-    TabOrder = 3
-    Visible = False
-    OnClick = RBNoneClick
-  end
-  object Panel1: TPanel
-    Left = 440
-    Top = 144
-    Width = 89
-    Height = 65
-    Anchors = [akTop, akRight]
-    BevelOuter = bvNone
-    TabOrder = 4
+    DesignSize = (
+      132
+      419)
+    object Label1: TLabel
+      Left = 25
+      Top = 8
+      Width = 75
+      Height = 15
+      Anchors = [akTop, akRight]
+      Caption = 'Culling Mode:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 29
+      Top = 128
+      Width = 47
+      Height = 15
+      Anchors = [akTop, akRight]
+      Caption = 'Objects:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object RBNone: TRadioButton
+      Left = 27
+      Top = 33
+      Width = 89
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = 'None'
+      TabOrder = 0
+      OnClick = RBNoneClick
+    end
+    object RBObject: TRadioButton
+      Left = 27
+      Top = 56
+      Width = 89
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = 'Object based'
+      TabOrder = 1
+      OnClick = RBNoneClick
+    end
+    object RBHierarchical: TRadioButton
+      Left = 27
+      Top = 79
+      Width = 89
+      Height = 17
+      Anchors = [akTop, akRight]
+      Caption = 'Hierarchical'
+      TabOrder = 2
+      Visible = False
+      OnClick = RBNoneClick
+    end
+    object RBActors: TRadioButton
+      Left = 32
+      Top = 208
+      Width = 81
+      Height = 17
+      Caption = 'Actors'
+      TabOrder = 3
+      OnClick = RBSpheresClick
+    end
     object RBSpheres: TRadioButton
-      Left = 0
-      Top = 0
+      Left = 30
+      Top = 170
       Width = 81
       Height = 17
       Caption = 'Spheres'
       Checked = True
-      TabOrder = 0
+      TabOrder = 4
       TabStop = True
-      OnClick = RBSpheresClick
-    end
-    object RBActors: TRadioButton
-      Left = 0
-      Top = 24
-      Width = 81
-      Height = 17
-      Caption = 'Actors'
-      TabOrder = 1
       OnClick = RBSpheresClick
     end
   end

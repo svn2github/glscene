@@ -30,7 +30,7 @@ uses
   Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
- DesignEditors, DesignIntf;
+ DesignEditors, DesignIntf, System.Actions;
 
 type
   TXCollectionEditor = class(TForm)

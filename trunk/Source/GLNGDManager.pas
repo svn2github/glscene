@@ -76,14 +76,14 @@ interface
 
 uses
   NewtonImport, NewtonImport_JointLibrary // Newton
-  , VectorGeometry // PVector TVector TMatrix PMatrix NullHmgVector...
-  , VectorLists // TaffineVectorList for Tree
+  , GLVectorGeometry // PVector TVector TMatrix PMatrix NullHmgVector...
+  , GLVectorLists // TaffineVectorList for Tree
   , Classes // TComponent Tlist TWriter TReader TPersistent
   , XCollection, SysUtils // TXCollection file function
-  , BaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
+  , GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
   , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
   , Math // Samevalue isZero to compare single
-  , GLColor, GeometryBB; // For show debug
+  , GLColor, GLGeometryBB; // For show debug
 
 type
 
@@ -1258,10 +1258,10 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
         BallAndSocketSetConeAngle(FNewtonUserJoint,
-          VectorGeometry.DegToRad(FCustomBallAndSocketOptions.FConeAngle));
+          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FConeAngle));
         BallAndSocketSetTwistAngle(FNewtonUserJoint,
-          VectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMinTwistAngle),
-          VectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMaxTwistAngle));
+          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMinTwistAngle),
+          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMaxTwistAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
           FStiffness);
@@ -1296,8 +1296,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FParentObject));
         HingeEnableLimits(FNewtonUserJoint, 1);
         HingeSetLimits(FNewtonUserJoint,
-          VectorGeometry.DegToRad(FCustomHingeOptions.FMinAngle),
-          VectorGeometry.DegToRad(FCustomHingeOptions.FMaxAngle));
+          GLVectorGeometry.DegToRad(FCustomHingeOptions.FMinAngle),
+          GLVectorGeometry.DegToRad(FCustomHingeOptions.FMaxAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
           FStiffness);

@@ -20,7 +20,8 @@
 program Christmas;
 
 uses
-  Forms, GLSound,
+  Forms,
+  GLSound,
   FMain in 'FMain.pas' {Main};
 
 {$E .scr}
@@ -33,5 +34,5 @@ begin
    Application.Initialize;
    Application.Title := 'GLScene Christmas 2014';
    Application.CreateForm(TMain, Main);
-   Application.Run;
+  Application.Run;
 end.

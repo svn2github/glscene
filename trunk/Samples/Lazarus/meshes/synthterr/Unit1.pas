@@ -35,8 +35,8 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData,
-  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLLCLViewer, VectorGeometry,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLLCLViewer, GLVectorGeometry,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

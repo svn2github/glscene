@@ -65,8 +65,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\..\Source\VectorGeometry.pas"/>
-        <UnitName Value="VectorGeometry"/>
+        <Filename Value="..\..\..\..\Source\GLVectorGeometry.pas"/>
+        <UnitName Value="GLVectorGeometry"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
@@ -95,11 +95,11 @@
         <Caret Line="15" Column="24" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\..\Source\VectorGeometry.pas"/>
+        <Filename Value="..\..\..\..\Source\GLVectorGeometry.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\..\Source\VectorGeometry.pas"/>
+        <Filename Value="..\..\..\..\Source\GLVectorGeometry.pas"/>
         <Caret Line="4983" Column="24" TopLine="4960"/>
       </Position6>
     </JumpHistory>

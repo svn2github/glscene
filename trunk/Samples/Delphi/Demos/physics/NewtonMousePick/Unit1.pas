@@ -3,24 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
-  GLNGDManager,
-  GLScene,
-  GLObjects,
-  GLCoordinates,
-  GLCadencer,
-  GLWin32Viewer,
-  GLCrossPlatform,
-  BaseClasses,
-  VectorGeometry;
+  //GLS
+  GLNGDManager, GLScene, GLObjects, GLCoordinates, GLCadencer, GLWin32Viewer,
+  GLCrossPlatform, GLBaseClasses, GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -47,11 +34,10 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     point3d, FPaneNormal: TVector;
-
   public
-    { Déclarations publiques }
+    { Public declarations }
     pickjoint: TNGDJoint;
   end;
 

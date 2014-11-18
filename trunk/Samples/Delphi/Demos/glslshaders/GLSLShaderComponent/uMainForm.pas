@@ -7,15 +7,16 @@ interface
 uses
   // VCL
   Windows, Messages, SysUtils, Classes, Controls, Forms, ExtCtrls, StdCtrls,
+  Jpeg,
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
-  GLGraph, VectorLists, VectorTypes, VectorGeometry, GLSLShader,
+  GLGraph, GLVectorLists, GLVectorTypes, GLVectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLUtils,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLUtils,
 
   // FileFormats
-  TGA, JPEG, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
 
 type
   TGLSLTestForm = class(TForm)

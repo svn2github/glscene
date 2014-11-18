@@ -10,10 +10,10 @@
 #include <GLGeomObjects.hpp>
 #include <GLWin32Viewer.hpp>
 #include <GLCadencer.hpp>
-#include <VectorGeometry.hpp>
+#include <GLVectorGeometry.hpp>
 #include <GLScene.hpp>
 #include <GLObjects.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"        // Pascal unit
 //---------------------------------------------------------------------------

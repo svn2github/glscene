@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBlur"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
@@ -20,14 +20,14 @@
 #pragma link "GLTeapot"
 #pragma link "GLWin32Viewer"
 #pragma resource "*.dfm"
-TForm7 *Form7;
+TForm1 *Form1;
 //---------------------------------------------------------------------------
-__fastcall TForm7::TForm7(TComponent* Owner)
+__fastcall TForm1::TForm1(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm7::GLCadencer1Progress(TObject *Sender, const double deltaTime,
+void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaTime,
 		  const double newTime)
 {
   GLCube1->RollAngle = GLCube1->RollAngle - 175*deltaTime;

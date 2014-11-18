@@ -12,7 +12,7 @@
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include <Vcl.ExtCtrls.hpp>

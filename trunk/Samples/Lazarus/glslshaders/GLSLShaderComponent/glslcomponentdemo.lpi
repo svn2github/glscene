@@ -86,8 +86,8 @@
         <UsageCount Value="10"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\ApplicationFileIO.pas"/>
-        <UnitName Value="ApplicationFileIO"/>
+        <Filename Value="..\..\..\Source\Base\GLApplicationFileIO.pas"/>
+        <UnitName Value="GLApplicationFileIO"/>
         <WindowIndex Value="0"/>
         <TopLine Value="187"/>
         <CursorPos X="40" Y="215"/>

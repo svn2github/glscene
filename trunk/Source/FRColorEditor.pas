@@ -26,7 +26,7 @@ uses
 {$ELSE}
   Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs, Controls, Graphics,
 {$ENDIF}
-  VectorGeometry, FRTrackBarEdit, GLColor;
+  GLVectorGeometry, FRTrackBarEdit, GLColor;
 
 type
 
@@ -85,7 +85,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GLTexture, GLCrossPlatform, VectorTypes;
+  GLTexture, GLCrossPlatform, GLVectorTypes;
 
 
 const

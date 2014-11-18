@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCgShader"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
@@ -59,7 +60,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 
 void __fastcall TForm1::CgShader1ApplyVP(TCgProgram *CgProgram, TObject *Sender)
 {
-  Vectorgeometry::TVector v;
+  Glvectorgeometry::TVector v;
   TCgParameter *Param;
   // rotate light vector for the "simple lighting" vertex program
   v = ZHmgVector;

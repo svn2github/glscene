@@ -9,8 +9,8 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLLCLViewer, GLWaterPlane,
   GLCadencer, ExtCtrls, GLTexture, GLUserShader, OpenGL1x,
-  VectorGeometry, GLGraph, VectorTypes, GLState, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLVectorGeometry, GLGraph, GLVectorTypes, GLState, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)

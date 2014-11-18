@@ -37,8 +37,6 @@ object Form1: TForm1
     Height = 41
     Align = alTop
     TabOrder = 1
-    ExplicitLeft = -42
-    ExplicitWidth = 560
     object Label1: TLabel
       Left = 296
       Top = 12
@@ -131,7 +129,7 @@ object Form1: TForm1
     object GLPoints1: TGLPoints
       NoZWrite = False
       Static = False
-      size = 7.000000000000000000
+      Size = 7.000000000000000000
     end
   end
   object GLCadencer: TGLCadencer

@@ -83,8 +83,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\ApplicationFileIO.pas"/>
-        <UnitName Value="ApplicationFileIO"/>
+        <Filename Value="..\..\..\Source\Base\GLApplicationFileIO.pas"/>
+        <UnitName Value="GLApplicationFileIO"/>
         <WindowIndex Value="0"/>
         <TopLine Value="189"/>
         <CursorPos X="1" Y="208"/>

@@ -19,7 +19,7 @@ interface
 
 uses
   Forms, SysUtils, Classes, GLScene, GLObjects, GLSDLContext, SDL,
-  GLTeapot, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLTeapot, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TDataModule1 = class(TDataModule)

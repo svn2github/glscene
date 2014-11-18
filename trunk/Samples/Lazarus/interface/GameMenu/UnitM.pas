@@ -20,7 +20,7 @@ uses
   // GLScene
   GLScene, GLObjects, GLLCLViewer, GLGeomObjects,
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture,
-  GLKeyboard, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLKeyboard, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

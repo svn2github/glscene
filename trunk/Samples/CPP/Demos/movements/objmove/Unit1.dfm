@@ -42,57 +42,52 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 0
       Top = 26
-      Width = 161
+      Width = 158
       Height = 26
       Align = alTop
       Caption = 'Select and move with the mouse any of the two cubes.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 158
     end
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 161
+      Width = 114
       Height = 13
       Align = alTop
       Caption = 'Author: Rado Stoyanov'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 114
     end
     object Label3: TLabel
       Left = 0
       Top = 52
-      Width = 161
+      Width = 150
       Height = 26
       Align = alTop
       Caption = 'Default movement is on the XY plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 150
     end
     object Label4: TLabel
       Left = 0
       Top = 78
-      Width = 161
+      Width = 145
       Height = 26
       Align = alTop
       Caption = 'Shift + Drag moves on the XZ plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 145
     end
     object Label5: TLabel
       Left = 0
       Top = 13
-      Width = 161
+      Width = 142
       Height = 13
       Align = alTop
       Caption = 'radostoyanov@softhome.net'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 142
     end
     object Button1: TButton
       Left = 618

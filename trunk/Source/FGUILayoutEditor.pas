@@ -20,7 +20,7 @@ uses
   ExtCtrls,  Spin,  Grids,
 {$ENDIF}
 
-  GLCrossPlatform,  BaseClasses,  GLGui
+  GLCrossPlatform,  GLBaseClasses,  GLGui
 
 {$IFDEF LINUX}, Process{$ENDIF};
 

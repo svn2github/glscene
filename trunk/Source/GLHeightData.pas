@@ -66,8 +66,19 @@ interface
 
 {$I GLScene.inc}
 
-uses SysUtils, Classes, VectorGeometry, GLCrossPlatform, GLMaterial, BaseClasses
-{$IFDEF FPC}, IntfGraphics {$ENDIF};
+uses
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
+    Windows, // for CreateMonochromeBitmap
+  {$ENDIF}
+  {$IFDEF FPC}, IntfGraphics, {$ENDIF}
+
+  GLApplicationFileIO, GLUtils,
+  GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
 
 type
   TByteArray = array [0 .. MaxInt div (2*SizeOf(Byte))] of Byte;
@@ -652,12 +663,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses ApplicationFileIO, GLUtils
-{$IFDEF MSWINDOWS}
-    , Windows // for CreateMonochromeBitmap
-{$ENDIF}
-    ;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
@@ -1966,7 +1971,7 @@ begin
   // some picture formats trigger a "change" when drawed
   Picture.OnChange := nil;
   try
-    FBitmap.Canvas.StretchDraw(Classes.Rect(0, 0, Size, Size), Picture.Graphic);
+    FBitmap.Canvas.StretchDraw(Rect(0, 0, Size, Size), Picture.Graphic);
   finally
     Picture.OnChange := OnPictureChanged;
   end;
@@ -2292,6 +2297,6 @@ initialization
 // ------------------------------------------------------------------
 
 // class registrations
-Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, THeightDataSourceFilter]);
+RegisterClasses([TGLBitmapHDS, TGLCustomHDS, THeightDataSourceFilter]);
 
 end.

@@ -14,7 +14,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCollision, ComCtrls, StdCtrls,
-  GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLLCLViewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
 

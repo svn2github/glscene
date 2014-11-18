@@ -36,7 +36,6 @@ object Form1: TForm1
     Align = alTop
     BevelOuter = bvLowered
     TabOrder = 1
-    ExplicitWidth = 405
     object LabelFPS: TLabel
       Left = 288
       Top = 8

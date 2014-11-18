@@ -23,7 +23,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
   GLLCLViewer, ComCtrls, GLGeomObjects, GLColor, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
 
@@ -67,7 +67,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, Polynomials;
+uses GLVectorGeometry, Polynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var

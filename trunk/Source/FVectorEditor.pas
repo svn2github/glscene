@@ -25,7 +25,7 @@ uses
 {$ELSE}
   Classes, Forms, SysUtils, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls
 {$ENDIF}
-  ,VectorGeometry, GLUtils, VectorTypes
+  ,GLVectorGeometry, GLUtils, GLVectorTypes
 ;
 
 type

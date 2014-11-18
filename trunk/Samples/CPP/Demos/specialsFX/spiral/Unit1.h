@@ -7,19 +7,23 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
+#include <Buttons.hpp>
+#include <ExtCtrls.hpp>
+
 #include <GLCrossPlatform.hpp>  // Pascal unit
-#include <VectorGeometry.hpp>   // Pascal unit
+#include <GLVectorGeometry.hpp>   // Pascal unit
 #include <GLBehaviours.hpp>     // Pascal unit
 #include <GLViewer.hpp>    // Pascal unit
 #include <GLObjects.hpp>        // Pascal unit
 #include <GLScene.hpp>          // Pascal unit
 #include <GLCadencer.hpp>       // Pascal unit
 #include <GLParticleFX.hpp>
-#include <Buttons.hpp>
-#include <ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
-#include "GLFullScreenViewer.hpp"         // Pascal unit
+#include "GLFullScreenViewer.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLKeyboard.hpp"
+
 //---------------------------------------------------------------------------
 class TForm1:public TForm
 {

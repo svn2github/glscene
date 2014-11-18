@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 61
   Top = 69
   Caption = 'Intensity Mesh'
-  ClientHeight = 417
-  ClientWidth = 690
+  ClientHeight = 423
+  ClientWidth = 629
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -19,29 +20,29 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 603
-    Height = 417
+    Width = 542
+    Height = 423
     Camera = GLCamera
     Buffer.BackgroundColor = clWhite
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roStereo]
     Buffer.FaceCulling = False
     Buffer.Lighting = False
-    FieldOfView = 153.029327392578100000
+    FieldOfView = 153.398193359375000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 603
+    Left = 542
     Top = 0
     Width = 87
-    Height = 417
+    Height = 423
     Align = alRight
     TabOrder = 1
     DesignSize = (
       87
-      417)
+      423)
     object Label1: TLabel
       Left = 8
       Top = 64
@@ -73,7 +74,7 @@ object Form1: TForm1
       Left = 26
       Top = 88
       Width = 31
-      Height = 317
+      Height = 323
       Anchors = [akLeft, akTop, akBottom]
       Max = 200
       Orientation = trVertical
@@ -86,8 +87,8 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 72
+    Left = 32
+    Top = 24
     object GLFreeForm: TGLFreeForm
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Palette'
@@ -109,17 +110,20 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Palette'
       Position.Coordinates = {0000964300007041000000000000803F}
+      Rotation = 0.000000000000000000
     end
     object HTPaletteLeft: TGLHUDText
       Position.Coordinates = {000002430000E040000000000000803F}
       BitmapFont = GLWindowsBitmapFont
       Text = '0'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTPaletteRight: TGLHUDText
       Position.Coordinates = {0000E6430000E040000000000000803F}
       BitmapFont = GLWindowsBitmapFont
       Text = '100'
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
   end
@@ -127,6 +131,7 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Palette'
+        Tag = 0
         Material.BackProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
         Material.BackProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -143,16 +148,15 @@ object Form1: TForm1
         Material.Texture.TextureWrap = twSeparate
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         Shader = GLUserShader
       end>
-    Left = 48
-    Top = 72
+    Left = 144
+    Top = 24
   end
   object GLUserShader: TGLUserShader
     OnDoUnApply = GLUserShaderDoUnApply
-    Left = 48
-    Top = 112
+    Left = 144
+    Top = 80
   end
   object GLWindowsBitmapFont: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -166,7 +170,7 @@ object Form1: TForm1
         StopASCII = '9'
         StartGlyphIdx = 0
       end>
-    Left = 8
-    Top = 112
+    Left = 32
+    Top = 80
   end
 end

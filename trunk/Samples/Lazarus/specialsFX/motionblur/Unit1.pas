@@ -20,7 +20,7 @@ interface
 
 uses Forms, Classes, Controls, GLLCLViewer, GLCadencer, GLScene, GLContext,
   GLObjects, GLTexture, GLHUDObjects, SysUtils, ExtCtrls, GLPolyhedron,
-  GLGeomObjects, GLUtils, GLCrossPlatform, GLCoordinates, BaseClasses, LCLType;
+  GLGeomObjects, GLUtils, GLCrossPlatform, GLCoordinates, GLBaseClasses, LCLType;
 
 type
   TForm1 = class(TForm)

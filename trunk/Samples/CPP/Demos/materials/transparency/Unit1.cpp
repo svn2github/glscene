@@ -10,7 +10,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma resource "*.dfm"

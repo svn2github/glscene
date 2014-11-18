@@ -65,8 +65,8 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 16
+    Left = 40
+    Top = 32
     object SkyDome: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
@@ -143,14 +143,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 16
-    Top = 56
+    Left = 224
+    Top = 96
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencerProgress
-    Left = 16
-    Top = 16
+    Left = 40
+    Top = 96
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
@@ -163,6 +163,7 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
         TextureScale.Coordinates = {00008042000080420000804200000000}
       end
       item
@@ -175,6 +176,7 @@ object Form1: TForm1
         Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
         Texture2Name = 'waterenv'
       end
       item
@@ -184,16 +186,17 @@ object Form1: TForm1
         Material.Texture.Image.PictureFileName = 'wake.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MaterialLibrary
       end>
-    Left = 56
-    Top = 56
+    Left = 224
+    Top = 32
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
     HTFFileName = 'Islands.htf'
     InfiniteWrap = False
     MaxPoolSize = 0
-    Left = 160
-    Top = 16
+    Left = 312
+    Top = 96
   end
   object BFSmall: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -201,25 +204,26 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 120
-    Top = 56
+    Left = 408
+    Top = 96
   end
   object GLCustomHDS1: TGLCustomHDS
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 120
-    Top = 16
+    Left = 312
+    Top = 32
   end
   object GLMemoryViewer1: TGLMemoryViewer
+    Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.Lighting = False
-    Left = 312
-    Top = 24
+    Left = 120
+    Top = 32
   end
   object MLSailBoat: TGLMaterialLibrary
     TexturePaths = 'sailboat'
-    Left = 56
+    Left = 112
     Top = 96
   end
   object BFLarge: TGLWindowsBitmapFont
@@ -228,7 +232,7 @@ object Form1: TForm1
     Font.Height = -21
     Font.Name = 'Arial'
     Font.Style = []
-    Left = 120
-    Top = 96
+    Left = 408
+    Top = 32
   end
 end

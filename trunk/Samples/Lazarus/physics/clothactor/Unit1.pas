@@ -25,8 +25,8 @@ uses
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLLCLViewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
   GLShadowVolume,
-  OpenGLTokens, VectorGeometry, GeometryBB, VerletClasses,
-  SpatialPartitioning, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  OpenGLTokens, GLVectorGeometry, GLGeometryBB, GLVerletTypes,
+  GLSpacePartition, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLState;
 
 type

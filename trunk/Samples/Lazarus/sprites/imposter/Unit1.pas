@@ -5,7 +5,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLTeapot, GLObjects, GLLCLViewer,
-  VectorGeometry, GLTexture, GLCadencer, GLImposter, StdCtrls, ExtCtrls, GLSkydome,
+  GLVectorGeometry, GLTexture, GLCadencer, GLImposter, StdCtrls, ExtCtrls, GLSkydome,
   GLCrossPlatform, GLCoordinates, GLRenderContextInfo;
 
 type

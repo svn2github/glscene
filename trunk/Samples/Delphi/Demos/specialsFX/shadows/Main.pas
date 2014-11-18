@@ -6,11 +6,11 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, StdCtrls, ComCtrls,
 
-  //GLScene
+  //GLS
   GLScene, GLGraph, GLObjects, GLTexture,
-  JPeg, GLGraphics, VectorTypes, VectorGeometry, GLHUDObjects,
-  GLzBuffer, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  JPeg, GLGraphics, GLVectorTypes, GLVectorGeometry, GLHUDObjects,
+  GLzBuffer, GLCadencer, GLAsyncTimer, GLWin32Viewer, GLTeapot,
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLBehaviours, GLUtils;
 
 type
@@ -38,7 +38,7 @@ type
     Shadows1: TGLZShadows;
     Cube1: TGLCube;
     FrustBox: TCheckBox;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     Torus1: TGLTorus;
     RotateBox: TCheckBox;
     ShadowOnBox: TCheckBox;

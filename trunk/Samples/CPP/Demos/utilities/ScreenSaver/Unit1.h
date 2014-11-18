@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBehaviours.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -17,9 +17,6 @@
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLScreenSaver.hpp"
-
-#include "Unit2.h"
-
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

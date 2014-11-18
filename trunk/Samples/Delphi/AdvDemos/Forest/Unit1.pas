@@ -5,48 +5,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLWin32Viewer,
-  GLCadencer,
-  GLTexture,
-  GLScene,
-  GLTerrainRenderer,
-  GLHeightData,
-  GLObjects,
-  VectorGeometry,
-  GLTree,
-  JPEG,
-  TGA,
-  GLKeyboard,
-  VectorLists,
-  GLBitmapFont,
-  GLContext,
-  GLWindowsFont,
-  GLHUDObjects,
-  GLSkydome,
-  GLImposter,
-  GLParticleFX,
-  GLGraphics,
-  PersistentClasses,
-  OpenGLTokens,
-  ExtCtrls,
-  GLUtils,
-  GLTextureCombiners,
-  XOpenGL,
-  GLHeightTileFileHDS,
-  GLMaterial,
-  GLCoordinates,
-  GLCrossPlatform,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLTextureFormat;
+  Windows,  Messages,  SysUtils,  Classes,  Graphics,  Controls,  Forms,
+  Dialogs, Jpeg, ExtCtrls,
+
+  //GLScene
+  GLWin32Viewer,  GLCadencer,  GLTexture,  GLVectorTypes,  GLVectorGeometry, GLScene,
+  GLObjects,   GLTree,  TGA,  GLKeyboard,  GLVectorLists,  GLBitmapFont,  GLContext,
+  GLWindowsFont,  GLHUDObjects,  GLSkydome,  GLImposter,  GLParticleFX,
+  GLGraphics,  GLPersistentClasses,  OpenGLTokens,   XOpenGL, GLBaseClasses,
+  GLTextureCombiners, GLTextureFormat, GLMaterial,  GLCoordinates,  GLCrossPlatform,
+  GLTerrainRenderer,  GLHeightData, GLHeightTileFileHDS,
+  GLRenderContextInfo,   GLScreen,  GLState, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -135,13 +104,8 @@ implementation
 
 {$R *.dfm}
 
-uses
-  VectorTypes,
-  GLScreen,
-  GLState;
-
 const
-  cImposterCacheFile: string = 'media\imposters.bmp';
+  cImposterCacheFile: string = 'data\imposters.bmp';
   cMapWidth: Integer = 1024;
   cMapHeight: Integer = 1024;
   cBaseSpeed: Single = 50;
@@ -156,9 +120,9 @@ begin
 
   SetCurrentDir(ExtractFilePath(Application.ExeName));
 
-  with MLTerrain.AddTextureMaterial('Terrain', 'media\volcano_TX_low.jpg') do
+  with MLTerrain.AddTextureMaterial('Terrain', 'data\volcano_TX_low.jpg') do
     Texture2Name := 'Detail';
-  with MLTerrain.AddTextureMaterial('Detail', 'media\detailmap.jpg') do
+  with MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg') do
   begin
     Material.Texture.TextureMode := tmModulate;
     TextureScale.SetPoint(128, 128, 128);
@@ -167,14 +131,14 @@ begin
   Terrain.Material.LibMaterialName := 'Terrain';
 
   // Load tree textures
-  with MLTrees.AddTextureMaterial('Leaf', 'media\leaf.tga') do
+  with MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga') do
   begin
     Material.Texture.TextureFormat := tfRGBA;
     Material.Texture.TextureMode := tmModulate;
     Material.Texture.MinFilter := miNearestMipmapNearest;
     Material.BlendingMode := bmAlphaTest50;
   end;
-  with MLTrees.AddTextureMaterial('Bark', 'media\zbark_016.jpg') do
+  with MLTrees.AddTextureMaterial('Bark', 'data\zbark_016.jpg') do
     Material.Texture.TextureMode := tmModulate;
 
   // Create test tree
@@ -204,7 +168,7 @@ begin
     densityBitmap.PixelFormat := pf24bit;
     Density := TPicture.Create;
     try
-      Density.LoadFromFile('media\volcano_trees.jpg');
+      Density.LoadFromFile('data\volcano_trees.jpg');
       densityBitmap.Width := Density.Width;
       densityBitmap.Height := Density.Height;
       densityBitmap.Canvas.Draw(0, 0, Density.Graphic);
@@ -373,7 +337,7 @@ end;
 procedure TForm1.PFXTreesRenderParticle(Sender: TObject;
   aParticle: TGLParticle; var rci: TRenderContextInfo);
 const
-  cTreeCenteringOffset: TAffineVector = (0, 30, 0);
+  cTreeCenteringOffset: TAffineVector = (X:0; Y:30; Z:0);
 var
   d: Single;
   camPos: TVector;
@@ -624,10 +588,10 @@ begin
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
 
   tex0Matrix := IdentityHmgMatrix;
-  tex0Matrix[0][0] := 3 * cWaveScale;
-  tex0Matrix[1][1] := 4 * cWaveScale;
-  tex0Matrix[3][0] := tWave * 1.1;
-  tex0Matrix[3][1] := tWave * 1.06;
+  tex0Matrix.V[0].V[0] := 3 * cWaveScale;
+  tex0Matrix.V[1].V[1] := 4 * cWaveScale;
+  tex0Matrix.V[3].V[0] := tWave * 1.1;
+  tex0Matrix.V[3].V[1] := tWave * 1.06;
   rci.GLStates.SetGLTextureMatrix(tex0Matrix);
 
   rci.GLStates.ActiveTexture := 1;
@@ -635,10 +599,10 @@ begin
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
 
   tex1Matrix := IdentityHmgMatrix;
-  tex1Matrix[0][0] := cWaveScale;
-  tex1Matrix[1][1] := cWaveScale;
-  tex1Matrix[3][0] := tWave * 0.83;
-  tex1Matrix[3][1] := tWave * 0.79;
+  tex1Matrix.V[0].V[0] := cWaveScale;
+  tex1Matrix.V[1].V[1] := cWaveScale;
+  tex1Matrix.V[3].V[0] := tWave * 0.83;
+  tex1Matrix.V[3].V[1] := tWave * 0.79;
   rci.GLStates.SetGLTextureMatrix(tex1Matrix);
 
   if enableTex2DReflection then
@@ -651,19 +615,24 @@ begin
 
   rci.GLStates.ActiveTexture := 0;
 
+  {
   if enableTex2DReflection then
   begin
-    SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
+    //SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
+    GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;'#13#10
       + 'Tex2:=Tex1+Tex2-0.5;');
     GL.Color4f(0.0, 0.3, 0.3, 1);
   end
   else
   begin
-    SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
+    //SetupTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
+    GetTextureCombiners('Tex0:=Tex1*Tex0;'#13#10
       + 'Tex1:=Tex0+Col;');
     GL.Color4f(0.0, 0.4, 0.7, 1);
   end;
+  }
+  GL.Color4f(0.0, 0.4, 0.7, 1);
 
   rci.GLStates.Disable(stCullFace);
   for y := -10 to 10 - 1 do
@@ -702,8 +671,8 @@ begin
   begin
     reflectionProgram := TGLProgramHandle.CreateAndAllocate;
 
-    reflectionProgram.AddShader(TGLVertexShaderHandle, LoadAnsiStringFromFile('media\water_vp.glsl'));
-    reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadAnsiStringFromFile('media\water_fp.glsl'));
+    reflectionProgram.AddShader(TGLVertexShaderHandle, LoadAnsiStringFromFile('data\water_vp.glsl'));
+    reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadAnsiStringFromFile('data\water_fp.glsl'));
     if not reflectionProgram.LinkProgram then
       raise Exception.Create(reflectionProgram.InfoLog);
     if not reflectionProgram.ValidateProgram then
@@ -741,7 +710,12 @@ end;
 
 function TForm1.GetTextureReflectionMatrix: TMatrix;
 const
-  cBaseMat: TMatrix = ((0.5, 0, 0, 0), (0, 0.5, 0, 0), (0, 0, 1, 0), (0.5, 0.5, 0, 1));
+  cBaseMat: TMatrix =
+  (V:((X:0.5; Y:0;   Z:0; W:0),
+      (X:0;   Y:0.5; Z:0; W:0),
+      (X:0;   Y:0; Z:1; W:0),
+      (X:0.5; Y:0.5; Z:0; W:1)));
+
 var
   w, h: Single;
 begin

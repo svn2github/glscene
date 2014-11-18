@@ -4,15 +4,15 @@ interface
 
 uses
   SysUtils,  Variants,  Classes,  Graphics,  Controls,  Forms,  Dialogs,
-  StdCtrls,  ExtCtrls,
+  StdCtrls,  ExtCtrls, Jpeg,
 
   //GLScene
   GLScene,  GLContext,  GLObjects,  GLHUDObjects,  GLMaterial,  GLTexture,
   GLWin32Viewer,  GLGeomObjects,  GLFBORenderer,  GLCadencer,  GLCustomShader,
-  GLSLShader,  VectorGeometry,  GLPolyhedron,  GLCoordinates,  GLCrossPlatform,
-  BaseClasses,  GLRenderContextInfo,  GLSimpleNavigation,  GLVectorFileObjects,
-  OpenGLTokens,  GLFileMD2,  DDSImage,  JPEG,  GLFileObj,  GLGraphics,
-  VectorTypes,  GLState, GLUtils;
+  GLSLShader,  GLVectorGeometry,  GLPolyhedron,  GLCoordinates,  GLCrossPlatform,
+  GLBaseClasses,  GLRenderContextInfo,  GLSimpleNavigation,  GLVectorFileObjects,
+  OpenGLTokens,  GLFileMD2,  DDSImage,  GLFileObj,  GLGraphics,
+  GLVectorTypes,  GLState, GLUtils;
 
 type
   TForm1 = class(TForm)

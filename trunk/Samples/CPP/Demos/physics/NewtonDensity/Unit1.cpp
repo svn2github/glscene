@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -27,8 +27,8 @@ TForm1 *Form1;
 int __cdecl BuoyancyPlaneCallback(const int collisionID, void *context,
   const PNGDFloat globalSpaceMatrix, PNGDFloat globalSpacePlane)
 {
-  Vectorgeometry::TMatrix *BodyMatrix;
-  Vectorgeometry::TVector PlaneEquation;
+  Glvectorgeometry::TMatrix *BodyMatrix;
+  Glvectorgeometry::TVector PlaneEquation;
   PVector pv;
   TForm1 *MyForm;
 
@@ -104,7 +104,7 @@ void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Bu
 void TForm1::MyForceAndTorqueDensity(const PNewtonBody cbody,
 	  NGDFloat timestep, int threadIndex)
 {
-  Vectorgeometry::TVector worldGravity;
+  Glvectorgeometry::TVector worldGravity;
   TGLNGDDynamic  *NGDDyn;
   float fluidDensity, fluidLinearViscosity, fluidAngularViscosity;
 

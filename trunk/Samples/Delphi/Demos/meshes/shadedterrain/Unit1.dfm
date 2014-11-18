@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 125
-  Top = 65
+  Left = 165
+  Top = 146
   Caption = 'Shaded Terrain'
-  ClientHeight = 445
-  ClientWidth = 595
+  ClientHeight = 408
+  ClientWidth = 573
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,8 +20,8 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 595
-    Height = 380
+    Width = 573
+    Height = 343
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
@@ -31,7 +31,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
-    FieldOfView = 150.512878417968800000
+    FieldOfView = 147.492416381835900000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -40,7 +40,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 595
+    Width = 573
     Height = 65
     Align = alTop
     BevelOuter = bvLowered
@@ -170,6 +170,7 @@ object Form1: TForm1
       HeightDataSource = GLBumpmapHDS1
       TileSize = 128
       TilesPerTexture = 1.000000000000000000
+      MaterialLibrary = GLMaterialLibrary1
       CLODPrecision = 30
     end
     object GLLensFlare: TGLLensFlare

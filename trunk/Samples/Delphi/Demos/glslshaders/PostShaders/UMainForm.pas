@@ -10,9 +10,9 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLViewer, GLWin32Viewer, GLScene, GLPostEffects,
-  GLGraph, GLUtils, GLContext, VectorGeometry, GLGeomObjects, GLCoordinates,
-  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform, GLMaterial, 
-  BaseClasses,
+  GLGraph, GLUtils, GLContext, GLVectorGeometry, GLGeomObjects, GLCoordinates,
+  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform, GLMaterial,
+  GLBaseClasses,
 
   // GlScene shaders
   GLSLPostBlurShader, CGPostTransformationShader,

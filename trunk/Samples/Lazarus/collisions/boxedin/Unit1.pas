@@ -13,10 +13,10 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Controls, Forms, GLKeyboard, VectorGeometry,
+  Classes, SysUtils, Controls, Forms, GLKeyboard, GLVectorGeometry,
   GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
   GLCadencer, ExtCtrls, StdCtrls, GLNavigator, ComCtrls, GLGeomObjects,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

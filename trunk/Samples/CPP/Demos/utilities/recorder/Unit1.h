@@ -1,21 +1,19 @@
 //---------------------------------------------------------------------------
-
-#ifndef Unit1H
-#define Unit1H
-//---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
 #include "GLAVIRecorder.hpp"
-#include "GLWin32Viewer.hpp"
-#include "GLAVIRecorder.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
-#include "AsyncTimer.hpp"
-#include "GLMisc.hpp"
+#include "GLCoordinates.hpp"
+#include "GLCrossPlatform.hpp"
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
-#include <ComCtrls.hpp>
+#include "GLWin32Viewer.hpp"
+#include "GLKeyboard.hpp"
+#include <System.Classes.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#ifndef Unit1H
+#define Unit1H
 //---------------------------------------------------------------------------
 
 // must manually add this #define to correct the Ambiguous error of AVIRecorder1PostProcessEvent
@@ -37,7 +35,7 @@ __published:                   // IDE-managed Components
   TGLDummyCube *DummyCube2;
   TGLCadencer *GLCadencer1;
   TButton *Button1;
-  TAVIRecorder *AVIRecorder1;
+	TGLAVIRecorder *AVIRecorder1;
   void __fastcall TrackBarChange(TObject * Sender);
   void __fastcall FormResize(TObject * Sender);
   void __fastcall Button1Click(TObject * Sender);

@@ -15,7 +15,7 @@
 #include "GLScene.hpp"
 #include "GLTexture.hpp"
 #include "GLWin32Viewer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
@@ -45,7 +45,7 @@ __published:	// IDE-managed Components
         TGLPlane *GLPlane2;
         TGLPlane *GLPlane3;
         TGLSphere *GLSphere1;
-        TGLCamera *camera;
+	TGLCamera *GLCamera1;
         TGLCadencer *GLCadencer1;
         TGLMaterialLibrary *matLib;
         TTimer *Timer1;

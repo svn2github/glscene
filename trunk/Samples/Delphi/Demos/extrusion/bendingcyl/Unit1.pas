@@ -4,8 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLExtrusion, GLCadencer, StdCtrls, ExtCtrls,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLObjects, GLExtrusion, GLCadencer, GLVectorGeometry,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -29,9 +31,9 @@ type
       X, Y: Integer);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 
@@ -41,8 +43,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses VectorGeometry;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);

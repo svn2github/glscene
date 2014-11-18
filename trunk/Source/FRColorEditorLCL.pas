@@ -14,7 +14,7 @@ interface
 
 uses
   Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEditLCL, Dialogs, Controls,
-  Classes, VectorGeometry, Graphics, SysUtils, GLColor,lresources;
+  Classes, GLVectorGeometry, Graphics, SysUtils, GLColor, lresources;
 
 type
 

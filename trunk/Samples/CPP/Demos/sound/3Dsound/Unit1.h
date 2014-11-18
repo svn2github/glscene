@@ -7,7 +7,10 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -19,11 +22,10 @@
 #include "GLSMOpenAL.hpp"
 #include "GLSound.hpp"
 #include "GLWin32Viewer.hpp"
-#include <Vcl.ComCtrls.hpp>
-#include <Vcl.ExtCtrls.hpp>
 #include "GLUtils.hpp"
 #include "GLFileWAV.hpp"
 #include "GLFileMP3.hpp"
+#include "BASS.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

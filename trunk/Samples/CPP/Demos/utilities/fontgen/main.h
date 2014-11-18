@@ -28,7 +28,7 @@ __published:	// IDE-managed Components
         void __fastcall Button2Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-       TGLStoredBitmapFont *FFont;
+	   TGLWindowsBitmapFont *FFont;
         __fastcall TfrmMain(TComponent* Owner);
 };
 //---------------------------------------------------------------------------

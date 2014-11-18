@@ -14,7 +14,7 @@
 #include <ComCtrls.hpp>
 #include "GLGraph.hpp"
 #include "GLObjects.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 

@@ -11,6 +11,7 @@ object Form1: TForm1
   Color = clBtnFace
   Constraints.MinHeight = 256
   Constraints.MinWidth = 256
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -38,7 +39,7 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 8
     Top = 56
-    Width = 239
+    Width = 238
     Height = 14
     Caption = 'texture using Graphics32 (www.graphics32.org)'
     Font.Charset = ANSI_CHARSET
@@ -65,7 +66,7 @@ object Form1: TForm1
   object Label5: TLabel
     Left = 6
     Top = 8
-    Width = 129
+    Width = 128
     Height = 19
     Caption = 'Dynamic Texture'
     Font.Charset = ANSI_CHARSET
@@ -99,7 +100,7 @@ object Form1: TForm1
     OnMouseMove = GLSceneViewer1MouseMove
     OnMouseUp = GLSceneViewer1MouseUp
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Interval = 80
     OnTimer = AsyncTimer1Timer
     Left = 40
@@ -115,6 +116,7 @@ object Form1: TForm1
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Compression = tcNone
       Material.Texture.Disabled = False
+      Material.MaterialLibrary = GLMaterialLibrary1
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
@@ -132,7 +134,12 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 352
+    Left = 384
+    Top = 16
+  end
+  object GLMaterialLibrary1: TGLMaterialLibrary
+    TexturePaths = '..\..\..\..\media'
+    Left = 488
     Top = 16
   end
 end

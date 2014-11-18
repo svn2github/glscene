@@ -4,9 +4,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
-  GLWin32Viewer, ComCtrls, GLGeomObjects, GLColor, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  StdCtrls, ExtCtrls, ComCtrls,
+
+  //GLS
+  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer,
+  GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform,
+  GLCoordinates, GLBaseClasses, GLPolynomials;
 
 type
   TForm1 = class(TForm)
@@ -45,10 +48,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses
-  VectorGeometry,
-  Polynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var

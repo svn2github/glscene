@@ -3,6 +3,9 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <tchar.h>
+//---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -10,17 +13,19 @@
 #include <Vcl.Buttons.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+
+#include "GLScene.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLGeomObjects.hpp"
 #include "GLObjects.hpp"
-#include "GLScene.hpp"
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLFileMD2.hpp"
+#include "GLBaseClasses.hpp"
 #include "JPEG.hpp"
+#include "GLUtils.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

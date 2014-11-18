@@ -4,10 +4,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, GLScene,
+  //GLS
   GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer, GLSArchiveManager,
-  BaseClasses, VectorGeometry,
-  GLFileMS3D, TGA, GLFileZLIB, GLCoordinates, GLCrossPlatform,
-  GLWin32Viewer;
+  GLBaseClasses, GLVectorGeometry, GLFileMS3D, TGA, GLFileZLIB, GLCoordinates,
+  GLCrossPlatform, GLWin32Viewer, GLVectorTypes, GLUtils;
+
 
 type
 
@@ -35,12 +36,9 @@ type
   end; 
 
 var
-  Form1: TForm1; 
+  Form1: TForm1;
 
 implementation
-
-uses
-  VectorTypes, GLUtils;
 
 {$R *.dfm}
 
@@ -65,6 +63,7 @@ begin
     {: Direct loading from archive }
     GLFreeForm1.LoadFromStream('Chair.ms3d',GetContent('Chair.ms3d'));
   end;
+  GLPlane1.Material.Texture.Image.LoadFromFile('GLScene.bmp');
 end;
 
 end.

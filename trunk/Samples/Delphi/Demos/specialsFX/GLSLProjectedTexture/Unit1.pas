@@ -3,30 +3,12 @@ unit Unit1;
 interface
 
 uses
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  GLScene,
-  GLObjects,
-  GLTexture,
-  GLWin32Viewer,
-  GLCadencer,
-  GLVectorFileObjects,
-  GLShadowVolume,
-  GLGeomObjects,
-  ExtCtrls,
-  GLUtils,
-  GLFileLMTS,
-  GLContext,
-  VectorGeometry,
-  GLSLProjectedTextures,
-  GLCrossPlatform,
-  GLGraphics,
-  GLMaterial,
-  GLCoordinates,
-  BaseClasses;
+  SysUtils, Classes, Graphics, Controls, Forms,  ExtCtrls, Jpeg,
+  //GLS
+  GLScene, GLObjects, GLTexture, GLWin32Viewer, GLCadencer, GLVectorFileObjects,
+  GLShadowVolume, GLGeomObjects, GLUtils, GLFileLMTS, GLContext, GLVectorGeometry,
+  GLSLProjectedTextures, GLCrossPlatform, GLGraphics, GLMaterial, GLCoordinates,
+  GLBaseClasses, TGA;
 
 type
 
@@ -64,10 +46,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  JPEG,
-  TGA;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 var

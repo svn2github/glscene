@@ -1,28 +1,16 @@
 unit Unit1;
 
-{ : Newton Game Dynamics Physics Engine demo.<p>
-
-  This exemple show how to move with keyboard.
-  There is already a NewtonWalkAndCarry demo but I wanted to do with another way.
-  Press X key to spawn New model.
-  Press C key to Respawn Body.
-  Press Middle Mouse to grab.
-  Press MouseLeft to shoot.
-  Hold MouseRight to look
-
-  Body has two Upvectors joint, one in Y one in X.
-
-  <b>History : </b><font size=-1><ul>
-  <li>04/02/11 - FP - Created by Franck Papouin
-  </ul>
-}
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLCoordinates, GLCadencer, GLNGDManager,
-  GLSimpleNavigation, GLWin32Viewer, GLCrossPlatform, BaseClasses,
-  GLVectorFileObjects, GLGeomObjects, GLHUDObjects;
+  Dialogs,
+  //GLS
+  GLScene, GLObjects, GLCoordinates, GLCadencer, GLNGDManager,
+  GLSimpleNavigation, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
+  GLVectorFileObjects, GLGeomObjects, GLHUDObjects,
+  GLFile3ds, GLVectorGeometry, GlMaterial, GLKeyboard, GLUtils;
+
 
 type
   TForm1 = class(TForm)
@@ -66,23 +54,11 @@ var
 
 implementation
 
-uses
-  GLFile3ds, VectorGeometry, GlMaterial, GLKeyboard;
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  MediaPath : String;
-  I : Integer;
 begin
-  MediaPath := ExtractFilePath(ParamStr(0));
-  I := Pos('Samples', MediaPath);
-  if (I <> 0) then
-  begin
-    Delete(MediaPath, I+8, Length(MediaPath)-I);
-    SetCurrentDir(MediaPath+'Media\');
-  end;
-
+  SetGLSceneMediaDir;
   // Set Mesh and scale their vertice position
   // because matrix scale is not supported in newton
   Map.LoadFromFile('ngdmap1.3ds');

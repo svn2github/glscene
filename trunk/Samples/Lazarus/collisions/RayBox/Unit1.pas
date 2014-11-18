@@ -15,8 +15,8 @@ uses
   ExtCtrls, StdCtrls,
   //GLScene
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
-  GLLCLViewer, GLTexture, VectorGeometry, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses;
+  GLLCLViewer, GLTexture, GLVectorGeometry, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

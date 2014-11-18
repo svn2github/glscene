@@ -37,7 +37,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLTexture, GLBumpShader, GLScene,
   GLVectorFileObjects, GLCadencer, GLLCLViewer, ExtCtrls,
-  StdCtrls, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates;
+  StdCtrls, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates;
 
 type
   TForm1 = class(TForm)
@@ -63,7 +63,7 @@ type
     Shape3: TShape;
     ColorDialog1: TColorDialog;
     DCLights: TGLDummyCube;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     CheckBox4: TCheckBox;
     ComboBox2: TComboBox;
     Label2: TLabel;
@@ -98,7 +98,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, GLContext, GLUtils;
+uses GLVectorGeometry, GLContext, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

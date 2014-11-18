@@ -3,13 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls,
+  Windows, Messages, SysUtils, Classes, Graphics, JPeg, Controls,
   Forms, Dialogs, StdCtrls, ExtCtrls,
 
   //GLScene
-  GLScene, GLVectorFileObjects, GLObjects, GLBehaviours, GLCadencer,
-  GLWin32Viewer, GLGeomObjects, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLVectorGeometry, GLTexture, GLScene, GLVectorFileObjects, GLObjects,
+  GLBehaviours, GLCadencer, GLWin32Viewer, GLGeomObjects, GLCrossPlatform,
+  GLCoordinates, GLBaseClasses,  GLFile3DS,  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,13 +48,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses
-  VectorGeometry,
-  GLTexture,
-  JPeg,
-  GLFile3DS,
-  GLUtils;
 
 const
   cSpread = 90;

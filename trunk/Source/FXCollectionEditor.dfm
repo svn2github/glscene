@@ -19,9 +19,9 @@ object XCollectionEditor: TXCollectionEditor
   TextHeight = 13
   object ListView: TListView
     Left = 0
-    Top = 29
+    Top = 30
     Width = 288
-    Height = 321
+    Height = 320
     Align = alClient
     Columns = <
       item
@@ -38,14 +38,12 @@ object XCollectionEditor: TXCollectionEditor
     TabOrder = 0
     ViewStyle = vsReport
     OnChange = ListViewChange
-    ExplicitTop = 32
-    ExplicitHeight = 319
   end
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
     Width = 288
-    Height = 29
+    Height = 30
     AutoSize = True
     BorderWidth = 1
     Caption = 'ToolBar1'
@@ -54,7 +52,7 @@ object XCollectionEditor: TXCollectionEditor
     TabOrder = 1
     object TBAdd: TToolButton
       Left = 0
-      Top = 2
+      Top = 0
       Hint = 'Add...'
       Caption = 'TBAdd'
       DropdownMenu = PMToolBar
@@ -64,7 +62,7 @@ object XCollectionEditor: TXCollectionEditor
     end
     object ToolButton5: TToolButton
       Left = 38
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton5'
       ImageIndex = 4
@@ -72,12 +70,12 @@ object XCollectionEditor: TXCollectionEditor
     end
     object ToolButton2: TToolButton
       Left = 46
-      Top = 2
+      Top = 0
       Action = ACRemove
     end
     object ToolButton6: TToolButton
       Left = 69
-      Top = 2
+      Top = 0
       Width = 8
       Caption = 'ToolButton6'
       ImageIndex = 5
@@ -85,12 +83,12 @@ object XCollectionEditor: TXCollectionEditor
     end
     object ToolButton3: TToolButton
       Left = 77
-      Top = 2
+      Top = 0
       Action = ACMoveUp
     end
     object ToolButton4: TToolButton
       Left = 100
-      Top = 2
+      Top = 0
       Action = ACMoveDown
     end
   end
@@ -146,7 +144,7 @@ object XCollectionEditor: TXCollectionEditor
     Left = 104
     Top = 64
     Bitmap = {
-      494C0101040009000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000900140010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -1,49 +1,18 @@
-{: This is a basic use for the Dynamic Collision Engine (DCE) by Lucas Goraieb.<p>
-
-     The engine pretty much works by creating a TGLDCEManager, and several
-     TGLDCEDynamic and TGLDCEStatic behaviours on the objects that should
-     interact. Each object can be either an ellipsoid, cube, freeForm or terrain,
-     have different sizes and friction, respond differently to collisions, etc.
-
-     This means your next FPS project is pretty much done: All you have to do
-     is keep loading object files into freeForms and letting DCE do the trick
-     for you. The only "real" code in this demo is inside the onProgress event
-     of the cadencer, that takes care of input.
-}
-
 unit Unit1;
 
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLDCE,
-  GLScene,
-  GLObjects,
-  GLCadencer,
-  GLWin32Viewer,
-  GLTexture,
-  GLHeightData,
-  GLTerrainRenderer,
-  GLVectorFileObjects,
-  ExtCtrls,
-  GLBitmapFont,
-  GLWindowsFont,
-  GLHUDObjects,
-  GLCrossPlatform,
-  GLMaterial,
-  GLCoordinates,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLState,
-  GLUtils;
+  Windows,  Messages,  SysUtils, OpenGL, Classes,  Graphics,  Controls,  Forms,
+  Dialogs,  ExtCtrls, Jpeg,
+
+  //GLS
+  GLScene,  GLObjects,  GLCadencer,  GLWin32Viewer,  GLDCE,  GLMaterial,
+  GLTexture,  GLHeightData,  GLTerrainRenderer,  GLVectorFileObjects,
+  GLBitmapFont,  GLWindowsFont,  GLHUDObjects,  GLCrossPlatform,
+  GLCoordinates,  GLVectorGeometry, GLFileMD2,  GLFile3DS,  GLContext,  GLEllipseCollision,
+  GLRenderContextInfo,  GLKeyboard,  GLProxyObjects,  GLState, GLUtils,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -106,16 +75,6 @@ const
 
 implementation
 
-uses Jpeg,
-  GLFileMD2,
-  GLFile3DS,
-  VectorGeometry,
-  GLKeyboard,
-  GLProxyObjects,
-  OpenGLTokens,
-  GLContext,
-  GLEllipseCollision;
-
 {$R *.dfm}
 
 { TForm1 }
@@ -173,13 +132,13 @@ begin
 
   Force := NullVector;
   if IsKeyDown('w') or IsKeyDown('z') then
-    Force.Z := cForce;
+    Force.V[2] := cForce;
   if IsKeyDown('s') then
-    Force.Z := -cForce;
+    Force.V[2] := -cForce;
   if IsKeyDown('a') or IsKeyDown('q') then
-    Force.X := cForce;
+    Force.V[0] := cForce;
   if IsKeyDown('d') then
-    Force.X := -cForce;
+    Force.V[0] := -cForce;
 
   GetOrCreateDCEDynamic(Player).ApplyAccel(Force);
 end;
@@ -222,8 +181,14 @@ begin
     Radius := 1;
     S := (100 + Random(900)) / 500;
     Scale.SetVector(s, s, s);
-    Position.SetPoint(Random(40) - random(40), 4 + Random(10), Random(40) - random(40));
-    Material.FrontProperties.Diffuse.SetColor((100 + Random(900)) / 1000, (100 + Random(900)) / 1000, (100 + Random(900)) / 1000);
+    Position.SetPoint(
+         Random(40) - Random(40),
+         4 + Random(10),
+         Random(40) - Random(40));
+    Material.FrontProperties.Diffuse.SetColor(
+        (100 + Random(900)) / 1000,
+        (100 + Random(900)) / 1000,
+        (100 + Random(900)) / 1000);
   end;
   with GetOrCreateDCEDynamic(Ball) do
   begin
@@ -404,30 +369,30 @@ begin
   //triangle list! -> SetLength(debug_tri,0);
 
   rci.GLStates.PointSize := 5.0;
-  GL.Color3f(0, 1, 0);
+  glColor3f(0, 1, 0);
 
   for i := 0 to High(debug_tri) do
     with debug_tri[i] do
     begin
-      GL.Color3f(0, 0, 0);
-      GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(p1.X, p1.Y, p1.Z);
-      GL.Vertex3f(p2.X, p2.Y, p2.Z);
-      GL.Vertex3f(p3.X, p3.Y, p3.Z);
-      GL.End_;
+      glColor3f(0, 0, 0);
+      glBegin(GL_LINE_STRIP);
+        glVertex3f(p1.X, p1.Y, p1.Z);
+        glVertex3f(p2.X, p2.Y, p2.Z);
+        glVertex3f(p3.X, p3.Y, p3.Z);
+      glEnd;
       CalcPlaneNormal(p1, p2, p3, n);
       ScaleVector(n, 0.25);
       p.X := (p1.X + p2.X + p3.X) / 3;
       p.Y := (p1.Y + p2.Y + p3.Y) / 3;
       p.Z := (p1.Z + p2.Z + p3.Z) / 3;
-      GL.Color3f(0, 0, 1);
-      GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(p.X, p.Y, p.Z);
-      GL.Vertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
-      GL.End_;
-      GL.Begin_(GL_POINTS);
-      GL.Vertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
-      GL.End_;
+      glColor3f(0, 0, 1);
+      glBegin(GL_LINE_STRIP);
+        glVertex3f(p.X, p.Y, p.Z);
+        glVertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
+      glEnd;
+      glBegin(GL_POINTS);
+        glVertex3f(p.X + n.X, p.Y + n.Y, p.Z + n.Z);
+      glEnd;
 
     end; //}
 

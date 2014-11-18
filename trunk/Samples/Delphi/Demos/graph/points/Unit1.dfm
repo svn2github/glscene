@@ -22,13 +22,11 @@ object Form1: TForm1
     Height = 380
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 150.512878417968700000
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 410
-    ExplicitHeight = 325
   end
   object Panel1: TPanel
     Left = 0
@@ -37,7 +35,6 @@ object Form1: TForm1
     Height = 25
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 410
     object LabelFPS: TLabel
       Left = 288
       Top = 6
@@ -76,7 +73,7 @@ object Form1: TForm1
       object GLPoints1: TGLPoints
         NoZWrite = True
         Static = False
-        size = 10.000000000000000000
+        Size = 10.000000000000000000
         Style = psSmoothAdditive
         PointParameters.Enabled = True
         PointParameters.DistanceAttenuation.Coordinates = {0000C0BF3333333F0000000000000000}
@@ -84,7 +81,7 @@ object Form1: TForm1
       object GLPoints2: TGLPoints
         NoZWrite = True
         Static = False
-        size = 20.000000000000000000
+        Size = 20.000000000000000000
         Style = psSmoothAdditive
         PointParameters.Enabled = True
         PointParameters.DistanceAttenuation.Coordinates = {0000C0BF3333333F0000000000000000}

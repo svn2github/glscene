@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLTeapot, GLObjects, GLWin32Viewer,
-  VectorGeometry, GLTexture, GLCadencer, GLImposter, StdCtrls, ExtCtrls, GLSkydome,
-  GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  Dialogs, StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLTeapot, GLObjects, GLWin32Viewer,
+  GLVectorGeometry, GLTexture, GLCadencer, GLImposter, GLSkydome,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -21,11 +23,12 @@ type
     GLSkyDome1: TGLSkyDome;
     GLDummyCube1: TGLDummyCube;
     Panel1: TPanel;
-    Label1: TLabel;
+    LabelTexSize: TLabel;
     CBShowTeapot: TCheckBox;
     CBShowImposter: TCheckBox;
     CBSampleSize: TComboBox;
     Label2: TLabel;
+    LabelFPS: TLabel;
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -100,12 +103,12 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=GLSceneViewer1.FramesPerSecondText;
+   LabelFPS.Caption:=GLSceneViewer1.FramesPerSecondText;
    if CBShowImposter.Checked then
-      Caption:=Caption+' - 3721 imposters';
+      LabelFPS.Caption:=LabelFPS.Caption+' - 3721 imposters';
    GLSceneViewer1.ResetPerformanceMonitor;
 
-   Label1.Caption:=Format('%d x %d - %.1f%%',
+   LabelTexSize.Caption:=Format('%d x %d - %.1f%%',
                           [impBuilder.TextureSize.X, impBuilder.TextureSize.Y,
                            impBuilder.TextureFillRatio*100]);
 

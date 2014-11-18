@@ -12,7 +12,7 @@
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBlur.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"

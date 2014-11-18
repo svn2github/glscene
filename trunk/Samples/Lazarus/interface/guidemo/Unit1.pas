@@ -40,7 +40,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
   GLBitmapFont, GLLCLViewer, GLWindowsFont, Menus, GLWindows, GLGui,
-  GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

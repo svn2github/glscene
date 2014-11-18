@@ -1,26 +1,17 @@
-{: Using the TJoystick to retrieve joystick position.<p>
-
-   The component make it fairly easy to get this info. The first method is to use
-   the events, the second it use its properties.<br>
-   I've tried to put both methods at use in this sample :<ul>
-   <li>spheres on the right are adjusted when button are pressed/depressed
-   <li>the 3D stick position is read in the rendering loop
-   </ul>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Joystick, GLScene, GLObjects, GLGeomObjects, GLCadencer, GLWin32Viewer,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLJoystick, GLScene, GLObjects, GLGeomObjects, GLCadencer, GLWin32Viewer,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    Joystick1: TJoystick;
+    Joystick1: TGLJoystick;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     DummyCube1: TGLDummyCube;
@@ -33,12 +24,11 @@ type
     Sphere4: TGLSphere;
     DummyCube3: TGLDummyCube;
     GLCadencer1: TGLCadencer;
-    procedure Joystick1JoystickButtonChange(Sender: TObject;
-      JoyID: TJoystickID; Buttons: TJoystickButtons; XDeflection,
-      YDeflection: Integer);
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure Joystick1JoystickButtonChange(Sender: TObject; JoyID: TJoystickID;
+      Buttons: TJoystickButtons; XDeflection, YDeflection: Integer);
   private
     { Déclarations privées }
   public

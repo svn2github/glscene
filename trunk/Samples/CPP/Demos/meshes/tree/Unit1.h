@@ -23,7 +23,7 @@
 #include <GLObjects.hpp>
 #include <GLScene.hpp>
 #include <ComCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"

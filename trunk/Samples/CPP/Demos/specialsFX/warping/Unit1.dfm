@@ -1,34 +1,41 @@
 object Form1: TForm1
   Left = 239
   Top = 111
-  Width = 433
-  Height = 338
-  Caption = 'Form1'
+  Caption = 'Warping'
+  ClientHeight = 365
+  ClientWidth = 531
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -13
+  Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
   OnCreate = FormCreate
-  PixelsPerInch = 110
-  TextHeight = 16
+  PixelsPerInch = 96
+  TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 425
-    Height = 278
+    Width = 531
+    Height = 365
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
     Camera = GLCamera
-    FieldOfView = 179.587799072266
+    FieldOfView = 179.686050415039100000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
+    ExplicitWidth = 425
+    ExplicitHeight = 272
   end
   object MainMenu1: TMainMenu
-    Left = 8
-    Top = 8
+    Left = 208
+    Top = 16
     object MIFile: TMenuItem
       Caption = 'File'
       object MIOpenImageFile: TMenuItem
@@ -129,28 +136,27 @@ object Form1: TForm1
     end
   end
   object OpenPictureDialog: TOpenPictureDialog
-    Left = 64
-    Top = 8
+    Left = 40
+    Top = 80
   end
   object GLScene: TGLScene
-    Left = 8
-    Top = 56
+    Left = 40
+    Top = 16
     object HeightField: TGLHeightField
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
       Direction.Coordinates = {00000000000000800000803F00000000}
-      XSamplingScale.Max = 16
-      XSamplingScale.Step = 8
-      YSamplingScale.Max = 16
-      YSamplingScale.Step = 8
+      XSamplingScale.Max = 16.000000000000000000
+      XSamplingScale.Step = 8.000000000000000000
+      YSamplingScale.Max = 16.000000000000000000
+      YSamplingScale.Step = 8.000000000000000000
       Options = [hfoTextureCoordinates, hfoTwoSided]
       OnGetHeight = HeightFieldGetHeight
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 0.5
+      DepthOfView = 100.000000000000000000
+      FocalLength = 0.500000000000000000
       CameraStyle = csOrthogonal
       Position.Coordinates = {0000803F0000803F000020410000803F}
       Left = 256
@@ -160,7 +166,7 @@ object Form1: TForm1
   object SaveDialog: TSaveDialog
     DefaultExt = 'bmp'
     Filter = 'Bitmaps (*.bmp)|*.bmp|All files (*.*)|*.*'
-    Left = 104
-    Top = 8
+    Left = 128
+    Top = 16
   end
 end

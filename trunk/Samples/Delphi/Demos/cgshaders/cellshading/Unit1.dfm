@@ -26,8 +26,6 @@ object Form1: TForm1
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 423
-    ExplicitHeight = 386
   end
   object GLScene1: TGLScene
     Left = 40
@@ -83,7 +81,7 @@ object Form1: TForm1
     Left = 40
     Top = 72
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     Left = 256

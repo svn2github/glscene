@@ -4,9 +4,9 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLScene, GLLCLViewer, VectorGeometry, StdCtrls,
+  Dialogs, GLObjects, GLScene, GLLCLViewer, GLVectorGeometry, StdCtrls,
   GeometryBB, GLTexture, OpenGL1x, GLCadencer, SpatialPartitioning,
-  ComCtrls, GLCrossPlatform, GLCoordinates, BaseClasses, GLRenderContextInfo,
+  ComCtrls, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLRenderContextInfo,
   GLState;
 
 const

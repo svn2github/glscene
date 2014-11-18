@@ -50,6 +50,10 @@ object Form1: TForm1
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Vertex Program'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Splitter3: TSplitter
           Left = 0
           Top = 270
@@ -380,6 +384,10 @@ object Form1: TForm1
       object TabSheet3: TTabSheet
         Caption = 'Controls'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         DesignSize = (
           301
           363)
@@ -700,12 +708,12 @@ object Form1: TForm1
       Position.Coordinates = {000000006F12033B000000000000803F}
       LineColor.Color = {938C0C3E938E0E3F938C0C3E0000803F}
       XSamplingScale.Min = -2.000000000000000000
-      XSamplingScale.max = 2.000000000000000000
-      XSamplingScale.step = 0.100000001490116100
-      YSamplingScale.step = 0.100000001490116100
+      XSamplingScale.Max = 2.000000000000000000
+      XSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.Step = 0.100000001490116100
       ZSamplingScale.Min = -2.000000000000000000
-      ZSamplingScale.max = 2.000000000000000000
-      ZSamplingScale.step = 0.100000001490116100
+      ZSamplingScale.Max = 2.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
     end
     object GLPlane1: TGLPlane

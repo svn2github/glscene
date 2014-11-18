@@ -3,28 +3,33 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
+#include <vcl.h>
+#include <tchar.h>
+//---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.Jpeg.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLScene.hpp"
+#include "GLObjects.hpp"
+#include "GLWin32Viewer.hpp"
 #include "GLCadencer.hpp"
+#include "GLVectorFileObjects.hpp"
+#include "GLShadowPlane.hpp"
+#include "GLVectorGeometry.hpp"
+#include "GLTexture.hpp"
+#include "GLParticleFX.hpp"
+#include "GLMaterial.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "GLMaterial.hpp"
-#include "GLObjects.hpp"
-#include "GLParticleFX.hpp"
-#include "GLScene.hpp"
-#include "GLShadowPlane.hpp"
-#include "GLVectorFileObjects.hpp"
-#include "GLWin32Viewer.hpp"
-#include "GLFileMD3.hpp"
-#include "Jpeg.hpp"
+#include "GLBaseClasses.hpp"
 
 #include "Q3MD3.hpp"
+
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -63,39 +68,26 @@ __published:	// IDE-managed Components
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ComboBox1Change(TObject *Sender);
 	void __fastcall ComboBox2Change(TObject *Sender);
-	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+	void __fastcall ComboSkinChange(TObject *Sender);
 	void __fastcall GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
 	void __fastcall GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift, int X,
           int Y);
-	void __fastcall ComboSkinChange(TObject *Sender);
+	void __fastcall Timer1Timer(TObject *Sender);
+	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
+	void __fastcall FormDestroy(TObject *Sender);
+
 private:	// User declarations
 	int mx, my;
 	int Idx;
-	String SkinFilePath;
-	String SkinShortName;
-	TStringList *stl;
-	TStringList *stlBuf;
-	TStringList *stlPics;
-	String MatName;
-	String PicFileName;
-	String GraphicFileExt;
-
-	void LoadSkin(String SkinShortName,
-	  TGLActor* Actor1, TGLActor* Actor2, TGLActor* Actor3,
-	  String GraphicFileExt);
-	void FetchStlBuf(String Prefix);
-	String __fastcall GetMaterialPicFilename(String MatName);
-	void DoActorMaterials(TGLActor* Actor);
-public:		// User declarations
-	__fastcall TForm1(TComponent* Owner);
 	TMD3TagList *LegsTags;
 	TMD3TagList *TorsoTags;
 	TMD3TagList *WeaponTags;
-	void BuildModel(void);
-	__fastcall Vectorgeometry::TMatrix InterpolateMatrix(Vectorgeometry::TMatrix m1,
-	        Vectorgeometry::TMatrix m2, float delta);
-
+	void __fastcall BuildModel();
+	Glvectorgeometry::TMatrix __fastcall InterpolateMatrix(
+	       Glvectorgeometry::TMatrix m1, Glvectorgeometry::TMatrix m2, Single Delta);
+public:		// User declarations
+	__fastcall TForm1(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;

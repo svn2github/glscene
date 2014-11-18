@@ -5,13 +5,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   Windows, Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
 
   // GLScene
-  GLCadencer, GLWin32Viewer, GLKeyboard, VectorGeometry, GLGeomObjects,
+  GLCadencer, GLWin32Viewer, GLKeyboard, GLVectorGeometry, GLGeomObjects,
   GLScene, GLObjects, GLGraph, GLCrossPlatform, GLSmoothNavigator,
-  GLCoordinates, BaseClasses, GLScreen;
+  GLCoordinates, GLBaseClasses, GLScreen;
 
 type
   TForm1 = class(TForm)
@@ -67,7 +66,6 @@ var
   Form1: TForm1;
 
 implementation
-
 
 {$R *.dfm}
 

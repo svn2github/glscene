@@ -17,14 +17,14 @@
 #include "GLWin32Viewer.hpp"
 #include "GLTexture.hpp"
 #include "GLSkydome.hpp"
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLAtmosphere.hpp"
 #include "GLSimpleNavigation.hpp"
 #include "GLBehaviours.hpp"
 #include "JPeg.hpp"
 #include "GLCoordinates.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLColor.hpp"
 
 //---------------------------------------------------------------------------

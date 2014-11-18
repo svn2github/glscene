@@ -25,8 +25,6 @@ object Form1: TForm1
     FieldOfView = 116.627265930175800000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 263
-    ExplicitHeight = 308
   end
   object StaticText1: TStaticText
     Left = 0
@@ -39,8 +37,6 @@ object Form1: TForm1
     BorderStyle = sbsSingle
     Caption = '???.? FPS'
     TabOrder = 1
-    ExplicitTop = 308
-    ExplicitWidth = 263
   end
   object GLScene1: TGLScene
     Left = 24

@@ -222,22 +222,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
-  SysUtils,
+  Classes, SysUtils,
 
   // GLScene
-  GLCrossPlatform,
-  BaseClasses,
-  OpenGLTokens,
-  VectorGeometry,
-  GLGraphics,
-  GLContext,
-  GLState,
-  GLColor,
-  GLCoordinates,
-  GLRenderContextInfo,
-  GLTextureFormat;
+  GLStrings, GLCrossPlatform, GLBaseClasses, OpenGLTokens,
+  GLVectorGeometry, GLGraphics, GLContext, GLState, GLColor, GLCoordinates,
+  GLRenderContextInfo, GLTextureFormat, GLApplicationFileIO, GLUtils;
 
 const
   cDefaultNormalMapScale = 0.125;
@@ -1050,12 +1040,9 @@ implementation
 
 uses
   GLScene,
-  GLStrings,
   XOpenGL,
-  ApplicationFileIO,
-  PictureRegisteredFormats,
-  GLUtils
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  PictureRegisteredFormats
+  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

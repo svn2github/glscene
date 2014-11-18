@@ -4,8 +4,10 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
-  ExtCtrls, SysUtils, VectorGeometry, GLWin32Viewer, GLGeomObjects, GLColor,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  ExtCtrls, SysUtils,
+  //GLS
+  GLVectorGeometry, GLWin32Viewer, GLGeomObjects, GLColor,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

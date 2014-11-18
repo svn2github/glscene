@@ -4,11 +4,15 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLCadencer, ODEImport,
-  GLShadowPlane, VectorGeometry, GLGeomObjects, ExtCtrls, ComCtrls,
+  Dialogs, ExtCtrls, ComCtrls,
+
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer, GLCadencer, ODEImport,
+  GLShadowPlane, GLVectorGeometry, GLGeomObjects,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, GLKeyboard, GLVectorFileObjects,
-  GLRagdoll, GLODERagdoll, GLTexture, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLUtils;
+  GLRagdoll, GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
+  GLBaseClasses, GLODERagdoll, ODEGL, GLFileSMD, GLUtils;
+
 
 //Physic World ODE
 type
@@ -22,8 +26,8 @@ type
     cube2: TGLCube;
     ODEEnable : boolean;
     physTime : double;
-    destructor destroy; override;
-    constructor create;
+    destructor Destroy; override;
+    constructor Create;
     procedure WorldUpdate;
   end;
 
@@ -71,9 +75,8 @@ var
 implementation
 
 {$R *.dfm}
-uses ODEGL, GLFileSMD;
 
-constructor TWorld_ODE.create;
+constructor TWorld_ODE.Create;
 var
   R : TdMatrix3;
 begin

@@ -14,7 +14,7 @@
 #include "GLWin32Viewer.hpp"
 #include <Dialogs.hpp>
 #include <ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"

@@ -33,12 +33,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes, VCL.Graphics,
+  {$ELSE}
+  Classes, Graphics,
+  {$ENDIF}
   GLCrossPlatform;
 
 {$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif}// Delphi 7

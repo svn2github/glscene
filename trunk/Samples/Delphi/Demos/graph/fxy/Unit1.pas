@@ -4,8 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ComCtrls, GLObjects, GLGraph, GLScene, VectorGeometry, VectorTypes,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, Vcl.ExtCtrls;
+  ComCtrls, ExtCtrls,
+
+  //GLScene
+  GLObjects, GLGraph, GLScene, GLVectorGeometry, GLVectorTypes,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

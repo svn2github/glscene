@@ -17,7 +17,7 @@ interface
 uses
   Classes, SysUtils,
   OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  ApplicationFileIO;
+  GLApplicationFileIO;
 
 type
 

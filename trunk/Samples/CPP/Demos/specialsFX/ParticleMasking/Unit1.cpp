@@ -8,7 +8,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "AsyncTimer"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"

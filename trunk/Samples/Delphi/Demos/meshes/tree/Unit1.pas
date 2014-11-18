@@ -1,21 +1,14 @@
 unit Unit1;
 
-{:
-  History:
-  13/01/07 - Da Stranger - Added a FPS counter
-  30/11/06 - Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
-                         -  Added the CenterBranchConstant TrackBar to
-                            use the new functions of TGLTree.
-}
-
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLTree, GLTexture,
-  ExtCtrls, ComCtrls, StdCtrls, GLVectorFileObjects, Menus, ExtDlgs,
-  AsyncTimer, GLCadencer, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  Windows, Messages, SysUtils, Classes, Graphics, Jpeg, Controls, Forms,
+  Dialogs, Menus, ExtDlgs, ExtCtrls, ComCtrls, StdCtrls,
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLTree, GLTexture, GLVectorFileObjects,
+  GLAsyncTimer, GLCadencer, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLBaseClasses, GLUtils, TGA;
 
 type
   TForm1 = class(TForm)
@@ -75,8 +68,9 @@ type
     OpenPictureDialog1: TOpenPictureDialog;
     Label13: TLabel;
     TrackBar12: TTrackBar;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLCadencer1: TGLCadencer;
+    miFPS: TMenuItem;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -125,9 +119,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  TGA, JPEG, GLUtils;
-
 procedure TForm1.AlignControlsToTree;
 begin
   TrackBar1.Position:=GLTree1.Depth;
@@ -173,7 +164,6 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
-
   // Set up default textures
   with GLMaterialLibrary1.AddTextureMaterial('LeafFront','maple_multi.tga') do begin
     Material.BlendingMode:=bmAlphaTest50;
@@ -216,22 +206,22 @@ end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
-  GLTree1.Depth:=TrackBar1.Position;
+  GLTree1.Depth:= Integer(TrackBar1.Position);
 end;
 
 procedure TForm1.TrackBar2Change(Sender: TObject);
 begin
-  GLTree1.BranchTwist:=TrackBar2.Position;
+  GLTree1.BranchTwist:=Integer(TrackBar2.Position);
 end;
 
 procedure TForm1.TrackBar3Change(Sender: TObject);
 begin
-  GLTree1.BranchAngle:=TrackBar3.Position/100;
+  GLTree1.BranchAngle:= TrackBar3.Position/100;
 end;
 
 procedure TForm1.TrackBar4Change(Sender: TObject);
 begin
-  GLTree1.BranchAngleBias:=TrackBar4.Position/100;
+  GLTree1.BranchAngleBias:= TrackBar4.Position/100;
 end;
 
 procedure TForm1.TrackBar5Change(Sender: TObject);
@@ -241,28 +231,39 @@ end;
 
 procedure TForm1.TrackBar6Change(Sender: TObject);
 begin
-  GLTree1.BranchRadius:=TrackBar6.Position/25;
+  GLTree1.BranchRadius := TrackBar6.Position/25;
 end;
 
 procedure TForm1.TrackBar7Change(Sender: TObject);
 begin
-  GLTree1.BranchNoise:=TrackBar7.Position/100;
+  GLTree1.BranchNoise:= TrackBar7.Position/100;
 end;
 
 procedure TForm1.TrackBar8Change(Sender: TObject);
 begin
-  GLTree1.LeafSize:=TrackBar8.Position/100;
+  GLTree1.LeafSize:= TrackBar8.Position/100;
 end;
 
 procedure TForm1.TrackBar9Change(Sender: TObject);
 begin
-  GLTree1.LeafThreshold:=TrackBar9.Position/100;
+  GLTree1.LeafThreshold:= TrackBar9.Position/100;
 end;
 
 procedure TForm1.TrackBar10Change(Sender: TObject);
 begin
-  GLTree1.BranchFacets:=TrackBar10.Position;
+  GLTree1.BranchFacets:=Integer(TrackBar10.Position);
 end;
+
+procedure TForm1.TrackBar11Change(Sender: TObject);
+begin
+  GLTree1.CentralLeaderBias:= TrackBar11.Position/100;
+end;
+
+procedure TForm1.TrackBar12Change(Sender: TObject);
+begin
+  GLTree1.CenterBranchConstant:= TrackBar12.Position/100;
+end;
+
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
@@ -279,11 +280,6 @@ end;
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   GLTree1.CentralLeader:=CheckBox1.Checked;
-end;
-
-procedure TForm1.TrackBar11Change(Sender: TObject);
-begin
-  GLTree1.CentralLeaderBias:=TrackBar11.Position/100;
 end;
 
 // Menu options
@@ -355,14 +351,10 @@ begin
   GLTree1.StructureChanged;
 end;
 
-procedure TForm1.TrackBar12Change(Sender: TObject);
-begin
-  GLTree1.CenterBranchConstant:=TrackBar12.Position/100;
-end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Caption := 'GLTree Editor - ' + GLSceneViewer1.FramesPerSecondText;
+  miFPS.Caption := 'Tree Editor - ' + GLSceneViewer1.FramesPerSecondText;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

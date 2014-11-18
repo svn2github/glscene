@@ -13,7 +13,7 @@
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -22,8 +22,8 @@
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
 
-#include "MeshUtils.hpp"
-#include "VectorGeometry.hpp"
+#include "GLMeshUtils.hpp"
+#include "GLVectorGeometry.hpp"
 
 #include "Jpeg.hpp"
 #include "TGA.hpp"
@@ -33,7 +33,7 @@
 #include "GLFileSMD.hpp"
 
 #include "GLUtils.hpp"
-#include "MeshUtils.hpp"
+#include "GLMeshUtils.hpp"
 
 
 //---------------------------------------------------------------------------

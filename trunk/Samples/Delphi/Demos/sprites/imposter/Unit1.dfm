@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 110
   Top = 65
-  Width = 542
-  Height = 341
-  Caption = 'Form1'
+  Caption = 'Imposter'
+  ClientHeight = 333
+  ClientWidth = 537
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,33 +11,38 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 407
-    Height = 312
+    Width = 390
+    Height = 333
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
+    FieldOfView = 134.394241333007800000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 407
+    Left = 390
     Top = 0
-    Width = 127
-    Height = 312
+    Width = 147
+    Height = 333
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
-    object Label1: TLabel
+    ExplicitLeft = -2
+    ExplicitHeight = 0
+    object LabelTexSize: TLabel
       Left = 8
       Top = 8
-      Width = 32
+      Width = 38
       Height = 13
-      Caption = 'Label1'
+      Caption = 'TexSize'
     end
     object Label2: TLabel
       Left = 8
@@ -45,6 +50,13 @@ object Form1: TForm1
       Width = 58
       Height = 13
       Caption = 'Sample Size'
+    end
+    object LabelFPS: TLabel
+      Left = 6
+      Top = 120
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
     end
     object CBShowTeapot: TCheckBox
       Left = 8
@@ -74,7 +86,6 @@ object Form1: TForm1
       Width = 49
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 3
       TabOrder = 2
       Text = '64'
@@ -92,7 +103,7 @@ object Form1: TForm1
     Left = 24
     Top = 24
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLSkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -100,16 +111,16 @@ object Form1: TForm1
       Bands = <
         item
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 15
+          StopAngle = 15.000000000000000000
         end
         item
-          StartAngle = 15
-          StopAngle = 90
+          StartAngle = 15.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Stacks = 4
         end
         item
-          StartAngle = -90
+          StartAngle = -90.000000000000000000
           StartColor.Color = {0000000000000000000000000000803F}
           StopColor.Color = {0000803F0000803F0000803F0000803F}
         end>
@@ -118,18 +129,19 @@ object Form1: TForm1
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
       OnRender = GLDirectOpenGL1Render
+      Blend = False
     end
     object GLTeapot1: TGLTeapot
       Scale.Coordinates = {00000040000000400000004000000000}
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00004842000034420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 200
-      FocalLength = 70
+      DepthOfView = 200.000000000000000000
+      FocalLength = 70.000000000000000000
       TargetObject = GLDirectOpenGL1
       Position.Coordinates = {00004040000000400000A0400000803F}
     end

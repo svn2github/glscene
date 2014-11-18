@@ -1,43 +1,19 @@
-{: Visibility culling demo/test/sample.<p>
-
-   This sample is used to test and showcase the efficiency (or inefficiency) of
-   visibility in various cases. Be aware that the sample may be slow loading
-   (the same mesh is loaded multiple times to put some stress).<br>
-   In each of the tests, a "square grid" of objects is created and made visible,
-   the camera points at the center of the square, making most of the objects
-   off-screen. Visibility culling detects that and does not render the off-screen
-   or too-far away objects.<p>
-
-   <ul>
-   <li>Spheres: this is the default setting, and one in which culling is
-      completely inefficient on a T&L board or good OpenGL ICD, mainly because
-      the spheres are rendered with build lists that already have some visibility
-      culling built-in. If culling is efficient for you in this case, well be
-      happy it is, but start looking for a newer graphics board ;)
-   <li>Actors: this one is culling friendly, and your framerate can more than
-      double by choosing "ObjectBased" mode. This is due to the fact that the
-      actor geometry must be resent at each frame, thus limiting T&L capability
-      (the AGP stands in the way...). A culled object's geometry is not sent
-      at all, and that can reduce the AGP and graphics driver load drastically.
-   </ul>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLCadencer, GLVectorFileObjects, ExtCtrls,
-  StdCtrls, GLWin32Viewer, GLTexture, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  ExtCtrls, StdCtrls, Jpeg,
+
+  //GLS
+  GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
+  GLWin32Viewer, GLTexture, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLFileMD2;
 
 type
   TForm1 = class(TForm)
     Viewer: TGLSceneViewer;
-    RBNone: TRadioButton;
-    RBObject: TRadioButton;
-    RBHierarchical: TRadioButton;
-    Label1: TLabel;
     GLScene: TGLScene;
     GLCadencer: TGLCadencer;
     GLCamera1: TGLCamera;
@@ -46,12 +22,16 @@ type
     Timer1: TTimer;
     DCSpheres: TGLDummyCube;
     DCActors: TGLDummyCube;
-    Label2: TLabel;
-    Panel1: TPanel;
-    RBSpheres: TRadioButton;
-    RBActors: TRadioButton;
     ACReference: TGLActor;
     GLMaterialLibrary: TGLMaterialLibrary;
+    Panel2: TPanel;
+    Label1: TLabel;
+    RBNone: TRadioButton;
+    RBObject: TRadioButton;
+    RBHierarchical: TRadioButton;
+    Label2: TLabel;
+    RBActors: TRadioButton;
+    RBSpheres: TRadioButton;
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
@@ -59,9 +39,9 @@ type
     procedure RBNoneClick(Sender: TObject);
     procedure RBSpheresClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -71,15 +51,22 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg, GLFileMD2, GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   i, j : Integer;
-   newSphere : TGLSphere;
-   newActor : TGLActor;
+  i, j : Integer;
+  newSphere : TGLSphere;
+  newActor : TGLActor;
+  MediaPath : String;
 begin
-   SetGLSceneMediaDir();
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos(UpperCase('Samples'), UpperCase(MediaPath));
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    MediaPath := MediaPath+'Media\';
+    SetCurrentDir(MediaPath);
+  end;
+
    // Spheres are used as standalone, high-polycount objects
    // that are highly T&L friendly
    for i:=-4 to 4 do for j:=-4 to 4 do begin
@@ -116,7 +103,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [Viewer.FramesPerSecond]);
+   Caption:=Format('Culling - %.1f FPS', [Viewer.FramesPerSecond]);
    Viewer.ResetPerformanceMonitor;
 end;
 

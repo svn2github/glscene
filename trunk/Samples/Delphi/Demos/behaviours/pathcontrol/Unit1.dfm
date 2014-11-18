@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 83
   Top = 95
-  Width = 513
-  Height = 414
-  Caption = 'Form1'
+  Caption = 'Path Control'
+  ClientHeight = 370
+  ClientWidth = 505
   Color = clBtnFace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 320
@@ -15,19 +15,19 @@ object Form1: TForm1
   OldCreateOrder = False
   OnActivate = FormActivate
   DesignSize = (
-    497
-    376)
+    505
+    370)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 489
+    Left = 0
+    Top = 0
+    Width = 505
     Height = 370
     Camera = GLCamera1
     Buffer.BackgroundColor = clAppWorkSpace
     FieldOfView = 149.751983642578100000
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Align = alClient
     TabOrder = 0
   end
   object MoveBtn: TBitBtn
@@ -41,8 +41,8 @@ object Form1: TForm1
     OnClick = MoveBtnClick
   end
   object GLScene1: TGLScene
-    Left = 16
-    Top = 16
+    Left = 40
+    Top = 24
     object DummyCube1: TGLDummyCube
       CubeSize = 2.000000000000000000
       VisibleAtRunTime = True
@@ -75,18 +75,13 @@ object Form1: TForm1
     Enabled = False
     TimeMultiplier = 2.000000000000000000
     SleepLength = 10
-    Left = 56
-    Top = 16
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 96
-    Top = 16
+    Left = 32
+    Top = 88
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
-    FormCaption = 'Form1 - %FPS'
+    FormCaption = 'Path Control - %FPS'
     KeyCombinations = <
       item
         ShiftState = [ssLeft, ssRight]
@@ -100,7 +95,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 16
-    Top = 72
+    Left = 128
+    Top = 88
   end
 end

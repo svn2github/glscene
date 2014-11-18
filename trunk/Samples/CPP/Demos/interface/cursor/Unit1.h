@@ -12,7 +12,7 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.ExtDlgs.hpp>
 #include <Vcl.Menus.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

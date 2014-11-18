@@ -30,7 +30,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Forms,
   Dialogs, GLNGDManager, GLScene, GLObjects, GLCoordinates, GLCadencer,
-  GLViewer, GLCrossPlatform, BaseClasses, VectorGeometry,
+  GLViewer, GLCrossPlatform, GLBaseClasses, GLVectorGeometry,
   GLSimpleNavigation, GLKeyboard, GLGeomObjects, GLHUDObjects, GLBitmapFont,
   GLWindowsFont,Controls;
 

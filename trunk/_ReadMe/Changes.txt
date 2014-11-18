@@ -1,0 +1,43 @@
+
+GLScene ver.1.2.1
+18/11/2014
+========================================
+Renamed units:
+
+ApplicationFileIO->GLApplicationFileIO
+AsyncTimer->GLAsyncTymer
+AVIRecorder->GLAVIRecorder
+BaseClasses->GLBaseClasses
+BumpMapping->GLBumpMapping
+CurvesAndSurfaces->GLCurvesAndSurfaces
+GeometryCoordinates->GLGeometryCoordinates
+GeometryBB->GLGeometryBB
+GuiSkinEditorFormUnit->GLSkinEditor
+HightTileFile->GLHightTileFile
+ImageUtils->GLImageUtils
+MeshUtils->GLMeshUtils
+Octree->GLOctree
+PerlinNoise3D->GLPerlinNoise3D
+PersistentClasses->GLPersistentClasses
+PlugInIntf->GLPlugInIntf
+PlugInManager->GLPlugInManager
+PluginManagerPropEditor->FPlugInManagerEditor
+Polynomials->GLPolynomials
+RGBE->GLS_RGBE
+SpacingPartitioning->GLSpacePartition
+Spline->GLSpline
+VectorTypes->GLVectorTypes
+VectorLists->GLVectorLists
+VectorGeometry->GLVectorGeometry
+VerletClasses->GLVerletTypes
+VerletHairClasses->GLVerletHairClasses
+
+
+====================================
+Refactoring for types:
+
+TCollisionManager>>TGLCollisionManager
+TJoystick>>>TGLJoystick
+TScreenSaver>>>TGLScreenSaver
+TAsyncTimer>>>TGLAsyncTimer
+TApplicationFileIO>>TGLApplicationFileIO

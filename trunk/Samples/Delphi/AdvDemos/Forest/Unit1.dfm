@@ -41,8 +41,8 @@ object Form1: TForm1
   end
   object GLScene: TGLScene
     ObjectsSorting = osNone
-    Left = 8
-    Top = 8
+    Left = 40
+    Top = 16
     object GLRenderPoint: TGLRenderPoint
     end
     object DOInitializeReflection: TGLDirectOpenGL
@@ -112,6 +112,7 @@ object Form1: TForm1
     object GLHUDText1: TGLHUDText
       Position.Coordinates = {0000A0410000A041000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
+      Rotation = 0.000000000000000000
       ModulateColor.Color = {48E13A3F0AD7233E8FC2753F0000803F}
     end
     object Camera: TGLCamera
@@ -122,18 +123,18 @@ object Form1: TForm1
     end
   end
   object MLTrees: TGLMaterialLibrary
-    Left = 208
-    Top = 8
+    Left = 288
+    Top = 16
   end
   object MLTerrain: TGLMaterialLibrary
-    Left = 104
-    Top = 8
+    Left = 128
+    Top = 16
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
     OnProgress = GLCadencerProgress
-    Left = 8
-    Top = 40
+    Left = 40
+    Top = 72
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -141,8 +142,8 @@ object Form1: TForm1
     Font.Height = -13
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
-    Left = 40
-    Top = 8
+    Left = 128
+    Top = 136
   end
   object SIBTree: TGLStaticImposterBuilder
     RenderPoint = GLRenderPoint
@@ -175,8 +176,8 @@ object Form1: TForm1
     SampleSize = 128
     SamplingRatioBias = 1.149999976158142000
     SamplesAlphaScale = 5.000000000000000000
-    Left = 208
-    Top = 40
+    Left = 288
+    Top = 72
   end
   object PFXTrees: TGLCustomPFXManager
     Cadencer = GLCadencer
@@ -200,44 +201,45 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 72
+    Left = 392
+    Top = 16
   end
   object MLWater: TGLMaterialLibrary
     Materials = <
       item
         Name = 'Water'
+        Tag = 0
         Material.BackProperties.Diffuse.Color = {CDCC4C3ECDCCCC3ECDCC4C3FCDCCCC3E}
-        Material.FrontProperties.Diffuse.Color = {CDCC4C3E0000003F0000803F0000803F}
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3E8180003F0000803F0000803F}
         Material.BlendingMode = bmTransparency
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'media\caustics.bmp'
+        Material.Texture.Image.PictureFileName = 'data\caustics.jpg'
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Disabled = False
         Material.FaceCulling = fcNoCull
-        Tag = 0
+        Texture2Name = 'WaterBump'
       end
       item
         Name = 'WaterBump'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'media\caustics.bmp'
+        Material.Texture.Image.PictureFileName = 'data\caustics.jpg'
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.Disabled = False
-        Tag = 0
       end>
-    Left = 152
-    Top = 8
+    Left = 208
+    Top = 16
   end
   object GLHeightTileFileHDS: TGLHeightTileFileHDS
-    HTFFileName = 'media\volcano.htf'
+    HTFFileName = 'data\volcano.htf'
     InfiniteWrap = False
     MinElevation = -7000
     MaxPoolSize = 0
     DefaultHeight = -9999.000000000000000000
-    Left = 152
-    Top = 40
+    Left = 128
+    Top = 72
   end
 end

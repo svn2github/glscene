@@ -1,11 +1,11 @@
 object Form2: TForm2
   Left = 324
   Top = 160
-  Width = 396
-  Height = 293
   AutoSize = True
   BorderStyle = bsSizeToolWin
   Caption = 'Font Texture'
+  ClientHeight = 264
+  ClientWidth = 388
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

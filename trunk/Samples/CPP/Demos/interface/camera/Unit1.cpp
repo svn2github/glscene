@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -55,7 +57,7 @@ void __fastcall TForm1::RadioGroup2Click(TObject *Sender)
 void __fastcall TForm1::GLCamera1CustomPerspective(const TRectangle &viewport, int width,
           int height, int DPI, float &viewPortRadius)
 {
-  Vectorgeometry::TMatrix Mat;
+  Glvectorgeometry::TMatrix Mat;
 
   Mat =  CreatePerspectiveMatrix(GLCamera1->GetFieldOfView(Width)/4,
 	Width / Height, GLCamera1->NearPlaneBias, GLCamera1->DepthOfView);
@@ -83,7 +85,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shi
           int X, int Y)
 {
 	int dx, dy;
-	Vectorgeometry::TVector v;
+	Glvectorgeometry::TVector v;
 
 	// calculate delta since last move or last mousedown
 	dx = mdx-X; dy = mdy-Y;

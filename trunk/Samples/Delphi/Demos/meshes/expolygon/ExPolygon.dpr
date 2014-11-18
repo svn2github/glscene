@@ -1,3 +1,8 @@
+{: TGLMultiPolygon Sample, contributed by Uwe Raabe.<p>
+
+   Note: this sample has been partly obsoleted/superseded by the TGLExtrusionSolid
+   (by Uwe Raabe), which allows building such solids directly.
+}
 program ExPolygon;
 
 uses

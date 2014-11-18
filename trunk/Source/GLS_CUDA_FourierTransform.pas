@@ -54,7 +54,7 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME
+  GLVectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 

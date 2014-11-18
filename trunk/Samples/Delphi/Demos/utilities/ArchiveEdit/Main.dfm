@@ -58,7 +58,7 @@ object Form1: TForm1
       end>
     Enabled = False
     Items.ItemData = {
-      034E0000000100000000000000FFFFFFFFFFFFFFFF00000000FFFFFFFF000000
+      054E0000000100000000000000FFFFFFFFFFFFFFFF00000000FFFFFFFF000000
       001A4F00700065006E0020006F00720020006300720065006100740065002000
       700061006B002000660069006C0065002E002E002E00}
     MultiSelect = True
@@ -209,6 +209,7 @@ object Form1: TForm1
       Visible = False
       Width = 160.000000000000000000
       Height = 160.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object GLCube1: TGLCube
       Material.MaterialLibrary = GLMaterialLibrary1
@@ -220,12 +221,12 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'image'
+        Tag = 0
         Material.Texture.ImageClassName = 'TGLCompositeImage'
         Material.Texture.Image.Width = 256
         Material.Texture.Image.Height = 256
         Material.Texture.Image.Depth = 0
         Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 248
     Top = 64

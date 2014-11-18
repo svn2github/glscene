@@ -11,7 +11,7 @@
 #include <Vcl.ExtCtrls.hpp>
 
 #include "GLScene.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

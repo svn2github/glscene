@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
@@ -16,6 +17,7 @@
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
+
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -49,8 +51,10 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
 
 {
-  if (IsKeyDown('W')) GameMenu->SelectPrev();
-  if (IsKeyDown('S')) GameMenu->SelectNext();
+  if (IsKeyDown('w') || IsKeyDown('W') || IsKeyDown(VK_UP))
+	GameMenu->SelectPrev();
+  if (IsKeyDown('s') || IsKeyDown('S') || IsKeyDown(VK_DOWN))
+	GameMenu->SelectNext();
   if (IsKeyDown(VK_RETURN))
   {
 	if (GameMenu->Selected != -1)
@@ -91,4 +95,4 @@ void __fastcall TForm1::MainPanelResize(TObject *Sender)
 {
   GameMenu->Position->X = MainPanel->Width / 2;
 }
-//---------------------------------------------------------------------------
+

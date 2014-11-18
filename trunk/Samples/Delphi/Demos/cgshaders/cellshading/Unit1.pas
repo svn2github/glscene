@@ -3,10 +3,14 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLCadencer, GLTexture, GLCgShader,
-  GLWin32Viewer, CgGL, GLVectorFileObjects, JPEG, AsyncTimer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLUtils;
+  Windows, Messages, SysUtils, Classes, Graphics, Jpeg, Controls, Forms,
+  Dialogs,
+  //nVIDIA
+  CgGL,
+  //GLS
+  GLScene, GLObjects, GLCadencer, GLTexture, GLCgShader,
+  GLWin32Viewer,  GLVectorFileObjects, GLAsyncTimer, GLCrossPlatform,
+  GLMaterial, GLCoordinates, GLBaseClasses, GLUtils, GLFileMD2;
 
 type
   TForm1 = class(TForm)
@@ -19,7 +23,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLActor1: TGLActor;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -43,9 +47,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLFileMD2;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

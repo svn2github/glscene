@@ -26,8 +26,9 @@ unit GLFileDXF;
 interface
 
 uses
-  Classes, SysUtils, ApplicationFileIO,
-  VectorGeometry, VectorLists, GLScene, GLTexture,
+  Classes, SysUtils,
+  //GLS
+  GLApplicationFileIO, GLVectorGeometry, GLVectorLists, GLScene, GLTexture,
   GLVectorFileObjects, GLMaterial;
 
 type

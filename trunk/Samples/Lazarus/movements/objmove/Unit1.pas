@@ -15,9 +15,9 @@ interface
 uses
   Forms, Dialogs, SysUtils, GLScene, GLObjects, Classes, Controls,
   GLGraph,
-  GLCollision, GLTexture, StdCtrls, ExtCtrls, VectorGeometry, Graphics,
+  GLCollision, GLTexture, StdCtrls, ExtCtrls, GLVectorGeometry, Graphics,
   GLVectorFileObjects, GLLCLViewer, GLSpaceText, GLGeomObjects, GLColor,
-  GLCrossPlatform, GLCoordinates, BaseClasses, GLBitmapFont, GLWindowsFont,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLBitmapFont, GLWindowsFont,
   GLHUDObjects;
 
 type

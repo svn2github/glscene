@@ -21,10 +21,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLLCLViewer, GLCadencer, ODEImport,
-  GLShadowPlane, VectorGeometry, GLGeomObjects, ExtCtrls, ComCtrls,
+  GLShadowPlane, GLVectorGeometry, GLGeomObjects, ExtCtrls, ComCtrls,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, GLKeyboard, GLVectorFileObjects,
   GLRagdoll, GLODERagdoll, GLTexture, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  GLCrossPlatform, GLBaseClasses;
 
 //Physic World ODE
 type

@@ -49,7 +49,7 @@ interface
 uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, ComCtrls, Controls, StdCtrls, GLLCLViewer,
-  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
+  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
   GLFileMP3;
 
 type
@@ -97,7 +97,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils;
+uses GLVectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

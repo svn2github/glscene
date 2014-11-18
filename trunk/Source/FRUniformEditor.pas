@@ -23,7 +23,7 @@ uses
   SysUtils, Variants, Classes,  Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons,
 {$ENDIF}
-  GLSLParameter, GLTextureFormat, VectorGeometry;
+  GLSLParameter, GLTextureFormat, GLVectorGeometry;
 
 type
   TShaderUniformEditor = class(TForm)

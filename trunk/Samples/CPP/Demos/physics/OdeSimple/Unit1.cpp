@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -83,6 +83,7 @@ void TForm1::DoSphere(void)
   sphere = (TGLSphere *)(ODEObjects->AddNewChild(__classid(TGLSphere)));
   sphere->Position->SetPoint(5*Random()-2.5,2,5*Random()-2.5);
   sphere->Radius = 0.3*(Random()+1);
+  sphere->Material->FrontProperties->Ambient->Color = clrRed;
   dyn = new TGLODEDynamic(sphere->Behaviours);
   dyn->Manager = GLODEManager1;
   ((TODEElementSphere *)(dyn->AddNewElement(__classid(TODEElementSphere))))->Radius = sphere->Radius;
@@ -99,6 +100,7 @@ void TForm1::DoBox(void)
   cube->CubeWidth = 0.5*(Random()+1);
   cube->CubeHeight = 0.5*(Random()+1);
   cube->CubeDepth = 0.5*(Random()+1);
+  cube->Material->FrontProperties->Ambient->Color = clrGreen;
   dyn = new TGLODEDynamic(cube->Behaviours);
   dyn->Manager = GLODEManager1;
   elem = (TODEElementBox *) dyn->AddNewElement(__classid(TODEElementBox));
@@ -120,6 +122,7 @@ void TForm1::DoCapsule(void)
   capsule->TopRadius = capsule->BottomRadius;
   capsule->Height = Random()+1;
   capsule->Parts << cySides;
+  capsule->Material->FrontProperties->Ambient->Color = clrBlue;
 
   sphere = (TGLSphere *) capsule->AddNewChild(__classid(TGLSphere));
   sphere->Position->Y = 0.5*capsule->Height;
@@ -151,6 +154,7 @@ void TForm1::DoCylinder(void)
   cylinder->BottomRadius = 0.25*(Random()+1);
   cylinder->TopRadius = cylinder->BottomRadius;
   cylinder->Height = Random()+1;
+  cylinder->Material->FrontProperties->Ambient->Color = clrYellow;
 
   dyn = new TGLODEDynamic(cylinder->Behaviours);
   dyn->Manager = GLODEManager1;
@@ -246,7 +250,7 @@ void __fastcall TForm1::ComboBox2Change(TObject *Sender)
 void __fastcall TForm1::TrackBar1Change(TObject *Sender)
 {
   ((TGLODEHeightField *)(GLHeightField1->Behaviours->Behaviour[0]))->ContactResolution =
-		0.25+(10-TrackBar1->Position)/20;
+		0.25+(float)(10-TrackBar1->Position)/20;
 }
 
 //---------------------------------------------------------------------------

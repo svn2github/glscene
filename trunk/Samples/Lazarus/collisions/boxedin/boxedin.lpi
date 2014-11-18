@@ -64,8 +64,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\VectorGeometry.pas"/>
-        <UnitName Value="VectorGeometry"/>
+        <Filename Value="..\..\..\Source\Base\GLVectorGeometry.pas"/>
+        <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7440"/>
         <CursorPos X="23" Y="7459"/>
@@ -163,8 +163,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
-        <Filename Value="..\..\..\..\Source\ApplicationFileIO.pas"/>
-        <UnitName Value="ApplicationFileIO"/>
+        <Filename Value="..\..\..\..\Source\GLApplicationFileIO.pas"/>
+        <UnitName Value="GLApplicationFileIO"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="196"/>

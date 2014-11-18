@@ -1,25 +1,14 @@
-{: Dynamic sample for the ExtrusionSolid.<p>
-
-   In this sample we extrude a complex solid made of an outer star-like contour
-   and an inner square cutout that is moves around. The TGLExtrusionSolid takes
-   care of the calculations, so all that is left is defining the contours
-   (one in the FormCreate event, and the other in the Cadencer.Progress event).<p>
-
-   Be aware that for TGLExtrusionSolid, like TGLMultiPolygon, the way you describe
-   your polygons IS important:<ul>
-   <li>the polygons must be in the X, Y plane
-   <li>if all your polygons are defined in a counterclockwise manner, the first
-       will define the solid outer, the second, third etc. will be the cutouts.
-   </ul>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLCadencer, GLScene, GLExtrusion, VectorGeometry, ExtCtrls, GLMultiPolygon,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  ExtCtrls,
+
+  //GLS
+  GLCadencer, GLScene, GLExtrusion, GLVectorGeometry, GLMultiPolygon,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -30,14 +19,15 @@ type
     ExtrusionSolid: TGLExtrusionSolid;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
+    PanelFPS: TPanel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -92,7 +82,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // Standard FPS counter
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   PanelFPS.Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

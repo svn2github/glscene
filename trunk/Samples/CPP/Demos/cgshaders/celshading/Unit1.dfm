@@ -80,7 +80,7 @@ object Form1: TForm1
     Left = 40
     Top = 72
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     Left = 256

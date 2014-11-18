@@ -13,9 +13,9 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, ComCtrls, GLBitmapFont, GLWindowsFont, GLTexture,
   GLCadencer, GLLCLViewer, GLScene, StdCtrls, GLObjects,
-  GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
-  GLGeomObjects, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  GLParticleFX, GLVectorGeometry, GLVectorTypes, GLEParticleMasksManager,
+  GLGeomObjects, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLBaseClasses;
 
 const
 
@@ -66,7 +66,7 @@ type
     Sphere: TGLSphere;
     CheckBox1: TCheckBox;
     GLArrowLine1: TGLArrowLine;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     procedure GLCadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);

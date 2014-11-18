@@ -3,7 +3,7 @@
 #define Unit1H
 //---------------------------------------------------------------------------
 #include <vcl.h>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -18,9 +18,9 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.StdCtrls.hpp>
 
-#include "SpatialPartitioning.hpp"
+#include "GLSpacePartition.hpp"
 #include "GLContext.hpp"
-#include "Vectorgeometry.hpp"
+#include "GLVectorgeometry.hpp"
 #include "OpenGLTokens.hpp"
 
 

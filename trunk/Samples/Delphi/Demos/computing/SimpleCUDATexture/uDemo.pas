@@ -5,9 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls,
-
-  GLUtils,
-  GLSCUDAContext, GLSCUDA, GLSCUDACompiler,  GLFilePGM,
+  //GLS
+  GLUtils,GLSCUDAContext, GLSCUDA, GLSCUDACompiler,  GLFilePGM,
   GLS_CUDA_Utility, GLGraphics, GLTextureFormat;
 
 type

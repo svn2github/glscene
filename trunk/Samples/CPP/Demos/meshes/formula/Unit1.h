@@ -14,7 +14,7 @@
 
 #include "GLScene.hpp"
 #include "GLObjects.hpp"
-#include "VectorGeometry.hpp"
+#include "GLVectorGeometry.hpp"
 #include "GLTexture.hpp"
 #include "GLCadencer.hpp"
 #include "GLMesh.hpp"
@@ -22,7 +22,7 @@
 #include "GLState.hpp"
 #include "GLColor.hpp"
 #include "GLCrossPlatform.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 
 

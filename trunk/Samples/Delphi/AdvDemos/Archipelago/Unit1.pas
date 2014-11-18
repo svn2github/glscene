@@ -3,41 +3,15 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLScene,
-  GLTerrainRenderer,
-  GLObjects,
-  jpeg,
-  GLHeightData,
-  ExtCtrls,
-  GLCadencer,
-  StdCtrls,
-  GLTexture,
-  GLHUDObjects,
-  VectorLists,
-  GLSkydome,
-  GLWin32Viewer,
-  VectorTypes,
-  VectorGeometry,
-  GLHeightTileFileHDS,
-  GLWindowsFont,
-  GLBitmapFont,
-  ComCtrls,
-  GLRoamPatch,
-  GLVectorFileObjects,
-  GLMaterial,
-  GLCoordinates,
-  GLCrossPlatform,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLColor;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, ExtCtrls, StdCtrls,
+  ComCtrls, Forms, Dialogs, Jpeg,
+
+  //GLScene
+  GLScene, GLCadencer, GLObjects, GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS,
+  GLTexture, GLHUDObjects, GLMaterial, GLSkydome, GLWin32Viewer, GLWindowsFont,
+  GLBitmapFont, GLCrossPlatform, GLCoordinates, GLRoamPatch, GLRenderContextInfo,
+  GLColor, GLVectorFileObjects, GLBaseClasses, GLVectorLists, GLVectorTypes,
+  GLVectorGeometry, GLKeyboard, OpenGLTokens, GLContext, GLState, GLTextureFormat;
 
 type
   TForm1 = class(TForm)
@@ -104,13 +78,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses
-  GLKeyboard,
-  OpenGLTokens,
-  GLContext,
-  GLState,
-  GLTextureFormat;
 
 const
   cWaterLevel = -10000;

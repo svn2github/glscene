@@ -1,4 +1,4 @@
-TAsyncTimer BITMAP vcl\TAsyncTimer.bmp
-TAVIRecorder BITMAP vcl\TAVIRecorder.bmp
-TJoystick BITMAP vcl\TJoystick.bmp
-TScreenSaver BITMAP vcl\TScreenSaver.bmp
+TGLAsyncTimer BITMAP vcl\TGLAsyncTimer.bmp
+TGLJoystick BITMAP vcl\TGLJoystick.bmp
+TGLAVIRecorder BITMAP vcl\TGLAVIRecorder.bmp
+TGLScreenSaver BITMAP vcl\TGLScreenSaver.bmp

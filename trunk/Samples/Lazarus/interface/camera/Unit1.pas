@@ -21,7 +21,7 @@ interface
 
 uses
   Forms, GLScene, GLObjects, Classes, Controls, GLTeapot,
-  GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLLCLViewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -52,7 +52,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, Math;
+uses GLVectorGeometry, Math;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);

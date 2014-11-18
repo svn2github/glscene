@@ -1,13 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "AsyncTimer"
-#pragma link "BaseClasses"
+#pragma link "GLAsyncTimer"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCgShader"
 #pragma link "GLCoordinates"

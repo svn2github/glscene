@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLGeomObjects.hpp"
@@ -17,6 +17,7 @@
 #include "GLWin32Viewer.hpp"
 #include "GLRenderContextInfo.hpp"
 #include "OpenGL1x.hpp"
+
 
 
 //---------------------------------------------------------------------------

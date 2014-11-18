@@ -1,27 +1,14 @@
-{
-  Simple spherical panorama viewer using GLScene
-
-  The sample input images are by Philippe Hurbain. http://www.philohome.com
-
-  Other resources on how to make your own spherical or cylindrical panorama:
-    http://www.fh-furtwangen.de/~dersch/
-    http://www.panoguide.com/
-    http://home.no.net/dmaurer/~dersch/Index.htm
-
-  Why IPIX patents regarding use of fisheye photos are questionable:
-    http://www.worldserver.com/turk/quicktimevr/fisheye.html
-
-  10/12/02 - EG - Updated for GLScene v0.9+
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, jpeg,
-  ComCtrls, StdCtrls, GLScene, GLObjects, ExtCtrls, ExtDlgs,
-  GLTexture, GLKeyBoard, GLCadencer, GLWin32Viewer, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  ComCtrls, StdCtrls, ExtCtrls, ExtDlgs,
+  //GLS
+  GLScene, GLObjects, GLTexture, GLKeyBoard, GLCadencer, GLWin32Viewer,
+  GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLUtils,
+  GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -51,6 +38,7 @@ type
       Shift: TShiftState);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
       mx, my : integer;
@@ -64,8 +52,6 @@ var
   Form1: TForm1;
 
 implementation
-
-uses VectorGeometry;
 
 {$R *.DFM}
 
@@ -125,6 +111,12 @@ begin
    if IsKeyDown(VK_RIGHT) then dx:=dx-delta;
    if IsKeyDown(VK_DOWN)  then dy:=dy-delta;
    PanCameraAround(dx, dy);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  SetGLSceneMediaDir();
+  OpenPictureDialog1.FileName := 'sejourstmathieu2048.jpg';
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;

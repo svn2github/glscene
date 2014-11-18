@@ -1,33 +1,16 @@
-{: Actor movement with two cameras (first-person and third-person)<p>
-
-   The movement control is a little "doom-like" and keyboard only.<br>
-   This demos mainly answers to "doom-like" movement questions and keyboard
-   handling in GLScene.<p>
-   The basic principle is to check which key are pressed, and for each movement
-   key, multiply the movement by the deltaTime and use this value as delta
-   position or angle.<p>
-   The frame rate may not be that good on non-T&L accelerated board, mainly due
-   to the mushrooms that are light on fillrate needs, but heavy on the polygons.<br>
-   This demonstrates how badly viewport object-level clipping is needed in
-   GLScene :), a fair share of rendering power is lost in projecting
-   objects that are out of the viewing frustum.<p>
-
-   TODO : 3rd person view with quaternion interpolation (smoother mvt)
-          More mvt options (duck, jump...)
-          Smooth animation transition for TGLActor
-          HUD in 1st person view
-
-   Carlos Arteaga Rivero <carteaga@superele.gov.bo>
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, GLCadencer, GLVectorFileObjects, GLScene, GLObjects,
-  StdCtrls, Buttons, Controls, ExtCtrls, ComCtrls, Classes, Forms, Graphics,
-  GLSkydome, GLWin32Viewer, GLNavigator, GLFileMD2, GLFile3DS,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  Windows, SysUtils, Jpeg, Buttons, Controls, ExtCtrls, ComCtrls, Classes, Forms,
+
+  //GLS
+  GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
+  StdCtrls,  Graphics,  GLSkydome, GLWin32Viewer, GLNavigator,
+  GLFileMD2, GLFile3DS, GLGeomObjects, GLCrossPlatform,
+  GLCoordinates, GLBaseClasses, GLUtils, GLVectorGeometry,  GLKeyboard;
+
 
 type
   TForm1 = class(TForm)
@@ -56,15 +39,15 @@ type
 
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure HandleKeys(const deltaTime: Double);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure CBMouseLookClick(Sender: TObject);
   private
     procedure AddMushrooms;
+    procedure HandleKeys(const deltaTime: Double);
 
   public
-    { Déclarations privées }
+    { Private declarations }
 
   end;
 
@@ -72,12 +55,9 @@ var
   Form1: TForm1;
 
 
-
 implementation
 
 {$R *.DFM}
-
-uses VectorGeometry, SysUtils, Jpeg, GLKeyboard, GLUtils;
 
 const
   cWalkStep = 6;   // this is our walking speed, in 3D units / second
@@ -203,7 +183,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    HandleKeys(deltaTime);
-   GLUserInterface1.Mouselook;
+   GLUserInterface1.MouseLook;
 
    GLSceneViewer1.Invalidate;
    GLUserInterface1.MouseUpdate;

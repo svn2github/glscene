@@ -54,7 +54,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLObjects, GLExtrusion, GLMirror, GLMultiPolygon,
   ExtCtrls, GLCadencer, StdCtrls, GLLCLViewer, GLTeapot, GLGeomObjects,
-  GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

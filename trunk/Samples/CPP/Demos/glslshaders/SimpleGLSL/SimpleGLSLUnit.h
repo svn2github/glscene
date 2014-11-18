@@ -17,7 +17,7 @@
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLWindowsFont.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"

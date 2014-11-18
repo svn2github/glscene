@@ -4,8 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, GLCadencer, GLScene, GLObjects, GLTexture, StdCtrls,
-  GLWin32Viewer, GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
+  ExtCtrls, StdCtrls,
+
+  //GLS
+  GLCadencer, GLScene, GLObjects, GLTexture,
+  GLWin32Viewer, GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -27,9 +30,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     timeToNextFrame : Double;
   end;
 

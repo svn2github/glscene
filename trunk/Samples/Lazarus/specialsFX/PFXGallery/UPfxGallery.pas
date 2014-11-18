@@ -6,12 +6,12 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
-  VectorGeometry,GLLCLViewer, GLScene, GLHUDObjects, GLParticleFX,
-  GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
+  GLVectorGeometry,GLLCLViewer, GLScene, GLHUDObjects, GLParticleFX,
+  GLVectorFileObjects, GLVectorTypes,GLObjects, GLBitmapFont,
   GLUtils,GLCadencer,  GLTexture, GLNavigator,
   ExtCtrls, GLGeomObjects, GLKeyboard, GLSpaceText,
   GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses;
 
 const
      cRunBoost = 10;

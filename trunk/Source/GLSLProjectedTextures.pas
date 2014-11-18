@@ -48,17 +48,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-  GLCrossPlatform,
-  GLScene,
-  GLTexture,
-  VectorGeometry,
-  GLContext,
-  sysutils,
-  GLColor,
-  GLRenderContextInfo,
-  GLTextureFormat
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  Classes, SysUtils,
+
+  GLCrossPlatform, GLScene, GLTexture, GLVectorGeometry, GLContext,
+  GLColor, GLRenderContextInfo, GLTextureFormat
+  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 type
   TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);

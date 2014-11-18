@@ -34,7 +34,7 @@ uses
   GLCadencer,
   GLViewer,
   GLCrossPlatform,
-  BaseClasses,
+  GLBaseClasses,
   GLNGDManager,
   StdCtrls,
   GLGeomObjects,

@@ -22,7 +22,7 @@ interface
 uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLGeomObjects, GLObjects, GLCadencer, GLLCLViewer,
-  StdCtrls, ExtCtrls, GLCrossPlatform, GLCoordinates, BaseClasses,
+  StdCtrls, ExtCtrls, GLCrossPlatform, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLContext;
 
 type

@@ -149,22 +149,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-  VectorGeometry,
-  VectorTypes,
-  GLScene,
-  OpenGLAdapter,
-  OpenGLTokens,
-  SysUtils,
-  VectorLists,
-  GLCrossPlatform,
-  GLContext,
-  GLSilhouette,
-  GLColor,
-  GLRenderContextInfo,
-  BaseClasses,
-  GLNodes,
-  GLCoordinates;
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes, System.SysUtils,
+  {$ELSE}
+  Classes, SysUtils,
+  {$ENDIF}
+
+  GLVectorGeometry, GLVectorTypes, GLScene, OpenGLAdapter,
+  OpenGLTokens, GLVectorLists, GLCrossPlatform, GLContext, GLSilhouette,
+  GLColor, GLRenderContextInfo, GLBaseClasses, GLNodes, GLCoordinates;
 
 type
 
@@ -1002,7 +995,7 @@ implementation
 // -------------------------------------------------------------
 
 uses
-  Spline,
+  GLSpline,
   XOpenGL,
   GLState;
 
@@ -3670,7 +3663,7 @@ begin
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    VectorGeometry.SinCos(AngTop, SinP, CosP);
+    GLVectorGeometry.SinCos(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
@@ -3689,7 +3682,7 @@ begin
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
-      VectorGeometry.SinCos(Theta, SinT, CosT);
+      GLVectorGeometry.SinCos(Theta, SinT, CosT);
       v1.V[0] := CosP * SinT;
       v1.V[2] := CosP * CosT;
       if FTopCap = ctCenter then
@@ -3715,8 +3708,8 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    VectorGeometry.SinCos(Phi, SinP, CosP);
-    VectorGeometry.SinCos(Phi2, SinP2, CosP2);
+    GLVectorGeometry.SinCos(Phi, SinP, CosP);
+    GLVectorGeometry.SinCos(Phi2, SinP2, CosP2);
     v1.V[1] := SinP;
     V2.V[1] := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;

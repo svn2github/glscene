@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 140
   Top = 116
-  Width = 561
-  Height = 391
   Caption = 'Gui Skin Editor and Manager'
+  ClientHeight = 325
+  ClientWidth = 553
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -71,16 +71,16 @@ object Form1: TForm1
     OnClick = Button2Click
   end
   object MainMenu1: TMainMenu
-    Left = 24
-    Top = 48
+    Left = 160
+    Top = 160
     object File1: TMenuItem
       Caption = '&File'
       object Open1: TMenuItem
-        Caption = 'Open'
+        Caption = 'Open...'
         OnClick = Open1Click
       end
       object Save1: TMenuItem
-        Caption = 'Save'
+        Caption = 'Save...'
         OnClick = Save1Click
       end
       object Close1: TMenuItem
@@ -91,7 +91,7 @@ object Form1: TForm1
         Caption = '-'
       end
       object Import1: TMenuItem
-        Caption = 'Import'
+        Caption = 'Import...'
         OnClick = Import1Click
       end
       object N2: TMenuItem
@@ -112,7 +112,7 @@ object Form1: TForm1
     object Image1: TMenuItem
       Caption = 'Image'
       object Load1: TMenuItem
-        Caption = 'Load'
+        Caption = 'Load...'
         OnClick = Load1Click
       end
     end
@@ -121,34 +121,34 @@ object Form1: TForm1
     DefaultExt = '*.layout'
     Filter = 'Layouts|*.layout'
     Title = 'Open Layout'
-    Left = 24
-    Top = 88
+    Left = 32
+    Top = 208
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '*.layout'
     Filter = 'Layouts|*.layout'
     Title = 'Save Layout'
-    Left = 24
-    Top = 120
+    Left = 64
+    Top = 272
   end
   object GLGuiLayout1: TGLGuiLayout
     BitmapFont = WindowsBitmapFont1
     Material.MaterialLibrary = GLMaterialLibrary1
     Material.LibMaterialName = 'LibMaterial'
     GuiComponents = <>
-    Left = 80
-    Top = 88
+    Left = 32
+    Top = 160
   end
   object ImportDialog: TOpenDialog
     DefaultExt = '*.layout'
     Filter = 'Layouts|*.layout'
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing]
-    Left = 24
-    Top = 168
+    Left = 176
+    Top = 208
   end
   object ListPopup: TPopupMenu
-    Left = 128
-    Top = 120
+    Left = 104
+    Top = 208
     object Add1: TMenuItem
       Caption = 'Add'
       OnClick = Add1Click
@@ -166,19 +166,21 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 184
-    Top = 88
+    Left = 56
+    Top = 64
     object HUDSprite1: TGLHUDSprite
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Position.Coordinates = {0000164300001643000000000000803F}
       Width = 200.000000000000000000
       Height = 200.000000000000000000
+      Rotation = 0.000000000000000000
     end
     object GLPanel1: TGLPanel
       Autosize = False
       RedrawAtOnce = False
       GuiLayout = GLGuiLayout1
+      Rotation = 0.000000000000000000
       NoZWrite = False
       DoChangesOnProgress = False
       Width = 200.000000000000000000
@@ -219,12 +221,12 @@ object Form1: TForm1
         StopASCII = ' '
         StartGlyphIdx = 62
       end>
-    Left = 80
-    Top = 48
+    Left = 160
+    Top = 64
   end
   object OpenPictureDialog: TOpenPictureDialog
-    Left = 128
-    Top = 88
+    Left = 144
+    Top = 272
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -233,7 +235,7 @@ object Form1: TForm1
         Tag = 0
         Material.Texture.Disabled = False
       end>
-    Left = 184
-    Top = 48
+    Left = 104
+    Top = 112
   end
 end

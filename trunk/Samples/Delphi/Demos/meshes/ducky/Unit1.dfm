@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 84
   Top = 117
-  Width = 666
-  Height = 435
-  Caption = 'Form1'
+  Caption = 'Ducky'
+  ClientHeight = 391
+  ClientWidth = 658
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 161
-    Height = 397
+    Height = 391
     Align = alLeft
     TabOrder = 0
     object Label1: TLabel
@@ -54,17 +54,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 161
     Top = 0
-    Width = 489
-    Height = 397
+    Width = 497
+    Height = 391
     Camera = GLCamera1
-    FieldOfView = 151.723861694335900000
+    FieldOfView = 151.307739257812500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 200
     Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000

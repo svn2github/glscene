@@ -18,11 +18,11 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLObjects, GLScene, GLVectorFileObjects, GLLCLViewer,
-  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
+  GLFileMS3D, GLVerletTypes, GLVectorTypes, GLVectorLists, GLVectorGeometry, GLTexture,
   OpenGL1x, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
   GLVerletClothify, ComCtrls, GLFile3DS, ODEImport, ODEGL,
-  GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo,
+  GLGeometryBB, GLSpacePartition, GLGeomObjects, GLShadowVolume, GLUtils,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLRenderContextInfo,
   GLState;
 
 type

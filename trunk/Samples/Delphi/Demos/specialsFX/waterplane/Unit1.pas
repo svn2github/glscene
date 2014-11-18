@@ -4,11 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
-  GLCadencer, ExtCtrls, Jpeg, GLTexture, GLUserShader, OpenGLTokens, GLContext,
-  VectorGeometry, GLGraph, VectorTypes, GLState, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo, GLSimpleNavigation,
-  GLColor, GLUtils;
+  Dialogs, ExtCtrls, Jpeg,
+
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
+  GLCadencer, GLTexture, GLUserShader, OpenGLTokens, GLContext,
+  GLVectorGeometry, GLGraph, GLVectorTypes, GLState, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLRenderContextInfo, GLSimpleNavigation,
+  GLColor, GLUtils, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

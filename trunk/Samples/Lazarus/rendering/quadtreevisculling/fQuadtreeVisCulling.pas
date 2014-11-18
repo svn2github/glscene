@@ -11,9 +11,9 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLLCLViewer, GLSkydome, GLObjects, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
-  SpatialPartitioning, VectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
+  SpatialPartitioning, GLVectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
   GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLRenderContextInfo;
 
 type
   TfrmQuadtreeVisCulling = class(TForm)

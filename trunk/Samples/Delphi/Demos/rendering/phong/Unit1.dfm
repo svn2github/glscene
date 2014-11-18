@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 107
-  Width = 397
-  Height = 373
   Caption = 'Phong Shader'
+  ClientHeight = 329
+  ClientWidth = 389
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,18 +13,21 @@ object Form1: TForm1
   OldCreateOrder = False
   DesignSize = (
     389
-    346)
+    329)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 389
-    Height = 346
+    Height = 329
     Camera = GLCamera1
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 146.186553955078100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object CheckBox1: TCheckBox
     Left = 312
@@ -56,7 +59,6 @@ object Form1: TForm1
     object GLTeapot1: TGLTeapot
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'phong'
-      Material.TextureEx = <>
       Scale.Coordinates = {00004040000040400000404000000000}
     end
   end
@@ -64,10 +66,9 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'phong'
+        Tag = 0
         Material.FrontProperties.Shininess = 16
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
-        Material.TextureEx = <>
-        Tag = 0
         Shader = GLPhongShader1
       end>
     Left = 40
@@ -75,7 +76,6 @@ object Form1: TForm1
   end
   object GLPhongShader1: TGLPhongShader
     Enabled = False
-    DesignTimeEnabled = False
     Left = 72
     Top = 8
   end
@@ -85,7 +85,7 @@ object Form1: TForm1
     Left = 8
     Top = 40
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpHigher

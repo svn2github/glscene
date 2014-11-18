@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: CGPostTransformationShader<p>
+{: cgPostTransformationShader<p>
 
    A shader that uses a texture to distort the view by adjusting texture
    coordinates.
@@ -13,7 +13,7 @@
       <li>04/11/06 - DaStr - Creation (based on demo by Rick)
 
 }
-unit CGPostTransformationShader;
+unit cgPostTransformationShader;
 
 interface
 

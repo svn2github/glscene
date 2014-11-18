@@ -55,19 +55,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
-  SysUtils,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
 
   // GLScene
-  GLScene,
-  VectorGeometry,
-  GLTexture,
-  GLVectorFileObjects,
-  GLStrings,
-  GLRenderContextInfo,
-  BaseClasses,
-  GLMaterial;
+  GLScene,  GLVectorGeometry,  GLTexture,  GLVectorFileObjects,
+  GLStrings,  GLRenderContextInfo,  GLBaseClasses, GLMaterial,
+  OpenGLTokens,  GLContext
+  {$IFDEF GLS_DELPHI},  GLVectorTypes{$ENDIF};
 
 type
   EGLProxyException = class(Exception);
@@ -303,12 +301,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
-uses
-  OpenGLTokens,
-  GLContext
-{$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TGLColorProxy ------------------

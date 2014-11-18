@@ -1,20 +1,14 @@
-{: Per-Pixel phong shading demo.<p>
-
-   The TGLPhongShader implements phong shading through the use of an
-   ARB vertex and fragment program. So far only the material and light
-   properties are supported, some form of texture support will be
-   added in future updates.<p>
-
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLTeapot, GLTexture, GLPhongShader,
-  GLWin32Viewer, AsyncTimer, GLCadencer, StdCtrls, GLCustomShader,
-  GLAsmShader, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  Dialogs, StdCtrls,
+  //GLS
+  GLScene, GLObjects, GLTeapot, GLTexture, GLPhongShader,
+  GLWin32Viewer, GLAsyncTimer, GLCadencer, GLCustomShader,
+  GLAsmShader, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -27,7 +21,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     CheckBox1: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

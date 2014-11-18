@@ -25,7 +25,7 @@ object Form1: TForm1
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 150.512878417968700000
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -232,7 +232,7 @@ object Form1: TForm1
     Left = 352
     Top = 72
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpNormal

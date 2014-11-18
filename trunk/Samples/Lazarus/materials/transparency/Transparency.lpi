@@ -120,8 +120,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\Source\Base\BaseClasses.pas"/>
-        <UnitName Value="BaseClasses"/>
+        <Filename Value="..\..\..\Source\Base\GLBaseClasses.pas"/>
+        <UnitName Value="GLBaseClasses"/>
         <WindowIndex Value="0"/>
         <TopLine Value="69"/>
         <CursorPos X="3" Y="83"/>

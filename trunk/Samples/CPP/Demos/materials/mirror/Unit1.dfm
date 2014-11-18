@@ -86,8 +86,6 @@ object Form1: TForm1
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 1
-    ExplicitLeft = 2
-    ExplicitTop = 8
   end
   object GLScene1: TGLScene
     Left = 32

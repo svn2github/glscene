@@ -1,21 +1,15 @@
-{: Scripting a Shader with DelphiWebScriptII<p>
-
-   A very simple example of how the GLUserShader and scripting
-   components can be used to build a scripted material shader.<p>
-
-   The Tdws2OpenGL1xUnit requires the Tdws2VectorGeometryUnit to be
-   associated with the script.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLUserShader, GLWin32Viewer,
-  GLScene, GLObjects, AsyncTimer, GLScriptBase, GLScriptDWS2,
+  ExtCtrls, StdCtrls,
+  //GLS
+  GLCadencer, GLTexture, GLUserShader, GLWin32Viewer,
+  GLScene, GLObjects, GLAsyncTimer, GLScriptBase, GLScriptDWS2,
   dws2OpenGL1x, dws2VectorGeometry, dws2Comp, GLMaterial, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLRenderContextInfo;
+  GLCrossPlatform, GLBaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -35,7 +29,7 @@ type
     GLCube1: TGLCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
     dws2VectorGeometryUnit1: Tdws2VectorGeometryUnit;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLDelphiWebScriptII1: TGLDelphiWebScriptII;
     GLScriptLibrary1: TGLScriptLibrary;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,

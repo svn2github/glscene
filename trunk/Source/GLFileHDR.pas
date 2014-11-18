@@ -28,7 +28,7 @@ uses
   GLContext,
   GLGraphics,
   GLTextureFormat,
-  ApplicationFileIO,
+  GLApplicationFileIO,
   GLCrossPlatform;
 
 type
@@ -64,9 +64,9 @@ type
 implementation
 
 uses
-  RGBE,
-  VectorTypes,
-  VectorGeometry;
+  GLS_RGBE,
+  GLVectorTypes,
+  GLVectorGeometry;
 
 // ------------------
 // ------------------ TGLHDRImage ------------------

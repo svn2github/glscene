@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -35,10 +35,10 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   UpdateHudText();
 }
 //---------------------------------------------------------------------------
-Vectorgeometry::TVector __fastcall TForm1::MouseWorldPos(int X, int Y)
+Glvectorgeometry::TVector __fastcall TForm1::MouseWorldPos(int X, int Y)
 {
-  Vectorgeometry::TVector v;
-  Vectorgeometry::TVector Result;
+  Glvectorgeometry::TVector v;
+  Glvectorgeometry::TVector Result;
 
   Y = Scn->Height - Y;
   if (CurrentPick)
@@ -131,7 +131,7 @@ void __fastcall TForm1::ScnMouseDown(TObject *Sender, TMouseButton Button, TShif
 void __fastcall TForm1::ScnMouseMove(TObject *Sender, TShiftState Shift, int X, int Y)
 
 {
-  Vectorgeometry::TVector newPos;
+  Glvectorgeometry::TVector newPos;
 
   ScnMouseMoveCnt++;
 ////not translated  Assert(ScnMouseMoveCnt < 2);

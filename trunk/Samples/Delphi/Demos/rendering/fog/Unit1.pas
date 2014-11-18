@@ -7,9 +7,8 @@ uses
   Math, Dialogs, ExtCtrls, StdCtrls,
 
   //GLScene
-  GLScene, GLObjects, GLCadencer,
-  GLWin32Viewer, GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses, GLUtils;
+  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLTexture, GLCrossPlatform,
+  GLMaterial, GLCoordinates, GLUtils, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -92,13 +92,13 @@ uses
   Windows,
 {$ENDIF}
   Classes,
-  PersistentClasses,
+  GLPersistentClasses,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Graphics,
 {$ELSE}
   Graphics,
 {$ENDIF}
-  ApplicationFileIO,
+  GLApplicationFileIO,
   SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
@@ -117,7 +117,7 @@ uses
 {$ENDIF}
   OpenGLTokens,
   GLContext,
-  ImageUtils,
+  GLImageUtils,
   GLUtils,
   GLCrossPlatform,
   GLColor,
@@ -503,7 +503,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  VectorGeometry,
+  GLVectorGeometry,
   GLStrings,
   SyncObjs
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};

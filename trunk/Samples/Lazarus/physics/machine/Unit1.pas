@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLLCLViewer, GLODEManager,
   GLCadencer, GLGeomObjects, odeimport, GLHUDObjects, GLBitmapFont,
-  GLWindowsFont, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLWindowsFont, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -46,7 +46,7 @@ var
 
 implementation
 
-uses VectorGeometry;
+uses GLVectorGeometry;
 
 {$R *.lfm}
 

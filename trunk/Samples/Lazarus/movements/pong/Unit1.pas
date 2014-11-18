@@ -11,9 +11,9 @@ unit Unit1;
 interface
 
 uses
-  Forms, GLScene, GLObjects, GLTexture, VectorGeometry, ExtCtrls,
+  Forms, GLScene, GLObjects, GLTexture, GLVectorGeometry, ExtCtrls,
   Classes, Controls, GLCadencer, GLLCLViewer, GLSpaceText, GLShadowPlane,
-  GLShadowVolume, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLShadowVolume, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

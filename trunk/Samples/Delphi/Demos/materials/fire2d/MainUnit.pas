@@ -4,13 +4,18 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls, ComCtrls, GR32, GR32_OrdinalMaps, AsyncTimer, GLScene,
-  GLObjects, GLHUDObjects, GLWin32Viewer, GR32_Image, GLCadencer,
-  GLCoordinates, GLCrossPlatform, BaseClasses, OpenGLTokens;
+  ExtCtrls, StdCtrls, ComCtrls, GLAsyncTimer,
+
+  //Graphics 32
+  GR32, GR32_OrdinalMaps, GR32_Image,
+  //GLS
+  GLScene,
+  GLObjects, GLHUDObjects, GLWin32Viewer, GLCadencer,
+  GLCoordinates, GLCrossPlatform, GLBaseClasses, OpenGLTokens, GLMaterial;
 
 type
   TForm1 = class(TForm)
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
@@ -23,6 +28,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    GLMaterialLibrary1: TGLMaterialLibrary;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);

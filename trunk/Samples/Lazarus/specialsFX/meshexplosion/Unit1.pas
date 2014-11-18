@@ -17,7 +17,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, GLScene, GLVectorFileObjects, GLLCLViewer,
   GLCadencer, GLExplosionFx, GLFile3DS, ExtCtrls, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

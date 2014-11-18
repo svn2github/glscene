@@ -1,5 +1,5 @@
 // dws2VectorGeometry
-{: DelphiWebScriptII symbol creation for VectorGeometry types
+{: DelphiWebScriptII symbol creation for GLVectorGeometry types
    and functions.<p>
 
    <b>History : </b><font size=-1><ul>
@@ -26,7 +26,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, VectorGeometry;
+  dws2Functions, GLVectorGeometry;
 
 type
   TVectorMakeFunction = class(TInternalFunction)
@@ -225,7 +225,7 @@ end;
 constructor Tdws2VectorGeometryUnit.Create(AOwner: TComponent);
 begin
   inherited;
-  FUnitName := 'VectorGeometry';
+  FUnitName := 'GLVectorGeometry';
 end;
 
 // ----------

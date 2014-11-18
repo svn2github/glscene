@@ -3,10 +3,12 @@
 #pragma hdrstop
 
 #include "SimpleGLSLUnit.h"
+
 #include "GLKeyboard.hpp"
 #include "GLContext.hpp"
 #include "GLFile3DS.hpp"
 #include "OpenGL1x.hpp"
+#include <math.h>
 
 #include <sysutils.hpp>
 //---------------------------------------------------------------------------
@@ -27,7 +29,7 @@
 #pragma link "GLFile3DS"
 #pragma link "OpenGL1x"
 
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
@@ -140,9 +142,9 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
   }
   if ((CurrShad == 9))
   {
-	VecCol1.V[0]= 0.5; VecCol1.V[1]= 0.25; VecCol1.V[2]= 0.2;
+	VecCol1.X= 0.5; VecCol1.Y= 0.25; VecCol1.Z= 0.2;
 	GLSLProg[CurrShad]->Uniform3f["DiffuseColor"]= VecCol1;
-	VecCol2.V[0]= 0.95; VecCol2.V[1]= 0.45; VecCol2.V[2]= 0.3;
+	VecCol2.X= 0.95; VecCol2.Y= 0.45; VecCol2.Z= 0.3;
 	GLSLProg[CurrShad]->Uniform3f["PhongColor"]= VecCol2;
 	GLSLProg[CurrShad]->Uniform1f["Edge"]= 0.25;
     GLSLProg[CurrShad]->Uniform1f["Phong"]= 0.5540001;
@@ -217,9 +219,9 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 	  ShowMessage("Your hardware does not support GLSL to execute this demo!");
 	  //	  return (void) NULL; <- It's not necessary
 	}
-    //Blinn Shader
+	//Blinn Shader
     GLSLProg[0] = new TGLProgramHandle(true);
-    GLSLProg[0]->AddShader(__classid(TGLVertexShaderHandle), LoadAnsiStringFromFile("Shaders\\vertex.glsl"),true);
+	GLSLProg[0]->AddShader(__classid(TGLVertexShaderHandle), LoadAnsiStringFromFile("Shaders\\vertex.glsl"),true);
 	GLSLProg[0]->AddShader(__classid(TGLFragmentShaderHandle), LoadAnsiStringFromFile("Shaders\\blinn.glsl"),true);
 	//Lambert Shader
 	GLSLProg[1]= new TGLProgramHandle(true);

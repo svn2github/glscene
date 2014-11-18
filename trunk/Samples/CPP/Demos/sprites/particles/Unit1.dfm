@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 284
   Top = 105
-  Caption = 'Form1'
-  ClientHeight = 236
-  ClientWidth = 272
+  Caption = 'GLScene Particles'
+  ClientHeight = 319
+  ClientWidth = 427
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,18 +11,20 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 272
-    Height = 236
+    Width = 427
+    Height = 319
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.DepthTest = False
-    FieldOfView = 134.072448730468800000
+    FieldOfView = 145.189712524414100000
     Align = alClient
     TabOrder = 0
   end
@@ -43,7 +45,6 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.BlendingMode = bmAdditive
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = '..\..\media\Flare1.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureFormat = tfIntensity
         Material.Texture.Disabled = False

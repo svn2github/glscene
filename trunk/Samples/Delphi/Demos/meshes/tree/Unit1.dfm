@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 106
-  Width = 736
-  Height = 569
-  Caption = 'GLTree Editor'
+  Caption = 'Tree Editor'
+  ClientHeight = 503
+  ClientWidth = 728
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,10 +19,10 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 153
     Top = 0
-    Width = 567
-    Height = 511
+    Width = 575
+    Height = 503
     Camera = GLCamera1
-    FieldOfView = 157.854904174804700000
+    FieldOfView = 157.511596679687500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -32,7 +32,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 153
-    Height = 511
+    Height = 503
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
@@ -303,7 +303,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 160
+    Left = 168
     Top = 8
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000000000020400000803F}
@@ -324,6 +324,7 @@ object Form1: TForm1
     end
     object GLFreeForm1: TGLFreeForm
       Visible = False
+      MaterialLibrary = GLMaterialLibrary1
     end
     object GLPlane1: TGLPlane
       Height = 10.000000000000000000
@@ -336,11 +337,11 @@ object Form1: TForm1
         Name = 'LibMaterial'
         Tag = 0
       end>
-    Left = 192
+    Left = 312
     Top = 8
   end
   object MainMenu1: TMainMenu
-    Left = 224
+    Left = 416
     Top = 8
     object File1: TMenuItem
       Caption = '&File'
@@ -390,49 +391,52 @@ object Form1: TForm1
         OnClick = BranchTexture1Click
       end
     end
+    object miFPS: TMenuItem
+      Caption = 'FPS'
+    end
   end
   object OpenDialog1: TOpenDialog
     Filter = 'GLTree files (*.gltr)|*.gltr'
     FilterIndex = 0
-    Left = 160
-    Top = 40
+    Left = 504
+    Top = 8
   end
   object SaveDialog1: TSaveDialog
     Filter = 'GLTree files (*.gltr)|*.gltr'
     FilterIndex = 0
-    Left = 160
-    Top = 72
+    Left = 416
+    Top = 64
   end
   object SaveDialog2: TSaveDialog
     Filter = 'GLScene Mesh files (*.glsm)|*.glsm'
     FilterIndex = 0
     Title = 'Export Mesh'
-    Left = 192
-    Top = 72
+    Left = 504
+    Top = 64
   end
   object SaveDialog3: TSaveDialog
     Filter = 'GLScene Material Library files (*.glml)|*.glml'
     FilterIndex = 0
     Title = 'Export Material Library'
-    Left = 224
-    Top = 72
+    Left = 504
+    Top = 120
   end
   object OpenPictureDialog1: TOpenPictureDialog
-    Left = 192
-    Top = 40
+    Left = 416
+    Top = 120
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpNormal
-    Left = 224
-    Top = 40
+    Left = 232
+    Top = 72
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     Mode = cmApplicationIdle
     OnProgress = GLCadencer1Progress
-    Left = 256
-    Top = 40
+    Left = 232
+    Top = 8
   end
 end

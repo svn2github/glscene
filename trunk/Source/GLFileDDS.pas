@@ -26,15 +26,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-  SysUtils,
-  GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  RGBE,
-  ApplicationFileIO;
+  Classes, SysUtils,
+  //GLS
+  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
+  GLS_RGBE, GLApplicationFileIO, GLVectorGeometry, GLStrings;
 
 type
 
@@ -75,9 +70,7 @@ var
 implementation
 
 uses
-  DXTC,
-  VectorGeometry,
-  GLStrings;
+  DXTC;
 
 // ------------------
 // ------------------ TGLDDSImage ------------------

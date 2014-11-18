@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'GLScene Quake3 Actor'
-  ClientHeight = 461
-  ClientWidth = 754
+  Caption = 'GLScene Quake Actor'
+  ClientHeight = 458
+  ClientWidth = 783
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,14 +11,15 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnClose = FormClose
+  WindowState = wsMaximized
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 754
+    Width = 783
     Height = 73
     Align = alTop
     TabOrder = 0
@@ -128,19 +129,19 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 73
-    Width = 754
-    Height = 388
+    Width = 783
+    Height = 385
     Camera = GLCamera1
-    Buffer.BackgroundColor = clSilver
+    Buffer.BackgroundColor = clSkyBlue
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 51.746768951416020000
+    FieldOfView = 51.398372650146480000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 1
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 32
     Top = 80
     object DummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -202,16 +203,18 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     SleepLength = 0
-    Left = 40
+    OnProgress = GLCadencer1Progress
+    Left = 120
     Top = 80
   end
   object Timer1: TTimer
-    Left = 8
-    Top = 112
+    OnTimer = Timer1Timer
+    Left = 208
+    Top = 80
   end
   object MatLib: TGLMaterialLibrary
-    Left = 40
-    Top = 112
+    Left = 32
+    Top = 144
   end
   object GLPointLightPFXManager1: TGLPointLightPFXManager
     Cadencer = GLCadencer1
@@ -226,7 +229,7 @@ object Form1: TForm1
         LifeTime = 3.000000000000000000
         SizeScale = 1.000000000000000000
       end>
-    Left = 72
-    Top = 112
+    Left = 120
+    Top = 144
   end
 end

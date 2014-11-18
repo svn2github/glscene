@@ -1,4 +1,3 @@
-// a Demo with absolutely no code :)
 unit Unit1;
 
 interface
@@ -6,13 +5,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCadencer, GLSimpleNavigation,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

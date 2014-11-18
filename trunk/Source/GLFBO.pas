@@ -171,7 +171,7 @@ implementation
 uses
   GLGraphics,
   GLTextureFormat
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF}
+  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF}
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 { TGLRenderbuffer }

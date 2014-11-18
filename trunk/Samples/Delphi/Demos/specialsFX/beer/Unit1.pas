@@ -1,23 +1,15 @@
-{: Beer demo.<p>
-
-   The scene is defined in the DFM, the code only takes care of loading
-   meshes, textures and reacting to mouse clicks.<br>
-   A PerlinPFX is used for the foam, a simpler PolyPFX for the bubbles.
-   The glass effect uses a texture in sphere mapping mode, the grouping
-   of faces in the 3DS model does the rest.<p>
-
-   Original idea by Vitomir Savic.
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Jpeg, Controls, Forms,
+
+  //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  GLFile3ds, GLCadencer, jpeg, GLGeomObjects, VectorGeometry,
+  GLFile3ds, GLCadencer, GLGeomObjects, GLVectorGeometry,
   GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -56,15 +48,10 @@ implementation
 
 {$R *.dfm}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-   SetGLSceneMediaDir();
-
+   SetGLSceneMediaDir;
    GLFreeForm1.LoadFromFile('beer.3ds');
-
    GLFreeForm1.Material.Texture.Image.LoadFromFile('clouds.jpg');
    GLShadowPlane1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
    GetOrCreateSourcePFX(GLDummyCube3).Burst(0, 150);

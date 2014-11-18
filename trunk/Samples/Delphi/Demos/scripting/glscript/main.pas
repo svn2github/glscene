@@ -1,28 +1,15 @@
-{: Scripted OpenGL.<p>
-
-   This demo shows how DWS2 can be used to script OpenGL
-   calls. While this demo simply draws a cube, the same
-   principles could easily be applied to a user shader
-   to allow for scripted shading of materials. Try adding
-   to or changing the script and press compile to see the
-   results. If there is an error in the script it will
-   be displayed in the HUD text object.<p>
-   
-   Not all OpenGL functions are available, but most of the
-   commonly used functions are supplied and almost all
-   of the constants. The list of supported functions can
-   be extended in the future should the need arise.<p>
-}
 unit main;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, dws2Comp,
-  dws2OpenGL1x, GLDWS2Objects, dws2Exprs, GLTexture, GLCadencer, AsyncTimer,
-  StdCtrls, ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects,
-  dws2VectorGeometry, GLCoordinates, GLCrossPlatform, BaseClasses, GLScriptDWS2,
+  Dialogs, GLScene, StdCtrls, ExtCtrls,
+  //GLS
+  GLObjects, GLWin32Viewer, dws2Comp,
+  dws2OpenGL1x, GLDWS2Objects, dws2Exprs, GLTexture, GLCadencer, GLAsyncTimer,
+  GLBitmapFont, GLWindowsFont, GLHUDObjects,
+  dws2VectorGeometry, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLScriptDWS2,
   GLRenderContextInfo;
 
 type
@@ -36,7 +23,7 @@ type
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLDummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLHUDText1: TGLHUDText;
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     Panel2: TPanel;

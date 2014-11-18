@@ -8,7 +8,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -16,8 +16,8 @@
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include "VectorGeometry.hpp"
-#include "Polynomials.hpp"
+#include "GLVectorGeometry.hpp"
+#include "GLPolynomials.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

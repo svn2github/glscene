@@ -10,7 +10,7 @@
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -60,8 +60,8 @@ __published:	// IDE-managed Components
 	void __fastcall AddODECubeClick(TObject *Sender);
 
 private:	// User declarations
-	Vectorgeometry::TVector FUserDirection;
-	Vectorgeometry::TVector FDirectionVector;
+	Glvectorgeometry::TVector FUserDirection;
+	Glvectorgeometry::TVector FDirectionVector;
 
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);

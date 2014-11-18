@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{82AAFF92-A109-4A19-AB65-F30BC8E684E7}</ProjectGuid>
-        <ProjectVersion>15.1</ProjectVersion>
+        <ProjectVersion>16.0</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <AppType>Application</AppType>
         <MainSource>MatScript.cpp</MainSource>
@@ -40,6 +40,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <SanitizedProjectName>MatScript</SanitizedProjectName>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <ILINK_LibraryPath>MaterialScript\;D:\Library\GLScene\Samples\CPP\Demos\materials\;D:\Library\GLScene\Samples\CPP\Demos\materials\MaterialScript\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Multithreaded>true</Multithreaded>
@@ -94,6 +95,7 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <ILINK_LibraryPath>..\..\..\..\..\Source\lib\;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <FinalOutputDir>.</FinalOutputDir>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -188,6 +190,7 @@
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>
                     <ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+                    <ProjectProperties Name="IndexFiles">False</ProjectProperties>
                 </ProjectProperties>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\RAD Studio\12.0\Bpl\GBComp.bpl">Geoblock - Components</Excluded_Packages>

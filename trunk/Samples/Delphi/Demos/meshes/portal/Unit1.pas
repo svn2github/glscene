@@ -1,29 +1,15 @@
-{: Advanced Demo for the GLScene Portal Renderer.<p>
-
-   This example is quite big since it include a small "maze editor" : the grid
-   defines walls and open areas, ala Wolfenstein maps, and the viewer displays
-   the result interactively.<p>
-
-   The portal mesh generation has been compacted in BBProcess but does not
-   generate a "perfect" portal mesh, indeed it is some kind of a worst case
-   situation since there are many more portals than actual polygons.<p>
-
-   The GLScene portal object can handle all kind of polygonal descriptions,
-   with not necessarily convex polygons, and non necessarily closed areas.
-   It is optimized for T&L accelerated cards ie. only an ultra-basic culling is
-   performed. It hasn't been tested on many map styles or 3D boards yet, but this
-   approach just tramples any "classic" (CPU-intensive) portal renderers on my
-   GeForce... not sure how it will scale, though.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Grids, StdCtrls, GLScene, GLTexture, GLVectorFileObjects,
-  GLObjects, ExtCtrls, GLCadencer, GLPortal, GLWin32Viewer, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses;
+  Grids, StdCtrls, ExtCtrls, JPeg,
+  //GLS
+  GLScene, GLTexture, GLVectorFileObjects, GLObjects, GLCadencer, GLPortal,
+  GLWin32Viewer, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLKeyboard, GLUtils;
+
 
 type
   TForm1 = class(TForm)
@@ -60,9 +46,9 @@ type
       const Value: String);
     procedure CBFogClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     portalCount, triangleCount : Integer;
   end;
 
@@ -73,11 +59,9 @@ implementation
 
 {$R *.DFM}
 
-uses JPeg, GLKeyboard, GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   i : Integer;
+  i:Integer;
 begin
    SetGLSceneMediaDir();
    for i:=0 to 15 do
@@ -98,27 +82,27 @@ procedure TForm1.BBProcessClick(Sender: TObject);
 var
    x, y, n : Integer;
    h : Single;
-   sector : TSectorMeshObject;
-   poly : TFGPolygon;
+   Sector : TSectorMeshObject;
+   Poly : TFGPolygon;
 begin
    h:=3;
    portalCount:=0;
    triangleCount:=0;
    Portal1.MeshObjects.Clear;
    for x:=-7 to 8 do for y:=-7 to 8 do begin
-      sector:=TSectorMeshObject.CreateOwned(Portal1.MeshObjects);
-      with sector.Vertices do begin
+      Sector:=TSectorMeshObject.CreateOwned(Portal1.MeshObjects);
+      with Sector.Vertices do begin
          n:=Count;
          Add(x, 0, y); Add(x+1, 0, y); Add(x+1, 0, y+1); Add(x, 0, y+1);
          Add(x, h, y); Add(x+1, h, y); Add(x+1, h, y+1); Add(x, h, y+1);
       end;
-      with sector.TexCoords do begin
+      with Sector.TexCoords do begin
          Add(0, 0, 0); Add(1, 0, 0); Add(1, 1, 0); Add(0, 1, 0);
       end;
       // ground
       Sector.Normals.Add(0, 1, 0);
       if SGMap.Cells[x+7, y+7]='' then begin
-         poly:=TFGPolygon.CreateOwned(sector.FaceGroups);
+         Poly:=TFGPolygon.CreateOwned(sector.FaceGroups);
          with poly do begin
             MaterialName:='gnd';
             Add(n+0, 0, 0); Add(n+3, 0, 3); Add(n+2, 0, 2); Add(n+1, 0, 1);
@@ -127,15 +111,15 @@ begin
       // front wall
       Sector.Normals.Add(0, 0, 1);
       if (y=-7) or (SGMap.Cells[x+7, y-1+7]<>'') then begin
-         poly:=TFGPolygon.CreateOwned(sector.FaceGroups);
-         poly.MaterialName:='wall';
+         Poly:=TFGPolygon.CreateOwned(sector.FaceGroups);
+         Poly.MaterialName:='wall';
          Inc(triangleCount, 2);
       end else begin
-         poly:=TFGPortalPolygon.CreateOwned(sector.FaceGroups);
+         Poly:=TFGPortalPolygon.CreateOwned(sector.FaceGroups);
          TFGPortalPolygon(poly).DestinationSectorIndex:=(x+7)*16+(y-1+7);
          Inc(portalCount);
       end;
-      with poly do begin
+      with Poly do begin
          Add(n+0, 1, 3); Add(n+1, 1, 2); Add(n+5, 1, 1); Add(n+4, 1, 0);
       end;
       // left wall

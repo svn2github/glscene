@@ -3,31 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLWin32Viewer,
-  GLScene,
-  GLObjects,
-  GLTexture,
-  GLHudObjects,
-  GLCompositeImage,
-  GLFileJPEG,
-  GLCadencer,
-  StdCtrls,
-  ExtCtrls,
-  GLBlur,
-  GLCrossPlatform,
-  GLMaterial,
-  GLCoordinates,
-  BaseClasses,
-  Jpeg,
-  GLUtils;
+  Windows, Messages, SysUtils, Classes, Graphics, Jpeg, Controls, Forms,
+  Dialogs,  StdCtrls, ExtCtrls,
+
+  //GLS
+  GLWin32Viewer, GLScene, GLObjects, GLTexture, GLHudObjects, GLCompositeImage,
+  GLFileJPEG, GLCadencer, GLBlur, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)

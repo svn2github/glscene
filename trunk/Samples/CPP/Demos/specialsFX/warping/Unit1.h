@@ -23,13 +23,19 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
-#include "GLGraph.hpp"
-#include "GLMisc.hpp"
-#include "GLScene.hpp"
-#include "GLWin32Viewer.hpp"
 #include <Dialogs.hpp>
 #include <ExtDlgs.hpp>
 #include <Menus.hpp>
+
+#include "GLGraph.hpp"
+#include "GLScene.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLBaseClasses.hpp"
+#include "GLCoordinates.hpp"
+#include "GLCrossPlatform.hpp"
+#include "GLFileJPEG.hpp"
+#include "jpeg.hpp"
+
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

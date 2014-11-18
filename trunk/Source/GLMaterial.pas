@@ -48,8 +48,15 @@ unit GLMaterial;
 interface
 
 uses
-  Classes, SysUtils, GLRenderContextInfo, BaseClasses, OpenGLTokens, GLContext,
-  GLTexture, GLColor, GLCoordinates, VectorGeometry, PersistentClasses,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils, System.Types,
+  {$ELSE}
+    Classes, SysUtils, Types,
+  {$ENDIF}
+
+  //GLScene
+  GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
+  GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
   GLCrossPlatform, GLState, GLTextureFormat;
 
 {$I GLScene.inc}
@@ -848,7 +855,7 @@ implementation
 // ------------------------------------------------------------------------------
 
 uses
-  GLStrings, XOpenGL, ApplicationFileIO, GLGraphics, GLUtils
+  GLStrings, XOpenGL, GLApplicationFileIO, GLGraphics, GLUtils
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 

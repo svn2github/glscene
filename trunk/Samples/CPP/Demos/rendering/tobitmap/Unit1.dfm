@@ -34,7 +34,6 @@ object Form1: TForm1
     Height = 406
     Align = alRight
     TabOrder = 1
-    ExplicitHeight = 344
     object BUSnapShot: TButton
       Left = 8
       Top = 40

@@ -202,7 +202,7 @@ uses
   Messages,
   GLCrossPlatform,
   GLState,
-  VectorGeometry
+  GLVectorGeometry
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 

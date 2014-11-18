@@ -4,11 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLTerrainRenderer, GLObjects, jpeg, GLHeightData,
-  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLODEManager,
+  ExtCtrls, StdCtrls, Jpeg,
+
+  //GLS
+  GLScene, GLTerrainRenderer, GLObjects, GLHeightData, GLKeyboard,
+  GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont,
+  GLSkydome, GLWin32Viewer, GLVectorGeometry, GLLensFlare, GLODEManager,
   GLODECustomColliders, GLNavigator, GLGeomObjects,GLColor, GLCrossPlatform,
-  GLMaterial, GLCoordinates, BaseClasses, GLState, GLUtils;
+  GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -53,8 +56,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses GLKeyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

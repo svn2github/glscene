@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 201
   Top = 129
-  Width = 538
-  Height = 389
-  Caption = 'Simple Spherical Pano Viewer - Use mouse or arrow keys to pan'
+  Caption = 'Simple Spherical Pano Viewer'
+  ClientHeight = 345
+  ClientWidth = 530
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -20,14 +21,16 @@ object Form1: TForm1
     Left = 0
     Top = 46
     Width = 530
-    Height = 314
+    Height = 299
     Cursor = crHandPoint
     Camera = GLCamera1
     Buffer.FaceCulling = False
     Buffer.Lighting = False
+    FieldOfView = 150.041778564453100000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
+    TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
@@ -47,7 +50,7 @@ object Form1: TForm1
     object LabelYaw: TLabel
       Left = 249
       Top = 8
-      Width = 36
+      Width = 35
       Height = 14
       Caption = 'Yaw: 0'
     end
@@ -88,11 +91,8 @@ object Form1: TForm1
       Height = 16
       Max = 100
       Min = 10
-      Orientation = trHorizontal
       Frequency = 10
       Position = 40
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 1
       ThumbLength = 10
       TickMarks = tmBoth
@@ -107,40 +107,40 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
       Normals = nsFlat
-      Radius = 2
+      Radius = 2.000000000000000000
       Slices = 64
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 200
-      FocalLength = 40
+      DepthOfView = 200.000000000000000000
+      FocalLength = 40.000000000000000000
       Left = 328
       Top = 216
     end
   end
   object OpenPictureDialog1: TOpenPictureDialog
-    Left = 56
+    Left = 304
     Top = 56
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfRGB
         Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
-        Tag = 0
         TextureOffset.Coordinates = {000000000000803F0000000000000000}
         TextureScale.Coordinates = {000080BF0000803F0000803F00000000}
       end>
-    Left = 16
-    Top = 96
+    Left = 192
+    Top = 56
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 56
-    Top = 96
+    Left = 96
+    Top = 56
   end
 end

@@ -1,20 +1,16 @@
-{: A simple utility that allows combining RGB and Alpha channel into a single
-   32 bits texture, also allows to view RGB & Alpha channel of a 32 bits texture.<br>
-   The implementation isn't high performance, just sufficiently fast for
-   interactive use.<p>
-
-   Eric Grange / GLScene<br>
-   http://glscene.org
-}
 unit FTTBMain;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLHUDObjects, GLScene, ExtCtrls,
-  GLWin32Viewer, ComCtrls, ActnList, Menus, ImgList, JPEG, TGA, ToolWin,
-  ExtDlgs, StdCtrls, GLCoordinates, GLCrossPlatform, BaseClasses;
+  Windows, Messages, SysUtils, Classes, Actions, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, ExtDlgs, StdCtrls, ComCtrls, ActnList, ToolWin,
+  Menus, ImgList, Jpeg,
+  //GLS
+  GLObjects, GLHUDObjects, GLScene, GLWin32Viewer, TGA,
+  GLCoordinates, GLCrossPlatform, GLBaseClasses,
+  GLTexture, GLGraphics, GLVectorGeometry, GLState, GLUtils;
+
 
 type
   TTTBMain = class(TForm)
@@ -133,8 +129,6 @@ var
   TTBMain: TTTBMain;
 
 implementation
-
-uses GLTexture, GLGraphics, VectorGeometry, GLState, GLUtils;
 
 {$R *.dfm}
 

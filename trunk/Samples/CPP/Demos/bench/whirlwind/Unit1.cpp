@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #include <system.hpp>
 #include <math.hpp>
 
@@ -9,7 +11,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLBehaviours"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"

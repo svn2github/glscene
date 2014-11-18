@@ -7,9 +7,9 @@ uses
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
+  GLBaseClasses, GLBitmapFont, GLWindowsFont, GLMaterial,
   GLCustomShader, GLSLShader, GLCadencer, GLHUDObjects, GLGeomObjects,
-  GLFBORenderer, VectorGeometry, VectorTypes, GLTexture, GLSimpleNavigation,
+  GLFBORenderer, GLVectorGeometry, GLVectorTypes, GLTexture, GLSimpleNavigation,
   GLState, GLContext, GLKeyboard, GLMultisampleImage;
 
 type

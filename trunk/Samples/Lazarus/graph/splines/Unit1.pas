@@ -41,7 +41,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry;
+uses GLVectorGeometry;
 
 procedure TForm1.MoveCenterNodeTo(x, y: integer);
 begin

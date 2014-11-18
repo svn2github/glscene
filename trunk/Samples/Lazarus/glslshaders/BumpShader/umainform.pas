@@ -23,7 +23,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLViewer, GLScene, GLObjects, GLPolyhedron,
-  GLVectorFileObjects, GLGraph, GLGeomObjects, VectorGeometry, GLSLBumpShader,
+  GLVectorFileObjects, GLGraph, GLGeomObjects, GLVectorGeometry, GLSLBumpShader,
   GLCustomShader, GLSLShader, GLCrossPlatform, GLMaterial, GLCoordinates,
 
   // FileFormats

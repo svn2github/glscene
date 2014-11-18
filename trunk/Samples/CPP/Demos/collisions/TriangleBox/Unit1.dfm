@@ -191,7 +191,7 @@ object Form1: TForm1
     object GLPoints1: TGLPoints
       NoZWrite = False
       Static = False
-      size = 6.000000000000000000
+      Size = 6.000000000000000000
     end
     object GLLines2: TGLLines
       LineWidth = 2.000000000000000000

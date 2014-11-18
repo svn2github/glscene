@@ -16,7 +16,7 @@ interface
 uses
   Classes, SysUtils,
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc, GLScene, VectorGeometry,
+  dws2Functions, dws2HelperFunc, GLScene, GLVectorGeometry,
   GLCoordinates;
 
 type
@@ -790,7 +790,7 @@ begin
   FUnitName:='GLScene';
   with FDependencies do begin
     Add('Classes');
-    Add('VectorGeometry');
+    Add('GLVectorGeometry');
   end;
 end;
 

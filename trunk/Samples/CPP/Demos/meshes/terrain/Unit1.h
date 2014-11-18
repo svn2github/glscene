@@ -7,25 +7,25 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
-#include <StdCtrls.hpp>         // Pascal unit
-#include <ExtCtrls.hpp>         // Pascal unit
+#include <StdCtrls.hpp>
+#include <ExtCtrls.hpp>
 #include <GIFImg.hpp>
 
-#include <GLLensFlare.hpp>      // Pascal unit
-#include <VectorGeometry.hpp>   // Pascal unit
-#include <GLSMBASS.hpp>         // Pascal unit
-#include <GLSound.hpp>          // Pascal unit
-#include <GLWin32Viewer.hpp>    // Pascal unit
-#include <GLSkydome.hpp>        // Pascal unit
-#include <GLBitmapFont.hpp>     // Pascal unit
-#include <GLHUDObjects.hpp>     // Pascal unit
-#include <GLTexture.hpp>        // Pascal unit
-#include <GLCadencer.hpp>       // Pascal unit
-#include <GLHeightData.hpp>     // Pascal unit
-#include <GLObjects.hpp>        // Pascal unit
-#include <GLTerrainRenderer.hpp>        // Pascal unit
+#include <GLLensFlare.hpp>
+#include <GLVectorGeometry.hpp>
+#include <GLSMBASS.hpp>
+#include <GLSound.hpp>
+#include <GLWin32Viewer.hpp>
+#include <GLSkydome.hpp>
+#include <GLBitmapFont.hpp>
+#include <GLHUDObjects.hpp>
+#include <GLTexture.hpp>
+#include <GLCadencer.hpp>
+#include <GLHeightData.hpp>
+#include <GLObjects.hpp>
+#include <GLTerrainRenderer.hpp>
 #include <GLScene.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"

@@ -12,12 +12,12 @@
 #include <GLTexture.hpp>        // Pascal unit
 #include <GLGeomObjects.hpp>    // Pascal unit
 #include <GLCelShader.hpp>      // Pascal unit
-#include <AsyncTimer.hpp>       // Pascal unit
+#include <GLAsyncTimer.hpp>       // Pascal unit
 #include <GLVectorFileObjects.hpp>      // Pascal unit
 #include <GLWin32Viewer.hpp>    // Pascal unit
 #include <GLCadencer.hpp>       // Pascal unit
 #include <GLScene.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"          // Pascal unit
@@ -39,7 +39,7 @@ __published:                   // IDE-managed Components
   TGLDummyCube *GLDummyCube1;
   TGLLightSource *GLLightSource1;
   TGLActor *GLActor1;
-  TAsyncTimer *AsyncTimer1;
+  TGLAsyncTimer *AsyncTimer1;
   TGLCelShader *GLTexturedCelShader;
   TGLCelShader *GLColoredCelShader;
   TGLTorus *GLTorus1;

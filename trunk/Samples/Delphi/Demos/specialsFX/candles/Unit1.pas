@@ -1,24 +1,15 @@
-{: FireFX and simulated "wind".<p>
-
-   This samples showcases a bare-bones "birthday cake" with three candles,
-   you can adjust wind strength with the horizontal slider, but beware, if the
-   wind gets too strong, the candles will be blown off! ;)<p>
-
-   The "cake" is a simple revolution solid, the candles are based on a cylinder,
-   line, fire FX on the line, and a transparent plane (for the 2cents "shadow").
-   The candles are duplicated with a TGLProxyObject each.<br>
-   Particles in a FireFX are submitted to a uniform acceleration, specified with
-   the "FireDir" property, and the "wind" slider directly adjusts it.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLObjects, GLExtrusion, GLScene, GLCadencer, GLFireFX, ComCtrls,
-  ExtCtrls, GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  ComCtrls,  ExtCtrls,
+
+  //GLS
+  GLObjects, GLExtrusion, GLScene, GLCadencer, GLFireFX,
+  GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -46,9 +37,9 @@ type
       X, Y: Integer);
     procedure FormResize(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 
@@ -68,7 +59,7 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 var
    n : Integer;
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   Caption := 'Candles - '+ Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
    if TrackBar1.Position=0 then
       GLFireFXManager1.Disabled:=False

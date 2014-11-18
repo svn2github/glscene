@@ -17,10 +17,10 @@ uses
   // GLScene
   GLScene, GLObjects, GLLCLViewer, GLTexture, GLCadencer, GLSimpleNavigation,
   GLVectorFileObjects, GLFile3DS, GLGraph, GLCgBombShader, GLMaterial,
-  VectorGeometry,
+  GLVectorGeometry,
 
   // FileFormats
-  {GLFileJPEG, }GLFileMD2, GLCrossPlatform, GLCoordinates, BaseClasses;
+  {GLFileJPEG, }GLFileMD2, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

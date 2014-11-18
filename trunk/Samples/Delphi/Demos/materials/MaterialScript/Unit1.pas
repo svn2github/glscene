@@ -8,7 +8,7 @@ uses
 
   //GLScene
   GLTexture, GLScene, GLObjects, GLWin32Viewer, GLMaterialScript, GLCadencer,
-  GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

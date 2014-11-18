@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLGeomObjects"
@@ -14,6 +14,7 @@
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
+#pragma link "GLBaseClasses"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------
@@ -26,18 +27,18 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 {
    int i;
    // generate a bunch of random points
-   for (i=1; i < 100; i++)
+   for (i=1; i < 1000; i++)
 	  GLPoints->Positions->Add((float)(Random()-0.5)*5,
-	          (float)(Random()-0.5)*5, (float)(Random()-0.5)*5);
+			  (float)(Random()-0.5)*5, (float)(Random()-0.5)*5);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::DirectOpenGLRender(TObject *Sender, TRenderContextInfo &rci)
 
 {
    int i;
-   Vectorgeometry::TMatrix mat;
-   Vectorgeometry::TVector p, pProj;
-   Vectorgeometry::TVector planePoint, planeNormal;
+   Glvectorgeometry::TMatrix mat;
+   Glvectorgeometry::TVector p, pProj;
+   Glvectorgeometry::TVector planePoint, planeNormal;
    THmgPlane plane;
 
    // Here we recover our plane point and normal...

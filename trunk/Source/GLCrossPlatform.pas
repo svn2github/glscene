@@ -455,7 +455,7 @@ end;
 
 function RGB(const r, g, b: Byte): TColor;
 begin
-  Result := (b shl 16) or (g shl 8) or r;
+  Result := r or (g shl 8) or (b shl 16);
 end;
 
 // GLRect

@@ -2054,10 +2054,6 @@ object Form1: TForm1
     object TabSheet3: TTabSheet
       Caption = 'About'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label8: TLabel
         Left = 5
         Top = 3

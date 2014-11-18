@@ -4,10 +4,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, GLWin32Viewer, GLScene, GLObjects,
+  Dialogs, ExtCtrls, StdCtrls, ComCtrls, Math,
+
+  //GLS
+  GLWin32Viewer, GLScene, GLObjects,
   GLVectorFileObjects, GLCameraController, GLFile3ds, GLGeomObjects, GLTexture,
-  GLCadencer, StdCtrls, ComCtrls, GLMaterial, GLCoordinates, GLCrossPlatform,
-  BaseClasses, VectorGeometry, GLNavigator, GLSmoothNavigator, GLGraph;
+  GLCadencer, GLMaterial, GLCoordinates, GLCrossPlatform,
+  GLBaseClasses, GLVectorGeometry, GLNavigator, GLSmoothNavigator, GLGraph;
 
 type
   TForm1 = class(TForm)         
@@ -129,8 +132,6 @@ var
   Form1: TForm1;
 
 implementation
-
-uses Math;
 
 {$R *.dfm}
 

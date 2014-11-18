@@ -8,9 +8,9 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLGraph, GLObjects, GLTexture, StdCtrls,
-  ComCtrls, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
-  GLzBuffer, GLCadencer, AsyncTimer, GLLCLViewer, GLTeapot,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  ComCtrls, GLGraphics, GLVectorTypes, GLVectorGeometry, GLHUDObjects,
+  GLzBuffer, GLCadencer, GLAsyncTimer, GLLCLViewer, GLTeapot,
+  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLBehaviours;
 
 type
@@ -38,7 +38,7 @@ type
     Shadows1: TGLZShadows;
     Cube1: TGLCube;
     FrustBox: TCheckBox;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     Torus1: TGLTorus;
     RotateBox: TCheckBox;
     ShadowOnBox: TCheckBox;

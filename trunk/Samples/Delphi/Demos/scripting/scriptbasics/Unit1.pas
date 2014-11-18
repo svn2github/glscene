@@ -1,42 +1,14 @@
-{: Setting up a simple scripted scene.<p>
-
-   This demo shows how to manipulate GLScene objects though
-   a couple of basic scripts. The TGLDWS2ActiveBehaviour is
-   a behaviour style component that wraps a DelphiWebScriptII
-   program and script. Once compiled and executed it will
-   remain active until it is deactivated, destroyed or 
-   recompiled.<p>
-   
-   There are a couple of procedures that the active script will
-   recognize and execute while active. The OnBeginProgram and
-   OnProgress procedures. If these procedures are found in the
-   compiled program it will call them from the behaviour. The
-   OnBeginProgram is called when the program starts, just after
-   compiling. The OnProgress procedure is called when the
-   behaviour progresses. The OnBeginProgram event is used here
-   to grab the instance of the object being scripted and the
-   OnProgress is used to manipulate the GLScene object.<p>
-   
-   The DWS2Program property is the compiled program, this can
-   be used to call on internal variables or functions from
-   Delphi. This can be used to create other custom events.<p>
-   
-   InvalidateScript is called after the script text is altered
-   to alert the behaviour that the program needs to be 
-   recompiled. OnBeginProgram will be called again once the
-   program is compiled and restarted. The Active property can
-   be used to halt and start DWS2Program's execution.<p>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, GLScene, GLObjects, GLCadencer,
-  GLWin32Viewer, AsyncTimer, dws2Classes, dws2VectorGeometry,
-  dws2GLScene, GLDWS2Objects, dws2Comp, GLScriptDWS2, GLCoordinates,
-  GLCrossPlatform, BaseClasses;
+  Dialogs, StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
+  dws2Classes, dws2VectorGeometry, dws2GLScene, GLDWS2Objects, dws2Comp,
+  GLScriptDWS2, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -58,7 +30,7 @@ type
     dws2GLSceneUnit1: Tdws2GLSceneUnit;
     Label1: TLabel;
     Label2: TLabel;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     procedure CheckBox1Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);

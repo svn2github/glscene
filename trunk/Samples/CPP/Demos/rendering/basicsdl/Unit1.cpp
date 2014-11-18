@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma classgroup "System.Classes.TPersistent"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLScene"
@@ -22,7 +22,7 @@ __fastcall TDataModule1::TDataModule1(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TDataModule1::DataModuleCreate(TObject *Sender)
+void TDataModule1::DataModuleCreate(TObject *Sender)
 {
    // When using SDL, the standard VCL message queue is no longer operational,
    // so you must have/make your own loop to prevent the application from
@@ -39,7 +39,7 @@ void __fastcall TDataModule1::DataModuleCreate(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-void __fastcall TDataModule1::GLSDLViewer1EventPollDone(TObject *Sender)
+void TDataModule1::GLSDLViewer1EventPollDone(TObject *Sender)
 {
    SetGLSceneMediaDir();
    if (!firstPassDone)
@@ -82,7 +82,7 @@ void __fastcall TDataModule1::GLSDLViewer1EventPollDone(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TDataModule1::GLSDLViewer1Resize(TObject *Sender)
+void TDataModule1::GLSDLViewer1Resize(TObject *Sender)
 {
    // Zoom if SDL window gets smaller/bigger
    GLCamera1->SceneScale = GLSDLViewer1->Width/160;

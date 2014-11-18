@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 160
   Top = 105
-  Width = 577
-  Height = 296
-  Caption = 'Form1'
+  Caption = 'Centering'
+  ClientHeight = 252
+  ClientWidth = 569
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,42 +14,23 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 14
-  object Label1: TLabel
-    Left = 56
-    Top = 8
-    Width = 68
-    Height = 14
-    Caption = 'Centered X, Y'
-  end
-  object Label2: TLabel
-    Left = 232
-    Top = 8
-    Width = 55
-    Height = 14
-    Caption = 'Centered Y'
-  end
-  object Label3: TLabel
-    Left = 408
-    Top = 8
-    Width = 80
-    Height = 14
-    Caption = 'Centered X, Y, Z'
-  end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 32
-    Width = 513
-    Height = 209
+    Left = 0
+    Top = 41
+    Width = 544
+    Height = 211
     Camera = GLCamera1
     Buffer.BackgroundColor = 11447982
-    FieldOfView = 60.275093078613280000
+    FieldOfView = 60.750083923339840000
+    Align = alClient
     TabOrder = 0
   end
   object TrackBar1: TTrackBar
-    Left = 528
-    Top = 32
+    Left = 544
+    Top = 41
     Width = 25
-    Height = 209
+    Height = 211
+    Align = alRight
     Max = 80
     Min = -80
     Orientation = trVertical
@@ -58,9 +39,38 @@ object Form1: TForm1
     ThumbLength = 10
     OnChange = TrackBar1Change
   end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 569
+    Height = 41
+    Align = alTop
+    TabOrder = 2
+    object Label1: TLabel
+      Left = 56
+      Top = 8
+      Width = 68
+      Height = 14
+      Caption = 'Centered X, Y'
+    end
+    object Label2: TLabel
+      Left = 232
+      Top = 8
+      Width = 55
+      Height = 14
+      Caption = 'Centered Y'
+    end
+    object Label3: TLabel
+      Left = 408
+      Top = 8
+      Width = 80
+      Height = 14
+      Caption = 'Centered X, Y, Z'
+    end
+  end
   object GLScene1: TGLScene
-    Left = 16
-    Top = 56
+    Left = 256
+    Top = 48
     object DummyCube3: TGLDummyCube
       Position.Coordinates = {000000C000000000000000000000803F}
       ShowAxes = True

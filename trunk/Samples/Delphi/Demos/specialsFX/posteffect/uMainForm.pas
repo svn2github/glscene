@@ -1,13 +1,3 @@
-{:
-  A Demo that shows how the new TGLPostEffect component works.
-
-  Version history:
-    16/08/07 - DaStr - Added pepBlur preset.
-    09/03/07 - DaStr - Added pepNightVision preset.
-    07/03/07 - DaStr - Updated according to changes in the GLPostEffects unit.
-    02/03/07 - DaStr - Initial version (based on demo by Grim).
-
-}
 unit uMainForm;
 
 interface
@@ -15,13 +5,19 @@ interface
 uses
   // VCL
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Jpeg,
 
   // GLScene
-  GLScene, GLVectorFileObjects, GLObjects, GLTexture, VectorLists, GLCadencer,
+  GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
-  MeshUtils, VectorGeometry, GLMaterial, GLCoordinates, BaseClasses,
-  GLRenderContextInfo;
+  GLMeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLRenderContextInfo, GLUtils, GLFileMD2
+//  TGA,
+//  GLFileObj,
+//  GLFile3DS,
+//  GLFileSMD,
+  ;
+
 
 type
   TMainForm = class(TForm)
@@ -57,8 +53,6 @@ implementation
 
 {$R *.dfm}
 
-uses JPEG, TGA, GLFileObj, GLFile3DS, GLFileMD2, GLFileSMD, GLUtils;
-
 procedure TMainForm.GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
 begin
   GLSceneViewer1.Invalidate;
@@ -66,7 +60,8 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
+  SetGLSceneMediaDir;
+//  GLMaterialLibrary1.TexturePaths := MediaPath;
   GLActor1.LoadFromFile('waste.md2');
   GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
   GLActor1.Material.Texture.Enabled := True;

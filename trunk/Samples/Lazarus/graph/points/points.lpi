@@ -66,8 +66,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="C:\lazarus\components\GLScene\Source\Base\VectorGeometry.pas"/>
-        <UnitName Value="VectorGeometry"/>
+        <Filename Value="C:\lazarus\components\GLScene\Source\Base\GLVectorGeometry.pas"/>
+        <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7067"/>
         <CursorPos X="14" Y="7072"/>
@@ -84,8 +84,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\VectorLists.pas"/>
-        <UnitName Value="VectorLists"/>
+        <Filename Value="..\..\..\Source\Base\GLVectorLists.pas"/>
+        <UnitName Value="GLVectorLists"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1403"/>
         <CursorPos X="1" Y="1430"/>
@@ -102,8 +102,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="..\..\..\Source\Base\VectorGeometry.pas"/>
-        <UnitName Value="VectorGeometry"/>
+        <Filename Value="..\..\..\Source\Base\GLVectorGeometry.pas"/>
+        <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7321"/>
         <CursorPos X="1" Y="7345"/>

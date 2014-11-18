@@ -5,7 +5,7 @@ interface
 uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects,
   GLSound, ComCtrls, Controls, StdCtrls, GLWin32Viewer,
-  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
+  GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
   GLFileMP3;
 
 type
@@ -54,7 +54,8 @@ implementation
 
 {$R *.DFM}
 
-uses VectorGeometry, SysUtils;
+uses
+  GLVectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

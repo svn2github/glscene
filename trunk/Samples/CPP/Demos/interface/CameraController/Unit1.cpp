@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCameraController"
 #pragma link "GLCoordinates"
@@ -61,7 +63,7 @@ void __fastcall TForm1::GetInput(TButton *Sender)
   }
 }
 //---------------------------------------------------------------------------
-Vectorgeometry::TVector __fastcall TForm1::OnGetCameraPosition(
+Glvectorgeometry::TVector __fastcall TForm1::OnGetCameraPosition(
 					   TGLNavigatorSmoothChangeVector* const ASender)
 {
   if (ASender == FCameraSmoothAnimator_AbsPos)
@@ -71,7 +73,7 @@ Vectorgeometry::TVector __fastcall TForm1::OnGetCameraPosition(
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::OnSetCameraPosition(TGLNavigatorSmoothChangeVector* const ASender,
-					   const Vectortypes::TVector4f &AValue)
+					   const Glvectortypes::TVector4f &AValue)
 {
   if (ASender == FCameraSmoothAnimator_AbsPos)
 	GLCamera->AbsolutePosition = AValue;
@@ -117,7 +119,7 @@ void __fastcall TForm1::btnZoomToDistanceClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::btnOrbitToPosClick(TObject *Sender)
 {
-  Vectorgeometry::TVector lTargetPosition;
+  Glvectorgeometry::TVector lTargetPosition;
 
   GetInput(btnOrbitToPos);
   lTargetPosition = dcSphere->LocalToAbsolute(PointMake(DextX, DextY, DextZ));
@@ -145,7 +147,7 @@ void __fastcall TForm1::btSmoothOrbitClick(TObject *Sender)
   float lAngle; // In radians.
   float lTime;
   bool lNeedToRecalculateZoom;
-  Vectorgeometry::TVector lTargetPosition;
+  Glvectorgeometry::TVector lTargetPosition;
 
   GetInput(btSmoothOrbit);
   lTargetPosition = dcSphere->LocalToAbsolute(PointMake(DextX, DextY, DextZ));
@@ -176,7 +178,7 @@ void __fastcall TForm1::btSmoothOrbitToPosAdvClick(TObject *Sender)
 {
   float lAngle; // In radians.
   float lTime;
-  Vectorgeometry::TVector lTargetPosition;
+  Glvectorgeometry::TVector lTargetPosition;
 
   GetInput(btSmoothOrbitToPosAdv);
 
@@ -197,7 +199,7 @@ void __fastcall TForm1::btSmoothOrbitToPosAdvClick(TObject *Sender)
 
 void __fastcall TForm1::btnOrbitToPosAdvClick(TObject *Sender)
 {
-  Vectorgeometry::TVector lTargetPosition;
+  Glvectorgeometry::TVector lTargetPosition;
 
   GetInput(btnOrbitToPosAdv);
   lTargetPosition = dcSphere->LocalToAbsolute(PointMake(DextX, DextY, DextZ));
@@ -232,7 +234,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaT
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+		  TShiftState Shift, int X, int Y)
 {
   FCameraSmoothAnimator_AbsPos->Enabled = false;
   FCameraSmoothAnimator_RelPos->Enabled = false;
@@ -246,23 +248,23 @@ void __fastcall TForm1::GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Bu
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift,
-          int X, int Y)
+		  int X, int Y)
 {
   if (Shift.Contains(ssLeft))
   {
 	GLCamera->MoveAroundTarget(my-Y, mx-X);
 	mx = X; my = Y;
 	Caption = "Camera Controller - camera position = " +
-	  FormatFloat("0.##",GLCamera->Position->X)+"/"+
-	  FormatFloat("0.##",GLCamera->Position->Y)+"/"+
-	  FormatFloat("0.##",GLCamera->Position->Z);
+	  FormatFloat("0",GLCamera->Position->X)+"/"+
+	  FormatFloat("0",GLCamera->Position->Y)+"/"+
+	  FormatFloat("0",GLCamera->Position->Z);
 
   }
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLSceneViewer1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+		  TShiftState Shift, int X, int Y)
 {
   Caption = "Camera Controller";
 }
@@ -270,13 +272,13 @@ void __fastcall TForm1::GLSceneViewer1MouseUp(TObject *Sender, TMouseButton Butt
 
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
-  camDirX->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Direction->X)));
-  camDirY->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Direction->Y)));
-  camDirZ->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Direction->Z)));
+  FormatFloat(camDirX->Text, GLCamera->Direction->X);
+  FormatFloat(camDirY->Text, GLCamera->Direction->Y);
+  FormatFloat(camDirZ->Text, GLCamera->Direction->Z);
 
-  camUpX->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Up->X)));
-  camUpY->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Up->Y)));
-  camUpZ->Text = Format("%.4f", ARRAYOFCONST ((GLCamera->Up->Z)));
+  FormatFloat(camUpX->Text, GLCamera->Up->X);
+  FormatFloat(camUpY->Text, GLCamera->Up->Y);
+  FormatFloat(camUpZ->Text, GLCamera->Up->Z);
 }
 //---------------------------------------------------------------------------
 
@@ -285,4 +287,5 @@ void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
   GLCadencer1->Enabled = false;
 }
 //---------------------------------------------------------------------------
+
 

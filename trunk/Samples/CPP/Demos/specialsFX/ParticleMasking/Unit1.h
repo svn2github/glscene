@@ -9,7 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include "AsyncTimer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBitmapFont.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -65,7 +65,7 @@ __published:	// IDE-managed Components
 	TGLWindowsBitmapFont *WinFont;
 	TGLPointLightPFXManager *PLManager;
 	TGLEParticleMasksManager *GLEParticleMasksManager1;
-	TAsyncTimer *AsyncTimer1;
+	TGLAsyncTimer *AsyncTimer1;
 	TButton *Button4;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencerProgress(TObject *Sender, const double deltaTime, const double newTime);

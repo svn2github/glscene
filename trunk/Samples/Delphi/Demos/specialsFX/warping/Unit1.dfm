@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 204
   Top = 99
-  Width = 433
-  Height = 338
-  Caption = 'Form1'
+  Caption = 'Warping'
+  ClientHeight = 332
+  ClientWidth = 472
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,14 @@ object Form1: TForm1
   object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 425
-    Height = 289
+    Width = 472
+    Height = 332
     Camera = GLCamera
+    FieldOfView = 179.654846191406300000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    TabOrder = 0
   end
   object MainMenu1: TMainMenu
     Left = 8
@@ -135,21 +137,20 @@ object Form1: TForm1
     Left = 8
     Top = 56
     object HeightField: TGLHeightField
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
-      Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False
-      XSamplingScale.Max = 16
-      XSamplingScale.Step = 8
-      YSamplingScale.Max = 16
-      YSamplingScale.Step = 8
+      Direction.Coordinates = {00000000000000800000803F00000000}
+      XSamplingScale.Max = 16.000000000000000000
+      XSamplingScale.Step = 8.000000000000000000
+      YSamplingScale.Max = 16.000000000000000000
+      YSamplingScale.Step = 8.000000000000000000
       Options = [hfoTextureCoordinates, hfoTwoSided]
       OnGetHeight = HeightFieldGetHeight
     end
     object GLCamera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 0.5
+      DepthOfView = 100.000000000000000000
+      FocalLength = 0.500000000000000000
       CameraStyle = csOrthogonal
       Position.Coordinates = {0000803F0000803F000020410000803F}
       Left = 256

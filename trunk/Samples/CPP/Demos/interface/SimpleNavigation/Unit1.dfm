@@ -23,8 +23,6 @@ object Form1: TForm1
     FieldOfView = 152.194625854492200000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 483
-    ExplicitHeight = 321
   end
   object GLScene1: TGLScene
     Left = 80

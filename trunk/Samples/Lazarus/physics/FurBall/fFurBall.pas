@@ -8,9 +8,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLLCLViewer, GLScene, GLObjects, GLCadencer, ODEImport,
-  StdCtrls, GLTexture, GLExtrusion, VectorGeometry, GLShadowPlane, GLNavigator,
-  VerletClasses, VerletHairClasses, GLKeyboard, ExtCtrls, ComCtrls,GLColor,
-  GLCrossPlatform, GLCoordinates, BaseClasses;
+  StdCtrls, GLTexture, GLExtrusion, GLVectorGeometry, GLShadowPlane, GLNavigator,
+  GLVerletTypes, GLVerletHairClasses, GLKeyboard, ExtCtrls, ComCtrls,GLColor,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 const
   cMaxWindMag = 8;

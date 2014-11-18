@@ -11,7 +11,7 @@ uses
   Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
   Classes, Controls, GLCadencer, GLBehaviours, Buttons, GLGraph, GLMovement,
   GLViewer, LResources,
-  GLCrossPlatform, GLCoordinates, BaseClasses, GLUtils,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLUtils,
   GLSimpleNavigation;
 
 type
@@ -49,7 +49,7 @@ implementation
 {$R *.lfm}
 
 uses
-   SysUtils, VectorGeometry;
+   SysUtils, GLVectorGeometry;
 
 procedure TForm1.FormActivate(Sender: TObject);
 var

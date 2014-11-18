@@ -3,22 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  GLScene,
-  GLWin32Viewer,
-  GLObjects,
-  StdCtrls,
-  GLTeapot,
-  GLCrossPlatform,
-  GLCoordinates,
-  BaseClasses;
+  Windows,  Messages,  SysUtils,  Classes,  Graphics, Jpeg,
+  Controls,  Forms,  Dialogs, StdCtrls,
+
+  //GLS
+  GLScene,  GLWin32Viewer,  GLObjects,  GLTeapot,  GLCrossPlatform,
+  GLTexture,  GLContext,  GLUtils,  GLCoordinates,  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -49,12 +39,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  Jpeg,
-  GLTexture,
-  GLContext,
-  GLUtils;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin

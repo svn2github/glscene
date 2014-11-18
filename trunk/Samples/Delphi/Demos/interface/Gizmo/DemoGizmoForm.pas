@@ -3,7 +3,6 @@ unit DemoGizmoForm;
 interface
 
 uses
-  // VCL
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   Dialogs, ExtCtrls,
 
@@ -11,7 +10,7 @@ uses
   GLScene, GLCadencer, GLObjects, GLSpaceText, GLPolyhedron,
   GLWin32Viewer,  GLBitmapFont, GLWindowsFont, GLHUDObjects,
   GLGeomObjects, GLGizmo, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

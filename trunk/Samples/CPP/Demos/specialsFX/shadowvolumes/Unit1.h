@@ -8,7 +8,7 @@
 #include <StdCtrls.hpp>
 #include <ExtCtrls.hpp>
 #include <Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

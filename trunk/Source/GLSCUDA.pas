@@ -22,25 +22,19 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes,
-  SysUtils,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+
   // GLScene
-  PersistentClasses,
-  BaseClasses,
-  GLCrossPlatform,
-  GLContext,
-  VectorGeometry,
-  VectorTypes,
-  VectorLists,
-  GLGraphics,
-  GLS_CL_Platform,
-  GLS_CUDA_API,
-  GLS_CUDA_RUNTIME,
-  GLSCUDAParser,
-  GLS_CUDA_FourierTransform,
-  GLSCUDACompiler,
-  GLSCUDAContext,
-  GLSCUDADataAccess;
+  GLPersistentClasses,  GLBaseClasses,  GLCrossPlatform,  GLContext,
+  GLVectorGeometry,  GLVectorTypes,  GLVectorLists,  GLGraphics,
+  GLS_CL_Platform,  GLS_CUDA_API,  GLS_CUDA_RUNTIME,  GLSCUDAParser,
+  GLS_CUDA_FourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
+  GLSCUDADataAccess,  GLStrings,  GLUtils
+  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 type
 
@@ -527,10 +521,6 @@ resourcestring
 
 implementation
 
-uses
-  GLStrings,
-  GLUtils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 const
   cAddressMode: array [TCuAddresMode] of TCUaddress_mode =

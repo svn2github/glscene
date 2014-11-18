@@ -166,19 +166,30 @@ object MaterialEditorForm: TMaterialEditorForm
       Left = 16
       Top = 22
       Width = 202
-      Height = 203
+      Height = 229
       AutoSize = True
       TabOrder = 0
       ExplicitLeft = 16
       ExplicitTop = 22
-      ExplicitHeight = 203
       inherited GLScene: TGLScene
         inherited World: TGLDummyCube
           inherited Cube: TGLCube
+            Material.MaterialLibrary = nil
+            Material.LibMaterialName = ''
             Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
             Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
           end
+          inherited Sphere: TGLSphere
+            Material.MaterialLibrary = nil
+            Material.LibMaterialName = ''
+          end
+          inherited Cone: TGLCone
+            Material.MaterialLibrary = nil
+            Material.LibMaterialName = ''
+          end
           inherited Teapot: TGLTeapot
+            Material.MaterialLibrary = nil
+            Material.LibMaterialName = ''
             Scale.Coordinates = {00000040000000400000004000000000}
           end
         end

@@ -51,6 +51,10 @@ object Form1: TForm1
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Vertex Program'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Splitter3: TSplitter
           Left = 0
           Top = 301
@@ -435,12 +439,12 @@ object Form1: TForm1
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -2.000000000000000000
-      XSamplingScale.max = 2.000000000000000000
-      XSamplingScale.step = 0.100000001490116100
-      YSamplingScale.step = 0.100000001490116100
+      XSamplingScale.Max = 2.000000000000000000
+      XSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.Step = 0.100000001490116100
       ZSamplingScale.Min = -2.000000000000000000
-      ZSamplingScale.max = 2.000000000000000000
-      ZSamplingScale.step = 0.100000001490116100
+      ZSamplingScale.Max = 2.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
     end
     object GLDummyCube1: TGLDummyCube

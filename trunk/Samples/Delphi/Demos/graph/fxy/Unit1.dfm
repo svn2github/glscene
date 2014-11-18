@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 106
   BorderWidth = 4
   Caption = 'Fxy'
-  ClientHeight = 467
-  ClientWidth = 634
+  ClientHeight = 459
+  ClientWidth = 626
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,27 +19,23 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 465
-    Height = 467
+    Width = 457
+    Height = 459
     Camera = GLCamera1
     Buffer.BackgroundColor = clTeal
-    FieldOfView = 123.471992492675800000
+    FieldOfView = 122.638626098632800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 248
-    ExplicitHeight = 233
   end
   object Panel1: TPanel
-    Left = 465
+    Left = 457
     Top = 0
     Width = 169
-    Height = 467
+    Height = 459
     Align = alRight
     TabOrder = 1
-    ExplicitLeft = 248
-    ExplicitHeight = 233
     object Label1: TLabel
       Left = 46
       Top = 343

@@ -4,7 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
+  GLBaseClasses, GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -29,8 +31,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses VectorGeometry;
 
 procedure TForm1.MoveCenterNodeTo(x, y : Integer);
 begin

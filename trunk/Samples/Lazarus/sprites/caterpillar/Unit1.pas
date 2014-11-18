@@ -60,7 +60,7 @@ implementation
 
 {$R *.lfm}
 
-uses SysUtils, VectorGeometry, FileUtil;
+uses SysUtils, GLVectorGeometry, FileUtil;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

@@ -71,10 +71,10 @@ uses
   Classes, SysUtils,
 
   // GLScene
-  GLScene, GLColor, GLObjects, VectorGeometry, GLMaterial, GLStrings,
+  GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GLState, GLSelection
-{$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 type
   TGLGizmoUndoCollection = class;

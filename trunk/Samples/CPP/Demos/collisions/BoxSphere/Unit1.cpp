@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -42,10 +44,10 @@ void __fastcall TForm1::CheckBox04Click(TObject *Sender)
 //---------------------------------------------------------------------------
 
 // Generates random rotation for matrix. It remains a scale.
-Vectorgeometry::TMatrix RandomRotation(Vectorgeometry::TMatrix const &aMatrix)
+Glvectorgeometry::TMatrix RandomRotation(Glvectorgeometry::TMatrix const &aMatrix)
 {
   TAffineVector aScale;
-  Vectorgeometry::TMatrix mat;
+  Glvectorgeometry::TMatrix mat;
   int I;
 
   // Save scale.

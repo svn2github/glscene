@@ -9,7 +9,7 @@ uses
   //GLScene
   GLUtils,
   GLFilePGM, GLGraphics, GLS_CUDA_Utility, GLSCUDADataAccess,
-  VectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
+  GLVectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
 
 type
   TDemoMode = (dmNone, dm1D, dm2D, dmLena);

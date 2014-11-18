@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 166
   Top = 102
-  Width = 513
-  Height = 403
-  Caption = 'Form1'
+  Caption = 'Bitmap Font'
+  ClientHeight = 359
+  ClientWidth = 505
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,11 +17,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 497
-    Height = 365
+    Width = 505
+    Height = 359
     Camera = GLCamera1
-    Buffer.BackgroundColor = clBlack
-    FieldOfView = 149.356979370117200000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 148.869476318359400000
     Align = alClient
     OnClick = GLSceneViewer1Click
     TabOrder = 0
@@ -30,6 +30,14 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 16
     Top = 16
+    object GLCamera1: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
+      TargetObject = Teapot1
+      Position.Coordinates = {0000A04000004040000080400000803F}
+      Left = 240
+      Top = 152
+    end
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000204100002041000020410000803F}
@@ -41,14 +49,16 @@ object Form1: TForm1
       Scale.Coordinates = {0000A0400000A0400000A04000000000}
     end
     object HUDText1: TGLHUDText
-      Position.Coordinates = {0000C8410000C841000000000000803F}
+      Position.Coordinates = {0000484200008C42000000000000803F}
       BitmapFont = BitmapFont1
       Text = 'Hello World'
+      Rotation = 0.000000000000000000
     end
     object HUDText2: TGLHUDText
       Position.Coordinates = {0000C84200009643000000000000803F}
       BitmapFont = BitmapFont1
       Text = 'Spin'
+      Rotation = 0.000000000000000000
       Alignment = taCenter
       Layout = tlCenter
     end
@@ -56,16 +66,15 @@ object Form1: TForm1
       Position.Coordinates = {0000AF4300009643000000000000803F}
       BitmapFont = BitmapFont1
       Text = 'Scale'
+      Rotation = 0.000000000000000000
       Alignment = taCenter
       Layout = tlCenter
     end
-    object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 50.000000000000000000
-      TargetObject = Teapot1
-      Position.Coordinates = {0000A04000004040000080400000803F}
-      Left = 240
-      Top = 152
+    object HUDTextFPS: TGLHUDText
+      Position.Coordinates = {0000C8420000A041000000000000803F}
+      BitmapFont = BitmapFont1
+      Text = 'FPS'
+      Rotation = 0.000000000000000000
     end
   end
   object BitmapFont1: TGLBitmapFont
@@ -86,7 +95,7 @@ object Form1: TForm1
     CharHeight = 30
     HSpace = 3
     VSpace = 6
-    Left = 48
+    Left = 80
     Top = 16
   end
   object GLCadencer1: TGLCadencer

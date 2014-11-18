@@ -8,8 +8,8 @@ uses
 
   //GLScene
   GLODEManager, GLKeyboard, OdeImport, GLCadencer, GLScene, GLObjects,
-  GLCoordinates, GLCrossPlatform, BaseClasses, GLWin32Viewer,
-  VectorGeometry, GLSimpleNavigation;
+  GLCoordinates, GLCrossPlatform, GLBaseClasses, GLWin32Viewer,
+  GLVectorGeometry, GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)

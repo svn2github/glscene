@@ -1,29 +1,14 @@
-{: Parallel projection demo.<p>
-
-   This simple demo shows how to do parallel projection and blend some custom
-   OpenGL calls into the scene.<br>
-   You can change the viewpoint with left clic drags, change the plane orientation
-   with right clic drags, and move the plane up/down with the wheel.<p>
-
-   The points and plane are rendered directly with regular scene objects,
-   but the projection lines between the points and the plane are computed
-   and rendered on the fly in a TGLDirectOpenGL. This is a typical case where
-   a little bit of custom code helps a lot: we could have used many TGLLines
-   object to draw the lines, but this would have resulted in a lot of object
-   creation and update code, and ultimately in rather poor performance.<br>
-   Note the position of the plane in the scene hierarchy: it is last as it is
-   a blended object. Try making it the first object, it will appear opaque
-   (though it is still transparent!).
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
-  GLWin32Viewer, OpenGLTokens, GLContext, GLTexture, VectorGeometry, GLGraph,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses,
-  GLRenderContextInfo, GLState;
+  Windows, Messages, SysUtils, Classes, Controls, Forms,  OpenGL,
+
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer, GLTexture,  GLVectorGeometry,
+  GLGeomObjects, GLRenderContextInfo, GLState,
+  GLGraph, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -64,7 +49,7 @@ var
    i : Integer;
 begin
    // generate a bunch of random points
-   for i:=1 to 100 do
+   for i:=1 to 1000 do
       GLPoints.Positions.Add((Random-0.5)*5, (Random-0.5)*5, (Random-0.5)*5);
 end;
 
@@ -87,21 +72,21 @@ begin
 
    // save state, turn off lighting and specify the lines color
    rci.GLStates.Disable(stLighting);
-   GL.Color3f(1, 1, 0);
+   glColor3f(1, 1, 0);
 
    // we'll be drawing a bunch of lines, to specify a line in OpenGL,
    // you only need to specify the line start and end vertices
-   GL.Begin_(GL_LINES);
+   glBegin(GL_LINES);
       for i:=0 to GLPoints.Positions.Count-1 do begin
          // read the point coordinates, directly from the TGLPoints list
          MakePoint(p, GLPoints.Positions.List[i]);
          // project this point on the plane with the matrix
          pProj:=VectorTransform(p, mat);
          // specify the two vertices
-         GL.Vertex3fv(@p);
-         GL.Vertex3fv(@pProj);
+         glVertex3fv(@p);
+         glVertex3fv(@pProj);
       end;
-   GL.End_;
+   glEnd;
 end;
 
 procedure TForm1.SceneViewerMouseDown(Sender: TObject;

@@ -9,7 +9,7 @@ uses
   // GLScene
   GLScene, GLTeapot, GLCoordinates, GLObjects, GLGeomObjects,
   GLMaterial, GLSimpleNavigation, GLCadencer, GLWin32Viewer, GLCrossPlatform,
-  BaseClasses, GLFBORenderer, GLHUDObjects, GLSCUDA, GLSCUDAGraphics,
+  GLBaseClasses, GLFBORenderer, GLHUDObjects, GLSCUDA, GLSCUDAGraphics,
   GLSCUDACompiler, GLSCUDAContext, GLState,
   GLRenderContextInfo, GLContext, GLCustomShader, GLSLShader,
   GLTexture, OpenGLTokens;

@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include "System.SysUtils.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLFullScreenViewer.hpp"

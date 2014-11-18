@@ -3,29 +3,14 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  GLScene,
-  GLObjects,
-  GLWin32Viewer,
-  GLSkydome,
-  GLTexture,
-  ExtCtrls,
-  GLCadencer,
-  GLLensFlare,
-  GLTexCombineShader,
-  GLMaterial,
-  GLCoordinates,
-  GLCrossPlatform,
-  BaseClasses,
-  GLRenderContextInfo,
-  GLColor,
-  GLState;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,  ExtCtrls,
+  FileCtrl, Jpeg,
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLSkydome, GLTexture,
+  GLCadencer, GLLensFlare, GLTexCombineShader, GLMaterial, GLCoordinates,
+  GLCrossPlatform, GLBaseClasses, GLRenderContextInfo, GLColor, GLState,
+  GLUtils, OpenGLTokens, OpenGL1x, GLVectorGeometry, GLContext, GLTextureFormat;
+
 
 type
   TForm1 = class(TForm)
@@ -84,14 +69,6 @@ implementation
 {$ENDIF}
 
 uses
-  FileCtrl,
-  GLUtils,
-  JPEG,
-  OpenGLTokens,
-  OpenGL1x,
-  VectorGeometry,
-  GLContext,
-  GLTextureFormat,
 // accurate movements left for later... or the astute reader
   USolarSystem;
 

@@ -86,7 +86,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils, GLUtils;
+uses GLVectorGeometry, SysUtils, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

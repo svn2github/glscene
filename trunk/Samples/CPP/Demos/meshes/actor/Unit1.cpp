@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -47,9 +47,8 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    CBAnimations->ItemIndex = 0;
    CBAnimationsChange(Sender);
 
-   // Load Texture for ground disk
-   Disk1->Material->Texture->Image->LoadFromFile("clover.jpg");
-
+   // Load Texture of ground disk for Persistant Image
+   // Disk1->Material->Texture->Image->LoadFromFile("clover.jpg");
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::SBPlayClick(TObject *Sender)
@@ -100,6 +99,7 @@ void __fastcall TForm1::SBFrameToFrameClick(TObject *Sender)
 void __fastcall TForm1::BBLoadWeaponClick(TObject *Sender)
 {
    // Load weapon model and texture
+   SetGLSceneMediaDir();
    Actor2->LoadFromFile("WeaponWaste.md2");
    Actor2->Material->Texture->Image->LoadFromFile("WeaponWaste.jpg");
 

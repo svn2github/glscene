@@ -3,9 +3,12 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
-  ExtCtrls, StdCtrls, GLCadencer, GLWin32Viewer, GLColor, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  Windows, Forms, Classes, Controls, SysUtils, ExtCtrls, StdCtrls,
+
+  //GLS
+  GLScene, GLObjects, GLTexture,
+  GLCadencer, GLWin32Viewer, GLColor, GLCrossPlatform,
+  GLCoordinates, GLBaseClasses, GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -32,8 +35,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses VectorGeometry, SysUtils;
 
 const
 	cNbPlanes = 30;

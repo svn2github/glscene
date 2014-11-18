@@ -41,10 +41,10 @@ interface
 uses
   Classes, SysUtils,
 
-  GLHeightData, GLGraphics, VectorGeometry,
+  GLHeightData, GLGraphics, GLVectorGeometry,
   GLTexture,   GLMaterial,  SyncObjs,  OpenGLTokens,
   GLUtils{$IFDEF GLS_DELPHI},
-  VectorTypes{$ENDIF};
+  GLVectorTypes{$ENDIF};
 
 
 

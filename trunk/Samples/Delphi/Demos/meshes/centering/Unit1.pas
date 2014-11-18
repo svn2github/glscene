@@ -1,17 +1,15 @@
-{: Illustrates the effects of AutoCentering for FreeForms.<p>
-
-   The same mesh is loaded three times and centered with different options
-   (by default, the polyhedron is not centered in its mesh).
-}
-
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLVectorFileObjects, GLObjects, ComCtrls, StdCtrls,
-  GLWin32Viewer, GLFile3DS, GLCrossPlatform, GLCoordinates, BaseClasses;
+  ExtCtrls,  ComCtrls, StdCtrls,
+
+  //GLScene
+  GLScene, GLVectorFileObjects, GLObjects,
+  GLWin32Viewer, GLFile3DS, GLCrossPlatform, GLCoordinates,
+  GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -27,15 +25,16 @@ type
     GLLightSource1: TGLLightSource;
     DCCamera: TGLDummyCube;
     TrackBar1: TTrackBar;
+    Panel1: TPanel;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -45,12 +44,10 @@ implementation
 
 {$R *.DFM}
 
-uses
-  GLUtils;
-
 procedure TForm1.FormCreate(Sender: TObject);
 const
    cFileName = 'polyhedron.3ds';
+
 begin
    SetGLSceneMediaDir();
    // left one
@@ -61,7 +58,7 @@ begin
    FreeForm2.LoadFromFile(cFileName);
    // right one
    FreeForm1.AutoCentering:=[macCenterX, macCenterY, macCenterZ];
-   FreeForm1.LoadFromFile(cFileName); 
+   FreeForm1.LoadFromFile(cFileName);
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);

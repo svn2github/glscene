@@ -1,12 +1,14 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -24,8 +26,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BUCastClick(TObject *Sender)
 {
-   Vectorgeometry::TVector o, v, vLight, light, iPoint, iNormal;
-   Vectorgeometry::TVector up, right, dir;
+   Glvectorgeometry::TVector o, v, vLight, light, iPoint, iNormal;
+   Glvectorgeometry::TVector up, right, dir;
    int x, y, dx, dy;
    float f, d;
    TColor color;

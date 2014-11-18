@@ -18,7 +18,7 @@ uses
   // GLScene
   GLScene, GLCadencer, GLObjects,
   GLLCLViewer, GLGizmoEx, GLCrossPlatform, GLCoordinates,
-  VectorGeometry, GLGeomObjects, GLBitmapFont,
+  GLVectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
 
 type

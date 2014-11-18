@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls, Graphics,
   // GLScene
-  GLScene, GLCadencer, GLWin32Viewer, GLCrossPlatform, BaseClasses,
+  GLScene, GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
   GLCoordinates, GLContext, GLGui, GLBitmapFont, GLWindowsFont, GLCustomShader,
   GLRenderContextInfo, GLState,
   GLMaterial, GLSLShader, GLWindows,
@@ -132,7 +132,7 @@ implementation
 {$R *.dfm}
 
 uses
-  VectorGeometry, VectorTypes, GLSCUDADataAccess;
+  GLVectorGeometry, GLVectorTypes, GLSCUDADataAccess;
 
 var
   InitPosition : Boolean = False;

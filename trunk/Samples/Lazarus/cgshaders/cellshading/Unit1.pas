@@ -27,8 +27,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLTexture, GLCgShader,
-  GLLCLViewer, CgGL, GLVectorFileObjects, AsyncTimer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLLCLViewer, CgGL, GLVectorFileObjects, GLAsyncTimer,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -41,7 +41,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLActor1: TGLActor;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;

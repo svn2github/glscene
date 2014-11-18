@@ -1,27 +1,14 @@
-{: Demonstrates how to use texture coordinates to warp an image.<p>
-
-   Load an image (preferably with dimensions a power of two, not too big,
-   and less than 256x256 if you have and old hardware, all TNT, GeForce,
-   Radeon and better should have no trouble loading big pictures), then click
-   somewhere in the image to define the warp point.<br>
-   You may use the menu to adjust or choose the effect.<p>
-
-   This sample displays an image with the help of a single TGLHeightField used
-   as a convenient way to specify texture coordinates. The camera is in
-   orthogonal mode and adjusted along with the viewer to a ratio of 1:1.<p>
-
-   All the warping code is in the TForm1.HeightFieldGetHeight event (the two
-   warping codes actually), the rest are just utility methods to load/save,
-   adjust settings etc.
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLGraph, ExtDlgs, Menus, GLObjects, VectorGeometry, VectorTypes,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  Windows, Messages, SysUtils, Classes, Graphics, JPeg, Controls, Forms,
+  Dialogs, ExtDlgs, Menus,
+
+  //GLS
+  GLScene, GLGraphics, GLGraph, GLObjects, GLVectorGeometry, GLVectorTypes,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -65,10 +52,10 @@ type
     procedure MIRadiusSettingClick(Sender: TObject);
     procedure MIZoomEffectClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     warpX, warpY, warpRadius, warpEffect : Integer;
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var
@@ -77,8 +64,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses JPeg, GLGraphics;
 
 procedure TForm1.HeightFieldGetHeight(const x, y: Single; var z: Single;
   var color: TVector4f; var texPoint: TTexPoint);
@@ -96,13 +81,13 @@ begin
          dy:=y*d+warpY*(1-d);
       end;
       1 : begin // the "spin" effect
-         vec[0]:=x-warpX;
-         vec[1]:=0;
-         vec[2]:=y-warpY;
+         vec.V[0]:=x-warpX;
+         vec.V[1]:=0;
+         vec.V[2]:=y-warpY;
          d:=VectorNorm(vec);
          RotateVectorAroundY(vec, Sqr(warpRadius)/(d+1));
-         dx:=warpX+vec[0];
-         dy:=warpY+vec[2];
+         dx:=warpX+vec.V[0];
+         dy:=warpY+vec.V[2];
       end;
    else
       raise Exception.Create('Unknown warp effect '+IntToStr(warpEffect));

@@ -8,8 +8,8 @@ uses
   ExtCtrls, StdCtrls,
   //GLScene
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
-  GLWin32Viewer, GLTexture, VectorGeometry, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses;
+  GLWin32Viewer, GLTexture, GLVectorGeometry, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -3,14 +3,13 @@ unit DemoGizmoForm;
 interface
 
 uses
-  // VCL
   SysUtils, Classes, Windows,
   Controls,  Forms, StdCtrls, ExtCtrls, Buttons, ComCtrls,
 
   // GLScene
   GLScene, GLCadencer, GLObjects,
   GLWin32Viewer, GLKeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
-  BaseClasses,  VectorGeometry, GLGeomObjects, GLBitmapFont,
+  GLBaseClasses,  GLVectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
 
 type

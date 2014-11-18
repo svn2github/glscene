@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 74
   Top = 84
-  Width = 717
-  Height = 460
-  Caption = 'Form1'
+  Caption = 'Portal'
+  ClientHeight = 416
+  ClientWidth = 709
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,8 +13,8 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   DesignSize = (
-    701
-    422)
+    709
+    416)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -152,7 +152,8 @@ object Form1: TForm1
     OnClick = CBFogClick
   end
   object GLScene1: TGLScene
-    Left = 488
+    Left = 24
+    Top = 56
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -177,16 +178,19 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 528
+    Left = 120
+    Top = 56
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 568
+    Left = 208
+    Top = 56
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     SleepLength = 0
     OnProgress = GLCadencer1Progress
-    Left = 448
+    Left = 24
+    Top = 120
   end
 end

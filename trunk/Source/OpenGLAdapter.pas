@@ -49,8 +49,8 @@ uses
 {$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
 
   OpenGLTokens,
-  VectorGeometry,
-  VectorTypes,
+  GLVectorGeometry,
+  GLVectorTypes,
   SysUtils;
 
 type

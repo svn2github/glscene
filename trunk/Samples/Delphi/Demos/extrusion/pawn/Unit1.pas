@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, StdCtrls, ComCtrls, GLTexture, ExtCtrls,
-  GLExtrusion, GLWin32Viewer, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLUtils;
+  StdCtrls, ComCtrls, ExtCtrls, JPeg,
+
+  //GLS
+  GLScene, GLObjects, GLTexture, GLExtrusion, GLWin32Viewer,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -44,9 +46,9 @@ type
     procedure TrackBar2Change(Sender: TObject);
     procedure TrackBar3Change(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 
@@ -56,8 +58,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses JPeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

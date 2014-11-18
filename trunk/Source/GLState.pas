@@ -63,11 +63,11 @@ interface
 {.$DEFINE GLS_CACHE_MISS_CHECK}
 
 uses
-  Classes,
+  Classes, SysUtils,
+  //GLS
   GLCrossPlatform,
-  VectorTypes,
-  VectorGeometry,
-  SysUtils,
+  GLVectorTypes,
+  GLVectorGeometry,
   OpenGLTokens,
   GLTextureFormat
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
@@ -3587,7 +3587,7 @@ begin
     else
     begin
       FSpotCutoff[I] := Value;
-      FLightStates.SpotCosCutoffExponent[I].V[0] := cos(VectorGeometry.DegToRad(Value));
+      FLightStates.SpotCosCutoffExponent[I].V[0] := cos(GLVectorGeometry.DegToRad(Value));
     end;
 	
     if FFFPLight then

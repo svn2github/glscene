@@ -1,16 +1,13 @@
-{: TGLMultiPolygon Sample, contributed by Uwe Raabe.<p>
-
-   Note: this sample has been partly obsoleted/superseded by the TGLExtrusionSolid
-   (by Uwe Raabe), which allows building such solids directly.
-}
 unit ExPolygon1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  VectorGeometry, GLTexture, GLScene, GLObjects, GLGeomObjects, GLMultiPolygon,
-  GLWin32Viewer, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+
+  GLScene, GLObjects, GLGeomObjects, GLTexture, GLMultiPolygon,
+  GLVectorGeometry,  GLWin32Viewer, GLCrossPlatform, GLMaterial,
+  GLCoordinates, GLBaseClasses;
 
 type
   TVektor = record
@@ -75,17 +72,6 @@ const
 procedure TForm1.MakeHole(Side: Integer; X, Y, Z, D, T, Phi, Rho: Double);
 var
   R : Double;
-
-  procedure AddPlane(I:Integer);
-  begin
-    with Plane[I] do begin
-      with TransformToPlane(I,X,Y,Z) do begin
-        Contours.Add.Nodes.AddXYArc(R/cos(Phi*c180divPi),R,0,360,16,AffineVectorMake(X,Y,0));
-      end;
-    end;
-  end;
-
-var
   Dum : TGLDummyCube;
   Cyl : TGLCylinder;
   through : Boolean;
@@ -128,9 +114,10 @@ begin
   Dum.AddChild(Cyl);
   Container.AddChild(Dum);
 
-  AddPlane(Side);
-  if through then AddPlane(cOpposite[Side]);
+  Plane[Side].Contours.Add.Nodes.AddXYArc(R/cos(Phi*c180divPi),R,0,360,16, AffineVectorMake(X,Y,0));
 
+  if through then
+    Plane[cOpposite[Side]].Contours.Add.Nodes.AddXYArc(R/cos(Phi*c180divPi),R,0,360,16, AffineVectorMake(X,Y,0));
 end;
 
 procedure TForm1.CreatePanel;
@@ -193,13 +180,13 @@ end;
 procedure TForm1.SetDY(const Value: Double);
 begin
   FDY := Value;
-  Container.Position.y := -0.5*Value;
+  Container.Position.Y := -0.5*Value;
 end;
 
 procedure TForm1.SetDZ(const Value: Double);
 begin
   FDZ := Value;
-  Container.Position.z := -0.5*Value;
+  Container.Position.Z := -0.5*Value;
 end;
 
 procedure TForm1.AddMaterial(Obj: TGLSceneObject);
@@ -237,7 +224,7 @@ end;
 
 function TForm1.TransformToPlane(Side: Integer; v: TVektor): TVektor;
 begin
-  with v do result := TransformToPlane(Side,x,y,z);
+  result := TransformToPlane(Side,v.x,v.y,v.z);
 end;
 
 end.

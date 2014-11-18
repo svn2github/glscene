@@ -67,7 +67,7 @@ object Form1: TForm1
     object GLPoints: TGLPoints
       NoZWrite = False
       Static = False
-      size = 5.000000000000000000
+      Size = 5.000000000000000000
       Style = psSmooth
     end
     object GLPlane: TGLPlane

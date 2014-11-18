@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLSimpleNavigation, GLScene, GLCoordinates, GLNGDManager,
+  Dialogs,
+  //GLS
+  GLSimpleNavigation, GLScene, GLCoordinates, GLNGDManager,
   GLBitmapFont, GLWindowsFont, GLCadencer, GLWin32Viewer, GLCrossPlatform,
-  BaseClasses, GLObjects;
+  GLBaseClasses, GLObjects;
 
 type
   TForm1 = class(TForm)
@@ -32,9 +34,9 @@ type
       const deltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
   end;
 
 var

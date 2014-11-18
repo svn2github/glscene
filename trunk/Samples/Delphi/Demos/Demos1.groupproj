@@ -1,0 +1,492 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{4D0D8F6C-0527-4F46-B630-6944222B4A5B}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="meshes\actor\Actor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshes\actortwocam\actortwocam.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="extrusion\bendingcyl\bendingcyl.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="specialsFX\boom\boom.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="interface\bmpfont\bmpfont.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="interface\camera\Camera.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sprites\caterpillar\Caterpillar.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="movements\column\Column.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="interface\cursor\cursor.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="materials\customquad\customquad.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshes\expolygon\ExPolygon.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="interface\fadingintf\Fading.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="specialsFX\fire\fire.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="graph\fxy\fxy.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="graph\heightfield\heightfield.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="movements\hierarch\Hierarchy.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="utilities\joystick\JoystickDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="utilities\keymap\keymap.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="movements\manual\Manual.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bench\megacube\Megacube.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshes\mushroom\Mushroom.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="materials\multitexture\Multitexture.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="extrusion\nutsnbolts\nutsnbolts.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="movements\objmove\objmove.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="sprites\particles\Particles.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="behaviours\pathcontrol\PathControl.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="extrusion\pawn\pawn.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="interface\pick\Pick.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="movements\pong\Pong.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshes\portal\portal.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="utilities\recorder\Recorder.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="utilities\screensaver\ScreenSaverDemo.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="collisions\sphere\sphere.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="graph\splines\splines.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="behaviours\torque\Torque.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="materials\transparency\Transparency.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="materials\texformat\texformat.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="meshes\terrain\terrain.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="bench\whirlwind\Whirlwind.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Actor">
+        <MSBuild Projects="meshes\actor\Actor.dproj"/>
+    </Target>
+    <Target Name="Actor:Clean">
+        <MSBuild Projects="meshes\actor\Actor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Actor:Make">
+        <MSBuild Projects="meshes\actor\Actor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="actortwocam">
+        <MSBuild Projects="meshes\actortwocam\actortwocam.dproj"/>
+    </Target>
+    <Target Name="actortwocam:Clean">
+        <MSBuild Projects="meshes\actortwocam\actortwocam.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="actortwocam:Make">
+        <MSBuild Projects="meshes\actortwocam\actortwocam.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bendingcyl">
+        <MSBuild Projects="extrusion\bendingcyl\bendingcyl.dproj"/>
+    </Target>
+    <Target Name="bendingcyl:Clean">
+        <MSBuild Projects="extrusion\bendingcyl\bendingcyl.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bendingcyl:Make">
+        <MSBuild Projects="extrusion\bendingcyl\bendingcyl.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="boom">
+        <MSBuild Projects="specialsFX\boom\boom.dproj"/>
+    </Target>
+    <Target Name="boom:Clean">
+        <MSBuild Projects="specialsFX\boom\boom.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="boom:Make">
+        <MSBuild Projects="specialsFX\boom\boom.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bmpfont">
+        <MSBuild Projects="interface\bmpfont\bmpfont.dproj"/>
+    </Target>
+    <Target Name="bmpfont:Clean">
+        <MSBuild Projects="interface\bmpfont\bmpfont.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bmpfont:Make">
+        <MSBuild Projects="interface\bmpfont\bmpfont.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Camera">
+        <MSBuild Projects="interface\camera\Camera.dproj"/>
+    </Target>
+    <Target Name="Camera:Clean">
+        <MSBuild Projects="interface\camera\Camera.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Camera:Make">
+        <MSBuild Projects="interface\camera\Camera.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Caterpillar">
+        <MSBuild Projects="sprites\caterpillar\Caterpillar.dproj"/>
+    </Target>
+    <Target Name="Caterpillar:Clean">
+        <MSBuild Projects="sprites\caterpillar\Caterpillar.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Caterpillar:Make">
+        <MSBuild Projects="sprites\caterpillar\Caterpillar.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Column">
+        <MSBuild Projects="movements\column\Column.dproj"/>
+    </Target>
+    <Target Name="Column:Clean">
+        <MSBuild Projects="movements\column\Column.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Column:Make">
+        <MSBuild Projects="movements\column\Column.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="cursor">
+        <MSBuild Projects="interface\cursor\cursor.dproj"/>
+    </Target>
+    <Target Name="cursor:Clean">
+        <MSBuild Projects="interface\cursor\cursor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="cursor:Make">
+        <MSBuild Projects="interface\cursor\cursor.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="customquad">
+        <MSBuild Projects="materials\customquad\customquad.dproj"/>
+    </Target>
+    <Target Name="customquad:Clean">
+        <MSBuild Projects="materials\customquad\customquad.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="customquad:Make">
+        <MSBuild Projects="materials\customquad\customquad.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ExPolygon">
+        <MSBuild Projects="meshes\expolygon\ExPolygon.dproj"/>
+    </Target>
+    <Target Name="ExPolygon:Clean">
+        <MSBuild Projects="meshes\expolygon\ExPolygon.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ExPolygon:Make">
+        <MSBuild Projects="meshes\expolygon\ExPolygon.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Fading">
+        <MSBuild Projects="interface\fadingintf\Fading.dproj"/>
+    </Target>
+    <Target Name="Fading:Clean">
+        <MSBuild Projects="interface\fadingintf\Fading.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Fading:Make">
+        <MSBuild Projects="interface\fadingintf\Fading.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fire">
+        <MSBuild Projects="specialsFX\fire\fire.dproj"/>
+    </Target>
+    <Target Name="fire:Clean">
+        <MSBuild Projects="specialsFX\fire\fire.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fire:Make">
+        <MSBuild Projects="specialsFX\fire\fire.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="fxy">
+        <MSBuild Projects="graph\fxy\fxy.dproj"/>
+    </Target>
+    <Target Name="fxy:Clean">
+        <MSBuild Projects="graph\fxy\fxy.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="fxy:Make">
+        <MSBuild Projects="graph\fxy\fxy.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="heightfield">
+        <MSBuild Projects="graph\heightfield\heightfield.dproj"/>
+    </Target>
+    <Target Name="heightfield:Clean">
+        <MSBuild Projects="graph\heightfield\heightfield.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="heightfield:Make">
+        <MSBuild Projects="graph\heightfield\heightfield.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Hierarchy">
+        <MSBuild Projects="movements\hierarch\Hierarchy.dproj"/>
+    </Target>
+    <Target Name="Hierarchy:Clean">
+        <MSBuild Projects="movements\hierarch\Hierarchy.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Hierarchy:Make">
+        <MSBuild Projects="movements\hierarch\Hierarchy.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="JoystickDemo">
+        <MSBuild Projects="utilities\joystick\JoystickDemo.dproj"/>
+    </Target>
+    <Target Name="JoystickDemo:Clean">
+        <MSBuild Projects="utilities\joystick\JoystickDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="JoystickDemo:Make">
+        <MSBuild Projects="utilities\joystick\JoystickDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="keymap">
+        <MSBuild Projects="utilities\keymap\keymap.dproj"/>
+    </Target>
+    <Target Name="keymap:Clean">
+        <MSBuild Projects="utilities\keymap\keymap.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="keymap:Make">
+        <MSBuild Projects="utilities\keymap\keymap.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Manual">
+        <MSBuild Projects="movements\manual\Manual.dproj"/>
+    </Target>
+    <Target Name="Manual:Clean">
+        <MSBuild Projects="movements\manual\Manual.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Manual:Make">
+        <MSBuild Projects="movements\manual\Manual.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Megacube">
+        <MSBuild Projects="bench\megacube\Megacube.dproj"/>
+    </Target>
+    <Target Name="Megacube:Clean">
+        <MSBuild Projects="bench\megacube\Megacube.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Megacube:Make">
+        <MSBuild Projects="bench\megacube\Megacube.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Mushroom">
+        <MSBuild Projects="meshes\mushroom\Mushroom.dproj"/>
+    </Target>
+    <Target Name="Mushroom:Clean">
+        <MSBuild Projects="meshes\mushroom\Mushroom.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Mushroom:Make">
+        <MSBuild Projects="meshes\mushroom\Mushroom.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Multitexture">
+        <MSBuild Projects="materials\multitexture\Multitexture.dproj"/>
+    </Target>
+    <Target Name="Multitexture:Clean">
+        <MSBuild Projects="materials\multitexture\Multitexture.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Multitexture:Make">
+        <MSBuild Projects="materials\multitexture\Multitexture.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="nutsnbolts">
+        <MSBuild Projects="extrusion\nutsnbolts\nutsnbolts.dproj"/>
+    </Target>
+    <Target Name="nutsnbolts:Clean">
+        <MSBuild Projects="extrusion\nutsnbolts\nutsnbolts.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="nutsnbolts:Make">
+        <MSBuild Projects="extrusion\nutsnbolts\nutsnbolts.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="objmove">
+        <MSBuild Projects="movements\objmove\objmove.dproj"/>
+    </Target>
+    <Target Name="objmove:Clean">
+        <MSBuild Projects="movements\objmove\objmove.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="objmove:Make">
+        <MSBuild Projects="movements\objmove\objmove.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Particles">
+        <MSBuild Projects="sprites\particles\Particles.dproj"/>
+    </Target>
+    <Target Name="Particles:Clean">
+        <MSBuild Projects="sprites\particles\Particles.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Particles:Make">
+        <MSBuild Projects="sprites\particles\Particles.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PathControl">
+        <MSBuild Projects="behaviours\pathcontrol\PathControl.dproj"/>
+    </Target>
+    <Target Name="PathControl:Clean">
+        <MSBuild Projects="behaviours\pathcontrol\PathControl.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PathControl:Make">
+        <MSBuild Projects="behaviours\pathcontrol\PathControl.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="pawn">
+        <MSBuild Projects="extrusion\pawn\pawn.dproj"/>
+    </Target>
+    <Target Name="pawn:Clean">
+        <MSBuild Projects="extrusion\pawn\pawn.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="pawn:Make">
+        <MSBuild Projects="extrusion\pawn\pawn.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Pick">
+        <MSBuild Projects="interface\pick\Pick.dproj"/>
+    </Target>
+    <Target Name="Pick:Clean">
+        <MSBuild Projects="interface\pick\Pick.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Pick:Make">
+        <MSBuild Projects="interface\pick\Pick.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Pong">
+        <MSBuild Projects="movements\pong\Pong.dproj"/>
+    </Target>
+    <Target Name="Pong:Clean">
+        <MSBuild Projects="movements\pong\Pong.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Pong:Make">
+        <MSBuild Projects="movements\pong\Pong.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="portal">
+        <MSBuild Projects="meshes\portal\portal.dproj"/>
+    </Target>
+    <Target Name="portal:Clean">
+        <MSBuild Projects="meshes\portal\portal.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="portal:Make">
+        <MSBuild Projects="meshes\portal\portal.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Recorder">
+        <MSBuild Projects="utilities\recorder\Recorder.dproj"/>
+    </Target>
+    <Target Name="Recorder:Clean">
+        <MSBuild Projects="utilities\recorder\Recorder.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Recorder:Make">
+        <MSBuild Projects="utilities\recorder\Recorder.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ScreenSaverDemo">
+        <MSBuild Projects="utilities\screensaver\ScreenSaverDemo.dproj"/>
+    </Target>
+    <Target Name="ScreenSaverDemo:Clean">
+        <MSBuild Projects="utilities\screensaver\ScreenSaverDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ScreenSaverDemo:Make">
+        <MSBuild Projects="utilities\screensaver\ScreenSaverDemo.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="sphere">
+        <MSBuild Projects="collisions\sphere\sphere.dproj"/>
+    </Target>
+    <Target Name="sphere:Clean">
+        <MSBuild Projects="collisions\sphere\sphere.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="sphere:Make">
+        <MSBuild Projects="collisions\sphere\sphere.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="splines">
+        <MSBuild Projects="graph\splines\splines.dproj"/>
+    </Target>
+    <Target Name="splines:Clean">
+        <MSBuild Projects="graph\splines\splines.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="splines:Make">
+        <MSBuild Projects="graph\splines\splines.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Torque">
+        <MSBuild Projects="behaviours\torque\Torque.dproj"/>
+    </Target>
+    <Target Name="Torque:Clean">
+        <MSBuild Projects="behaviours\torque\Torque.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Torque:Make">
+        <MSBuild Projects="behaviours\torque\Torque.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Transparency">
+        <MSBuild Projects="materials\transparency\Transparency.dproj"/>
+    </Target>
+    <Target Name="Transparency:Clean">
+        <MSBuild Projects="materials\transparency\Transparency.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Transparency:Make">
+        <MSBuild Projects="materials\transparency\Transparency.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="texformat">
+        <MSBuild Projects="materials\texformat\texformat.dproj"/>
+    </Target>
+    <Target Name="texformat:Clean">
+        <MSBuild Projects="materials\texformat\texformat.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="texformat:Make">
+        <MSBuild Projects="materials\texformat\texformat.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="terrain">
+        <MSBuild Projects="meshes\terrain\terrain.dproj"/>
+    </Target>
+    <Target Name="terrain:Clean">
+        <MSBuild Projects="meshes\terrain\terrain.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="terrain:Make">
+        <MSBuild Projects="meshes\terrain\terrain.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Whirlwind">
+        <MSBuild Projects="bench\whirlwind\Whirlwind.dproj"/>
+    </Target>
+    <Target Name="Whirlwind:Clean">
+        <MSBuild Projects="bench\whirlwind\Whirlwind.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Whirlwind:Make">
+        <MSBuild Projects="bench\whirlwind\Whirlwind.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Actor;actortwocam;bendingcyl;boom;bmpfont;Camera;Caterpillar;Column;cursor;customquad;ExPolygon;Fading;fire;fxy;heightfield;Hierarchy;JoystickDemo;keymap;Manual;Megacube;Mushroom;Multitexture;nutsnbolts;objmove;Particles;PathControl;pawn;Pick;Pong;portal;Recorder;ScreenSaverDemo;sphere;splines;Torque;Transparency;texformat;terrain;Whirlwind"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Actor:Clean;actortwocam:Clean;bendingcyl:Clean;boom:Clean;bmpfont:Clean;Camera:Clean;Caterpillar:Clean;Column:Clean;cursor:Clean;customquad:Clean;ExPolygon:Clean;Fading:Clean;fire:Clean;fxy:Clean;heightfield:Clean;Hierarchy:Clean;JoystickDemo:Clean;keymap:Clean;Manual:Clean;Megacube:Clean;Mushroom:Clean;Multitexture:Clean;nutsnbolts:Clean;objmove:Clean;Particles:Clean;PathControl:Clean;pawn:Clean;Pick:Clean;Pong:Clean;portal:Clean;Recorder:Clean;ScreenSaverDemo:Clean;sphere:Clean;splines:Clean;Torque:Clean;Transparency:Clean;texformat:Clean;terrain:Clean;Whirlwind:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Actor:Make;actortwocam:Make;bendingcyl:Make;boom:Make;bmpfont:Make;Camera:Make;Caterpillar:Make;Column:Make;cursor:Make;customquad:Make;ExPolygon:Make;Fading:Make;fire:Make;fxy:Make;heightfield:Make;Hierarchy:Make;JoystickDemo:Make;keymap:Make;Manual:Make;Megacube:Make;Mushroom:Make;Multitexture:Make;nutsnbolts:Make;objmove:Make;Particles:Make;PathControl:Make;pawn:Make;Pick:Make;Pong:Make;portal:Make;Recorder:Make;ScreenSaverDemo:Make;sphere:Make;splines:Make;Torque:Make;Transparency:Make;texformat:Make;terrain:Make;Whirlwind:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

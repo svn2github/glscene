@@ -74,7 +74,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, VectorGeometry, GLUtils; 
+  SysUtils, GLVectorGeometry, GLUtils;
 
 var
 	vVectorEditorForm : TVectorEditorForm;

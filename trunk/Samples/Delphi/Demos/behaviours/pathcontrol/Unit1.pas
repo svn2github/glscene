@@ -1,16 +1,14 @@
-{: This Form demonstrates basic "Pathcontrol" movements.<p>
-
-   You can modified the Looped property of the path to enable the path-looping.
-   Set ShowPath property to turn on or turn off the path-displaying 
-}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
-  Classes, Controls, GLCadencer, GLBehaviours, Buttons, GLGraph, GLMovement,
-  GLWin32Viewer, GLCrossPlatform, GLCoordinates, BaseClasses, GLUtils,
+  Windows, Forms,  SysUtils,  Classes, Controls, ComCtrls, ExtCtrls, StdCtrls,
+  Buttons,
+
+  //GLS
+  GLScene, GLObjects, GLVectorGeometry, GLCadencer, GLBehaviours, GLGraph, GLMovement,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLUtils,
   GLSimpleNavigation;
 
 type
@@ -23,12 +21,10 @@ type
     DummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     MoveBtn: TBitBtn;
-    Timer1: TTimer;
     Sphere1: TGLSphere;
     GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormActivate(Sender: TObject);
     procedure MoveBtnClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
   private
     procedure PathTravelStop(Sender: TObject; Path: TGLMovementPath; var Looped: Boolean);
     procedure PathAllTravelledOver(Sender: TObject);
@@ -41,9 +37,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses
-   SysUtils, VectorGeometry;
 
 procedure TForm1.FormActivate(Sender: TObject);
 var
@@ -113,12 +106,6 @@ procedure TForm1.PathAllTravelledOver(Sender: TObject);
 begin
    if not Application.Terminated then
       InformationDlg('All Path(es) Traveled Over');
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-   Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
-   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.

@@ -28,9 +28,17 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, VectorGeometry, GLScene,
-   OpenGLTokens, VectorLists, GLCrossPlatform, PersistentClasses,
-   BaseClasses, GLRenderContextInfo {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+uses
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes,
+  {$ELSE}
+    Classes,
+  {$ENDIF}
+
+  GLVectorGeometry, GLScene, OpenGLTokens, GLVectorLists,
+  GLCrossPlatform, GLPersistentClasses, GLBaseClasses,
+  GLContext,
+  GLRenderContextInfo {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 type
 
@@ -142,8 +150,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-uses
-  GLContext;
 
 // Create
 //

@@ -1,19 +1,17 @@
-{: Using the TOctreeSpacePartition for visibility culling.<p>
-
-  Demo by HRLI slightly reworked to be a quadtree demo and committed by MF.<p>
-}
-
 unit fQuadtreeVisCulling;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLWin32Viewer, GLSkydome, GLObjects,  jpeg, GLKeyboard,
+  Dialogs, Jpeg, ExtCtrls, StdCtrls, ComCtrls,
+
+  //GLS
+  GLScene, GLWin32Viewer, GLSkydome, GLObjects, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
-  SpatialPartitioning, VectorGeometry, ExtCtrls, GLBitmapFont, GeometryBB,
-  GLWindowsFont, GLHUDObjects, StdCtrls, ComCtrls,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo;
+  SpatialPartitioning, GLVectorGeometry, GLBitmapFont, GeometryBB,
+  GLWindowsFont, GLHUDObjects, GLCrossPlatform, GLMaterial, GLSpatialPartitioning,
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLUtils;
 
 type
   TfrmQuadtreeVisCulling = class(TForm)
@@ -33,16 +31,17 @@ type
     GLHUDText1: TGLHUDText;
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     GLDirectOpenGL1: TGLDirectOpenGL;
-    cbUseQuadtree: TCheckBox;
     Panel1: TPanel;
     Label1: TLabel;
     ProgressBar1: TProgressBar;
-    Label2: TLabel;
-    cbShowQuadtree: TCheckBox;
     GLDirectOpenGL2: TGLDirectOpenGL;
     tree: TGLSprite;
-    cbUseExtendedFrustum: TCheckBox;
     GLSphere1: TGLSphere;
+    Panel2: TPanel;
+    cbUseQuadtree: TCheckBox;
+    cbUseExtendedFrustum: TCheckBox;
+    cbShowQuadtree: TCheckBox;
+    Label2: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -70,8 +69,6 @@ var
   frmQuadtreeVisCulling: TfrmQuadtreeVisCulling;
 
 implementation
-
-uses GLSpatialPartitioning, GLUtils;
 
 {$R *.dfm}
 
@@ -102,13 +99,14 @@ begin
    end;
    with GLCamera1.Position do
       Y:=glTerrainRenderer1.InterpolatedHeight(AsVector)+80+FCamHeight;
-   GLHUDText1.Text := cullingMode+ 'visible tree count: '+inttostr(visiblecount)+' / Total:'+inttostr(treecount)+
-     #13#10+ ' press ''V'' to Change quadtree query visible or visiblity culling'+
-     #13#10+ ' press ''esc'' to quit';
+   GLHUDText1.Text := CullingMode+ 'visible tree count: '+inttostr(visiblecount)+' / Total:'+inttostr(treecount)+
+     #13#10+ ' Press ''V'' to Change quadtree query visible or visiblity culling'+
+     #13#10+ ' Press ''Esc'' to quit';
 end;
 
 procedure TfrmQuadtreeVisCulling.FormCreate(Sender: TObject);
 begin
+  SetGLSceneMediaDir;
   SpacePartition := TQuadtreeSpacePartition.Create;
   SpacePartition.LeafThreshold := 50;
   SpacePartition.MaxTreeDepth := 10;//}
@@ -117,14 +115,13 @@ begin
   tree.visible := false;
   trees.ObjectsSorting := osRenderFarthestFirst;
 
-  SetGLSceneMediaDir();
   GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
   GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('snow512.jpg');
   GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
   tree.Material.Texture.Image.LoadFromFile('tree1.bmp');
   Show;
   CreateTrees;
-  cullingMode := 'quadtree ';
+  cullingMode := 'Quadtree ';
   GLUserInterface1.MouseLookActivate;
 end;
 
@@ -174,10 +171,10 @@ procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   function PlaneToStr(const APlane : THmgPlane) : string;
   begin
     result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
-      APlane.X,
-      APlane.Y,
-      APlane.Z,
-      APlane.W]);
+      APlane.V[0],
+      APlane.V[1],
+      APlane.V[2],
+      APlane.V[3]]);
   end;
 var
   i: integer;
@@ -229,7 +226,7 @@ end;
 
 procedure TfrmQuadtreeVisCulling.Timer1Timer(Sender: TObject);
 begin
-  caption := GLSceneViewer1.FramesPerSecondText;
+  Caption := 'Quardtree Visibility Culling - '+GLSceneViewer1.FramesPerSecondText;
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
@@ -243,7 +240,7 @@ begin
 
     if cbUseQuadtree.Checked then
     begin
-      cullingMode := ' Quadtree';
+      cullingMode := ' Quadtree ';
       for i := 0 to trees.Count - 1 do
         trees.Children[i].Visible := true;
       trees.VisibilityCulling := vcNone;

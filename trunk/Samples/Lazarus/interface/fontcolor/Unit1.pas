@@ -20,7 +20,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLLCLViewer, GLScene, GLObjects, GLHUDObjects,
   GLBitmapFont, GLCadencer, GLTimeEventsMgr, GLTeapot, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -58,7 +58,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, VectorTypes, GLUtils;
+uses GLVectorGeometry, GLVectorTypes, GLUtils;
 
 var
   FadeOutCount: integer;

@@ -10,7 +10,7 @@
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLObjects.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 //---------------------------------------------------------------------------

@@ -10,7 +10,6 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.Graphics.hpp>
 
-#include "BaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLScene.hpp"
@@ -19,6 +18,7 @@
 #include "GLRenderContextInfo.hpp"
 #include "GLBitmapFont.hpp"
 #include "GLWindowsFont.hpp"
+#include "GLBaseClasses.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

@@ -294,7 +294,7 @@ object Form1: TForm1
     Left = 464
     Top = 8
   end
-  object CollisionManager1: TCollisionManager
+  object CollisionManager1: TGLCollisionManager
     OnCollision = CollisionManager1Collision
     Left = 192
     Top = 80

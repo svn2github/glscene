@@ -3,10 +3,11 @@ unit uMainForm;
 interface
 
 uses
-  Windows, Forms, Messages, SysUtils,classes, VectorGeometry, StdCtrls,
-  GLObjects, GLScene, GLBlur, GLSimpleNavigation, GLTexture, GLCadencer,
-  GLTeapot, GLPolyhedron, GLGeomObjects, Controls, GLWin32Viewer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  Windows, Forms, Messages, Classes, SysUtils, StdCtrls, Controls,
+  //GLS
+  GLObjects, GLScene, GLBlur, GLSimpleNavigation, GLTexture,
+  GLCadencer, GLVectorGeometry, GLTeapot, GLPolyhedron, GLGeomObjects,
+  GLWin32Viewer, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

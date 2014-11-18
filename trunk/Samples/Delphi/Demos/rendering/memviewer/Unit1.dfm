@@ -50,7 +50,7 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 33
       Top = 48
-      Width = 87
+      Width = 86
       Height = 14
       Caption = 'Texture framerate'
     end

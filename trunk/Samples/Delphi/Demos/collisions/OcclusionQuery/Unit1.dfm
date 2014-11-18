@@ -25,8 +25,6 @@ object Form1: TForm1
     FieldOfView = 151.927505493164100000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 563
-    ExplicitHeight = 403
   end
   object Panel1: TPanel
     Left = 0
@@ -35,7 +33,6 @@ object Form1: TForm1
     Height = 41
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 693
     object Label1: TLabel
       Left = 112
       Top = 3

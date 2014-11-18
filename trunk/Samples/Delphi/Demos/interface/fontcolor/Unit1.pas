@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLWin32Viewer, GLScene, GLObjects, GLHUDObjects,
-  GLBitmapFont, GLCadencer, GLTimeEventsMgr, GLTeapot, GLCrossPlatform,
-  GLCoordinates, BaseClasses, GLUtils;
+  Dialogs,
+  //GLS
+  GLWin32Viewer, GLScene, GLObjects, GLHUDObjects, GLVectorGeometry,
+  GLVectorTypes, GLBitmapFont, GLCadencer, GLTimeEventsMgr, GLTeapot,
+  GLCrossPlatform, GLCoordinates, GLUtils, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -38,11 +40,10 @@ var
 const FadeOutMax = 100;
       FadeInMax  = 100;
       OverallTrans = 0.7;
+
 implementation
 
 {$R *.dfm}
-
-uses VectorGeometry, VectorTypes;
 
 var
   FadeOutCount : integer;

@@ -7,8 +7,8 @@ uses
 
   //GLScene
   GLCadencer, GLScene, GLObjects, GLSound,  GLSMBASS, GLWin32Viewer,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses, GLFileWAV,
-  GLFileMP3, GLUtils, VectorGeometry;
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLFileWAV,
+  GLFileMP3, GLUtils, GLVectorGeometry;
 
 type
   TForm1 = class(TForm)

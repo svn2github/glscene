@@ -1,15 +1,3 @@
-{: Utility to pack one or many DEM sources into a single HTF.<p>
-
-   Note: this is a *basic* tool, error messages are unfriendly and there are
-         memory leaks if you do any, I know. So, don't do errors ;)
-
-         DTED data is organized in columns, instead of rows, like most other DEM's.
-         This means that an inported DTED file will have to be rotated by 270 degrees,
-         if you want north at the top. DTED level 2 maps will have a size of 1801x3601
-
-  10/04/2007 -LIN- Added support for DTED DEM files.
-                   Added Flip/Rotate. (Use Rotate 270 for DTED files.)
-}
 unit FMainForm;
 
 interface
@@ -17,7 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, HeightTileFile;
+  ActnList, ImgList, Actions, Math, FViewerForm,
+  //GLS
+  GLHeightTileFile;
 
 type
    TSrc = record
@@ -140,8 +130,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses Math, FViewerForm;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var

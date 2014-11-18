@@ -72,9 +72,9 @@ uses
   SysUtils, Classes,
 
   // GLScene
-  GLScene, GLObjects, GLCadencer, OpenGLTokens, VectorGeometry,
+  GLScene, GLObjects, GLCadencer, OpenGLTokens, GLVectorGeometry,
   GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState, GLCrossPlatform
-  {$IFDEF GLS_DELPHI}, VectorTypes{$ENDIF};
+  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 type
    EGLAtmosphereException = class(Exception);

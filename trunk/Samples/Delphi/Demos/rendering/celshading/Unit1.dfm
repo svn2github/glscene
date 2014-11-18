@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 114
-  Width = 408
-  Height = 434
-  Caption = 'Cel Shading Demo'
+  Caption = 'GLScene Cel Shading'
+  ClientHeight = 419
+  ClientWidth = 550
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,23 +12,24 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 392
-    Height = 396
+    Width = 550
+    Height = 419
     Camera = GLCamera1
-    FieldOfView = 151.377914428710900000
+    FieldOfView = 153.153396606445300000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 8
+    Left = 24
     Top = 8
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -81,31 +82,31 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Shader = GLColoredCelShader
       end>
-    Left = 40
+    Left = 168
     Top = 8
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 8
-    Top = 40
+    Left = 24
+    Top = 56
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
-    Left = 8
-    Top = 72
+    Left = 456
+    Top = 16
   end
   object GLTexturedCelShader: TGLCelShader
     CelShaderOptions = [csoOutlines, csoTextured]
     OutlineWidth = 3.000000000000000000
-    Left = 40
-    Top = 40
+    Left = 168
+    Top = 56
   end
   object GLColoredCelShader: TGLCelShader
     CelShaderOptions = [csoOutlines]
     OutlineWidth = 3.000000000000000000
-    Left = 40
-    Top = 72
+    Left = 168
+    Top = 112
   end
 end

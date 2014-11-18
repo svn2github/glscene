@@ -1,20 +1,15 @@
-{: Basic viewer for HTF Content.<p>
-
-   Gives basic time stats for HTF data extraction and rendering (there is NO
-   cache, each tile is reloaded each time from the disk, ie. those are the
-   timings you could expect when accessing an HTF area for the first time or
-   when "moving at high speed").<p>
-
-   Requires the Graphics32 library (http://www.g32.org).
-}
 unit FViewerForm;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, HeightTileFile, ActnList, StdCtrls, ExtCtrls, ComCtrls, ImgList,
-  ToolWin, GR32_Image, GR32, Menus;
+  Dialogs, ActnList, StdCtrls, ExtCtrls, ComCtrls, ImgList,
+  ToolWin, Menus, Actions,
+  //GR32
+  GR32_Image, GR32,
+  //GLS
+  GLHeightTileFile, GLVectorGeometry, GLUtils;
 
 type
   TViewerForm = class(TForm)
@@ -74,7 +69,7 @@ implementation
 
 {$R *.dfm}
 
-uses FNavForm, VectorGeometry;
+uses FNavForm;
 
 { Quick'n dirty parser for palette file format '.pal', in which each line defines
   nodes in the color ramp palette:
@@ -92,10 +87,10 @@ procedure PreparePal(const fileName : String);
       p:=Pos(':', buf);
       n:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
       p:=Pos(',', buf);
-      c[0]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      c.X:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
       p:=Pos(',', buf);
-      c[1]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
-      c[2]:=StrToInt(buf);
+      c.Y:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      c.Z:=StrToInt(buf);
    end;
 
 var
@@ -113,7 +108,7 @@ var
       else d:=0;
       for cur:=prev to next do begin
          cC:=VectorLerp(pC, nC, (cur-prev)*d);
-         heightColor[cur]:=Color32(Round(cC[0]), Round(cC[1]), Round(cC[2]));
+         heightColor[cur]:=Color32(Round(cC.V[0]), Round(cC.V[1]), Round(cC.V[2]));
       end;
    end;
 
@@ -142,15 +137,15 @@ var
    i : Integer;
    sr : TSearchRec;
    mi : TMenuItem;
-   appDir : String;
    sl : TStringList;
+   AppDir : String;
+
 begin
    bmpTile:=TBitmap32.Create;
 
-   appDir:=ExtractFilePath(Application.ExeName);
+   AppDir:=ExtractFilePath(Application.ExeName);
 
    PreparePal(appDir+'Blue-Green-Red.pal');
-
    i:=FindFirst(appDir+'*.pal', faAnyFile, sr);
    sl:=TStringList.Create;
    try
@@ -184,16 +179,20 @@ begin
 end;
 
 procedure TViewerForm.ACOpenExecute(Sender: TObject);
+var
+  I : Integer;
 begin
-   if OpenDialog.Execute then begin
-      htf.Free;
-      htf:=THeightTileFile.Create(OpenDialog.FileName);
-      Caption:='HTFViewer - '+ExtractFileName(OpenDialog.FileName);
-      curX:=0;
-      curY:=0;
-      PrepareBitmap;
-      PaintBox.Invalidate;
-   end;
+  SetGLSceneMediaDir;
+  OpenDialog.InitialDir := GetCurrentDir;
+  if OpenDialog.Execute then begin
+     htf.Free;
+     htf:=THeightTileFile.Create(OpenDialog.FileName);
+     Caption:='HTFViewer - '+ExtractFileName(OpenDialog.FileName);
+     curX:=0;
+     curY:=0;
+     PrepareBitmap;
+     PaintBox.Invalidate;
+  end;
 end;
 
 procedure TViewerForm.PrepareBitmap;

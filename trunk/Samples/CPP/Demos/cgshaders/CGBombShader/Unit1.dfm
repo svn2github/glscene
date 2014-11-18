@@ -245,8 +245,6 @@ object Form1: TForm1
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 1
-    ExplicitWidth = 380
-    ExplicitHeight = 0
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
       Top = 1
@@ -257,8 +255,6 @@ object Form1: TForm1
       FieldOfView = 148.451522827148400000
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 378
-      ExplicitHeight = 455
     end
   end
   object GLScene1: TGLScene
@@ -305,12 +301,12 @@ object Form1: TForm1
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -3.000000000000000000
-      XSamplingScale.max = 3.000000000000000000
-      XSamplingScale.step = 0.100000001490116100
-      YSamplingScale.step = 0.100000001490116100
+      XSamplingScale.Max = 3.000000000000000000
+      XSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.Step = 0.100000001490116100
       ZSamplingScale.Min = -3.000000000000000000
-      ZSamplingScale.max = 3.000000000000000000
-      ZSamplingScale.step = 0.100000001490116100
+      ZSamplingScale.Max = 3.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
     end
     object GLLightSource1: TGLLightSource

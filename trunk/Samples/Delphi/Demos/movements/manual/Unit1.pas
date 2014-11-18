@@ -3,9 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
-  Classes, Controls, Dialogs, GLCadencer, GLWin32Viewer, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  Windows, Forms, SysUtils, Math, ComCtrls, ExtCtrls, StdCtrls,
+
+  //GLS
+  GLScene, GLObjects, Classes, Controls, Dialogs, GLCadencer,
+  GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -36,8 +38,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses Math, SysUtils;
 
 procedure TForm1.TrackBarChange(Sender: TObject);
 var

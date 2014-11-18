@@ -1,9 +1,9 @@
 object TTBMain: TTTBMain
   Left = 293
   Top = 216
-  Width = 682
-  Height = 530
-  Caption = 'Texture ToolBox'
+  Caption = 'GLScene Texture ToolBox'
+  ClientHeight = 464
+  ClientWidth = 674
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,13 +21,14 @@ object TTBMain: TTTBMain
     Left = 385
     Top = 0
     Width = 4
-    Height = 472
+    Height = 464
+    ExplicitHeight = 472
   end
   object PAImages: TPanel
     Left = 0
     Top = 0
     Width = 385
-    Height = 472
+    Height = 464
     Align = alLeft
     BevelOuter = bvLowered
     BorderWidth = 4
@@ -35,23 +36,27 @@ object TTBMain: TTTBMain
     TabOrder = 0
     DesignSize = (
       385
-      472)
+      464)
     object PageControl: TPageControl
       Left = 5
       Top = 33
       Width = 375
-      Height = 434
+      Height = 426
       ActivePage = TSRGB
       Align = alClient
       Style = tsButtons
       TabOrder = 0
       object TSRGB: TTabSheet
         Caption = 'RGB'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ScrollBox1: TScrollBox
           Left = 0
           Top = 0
           Width = 367
-          Height = 403
+          Height = 395
           HorzScrollBar.Smooth = True
           HorzScrollBar.Style = ssFlat
           HorzScrollBar.Tracking = True
@@ -74,6 +79,10 @@ object TTBMain: TTTBMain
       object TSAlpha: TTabSheet
         Caption = 'Alpha'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object ScrollBox2: TScrollBox
           Left = 0
           Top = 0
@@ -110,8 +119,6 @@ object TTBMain: TTTBMain
       ButtonWidth = 73
       Caption = 'ToolBar'
       Color = clBtnFace
-      EdgeBorders = []
-      Flat = True
       ParentColor = False
       ShowCaptions = True
       TabOrder = 1
@@ -154,7 +161,6 @@ object TTBMain: TTTBMain
         Width = 57
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         TabOrder = 0
         OnChange = CBWidthChange
         Items.Strings = (
@@ -178,7 +184,6 @@ object TTBMain: TTTBMain
         Width = 57
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         TabOrder = 1
         OnChange = CBWidthChange
         Items.Strings = (
@@ -201,8 +206,8 @@ object TTBMain: TTTBMain
   object PAPreview: TPanel
     Left = 389
     Top = 0
-    Width = 277
-    Height = 472
+    Width = 285
+    Height = 464
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 4
@@ -212,11 +217,11 @@ object TTBMain: TTTBMain
     object GLSceneViewer: TGLSceneViewer
       Left = 5
       Top = 5
-      Width = 267
-      Height = 462
+      Width = 275
+      Height = 454
       Camera = GLCamera
       Buffer.AntiAliasing = aa2x
-      FieldOfView = 138.934951782226600000
+      FieldOfView = 140.033782958984400000
       Align = alClient
       OnMouseDown = GLSceneViewerMouseDown
       OnMouseMove = GLSceneViewerMouseMove
@@ -245,7 +250,6 @@ object TTBMain: TTTBMain
         Width = 90
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
         TabOrder = 1
         OnChange = CBBackgroundChange
         Items.Strings = (
@@ -325,7 +329,7 @@ object TTBMain: TTTBMain
     Left = 48
     Top = 72
     Bitmap = {
-      494C010102000400040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020004000C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -562,6 +566,7 @@ object TTBMain: TTTBMain
       Position.Coordinates = {0000C8420000C842000000000000803F}
       Width = 100.000000000000000000
       Height = 100.000000000000000000
+      Rotation = 0.000000000000000000
       XTiles = 2
       YTiles = 2
     end

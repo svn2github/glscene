@@ -385,7 +385,7 @@ object Form1: TForm1
     Left = 168
     Top = 8
   end
-  object AsyncTimer1: TAsyncTimer
+  object AsyncTimer1: TGLAsyncTimer
     Enabled = True
     OnTimer = AsyncTimer1Timer
     ThreadPriority = tpNormal

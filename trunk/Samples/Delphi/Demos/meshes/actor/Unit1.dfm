@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 145
   Top = 99
-  Width = 526
-  Height = 441
-  Caption = 'Form1'
+  Caption = 'Actor'
+  ClientHeight = 397
+  ClientWidth = 587
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,11 +18,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 38
-    Width = 510
-    Height = 346
+    Width = 587
+    Height = 340
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
-    FieldOfView = 46.776966094970700000
+    FieldOfView = 46.050983428955080000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -30,8 +30,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 384
-    Width = 510
+    Top = 378
+    Width = 587
     Height = 19
     Panels = <
       item
@@ -41,7 +41,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 510
+    Width = 587
     Height = 38
     Align = alTop
     BevelOuter = bvLowered
@@ -126,6 +126,13 @@ object Form1: TForm1
       Height = 13
       Caption = 'Animation :'
     end
+    object LabelFPS: TLabel
+      Left = 490
+      Top = 12
+      Width = 20
+      Height = 13
+      Caption = 'FPS'
+    end
     object CBAnimations: TComboBox
       Left = 64
       Top = 10
@@ -133,14 +140,13 @@ object Form1: TForm1
       Height = 21
       Hint = 'Change State'
       Style = csDropDownList
-      ItemHeight = 13
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
       OnChange = CBAnimationsChange
     end
     object BBLoadWeapon: TBitBtn
-      Left = 408
+      Left = 351
       Top = 8
       Width = 89
       Height = 24
@@ -150,7 +156,7 @@ object Form1: TForm1
     end
     object CBSmooth: TCheckBox
       Left = 280
-      Top = 12
+      Top = 11
       Width = 65
       Height = 17
       Caption = 'Smooth'
@@ -161,7 +167,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 40
+    Left = 24
     Top = 48
     object DummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -209,12 +215,12 @@ object Form1: TForm1
     Scene = GLScene1
     SleepLength = 0
     OnProgress = GLCadencer1Progress
-    Left = 8
+    Left = 96
     Top = 48
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 8
-    Top = 80
+    Left = 24
+    Top = 112
   end
 end

@@ -32,7 +32,7 @@
 #pragma link "GLScene"
 #pragma link "GLTexture"
 #pragma link "GLWin32Viewer"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
@@ -67,7 +67,7 @@ void __fastcall THiddenLineShader::DoApply(TRenderContextInfo &rci, System::TObj
   glDisable(GL_LIGHTING);
   rci.GLStates->PolygonMode = GL_FRONT_AND_BACK, GL_FILL;
   // use background color
-  glColor3fv(&BackgroundColor.Coord[0]);
+  glColor3fv(&BackgroundColor.V[0]);
   // enable and adjust polygon offset
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(1, 2);
@@ -85,7 +85,7 @@ bool __fastcall THiddenLineShader::DoUnApply(TRenderContextInfo &rci)
 
        // switch to wireframe and its color
        rci.GLStates->PolygonMode = GL_FRONT_AND_BACK, GL_LINE;
-       glColor3fv(&LineColor.Coord[0]);
+       glColor3fv(&LineColor.V[0]);
        // disable polygon offset
        glDisable(GL_POLYGON_OFFSET_LINE);
 
@@ -138,7 +138,7 @@ void __fastcall TOutLineShader::DoApply(TRenderContextInfo &rci, System::TObject
    glPolygonMode(GL_BACK, GL_LINE);
    glCullFace(GL_FRONT);
    glDepthFunc(GL_LEQUAL);
-   glColor3fv(&LineColor.Coord[0]);
+   glColor3fv(&LineColor.V[0]);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TOutLineShader::DoUnApply(TRenderContextInfo &rci)
@@ -151,7 +151,7 @@ bool __fastcall TOutLineShader::DoUnApply(TRenderContextInfo &rci)
        PassCount=2;
        if (Lighting)
          glEnable(GL_LIGHTING);
-       else glColor3fv(&BackgroundColor.Coord[0]);
+       else glColor3fv(&BackgroundColor.V[0]);
        glDepthFunc(GL_LESS);
        glCullFace(GL_BACK);
        glPolygonMode(GL_BACK, GL_FILL);

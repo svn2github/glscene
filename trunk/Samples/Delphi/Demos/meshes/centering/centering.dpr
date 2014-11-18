@@ -1,3 +1,8 @@
+{: Illustrates the effects of AutoCentering for FreeForms.<p>
+
+   The same mesh is loaded three times and centered with different options
+   (by default, the polyhedron is not centered in its mesh).
+}
 program centering;
 
 uses

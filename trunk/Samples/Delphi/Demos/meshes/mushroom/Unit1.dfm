@@ -35,8 +35,6 @@ object Form1: TForm1
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 400
-    ExplicitHeight = 241
   end
   object Button1: TButton
     Left = 144
@@ -53,7 +51,6 @@ object Form1: TForm1
     ParentFont = False
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 223
   end
   object GLScene1: TGLScene
     VisibilityCulling = vcObjectBased

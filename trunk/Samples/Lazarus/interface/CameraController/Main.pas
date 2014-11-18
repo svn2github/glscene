@@ -15,7 +15,7 @@ uses
   Dialogs, ExtCtrls, GLViewer, GLScene, GLObjects,
   GLVectorFileObjects, GLCameraController, GLFile3ds, GLGeomObjects, GLTexture,
   GLCadencer, StdCtrls, ComCtrls, GLMaterial, GLCoordinates, GLCrossPlatform,
-  BaseClasses, VectorGeometry, GLNavigator, GLSmoothNavigator, GLGraph;
+  GLBaseClasses, GLVectorGeometry, GLNavigator, GLSmoothNavigator, GLGraph;
 
 type
 

@@ -9,7 +9,7 @@
 #include <ExtCtrls.hpp>
 #include <Forms.hpp>
 #include <Jpeg.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"

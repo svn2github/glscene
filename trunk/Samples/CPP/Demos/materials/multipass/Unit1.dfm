@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 343
   Top = 159
-  Caption = 'Form1'
+  Caption = 'Multipass'
   ClientHeight = 325
   ClientWidth = 430
   Color = clBtnFace

@@ -9,7 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBitmapFont.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -30,6 +30,9 @@
 #include "GLSMBASS.hpp"
 #include "GLFileWAV.hpp"
 #include "Jpeg.hpp"
+#include "Bass.hpp"
+
+//#include "Bass.hpp"
 
 //#include "Bass.hpp"
 
@@ -80,7 +83,7 @@ __published:	// IDE-managed Components
 	TGLSphere *SPWhiteBall;
 	TGLSphere *SPGoldBall;
 	TGLHUDSprite *HSGLScene;
-	TGLCamera *GLCamera;
+	TGLCamera *Camera;
 	TTimer *Timer;
 	TGLCadencer *GLCadencer;
 	TGLMaterialLibrary *GLMaterialLibrary;
@@ -89,6 +92,7 @@ __published:	// IDE-managed Components
 	TGLPolygonPFXManager *PFXTree;
 	TGLWindowsBitmapFont *GLWindowsBitmapFont;
 	TGLScreenSaver *GLScreenSaver1;
+	TGLFlatText *FTHappyNewYear;
 //	TScreenSaver *ScreenSaver;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ViewerMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
@@ -106,7 +110,6 @@ __published:	// IDE-managed Components
 	void __fastcall GLScreenSaver1CloseQuery(TObject *Sender, bool &CanClose);
 	void __fastcall GLScreenSaver1Execute(TObject *Sender);
 	void __fastcall GLScreenSaver1Preview(TObject *Sender, HWND previewHwnd);
-	void __fastcall GLScreenSaver1PropertiesRequested(TObject *Sender);
 
 
 private:	// User declarations

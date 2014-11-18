@@ -2,7 +2,7 @@
      Getting a GLODEManager and GLTerrainRenderer talking.
     Use '1' -> '5' keys to drop objects onto Terrain.
 }
-program odeterrain;
+program OdeTerrain;
 
 uses
   Forms,

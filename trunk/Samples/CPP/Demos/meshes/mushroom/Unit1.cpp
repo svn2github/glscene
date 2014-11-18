@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -49,7 +49,7 @@ void __fastcall TForm1::AddMushRooms()
 {
    int i;
    TGLProxyObject *proxy;
-   Vectorgeometry::TVector s;
+   Glvectorgeometry::TVector s;
    float f;
 
    // spawn some more mushrooms using proxy objects

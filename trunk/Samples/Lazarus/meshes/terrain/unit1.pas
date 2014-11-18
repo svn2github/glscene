@@ -45,8 +45,8 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData, GLColor,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLLCLViewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3;
+  GLSkydome, GLLCLViewer, GLSound, GLSMBASS, GLVectorGeometry, GLLensFlare,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLFileMP3;
 
 type
   TForm1 = class(TForm)

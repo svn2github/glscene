@@ -1,23 +1,15 @@
-{: Demo of the TGLPoints component.<p>
-
-   The component is specialized in rendering large numbers of points,
-   with ability to adjust point style (from fast square point to smooth
-   round points) and point parameters.<p>
-   The point parameters define how point size is adjusted with regard
-   to eye-point distance (to make farther points smaller, see ARB_point_parameters
-   for more details).<p>
-   The component is also suitable for particle systems, but offers less
-   flexibility than the TGLParticleFX.
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLWin32Viewer, StdCtrls, VectorGeometry, VectorLists,
-  GLCadencer, GLTexture, ExtCtrls, GLColor, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  StdCtrls, ExtCtrls,
+
+  //GLScene
+  GLScene, GLObjects, GLWin32Viewer,  GLVectorGeometry, GLVectorLists,
+  GLCadencer, GLTexture, GLColor, GLCrossPlatform, GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -32,6 +24,7 @@ type
     CBPointParams: TCheckBox;
     CBAnimate: TCheckBox;
     Timer1: TTimer;
+    LabelFPS: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -43,9 +36,9 @@ type
     procedure CBPointParamsClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer
   end;
 
@@ -84,13 +77,14 @@ begin
       f:=1+Cos(newTime);
       p:=GLPoints1.Positions;
       ab:=newTime*0.1;
-      for i:=0 to cNbPoints-1 do begin
+      for i:=0 to cNbPoints-1 do
+      begin
          a:=DegToRad(4*i)+ab;
          SinCos(a, sa, ca);
          v.X:=2*ca;
          v.Y:=2*Cos(f*a);
          v.Z:=2*sa;
-         p[i]:=v;
+         p.Create[i]:=v;
       end;
       // replicate points in second set
       GLPoints2.Positions:=GLPoints1.Positions;
@@ -129,7 +123,7 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   LabelFPS.Caption:=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

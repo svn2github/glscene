@@ -85,7 +85,7 @@ uses
   Classes, SysUtils,
   
   // GLScene
-  GLTexture, GLScene, VectorGeometry, VectorTypes, GLCadencer, GLStrings,
+  GLTexture, GLScene, GLVectorGeometry, GLVectorTypes, GLCadencer, GLStrings,
   OpenGLTokens, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
   GLMaterial;
 

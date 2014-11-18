@@ -35,16 +35,16 @@
     <Version Major="1"/>
     <Files Count="237">
       <Item1>
-        <Filename Value="../Source/ApplicationFileIO.pas"/>
-        <UnitName Value="ApplicationFileIO"/>
+        <Filename Value="../Source/GLApplicationFileIO.pas"/>
+        <UnitName Value="GLApplicationFileIO"/>
       </Item1>
       <Item2>
         <Filename Value="../Source/AsyncTimer.pas"/>
         <UnitName Value="AsyncTimer"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/BaseClasses.pas"/>
-        <UnitName Value="BaseClasses"/>
+        <Filename Value="../Source/GLBaseClasses.pas"/>
+        <UnitName Value="GLBaseClasses"/>
       </Item3>
       <Item4>
         <Filename Value="../Source/BumpMapping.pas"/>
@@ -147,16 +147,16 @@
         <UnitName Value="Spline"/>
       </Item28>
       <Item29>
-        <Filename Value="../Source/VectorGeometry.pas"/>
-        <UnitName Value="VectorGeometry"/>
+        <Filename Value="../Source/GLVectorGeometry.pas"/>
+        <UnitName Value="GLVectorGeometry"/>
       </Item29>
       <Item30>
-        <Filename Value="../Source/VectorLists.pas"/>
-        <UnitName Value="VectorLists"/>
+        <Filename Value="../Source/GLVectorLists.pas"/>
+        <UnitName Value="GLVectorLists"/>
       </Item30>
       <Item31>
-        <Filename Value="../Source/VectorTypes.pas"/>
-        <UnitName Value="VectorTypes"/>
+        <Filename Value="../Source/GLVectorTypes.pas"/>
+        <UnitName Value="GLVectorTypes"/>
       </Item31>
       <Item32>
         <Filename Value="../Source/VerletClasses.pas"/>

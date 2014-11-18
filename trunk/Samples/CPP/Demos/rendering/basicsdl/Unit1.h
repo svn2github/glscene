@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLScene.hpp"
@@ -25,9 +25,9 @@ __published:	// IDE-managed Components
 	TGLTeapot *Teapot1;
 	TGLCamera *GLCamera1;
 	TGLSDLViewer *GLSDLViewer1;
-	void __fastcall DataModuleCreate(TObject *Sender);
-	void __fastcall GLSDLViewer1EventPollDone(TObject *Sender);
-	void __fastcall GLSDLViewer1Resize(TObject *Sender);
+	void DataModuleCreate(TObject *Sender);
+	void GLSDLViewer1EventPollDone(TObject *Sender);
+	void GLSDLViewer1Resize(TObject *Sender);
 private:	// User declarations
 	bool firstPassDone;
 public:		// User declarations

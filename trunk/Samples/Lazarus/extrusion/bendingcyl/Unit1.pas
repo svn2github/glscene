@@ -17,7 +17,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLExtrusion, GLCadencer, StdCtrls, ExtCtrls,
-  GLLCLViewer, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLLCLViewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -53,7 +53,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry;
+uses GLVectorGeometry;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);

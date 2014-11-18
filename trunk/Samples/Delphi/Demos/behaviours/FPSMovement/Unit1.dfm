@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 209
   Top = 112
-  Width = 590
-  Height = 475
-  Caption = 'Form1'
+  Caption = 'FPSMovement'
+  ClientHeight = 383
+  ClientWidth = 588
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,7 @@ object Form1: TForm1
   KeyPreview = True
   OldCreateOrder = False
   Position = poDesktopCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
@@ -20,26 +21,26 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 574
-    Height = 437
+    Width = 588
+    Height = 383
     Camera = ThirdPersonCamera
     Buffer.BackgroundColor = clBlack
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 154.221511840820300000
+    FieldOfView = 150.733886718750000000
     Align = alClient
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 144
-    Top = 48
+    Left = 40
+    Top = 24
     object World: TGLDummyCube
       CubeSize = 1.000000000000000000
       object Player: TGLDummyCube
         Position.Coordinates = {0000803FCDCC8C3F0000803F0000803F}
         CubeSize = 1.000000000000000000
         BehavioursData = {
-          0458434F4C02010201060F54474C424650534D6F76656D656E74020006000200
-          020002000F6666263F0909060A4D6F764D616E61676572}
+          0458434F4C02010201060F54474C424650534D6F76656D656E74020012000000
+          000200020002000F6666263F0909060A4D6F764D616E61676572}
         object PlayerSphere: TGLSphere
           Radius = 0.649999976158142100
         end
@@ -68,8 +69,8 @@ object Form1: TForm1
       object Bot: TGLDummyCube
         CubeSize = 1.000000000000000000
         BehavioursData = {
-          0458434F4C02010201060F54474C424650534D6F76656D656E74020006000200
-          020002000FCDCCCC3E0909060A4D6F764D616E61676572}
+          0458434F4C02010201060F54474C424650534D6F76656D656E74020012000000
+          000200020002000FCDCCCC3E0909060A4D6F764D616E61676572}
         object BotCenter: TGLSphere
           Radius = 0.050000000745058060
         end
@@ -103,13 +104,8 @@ object Form1: TForm1
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 208
-    Top = 48
-  end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
-    Left = 176
-    Top = 48
+    Left = 128
+    Top = 88
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -226,26 +222,46 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 144
-    Top = 80
+    Left = 40
+    Top = 88
   end
   object Navigator1: TGLNavigator
     VirtualUp.Coordinates = {000000000000803F000000000000803F}
     UseVirtualUp = True
     AutoUpdateObject = True
-    Left = 144
-    Top = 136
+    Left = 40
+    Top = 152
   end
   object MovManager: TGLFPSMovementManager
     Navigator = Navigator1
     Scene = GLScene1
     DisplayTime = 2000
     MovementScale = 4.000000000000000000
-    Left = 248
-    Top = 144
+    Left = 128
+    Top = 24
     MapsData = {
       0458434F4C02010202061454474C4D6170436F6C6C656374696F6E4974656D02
       00060E4650534D6F76656D656E744D61700200020006044D6170310200020006
       0E4650534D6F76656D656E744D61700200020006044D617032}
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'FPSMovement - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 128
+    Top = 152
   end
 end

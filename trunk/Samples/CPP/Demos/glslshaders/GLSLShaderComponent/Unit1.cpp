@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -35,14 +36,15 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-  //First load scripts from media directory in project dir
   SetGLSceneMediaDir();
+  //First load scripts from shader directory in project dir
   GLSLShader->LoadShaderPrograms("Shader.Vert","Shader.Frag");
   GLSLShader->Enabled = true;
 
 
   //Second load models from media directory
-   Fighter->LoadFromFile("waste.md2"); //Fighter
+
+  Fighter->LoadFromFile("waste.md2"); //Fighter
   Fighter->SwitchToAnimation(0, true);
   Fighter->AnimationMode = aamLoop;
   Fighter->Scale->Scale(3);

@@ -13,7 +13,7 @@ interface
 uses
   Classes, SysUtils, Controls, Forms,
   GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
-  GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLGeomObjects, StdCtrls, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -51,7 +51,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, GLFile3DS, GLUtils;
+uses GLVectorGeometry, GLFile3DS, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

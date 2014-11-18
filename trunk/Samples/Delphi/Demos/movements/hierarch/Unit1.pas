@@ -4,8 +4,10 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, ComCtrls, ExtCtrls, StdCtrls,
-  AsyncTimer, Classes, Controls, GLCadencer, GLWin32Viewer, GLCrossPlatform,
-  GLCoordinates, BaseClasses;
+  Classes, Controls,
+  //GLS
+  GLCadencer, GLAsyncTimer, GLWin32Viewer, GLCrossPlatform,
+  GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -1,26 +1,14 @@
-{: Simple motion blur demo.<p>
-
-   This demo illustrates a simple technique to obtain a motion blur: using
-   a plane that covers all the viewport that is used to transparently blend
-   the previous frame. By adjusting the transparency, you control how many
-   frames are taken into account in the blur.<br>
-   Since it is a frame-to-frame mechanism, the result is highly dependant
-   on framerate, which is illustrated here by turning VSync ON or OFF in the
-   demo (hit V or S key). You can control the number of frames with the up
-   and down arrow key.<p>
-   In a more complex application, you will have to implement a framerate
-   control mechanism (relying on VSync isn't such a control mechanism,
-   VSync frequency is a user setting that depends on the machine and monitor).<p>
-
-   Original demo by Piotr Szturmaj.
-}
 unit Unit1;
 
 interface
 
-uses Windows, Forms, Classes, Controls, GLWin32Viewer, GLCadencer, GLScene,
-  GLObjects, GLTexture, GLHUDObjects, SysUtils, ExtCtrls, GLPolyhedron,
-  GLGeomObjects, GLUtils, GLCrossPlatform, GLCoordinates, BaseClasses;
+uses
+  Windows, Forms, Classes, SysUtils, ExtCtrls, Controls,
+
+  //GLS
+  GLWin32Viewer, GLCadencer, GLScene, GLContext,
+  GLObjects, GLTexture, GLHUDObjects, GLPolyhedron,
+  GLGeomObjects, GLUtils, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -35,6 +23,7 @@ type
     Timer1: TTimer;
     Dodecahedron: TGLDodecahedron;
     DummyCube: TGLDummyCube;
+    Panel1: TPanel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -61,9 +50,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLContext;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -109,15 +95,6 @@ begin
    Dodecahedron.RollAngle:=newTime*15;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
-const
-   cVSync : array [vsmSync..vsmNoSync] of String = ('VSync ON', 'VSync OFF');
-begin
-   Caption:=Format('Motion Blur on %d frames | %s | %f FPS',
-                   [frames, cVSync[GLSceneViewer.VSync], GLSceneViewer.FramesPerSecond]);
-   GLSceneViewer.ResetPerformanceMonitor;
-end;
-
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -155,5 +132,15 @@ begin
       Camera.MoveAroundTarget(my-y, mx-x);
    mx:=x; my:=y;
 end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+const
+   cVSync : array [vsmSync..vsmNoSync] of String = ('VSync ON', 'VSync OFF');
+begin
+   Panel1.Caption:=Format('Motion Blur on %d frames | %s | %f FPS',
+                   [frames, cVSync[GLSceneViewer.VSync], GLSceneViewer.FramesPerSecond]);
+   GLSceneViewer.ResetPerformanceMonitor;
+end;
+
 
 end.

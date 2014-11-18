@@ -30,7 +30,7 @@ uses
 {$ENDIF}
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
   GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
-  GLCrossPlatform, BaseClasses, GLMaterial;
+  GLCrossPlatform, GLBaseClasses, GLMaterial;
 
 
 type

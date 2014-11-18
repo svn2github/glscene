@@ -27,7 +27,7 @@ uses
   GLCadencer, GLVectorFileObjects, GLScene, GLObjects,
   StdCtrls, Buttons, Controls, ExtCtrls, ComCtrls, Classes, Forms, Graphics,
   GLSkydome, GLLCLViewer, GLNavigator, GLFileMD2, GLFile3DS,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -77,7 +77,7 @@ implementation
 
 {$R *.lfm}
 
-uses VectorGeometry, SysUtils, GLKeyboard, GLUtils, LCLType;
+uses GLVectorGeometry, SysUtils, GLKeyboard, GLUtils, LCLType;
 
 const
   cWalkStep = 6;   // this is our walking speed, in 3D units / second

@@ -8,7 +8,7 @@ uses
 
   //GLScene
   GLScene, GLWin32Viewer, GLFBORenderer, GLObjects, GLCoordinates, GLSimpleNavigation,
-  GLMaterial, GLCadencer,  GLCrossPlatform, BaseClasses,
+  GLMaterial, GLCadencer,  GLCrossPlatform, GLBaseClasses,
   GLRenderContextInfo, GLContext, AsyncTimer;
 
 type

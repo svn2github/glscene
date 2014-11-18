@@ -34,8 +34,6 @@ object GLSLTestForm: TGLSLTestForm
     FieldOfView = 136.997131347656300000
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 506
-    ExplicitHeight = 282
   end
   object Panel1: TPanel
     Left = 0
@@ -44,8 +42,6 @@ object GLSLTestForm: TGLSLTestForm
     Height = 45
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = -45
-    ExplicitWidth = 124
     object LightMovingCheckBox: TCheckBox
       Left = 8
       Top = 8

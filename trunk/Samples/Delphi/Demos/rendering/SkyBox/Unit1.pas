@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls,GLScene, GLTexture, GLSkyBox, GLCrossPlatform,
+  Dialogs, ExtCtrls, JPeg,
+  //GLS
+  GLScene, GLTexture, GLSkyBox, GLCrossPlatform,
   GLCadencer, GLNavigator, GLWin32Viewer, GLKeyboard, GLLensFlare, GLObjects,
-  JPeg, GLMaterial, GLCoordinates, BaseClasses, GLSimpleNavigation,
+  GLMaterial, GLCoordinates, GLBaseClasses, GLSimpleNavigation,
   GLUtils;
 
 type

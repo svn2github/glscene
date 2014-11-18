@@ -17,7 +17,7 @@ uses
 
   // GLScene
   GLTexture, GLCadencer, GLViewer, GLScene, GLPostEffects,
-  GLGraph, GLContext, VectorGeometry, GLGeomObjects,
+  GLGraph, GLContext, GLVectorGeometry, GLGeomObjects,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
 
   // GlScene shaders
@@ -25,7 +25,7 @@ uses
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage, GLMaterial, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses;
 
 type
   TPostShaderDemoForm = class(TForm)

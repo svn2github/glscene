@@ -8,16 +8,16 @@ uses
  {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Imaging.GIFImg,
+  Vcl.Imaging.GIFImg, Vcl.Imaging.Jpeg,
   {$ELSE}
   Windows, Messages, SysUtils, Classes, ExtCtrls, StdCtrls,
-  Graphics, Controls, Forms, Dialogs, GIFImg,
+  Graphics, Controls, Forms, Dialogs, GIFImg, Jpeg,
   {$ENDIF}
   //GLScene
-  GLScene, GLTerrainRenderer, GLObjects, Jpeg, GLHeightData, GLColor,
+  GLScene, GLObjects, GLTerrainRenderer, GLHeightData, GLColor,
   GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont, GLKeyboard,
-  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare,
-  GLMaterial, GLCoordinates, BaseClasses, GLState, GLFileMP3,
+  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, GLVectorGeometry, GLLensFlare,
+  GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLFileMP3,
   GLUtils, GLCrossPlatform;
 
 type

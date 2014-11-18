@@ -1,10 +1,10 @@
-vcl\TAsyncTimer.bmp
 vcl\TApplicationFileIO.bmp
 vcl\TCGShader.bmp
 vcl\TCollisionManager.bmp
 vcl\TGLAnimationControler.bmp
 vcl\TGLAsmShader.bmp
 vcl\TGLAsyncHDS.bmp
+vcl\TGLAsyncTimer.bmp
 vcl\TGLBitmapFont.bmp
 vcl\TGLBitmapHDS.bmp
 vcl\TGLBumpmapHDS.bmp

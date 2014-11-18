@@ -52,7 +52,7 @@
 // May be useful when debugging.
 {.$DEFINE GLS_ENABLE_UNSAFE_WARNINGS}
 
-// De-Activate assembly routines in VectorGeometry.pas
+// De-Activate assembly routines in GLVectorGeometry.pas
 {.$DEFINE GEOMETRY_NO_ASM}
 
 // De-Activate assembly routines in other GLS units.

@@ -33,7 +33,6 @@ object Form1: TForm1
     Height = 41
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 693
     object Label1: TLabel
       Left = 112
       Top = 3

@@ -21,7 +21,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, GLScene, GLTexture, GLSkyBox, GLCrossPlatform,
   GLCadencer, GLNavigator, GLLCLViewer, GLKeyboard, GLLensFlare, GLObjects,
-  GLMaterial, GLCoordinates, BaseClasses;
+  GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

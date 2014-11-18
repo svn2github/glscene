@@ -29,7 +29,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects, ExtCtrls,
   StdCtrls, GLLCLViewer, GLTexture, GLCrossPlatform, GLMaterial,
-  GLCoordinates, BaseClasses, GLRenderContextInfo;
+  GLCoordinates, GLBaseClasses, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)

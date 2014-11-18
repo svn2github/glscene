@@ -33,8 +33,8 @@ uses
   GLCadencer,
   GLViewer,
   GLCrossPlatform,
-  BaseClasses,
-  VectorGeometry;
+  GLBaseClasses,
+  GLVectorGeometry;
 
 type
 

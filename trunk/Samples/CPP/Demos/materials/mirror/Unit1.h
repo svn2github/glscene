@@ -17,7 +17,7 @@
 #include "GLExtrusion.hpp"
 #include "GLMultiPolygon.hpp"
 #include "GLTeapot.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 //---------------------------------------------------------------------------

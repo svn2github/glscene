@@ -1,22 +1,17 @@
-{ : Walk and carry demo.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>31/01/11 - Yar - Updated after Huge update GLNGDManager (by Dev)
-  <li>25/12/10 - Dev - Created
-  </ul>
-}
-
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, Math,
-  Dialogs, GLNGDManager, GLMaterial, GLCadencer, GLWin32Viewer, GLCrossPlatform,
-  BaseClasses, GLScene, GLGeomObjects, GLBitmapFont, GLWindowsFont, GLObjects,
-  GLCoordinates, GLFile3DS, GLFileJPEG, GLNavigator, GLKeyboard, vectorgeometry,
-  vectortypes, StdCtrls, GLVectorFileObjects, ExtCtrls, GLColor, GLHUDObjects,
-  GLTexture, JPEG, GLUtils;
+  Dialogs, StdCtrls, ExtCtrls, Jpeg,
+
+  //GLS
+  GLNGDManager, GLMaterial, GLCadencer, GLWin32Viewer, GLCrossPlatform,
+  GLBaseClasses, GLScene, GLGeomObjects, GLBitmapFont, GLWindowsFont, GLObjects,
+  GLCoordinates, GLFile3DS, GLFileJPEG, GLNavigator, GLKeyboard, GLVectorGeometry,
+  GLVectorTypes, GLVectorFileObjects, GLColor, GLHUDObjects,
+  GLTexture, GLUtils;
 
 type
 

@@ -16,7 +16,7 @@
 #include "GLGraph.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLCadencer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"

@@ -11,7 +11,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBehaviours.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"

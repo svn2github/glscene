@@ -97,6 +97,7 @@ object Form1: TForm1
   end
   object GLSMWaveOut: TGLSMWaveOut
     Active = True
+    MaxChannels = 32
     MasterVolume = 1.000000000000000000
     Listener = Mickey
     Sources = <>

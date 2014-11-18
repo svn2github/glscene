@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #pragma hdrstop
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCadencer"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -73,7 +74,7 @@ void __fastcall TForm1::CgShader1Initialize(TCustomCgShader *CgShader)
 
 void __fastcall TForm1::CgShader1ApplyVP(TCgProgram *CgProgram, TObject *Sender)
 {
-  Vectorgeometry::TVector v;
+  Glvectorgeometry::TVector v;
   CgProgram->ParamByName("ModelViewProj")->SetAsStateMatrix(CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 // Alternatively, you can set it using:
 // CgProgram->SetStateMatrix("ModelViewProj", CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
@@ -92,7 +93,7 @@ void __fastcall TForm1::CgShader1ApplyVP(TCgProgram *CgProgram, TObject *Sender)
 
 void __fastcall TForm1::CgShader1ApplyFP(TCgProgram *CgProgram, TObject *Sender)
 {
-  Vectorgeometry::TVector v;
+  Glvectorgeometry::TVector v;
   CgProgram->ParamByName("Map0")->EnableTexture();
   CgProgram->ParamByName("Map1")->EnableTexture();
   CgProgram->ParamByName("Map2")->EnableTexture();

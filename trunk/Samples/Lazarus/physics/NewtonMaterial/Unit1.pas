@@ -26,7 +26,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLSimpleNavigation, GLScene, GLCoordinates, GLNGDManager,
   GLBitmapFont, GLWindowsFont, GLCadencer, GLViewer, GLCrossPlatform,
-  BaseClasses, GLObjects;
+  GLBaseClasses, GLObjects;
 
 type
   TForm1 = class(TForm)

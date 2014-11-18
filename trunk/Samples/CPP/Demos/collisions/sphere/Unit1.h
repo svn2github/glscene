@@ -7,7 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLCollision.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -28,7 +28,7 @@ __published:	// IDE-managed Components
 	TGLSphere *Sphere1;
 	TGLSphere *Sphere2;
 	TGLCamera *GLCamera1;
-	TCollisionManager *CollisionManager1;
+	TGLCollisionManager *CollisionManager1;
 	void __fastcall TrackBar1Change(TObject *Sender);
 	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall CollisionManager1Collision(TObject *Sender, TGLBaseSceneObject *object1,

@@ -1,24 +1,16 @@
-{: Loading NURBS into a GLScene FreeForm/Actor object<p>
-
-   A very simple parametric model of a duck, comprised of 3 NURBS
-   surfaces. The Nurbs format is essentially the NurbsSurface geometry 
-   type used in VRML. One limitation at the moment is the Control points
-   must each be on a separate line. Inverted surfaces are handled with 
-   the ccw FALSE statement in the .nurbs file (duck3.nurbs uses this 
-   setting).<p>
-   
-   Use the resolution slider to increase or decrease the models triangle
-   count dynamically.<p>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
-  ExtCtrls, ComCtrls, StdCtrls, GLTexture, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLMaterial, GLState;
+  Dialogs, ExtCtrls, ComCtrls, StdCtrls,
+
+  //GLS
+  GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
+  GLParametricSurfaces, GLVectorGeometry, GLVectorLists,
+  GLTexture, GLCrossPlatform, GLCoordinates,
+  GLMaterial, GLState, GLBaseClasses, GLFileNurbs, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -52,8 +44,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

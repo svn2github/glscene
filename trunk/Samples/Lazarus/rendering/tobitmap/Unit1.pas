@@ -22,7 +22,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   GLCadencer, GLObjects, GLScene, ExtCtrls, GLLCLViewer,
   GLHUDObjects, StdCtrls, GLSpaceText, GLCrossPlatform, GLCoordinates,
-  BaseClasses;
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

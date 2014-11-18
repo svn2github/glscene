@@ -88,12 +88,10 @@ uses
   {$IFDEF MSWINDOWS}
   Windows,
   {$ENDIF}
-  Classes, SysUtils,
-
   {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Consts,  VCL.Forms,
+  System.Classes, System.SysUtils, System.Types, VCL.Consts, VCL.Forms,
   {$ELSE}
-  Forms,
+  Classes, SysUtils, Types, Forms,
   {$IFDEF FPC}
   LCLVersion, LCLType,
   {$ELSE}
@@ -105,8 +103,8 @@ uses
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
-  GLCrossPlatform, OpenGLTokens, OpenGLAdapter,  VectorGeometry,
-  VectorTypes,  GLState,  GLPipelineTransformation,  GLTextureFormat
+  GLCrossPlatform, OpenGLTokens, OpenGLAdapter,  GLVectorGeometry,
+  GLVectorTypes,  GLState,  GLPipelineTransformation,  GLTextureFormat
  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)

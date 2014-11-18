@@ -8,9 +8,9 @@ uses
 
   //GLScene
   GLBitmapFont, GLWindowsFont, GLTexture,  GLCadencer, GLWin32Viewer, GLScene,
-  GLObjects,  GLParticleFX, VectorGeometry, VectorTypes, GLEParticleMasksManager,
-  GLGeomObjects, AsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
-  BaseClasses;
+  GLObjects,  GLParticleFX, GLVectorGeometry, GLVectorTypes, GLEParticleMasksManager,
+  GLGeomObjects, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLBaseClasses;
 
 const
 
@@ -61,7 +61,7 @@ type
     Sphere: TGLSphere;
     CheckBox1: TCheckBox;
     GLArrowLine1: TGLArrowLine;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     procedure GLCadencerProgress(Sender: TObject; const DeltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -237,6 +237,11 @@ begin
   FormCreate(Sender);
 end;
 
+procedure TForm1.Edit2Change(Sender: TObject);
+begin
+  RefreshMask;
+end;
+
 procedure TForm1.Edit3Change(Sender: TObject);
 begin
   GLEParticleMasksManager1.ParticleMaskByName('mask').PitchAngle := StrToFloatDef(Edit3.Text, 0);
@@ -261,11 +266,6 @@ procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
   Caption := FormatFloat('Particle Masking - ' +'FPS: 0.0', SceneViewer.FramesPerSecond) + ' Particle Count: ' + IntToStr(PLManager.ParticleCount);
   SceneViewer.ResetPerformanceMonitor;
-end;
-
-procedure TForm1.Edit2Change(Sender: TObject);
-begin
-  RefreshMask;
 end;
 
 end.

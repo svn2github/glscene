@@ -4,13 +4,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  ExtCtrls, StdCtrls, ComCtrls,
+
+  //GLS
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
-  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
-  OpenGLTokens, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
-  GLVerletClothify, ComCtrls, GLFileJPEG, GLFile3DS, ODEImport, ODEGL,
-  GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume, GLUtils,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses, GLRenderContextInfo,
-  GLState, GLContext;
+  GLFileMS3D, GLVerletTypes, GLVectorTypes, GLVectorLists, GLVectorGeometry,
+  GLTexture, OpenGLTokens, GLFileSMD, GLCadencer, GLShadowPlane,
+  GLVerletClothify, GLFileJPEG, GLFile3DS, ODEImport, ODEGL,
+  GLGeometryBB, GLSpacePartition, GLGeomObjects, GLShadowVolume, GLUtils,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLRenderContextInfo,
+  GLState, GLContext, GLBaseClasses;
 
 type
   TfrmClothify = class(TForm)
@@ -208,6 +211,7 @@ var
     Cube.Sides := Sides;//}
   end;
 
+
   procedure CreateODEWorld;
   var
     m : TdMass;
@@ -227,13 +231,13 @@ var
     ODESphere := dCreateSphere (space, GLSphere1.Radius);
 
     dGeomSetBody (ODESphere, body);
-    dBodySetMass (body, @m);
+    dBodySetMass (body, @m); ///How to set centre of mass to origin ???
 
     ODESphere.data := GLSphere1;
 
     PositionSceneObjectForGeom(ODESphere);
   end;
-  
+
 begin
   randomize;
 

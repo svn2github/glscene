@@ -8,7 +8,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCollision"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -161,7 +161,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shi
           int X, int Y)
 {
    int dx, dy;
-   Vectorgeometry::TVector VX, VY;
+   Glvectorgeometry::TVector VX, VY;
    TGLCamera *Camera;
 
    Camera = GLSceneViewer1->Camera;

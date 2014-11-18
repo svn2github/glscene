@@ -11,8 +11,8 @@
 #include <Vcl.Dialogs.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "AsyncTimer.hpp"
-#include "BaseClasses.hpp"
+#include "GLAsyncTimer.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLBumpShader.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -25,6 +25,7 @@
 #include "OpenGLAdapter.hpp"
 #include "OpenGL1x.hpp"
 #include "JPeg.hpp"
+#include "GLAsyncTimer.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -56,7 +57,7 @@ __published:	// IDE-managed Components
 	TGLMaterialLibrary *GLMaterialLibrary1;
 	TGLBumpShader *GLBumpShader1;
 	TColorDialog *ColorDialog1;
-	TAsyncTimer *AsyncTimer1;
+	TGLAsyncTimer *AsyncTimer1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall CheckBox1Click(TObject *Sender);

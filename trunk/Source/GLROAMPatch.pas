@@ -34,7 +34,7 @@ interface
 
 uses
   SysUtils,
-  VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext,
+  GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
   OpenGLTokens, XOpenGL;
 
 type

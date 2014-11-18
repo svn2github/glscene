@@ -14,7 +14,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLCadencer, GLScene, GLObjects, GLTexture, StdCtrls,
-  GLLCLViewer, GLMaterial, GLCoordinates, GLCrossPlatform, BaseClasses;
+  GLLCLViewer, GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

@@ -140,7 +140,7 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}Windows, {$ENDIF}
-  SysUtils, Dialogs, ApplicationFileIO,
+  SysUtils, Dialogs, GLApplicationFileIO,
   ShellAPI,
 {$IFNDEF FPC}
   TlHelp32

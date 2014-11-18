@@ -3,9 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLObjects, GLExtrusion, GLWin32Viewer, VectorGeometry,
-  GLGeomObjects, GLCrossPlatform, GLCoordinates, BaseClasses;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, Jpeg,
+
+  //GLS
+  GLScene, GLObjects, GLExtrusion, GLWin32Viewer, GLVectorGeometry,
+  GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -29,9 +31,9 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     mx, my : Integer;
   end;
 

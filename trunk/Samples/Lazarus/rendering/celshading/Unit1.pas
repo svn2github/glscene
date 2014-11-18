@@ -5,8 +5,8 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLCadencer, GLLCLViewer, GLVectorFileObjects,
-  AsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
-  GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses;
+  GLAsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -18,7 +18,7 @@ type
     GLDummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLActor1: TGLActor;
-    AsyncTimer1: TAsyncTimer;
+    AsyncTimer1: TGLAsyncTimer;
     GLTexturedCelShader: TGLCelShader;
     GLColoredCelShader: TGLCelShader;
     GLTorus1: TGLTorus;

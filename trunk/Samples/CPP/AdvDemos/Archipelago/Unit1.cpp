@@ -6,22 +6,22 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "GLScene"
+#pragma link "GLObjects"
+#pragma link "GLVectorFileObjects"
 #pragma link "GLBitmapFont"
 #pragma link "GLCadencer"
 #pragma link "GLHeightData"
 #pragma link "GLHeightTileFileHDS"
 #pragma link "GLHUDObjects"
-#pragma link "GLObjects"
-#pragma link "GLScene"
 #pragma link "GLSkydome"
 #pragma link "GLTerrainRenderer"
 #pragma link "GLTexture"
-#pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
 #pragma link "GLKeyboard"
 #pragma link "GLState"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma link "GLMaterial"
@@ -61,8 +61,8 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	{
 	  name = Format("Tex_%d_%d.bmp", ARRAYOFCONST((i, j)));
 	  if (! FileExists(name)) {
-		 ShowMessage( "Texture file "+name+" not found...\n"
-					  "Did you run ""splitter->exe"" as said in the readme->txt?");
+		 ShowMessage( "Texture file "+name+" not found...\r\
+					  Did you run ""splitter->exe"" as said in the readme->txt?");
 		 Application->Terminate();
 		 Abort();
 	  }
@@ -97,7 +97,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   DCCamera->Turn(200);
 
   // Help text
-  HTHelp->Text = WideString("GLScene Archipelago Demo\r\
+  HTHelp->Text = String("GLScene Archipelago Demo\r\
 			  * : Increase CLOD precision\r\
 			  / : decrease CLOD precision\r\
 			  W : wireframe on/off\r\
@@ -129,7 +129,7 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
 {
   float speed, alpha, f;
   float terrainHeight, surfaceHeight;
-  Vectorgeometry::TVector sbp;
+  Glvectorgeometry::TVector sbp;
   POINT newMousePos;
 
   // handle keypresses
@@ -161,12 +161,12 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   // mouse movements and actions
   if (IsKeyDown(VK_LBUTTON)) {
     alpha = DCCamera->Position->Y;
-    DCCamera->Position->AddScaledVector(speed, GLCamera->AbsoluteVectorToTarget());
+	DCCamera->Position->AddScaledVector(speed, GLCamera->AbsoluteVectorToTarget());
     CamHeight = CamHeight+DCCamera->Position->Y-alpha;
   }
   if (IsKeyDown(VK_RBUTTON)) {
     alpha = DCCamera->Position->Y;
-    DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteVectorToTarget());
+	DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteVectorToTarget());
     CamHeight = CamHeight+DCCamera->Position->Y-alpha;
   }
   GetCursorPos(&newMousePos);
@@ -248,12 +248,12 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
     case 'w' :
 	case 'W' : {
       if (MaterialLibrary->Materials->Items[0]->Material->PolygonMode == pmLines)
-         pm = pmFill;
+		 pm = pmFill;
       else pm = pmLines;
       for (i = 0; i<MaterialLibrary->Materials->Count; i++)
 		 MaterialLibrary->Materials->Items[i]->Material->PolygonMode = pm;
 
-       for (i = 0; i<MLSailBoat->Materials->Count; i++)
+	   for (i = 0; i<MLSailBoat->Materials->Count; i++)
           MLSailBoat->Materials->Items[i]->Material->PolygonMode = pm;
        FFSailBoat->StructureChanged();
 	   break;
@@ -306,7 +306,7 @@ void __fastcall TForm1::GLCustomHDS1StartPreparingData(THeightData *heightData)
        htfHD->DataType = hdtSmallInt;
 	   heightData->Allocate(hdtSmallInt);
        Move(htfHD->SmallIntData, heightData->SmallIntData, htfHD->DataSize);
-       heightData->DataState = hdsReady;
+	   heightData->DataState = hdsReady;
        heightData->HeightMin = htfHD->HeightMin;
        heightData->HeightMax = htfHD->HeightMax;
 	} else heightData->DataState = hdsNone;
@@ -444,7 +444,7 @@ void __fastcall TForm1::DOWakeProgress(TObject *Sender,
 
 {
   int i;
-  Vectorgeometry::TVector sbp, sbr;
+  Glvectorgeometry::TVector sbp, sbr;
 
   if (WakeVertices == NULL)
   {
@@ -480,7 +480,7 @@ void __fastcall TForm1::DOWakeProgress(TObject *Sender,
       if (WakeVertices->Count >= 80) {
          WakeVertices->Delete(0);
 		 WakeVertices->Delete(0);
-         WakeStretch->Delete(0);
+		 WakeStretch->Delete(0);
          WakeTime->Delete(0);
       }
 	}
@@ -491,8 +491,8 @@ void __fastcall TForm1::DOWakeProgress(TObject *Sender,
 void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
 {
   int i, n;
-  Vectortypes::TVector3f p;
-  Vectorgeometry::TVector sbp;
+  Glvectortypes::TVector3f p;
+  Glvectorgeometry::TVector sbp;
   float c;
 
   if ((WakeVertices) &&
@@ -529,7 +529,7 @@ void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
 			glTexCoord2f(0, WakeTime->Items[i/2]);
 		 } else
 		 glTexCoord2f(1, WakeTime->Items[i/2]);
-		 glVertex3f(p.V[0], WaterHeight(sbp.V[0], sbp.V[1]), p.V[2]);
+		 glVertex3f(p.X, WaterHeight(sbp.X, sbp.Y), p.Z);
 	  }
 	  glEnd();
 

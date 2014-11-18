@@ -4,9 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
-  GLBitmapFont, GLWin32Viewer, GLWindowsFont, Menus, GLWindows, GLGui,
-  GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, BaseClasses,
+  ExtCtrls, Menus,
+  //GLS
+  GLScene, GLHUDObjects, GLObjects, GLCadencer,
+  GLBitmapFont, GLWin32Viewer, GLWindowsFont, GLWindows, GLGui,
+  GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLUtils;
 
 type

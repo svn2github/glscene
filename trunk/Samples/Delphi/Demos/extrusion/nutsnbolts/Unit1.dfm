@@ -1,11 +1,10 @@
 object Form1: TForm1
-  Left = 226
-  Top = 150
-  Width = 471
-  Height = 341
-  AutoSize = True
+  Left = 162
+  Top = 77
   BorderWidth = 3
-  Caption = 'Form1'
+  Caption = 'Nut and Bolt'
+  ClientHeight = 285
+  ClientWidth = 437
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,17 +12,19 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 449
-    Height = 297
+    Width = 437
+    Height = 285
     Camera = GLCamera1
-    Buffer.BackgroundColor = clNavy
-    FieldOfView = 142.783203125000000000
+    Buffer.BackgroundColor = clBackground
+    FieldOfView = 141.330383300781200000
+    Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
@@ -151,11 +152,11 @@ object Form1: TForm1
           Slices = 6
         end
         object Annulus1: TGLAnnulus
-          BottomRadius = 0.699999988079071000
+          BottomRadius = 0.699999988079071100
           Height = 0.449999988079071000
           BottomInnerRadius = 0.550000011920929000
           TopInnerRadius = 0.550000011920929000
-          TopRadius = 0.699999988079071000
+          TopRadius = 0.699999988079071100
           Parts = [anInnerSides, anBottom, anTop]
         end
       end

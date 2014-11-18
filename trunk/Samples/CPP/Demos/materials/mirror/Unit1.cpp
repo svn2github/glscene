@@ -15,7 +15,7 @@
 #pragma link "GLExtrusion"
 #pragma link "GLMultiPolygon"
 #pragma link "GLTeapot"
-#pragma link "BaseClasses"
+#pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
 #pragma resource "*.dfm"

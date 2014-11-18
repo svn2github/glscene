@@ -42,6 +42,7 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object ExtrusionSolid: TGLExtrusionSolid
+      Material.Texture.ImageClassName = 'TGLPicFileImage'
       Contours = <>
       Parts = [espOutside, espStartPolygon, espStopPolygon]
       Height = 1.000000000000000000

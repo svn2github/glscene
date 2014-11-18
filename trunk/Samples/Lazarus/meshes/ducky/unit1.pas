@@ -18,7 +18,7 @@ uses
   SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLLCLViewer,
   ExtCtrls, ComCtrls, StdCtrls, GLTexture, GLCrossPlatform, GLCoordinates,
-  BaseClasses, GLMaterial, GLState;
+  GLBaseClasses, GLMaterial, GLState;
 
 type
   TForm1 = class(TForm)
@@ -53,7 +53,7 @@ implementation
 
 {$R *.lfm}
 
-uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists, GLUtils;
+uses GLFileNurbs, GLParametricSurfaces, GLVectorGeometry, GLVectorLists, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

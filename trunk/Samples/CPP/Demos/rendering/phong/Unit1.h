@@ -7,7 +7,7 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
-#include "AsyncTimer.hpp"
+#include "GLAsyncTimer.hpp"
 #include "GLCadencer.hpp"
 #include "GLObjects.hpp"
 #include "GLPhongShader.hpp"
@@ -15,7 +15,7 @@
 #include "GLTeapot.hpp"
 #include "GLTexture.hpp"
 #include "GLWin32Viewer.hpp"
-#include "BaseClasses.hpp"
+#include "GLBaseClasses.hpp"
 #include "GLAsmShader.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -35,7 +35,7 @@ __published:	// Composants gérés par l'EDI
         TGLMaterialLibrary *GLMaterialLibrary1;
         TGLPhongShader *GLPhongShader1;
         TGLCadencer *GLCadencer1;
-        TAsyncTimer *AsyncTimer1;
+		TGLAsyncTimer *AsyncTimer1;
         void __fastcall GLSceneViewer1MouseDown(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y);
         void __fastcall GLSceneViewer1MouseMove(TObject *Sender,

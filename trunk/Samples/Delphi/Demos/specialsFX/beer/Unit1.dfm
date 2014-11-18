@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 203
   Top = 108
-  Width = 392
-  Height = 430
-  Caption = 'Virtual Beer'
+  Caption = 'Beer'
+  ClientHeight = 386
+  ClientWidth = 413
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,21 +11,22 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnActivate = FormActivate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 376
-    Height = 392
+    Width = 413
+    Height = 386
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AmbientColor.Color = {0000000000000000000000000000803F}
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa2x
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 150.213058471679700000
+    FieldOfView = 150.951690673828100000
     Align = alClient
     OnDblClick = GLSceneViewer1DblClick
     OnMouseMove = GLSceneViewer1MouseMove
@@ -33,7 +34,7 @@ object Form1: TForm1
   end
   object GLScene1: TGLScene
     VisibilityCulling = vcHierarchical
-    Left = 16
+    Left = 32
     Top = 16
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -57,11 +58,11 @@ object Form1: TForm1
         Parts = [cySides, cyBottom]
         EffectsData = {
           0458434F4C02010201061254474C536F75726365504658456666656374020202
-          000600020002000614474C506F6C79676F6E5046584D616E6167657231050000
-          000000000080FF3F020602000900000000CDCCCC3D0000000000000000020009
-          00000000666666BF00000000000000000200090000803F9A99993E0000803F00
-          000000050000000000CDCCCCFA3F0500000000003333F3FE3F0500000000008F
-          C2F5F93F02000201090500000000000000000000080200}
+          001200000000020002000614474C506F6C79676F6E5046584D616E6167657231
+          050000000000000080FF3F020602000900000000CDCCCC3D0000000000000000
+          02000900000000666666BF00000000000000000200090000803F9A99993E0000
+          803F00000000050000000000CDCCCCFA3F0500000000003333F3FE3F05000000
+          00008FC2F5F93F02000201090500000000000000000000080200}
       end
       object GLParticleFXRenderer2: TGLParticleFXRenderer
         ZTest = False
@@ -84,10 +85,10 @@ object Form1: TForm1
         CubeSize = 1.000000000000000000
         EffectsData = {
           0458434F4C02010201061254474C536F75726365504658456666656374020202
-          000600020002000613474C5065726C696E5046584D616E616765723105000000
-          0000000080FF3F02060200080200080200090000803F9A99193E0000803F0000
-          00000500000000000000000000050000000000000080FF3F0500000000000AD7
-          A3F93F02000201090500000000000000000000080200}
+          001200000000020002000613474C5065726C696E5046584D616E616765723105
+          0000000000000080FF3F02060200080200080200090000803F9A99193E000080
+          3F000000000500000000000000000000050000000000000080FF3F0500000000
+          000AD7A3F93F02000201090500000000000000000000080200}
       end
       object GLParticleFXRenderer1: TGLParticleFXRenderer
         BlendingMode = bmTransparency
@@ -119,8 +120,8 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 56
-    Top = 16
+    Left = 32
+    Top = 72
   end
   object GLPerlinPFXManager1: TGLPerlinPFXManager
     Cadencer = GLCadencer1
@@ -154,8 +155,8 @@ object Form1: TForm1
         LifeTime = 5.000000000000000000
         SizeScale = 1.000000000000000000
       end>
-    Left = 112
-    Top = 16
+    Left = 336
+    Top = 72
   end
   object GLPolygonPFXManager1: TGLPolygonPFXManager
     Cadencer = GLCadencer1
@@ -164,7 +165,7 @@ object Form1: TForm1
     Friction = 1.000000000000000000
     BlendingMode = bmTransparency
     NbSides = 5
-    ParticleSize = 0.029999999329447750
+    ParticleSize = 0.029999999329447740
     ColorInner.Color = {0000803F000000000000000000000000}
     ColorOuter.Color = {0000803F0000803F0000000000000000}
     LifeColors = <
@@ -180,7 +181,7 @@ object Form1: TForm1
         LifeTime = 3.500000000000000000
         SizeScale = 1.000000000000000000
       end>
-    Left = 152
-    Top = 16
+    Left = 336
+    Top = 8
   end
 end
