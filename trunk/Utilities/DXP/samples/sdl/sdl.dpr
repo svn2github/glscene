@@ -2,8 +2,9 @@ program sdl_test;
 
 {$APPTYPE gui}
 
-uses Forms, GLScene, GLSDLContext, SDL, GLTeapot, SysUtils
-     {$IFDEF FPC}, Interfaces{$ENDIF};
+uses
+  Forms, GLScene, GLSDLContext, GLSDL, GLTeapot, SysUtils
+  {$IFDEF FPC}, Interfaces{$ENDIF};
 
 type
    TMySDLViewer = class (TGLSDLViewer)
