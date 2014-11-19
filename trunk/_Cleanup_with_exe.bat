@@ -39,3 +39,4 @@ attrib -R "AdvDemos/Q3Demo/Model/animation.cfg"
 attrib -R "Source/DesignTime/Resources/lazres.exe"
 
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
+
