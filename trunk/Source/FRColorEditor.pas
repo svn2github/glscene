@@ -18,18 +18,17 @@ interface
 {$i GLScene.inc}
 
 uses
-  Windows,
+
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils,
-  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls,
-  VCL.Dialogs, VCL.Controls, VCL.Graphics,
+  WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,
+  VCL.ComCtrls, VCL.ExtCtrls, VCL.Dialogs, VCL.Controls, VCL.Graphics,
 {$ELSE}
-  Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs, Controls, Graphics,
+  Windows, Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs,
+  Controls, Graphics,
 {$ENDIF}
-  GLVectorGeometry, FRTrackBarEdit, GLColor;
+  GLVectorGeometry, FRTrackBarEdit, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
 
 type
-
   TRColorEditor = class(TFrame)
     Label1: TLabel;
     Label2: TLabel;
@@ -58,7 +57,7 @@ type
     procedure BlueEditChange(Sender: TObject);
     procedure AlphaEditChange(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     FOnChange : TNotifyEvent;
     updating : Boolean;
     WorkBitmap : tBitmap;
@@ -83,10 +82,6 @@ type
 implementation
 
 {$R *.dfm}
-
-uses
-  GLTexture, GLCrossPlatform, GLVectorTypes;
-
 
 const
   MaxColorValue = 255;

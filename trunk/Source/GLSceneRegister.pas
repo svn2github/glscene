@@ -477,10 +477,10 @@ uses
   Dialogs, SysUtils, TypInfo,
 {$ENDIF}
   FLibMaterialPicker,
-  FRUniformEditor,
-  FShaderMemo,
   FGUILayoutEditor,
   FMaterialEditorForm,
+  FShaderMemo,
+  FShaderUniformEditor,
   FVectorEditor,
   GLAnimatedSprite,
   GLApplicationFileIO,

@@ -69,10 +69,22 @@ object LibMaterialPicker: TLibMaterialPicker
     inherited GLScene: TGLScene
       inherited World: TGLDummyCube
         inherited Cube: TGLCube
+          Material.MaterialLibrary = nil
+          Material.LibMaterialName = ''
           Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
           Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
         end
+        inherited Sphere: TGLSphere
+          Material.MaterialLibrary = nil
+          Material.LibMaterialName = ''
+        end
+        inherited Cone: TGLCone
+          Material.MaterialLibrary = nil
+          Material.LibMaterialName = ''
+        end
         inherited Teapot: TGLTeapot
+          Material.MaterialLibrary = nil
+          Material.LibMaterialName = ''
           Scale.Coordinates = {00000040000000400000004000000000}
         end
       end
@@ -90,6 +102,13 @@ object LibMaterialPicker: TLibMaterialPicker
       inherited Camera: TGLCamera
         Position.Coordinates = {0000000000000000000020410000803F}
       end
+    end
+    inherited GLMaterialLibrary: TGLMaterialLibrary
+      Materials = <
+        item
+          Name = 'LibMaterial1'
+          Tag = 0
+        end>
     end
   end
 end

@@ -17,12 +17,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  System.Win.Registry,
   VCL.Controls,
   VCL.Forms,
   VCL.ComCtrls,
@@ -35,7 +36,13 @@ uses
   VCL.StdCtrls,
   VCL.Graphics,
 {$ELSE}
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
   Controls,
+  Registry,
   Forms,
   ComCtrls,
   ImgList,
@@ -51,7 +58,7 @@ uses
 
 type
 
-  TGLShaderEditor = class(TForm)
+  TShaderMemoForm = class(TForm)
     ImageList: TImageList;
     ToolBar: TToolBar;
     TBOpen: TToolButton;
@@ -116,15 +123,12 @@ type
     property OnCheck: TNotifyEvent read FOnCheck write FOnCheck;
   end;
 
-function GLShaderEditorForm: TGLShaderEditor;
+function GLShaderEditorForm: TShaderMemoForm;
 procedure ReleaseGLShaderEditor;
 
 implementation
 
 {$R *.dfm}
-
-uses
-  Registry;
 
 const
   cRegistryKey = 'Software\GLScene.org\GLSceneShaderEdit';
@@ -724,12 +728,12 @@ type
   TFriendlyMemo = class(TGLSSynHiMemo);
 
 var
-  vGLShaderEditor: TGLShaderEditor;
+  vGLShaderEditor: TShaderMemoForm;
 
-function GLShaderEditorForm: TGLShaderEditor;
+function GLShaderEditorForm: TShaderMemoForm;
 begin
   if not Assigned(vGLShaderEditor) then
-    vGLShaderEditor := TGLShaderEditor.Create(nil);
+    vGLShaderEditor := TShaderMemoForm.Create(nil);
   Result := vGLShaderEditor;
 end;
 
@@ -751,7 +755,7 @@ begin
     Result := defaultValue;
 end;
 
-procedure TGLShaderEditor.FormCreate(Sender: TObject);
+procedure TShaderMemoForm.FormCreate(Sender: TObject);
 var
   reg: TRegistry;
   No: Integer;
@@ -826,7 +830,7 @@ begin
   GLSL330.Add(item);
 end;
 
-procedure TGLShaderEditor.FormDestroy(Sender: TObject);
+procedure TShaderMemoForm.FormDestroy(Sender: TObject);
 var
   reg: TRegistry;
 begin
@@ -844,13 +848,13 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.FormShow(Sender: TObject);
+procedure TShaderMemoForm.FormShow(Sender: TObject);
 begin
   if GLSLMemo.Lines.Count = 0 then
     GLSLMemo.Lines.Add('');
 end;
 
-procedure TGLShaderEditor.GLSLMemoGutterClick(Sender: TObject; LineNo: Integer);
+procedure TShaderMemoForm.GLSLMemoGutterClick(Sender: TObject; LineNo: Integer);
 begin
   with GLSLMemo do
   begin
@@ -858,7 +862,7 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.GLSLMemoGutterDraw(Sender: TObject; ACanvas: TCanvas;
+procedure TShaderMemoForm.GLSLMemoGutterDraw(Sender: TObject; ACanvas: TCanvas;
   LineNo: Integer; rct: TRect);
 var
   txt: string;
@@ -878,18 +882,18 @@ begin
     end;
 end;
 
-procedure TGLShaderEditor.GLSLMemoUndoChange(Sender: TObject; CanUndo, CanRedo: Boolean);
+procedure TShaderMemoForm.GLSLMemoUndoChange(Sender: TObject; CanUndo, CanRedo: Boolean);
 begin
   TBUndo.Enabled := CanUndo;
   TBRedo.Enabled := CanRedo;
 end;
 
-procedure TGLShaderEditor.OnTemplateClick(Sender: TObject);
+procedure TShaderMemoForm.OnTemplateClick(Sender: TObject);
 begin
   GLSLMemo.InsertTemplate(cTemplates[TMenuItem(Sender).Tag]);
 end;
 
-procedure TGLShaderEditor.TBCommentClick(Sender: TObject);
+procedure TShaderMemoForm.TBCommentClick(Sender: TObject);
 var
   I: Integer;
   S, E: Integer;
@@ -911,7 +915,7 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.TBUncomentClick(Sender: TObject);
+procedure TShaderMemoForm.TBUncomentClick(Sender: TObject);
 var
   I: Integer;
   S, E: Integer;
@@ -938,17 +942,17 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.TBCopyClick(Sender: TObject);
+procedure TShaderMemoForm.TBCopyClick(Sender: TObject);
 begin
   GLSLMemo.CopyToClipBoard;
 end;
 
-procedure TGLShaderEditor.TBCutClick(Sender: TObject);
+procedure TShaderMemoForm.TBCutClick(Sender: TObject);
 begin
   GLSLMemo.CutToClipBoard;
 end;
 
-procedure TGLShaderEditor.TBIncIndentClick(Sender: TObject);
+procedure TShaderMemoForm.TBIncIndentClick(Sender: TObject);
 var
   I: Integer;
   S, E: Integer;
@@ -969,7 +973,7 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.TBDecIndentClick(Sender: TObject);
+procedure TShaderMemoForm.TBDecIndentClick(Sender: TObject);
 var
   I, J: Integer;
   S, E: Integer;
@@ -994,19 +998,19 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.TBOpenClick(Sender: TObject);
+procedure TShaderMemoForm.TBOpenClick(Sender: TObject);
 begin
   if OpenDialog.Execute then
     GLSLMemo.Lines.LoadFromFile(OpenDialog.FileName);
   SetFocus;
 end;
 
-procedure TGLShaderEditor.TBPasteClick(Sender: TObject);
+procedure TShaderMemoForm.TBPasteClick(Sender: TObject);
 begin
   GLSLMemo.PasteFromClipBoard;
 end;
 
-procedure TGLShaderEditor.TBRedoClick(Sender: TObject);
+procedure TShaderMemoForm.TBRedoClick(Sender: TObject);
 begin
   with GLSLMemo do
   begin
@@ -1015,14 +1019,14 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.TBSaveClick(Sender: TObject);
+procedure TShaderMemoForm.TBSaveClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
     GLSLMemo.Lines.SaveToFile(SaveDialog.FileName);
   SetFocus;
 end;
 
-procedure TGLShaderEditor.TBStayOnTopClick(Sender: TObject);
+procedure TShaderMemoForm.TBStayOnTopClick(Sender: TObject);
 begin
   if TBStayOnTop.Down then
     FormStyle := fsStayOnTop
@@ -1030,7 +1034,7 @@ begin
     FormStyle := fsNormal;
 end;
 
-procedure TGLShaderEditor.TBUndoClick(Sender: TObject);
+procedure TShaderMemoForm.TBUndoClick(Sender: TObject);
 begin
   with GLSLMemo do
   begin
@@ -1039,7 +1043,7 @@ begin
   end;
 end;
 
-procedure TGLShaderEditor.CheckButtonClick(Sender: TObject);
+procedure TShaderMemoForm.CheckButtonClick(Sender: TObject);
 begin
   if Assigned(FOnCheck) then
     FOnCheck(Self);

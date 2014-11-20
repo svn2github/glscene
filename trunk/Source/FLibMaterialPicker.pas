@@ -38,7 +38,7 @@ type
     procedure LBMaterialsKeyPress(Sender: TObject; var Key: Char);
     procedure LBMaterialsDblClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
   public
     { Déclarations publiques }
     function Execute(var materialName: TGLLibMaterialName;

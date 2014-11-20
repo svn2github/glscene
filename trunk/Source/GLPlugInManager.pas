@@ -384,7 +384,7 @@ end;
 procedure TPlugInManager.EditPlugInList;
 
 begin
-  TFPlugInManagerPropEditor.EditPlugIns(Self);
+  TPlugInManagerEditor.EditPlugIns(Self);
 end;
 
 // ------------------------------------------------------------------------------

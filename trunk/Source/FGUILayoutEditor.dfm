@@ -1,4 +1,4 @@
-object layouts_form: Tlayouts_form
+object Layouts_form: TLayouts_form
   Left = 208
   Top = 187
   BorderIcons = [biSystemMenu]

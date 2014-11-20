@@ -15,19 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFNDEF FPC}
-  Windows, Messages,
-{$ENDIF}
-  GLCrossPlatform,
-
-  SysUtils, Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
-  VCL.StdCtrls, VCL.ExtCtrls;
+  WinApi.Windows, WinApi.Messages, System.SysUtils, System.Classes, System.UITypes,
+  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
+  VCL.StdCtrls, VCL.ExtCtrls,
 {$ELSE}
-  Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, UITypes, Graphics, Controls,
+  Forms, Dialogs, ClipBrd, StdCtrls, ExtCtrls,
 {$ENDIF}
+  GLCrossPlatform;
+
 
 
 type
@@ -859,13 +856,6 @@ type
 procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
 
 implementation
-
-uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.ClipBrd;
-{$ELSE}
-  ClipBrd;
-{$ENDIF}
 
 const
   cmDelete = VK_DELETE;
@@ -2362,7 +2352,7 @@ begin
     Exit;
   end;
 
-  if Button <> mbLeft then
+  if Button <> TMouseButton.mbLeft then
     Exit;
 
   if sbVert.MouseDown(Button, Shift, X, Y) then
@@ -2380,7 +2370,7 @@ begin
       FOnMoveCursor(Self);
 
     Selecting := ssShift in Shift;
-    if Button = mbLeft then
+    if Button = TMouseButton.mbLeft then
     begin
       if Selecting then
         ExpandSelection
@@ -2438,7 +2428,7 @@ begin
     Exit;
   if sbHorz.MouseUp(Button, Shift, X, Y) then
     Exit;
-  if Button = mbLeft then
+  if Button = TMouseButton.mbLeft then
     ShowCaret(True);
   FLeftButtonDown := False;
   FLastMouseUpX := X;
@@ -2552,9 +2542,9 @@ begin
   GetCursorPos(P);
   P := ScreenToClient(P);
   if PointInRect(P, EditorRect) then
-    Windows.SetCursor(Screen.Cursors[crIBeam])
+    Winapi.Windows.SetCursor(Screen.Cursors[crIBeam])
   else
-    Windows.SetCursor(Screen.Cursors[crArrow]);
+    Winapi.Windows.SetCursor(Screen.Cursors[crArrow]);
 end;
 
 //--------------------------------------------------------------
@@ -2595,7 +2585,7 @@ begin
   begin
     rct := CellRect(CurX - FLeftCol, CurY - FTopLine);
     SetCaretPos(rct.Left, rct.Top + 1);
-    Windows.ShowCaret(Handle);
+    Winapi.Windows.ShowCaret(Handle);
     FCaretVisible := True;
   end;
 end;

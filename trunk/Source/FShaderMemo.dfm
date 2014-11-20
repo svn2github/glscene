@@ -1,4 +1,4 @@
-object GLShaderEditor: TGLShaderEditor
+object ShaderMemoForm: TShaderMemoForm
   Left = 224
   Top = 92
   BorderIcons = [biSystemMenu]
@@ -184,12 +184,12 @@ object GLShaderEditor: TGLShaderEditor
   end
   object GLSLMemo: TGLSSynHiMemo
     Left = 0
-    Top = 36
+    Top = 32
     Width = 502
-    Height = 533
+    Height = 537
     Cursor = crIBeam
     Align = alClient
-    TabOrder = 1
+    TabOrder = 3
     TabStop = True
     ReadOnly = False
     AutoIndent = True
@@ -203,7 +203,8 @@ object GLShaderEditor: TGLShaderEditor
     BkColor = clWhite
     SelColor = clWhite
     SelBkColor = clNavy
-    Lines.Strings = ('')
+    Lines.Strings = (
+      '')
     HiddenCaret = False
     TabSize = 4
     UndoLimit = 100
@@ -280,7 +281,7 @@ object GLShaderEditor: TGLShaderEditor
     Left = 96
     Top = 632
     Bitmap = {
-      494C01010E001800680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E0018007C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

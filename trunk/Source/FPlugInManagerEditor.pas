@@ -29,7 +29,7 @@ uses
   GLPlugInIntf, GLPlugInManager;
 
 type
-  TFPlugInManagerPropEditor = class(TForm)
+  TPlugInManagerEditor = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
@@ -58,7 +58,7 @@ type
   end;
 
 var
-  FPlugInManagerPropEditor: TFPlugInManagerPropEditor;
+  PlugInManagerEditor: TPlugInManagerEditor;
 
   // ------------------------------------------------------------------------------
 
@@ -67,14 +67,14 @@ implementation
 {$R *.DFM}
 // ------------------------------------------------------------------------------
 
-procedure TFPlugInManagerPropEditor.OKButtonClick(Sender: TObject);
+procedure TPlugInManagerEditor.OKButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFPlugInManagerPropEditor.LoadButtonClick(Sender: TObject);
+procedure TPlugInManagerEditor.LoadButtonClick(Sender: TObject);
 
 var
   I, Index: Integer;
@@ -100,26 +100,26 @@ end;
 
 // ------------------------------------------------------------------------------
 
-class procedure TFPlugInManagerPropEditor.EditPlugIns(AManager: TPlugInManager);
+class procedure TPlugInManagerEditor.EditPlugIns(AManager: TPlugInManager);
 
 begin
   // ensure only one instance
-  if assigned(FPlugInManagerPropEditor) then
-    FPlugInManagerPropEditor.Free;
-  FPlugInManagerPropEditor := TFPlugInManagerPropEditor.Create(Application);
-  with FPlugInManagerPropEditor do
+  if assigned(PlugInManagerEditor) then
+    PlugInManagerEditor.Free;
+  PlugInManagerEditor := TPlugInManagerEditor.Create(Application);
+  with PlugInManagerEditor do
   begin
     ListBox.Items := AManager.PlugIns;
     FManager := AManager;
     ShowModal;
     Free;
   end;
-  FPlugInManagerPropEditor := nil;
+  PlugInManagerEditor := nil;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFPlugInManagerPropEditor.ListBoxClick(Sender: TObject);
+procedure TPlugInManagerEditor.ListBoxClick(Sender: TObject);
 
 var
   Entry: Integer;
@@ -181,7 +181,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFPlugInManagerPropEditor.UnloadButtonClick(Sender: TObject);
+procedure TPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
 
 var
   I: Integer;
@@ -209,12 +209,12 @@ end;
 procedure NameCallback(Name: PAnsiChar); stdcall;
 
 begin
-  FPlugInManagerPropEditor.NameBox.Items.Add(string(StrPas(Name)));
+  PlugInManagerEditor.NameBox.Items.Add(string(StrPas(Name)));
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TFPlugInManagerPropEditor.ServiceBoxChange(Sender: TObject);
+procedure TPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
 
 begin
   NameBox.Items.Clear;

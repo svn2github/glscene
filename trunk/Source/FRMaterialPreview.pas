@@ -65,9 +65,9 @@ type
     procedure SetMaterial(const Value: TGLMaterial);
     function GetLibMaterial: TGLAbstractLibMaterial;
     procedure SetLibMaterial(const Value: TGLAbstractLibMaterial);
-    { Déclarations privées }
+    { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     constructor Create(AOwner : TComponent); override;
 
     property Material : TGLMaterial read GetMaterial
