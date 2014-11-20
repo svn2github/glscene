@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value="../Source/"/>
-        <OtherUnitFiles Value="../Source/"/>
+        <IncludeFiles Value='../../Source/"/>
+        <OtherUnitFiles Value='../../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -31,40 +31,40 @@
     <Version Major="1" Build="3"/>
     <Files Count="9">
       <Item1>
-        <Filename Value="../Source/GLODERegister.pas"/>
+        <Filename Value='../../Source/GLODERegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLODERegister"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/GLODECustomColliders.pas"/>
+        <Filename Value='../../Source/GLODECustomColliders.pas"/>
         <UnitName Value="GLODECustomColliders"/>
       </Item2>
       <Item3>
-        <Filename Value="../Source/GLODEManager.pas"/>
+        <Filename Value='../../Source/GLODEManager.pas"/>
         <UnitName Value="GLODEManager"/>
       </Item3>
       <Item4>
-        <Filename Value="../Source/dynodegl.pas"/>
+        <Filename Value='../../Source/dynodegl.pas"/>
         <UnitName Value="dynodegl"/>
       </Item4>
       <Item5>
-        <Filename Value="../Source/ODEImport.pas"/>
+        <Filename Value='../../Source/ODEImport.pas"/>
         <UnitName Value="ODEImport"/>
       </Item5>
       <Item6>
-        <Filename Value="../Source/ODEGL.pas"/>
+        <Filename Value='../../Source/ODEGL.pas"/>
         <UnitName Value="ODEGL"/>
       </Item6>
       <Item7>
-        <Filename Value="../Source/GLODERagdoll.pas"/>
+        <Filename Value='../../Source/GLODERagdoll.pas"/>
         <UnitName Value="GLODERagdoll"/>
       </Item7>
       <Item8>
-        <Filename Value="../Source/GLODESkeletonColliders.pas"/>
+        <Filename Value='../../Source/GLODESkeletonColliders.pas"/>
         <UnitName Value="GLODESkeletonColliders"/>
       </Item8>
       <Item9>
-        <Filename Value="../Source/delphiode.inc"/>
+        <Filename Value='../../Source/delphiode.inc"/>
         <Type Value="Include"/>
       </Item9>
     </Files>

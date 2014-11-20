@@ -36,9 +36,6 @@
         <Projects Include="GLS_Computing_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_SDL.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -146,23 +143,14 @@
     <Target Name="GLS_Computing_DesignTime:Make">
         <MSBuild Projects="GLS_Computing_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_SDL">
-        <MSBuild Projects="GLS_SDL.dproj"/>
-    </Target>
-    <Target Name="GLS_SDL:Clean">
-        <MSBuild Projects="GLS_SDL.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLS_SDL:Make">
-        <MSBuild Projects="GLS_SDL.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTime;GLScene_DesignTime;GLSS_BASS;GLSS_FMOD;GLSS_OpenAL;GLS_ODE;GLS_NGD;GLCg_RunTime;GLCg_DesignTime;GLS_Computing_RunTime;GLS_Computing_DesignTime;GLS_SDL"/>
+        <CallTarget Targets="GLScene_RunTime;GLScene_DesignTime;GLSS_BASS;GLSS_FMOD;GLSS_OpenAL;GLS_ODE;GLS_NGD;GLCg_RunTime;GLCg_DesignTime;GLS_Computing_RunTime;GLS_Computing_DesignTime"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_DesignTime:Clean;GLSS_BASS:Clean;GLSS_FMOD:Clean;GLSS_OpenAL:Clean;GLS_ODE:Clean;GLS_NGD:Clean;GLCg_RunTime:Clean;GLCg_DesignTime:Clean;GLS_Computing_RunTime:Clean;GLS_Computing_DesignTime:Clean;GLS_SDL:Clean"/>
+        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_DesignTime:Clean;GLSS_BASS:Clean;GLSS_FMOD:Clean;GLSS_OpenAL:Clean;GLS_ODE:Clean;GLS_NGD:Clean;GLCg_RunTime:Clean;GLCg_DesignTime:Clean;GLS_Computing_RunTime:Clean;GLS_Computing_DesignTime:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTime:Make;GLScene_DesignTime:Make;GLSS_BASS:Make;GLSS_FMOD:Make;GLSS_OpenAL:Make;GLS_ODE:Make;GLS_NGD:Make;GLCg_RunTime:Make;GLCg_DesignTime:Make;GLS_Computing_RunTime:Make;GLS_Computing_DesignTime:Make;GLS_SDL:Make"/>
+        <CallTarget Targets="GLScene_RunTime:Make;GLScene_DesignTime:Make;GLSS_BASS:Make;GLSS_FMOD:Make;GLSS_OpenAL:Make;GLS_ODE:Make;GLS_NGD:Make;GLCg_RunTime:Make;GLCg_DesignTime:Make;GLS_Computing_RunTime:Make;GLS_Computing_DesignTime:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

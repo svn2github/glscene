@@ -35,19 +35,23 @@ package GLScene_DesignTime;
 requires
   rtl,
   designide,
-  GLScene_RunTime,
   vclimg,
   vcl,
-  VclSmp;
+  VclSmp,
+  GLScene_RunTime;
 
 contains
   FXCollectionEditor in '..\..\Source\FXCollectionEditor.pas' {XCollectionEditor},
   GLSceneEdit in '..\..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
-  GLSceneRegister in '..\..\Source\GLSceneRegister.pas',
   RegisterXCollection in '..\..\Source\RegisterXCollection.pas',
-  FShaderMemo in '..\..\Source\FShaderMemo.pas',
   GLSceneFormDesign in '..\..\Source\GLSceneFormDesign.pas',
-  FGUILayoutEditor in '..\..\Source\FGUILayoutEditor.pas' {layouts_form};
+  FLibMaterialPicker in '..\..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FMaterialEditorForm in '..\..\Source\FMaterialEditorForm.pas' {MaterialEditorForm},
+  FGUILayoutEditor in '..\..\Source\FGUILayoutEditor.pas' {Layouts_form},
+  FRMaterialPreview in '..\..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FGuiSkinEditor in '..\..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
+  FShaderMemo in '..\..\Source\FShaderMemo.pas' {ShaderMemoForm},
+  FShaderUniformEditor in '..\..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor};
 
 end.
 
