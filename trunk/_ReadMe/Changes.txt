@@ -12,8 +12,8 @@ BumpMapping->GLBumpMapping
 CurvesAndSurfaces->GLCurvesAndSurfaces
 GeometryCoordinates->GLGeometryCoordinates
 GeometryBB->GLGeometryBB
-GuiSkinEditorFormUnit->GLSkinEditor
 HightTileFile->GLHightTileFile
+FRUniformEditor->FShaderUniformEditor
 ImageUtils->GLImageUtils
 MeshUtils->GLMeshUtils
 Octree->GLOctree
@@ -32,12 +32,17 @@ VectorGeometry->GLVectorGeometry
 VerletClasses->GLVerletTypes
 VerletHairClasses->GLVerletHairClasses
 
-
 ====================================
-Refactoring for types:
+Refactoring classes:
 
 TCollisionManager>>TGLCollisionManager
 TJoystick>>>TGLJoystick
 TScreenSaver>>>TGLScreenSaver
 TAsyncTimer>>>TGLAsyncTimer
 TApplicationFileIO>>TGLApplicationFileIO
+
+===========================================
+Removed from projects:
+GLSMemo - unresolved bug in registration on XE6 
+
+
