@@ -51,7 +51,8 @@ contains
   FRMaterialPreview in '..\..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
   FGuiSkinEditor in '..\..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
   FShaderMemo in '..\..\Source\FShaderMemo.pas' {ShaderMemoForm},
-  FShaderUniformEditor in '..\..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor};
+  FShaderUniformEditor in '..\..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  GLSceneRegister in '..\..\Source\GLSceneRegister.pas';
 
 end.
 
