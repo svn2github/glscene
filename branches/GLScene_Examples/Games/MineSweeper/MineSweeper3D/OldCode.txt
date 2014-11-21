@@ -1,0 +1,22 @@
+    (*// First, try a fast method
+    result := nil;
+    for i := 0 to ArenaList.Count - 1 do
+      if Hits3DSquare(T3DSquare(ArenaList[i])) then
+      begin
+        result := T3DSquare(ArenaList[i]);
+        exit;
+      end;//}
+
+    // If that fails, try to use the GetPickedObject method, it's slow, but
+    // it works.
+    if result=nil then
+    begin
+      temppick:=(GLSceneViewer_Main.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
+
+      if tempPick<>nil then
+      begin
+        inc(FSpecialCount);
+        result := T3DSquare(tempPick.Tag);
+      end else
+        result := nil;//}
+    end;*)
