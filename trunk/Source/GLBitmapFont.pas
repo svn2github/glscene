@@ -364,7 +364,7 @@ type
     { : Text to render.<p>
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
-    property text: UnicodeString read FText write SetText;
+    property Text: UnicodeString read FText write SetText;
     { : Controls the text alignment (horizontal).<p>
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment;

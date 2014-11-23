@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSkinEditor<p>
+{: FGuiSkinEditor<p>
 
    Editor for Gui skin.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to GLSkinEditor
+      <li>17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to FGuiSkinEditor
       <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
       <li>04/03/10 - DanB - Now uses CharInSet
       <li>05/10/08 - DanB - removed Kylix support, changed uses clause

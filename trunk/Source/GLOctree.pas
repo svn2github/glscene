@@ -8,7 +8,7 @@
   TODO: move the many public vars/fields to private/protected<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>10/11/14 - PW - Remaned from Octree to GLOctree
+  <li>10/11/14 - PW - Renamed from "Octree.pas" to "GLOctree.pas" and added ListHandle in TOctreeNode
   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
   <li>30/03/07 - DaStr - Added $I GLScene.inc
   <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -35,7 +35,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorTypes, GLVectorGeometry, GLVectorLists, GLGeometryBB;
+  Classes,
+  GLVectorTypes, GLVectorGeometry, GLVectorLists, GLGeometryBB, GLContext;
 
 type
 
@@ -59,6 +60,9 @@ type
   TOctreeNode = record
     MinExtent: TAffineFLTVector;
     MaxExtent: TAffineFLTVector;
+    // TextureHandle:TGLTextureHandle;
+    ListHandle: TGLListHandle;
+    WillDraw: Boolean; // temporary change
 
     // Duplicates possible?
     TriArray: array of Integer; // array of triangle references
@@ -252,9 +256,9 @@ begin
     Result := B
   else
   begin
-    V.V[0] := V.V[0] * T;
-    V.V[1] := V.V[1] * T;
-    V.V[2] := V.V[2] * T;
+    V.X := V.X * T;
+    V.Y := V.Y * T;
+    V.Z := V.Z * T;
     Result := VectorAdd(A, V);
   end;
 end;
