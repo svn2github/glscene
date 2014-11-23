@@ -14,7 +14,17 @@ the means to check... so if you have clues about any of them:
 - Music: unknown origin, was in a "royalty free" download package,
   playback via BASS (http://www.un4seen.com/music/)
 
-Source available from the GLScene Sourceforge CVS (AdvDemos/Christmas).
+Source available from the GLScene Sourceforge (AdvDemos/Christmas).
 
 Eric Grange
 http://glscene.org
+
+GLScene Christmas 2015 "ScreenSaver".
+Customized using GLScene v.1.3 for Delphi & C++Builder 
+Adapted for Happy New Year with PopupMenu items. 
+Source available from the page:
+http://sourceforge.net/projects/glscene
+
+GLS Team
+
+

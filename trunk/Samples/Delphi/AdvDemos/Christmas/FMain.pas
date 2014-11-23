@@ -20,7 +20,7 @@ uses
   GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects,
   GLScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
   GLCoordinates, GLBaseClasses, GLCrossPlatform, GLColor,
-  GLSound, GLSMBASS, GLFileWAV, Bass;
+  GLSound, GLSMBASS, GLFileWAV, Bass, Vcl.Menus;
 
 type
   TMain = class(TForm)
@@ -63,7 +63,6 @@ type
     POWhiteBall3: TGLProxyObject;
     LensFlare6: TGLLensFlare;
     PFXTree: TGLPolygonPFXManager;
-    FTCountDown: TGLFlatText;
     WindowsBitmapFont: TGLWindowsBitmapFont;
     Cube1: TGLCube;
     DCGifts: TGLDummyCube;
@@ -76,7 +75,12 @@ type
     ScreenSaver: TGLScreenSaver;
     Timer: TTimer;
     HUDSprite: TGLHUDSprite;
+    FTCountDown: TGLFlatText;
     FTYear: TGLFlatText;
+    FTCongratulations: TGLFlatText;
+    PopupMenu: TPopupMenu;
+    miMerryCristmas: TMenuItem;
+    miHappyNewYear: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -91,6 +95,8 @@ type
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ViewerDblClick(Sender: TObject);
+    procedure miMerryCristmasClick(Sender: TObject);
+    procedure miHappyNewYearClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -128,6 +134,19 @@ begin
    if (Width>=Screen.Width) then
       ViewerDblClick(Self);
 end;
+
+procedure TMain.miMerryCristmasClick(Sender: TObject);
+begin
+  miMerryCristmas.Checked := True;
+  miHappyNewYear.Checked := False;
+end;
+
+procedure TMain.miHappyNewYearClick(Sender: TObject);
+begin
+  miHappyNewYear.Checked := True;
+  miMerryCristmas.Checked := False;
+end;
+
 
 procedure TMain.FormKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -188,6 +207,8 @@ var
    t : TDateTime;
    buf : String;
    y, m, d : Word;
+   TheChristmas, isArrived : Boolean;
+
 begin
    Caption:=Format('%.1f FPS', [Viewer.FramesPerSecond]);
    Viewer.ResetPerformanceMonitor;
@@ -198,8 +219,16 @@ begin
    end;
    DecodeDate(Now(), y, m, d);
    FTYear.Text:= IntToStr(y+1)+' !';
-// t:=EncodeDate(y, 12, 25)-Now();     //Merry Cristmas!
-   t:=EncodeDate(y+1, 01, 01)-Now();    //Happy New Year!
+   if miMerryCristmas.Checked then
+   begin
+     t:=EncodeDate(y, 12, 25)-Now();
+     FTCongratulations.Text := 'Merry Christmas';
+   end
+   else
+   begin
+     t:=EncodeDate(y+1, 01, 01)-Now();
+     FTCongratulations.Text := 'Happy New Year';
+   end;
    if (t<1) and (t>-1) then
       DCGifts.Visible:=True;
    if t>=2 then
