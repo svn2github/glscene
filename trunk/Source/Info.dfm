@@ -30,7 +30,7 @@ object InfoForm: TInfoForm
     Top = 0
     Width = 457
     Height = 341
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -2762,16 +2762,13 @@ object InfoForm: TInfoForm
           'License: MPL'
           ''
           
-            'GLScene is an OpenGL based 3D library for Delph, C++ Builderi an' +
-            'd Lazarus. It provides '
-          'visual '
-          'components and '
+            'GLScene is an OpenGL based 3D library for Delph, C++ Builder and' +
+            ' Lazarus. It provides '
           
-            'objects allowing description and rendering of 3D scenes in an ea' +
-            'sy, no-hassle, yet powerful '
-          
-            'manner. GLScene runs on Windows, Linux, Mac OS X, FreeBSD and mo' +
-            're.'
+            'visual components and objects allowing description and rendering' +
+            ' of 3D scenes in an easy, '
+          'no-hassle, yet powerful manner. '
+          'GLScene runs on Windows, Linux, Mac OS X, FreeBSD and more.'
           ''
           'As GLScene is growing we need more developers.')
         TabOrder = 0
