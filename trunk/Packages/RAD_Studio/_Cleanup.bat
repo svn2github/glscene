@@ -1,4 +1,3 @@
-rem del *.dproj /s - it will delete compiler options for c++ outputs
 del *.local /s
 del *.identcache /s
 del *.obj /s

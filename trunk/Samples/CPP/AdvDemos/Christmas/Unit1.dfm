@@ -16,8 +16,6 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnResize = FormResize
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object Viewer: TGLSceneViewer
@@ -2360,7 +2358,7 @@ object Form1: TForm1
       Position.Coordinates = {6666C6403333B3BF000040C00000803F}
       Scale.Coordinates = {8FC2753C8FC2753C8FC2753C00000000}
       BitmapFont = GLWindowsBitmapFont
-      text = 'Hello There'
+      Text = 'Hello There'
       Alignment = taCenter
       Layout = tlTop
       ModulateColor.Color = {295C4F3F8FC2353F1F856B3E0000803F}
@@ -2370,7 +2368,7 @@ object Form1: TForm1
       Position.Coordinates = {666686400000803F000040C00000803F}
       Scale.Coordinates = {0AD7A33C0AD7A33C0AD7A33C00000000}
       BitmapFont = GLWindowsBitmapFont
-      text = 'Happy New Year!'
+      Text = 'Happy New Year!'
       Alignment = taLeftJustify
       Layout = tlTop
       ModulateColor.Color = {295C4F3F8FC2353F1F856B3E0000803F}

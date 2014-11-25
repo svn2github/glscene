@@ -89,7 +89,7 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 ///   t = EncodeDate(y, 12, 25) - Now(); //Merry Christmas
    t = EncodeDate(y+1, 01, 01) - Now(); //Happy New Year!
    if ((double)t<0)
-	  FTCountDown->text = "Merry Christmas!";
+	  FTCountDown->Text = "Merry Christmas!";
    if (((double)t<1) && ((double)t>-1))
 	  DCGifts->Visible = true;
    if ((double)t>=2)
@@ -100,7 +100,7 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 		 buf = buf + IntToStr(i)+" hours...";
 	  else
 		buf = buf + IntToStr(i)+" hour...";
-	  FTCountDown->text = buf;
+	  FTCountDown->Text = buf;
    }
    else
    {
@@ -113,12 +113,12 @@ void __fastcall TForm1::TimerTimer(TObject *Sender)
 		  buf = buf + IntToStr(i)+" minutes...";
 		else
 		  buf = buf + IntToStr(i)+" minute...";
-		FTCountDown->text = buf;
+		FTCountDown->Text = buf;
 	  }
 	  else
 	  {
 		 t = (double)t*60;
-		 FTCountDown->text = IntToStr(Trunc((double)t)) + " minutes, "
+		 FTCountDown->Text = IntToStr(Trunc((double)t)) + " minutes, "
 						   + IntToStr(Round(System::Frac((double)t)*60)) + " seconds...";
 	  }
    }
