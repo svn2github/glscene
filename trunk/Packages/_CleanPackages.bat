@@ -1,9 +1,10 @@
+del *.res /s
+del *.ico /s
 del *.local /s
 del *.identcache /s
 del *.obj /s
 del *.~* /s
 del *.dsk /s
-del *.res /s
 del *.log /s
 del *.tvsconfig /s
 
