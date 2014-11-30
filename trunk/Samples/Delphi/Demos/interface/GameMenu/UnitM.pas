@@ -9,10 +9,7 @@ uses
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLGeomObjects,
   GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
-
-  // File formats
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLUtils;
+  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)

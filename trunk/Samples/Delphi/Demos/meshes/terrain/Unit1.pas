@@ -15,10 +15,10 @@ uses
   {$ENDIF}
   //GLScene
   GLScene, GLObjects, GLTerrainRenderer, GLHeightData, GLColor,
-  GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont, GLKeyboard,
-  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, GLVectorGeometry, GLLensFlare,
+  GLCadencer, GLTexture, GLBitmapFont, GLKeyboard, GLSkydome,
+  GLWin32Viewer, GLSound, GLSMBASS, GLVectorGeometry, GLLensFlare,
   GLMaterial, GLCoordinates, GLBaseClasses, GLState, GLFileMP3,
-  GLUtils, GLCrossPlatform;
+  GLUtils, GLCrossPlatform, GLHUDObjects;
 
 type
   TForm1 = class(TForm)

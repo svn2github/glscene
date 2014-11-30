@@ -40,12 +40,12 @@ type
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Déclarations privées }
+    { Private declarations }
     procedure ScaleMesh(freeform: TGLFreeForm; val: Single);
     procedure MoveCam(const deltaTime, newTime: Double);
     procedure MoveGrab;
   public
-    { Déclarations publiques }
+    { Publiques declarations }
     grabJoint: TNGDJoint;
   end;
 
@@ -176,7 +176,7 @@ begin
     Ball.Radius := 0.1;
     Ball.AbsolutePosition := GLCamera1.TargetObject.AbsolutePosition;
     delta := VectorScale(GLCamera1.AbsoluteVectorToTarget, 2);
-    Ball.Translate(delta.V[0], delta.V[1], delta.V[2]);
+    Ball.Translate(delta.X, delta.Y, delta.Z);
     GetOrCreateNGDDynamic(Ball);
     GetNGDDynamic(Ball).Manager := GLNGDManager1;
     GetNGDDynamic(Ball).Density := 100;

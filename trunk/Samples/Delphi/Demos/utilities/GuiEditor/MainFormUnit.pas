@@ -8,7 +8,7 @@ uses
   //GLS
   GLGui, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont,
-  GLTexture, GLSkinEditor, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLTexture, FGuiSkinEditor, GLCrossPlatform, GLMaterial, GLCoordinates,
   GLBaseClasses;
 
 type

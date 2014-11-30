@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   OnResize = FormResize
@@ -57,7 +58,7 @@ object Form1: TForm1
       Up.Coordinates = {EF83843EE946773F0000008000000000}
       object Torus: TGLTorus
         Scale.Coordinates = {0000A0400000A0400000A04000000000}
-        MajorRadius = 0.400000005960464400
+        MajorRadius = 0.400000005960464500
         MinorRadius = 0.100000001490116100
         StopAngle = 360.000000000000000000
         Parts = [toSides, toStartDisk, toStopDisk]

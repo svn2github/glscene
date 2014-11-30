@@ -15,8 +15,6 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -120,7 +118,7 @@ object Form1: TForm1
       Scale.Coordinates = {00008040000080400000803E00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLBitmapHDS1
-      TileSize = 32
+      TileSize = 256
       TilesPerTexture = 1.000000000000000000
       QualityDistance = 150.000000000000000000
     end

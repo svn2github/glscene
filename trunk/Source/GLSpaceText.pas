@@ -49,7 +49,7 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows, Messages, Classes,
+  Windows, Messages, Classes, UITypes,
   // VCL
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Dialogs, VCL.Graphics, VCL.Controls,

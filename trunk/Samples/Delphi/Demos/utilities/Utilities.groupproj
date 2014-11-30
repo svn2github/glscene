@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{736E188A-321D-4523-83D7-6FF3BEC90D3D}</ProjectGuid>
+        <ProjectGuid>{B4107AD8-93B6-4AB7-A6E5-4F053F4C0F6F}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="ArchiveEdit\ArchiveEdit.dproj">
@@ -9,13 +9,16 @@
         <Projects Include="ArchiverDemo\Archiver.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GuiEditor\GuiEditor.dproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="fontgen\fontgen.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="GuiEditor\GuiEditor.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="HTFUtils\HTFViewer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="HTFUtils\TerrainPack.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="joystick\JoystickDemo.dproj">
@@ -24,13 +27,13 @@
         <Projects Include="keymap\keymap.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Language\LanguageDemo.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="recorder\Recorder.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="screensaver\ScreenSaverDemo.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="HTFUtils\TerrainPack.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -59,15 +62,6 @@
     <Target Name="Archiver:Make">
         <MSBuild Projects="ArchiverDemo\Archiver.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GuiEditor">
-        <MSBuild Projects="GuiEditor\GuiEditor.dproj"/>
-    </Target>
-    <Target Name="GuiEditor:Clean">
-        <MSBuild Projects="GuiEditor\GuiEditor.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GuiEditor:Make">
-        <MSBuild Projects="GuiEditor\GuiEditor.dproj" Targets="Make"/>
-    </Target>
     <Target Name="fontgen">
         <MSBuild Projects="fontgen\fontgen.dproj"/>
     </Target>
@@ -77,6 +71,15 @@
     <Target Name="fontgen:Make">
         <MSBuild Projects="fontgen\fontgen.dproj" Targets="Make"/>
     </Target>
+    <Target Name="GuiEditor">
+        <MSBuild Projects="GuiEditor\GuiEditor.dproj"/>
+    </Target>
+    <Target Name="GuiEditor:Clean">
+        <MSBuild Projects="GuiEditor\GuiEditor.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GuiEditor:Make">
+        <MSBuild Projects="GuiEditor\GuiEditor.dproj" Targets="Make"/>
+    </Target>
     <Target Name="HTFViewer">
         <MSBuild Projects="HTFUtils\HTFViewer.dproj"/>
     </Target>
@@ -85,6 +88,15 @@
     </Target>
     <Target Name="HTFViewer:Make">
         <MSBuild Projects="HTFUtils\HTFViewer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TerrainPack">
+        <MSBuild Projects="HTFUtils\TerrainPack.dproj"/>
+    </Target>
+    <Target Name="TerrainPack:Clean">
+        <MSBuild Projects="HTFUtils\TerrainPack.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TerrainPack:Make">
+        <MSBuild Projects="HTFUtils\TerrainPack.dproj" Targets="Make"/>
     </Target>
     <Target Name="JoystickDemo">
         <MSBuild Projects="joystick\JoystickDemo.dproj"/>
@@ -104,6 +116,15 @@
     <Target Name="keymap:Make">
         <MSBuild Projects="keymap\keymap.dproj" Targets="Make"/>
     </Target>
+    <Target Name="LanguageDemo">
+        <MSBuild Projects="Language\LanguageDemo.dproj"/>
+    </Target>
+    <Target Name="LanguageDemo:Clean">
+        <MSBuild Projects="Language\LanguageDemo.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LanguageDemo:Make">
+        <MSBuild Projects="Language\LanguageDemo.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Recorder">
         <MSBuild Projects="recorder\Recorder.dproj"/>
     </Target>
@@ -122,23 +143,14 @@
     <Target Name="ScreenSaverDemo:Make">
         <MSBuild Projects="screensaver\ScreenSaverDemo.dproj" Targets="Make"/>
     </Target>
-    <Target Name="TerrainPack">
-        <MSBuild Projects="HTFUtils\TerrainPack.dproj"/>
-    </Target>
-    <Target Name="TerrainPack:Clean">
-        <MSBuild Projects="HTFUtils\TerrainPack.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TerrainPack:Make">
-        <MSBuild Projects="HTFUtils\TerrainPack.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="ArchiveEdit;Archiver;GuiEditor;fontgen;HTFViewer;JoystickDemo;keymap;Recorder;ScreenSaverDemo;TerrainPack"/>
+        <CallTarget Targets="ArchiveEdit;Archiver;fontgen;GuiEditor;HTFViewer;TerrainPack;JoystickDemo;keymap;LanguageDemo;Recorder;ScreenSaverDemo"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ArchiveEdit:Clean;Archiver:Clean;GuiEditor:Clean;fontgen:Clean;HTFViewer:Clean;JoystickDemo:Clean;keymap:Clean;Recorder:Clean;ScreenSaverDemo:Clean;TerrainPack:Clean"/>
+        <CallTarget Targets="ArchiveEdit:Clean;Archiver:Clean;fontgen:Clean;GuiEditor:Clean;HTFViewer:Clean;TerrainPack:Clean;JoystickDemo:Clean;keymap:Clean;LanguageDemo:Clean;Recorder:Clean;ScreenSaverDemo:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ArchiveEdit:Make;Archiver:Make;GuiEditor:Make;fontgen:Make;HTFViewer:Make;JoystickDemo:Make;keymap:Make;Recorder:Make;ScreenSaverDemo:Make;TerrainPack:Make"/>
+        <CallTarget Targets="ArchiveEdit:Make;Archiver:Make;fontgen:Make;GuiEditor:Make;HTFViewer:Make;TerrainPack:Make;JoystickDemo:Make;keymap:Make;LanguageDemo:Make;Recorder:Make;ScreenSaverDemo:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

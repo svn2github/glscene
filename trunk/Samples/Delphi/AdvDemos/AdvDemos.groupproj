@@ -3,7 +3,7 @@
         <ProjectGuid>{02A55F1F-28A9-4F0B-BC74-BAC6D4030B89}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="AirBlast\AirBlast.dproj">
+        <Projects Include="Archipelago\Splitter\Splitter.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Archipelago\Archipelago.dproj">
@@ -27,13 +27,10 @@
         <Projects Include="PanoViewer\PanoViewer.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Q3Demo\Actor.dproj">
+        <Projects Include="Q3Demo\Q3Demo.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="TextureTB\TTB.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="TheBall\TheBall.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -44,14 +41,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="AirBlast">
-        <MSBuild Projects="AirBlast\AirBlast.dproj"/>
+    <Target Name="Splitter">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.dproj"/>
     </Target>
-    <Target Name="AirBlast:Clean">
-        <MSBuild Projects="AirBlast\AirBlast.dproj" Targets="Clean"/>
+    <Target Name="Splitter:Clean">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="AirBlast:Make">
-        <MSBuild Projects="AirBlast\AirBlast.dproj" Targets="Make"/>
+    <Target Name="Splitter:Make">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.dproj" Targets="Make"/>
     </Target>
     <Target Name="Archipelago">
         <MSBuild Projects="Archipelago\Archipelago.dproj"/>
@@ -116,14 +113,14 @@
     <Target Name="PanoViewer:Make">
         <MSBuild Projects="PanoViewer\PanoViewer.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Actor">
-        <MSBuild Projects="Q3Demo\Actor.dproj"/>
+    <Target Name="Q3Demo">
+        <MSBuild Projects="Q3Demo\Q3Demo.dproj"/>
     </Target>
-    <Target Name="Actor:Clean">
-        <MSBuild Projects="Q3Demo\Actor.dproj" Targets="Clean"/>
+    <Target Name="Q3Demo:Clean">
+        <MSBuild Projects="Q3Demo\Q3Demo.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Actor:Make">
-        <MSBuild Projects="Q3Demo\Actor.dproj" Targets="Make"/>
+    <Target Name="Q3Demo:Make">
+        <MSBuild Projects="Q3Demo\Q3Demo.dproj" Targets="Make"/>
     </Target>
     <Target Name="TTB">
         <MSBuild Projects="TextureTB\TTB.dproj"/>
@@ -134,23 +131,14 @@
     <Target Name="TTB:Make">
         <MSBuild Projects="TextureTB\TTB.dproj" Targets="Make"/>
     </Target>
-    <Target Name="TheBall">
-        <MSBuild Projects="TheBall\TheBall.dproj"/>
-    </Target>
-    <Target Name="TheBall:Clean">
-        <MSBuild Projects="TheBall\TheBall.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TheBall:Make">
-        <MSBuild Projects="TheBall\TheBall.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="AirBlast;Archipelago;Christmas;Earth;Forest;GLSViewer;IntensityMesh;PanoViewer;Actor;TTB;TheBall"/>
+        <CallTarget Targets="Splitter;Archipelago;Christmas;Earth;Forest;GLSViewer;IntensityMesh;PanoViewer;Q3Demo;TTB"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AirBlast:Clean;Archipelago:Clean;Christmas:Clean;Earth:Clean;Forest:Clean;GLSViewer:Clean;IntensityMesh:Clean;PanoViewer:Clean;Actor:Clean;TTB:Clean;TheBall:Clean"/>
+        <CallTarget Targets="Splitter:Clean;Archipelago:Clean;Christmas:Clean;Earth:Clean;Forest:Clean;GLSViewer:Clean;IntensityMesh:Clean;PanoViewer:Clean;Q3Demo:Clean;TTB:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AirBlast:Make;Archipelago:Make;Christmas:Make;Earth:Make;Forest:Make;GLSViewer:Make;IntensityMesh:Make;PanoViewer:Make;Actor:Make;TTB:Make;TheBall:Make"/>
+        <CallTarget Targets="Splitter:Make;Archipelago:Make;Christmas:Make;Earth:Make;Forest:Make;GLSViewer:Make;IntensityMesh:Make;PanoViewer:Make;Q3Demo:Make;TTB:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -168,7 +168,7 @@ object Form1: TForm1
       Scale.Coordinates = {00008040000080400000803E00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLBumpmapHDS1
-      TileSize = 128
+      TileSize = 256
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = GLMaterialLibrary1
       CLODPrecision = 30

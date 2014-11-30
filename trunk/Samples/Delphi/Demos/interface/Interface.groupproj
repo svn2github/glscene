@@ -33,22 +33,22 @@
         <Projects Include="GizmoEx\GizmoEx.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="guidemo\Guidemo.dproj">
+        <Projects Include="GuiDemo\Guidemo.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="GuiPaint\GuiPaint.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="hfpick\HFpick.dproj">
+        <Projects Include="HFPick\HFpick.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="pick\Pick.dproj">
+        <Projects Include="Pick\Pick.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="SimpleNavigation\SimpleNavigation.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="winfont\Winfont.dproj">
+        <Projects Include="WinFont\Winfont.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -150,13 +150,13 @@
         <MSBuild Projects="GizmoEx\GizmoEx.dproj" Targets="Make"/>
     </Target>
     <Target Name="Guidemo">
-        <MSBuild Projects="guidemo\Guidemo.dproj"/>
+        <MSBuild Projects="GuiDemo\Guidemo.dproj"/>
     </Target>
     <Target Name="Guidemo:Clean">
-        <MSBuild Projects="guidemo\Guidemo.dproj" Targets="Clean"/>
+        <MSBuild Projects="GuiDemo\Guidemo.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Guidemo:Make">
-        <MSBuild Projects="guidemo\Guidemo.dproj" Targets="Make"/>
+        <MSBuild Projects="GuiDemo\Guidemo.dproj" Targets="Make"/>
     </Target>
     <Target Name="GuiPaint">
         <MSBuild Projects="GuiPaint\GuiPaint.dproj"/>
@@ -168,22 +168,22 @@
         <MSBuild Projects="GuiPaint\GuiPaint.dproj" Targets="Make"/>
     </Target>
     <Target Name="HFpick">
-        <MSBuild Projects="hfpick\HFpick.dproj"/>
+        <MSBuild Projects="HFPick\HFpick.dproj"/>
     </Target>
     <Target Name="HFpick:Clean">
-        <MSBuild Projects="hfpick\HFpick.dproj" Targets="Clean"/>
+        <MSBuild Projects="HFPick\HFpick.dproj" Targets="Clean"/>
     </Target>
     <Target Name="HFpick:Make">
-        <MSBuild Projects="hfpick\HFpick.dproj" Targets="Make"/>
+        <MSBuild Projects="HFPick\HFpick.dproj" Targets="Make"/>
     </Target>
     <Target Name="Pick">
-        <MSBuild Projects="pick\Pick.dproj"/>
+        <MSBuild Projects="Pick\Pick.dproj"/>
     </Target>
     <Target Name="Pick:Clean">
-        <MSBuild Projects="pick\Pick.dproj" Targets="Clean"/>
+        <MSBuild Projects="Pick\Pick.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Pick:Make">
-        <MSBuild Projects="pick\Pick.dproj" Targets="Make"/>
+        <MSBuild Projects="Pick\Pick.dproj" Targets="Make"/>
     </Target>
     <Target Name="SimpleNavigation">
         <MSBuild Projects="SimpleNavigation\SimpleNavigation.dproj"/>
@@ -195,13 +195,13 @@
         <MSBuild Projects="SimpleNavigation\SimpleNavigation.dproj" Targets="Make"/>
     </Target>
     <Target Name="Winfont">
-        <MSBuild Projects="winfont\Winfont.dproj"/>
+        <MSBuild Projects="WinFont\Winfont.dproj"/>
     </Target>
     <Target Name="Winfont:Clean">
-        <MSBuild Projects="winfont\Winfont.dproj" Targets="Clean"/>
+        <MSBuild Projects="WinFont\Winfont.dproj" Targets="Clean"/>
     </Target>
     <Target Name="Winfont:Make">
-        <MSBuild Projects="winfont\Winfont.dproj" Targets="Make"/>
+        <MSBuild Projects="WinFont\Winfont.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
         <CallTarget Targets="Bmpfont;Camera;CameraController;Console;Cursor;Fading;Fontcolor;GameMenu;Gizmo;GizmoEx;Guidemo;GuiPaint;HFpick;Pick;SimpleNavigation;Winfont"/>

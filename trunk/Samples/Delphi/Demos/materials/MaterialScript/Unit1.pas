@@ -49,7 +49,7 @@ implementation
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-   OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
+   OpenDialog1.InitialDir := ExtractFilePath(ParamStr(0));
    if OpenDialog1.Execute then
       if fileexists(Opendialog1.FileName) then
       Memo1.Lines.LoadFromFile(Opendialog1.FileName);
@@ -68,7 +68,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    GLMaterialScripter1.DebugMemo := Memo2;;
    GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
-   SetCurrentDir(ExtractFilePath(Application.ExeName));
+   SetCurrentDir(ExtractFilePath(ParamStr(0)));
 end;
 
 

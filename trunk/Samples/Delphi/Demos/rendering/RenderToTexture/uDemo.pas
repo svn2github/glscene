@@ -9,7 +9,7 @@ uses
   //GLScene
   GLScene, GLWin32Viewer, GLFBORenderer, GLObjects, GLCoordinates, GLSimpleNavigation,
   GLMaterial, GLCadencer,  GLCrossPlatform, GLBaseClasses,
-  GLRenderContextInfo, GLContext, AsyncTimer;
+  GLRenderContextInfo, GLContext, GLAsyncTimer;
 
 type
   TForm1 = class(TForm)

@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 170
   Caption = 'Gizmo'
   ClientHeight = 616
-  ClientWidth = 582
+  ClientWidth = 679
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,11 +20,11 @@ object Form1: TForm1
   object Viewer: TGLSceneViewer
     Left = 201
     Top = 0
-    Width = 381
+    Width = 478
     Height = 616
     Camera = Camera
     Buffer.BackgroundColor = clMedGray
-    FieldOfView = 150.586914062500000000
+    FieldOfView = 156.367706298828100000
     Align = alClient
     OnMouseDown = ViewerMouseDown
     OnMouseMove = ViewerMouseMove
@@ -38,6 +38,7 @@ object Form1: TForm1
     Height = 616
     Align = alLeft
     TabOrder = 1
+    ExplicitLeft = -6
     object Bevel1: TBevel
       Left = 1
       Top = 1
@@ -47,78 +48,64 @@ object Form1: TForm1
       Shape = bsTopLine
     end
     object Label1: TLabel
-      Left = 8
-      Top = 504
+      Left = 7
+      Top = 472
       Width = 100
       Height = 13
       Caption = 'Bounding Box Color :'
     end
     object Label2: TLabel
-      Left = 8
-      Top = 544
+      Left = 7
+      Top = 512
       Width = 81
       Height = 13
       Caption = 'Label Infos Color'
     end
     object Label3: TLabel
-      Left = 8
-      Top = 584
+      Left = 7
+      Top = 552
       Width = 69
       Height = 13
       Caption = 'Selected Color'
     end
     object Label4: TLabel
-      Left = 24
-      Top = 466
+      Left = 23
+      Top = 434
       Width = 84
       Height = 13
       Caption = 'Auto Zoom factor'
     end
     object Label5: TLabel
-      Left = 48
-      Top = 487
+      Left = 47
+      Top = 455
       Width = 60
       Height = 13
       Caption = 'Zoom Factor'
     end
     object Label6: TLabel
       Left = 23
-      Top = 276
+      Top = 244
       Width = 59
       Height = 13
       Caption = 'Move Coef :'
     end
-    object Label8: TLabel
-      Left = 5
-      Top = 9
-      Width = 152
-      Height = 39
-      Caption = 'GLGizmo  '#13#10'code by Adirex, Degiovani, Delauney, Mrqzzz'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Shell Dlg 2'
-      Font.Style = [fsBold]
-      ParentFont = False
-      WordWrap = True
-    end
     object Label10: TLabel
       Left = 17
-      Top = 323
+      Top = 291
       Width = 58
       Height = 13
       Caption = 'Scale Coef :'
     end
     object Label11: TLabel
       Left = 5
-      Top = 253
+      Top = 221
       Width = 77
       Height = 13
       Caption = 'Gizmo Thickness'
     end
     object Label7: TLabel
       Left = 16
-      Top = 301
+      Top = 269
       Width = 66
       Height = 13
       Caption = 'Rotate Coef :'
@@ -126,7 +113,7 @@ object Form1: TForm1
     object CheckBox1: TCheckBox
       Tag = 1
       Left = 8
-      Top = 112
+      Top = 80
       Width = 145
       Height = 17
       Caption = 'Exclude Objects in list'
@@ -136,7 +123,7 @@ object Form1: TForm1
     object CheckBox2: TCheckBox
       Tag = 2
       Left = 8
-      Top = 184
+      Top = 152
       Width = 97
       Height = 17
       Caption = 'Force Axis'
@@ -145,7 +132,7 @@ object Form1: TForm1
     end
     object CBXAxis: TComboBox
       Left = 108
-      Top = 180
+      Top = 148
       Width = 89
       Height = 21
       Enabled = False
@@ -165,7 +152,7 @@ object Form1: TForm1
     object CheckBox3: TCheckBox
       Tag = 3
       Left = 8
-      Top = 203
+      Top = 171
       Width = 97
       Height = 17
       Caption = 'Force Operation'
@@ -174,7 +161,7 @@ object Form1: TForm1
     end
     object CBXOperation: TComboBox
       Left = 108
-      Top = 202
+      Top = 170
       Width = 89
       Height = 21
       Enabled = False
@@ -191,7 +178,7 @@ object Form1: TForm1
     object CheckBox4: TCheckBox
       Tag = 4
       Left = 8
-      Top = 224
+      Top = 192
       Width = 137
       Height = 17
       Caption = 'Force Uniform Scale'
@@ -201,7 +188,7 @@ object Form1: TForm1
     object CheckBox5: TCheckBox
       Tag = 5
       Left = 8
-      Top = 346
+      Top = 314
       Width = 97
       Height = 17
       Caption = 'Show Axis Label'
@@ -213,7 +200,7 @@ object Form1: TForm1
     object CheckBox6: TCheckBox
       Tag = 6
       Left = 8
-      Top = 362
+      Top = 330
       Width = 113
       Height = 17
       Caption = 'Show Infos Label'
@@ -225,7 +212,7 @@ object Form1: TForm1
     object CheckBox7: TCheckBox
       Tag = 9
       Left = 32
-      Top = 380
+      Top = 348
       Width = 97
       Height = 17
       Caption = 'Object Name'
@@ -237,7 +224,7 @@ object Form1: TForm1
     object CheckBox8: TCheckBox
       Tag = 10
       Left = 32
-      Top = 396
+      Top = 364
       Width = 97
       Height = 17
       Caption = 'Operation'
@@ -249,7 +236,7 @@ object Form1: TForm1
     object CheckBox9: TCheckBox
       Tag = 11
       Left = 32
-      Top = 412
+      Top = 380
       Width = 97
       Height = 17
       Caption = 'Coordonates'
@@ -260,8 +247,8 @@ object Form1: TForm1
     end
     object CheckBox10: TCheckBox
       Tag = 8
-      Left = 8
-      Top = 450
+      Left = 7
+      Top = 418
       Width = 97
       Height = 17
       Caption = 'Auto Zoom'
@@ -272,8 +259,8 @@ object Form1: TForm1
     end
     object CheckBox11: TCheckBox
       Tag = 7
-      Left = 8
-      Top = 433
+      Left = 7
+      Top = 401
       Width = 97
       Height = 17
       Caption = 'No Z-Write'
@@ -283,8 +270,8 @@ object Form1: TForm1
       OnClick = CheckBox12Click
     end
     object ColorBox1: TColorBox
-      Left = 5
-      Top = 520
+      Left = 4
+      Top = 488
       Width = 188
       Height = 22
       DefaultColorColor = clWhite
@@ -294,8 +281,8 @@ object Form1: TForm1
     end
     object ColorBox2: TColorBox
       Tag = 1
-      Left = 5
-      Top = 558
+      Left = 4
+      Top = 526
       Width = 188
       Height = 22
       Selected = clYellow
@@ -304,8 +291,8 @@ object Form1: TForm1
     end
     object ColorBox3: TColorBox
       Tag = 2
-      Left = 5
-      Top = 598
+      Left = 4
+      Top = 566
       Width = 188
       Height = 22
       Selected = clYellow
@@ -313,8 +300,8 @@ object Form1: TForm1
       OnChange = ColorBox1Change
     end
     object edAutoZoomFactor: TEdit
-      Left = 115
-      Top = 464
+      Left = 114
+      Top = 432
       Width = 73
       Height = 21
       TabOrder = 16
@@ -323,8 +310,8 @@ object Form1: TForm1
       OnKeyPress = edAutoZoomFactorKeyPress
     end
     object edZoomFactor: TEdit
-      Left = 115
-      Top = 484
+      Left = 114
+      Top = 452
       Width = 73
       Height = 21
       Enabled = False
@@ -335,7 +322,7 @@ object Form1: TForm1
     end
     object CheckBox12: TCheckBox
       Left = 8
-      Top = 95
+      Top = 63
       Width = 65
       Height = 17
       Caption = 'Enabled'
@@ -346,7 +333,7 @@ object Form1: TForm1
     end
     object edMoveCoef: TEdit
       Left = 88
-      Top = 272
+      Top = 240
       Width = 73
       Height = 21
       TabOrder = 19
@@ -356,7 +343,7 @@ object Form1: TForm1
     end
     object edRotateCoef: TEdit
       Left = 88
-      Top = 296
+      Top = 264
       Width = 73
       Height = 21
       TabOrder = 20
@@ -367,7 +354,7 @@ object Form1: TForm1
     object CheckBox13: TCheckBox
       Tag = 12
       Left = 8
-      Top = 129
+      Top = 97
       Width = 97
       Height = 17
       Caption = 'Show Move Part'
@@ -379,7 +366,7 @@ object Form1: TForm1
     object CheckBox14: TCheckBox
       Tag = 13
       Left = 8
-      Top = 145
+      Top = 113
       Width = 113
       Height = 17
       Caption = 'Show Rotate Part'
@@ -391,7 +378,7 @@ object Form1: TForm1
     object CheckBox15: TCheckBox
       Tag = 14
       Left = 8
-      Top = 163
+      Top = 131
       Width = 97
       Height = 17
       Caption = 'Show Scale Part'
@@ -402,7 +389,7 @@ object Form1: TForm1
     end
     object edGizmoThickness: TEdit
       Left = 88
-      Top = 248
+      Top = 216
       Width = 73
       Height = 21
       TabOrder = 24
@@ -411,8 +398,8 @@ object Form1: TForm1
     end
     object OptPickMode: TRadioGroup
       Left = 8
-      Top = 58
-      Width = 169
+      Top = 15
+      Width = 180
       Height = 33
       Caption = 'PickMode'
       Columns = 2
@@ -426,7 +413,7 @@ object Form1: TForm1
   end
   object edScaleCoef: TEdit
     Left = 88
-    Top = 319
+    Top = 287
     Width = 73
     Height = 21
     TabOrder = 2
@@ -435,8 +422,8 @@ object Form1: TForm1
     OnKeyPress = edAutoZoomFactorKeyPress
   end
   object GLScene1: TGLScene
-    Left = 280
-    Top = 120
+    Left = 248
+    Top = 56
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLDodecahedron3: TGLDodecahedron

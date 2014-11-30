@@ -54,7 +54,6 @@ type
     CheckBox13: TCheckBox;
     CheckBox14: TCheckBox;
     CheckBox15: TCheckBox;
-    Label8: TLabel;
     GLDodecahedron3: TGLDodecahedron;
     GLArrowLine3: TGLArrowLine;
     GLArrowLine4: TGLArrowLine;

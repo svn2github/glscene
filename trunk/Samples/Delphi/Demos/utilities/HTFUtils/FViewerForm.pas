@@ -143,7 +143,7 @@ var
 begin
    bmpTile:=TBitmap32.Create;
 
-   AppDir:=ExtractFilePath(Application.ExeName);
+   AppDir:=ExtractFilePath(ParamStr(0));
 
    PreparePal(appDir+'Blue-Green-Red.pal');
    i:=FindFirst(appDir+'*.pal', faAnyFile, sr);

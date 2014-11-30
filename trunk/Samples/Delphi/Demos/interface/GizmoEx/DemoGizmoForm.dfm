@@ -12,7 +12,9 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poScreenCenter
   ShowHint = True
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
@@ -1618,15 +1620,11 @@ object Form1: TForm1
     Top = 35
     Width = 213
     Height = 491
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alLeft
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label10: TLabel
         Left = 0
         Top = 118
@@ -1979,10 +1977,6 @@ object Form1: TForm1
     object TabSheet2: TTabSheet
       Caption = 'Colors Settings'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label1: TLabel
         Left = 5
         Top = 6

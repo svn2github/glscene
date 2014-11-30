@@ -170,9 +170,9 @@ end;
 procedure TForm1.CloudFileOpenBtnClick(Sender: TObject);
 begin
   OpenDialog1.Filter := 'Cloud base (*.clb)|*.clb';
-  OpenDialog1.InitialDir := ExtractFilePath(Application.Exename);
+  OpenDialog1.InitialDir := ExtractFilePath(ParamStr(0));
   OpenDialog1.Filename:='*.clb' ;
-  if OpenDialog1.execute then
+  if OpenDialog1.Execute then
   begin
     CloudFileUsedEdit.Text := OpenDialog1.Filename;
   end;
@@ -217,7 +217,7 @@ begin
 end;
 begin
   SaveDialog1.Filter := 'Cloud base (*.clb)|*.clb';
-  SaveDialog1.InitialDir:=ExtractFilePath(Application.Exename);
+  SaveDialog1.InitialDir:=ExtractFilePath(ParamStr(0));
   SaveDialog1.DefaultExt:='rnd';
   SaveDialog1.Filename:='*.clb' ;
   if (SaveDialog1.Execute) then
