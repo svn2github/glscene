@@ -14,7 +14,7 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    CollisionManager1: TCollisionManager;
+    CollisionManager1: TGLCollisionManager;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     DummyCube1: TGLDummyCube;

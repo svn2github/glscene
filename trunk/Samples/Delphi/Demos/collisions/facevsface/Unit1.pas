@@ -23,7 +23,7 @@ type
     txtX: TGLSpaceText;
     txtY: TGLSpaceText;
     txtZ: TGLSpaceText;
-    CollisionManager1: TCollisionManager;
+    CollisionManager1: TGLCollisionManager;
     cbCollisionMode: TRadioGroup;
     Bar: TGLCube;
     Teapot1: TGLFreeForm;
