@@ -74,7 +74,7 @@ uses
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
 
   GLSkyDome.Bands.Clear;
   if FileExists('Yale_BSC.stars') then

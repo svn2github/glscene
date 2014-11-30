@@ -12,6 +12,7 @@ object GLSLTestForm: TGLSLTestForm
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel

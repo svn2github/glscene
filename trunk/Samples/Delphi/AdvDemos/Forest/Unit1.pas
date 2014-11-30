@@ -118,7 +118,7 @@ begin
 //  SetFullscreenMode(GetIndexFromResolution(1024, 768, 32), 85);
   Application.OnDeactivate := FormDeactivate;
 
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
 
   with MLTerrain.AddTextureMaterial('Terrain', 'data\volcano_TX_low.jpg') do
     Texture2Name := 'Detail';

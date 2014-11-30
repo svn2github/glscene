@@ -51,11 +51,14 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::DOInitializeRender(TObject *Sender, TRenderContextInfo &rci)
 {
-	if ((! (GL_ARB_shader_objects && GL_ARB_vertex_program && GL_ARB_vertex_shader && GL_ARB_fragment_shader)))
+	if (! ((GL_SHADER_OBJECT_ARB) &&
+			(GL_VERTEX_PROGRAM_ARB) &&
+			(GL_VERTEX_SHADER_ARB) &&
+			(GL_FRAGMENT_SHADER_ARB)))
 	{
 	  ShowMessage("Your hardware does not support GLSL to execute this demo!");
-	  //	  return (void) NULL;
 	}
+
   if (DOInitialize->Tag != 0)
 	exit;
   DOInitialize->Tag = 1;
@@ -92,10 +95,11 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender, TRenderContextInfo
 {
   Glvectorgeometry::TVector camPos;
 
+  programObject = new TGLProgramHandle();
   programObject->UseProgramObject();
-  programObject->Uniform1f["Time"] = GLCadencer1->CurrentTime * 0.05;
+///  programObject->Uniform1f["Time"] = GLCadencer1->CurrentTime * 0.05;
   camPos = GLCamera->AbsolutePosition;
-  programObject->Uniform4f["EyePos"] = camPos;
+///  programObject->Uniform4f["EyePos"] = camPos;
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass, TRenderContextInfo &rci,
@@ -153,9 +157,11 @@ void __fastcall TForm1::DOOceanPlaneRender(TObject *Sender, TRenderContextInfo &
   int x, y;
   TTexPointList *v;
   bool cont;
+  TGLExtensionsAndEntryPoints *GL;
 
   GLUserShader1DoApply(Sender, rci);
-  glEnableClientState(GL_VERTEX_ARRAY);
+  GL = new TGLExtensionsAndEntryPoints();
+  GL->EnableClientState(GL_VERTEX_ARRAY);
 
   if (! vbo)
   {
@@ -180,8 +186,8 @@ void __fastcall TForm1::DOOceanPlaneRender(TObject *Sender, TRenderContextInfo &
 	vbo->BufferData(v->List, v->DataSize(), GL_STATIC_DRAW_ARB);
 	nbVerts = v->Count;
 
-	glVertexPointer(2, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_QUAD_STRIP, 0, nbVerts);
+	GL->VertexPointer(2, GL_FLOAT, 0, NULL);
+	GL->DrawArrays(GL_QUAD_STRIP, 0, nbVerts);
 
 	vbo->UnBind();
 
@@ -190,11 +196,11 @@ void __fastcall TForm1::DOOceanPlaneRender(TObject *Sender, TRenderContextInfo &
   else
   {
 	vbo->Bind();
-	glVertexPointer(2, GL_FLOAT, 0, NULL);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, nbVerts);
+	GL->VertexPointer(2, GL_FLOAT, 0, NULL);
+	GL->DrawArrays(GL_TRIANGLE_STRIP, 0, nbVerts);
 	vbo->UnBind();
   }
-  glDisableClientState(GL_VERTEX_ARRAY);
+  GL->DisableClientState(GL_VERTEX_ARRAY);
   GLUserShader1DoUnApply(Sender, 0, rci, cont);
 }
 //---------------------------------------------------------------------------

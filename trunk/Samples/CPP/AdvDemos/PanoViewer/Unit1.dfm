@@ -12,6 +12,8 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnKeyDown = FormKeyDown
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -57,7 +59,7 @@ object Form1: TForm1
     object LabelYaw: TLabel
       Left = 249
       Top = 8
-      Width = 36
+      Width = 35
       Height = 15
       Margins.Left = 2
       Margins.Top = 2
@@ -149,6 +151,7 @@ object Form1: TForm1
     end
   end
   object OpenPictureDialog1: TOpenPictureDialog
+    DefaultExt = '*.jpg'
     Left = 136
     Top = 64
   end

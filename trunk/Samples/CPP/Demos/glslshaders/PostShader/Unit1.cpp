@@ -107,8 +107,7 @@ void __fastcall TForm1::ShaderCheckListBoxClick(TObject *Sender)
   int I;
   if (ShaderCheckListBox->Items->Count != 0)
 	for (I = 0; I < ShaderCheckListBox->Items->Count - 1; I++) {
-//	  TGLShader(ShaderCheckListBox->Items->Objects[I])->Enabled =
-		ShaderCheckListBox->Checked[I];
+///	  TGLShader(ShaderCheckListBox->Items->Objects[I])->Enabled = ShaderCheckListBox->Checked[I];
 	}
 }
 

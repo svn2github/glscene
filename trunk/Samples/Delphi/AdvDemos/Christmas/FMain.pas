@@ -139,6 +139,7 @@ procedure TMain.miMerryCristmasClick(Sender: TObject);
 begin
   miMerryCristmas.Checked := True;
   miHappyNewYear.Checked := False;
+  FTYear.Text := '';
 end;
 
 procedure TMain.miHappyNewYearClick(Sender: TObject);
@@ -214,20 +215,20 @@ begin
    Viewer.ResetPerformanceMonitor;
    if SMBASS.Active and (bStream=0) then
    begin
-      bStream:=BASS_StreamCreateFile(false, PAnsiChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
-      BASS_ChannelPlay(bStream, False);
+     bStream:=BASS_StreamCreateFile(False, PAnsiChar('Jingle_Bells_64.mp3'), 0, 0, BASS_STREAM_AUTOFREE);
+     BASS_ChannelPlay(bStream, True);
    end;
    DecodeDate(Now(), y, m, d);
-   FTYear.Text:= IntToStr(y+1)+' !';
    if miMerryCristmas.Checked then
    begin
      t:=EncodeDate(y, 12, 25)-Now();
-     FTCongratulations.Text := 'Merry Christmas';
+     FTCongratulations.Text := 'Merry Christmas!';
    end
    else
    begin
      t:=EncodeDate(y+1, 01, 01)-Now();
      FTCongratulations.Text := 'Happy New Year';
+     FTYear.Text:= IntToStr(y+1)+' !';
    end;
    if (t<1) and (t>-1) then
       DCGifts.Visible:=True;

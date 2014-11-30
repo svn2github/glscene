@@ -165,7 +165,8 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
    // You will note that this number quickly gets out of hand if you are
    // using large high-resolution grids
    LabelFPS->Caption = Format("%d Triangles - %.2f FPS",
-	   ARRAYOFCONST ((HeightField1->TriangleCount, GLSceneViewer1->FramesPerSecond())));
+	   ARRAYOFCONST ((HeightField1->TriangleCount,
+	   GLSceneViewer1->FramesPerSecond())));
    GLSceneViewer1->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------

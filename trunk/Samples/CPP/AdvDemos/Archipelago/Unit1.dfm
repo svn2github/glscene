@@ -17,7 +17,7 @@ object Form1: TForm1
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
-  object GLSceneViewer1: TGLSceneViewer
+  object GLSceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 560
@@ -107,6 +107,7 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = MaterialLibrary
       CLODPrecision = 5
+      OnHeightDataPostRender = TerrainRendererHeightDataPostRender
     end
     object DOWake: TGLDirectOpenGL
       OnProgress = DOWakeProgress
@@ -134,10 +135,8 @@ object Form1: TForm1
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
     object HTHelp: TGLHUDText
+      Up.Coordinates = {4CB7F8BE05C45F3F0000000000000000}
       BitmapFont = BFLarge
-      Rotation = 0.000000000000000000
-    end
-    object GLHUDText1: TGLHUDText
       Rotation = 0.000000000000000000
     end
   end
@@ -163,7 +162,6 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
-        Material.MaterialLibrary = MaterialLibrary
         TextureScale.Coordinates = {00008042000080420000804200000000}
       end
       item
@@ -176,7 +174,6 @@ object Form1: TForm1
         Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
         Material.Texture.Disabled = False
-        Material.MaterialLibrary = MaterialLibrary
         Texture2Name = 'waterenv'
       end
       item
@@ -186,9 +183,8 @@ object Form1: TForm1
         Material.Texture.Image.PictureFileName = 'wake.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Material.MaterialLibrary = MaterialLibrary
       end>
-    Left = 224
+    Left = 112
     Top = 32
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
@@ -211,14 +207,13 @@ object Form1: TForm1
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 312
+    Left = 224
     Top = 32
   end
   object GLMemoryViewer1: TGLMemoryViewer
-    Camera = GLCamera
     Buffer.BackgroundColor = clBlack
     Buffer.Lighting = False
-    Left = 120
+    Left = 312
     Top = 32
   end
   object MLSailBoat: TGLMaterialLibrary

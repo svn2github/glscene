@@ -62,8 +62,6 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 
   // This is how a shader is created in runtime.
   MultiLightShader = new TGLSLMLDiffuseSpecularShader(this);
-  MultiLightShader->LightCompensation = 0.7;
-  MultiLightShader->LightCount = 2;
 
   // Disable fog.
   EnableFogCheckBoxClick(NULL);
@@ -122,12 +120,12 @@ void __fastcall TForm1::RealisticSpecularCheckBoxClick(TObject *Sender)
   DiffuseSpecularShader->RealisticSpecular = RealisticSpecularCheckBox->Checked;
   MultiLightShader->RealisticSpecular = RealisticSpecularCheckBox->Checked;
   if (DiffuseSpecularShader->RealisticSpecular) {
-	DiffuseSpecularShader->SpecularPower = 20;
-	MultiLightShader->SpecularPower = 20;
+	MaterialLibrary->Materials->Items[0]->Material->FrontProperties->Shininess = 20;
+	MaterialLibrary->Materials->Items[1]->Material->FrontProperties->Shininess = 20;
   }
   else {
-	DiffuseSpecularShader->SpecularPower = 8;
-	MultiLightShader->SpecularPower = 8;
+	MaterialLibrary->Materials->Items[0]->Material->FrontProperties->Shininess = 8;
+	MaterialLibrary->Materials->Items[1]->Material->FrontProperties->Shininess = 8;
   }
 }
 //---------------------------------------------------------------------------

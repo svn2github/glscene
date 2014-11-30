@@ -29,7 +29,6 @@
 #include "GLUtils.hpp"
 #include "JPEG.hpp"
 #include "TGA.hpp"
-#include "OpenGL1x.hpp"
 
 
 //---------------------------------------------------------------------------

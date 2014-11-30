@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
@@ -35,8 +37,6 @@ object Form1: TForm1
     Height = 454
     Align = alLeft
     TabOrder = 1
-    ExplicitTop = -16
-    ExplicitHeight = 470
     object Label5: TLabel
       Left = 10
       Top = 134

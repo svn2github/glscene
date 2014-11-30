@@ -45,13 +45,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   AnsiString name;
   TGLLibMaterial *libMat;
 
-  String DataPath = ExtractFilePath(ParamStr(0));
-  int I = DataPath.Pos("Archipelago");
-  if (I != 0) {
-	DataPath.Delete(I+12,DataPath.Length()-I);
-	DataPath += "\\Data";
-	SetCurrentDir(DataPath);
-  }
+
+  SetCurrentDir(ExtractFilePath(ParamStr(0))+"\\Data");
+
   GLCustomHDS1->MaxPoolSize = 8*1024*1024;
   GLCustomHDS1->DefaultHeight = cWaterLevel;
 
@@ -72,7 +68,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	  libMat->Material->Texture->Compression = tcStandard; // comment out to turn off texture compression
 	  //         FilteringQuality = tfAnisotropic;
 
-	  libMat->Texture2Name = DataPath+"detail";
+	  libMat->Texture2Name = "detail";
 	}
 
   // Initial camera height offset (controled with pageUp/pageDown)
@@ -107,19 +103,14 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 			  F1: show this help");
   HTHelp->Position->SetPoint(Screen->Width/2 - 100,
 							 Screen->Height/2 - 150, 0);
-  HelpOpacity = 4;
-  GLSceneViewer1->Cursor = crNone;
-
-  WakeVertices = NULL;
-  WakeStretch = NULL;
-  WakeTime = NULL;
-  WasAboveWater = false;
+  HelpOpacity = 5;
+  GLSceneViewer->Cursor = crNone;
 }
 
 //---------------------------------------------------------------------------
 void TForm1::ResetMousePos(void)
 {
-   if (GLSceneViewer1->Cursor == crNone)
+   if (GLSceneViewer->Cursor == crNone)
 	  SetCursorPos(Screen->Width/2, Screen->Height/2);
 }
 
@@ -132,9 +123,9 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   Glvectorgeometry::TVector sbp;
   POINT newMousePos;
 
-  // handle keypresses
+  // Handle keypresses
   if (IsKeyDown(VK_SHIFT))
-    speed = 100*deltaTime;
+	speed = 100*deltaTime;
   else speed = 20*deltaTime;
 
   if (IsKeyDown(VK_UP))
@@ -152,78 +143,79 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
   if (IsKeyDown(VK_ESCAPE)) Close();
 
   if (IsKeyDown(VK_F1))
-    HelpOpacity = ClampValue(HelpOpacity+deltaTime*3, 0, 3);
+    HelpOpacity = ClampValue(HelpOpacity+deltaTime*5, 3, 5);
   if (IsKeyDown(VK_NUMPAD4))
     FFSailBoat->Turn(-deltaTime*3);
   if (IsKeyDown(VK_NUMPAD6))
     FFSailBoat->Turn(deltaTime*3);
 
-  // mouse movements and actions
+  // Mouse movements and actions
   if (IsKeyDown(VK_LBUTTON)) {
-    alpha = DCCamera->Position->Y;
+	alpha = DCCamera->Position->Y;
 	DCCamera->Position->AddScaledVector(speed, GLCamera->AbsoluteVectorToTarget());
-    CamHeight = CamHeight+DCCamera->Position->Y-alpha;
+	CamHeight = CamHeight+DCCamera->Position->Y-alpha;
   }
   if (IsKeyDown(VK_RBUTTON)) {
-    alpha = DCCamera->Position->Y;
+	alpha = DCCamera->Position->Y;
 	DCCamera->Position->AddScaledVector(-speed, GLCamera->AbsoluteVectorToTarget());
-    CamHeight = CamHeight+DCCamera->Position->Y-alpha;
+	CamHeight = CamHeight+DCCamera->Position->Y-alpha;
   }
   GetCursorPos(&newMousePos);
   GLCamera->MoveAroundTarget((Screen->Height/2-newMousePos.y)*0.25,
 							 (Screen->Width/2-newMousePos.x)*0.25);
   ResetMousePos();
 
-  // don"t drop our target through terrain!
-
+  // Don"t drop our target through terrain!
   terrainHeight = TerrainRenderer->InterpolatedHeight(DCCamera->Position->AsVector);
   surfaceHeight = TerrainRenderer->Scale->Z*cWaterLevel/128;
   if (terrainHeight<surfaceHeight)
-     terrainHeight = surfaceHeight;
+	 terrainHeight = surfaceHeight;
   DCCamera->Position->Y = terrainHeight+CamHeight;
 
-  // adjust fog distance/color for air/water
-  if ((GLCamera->AbsolutePosition.V[1]>surfaceHeight) || (! WaterPlane)) {
-    if (! WasAboveWater) {
-       SkyDome->Visible = true;
+  // Adjust fog distance/color for air/water
+  if ((GLCamera->AbsolutePosition.Y>surfaceHeight) || (! WaterPlane)) {
+	if (! WasAboveWater) {
+	   SkyDome->Visible = true;
 
-      GLSceneViewer1->Buffer->FogEnvironment->FogColor->Color = clrWhite;
-	  GLSceneViewer1->Buffer->FogEnvironment->FogEnd = 1000;
-      GLSceneViewer1->Buffer->FogEnvironment->FogStart = 500;
+	  GLSceneViewer->Buffer->FogEnvironment->FogColor->Color = clrWhite;
+	  GLSceneViewer->Buffer->FogEnvironment->FogEnd = 1000;
+	  GLSceneViewer->Buffer->FogEnvironment->FogStart = 500;
 
-       GLSceneViewer1->Buffer->BackgroundColor = clWhite;
-       GLCamera->DepthOfView = 1000;
+	   GLSceneViewer->Buffer->BackgroundColor = clWhite;
+	   GLCamera->DepthOfView = 1000;
 	   WasAboveWater = true;
-    }
-  }
-  else {
-    if (WasAboveWater) {
-       SkyDome->Visible = false;
-
-	  GLSceneViewer1->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
-      GLSceneViewer1->Buffer->FogEnvironment->FogEnd = 100;
-      GLSceneViewer1->Buffer->FogEnvironment->FogStart = 0;
-
-       GLSceneViewer1->Buffer->BackgroundColor = clNavy;
-       GLCamera->DepthOfView = 100;
-       WasAboveWater = false;
 	}
   }
-  // help visibility
-  if (HelpOpacity>0) {
-    HelpOpacity = HelpOpacity-deltaTime;
-    alpha = ClampValue(HelpOpacity, 0, 1);
-    if (alpha>0) {
-       HTHelp->Visible = true;
-       HTHelp->ModulateColor->Alpha = alpha;
-    } else HTHelp->Visible = false;
+  else {
+	if (WasAboveWater) {
+	   SkyDome->Visible = false;
+
+	  GLSceneViewer->Buffer->FogEnvironment->FogColor->AsWinColor = clNavy;
+	  GLSceneViewer->Buffer->FogEnvironment->FogEnd = 100;
+	  GLSceneViewer->Buffer->FogEnvironment->FogStart = 0;
+
+	   GLSceneViewer->Buffer->BackgroundColor = clNavy;
+	   GLCamera->DepthOfView = 100;
+	   WasAboveWater = false;
+	}
   }
-  // rock the sailboat
+
+  // Visibility of Help
+  if (HelpOpacity>0) {
+	HelpOpacity = HelpOpacity-deltaTime;
+	alpha = ClampValue(HelpOpacity, 0, 1);
+	if (alpha>0) {
+	   HTHelp->Visible = true;
+	   HTHelp->ModulateColor->Alpha = alpha;
+	} else HTHelp->Visible = false;
+  }
+
+  // Rock the sailboat
   sbp = TerrainRenderer->AbsoluteToLocal(FFSailBoat->AbsolutePosition);
-  alpha = WaterPhase(sbp.V[0]+TerrainRenderer->TileSize*0.5,
-					 sbp.V[1]+TerrainRenderer->TileSize*0.5);
+  alpha = WaterPhase(sbp.X+TerrainRenderer->TileSize*0.5,
+					 sbp.Y+TerrainRenderer->TileSize*0.5);
   FFSailBoat->Position->Y = (cWaterLevel+sin(alpha)*cWaveAmplitude)*(TerrainRenderer->Scale->Z/128)
-                        -1.5;
+						-1.5;
   f = cWaveAmplitude*0.01;
   FFSailBoat->Up->SetVector(cos(alpha)*0.02*f, 1, (sin(alpha)*0.02-0.005)*f);
   FFSailBoat->Move(deltaTime*2);
@@ -232,10 +224,10 @@ void __fastcall TForm1::GLCadencerProgress(TObject *Sender,
 void __fastcall TForm1::Timer1Timer(TObject *Sender)
 {
   HTFPS->Text = Format("%.1f FPS - %d - %d",
-                    ARRAYOFCONST((GLSceneViewer1->FramesPerSecond(),
-                     TerrainRenderer->LastTriangleCount,
+					ARRAYOFCONST((GLSceneViewer->FramesPerSecond(),
+					 TerrainRenderer->LastTriangleCount,
                      WaterPolyCount)));
-  GLSceneViewer1->ResetPerformanceMonitor();
+  GLSceneViewer->ResetPerformanceMonitor();
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
@@ -259,12 +251,12 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key)
 	   break;
     }
     case 's' :
-    case 'S' : WaterPlane = ! WaterPlane; break;
+	case 'S' : WaterPlane = ! WaterPlane; break;
     case 'b' :
-    case 'B' : FFSailBoat->Visible = ! FFSailBoat->Visible; break;
+	case 'B' : FFSailBoat->Visible = ! FFSailBoat->Visible; break;
     case '*' :
 	   if (TerrainRenderer->CLODPrecision>1)
-         TerrainRenderer->CLODPrecision = Round(TerrainRenderer->CLODPrecision*0.8);
+		 TerrainRenderer->CLODPrecision = Round(TerrainRenderer->CLODPrecision*0.8);
        break;
     case '/' :
        if (TerrainRenderer->CLODPrecision<1000)
@@ -288,7 +280,7 @@ void __fastcall TForm1::GLCustomHDS1StartPreparingData(THeightData *heightData)
 
   htfHD = GLHeightTileFileHDS1->GetData(heightData->XLeft, heightData->YTop,
 	  heightData->Size, heightData->DataType);
-  if ((htfHD->DataState == hdsNone)) //or (htfHD->HeightMax<=cWaterLevel-cWaterOpaqueDepth))
+  if ((htfHD->DataState == hdsNone)) //or (htfHD->HeightMax<=cWaterLevel-cWaterOpaqueDepth)
 	heightData->DataState = hdsNone;
   else {
 	i = (heightData->XLeft/128);
@@ -334,7 +326,7 @@ void __fastcall TForm1::GLSceneViewerBeforeRender(TObject *Sender)
   {
 	ResetMousePos();
 	PAProgress->Visible = false;
-	GLSceneViewer1->BeforeRender = NULL;
+	GLSceneViewer->BeforeRender = NULL;
   }
 }
 
@@ -379,7 +371,6 @@ void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx, 
 }
 
 //---------------------------------------------------------------------------
-
 void __fastcall TForm1::TerrainRendererHeightDataPostRender(TRenderContextInfo &rci,
 		  TList *&HeightDatas)
 {
@@ -436,6 +427,7 @@ void __fastcall TForm1::TerrainRendererHeightDataPostRender(TRenderContextInfo &
 	while (MaterialLibrary->UnApplyMaterial(rci));
   }
 }
+
 //---------------------------------------------------------------------------
 
 
@@ -524,7 +516,7 @@ void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci)
 		 p = WakeVertices->Items[i ^ 1];
 		 sbp = TerrainRenderer->AbsoluteToLocal(VectorMake(p,0));
 		 if ((i & 1) == 0) {
-			c = (i & 0xFFE)*0.2/n;
+			c = (float)(i & 0xFFE)*0.2/n;
 			glColor3f(c, c, c);
 			glTexCoord2f(0, WakeTime->Items[i/2]);
 		 } else

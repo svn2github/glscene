@@ -21,6 +21,8 @@
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
+#include "OpenGLTokens.hpp"
+#include "GLContext.hpp"
 //---------------------------------------------------------------------------
 
 #define MAXSHADERS 10

@@ -51,7 +51,7 @@ var
   s, sd, f: Integer;
   x, y: Integer;
 begin
-  SetCurrentDir(ExtractFilePath(Application.ExeName));
+  SetCurrentDir(ExtractFilePath(ParamStr(0)));
 
   s := StrToInt(EDTileSize.Text);
   pic := TPicture.Create;

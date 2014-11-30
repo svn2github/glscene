@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
 #include <math.h>
 #pragma hdrstop
 
@@ -27,7 +28,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::BtnLoadClick(TObject *Sender)
 {
-  SetGLSceneMediaDir();
+//  SetGLSceneMediaDir();
+  OpenPictureDialog1->InitialDir = ExtractFilePath(ParamStr(0));
   OpenPictureDialog1->FileName = "sejourstmathieu2048.jpg";
   if (OpenPictureDialog1->Execute())
   GLMaterialLibrary1->Materials->Items[0]->Material->
