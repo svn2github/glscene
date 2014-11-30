@@ -1092,14 +1092,7 @@ end;
 
 function GetValueFromStringsIndex(const AStrings: TStrings; const AIndex: Integer): string;
 begin
-  {$IFNDEF GLS_DELPHI_5}
   Result := AStrings.ValueFromIndex[AIndex];
-  {$ELSE}
-  if AIndex >= 0 then
-    Result := Copy(AStrings[AIndex], Length(AStrings.Names[AIndex]) + 2, MaxInt)
-  else
-    Result := '';
-  {$ENDIF}
 end;
 
 function GetPlatformInfo: TPlatformInfo;

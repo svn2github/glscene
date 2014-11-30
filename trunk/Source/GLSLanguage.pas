@@ -7,7 +7,7 @@
         In Lazarus has the ability to upload text from any encoding.
    Ru
        TLanguage создан для локализации вашего приложения.
-       В Делфи текст имеет кодировку Ansi cp1251 и не подлежыт кодировке\декодировке.
+       В Делфи текст имеет кодировку Ansi cp1251 и не подлежит кодировке\декодировке.
        В Лазарусе имеется возможность загружать текст из любой кодировки.
 
   <b>History : </b><font size=-1><ul>
@@ -22,10 +22,8 @@ interface
 
 {$I GLScene.inc}
 {$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
-{$IFDEF GLS_COMPILER_2009_UP}
 {$WARN IMPLICIT_STRING_CAST OFF}
 {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
-{$ENDIF}
 
 uses
   Classes;

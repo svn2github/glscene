@@ -391,11 +391,6 @@ begin
    // Build SubMenus
    SetObjectsSubItems(MIAddObject);
    MIAddObject.SubMenuImages:=ObjectManager.ObjectIcons;
-{$IFNDEF GLS_DELPHI_6_UP}
-   ACCut.Visible:=False;
-   ACCopy.Visible:=False;
-   ACPaste.Visible:=False;
-{$ENDIF}
    SetObjectsSubItems(PMToolBar.Items);
    PMToolBar.Images:=ObjectManager.ObjectIcons;
 
@@ -1143,7 +1138,6 @@ end;
 // IsPastePossible
 //
 function TGLSceneEditorForm.IsPastePossible : Boolean;
-{$IFDEF GLS_DELPHI_6_UP}
 
    function PossibleStream(const S: string): Boolean;
    var
@@ -1182,25 +1176,18 @@ begin
          TmpContainer.Free;
       end;
    end else Result:=False;
-{$ELSE}
-begin
-   Result:=False;
-{$ENDIF}
 end;
 
 // CanPaste
 //
-{$IFDEF GLS_DELPHI_6_UP}
 function TGLSceneEditorForm.CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
 begin
    Result:= Assigned(obj) and Assigned(destination);
 end;
-{$ENDIF}
 
 // ACCopyExecute
 //
 procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
-{$IFDEF GLS_DELPHI_6_UP}
 var
    ComponentList: IDesignerSelections;
 begin
@@ -1208,15 +1195,11 @@ begin
    ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
    CopyComponents(FScene.Owner, ComponentList);
    ACPaste.Enabled:=IsPastePossible;
-{$ELSE}
-begin
-{$ENDIF}
 end;
 
 // ACCutExecute
 //
 procedure TGLSceneEditorForm.ACCutExecute(Sender: TObject);
-{$IFDEF GLS_DELPHI_6_UP}
 var
   AObject: TGLBaseSceneObject;
   ComponentList: IDesignerSelections;
@@ -1233,16 +1216,12 @@ begin
     Tree.Selected.Free;
     ACPaste.Enabled:=IsPastePossible;
   end;
-{$ELSE}
-begin
-{$ENDIF}
 end;
 
 
 // ACPasteExecute
 //
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
-{$IFDEF GLS_DELPHI_6_UP}
 var
    selNode : TTreeNode;
 	destination : TGLBaseSceneObject;
@@ -1261,12 +1240,8 @@ begin
       end;
       FCurrentDesigner.Modified;
    end;
-{$ELSE}
-begin
-{$ENDIF}
 end;
 
-{$IFDEF GLS_DELPHI_6_UP}
 // CopyComponents
 //
 procedure TGLSceneEditorForm.CopyComponents(Root: TComponent; const Components: IDesignerSelections);
@@ -1339,7 +1314,6 @@ procedure TGLSceneEditorForm.ComponentRead(Component: TComponent);
 begin
    FPasteSelection.Add(Component);
 end;
-{$ENDIF}
 
 procedure TGLSceneEditorForm.BehavioursListViewClick(Sender: TObject);
 begin

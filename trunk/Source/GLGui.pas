@@ -530,13 +530,11 @@ begin
       LLayout.FGuiComponents[I].AssignTo(LComponent);
       LComponent.Name := LLayout.FGuiComponents[I].Name;
     end;
-{$IFNDEF GLS_DELPHI_5}
     for I := 0 to FGuiComponentList.Count - 1 do
       TGLUpdateAbleComponent(FGuiComponentList[I]).RemoveFreeNotification(Self);
     FGuiComponentList.Assign(LLayout.FGuiComponentList);
     for I := 0 to FGuiComponentList.Count - 1 do
       TGLUpdateAbleComponent(FGuiComponentList[I]).FreeNotification(Self);
-{$ENDIF}
   end
   else
     inherited; // Assign Error

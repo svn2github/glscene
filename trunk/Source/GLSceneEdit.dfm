@@ -328,22 +328,20 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object Label1: TLabel
       Left = 1
       Top = 30
-      Width = 208
+      Width = 55
       Height = 14
       Align = alTop
       Alignment = taCenter
       Caption = 'Behaviours'
-      ExplicitWidth = 55
     end
     object Label2: TLabel
       Left = 1
       Top = 158
-      Width = 208
+      Width = 35
       Height = 14
       Align = alTop
       Alignment = taCenter
       Caption = 'Effects'
-      ExplicitWidth = 35
     end
     object BehavioursListView: TListView
       Left = 1
@@ -590,7 +588,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 16
     Top = 120
     Bitmap = {
-      494C01010F001800500010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

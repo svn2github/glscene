@@ -346,7 +346,7 @@ type
   //
   { : Editor for GLScene Archive Manager.<p> }
   TGLSArchiveManagerEditor = class
-    (TReuseableDefaultEditor{$IFDEF GLS_DELPHI_6_UP}, IDefaultEditor{$ENDIF})
+    (TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
       var Continue: Boolean); override;

@@ -2141,10 +2141,10 @@ type
     property BackgroundAlpha: Single read FBackgroundAlpha write
       SetBackgroundAlpha;
     {: Returns the projection matrix in use or used for the last rendering. }
-    function ProjectionMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    function ProjectionMatrix: TMatrix; deprecated;
     {: Returns the view matrix in use or used for the last rendering. }
-    function ViewMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    function ModelMatrix: TMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    function ViewMatrix: TMatrix; deprecated;
+    function ModelMatrix: TMatrix; deprecated;
 
     {: Returns the base projection matrix in use or used for the last rendering.<p>
        The "base" projection is (as of now) either identity or the pick
@@ -2155,12 +2155,12 @@ type
     {: Back up current View matrix and replace it with newMatrix.<p>
        This method has no effect on the OpenGL matrix, only on the Buffer's
        matrix, and is intended for special effects rendering. }
-    procedure PushViewMatrix(const newMatrix: TMatrix); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure PushViewMatrix(const newMatrix: TMatrix); deprecated;
     {: Restore a View matrix previously pushed. }
-    procedure PopViewMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure PopViewMatrix; deprecated;
 
-    procedure PushProjectionMatrix(const newMatrix: TMatrix); {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
-    procedure PopProjectionMatrix; {$IFNDEF GLS_DELPHI_5} deprecated; {$ENDIF}
+    procedure PushProjectionMatrix(const newMatrix: TMatrix); deprecated;
+    procedure PopProjectionMatrix;  deprecated;
 
     {: Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
        This function accepts standard canvas coordinates, with (0,0) being
