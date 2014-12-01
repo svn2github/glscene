@@ -4,7 +4,9 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, ExtCtrls, GLScene, GLObjects, GLSLanguage;
+  Menus, StdCtrls, ExtCtrls,
+  //GLS
+  GLScene, GLObjects, GLSLanguage;
 
 type
 
@@ -53,6 +55,7 @@ begin
     mLanguage.Caption := Translate('mLanguage');
     mEnglish.Caption := Translate('mEnglish');
     mRussian.Caption := Translate('mRussian');
+    Form1.Caption := Translate('Form1Caption');
     GroupBox1.Caption := Translate('GroupBox1');
     Button.Caption := Translate('Button');
     label1.Caption := Translate('label');
