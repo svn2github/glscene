@@ -53,7 +53,7 @@ uses
   // GLScene
   GLScene, GLVectorGeometry, GLTexture, GLMaterial, GLSilhouette, GLStrings,
   GLCrossPlatform, GLPersistentClasses, GLRenderContextInfo, GLBaseClasses,
-  GLContext {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  GLContext , GLVectorTypes;
 
 type
 

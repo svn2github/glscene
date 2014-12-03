@@ -65,7 +65,7 @@
 {.$DEFINE GLS_NO_REGIONS}
 
 // Activate Logging
-{$DEFINE GLS_LOGGING}
+{.$DEFINE GLS_LOGGING}
 
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
@@ -130,8 +130,6 @@
     {$DEFINE GLS_CPPB}
     // C++Builder requires hpp/obj files to use Delphi components in run-time packages.
     {$ObjExportAll On}
-  {$ELSE}
-    {$DEFINE GLS_DELPHI}
   {$ENDIF}
 {$ENDIF}
 

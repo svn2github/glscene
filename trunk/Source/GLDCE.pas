@@ -59,7 +59,7 @@ uses
   GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
   GLTerrainRenderer, GLCoordinates, GLBaseClasses, GLManager
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
   {Only csEllipsoid can have dynamic behaviour}

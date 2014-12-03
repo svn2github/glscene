@@ -27,8 +27,8 @@ uses
   GLS_CUDA_RunTime,
   GLS_CL_Platform,
   GLContext,
-  GLSGenerics
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLSGenerics,
+  GLSLog;
 
 type
 

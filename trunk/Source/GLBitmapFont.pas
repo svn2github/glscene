@@ -62,13 +62,15 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, VCL.Graphics, System.Types,
+  System.Classes, System.SysUtils, VCL.Graphics, System.Types,
 {$ELSE}
-  Classes, Graphics, Types,
+  Classes, Graphics, SysUtils, Types,
 {$ENDIF}
   GLScene, GLVectorGeometry, GLContext, GLCrossPlatform,
   GLTexture, GLState, GLUtils, GLGraphics, GLColor, GLBaseClasses,
-  GLRenderContextInfo, GLTextureFormat;
+  GLRenderContextInfo, GLTextureFormat,
+  OpenGLTokens, XOpenGL, GLVectorTypes;
+
 
 type
 {$IFNDEF GLS_UNICODE_SUPPORT}
@@ -388,8 +390,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils, OpenGLTokens, XOpenGL {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
 
 // ------------------
 // ------------------ TBitmapFontRange ------------------

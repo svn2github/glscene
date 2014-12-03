@@ -37,9 +37,9 @@ uses
   GLVectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
   GLMaterial, GLRenderContextInfo, GLState, OpenGLTokens,
   GLTextureFormat,
-  {$IFDEF GLS_DELPHI} GLVectorTypes, {$ENDIF}
-  GLMultisampleImage
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLVectorTypes,
+  GLMultisampleImage,
+  GLSLog;
 
 type
   TGLEnabledRenderBuffer = (erbDepth, erbStencil);

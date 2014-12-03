@@ -36,7 +36,10 @@ uses
   GLRenderContextInfo, GLBaseClasses, GLContext, GLVectorTypes,
   GLMaterial, GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLGraphics,
   GLPersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
-  GLTextureCombiners, OpenGLTokens, GLSLParameter;
+  GLTextureCombiners, OpenGLTokens, GLSLParameter,
+  GLApplicationFileIO, GLStrings, GLImageUtils, GLUtils, XOpenGL,
+  GLSLog;
+
 
 type
 
@@ -1329,11 +1332,6 @@ procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 
 implementation
-
-uses
-  GLApplicationFileIO, GLStrings, GLImageUtils, GLUtils, XOpenGL
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
-
 
 const
   cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =

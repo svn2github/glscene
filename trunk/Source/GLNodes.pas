@@ -27,7 +27,7 @@ uses
   GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLBaseClasses,
   GLCoordinates, GLSpline,
   XOpenGL
-{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+, GLVectorTypes;
 
 
 {$I GLScene.inc}

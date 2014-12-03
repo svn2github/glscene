@@ -4,7 +4,7 @@
 { : GLSCUDAFFTPlan <p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
+  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
   <li>04/05/11 - Yar - Fixed Source/Destination size checking
   <li>05/03/11 - Yar - Refactored
   <li>19/03/10 - Yar - Creation
@@ -19,10 +19,13 @@ interface
 
 uses
   Classes, SysUtils,
+  //GLS
   GLSCUDAContext,
-  GLSCUDA, GLS_CUDA_API, GLS_CUDA_FourierTransform,
-  GLStrings
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLSCUDA,
+  GLS_CUDA_API,
+  GLS_CUDA_FourierTransform,
+  GLStrings,
+  GLSLog;
 
 type
 

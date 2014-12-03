@@ -25,7 +25,7 @@ interface
 uses
   Classes, SysUtils, GLPersistentClasses, GLVectorGeometry,
   GLParticleFX, GLTexture, GLColor, GLRenderContextInfo,
-  OpenGLTokens, GLContext {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  OpenGLTokens, GLContext , GLVectorTypes;
 
 type
 

@@ -3,10 +3,7 @@
         <ProjectGuid>{7ECCAD50-135D-42E4-97AD-C681D87ED63D}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="clothactor\clothactor.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Clothify\Clothify.dproj">
+        <Projects Include="clothactor\Clothactor.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="NewtonDensity\NewtonDensity.dproj">
@@ -48,6 +45,9 @@
         <Projects Include="OdeTerrain\OdeTerrain.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Clothify\OdeClothify.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -56,23 +56,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="clothactor">
-        <MSBuild Projects="clothactor\clothactor.dproj"/>
+    <Target Name="Clothactor">
+        <MSBuild Projects="clothactor\Clothactor.dproj"/>
     </Target>
-    <Target Name="clothactor:Clean">
-        <MSBuild Projects="clothactor\clothactor.dproj" Targets="Clean"/>
+    <Target Name="Clothactor:Clean">
+        <MSBuild Projects="clothactor\Clothactor.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="clothactor:Make">
-        <MSBuild Projects="clothactor\clothactor.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Clothify">
-        <MSBuild Projects="Clothify\Clothify.dproj"/>
-    </Target>
-    <Target Name="Clothify:Clean">
-        <MSBuild Projects="Clothify\Clothify.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Clothify:Make">
-        <MSBuild Projects="Clothify\Clothify.dproj" Targets="Make"/>
+    <Target Name="Clothactor:Make">
+        <MSBuild Projects="clothactor\Clothactor.dproj" Targets="Make"/>
     </Target>
     <Target Name="NewtonDensity">
         <MSBuild Projects="NewtonDensity\NewtonDensity.dproj"/>
@@ -191,14 +182,23 @@
     <Target Name="OdeTerrain:Make">
         <MSBuild Projects="OdeTerrain\OdeTerrain.dproj" Targets="Make"/>
     </Target>
+    <Target Name="OdeClothify">
+        <MSBuild Projects="Clothify\OdeClothify.dproj"/>
+    </Target>
+    <Target Name="OdeClothify:Clean">
+        <MSBuild Projects="Clothify\OdeClothify.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OdeClothify:Make">
+        <MSBuild Projects="Clothify\OdeClothify.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="clothactor;Clothify;NewtonDensity;NewtonJoints;NewtonMaterial;NewtonMousePick;NewtonSimpleSpawn;NewtonWalkAndCarry;NewtonWalkCarryShoot;OdeConveyor;OdeFurBall;OdeMachine;OdeRagdoll;OdeSimple;OdeTerrain"/>
+        <CallTarget Targets="Clothactor;NewtonDensity;NewtonJoints;NewtonMaterial;NewtonMousePick;NewtonSimpleSpawn;NewtonWalkAndCarry;NewtonWalkCarryShoot;OdeConveyor;OdeFurBall;OdeMachine;OdeRagdoll;OdeSimple;OdeTerrain;OdeClothify"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="clothactor:Clean;Clothify:Clean;NewtonDensity:Clean;NewtonJoints:Clean;NewtonMaterial:Clean;NewtonMousePick:Clean;NewtonSimpleSpawn:Clean;NewtonWalkAndCarry:Clean;NewtonWalkCarryShoot:Clean;OdeConveyor:Clean;OdeFurBall:Clean;OdeMachine:Clean;OdeRagdoll:Clean;OdeSimple:Clean;OdeTerrain:Clean"/>
+        <CallTarget Targets="Clothactor:Clean;NewtonDensity:Clean;NewtonJoints:Clean;NewtonMaterial:Clean;NewtonMousePick:Clean;NewtonSimpleSpawn:Clean;NewtonWalkAndCarry:Clean;NewtonWalkCarryShoot:Clean;OdeConveyor:Clean;OdeFurBall:Clean;OdeMachine:Clean;OdeRagdoll:Clean;OdeSimple:Clean;OdeTerrain:Clean;OdeClothify:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="clothactor:Make;Clothify:Make;NewtonDensity:Make;NewtonJoints:Make;NewtonMaterial:Make;NewtonMousePick:Make;NewtonSimpleSpawn:Make;NewtonWalkAndCarry:Make;NewtonWalkCarryShoot:Make;OdeConveyor:Make;OdeFurBall:Make;OdeMachine:Make;OdeRagdoll:Make;OdeSimple:Make;OdeTerrain:Make"/>
+        <CallTarget Targets="Clothactor:Make;NewtonDensity:Make;NewtonJoints:Make;NewtonMaterial:Make;NewtonMousePick:Make;NewtonSimpleSpawn:Make;NewtonWalkAndCarry:Make;NewtonWalkCarryShoot:Make;OdeConveyor:Make;OdeFurBall:Make;OdeMachine:Make;OdeRagdoll:Make;OdeSimple:Make;OdeTerrain:Make;OdeClothify:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

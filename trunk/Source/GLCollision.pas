@@ -33,7 +33,7 @@ uses
   //GLS
   GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLGeometryBB, GLCrossPlatform,
-  GLManager {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  GLManager , GLVectorTypes;
 
 
 type

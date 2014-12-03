@@ -121,7 +121,7 @@ uses
   GLVectorGeometry,
   OpenGLTokens,
   GLApplicationFileIO
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 const
   cDefaultLast = '}';
@@ -480,4 +480,4 @@ initialization
   RegisterClasses([TGLWindowsBitmapFont]);
 
 end.
-
+

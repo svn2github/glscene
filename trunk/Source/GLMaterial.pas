@@ -57,7 +57,8 @@ uses
   //GLScene
   GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
   GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
-  GLCrossPlatform, GLState, GLTextureFormat;
+  GLCrossPlatform, GLState, GLTextureFormat, GLStrings, XOpenGL,
+  GLApplicationFileIO, GLGraphics, GLUtils, GLSLog;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
@@ -853,10 +854,6 @@ implementation
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-
-uses
-  GLStrings, XOpenGL, GLApplicationFileIO, GLGraphics, GLUtils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 
 resourcestring

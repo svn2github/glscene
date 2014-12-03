@@ -43,8 +43,7 @@ uses
 
   GLHeightData, GLGraphics, GLVectorGeometry,
   GLTexture, GLMaterial, SyncObjs, OpenGLTokens,
-  GLUtils{$IFDEF GLS_DELPHI},
-  GLVectorTypes{$ENDIF};
+  GLUtils, GLVectorTypes;
 
 type
   TGLBumpmapHDS = class;

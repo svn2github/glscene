@@ -36,7 +36,7 @@ uses
   ,
   Windows
   {$ENDIF}
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  , GLSLog;
 
 
 const

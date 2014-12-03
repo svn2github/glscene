@@ -76,8 +76,7 @@ uses
   jdatasrc,
   jmemmgr,
 {$ENDIF}
-  GLVectorGeometry
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLVectorGeometry;
 
 
 // ------------------

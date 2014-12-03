@@ -368,7 +368,11 @@ uses
   OpenGLTokens, GLContext, GLVectorGeometry, XCollection, GLSilhouette,
   GLPersistentClasses, GLState, GLGraphics, GLGeometryBB, GLCrossPlatform,
   GLVectorLists, GLTexture, GLColor, GLBaseClasses, GLCoordinates,
-  GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection;
+  GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection,
+  GLStrings, XOpenGL, GLVectorTypes, GLApplicationFileIO,
+  GLUtils,  GLSLog;
+
+
 
 type
 
@@ -2513,15 +2517,6 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-uses
-  GLStrings,
-  XOpenGL,
-  GLVectorTypes,
-  GLApplicationFileIO,
-  GLUtils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
-
 
 var
   vCounterFrequency: Int64;

@@ -80,7 +80,7 @@ uses
   //GLS
   GLScene, GLVectorGeometry, GLGraphics, GLObjects, GLContext, GLViewer,
   GLColor, GLRenderContextInfo, GLState, GLTextureFormat,
-  OpenGLTokens, XOpenGL {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  OpenGLTokens, XOpenGL , GLVectorTypes;
 
 
 type

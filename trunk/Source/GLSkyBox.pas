@@ -38,7 +38,7 @@ uses
   OpenGLTokens,
   XOpenGL,
   GLRenderContextInfo
-{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+, GLVectorTypes;
 
 type
 

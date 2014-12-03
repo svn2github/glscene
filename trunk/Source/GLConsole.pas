@@ -82,7 +82,7 @@ uses
   // GLScene
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
   GLPersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
-  GLCrossPlatform, GLMaterial{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  GLCrossPlatform, GLMaterial, GLVectorTypes;
 
 const
   CONSOLE_MAX_COMMANDS = 120;

@@ -1369,7 +1369,7 @@ type
     FLightmapLibrary: TGLMaterialLibrary;
     FAxisAlignedDimensionsCache: TVector;
     FBaryCenterOffsetChanged: Boolean;
-    FBaryCenterOffset: TVector;    
+    FBaryCenterOffset: TVector;
     FUseMeshMaterials: Boolean;
     FOverlaySkeleton: Boolean;
     FIgnoreMissingTextures: Boolean;
@@ -1994,8 +1994,7 @@ implementation
 
 uses
   GLStrings, XOpenGL, GLCrossPlatform, GLMeshUtils, GLState, GLUtils,
-  GLBaseMeshSilhouette
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  GLBaseMeshSilhouette, GLVectorTypes;
 
 var
   vVectorFileFormats: TVectorFileFormatsList;
@@ -5491,7 +5490,7 @@ begin
     begin
       obj := GetMeshObject(i);
       if not obj.Visible then
-        continue;                  
+        continue;
       objTris := obj.ExtractTriangles(objTexCoords, objNormals);
       try
         Result.Add(objTris);
@@ -7930,7 +7929,7 @@ end;
 procedure TGLBaseMesh.StructureChanged;
 begin
   FAxisAlignedDimensionsCache.V[0] := -1;
-  FBaryCenterOffsetChanged := True;  
+  FBaryCenterOffsetChanged := True;
   DropMaterialLibraryCache;
   MeshObjects.Prepare;
   inherited;

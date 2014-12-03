@@ -39,7 +39,7 @@ uses
   GLScene, GLVectorGeometry, OpenGLAdapter, OpenGLTokens, GLContext,
   GLMaterial, GLColor, GLRenderContextInfo,
   GLState
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 
 type

@@ -74,7 +74,7 @@ uses
   GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GLState, GLSelection
-{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+, GLVectorTypes;
 
 type
   TGLGizmoUndoCollection = class;

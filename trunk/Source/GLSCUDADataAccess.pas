@@ -4,7 +4,7 @@
 { : GLSCUDADataAccess<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
+  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
   <li>24/02/11 - Yar - Creation
   </ul></font><p>
 }
@@ -15,9 +15,9 @@ interface
 {$I GLScene.inc}
 
 uses
+  SysUtils,
   GLCrossPlatform,
-  SysUtils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLSLog;
 
 type
 

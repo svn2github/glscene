@@ -1042,7 +1042,7 @@ uses
   GLScene,
   XOpenGL,
   PictureRegisteredFormats
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

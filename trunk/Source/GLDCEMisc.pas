@@ -22,7 +22,7 @@ interface
 uses
   GLVectorFileObjects, GLEllipseCollision, GLVectorGeometry, GLVectorLists,
   GLScene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 //Calculate and set the collision range
 procedure ECSetCollisionRange(var MovePack: TECMovePack);

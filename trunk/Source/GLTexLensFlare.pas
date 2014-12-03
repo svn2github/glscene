@@ -32,7 +32,7 @@ uses
   GLScene,  GLVectorGeometry,  GLObjects,  GLTexture, OpenGLTokens,
   GLContext,  GLRenderContextInfo,  GLBaseClasses,
   GLState
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
 

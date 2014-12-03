@@ -52,7 +52,7 @@ uses
 
   GLCrossPlatform, GLScene, GLTexture, GLVectorGeometry, GLContext,
   GLColor, GLRenderContextInfo, GLTextureFormat
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
   TGLSLProjectedTexturesStyle = (ptsLight, ptsShadow);

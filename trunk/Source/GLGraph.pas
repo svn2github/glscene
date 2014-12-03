@@ -49,7 +49,7 @@ uses
   GLMaterial,  GLObjects,  GLVectorLists, GLColor,  GLBaseClasses,
   GLRenderContextInfo,
   GLState
- {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+ , GLVectorTypes;
 
 type
 

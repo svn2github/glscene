@@ -541,7 +541,7 @@ var
 begin
   // Stup the body
   dMassSetBox(m, 1, Cube.CubeWidth, Cube.CubeHeight, Cube.CubeDepth);
-  dBodySetMass(Body, @m);
+  if m.mass>0 then dBodySetMass(Body, @m);
 
   // Setup the geom
   Geom := CreateGeomFromCube(Cube, Space);

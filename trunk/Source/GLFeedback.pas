@@ -40,7 +40,7 @@ uses
   GLVectorGeometry, GLVectorLists, GLScene, GLVectorFileObjects,
   GLTexture, GLRenderContextInfo, GLContext, GLState, OpenGLTokens,
   GLMeshUtils
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);

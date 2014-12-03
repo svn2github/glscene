@@ -59,7 +59,7 @@ uses
 
   OpenGLTokens,  OpenGLAdapter,  GLSpline,
   XOpenGL,  GLContext
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF},
+  , GLVectorTypes,
   GLVectorGeometry,  GLVectorLists,  GLPersistentClasses,
   GLScene,  GLObjects,  GLGeomObjects,  GLNodes,  GLBaseClasses,
   GLCoordinates,  GLRenderContextInfo;

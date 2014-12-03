@@ -24,7 +24,7 @@ uses
   //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext,
   GLRenderContextInfo
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
 

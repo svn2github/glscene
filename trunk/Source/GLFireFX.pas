@@ -45,7 +45,7 @@ uses
 
   GLScene,  XCollection,  GLVectorGeometry,
   OpenGLTokens,  GLContext,  GLVectorLists
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF},
+  , GLVectorTypes,
 
   GLCadencer,  GLColor,  GLBaseClasses,  GLCoordinates,
   GLManager,  GLRenderContextInfo,  GLState,  GLTextureFormat;

@@ -56,7 +56,7 @@ uses
   // GLS
   GLScene, GLHeightData, GLMaterial, GLVectorGeometry, GLContext, GLROAMPatch,
   GLVectorLists, GLRenderContextInfo, OpenGLTokens, XOpenGL, GLUtils
-{$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+, GLVectorTypes;
 
 const
   cTilesHashSize = 255;

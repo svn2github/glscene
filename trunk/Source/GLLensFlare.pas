@@ -59,7 +59,7 @@ uses
 
   GLScene, GLVectorGeometry, GLObjects, OpenGLTokens,
   GLContext, GLColor, GLBaseClasses, GLRenderContextInfo, GLState
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF}, GLUtils,
+  , GLVectorTypes, GLUtils,
   GLTextureFormat;
 
 type

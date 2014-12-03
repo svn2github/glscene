@@ -64,8 +64,7 @@ uses
   // GLScene
   GLScene,  GLVectorGeometry,  GLTexture,  GLVectorFileObjects,
   GLStrings,  GLRenderContextInfo,  GLBaseClasses, GLMaterial,
-  OpenGLTokens,  GLContext
-  {$IFDEF GLS_DELPHI},  GLVectorTypes{$ENDIF};
+  OpenGLTokens,  GLContext,  GLVectorTypes;
 
 type
   EGLProxyException = class(Exception);

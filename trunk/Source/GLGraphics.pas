@@ -91,15 +91,11 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-  Classes,
-  GLPersistentClasses,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
+  System.Classes, System.SysUtils, System.SyncObjs, VCL.Graphics,
 {$ELSE}
-  Graphics,
+  Classes, SysUtils, SyncObjs, Graphics,
 {$ENDIF}
-  GLApplicationFileIO,
-  SysUtils,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
@@ -112,16 +108,22 @@ uses
 {$ENDIF}
 {$IFDEF FPC}
   fpimage,
-  intfgraphics,
+  Intfgraphics,
   GraphType,
 {$ENDIF}
+  GLApplicationFileIO,
+  GLPersistentClasses,
   OpenGLTokens,
   GLContext,
   GLImageUtils,
   GLUtils,
   GLCrossPlatform,
   GLColor,
-  GLTextureFormat;
+  GLTextureFormat,
+  GLVectorGeometry,
+  GLStrings,
+  GLSLog;
+
 
 type
 
@@ -501,12 +503,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLVectorGeometry,
-  GLStrings,
-  SyncObjs
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
 
 resourcestring
   glsCantConvertImg = '%s: can''t convert image to RGBA8 format';

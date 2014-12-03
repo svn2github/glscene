@@ -80,7 +80,7 @@ uses
   {$ENDIF}
 
   GLScene,  OpenGLTokens,  GLCrossPlatform,  GLState
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF},
+  , GLVectorTypes,
   GLPersistentClasses,  GLVectorGeometry,  XCollection,  GLMaterial,
   GLCadencer, GLVectorLists,  GLGraphics,  GLContext,  GLColor,  GLBaseClasses,
   GLCoordinates,  GLRenderContextInfo,  GLManager,  GLTextureFormat;

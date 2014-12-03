@@ -316,7 +316,7 @@ uses
   SysUtils,
   GLVectorLists,
   GLState
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------

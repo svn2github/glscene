@@ -42,7 +42,7 @@ uses
 
   // GLScene
   GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  , GLVectorTypes;
 
 type
 

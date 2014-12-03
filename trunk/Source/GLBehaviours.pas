@@ -32,8 +32,13 @@ uses
   {$ELSE}
     Classes, SysUtils
   {$ENDIF}
-  {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF},
-  GLScene, GLVectorGeometry, XCollection, GLBaseClasses, GLCoordinates;
+  ,
+  GLVectorTypes,
+  GLScene,
+  GLVectorGeometry,
+  XCollection,
+  GLBaseClasses,
+  GLCoordinates;
 
 type
 

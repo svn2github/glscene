@@ -37,8 +37,7 @@ uses
 
   GLVectorGeometry, GLScene, OpenGLTokens, GLVectorLists,
   GLCrossPlatform, GLPersistentClasses, GLBaseClasses,
-  GLContext,
-  GLRenderContextInfo {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+  GLContext, GLRenderContextInfo, GLVectorTypes;
 
 type
 

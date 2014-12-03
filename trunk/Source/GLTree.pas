@@ -51,7 +51,7 @@ uses
    //GLS
    GLScene, GLMaterial, GLVectorGeometry, GLVectorLists,
    OpenGLTokens, GLVectorFileObjects, GLApplicationFileIO, GLRenderContextInfo,
-   XOpenGL, GLContext {$IFDEF GLS_DELPHI}, GLVectorTypes{$ENDIF};
+   XOpenGL, GLContext , GLVectorTypes;
 
 type
    TGLTree = class;

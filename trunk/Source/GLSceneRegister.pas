@@ -641,8 +641,8 @@ uses
   GLSpaceText,
   GLJoystick,
   GLScreenSaver,
-  GLFullScreenViewer
-{$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLFullScreenViewer,
+  GLSLog;
 
 var
   vObjectManager: TObjectManager;
