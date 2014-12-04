@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
   <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with records
   <li>01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
   <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
@@ -70,7 +71,6 @@ uses
   GLTexture, GLState, GLUtils, GLGraphics, GLColor, GLBaseClasses,
   GLRenderContextInfo, GLTextureFormat,
   OpenGLTokens, XOpenGL, GLVectorTypes;
-
 
 type
 {$IFNDEF GLS_UNICODE_SUPPORT}
@@ -366,7 +366,7 @@ type
     { : Text to render.<p>
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
-    property Text: UnicodeString read FText write SetText;
+    property text: UnicodeString read FText write SetText;
     { : Controls the text alignment (horizontal).<p>
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment;
@@ -956,9 +956,13 @@ begin
   bitmap := TGLBitmap.Create;
   with bitmap do
   begin
-    PixelFormat := glpf32bit;
-    Width := RoundUpToPowerOf2(FTextureWidth);
-    Height := RoundUpToPowerOf2(FTextureHeight);
+    {$IFDEF MSWINDOWS}
+   //due to lazarus doesn't properly support pixel formats
+   PixelFormat := glpf32bit;
+   {$ENDIF}
+   Width := RoundUpToPowerOf2(FTextureWidth);
+   Height := RoundUpToPowerOf2(FTextureHeight);
+   SetSize(Width, Height);
   end;
 
   bitmap32 := TGLBitmap32.Create;

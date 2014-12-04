@@ -7,8 +7,9 @@ uses
   ExtCtrls, Menus,
 
   //GLS
-  GLScene, GLHUDObjects, GLObjects, GLCadencer, GLBitmapFont, GLWin32Viewer,
-  GLWindowsFont, GLTeapot, GLCoordinates, GLCrossPlatform, GLBaseClasses;
+  GLScene, GLHUDObjects, GLObjects, GLCadencer, GLWin32Viewer,
+  GLWindowsFont, GLTeapot, GLCoordinates, GLCrossPlatform, GLBaseClasses,
+  GLBitmapFont;
 
 type
   TForm1 = class(TForm)
