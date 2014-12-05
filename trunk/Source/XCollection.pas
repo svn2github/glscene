@@ -1,5 +1,6 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 { : XCollection<p>
 
   A polymorphism-enabled TCollection-like set of classes<p>
@@ -35,13 +36,18 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, System.Types,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
 {$ELSE}
-  Classes, SysUtils, Types,
+  Classes,
+  SysUtils,
+  Types,
 {$ENDIF}
   // GLS
   GLCrossPlatform,
-  GLPersistentClasses{$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
+  GLPersistentClasses
+  {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
 
 {$I GLScene.inc}
 
@@ -222,7 +228,6 @@ procedure GetXCollectionClassesList(var ClassesList: TList;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

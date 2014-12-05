@@ -3,10 +3,8 @@ unit FGLOptions;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  IniFiles,
+  Windows, Messages, SysUtils, Variants, Classes,
+  Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls, IniFiles,
 
   //
   DGLSViewer, FGLForm, FGLDialog;
@@ -22,6 +20,7 @@ type
     procedure RadioGroupLanguageClick(Sender: TObject);
     procedure ButtonOKClick(Sender: TObject);
     procedure PanelBackgroundClick(Sender: TObject);
+    procedure CheckBoxAxisClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -105,6 +104,15 @@ begin
     end;
   inherited;
 end;
+
+procedure TfmOptions.CheckBoxAxisClick(Sender: TObject);
+begin
+  if CheckBoxAxis.Checked then
+    Main.DCAxis.Visible := True
+  else
+    Main.DCAxis.Visible := False;
+end;
+
 
 procedure TfmOptions.PanelBackgroundClick(Sender: TObject);
 var

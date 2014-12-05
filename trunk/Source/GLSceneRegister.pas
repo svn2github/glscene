@@ -104,14 +104,20 @@ uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows,
   System.Classes,
+  System.SysUtils,
+  System.TypInfo,
   VCL.Forms,
+  VCL.Dialogs,
   VCL.Controls,
   VCL.StdCtrls,
   VCL.Graphics,
 {$ELSE}
   Windows,
   Classes,
+  SysUtils,
+  TypInfo,
   Forms,
+  Dialogs,
   Controls,
   StdCtrls,
   Graphics,
@@ -120,7 +126,7 @@ uses
   DesignIntf,
   DesignEditors,
   VCLEditors,
-
+//GLS
   GLScene,
   GLContext,
   GLColor,
@@ -471,11 +477,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs, System.SysUtils, System.TypInfo,
-{$ELSE}
-  Dialogs, SysUtils, TypInfo,
-{$ENDIF}
   FLibMaterialPicker,
   FGUILayoutEditor,
   FMaterialEditorForm,

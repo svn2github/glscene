@@ -6,22 +6,21 @@
   Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>06/12/14 - PW -  Reduced doubled Camera and Expand/Collapse buttons, added GalleryListView
   <li>20/01/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
   <li>20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
   <li>14/03/09 - DanB - Removed Cameras node, instead cameras are now placed into scene
   <li>19/03/08 - mrqzzz - Little change to "stay on top" (references self, not GLSceneEditorForm )
   <li>17/03/08 - mrqzzz - By dAlex: Added "stay on top" button
-  <li>12/07/07 - DaStr - Improved cross-platform compatibility
-  (BugTrackerID=1684432)
+  <li>12/07/07 - DaStr - Improved cross-platform compatibility (BugTrackerID=1684432)
   <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>25/03/07 - DaStr - Abstracted IsSubComponent for Delphi5 compatibility
   <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
   <li>07/02/07 - DaStr - TGLSceneEditorForm.ACDeleteObjectExecute bugfixed
-  TGLSceneEditorForm.AddNodes - removed warning
-  (all for proper Subcomponent support)
+                         TGLSceneEditorForm.AddNodes - removed warning (all for proper Subcomponent support)
   <li>20/01/07 - DaStr - TGLSceneEditorForm.ACCutExecute bugfixed
-  <li>19/12/06 - DaStr - TGLSceneEditorForm.AddNodes bugfixed - SubComponents are
-  no longer displayed in the Editor (BugTraker ID = 1585913)
+  <li>19/12/06 - DaStr - TGLSceneEditorForm.AddNodes bugfixed -
+                         SubComponents are no longer displayed in the Editor (BugTraker ID = 1585913)
   <li>24/06/06 - PvD - Fixed bug with DELETE key when editing name in Treeview
   <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
@@ -35,17 +34,14 @@
   <li>28/04/00 - EG - Fixed new objects not being immediately reco by IDE
   <li>26/04/00 - EG - Added support for objects categories
   <li>17/04/00 - EG - Added access to TInfoForm
-  <li>16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk
-  while GLSceneEdit is visible
+  <li>16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk while GLSceneEdit is visible
   <li>10/04/00 - EG - Minor Create/Release change
   <li>24/03/00 - EG - Fixed SetScene not updating enablings
   <li>13/03/00 - EG - Object names (ie. node text) is now properly adjusted
-  when a GLScene object is renamed,
-  Added Load/Save whole scene
+                      when a GLScene object is renamed, Added Load/Save whole scene
   <li>07/02/00 - EG - Fixed notification logic
   <li>06/02/00 - EG - DragDrop now starts after moving the mouse a little,
-  Form is now auto-creating, fixed Notification,
-  Added actionlist and moveUp/moveDown
+                      Form is now auto-creating, fixed Notification, Added actionlist and moveUp/moveDown
   <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
   </ul></font>
 }
@@ -91,10 +87,16 @@ uses
   StdCtrls,
   ClipBrd,
 {$ENDIF}
-  DesignIntf, VCLEditors,
+  DesignIntf,
+  VCLEditors,
 
-  // GLScene
-  GLScene, GLViewer, GLSceneRegister, GLStrings, Info, GLCrossPlatform;
+  // GLS
+  GLScene,
+  GLViewer,
+  GLSceneRegister,
+  GLStrings,
+  Info,
+  GLCrossPlatform;
 
 const
   SCENE_SELECTED = 0;
@@ -105,21 +107,17 @@ type
   TSetSubItemsEvent = procedure(Sender: TObject) of object;
 
   TGLSceneEditorForm = class(TForm)
-    Tree: TTreeView;
     PopupMenu: TPopupMenu;
-    MIAddCamera: TMenuItem;
     MIAddObject: TMenuItem;
     N1: TMenuItem;
     MIDelObject: TMenuItem;
     ToolBar: TToolBar;
     ActionList: TActionList;
-    ToolButton1: TToolButton;
     TBAddObjects: TToolButton;
     ToolButton4: TToolButton;
     PMToolBar: TPopupMenu;
-    ToolButton5: TToolButton;
+    TBDeleteObject: TToolButton;
     ToolButton7: TToolButton;
-    ACAddCamera: TAction;
     ACAddObject: TAction;
     ImageList: TImageList;
     ACDeleteObject: TAction;
@@ -141,14 +139,12 @@ type
     Copy1: TMenuItem;
     Paste1: TMenuItem;
     Cut1: TMenuItem;
-    ToolButton12: TToolButton;
-    ToolButton13: TToolButton;
-    ToolButton14: TToolButton;
-    PABehaviours: TPanel;
-    BehavioursListView: TListView;
+    TBCut: TToolButton;
+    TBCopy: TToolButton;
+    TBPaste: TToolButton;
+    PACharacter: TPanel;
     Splitter3: TSplitter;
-    EffectsListView: TListView;
-    Splitter: TSplitter;
+    Splitter1: TSplitter;
     PMBehavioursToolbar: TPopupMenu;
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
@@ -160,21 +156,28 @@ type
     MoveUp1: TMenuItem;
     MoveDown1: TMenuItem;
     N4: TMenuItem;
-    Label1: TLabel;
-    Label2: TLabel;
     PMEffectsToolbar: TPopupMenu;
     ACAddEffect: TAction;
-    ToolBar1: TToolBar;
-    TBAddBehaviours: TToolButton;
-    TBAddEffects: TToolButton;
-    TBEffectsPanel: TToolButton;
+    TBCharacterPanel: TToolButton;
     TBStayOnTop: TToolButton;
     ACStayOnTop: TAction;
     ToolButton10: TToolButton;
-    ToolButton15: TToolButton;
-    ToolButton16: TToolButton;
+    TBExpand: TToolButton;
     ACExpand: TAction;
-    ACColapse: TAction;
+    PAGallery: TPanel;
+    Splitter2: TSplitter;
+    PanelBehaviours: TPanel;
+    BehavioursListView: TListView;
+    PanelEffects: TPanel;
+    EffectsListView: TListView;
+    ToolBar1: TToolBar;
+    TBAddBehaviours: TToolButton;
+    ToolBar2: TToolBar;
+    TBAddEffects: TToolButton;
+    PATree: TPanel;
+    Tree: TTreeView;
+    TBInfo: TToolButton;
+    GalleryListView: TListView;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode;
       var AllowEdit: Boolean);
@@ -186,7 +189,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TreeEnter(Sender: TObject);
     procedure TreeMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure ACAddCameraExecute(Sender: TObject);
     procedure ACDeleteObjectExecute(Sender: TObject);
     procedure ACMoveUpExecute(Sender: TObject);
     procedure ACMoveDownExecute(Sender: TObject);
@@ -209,7 +211,7 @@ type
       Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
-    procedure TBEffectsPanelClick(Sender: TObject);
+    procedure TBCharacterPanelClick(Sender: TObject);
     procedure TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ACStayOnTopExecute(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -276,7 +278,6 @@ procedure ReleaseGLSceneEditorForm;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -407,7 +408,6 @@ begin
     EffectsListView.Enabled := False;
     ACLoadScene.Enabled := False;
     ACSaveScene.Enabled := False;
-    ACAddCamera.Enabled := False;
     ACAddObject.Enabled := False;
     ACAddBehaviour.Enabled := False;
     ACAddEffect.Enabled := False;
@@ -423,7 +423,6 @@ end;
 
 // FormCreate
 //
-
 procedure TGLSceneEditorForm.FormCreate(Sender: TObject);
 var
   CurrentNode: TTreeNode;
@@ -447,7 +446,7 @@ begin
     with FObjectNode do
     begin
       ImageIndex := ObjectManager.ObjectRootIndex;
-      SelectedIndex := ObjectManager.ObjectRootIndex;
+      SelectedIndex := ImageIndex;
     end;
   end;
   // Build SubMenus
@@ -468,9 +467,9 @@ begin
   try
     if reg.OpenKey(cRegistryKey, true) then
     begin
-      if reg.ValueExists('EffectsPanel') then
-        TBEffectsPanel.Down := reg.ReadBool('EffectsPanel');
-      TBEffectsPanelClick(Self);
+      if reg.ValueExists('CharacterPanel') then
+        TBCharacterPanel.Down := reg.ReadBool('CharacterPanel');
+      TBCharacterPanelClick(Self);
       Left := ReadRegistryInteger(reg, 'Left', Left);
       Top := ReadRegistryInteger(reg, 'Top', Top);
       Width := ReadRegistryInteger(reg, 'Width', 250);
@@ -497,7 +496,7 @@ begin
   try
     if reg.OpenKey(cRegistryKey, true) then
     begin
-      reg.WriteBool('EffectsPanel', TBEffectsPanel.Down);
+      reg.WriteBool('CharacterPanel', TBCharacterPanel.Down);
       reg.WriteInteger('Left', Left);
       reg.WriteInteger('Top', Top);
       reg.WriteInteger('Width', Width);
@@ -516,7 +515,7 @@ begin
 end;
 
 // ----------------------------------------------------------------------------------------------------------------------
-
+//
 procedure TGLSceneEditorForm.ReadScene;
 
 var
@@ -539,7 +538,7 @@ begin
 end;
 
 // ----------------------------------------------------------------------------------------------------------------------
-
+//
 procedure TGLSceneEditorForm.ResetTree;
 begin
   // delete all subtrees (empty tree)
@@ -584,7 +583,7 @@ end;
 procedure TGLSceneEditorForm.SetObjectsSubItems(parent: TMenuItem);
 var
   objectList: TStringList;
-  I, j: Integer;
+  i, j: Integer;
   Item, currentParent: TMenuItem;
   currentCategory: string;
   soc: TGLSceneObjectClass;
@@ -592,12 +591,12 @@ begin
   objectList := TStringList.Create;
   try
     ObjectManager.GetRegisteredSceneObjects(objectList);
-    for I := 0 to objectList.Count - 1 do
-      if objectList[I] <> '' then
+    for i := 0 to objectList.Count - 1 do
+      if objectList[i] <> '' then
       begin
         with ObjectManager do
           currentCategory :=
-            GetCategory(TGLSceneObjectClass(objectList.Objects[I]));
+            GetCategory(TGLSceneObjectClass(objectList.Objects[i]));
         if currentCategory = '' then
           currentParent := parent
         else
@@ -631,7 +630,7 @@ end;
 procedure TGLSceneEditorForm.SetXCollectionSubItems(parent: TMenuItem;
   XCollection: TXCollection; Event: TSetSubItemsEvent);
 var
-  I: Integer;
+  i: Integer;
   list: TList;
   XCollectionItemClass: TXCollectionItemClass;
   mi: TMenuItem;
@@ -641,9 +640,9 @@ begin
   begin
     list := GetXCollectionItemClassesList(XCollection.ItemsClass);
     try
-      for I := 0 to list.Count - 1 do
+      for i := 0 to list.Count - 1 do
       begin
-        XCollectionItemClass := TXCollectionItemClass(list[I]);
+        XCollectionItemClass := TXCollectionItemClass(list[i]);
         mi := TMenuItem.Create(owner);
         mi.Caption := XCollectionItemClass.FriendlyName;
         mi.OnClick := Event; // AddBehaviourClick;
@@ -671,7 +670,6 @@ end;
 
 // SetEffectsSubItems
 //
-
 procedure TGLSceneEditorForm.SetEffectsSubItems(parent: TMenuItem;
   XCollection: TXCollection);
 begin
@@ -948,24 +946,6 @@ begin
   EnableAndDisableActions();
 end;
 
-// ACAddCameraExecute
-//
-procedure TGLSceneEditorForm.ACAddCameraExecute(Sender: TObject);
-var
-  AObject: TGLBaseSceneObject;
-  Node: TTreeNode;
-begin
-  if Assigned(FCurrentDesigner) then
-  begin
-    AObject := TGLBaseSceneObject(FCurrentDesigner.CreateComponent(TGLCamera,
-      FScene.Objects, 0, 0, 0, 0));
-    FScene.Objects.AddChild(AObject);
-    Node := AddNodes(FObjectNode, AObject);
-    Node.Selected := true;
-    FCurrentDesigner.Modified;
-  end;
-end;
-
 // ACDeleteObjectExecute
 //
 procedure TGLSceneEditorForm.ACDeleteObjectExecute(Sender: TObject);
@@ -1050,19 +1030,25 @@ end;
 
 procedure TGLSceneEditorForm.ACExpandExecute(Sender: TObject);
 begin
-  Tree.FullExpand;
+  if FSceneObjects <> nil then
+    try
+      Tree.Items.BeginUpdate;
+      if TBExpand.Down then
+      begin
+        Tree.FullExpand;
+      end
+      else
+      begin
+        FSceneObjects.Collapse(true);
+        FSceneObjects.Expand(False);
+      end;
+    finally
+      Tree.Items.EndUpdate;
+    end;
 end;
 
 procedure TGLSceneEditorForm.ACColapseExecute(Sender: TObject);
 begin
-  if FSceneObjects <> nil then
-    try
-      Tree.Items.BeginUpdate;
-      FSceneObjects.Collapse(true);
-      FSceneObjects.Expand(False);
-    finally
-      Tree.Items.EndUpdate;
-    end;
 end;
 
 // ACMoveUpExecute
@@ -1371,6 +1357,8 @@ begin
   end;
 end;
 
+// MethodError
+//
 procedure TGLSceneEditorForm.MethodError(Reader: TReader;
   const MethodName: string; var Address: Pointer; var Error: Boolean);
 begin
@@ -1508,10 +1496,7 @@ begin
       else
         FCurrentDesigner.SelectComponent(FScene);
       // enablings
-      ACAddCamera.Enabled := ((selNode = FObjectNode) or
-        selNode.HasAsParent(FObjectNode));
-      ACAddObject.Enabled := ((selNode = FObjectNode) or
-        selNode.HasAsParent(FObjectNode));
+      ACAddObject.Enabled := ((selNode = FObjectNode) or selNode.HasAsParent(FObjectNode));
       ACAddBehaviour.Enabled := (selNode.HasAsParent(FObjectNode));
       ACAddEffect.Enabled := (selNode.HasAsParent(FObjectNode));
       ACDeleteObject.Enabled := (selNode.Level > 1);
@@ -1524,7 +1509,6 @@ begin
     end
     else
     begin
-      ACAddCamera.Enabled := False;
       ACAddObject.Enabled := False;
       ACAddBehaviour.Enabled := False;
       ACAddEffect.Enabled := False;
@@ -1610,14 +1594,14 @@ begin
   end;
 end;
 
-procedure TGLSceneEditorForm.TBEffectsPanelClick(Sender: TObject);
+procedure TGLSceneEditorForm.TBCharacterPanelClick(Sender: TObject);
 begin
-  PABehaviours.Visible := TBEffectsPanel.Down;
-  Splitter.Visible := TBEffectsPanel.Down;
-  if PABehaviours.Visible then
-    Width := Width + PABehaviours.Width
+  PACharacter.Visible := TBCharacterPanel.Down;
+  Splitter2.Visible := TBCharacterPanel.Down;
+  if PACharacter.Visible then
+    Width := Width + PAGallery.Width
   else
-    Width := Width - PABehaviours.Width;
+    Width := Width - PAGallery.Width;
 end;
 
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word;

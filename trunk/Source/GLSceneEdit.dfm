@@ -2,9 +2,9 @@ object GLSceneEditorForm: TGLSceneEditorForm
   Left = 402
   Top = 98
   BorderStyle = bsSizeToolWin
-  Caption = 'GLScene editor'
-  ClientHeight = 487
-  ClientWidth = 405
+  Caption = 'GLScene Editor'
+  ClientHeight = 511
+  ClientWidth = 617
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -148,40 +148,34 @@ object GLSceneEditorForm: TGLSceneEditorForm
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 14
-  object Splitter: TSplitter
-    Left = 191
-    Top = 56
-    Width = 4
-    Height = 431
+  object Splitter1: TSplitter
+    Left = 301
+    Top = 26
+    Width = 5
+    Height = 335
     Align = alRight
     Visible = False
-    ExplicitTop = 57
+    ExplicitLeft = 319
+    ExplicitTop = 23
+    ExplicitHeight = 297
   end
-  object Tree: TTreeView
+  object Splitter2: TSplitter
     Left = 0
-    Top = 56
-    Width = 191
-    Height = 431
-    Align = alClient
-    HideSelection = False
-    Indent = 19
-    PopupMenu = PopupMenu
-    RightClickSelect = True
-    TabOrder = 0
-    OnChange = TreeChange
-    OnDragDrop = TreeDragDrop
-    OnDragOver = TreeDragOver
-    OnEditing = TreeEditing
-    OnEnter = TreeEnter
-    OnKeyDown = TreeKeyDown
-    OnMouseDown = TreeMouseDown
-    OnMouseMove = TreeMouseMove
+    Top = 361
+    Width = 617
+    Height = 5
+    Cursor = crVSplit
+    Align = alBottom
+    Visible = False
+    ExplicitLeft = 8
+    ExplicitTop = 326
+    ExplicitWidth = 599
   end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 405
-    Height = 56
+    Width = 617
+    Height = 26
     AutoSize = True
     BorderWidth = 1
     ButtonWidth = 28
@@ -189,7 +183,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Images = ImageList
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 1
+    TabOrder = 0
+    ExplicitWidth = 678
     object ToolButton8: TToolButton
       Left = 0
       Top = 0
@@ -200,14 +195,14 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Top = 0
       Action = ACSaveScene
     end
-    object TBEffectsPanel: TToolButton
+    object TBCharacterPanel: TToolButton
       Left = 56
       Top = 0
       Hint = 'Show Behaviours/Effects'
       Caption = 'Show Behaviours/Effects'
       ImageIndex = 11
       Style = tbsCheck
-      OnClick = TBEffectsPanelClick
+      OnClick = TBCharacterPanelClick
     end
     object TBStayOnTop: TToolButton
       Left = 84
@@ -216,222 +211,288 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Action = ACStayOnTop
       Style = tbsCheck
     end
-    object ToolButton11: TToolButton
-      Left = 112
-      Top = 0
-      Action = ACInfo
-    end
     object ToolButton2: TToolButton
-      Left = 140
+      Left = 112
       Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 2
       Style = tbsSeparator
     end
-    object ToolButton1: TToolButton
-      Left = 148
-      Top = 0
-      Action = ACAddCamera
-    end
     object TBAddObjects: TToolButton
-      Left = 176
+      Left = 120
       Top = 0
       Action = ACAddObject
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
     object ToolButton3: TToolButton
-      Left = 0
+      Left = 163
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
       ImageIndex = 2
-      Wrap = True
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 0
-      Top = 30
+      Left = 171
+      Top = 0
       Action = ACMoveUp
     end
     object ToolButton7: TToolButton
-      Left = 28
-      Top = 30
+      Left = 199
+      Top = 0
       Action = ACMoveDown
     end
+    object TBExpand: TToolButton
+      Left = 227
+      Top = 0
+      Action = ACExpand
+      Style = tbsCheck
+    end
     object ToolButton6: TToolButton
-      Left = 56
-      Top = 30
+      Left = 255
+      Top = 0
       Width = 8
       Caption = 'ToolButton6'
       ImageIndex = 4
       Style = tbsSeparator
     end
-    object ToolButton12: TToolButton
-      Left = 64
-      Top = 30
-      Action = ACCut
-    end
-    object ToolButton13: TToolButton
-      Left = 92
-      Top = 30
-      Action = ACCopy
-    end
-    object ToolButton14: TToolButton
-      Left = 120
-      Top = 30
-      Action = ACPaste
-    end
-    object ToolButton5: TToolButton
-      Left = 148
-      Top = 30
+    object TBDeleteObject: TToolButton
+      Left = 263
+      Top = 0
       Action = ACDeleteObject
     end
+    object TBCut: TToolButton
+      Left = 291
+      Top = 0
+      Action = ACCut
+    end
+    object TBCopy: TToolButton
+      Left = 319
+      Top = 0
+      Action = ACCopy
+    end
+    object TBPaste: TToolButton
+      Left = 347
+      Top = 0
+      Action = ACPaste
+    end
     object ToolButton10: TToolButton
-      Left = 176
-      Top = 30
+      Left = 375
+      Top = 0
       Width = 8
       Caption = 'ToolButton10'
       ImageIndex = 5
       Style = tbsSeparator
     end
-    object ToolButton15: TToolButton
-      Left = 184
-      Top = 30
-      Action = ACExpand
-    end
-    object ToolButton16: TToolButton
-      Left = 212
-      Top = 30
-      Action = ACColapse
+    object TBInfo: TToolButton
+      Left = 383
+      Top = 0
+      Action = ACInfo
     end
   end
-  object PABehaviours: TPanel
-    Left = 195
-    Top = 56
-    Width = 210
-    Height = 431
-    Align = alRight
-    Caption = 'PABehaviours'
+  object PACharacter: TPanel
+    Left = 0
+    Top = 366
+    Width = 617
+    Height = 145
+    Align = alBottom
     Constraints.MinWidth = 1
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
+    ExplicitTop = 439
+    ExplicitWidth = 623
     object Splitter3: TSplitter
-      Left = 1
-      Top = 154
-      Width = 208
-      Height = 4
-      Cursor = crVSplit
-      Align = alTop
+      Left = 302
+      Top = 1
+      Width = 5
+      Height = 143
+      Align = alRight
+      ExplicitLeft = 293
+      ExplicitTop = 22
+      ExplicitHeight = 161
     end
-    object Label1: TLabel
-      Left = 1
-      Top = 30
-      Width = 55
-      Height = 14
-      Align = alTop
-      Alignment = taCenter
-      Caption = 'Behaviours'
-    end
-    object Label2: TLabel
-      Left = 1
-      Top = 158
-      Width = 35
-      Height = 14
-      Align = alTop
-      Alignment = taCenter
-      Caption = 'Effects'
-    end
-    object BehavioursListView: TListView
-      Left = 1
-      Top = 44
-      Width = 208
-      Height = 110
-      Align = alTop
-      Columns = <
-        item
-          Caption = 'Name'
-          Width = 100
-        end
-        item
-          Caption = 'Type'
-          Width = 100
-        end>
-      ReadOnly = True
-      PopupMenu = BehavioursPopupMenu
-      TabOrder = 0
-      ViewStyle = vsReport
-      OnEnter = BehavioursListViewEnter
-      OnKeyDown = TreeKeyDown
-      OnSelectItem = BehavioursListViewSelectItem
-    end
-    object EffectsListView: TListView
-      Left = 1
-      Top = 172
-      Width = 208
-      Height = 258
-      Align = alClient
-      Columns = <
-        item
-          Caption = 'Name'
-          Width = 100
-        end
-        item
-          Caption = 'Type'
-          Width = 100
-        end>
-      ReadOnly = True
-      PopupMenu = BehavioursPopupMenu
-      TabOrder = 1
-      ViewStyle = vsReport
-      OnEnter = EffectsListViewEnter
-      OnKeyDown = TreeKeyDown
-      OnSelectItem = BehavioursListViewSelectItem
-    end
-    object ToolBar1: TToolBar
+    object PanelBehaviours: TPanel
       Left = 1
       Top = 1
-      Width = 208
-      Height = 29
-      ButtonHeight = 30
-      ButtonWidth = 68
-      Caption = 'ToolBar1'
-      ParentShowHint = False
-      ShowCaptions = True
-      ShowHint = False
-      TabOrder = 2
-      object TBAddBehaviours: TToolButton
-        Left = 0
-        Top = 0
-        Action = ACAddBehaviour
-        Caption = 'Behaviours'
-        DropdownMenu = PMBehavioursToolbar
-        ParentShowHint = False
-        ShowHint = True
-        Style = tbsDropDown
+      Width = 301
+      Height = 143
+      Align = alClient
+      TabOrder = 0
+      ExplicitWidth = 338
+      ExplicitHeight = 149
+      object BehavioursListView: TListView
+        Left = 1
+        Top = 31
+        Width = 299
+        Height = 111
+        Align = alClient
+        Columns = <
+          item
+            Caption = 'Name'
+            Width = 100
+          end
+          item
+            Caption = 'Type'
+            Width = 100
+          end>
+        ReadOnly = True
+        PopupMenu = BehavioursPopupMenu
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnEnter = BehavioursListViewEnter
+        OnKeyDown = TreeKeyDown
+        OnSelectItem = BehavioursListViewSelectItem
+        ExplicitWidth = 336
+        ExplicitHeight = 117
       end
-      object TBAddEffects: TToolButton
-        Left = 83
-        Top = 0
-        Hint = 'Add effect'
-        Action = ACAddEffect
-        Caption = 'Effects'
-        DropdownMenu = PMEffectsToolbar
+      object ToolBar1: TToolBar
+        Left = 1
+        Top = 1
+        Width = 299
+        Height = 30
+        AutoSize = True
+        ButtonHeight = 30
+        ButtonWidth = 68
+        Caption = 'ToolBar1'
         ParentShowHint = False
-        ShowHint = True
-        Style = tbsDropDown
+        ShowCaptions = True
+        ShowHint = False
+        TabOrder = 1
+        ExplicitWidth = 336
+        object TBAddBehaviours: TToolButton
+          Left = 0
+          Top = 0
+          Action = ACAddBehaviour
+          Caption = 'Behaviours'
+          DropdownMenu = PMBehavioursToolbar
+          ParentShowHint = False
+          ShowHint = True
+          Style = tbsDropDown
+        end
       end
+    end
+    object PanelEffects: TPanel
+      Left = 307
+      Top = 1
+      Width = 309
+      Height = 143
+      Align = alRight
+      TabOrder = 1
+      ExplicitLeft = 313
+      ExplicitHeight = 149
+      object EffectsListView: TListView
+        Left = 1
+        Top = 31
+        Width = 307
+        Height = 111
+        Align = alClient
+        Columns = <
+          item
+            Caption = 'Name'
+            Width = 100
+          end
+          item
+            Caption = 'Type'
+            Width = 100
+          end>
+        ReadOnly = True
+        PopupMenu = BehavioursPopupMenu
+        TabOrder = 0
+        ViewStyle = vsReport
+        OnEnter = EffectsListViewEnter
+        OnKeyDown = TreeKeyDown
+        OnSelectItem = BehavioursListViewSelectItem
+        ExplicitWidth = 331
+        ExplicitHeight = 117
+      end
+      object ToolBar2: TToolBar
+        Left = 1
+        Top = 1
+        Width = 307
+        Height = 30
+        AutoSize = True
+        ButtonHeight = 30
+        ButtonWidth = 48
+        Caption = 'ToolBar1'
+        ParentShowHint = False
+        ShowCaptions = True
+        ShowHint = False
+        TabOrder = 1
+        ExplicitWidth = 331
+        object TBAddEffects: TToolButton
+          Left = 0
+          Top = 0
+          Action = ACAddEffect
+          Caption = 'Effects'
+          DropdownMenu = PMEffectsToolbar
+          ParentShowHint = False
+          ShowHint = True
+          Style = tbsDropDown
+        end
+      end
+    end
+  end
+  object PAGallery: TPanel
+    Left = 306
+    Top = 26
+    Width = 311
+    Height = 335
+    Align = alRight
+    TabOrder = 2
+    Visible = False
+    ExplicitLeft = 312
+    ExplicitHeight = 402
+    object GalleryListView: TListView
+      Left = 1
+      Top = 1
+      Width = 309
+      Height = 333
+      Align = alClient
+      Columns = <>
+      TabOrder = 0
+      ExplicitWidth = 331
+      ExplicitHeight = 398
+    end
+  end
+  object PATree: TPanel
+    Left = 0
+    Top = 26
+    Width = 301
+    Height = 335
+    Align = alClient
+    TabOrder = 3
+    ExplicitWidth = 340
+    ExplicitHeight = 400
+    object Tree: TTreeView
+      Left = 1
+      Top = 1
+      Width = 299
+      Height = 333
+      Align = alClient
+      HideSelection = False
+      Indent = 19
+      PopupMenu = PopupMenu
+      RightClickSelect = True
+      TabOrder = 0
+      OnChange = TreeChange
+      OnDragDrop = TreeDragDrop
+      OnDragOver = TreeDragOver
+      OnEditing = TreeEditing
+      OnEnter = TreeEnter
+      OnKeyDown = TreeKeyDown
+      OnMouseDown = TreeMouseDown
+      OnMouseMove = TreeMouseMove
+      ExplicitWidth = 338
+      ExplicitHeight = 398
     end
   end
   object PopupMenu: TPopupMenu
     Images = ImageList
     OnPopup = PopupMenuPopup
-    Left = 88
-    Top = 168
-    object MIAddCamera: TMenuItem
-      Action = ACAddCamera
-    end
+    Left = 192
+    Top = 64
     object MIAddObject: TMenuItem
       Action = ACAddObject
     end
@@ -478,12 +539,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Images = ImageList
     Left = 16
     Top = 64
-    object ACAddCamera: TAction
-      Caption = 'Add camera'
-      Hint = 'Add camera'
-      ImageIndex = 2
-      OnExecute = ACAddCameraExecute
-    end
     object ACAddObject: TAction
       Caption = 'Add object'
       Hint = 'Add object'
@@ -527,19 +582,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
       OnExecute = ACMoveDownExecute
     end
     object ACSaveScene: TAction
-      Caption = 'ACSaveScene'
+      Caption = 'Save scene'
       Hint = 'Save whole scene'
       ImageIndex = 6
       OnExecute = ACSaveSceneExecute
     end
     object ACLoadScene: TAction
-      Caption = 'ACLoadScene'
+      Caption = 'Load scene'
       Hint = 'Load whole scene'
       ImageIndex = 5
       OnExecute = ACLoadSceneExecute
     end
     object ACInfo: TAction
-      Caption = 'ACInfo'
+      Caption = 'Info'
       Hint = 'OpenGL Info'
       ImageIndex = 7
       OnExecute = ACInfoExecute
@@ -571,24 +626,21 @@ object GLSceneEditorForm: TGLSceneEditorForm
       OnExecute = ACStayOnTopExecute
     end
     object ACExpand: TAction
+      Caption = 'Expand nodes'
+      Hint = 'Expand nodes'
       ImageIndex = 13
       OnExecute = ACExpandExecute
     end
-    object ACColapse: TAction
-      Caption = 'ACColapse'
-      ImageIndex = 14
-      OnExecute = ACColapseExecute
-    end
   end
   object PMToolBar: TPopupMenu
-    Left = 88
+    Left = 104
     Top = 64
   end
   object ImageList: TImageList
     Left = 16
     Top = 120
     Bitmap = {
-      494C01010F001800540010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F0018004C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1140,13 +1192,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMBehavioursToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMBehavioursToolbarPopup
-    Left = 88
-    Top = 120
+    Left = 120
+    Top = 184
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    Left = 94
-    Top = 286
+    Left = 134
+    Top = 486
     object Delete1: TMenuItem
       Action = ACDeleteObject
     end
@@ -1165,7 +1217,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMEffectsToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMEffectsToolbarPopup
-    Left = 88
-    Top = 224
+    Left = 432
+    Top = 496
   end
 end

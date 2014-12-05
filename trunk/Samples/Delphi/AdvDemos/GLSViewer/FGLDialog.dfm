@@ -3,9 +3,8 @@ inherited GLDialog: TGLDialog
   Caption = 'GLScene Dialog'
   ClientHeight = 362
   ClientWidth = 484
-  Position = poDesktopCenter
-  ExplicitWidth = 492
-  ExplicitHeight = 406
+  ExplicitWidth = 500
+  ExplicitHeight = 401
   PixelsPerInch = 96
   TextHeight = 16
   object PanelTop: TPanel

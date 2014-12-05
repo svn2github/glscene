@@ -37,6 +37,7 @@ object Form1: TForm1
       object GLCamera1: TGLCamera
         DepthOfView = 100.000000000000000000
         FocalLength = 50.000000000000000000
+        SceneScale = 2.000000000000000000
         TargetObject = GLDummyCube1
         Position.Coordinates = {0000803F000040400000A0C00000803F}
         object GLLightSource1: TGLLightSource
@@ -58,10 +59,12 @@ object Form1: TForm1
         Tag = 0
         Shader = GLMultiMaterialShader1
       end>
+    TexturePaths = '..\..\media'
     Left = 120
     Top = 8
   end
   object GLMaterialLibrary2: TGLMaterialLibrary
+    TexturePaths = '..\..\media'
     Left = 120
     Top = 64
   end

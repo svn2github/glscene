@@ -1,4 +1,5 @@
 inherited fmOptions: TfmOptions
+  HelpContext = 0
   Caption = 'Options'
   OnClose = FormClose
   PixelsPerInch = 96
@@ -16,8 +17,9 @@ inherited fmOptions: TfmOptions
       Top = 32
       Width = 113
       Height = 17
-      Caption = 'Axis'
+      Caption = 'Show Axes'
       TabOrder = 0
+      OnClick = CheckBoxAxisClick
     end
     object RadioGroupLanguage: TRadioGroup
       Left = 96

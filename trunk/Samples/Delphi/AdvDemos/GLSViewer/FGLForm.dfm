@@ -11,6 +11,7 @@ object GLForm: TGLForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   Scaled = False
   OnCreate = FormCreate
   PixelsPerInch = 96
