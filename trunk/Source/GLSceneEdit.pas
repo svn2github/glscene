@@ -144,7 +144,6 @@ type
     TBPaste: TToolButton;
     PACharacter: TPanel;
     Splitter3: TSplitter;
-    Splitter1: TSplitter;
     PMBehavioursToolbar: TPopupMenu;
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
@@ -178,6 +177,7 @@ type
     Tree: TTreeView;
     TBInfo: TToolButton;
     GalleryListView: TListView;
+    Splitter1: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode;
       var AllowEdit: Boolean);
@@ -216,7 +216,6 @@ type
     procedure ACStayOnTopExecute(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ACExpandExecute(Sender: TObject);
-    procedure ACColapseExecute(Sender: TObject);
 
   private
     FSelectedItems: Integer; //
@@ -246,6 +245,7 @@ type
     function IsPastePossible: Boolean;
     procedure ShowBehaviours(BaseSceneObject: TGLBaseSceneObject);
     procedure ShowEffects(BaseSceneObject: TGLBaseSceneObject);
+    procedure ShowGallery(BaseSceneObject: TGLBaseSceneObject);
     procedure ShowBehavioursAndEffects(BaseSceneObject: TGLBaseSceneObject);
     procedure EnableAndDisableActions();
     function CanPaste(obj, destination: TGLBaseSceneObject): Boolean;
@@ -381,6 +381,7 @@ begin
   ResetTree;
   BehavioursListView.Items.Clear;
   EffectsListView.Items.Clear;
+  GalleryListView.Items.Clear;
 
   if Assigned(FScene) then
   begin
@@ -452,9 +453,6 @@ begin
   // Build SubMenus
   SetObjectsSubItems(MIAddObject);
   MIAddObject.SubMenuImages := ObjectManager.ObjectIcons;
-  ACCut.Visible := False;
-  ACCopy.Visible := False;
-  ACPaste.Visible := False;
   SetObjectsSubItems(PMToolBar.Items);
   PMToolBar.Images := ObjectManager.ObjectIcons;
 
@@ -470,6 +468,11 @@ begin
       if reg.ValueExists('CharacterPanel') then
         TBCharacterPanel.Down := reg.ReadBool('CharacterPanel');
       TBCharacterPanelClick(Self);
+
+      if reg.ValueExists('ExpandTree') then
+        TBExpand.Down := reg.ReadBool('ExpandTree');
+      ACExpandExecute(Self);
+
       Left := ReadRegistryInteger(reg, 'Left', Left);
       Top := ReadRegistryInteger(reg, 'Top', Top);
       Width := ReadRegistryInteger(reg, 'Width', 250);
@@ -497,6 +500,7 @@ begin
     if reg.OpenKey(cRegistryKey, true) then
     begin
       reg.WriteBool('CharacterPanel', TBCharacterPanel.Down);
+      reg.WriteBool('ExpandTree', TBExpand.Down);
       reg.WriteInteger('Left', Left);
       reg.WriteInteger('Top', Top);
       reg.WriteInteger('Width', Width);
@@ -511,7 +515,6 @@ procedure TGLSceneEditorForm.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_F12 then
-
 end;
 
 // ----------------------------------------------------------------------------------------------------------------------
@@ -869,11 +872,35 @@ begin
           DisplayedName := '(unnamed)';
         Caption := IntToStr(I) + ' - ' + DisplayedName;
         SubItems.Add(BaseSceneObject.Effects[I].FriendlyName);
-        data := BaseSceneObject.Effects[I];
+        Data := BaseSceneObject.Effects[I];
       end;
     end;
   end;
   EffectsListView.Items.EndUpdate;
+end;
+
+procedure TGLSceneEditorForm.ShowGallery(BaseSceneObject: TGLBaseSceneObject);
+var
+  I: Integer;
+  DisplayedName: string;
+begin
+ // GalleryListView.LargeImages := ObjectManager.ObjectIcons;
+  GalleryListView.Items.Clear;
+  GalleryListView.Items.BeginUpdate;
+  if Assigned(BaseSceneObject) then
+  begin
+    for I := 0 to BaseSceneObject.Count - 1 do
+    begin
+      with GalleryListView.Items.Add do
+      begin
+        DisplayedName := BaseSceneObject.Name;
+        if DisplayedName = '' then
+          DisplayedName := '(unnamed)';
+        Caption := IntToStr(I) + ' - ' + DisplayedName;
+      end;
+    end;
+  end;
+  GalleryListView.Items.EndUpdate;
 end;
 
 procedure TGLSceneEditorForm.ShowBehavioursAndEffects(BaseSceneObject
@@ -881,6 +908,7 @@ procedure TGLSceneEditorForm.ShowBehavioursAndEffects(BaseSceneObject
 begin
   ShowBehaviours(BaseSceneObject);
   ShowEffects(BaseSceneObject);
+  ShowGallery(BaseSceneObject);
 end;
 
 // TreeEdited
@@ -1034,21 +1062,15 @@ begin
     try
       Tree.Items.BeginUpdate;
       if TBExpand.Down then
-      begin
-        Tree.FullExpand;
-      end
+        Tree.FullExpand
       else
       begin
-        FSceneObjects.Collapse(true);
+        FSceneObjects.Collapse(True);
         FSceneObjects.Expand(False);
       end;
     finally
       Tree.Items.EndUpdate;
     end;
-end;
-
-procedure TGLSceneEditorForm.ACColapseExecute(Sender: TObject);
-begin
 end;
 
 // ACMoveUpExecute
@@ -1501,8 +1523,7 @@ begin
       ACAddEffect.Enabled := (selNode.HasAsParent(FObjectNode));
       ACDeleteObject.Enabled := (selNode.Level > 1);
       ACMoveUp.Enabled := ((selNode.Index > 0) and (selNode.Level > 1));
-      ACMoveDown.Enabled := ((selNode.getNextSibling <> nil) and
-        (selNode.Level > 1));
+      ACMoveDown.Enabled := ((selNode.getNextSibling <> nil) and (selNode.Level > 1));
       ACCut.Enabled := IsValidClipBoardNode;
       ACPaste.Enabled := IsPastePossible;
 
@@ -1596,8 +1617,14 @@ end;
 
 procedure TGLSceneEditorForm.TBCharacterPanelClick(Sender: TObject);
 begin
+  //yet not ready to populate with LargeImages 32x32
+  (*
+  PAGallery.Visible := TBCharacterPanel.Down;
+  Splitter1.Visible := TBCharacterPanel.Down;
+  *)
   PACharacter.Visible := TBCharacterPanel.Down;
   Splitter2.Visible := TBCharacterPanel.Down;
+
   if PACharacter.Visible then
     Width := Width + PAGallery.Width
   else

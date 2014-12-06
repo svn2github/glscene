@@ -8,7 +8,7 @@ uses
 
   //GLScene
   GLScene, GLObjects, GLWin32Viewer, GLVectorGeometry,
-  GeometryBB, GLTexture, GLCadencer, SpatialPartitioning,
+  GLGeometryBB, GLTexture, GLCadencer, GLSpacePartition,
   GLCrossPlatform, GLCoordinates, GLRenderContextInfo,
   GLState, GLSimpleNavigation, GLMaterial, GLContext, GLBaseClasses;
 

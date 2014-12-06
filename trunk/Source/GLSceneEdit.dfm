@@ -148,17 +148,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 14
-  object Splitter1: TSplitter
-    Left = 301
-    Top = 26
-    Width = 5
-    Height = 335
-    Align = alRight
-    Visible = False
-    ExplicitLeft = 319
-    ExplicitTop = 23
-    ExplicitHeight = 297
-  end
   object Splitter2: TSplitter
     Left = 0
     Top = 361
@@ -170,6 +159,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
     ExplicitLeft = 8
     ExplicitTop = 326
     ExplicitWidth = 599
+  end
+  object Splitter1: TSplitter
+    Left = 301
+    Top = 26
+    Width = 5
+    Height = 335
+    Align = alRight
+    Visible = False
+    ExplicitLeft = 1
+    ExplicitTop = 17
+    ExplicitHeight = 333
   end
   object ToolBar: TToolBar
     Left = 0
@@ -184,7 +184,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    ExplicitWidth = 678
     object ToolButton8: TToolButton
       Left = 0
       Top = 0
@@ -301,8 +300,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Constraints.MinWidth = 1
     TabOrder = 1
     Visible = False
-    ExplicitTop = 439
-    ExplicitWidth = 623
     object Splitter3: TSplitter
       Left = 302
       Top = 1
@@ -320,8 +317,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Height = 143
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 338
-      ExplicitHeight = 149
       object BehavioursListView: TListView
         Left = 1
         Top = 31
@@ -344,8 +339,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
         OnEnter = BehavioursListViewEnter
         OnKeyDown = TreeKeyDown
         OnSelectItem = BehavioursListViewSelectItem
-        ExplicitWidth = 336
-        ExplicitHeight = 117
       end
       object ToolBar1: TToolBar
         Left = 1
@@ -360,7 +353,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
         ShowCaptions = True
         ShowHint = False
         TabOrder = 1
-        ExplicitWidth = 336
         object TBAddBehaviours: TToolButton
           Left = 0
           Top = 0
@@ -380,8 +372,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Height = 143
       Align = alRight
       TabOrder = 1
-      ExplicitLeft = 313
-      ExplicitHeight = 149
       object EffectsListView: TListView
         Left = 1
         Top = 31
@@ -404,8 +394,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
         OnEnter = EffectsListViewEnter
         OnKeyDown = TreeKeyDown
         OnSelectItem = BehavioursListViewSelectItem
-        ExplicitWidth = 331
-        ExplicitHeight = 117
       end
       object ToolBar2: TToolBar
         Left = 1
@@ -420,7 +408,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
         ShowCaptions = True
         ShowHint = False
         TabOrder = 1
-        ExplicitWidth = 331
         object TBAddEffects: TToolButton
           Left = 0
           Top = 0
@@ -442,8 +429,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Align = alRight
     TabOrder = 2
     Visible = False
-    ExplicitLeft = 312
-    ExplicitHeight = 402
     object GalleryListView: TListView
       Left = 1
       Top = 1
@@ -452,8 +437,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Align = alClient
       Columns = <>
       TabOrder = 0
-      ExplicitWidth = 331
-      ExplicitHeight = 398
     end
   end
   object PATree: TPanel
@@ -463,8 +446,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Height = 335
     Align = alClient
     TabOrder = 3
-    ExplicitWidth = 340
-    ExplicitHeight = 400
     object Tree: TTreeView
       Left = 1
       Top = 1
@@ -484,8 +465,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
       OnKeyDown = TreeKeyDown
       OnMouseDown = TreeMouseDown
       OnMouseMove = TreeMouseMove
-      ExplicitWidth = 338
-      ExplicitHeight = 398
     end
   end
   object PopupMenu: TPopupMenu
@@ -539,6 +518,23 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Images = ImageList
     Left = 16
     Top = 64
+    object ACLoadScene: TAction
+      Caption = 'Load scene'
+      Hint = 'Load whole scene'
+      ImageIndex = 5
+      OnExecute = ACLoadSceneExecute
+    end
+    object ACSaveScene: TAction
+      Caption = 'Save scene'
+      Hint = 'Save whole scene'
+      ImageIndex = 6
+      OnExecute = ACSaveSceneExecute
+    end
+    object ACStayOnTop: TAction
+      Caption = 'Stay on top'
+      ImageIndex = 12
+      OnExecute = ACStayOnTopExecute
+    end
     object ACAddObject: TAction
       Caption = 'Add object'
       Hint = 'Add object'
@@ -556,17 +552,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ImageIndex = 3
       OnExecute = ACAddEffectExecute
     end
-    object ACDeleteObject: TAction
-      Caption = 'Delete object'
-      Hint = 'Delete object'
-      ImageIndex = 4
-      OnExecute = ACDeleteObjectExecute
-    end
-    object ACDeleteBehaviour: TAction
-      Caption = 'ACDeleteBehaviour'
-      Hint = 'Delete behaviour'
-      ImageIndex = 4
-    end
     object ACMoveUp: TAction
       Caption = 'Move object up'
       Hint = 'Move object up'
@@ -581,23 +566,22 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ShortCut = 16452
       OnExecute = ACMoveDownExecute
     end
-    object ACSaveScene: TAction
-      Caption = 'Save scene'
-      Hint = 'Save whole scene'
-      ImageIndex = 6
-      OnExecute = ACSaveSceneExecute
+    object ACExpand: TAction
+      Caption = 'Expand tree'
+      Hint = 'Expand tree'
+      ImageIndex = 13
+      OnExecute = ACExpandExecute
     end
-    object ACLoadScene: TAction
-      Caption = 'Load scene'
-      Hint = 'Load whole scene'
-      ImageIndex = 5
-      OnExecute = ACLoadSceneExecute
+    object ACDeleteObject: TAction
+      Caption = 'Delete object'
+      Hint = 'Delete object'
+      ImageIndex = 4
+      OnExecute = ACDeleteObjectExecute
     end
-    object ACInfo: TAction
-      Caption = 'Info'
-      Hint = 'OpenGL Info'
-      ImageIndex = 7
-      OnExecute = ACInfoExecute
+    object ACDeleteBehaviour: TAction
+      Caption = 'ACDeleteBehaviour'
+      Hint = 'Delete behaviour'
+      ImageIndex = 4
     end
     object ACCopy: TAction
       Caption = 'Copy'
@@ -620,16 +604,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ShortCut = 16470
       OnExecute = ACPasteExecute
     end
-    object ACStayOnTop: TAction
-      Caption = 'Stay on top'
-      ImageIndex = 12
-      OnExecute = ACStayOnTopExecute
-    end
-    object ACExpand: TAction
-      Caption = 'Expand nodes'
-      Hint = 'Expand nodes'
-      ImageIndex = 13
-      OnExecute = ACExpandExecute
+    object ACInfo: TAction
+      Caption = 'Info'
+      Hint = 'OpenGL Info'
+      ImageIndex = 7
+      OnExecute = ACInfoExecute
     end
   end
   object PMToolBar: TPopupMenu
@@ -640,7 +619,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 16
     Top = 120
     Bitmap = {
-      494C01010F0018004C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800780110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

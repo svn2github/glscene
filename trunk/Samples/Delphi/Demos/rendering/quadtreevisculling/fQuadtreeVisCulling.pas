@@ -9,7 +9,7 @@ uses
   //GLS
   GLScene, GLWin32Viewer, GLSkydome, GLObjects, GLKeyboard,
   GLHeightData, GLTerrainRenderer, GLTexture, GLCadencer, GLNavigator,
-  SpatialPartitioning, GLVectorGeometry, GLBitmapFont, GeometryBB,
+  GLSpacePartition, GLVectorGeometry, GLBitmapFont, GLGeometryBB,
   GLWindowsFont, GLHUDObjects, GLCrossPlatform, GLMaterial, GLSpatialPartitioning,
   GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLUtils;
 
@@ -99,7 +99,10 @@ begin
    end;
    with GLCamera1.Position do
       Y:=glTerrainRenderer1.InterpolatedHeight(AsVector)+80+FCamHeight;
-   GLHUDText1.Text := CullingMode+ 'visible tree count: '+inttostr(visiblecount)+' / Total:'+inttostr(treecount)+
+   GLHUDText1.Text := CullingMode+ 'visible tree count: '+inttostr(visiblecount)+
+     ' / Total:'+inttostr(treecount)+
+     #13#10+ ' Press ''W A S D'' to navigate, ''E'' - up, ''C'' - down'+
+     #13#10+ ' Press ''Q'' to Show Quadtree, ''X'' - Extended frustum'+
      #13#10+ ' Press ''V'' to Change quadtree query visible or visiblity culling'+
      #13#10+ ' Press ''Esc'' to quit';
 end;
@@ -171,10 +174,10 @@ procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   function PlaneToStr(const APlane : THmgPlane) : string;
   begin
     result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
-      APlane.V[0],
-      APlane.V[1],
-      APlane.V[2],
-      APlane.V[3]]);
+      APlane.X,
+      APlane.Y,
+      APlane.Z,
+      APlane.W]);
   end;
 var
   i: integer;
@@ -234,7 +237,7 @@ procedure TfrmQuadtreeVisCulling.FormKeyPress(Sender: TObject; var Key: Char);
 var
   i: integer;
 begin
-  if key = 'v' then
+  if Key = 'v' then
   begin
     cbUseQuadtree.Checked := not cbUseQuadtree.Checked;
 
