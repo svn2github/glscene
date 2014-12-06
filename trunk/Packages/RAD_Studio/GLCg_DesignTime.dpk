@@ -26,6 +26,7 @@ package GLCg_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene - Cg Shaders'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
@@ -34,8 +35,8 @@ requires
   designide,
   GLCg_RunTime,
   VclSmp,
-  GLScene_DesignTime,
-  GLScene_RunTime;
+  GLScene_RunTime,
+  GLScene_DesignTime;
 
 contains
   GLCgRegister in '..\..\Source\GLCgRegister.pas';

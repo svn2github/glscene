@@ -110,9 +110,6 @@
         <DCCReference Include="..\..\Source\Info.pas">
             <Form>InfoForm</Form>
         </DCCReference>
-        <DCCReference Include="..\..\Source\FPlugInManagerEditor.pas">
-            <Form>PlugInManagerEditor</Form>
-        </DCCReference>
         <DCCReference Include="..\..\Source\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\File3DS.pas"/>
         <DCCReference Include="..\..\Source\FileMD2.pas"/>
@@ -120,26 +117,7 @@
         <DCCReference Include="..\..\Source\Types3DS.pas"/>
         <DCCReference Include="..\..\Source\Const3DS.pas"/>
         <DCCReference Include="..\..\Source\GLAsyncTimer.pas"/>
-        <DCCReference Include="..\..\Source\FVectorEditor.pas">
-            <Form>VectorEditorForm</Form>
-        </DCCReference>
-        <DCCReference Include="..\..\Source\FRTrackBarEdit.pas">
-            <Form>RTrackBarEdit</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\..\Source\FRColorEditor.pas">
-            <Form>RColorEditor</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
-        <DCCReference Include="..\..\Source\FRFaceEditor.pas">
-            <Form>RFaceEditor</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\..\Source\GLVectorFileObjects.pas"/>
-        <DCCReference Include="..\..\Source\FRTextureEdit.pas">
-            <Form>RTextureEdit</Form>
-            <DesignClass>TFrame</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\..\Source\GLJoystick.pas"/>
         <DCCReference Include="..\..\Source\GLBehaviours.pas"/>
         <DCCReference Include="..\..\Source\GLScreenSaver.pas"/>
@@ -376,6 +354,7 @@
         <DCCReference Include="..\..\Source\GLAnimationUtils.pas"/>
         <DCCReference Include="..\..\Source\GLFileDXF.pas"/>
         <DCCReference Include="..\..\Source\GLFileGRD.pas"/>
+        <DCCReference Include="..\..\Source\GLSMemo.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -397,10 +376,10 @@
                     <Source Name="MainSource">GLScene_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k200.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp200.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp210.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

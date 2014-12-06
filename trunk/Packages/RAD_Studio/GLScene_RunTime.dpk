@@ -42,7 +42,6 @@ contains
   GLScreen in '..\..\Source\GLScreen.pas',
   GLVectorGeometry in '..\..\Source\GLVectorGeometry.pas',
   Info in '..\..\Source\Info.pas' {InfoForm},
-  FPlugInManagerEditor in '..\..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
   Utils3DS in '..\..\Source\Utils3DS.pas',
   File3DS in '..\..\Source\File3DS.pas',
   FileMD2 in '..\..\Source\FileMD2.pas',
@@ -50,12 +49,7 @@ contains
   Types3DS in '..\..\Source\Types3DS.pas',
   Const3DS in '..\..\Source\Const3DS.pas',
   GLAsyncTimer in '..\..\Source\GLAsyncTimer.pas',
-  FVectorEditor in '..\..\Source\FVectorEditor.pas' {VectorEditorForm},
-  FRTrackBarEdit in '..\..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  FRColorEditor in '..\..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
-  FRFaceEditor in '..\..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
   GLVectorFileObjects in '..\..\Source\GLVectorFileObjects.pas',
-  FRTextureEdit in '..\..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
   GLJoystick in '..\..\Source\GLJoystick.pas',
   GLBehaviours in '..\..\Source\GLBehaviours.pas',
   GLScreenSaver in '..\..\Source\GLScreenSaver.pas',
@@ -291,6 +285,7 @@ contains
   GLTypes in '..\..\Source\GLTypes.pas',
   GLAnimationUtils in '..\..\Source\GLAnimationUtils.pas',
   GLFileDXF in '..\..\Source\GLFileDXF.pas',
-  GLFileGRD in '..\..\Source\GLFileGRD.pas';
+  GLFileGRD in '..\..\Source\GLFileGRD.pas',
+  GLSMemo in '..\..\Source\GLSMemo.pas';
 
 end.

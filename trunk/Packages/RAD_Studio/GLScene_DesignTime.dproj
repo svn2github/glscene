@@ -163,15 +163,39 @@
             <Form>GUISkinEditor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\..\Source\FShaderMemo.pas">
-            <Form>ShaderMemoForm</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="..\..\Source\FShaderUniformEditor.pas">
             <Form>ShaderUniformEditor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\..\Source\GLSceneRegister.pas"/>
+        <DCCReference Include="..\..\Source\FRColorEditor.pas">
+            <Form>RColorEditor</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\Source\FRFaceEditor.pas"/>
+        <DCCReference Include="..\..\Source\FRTextureEdit.pas">
+            <Form>RTextureEdit</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\Source\FRTrackBarEdit.pas">
+            <Form>RTrackBarEdit</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\..\Source\FVectorEditor.pas">
+            <Form>VectorEditorForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\..\Source\FShaderMemo.pas">
+            <Form>ShaderMemoForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\..\Source\FPlugInManagerEditor.pas">
+            <Form>PlugInManagerEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

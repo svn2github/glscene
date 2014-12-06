@@ -50,9 +50,16 @@ contains
   FGUILayoutEditor in '..\..\Source\FGUILayoutEditor.pas' {Layouts_form},
   FRMaterialPreview in '..\..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
   FGuiSkinEditor in '..\..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
-  FShaderMemo in '..\..\Source\FShaderMemo.pas' {ShaderMemoForm},
   FShaderUniformEditor in '..\..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
-  GLSceneRegister in '..\..\Source\GLSceneRegister.pas';
+  GLSceneRegister in '..\..\Source\GLSceneRegister.pas',
+  FRColorEditor in '..\..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
+  FRFaceEditor in '..\..\Source\FRFaceEditor.pas',
+  FRTextureEdit in '..\..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FRTrackBarEdit in '..\..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FVectorEditor in '..\..\Source\FVectorEditor.pas' {VectorEditorForm},
+  FShaderMemo in '..\..\Source\FShaderMemo.pas' {ShaderMemoForm},
+  FPlugInManagerEditor in '..\..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor};
 
 end.
+
 
