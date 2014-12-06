@@ -25,6 +25,7 @@ uses
 {$ENDIF}
   GLPlugInIntf;
 
+
 type
   PPlugInEntry = ^TPlugInEntry;
 
@@ -99,9 +100,6 @@ type
   // ------------------------------------------------------------------------------
 
 implementation
-
-uses
-  FPlugInManagerEditor;
 
 // ----------------- TPlugInList ------------------------------------------------
 
@@ -384,7 +382,7 @@ end;
 procedure TPlugInManager.EditPlugInList;
 
 begin
-  TPlugInManagerEditor.EditPlugIns(Self);
+  ///TPlugInManagerEditor.EditPlugIns(Self);   //Circular call to edit Listbox items?
 end;
 
 // ------------------------------------------------------------------------------

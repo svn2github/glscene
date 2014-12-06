@@ -26,16 +26,13 @@ uses
 {$ELSE}
   Classes, SysUtils, Forms, Dialogs, StdCtrls, Controls, Buttons,
 {$ENDIF}
-  GLPlugInIntf, GLPlugInManager;
+  GLPlugInIntf, GLPlugInManager, Vcl.ExtCtrls;
 
 type
   TPlugInManagerEditor = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
-    OKButton: TSpeedButton;
-    LoadButton: TSpeedButton;
-    UnloadButton: TSpeedButton;
     GroupBox: TGroupBox;
     DescriptionMemo: TMemo;
     Label2: TLabel;
@@ -46,6 +43,10 @@ type
     Label5: TLabel;
     ServiceBox: TComboBox;
     NameBox: TComboBox;
+    PanelButtons: TPanel;
+    LoadButton: TSpeedButton;
+    UnloadButton: TSpeedButton;
+    OKButton: TSpeedButton;
     procedure OKButtonClick(Sender: TObject);
     procedure LoadButtonClick(Sender: TObject);
     procedure ListBoxClick(Sender: TObject);

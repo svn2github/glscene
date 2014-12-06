@@ -116,7 +116,7 @@ uses
   // Property editor forms
   GLSceneEditLCL, FVectorEditorLCL, FMaterialEditorFormLCL, FRMaterialPreviewLCL,
   FLibMaterialPickerLCL, FRTextureEditLCL, FRFaceEditorLCL,
-  FRColorEditorLCL, FRTrackBarEditLCL, FRUniformEditor, FGUILayoutEditor,
+  FRColorEditorLCL, FRTrackBarEditLCL, FShaderUniformEditor, FGUILayoutEditor,
   GLUtils;
 
 var

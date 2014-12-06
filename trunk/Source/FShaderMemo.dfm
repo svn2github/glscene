@@ -3,8 +3,8 @@ object ShaderMemoForm: TShaderMemoForm
   Top = 92
   BorderIcons = [biSystemMenu]
   Caption = 'GLSL Shader Source Editor'
-  ClientHeight = 667
-  ClientWidth = 502
+  ClientHeight = 593
+  ClientWidth = 491
   Color = clBtnFace
   Constraints.MinHeight = 400
   Constraints.MinWidth = 500
@@ -21,18 +21,20 @@ object ShaderMemoForm: TShaderMemoForm
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 569
-    Width = 502
+    Top = 504
+    Width = 491
     Height = 5
     Cursor = crVSplit
     Align = alBottom
     MinSize = 50
     ResizeStyle = rsLine
+    ExplicitTop = 569
+    ExplicitWidth = 502
   end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 502
+    Width = 491
     AutoSize = True
     BorderWidth = 1
     ButtonHeight = 28
@@ -185,8 +187,8 @@ object ShaderMemoForm: TShaderMemoForm
   object GLSLMemo: TGLSSynHiMemo
     Left = 0
     Top = 32
-    Width = 502
-    Height = 537
+    Width = 491
+    Height = 472
     Cursor = crIBeam
     Align = alClient
     TabOrder = 3
@@ -225,9 +227,9 @@ object ShaderMemoForm: TShaderMemoForm
   end
   object CompilatorLog: TMemo
     Left = 0
-    Top = 574
-    Width = 502
-    Height = 50
+    Top = 509
+    Width = 491
+    Height = 41
     TabStop = False
     Align = alBottom
     Color = clInfoBk
@@ -237,16 +239,16 @@ object ShaderMemoForm: TShaderMemoForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 624
-    Width = 502
+    Top = 550
+    Width = 491
     Height = 43
     Align = alBottom
     TabOrder = 1
     DesignSize = (
-      502
+      491
       43)
     object CancelButton: TButton
-      Left = 419
+      Left = 408
       Top = 10
       Width = 75
       Height = 25
@@ -257,7 +259,7 @@ object ShaderMemoForm: TShaderMemoForm
       TabOrder = 0
     end
     object OKButton: TButton
-      Left = 339
+      Left = 328
       Top = 10
       Width = 75
       Height = 25
@@ -278,10 +280,10 @@ object ShaderMemoForm: TShaderMemoForm
     end
   end
   object ImageList: TImageList
-    Left = 96
-    Top = 632
+    Left = 80
+    Top = 64
     Bitmap = {
-      494C01010E0018007C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E0018008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -820,19 +822,19 @@ object ShaderMemoForm: TShaderMemoForm
     DefaultExt = 'glsl'
     Filter = 'GLSL file (*.glsl)|*.glsl|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
-    Left = 136
-    Top = 632
+    Left = 144
+    Top = 64
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'glsl'
     Filter = 'GLSL file (*.glsl)|*.glsl|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 176
-    Top = 632
+    Left = 216
+    Top = 64
   end
   object TemplateMenu: TPopupMenu
-    Left = 216
-    Top = 632
+    Left = 288
+    Top = 64
     object GLSL120: TMenuItem
       Caption = 'GLSL 120'
     end

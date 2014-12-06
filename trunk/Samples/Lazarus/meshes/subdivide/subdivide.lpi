@@ -96,8 +96,8 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="../../../Source/PropertyEditors/FRUniformEditor.pas"/>
-        <UnitName Value="FRUniformEditor"/>
+        <Filename Value="../../Source/FShaderUniformEditor.pas"/>
+        <UnitName Value="FShaderUniformEditor"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="3" Y="18"/>

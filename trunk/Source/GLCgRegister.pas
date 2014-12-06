@@ -20,12 +20,13 @@ interface
 uses
   // VCL
   Classes,
-  {$IFNDEF FPC}
+  {$IFDEF FPC}
+    propedits, GLSceneRegisterLCL,
+  {$ELSE}
     DesignIntf, DesignEditors, VCLEditors,
     GLSceneRegister,
-  {$ELSE FPC}
-    propedits, GLSceneRegisterLCL,
-  {$ENDIF FPC}
+  {$ENDIF}
+
   // GLScene
   GLMaterial,
 

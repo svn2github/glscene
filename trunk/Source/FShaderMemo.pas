@@ -1,5 +1,7 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FShaderMemo<p>
-
    Shader code editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
@@ -34,7 +36,7 @@ uses
   VCL.ToolWin,
   VCL.ExtCtrls,
   VCL.StdCtrls,
-  VCL.Graphics,
+  VCL.Graphics
 {$ELSE}
   Windows,
   Messages,
@@ -52,8 +54,9 @@ uses
   ExtCtrls,
   StdCtrls,
   Menus,
-  Graphics,
+  Graphics, GLSMemo
 {$ENDIF}
+  ,
   GLSMemo;
 
 type
