@@ -124,6 +124,7 @@ begin
    FFFirTree.LoadFromFile('firtree.3ds');
    FFFirePlace.LoadFromFile('fireplace.3ds');
    FireLight:=0.5;
+   FTYear.Text:= '';
 end;
 
 procedure TMain.FormResize(Sender: TObject);
@@ -184,7 +185,6 @@ end;
 procedure TMain.CadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   Viewer.Invalidate();
    FireLight:=ClampValue(fireLight+Random*0.4-0.2, 0, 1);
    LSFire.Diffuse.Color:=VectorLerp(clrYellow, VectorMake(0.5, 0, 0, 1),
                                     fireLight);
@@ -196,10 +196,12 @@ begin
    if HUDSprite.Visible then
    begin
      HUDSprite.Material.FrontProperties.Diffuse.Alpha:=
-         HUDSprite.Material.FrontProperties.Diffuse.Alpha-deltaTime*0.1;
+         HUDSprite.Material.FrontProperties.Diffuse.Alpha-deltaTime*0.03  ;
      if HUDSprite.Material.FrontProperties.Diffuse.Alpha<0.01 then
          HUDSprite.Visible:=False;
    end;
+   DCFirTree.Turn(0.1);
+   Viewer.Invalidate();
 end;
 
 procedure TMain.TimerTimer(Sender: TObject);
@@ -227,8 +229,8 @@ begin
    else
    begin
      t:=EncodeDate(y+1, 01, 01)-Now();
-     FTCongratulations.Text := 'Happy New Year';
-     FTYear.Text:= IntToStr(y+1)+' !';
+     FTCongratulations.Text := 'Happy New Year!';
+     FTYear.Text:= IntToStr(y+1);
    end;
    if (t<1) and (t>-1) then
       DCGifts.Visible:=True;
