@@ -97,6 +97,8 @@ type
     procedure ViewerDblClick(Sender: TObject);
     procedure miMerryCristmasClick(Sender: TObject);
     procedure miHappyNewYearClick(Sender: TObject);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     { Private declarations }
   public
@@ -156,6 +158,12 @@ begin
    Application.Terminate;
 end;
 
+procedure TMain.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+  Camera.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
+end;
+
 procedure TMain.ViewerDblClick(Sender: TObject);
 begin
    if (not inPreview) and (not inSaver) and (not Application.Terminated) and (BorderStyle<>bsNone) then
@@ -200,7 +208,7 @@ begin
      if HUDSprite.Material.FrontProperties.Diffuse.Alpha<0.01 then
          HUDSprite.Visible:=False;
    end;
-   DCFirTree.Turn(0.1);
+   DCFirTree.Turn(deltaTime);
    Viewer.Invalidate();
 end;
 

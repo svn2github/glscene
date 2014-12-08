@@ -31,6 +31,10 @@
 #include "GLFileWAV.hpp"
 #include "Jpeg.hpp"
 #include "Bass.hpp"
+#include "GLFileMP3.hpp"
+#include "GLThorFX.hpp"
+#include "GLFireFX.hpp"
+#include <Vcl.Menus.hpp>
 
 //#include "Bass.hpp"
 
@@ -56,13 +60,13 @@ __published:	// IDE-managed Components
 	TGLCube *GLCube3;
 	TGLCube *GLCube4;
 	TGLDummyCube *DCDecoWhite;
-	TGLProxyObject *GLProxyObject1;
-	TGLProxyObject *GLProxyObject4;
-	TGLProxyObject *GLProxyObject6;
+	TGLProxyObject *POWhiteBall1;
+	TGLProxyObject *POWhiteBall2;
+	TGLProxyObject *POWhiteBall3;
 	TGLDummyCube *DCDecoGold;
-	TGLProxyObject *GLProxyObject2;
-	TGLProxyObject *GLProxyObject3;
-	TGLProxyObject *GLProxyObject5;
+	TGLProxyObject *POGoldBall1;
+	TGLProxyObject *POGoldBall2;
+	TGLProxyObject *POGoldBall3;
 	TGLDummyCube *DCLensFlares;
 	TGLLensFlare *GLLensFlare1;
 	TGLLensFlare *GLLensFlare2;
@@ -73,33 +77,37 @@ __published:	// IDE-managed Components
 	TGLDummyCube *DCGifts;
 	TGLCube *GLCube1;
 	TGLCube *GLCube2;
-	TGLShadowPlane *GLShadowPlane;
+	TGLShadowPlane *ShadowPlane;
 	TGLFlatText *FTCountDown;
 	TGLLensFlare *LSFireLens;
 	TGLLightSource *LSRoom;
 	TGLDummyCube *DCCameraTarget;
 	TGLParticleFXRenderer *ParticleFXRenderer;
-	TGLDummyCube *DCTemplates;
+	TGLDummyCube *DCBalls;
 	TGLSphere *SPWhiteBall;
 	TGLSphere *SPGoldBall;
-	TGLHUDSprite *HSGLScene;
+	TGLHUDSprite *HUDSprite;
 	TGLCamera *Camera;
 	TTimer *Timer;
-	TGLCadencer *GLCadencer;
-	TGLMaterialLibrary *GLMaterialLibrary;
+	TGLCadencer *Cadencer;
+	TGLMaterialLibrary *MaterialLibrary;
 	TGLPolygonPFXManager *PFXFire;
-	TGLSoundLibrary *GLSoundLibrary;
+	TGLSoundLibrary *SoundLibrary;
 	TGLPolygonPFXManager *PFXTree;
-	TGLWindowsBitmapFont *GLWindowsBitmapFont;
-	TGLScreenSaver *GLScreenSaver1;
-	TGLFlatText *FTHappyNewYear;
+	TGLWindowsBitmapFont *WindowsBitmapFont;
+	TGLScreenSaver *ScreenSaver;
+	TGLFlatText *FTCongratulations;
+	TGLFlatText *FTYear;
+	TPopupMenu *PopupMenu;
+	TMenuItem *miMerryCristmas;
+	TMenuItem *miHappyNewYear;
 //	TScreenSaver *ScreenSaver;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ViewerMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
 	void __fastcall ViewerMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 	void __fastcall TimerTimer(TObject *Sender);
-	void __fastcall GLCadencerProgress(TObject *Sender, const double deltaTime, const double newTime);
+	void __fastcall CadencerProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall FormResize(TObject *Sender);
 	void __fastcall FormKeyPress(TObject *Sender, System::WideChar &Key);
 //	void __fastcall ScreenSaverCloseQuery(TObject *Sender, bool &CanClose);
@@ -107,9 +115,13 @@ __published:	// IDE-managed Components
 //	void __fastcall ScreenSaverExecute(TObject *Sender);
 //	void __fastcall ScreenSaverPropertiesRequested(TObject *Sender);
 	void __fastcall ViewerDblClick(TObject *Sender);
-	void __fastcall GLScreenSaver1CloseQuery(TObject *Sender, bool &CanClose);
-	void __fastcall GLScreenSaver1Execute(TObject *Sender);
-	void __fastcall GLScreenSaver1Preview(TObject *Sender, HWND previewHwnd);
+	void __fastcall ScreenSaverCloseQuery(TObject *Sender, bool &CanClose);
+	void __fastcall ScreenSaverExecute(TObject *Sender);
+	void __fastcall ScreenSaverPreview(TObject *Sender, HWND previewHwnd);
+	void __fastcall miMerryCristmasClick(TObject *Sender);
+	void __fastcall miHappyNewYearClick(TObject *Sender);
+	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled);
 
 
 private:	// User declarations
