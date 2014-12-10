@@ -81,15 +81,19 @@ object RFaceEditor: TRFaceEditor
     Left = 52
     Top = 0
     Width = 201
-    Height = 21
-    AutoSize = True
+    Height = 33
     TabOrder = 1
     ExplicitLeft = 52
     ExplicitWidth = 201
+    ExplicitHeight = 33
     inherited TrackBar: TTrackBar
+      Left = -2
+      Top = 1
       Max = 128
       Frequency = 16
       OnChange = TBEShininessTrackBarChange
+      ExplicitLeft = -2
+      ExplicitTop = 1
     end
     inherited Edit: TEdit
       Left = 160

@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -91,9 +92,7 @@ object Form1: TForm1
     Width = 225
     Height = 17
     Caption = 'Full Resolution (64 MB graphics memory)'
-    Checked = True
     TabOrder = 5
-    TabStop = True
   end
   object RBHalf: TRadioButton
     Left = 48
@@ -101,7 +100,9 @@ object Form1: TForm1
     Width = 225
     Height = 17
     Caption = 'Medium Resolution (16 MB)'
+    Checked = True
     TabOrder = 6
+    TabStop = True
   end
   object RBLow: TRadioButton
     Left = 48

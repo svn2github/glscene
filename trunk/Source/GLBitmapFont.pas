@@ -920,8 +920,13 @@ begin
     // due to lazarus doesn't properly support pixel formats
     PixelFormat := glpf32bit;
 {$ENDIF}
+{$IFDEF GLS_DELPHI_XE2_UP}
+    Width  := RoundUpToPowerOf2(FTextureWidth);
+    Height := RoundUpToPowerOf2(FTextureHeight);
+{$ELSE}
     SetSize(RoundUpToPowerOf2(FTextureWidth),
       RoundUpToPowerOf2(FTextureHeight));
+{$ENDIF}
   end;
 
   bitmap32 := TGLBitmap32.Create;

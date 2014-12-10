@@ -22,11 +22,12 @@ interface
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
-  VCL.Controls, VCL.Buttons,
+  VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
 {$ELSE}
-  Classes, SysUtils, Forms, Dialogs, StdCtrls, Controls, Buttons,
+  Classes, SysUtils, Forms, Dialogs, StdCtrls, Controls, Buttons, ExtCtrls,
+  ImgList, ComCtrls, ToolWin,
 {$ENDIF}
-  GLPlugInIntf, GLPlugInManager, Vcl.ExtCtrls;
+  GLPlugInIntf, GLPlugInManager;
 
 type
   TPlugInManagerEditor = class(TForm)
@@ -43,10 +44,11 @@ type
     Label5: TLabel;
     ServiceBox: TComboBox;
     NameBox: TComboBox;
-    PanelButtons: TPanel;
-    LoadButton: TSpeedButton;
-    UnloadButton: TSpeedButton;
-    OKButton: TSpeedButton;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ImageList: TImageList;
     procedure OKButtonClick(Sender: TObject);
     procedure LoadButtonClick(Sender: TObject);
     procedure ListBoxClick(Sender: TObject);

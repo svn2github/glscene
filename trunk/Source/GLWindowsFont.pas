@@ -47,7 +47,7 @@ uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Graphics, System.Types, System.UITypes,
 {$ELSE}
-  Graphics, Types, UITypes,
+  Graphics, Types,
 {$ENDIF}
   GLVectorLists,
   GLCrossPlatform;

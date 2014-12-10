@@ -47,7 +47,8 @@ uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Dialogs, VCL.Controls, System.UITypes,
 {$ELSE}
-  Dialogs, Controls, UITypes,
+  Dialogs,
+  Controls,
 {$ENDIF}
  StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
 {$IFDEF MSWINDOWS} , ShellApi {$ENDIF}

@@ -22,15 +22,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, XCollection, Messages, Classes, GLCrossPlatform,
+  Windows, Messages,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList,
-  VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
+  System.Classes, System.Actions, VCL.Forms, VCL.ImgList, VCL.Controls,
+  VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
 {$ELSE}
-  Forms, ImgList, Controls, ActnList,
+  Classes, Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
- DesignEditors, DesignIntf, System.Actions;
+ DesignEditors, DesignIntf,
+ //GLS
+ GLCrossPlatform, XCollection;
 
 type
   TXCollectionEditor = class(TForm)

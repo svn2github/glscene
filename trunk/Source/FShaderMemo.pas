@@ -19,6 +19,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  GLSMemo,
 {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   Winapi.Messages,
@@ -54,10 +55,8 @@ uses
   ExtCtrls,
   StdCtrls,
   Menus,
-  Graphics, GLSMemo
-{$ENDIF}
-  ,
-  GLSMemo;
+  Graphics
+{$ENDIF};
 
 type
 
@@ -96,7 +95,6 @@ type
     CancelButton: TButton;
     OKButton: TButton;
     CheckButton: TButton;
-    Splitter1: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLSLMemoGutterClick(Sender: TObject; LineNo: Integer);

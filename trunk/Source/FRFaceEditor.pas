@@ -3,7 +3,7 @@
 //
 { : FRFaceEditor<p>
 
-  Editor fram for a TGLFaceProperties.<p>
+  Editor frame for a TGLFaceProperties.<p>
 
   <b>Historique : </b><font size=-1><ul>
   <li>05/09/08 - DanB - Removed Kylix support

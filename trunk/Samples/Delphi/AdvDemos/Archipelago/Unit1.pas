@@ -91,15 +91,9 @@ var
   libMat: TGLLibMaterial;
   DataPath : String;
 begin
-  //The DataPath for Debug or Release exe output on different platforms
-  DataPath := ExtractFilePath(ParamStr(0));
-  I := Pos(UpperCase('Archipelago'), UpperCase(DataPath));
-  if (I <> 0) then
-  begin
-    Delete(DataPath, I+12, Length(DataPath)-I);
-    DataPath := DataPath+'Data\';
-    SetCurrentDir(DataPath);
-  end;
+  DataPath := ExtractFilePath(ParamStr(0))+'\Data';
+  SetCurrentDir(DataPath);
+  MaterialLibrary.TexturePaths := DataPath;
   GLCustomHDS1.MaxPoolSize := 8 * 1024 * 1024;
   GLCustomHDS1.DefaultHeight := cWaterLevel;
 
@@ -123,7 +117,7 @@ begin
         Compression := tcStandard; // comment out to turn off texture compression
         //         FilteringQuality:=tfAnisotropic;
       end;
-      libMat.Texture2Name := DataPath + 'detail';
+      libMat.Texture2Name := 'detail';
     end;
 
   // Initial camera height offset (controled with pageUp/pageDown)

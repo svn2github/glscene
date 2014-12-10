@@ -38,7 +38,7 @@ uses
   {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, VCL.Graphics, VCL.Controls, System.UITypes,
   {$ELSE}
-  Classes, SysUtils, Graphics, Controls, UITypes,
+  Classes, SysUtils, Graphics, Controls,
 {$ENDIF}
   // GLScene
   GLVectorGeometry, GLCrossPlatform;

@@ -19,18 +19,6 @@ object ShaderMemoForm: TShaderMemoForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Splitter1: TSplitter
-    Left = 0
-    Top = 504
-    Width = 491
-    Height = 5
-    Cursor = crVSplit
-    Align = alBottom
-    MinSize = 50
-    ResizeStyle = rsLine
-    ExplicitTop = 569
-    ExplicitWidth = 502
-  end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
@@ -188,7 +176,7 @@ object ShaderMemoForm: TShaderMemoForm
     Left = 0
     Top = 32
     Width = 491
-    Height = 472
+    Height = 456
     Cursor = crIBeam
     Align = alClient
     TabOrder = 3
@@ -227,9 +215,9 @@ object ShaderMemoForm: TShaderMemoForm
   end
   object CompilatorLog: TMemo
     Left = 0
-    Top = 509
+    Top = 488
     Width = 491
-    Height = 41
+    Height = 62
     TabStop = False
     Align = alBottom
     Color = clInfoBk
@@ -283,7 +271,7 @@ object ShaderMemoForm: TShaderMemoForm
     Left = 80
     Top = 64
     Bitmap = {
-      494C01010E0018008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800980010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

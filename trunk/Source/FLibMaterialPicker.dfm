@@ -3,8 +3,8 @@ object LibMaterialPicker: TLibMaterialPicker
   Top = 157
   BorderStyle = bsDialog
   Caption = 'LibMaterial Picker'
-  ClientHeight = 234
-  ClientWidth = 458
+  ClientHeight = 261
+  ClientWidth = 460
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -32,7 +32,7 @@ object LibMaterialPicker: TLibMaterialPicker
     Left = 8
     Top = 24
     Width = 137
-    Height = 201
+    Height = 223
     ItemHeight = 13
     TabOrder = 0
     OnClick = LBMaterialsClick
@@ -58,14 +58,19 @@ object LibMaterialPicker: TLibMaterialPicker
     TabOrder = 1
   end
   inline MPPreview: TRMaterialPreview
-    Left = 152
-    Top = 22
+    Left = 157
+    Top = 25
     Width = 202
-    Height = 229
+    Height = 222
     AutoSize = True
     TabOrder = 3
-    ExplicitLeft = 152
-    ExplicitTop = 22
+    ExplicitLeft = 157
+    ExplicitTop = 25
+    ExplicitHeight = 222
+    inherited GLSceneViewer: TGLSceneViewer
+      Top = 19
+      ExplicitTop = 19
+    end
     inherited GLScene: TGLScene
       inherited World: TGLDummyCube
         inherited Cube: TGLCube

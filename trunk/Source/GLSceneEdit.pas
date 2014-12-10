@@ -52,13 +52,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  XCollection,
-  Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  WinApi.Windows,
   System.Classes,
   System.SysUtils,
-  System.Actions,
   System.Win.Registry,
+  System.Actions,
   VCL.Controls,
   VCL.Forms,
   VCL.ComCtrls,
@@ -71,9 +70,9 @@ uses
   VCL.StdCtrls,
   VCL.ClipBrd,
 {$ELSE}
+  Windows,
   Classes,
   SysUtils,
-  Actions,
   Registry,
   Controls,
   Forms,
@@ -81,12 +80,14 @@ uses
   ImgList,
   Dialogs,
   Menus,
+  Actions  /// - no such unit Actions in Delphi7, remove it
   ActnList,
   ToolWin,
   ExtCtrls,
   StdCtrls,
   ClipBrd,
 {$ENDIF}
+
   DesignIntf,
   VCLEditors,
 
@@ -96,6 +97,7 @@ uses
   GLSceneRegister,
   GLStrings,
   Info,
+  XCollection,
   GLCrossPlatform;
 
 const
@@ -114,10 +116,10 @@ type
     ToolBar: TToolBar;
     ActionList: TActionList;
     TBAddObjects: TToolButton;
-    ToolButton4: TToolButton;
+    TBMoveUp: TToolButton;
     PMToolBar: TPopupMenu;
     TBDeleteObject: TToolButton;
-    ToolButton7: TToolButton;
+    TBMoveDown: TToolButton;
     ACAddObject: TAction;
     ImageList: TImageList;
     ACDeleteObject: TAction;
@@ -142,8 +144,6 @@ type
     TBCut: TToolButton;
     TBCopy: TToolButton;
     TBPaste: TToolButton;
-    PACharacter: TPanel;
-    Splitter3: TSplitter;
     PMBehavioursToolbar: TPopupMenu;
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
@@ -157,27 +157,26 @@ type
     N4: TMenuItem;
     PMEffectsToolbar: TPopupMenu;
     ACAddEffect: TAction;
-    TBCharacterPanel: TToolButton;
+    TBCharacterPanels: TToolButton;
     TBStayOnTop: TToolButton;
     ACStayOnTop: TAction;
     ToolButton10: TToolButton;
     TBExpand: TToolButton;
     ACExpand: TAction;
     PAGallery: TPanel;
-    Splitter2: TSplitter;
-    PanelBehaviours: TPanel;
-    BehavioursListView: TListView;
-    PanelEffects: TPanel;
-    EffectsListView: TListView;
-    ToolBar1: TToolBar;
-    TBAddBehaviours: TToolButton;
-    ToolBar2: TToolBar;
-    TBAddEffects: TToolButton;
     PATree: TPanel;
     Tree: TTreeView;
     TBInfo: TToolButton;
     GalleryListView: TListView;
-    Splitter1: TSplitter;
+    PABehaviours: TPanel;
+    ToolBarBehaviours: TToolBar;
+    TBAddBehaviours: TToolButton;
+    BehavioursListView: TListView;
+    PAEffects: TPanel;
+    EffectsListView: TListView;
+    ToolBarEffects: TToolBar;
+    TBAddEffects: TToolButton;
+    TBGalleryPanel: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode;
       var AllowEdit: Boolean);
@@ -211,11 +210,12 @@ type
       Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
-    procedure TBCharacterPanelClick(Sender: TObject);
+    procedure TBCharacterPanelsClick(Sender: TObject);
     procedure TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ACStayOnTopExecute(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ACExpandExecute(Sender: TObject);
+    procedure TBGalleryPanelClick(Sender: TObject);
 
   private
     FSelectedItems: Integer; //
@@ -465,9 +465,9 @@ begin
   try
     if reg.OpenKey(cRegistryKey, true) then
     begin
-      if reg.ValueExists('CharacterPanel') then
-        TBCharacterPanel.Down := reg.ReadBool('CharacterPanel');
-      TBCharacterPanelClick(Self);
+      if reg.ValueExists('CharacterPanels') then
+        TBCharacterPanels.Down := reg.ReadBool('CharacterPanels');
+      TBCharacterPanelsClick(Self);
 
       if reg.ValueExists('ExpandTree') then
         TBExpand.Down := reg.ReadBool('ExpandTree');
@@ -499,7 +499,7 @@ begin
   try
     if reg.OpenKey(cRegistryKey, true) then
     begin
-      reg.WriteBool('CharacterPanel', TBCharacterPanel.Down);
+      reg.WriteBool('CharacterPanels', TBCharacterPanels.Down);
       reg.WriteBool('ExpandTree', TBExpand.Down);
       reg.WriteInteger('Left', Left);
       reg.WriteInteger('Top', Top);
@@ -1615,20 +1615,25 @@ begin
   end;
 end;
 
-procedure TGLSceneEditorForm.TBCharacterPanelClick(Sender: TObject);
+procedure TGLSceneEditorForm.TBCharacterPanelsClick(Sender: TObject);
+begin
+  PABehaviours.Visible := TBCharacterPanels.Down;
+  PAEffects.Visible := TBCharacterPanels.Down;
+  if PABehaviours.Visible then
+    Height := Height + PABehaviours.Height + PAEffects.Height
+  else
+    Height := Height - PABehaviours.Height - PAEffects.Height;
+end;
+
+procedure TGLSceneEditorForm.TBGalleryPanelClick(Sender: TObject);
 begin
   //yet not ready to populate with LargeImages 32x32
-  (*
-  PAGallery.Visible := TBCharacterPanel.Down;
-  Splitter1.Visible := TBCharacterPanel.Down;
-  *)
-  PACharacter.Visible := TBCharacterPanel.Down;
-  Splitter2.Visible := TBCharacterPanel.Down;
-
-  if PACharacter.Visible then
-    Width := Width + PAGallery.Width
+  PAGallery.Visible := TBGalleryPanel.Down;
+  if PAGallery.Visible then
+    Width := Width + PATree.Width
   else
-    Width := Width - PAGallery.Width;
+    Width := Width - PATree.Width;
+
 end;
 
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word;

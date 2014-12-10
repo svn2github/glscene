@@ -206,13 +206,13 @@ object Form1: TForm1
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 168
+    Left = 288
     Top = 24
   end
   object GLMemoryViewer1: TGLMemoryViewer
     Buffer.BackgroundColor = clBlack
     Buffer.Lighting = False
-    Left = 288
+    Left = 168
     Top = 24
   end
   object MLSailBoat: TGLMaterialLibrary

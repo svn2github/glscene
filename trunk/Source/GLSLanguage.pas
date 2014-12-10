@@ -23,8 +23,10 @@ interface
 
 {$I GLScene.inc}
 {$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
-{$WARN IMPLICIT_STRING_CAST OFF}
-{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$IFDEF GLS_DELPHI_XE2_UP}
+  {$WARN IMPLICIT_STRING_CAST OFF}
+  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+{$ENDIF}
 
 uses
   Classes, IniFiles, SysUtils;

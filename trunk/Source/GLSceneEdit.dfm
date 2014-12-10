@@ -3,8 +3,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
   Top = 98
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene Editor'
-  ClientHeight = 511
-  ClientWidth = 617
+  ClientHeight = 524
+  ClientWidth = 534
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -148,33 +148,10 @@ object GLSceneEditorForm: TGLSceneEditorForm
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
   TextHeight = 14
-  object Splitter2: TSplitter
-    Left = 0
-    Top = 361
-    Width = 617
-    Height = 5
-    Cursor = crVSplit
-    Align = alBottom
-    Visible = False
-    ExplicitLeft = 8
-    ExplicitTop = 326
-    ExplicitWidth = 599
-  end
-  object Splitter1: TSplitter
-    Left = 301
-    Top = 26
-    Width = 5
-    Height = 335
-    Align = alRight
-    Visible = False
-    ExplicitLeft = 1
-    ExplicitTop = 17
-    ExplicitHeight = 333
-  end
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 617
+    Width = 534
     Height = 26
     AutoSize = True
     BorderWidth = 1
@@ -194,24 +171,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Top = 0
       Action = ACSaveScene
     end
-    object TBCharacterPanel: TToolButton
-      Left = 56
-      Top = 0
-      Hint = 'Show Behaviours/Effects'
-      Caption = 'Show Behaviours/Effects'
-      ImageIndex = 11
-      Style = tbsCheck
-      OnClick = TBCharacterPanelClick
-    end
     object TBStayOnTop: TToolButton
-      Left = 84
+      Left = 56
       Top = 0
       Hint = 'Stay on top'
       Action = ACStayOnTop
       Style = tbsCheck
     end
     object ToolButton2: TToolButton
-      Left = 112
+      Left = 84
       Top = 0
       Width = 8
       Caption = 'ToolButton2'
@@ -219,38 +187,56 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object TBAddObjects: TToolButton
-      Left = 120
+      Left = 92
       Top = 0
       Action = ACAddObject
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
-    object ToolButton3: TToolButton
+    object TBGalleryPanel: TToolButton
+      Left = 135
+      Top = 0
+      Hint = 'Show Gallery'
+      Caption = 'Gallery'
+      ImageIndex = 14
+      Style = tbsCheck
+      OnClick = TBGalleryPanelClick
+    end
+    object TBCharacterPanels: TToolButton
       Left = 163
+      Top = 0
+      Hint = 'Show Behaviours/Effects'
+      Caption = 'Show Behaviours/Effects'
+      ImageIndex = 11
+      Style = tbsCheck
+      OnClick = TBCharacterPanelsClick
+    end
+    object ToolButton3: TToolButton
+      Left = 191
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
       ImageIndex = 2
       Style = tbsSeparator
     end
-    object ToolButton4: TToolButton
-      Left = 171
+    object TBMoveUp: TToolButton
+      Left = 199
       Top = 0
       Action = ACMoveUp
     end
-    object ToolButton7: TToolButton
-      Left = 199
+    object TBMoveDown: TToolButton
+      Left = 227
       Top = 0
       Action = ACMoveDown
     end
     object TBExpand: TToolButton
-      Left = 227
+      Left = 255
       Top = 0
       Action = ACExpand
       Style = tbsCheck
     end
     object ToolButton6: TToolButton
-      Left = 255
+      Left = 283
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -258,27 +244,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object TBDeleteObject: TToolButton
-      Left = 263
+      Left = 291
       Top = 0
       Action = ACDeleteObject
     end
     object TBCut: TToolButton
-      Left = 291
+      Left = 319
       Top = 0
       Action = ACCut
     end
     object TBCopy: TToolButton
-      Left = 319
+      Left = 347
       Top = 0
       Action = ACCopy
     end
     object TBPaste: TToolButton
-      Left = 347
+      Left = 375
       Top = 0
       Action = ACPaste
     end
     object ToolButton10: TToolButton
-      Left = 375
+      Left = 403
       Top = 0
       Width = 8
       Caption = 'ToolButton10'
@@ -286,42 +272,91 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object TBInfo: TToolButton
-      Left = 383
+      Left = 411
       Top = 0
       Action = ACInfo
     end
   end
-  object PACharacter: TPanel
-    Left = 0
-    Top = 366
-    Width = 617
-    Height = 145
-    Align = alBottom
-    Constraints.MinWidth = 1
+  object PAGallery: TPanel
+    Left = 257
+    Top = 26
+    Width = 277
+    Height = 498
+    Align = alClient
     TabOrder = 1
     Visible = False
-    object Splitter3: TSplitter
-      Left = 302
-      Top = 1
-      Width = 5
-      Height = 143
-      Align = alRight
-      ExplicitLeft = 293
-      ExplicitTop = 22
-      ExplicitHeight = 161
-    end
-    object PanelBehaviours: TPanel
+    object GalleryListView: TListView
       Left = 1
       Top = 1
-      Width = 301
-      Height = 143
+      Width = 275
+      Height = 496
       Align = alClient
+      Columns = <>
       TabOrder = 0
+    end
+  end
+  object PATree: TPanel
+    Left = 0
+    Top = 26
+    Width = 257
+    Height = 498
+    Align = alLeft
+    TabOrder = 2
+    object Tree: TTreeView
+      Left = 1
+      Top = 1
+      Width = 255
+      Height = 273
+      Align = alClient
+      HideSelection = False
+      Indent = 19
+      PopupMenu = PopupMenu
+      RightClickSelect = True
+      TabOrder = 0
+      OnChange = TreeChange
+      OnDragDrop = TreeDragDrop
+      OnDragOver = TreeDragOver
+      OnEditing = TreeEditing
+      OnEnter = TreeEnter
+      OnKeyDown = TreeKeyDown
+      OnMouseDown = TreeMouseDown
+      OnMouseMove = TreeMouseMove
+    end
+    object PABehaviours: TPanel
+      Left = 1
+      Top = 274
+      Width = 255
+      Height = 112
+      Align = alBottom
+      TabOrder = 1
+      object ToolBarBehaviours: TToolBar
+        Left = 1
+        Top = 1
+        Width = 253
+        Height = 30
+        AutoSize = True
+        ButtonHeight = 30
+        ButtonWidth = 68
+        Caption = 'ToolBarBehaviours'
+        ParentShowHint = False
+        ShowCaptions = True
+        ShowHint = False
+        TabOrder = 0
+        object TBAddBehaviours: TToolButton
+          Left = 0
+          Top = 0
+          Action = ACAddBehaviour
+          DropdownMenu = PMBehavioursToolbar
+          ParentShowHint = False
+          ShowHint = True
+          Style = tbsDropDown
+        end
+      end
       object BehavioursListView: TListView
         Left = 1
         Top = 31
-        Width = 299
-        Height = 111
+        Width = 253
+        Height = 80
         Align = alClient
         Columns = <
           item
@@ -334,49 +369,25 @@ object GLSceneEditorForm: TGLSceneEditorForm
           end>
         ReadOnly = True
         PopupMenu = BehavioursPopupMenu
-        TabOrder = 0
+        TabOrder = 1
         ViewStyle = vsReport
         OnEnter = BehavioursListViewEnter
         OnKeyDown = TreeKeyDown
         OnSelectItem = BehavioursListViewSelectItem
       end
-      object ToolBar1: TToolBar
-        Left = 1
-        Top = 1
-        Width = 299
-        Height = 30
-        AutoSize = True
-        ButtonHeight = 30
-        ButtonWidth = 68
-        Caption = 'ToolBar1'
-        ParentShowHint = False
-        ShowCaptions = True
-        ShowHint = False
-        TabOrder = 1
-        object TBAddBehaviours: TToolButton
-          Left = 0
-          Top = 0
-          Action = ACAddBehaviour
-          Caption = 'Behaviours'
-          DropdownMenu = PMBehavioursToolbar
-          ParentShowHint = False
-          ShowHint = True
-          Style = tbsDropDown
-        end
-      end
     end
-    object PanelEffects: TPanel
-      Left = 307
-      Top = 1
-      Width = 309
-      Height = 143
-      Align = alRight
-      TabOrder = 1
+    object PAEffects: TPanel
+      Left = 1
+      Top = 386
+      Width = 255
+      Height = 111
+      Align = alBottom
+      TabOrder = 2
       object EffectsListView: TListView
         Left = 1
         Top = 31
-        Width = 307
-        Height = 111
+        Width = 253
+        Height = 79
         Align = alClient
         Columns = <
           item
@@ -395,15 +406,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
         OnKeyDown = TreeKeyDown
         OnSelectItem = BehavioursListViewSelectItem
       end
-      object ToolBar2: TToolBar
+      object ToolBarEffects: TToolBar
         Left = 1
         Top = 1
-        Width = 307
+        Width = 253
         Height = 30
         AutoSize = True
         ButtonHeight = 30
         ButtonWidth = 48
-        Caption = 'ToolBar1'
+        Caption = 'ToolBarEffects'
         ParentShowHint = False
         ShowCaptions = True
         ShowHint = False
@@ -412,7 +423,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
           Left = 0
           Top = 0
           Action = ACAddEffect
-          Caption = 'Effects'
           DropdownMenu = PMEffectsToolbar
           ParentShowHint = False
           ShowHint = True
@@ -421,57 +431,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       end
     end
   end
-  object PAGallery: TPanel
-    Left = 306
-    Top = 26
-    Width = 311
-    Height = 335
-    Align = alRight
-    TabOrder = 2
-    Visible = False
-    object GalleryListView: TListView
-      Left = 1
-      Top = 1
-      Width = 309
-      Height = 333
-      Align = alClient
-      Columns = <>
-      TabOrder = 0
-    end
-  end
-  object PATree: TPanel
-    Left = 0
-    Top = 26
-    Width = 301
-    Height = 335
-    Align = alClient
-    TabOrder = 3
-    object Tree: TTreeView
-      Left = 1
-      Top = 1
-      Width = 299
-      Height = 333
-      Align = alClient
-      HideSelection = False
-      Indent = 19
-      PopupMenu = PopupMenu
-      RightClickSelect = True
-      TabOrder = 0
-      OnChange = TreeChange
-      OnDragDrop = TreeDragDrop
-      OnDragOver = TreeDragOver
-      OnEditing = TreeEditing
-      OnEnter = TreeEnter
-      OnKeyDown = TreeKeyDown
-      OnMouseDown = TreeMouseDown
-      OnMouseMove = TreeMouseMove
-    end
-  end
   object PopupMenu: TPopupMenu
     Images = ImageList
     OnPopup = PopupMenuPopup
-    Left = 192
-    Top = 64
+    Left = 168
+    Top = 40
     object MIAddObject: TMenuItem
       Action = ACAddObject
     end
@@ -517,7 +481,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object ActionList: TActionList
     Images = ImageList
     Left = 16
-    Top = 64
+    Top = 40
     object ACLoadScene: TAction
       Caption = 'Load scene'
       Hint = 'Load whole scene'
@@ -542,13 +506,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
       OnExecute = ACAddObjectExecute
     end
     object ACAddBehaviour: TAction
-      Caption = 'ACAddBehaviour'
+      Caption = 'Behaviours'
       Hint = 'Add behaviour'
       ImageIndex = 3
       OnExecute = ACAddBehaviourExecute
     end
     object ACAddEffect: TAction
-      Caption = 'ACAddEffect'
+      Caption = 'Effects'
       ImageIndex = 3
       OnExecute = ACAddEffectExecute
     end
@@ -612,14 +576,14 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
   end
   object PMToolBar: TPopupMenu
-    Left = 104
-    Top = 64
+    Left = 88
+    Top = 40
   end
   object ImageList: TImageList
     Left = 16
-    Top = 120
+    Top = 96
     Bitmap = {
-      494C01010F001800780110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800300210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -642,62 +606,62 @@ object GLSceneEditorForm: TGLSceneEditorForm
       0000000000000000000000000000000000000000000000F2FF0000F2FF007F7F
       7F007F7F7F007F7F7F007F7F7F00000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000008080800080808000C0C0C000C0C0
+      C000808080000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000000000007F7F7F000000
       0000000000000000000000000000000000000000000000000000000000000000
-      00000000000000000000000000000000000000000000000000007F7F7F000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000080808000C0C0C000C0C0C0008080
+      8000808080000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000075A8B00075A8B000000000000000000000000000000
       000000000000075A8B00075A8B000000000000000000000000007B7363000000
       00000000000000000000000000007F7F7F007F7F7F007F7F7F007F7F7F007F7F
-      7F007F7F7F000000000000000000000000000000000000000000241CED000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      7F007F7F7F000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000008080800080808000C0C0C000C0C0
+      C000808080000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000075A8B000077AE00075A8B0000000000000000000000
       0000075A8B0008639B00075A8B00000000000000000000F2FF0000F2FF007F7F
       7F007F7F7F007F7F7F007F7F7F007F7F7F000000000000000000000000000000
-      00000000000000000000000000000000000000000000241CED00241CED00241C
-      ED007F7F7F007F7F7F007F7F7F007F7F7F000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000C0C0
+      C000C0C0C00000000000000000000000000080808000C0C0C000C0C0C0008080
+      8000808080000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000075A8B001481BE000077AE00075A8B00075A8B00075A
       8B0008639B000077AE00075A8B000000000000000000000000007F7F7F000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000241CED000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000C0C0
+      C000C0C0C0000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000A4787400A478
       7400A4787400A4787400075A8B0031D2FC001481BE0008639B000077AE001481
       BE000077AE0031D2FC00075A8B000000000000000000000000007F7F7F000000
       0000000000000000000000000000000000007F7F7F007F7F7F007F7F7F007F7F
-      7F007F7F7F007F7F7F00000000000000000000000000000000007F7F7F000000
-      0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000000000000000
+      7F007F7F7F007F7F7F0000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000C0C0C000C0C0C000C0C0C000C0C0
+      C000C0C0C0000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000000000000000000000000000A4787400BC9B9800E6E6
       E600FFFFFF00E6E6E6002F9FD800A9E7FE0099E4FB008FC6E50086DBFA0099E4
       FB007AB8E10099E4FB00075A8B00000000000000000000F2FF0000F2FF007F7F
       7F007F7F7F007F7F7F007F7F7F007F7F7F007F7F7F0000000000000000000000
-      00000000000000000000000000000000000000000000241CED00241CED00241C
-      ED007F7F7F007F7F7F007F7F7F007F7F7F000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000C9C7BC00C9C7
       BC00C9C7BC00C9C7BC002F9FD8004FB9FD0086DBFA0010AADC00008FE200008F
       E20010AADC004FB9FD002F9FD8000000000000000000000000007F7F7F000000
       0000000000000000000000000000000000000000000000000000000000000000
-      0000000000000000000000000000000000000000000000000000241CED000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -705,33 +669,33 @@ object GLSceneEditorForm: TGLSceneEditorForm
       0000000000000000000031D2FC0008BDE90008BDE90031D2FC0031D2FC0031D2
       FC000077AE0031D2FC002F9FD80000000000000000007B7363007B7363007B73
       63007B7363007B7363007B7363007B7363007B7363007B7363007B7363007B73
-      63007B7363007B7363007B7363007B736300000000007B7363007B7363007B73
-      63007B7363007B7363007B7363007B7363007B7363007B7363007B7363007B73
       63007B7363007B7363007B7363007B7363000000000000000000000000000000
+      000000FFFF0000FFFF0000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000031D2FC00008FE20031D2FC0000000000000000000000
       000031D2FC00008FE20031D2FC0000000000000000007B736300DEDEDE00EF9C
       21007B736300EF9C2100EF9C2100EF9C2100EF9C2100EF9C2100EF9C2100EF9C
-      2100EF9C2100EF9C2100EF9C2100B5B5B500000000007B736300241CED00EF9C
-      21007B736300EF9C2100EF9C2100EF9C2100EF9C2100EF9C2100EF9C2100EF9C
       2100EF9C2100EF9C2100EF9C2100B5B5B5000000000000000000000000000000
+      000000FFFF0000FFFF000000000000000000000000000000FF000000FF000000
+      FF00000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000031D2FC0031D2FC000000000000000000000000000000
       00000000000031D2FC0031D2FC00000000000000000000F2FF0000F2FF0000F2
       FF007B736300DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDE
-      DE00DEDEDE00DEDEDE00DEDEDE00B5B5B50000000000241CED00241CED00241C
-      ED007B736300DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDEDE00DEDE
       DE00DEDEDE00DEDEDE00DEDEDE00B5B5B5000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000FF000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       000000000000000000000000000000000000000000007B7363007B7363007B73
       63007B736300B5B5B500B5B5B500B5B5B500B5B5B500B5B5B500B5B5B500B5B5
-      B500B5B5B500B5B5B500B5B5B500B5B5B500000000007B736300241CED007B73
-      63007B736300B5B5B500B5B5B500B5B5B500B5B5B500B5B5B500B5B5B500B5B5
       B500B5B5B500B5B5B500B5B5B500B5B5B5000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000000000FF000000
+      0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1135,11 +1099,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       000000000000EFEFEF00C0C0C000AFAFAF009F9F9F008F8F8F008F8F8F00CFCF
       CF0000000000000000000000000000000000424D3E000000000000003E000000
       2800000040000000400000000100010000000000000200000000000000000000
-      000000000000000000000000FFFFFF00FFFFFFFFFFFF0000FFFFDC0FFFFF0000
-      FFFF81FFFFFF0000FFFFDFFFDFFF0000FCF9DE07DFFF0000FC7180FF80FF0000
-      FC01DFFFDFFF0000C001DF03DFFF00008001807F80FF0000C001DFFFDFFF0000
-      FC01800080000000FC71800080000000FCF9800080000000FFFF800080000000
-      FFFFFFFFFFFF0000FFFFFFFFFFFF0000E001FFFFF801FFFFC001D937F8018001
+      000000000000000000000000FFFFFF00FFFFFFFFFFFF0000FFFFDC0FFF070000
+      FFFF81FFFE030000FFFFDFFFFE030000FCF9DE07E6030000FC7180FFC2030000
+      FC01DFFFC2030000C001DF03E60300008001807FFF070000C001DFFFE1FF0000
+      FC018000E1070000FC718000E1070000FCF98000E18F0000FFFF8000FF8F0000
+      FFFFFFFFFFDF0000FFFFFFFFFFFF0000E001FFFFF801FFFFC001D937F8018001
       8001DD77F80180018001CD67F80180018001E10F800180018001F01F80018001
       8001FC7F800180018001F83F800180018001F81F800180018003F01F80018001
       8003E10F800380008003E38F800780008003E38F801F80008003E7CF801F8000
@@ -1159,25 +1123,25 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 16
-    Top = 168
+    Top = 160
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 16
-    Top = 224
+    Left = 88
+    Top = 88
   end
   object PMBehavioursToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMBehavioursToolbarPopup
-    Left = 120
-    Top = 184
+    Left = 96
+    Top = 160
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    Left = 134
-    Top = 486
+    Left = 206
+    Top = 158
     object Delete1: TMenuItem
       Action = ACDeleteObject
     end
@@ -1196,7 +1160,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMEffectsToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMEffectsToolbarPopup
-    Left = 432
-    Top = 496
+    Left = 168
+    Top = 96
   end
 end
