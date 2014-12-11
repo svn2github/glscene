@@ -141,7 +141,7 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 168
+    Left = 368
     Top = 88
   end
   object GLCadencer: TGLCadencer
@@ -187,11 +187,11 @@ object Form1: TForm1
     Top = 88
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
-    HTFFileName = 'Islands.htf'
+    HTFFileName = 'Data\Islands.htf'
     InfiniteWrap = False
     MaxPoolSize = 0
-    Left = 288
-    Top = 88
+    Left = 176
+    Top = 24
   end
   object BFSmall: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -199,21 +199,15 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 400
-    Top = 80
+    Left = 272
+    Top = 88
   end
   object GLCustomHDS1: TGLCustomHDS
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 288
-    Top = 24
-  end
-  object GLMemoryViewer1: TGLMemoryViewer
-    Buffer.BackgroundColor = clBlack
-    Buffer.Lighting = False
-    Left = 168
-    Top = 24
+    Left = 176
+    Top = 88
   end
   object MLSailBoat: TGLMaterialLibrary
     TexturePaths = 'sailboat'
@@ -226,7 +220,7 @@ object Form1: TForm1
     Font.Height = -21
     Font.Name = 'Arial'
     Font.Style = []
-    Left = 400
+    Left = 272
     Top = 24
   end
 end

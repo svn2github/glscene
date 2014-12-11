@@ -3,6 +3,9 @@
         <ProjectGuid>{2112950E-56B5-4A45-8B33-4FB1A4A107A1}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="Archipelago\Splitter\Splitter.cbproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Archipelago\Archipelago.cbproj">
             <Dependencies/>
         </Projects>
@@ -26,6 +29,15 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
+    <Target Name="Splitter">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.cbproj"/>
+    </Target>
+    <Target Name="Splitter:Clean">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Splitter:Make">
+        <MSBuild Projects="Archipelago\Splitter\Splitter.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Archipelago">
         <MSBuild Projects="Archipelago\Archipelago.cbproj"/>
     </Target>
@@ -72,13 +84,13 @@
         <MSBuild Projects="Q3Demo\Q3Demo.cbproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Archipelago;Christmas;IntensityMesh;PanoViewer;Q3Demo"/>
+        <CallTarget Targets="Splitter;Archipelago;Christmas;IntensityMesh;PanoViewer;Q3Demo"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Archipelago:Clean;Christmas:Clean;IntensityMesh:Clean;PanoViewer:Clean;Q3Demo:Clean"/>
+        <CallTarget Targets="Splitter:Clean;Archipelago:Clean;Christmas:Clean;IntensityMesh:Clean;PanoViewer:Clean;Q3Demo:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Archipelago:Make;Christmas:Make;IntensityMesh:Make;PanoViewer:Make;Q3Demo:Make"/>
+        <CallTarget Targets="Splitter:Make;Archipelago:Make;Christmas:Make;IntensityMesh:Make;PanoViewer:Make;Q3Demo:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

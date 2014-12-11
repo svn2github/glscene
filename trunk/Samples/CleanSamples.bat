@@ -1,5 +1,6 @@
 echo off
 del *.exe /s  
+del *.scr /s
 del *.dcu /s 
 del *.ddp /s
 del *.ppu /s
@@ -27,11 +28,11 @@ del *.cvsignore /s
 del *.identcache /s
 del *.otares /s
 del *.tvsconfig /s
+del *.db /s
 
 rem delete cpp builder files
 
 del *.hpp /s
-rem del *.obj /s 
 del *.#00 /s
 del *.pch /s
 del *.tds /s
@@ -49,10 +50,10 @@ echo             Don't delete some files
 echo ************************************************
 echo _
 
-
-rem del *.res /s 
-rem del *.ico /s - some applications have original icos
-rem del *.cfg /s  - animations
+del *.res /s
+rem del *.ico /s  - some projects have own icos
+rem del *.obj /s  - obj models and resources for lazarus
+rem del *.cfg /s  - there are quake's animations
 
 
 echo --------------------------------------------------------

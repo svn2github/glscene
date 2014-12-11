@@ -142,14 +142,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 224
+    Left = 376
     Top = 96
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencerProgress
-    Left = 40
-    Top = 96
+    Left = 112
+    Top = 32
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
@@ -163,6 +163,7 @@ object Form1: TForm1
         Material.Texture.Compression = tcStandard
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {00008042000080420000804200000000}
+        Texture2Name = 'detail'
       end
       item
         Name = 'water'
@@ -174,7 +175,7 @@ object Form1: TForm1
         Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
         Material.Texture.Disabled = False
-        Texture2Name = 'waterenv'
+        Texture2Name = 'water'
       end
       item
         Name = 'wake'
@@ -183,16 +184,18 @@ object Form1: TForm1
         Material.Texture.Image.PictureFileName = 'wake.bmp'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
+        Texture2Name = 'wake'
       end>
-    Left = 112
-    Top = 32
+    TexturePaths = '..\\Data'
+    Left = 40
+    Top = 96
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
-    HTFFileName = 'Islands.htf'
+    HTFFileName = 'Data\\Islands.htf'
     InfiniteWrap = False
     MaxPoolSize = 0
-    Left = 312
-    Top = 96
+    Left = 200
+    Top = 32
   end
   object BFSmall: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
@@ -200,34 +203,28 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    Left = 408
+    Left = 296
     Top = 96
   end
   object GLCustomHDS1: TGLCustomHDS
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 224
-    Top = 32
-  end
-  object GLMemoryViewer1: TGLMemoryViewer
-    Buffer.BackgroundColor = clBlack
-    Buffer.Lighting = False
-    Left = 312
-    Top = 32
+    Left = 200
+    Top = 96
   end
   object MLSailBoat: TGLMaterialLibrary
-    TexturePaths = 'sailboat'
+    TexturePaths = '..\\Data'
     Left = 112
     Top = 96
   end
   object BFLarge: TGLWindowsBitmapFont
-    Font.Charset = DEFAULT_CHARSET
+    Font.Charset = RUSSIAN_CHARSET
     Font.Color = clWhite
     Font.Height = -21
     Font.Name = 'Arial'
     Font.Style = []
-    Left = 408
+    Left = 296
     Top = 32
   end
 end

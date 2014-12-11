@@ -66,10 +66,8 @@ __published:	// IDE-managed Components
 	TGLHeightTileFileHDS *GLHeightTileFileHDS1;
 	TGLWindowsBitmapFont *BFSmall;
 	TGLCustomHDS *GLCustomHDS1;
-	TGLMemoryViewer *GLMemoryViewer1;
 	TGLMaterialLibrary *MLSailBoat;
 	TGLWindowsBitmapFont *BFLarge;
-	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencerProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall FormKeyPress(TObject *Sender, System::WideChar &Key);
@@ -79,6 +77,7 @@ __published:	// IDE-managed Components
 	void __fastcall DOWakeProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall DOWakeRender(TObject *Sender, TRenderContextInfo &rci);
 	void __fastcall TerrainRendererHeightDataPostRender(TRenderContextInfo &rci, TList *&HeightDatas);
+	void __fastcall FormCreate(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

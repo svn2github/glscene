@@ -8,7 +8,7 @@
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <ComCtrls.hpp>
-#include <GLFileJPEG.hpp>
+#include <JPEG.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
