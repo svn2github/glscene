@@ -57,7 +57,8 @@ contains
   FRTrackBarEdit in '..\..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
   FVectorEditor in '..\..\Source\FVectorEditor.pas' {VectorEditorForm},
   FPlugInManagerEditor in '..\..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
-  FShaderMemo in '..\..\Source\FShaderMemo.pas';
+  FShaderMemo in '..\..\Source\FShaderMemo.pas',
+  FInfo in '..\..\Source\FInfo.pas' {InfoForm};
 
 end.
 

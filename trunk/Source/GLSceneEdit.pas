@@ -80,7 +80,7 @@ uses
   ImgList,
   Dialogs,
   Menus,
-  Actions  /// - no such unit Actions in Delphi7, remove it
+  Actions
   ActnList,
   ToolWin,
   ExtCtrls,
@@ -96,7 +96,7 @@ uses
   GLViewer,
   GLSceneRegister,
   GLStrings,
-  Info,
+  FInfo,
   XCollection,
   GLCrossPlatform;
 

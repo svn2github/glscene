@@ -41,7 +41,6 @@ contains
   GLTexture in '..\..\Source\GLTexture.pas',
   GLScreen in '..\..\Source\GLScreen.pas',
   GLVectorGeometry in '..\..\Source\GLVectorGeometry.pas',
-  Info in '..\..\Source\Info.pas' {InfoForm},
   Utils3DS in '..\..\Source\Utils3DS.pas',
   File3DS in '..\..\Source\File3DS.pas',
   FileMD2 in '..\..\Source\FileMD2.pas',

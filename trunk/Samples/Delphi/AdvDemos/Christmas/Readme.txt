@@ -1,6 +1,5 @@
-GLScene Christmas 2002 "ScreenSaver".
-
-Won't save your screen from anything though ;)
+GLScene Christmas 2015 
+based on 2002 "ScreenSaver" by Eric Grange
 
 The scene is made up from a few meshes, some GLScene objects, several
 lens-flares and particle effects components, and a 2 text. BASS is used
@@ -14,15 +13,13 @@ the means to check... so if you have clues about any of them:
 - Music: unknown origin, was in a "royalty free" download package,
   playback via BASS (http://www.un4seen.com/music/)
 
-Source available from the GLScene Sourceforge (AdvDemos/Christmas).
-
-Eric Grange
-http://glscene.org
-
-GLScene Christmas 2015 "ScreenSaver".
 Customized using GLScene v.1.3 for Delphi & C++Builder 
 Adapted for Happy New Year with PopupMenu items. 
-Source available from the page:
+Sound library BASS 2.4.10 as bass.dll included.
+Copyright (c) 1999-2014 Un4seen Developments Ltd. All rights reserved.
+Check http://www.un4seen.com/music/ for any later bass.dll
+
+Updated Christmas source available from the GLScene Sourceforge site (AdvDemos) at
 http://sourceforge.net/projects/glscene
 
 GLS Team

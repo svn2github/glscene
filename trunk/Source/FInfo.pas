@@ -26,7 +26,7 @@
   <li>17/04/00 - EG - Creation of header, minor layout changes
   </ul></font>
 }
-unit Info;
+unit FInfo;
 
 interface
 
@@ -41,7 +41,7 @@ uses
   Forms, Controls, Buttons, StdCtrls, ComCtrls,
   ExtCtrls, Graphics, Menus, JPEG,
 {$ENDIF}
-  GLScene, Classes;
+  GLScene, Classes, GLWin32Viewer;
 
 type
 
@@ -55,7 +55,7 @@ type
     DepthLabel: TLabel;
     DoubleLabel: TLabel;
     EvalLabel: TLabel;
-    Image1: TImage;
+    Image: TImage;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
@@ -90,8 +90,8 @@ type
     Label9: TLabel;
     LightLabel: TLabel;
     ListLabel: TLabel;
-    Memo1: TMemo;
-    Contributors: TMemo;
+    MemoAbout: TMemo;
+    MemoContributors: TMemo;
     ModelLabel: TLabel;
     NameLabel: TLabel;
     OverlayLabel: TLabel;
@@ -99,25 +99,25 @@ type
     PixelLabel: TLabel;
     ProjLabel: TLabel;
     RendererLabel: TLabel;
-    ScrollBox1: TScrollBox;
-    TabSheet4: TTabSheet;
+    ScrollBoxInfo: TScrollBox;
+    TabSheetInformation: TTabSheet;
     StencilLabel: TLabel;
     StereoLabel: TLabel;
     SubLabel: TLabel;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
+    TabSheetAbout: TTabSheet;
+    TabSheetContributors: TTabSheet;
     TexSizeLabel: TLabel;
     TexStackLabel: TLabel;
     TexUnitsLabel: TLabel;
     UnderlayLabel: TLabel;
     VendorLabel: TLabel;
     VersionLabel: TLabel;
-    TabSheet5: TTabSheet;
-    Extensions: TListBox;
+    TabSheetExtensions: TTabSheet;
+    ListBoxExtensions: TListBox;
     PMWebLink: TPopupMenu;
     MIRegistryLink: TMenuItem;
     MIDelphi3D: TMenuItem;
-    TabSheet1: TTabSheet;
+    TabSheetGLScene: TTabSheet;
     CloseButton: TButton;
     VersionLbl: TLabel;
     ViewLabel: TLabel;
@@ -126,9 +126,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure ExtensionsDblClick(Sender: TObject);
-    procedure ExtensionsClick(Sender: TObject);
-    procedure ExtensionsKeyPress(Sender: TObject; var Key: Char);
+    procedure ListBoxExtensionsDblClick(Sender: TObject);
+    procedure ListBoxExtensionsClick(Sender: TObject);
+    procedure ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
     procedure FormShow(Sender: TObject);
     procedure MIDelphi3DClick(Sender: TObject);
     procedure WebsiteLblClick(Sender: TObject);
@@ -145,7 +145,7 @@ uses
   OpenGLTokens, OpenGLAdapter, GLContext, SysUtils, GLCrossPlatform;
 
 {$R *.dfm}
-{$R Info.res}
+{$R FInfo.res}
 
 // ShowInfoForm
 //
@@ -213,13 +213,13 @@ begin
         AccLabel.Caption := 'Generic Software Driver';
       VersionLabel.Caption := String(GL.GetString(GL_VERSION));
       ExtStr := String(GL.GetString(GL_EXTENSIONS));
-      Extensions.Clear;
+      ListBoxExtensions.Clear;
       while Length(ExtStr) > 0 do
       begin
         i := Pos(' ', ExtStr);
         if i = 0 then
           i := 255;
-        Extensions.Items.Add(Copy(ExtStr, 1, i - 1));
+        ListBoxExtensions.Items.Add(Copy(ExtStr, 1, i - 1));
         Delete(ExtStr, 1, i);
       end;
 
@@ -242,7 +242,7 @@ begin
           i := Pos(' ', ExtStr);
           if i = 0 then
             i := 255;
-          Extensions.Items.Add(Copy(ExtStr, 1, i - 1));
+          ListBoxExtensions.Items.Add(Copy(ExtStr, 1, i - 1));
           Delete(ExtStr, 1, i);
         end;
       end;
@@ -324,12 +324,12 @@ begin
   Release;
 end;
 
-procedure TInfoForm.ExtensionsDblClick(Sender: TObject);
+procedure TInfoForm.ListBoxExtensionsDblClick(Sender: TObject);
 var
   p: Integer;
   url, buf: String;
 begin
-  with Extensions do
+  with ListBoxExtensions do
   begin
     if ItemIndex < 0 then
       Exit;
@@ -351,7 +351,7 @@ procedure TInfoForm.MIDelphi3DClick(Sender: TObject);
 var
   url: String;
 begin
-  with Extensions do
+  with ListBoxExtensions do
   begin
     if ItemIndex < 0 then
       Exit;
@@ -361,24 +361,24 @@ begin
   ShowHTMLUrl(url);
 end;
 
-procedure TInfoForm.ExtensionsClick(Sender: TObject);
+procedure TInfoForm.ListBoxExtensionsClick(Sender: TObject);
 var
   extName: String;
 begin
-  if Extensions.ItemIndex < 0 then
-    Extensions.PopupMenu := nil
+  if ListBoxExtensions.ItemIndex < 0 then
+    ListBoxExtensions.PopupMenu := nil
   else
   begin
-    Extensions.PopupMenu := PMWebLink;
-    extName := Extensions.Items[Extensions.ItemIndex];
+    ListBoxExtensions.PopupMenu := PMWebLink;
+    extName := ListBoxExtensions.Items[ListBoxExtensions.ItemIndex];
     MIRegistryLink.Caption := 'View OpenGL Extension Registry for ' + extName;
     MIDelphi3D.Caption := 'View Delphi3D Hardware Registry for ' + extName;
   end;
 end;
 
-procedure TInfoForm.ExtensionsKeyPress(Sender: TObject; var Key: Char);
+procedure TInfoForm.ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
 begin
-  ExtensionsClick(Sender);
+  ListBoxExtensionsClick(Sender);
 end;
 
 procedure TInfoForm.FormShow(Sender: TObject);
@@ -396,10 +396,10 @@ begin
     // 'GLSceneContributors.txt';
 
     if FileExistsUTF8(ContributorsFileName) then
-    Contributors.Lines.LoadFromFile(UTF8ToSys(ContributorsFileName))
+    MemoContributors.Lines.LoadFromFile(UTF8ToSys(ContributorsFileName))
     else
-    Contributors.Lines.Text:='Cannot find contributors list.';
-    Contributors.Lines.Add( ContributorsFileName) }
+    MemoContributors.Lines.Text:='Cannot find contributors list.';
+    MemoContributors.Lines.Add( ContributorsFileName) }
 end;
 
 function TInfoForm.GetSceneVersion: string;
@@ -408,9 +408,9 @@ var
 begin
   FGLSceneRevision := Copy(GLSCENE_REVISION, 12, 4);
   FExePath := ExtractFilePath(ParamStr(0));
-  if FileExists(FExePath + 'GLSceneRevision') then 
+  if FileExists(FExePath + 'GLSceneRevision') then
   try
-    with TStringList.Create do 
+    with TStringList.Create do
     try
       LoadFromFile(FExePath + 'GLSceneRevision');
       if (Count >= 1) and (trim(Strings[0]) <> '') then

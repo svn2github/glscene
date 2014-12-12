@@ -11,7 +11,7 @@ uses
   GLSceneRegisterLCL, RegisterXCollection, GLObjectManager, 
   FLibMaterialPickerLCL, FMaterialEditorFormLCL, FRColorEditorLCL, 
   FRFaceEditorLCL, FRMaterialPreviewLCL, FRTextureEditLCL, FRTrackBarEditLCL, 
-  FVectorEditorLCL, InfoLCL, FGUILayoutEditor, LazarusPackageIntf;
+  FVectorEditorLCL, FInfoLCL, FGUILayoutEditor, LazarusPackageIntf;
 
 implementation
 

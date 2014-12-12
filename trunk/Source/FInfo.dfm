@@ -30,13 +30,13 @@ object InfoForm: TInfoForm
     Top = 0
     Width = 457
     Height = 341
-    ActivePage = TabSheet1
+    ActivePage = TabSheetGLScene
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    object TabSheet1: TTabSheet
+    object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
-      object Image1: TImage
+      object Image: TImage
         Left = 1
         Top = 2
         Width = 444
@@ -2724,7 +2724,7 @@ object InfoForm: TInfoForm
         Transparent = True
       end
     end
-    object TabSheet2: TTabSheet
+    object TabSheetAbout: TTabSheet
       Caption = 'About'
       object WebsiteLbl: TLabel
         Left = 57
@@ -2752,7 +2752,7 @@ object InfoForm: TInfoForm
         Color = clBtnFace
         ParentColor = False
       end
-      object Memo1: TMemo
+      object MemoAbout: TMemo
         Left = 0
         Top = 0
         Width = 449
@@ -2774,9 +2774,9 @@ object InfoForm: TInfoForm
         TabOrder = 0
       end
     end
-    object TabSheet3: TTabSheet
+    object TabSheetContributors: TTabSheet
       Caption = 'Contributors'
-      object Contributors: TMemo
+      object MemoContributors: TMemo
         Left = 0
         Top = 0
         Width = 449
@@ -2805,6 +2805,7 @@ object InfoForm: TInfoForm
           'Erick Schuitema'
           'fig'
           'filippo'
+          'Gabriel Corneanu'
           'J.Delauney'
           'Joen A. Joensen'
           'Joen Joensen'
@@ -2844,9 +2845,9 @@ object InfoForm: TInfoForm
         TabOrder = 0
       end
     end
-    object TabSheet4: TTabSheet
+    object TabSheetInformation: TTabSheet
       Caption = 'Information'
-      object ScrollBox1: TScrollBox
+      object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
         Width = 449
@@ -3566,10 +3567,10 @@ object InfoForm: TInfoForm
         end
       end
     end
-    object TabSheet5: TTabSheet
+    object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
-      object Extensions: TListBox
+      object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
         Width = 449
@@ -3588,9 +3589,9 @@ object InfoForm: TInfoForm
         ItemHeight = 14
         ParentFont = False
         TabOrder = 0
-        OnClick = ExtensionsClick
-        OnDblClick = ExtensionsDblClick
-        OnKeyPress = ExtensionsKeyPress
+        OnClick = ListBoxExtensionsClick
+        OnDblClick = ListBoxExtensionsDblClick
+        OnKeyPress = ListBoxExtensionsKeyPress
       end
     end
   end
@@ -3609,7 +3610,7 @@ object InfoForm: TInfoForm
     Top = 40
     object MIRegistryLink: TMenuItem
       Caption = 'MIRegistryLink'
-      OnClick = ExtensionsDblClick
+      OnClick = ListBoxExtensionsDblClick
     end
     object MIDelphi3D: TMenuItem
       Caption = 'MIDelphi3D'

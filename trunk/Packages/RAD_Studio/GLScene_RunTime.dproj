@@ -107,9 +107,6 @@
         <DCCReference Include="..\..\Source\GLTexture.pas"/>
         <DCCReference Include="..\..\Source\GLScreen.pas"/>
         <DCCReference Include="..\..\Source\GLVectorGeometry.pas"/>
-        <DCCReference Include="..\..\Source\Info.pas">
-            <Form>InfoForm</Form>
-        </DCCReference>
         <DCCReference Include="..\..\Source\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\File3DS.pas"/>
         <DCCReference Include="..\..\Source\FileMD2.pas"/>
