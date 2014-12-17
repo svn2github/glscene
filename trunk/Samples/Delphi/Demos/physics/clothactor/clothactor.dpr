@@ -15,7 +15,7 @@
    A dynamic octree is used here to give a little performace boost to
    the verlet testing.
 }
-program clothactor;
+program Clothactor;
 
 uses
   Forms,

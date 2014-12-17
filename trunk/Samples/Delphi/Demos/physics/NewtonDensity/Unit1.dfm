@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -182,20 +184,23 @@ object Form1: TForm1
         F83F1200000000}
       CubeSize = {000048420000803F00004842}
     end
-    object GLHUDText1: TGLHUDText
-      Position.Coordinates = {0000704100000243000000000000803F}
+    object HTWaterDensity: TGLHUDText
+      Position.Coordinates = {000070410000AA42000000000000803F}
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Water Density'
       Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
-    object GLHUDText2: TGLHUDText
-      Position.Coordinates = {0000704100003E43000000000000803F}
+    object HTLinearViscosity: TGLHUDText
+      Position.Coordinates = {0000704100000C43000000000000803F}
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Linear Viscosity'
       Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
     end
-    object GLHUDText3: TGLHUDText
-      Position.Coordinates = {0000704100007043000000000000803F}
+    object HTAngularViscosity: TGLHUDText
+      Position.Coordinates = {0000704100004343000000000000803F}
+      BitmapFont = GLWindowsBitmapFont1
       Text = 'Angular Viscosity'
       Rotation = 0.000000000000000000
       ModulateColor.Color = {0000000000000000000000000000803F}
@@ -229,5 +234,14 @@ object Form1: TForm1
     NewtonJoint = <>
     Left = 520
     Top = 16
+  end
+  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    Left = 412
+    Top = 152
   end
 end

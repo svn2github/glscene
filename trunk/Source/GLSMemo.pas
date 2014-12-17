@@ -20,9 +20,7 @@ uses
   VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
   VCL.StdCtrls, VCL.ExtCtrls
 {$ELSE}
-  Windows, Messages, SysUtils, Classes, Controls,
-  //UITypes,
-  Graphics,
+  Windows, Messages, SysUtils, Classes, Controls, Graphics,
   Forms, Dialogs, ClipBrd, StdCtrls, ExtCtrls
 {$ENDIF};
 
@@ -416,7 +414,7 @@ type
     FSelStartX, FSelStartY,
       FSelEndX, FSelEndY,
       FPrevSelX, FPrevSelY: integer;
-    FScrollBars: TScrollStyle;
+    FScrollBars: System.UITypes.TScrollStyle;
     FScrollBarWidth: integer;
     FGutter: TGLSMemoGutter;
     FGutterWidth: integer;
@@ -447,7 +445,7 @@ type
 
     procedure SetHiddenCaret(Value: Boolean);
 
-    procedure SetScrollBars(Value: TScrollStyle);
+    procedure SetScrollBars(Value: System.UITypes.TScrollStyle);
 
     procedure SetGutterWidth(Value: integer);
     procedure SetGutterColor(Value: TColor);

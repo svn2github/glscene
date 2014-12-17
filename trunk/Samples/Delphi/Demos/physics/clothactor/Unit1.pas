@@ -4,16 +4,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, Jpeg, OpenGL,
+  StdCtrls, ExtCtrls, Jpeg,
 
   //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
   GLShadowVolume,
 
-  GLKeyboard, OpenGLTokens, GLVectorGeometry, GLGeometryBB, GLVerletTypes,
-  GLSpacePartition, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLRenderContextInfo, GLState, GLContext, GLUtils;
+  GLKeyboard, OpenGL1x, OpenGLTokens, GLVectorGeometry, GLGeometryBB,
+  GLVerletTypes, GLSpacePartition, GLCrossPlatform, GLMaterial, GLBaseClasses,
+  GLRenderContextInfo, GLContext, GLUtils, GLCoordinates;
 
 type
   TForm1 = class(TForm)
@@ -144,7 +144,7 @@ begin
     Image.LoadFromFile('beigemarble.jpg');
     Disabled:=False;
   end;
-  GLPlane1.Position.Y:=-GLActor1.BoundingSphereRadius;
+  GLPlane1.Position.Y:=-GLActor1.BoundingSphereRadius*0.9;
 
   // Setting up the verlet world using the optional dynamic octree can
   // give good perfamnce increases.
@@ -247,6 +247,7 @@ procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextI
       glVertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
     glEnd;
   end;
+
 
   procedure RenderOctreeNode(Node : TSectorNode);
   var

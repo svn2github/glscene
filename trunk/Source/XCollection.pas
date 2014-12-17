@@ -30,9 +30,11 @@
 }
 unit XCollection;
 
-{ .$DEFINE DEBUG_XCOLLECTION }
+{.$DEFINE DEBUG_XCOLLECTION }  // on define the most apps will not work
 
 interface
+
+{$I GLScene.inc}
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
@@ -49,10 +51,7 @@ uses
   GLPersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
 
-{$I GLScene.inc}
-
 type
-
   TXCollection = class;
 
   EFilerException = class(Exception)
