@@ -116,7 +116,6 @@
         <DCCReference Include="..\..\Source\GLSceneVCLNGD.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
-        <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="GLScene_RunTime.dcp"/>
         <DCCReference Include="..\..\Source\GLNGDManager.pas"/>
         <DCCReference Include="..\..\Source\GLNewtonRegister.pas"/>
