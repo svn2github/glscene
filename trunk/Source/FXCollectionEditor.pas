@@ -27,7 +27,7 @@ uses
   System.Classes, System.Actions, VCL.Forms, VCL.ImgList, VCL.Controls,
   VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
 {$ELSE}
-  Classes, Forms, ImgList, Controls, ActnList,
+  Classes, Actions, Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
  DesignEditors, DesignIntf,
@@ -68,7 +68,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     FXCollection: TXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;

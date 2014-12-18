@@ -1,0 +1,109 @@
+object RColorEditor: TRColorEditor
+  Size.Width = 302.000000000000000000
+  Size.Height = 116.000000000000000000
+  Size.PlatformDefault = False
+  TabOrder = 0
+  object Panel: TPanel
+    Align = Client
+    Margins.Left = 3.000000000000000000
+    Margins.Top = 3.000000000000000000
+    Margins.Right = 3.000000000000000000
+    Margins.Bottom = 3.000000000000000000
+    Size.Width = 296.000000000000000000
+    Size.Height = 110.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object Edit1: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 1
+      Text = '0'
+      Position.X = 232.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 49.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Edit2: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 2
+      Text = '0'
+      Position.X = 232.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 49.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Edit3: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 3
+      Text = '0'
+      Position.X = 232.000000000000000000
+      Position.Y = 56.000000000000000000
+      Size.Width = 49.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Edit4: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 4
+      Text = '0'
+      Position.X = 232.000000000000000000
+      Position.Y = 80.000000000000000000
+      Size.Width = 49.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object ColorBox1: TColorBox
+      Color = claNull
+      Position.X = 128.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 89.000000000000000000
+      Size.Height = 89.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+    end
+    object Label1: TLabel
+      StyledSettings = [Family, Size]
+      Position.X = 8.000000000000000000
+      Position.Y = 8.000000000000000000
+      Size.Width = 81.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.FontColor = claRed
+      Text = 'Red'
+    end
+    object Label2: TLabel
+      StyledSettings = [Family, Size]
+      Position.X = 8.000000000000000000
+      Position.Y = 32.000000000000000000
+      Size.Width = 73.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.FontColor = claGreen
+      Text = 'Green'
+    end
+    object Label3: TLabel
+      StyledSettings = [Family, Size]
+      Position.X = 8.000000000000000000
+      Position.Y = 56.000000000000000000
+      Size.Width = 73.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      TextSettings.FontColor = claBlue
+      Text = 'Blue'
+    end
+    object Label4: TLabel
+      StyledSettings = [Family, Size, FontColor]
+      Position.X = 8.000000000000000000
+      Position.Y = 80.000000000000000000
+      Size.Width = 73.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Style = [fsBold]
+      Text = 'Alpha'
+    end
+  end
+end
