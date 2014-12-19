@@ -1,12 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRTrackBarEdit<p>
+{: FRTrackBarEditFMX<p>
 
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>10/08/14 - PW - Upgraded to support FireMonkey platform
+      <li>10/08/14 - PW - Upgraded to support FMX
+      <li>05/10/08 - DanB - Removed Kylix support
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+      <li>19/12/06 - DaStr - Fixed bug in SetValue, SetValueMin, SetValueMax when
+                             changing these values didn't change the Edit's Text
+      <li>03/07/04 - LR  - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -17,7 +22,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Edit;
+  FMX.Edit, FMX.Controls.Presentation;
 
 type
   TRTrackBarEdit = class(TFrame)

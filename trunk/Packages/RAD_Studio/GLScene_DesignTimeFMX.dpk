@@ -37,6 +37,7 @@ contains
   FRColorEditorFMX in '..\..\Source\FRColorEditorFMX.pas' {RColorEditor: TFrame},
   FRTrackBarEditFMX in '..\..\Source\FRTrackBarEditFMX.pas' {RTrackBarEdit: TFrame},
   FXCollectionEditorFMX in '..\..\Source\FXCollectionEditorFMX.pas' {XCollectionEditor},
-  FVectorEditorFMX in '..\..\Source\FVectorEditorFMX.pas' {VectorEditorForm};
+  FVectorEditorFMX in '..\..\Source\FVectorEditorFMX.pas' {VectorEditorForm},
+  FRTextureEditFMX in '..\..\Source\FRTextureEditFMX.pas' {RTextureEdit: TFrame};
 
 end.

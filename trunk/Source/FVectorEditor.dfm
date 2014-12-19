@@ -3,8 +3,8 @@ object VectorEditorForm: TVectorEditorForm
   Top = 108
   BorderStyle = bsDialog
   Caption = 'XYZ editor'
-  ClientHeight = 171
-  ClientWidth = 265
+  ClientHeight = 163
+  ClientWidth = 275
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,8 +14,8 @@ object VectorEditorForm: TVectorEditorForm
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 8
+  object LabelX: TLabel
+    Left = 16
     Top = 72
     Width = 39
     Height = 16
@@ -27,8 +27,8 @@ object VectorEditorForm: TVectorEditorForm
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Label2: TLabel
-    Left = 8
+  object LabelY: TLabel
+    Left = 16
     Top = 104
     Width = 38
     Height = 16
@@ -40,8 +40,8 @@ object VectorEditorForm: TVectorEditorForm
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Label3: TLabel
-    Left = 8
+  object LabelZ: TLabel
+    Left = 16
     Top = 136
     Width = 37
     Height = 16
@@ -54,7 +54,7 @@ object VectorEditorForm: TVectorEditorForm
     ParentFont = False
   end
   object IMx: TImage
-    Left = 152
+    Left = 160
     Top = 72
     Width = 16
     Height = 16
@@ -76,7 +76,7 @@ object VectorEditorForm: TVectorEditorForm
     Visible = False
   end
   object IMy: TImage
-    Left = 152
+    Left = 160
     Top = 104
     Width = 16
     Height = 16
@@ -98,7 +98,7 @@ object VectorEditorForm: TVectorEditorForm
     Visible = False
   end
   object IMz: TImage
-    Left = 152
+    Left = 160
     Top = 136
     Width = 16
     Height = 16
@@ -119,115 +119,105 @@ object VectorEditorForm: TVectorEditorForm
     Transparent = True
     Visible = False
   end
-  object SpeedButton1: TSpeedButton
-    Left = 8
+  object SBPlusX: TSpeedButton
+    Left = 11
     Top = 8
     Width = 33
     Height = 23
     Caption = '+ X'
-    Flat = True
     Transparent = False
-    OnClick = TBxClick
+    OnClick = SBPlusXClick
   end
-  object SBmX: TSpeedButton
-    Left = 8
-    Top = 32
+  object SBMinusX: TSpeedButton
+    Left = 11
+    Top = 33
     Width = 33
     Height = 23
     Caption = '- X'
-    Flat = True
     Transparent = False
-    OnClick = SBmXClick
+    OnClick = SBMinusXClick
   end
-  object SpeedButton3: TSpeedButton
-    Left = 42
+  object SBPlusY: TSpeedButton
+    Left = 45
     Top = 8
     Width = 33
     Height = 23
     Caption = '+ Y'
-    Flat = True
     Transparent = False
-    OnClick = TByClick
+    OnClick = SBPlusYClick
   end
-  object SBmY: TSpeedButton
-    Left = 42
-    Top = 32
+  object SBMinusY: TSpeedButton
+    Left = 45
+    Top = 33
     Width = 33
     Height = 23
     Caption = '- Y'
-    Flat = True
     Transparent = False
-    OnClick = SBmYClick
+    OnClick = SBMinusYClick
   end
-  object SpeedButton5: TSpeedButton
-    Left = 76
+  object SBPlusZ: TSpeedButton
+    Left = 84
     Top = 8
     Width = 33
     Height = 23
     Caption = '+ Z'
-    Flat = True
     Transparent = False
-    OnClick = TBzClick
+    OnClick = SBPlusZClick
   end
-  object SBmZ: TSpeedButton
-    Left = 76
+  object SBMinusZ: TSpeedButton
+    Left = 84
     Top = 32
     Width = 33
     Height = 23
     Caption = '- Z'
-    Flat = True
     Transparent = False
-    OnClick = SBmZClick
+    OnClick = SBMinusZClick
   end
-  object SpeedButton7: TSpeedButton
-    Left = 130
+  object SBNull: TSpeedButton
+    Left = 138
     Top = 8
     Width = 47
     Height = 23
     Caption = '0; 0; 0'
-    Flat = True
     Transparent = False
-    OnClick = TBnullClick
+    OnClick = SBNullClick
   end
   object SBUnit: TSpeedButton
-    Left = 130
+    Left = 138
     Top = 32
     Width = 47
     Height = 23
     Caption = '1; 1; 1'
-    Flat = True
     Transparent = False
     OnClick = SBUnitClick
   end
-  object SpeedButton9: TSpeedButton
-    Left = 194
+  object SBNormalize: TSpeedButton
+    Left = 202
     Top = 8
     Width = 63
     Height = 23
     Caption = 'Normalize'
-    Flat = True
     Transparent = False
-    OnClick = SpeedButton9Click
+    OnClick = SBNormalizeClick
   end
   object Bevel1: TBevel
-    Left = 8
+    Left = 16
     Top = 62
     Width = 249
     Height = 5
     Shape = bsTopLine
   end
   object SBInvert: TSpeedButton
-    Left = 194
+    Left = 202
     Top = 32
     Width = 63
     Height = 23
     Caption = 'Invert'
-    Flat = True
     Transparent = False
     OnClick = SBInvertClick
   end
   object EDx: TEdit
-    Left = 56
+    Left = 64
     Top = 71
     Width = 89
     Height = 21
@@ -236,7 +226,7 @@ object VectorEditorForm: TVectorEditorForm
     OnChange = EDxChange
   end
   object EDy: TEdit
-    Left = 56
+    Left = 64
     Top = 103
     Width = 89
     Height = 21
@@ -245,7 +235,7 @@ object VectorEditorForm: TVectorEditorForm
     OnChange = EDyChange
   end
   object EDz: TEdit
-    Left = 56
+    Left = 64
     Top = 135
     Width = 89
     Height = 21
@@ -254,7 +244,7 @@ object VectorEditorForm: TVectorEditorForm
     OnChange = EDzChange
   end
   object BBok: TBitBtn
-    Left = 184
+    Left = 192
     Top = 72
     Width = 75
     Height = 25
@@ -263,7 +253,7 @@ object VectorEditorForm: TVectorEditorForm
     TabOrder = 3
   end
   object BBcancel: TBitBtn
-    Left = 184
+    Left = 192
     Top = 104
     Width = 75
     Height = 25

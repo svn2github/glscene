@@ -1,3 +1,19 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : FVectorEditorFMX<p>
+
+  Editor for a vector.<p>
+
+  <b>History : </b><font size=-1><ul>
+  <li>19/12/14 - PW - Upgraded to support FMX
+  <li>05/10/08 - DanB - Removed Kylix support
+  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+  <li>03/07/04 - LR - Make change for Linux
+  <li>02/03/04 -  - Creation
+  </ul></font>
+}
+
 unit FVectorEditorFMX;
 
 interface

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // FRTextureEdit
 { : Egg<p>
 
@@ -6,13 +9,13 @@
   <b>Historique : </b><font size=-1><ul>
   <li>05/10/08 - DanB - Removed Kylix support
   <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-  to GLGraphics.pas (BugTracker ID = 1923844)
+                  to GLGraphics.pas (BugTracker ID = 1923844)
   <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
-  TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
-  now gets the correct variable as its owner (BugTracker ID = 1603743)
-  All comboboxes get their Items using RTTI
-  (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
+                 TRTextureEdit.CBImageClassChange - TGLTextureImageClass(tic).Create()
+                 now gets the correct variable as its owner (BugTracker ID = 1603743)
+                 All comboboxes get their Items using RTTI
+                (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
   <li>03/07/04 - LR  - Make change for Linux
   <li>17/03/00 - Egg - Added ImageAlpha combo
   <li>13/03/00 - Egg - Creation
@@ -27,7 +30,8 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.TypInfo, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+  System.Classes, System.TypInfo, VCL.Forms, VCL.StdCtrls, VCL.Buttons,
+  VCL.Controls,
 {$ELSE}
   Classes, TypInfo, Forms, StdCtrls, Buttons, Controls,
 {$ENDIF}
@@ -35,22 +39,22 @@ uses
 
 type
   TRTextureEdit = class(TFrame)
-    Label2: TLabel;
+    LabelImage: TLabel;
     SBEditImage: TSpeedButton;
     CBMagFilter: TComboBox;
-    Label3: TLabel;
-    Label4: TLabel;
+    LabelMagFilter: TLabel;
+    LabelMinFilter: TLabel;
     CBMinFilter: TComboBox;
     CBTextureMode: TComboBox;
-    Label1: TLabel;
-    Label5: TLabel;
+    LabelTextureMode: TLabel;
+    LabelTextureWrap: TLabel;
     CBTextureWrap: TComboBox;
     CBDisabled: TCheckBox;
     CBImageClass: TComboBox;
     CBImageAlpha: TComboBox;
-    Label6: TLabel;
+    LabelImageAlpha: TLabel;
     CBFilteringQuality: TComboBox;
-    Label7: TLabel;
+    LabelFilterQuality: TLabel;
     procedure CBMagFilterChange(Sender: TObject);
     procedure CBMinFilterChange(Sender: TObject);
     procedure CBTextureModeChange(Sender: TObject);
@@ -62,18 +66,18 @@ type
     procedure CBFilteringQualityChange(Sender: TObject);
 
   private
-    { Déclarations privées }
+    { Private declarations }
     FTexture: TGLTexture;
     FOnChange: TNotifyEvent;
-    changeing: Boolean;
+    Changeing: Boolean;
 
   protected
-    { Déclarations protégées }
+    { Protected declarations }
     procedure SetTexture(const val: TGLTexture);
     procedure DoOnChange; dynamic;
 
   public
-    { Déclarations publiques }
+    { Public declarations  }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -100,18 +104,18 @@ begin
   SetTexture(FTexture);
   SetGLTextureImageClassesToStrings(CBImageClass.Items);
 
-  for I := 0 to Integer( High(TGLTextureImageAlpha)) do
+  for I := 0 to Integer(High(TGLTextureImageAlpha)) do
     CBImageAlpha.Items.Add(GetEnumName(TypeInfo(TGLTextureImageAlpha), I));
-  for I := 0 to Integer( High(TGLMagFilter)) do
+  for I := 0 to Integer(High(TGLMagFilter)) do
     CBMagFilter.Items.Add(GetEnumName(TypeInfo(TGLMagFilter), I));
-  for I := 0 to Integer( High(TGLMinFilter)) do
+  for I := 0 to Integer(High(TGLMinFilter)) do
     CBMinFilter.Items.Add(GetEnumName(TypeInfo(TGLMinFilter), I));
-  for I := 0 to Integer( High(TGLTextureFilteringQuality)) do
+  for I := 0 to Integer(High(TGLTextureFilteringQuality)) do
     CBFilteringQuality.Items.Add
       (GetEnumName(TypeInfo(TGLTextureFilteringQuality), I));
-  for I := 0 to Integer( High(TGLTextureMode)) do
+  for I := 0 to Integer(High(TGLTextureMode)) do
     CBTextureMode.Items.Add(GetEnumName(TypeInfo(TGLTextureMode), I));
-  for I := 0 to Integer( High(TGLTextureWrap)) do
+  for I := 0 to Integer(High(TGLTextureWrap)) do
     CBTextureWrap.Items.Add(GetEnumName(TypeInfo(TGLTextureWrap), I));
 end;
 
@@ -140,7 +144,7 @@ begin
     CBTextureWrap.ItemIndex := Integer(FTexture.TextureWrap);
     CBDisabled.Checked := FTexture.Disabled;
   finally
-    changeing := False;
+    Changeing := False;
     DoOnChange;
   end;
 end;
@@ -149,7 +153,7 @@ end;
 //
 procedure TRTextureEdit.DoOnChange;
 begin
-  if (not changeing) and Assigned(FOnChange) then
+  if (not Changeing) and Assigned(FOnChange) then
     OnChange(Self);
 end;
 
@@ -232,7 +236,8 @@ end;
 
 procedure TRTextureEdit.CBFilteringQualityChange(Sender: TObject);
 begin
-  FTexture.FilteringQuality := TGLTextureFilteringQuality(CBFilteringQuality.ItemIndex);
+  FTexture.FilteringQuality := TGLTextureFilteringQuality
+    (CBFilteringQuality.ItemIndex);
   DoOnChange;
 end;
 
