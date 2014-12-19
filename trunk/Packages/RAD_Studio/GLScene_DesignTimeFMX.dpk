@@ -36,6 +36,7 @@ requires
 contains
   FRColorEditorFMX in '..\..\Source\FRColorEditorFMX.pas' {RColorEditor: TFrame},
   FRTrackBarEditFMX in '..\..\Source\FRTrackBarEditFMX.pas' {RTrackBarEdit: TFrame},
-  FXCollectionEditorFMX in '..\..\Source\FXCollectionEditorFMX.pas' {XCollectionEditor};
+  FXCollectionEditorFMX in '..\..\Source\FXCollectionEditorFMX.pas' {XCollectionEditor},
+  FVectorEditorFMX in '..\..\Source\FVectorEditorFMX.pas' {VectorEditorForm};
 
 end.
