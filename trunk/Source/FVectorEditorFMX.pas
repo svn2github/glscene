@@ -48,6 +48,8 @@ type
     ImX: TImage;
     ImY: TImage;
     ImZ: TImage;
+    ImageOK: TImage;
+    ImageCancel: TImage;
     procedure SBPlusXClick(Sender: TObject);
     procedure SBPlusYClick(Sender: TObject);
     procedure SBPlusZClick(Sender: TObject);
