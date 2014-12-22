@@ -138,7 +138,7 @@ object RTextureEdit: TRTextureEdit
     Size.Width = 25.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
-    StyleLookup = 'ellipseseditbutton'
+    StyleLookup = 'cornerbuttonstyle'
     Text = '...'
     OnClick = SBEditImageClick
   end

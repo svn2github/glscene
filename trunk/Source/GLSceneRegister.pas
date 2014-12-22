@@ -471,18 +471,24 @@ function ObjectManager: TObjectManager;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 uses
-  FLibMaterialPicker,
   FGUILayoutEditor,
+//  FGUISkinEditor,
+  FLibMaterialPicker,
   FMaterialEditorForm,
+//  FRColorEditor,
+  FRFaceEditor,
+  FRMaterialPreview,
+  FRTextureEdit,
+  FRTrackBarEdit,
   FShaderMemo,
   FShaderUniformEditor,
   FVectorEditor,
+  FXCollectionEditor,
   GLAnimatedSprite,
   GLApplicationFileIO,
   GLAsmShader,

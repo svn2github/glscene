@@ -26,16 +26,20 @@ object InfoForm: TInfoForm
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl: TPageControl
-    Left = 3
+    Left = 0
     Top = 0
-    Width = 457
+    Width = 460
     Height = 341
     ActivePage = TabSheetGLScene
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Align = alTop
     TabOrder = 0
     object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Image: TImage
         Left = 1
         Top = 2
@@ -2726,6 +2730,10 @@ object InfoForm: TInfoForm
     end
     object TabSheetAbout: TTabSheet
       Caption = 'About'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 449
+      ExplicitHeight = 0
       object WebsiteLbl: TLabel
         Left = 57
         Top = 274
@@ -2755,7 +2763,7 @@ object InfoForm: TInfoForm
       object MemoAbout: TMemo
         Left = 0
         Top = 0
-        Width = 449
+        Width = 452
         Height = 259
         Align = alTop
         Lines.Strings = (
@@ -2776,10 +2784,14 @@ object InfoForm: TInfoForm
     end
     object TabSheetContributors: TTabSheet
       Caption = 'Contributors'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 449
+      ExplicitHeight = 0
       object MemoContributors: TMemo
         Left = 0
         Top = 0
-        Width = 449
+        Width = 452
         Height = 313
         Align = alClient
         Alignment = taCenter
@@ -2847,14 +2859,19 @@ object InfoForm: TInfoForm
     end
     object TabSheetInformation: TTabSheet
       Caption = 'Information'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 449
+      ExplicitHeight = 0
       object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
-        Width = 449
+        Width = 452
         Height = 313
         Align = alClient
         BorderStyle = bsNone
         TabOrder = 0
+        ExplicitWidth = 449
         object Label1: TLabel
           Left = 10
           Top = 29
@@ -3570,10 +3587,14 @@ object InfoForm: TInfoForm
     object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 449
+      ExplicitHeight = 0
       object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
-        Width = 449
+        Width = 452
         Height = 313
         Hint = 
           'Double-click and extension to go to its OpenGL Extension registr' +

@@ -116,7 +116,7 @@ object MaterialEditorForm: TMaterialEditorForm
         DesignSize = (
           305
           186)
-        inherited Label2: TLabel
+        inherited LabelImage: TLabel
           Width = 29
           ExplicitWidth = 29
         end
@@ -124,27 +124,27 @@ object MaterialEditorForm: TMaterialEditorForm
           Left = 287
           ExplicitLeft = 287
         end
-        inherited Label3: TLabel
+        inherited LabelMagFilter: TLabel
           Width = 43
           ExplicitWidth = 43
         end
-        inherited Label4: TLabel
+        inherited LabelMinFilter: TLabel
           Width = 39
           ExplicitWidth = 39
         end
-        inherited Label1: TLabel
+        inherited LabelTextureMode: TLabel
           Width = 66
           ExplicitWidth = 66
         end
-        inherited Label5: TLabel
+        inherited LabelTextureWrap: TLabel
           Width = 65
           ExplicitWidth = 65
         end
-        inherited Label6: TLabel
+        inherited LabelImageAlpha: TLabel
           Width = 56
           ExplicitWidth = 56
         end
-        inherited Label7: TLabel
+        inherited LabelFilterQuality: TLabel
           Width = 71
           ExplicitWidth = 71
         end

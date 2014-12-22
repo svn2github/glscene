@@ -27,8 +27,11 @@ uses
 {$ELSE}
   Windows, Classes, Forms, ComCtrls, StdCtrls, ImgList, Controls, Graphics,
 {$ENDIF}
-  FRTrackBarEdit, FRColorEditor,
-  GLTexture, GLMaterial, GLState;
+  FRTrackBarEdit,
+  FRColorEditor,
+  GLTexture,
+  GLMaterial,
+  GLState;
 
 type
   TRFaceEditor = class(TFrame)
@@ -37,10 +40,10 @@ type
     TSDiffuse: TTabSheet;
     TSEmission: TTabSheet;
     TSSpecular: TTabSheet;
-    CEAmbiant: TRColorEditor;
     Label1: TLabel;
     TBEShininess: TRTrackBarEdit;
     ImageList: TImageList;
+    CEAmbiant: TRColorEditor;
     CEDiffuse: TRColorEditor;
     CEEmission: TRColorEditor;
     CESpecular: TRColorEditor;

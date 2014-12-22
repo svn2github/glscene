@@ -61,12 +61,12 @@ object LibMaterialPicker: TLibMaterialPicker
     Left = 157
     Top = 25
     Width = 202
-    Height = 222
+    Height = 221
     AutoSize = True
     TabOrder = 3
     ExplicitLeft = 157
     ExplicitTop = 25
-    ExplicitHeight = 222
+    ExplicitHeight = 221
     inherited GLSceneViewer: TGLSceneViewer
       Top = 19
       ExplicitTop = 19

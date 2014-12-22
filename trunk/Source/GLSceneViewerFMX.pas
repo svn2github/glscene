@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneViewer<p>
+{: GLSceneViewerFMX<p>
 
-   Win32 specific Scene viewer.<p>
+  GLScene cross-platform viewer.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>22/12/14 - PW - Renamed "GLWin32Viewer.pas" to "GLSceneViewer.pas"
+      <li>22/12/14 - PW - Upgraded  "GLWin32Viewer.pas" to "GLSceneViewerFMX.pas"
       <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
       <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
       <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
@@ -35,25 +35,30 @@
      <li>12/12/01 - EG - Creation (split from GLScene.pas)
  </ul></font>
 }
-unit GLWin32Viewer;
+unit GLSceneViewerFMX;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  System.Types, VCL.Graphics, VCL.Forms, VCL.Controls,
-{$ELSE}
-  Windows, Messages, Classes,  SysUtils, Types,
-  Graphics, Forms, Controls,
-{$ENDIF}
+  System.Types, FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
 
   // GLScene
-  GLScene, GLWin32Context,  GLContext;
+  GLSceneFMX, GLSceneContextFMX,  GLContextFMX;
 
 type
+  TCreateParams = record
+    Caption: PChar;
+    Style: DWORD;
+    ExStyle: DWORD;
+    X, Y: Integer;
+    Width, Height: Integer;
+    WndParent: HWnd;
+    Param: Pointer;
+    WindowClass: TWndClass;
+    WinClassName: array[0..63] of Char;
+  end;
+
   TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
 
   // TGLSceneViewer
@@ -67,7 +72,7 @@ type
      borderless form).<p>
      This viewer also allows to define rendering options such a fog, face culling,
      depth testing, etc. and can take care of framerate calculation.<p> }
-  TGLSceneViewer = class(TWinControl)
+  TGLSceneViewer = class(TControl)
   private
     { Private Declarations }
     FBuffer: TGLSceneBuffer;
@@ -85,11 +90,11 @@ type
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMGetDglCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-{$IFDEF GLS_DELPHI_XE_UP}
     procedure WMTouch(var Message: TMessage); message WM_TOUCH;
-{$ENDIF}
-    procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+    { TODO -oPW -cMessages : Convert message CM_MOUSEENTER  to FMX }
+    procedure CMMouseEnter(var msg: TMessage);
+    { TODO -oPW -cMessages :  Convert message CM_MOUSELEAVE;  to FMX }
+    procedure CMMouseLeave(var msg: TMessage);
 
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
@@ -107,15 +112,15 @@ type
     function GetCamera: TGLCamera;
     procedure SetBuffer(const val: TGLSceneBuffer);
 
-    procedure CreateParams(var Params: TCreateParams); override;
-    procedure CreateWnd; override;
-    procedure DestroyWnd; override;
+    procedure CreateParams(var Params: TCreateParams); /// Vcl - override;
+    procedure CreateWnd; /// Vcl - override;
+    procedure DestroyWnd; /// Vcl - override;
     procedure Loaded; override;
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
 
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Integer); /// Vcl - override;
 
   public
     { Public Declarations }
@@ -184,10 +189,10 @@ type
 
     property Align;
     property Anchors;
-    property DragCursor;
+///    property DragCursor; - Vcl
     property DragMode;
     property Enabled;
-    property HelpContext;
+///    property HelpContext; - Vcl
     property Hint;
     property PopupMenu;
     property Visible;
@@ -196,55 +201,72 @@ type
     property OnDblClick;
     property OnDragDrop;
     property OnDragOver;
-    property OnStartDrag;
-    property OnEndDrag;
+///    property OnStartDrag; - Vcl
+///    property OnEndDrag; - Vcl
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
 
     property OnMouseWheel;
-    property OnMouseWheelDown;
-    property OnMouseWheelUp;
+///    property OnMouseWheelDown; - Vcl
+///    property OnMouseWheelUp; - Vcl
 
     property OnKeyDown;
     property OnKeyUp;
 
-    property OnContextPopup;
+///    property OnContextPopup; - Vcl
     property TabStop;
     property TabOrder;
     property OnEnter;
     property OnExit;
 
-{$IFDEF GLS_DELPHI_2010_UP}
     property OnGesture;
     property Touch;
-{$ENDIF}
-
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+procedure SetupVSync(const AVSyncMode : TVSyncMode);
+
+var
+ Handle: HWND;
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses
-  GLViewer;
+// ------------------
+// ------------------ TGLSceneViewerFMX ------------------
+// ------------------
 
-// ------------------
-// ------------------ TGLSceneViewer ------------------
-// ------------------
+procedure SetupVSync(const AVSyncMode : TVSyncMode);
+var
+  I: Integer;
+begin
+  if GL.W_EXT_swap_control then
+  begin
+    I := GL.WGetSwapIntervalEXT;
+    case AVSyncMode of
+      vsmSync  : if I <> 1 then GL.WSwapIntervalEXT(1);
+      vsmNoSync: if I <> 0 then GL.WSwapIntervalEXT(0);
+    else
+       Assert(False);
+    end;
+  end;
+end;
 
 // Create
 //
-
 constructor TGLSceneViewer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  { TODO -oPW -cStyles : ContrilStyle in FMX }
+(*  - todo Vcl styles convert to FMX styles
   ControlStyle := [csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
   if csDesigning in ComponentState then
     ControlStyle := ControlStyle + [csFramed];
+*)
   Width := 100;
   Height := 100;
   FVSync := vsmNoSync;
@@ -256,7 +278,6 @@ end;
 
 // Destroy
 //
-
 destructor TGLSceneViewer.Destroy;
 begin
   FBuffer.Free;
@@ -266,7 +287,6 @@ end;
 
 // Notification
 //
-
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
   if (Operation = opRemove) and (FBuffer <> nil) then
@@ -287,14 +307,11 @@ end;
 
 procedure TGLSceneViewer.RegisterTouch;
 begin
-{$IFDEF GLS_DELPHI_2010_UP}
-  RegisterTouchWindow(Handle, 0);
-{$ENDIF}
+  /// RegisterTouchWindow(Handle, 0); - Vcl Handle
 end;
 
 // SetBeforeRender
 //
-
 procedure TGLSceneViewer.SetBeforeRender(const val: TNotifyEvent);
 begin
   FBuffer.BeforeRender := val;
@@ -302,7 +319,6 @@ end;
 
 // GetBeforeRender
 //
-
 function TGLSceneViewer.GetBeforeRender: TNotifyEvent;
 begin
   Result := FBuffer.BeforeRender;
@@ -310,7 +326,6 @@ end;
 
 // SetPostRender
 //
-
 procedure TGLSceneViewer.SetPostRender(const val: TNotifyEvent);
 begin
   FBuffer.PostRender := val;
@@ -318,14 +333,11 @@ end;
 
 procedure TGLSceneViewer.UnregisterTouch;
 begin
-{$IFDEF GLS_DELPHI_2010_UP}
-  UnregisterTouchWindow(Handle);
-{$ENDIF}
+///  UnregisterTouchWindow(Handle); - Vcl Handle
 end;
 
 // GetPostRender
 //
-
 function TGLSceneViewer.GetPostRender: TNotifyEvent;
 begin
   Result := FBuffer.PostRender;
@@ -333,7 +345,6 @@ end;
 
 // SetAfterRender
 //
-
 procedure TGLSceneViewer.SetAfterRender(const val: TNotifyEvent);
 begin
   FBuffer.AfterRender := val;
@@ -341,7 +352,6 @@ end;
 
 // GetAfterRender
 //
-
 function TGLSceneViewer.GetAfterRender: TNotifyEvent;
 begin
   Result := FBuffer.AfterRender;
@@ -349,7 +359,6 @@ end;
 
 // SetCamera
 //
-
 procedure TGLSceneViewer.SetCamera(const val: TGLCamera);
 begin
   FBuffer.Camera := val;
@@ -357,7 +366,6 @@ end;
 
 // GetCamera
 //
-
 function TGLSceneViewer.GetCamera: TGLCamera;
 begin
   Result := FBuffer.Camera;
@@ -365,7 +373,6 @@ end;
 
 // SetBuffer
 //
-
 procedure TGLSceneViewer.SetBuffer(const val: TGLSceneBuffer);
 begin
   FBuffer.Assign(val);
@@ -376,7 +383,7 @@ end;
 
 procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
 begin
-  inherited CreateParams(Params);
+  inherited;  /// Vcl -  inherited CreateParams(Params);
   with Params do
   begin
     Style := Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
@@ -386,25 +393,24 @@ end;
 
 // CreateWnd
 //
-
 procedure TGLSceneViewer.CreateWnd;
 begin
-  inherited CreateWnd;
+  inherited;  /// Vcl -  inherited CreateWnd;
   // initialize and activate the OpenGL rendering context
   // need to do this only once per window creation as we have a private DC
-  FBuffer.Resize(0, 0, Self.Width, Self.Height);
+  FBuffer.Resize(0, 0, Round(Self.Width), Round(Self.Height));
   FOwnDC := GetDC(Handle);
   FBuffer.CreateRC(FOwnDC, False);
 end;
 
 // DestroyWnd
 //
-
 procedure TGLSceneViewer.DestroyWnd;
 begin
   FBuffer.DestroyRC;
   if FOwnDC <> 0 then
   begin
+
     ReleaseDC(Handle, FOwnDC);
     FOwnDC := 0;
   end;
@@ -413,7 +419,6 @@ end;
 
 // WMEraseBkgnd
 //
-
 procedure TGLSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
 begin
   if IsRenderingContextAvailable then
@@ -425,21 +430,20 @@ end;
 
 // WMSize
 //
-
 procedure TGLSceneViewer.WMSize(var Message: TWMSize);
 begin
   inherited;
   FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
-{$IFDEF GLS_DELPHI_XE_UP}
 procedure TGLSceneViewer.WMTouch(var Message: TMessage);
 
   function TouchPointToPoint(const TouchPoint: TTouchInput): TPoint;
   begin
     Result := Point(TOUCH_COORD_TO_PIXEL(TouchPoint.X), TOUCH_COORD_TO_PIXEL(TouchPoint.Y));
     PhysicalToLogicalPoint(Handle, Result);
-    Result:=ScreenToClient(Result);
+    { TODO -oPW -cIncompatibility : Incompatible Handle and Result in FMX }
+    ///Result:=ScreenToClient(Result);
   end;
 
 var
@@ -486,23 +490,22 @@ begin
       inherited;
   end;
 end;
-{$ENDIF}
 
 // WMPaint
 //
-
 procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
 var
   PS: TPaintStruct;
   p: TPoint;
 begin
-  p := ClientToScreen(Point(0, 0));
+  { TODO -oPW -cUnworkable : FMX.Forms.IFMXWindowService.ClientToScreen in FMX }
+///  p := ClientToScreen(Point(0, 0));
   if (FLastScreenPos.X <> p.X) or (FLastScreenPos.Y <> p.Y) then
   begin
     // Workaround for MS OpenGL "black borders" bug
     if FBuffer.RCInstantiated then
-      PostMessage(Handle, WM_SIZE, SIZE_RESTORED,
-        Width + (Height shl 16));
+     { TODO -oPW -cUnworkable : Not applicable in FMX }
+///      PostMessage(Handle, WM_SIZE, SIZE_RESTORED, Width + (Height shl 16));
     FLastScreenPos := p;
   end;
   BeginPaint(Handle, PS);
@@ -518,7 +521,6 @@ end;
 
 // WMGetDglCode
 //
-
 procedure TGLSceneViewer.WMGetDglCode(var Message: TMessage);
 begin
   Message.Result := Message.Result or DLGC_WANTARROWS;
@@ -526,7 +528,6 @@ end;
 
 // WMDestroy
 //
-
 procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
 begin
   if Assigned(FBuffer) then
@@ -543,7 +544,6 @@ end;
 
 // CMMouseEnter
 //
-
 procedure TGLSceneViewer.CMMouseEnter(var msg: TMessage);
 begin
   inherited;
@@ -565,18 +565,16 @@ end;
 
 // Loaded
 //
-
 procedure TGLSceneViewer.Loaded;
 begin
   inherited Loaded;
   // initiate window creation
-
-  HandleNeeded;
+  { TODO -oPW -cUnworkable : HandleNeeded not found in FMX.Controls }
+  ///HandleNeeded;
 end;
 
 // DoBeforeRender
 //
-
 procedure TGLSceneViewer.DoBeforeRender(Sender: TObject);
 begin
   SetupVSync(VSync);
@@ -584,17 +582,15 @@ end;
 
 // DoBufferChange
 //
-
 procedure TGLSceneViewer.DoBufferChange(Sender: TObject);
 begin
   if (not Buffer.Rendering) and (not Buffer.Freezed) then
   { TODO -oPW -cUnworkable : Invalidate not found in FMX.Controls }
-    Invalidate;
+  ///  Invalidate;
 end;
 
 // DoBufferStructuralChange
 //
-
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender: TObject);
 begin
   RecreateWnd;
@@ -602,14 +598,13 @@ end;
 
 procedure TGLSceneViewer.MouseMove(Shift: TShiftState; X, Y: Integer);
 begin
-  inherited;
-  if csDesignInteractive in ControlStyle then
-    FBuffer.NotifyMouseMove(Shift, X, Y);
+   { TODO -oPW -cIncompatibility : not found in FMX.Controls }
+///  inherited;
+///  if csDesignInteractive in ControlStyle then FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
 // LastFrameTime
 //
-
 function TGLSceneViewer.LastFrameTime: Single;
 begin
   Result := FBuffer.LastFrameTime;
@@ -617,7 +612,6 @@ end;
 
 // FramesPerSecond
 //
-
 function TGLSceneViewer.FramesPerSecond: Single;
 begin
   Result := FBuffer.FramesPerSecond;
@@ -625,7 +619,6 @@ end;
 
 // FramesPerSecondText
 //
-
 function TGLSceneViewer.FramesPerSecondText(decimals: Integer = 1): string;
 begin
   Result := Format('%.*f FPS', [decimals, FBuffer.FramesPerSecond]);
@@ -633,7 +626,6 @@ end;
 
 // ResetPerformanceMonitor
 //
-
 procedure TGLSceneViewer.ResetPerformanceMonitor;
 begin
   FBuffer.ResetPerformanceMonitor;
@@ -641,21 +633,19 @@ end;
 
 // CreateSnapShotBitmap
 //
-
 function TGLSceneViewer.CreateSnapShotBitmap: TBitmap;
 begin
   Result := TBitmap.Create;
-  Result.PixelFormat := pf24bit;
-  Result.Width := Width;
-  Result.Height := Height;
-
-  BitBlt(Result.Canvas.Handle, 0, 0, Width, Height,
-    RenderDC, 0, 0, SRCCOPY);
+  { TODO -oPW -cIncompatibility : Find analog of pf24bit in FMX }
+///  Result.PixelFormat := pf24bit;
+  Result.Width := Round(Width);
+  Result.Height := Round(Height);
+  { TODO -oPW -cUnworkable : Handle not found in FMX }
+///  BitBlt(Result.Canvas.Handle, 0, 0, Width, Height, RenderDC, 0, 0, SRCCOPY);
 end;
 
 // GetFieldOfView
 //
-
 function TGLSceneViewer.GetFieldOfView: single;
 begin
   if not Assigned(Camera) then
@@ -670,7 +660,6 @@ end;
 
 // GetIsRenderingContextAvailable
 //
-
 function TGLSceneViewer.GetIsRenderingContextAvailable: Boolean;
 begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
@@ -678,7 +667,6 @@ end;
 
 // SetFieldOfView
 //
-
 procedure TGLSceneViewer.SetFieldOfView(const Value: single);
 begin
   if Assigned(Camera) then
