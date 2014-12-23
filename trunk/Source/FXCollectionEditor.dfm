@@ -95,7 +95,7 @@ object XCollectionEditor: TXCollectionEditor
   object PMListView: TPopupMenu
     Images = ImageList
     OnPopup = PMListViewPopup
-    Left = 16
+    Left = 24
     Top = 64
     object MIAdd: TMenuItem
       Caption = 'Add...'
@@ -119,7 +119,7 @@ object XCollectionEditor: TXCollectionEditor
   end
   object ActionList: TActionList
     Images = ImageList
-    Left = 88
+    Left = 64
     Top = 64
     object ACRemove: TAction
       Caption = 'Remove item'
@@ -141,10 +141,10 @@ object XCollectionEditor: TXCollectionEditor
     end
   end
   object ImageList: TImageList
-    Left = 168
+    Left = 104
     Top = 64
     Bitmap = {
-      494C010104000900200010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101040009001C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -417,7 +417,7 @@ object XCollectionEditor: TXCollectionEditor
   end
   object PMToolBar: TPopupMenu
     OnPopup = PMToolBarPopup
-    Left = 16
-    Top = 128
+    Left = 24
+    Top = 104
   end
 end

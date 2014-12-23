@@ -20,7 +20,7 @@ uses
   Graphics,
   Classes, Buttons, TypInfo, FRTextureEditLCL,
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLTeapot,
-  GLGeomObjects, GLColor, GLSceneViewerLCL, GLCoordinates,
+  GLGeomObjects, GLColor, GLLCLViewer, GLCoordinates,
   GLCrossPlatform, GLMaterial, GLState,
   LResources;
 

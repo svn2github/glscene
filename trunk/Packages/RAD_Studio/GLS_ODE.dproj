@@ -82,7 +82,7 @@
     </PropertyGroup>
     <Import Project="CBOutput.optset" Condition="'$(Base_Win32)'!='' And Exists('CBOutput.optset')"/>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>rtl;vcl;GLScene_RunTime;GLSS_BASS;VclSmp;GLCg_RunTime;GLSS_FMOD;GLSS_OpenAL;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;GLScene_RunTime;GLSS_BASS;VclSmp;GLCg_RunTime;GLSS_FMOD;GLSS_OpenAL;GLS_Computing_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <CfgDependentOn>CBOutput.optset</CfgDependentOn>
     </PropertyGroup>
@@ -146,6 +146,7 @@
                     <Source Name="MainSource">GLS_ODE.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLSS_OpenAL.bpl">GLScene - OpenAL Manager</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

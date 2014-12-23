@@ -1,4 +1,4 @@
-object Layouts_Form: TLayouts_Form
+object Layouts_form: TLayouts_form
   Left = 208
   Top = 187
   BorderIcons = [biSystemMenu]
@@ -28,7 +28,7 @@ object Layouts_Form: TLayouts_Form
     DesignSize = (
       600
       41)
-    object X_Label: TLabel
+    object x_label: TLabel
       Left = 415
       Top = 9
       Width = 13
@@ -38,7 +38,7 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object Y_Label: TLabel
+    object y_label: TLabel
       Left = 415
       Top = 25
       Width = 13
@@ -48,7 +48,7 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object Open_Image_Button: TBitBtn
+    object open_image_button: TBitBtn
       Left = 8
       Top = 10
       Width = 81
@@ -98,9 +98,9 @@ object Layouts_Form: TLayouts_Form
         45453B1A1A343A2D0A131326454545454545454342403F3A0B13132626262624
         232120171612120E0D1313131313131313131313131313131313}
       TabOrder = 0
-      OnClick = Open_Image_ButtonClick
+      OnClick = open_image_buttonClick
     end
-    object Open_Button: TBitBtn
+    object open_button: TBitBtn
       Left = 95
       Top = 10
       Width = 89
@@ -134,9 +134,9 @@ object Layouts_Form: TLayouts_Form
         84C6AA940000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
         00FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF}
       TabOrder = 1
-      OnClick = Open_ButtonClick
+      OnClick = open_buttonClick
     end
-    object Save_Button: TBitBtn
+    object save_button: TBitBtn
       Left = 191
       Top = 10
       Width = 89
@@ -170,11 +170,11 @@ object Layouts_Form: TLayouts_Form
         FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
         00FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF}
       TabOrder = 2
-      OnClick = Save_ButtonClick
+      OnClick = save_buttonClick
     end
-    object BitBtnZoomIn: TBitBtn
+    object BitBtn4: TBitBtn
       Tag = 1
-      Left = 506
+      Left = 488
       Top = 10
       Width = 25
       Height = 25
@@ -207,11 +207,11 @@ object Layouts_Form: TLayouts_Form
         9C0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
         00FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF}
       TabOrder = 3
-      OnClick = BitBtnZoomInClick
+      OnClick = BitBtn4Click
     end
-    object BitBtnZoomOut: TBitBtn
+    object BitBtn5: TBitBtn
       Tag = -1
-      Left = 537
+      Left = 520
       Top = 10
       Width = 25
       Height = 25
@@ -244,9 +244,9 @@ object Layouts_Form: TLayouts_Form
         8CBDBABD0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
         00FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF}
       TabOrder = 4
-      OnClick = BitBtnZoomInClick
+      OnClick = BitBtn4Click
     end
-    object BitBtnShow: TBitBtn
+    object BitBtn6: TBitBtn
       Left = 568
       Top = 10
       Width = 25
@@ -296,7 +296,7 @@ object Layouts_Form: TLayouts_Form
         1A451B1B1B1B1B1B1B1B1B2A41264243491B1B1B1B1B1B1B1B1B1B1B2A191B1B
         1B1B1B1B1B1B1B1B1B1B1B1B1B271B1B1B1B1B1B1B1B1B1B1B1B}
       TabOrder = 5
-      OnClick = BitBtnShowClick
+      OnClick = BitBtn6Click
     end
     object BitBtn1: TBitBtn
       Left = 286
@@ -356,7 +356,7 @@ object Layouts_Form: TLayouts_Form
     Height = 378
     Align = alLeft
     TabOrder = 1
-    object LabelX: TLabel
+    object Label1: TLabel
       Left = 8
       Top = 291
       Width = 10
@@ -365,7 +365,7 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object LabelY: TLabel
+    object Label2: TLabel
       Left = 8
       Top = 315
       Width = 10
@@ -374,7 +374,7 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object LabelHeight: TLabel
+    object Label3: TLabel
       Left = 80
       Top = 315
       Width = 34
@@ -383,7 +383,7 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object LabelWidth: TLabel
+    object Label4: TLabel
       Left = 80
       Top = 291
       Width = 31
@@ -401,16 +401,16 @@ object Layouts_Form: TLayouts_Form
       Color = clBtnFace
       ParentColor = False
     end
-    object Items_List: TListBox
+    object items_list: TListBox
       Left = 8
       Top = 8
       Width = 169
       Height = 105
       ItemHeight = 13
       TabOrder = 0
-      OnClick = Items_ListClick
+      OnClick = items_listClick
     end
-    object Delete_Button: TBitBtn
+    object delete_item_button: TBitBtn
       Left = 96
       Top = 120
       Width = 73
@@ -444,9 +444,9 @@ object Layouts_Form: TLayouts_Form
         FF0000FF00008000008000008000008000008000008000008000008000008000
         0080000080000080000080000080000080000080000080000080}
       TabOrder = 1
-      OnClick = Delete_ButtonClick
+      OnClick = delete_item_buttonClick
     end
-    object Add_Button: TBitBtn
+    object add_button: TBitBtn
       Left = 17
       Top = 121
       Width = 73
@@ -480,9 +480,9 @@ object Layouts_Form: TLayouts_Form
         FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF0000FF00
         00FF0000FF0080000080000080000000FF0000FF0000FF0000FF}
       TabOrder = 2
-      OnClick = Add_ButtonClick
+      OnClick = add_buttonClick
     end
-    object Left_Edit: TSpinEdit
+    object left_edit: TSpinEdit
       Left = 24
       Top = 288
       Width = 49
@@ -491,20 +491,20 @@ object Layouts_Form: TLayouts_Form
       MinValue = 0
       TabOrder = 3
       Value = 0
-      OnChange = Left_EditChange
+      OnChange = left_editChange
     end
-    object Top_Edit: TSpinEdit
-      Left = 25
-      Top = 310
+    object top_edit: TSpinEdit
+      Left = 24
+      Top = 312
       Width = 49
       Height = 22
       MaxValue = 0
       MinValue = 0
       TabOrder = 4
       Value = 0
-      OnChange = Top_EditChange
+      OnChange = top_editChange
     end
-    object Height_Edit: TSpinEdit
+    object height_edit: TSpinEdit
       Left = 128
       Top = 312
       Width = 49
@@ -513,9 +513,9 @@ object Layouts_Form: TLayouts_Form
       MinValue = 0
       TabOrder = 5
       Value = 0
-      OnChange = Height_EditChange
+      OnChange = height_editChange
     end
-    object Width_Edit: TSpinEdit
+    object width_edit: TSpinEdit
       Left = 128
       Top = 288
       Width = 49
@@ -524,18 +524,18 @@ object Layouts_Form: TLayouts_Form
       MinValue = 0
       TabOrder = 6
       Value = 0
-      OnChange = Width_EditChange
+      OnChange = width_editChange
     end
-    object Name_Edit: TEdit
+    object name_edit: TEdit
       Left = 58
       Top = 152
       Width = 103
       Height = 21
       TabOrder = 7
-      OnExit = Name_EditExit
-      OnKeyPress = Name_EditKeyPress
+      OnExit = name_editExit
+      OnKeyPress = name_editKeyPress
     end
-    object Elements_Grid: TStringGrid
+    object elements_grid: TStringGrid
       Left = 54
       Top = 192
       Width = 78
@@ -553,14 +553,14 @@ object Layouts_Form: TLayouts_Form
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine]
       ParentFont = False
       TabOrder = 8
-      OnClick = Elements_GridClick
-      OnDblClick = Elements_GridDblClick
+      OnClick = elements_gridClick
+      OnDblClick = elements_gridDblClick
     end
     object Panel3: TPanel
-      Left = 24
+      Left = 40
       Top = 181
-      Width = 137
-      Height = 5
+      Width = 105
+      Height = 4
       TabOrder = 9
     end
   end
@@ -601,19 +601,19 @@ object Layouts_Form: TLayouts_Form
     DefaultExt = '.layout'
     Filter = 'File with ext (*.layout)|*.layout'
     Options = [ofOverwritePrompt, ofPathMustExist, ofFileMustExist, ofEnableSizing, ofDontAddToRecent]
-    Left = 272
+    Left = 200
     Top = 96
   end
   object SaveDialog1: TSaveDialog
     DefaultExt = '.layout'
     Filter = 'File with ext (*.layout)|*.layout'
     Options = [ofPathMustExist, ofEnableSizing, ofDontAddToRecent]
-    Left = 408
+    Left = 248
     Top = 96
   end
   object GLGuiLayout1: TGLGuiLayout
     GuiComponents = <>
-    Left = 497
+    Left = 297
     Top = 97
   end
 end

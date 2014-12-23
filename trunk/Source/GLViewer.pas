@@ -35,7 +35,7 @@ uses
   {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
 type
 {$IFDEF FPC}
-  TGLSceneViewer = GLSceneViewerLCL.TGLSceneViewer;
+  TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
 {$ELSE}
   TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
 {$ENDIF FPC}

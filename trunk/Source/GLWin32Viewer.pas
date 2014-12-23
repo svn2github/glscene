@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneViewer<p>
+{: GLWin32Viewer<p>
 
    Win32 specific Scene viewer.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>22/12/14 - PW - Renamed "GLWin32Viewer.pas" to "GLSceneViewer.pas"
       <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
       <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
       <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
@@ -570,7 +569,6 @@ procedure TGLSceneViewer.Loaded;
 begin
   inherited Loaded;
   // initiate window creation
-
   HandleNeeded;
 end;
 
@@ -588,7 +586,6 @@ end;
 procedure TGLSceneViewer.DoBufferChange(Sender: TObject);
 begin
   if (not Buffer.Rendering) and (not Buffer.Freezed) then
-  { TODO -oPW -cUnworkable : Invalidate not found in FMX.Controls }
     Invalidate;
 end;
 

@@ -37,9 +37,9 @@ object RMaterialPreview: TRMaterialPreview
   end
   object GLSceneViewer: TGLSceneViewer
     Left = 0
-    Top = 27
+    Top = 26
     Width = 202
-    Height = 202
+    Height = 203
     Camera = Camera
     FieldOfView = 71.615516662597660000
     TabOrder = 2

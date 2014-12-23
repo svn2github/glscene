@@ -1,13 +1,9 @@
-//
-// This unit is part of the GLScene Project, http://glscene.org
-//
 // FXCollectionEditor
 { : Egg<p>
 
   Edits a TXCollection<p>
 
   <b>Historique : </b><font size=-1><ul>
-
   <li>20/01/11 - DanB - Collection items are now grouped by ItemCategory
   <li>16/06/10 - YP - Fixed IDE exception when item removed
   <li>05/10/08 - DanB - removed Kylix support + some other old ifdefs
@@ -31,7 +27,7 @@ uses
   System.Classes, System.Actions, VCL.Forms, VCL.ImgList, VCL.Controls,
   VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
 {$ELSE}
-  Classes, Actions, Forms, ImgList, Controls, ActnList,
+  Classes, Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
  DesignEditors, DesignIntf,
@@ -72,7 +68,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    { Private declarations }
+    { Déclarations privées }
     FXCollection: TXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;

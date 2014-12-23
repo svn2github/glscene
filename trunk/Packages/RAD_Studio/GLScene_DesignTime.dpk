@@ -46,19 +46,19 @@ contains
   RegisterXCollection in '..\..\Source\RegisterXCollection.pas',
   GLSceneFormDesign in '..\..\Source\GLSceneFormDesign.pas',
   FLibMaterialPicker in '..\..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
-  FGUILayoutEditor in '..\..\Source\FGUILayoutEditor.pas' {Layouts_Form},
+  FMaterialEditorForm in '..\..\Source\FMaterialEditorForm.pas' {MaterialEditorForm},
+  FGUILayoutEditor in '..\..\Source\FGUILayoutEditor.pas' {Layouts_form},
   FRMaterialPreview in '..\..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
   FGuiSkinEditor in '..\..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
   FShaderUniformEditor in '..\..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
   FRColorEditor in '..\..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
+  FRFaceEditor in '..\..\Source\FRFaceEditor.pas',
   FRTextureEdit in '..\..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
   FRTrackBarEdit in '..\..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
   FVectorEditor in '..\..\Source\FVectorEditor.pas' {VectorEditorForm},
   FPlugInManagerEditor in '..\..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FShaderMemo in '..\..\Source\FShaderMemo.pas',
   FInfo in '..\..\Source\FInfo.pas' {InfoForm},
-  FRFaceEditor in '..\..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
-  FShaderMemo in '..\..\Source\FShaderMemo.pas' {ShaderMemoForm},
-  FMaterialEditorForm in '..\..\Source\FMaterialEditorForm.pas',
   GLSceneRegister in '..\..\Source\GLSceneRegister.pas';
 
 end.

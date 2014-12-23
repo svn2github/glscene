@@ -9,7 +9,7 @@ object RTextureEdit: TRTextureEdit
   DesignSize = (
     230
     187)
-  object LabelImage: TLabel
+  object Label2: TLabel
     Left = 0
     Top = 1
     Width = 30
@@ -26,42 +26,42 @@ object RTextureEdit: TRTextureEdit
     Caption = '...'
     OnClick = SBEditImageClick
   end
-  object LabelMagFilter: TLabel
+  object Label3: TLabel
     Left = 0
     Top = 52
     Width = 44
     Height = 13
     Caption = 'MagFilter'
   end
-  object LabelMinFilter: TLabel
+  object Label4: TLabel
     Left = 0
     Top = 76
     Width = 40
     Height = 13
     Caption = 'MinFilter'
   end
-  object LabelTextureMode: TLabel
+  object Label1: TLabel
     Left = 0
     Top = 124
     Width = 67
     Height = 13
     Caption = 'Texture Mode'
   end
-  object LabelTextureWrap: TLabel
+  object Label5: TLabel
     Left = 0
     Top = 148
     Width = 67
     Height = 13
     Caption = 'Texture Wrap'
   end
-  object LabelImageAlpha: TLabel
+  object Label6: TLabel
     Left = 0
     Top = 28
     Width = 57
     Height = 13
     Caption = 'ImageAlpha'
   end
-  object LabelFilterQuality: TLabel
+  object Label7: TLabel
     Left = 0
     Top = 100
     Width = 75

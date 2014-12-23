@@ -30,7 +30,7 @@ uses
 {$ELSE}
   Classes, TypInfo, Forms, ComCtrls, StdCtrls, Controls, Buttons,
 {$ENDIF}
-  FRMaterialPreview, FRFaceEditor,
+  FRMaterialPreview, FRColorEditor, FRFaceEditor,
   GLTexture,  FRTextureEdit,  GLViewer,
   GLMaterial,  GLState;
 
@@ -53,9 +53,9 @@ type
     CBPolygonMode: TComboBox;
     procedure OnMaterialChanged(Sender: TObject);
   private
-    { Private declarations  }
+    { Déclarations privées }
   public
-    { Public declarations  }
+    { Déclarations publiques }
     constructor Create(AOwner: TComponent); override;
 
     function Execute(AMaterial: TGLMaterial): Boolean;
