@@ -1,151 +1,118 @@
-// Info
-{ : Informations on OpenGL driver.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>13/06/10 - DaStr - Removed compiler hints
-  <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
-  <li>20/02/10 - DanB - Now uses correct DC, rather than using
-  the info form (bug due to "with" keyword)
-  <li>25/10/08 - DanB - Delphi 2009 compatibility, extensions are now looked
-  up from www.opengl.org/registry/
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux
-  <li>06/07/04 - LR - Display some infos for Linux
-  <li>03/07/04 - LR - Make change for Linux
-  <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
-  Delphi3D's hardware registry
-  <li>08/02/04 - NelC - Added option for modal
-  <li>09/09/03 - NelC - Added Renderer info
-  <li>26/06/03 - EG - Double-clicking an extension will now go to its OpenGL
-  registry webpage
-  <li>22/05/03 - EG - Added Texture Units info
-  <li>21/07/02 - EG - No longer modal
-  <li>03/02/02 - EG - InfoForm registration mechanism
-  <li>24/08/01 - EG - Compatibility with new Buffer classes
-  <li>17/04/00 - EG - Creation of header, minor layout changes
-  </ul></font>
-}
-unit FInfo;
+unit FInfoFMX;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils, System.Classes,
-  VCL.Forms, VCL.Controls, VCL.Buttons, VCL.StdCtrls, VCL.ComCtrls,
-  VCL.ExtCtrls, VCL.Graphics, VCL.Menus, VCL.Imaging.JPEG,
-{$ELSE}
-  SysUtils, Classes,
-  Forms, Controls, Buttons, StdCtrls, ComCtrls,
-  ExtCtrls, Graphics, Menus, JPEG,
-{$ENDIF}
-  GLScene, GLWin32Viewer,
-  OpenGLTokens, OpenGLAdapter, GLContext, GLCrossPlatform;
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
+  FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
+  //GLS
+  GLSceneFMX,
+  OpenGLTokens, GLContext;
 
 type
-
   TInfoForm = class(TForm)
-    AccLabel: TLabel;
-    AccumLabel: TLabel;
-    AuxLabel: TLabel;
-    ClipLabel: TLabel;
-    ColorLabel: TLabel;
-    CopyLabel: TLabel;
-    DepthLabel: TLabel;
-    DoubleLabel: TLabel;
-    EvalLabel: TLabel;
-    Image: TImage;
-    Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label18: TLabel;
-    Label2: TLabel;
-    Label20: TLabel;
-    Label23: TLabel;
-    Label25: TLabel;
-    Label26: TLabel;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    Label3: TLabel;
-    Label30: TLabel;
+    TabControl: TTabControl;
+    TabItemGLScene: TTabItem;
+    TabItemInformation: TTabItem;
+    TabItemExtensions: TTabItem;
+    TabItemContributors: TTabItem;
+    TabItemAbout: TTabItem;
+    ButtonClose: TButton;
+    ImageControl1: TImageControl;
+    ScrollBoxInfo: TScrollBox;
     LabelCommon: TLabel;
-    LabelDepths: TLabel;
-    LabelMaxValues: TLabel;
-    Label34: TLabel;
-    Label35: TLabel;
-    Label37: TLabel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
-    Label8: TLabel;
+    CopyLabel: TLabel;
+    AccLabel: TLabel;
+    StereoLabel: TLabel;
+    DoubleLabel: TLabel;
+    VersionLabel: TLabel;
+    RendererLabel: TLabel;
+    VendorLabel: TLabel;
+    LabelDepths: TLabel;
     Label9: TLabel;
-    LightLabel: TLabel;
-    ListLabel: TLabel;
-    MemoAbout: TMemo;
-    MemoContributors: TMemo;
-    ModelLabel: TLabel;
-    NameLabel: TLabel;
+    ColorLabel: TLabel;
+    Label11: TLabel;
+    DepthLabel: TLabel;
+    Label13: TLabel;
+    StencilLabel: TLabel;
+    Label15: TLabel;
+    AccumLabel: TLabel;
+    Label17: TLabel;
+    AuxLabel: TLabel;
+    Label19: TLabel;
+    SubLabel: TLabel;
+    Label21: TLabel;
     OverlayLabel: TLabel;
-    PageControl: TPageControl;
+    ListBoxExtensions: TListBox;
+    Label23: TLabel;
+    UnderlayLabel: TLabel;
+    LabelMaxValues: TLabel;
+    Label8: TLabel;
+    ViewLabel: TLabel;
+    Label26: TLabel;
+    ModelLabel: TLabel;
+    Label28: TLabel;
+    ListLabel: TLabel;
+    LightLabel: TLabel;
+    Label31: TLabel;
+    EvalLabel: TLabel;
+    Label33: TLabel;
+    ClipLabel: TLabel;
+    Label35: TLabel;
+    Label36: TLabel;
+    Label37: TLabel;
+    NameLabel: TLabel;
+    Label39: TLabel;
     PixelLabel: TLabel;
     ProjLabel: TLabel;
-    RendererLabel: TLabel;
-    ScrollBoxInfo: TScrollBox;
-    TabSheetInformation: TTabSheet;
-    StencilLabel: TLabel;
-    StereoLabel: TLabel;
-    SubLabel: TLabel;
-    TabSheetAbout: TTabSheet;
-    TabSheetContributors: TTabSheet;
     TexSizeLabel: TLabel;
+    Label43: TLabel;
     TexStackLabel: TLabel;
+    Label45: TLabel;
     TexUnitsLabel: TLabel;
-    UnderlayLabel: TLabel;
-    VendorLabel: TLabel;
-    VersionLabel: TLabel;
-    TabSheetExtensions: TTabSheet;
-    ListBoxExtensions: TListBox;
-    PMWebLink: TPopupMenu;
-    MIRegistryLink: TMenuItem;
-    MIDelphi3D: TMenuItem;
-    TabSheetGLScene: TTabSheet;
-    CloseButton: TButton;
+    Label47: TLabel;
+    MemoContributors: TMemo;
+    MemoAbout: TMemo;
+    LabelOfficial: TLabel;
+    WebSiteLbl: TLabel;
+    LabelDevelopment: TLabel;
+    DevSiteLbl: TLabel;
+    Label10: TLabel;
     VersionLbl: TLabel;
-    ViewLabel: TLabel;
-    WebsiteLbl: TLabel;
-    procedure CloseButtonClick(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
+    procedure WebSiteLblClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; var KeyChar: Char;
+      Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListBoxExtensionsDblClick(Sender: TObject);
-    procedure ListBoxExtensionsClick(Sender: TObject);
-    procedure ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
-    procedure FormShow(Sender: TObject);
-    procedure MIDelphi3DClick(Sender: TObject);
-    procedure WebsiteLblClick(Sender: TObject);
+  private
+    { Private declarations }
+
   protected
+    { Protected declarations }
     procedure LoadContributors;
     function GetSceneVersion: string;
   public
+    { Public declarations }
     procedure GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
   end;
 
+var
+  InfoForm: TInfoForm;
+
 implementation
 
-{$R *.dfm}
-{$R FInfo.res}
+{$R *.fmx}
 
 // ShowInfoForm
 //
@@ -171,31 +138,32 @@ end;
 //
 procedure TInfoForm.FormCreate(Sender: TObject);
 begin
-  PageControl.ActivePageIndex := 0;
+  TabControl.ActiveTab := TabItemGLScene;
 end;
 
 // FormShow
 //
 procedure TInfoForm.FormShow(Sender: TObject);
 begin
-  PageControl.ActivePageIndex := 0;
+  TabControl.ActiveTab := TabItemGLScene;
 end;
 
 // GetInfoFrom
 //
 procedure TInfoForm.GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
-const
-  DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
+  { TODO -cIncompatibility : Need to replace TPixelFormatDescriptor and HDC }
+///const
+  ///DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
 var
-  pfd: TPixelformatDescriptor;
+  ///pfd: TPixelFormatDescriptor;
   pixelFormat: Integer;
-  dc: HDC;
+  ///dc: HDC;   /// HDC - in Winapi.Windows should be replaced with...
   i: Integer;
   ExtStr: String;
 
   procedure IntLimitToLabel(const aLabel: TLabel; const aLimit: TLimitType);
   begin
-    aLabel.Caption := IntToStr(aSceneBuffer.LimitOf[aLimit]);
+    aLabel.Text := IntToStr(aSceneBuffer.LimitOf[aLimit]);
   end;
 
 begin
@@ -206,19 +174,21 @@ begin
     with aSceneBuffer do
     begin
       // common properties
-      VendorLabel.Caption := String(GL.GetString(GL_VENDOR));
-      RendererLabel.Caption := String(GL.GetString(GL_RENDERER));
+      VendorLabel.Text := String(GL.GetString(GL_VENDOR));
+      RendererLabel.Text := String(GL.GetString(GL_RENDERER));
+(*
       dc := wglGetCurrentDC();
       pixelFormat := GetPixelFormat(dc);
       DescribePixelFormat(dc, pixelFormat, SizeOf(pfd), pfd);
       // figure out the driver type
       if (DRIVER_MASK and pfd.dwFlags) = 0 then
-        AccLabel.Caption := 'Installable Client Driver'
+        AccLabel.Text := 'Installable Client Driver'
       else if (DRIVER_MASK and pfd.dwFlags) = DRIVER_MASK then
-        AccLabel.Caption := 'Mini-Client Driver'
+        AccLabel.Text := 'Mini-Client Driver'
       else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then
-        AccLabel.Caption := 'Generic Software Driver';
-      VersionLabel.Caption := String(GL.GetString(GL_VERSION));
+        AccLabel.Text := 'Generic Software Driver';
+*)
+      VersionLabel.Text := String(GL.GetString(GL_VERSION));
       ExtStr := String(GL.GetString(GL_EXTENSIONS));
       ListBoxExtensions.Clear;
       while Length(ExtStr) > 0 do
@@ -231,16 +201,17 @@ begin
       end;
 
       if LimitOf[limDoubleBuffer] = GL_TRUE then
-        DoubleLabel.Caption := 'yes'
+        DoubleLabel.Text := 'yes'
       else
-        DoubleLabel.Caption := 'no';
+        DoubleLabel.Text := 'no';
 
       if LimitOf[limStereo] = GL_TRUE then
-        StereoLabel.Caption := 'yes'
+        StereoLabel.Text := 'yes'
       else
-        StereoLabel.Caption := 'no';
+        StereoLabel.Text := 'no';
 
       // Include WGL extensions
+(*
       if GL.W_ARB_extensions_string then
       begin
         ExtStr := String(GL.WGetExtensionsStringARB(dc));
@@ -257,38 +228,38 @@ begin
       // Some extra info about the double buffer mode
       if (pfd.dwFlags and PFD_DOUBLEBUFFER) = PFD_DOUBLEBUFFER then
       begin
-        CopyLabel.Caption := '';
+        CopyLabel.Text := '';
         if (pfd.dwFlags and PFD_SWAP_EXCHANGE) > 0 then
-          CopyLabel.Caption := 'exchange';
+          CopyLabel.Text := 'exchange';
         if (pfd.dwFlags and PFD_SWAP_COPY) > 0 then
         begin
-          if Length(CopyLabel.Caption) > 0 then
-            CopyLabel.Caption := CopyLabel.Caption + ', ';
-          CopyLabel.Caption := CopyLabel.Caption + 'copy';
+          if Length(CopyLabel.Text) > 0 then
+            CopyLabel.Text := CopyLabel.Text + ', ';
+          CopyLabel.Text := CopyLabel.Text + 'copy';
         end;
-        if Length(CopyLabel.Caption) = 0 then
-          CopyLabel.Caption := 'no info available';
+        if Length(CopyLabel.Text) = 0 then
+          CopyLabel.Text := 'no info available';
       end
       else
       begin
-        CopyLabel.Caption := 'n/a';
+        CopyLabel.Text := 'n/a';
       end;
       // buffer and pixel depths
-      ColorLabel.Caption :=
+      ColorLabel.Text :=
         Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
         [LimitOf[limRedBits], LimitOf[limGreenBits], LimitOf[limBlueBits],
         LimitOf[limAlphaBits]]);
-      DepthLabel.Caption := Format('%d bits', [LimitOf[limDepthBits]]);
-      StencilLabel.Caption := Format('%d bits', [LimitOf[limStencilBits]]);
-      AccumLabel.Caption :=
+      DepthLabel.Text := Format('%d bits', [LimitOf[limDepthBits]]);
+      StencilLabel.Text := Format('%d bits', [LimitOf[limStencilBits]]);
+      AccumLabel.Text :=
         Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
         [LimitOf[limAccumRedBits], LimitOf[limAccumGreenBits],
         LimitOf[limAccumBlueBits], LimitOf[limAccumAlphaBits]]);
       IntLimitToLabel(AuxLabel, limAuxBuffers);
       IntLimitToLabel(SubLabel, limSubpixelBits);
-      OverlayLabel.Caption := IntToStr(pfd.bReserved and 7);
-      UnderlayLabel.Caption := IntToStr(pfd.bReserved shr 3);
-
+      OverlayLabel.Text := IntToStr(pfd.bReserved and 7);
+      UnderlayLabel.Text := IntToStr(pfd.bReserved shr 3);
+*)
       // Maximum values
       IntLimitToLabel(ClipLabel, limClipPlanes);
       IntLimitToLabel(EvalLabel, limEvalOrder);
@@ -304,7 +275,7 @@ begin
       IntLimitToLabel(TexStackLabel, limTextureStack);
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
     end;
-    VersionLbl.Caption := GetSceneVersion;
+    VersionLbl.Text := GetSceneVersion;
   finally
     aSceneBuffer.RenderingContext.Deactivate;
   end;
@@ -312,21 +283,21 @@ end;
 
 // CloseButtonClick
 //
-procedure TInfoForm.CloseButtonClick(Sender: TObject);
+procedure TInfoForm.ButtonCloseClick(Sender: TObject);
 begin
   Close;
 end;
 
-// -------------------------------------------------------------------
+// FormKeyDown
 //
-procedure TInfoForm.FormKeyPress(Sender: TObject; var Key: Char);
-
+procedure TInfoForm.FormKeyDown(Sender: TObject; var Key: Word;
+  var KeyChar: Char; Shift: TShiftState);
 begin
-  if Key = #27 then
+ /// if Key = #27 then
     Close;
 end;
 
-// -------------------------------------------------------------------
+// FormClose
 //
 procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
@@ -355,45 +326,8 @@ begin
   buf := Copy(url, 1, p - 1);
   url := 'http://www.opengl.org/registry/specs/' + buf + '/' +
     Copy(url, p + 1, 255) + '.txt';
-  ShowHTMLUrl(url);
-end;
-
-// -------------------------------------------------------------------
-//
-procedure TInfoForm.MIDelphi3DClick(Sender: TObject);
-var
-  url: String;
-begin
-  with ListBoxExtensions do
-  begin
-    if ItemIndex < 0 then
-      Exit;
-    url := 'http://www.delphi3d.net/hardware/extsupport.php?extension=' +
-      Items[ItemIndex];
-  end;
-  ShowHTMLUrl(url);
-end;
-
-// -------------------------------------------------------------------
-//
-procedure TInfoForm.ListBoxExtensionsClick(Sender: TObject);
-var
-  extName: String;
-begin
-  if ListBoxExtensions.ItemIndex < 0 then
-    ListBoxExtensions.PopupMenu := nil
-  else
-  begin
-    ListBoxExtensions.PopupMenu := PMWebLink;
-    extName := ListBoxExtensions.Items[ListBoxExtensions.ItemIndex];
-    MIRegistryLink.Caption := 'View OpenGL Extension Registry for ' + extName;
-    MIDelphi3D.Caption := 'View Delphi3D Hardware Registry for ' + extName;
-  end;
-end;
-
-procedure TInfoForm.ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
-begin
-  ListBoxExtensionsClick(Sender);
+  { TODO -cIncompatibility : Find substitution to ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW); }
+  ///ShowHTMLUrl(url);
 end;
 
 // -------------------------------------------------------------------
@@ -438,12 +372,13 @@ begin
   Result := Format(GLSCENE_VERSION, [FGLSceneRevision]);
 end;
 
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-procedure TInfoForm.WebsiteLblClick(Sender: TObject);
+
+// -------------------------------------------------------------------
+//
+procedure TInfoForm.WebSiteLblClick(Sender: TObject);
 begin
-  ShowHTMLUrl(WebsiteLbl.Caption);
+///  ShellExecute(0, 'open', PChar(Url), nil, nil, SW_SHOW);
+///  ShowHTMLUrl(WebSiteLbl.Text);
 end;
 
 initialization
@@ -454,5 +389,5 @@ initialization
 
 RegisterInfoForm(ShowInfoForm);
 
-end.
 
+end.

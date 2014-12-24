@@ -164,6 +164,11 @@
             <FormType>fmx</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
+        <DCCReference Include="..\..\Source\FInfoFMX.pas">
+            <Form>InfoForm</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <None Include="GLScene_DesignTimeFMX.todo"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

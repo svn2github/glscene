@@ -36,10 +36,6 @@ object InfoForm: TInfoForm
     object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Image: TImage
         Left = 1
         Top = 2
@@ -2700,7 +2696,7 @@ object InfoForm: TInfoForm
         Height = 16
         Caption = 'versionNo'
         Color = clBtnFace
-        Font.Charset = RUSSIAN_CHARSET
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
@@ -2717,7 +2713,7 @@ object InfoForm: TInfoForm
         Height = 16
         Caption = 'Version:'
         Color = clBtnFace
-        Font.Charset = RUSSIAN_CHARSET
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = clBlack
         Font.Height = -13
         Font.Name = 'MS Sans Serif'
@@ -2728,141 +2724,8 @@ object InfoForm: TInfoForm
         Transparent = True
       end
     end
-    object TabSheetAbout: TTabSheet
-      Caption = 'About'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 449
-      ExplicitHeight = 0
-      object WebsiteLbl: TLabel
-        Left = 57
-        Top = 274
-        Width = 86
-        Height = 13
-        Cursor = crHandPoint
-        Caption = 'http://glscene.org'
-        Color = clBtnFace
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clBlue
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsUnderline]
-        ParentColor = False
-        ParentFont = False
-        OnClick = WebsiteLblClick
-      end
-      object Label34: TLabel
-        Left = 9
-        Top = 274
-        Width = 35
-        Height = 13
-        Caption = 'Official:'
-        Color = clBtnFace
-        ParentColor = False
-      end
-      object MemoAbout: TMemo
-        Left = 0
-        Top = 0
-        Width = 452
-        Height = 259
-        Align = alTop
-        Lines.Strings = (
-          'License: MPL'
-          ''
-          
-            'GLScene is an OpenGL based 3D library for Delph, C++ Builder and' +
-            ' Lazarus. It provides '
-          
-            'visual components and objects allowing description and rendering' +
-            ' of 3D scenes in an easy, '
-          'no-hassle, yet powerful manner. '
-          'GLScene runs on Windows, Linux, Mac OS X, FreeBSD and more.'
-          ''
-          'As GLScene is growing we need more developers.')
-        TabOrder = 0
-      end
-    end
-    object TabSheetContributors: TTabSheet
-      Caption = 'Contributors'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 449
-      ExplicitHeight = 0
-      object MemoContributors: TMemo
-        Left = 0
-        Top = 0
-        Width = 452
-        Height = 313
-        Align = alClient
-        Alignment = taCenter
-        BorderStyle = bsNone
-        Lines.Strings = (
-          'Aaron Hochwimmer'
-          'Adirex'
-          'Airatz'
-          'Alan Rose'
-          'Alejandro Leon Escalera'
-          'Alexandre Hirzel'
-          'Arvydas Juskevicius'
-          'Ast'
-          'Brian Johns'
-          'Burkhard Carstens'
-          'C4'
-          'Da Stranger'
-          'Daniel Bartlett'
-          'Dave Kerr'
-          'Degiovani'
-          'Eric Grange'
-          'Eric Pascual'
-          'Erick Schuitema'
-          'fig'
-          'filippo'
-          'Gabriel Corneanu'
-          'J.Delauney'
-          'Joen A. Joensen'
-          'Joen Joensen'
-          'Kapitan'
-          'Kenneth Poulter'
-          'Lionel Reynaud'
-          'Lord Crc'
-          'Lukasz Sokol'
-          'mal'
-          'Marcus Oblak'
-          'Matheus Degiovani'
-          'Mattias Fagerlund'
-          'mif'
-          'Mike Lischke'
-          'Nelson Chu'
-          'overkrik'
-          'Pavel Vassiliev'
-          'Paul van Dinther'
-          'Peirick'
-          'Phil Scadden'
-          'Philipp Pammler'
-          'Pierre Lemerle'
-          'Piotr Szturmaj'
-          'Rene Lindsay'
-          'Roshal Sasha'
-          'Rustam Asmandiarov'
-          'Sandor Domokos'
-          'Solerman Kaplon'
-          'Sternas Stefanos'
-          'Stuart Gooding'
-          'Uwe'
-          'Uwe Raabe'
-          'YarUnderoaker'
-          'Zsolt Laky')
-        ReadOnly = True
-        ScrollBars = ssVertical
-        TabOrder = 0
-      end
-    end
     object TabSheetInformation: TTabSheet
       Caption = 'Information'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 449
-      ExplicitHeight = 0
       object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
@@ -2871,7 +2734,7 @@ object InfoForm: TInfoForm
         Align = alClient
         BorderStyle = bsNone
         TabOrder = 0
-        ExplicitWidth = 449
+        ExplicitTop = 1
         object Label1: TLabel
           Left = 10
           Top = 29
@@ -2892,8 +2755,8 @@ object InfoForm: TInfoForm
           Visible = False
         end
         object Label3: TLabel
-          Left = 10
-          Top = 75
+          Left = 11
+          Top = 76
           Width = 62
           Height = 13
           Caption = 'Version Info :'
@@ -3044,7 +2907,7 @@ object InfoForm: TInfoForm
           ParentColor = False
           ParentFont = False
         end
-        object Label31: TLabel
+        object LabelCommon: TLabel
           Left = 0
           Top = 2
           Width = 430
@@ -3053,7 +2916,7 @@ object InfoForm: TInfoForm
           AutoSize = False
           Caption = 'Common'
           Color = clBtnFace
-          Font.Charset = RUSSIAN_CHARSET
+          Font.Charset = DEFAULT_CHARSET
           Font.Color = clMaroon
           Font.Height = -16
           Font.Name = 'MS Sans Serif'
@@ -3062,16 +2925,16 @@ object InfoForm: TInfoForm
           ParentColor = False
           ParentFont = False
         end
-        object Label32: TLabel
+        object LabelDepths: TLabel
           Left = 10
           Top = 184
           Width = 420
           Height = 21
           Alignment = taCenter
           AutoSize = False
-          Caption = 'Buffer and pixel depths'
+          Caption = 'Buffers and pixel depths'
           Color = clBtnFace
-          Font.Charset = RUSSIAN_CHARSET
+          Font.Charset = DEFAULT_CHARSET
           Font.Color = clMaroon
           Font.Height = -16
           Font.Name = 'MS Sans Serif'
@@ -3227,9 +3090,9 @@ object InfoForm: TInfoForm
         object Label18: TLabel
           Left = 12
           Top = 345
-          Width = 95
+          Width = 97
           Height = 13
-          Caption = 'supported overlays :'
+          Caption = 'Supported overlays :'
           Color = clBtnFace
           ParentColor = False
           Visible = False
@@ -3269,9 +3132,9 @@ object InfoForm: TInfoForm
         object Label20: TLabel
           Left = 12
           Top = 369
-          Width = 101
+          Width = 103
           Height = 13
-          Caption = 'supported underlays :'
+          Caption = 'Supported underlays :'
           Color = clBtnFace
           ParentColor = False
           Visible = False
@@ -3416,7 +3279,7 @@ object InfoForm: TInfoForm
         end
         object Label27: TLabel
           Left = 220
-          Top = 463
+          Top = 467
           Width = 82
           Height = 13
           Caption = 'Projection stack :'
@@ -3564,7 +3427,7 @@ object InfoForm: TInfoForm
           ParentColor = False
           ParentFont = False
         end
-        object Label33: TLabel
+        object LabelMaxValues: TLabel
           Left = 0
           Top = 389
           Width = 430
@@ -3573,7 +3436,7 @@ object InfoForm: TInfoForm
           AutoSize = False
           Caption = 'Maximum values'
           Color = clBtnFace
-          Font.Charset = RUSSIAN_CHARSET
+          Font.Charset = DEFAULT_CHARSET
           Font.Color = clMaroon
           Font.Height = -16
           Font.Name = 'MS Sans Serif'
@@ -3587,10 +3450,6 @@ object InfoForm: TInfoForm
     object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 449
-      ExplicitHeight = 0
       object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
@@ -3613,6 +3472,128 @@ object InfoForm: TInfoForm
         OnClick = ListBoxExtensionsClick
         OnDblClick = ListBoxExtensionsDblClick
         OnKeyPress = ListBoxExtensionsKeyPress
+      end
+    end
+    object TabSheetContributors: TTabSheet
+      Caption = 'Contributors'
+      object MemoContributors: TMemo
+        Left = 0
+        Top = 0
+        Width = 452
+        Height = 313
+        Align = alClient
+        Alignment = taCenter
+        BorderStyle = bsNone
+        Lines.Strings = (
+          'Aaron Hochwimmer'
+          'Adirex'
+          'Airatz'
+          'Alan Rose'
+          'Alejandro Leon Escalera'
+          'Alexandre Hirzel'
+          'Arvydas Juskevicius'
+          'Ast'
+          'Brian Johns'
+          'Burkhard Carstens'
+          'C4'
+          'Da Stranger'
+          'Daniel Bartlett'
+          'Dave Kerr'
+          'Degiovani'
+          'Eric Grange'
+          'Eric Pascual'
+          'Erick Schuitema'
+          'fig'
+          'filippo'
+          'Gabriel Corneanu'
+          'J.Delauney'
+          'Joen A. Joensen'
+          'Joen Joensen'
+          'Kapitan'
+          'Kenneth Poulter'
+          'Lionel Reynaud'
+          'Lord Crc'
+          'Lukasz Sokol'
+          'mal'
+          'Marcus Oblak'
+          'Matheus Degiovani'
+          'Mattias Fagerlund'
+          'mif'
+          'Mike Lischke'
+          'Nelson Chu'
+          'overkrik'
+          'Pavel Vassiliev'
+          'Paul van Dinther'
+          'Peirick'
+          'Phil Scadden'
+          'Philipp Pammler'
+          'Pierre Lemerle'
+          'Piotr Szturmaj'
+          'Rene Lindsay'
+          'Roshal Sasha'
+          'Rustam Asmandiarov'
+          'Sandor Domokos'
+          'Solerman Kaplon'
+          'Sternas Stefanos'
+          'Stuart Gooding'
+          'Uwe Raabe'
+          'YarUnderoaker'
+          'Zsolt Laky')
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 0
+      end
+    end
+    object TabSheetAbout: TTabSheet
+      Caption = 'About'
+      object WebsiteLbl: TLabel
+        Left = 57
+        Top = 274
+        Width = 86
+        Height = 13
+        Cursor = crHandPoint
+        Caption = 'http://glscene.org'
+        Color = clBtnFace
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlue
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsUnderline]
+        ParentColor = False
+        ParentFont = False
+        OnClick = WebsiteLblClick
+      end
+      object Label34: TLabel
+        Left = 9
+        Top = 274
+        Width = 35
+        Height = 13
+        Caption = 'Official:'
+        Color = clBtnFace
+        ParentColor = False
+      end
+      object MemoAbout: TMemo
+        Left = 0
+        Top = 0
+        Width = 452
+        Height = 259
+        Align = alTop
+        Lines.Strings = (
+          'License: MPL'
+          ''
+          
+            'GLScene is an OpenGL based 3D library for Delph, C++ Builder and' +
+            ' Free Pascal. It provides '
+          
+            'visual components and objects allowing description and rendering' +
+            ' of 3D scenes in an easy, '
+          'no-hassle, yet powerful manner. '
+          
+            'GLScene runs on Windows, Mac OS X, iOS, Android, Linux, FreeBSD ' +
+            'and more.'
+          '')
+        TabOrder = 0
+        ExplicitTop = 9
       end
     end
   end
