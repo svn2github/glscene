@@ -6,7 +6,7 @@
         <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Package</AppType>
-        <FrameworkType>None</FrameworkType>
+        <FrameworkType>FMX</FrameworkType>
         <ProjectVersion>16.0</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
@@ -73,12 +73,19 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="..\..\Source\fmx\GLX.Context.pas"/>
-        <DCCReference Include="..\..\Source\fmx\GLX.SceneContext.pas"/>
-        <DCCReference Include="..\..\Source\fmx\GLX.Scene.pas"/>
-        <DCCReference Include="..\..\Source\fmx\GLx.SceneViewer.pas"/>
-        <DCCReference Include="..\..\Source\fmx\GLX.FullScreenViewer.pas"/>
-        <DCCReference Include="..\..\Source\fmx\GLx.AnimatedSprite.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.Context.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.CrossPlatform.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.FullScreenViewer.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.OpenGLTokens.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.Scene.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.SceneContext.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.SceneViewer.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.VectorGeometry.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.VectorTypes.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.VectorLists.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.Types.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.Objects.pas"/>
+        <DCCReference Include="..\..\Source\fmx\GLS.BaseClasses.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

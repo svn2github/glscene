@@ -34,11 +34,12 @@ requires
   fmx;
 
 contains
-  Glx.FInfo in '..\..\Source\fmx\Glx.FInfo.pas' {InfoForm},
-  Glx.FRColorEditor in '..\..\Source\fmx\Glx.FRColorEditor.pas' {RColorEditor: TFrame},
-  Glx.FRTextureEdit in '..\..\Source\fmx\Glx.FRTextureEdit.pas' {RTextureEdit: TFrame},
-  Glx.FRTrackBarEdit in '..\..\Source\fmx\Glx.FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  Glx.FXCollectionEditor in '..\..\Source\fmx\Glx.FXCollectionEditor.pas' {XCollectionEditor},
-  Glx.FVectorEditor in '..\..\Source\fmx\Glx.FVectorEditor.pas' {VectorEditorForm};
+  FInfo in '..\..\Source\fmx\FInfo.pas' {InfoForm},
+  FRColorEditor in '..\..\Source\fmx\FRColorEditor.pas' {RColorEditor: TFrame},
+  FRTextureEdit in '..\..\Source\fmx\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FRTrackBarEdit in '..\..\Source\fmx\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FXCollectionEditor in '..\..\Source\fmx\FXCollectionEditor.pas' {XCollectionEditor},
+  FVectorEditor in '..\..\Source\fmx\FVectorEditor.pas' {VectorEditorForm},
+  FGUILayoutEditor in '..\..\Source\fmx\FGUILayoutEditor.pas' {Layouts_Form};
 
 end.
