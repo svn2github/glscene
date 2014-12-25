@@ -31,8 +31,11 @@ requires
   rtl;
 
 contains
-  GLSceneFMX in '..\..\Source\GLSceneFMX.pas',
-  GLSceneContextFMX in '..\..\Source\GLSceneContextFMX.pas',
-  GLSceneViewerFMX in '..\..\Source\GLSceneViewerFMX.pas';
+  GLX.Context in '..\..\Source\fmx\GLX.Context.pas',
+  GLX.SceneContext in '..\..\Source\fmx\GLX.SceneContext.pas',
+  GLX.Scene in '..\..\Source\fmx\GLX.Scene.pas',
+  GLx.SceneViewer in '..\..\Source\fmx\GLx.SceneViewer.pas',
+  GLX.FullScreenViewer in '..\..\Source\fmx\GLX.FullScreenViewer.pas',
+  GLx.AnimatedSprite in '..\..\Source\fmx\GLx.AnimatedSprite.pas';
 
 end.

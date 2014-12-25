@@ -1,0 +1,1 @@
+The directory for Embarcadero RAD Studio VCL and FMX packages of GLScene

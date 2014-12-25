@@ -1,6 +1,7 @@
-package GLScene_DesignTimeFMX;
+package GLS_DWS;
 
 {$R *.res}
+{$R '..\..\Source\ScriptingAPIs\GLSceneVCLDWS2.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,20 +26,23 @@ package GLScene_DesignTimeFMX;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneFMX - OpenGL 3D library'}
+{$DESCRIPTION 'GLScene - DelphiWebScriptII'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  fmx;
+  vcl,
+  GLScene_RunTime,
+  dws2Runtime;
 
 contains
-  Glx.FInfo in '..\..\Source\fmx\Glx.FInfo.pas' {InfoForm},
-  Glx.FRColorEditor in '..\..\Source\fmx\Glx.FRColorEditor.pas' {RColorEditor: TFrame},
-  Glx.FRTextureEdit in '..\..\Source\fmx\Glx.FRTextureEdit.pas' {RTextureEdit: TFrame},
-  Glx.FRTrackBarEdit in '..\..\Source\fmx\Glx.FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  Glx.FXCollectionEditor in '..\..\Source\fmx\Glx.FXCollectionEditor.pas' {XCollectionEditor},
-  Glx.FVectorEditor in '..\..\Source\fmx\Glx.FVectorEditor.pas' {VectorEditorForm};
+  GLScriptDWS2 in '..\..\Source\GLScriptDWS2.pas',
+  GLDWS2Objects in '..\..\Source\GLDWS2Objects.pas',
+  dws2HelperFunc in '..\..\Source\dws2HelperFunc.pas',
+  dws2Classes in '..\..\Source\dws2Classes.pas',
+  dws2VectorGeometry in '..\..\Source\dws2VectorGeometry.pas',
+  dws2GLScene in '..\..\Source\dws2GLScene.pas',
+  dws2OpenGLAdapter in '..\..\Source\dws2OpenGLAdapter.pas';
 
 end.
