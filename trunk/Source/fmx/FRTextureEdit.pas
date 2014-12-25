@@ -23,7 +23,7 @@
   </ul></font>
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
-unit Glx.FRTextureEdit;
+unit FRTextureEdit;
 
 interface
 
@@ -33,7 +33,7 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListBox,
   //GLS
-  GLGraphics, GLTextureFormat, GLTexture, GLTextureImageEditors;
+  GLS.Graphics, GLS.TextureFormat, GLS.Texture, GLS.TextureImageEditors;
 
 type
   TRTextureEdit = class(TFrame)

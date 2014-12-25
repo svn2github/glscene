@@ -16488,7 +16488,7 @@ object InfoForm: TInfoForm
         object LabelCommon: TLabel
           Align = Top
           StyledSettings = [Family]
-          Size.Width = 50.000000000000000000
+          Size.Width = 524.000000000000000000
           Size.Height = 21.000000000000000000
           Size.PlatformDefault = False
           TextSettings.Font.Size = 16.000000000000000000

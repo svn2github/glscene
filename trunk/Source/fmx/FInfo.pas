@@ -1,4 +1,4 @@
-unit GLx.FInfo;
+unit FInfo;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
   //GLX
-  GLx.GLScene, GLx.OpenGLTokens, GLx.Context;
+  GLS.GLScene, GLS.OpenGLTokens, GLS.Context;
 
 type
   TInfoForm = class(TForm)

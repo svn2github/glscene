@@ -14,7 +14,7 @@
   </ul></font>
 }
 
-unit Glx.FVectorEditor;
+unit FVectorEditor;
 
 interface
 
@@ -23,7 +23,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Controls.Presentation, FMX.Edit, FMX.Objects,
   //GLS
-  GLVectorGeometry, GLVectorTypes, GLUtils;
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.Utils;
 
 type
   TVectorEditorForm = class(TForm)

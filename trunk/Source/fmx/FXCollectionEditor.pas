@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// GLx.FXCollectionEditor
+// GLS.FXCollectionEditor
 { : Egg<p>
 
   Edits a TXCollection<p>
@@ -19,7 +19,7 @@
   <li>06/04/00 - Egg - Creation
   </ul></font>
 }
-unit GLx.FXCollectionEditor;
+unit FXCollectionEditor;
 
 interface
 
@@ -29,7 +29,7 @@ uses
   FMX.ListView.Types, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListView,
 
  //GLS
-  GLCrossPlatform, XCollection;
+  GLS.CrossPlatform, GLS.XCollection;
 
 type
   TXCollectionEditor = class(TForm)
