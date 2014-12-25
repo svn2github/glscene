@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFullscreenViewerFMX<p>
+{ : GLx.FullscreenViewer<p>
 
   A cross-platform full-screen viewer.<p>
 
@@ -16,21 +16,19 @@
   <li>24/07/03 - EG - Creation from GLWin32Viewer split
   </ul></font>
 }
-unit GLFullScreenViewer;
+unit GLx.FullScreenViewer;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  VCL.Forms, VCL.Controls, VCL.Menus,
-  System.Classes, Winapi.Messages,
+  Winapi.Messages, Winapi.Windows,
+  System.Classes, System.SysUtils,
+  Fmx.Forms, Fmx.Controls, Fmx.Menus,
   //GLScene
-  GLViewer, GLScene, GLContext
-{$IFDEF MSWindows}
-    , Winapi.Windows
-{$ENDIF}
-    ;
+  GLx.Scene, GLx.Context, GLx.SceneContext, GLx.OpenGLTokens,
+  GLCrossPlatform, OpenGLAdapter;
 
 type
 
@@ -214,10 +212,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform,
-  GLScreen, GLSceneContext;
 
 const
   cScreenDepthToBPP: array [sd8bits .. sd32bits] of Integer = (8, 16, 24, 32);

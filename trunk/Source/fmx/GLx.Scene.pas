@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneFMX<p>
+{ : GLScene<p>
 
   Base classes and structures for GLScene.<p>
 
@@ -343,11 +343,11 @@
   TGLBaseSceneObject.CoordinateChanged
   </ul></font>
 }
-unit GLSceneFMX;
+unit GLx.Scene;
 
 interface
 
-///{$I GLScene.inc}
+{$I GLScene.inc}
 
 uses
   Winapi.Windows,
@@ -358,8 +358,8 @@ uses
   FMX.Controls,
 
   // GLScene
-  GLContextFMX,
-  OpenGLTokens,
+  GLX.Context,
+  GLX.OpenGLTokens,
   GLVectorGeometry,
   XCollection,
   GLSilhouette,

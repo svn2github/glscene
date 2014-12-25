@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLContextFMX<p>
+{: GLx.Context<p>
 
    Prototypes and base implementation of TGLContext.<p>
 
@@ -78,7 +78,7 @@
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
 }
-unit GLContextFMX;
+unit GLx.Context;
 
 interface
 
@@ -96,8 +96,8 @@ uses
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
+  GLx.OpenGLTokens,
   GLCrossPlatform,
-  OpenGLTokens,
   OpenGLAdapter,
   GLVectorGeometry,
   GLStrings,

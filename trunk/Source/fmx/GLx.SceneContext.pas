@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneContextFMX<p>
+{ : GLx.SceneContext<p>
 
   Cross-platform context.<p>
 
@@ -55,7 +55,7 @@
   <li>22/07/01 - EG - Creation (glcontext.omm)
   </ul></font>
 }
-unit GLSceneContextFMX;
+unit GLx.SceneContext;
 
 interface
 
@@ -69,17 +69,17 @@ uses
   FMX.Forms,
 ///  FMX.Platform.Win,
 
-  // GLS
-  OpenGLTokens,
+  // GLX
+  GLx.Context,
+  GLx.OpenGLTokens,
   OpenGLAdapter,
-  GLContext,
   GLCrossPlatform,
   GLState,
   GLSLog,
   GLVectorGeometry;
 
 type
-  // TGSceneContextFMX
+  // TGSceneContext
   //
   { : A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)

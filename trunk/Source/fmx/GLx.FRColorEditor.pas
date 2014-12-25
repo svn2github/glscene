@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRColorEditorFMX<p>
+{: GLx.FRColorEditor<p>
 
    RGB+Alpha color editor.<p>
 
@@ -15,7 +15,7 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRColorEditorFMX;
+unit GLx.FRColorEditor;
 
 interface
 

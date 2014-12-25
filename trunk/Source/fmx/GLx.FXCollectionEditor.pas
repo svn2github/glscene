@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// FXCollectionEditorFMX
+// GLx.FXCollectionEditor
 { : Egg<p>
 
   Edits a TXCollection<p>
@@ -19,7 +19,7 @@
   <li>06/04/00 - Egg - Creation
   </ul></font>
 }
-unit FXCollectionEditorFMX;
+unit GLx.FXCollectionEditor;
 
 interface
 

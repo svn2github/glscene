@@ -15,7 +15,7 @@
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
-unit FRTrackBarEditFMX;
+unit Glx.FRTrackBarEdit;
 
 interface
 

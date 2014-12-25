@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// FRTextureEditFMX
+// FRTextureEdit
 { : Egg<p>
 
   Basic editing frame for TGLTexture<p>
@@ -23,7 +23,7 @@
   </ul></font>
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
-unit FRTextureEditFMX;
+unit Glx.FRTextureEdit;
 
 interface
 

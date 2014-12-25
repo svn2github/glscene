@@ -14,7 +14,7 @@
   </ul></font>
 }
 
-unit FVectorEditorFMX;
+unit Glx.FVectorEditor;
 
 interface
 

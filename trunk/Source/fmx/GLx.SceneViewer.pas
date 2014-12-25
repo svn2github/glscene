@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneViewerFMX<p>
+{: GLx.SceneViewer<p>
 
   GLScene cross-platform viewer.<p>
 
  <b>History : </b><font size=-1><ul>
-      <li>22/12/14 - PW - Upgraded  "GLWin32Viewer.pas" to "GLSceneViewerFMX.pas"
+      <li>22/12/14 - PW - Upgraded  "GLWin32Viewer.pas" to "GLx.SceneViewer.pas"
       <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
       <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
       <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
@@ -35,7 +35,7 @@
      <li>12/12/01 - EG - Creation (split from GLScene.pas)
  </ul></font>
 }
-unit GLSceneViewerFMX;
+unit GLx.SceneViewer;
 
 interface
 
@@ -43,8 +43,8 @@ uses
   WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
   System.Types, FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
 
-  // GLScene
-  GLSceneFMX, GLSceneContextFMX,  GLContextFMX;
+  // GLX
+  GLx.Scene, GLx.SceneContext,  GLx.Context;
 
 type
   TCreateParams = record
