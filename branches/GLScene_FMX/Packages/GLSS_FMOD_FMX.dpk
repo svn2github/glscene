@@ -1,4 +1,4 @@
-package GLScene_DesignTimeFMX;
+package GLSS_FMOD_FMX;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -25,21 +25,17 @@ package GLScene_DesignTimeFMX;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneFMX - OpenGL 3D library'}
-{$DESIGNONLY}
+{$DESCRIPTION 'GLSceneFMX - FMOD Manager'}
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
-  fmx,
-  GLScene_RunTimeFMX;
+  rtl;
 
 contains
-  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {Layouts_Form},
-  FInfo in '..\Source\FInfo.pas' {InfoForm},
-  FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
-  FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
-  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor};
+  fmod in '..\Source\fmod.pas',
+  fmodtypes in '..\Source\fmodtypes.pas',
+  fmoderrors in '..\Source\fmoderrors.pas',
+  fmodpresets in '..\Source\fmodpresets.pas',
+  GLS.SMFMOD in '..\Source\GLS.SMFMOD.pas';
 
 end.

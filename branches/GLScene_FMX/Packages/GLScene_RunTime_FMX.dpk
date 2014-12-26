@@ -1,4 +1,4 @@
-package GLScene_RunTimeFMX;
+package GLScene_RunTime_FMX;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}

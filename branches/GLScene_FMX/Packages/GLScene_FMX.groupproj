@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{A573E45E-65D3-4041-9441-243A1709F4DD}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="GLScene_RunTime_FMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLScene_DesignTime_FMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSS_BASS_FMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSS_FMOD_FMX.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSS_OpenAL_FMX.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="GLScene_RunTime_FMX">
+        <MSBuild Projects="GLScene_RunTime_FMX.dproj"/>
+    </Target>
+    <Target Name="GLScene_RunTime_FMX:Clean">
+        <MSBuild Projects="GLScene_RunTime_FMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_RunTime_FMX:Make">
+        <MSBuild Projects="GLScene_RunTime_FMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLScene_DesignTime_FMX">
+        <MSBuild Projects="GLScene_DesignTime_FMX.dproj"/>
+    </Target>
+    <Target Name="GLScene_DesignTime_FMX:Clean">
+        <MSBuild Projects="GLScene_DesignTime_FMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_DesignTime_FMX:Make">
+        <MSBuild Projects="GLScene_DesignTime_FMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSS_BASS_FMX">
+        <MSBuild Projects="GLSS_BASS_FMX.dproj"/>
+    </Target>
+    <Target Name="GLSS_BASS_FMX:Clean">
+        <MSBuild Projects="GLSS_BASS_FMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSS_BASS_FMX:Make">
+        <MSBuild Projects="GLSS_BASS_FMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSS_FMOD_FMX">
+        <MSBuild Projects="GLSS_FMOD_FMX.dproj"/>
+    </Target>
+    <Target Name="GLSS_FMOD_FMX:Clean">
+        <MSBuild Projects="GLSS_FMOD_FMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSS_FMOD_FMX:Make">
+        <MSBuild Projects="GLSS_FMOD_FMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSS_OpenAL_FMX">
+        <MSBuild Projects="GLSS_OpenAL_FMX.dproj"/>
+    </Target>
+    <Target Name="GLSS_OpenAL_FMX:Clean">
+        <MSBuild Projects="GLSS_OpenAL_FMX.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSS_OpenAL_FMX:Make">
+        <MSBuild Projects="GLSS_OpenAL_FMX.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="GLScene_RunTime_FMX;GLScene_DesignTime_FMX;GLSS_BASS_FMX;GLSS_FMOD_FMX;GLSS_OpenAL_FMX"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="GLScene_RunTime_FMX:Clean;GLScene_DesignTime_FMX:Clean;GLSS_BASS_FMX:Clean;GLSS_FMOD_FMX:Clean;GLSS_OpenAL_FMX:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="GLScene_RunTime_FMX:Make;GLScene_DesignTime_FMX:Make;GLSS_BASS_FMX:Make;GLSS_FMOD_FMX:Make;GLSS_OpenAL_FMX:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
