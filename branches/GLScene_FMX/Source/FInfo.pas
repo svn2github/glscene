@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
   //GLX
-  GLS.GLScene, GLS.OpenGLTokens, GLS.Context;
+  GLS.Scene, GLS.OpenGLTokens, GLS.Context;
 
 type
   TInfoForm = class(TForm)

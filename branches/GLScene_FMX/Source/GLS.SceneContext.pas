@@ -69,14 +69,14 @@ uses
   FMX.Forms,
 ///  FMX.Platform.Win,
 
-  // GLX
+  // GLS
   GLS.Context,
   GLS.OpenGLTokens,
-  OpenGLAdapter,
-  GLCrossPlatform,
-  GLState,
-  GLSLog,
-  GLVectorGeometry;
+  GLS.OpenGLAdapter,
+  GLS.CrossPlatform,
+  GLS.State,
+  GLS.Log,
+  GLS.VectorGeometry;
 
 type
   // TGSceneContext
