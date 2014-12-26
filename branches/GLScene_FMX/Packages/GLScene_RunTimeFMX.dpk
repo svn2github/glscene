@@ -31,18 +31,20 @@ requires
   rtl;
 
 contains
-  GLS.Context in '..\..\Source\fmx\GLS.Context.pas',
-  GLS.CrossPlatform in '..\..\Source\fmx\GLS.CrossPlatform.pas',
-  GLS.FullScreenViewer in '..\..\Source\fmx\GLS.FullScreenViewer.pas',
-  GLS.OpenGLTokens in '..\..\Source\fmx\GLS.OpenGLTokens.pas',
-  GLS.Scene in '..\..\Source\fmx\GLS.Scene.pas',
-  GLS.SceneContext in '..\..\Source\fmx\GLS.SceneContext.pas',
-  GLS.SceneViewer in '..\..\Source\fmx\GLS.SceneViewer.pas',
-  GLS.VectorGeometry in '..\..\Source\fmx\GLS.VectorGeometry.pas',
-  GLS.VectorTypes in '..\..\Source\fmx\GLS.VectorTypes.pas',
-  GLS.VectorLists in '..\..\Source\fmx\GLS.VectorLists.pas',
-  GLS.Types in '..\..\Source\fmx\GLS.Types.pas',
-  GLS.Objects in '..\..\Source\fmx\GLS.Objects.pas',
-  GLS.BaseClasses in '..\..\Source\fmx\GLS.BaseClasses.pas';
+  GLS.BaseClasses in '..\Source\GLS.BaseClasses.pas',
+  GLS.Context in '..\Source\GLS.Context.pas',
+  GLS.CrossPlatform in '..\Source\GLS.CrossPlatform.pas',
+  GLS.FullScreenViewer in '..\Source\GLS.FullScreenViewer.pas',
+  GLS.Objects in '..\Source\GLS.Objects.pas',
+  GLS.OpenGLTokens in '..\Source\GLS.OpenGLTokens.pas',
+  GLS.Scene in '..\Source\GLS.Scene.pas',
+  GLS.SceneContext in '..\Source\GLS.SceneContext.pas',
+  GLS.SceneViewer in '..\Source\GLS.SceneViewer.pas',
+  GLS.Types in '..\Source\GLS.Types.pas',
+  GLS.VectorGeometry in '..\Source\GLS.VectorGeometry.pas',
+  GLS.VectorLists in '..\Source\GLS.VectorLists.pas',
+  GLS.VectorTypes in '..\Source\GLS.VectorTypes.pas',
+  GLS.Strings in '..\Source\GLS.Strings.pas',
+  GLS.PersistentClasses in '..\Source\GLS.PersistentClasses.pas';
 
 end.

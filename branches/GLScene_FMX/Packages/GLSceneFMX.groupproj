@@ -9,12 +9,6 @@
         <Projects Include="GLScene_DesignTimeFMX.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLScene_DesignTime.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="GLScene_RunTime.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -41,32 +35,14 @@
     <Target Name="GLScene_DesignTimeFMX:Make">
         <MSBuild Projects="GLScene_DesignTimeFMX.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLScene_DesignTime">
-        <MSBuild Projects="GLScene_DesignTime.dproj"/>
-    </Target>
-    <Target Name="GLScene_DesignTime:Clean">
-        <MSBuild Projects="GLScene_DesignTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLScene_DesignTime:Make">
-        <MSBuild Projects="GLScene_DesignTime.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="GLScene_RunTime">
-        <MSBuild Projects="GLScene_RunTime.dproj"/>
-    </Target>
-    <Target Name="GLScene_RunTime:Clean">
-        <MSBuild Projects="GLScene_RunTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLScene_RunTime:Make">
-        <MSBuild Projects="GLScene_RunTime.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTimeFMX;GLScene_DesignTimeFMX;GLScene_DesignTime;GLScene_RunTime"/>
+        <CallTarget Targets="GLScene_RunTimeFMX;GLScene_DesignTimeFMX"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTimeFMX:Clean;GLScene_DesignTimeFMX:Clean;GLScene_DesignTime:Clean;GLScene_RunTime:Clean"/>
+        <CallTarget Targets="GLScene_RunTimeFMX:Clean;GLScene_DesignTimeFMX:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTimeFMX:Make;GLScene_DesignTimeFMX:Make;GLScene_DesignTime:Make;GLScene_RunTime:Make"/>
+        <CallTarget Targets="GLScene_RunTimeFMX:Make;GLScene_DesignTimeFMX:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
