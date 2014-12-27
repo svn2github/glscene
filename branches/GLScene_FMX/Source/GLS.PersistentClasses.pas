@@ -5,7 +5,7 @@
 
    Base persistence classes.<p>
 
-   These classes are used in GLScene, but are designed for generic purpose.<br>
+   These classes are used in GLS.Scene, but are designed for generic purpose.<br>
    They implement a slightly different persistence mechanism than that of the VCL,
    allowing for object-level versioning (100% backward compatibility) and full
    polymorphic persistence.<p>

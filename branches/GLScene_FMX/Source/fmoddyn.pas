@@ -10,7 +10,7 @@
   NOTE: For the demos to run you must have either fmod.dll (in Windows)
   or libfmod-3.75.so (in Linux) installed.
 
-  In Windows, copy the fmod.dll file found in the api directory to either of
+  In Winapi.Windows, copy the fmod.dll file found in the api directory to either of
   the following locations (in order of preference)
   - your application directory
   - Windows\System (95/98) or WinNT\System32 (NT/2000/XP)
@@ -32,7 +32,7 @@ interface
 
 uses
 {$IFDEF MSWINDOWS}
-  Windows,
+  Winapi.Windows,
 {$ENDIF}
 {$IFDEF FPC}
   LCLType,

@@ -64,7 +64,7 @@ uses
   System.Classes, System.SysUtils,
 
   // GLScene
-  GLS.Texture, GLScene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings, GLS.CustomShader,
+  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings, GLS.CustomShader,
   GLSL.Shader, GLS.Color, GLS.RenderContextInfo, GLS.Material;
 
 type

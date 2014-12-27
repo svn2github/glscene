@@ -34,7 +34,7 @@
       <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
       <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
                             on prior versions of Delphi)
-      <li>24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
+      <li>24/03/09 - DanB - Moved Dialog utility functions to GLS.Utils.pas, new ShowHTMLUrl procedure
       <li>19/03/09 - DanB - Removed some Kylix IFDEFs, and other changes mostly affecting D5/FPC
       <li>29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
       <li>10/04/08 - DaStr - Added TGLComponent (BugTracker ID = 1938988)

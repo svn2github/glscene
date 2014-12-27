@@ -27,7 +27,7 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows, System.Classes,
+  Winapi.Windows, System.Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Controls, VCL.Forms, VCL.Extctrls;
 {$ELSE}
@@ -180,7 +180,7 @@ uses
 {$ELSE}
   Dialogs,
 {$ENDIF}
-  SysUtils, Registry, Messages;
+  System.SysUtils, Registry, Messages;
 
 // GetSystemDirectory
 //

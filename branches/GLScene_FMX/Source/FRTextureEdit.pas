@@ -9,7 +9,7 @@
   <b>History : </b><font size=-1><ul>
   <li>19/12/14 - PW - Upgraded to support FMX
   <li>05/10/08 - DanB - Removed Kylix support
-  <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+  <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLS.Utils.pas
                   to GLGraphics.pas (BugTracker ID = 1923844)
   <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange

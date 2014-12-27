@@ -100,7 +100,7 @@ uses
   GLCrossPlatform,
   OpenGLAdapter,
   GLVectorGeometry,
-  GLStrings,
+  GLS.Strings,
   GLVectorTypes,
   GLState,
   GLPipelineTransformation,

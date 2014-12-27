@@ -74,7 +74,7 @@
 
 
 }
-unit GLSL.BumpShader;
+unit GLSLBumpShader;
 
 interface
 

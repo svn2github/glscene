@@ -27,7 +27,7 @@ interface
 
 uses
   Classes,
-  SysUtils,
+  System.SysUtils,
   GLBaseClasses
   {$IFDEF FPC}
   ,

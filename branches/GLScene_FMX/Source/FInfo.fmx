@@ -17188,7 +17188,7 @@ object InfoForm: TInfoForm
           'allowing description and rendering of 3D scenes in an easy, '
           'no-hassle, yet powerful manner. '
           
-            'GLScene runs on Windows, Mac OS X, iOS, Android, Linux, FreeBSD ' +
+            'GLScene runs on Winapi.Windows, Mac OS X, iOS, Android, Linux, FreeBSD ' +
             'and more.'
           'License: MPL'
           '***'

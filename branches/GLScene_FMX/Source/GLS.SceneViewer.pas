@@ -40,7 +40,7 @@ unit GLS.SceneViewer;
 interface
 
 uses
-  WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
+  WinApi.Winapi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
   System.Types, FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
 
   // GLX

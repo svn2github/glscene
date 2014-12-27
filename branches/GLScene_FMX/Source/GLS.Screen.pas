@@ -37,7 +37,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS} Windows, {$ENDIF}
+{$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
 {$IFDEF FPC} LCLVersion, {$ENDIF}
   System.Classes, GLS.VectorGeometry, GLS.CrossPlatform;

@@ -87,7 +87,7 @@
   <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
   <li>05/02/01 - EG - Minor changes to TGLCube.BuildList
   <li>21/01/01 - EG - BaseProjectionMatrix fix for TGLHUDSprite (picking issue),
-  TGLHUDSprite moved to GLHUDObjects
+  TGLHUDSprite moved to GLS.HUDObjects
   <li>14/01/01 - EG - Fixed TGLSphere texture coordinates
   <li>13/01/01 - EG - TGLSprite matrix compatibility update
   <li>09/01/01 - EG - TGLSpaceText now handles its TFont.OnFontChange
@@ -149,15 +149,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils,
-  {$ELSE}
-  Classes, SysUtils,
-  {$ENDIF}
 
-  GLS.VectorGeometry, GLS.VectorTypes, GLScene, OpenGLAdapter,
-  OpenGLTokens, GLS.VectorLists, GLS.CrossPlatform, GLContext, GLSilhouette,
-  GLColor, GLRenderContextInfo, GLS.BaseClasses, GLNodes, GLCoordinates;
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.Scene, GLS.OpenGLAdapter,
+  GLS.OpenGLTokens, GLS.VectorLists, GLS.CrossPlatform, GLS.Context,
+  GLSilhouette, GLColor, GLRenderContextInfo, GLS.BaseClasses,
+  GLNodes, GLCoordinates;
 
 type
 

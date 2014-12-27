@@ -22,25 +22,8 @@ interface
 
 uses
   GLVectorTypes,
-  SysUtils,
-{$IFDEF MSWINDOWS}
-  Windows
-{$ENDIF }
-
-{$IFDEF UNIX}
-  Types,
-  LCLType,
-  dynlibs,
-{$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
-  X,
-  Xlib,
-  XUtil
-{$ENDIF}
-{$IFDEF DARWIN}
-  MacOsAll
-{$ENDIF}
-  ;
+  System.SysUtils,
+  Winapi.Windows;
 
 const
 {$IFDEF MSWINDOWS}
@@ -48,21 +31,6 @@ const
   glu32 = 'GLU32.dll';
   libEGL = 'libEGL.dll';
   libGLES2 = 'libGLESv2.dll';
-{$ENDIF}
-
-{$IFDEF Linux}
-  opengl32 = 'libGL.so';
-  glu32 = 'libGLU.so';
-  libEGL = 'libEGL.so';
-  libGLES2 = 'libGLESv2.so';
-{$ENDIF}
-
-{$IFDEF DARWIN}
-  opengl32  = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
-  glu32 = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
-  libAGL = '/System/Library/Frameworks/AGL.framework/AGL';
-  libdl = '/usr/lib/libdl.dylib';
-  libGLES2 = '/System/Library/Frameworks/OpenGLES.framework/OpenGLES';
 {$ENDIF}
 
 type
@@ -249,38 +217,6 @@ type
   GLXBufferClobberEventSGIX = ^TGLXBufferClobberEventSGIX;
   GLXVideoDeviceNV = PGLuint;
   GLXVideoCaptureDeviceNV = TXID;
-{$ENDIF}
-
-{$IFDEF DARWIN}
-const
-   AGL_VERSION_2_0 = 1;
-
-type
-   TGDHandle = ptrint;
-   TCGrafPtr = Pointer;
-
-   PAGLDevice = ^TAGLDevice;
-   TAGLDevice = TGDHandle;
-
-   {
-   ** Macintosh drawable type.
-    }
-
-   PAGLDrawable = ^TAGLDrawable;
-   TAGLDrawable = TCGrafPtr;
-
-   {
-   ** AGL opaque data.
-    }
-
-   TAGLRendererInfo = Pointer;
-
-   TAGLPixelFormat = Pointer;
-
-   TAGLContext = Pointer;
-
-   TAGLPbuffer = Pointer;
-   PAGLPbuffer = ^TAGLPbuffer;
 {$ENDIF}
 
 {$IFDEF SUPPORT_WGL}

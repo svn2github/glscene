@@ -35,7 +35,7 @@ resourcestring
   glsAlreadyRendering   = 'Already rendering';
   glsSceneViewerNotDefined = 'SceneViewer not defined!';
 
-  // GLCadencer
+  // GLS.Cadencer
   glsCadencerNotDefined   = 'Cadencer not defined!';
   glsCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
 

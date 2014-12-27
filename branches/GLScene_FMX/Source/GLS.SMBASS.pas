@@ -34,7 +34,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, SysUtils, FMX.Forms,
+  System.Classes, System.SysUtils, FMX.Forms,
 
   //GLS
   GLS.Sound, GLS.Scene, GLS.VectorGeometry, Bass;

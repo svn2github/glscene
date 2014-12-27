@@ -1823,7 +1823,7 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
-uses SysUtils, Math;
+uses System.SysUtils, Math;
 
 const
 {$ifndef GEOMETRY_NO_ASM}

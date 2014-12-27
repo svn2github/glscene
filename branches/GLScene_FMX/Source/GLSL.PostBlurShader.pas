@@ -28,7 +28,7 @@ uses
   System.Classes,
 
   // GLS
-  GLS.Texture, GLScene, GLS.VectorGeometry, GLS.Context,
+  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.Context,
   GLSL.Shader, GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat;
 
 type

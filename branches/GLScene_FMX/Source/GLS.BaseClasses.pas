@@ -14,14 +14,10 @@ unit GLS.BaseClasses;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils,
-  {$ELSE}
-  Classes, SysUtils,
-  {$ENDIF}
 
   //GLScene
-  GLStrings, GLS.PersistentClasses, GLS.CrossPlatform;
+  GLS.Strings, GLS.PersistentClasses, GLS.CrossPlatform;
 
 type
 

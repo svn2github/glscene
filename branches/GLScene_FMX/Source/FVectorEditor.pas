@@ -150,8 +150,8 @@ procedure TVectorEditorForm.SBInvertClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
-  SetVector(v, GLUtils.StrToFloatDef(EDx.Text, 0),
-    GLUtils.StrToFloatDef(EDy.Text, 0), GLUtils.StrToFloatDef(EDz.Text, 0));
+  SetVector(v, GLS.Utils.StrToFloatDef(EDx.Text, 0),
+    GLS.Utils.StrToFloatDef(EDy.Text, 0), GLS.Utils.StrToFloatDef(EDz.Text, 0));
   NegateVector(v);
   EDx.Text := FloatToStr(v.x);
   EDy.Text := FloatToStr(v.y);
@@ -183,8 +183,8 @@ procedure TVectorEditorForm.SBNormalizeClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
-  SetVector(v, GLUtils.StrToFloatDef(EDx.Text, 0),
-    GLUtils.StrToFloatDef(EDy.Text, 0), GLUtils.StrToFloatDef(EDz.Text, 0));
+  SetVector(v, GLS.Utils.StrToFloatDef(EDx.Text, 0),
+    GLS.Utils.StrToFloatDef(EDy.Text, 0), GLS.Utils.StrToFloatDef(EDz.Text, 0));
   if VectorLength(v) = 0 then
     v := NullVector
   else

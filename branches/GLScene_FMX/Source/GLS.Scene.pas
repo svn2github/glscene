@@ -317,7 +317,7 @@
   Added BarycenterXxx and SqrDistance funcs,
   Fixed (?) AbsolutePosition,
   Added ResetPerformanceMonitor
-  <li>14/03/00 - Egg - Added SaveToFile, LoadFromFile to GLScene,
+  <li>14/03/00 - Egg - Added SaveToFile, LoadFromFile to GLS.Scene,
   <li>03/03/00 - Egg - Disabled woTransparent handling
   <li>12/02/00 - Egg - Added Material Library
   <li>10/02/00 - Egg - Added Initialize to TGLCoordinates
@@ -373,15 +373,15 @@ uses
   GLGraphics,
   GLTexture,
   GLColor,
-  GLCoordinates,
+  GLS.Coordinates,
   GLRenderContextInfo,
   GLMaterial,
   GLTextureFormat,
   GLSelection,
-  GLStrings,
+  GLS.Strings,
   XOpenGL,
   GLApplicationFileIO,
-  GLUtils,
+  GLS.Utils,
   GLSLog;
 
 type

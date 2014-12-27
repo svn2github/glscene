@@ -28,7 +28,7 @@ uses
   Fmx.Forms, Fmx.Controls, Fmx.Menus,
   //GLScene
   GLS.Scene, GLS.Context, GLS.SceneContext, GLS.OpenGLTokens,
-  GLCrossPlatform, OpenGLAdapter;
+  GLCrossPlatform, GLS.OpenGLAdapter;
 
 type
 

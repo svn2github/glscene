@@ -27,8 +27,8 @@ uses
   System.Classes, System.SysUtils, System.Types,
 
   //GLS
-  GLSoundFileObjects, GLScene, XCollection, GLS.VectorGeometry,
-  GLCadencer, GLS.BaseClasses, GLS.CrossPlatform, GLUtils;
+  GLSoundFileObjects, GLS.Scene, XCollection, GLS.VectorGeometry,
+  GLS.Cadencer, GLS.BaseClasses, GLS.CrossPlatform, GLS.Utils;
 
 {$I GLScene.inc}
 

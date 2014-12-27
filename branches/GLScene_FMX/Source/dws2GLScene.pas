@@ -14,7 +14,7 @@ unit dws2GLScene;
 interface
 
 uses
-  System.Classes, SysUtils,
+  System.Classes, System.SysUtils,
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
   dws2Functions, dws2HelperFunc, GLS.Scene, GLS.VectorGeometry,
   GLS.Coordinates;

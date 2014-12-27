@@ -118,8 +118,8 @@ unit cgGL;
 interface
 
 uses
-  GLS.OpenGLTokens, cg
-  {$IFDEF MSWINDOWS} ,Windows{$ENDIF};
+  GLS.OpenGLTokens, Cg
+  {$IFDEF MSWINDOWS} ,Winapi.Windows{$ENDIF};
 
 const
   {$IFDEF MSWINDOWS}
