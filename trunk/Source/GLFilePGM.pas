@@ -15,7 +15,8 @@ unit GLFilePGM;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
+  //GLS
   OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
   GLApplicationFileIO;
 
@@ -39,7 +40,7 @@ type
 implementation
 
 uses
-  GLS_CUDA_Utility;
+  GLSCUDAUtility;
 
 resourcestring
   cCUTILFailed = 'Can not initialize cutil32.dll';

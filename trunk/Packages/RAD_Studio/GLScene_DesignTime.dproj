@@ -117,6 +117,7 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_Description>GLScene VCL OpenGL 3D library</DCC_Description>
         <DCC_HppOutput>..\..\Source\include\</DCC_HppOutput>
         <DCC_BpiOutput>..\..\Source\lib\</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLS_CUDA_ParallelPrimitives<p>
+{: GLSCUDAParallelPrimitives<p>
 
    <b>History : </b><font size=-1><ul>
       <li>28/01/10 - Yar - Creation
@@ -18,12 +18,12 @@
 // the root directory of this source distribution.
 // -------------------------------------------------------------
 
-unit GLS_CUDA_ParallelPrimitives;
+unit GLSCUDAParallelPrimitives;
 
 interface
 
 uses
-  GLS_CL_Platform;
+  GLSCLPlatform;
 
 {$I cuda.inc}
 

@@ -4,7 +4,6 @@
 { : GLSCUDAContext <p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
@@ -16,16 +15,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  System.Classes, System.SysUtils,
+  //GLS
   GLBaseClasses,
-  GLS_CUDA_API,
-  GLS_CUDA_RunTime,
-  GLS_CL_Platform,
+  GLSCUDAApi,
+  GLSCUDARunTime,
+  GLSCLPlatform,
   GLContext,
   GLSGenerics,
   GLSLog;

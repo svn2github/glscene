@@ -22,14 +22,19 @@ unit GLFileHDR;
 interface
 
 uses
-  Classes,
-  SysUtils,
+  System.Classes,
+  System.SysUtils,
+  //GLS
   OpenGLTokens,
   GLContext,
   GLGraphics,
   GLTextureFormat,
   GLApplicationFileIO,
-  GLCrossPlatform;
+  GLCrossPlatform,
+  GLSRGBE,
+  GLVectorTypes,
+  GLVectorGeometry;
+
 
 type
 
@@ -60,13 +65,13 @@ type
     property Exposure: Single read fExposure;
     property ProgramType: Ansistring read GetProgramType write SetProgramType;
   end;
-
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 implementation
-
-uses
-  GLS_RGBE,
-  GLVectorTypes,
-  GLVectorGeometry;
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 
 // ------------------
 // ------------------ TGLHDRImage ------------------

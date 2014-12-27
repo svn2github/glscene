@@ -23,7 +23,7 @@ uses
   {$IFNDEF FPC}
   DesignIntf, VCLEditors,
   {$ELSE}
-  propedits, componenteditors,
+  Propedits, Componenteditors,
   {$ENDIF}
   GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics;
 

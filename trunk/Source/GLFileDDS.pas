@@ -26,10 +26,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  GLS_RGBE, GLApplicationFileIO, GLVectorGeometry, GLStrings;
+  GLSrgbe, GLApplicationFileIO, GLVectorGeometry, GLStrings;
 
 type
 

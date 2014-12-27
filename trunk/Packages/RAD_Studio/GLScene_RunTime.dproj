@@ -89,6 +89,7 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_Description>GLScene VCL OpenGL 3D library</DCC_Description>
         <DCC_AdditionalSwitches>-LUDesignIDE </DCC_AdditionalSwitches>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -311,7 +312,7 @@
         <DCCReference Include="..\..\Source\DDSImage.pas"/>
         <DCCReference Include="..\..\Source\HDRImage.pas"/>
         <DCCReference Include="..\..\Source\O3TCImage.pas"/>
-        <DCCReference Include="..\..\Source\GLS_RGBE.pas"/>
+        <DCCReference Include="..\..\Source\GLSRGBE.pas"/>
         <DCCReference Include="..\..\Source\GLCompositeImage.pas"/>
         <DCCReference Include="..\..\Source\GLFBO.pas"/>
         <DCCReference Include="..\..\Source\GLFileMP3.pas"/>

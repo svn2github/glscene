@@ -30,7 +30,7 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // ****************************************************************************/
 
-unit GLS_CL_Platform;
+unit GLSCLPlatform;
 
 interface
 
@@ -42,15 +42,9 @@ type
   Psize_t = PSizeInt;
   intptr_t = PtrInt;
 {$ELSE}
-{$IFDEF GLS_DELPHI_2009_UP}
   TSize_T = NativeUInt; // 32 or 64 bit unsigned integer
   Psize_t = ^TSize_T;
   intptr_t = NativeUInt;
-{$ELSE}
-  TSize_T = Cardinal; // 32 bit unsigned integer
-  Psize_t = ^TSize_T;
-  intptr_t = Cardinal;
-{$ENDIF}
 {$ENDIF}
   // Pintptr_t = ^intptr_t;
 

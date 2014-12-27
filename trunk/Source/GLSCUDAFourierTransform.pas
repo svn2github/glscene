@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_FourierTransform<p>
+{ : GLSCUDAFourierTransform<p>
 
   <b>History : </b><font size=-1><ul>
   <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
@@ -45,7 +45,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_FourierTransform;
+unit GLSCUDAFourierTransform;
 
 interface
 
@@ -54,8 +54,7 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  GLVectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLVectorTypes, GLSCUDAApi, GLSCUDARunTime, GLSLog;
 
 
 const

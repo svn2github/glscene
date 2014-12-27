@@ -22,19 +22,14 @@ interface
 {$I cuda.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  // GLScene
+  // GLS
   GLPersistentClasses,  GLBaseClasses,  GLCrossPlatform,  GLContext,
   GLVectorGeometry,  GLVectorTypes,  GLVectorLists,  GLGraphics,
-  GLS_CL_Platform,  GLS_CUDA_API,  GLS_CUDA_RUNTIME,  GLSCUDAParser,
-  GLS_CUDA_FourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
-  GLSCUDADataAccess,  GLStrings,  GLUtils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLSCLPlatform,  GLSCUDAApi,  GLSCUDARunTime,  GLSCUDAParser,
+  GLSCUDAFourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
+  GLSCUDADataAccess,  GLStrings,  GLUtils, GLSLog;
 
 type
 

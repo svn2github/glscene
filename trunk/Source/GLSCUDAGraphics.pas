@@ -17,9 +17,10 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes,
+  System.Classes,
+  //GLS
   GLCrossPlatform,
-  GLS_CUDA_API,
+  GLSCUDAApi,
   GLSCUDA,
   OpenGLTokens,
   GLContext,

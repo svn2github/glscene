@@ -17,7 +17,8 @@ unit GLSCUDAParser;
 interface
 
 uses
-  Classes, GLS_CUDA_RUNTIME;
+  System.Classes,
+  GLSCUDARunTime;
 
 type
 

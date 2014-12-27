@@ -25,7 +25,7 @@ package GLS_Computing_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene - CUDA Computing'}
+{$DESCRIPTION 'GLScene VCL GPU Computing'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -37,13 +37,13 @@ requires
   GLScene_RunTime;
 
 contains
-  GLS_CL_Platform in '..\..\Source\GLS_CL_Platform.pas',
-  GLS_CL in '..\..\Source\GLS_CL.pas',
-  GLS_CL_GL in '..\..\Source\GLS_CL_GL.pas',
-  GLS_CUDA_API in '..\..\Source\GLS_CUDA_API.pas',
-  GLS_CUDA_RunTime in '..\..\Source\GLS_CUDA_RunTime.pas',
-  GLS_CUDA_FourierTransform in '..\..\Source\GLS_CUDA_FourierTransform.pas',
-  GLS_CUDA_Utility in '..\..\Source\GLS_CUDA_Utility.pas',
+  GLSCLPlatform in '..\..\Source\GLSCLPlatform.pas',
+  GLSCL in '..\..\Source\GLSCL.pas',
+  GLSCLGL in '..\..\Source\GLSCLGL.pas',
+  GLSCUDAApi in '..\..\Source\GLSCUDAApi.pas',
+  GLSCUDARuntime in '..\..\Source\GLSCUDARuntime.pas',
+  GLSCUDAFourierTransform in '..\..\Source\GLSCUDAFourierTransform.pas',
+  GLSCUDAUtility in '..\..\Source\GLSCUDAUtility.pas',
   GLSCUDA in '..\..\Source\GLSCUDA.pas',
   GLSCUDACompiler in '..\..\Source\GLSCUDACompiler.pas',
   GLSCUDAContext in '..\..\Source\GLSCUDAContext.pas',

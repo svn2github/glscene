@@ -82,7 +82,7 @@ type
 implementation
 
 uses
-  GLS_CUDA_RUNTIME,
+  GLSCUDARunTime,
   GLSCUDAEditor,
   GLSCUDAContext,
   GLSCUDA,

@@ -109,7 +109,7 @@
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_Description>GLScene - Cg Shaders</DCC_Description>
+        <DCC_Description>GLScene VCL Cg Shaders</DCC_Description>
         <DCC_HppOutput>..\..\Source\include\</DCC_HppOutput>
         <DCC_BpiOutput>..\..\Source\lib\</DCC_BpiOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>

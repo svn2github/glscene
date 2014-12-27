@@ -4,7 +4,7 @@
 { : GLS_CUDA_Runtime<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
+  <li>13/12/13 - PW - Added GLScene.inc
   <li>28/01/10 - Yar - Creation
   </ul></font>
 }
@@ -44,7 +44,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_Runtime;
+unit GLSCUDARunTime;
 
 interface
 
@@ -56,10 +56,10 @@ uses
   Windows,
 {$ENDIF}
   GLCrossPlatform,
-  GLS_CL_Platform,
-  GLS_CUDA_API,
-  OpenGLTokens
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLSCLPlatform,
+  GLSCUDAApi,
+  OpenGLTokens,
+  GLSLog;
 
 
 const

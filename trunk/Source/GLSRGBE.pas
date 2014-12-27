@@ -1,22 +1,22 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_RGBE<p>
+{ : GLSRGBE<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Renamed from RGBE.pas to GLS_RGBE.pas
+  <li>17/11/14 - PW - Renamed from RGBE.pas to GLSRGBE.pas
   <li>15/06/10 - Yar - Fixes for Linux x64
   <li>20/01/10 - Yar - Creation
   </ul><p>
 }
-unit GLS_RGBE;
+unit GLSRGBE;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLVectorTypes, GLVectorGeometry, GLCrossPlatform;
 

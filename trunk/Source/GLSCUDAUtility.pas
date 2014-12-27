@@ -9,7 +9,7 @@
       <li>02/03/10 - Yar - Creation
    </ul></font>
 }
-unit GLS_CUDA_Utility;
+unit GLSCUDAUtility;
 
 interface
 

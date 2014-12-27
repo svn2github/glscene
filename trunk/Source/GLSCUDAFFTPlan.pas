@@ -22,8 +22,8 @@ uses
   //GLS
   GLSCUDAContext,
   GLSCUDA,
-  GLS_CUDA_API,
-  GLS_CUDA_FourierTransform,
+  GLSCUDAApi,
+  GLSCUDAFourierTransform,
   GLStrings,
   GLSLog;
 

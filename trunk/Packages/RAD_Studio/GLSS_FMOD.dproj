@@ -102,6 +102,7 @@
     </PropertyGroup>
     <Import Project="CBOutput.optset" Condition="'$(Cfg_2_Win32)'!='' And Exists('CBOutput.optset')"/>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_Description>GLScene VCL FMOD Manager</DCC_Description>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <CfgDependentOn>CBOutput.optset</CfgDependentOn>
     </PropertyGroup>
