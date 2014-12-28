@@ -1,6 +1,6 @@
 
-GLScene ver.1.2.1
-18/11/2014
+GLScene ver.1.3.0
+28/12/2014
 ========================================
 Renamed units:
 
@@ -20,10 +20,10 @@ Octree->GLOctree
 PerlinNoise3D->GLPerlinNoise3D
 PersistentClasses->GLPersistentClasses
 PlugInIntf->GLPlugInIntf
-PlugInManager->GLPlugInManager
+PlugInManager->FPlugInManager
 PluginManagerPropEditor->FPlugInManagerEditor
 Polynomials->GLPolynomials
-RGBE->GLS_RGBE
+RGBE->GLSRGBE
 SpacingPartitioning->GLSpacePartition
 Spline->GLSpline
 VectorTypes->GLVectorTypes
@@ -42,7 +42,5 @@ TAsyncTimer>>>TGLAsyncTimer
 TApplicationFileIO>>TGLApplicationFileIO
 
 ===========================================
-Removed from projects:
-GLSMemo - unresolved bug in registration on XE6 
 
 
