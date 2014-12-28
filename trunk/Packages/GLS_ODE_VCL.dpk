@@ -1,7 +1,7 @@
-package GLSS_FMOD;
+package GLS_ODE_VCL;
 
 {$R *.res}
-{$R '..\..\Source\GLSceneVCLFMod.dcr'}
+{$R '..\Source\GLSceneVCLODE.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,19 +26,22 @@ package GLSS_FMOD;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL FMOD Manager'}
+{$DESCRIPTION 'GLScene VCL ODE Manager'}
 {$IMPLICITBUILD ON}
 
 requires
   vcl,
-  GLScene_RunTime,
+  GLScene_RunTime_VCL,
   rtl;
 
 contains
-  fmod in '..\..\Source\fmod.pas',
-  GLSMFMOD in '..\..\Source\GLSMFMOD.pas',
-  fmodpresets in '..\..\Source\fmodpresets.pas',
-  fmodtypes in '..\..\Source\fmodtypes.pas',
-  fmoderrors in '..\..\Source\fmoderrors.pas';
+  GLODEManager in '..\Source\GLODEManager.pas',
+  GLODERegister in '..\Source\GLODERegister.pas',
+  GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
+  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
+  ODEImport in '..\Source\ODEImport.pas',
+  ODEGL in '..\Source\ODEGL.pas',
+  GLODERagdoll in '..\Source\GLODERagdoll.pas',
+  GLSModuleLoader in '..\Source\GLSModuleLoader.pas';
 
 end.

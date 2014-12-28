@@ -1,7 +1,7 @@
-package GLSS_OpenAL;
+package GLS_NGD_VCL;
 
 {$R *.res}
-{$R '..\..\Source\GLSceneVCLOpenAL.dcr'}
+{$R '..\Source\GLSceneVCLNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,16 +26,19 @@ package GLSS_OpenAL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL OpenAL Manager'}
+{$DESCRIPTION 'GLScene VCL NGD Manager'}
 {$IMPLICITBUILD ON}
 
 requires
+  rtl,
   vcl,
-  GLScene_RunTime,
-  rtl;
+  GLScene_RunTime_VCL;
 
 contains
-  GLSMOpenAL in '..\..\Source\GLSMOpenAL.pas',
-  openal in '..\..\Source\openal.pas';
+  GLNGDManager in '..\Source\GLNGDManager.pas',
+  GLNewtonRegister in '..\Source\GLNewtonRegister.pas',
+  NewtonImport in '..\Source\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\Source\NewtonImport_JointLibrary.pas';
 
 end.
+

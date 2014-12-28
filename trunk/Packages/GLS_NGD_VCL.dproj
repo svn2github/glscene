@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{5996121A-4FE4-4830-8C90-E1DF46D148E2}</ProjectGuid>
-        <MainSource>GLS_NGD.dpk</MainSource>
+        <MainSource>GLS_NGD_VCL.dpk</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
@@ -57,7 +57,7 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <GenPackage>true</GenPackage>
         <VerInfo_Locale>1049</VerInfo_Locale>
-        <SanitizedProjectName>GLS_NGD</SanitizedProjectName>
+        <SanitizedProjectName>GLS_NGD_VCL</SanitizedProjectName>
         <DCC_K>false</DCC_K>
         <GenDll>true</GenDll>
         <DCC_Description>GLScene - NGD Manager</DCC_Description>
@@ -80,11 +80,9 @@
     <PropertyGroup Condition="'$(Base_iOSSimulator)'!=''">
         <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
-    <Import Project="CBOutput.optset" Condition="'$(Base_Win32)'!='' And Exists('CBOutput.optset')"/>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>rtl;vcl;vclimg;GLScene_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;GLScene_RunTime;GLScene_RunTime_VCL;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
-        <CfgDependentOn>CBOutput.optset</CfgDependentOn>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_UsePackage>rtl;vcl;vclimg;$(DCC_UsePackage)</DCC_UsePackage>
@@ -102,26 +100,27 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_Description>GLScene VCL NGD Manager</DCC_Description>
-        <DCC_HppOutput>..\..\Source\include\</DCC_HppOutput>
-        <DCC_BpiOutput>..\..\Source\lib\</DCC_BpiOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_ObjOutput>..\..\Source\lib\</DCC_ObjOutput>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
+    <Import Project="CBOutput.optset" Condition="'$(Base_Win32)'!='' And Exists('CBOutput.optset')"/>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\..\Source\GLSceneVCLNGD.dcr"/>
+        <DCCReference Include="..\Source\GLSceneVCLNGD.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
-        <DCCReference Include="GLScene_RunTime.dcp"/>
-        <DCCReference Include="..\..\Source\GLNGDManager.pas"/>
-        <DCCReference Include="..\..\Source\GLNewtonRegister.pas"/>
-        <DCCReference Include="..\..\Source\NewtonImport.pas"/>
-        <DCCReference Include="..\..\Source\NewtonImport_JointLibrary.pas"/>
+        <DCCReference Include="GLScene_RunTime_VCL.dcp"/>
+        <DCCReference Include="..\Source\GLNGDManager.pas"/>
+        <DCCReference Include="..\Source\GLNewtonRegister.pas"/>
+        <DCCReference Include="..\Source\NewtonImport.pas"/>
+        <DCCReference Include="..\Source\NewtonImport_JointLibrary.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -140,9 +139,10 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">GLS_NGD.dpk</Source>
+                    <Source Name="MainSource">GLS_NGD_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -156,9 +156,11 @@
                 <Platform value="Win32">True</Platform>
                 <Platform value="Win64">False</Platform>
             </Platforms>
+            <Deployment/>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
     <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+    <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
 </Project>

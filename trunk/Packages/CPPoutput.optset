@@ -1,12 +1,10 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_ObjOutput>..\..\Source\lib\</DCC_ObjOutput>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_BpiOutput>..\..\Source\lib\</DCC_BpiOutput>
-        <DCC_HppOutput>..\..\Source\include\</DCC_HppOutput>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ProjectExtensions>
         <Borland.Personality>Delphi.Personality.12</Borland.Personality>

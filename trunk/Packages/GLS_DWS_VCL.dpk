@@ -1,6 +1,7 @@
-package GLCg_RunTime;
+package GLS_DWS_VCL;
 
 {$R *.res}
+{$R '..\Source\ScriptingAPIs\GLSceneVCLDWS2.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,22 +26,22 @@ package GLCg_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL Cg Shaders'}
-{$RUNONLY}
+{$DESCRIPTION 'GLScene VCL DelphiWebScriptII'}
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
-  vclimg,
-  xmlrtl,
-  GLScene_RunTime;
+  vcl,
+  GLScene_RunTime_VCL,
+  dws2Runtime;
 
 contains
-  cgGL in '..\..\Source\cgGL.pas',
-  cg in '..\..\Source\cg.pas',
-  GLCgShader in '..\..\Source\GLCgShader.pas',
-  GLCgBombShader in '..\..\Source\GLCgBombShader.pas',
-  cgPostTransformationShader in '..\..\Source\cgPostTransformationShader.pas';
+  GLScriptDWS2 in '..\Source\GLScriptDWS2.pas',
+  GLDWS2Objects in '..\Source\GLDWS2Objects.pas',
+  dws2HelperFunc in '..\Source\dws2HelperFunc.pas',
+  dws2Classes in '..\Source\dws2Classes.pas',
+  dws2VectorGeometry in '..\Source\dws2VectorGeometry.pas',
+  dws2GLScene in '..\Source\dws2GLScene.pas',
+  dws2OpenGLAdapter in '..\Source\dws2OpenGLAdapter.pas';
 
 end.

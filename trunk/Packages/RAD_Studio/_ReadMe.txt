@@ -1,1 +1,0 @@
-The directory for Embarcadero RAD Studio VCL packages of GLScene

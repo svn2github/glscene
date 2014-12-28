@@ -1,12 +1,11 @@
-package GLS_SDL;
+package GLS_Python_VCL;
 
 {$R *.res}
-{$R '..\..\Source\GLSceneVCLSDL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO OFF}
+{$DEBUGINFO ON}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -26,20 +25,17 @@ package GLS_SDL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL SDL Driver'}
+{$DESCRIPTION 'GLScene VCL Python'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   vcl,
-  vclimg,
-  GLScene_RunTime;
+  GLScene_RunTime_VCL,
+  Python_d7;
 
 contains
-  GLSDLContext in '..\..\Source\GLSDLContext.pas',
-  GLSDL in '..\..\Source\GLSDL.pas',
-  GLSDLWindow in '..\..\Source\GLSDLWindow.pas';
+  GLScriptPython in '..\Source\GLScriptPython.pas';
 
 end.
-
