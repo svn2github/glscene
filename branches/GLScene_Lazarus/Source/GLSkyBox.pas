@@ -1,9 +1,23 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLSkyBox<p>
 
    A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
    for use as a skybox always centered on the camera.<p>
 
-	<b>History : </b><font size=-1><ul>
+ <b>History : </b><font size=-1><ul>
+      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>22/04/10 - Yar - Fixes after GLState revision
+      <li>05/03/10 - DanB - More state added to TGLStateCache
+      <li>26/03/09 - DanB - Skybox is now a TGLCameraInvariantObject
+      <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
+                            of Scene.CurrentGLCamera
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+      <li>21/01/07 - DaStr - Added IGLMaterialLibrarySupported support
       <li>12/04/04 - EG - Added Style property, multipass support
       <li>27/11/03 - EG - Cleanup and fixes
       <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
@@ -14,79 +28,105 @@ unit GLSkyBox;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-   Classes, GLScene, GLTexture, VectorTypes, VectorGeometry, OpenGL1x, GLMisc,
-   XOpenGL;
+  Classes,
+  GLScene,
+  GLMaterial,
+  GLVectorGeometry,
+  OpenGLTokens,
+  XOpenGL,
+  GLRenderContextInfo
+, GLVectorTypes;
 
 type
 
-   // TGLSkyBoxStyle
-   //
-   TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds);
+  // TGLSkyBoxStyle
+  //
+  TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds,
+    sbsTopHalfClamped);
 
-   // TGLSkyBox
-   //
-   TGLSkyBox = class(TGLImmaterialSceneObject)
-	   private
-	      { Private Declarations }
-         FMatNameTop : String;
-         FMatNameRight : String;
-         FMatNameFront : String;
-         FMatNameLeft : String;
-         FMatNameBack : String;
-         FMatNameBottom : String;
-         FMatNameClouds : String;
-         FMaterialLibrary : TGLMaterialLibrary;
-         FCloudsPlaneOffset : Single;
-         FCloudsPlaneSize : Single;
-         FStyle : TGLSkyBoxStyle;
+  // TGLSkyBox
+  //
+  TGLSkyBox = class(TGLCameraInvariantObject, IGLMaterialLibrarySupported)
+  private
+    { Private Declarations }
+    FMatNameTop: string;
+    FMatNameRight: string;
+    FMatNameFront: string;
+    FMatNameLeft: string;
+    FMatNameBack: string;
+    FMatNameBottom: string;
+    FMatNameClouds: string;
+    FMaterialLibrary: TGLMaterialLibrary;
+    FCloudsPlaneOffset: Single;
+    FCloudsPlaneSize: Single;
+    FStyle: TGLSkyBoxStyle;
 
-	   protected
-			{ Protected Declarations }
-         procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
-         procedure SetMatNameBack(const Value: string);
-         procedure SetMatNameBottom(const Value: string);
-         procedure SetMatNameFront(const Value: string);
-         procedure SetMatNameLeft(const Value: string);
-         procedure SetMatNameRight(const Value: string);
-         procedure SetMatNameTop(const Value: string);
-         procedure SetMatNameClouds(const Value: string);
-         procedure SetCloudsPlaneOffset(const Value: single);
-         procedure SetCloudsPlaneSize(const Value: single);
-         procedure SetStyle(const value : TGLSkyBoxStyle);
+    //implementing IGLMaterialLibrarySupported
+    function GetMaterialLibrary: TGLAbstractMaterialLibrary;
+  protected
+    { Protected Declarations }
+    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+    procedure SetMatNameBack(const Value: string);
+    procedure SetMatNameBottom(const Value: string);
+    procedure SetMatNameFront(const Value: string);
+    procedure SetMatNameLeft(const Value: string);
+    procedure SetMatNameRight(const Value: string);
+    procedure SetMatNameTop(const Value: string);
+    procedure SetMatNameClouds(const Value: string);
+    procedure SetCloudsPlaneOffset(const Value: single);
+    procedure SetCloudsPlaneSize(const Value: single);
+    procedure SetStyle(const value: TGLSkyBoxStyle);
 
-      public
-	      { Public Declarations }
-         constructor Create(AOwner : TComponent); override;
-         destructor  Destroy; override;
-         
-         procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
-         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
 
-      published
-	      { Published Declarations }
-         property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-         property MatNameTop : TGLLibMaterialName read FMatNameTop write SetMatNameTop;
-         property MatNameBottom : TGLLibMaterialName read FMatNameBottom write SetMatNameBottom;
-         property MatNameLeft : TGLLibMaterialName read FMatNameLeft write SetMatNameLeft;
-         property MatNameRight : TGLLibMaterialName read FMatNameRight write SetMatNameRight;
-         property MatNameFront : TGLLibMaterialName read FMatNameFront write SetMatNameFront;
-         property MatNameBack : TGLLibMaterialName read FMatNameBack write SetMatNameBack;
-         property MatNameClouds : TGLLibMaterialName read FMatNameClouds write SetMatNameClouds;
-         property CloudsPlaneOffset : Single read FCloudsPlaneOffset write SetCloudsPlaneOffset;
-         property CloudsPlaneSize : Single read FCloudsPlaneSize write SetCloudsPlaneSize;
-         property Style : TGLSkyBoxStyle read FStyle write FStyle default sbsFull;
-   end;
+    procedure DoRender(var ARci: TRenderContextInfo;
+      ARenderSelf, ARenderChildren: Boolean); override;
+    procedure BuildList(var ARci: TRenderCOntextInfo); override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation);
+      override;
 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  published
+    { Published Declarations }
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
+      SetMaterialLibrary;
+    property MatNameTop: TGLLibMaterialName read FMatNameTop write
+      SetMatNameTop;
+    property MatNameBottom: TGLLibMaterialName read FMatNameBottom write
+      SetMatNameBottom;
+    property MatNameLeft: TGLLibMaterialName read FMatNameLeft write
+      SetMatNameLeft;
+    property MatNameRight: TGLLibMaterialName read FMatNameRight write
+      SetMatNameRight;
+    property MatNameFront: TGLLibMaterialName read FMatNameFront write
+      SetMatNameFront;
+    property MatNameBack: TGLLibMaterialName read FMatNameBack write
+      SetMatNameBack;
+    property MatNameClouds: TGLLibMaterialName read FMatNameClouds write
+      SetMatNameClouds;
+    property CloudsPlaneOffset: Single read FCloudsPlaneOffset write
+      SetCloudsPlaneOffset;
+    property CloudsPlaneSize: Single read FCloudsPlaneSize write
+      SetCloudsPlaneSize;
+    property Style: TGLSkyBoxStyle read FStyle write FStyle default sbsFull;
+  end;
+
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLState;
+uses
+  GLContext,
+  GLState;
 
 // ------------------
 // ------------------ TGLSkyBox ------------------
@@ -94,199 +134,289 @@ uses GLState;
 
 // Create
 //
+
 constructor TGLSkyBox.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
-  FCloudsPlaneOffset:=0.2; // this should be set far enough to avoid near plane clipping
-  FCloudsPlaneSize:=32;    // the bigger, the more this extends the clouds cap to the horizon
+  CamInvarianceMode := cimPosition;
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
+  FCloudsPlaneOffset := 0.2;
+    // this should be set far enough to avoid near plane clipping
+  FCloudsPlaneSize := 32;
+    // the bigger, the more this extends the clouds cap to the horizon
 end;
 
 // Destroy
 //
+
 destructor TGLSkyBox.Destroy;
 begin
-   inherited;
+  inherited;
+end;
+
+// GetMaterialLibrary
+//
+
+function TGLSkyBox.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+begin
+  Result := FMaterialLibrary;
 end;
 
 // Notification
 //
+
 procedure TGLSkyBox.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation=opRemove) and (AComponent=FMaterialLibrary) then
-      MaterialLibrary:=nil;
+  if (Operation = opRemove) and (AComponent = FMaterialLibrary) then
+    MaterialLibrary := nil;
   inherited;
 end;
 
 // DoRender
 //
-procedure TGLSkyBox.DoRender(var rci : TRenderContextInfo;
-                             renderSelf, renderChildren : Boolean);
-var
-   f, cps, cof1 : Single;
-   mvMat : TMatrix;
-   oldStates : TGLStates;
-   libMat : TGLLibMaterial;
-   transMat : TMatrix;
+
+procedure TGLSkyBox.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+  ARenderChildren: Boolean);
 begin
-   if FMaterialLibrary=nil then Exit;
+  // We want children of the sky box to appear far away too
+  // (note: simply not writing to depth buffer may not make this not work,
+  //  child objects may need the depth buffer to render themselves properly,
+  //  this may require depth buffer cleared after that. - DanB)
+  Arci.GLStates.DepthWriteMask := False;
+  Arci.ignoreDepthRequests := true;
+  inherited;
+  Arci.ignoreDepthRequests := False;
+end;
+// DoRender
+//
 
-   with rci.GLStates do begin
-      oldStates:=States;
-      UnSetGLState(stDepthTest);
-      UnSetGLState(stLighting);
-      UnSetGLState(stFog);
-   end;
-   glDepthMask(False);
+procedure TGLSkyBox.BuildList(var ARci: TRenderCOntextInfo);
+var
+  f, cps, cof1: Single;
+  oldStates: TGLStates;
+  libMat: TGLLibMaterial;
+begin
+  if FMaterialLibrary = nil then
+    Exit;
 
-   glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-   SetVector(transMat[0], LeftVector);
-   SetVector(transMat[1], Up.AsVector);
-   SetVector(transMat[2], Direction.AsVector);
-   SetVector(transMat[3], rci.cameraPosition);
-   glMultMatrixf(@transMat);
-   
-   with Scene.CurrentGLCamera do
-      f:=(NearPlane+DepthOfView)*0.5;
-   glScalef(f, f, f);
+  with ARci.GLStates do
+  begin
+    oldStates := States;
+    Disable(stDepthTest);
+    Disable(stLighting);
+    Disable(stFog);
+  end;
 
-   glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
-   Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
-   try
-      glPushMatrix;
-      case Style of
-         sbsFull : ;
-         sbsTopHalf : begin
-            glTranslatef(0, 0.5, 0);
-            glScalef(1, 0.5, 1);
-         end;
-         sbsBottomHalf : begin
-            glTranslatef(0, -0.5, 0);
-            glScalef(1, 0.5, 1);
-         end;
-         sbTopTwoThirds : begin
-            glTranslatef(0, 1/3, 0);
-            glScalef(1, 2/3, 1);
-         end;
-      end;
+  GL.PushMatrix;
+  f := ARci.rcci.farClippingDistance * 0.5;
+  GL.Scalef(f, f, f);
 
-      // FRONT
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameFront);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1, -1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1, -1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1, -1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1, -1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // BACK
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameBack);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f( 1,  1,  1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -1,  1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1,  1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1,  1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // TOP
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameTop);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1,  1, -1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1,  1, -1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1,  1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // BOTTOM
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameBottom);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1, -1, -1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1,  1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1, -1, -1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // LEFT
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameLeft);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1, -1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1, -1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // RIGHT
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameRight);
-      if libMat<>nil then begin
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0.002, 0.998);  glVertex3f(1,  1, -1);
-               xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -1, -1);
-               xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -1,  1);
-               xglTexCoord2f(0.998, 0.998);  glVertex3f(1,  1,  1);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
-      // CLOUDS CAP PLANE
-      libMat:=MaterialLibrary.LibMaterialByName(FMatNameClouds);
-      if libMat<>nil then begin
-         // pre-calculate possible values to speed up
-         cps := FCloudsPlaneSize*0.5;
-         cof1 := FCloudsPlaneOffset;
+  try
+    case Style of
+      sbsFull: ;
+      sbsTopHalf, sbsTopHalfClamped:
+        begin
+          GL.Translatef(0, 0.5, 0);
+          GL.Scalef(1, 0.5, 1);
+        end;
+      sbsBottomHalf:
+        begin
+          GL.Translatef(0, -0.5, 0);
+          GL.Scalef(1, 0.5, 1);
+        end;
+      sbTopTwoThirds:
+        begin
+          GL.Translatef(0, 1 / 3, 0);
+          GL.Scalef(1, 2 / 3, 1);
+        end;
+    end;
 
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-               xglTexCoord2f(0, 1);  glVertex3f(-cps, cof1,  cps);
-               xglTexCoord2f(0, 0);  glVertex3f(-cps, cof1, -cps);
-               xglTexCoord2f(1, 0);  glVertex3f( cps, cof1, -cps);
-               xglTexCoord2f(1, 1);  glVertex3f( cps, cof1,  cps);
-            glEnd;
-         until not libMat.UnApply(rci);
-      end;
+    // FRONT
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameFront);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(-1, 1, -1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(-1, -1, -1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(1, -1, -1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(1, 1, -1);
+        if Style = sbsTopHalfClamped then
+        begin
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(-1, -1, -1);
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(-1, -3, -1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(1, -3, -1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(1, -1, -1);
+        end;
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // BACK
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameBack);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(1, 1, 1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(-1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(-1, 1, 1);
+        if Style = sbsTopHalfClamped then
+        begin
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(1, -1, 1);
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(1, -3, 1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(-1, -3, 1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(-1, -1, 1);
+        end;
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // TOP
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameTop);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(-1, 1, 1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(-1, 1, -1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(1, 1, -1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(1, 1, 1);
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // BOTTOM
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameBottom);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(-1, -1, -1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(-1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(1, -1, -1);
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // LEFT
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameLeft);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(-1, 1, 1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(-1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(-1, -1, -1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(-1, 1, -1);
+        if Style = sbsTopHalfClamped then
+        begin
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(-1, -1, 1);
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(-1, -3, 1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(-1, -3, -1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(-1, -1, -1);
+        end;
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // RIGHT
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameRight);
+    if libMat <> nil then
+    begin
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0.002, 0.998);
+        GL.Vertex3f(1, 1, -1);
+        xgl.TexCoord2f(0.002, 0.002);
+        GL.Vertex3f(1, -1, -1);
+        xgl.TexCoord2f(0.998, 0.002);
+        GL.Vertex3f(1, -1, 1);
+        xgl.TexCoord2f(0.998, 0.998);
+        GL.Vertex3f(1, 1, 1);
+        if Style = sbsTopHalfClamped then
+        begin
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(1, -1, -1);
+          xgl.TexCoord2f(0.002, 0.002);
+          GL.Vertex3f(1, -3, -1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(1, -3, 1);
+          xgl.TexCoord2f(0.998, 0.002);
+          GL.Vertex3f(1, -1, 1);
+        end;
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
+    // CLOUDS CAP PLANE
+    libMat := MaterialLibrary.LibMaterialByName(FMatNameClouds);
+    if libMat <> nil then
+    begin
+      // pre-calculate possible values to speed up
+      cps := FCloudsPlaneSize * 0.5;
+      cof1 := FCloudsPlaneOffset;
 
-      glPopMatrix;
+      libMat.Apply(ARci);
+      repeat
+        GL.Begin_(GL_QUADS);
+        xgl.TexCoord2f(0, 1);
+        GL.Vertex3f(-cps, cof1, cps);
+        xgl.TexCoord2f(0, 0);
+        GL.Vertex3f(-cps, cof1, -cps);
+        xgl.TexCoord2f(1, 0);
+        GL.Vertex3f(cps, cof1, -cps);
+        xgl.TexCoord2f(1, 1);
+        GL.Vertex3f(cps, cof1, cps);
+        GL.End_;
+      until not libMat.UnApply(ARci);
+    end;
 
-      glDepthMask(True); // restore
-      if stLighting in oldStates then
-         rci.GLStates.SetGLState(stLighting);
-      if stFog in oldStates then
-         rci.GLStates.SetGLState(stFog);
+    GL.PopMatrix;
 
-      // process children
-      if renderChildren then begin
-         f:=1/f;
-         glScalef(f, f, f);
-         Self.RenderChildren(0, Count-1, rci);
-      end;
+    if stLighting in oldStates then
+      ARci.GLStates.Enable(stLighting);
+    if stFog in oldStates then
+      ARci.GLStates.Enable(stFog);
+    if stDepthTest in oldStates then
+      ARci.GLStates.Enable(stDepthTest);
 
-      if stDepthTest in oldStates then
-         rci.GLStates.SetGLState(stDepthTest);
-
-   finally
-      Scene.CurrentBuffer.PopModelViewMatrix;
-   end;
+  finally
+  end;
 end;
 
 procedure TGLSkyBox.SetCloudsPlaneOffset(const Value: single);
@@ -303,18 +433,20 @@ end;
 
 // SetStyle
 //
-procedure TGLSkyBox.SetStyle(const value : TGLSkyBoxStyle);
+
+procedure TGLSkyBox.SetStyle(const value: TGLSkyBoxStyle);
 begin
-   FStyle:=value;
-   StructureChanged;
+  FStyle := value;
+  StructureChanged;
 end;
 
 // SetMaterialLibrary
 //
-procedure TGLSkyBox.SetMaterialLibrary(const value : TGLMaterialLibrary);
+
+procedure TGLSkyBox.SetMaterialLibrary(const value: TGLMaterialLibrary);
 begin
-   FMaterialLibrary:=value;
-   StructureChanged;
+  FMaterialLibrary := value;
+  StructureChanged;
 end;
 
 procedure TGLSkyBox.SetMatNameBack(const Value: string);
@@ -363,10 +495,11 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
+  // ------------------------------------------------------------------
 
-   RegisterClass(TGLSkyBox);
+  RegisterClass(TGLSkyBox);
 
 end.
+
