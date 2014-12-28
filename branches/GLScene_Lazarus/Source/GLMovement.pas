@@ -1,9 +1,35 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLMovement<p>
 
    Movement path behaviour by Roger Cao<p>
 
+   Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
+   but the default value is rmTurnPitchRoll for backwards compatibility.
+
    <b>Historique : </b><font size=-1><ul>
-      <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)  
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+                          Replaced direct access to properties by methods
+                          GetPositionCoordinate, GetRotationCoordinate, GetScaleCoordinate,
+                          GetDirectionCoordinate and GetUpCoordinate
+      <li>21/01/01 - DanB - Added "inherited" call to TGLMovement.WriteToFiler
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>12/11/09 - DaStr - Bugfix after previous commit
+      <li>25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
+      <li>14/03/09 - DanB - Changes to Start/StopAllMovements due to TGLScene.Cameras removal
+      <li>05/10/08 - DaStr - Added Delphi5 compatibility
+      <li>21/06/08 - DaStr - A lot of cosmetic fixes
+                             Bugfixed same position rotation / scale interpolation
+                               in TGLMovementPath.CalculateState()
+                             Bugfixed destroying TGLMovement with multiple paths.
+                             Added TGLMovementPath.RotationMode
+                            (Bugtracker ID = 1999464) (thanks VirusX)
+      <li>02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
+      <li>25/03/07 - DaStr - Small fix for Delphi5 compatibility
+      <li>15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
+      <li>27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
+      <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)
       <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
       <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
       <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
@@ -16,8 +42,18 @@ unit GLMovement;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  Classes, GLScene, VectorGeometry, GLMisc, XCollection, OpenGL1x, Spline, GLObjects;
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+
+  // GLScene
+  GLScene, GLVectorGeometry, XCollection, OpenGLTokens, GLSpline, GLObjects,
+  GLCrossPlatform, GLStrings, GLBaseClasses;
 
 type
 
@@ -28,17 +64,29 @@ type
     FPosition: TVector;
     FScale: TVector;
     FRotation: TVector;
+    
+    FDirection: TVector;
+    FUp: TVector;
+
     FSpeed: single;
 
     procedure SetPositionAsVector(const Value: TVector);
     procedure SetRotationAsVector(const Value: TVector);
     procedure SetScaleAsVector(const Value: TVector);
 
-    procedure SetPositionCoordinate(Index: integer; AValue: TGLFloat);
-    procedure SetRotationCoordinate(Index: integer; AValue: TGLFloat);
-    procedure SetScaleCoordinate(Index: integer; AValue: TGLFloat);
+    function GetPositionCoordinate(const Index: Integer): TGLFloat;
+    procedure SetPositionCoordinate(const Index: integer; const AValue: TGLFloat);
+    function GetRotationCoordinate(const Index: Integer): TGLFloat;
+    procedure SetRotationCoordinate(const Index: integer; const AValue: TGLFloat);
+    function GetScaleCoordinate(const Index: Integer): TGLFloat;
+    procedure SetScaleCoordinate(const Index: integer; const AValue: TGLFloat);
 
-    procedure SetSpeed(Value: single);
+    procedure SetSpeed(const Value: single);
+
+    function GetDirectionCoordinate(const Index: Integer): TGLFloat;
+    procedure SetDirectionCoordinate(const Index: integer; const AValue: TGLFloat);
+    function GetUpCoordinate(const Index: Integer): TGLFloat;
+    procedure SetUpCoordinate(const Index: integer; const AValue: TGLFloat);
   protected
     function GetDisplayName: string; override;
     procedure WriteToFiler(writer : TWriter);
@@ -53,50 +101,68 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure InitializeByObject(Obj: TGLBaseSceneObject);
-    function EqualNode(aNode: TGLPathNode): boolean;
+    procedure InitializeByObject(const Obj: TGLBaseSceneObject);
 
-    property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
+    {: Warning: does not take speed into account. }
+    function EqualNode(const aNode: TGLPathNode): boolean;
+
+    {: Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
+    property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
+    property UpAsVector: TVector read FUp write FUp;
+    property DirectionAsVector: TVector read FDirection write FDirection;
+
   published
-    property X: TGLFloat index 0 Read FPosition[0] Write SetPositionCoordinate;
-    property Y: TGLFloat index 1 Read FPosition[1] Write SetPositionCoordinate;
-    property Z: TGLFloat index 2 Read FPosition[2] Write SetPositionCoordinate;
+    property X: TGLFloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Y: TGLFloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Z: TGLFloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
 
     //Rotation.X means PitchAngle;
     //Rotation.Y means TurnAngle;
     //Rotation.Z means RollAngle;
-    property PitchAngle: TGLFloat index 0 Read FRotation[0] Write SetRotationCoordinate;
-    property TurnAngle: TGLFloat index 1 Read FRotation[1] Write SetRotationCoordinate;
-    property RollAngle: TGLFloat index 2 Read FRotation[2] Write SetRotationCoordinate;
+    property PitchAngle: TGLFloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property TurnAngle: TGLFloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property RollAngle: TGLFloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
 
-    property ScaleX: TGLFloat index 0 Read FScale[0] Write SetScaleCoordinate;
-    property ScaleY: TGLFloat index 1 Read FScale[1] Write SetScaleCoordinate;
-    property ScaleZ: TGLFloat index 2 Read FScale[2] Write SetScaleCoordinate;
+    property ScaleX: TGLFloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleY: TGLFloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleZ: TGLFloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
+
+    property DirectionX: TGLFloat index 0 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+    property DirectionY: TGLFloat index 1 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+    property DirectionZ: TGLFloat index 2 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+
+    property UpX: TGLFloat index 0 Read GetUpCoordinate Write SetUpCoordinate;
+    property UpY: TGLFloat index 1 Read GetUpCoordinate Write SetUpCoordinate;
+    property UpZ: TGLFloat index 2 Read GetUpCoordinate Write SetUpCoordinate;
 
     property Speed: single Read FSpeed Write SetSpeed;
   end;
+
+
+  TGLMovementRotationMode = (rmTurnPitchRoll, rmUpDirection);
 
 
   TGLMovementPath = class;
 
   // TGLPathNodes
   //
-  TGLPathNodes = class (TCollection)
-  private
-    Owner: TGLMovementPath;
+  TGLPathNodes = class (TOwnedCollection)
   protected
-    function GetOwner: TPersistent; override;
-    procedure SetItems(index: integer; const val: TGLPathNode);
-    function GetItems(index: integer): TGLPathNode;
+    procedure SetItems(const index: integer; const val: TGLPathNode);
+    function GetItems(const index: integer): TGLPathNode;
   public
     constructor Create(aOwner: TGLMovementPath);
+    function GetOwnerMovementPath: TGLMovementPath;
     function Add: TGLPathNode;
-    function FindItemID(ID: integer): TGLPathNode;
-    property Items[index: integer]: TGLPathNode Read GetItems Write SetItems; default;
+    function FindItemID(const ID: integer): TGLPathNode;
+    property Items[const index: integer]: TGLPathNode Read GetItems Write SetItems; default;
     procedure NotifyChange; virtual;
   end;
+
+  TGLMovement = class;
+  TGLMovementPaths = class;
 
   TGLMovementPath = class(TCollectionItem)
   private
@@ -107,60 +173,68 @@ type
     FNodes: TGLPathNodes;
 
     //All the time saved in ms
+    FStartTimeApplied: Boolean;
     FStartTime: double;
+    FInitialTime: Double;
     FEstimateTime: double;
     FCurrentNode: TGLPathNode;
     FInTravel: boolean;
     FLooped: boolean;
     FName: string;
+    FRotationMode: TGLMovementRotationMode;
+
 
     MotionSplineControl: TCubicSpline;
     RotationSplineControl: TCubicSpline;
     ScaleSplineControl: TCubicSpline;
+    DirectionSplineControl: TCubicSpline;
+    UpSplineControl: TCubicSpline;
+
 
     FOnTravelStart: TNotifyEvent;
     FOnTravelStop: TNotifyEvent;
 
     FCurrentNodeIndex: integer;
-    //function GetPathNode(Index: integer): TGLPathNode;
-    //procedure SetPathNode(Index: integer; AValue: TGLPathNode);
+
     function GetNodeCount: integer;
-    procedure SetStartTime(Value: double);
+    procedure SetStartTime(const Value: double);
 
-    procedure SetCurrentNodeIndex(Value: integer);
+    procedure SetCurrentNodeIndex(const Value: integer);
 
-    procedure SetShowPath(Value: Boolean);
-    procedure SetPathSplineMode(Value: TLineSplineMode);
+    procedure SetShowPath(const Value: Boolean);
+    procedure SetPathSplineMode(const Value: TLineSplineMode);
   protected
     procedure WriteToFiler(writer : TWriter);
     procedure ReadFromFiler(reader : TReader);
     function CanTravel: boolean;
+    function GetCollection: TGLMovementPaths;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
+    function GetMovement: TGLMovement;
 
     function AddNode: TGLPathNode; overload;
-    function AddNode(Node: TGLPathNode): TGLPathNode; overload;
+    function AddNode(const Node: TGLPathNode): TGLPathNode; overload;
 
-    function AddNodeFromObject(Obj: TGLBaseSceneObject): TGLPathNode;
-    function InsertNodeFromObject(Obj: TGLBaseSceneObject; Index: integer): TGLPathNode;
+    function AddNodeFromObject(const Obj: TGLBaseSceneObject): TGLPathNode;
+    function InsertNodeFromObject(const Obj: TGLBaseSceneObject; const Index: integer): TGLPathNode;
 
-    function InsertNode(Node: TGLPathNode; Index: integer): TGLPathNode; overload;
-    function InsertNode(Index: integer): TGLPathNode; overload;
-    function DeleteNode(Index: integer): TGLPathNode; overload;
-    function DeleteNode(Node: TGLPathNode): TGLPathNode; overload;
+    function InsertNode(const Node: TGLPathNode; const Index: integer): TGLPathNode; overload;
+    function InsertNode(const Index: integer): TGLPathNode; overload;
+    function DeleteNode(const Index: integer): TGLPathNode; overload;
+    function DeleteNode(const Node: TGLPathNode): TGLPathNode; overload;
     procedure ClearNodes;
     procedure UpdatePathLine;
 
-    function NodeDistance(Node1, Node2: TGLPathNode): double;
-    procedure CalculateState(CurrentTime: double);
+    function NodeDistance(const Node1, Node2: TGLPathNode): double;
 
-    procedure TravelPath(Start: boolean); overload;
-    procedure TravelPath(Start: boolean; aStartTime: double); overload;
+    procedure CalculateState(const CurrentTime: double);
 
-    //property Nodes[index: Integer]: TGLPathNode read GetPathNode write SetPathNode;
+    procedure TravelPath(const Start: boolean); overload;
+    procedure TravelPath(const Start: boolean; const aStartTime: double); overload;
+
     property NodeCount: integer Read GetNodeCount;
     property CurrentNode: TGLPathNode Read FCurrentNode;
     property InTravel: boolean Read FInTravel;
@@ -174,8 +248,10 @@ type
     property OnTravelStop: TNotifyEvent Read FOnTravelStop Write FOnTravelStop;
   published
     property Name: string Read FName Write FName;
+
     {: This property is currently ignored. }
-    property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode;
+    property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
+    property RotationMode: TGLMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
 
     property StartTime: double Read FStartTime Write SetStartTime;
     property EstimateTime: double Read FEstimateTime;
@@ -185,21 +261,16 @@ type
     property ShowPath: Boolean read FShowPath write SetShowPath;
   end;
 
-  TGLMovement = class;
-
-  TGLMovementPaths = class(TCollection)
+  TGLMovementPaths = class(TOwnedCollection)
   protected
-    Owner: TGLMovement;
-    function GetOwner: TPersistent; override;
-    procedure SetItems(index: integer; const val: TGLMovementPath);
-    function GetItems(index: integer): TGLMovementPath;
+    procedure SetItems(const index: integer; const val: TGLMovementPath);
+    function GetItems(const index: integer): TGLMovementPath;
+    function GetMovement: TGLMovement;
   public
     constructor Create(aOwner: TGLMovement);
     function Add: TGLMovementPath;
-    function FindItemID(ID: integer): TGLMovementPath;
-    property Items[index: integer]: TGLMovementPath Read GetItems Write SetItems;
-    default;
-    procedure Delete(index: integer);
+    function FindItemID(const ID: integer): TGLMovementPath;
+    property Items[const index: integer]: TGLMovementPath Read GetItems Write SetItems; default;
     procedure NotifyChange; virtual;
   end;
 
@@ -233,6 +304,8 @@ type
     procedure ReadFromFiler(reader : TReader); override;
     procedure PathTravelStart(Sender: TObject);
     procedure PathTravelStop(Sender: TObject);
+
+    function GetSceneObject: TGLBaseSceneObject;
   public
     constructor Create(aOwner: TXCollection); override;
     destructor Destroy; override;
@@ -278,33 +351,32 @@ type
     property ActivePath: TGLMovementPath Read GetActivePath Write SetActivePath;
   end;
 
-function GetMovement(behaviours: TGLBehaviours): TGLMovement; overload;
-function GetMovement(obj: TGLBaseSceneObject): TGLMovement; overload;
-function GetOrCreateMovement(behaviours: TGLBehaviours): TGLMovement; overload;
-function GetOrCreateMovement(obj: TGLBaseSceneObject): TGLMovement; overload;
-procedure StartAllMovements(Scene: TGLScene; StartCamerasMove, StartObjectsMove: Boolean);
-procedure StopAllMovements(Scene: TGLScene; StopCamerasMove, StopObjectsMove: Boolean);
+function GetMovement(const behaviours: TGLBehaviours): TGLMovement; overload;
+function GetMovement(const obj: TGLBaseSceneObject): TGLMovement; overload;
+function GetOrCreateMovement(const behaviours: TGLBehaviours): TGLMovement; overload;
+function GetOrCreateMovement(const obj: TGLBaseSceneObject): TGLMovement; overload;
+procedure StartAllMovements(const Scene: TGLScene; const StartCamerasMove, StartObjectsMove: Boolean);
+procedure StopAllMovements(const Scene: TGLScene; const StopCamerasMove, StopObjectsMove: Boolean);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils;
-
-//----------------------------------- Added by Roger ---------------------------
+uses
+  GLVectorTypes;
 //----------------------------- TGLPathNode ------------------------------------
 constructor TGLPathNode.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
-  FPosition := VectorMake(0, 0, 0, 1);
-  FRotation := VectorMake(0, 0, 0, 1);
-  FScale    := VectorMake(1, 1, 1, 1);
-  FSpeed    := 0;
+  FPosition  := VectorMake(0, 0, 0, 1);
+  FRotation  := VectorMake(0, 0, 0, 1);
+  FScale     := VectorMake(1, 1, 1, 1);
+  FDirection := ZHmgVector;
+  FUp        := YHmgVector;
+  FSpeed     := 0;
 end;
 
 destructor TGLPathNode.Destroy;
@@ -351,49 +423,75 @@ var
 begin
   with Writer do
   begin
-    WriteInteger(0); // Archive Version 0
-    WriteStuff := not (VectorEquals(FPosition, NullHmgPoint) and VectorEquals(FRotation, NullHmgPoint)
-      and VectorEquals(FScale, VectorMake(1, 1, 1)) and (Speed=0));
+    WriteInteger(1); // Archive Version 1.
+    WriteStuff := not (VectorEquals(FPosition, NullHmgPoint) and
+                       VectorEquals(FRotation, NullHmgPoint) and
+                       VectorEquals(FScale, XYZHmgVector) and
+                       (Speed = 0) and
+                       VectorEquals(FDirection, ZHmgVector) and
+                       VectorEquals(FUp, YHmgVector));
+
     WriteBoolean(writeStuff);
+
     if WriteStuff then
     begin
-      Write(FPosition, sizeof(FPosition));
-      Write(FRotation, sizeof(FRotation));
-      Write(FScale, sizeof(FScale));
+      // Archive Version 0.
+      Write(FPosition, SizeOf(FPosition));
+      Write(FRotation, SizeOf(FRotation));
+      Write(FScale, SizeOf(FScale));
       WriteFloat(FSpeed);
+      
+      // Archive Version 1.
+      Write(FDirection, SizeOf(FDirection));
+      Write(FUp, SizeOf(FUp));
     end;
   end;
 end;
 
 procedure TGLPathNode.ReadFromFiler(reader : TReader);
+var
+  lVersion: Integer;
 begin
   with Reader do
   begin
-    ReadInteger; //Achive Version 0
+    lVersion := ReadInteger;
     if ReadBoolean then
     begin
-      Read(FPosition, sizeof(FPosition));
-      Read(FRotation, sizeof(FRotation));
-      Read(FScale, sizeof(FScale));
+      // Archive Version 0.
+      Read(FPosition, SizeOf(FPosition));
+      Read(FRotation, SizeOf(FRotation));
+      Read(FScale, SizeOf(FScale));
       FSpeed := ReadFloat;
-    end else
+
+      // Archive Version 1.
+      if lVersion >= 1 then
+      begin
+        Read(FDirection, SizeOf(FDirection));
+        Read(FUp, SizeOf(FUp));
+      end;
+    end
+    else
     begin
+      // Default parameters.
       FPosition := NullHmgPoint;
       FRotation := NullHmgPoint;
       FScale := VectorMake(1, 1, 1, 1);
       FSpeed := 0;
+      FDirection := ZHmgVector;
+      FUp        := YHmgVector;
     end;
   end;
 end;
 
-procedure TGLPathNode.InitializeByObject(Obj: TGLBaseSceneObject);
+procedure TGLPathNode.InitializeByObject(const Obj: TGLBaseSceneObject);
 begin
   if Assigned(Obj) then
   begin
     FPosition := Obj.Position.AsVector;
     FScale    := Obj.Scale.AsVector;
     FRotation := Obj.Rotation.AsVector;
-    //Speed     := Obj.Speed;
+    FDirection := Obj.Direction.AsVector;
+    FUp        := Obj.Up.AsVector;
   end;
 end;
 
@@ -405,37 +503,23 @@ begin
     FRotation := TGLPathNode(Source).FRotation;
     FScale    := TGLPathNode(Source).FScale;
     FSpeed    := TGLPathNode(Source).FSpeed;
+
+    FDirection := TGLPathNode(Source).FDirection;
+    FUp        := TGLPathNode(Source).FUp;
   end else
     inherited Assign(Source);
 end;
 
-function TGLPathNode.EqualNode(aNode: TGLPathNode): boolean;
+function TGLPathNode.EqualNode(const aNode: TGLPathNode): boolean;
 begin
-  //the speed diffrent will not be ...
-  Result := (VectorEquals(FPosition, aNode.FPosition)) and
-    (VectorEquals(FRotation, aNode.FRotation)) and
-    (VectorEquals(FScale, aNode.FScale));
+  Result := VectorEquals(FPosition, aNode.FPosition) and
+            VectorEquals(FRotation, aNode.FRotation) and
+            VectorEquals(FScale, aNode.FScale) and
+            VectorEquals(FDirection, aNode.FDirection) and
+            VectorEquals(FUp, aNode.FUp);
 end;
 
-procedure TGLPathNode.SetPositionCoordinate(Index: integer; AValue: TGLFloat);
-begin
-  FPosition[Index] := AValue;
-    (Collection as TGLPathNodes).NotifyChange;
-end;
-
-procedure TGLPathNode.SetRotationCoordinate(Index: integer; AValue: TGLFloat);
-begin
-  FRotation[Index] := AValue;
-    (Collection as TGLPathNodes).NotifyChange;
-end;
-
-procedure TGLPathNode.SetScaleCoordinate(Index: integer; AValue: TGLFloat);
-begin
-  FScale[Index] := AValue;
-    (Collection as TGLPathNodes).NotifyChange;
-end;
-
-procedure TGLPathNode.SetSpeed(Value: single);
+procedure TGLPathNode.SetSpeed(const Value: single);
 begin
   FSpeed := Value;
 end;
@@ -445,24 +529,81 @@ begin
   Result := 'PathNode';
 end;
 
+function TGLPathNode.GetPositionCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FPosition.V[Index];
+end;
+
+procedure TGLPathNode.SetPositionCoordinate(const Index: integer; const AValue: TGLFloat);
+begin
+  FPosition.V[Index] := AValue;
+  if Collection <> nil then
+    (Collection as TGLPathNodes).NotifyChange;
+end;
+
+function TGLPathNode.GetRotationCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FRotation.V[Index];
+end;
+
+procedure TGLPathNode.SetRotationCoordinate(const Index: integer; const AValue: TGLFloat);
+begin
+  FRotation.V[Index] := AValue;
+  if Collection <> nil then
+    (Collection as TGLPathNodes).NotifyChange;
+end;
+
+function TGLPathNode.GetScaleCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FScale.V[Index];
+end;
+
+procedure TGLPathNode.SetScaleCoordinate(const Index: integer; const AValue: TGLFloat);
+begin
+  FScale.V[Index] := AValue;
+  if Collection <> nil then
+    (Collection as TGLPathNodes).NotifyChange;
+end;
+
+
+function TGLPathNode.GetDirectionCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FDirection.V[Index];
+end;
+
+
+procedure TGLPathNode.SetDirectionCoordinate(const Index: integer;
+  const AValue: TGLFloat);
+begin
+  FDirection.V[Index] := AValue;
+  if Collection <> nil then
+    (Collection as TGLPathNodes).NotifyChange;
+end;
+
+function TGLPathNode.GetUpCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FUp.V[Index];
+end;
+
+procedure TGLPathNode.SetUpCoordinate(const Index: integer; const AValue: TGLFloat);
+begin
+  FUp.V[Index] := AValue;
+  if Collection <> nil then
+    (Collection as TGLPathNodes).NotifyChange;
+end;
+
 //--------------------------- TGLPathNodes -------------------------------------
 constructor TGLPathNodes.Create(aOwner: TGLMovementPath);
 begin
-  Owner := aOwner;
-  inherited Create(TGLPathNode);
+  inherited Create(aOwner, TGLPathNode);
 end;
 
-function TGLPathNodes.GetOwner: TPersistent;
-begin
-  Result := Owner;
-end;
-
-procedure TGLPathNodes.SetItems(index: integer; const val: TGLPathNode);
+procedure TGLPathNodes.SetItems(const index: integer; const val: TGLPathNode);
 begin
   inherited Items[index] := val;
 end;
 
-function TGLPathNodes.GetItems(index: integer): TGLPathNode;
+function TGLPathNodes.GetItems(const index: integer): TGLPathNode;
 begin
   Result := TGLPathNode(inherited Items[index]);
 end;
@@ -472,32 +613,43 @@ begin
   Result := (inherited Add) as TGLPathNode;
 end;
 
-function TGLPathNodes.FindItemID(ID: integer): TGLPathNode;
+function TGLPathNodes.GetOwnerMovementPath: TGLMovementPath;
+begin
+  Result := TGLMovementPath(GetOwner);
+end;
+
+function TGLPathNodes.FindItemID(const ID: integer): TGLPathNode;
 begin
   Result := (inherited FindItemID(ID)) as TGLPathNode;
 end;
 
 procedure TGLPathNodes.NotifyChange;
 begin
-  //Update the path-line if avlible in TGLMovementPath
-  (Owner as TGLMovementPath).UpdatePathLine;
+  // Update the path-line if avalible in TGLMovementPath.
+  GetOwnerMovementPath.UpdatePathLine;
 end;
 
 //--------------------------- TGLMovementPath ----------------------------------
 constructor TGLMovementPath.Create(Collection: TCollection);
 begin
-  //This object can only be added to a TGLMovement class
+  // This object can only be added to a TGLMovement class.
   inherited Create(Collection);
+
   FNodes := TGLPathNodes.Create(Self);
   FCurrentNodeIndex := -1;
-
+  FRotationMode := rmTurnPitchRoll;
   FPathSplineMode := lsmCubicSpline;
+  FStartTimeApplied := False;  
 end;
 
 destructor TGLMovementPath.Destroy;
 begin
+  // Make sure the splines are freed.
+  FLooped:= false;
+  
   ClearNodes;
   FNodes.Free;
+
   inherited Destroy;
 end;
 
@@ -508,19 +660,23 @@ var
 begin
   with Writer do
   begin
-    WriteInteger(0); // Archive Version 0
-    WriteStuff := (FNodes.Count>0) or (FLooped) or (FCurrentNodeIndex<>-1) or (FShowPath)
-      or (FPathSplineMode<>lsmCubicSpline);
+    WriteInteger(1); // Archive Version 1.
+    WriteStuff := (FNodes.Count>0) or (FLooped) or (FCurrentNodeIndex<>-1) or (FShowPath) or
+                  (FPathSplineMode <> lsmCubicSpline) or (FRotationMode <> rmTurnPitchRoll);
     WriteBoolean(writeStuff);
     if WriteStuff then
     begin
+      // Archive Version 0.
       WriteBoolean(FLooped);
       WriteInteger(FCurrentNodeIndex);
       WriteBoolean(FShowPath);
-      Write(FPathSplineMode, sizeof(FPathSplineMode));
+      Write(FPathSplineMode, SizeOf(FPathSplineMode));
       WriteInteger(FNodes.Count);
       for I:=0 to FNodes.Count-1 do
         FNodes.Items[I].WriteToFiler(Writer);
+
+      // Archive Version 1.
+      WriteInteger(Ord(FRotationMode));
     end;
   end;
 end;
@@ -530,17 +686,19 @@ var
   I: Integer;
   Count: Integer;
   Node: TGLPathNode;
+  lVersion: Integer;
 begin
   ClearNodes;
   with Reader do
   begin
-    ReadInteger; // Archive Version 0
+    lVersion := ReadInteger; // Archive Version.
     if ReadBoolean then
     begin
+      // Archive Version 0.
       FLooped := ReadBoolean;
       FCurrentNodeIndex := ReadInteger;
       ShowPath := ReadBoolean;
-      Read(FPathSplineMode, sizeof(FPathSplineMode));
+      Read(FPathSplineMode, SizeOf(FPathSplineMode));
 
       Count := ReadInteger;
       for I:=0 to Count-1 do
@@ -548,18 +706,26 @@ begin
         Node := AddNode;
         Node.ReadFromFiler(Reader);
       end;
-    end else
+
+      // Archive Version 1.
+      if lVersion >= 1 then
+      begin
+        FRotationMode := TGLMovementRotationMode(ReadInteger);
+      end;  
+    end
+    else
     begin
       FLooped := False;
       FCurrentNodeIndex := -1;
       FShowPath := False;
       FPathSplineMode := lsmCubicSpline;
+      FRotationMode := rmTurnPitchRoll;
     end;
   end;
   UpdatePathLine;
 end;
 
-procedure TGLMovementPath.SetPathSplineMode(Value: TLineSplineMode);
+procedure TGLMovementPath.SetPathSplineMode(const Value: TLineSplineMode);
 begin
   if Value<>FPathSplineMode then
   begin
@@ -585,31 +751,24 @@ begin
   end;
 end;
 
-procedure TGLMovementPath.SetShowPath(Value: Boolean);
+procedure TGLMovementPath.SetShowPath(const Value: Boolean);
 var
   OwnerObj: TGLBaseSceneObject;
-  LineObj: TGLLines;
 begin
   if FShowPath<>Value then
   begin
     FShowPath := Value;
-    //what a mass relationship :-(
-    OwnerObj := (Collection as TGLMovementPaths).Owner{TGLMovement}.Owner{TGLBehavours}.Owner as TGLBaseSceneObject;
+    OwnerObj := GetMovement.GetSceneObject;
     if FShowPath then
     begin
-      //allways add the line object to the root
-      LineObj := OwnerObj.Scene.Objects.AddNewChild(TGLLines) as TGLLines;
-      //set the link
-      FPathLine := LineObj;
+      FPathLine := TGLLines.Create(OwnerObj);
+      MakeSubComponent(FPathLine, True);
+      OwnerObj.Scene.Objects.AddChild(FPathLine);
       FPathLine.SplineMode := FPathSplineMode;
-
       UpdatePathLine;
-    end else
-    begin
-      OwnerObj.Scene.Objects.Remove(FPathLine, False);
-      FPathLine.free;
-      FPathLine := nil;
-    end;
+    end
+    else
+      FreeAndNil(FPathLine);
   end;
 end;
 
@@ -626,7 +785,7 @@ begin
   UpdatePathLine;
 end;
 
-procedure TGLMovementPath.SetCurrentNodeIndex(Value: integer);
+procedure TGLMovementPath.SetCurrentNodeIndex(const Value: integer);
 begin
   if FNodes.Count = 0 then
   begin
@@ -644,7 +803,7 @@ begin
   end;
 end;
 
-function TGLMovementPath.InsertNode(Node: TGLPathNode; Index: integer): TGLPathNode;
+function TGLMovementPath.InsertNode(const Node: TGLPathNode; const Index: integer): TGLPathNode;
 var
   N: TGLPathNode;
 begin
@@ -666,7 +825,7 @@ begin
   UpdatePathLine;
 end;
 
-function TGLMovementPath.InsertNode(Index: integer): TGLPathNode;
+function TGLMovementPath.InsertNode(const Index: integer): TGLPathNode;
 var
   N: TGLPathNode;
 begin
@@ -688,7 +847,7 @@ begin
   UpdatePathLine;
 end;
 
-function TGLMovementPath.AddNodeFromObject(Obj: TGLBaseSceneObject): TGLPathNode;
+function TGLMovementPath.AddNodeFromObject(const Obj: TGLBaseSceneObject): TGLPathNode;
 begin
   Result := nil;
   if (FInTravel) or (not Assigned(Obj)) then
@@ -697,27 +856,29 @@ begin
   Result.FPosition := Obj.Position.AsVector;
   Result.FScale    := Obj.Scale.AsVector;
   Result.FRotation := Obj.Rotation.AsVector;
-  //Result.FSpeed    := Obj.Speed;
+  Result.FDirection:=  Obj.Direction.AsVector;
+  Result.FUp:=         Obj.Up.AsVector;
+
   UpdatePathLine;
 end;
 
-function TGLMovementPath.InsertNodeFromObject(Obj: TGLBaseSceneObject; Index: integer): TGLPathNode;
-var
-  N: TGLPathNode;
+function TGLMovementPath.InsertNodeFromObject(const Obj: TGLBaseSceneObject; const Index: integer): TGLPathNode;
 begin
   Result := nil;
   if (FInTravel) or (not Assigned(Obj)) then
     exit;
-  N           := InsertNode(Index);
-  N.FPosition := Obj.Position.AsVector;
-  N.FScale    := Obj.Scale.AsVector;
-  N.FRotation := Obj.Rotation.AsVector;
-  //N.Speed     := Obj.Speed;
-  Result      := N;
+
+  Result      := InsertNode(Index);
+  Result.FPosition := Obj.Position.AsVector;
+  Result.FScale    := Obj.Scale.AsVector;
+  Result.FRotation := Obj.Rotation.AsVector;
+  Result.FDirection:= Obj.Direction.AsVector;
+  Result.FUp:= Obj.Up.AsVector;
+
   UpdatePathLine;
 end;
 
-function TGLMovementPath.DeleteNode(Index: integer): TGLPathNode;
+function TGLMovementPath.DeleteNode(const Index: integer): TGLPathNode;
 var
   Node: TGLPathNode;
 begin
@@ -751,7 +912,7 @@ begin
   UpdatePathLine;
 end;
 
-function TGLMovementPath.DeleteNode(Node: TGLPathNode): TGLPathNode;
+function TGLMovementPath.DeleteNode(const Node: TGLPathNode): TGLPathNode;
 var
   I: integer;
 begin
@@ -795,12 +956,9 @@ begin
   Result             := FCurrentNodeIndex;
 end;
 
-function TGLMovementPath.NodeDistance(Node1, Node2: TGLPathNode): double;
-var
-  Vector: TVector;
+function TGLMovementPath.NodeDistance(const Node1, Node2: TGLPathNode): double;
 begin
-  Vector := VectorSubtract(Node1.FPosition, Node2.FPosition);
-  Result := VectorLength(Vector);
+  Result := VectorDistance(Node1.FPosition, Node2.FPosition);
 end;
 
 //need to do
@@ -808,20 +966,20 @@ end;
 //2 The travel-time of a segment is based a simple linear movement, at the start and the end
 //  of the segment, the speed will be more high than in the middle
 //3 Rotation Interpolation has not been tested
-procedure TGLMovementPath.CalculateState(CurrentTime: double);
+procedure TGLMovementPath.CalculateState(const CurrentTime: double);
 var
   I:       integer;
   SumTime: double;
-  L:       single;
+  L, L2:       single;
   Interpolated: boolean;
   T:       double;
   a:double;
 
-  procedure Interpolation(ReturnNode: TGLPathNode; Time1, Time2: double;
-Index: integer);
+  procedure Interpolation(ReturnNode: TGLPathNode; Time1, Time2: double; Index: integer);
   var
     Ratio: double;
     x, y, z, p, t, r, sx, sy, sz: single;
+    dx, dy, dz,ux, uy, uz: single;
   begin
     Ratio:=(Nodes[I - 1].Speed*Time2+0.5*a*time2*time2)/L + Index;
 
@@ -829,22 +987,56 @@ Index: integer);
     RotationSplineControl.SplineXYZ(Ratio, p, t, r);
     ScaleSplineControl.SplineXYZ(Ratio, sx, sy, sz);
 
+    DirectionSplineControl.SplineXYZ(Ratio,dx,dy,dz);
+    UpSplineControl.SplineXYZ(Ratio,ux,uy,uz);
+
+
     ReturnNode.FPosition := VectorMake(x, y, z, 1);
     ReturnNode.FRotation := VectorMake(p, t, r, 1);
     ReturnNode.FScale    := VectorMake(sx, sy, sz, 1);
+
+    ReturnNode.FDirection := VectorMake(dx,dy,dz, 1);
+    ReturnNode.FUp := VectorMake(ux,uy,uz, 1);
   end;
 
 begin
   I := 1;
 
-  if (FStartTime=0) or (FStartTime>CurrentTime) then
-    FStartTime := CurrentTime;
-  SumTime      := FStartTime;
+  if (FInitialTime = 0) or (FInitialTime > CurrentTime) then
+    FInitialTime := CurrentTime;
+
+
+  if (FStartTime <> 0) and not FStartTimeApplied then
+  begin
+    if FInitialTime + FStartTime < CurrentTime then
+    begin
+      FInitialTime := CurrentTime;
+      FStartTimeApplied := True;
+    end
+    else
+      Exit;
+  end;
+
+  SumTime      := FInitialTime;
   Interpolated := False;
   while I < FNodes.Count do
   begin
     L := NodeDistance(Nodes[I], Nodes[I - 1]);
-    T := L / (Nodes[I - 1].Speed+Nodes[I - 0].Speed)*2;
+
+    if L = 0 then
+      L := VectorDistance(Nodes[i].FScale, Nodes[i-1].FScale);
+
+    if L = 0 then
+    begin
+      L := VectorDistance(Nodes[i].FDirection, Nodes[i-1].FDirection);
+      L2 := VectorDistance(Nodes[i].FUp, Nodes[i-1].Fup);
+      if (L2 > L) then L:= L2;
+    end;
+
+    if L = 0 then
+      L := Nodes[I - 0].Speed;
+
+    T := L / (Nodes[I - 1].Speed + Nodes[I - 0].Speed) * 2;
     if (SumTime + T) >= CurrentTime then
     begin
       a:=(Nodes[I - 0].Speed-Nodes[I - 1].Speed)/T;
@@ -858,6 +1050,7 @@ begin
       SumTime := SumTime + T;
     end;
   end;
+
   if (not Interpolated) then
   begin
     Interpolation(FCurrentNode, 1.0, 0.0, FNodes.Count - 1);
@@ -884,11 +1077,24 @@ begin
     end;
 end;
 
-procedure TGLMovementPath.TravelPath(Start: boolean);
+function TGLMovementPath.GetCollection: TGLMovementPaths;
+begin
+  Result := TGLMovementPaths(GetOwner);
+end;
+
+function TGLMovementPath.GetMovement: TGLMovement;
+begin
+  Result := GetCollection.GetMovement;
+end;
+
+procedure TGLMovementPath.TravelPath(const Start: boolean);
 var
   x, y, z:    PFloatArray;
   p, t, r:    PFloatArray;
   sx, sy, sz: PFloatArray;
+  dx, dy, dz: PFloatArray;
+  ux, uy, uz: PFloatArray;
+
   I:          integer;
 begin
   if (FInTravel = Start) or (FNodes.Count = 0) then
@@ -908,21 +1114,40 @@ begin
     GetMem(sx, sizeof(single) * FNodes.Count);
     GetMem(sy, sizeof(single) * FNodes.Count);
     GetMem(sz, sizeof(single) * FNodes.Count);
+    GetMem(dx, sizeof(single) * FNodes.Count);
+    GetMem(dy, sizeof(single) * FNodes.Count);
+    GetMem(dz, sizeof(single) * FNodes.Count);
+    GetMem(ux, sizeof(single) * FNodes.Count);
+    GetMem(uy, sizeof(single) * FNodes.Count);
+    GetMem(uz, sizeof(single) * FNodes.Count);
+
     for I := 0 to FNodes.Count - 1 do
     begin
-      PFloatArray(x)[I]  := Nodes[I].FPosition[0];
-      PFloatArray(y)[I]  := Nodes[I].FPosition[1];
-      PFloatArray(z)[I]  := Nodes[I].FPosition[2];
-      PFloatArray(p)[I]  := Nodes[I].FRotation[0];
-      PFloatArray(t)[I]  := Nodes[I].FRotation[1];
-      PFloatArray(r)[I]  := Nodes[I].FRotation[2];
-      PFloatArray(sx)[I] := Nodes[I].FScale[0];
-      PFloatArray(sy)[I] := Nodes[I].FScale[1];
-      PFloatArray(sz)[I] := Nodes[I].FScale[2];
+      PFloatArray(x)[I]  := Nodes[I].FPosition.V[0];
+      PFloatArray(y)[I]  := Nodes[I].FPosition.V[1];
+      PFloatArray(z)[I]  := Nodes[I].FPosition.V[2];
+      PFloatArray(p)[I]  := Nodes[I].FRotation.V[0];
+      PFloatArray(t)[I]  := Nodes[I].FRotation.V[1];
+      PFloatArray(r)[I]  := Nodes[I].FRotation.V[2];
+      PFloatArray(sx)[I] := Nodes[I].FScale.V[0];
+      PFloatArray(sy)[I] := Nodes[I].FScale.V[1];
+      PFloatArray(sz)[I] := Nodes[I].FScale.V[2];
+
+      PFloatArray(dx)[I] := Nodes[I].FDirection.V[0];
+      PFloatArray(dy)[I] := Nodes[I].FDirection.V[1];
+      PFloatArray(dz)[I] := Nodes[I].FDirection.V[2];
+
+      PFloatArray(ux)[I] := Nodes[I].FUp.V[0];
+      PFloatArray(uy)[I] := Nodes[I].FUp.V[1];
+      PFloatArray(uz)[I] := Nodes[I].FUp.V[2];
+
     end;
     MotionSplineControl   := TCubicSpline.Create(x, y, z, nil, FNodes.Count);
     RotationSplineControl := TCubicSpline.Create(p, t, r, nil, FNodes.Count);
     ScaleSplineControl    := TCubicSpline.Create(sx, sy, sz, nil, FNodes.Count);
+    DirectionSplineControl:= TCubicSpline.Create(dx, dy, dz, nil, FNodes.Count);
+    UpSplineControl:= TCubicSpline.Create(ux, uy, uz, nil, FNodes.Count);
+
     FreeMem(x);
     FreeMem(y);
     FreeMem(z);
@@ -932,7 +1157,15 @@ begin
     FreeMem(sx);
     FreeMem(sy);
     FreeMem(sz);
+    FreeMem(dx);
+    FreeMem(dy);
+    FreeMem(dz);
+    FreeMem(ux);
+    FreeMem(uy);
+    FreeMem(uz);
 
+
+    FreeAndNil(FCurrentNode);
     FCurrentNode := TGLPathNode.Create(nil);
     FCurrentNode.Assign(Nodes[0]);
     FCurrentNodeIndex := -1;
@@ -943,124 +1176,39 @@ begin
 
     if Assigned(FOnTravelStart) then
       FOnTravelStart(self);
-  end 
+  end
   else
   begin
-    MotionSplineControl.Free;
-    RotationSplineControl.Free;
-    ScaleSplineControl.Free;
+    FreeAndNil(MotionSplineControl);
+    FreeAndNil(RotationSplineControl);
+    FreeAndNil(ScaleSplineControl);
+    FreeAndNil(DirectionSplineControl);
+    FreeAndNil(UpSplineControl);
+
     if Assigned(FOnTravelStop) then
       FOnTravelStop(self);
   end;
 end;
 
-procedure TGLMovementPath.TravelPath(Start: boolean; aStartTime: double);
+procedure TGLMovementPath.TravelPath(const Start: boolean; const aStartTime: double);
 begin
   if FInTravel = Start then
     exit;
-  FStartTime := aStartTime;
+  FInitialTime := aStartTime;
+  FStartTimeApplied := False;
   TravelPath(Start);
 end;
 
-{
-function TGLMovementPath.GetPathNode(Index: integer): TGLPathNode;
-begin
-  if (Index >=0) and (Index <FNodes.Count) then
-    Result := FNodes[Index]
-  else
-    Result := nil;
-end;
-
-procedure TGLMovementPath.SetPathNode(Index: integer; AValue: TGLPathNode);
-begin
-  if (Index >=0) and (Index <FNodes.Count) and (Assigned(AValue)) then
-    Nodes[Index].Assign(AValue);
-end;
-}
 function TGLMovementPath.GetNodeCount: integer;
 begin
   Result := FNodes.Count;
 end;
 
 //-------------------------- This function need modified -----------------------
-procedure TGLMovementPath.SetStartTime(Value: double);
+procedure TGLMovementPath.SetStartTime(const Value: double);
 begin
   FStartTime := Value;
 end;
-
-(*
-procedure TGLMovementPath.WriteToFiler(writer : TWriter);
-var
-  WriteStuff : Boolean;
-  I: Integer;
-begin
-  with Writer do
-  begin
-    WriteInteger(0); // Archive Version 0
-    WriteStuff := (FStartTime<>0) or (FNodes.Count>0) {or (Assigned(FOnTravelStart))
-      or (Assigned(FOnTravelStop))}
-      or (FLooped) or (FName<>'');
-    WriteBoolean(WriteStuff);
-    if WriteStuff then
-    begin
-      WriteString(FName);
-      Writer.WriteFloat(FStartTime);
-      WriteInteger(FNodeList.Count);
-      for I:=0 to FNodeList.Count-1 do
-        Nodes[I].WriteToFiler(Writer);
-      WriteBoolean(FLooped);
-      //Writer.WriteString(MethodName(@FOnTravelStart));
-      //Writer.WriteString(MethodName(@FOnTravelStop));
-    end;
-  end;
-end;
-
-procedure TGLMovementPath.ReadFromFiler(reader : TReader);
-var
-  I: Integer;
-  Count: Integer;
-  //S: string;
-begin
-  ClearNodes;
-  FEstimateTime := 0;
-  with Reader do
-  begin
-    ReadInteger; // ignore Archive Version
-    if ReadBoolean then
-    begin
-      FName := ReadString;
-      FStartTime := ReadFloat;
-      //List count read here
-      Count := ReadInteger;
-      for I:=0 to Count-1 do
-      begin
-        AddNode;
-        Nodes[I].ReadFromFiler(Reader);
-      end;
-      FLooped := ReadBoolean;
-      {
-      S := ReadString;
-      @FOnTravelStart := MethodAddress(S);
-      S := ReadString;
-      @FOnTravelStop := MethodAddress(S);
-      }
-    end else
-    begin
-      FStartTime := 0;
-      FLooped := False;
-      FOnTravelStart := nil;
-      FOnTravelStop := nil;
-    end;
-  end;
-  FInTravel := False;
-  if Assigned(FCurrentNode) then
-  begin
-    FCurrentNode.free;
-    FCurrentNode := nil;
-  end;
-  FCurrentNodeIndex := -1;
-end;
-*)
 
 procedure TGLMovementPath.Assign(Source: TPersistent);
 var
@@ -1076,6 +1224,7 @@ begin
       FStartTime := TGLMovementPath(Source).FStartTime;
       //FEstimateTime := TGLMovementPath(Source).FEstimateTime;
       FLooped := TGLMovementPath(Source).FLooped;
+      FRotationMode := TGLMovementPath(Source).FRotationMode;
     end;
   end;
 end;
@@ -1093,7 +1242,7 @@ begin
   Result := Node;
 end;
 
-function TGLMovementPath.AddNode(Node: TGLPathNode): TGLPathNode;
+function TGLMovementPath.AddNode(const Node: TGLPathNode): TGLPathNode;
 begin
   Result := AddNode;
   if Assigned(Node) then
@@ -1103,21 +1252,15 @@ end;
 //------------------------- TGLMovementPaths ----------------------------------
 constructor TGLMovementPaths.Create(aOwner: TGLMovement);
 begin
-  Owner := aOwner;
-  inherited Create(TGLMovementPath);
+  inherited Create(aOwner, TGLMovementPath);
 end;
 
-procedure TGLMovementPaths.SetItems(index: integer; const val: TGLMovementPath);
+procedure TGLMovementPaths.SetItems(const index: integer; const val: TGLMovementPath);
 begin
   inherited Items[index] := val;
 end;
 
-function TGLMovementPaths.GetOwner: TPersistent;
-begin
-  Result := Owner;
-end;
-
-function TGLMovementPaths.GetItems(index: integer): TGLMovementPath;
+function TGLMovementPaths.GetItems(const index: integer): TGLMovementPath;
 begin
   Result := TGLMovementPath(inherited Items[index]);
 end;
@@ -1127,23 +1270,19 @@ begin
   Result := (inherited Add) as TGLMovementPath;
 end;
 
-function TGLMovementPaths.FindItemID(ID: integer): TGLMovementPath;
+function TGLMovementPaths.FindItemID(const ID: integer): TGLMovementPath;
 begin
   Result := (inherited FindItemID(ID)) as TGLMovementPath;
 end;
 
-procedure TGLMovementPaths.Delete(index: integer);
-var
-  item: TCollectionItem;
-begin
-  item := inherited Items[index];
-  item.Collection := nil;
-  item.Free;
-end;
-
 procedure TGLMovementPaths.NotifyChange;
 begin
-  //Do nothing here
+  // Do nothing here.
+end;
+
+function TGLMovementPaths.GetMovement: TGLMovement;
+begin
+  Result := TGLMovement(GetOwner);
 end;
 
 
@@ -1173,7 +1312,9 @@ var
 begin
   with Writer do
   begin
-    WriteInteger(0); // Archive Version 0
+    // Archive Version 1, added inherited call
+    WriteInteger(1);
+    inherited;
     WriteStuff := (FPaths.Count>0) or (not FAutoStartNextPath) or (FActivePathIndex<>-1);
     WriteBoolean(WriteStuff);
     if WriteStuff then
@@ -1193,11 +1334,14 @@ var
   I: Integer;
   Count: Integer;
   Path: TGLMovementPath;
+  archiveVersion: Integer;
 begin
   ClearPaths;
   with Reader do
   begin
-    ReadInteger; // Archive Version 0
+    archiveVersion := ReadInteger;
+    if archiveVersion >= 1 then
+      inherited;
     if ReadBoolean then
     begin
       FAutoStartNextPath := ReadBoolean;
@@ -1219,6 +1363,7 @@ end;
 
 procedure TGLMovement.ClearPaths;
 begin
+  StopPathTravel;
   FPaths.Clear;
   FActivePathIndex := -1;
 end;
@@ -1249,6 +1394,11 @@ begin
     Inc(FActivePathIndex);
     StartPathTravel;
   end;
+end;
+
+function TGLMovement.GetSceneObject: TGLBaseSceneObject;
+begin
+  Result := TGLBaseSceneObject(Owner{TGLBehavours}.Owner);
 end;
 
 function TGLMovement.AddPath: TGLMovementPath;
@@ -1401,64 +1551,6 @@ begin
   Result := FPaths.Count;
 end;
 
-(*
-procedure TGLMovement.WriteToFiler(writer : TWriter);
-var
-  WriteStuff : Boolean;
-  I: Integer;
-  //S: string;
-begin
-  inherited;
-  with Writer do
-  begin
-    WriteInteger(0); // Archive Version 0
-    WriteStuff := (FPathList.Count>0) or (FAutoStartNextPath) or
-      (FActivePathIndex<>-1) {or (Assigned(OnAllPathTravelledOver))};
-    WriteBoolean(WriteStuff);
-    if WriteStuff then
-    begin
-      WriteBoolean(FAutoStartNextPath);
-      WriteInteger(FPathList.Count);
-      for I:=0 to FPathList.Count-1 do
-        Paths[I].WriteToFiler(Writer);
-      //the Activepathindex must be write after the path list had been saved
-      WriteInteger(FActivePathIndex);
-    end;
-  end;
-end;
-
-procedure TGLMovement.ReadFromFiler(reader : TReader);
-var
-  I: Integer;
-  Count: Integer;
-  //S: string;
-begin
-  inherited;
-  ClearPaths;
-  with Reader do
-  begin
-    ReadInteger; // ignore Archive Version
-    if ReadBoolean then
-    begin
-      FAutoStartNextPath := ReadBoolean;
-      //List count read here
-      Count := ReadInteger;
-      for I:=0 to Count-1 do
-      begin
-        AddPath;
-        Paths[I].ReadFromFiler(Reader);
-      end;
-      //the Activepathindex must be write after the path list had been saved
-      FActivePathIndex := ReadInteger;
-    end else
-    begin
-      FAutoStartNextPath := False;
-      FOnAllPathTravelledOver := nil;
-    end;
-  end;
-end;
-*)
-
 procedure TGLMovement.Assign(Source: TPersistent);
 var
   I: integer;
@@ -1490,26 +1582,21 @@ begin
   Result := True;
 end;
 
-var
-  OldTime: double = 0.0;
-
 procedure TGLMovement.StartPathTravel;
-var
-  newTime: double;
 begin
   if FActivePathIndex < 0 then
     exit;
   //convert the time to second
-  newTime := 0;
-  OldTime := newTime;
-  Paths[FActivePathIndex].TravelPath(True, newTime);
+  Paths[FActivePathIndex].TravelPath(True, 0);
 end;
 
 procedure TGLMovement.StopPathTravel;
+var
+  I: Integer;
 begin
-  if FActivePathIndex < 0 then
-    exit;
-  Paths[FActivePathIndex].TravelPath(False);
+  if FPaths.Count <> 0 then
+    for I := 0 to FPaths.Count - 1 do
+      Paths[I].TravelPath(False);
 end;
 
 //Calculate functions add into this method
@@ -1518,7 +1605,6 @@ var
   Path: TGLMovementPath;
 begin
   if (FActivePathIndex >= 0) and (Paths[FActivePathIndex].InTravel) then
-    //if deltaTime >= 0.033 then
     begin
       Path := Paths[FActivePathIndex];
       Path.CalculateState(progressTime.newTime);
@@ -1529,16 +1615,30 @@ begin
           begin
             Position.AsVector := Path.CurrentNode.FPosition;
             Scale.AsVector    := Path.CurrentNode.FScale;
-            PitchAngle := Path.CurrentNode.PitchAngle;
-            TurnAngle := Path.CurrentNode.TurnAngle;
-            RollAngle := Path.CurrentNode.RollAngle;
+
+            case Path.FRotationMode of
+              rmTurnPitchRoll:
+              begin
+                PitchAngle := Path.CurrentNode.PitchAngle;
+                TurnAngle := Path.CurrentNode.TurnAngle;
+                RollAngle := Path.CurrentNode.RollAngle;
+              end;
+
+              rmUpDirection:
+              begin
+                Direction.AsVector := Path.CurrentNode.FDirection;
+                Up.AsVector := Path.CurrentNode.FUp;
+              end;
+            else
+              Assert(False, glsErrorEx + glsUnknownType);
+            end
           end;
       end;
     end;
 end;
 
 
-function GetMovement(behaviours: TGLBehaviours): TGLMovement; overload;
+function GetMovement(const behaviours: TGLBehaviours): TGLMovement; overload;
 var
   i: integer;
 begin
@@ -1549,12 +1649,12 @@ begin
     Result := nil;
 end;
 
-function GetMovement(obj: TGLBaseSceneObject): TGLMovement; overload;
+function GetMovement(const obj: TGLBaseSceneObject): TGLMovement; overload;
 begin
   Result := GetMovement(obj.behaviours);
 end;
 
-function GetOrCreateMovement(behaviours: TGLBehaviours): TGLMovement; overload;
+function GetOrCreateMovement(const behaviours: TGLBehaviours): TGLMovement; overload;
 var
   i: integer;
 begin
@@ -1565,52 +1665,52 @@ begin
     Result := TGLMovement.Create(behaviours);
 end;
 
-function GetOrCreateMovement(obj: TGLBaseSceneObject): TGLMovement; overload;
+function GetOrCreateMovement(const obj: TGLBaseSceneObject): TGLMovement; overload;
 begin
   Result := GetOrCreateMovement(obj.behaviours);
 end;
 
-procedure StartStopTravel(Obj: TGLBaseSceneObject; Start: Boolean);
+procedure StartStopTravel(const Obj: TGLBaseSceneObject; Start: Boolean; ChangeCameras, ChangeObjects: Boolean);
 var
   NewObj: TGLBaseSceneObject;
   I: Integer;
   Movement: TGLMovement;
 begin
-  Movement := GetMovement(Obj);
-  if Assigned(Movement) then
-    if Start then
-    begin
-      if (Movement.PathCount>0) and (Movement.ActivePathIndex=-1) then
-        Movement.ActivePathIndex := 0;
-      Movement.StartPathTravel;
-    end else
-      Movement.StopPathTravel;
+  if ((Obj is TGLCamera)and(ChangeCameras))or
+     ((not(Obj is TGLCamera))and(ChangeObjects))  then
+  begin
+    Movement := GetMovement(Obj);
+    if Assigned(Movement) then
+      if Start then
+      begin
+        if (Movement.PathCount>0) and (Movement.ActivePathIndex=-1) then
+          Movement.ActivePathIndex := 0;
+        Movement.StartPathTravel;
+      end else
+        Movement.StopPathTravel;
+  end;
   for I:=0 to Obj.Count-1 do
   begin
     NewObj := Obj.Children[I];
-    StartStopTravel(NewObj, Start);
+    StartStopTravel(NewObj, Start, ChangeCameras, ChangeObjects);
   end;
 end;
 
-procedure StartAllMovements(Scene: TGLScene; StartCamerasMove, StartObjectsMove: Boolean);
+procedure StartAllMovements(const Scene: TGLScene; const StartCamerasMove, StartObjectsMove: Boolean);
 begin
   if Assigned(Scene) then
   begin
-    if StartCamerasMove then
-      StartStopTravel(Scene.Cameras, StartCamerasMove);
-    if StartObjectsMove then
-      StartStopTravel(Scene.Objects, StartObjectsMove);
+    if StartCamerasMove or StartObjectsMove then
+      StartStopTravel(Scene.Objects, True, StartCamerasMove, StartObjectsMove);
   end;
 end;
 
-procedure StopAllMovements(Scene: TGLScene; StopCamerasMove, StopObjectsMove: Boolean);
+procedure StopAllMovements(const Scene: TGLScene; const StopCamerasMove, StopObjectsMove: Boolean);
 begin
   if Assigned(Scene) then
   begin
-    if StopCamerasMove then
-      StartStopTravel(Scene.Cameras, False);
-    if StopObjectsMove then
-      StartStopTravel(Scene.Objects, False);
+    if StopCamerasMove or StopObjectsMove then
+      StartStopTravel(Scene.Objects, False, StopCamerasMove, StopObjectsMove);
   end;
 end;
 
@@ -1625,5 +1725,11 @@ initialization
   // class registrations
   RegisterXCollectionItemClass(TGLMovement);
 
+finalization
+
+  UnregisterXCollectionItemClass(TGLMovement);
+
 end.
+
+
 

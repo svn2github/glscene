@@ -2,6 +2,7 @@
 {: Mesh optimization for GLScene.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
       <li>21/08/03 - EG - Added basic mooStandardize support
       <li>03/06/03 - EG - Creation
 	</ul></font>
@@ -10,7 +11,8 @@ unit GLMeshOptimizer;
 
 interface
 
-uses Classes,Sysutils,VectorGeometry, GLVectorFileObjects;
+uses
+  Classes, Sysutils, GLVectorGeometry, GLVectorFileObjects;
 
 type
 
@@ -28,7 +30,7 @@ procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions)
 procedure OptimizeMesh(aList : TMeshObjectList); overload;
 procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOptions); overload;
 procedure OptimizeMesh(aMeshObject : TMeshObject); overload;
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0);
+procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
 
 
 // ------------------------------------------------------------------
@@ -39,7 +41,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses PersistentClasses, VectorLists, MeshUtils;
+uses
+  GLPersistentClasses, GLVectorLists, GLMeshUtils;
 
 // OptimizeMesh (list, default options)
 //
@@ -169,13 +172,13 @@ end;
 
 
 
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0);
+procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
 Var
   I, J, K, L: integer;
   WeldedVertex: TAffineVectorList;
   TmpIntegerList: TIntegerList;
   IndexMap: TStringList;
-  v, n: TAffineVector;
+  n: TAffineVector;
   indicesMap : TIntegerList;
   Index: Integer;
   FaceList: TIntegerList;
@@ -188,10 +191,6 @@ Var
   ReferenceMap: TIntegerList;
   ID1, ID2: Integer;
   Index1, Index2, Index3: Integer;
-
-  Tex1, Tex2, Tex3, Tex4: TTexPoint;
-  List: TIntegerList;
-  DupList: TStringList;
 
   function FindReferenceIndex(aID: Integer): Integer;
   begin
@@ -302,9 +301,15 @@ begin
     Index := FaceList[I*2+0];
     FG := TFGVertexIndexList(aMeshObj.FaceGroups[Index]);
     Index := FaceList[I*2+1];
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := VectorNegate(NormalList[(I*3+0)]);
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := VectorNegate(NormalList[(I*3+1)]);
-    aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := VectorNegate(NormalList[(I*3+2)]);
+    aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := NormalList[(I*3+0)];
+    aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := NormalList[(I*3+1)];
+    aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := NormalList[(I*3+2)];
+    if InvertNormals then
+    begin
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+0)]]);
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+1)]]);
+         aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]] := VectorNegate(aMeshObj.Normals[FG.VertexIndices[(Index*3+2)]]);
+    end;
   end;
   FaceList.free;
   NormalList.free;

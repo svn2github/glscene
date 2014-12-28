@@ -1,8 +1,17 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLPerlinPFX<p>
 
    PFX particle effects revolving around the use of Perlin noise.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
       <li>15/04/04 - EG - Creation
    </ul></font>
@@ -11,7 +20,13 @@ unit GLPerlinPFX;
 
 interface
 
-uses Classes, GLParticleFX, GLGraphics;
+{$I GLScene.inc}
+
+uses
+  Classes,
+  //GLS
+  GLParticleFX, GLGraphics, GLCrossPlatform,
+  GLPerlinNoise3D, OpenGLTokens, GLVectorGeometry;
 
 type
 
@@ -95,8 +110,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses PerlinNoise, OpenGL1x, VectorGeometry;
 
 // ------------------
 // ------------------ TGLPerlinPFXManager ------------------
@@ -202,7 +215,7 @@ end;
 //
 procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer);
 
-   procedure PrepareSubImage(dx, dy, s : Integer; noise : TPerlin3DNoise);
+   procedure PrepareSubImage(dx, dy, s : Integer; noise : TGLPerlin3DNoise);
    var
       s2 : Integer;
       x, y, d : Integer;
@@ -234,7 +247,7 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
                dfg:=Power((1-Sqrt(f)), FSmoothness);
                d:=Trunc(df*255);
                if d > 255 then d:=255;
-               with scanLine[x+dx] do begin
+               with scanLine^[x+dx] do begin
                   r:=d;
                   g:=d;
                   b:=d;
@@ -247,13 +260,14 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
 
 var
    s, s2 : Integer;
-   noise : TPerlin3DNoise;
+   noise : TGLPerlin3DNoise;
 begin
    s:=(1 shl TexMapSize);
    bmp32.Width:=s;
    bmp32.Height:=s;
+   bmp32.Blank := false;
    texFormat:=GL_LUMINANCE_ALPHA;
-   noise:=TPerlin3DNoise.Create(NoiseSeed);
+   noise:=TGLPerlin3DNoise.Create(NoiseSeed);
    try
       case SpritesPerTexture of
          sptOne : PrepareSubImage(0, 0, s, noise);

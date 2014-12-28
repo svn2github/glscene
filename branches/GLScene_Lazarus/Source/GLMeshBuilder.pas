@@ -11,6 +11,7 @@
    Features: BuildCube, BuildCylinder.
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/10 - Yar - Added GLVectorTypes to uses
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
       <li>21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?
 	</ul></font>
@@ -20,7 +21,8 @@ unit GLMeshBuilder;
 interface
 
 Uses
-  Windows, SysUtils, Classes, GLMisc, GLScene, GLVectorFileObjects, VectorGeometry, VectorLists;
+  SysUtils, Classes, GLScene, GLVectorFileObjects,
+  GLVectorTypes, GLVectorGeometry, GLVectorLists;
 
 Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
 Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
@@ -31,9 +33,9 @@ implementation
 Function  VectorCombineWeighted(Position,Scale : TAffineVector; X, Y, Z : Single) : TAffineVector;
 
 Begin
-  Result[0]:= position[0]+Scale[0]*X;
-  Result[1]:= position[1]+Scale[1]*Y;
-  Result[2]:= position[2]+Scale[2]*Z;
+  Result.V[0]:= position.V[0]+Scale.V[0]*X;
+  Result.V[1]:= position.V[1]+Scale.V[1]*Y;
+  Result.V[2]:= position.V[2]+Scale.V[2]*Z;
 End;
 
 Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);

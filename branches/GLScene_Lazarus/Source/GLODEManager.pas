@@ -15,7 +15,45 @@
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
-  History:<ul>
+  <b>History : </b><font size=-1><ul>
+    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+    <li>21/01/01 - DanB - Added "inherited" call to TODEElementPlane.WriteToFiler
+    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+    <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
+    <li>22/04/10 - Yar - Fixes after GLState revision
+    <li>05/03/10 - DanB - More state added to TGLStateCache
+    <li>17/11/09 - DaStr - Improved Unix compatibility
+                           (thanks Predator) (BugtrackerID = 2893580)
+    <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
+                         joint parms now have a 1 appended to them for first parm
+                         example dParamLoStop is now dParamLoStop1
+    <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
+    <li>12/04/08 - DaStr - Cleaned up uses section
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
+    <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
+    <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
+                            Don't create contact between static objects;
+                            In Destroying procedures placed to last line the "Inherited"
+    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint
+                             creation in TODEJointUniversal.Create
+    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello;
+                             fixes for runtime creation)
+    <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
+                             (thanks Sandor Domokos) (BugtrackerID = 1808371)
+    <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
+    <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit
+                             reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^)
+                             to avoid ambiguous overloading
+    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
+                           make GLODEManager compatible with non-GLODEManager based ODE worlds
+                           Added public property "ContactGroup"
+    <li>24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
+    <li>07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+                           Added $I GLScene.inc
+    <li>28/03/07 - DaStr - Renamed parameters in some methods
+                           (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+    <li>01/03/05 - Mrqzzz - Moved in TODEJointBase protected code from Loaded to
+                          public DoLoaded.
     <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
                         Fix for Hinge2 and Universal joints,
                         Fix for TGLODEDynamic.Enabled property persistence.
@@ -86,9 +124,12 @@ unit GLODEManager;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  Classes, dynode, dynodegl, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
-  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists;
+  Classes, ODEGL, ODEImport, GLScene, GLVectorGeometry, GLTexture, OpenGLTokens,
+  XOpenGL, SysUtils, GLObjects, XCollection, GLPersistentClasses, GLVectorLists,
+  GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
 
 type
 
@@ -99,7 +140,8 @@ type
                                   var HandleCollision:Boolean) of object;
 
   TODEObjectCollisionEvent = procedure (Sender : TObject; Object2 : TObject;
-                                        Contact:TdContact) of object;
+                                        var Contact:TdContact;
+                                        var HandleCollision:Boolean) of object;
 
   TODECollisionSurfaceMode = (csmMu2,csmFDir1,csmBounce,csmSoftERP,csmSoftCFM,
                               csmMotion1,csmMotion2,csmSlip1,csmSlip2);
@@ -134,7 +176,9 @@ type
       FRenderPoint : TGLRenderPoint;
       FVisible,
       FVisibleAtRunTime : Boolean;
-      FGeomColor : TGLColor;
+      FGeomColorDynD,
+      FGeomColorDynE,
+      FGeomColorStat: TGLColor;
 
     protected
       { Protected Declarations }
@@ -157,10 +201,14 @@ type
       procedure RenderEvent(Sender : TObject; var rci : TRenderContextInfo);
       procedure RenderPointFreed(Sender : TObject);
 
-      procedure SetVisible(const Value : Boolean);
-      procedure SetVisibleAtRunTime(const Value : Boolean);
-      procedure SetGeomColor(const Value : TGLColor);
-      procedure GeomColorChange(Sender:TObject);
+    procedure SetVisible(const Value: Boolean);
+    procedure SetVisibleAtRunTime(const Value: Boolean);
+    procedure SetGeomColorDynE(const Value: TGLColor);
+    procedure GeomColorChangeDynE(Sender: TObject);
+    procedure SetGeomColorDynD(const Value: TGLColor);
+    procedure GeomColorChangeDynD(Sender: TObject);
+    procedure SetGeomColorStat(const Value: TGLColor);
+    procedure GeomColorChangeStat(Sender: TObject);
 
       property ODEBehaviours[index : Integer] : TGLODEBehaviour read GetODEBehaviour;
 
@@ -174,6 +222,7 @@ type
 
       property World : PdxWorld read FWorld;
       property Space : PdxSpace read FSpace;
+      property ContactGroup : TdJointGroupID read FContactGroup;
       property NumContactJoints : integer read FNumContactJoints;
 
     published
@@ -187,7 +236,9 @@ type
       property RenderPoint : TGLRenderPoint read FRenderPoint write SetRenderPoint;
       property Visible : Boolean read FVisible write SetVisible;
       property VisibleAtRunTime : Boolean read FVisibleAtRunTime write SetVisibleAtRunTime;
-      property GeomColor : TGLColor read FGeomColor write SetGeomColor;
+      property GeomColorDynD: TGLColor read FGeomColorDynD write SetGeomColorDynD;
+      property GeomColorDynE: TGLColor read FGeomColorDynE write SetGeomColorDynE;
+      property GeomColorStat: TGLColor read FGeomColorStat write SetGeomColorStat;
 
   end;
 
@@ -268,7 +319,6 @@ type
       FOnCollision : TODEObjectCollisionEvent;
       FInitialized : Boolean;
       FOwnerBaseSceneObject : TGLBaseSceneObject;
-
     protected
       { Protected Declarations }
       procedure Initialize; virtual;
@@ -644,45 +694,6 @@ type
 
   end;
 
-  // TODEElementCone
-  //
-  {: ODE cone implementation. }
-  TODEElementCone = class (TODEElementBase)
-    private
-      { Private Declarations }
-      FRadius,
-      FLength : TdReal;
-
-    protected
-      { Protected Declarations }
-      procedure Initialize; override;
-      function CalculateMass : TdMass; override;
-      procedure ODERebuild; override;
-
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
-
-      function GetRadius : TdReal;
-      function GetLength : TdReal;
-      procedure SetRadius(const Value: TdReal);
-      procedure SetLength(const Value: TdReal);
-
-    public
-      { Public Declarations }
-      constructor Create(AOwner:TXCollection); override;
-
-      procedure Render(var rci : TRenderContextInfo); override;
-
-      class function FriendlyName : String; override;
-      class function FriendlyDescription : String; override;
-      class function ItemCategory : String; override;
-
-    published
-      { Published Declarations }
-      property Radius : TdReal read GetRadius write SetRadius;
-      property Length : TdReal read GetLength write SetLength;
-
-  end;
 
   // TODEElementTriMesh
   //
@@ -813,8 +824,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; virtual;
-      procedure Finalize; virtual;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -841,10 +850,15 @@ type
       destructor Destroy; override;
       procedure StructureChanged; virtual;
 
+      procedure Initialize; virtual;
+      procedure Finalize; virtual;
       function IsAttached : Boolean;
+
+      procedure DoLoaded;
 
       property JointID : TdJointID read FJointID;
       property Initialized : Boolean read FInitialized;
+
 
     published
       { Published Declarations }
@@ -957,7 +971,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -977,6 +990,7 @@ type
       destructor Destroy; override;
       procedure StructureChanged; override;
 
+      procedure Initialize; override;
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
 
@@ -998,7 +1012,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1012,6 +1025,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1033,7 +1047,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1051,6 +1064,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1068,7 +1082,6 @@ type
   TODEJointFixed = class (TODEJointBase)
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1077,6 +1090,7 @@ type
       { Public Declarations }
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
+      procedure Initialize; override;
 
   end;
 
@@ -1094,7 +1108,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1119,6 +1132,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1147,7 +1161,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1171,6 +1184,7 @@ type
       constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
 
+      procedure Initialize; override;
       procedure StructureChanged; override;
 
       class function FriendlyName : String; override;
@@ -1217,6 +1231,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+uses
+  GLContext;
 
 // nearCallBack
 //
@@ -1252,11 +1268,22 @@ end;
 // GetSurfaceFromObject
 //
 function GetSurfaceFromObject(anObject : TObject) : TODECollisionSurface;
+var
+  odebehaviour: TGLOdeBehaviour;
 begin
   Result:=nil;
   if Assigned(anObject) then
     if anObject is TGLODEBehaviour then
-      Result:=TGLODEBehaviour(anObject).Surface;
+      Result:=TGLODEBehaviour(anObject).Surface
+    else
+    begin
+         if (anObject is TGLBaseSceneObject) then
+         begin
+              odebehaviour:=TGLOdeBehaviour(TGLBaseSceneObject(anObject).Behaviours.GetByClass(TGLODEBehaviour));
+              if assigned(odebehaviour) then
+                 Result:=odebehaviour.Surface
+         end;
+    end;
 end;
 
 // IsGLODEObject
@@ -1337,6 +1364,7 @@ end;
 //
 constructor TGLODEManager.Create(AOwner:TComponent);
 begin
+  FWorld := nil;
   if not InitODE('') then
     raise Exception.Create('ODE failed to initialize.');
 
@@ -1360,7 +1388,9 @@ begin
     FContactGroup:=dJointGroupCreate(100);
   end;
 
-  FGeomColor:=TGLColor.CreateInitialized(Self, clrWhite, GeomColorChange);
+  FGeomColorDynD := TGLColor.CreateInitialized(Self, clrRed, GeomColorChangeDynD);
+  FGeomColorDynE := TGLColor.CreateInitialized(Self, clrLime, GeomColorChangeDynE);
+  FGeomColorStat := TGLColor.CreateInitialized(Self, clrBlue, GeomColorChangeStat);
 
   RegisterManager(Self);
 end;
@@ -1369,6 +1399,8 @@ end;
 //
 destructor TGLODEManager.Destroy;
 begin
+  RenderPoint := nil;
+
   // Unregister everything
   while FODEBehaviours.Count>0 do
     ODEBehaviours[0].Manager:=nil;
@@ -1385,7 +1417,9 @@ begin
     dWorldDestroy(FWorld);
   end;
 
-  FGeomColor.Free;
+  FGeomColorDynD.Free;
+  FGeomColorDynE.Free;
+  FGeomColorStat.Free;
 
   DeregisterManager(Self);
   inherited Destroy;
@@ -1485,6 +1519,9 @@ begin
   b1:=dGeomGetBody(g1);
   b2:=dGeomGetBody(g2);
 
+  // don't create contact between static objects
+  if not Assigned(b1) and not Assigned(b2) then Exit;
+
   if Assigned(b1) and Assigned(b2) then
     if dAreConnected(b1,b2)=1 then
       exit;
@@ -1513,10 +1550,10 @@ begin
       // Fire the OnCollision event for each object
       if TObject(Obj1) is TGLODEBehaviour then
         if Assigned(TGLODEBehaviour(Obj1).FOnCollision) then
-          TGLODEBehaviour(Obj1).FOnCollision(Self,Obj2,FContacts[i]);
+          TGLODEBehaviour(Obj1).FOnCollision(Self,Obj2,FContacts[i],HandleCollision);
       if TObject(Obj2) is TGLODEBehaviour then
         if Assigned(TGLODEBehaviour(Obj2).FOnCollision) then
-          TGLODEBehaviour(Obj2).FOnCollision(Self,Obj1,FContacts[i]);
+          TGLODEBehaviour(Obj2).FOnCollision(Self,Obj1,FContacts[i],HandleCollision);
     end else begin
       // Default surface values
       FContacts[i].surface.mu:=1000;
@@ -1640,16 +1677,21 @@ begin
   if not (csDesigning in ComponentState) then
     if not VisibleAtRunTime then Exit;
 
-  glPushAttrib(GL_ENABLE_BIT + GL_CURRENT_BIT + GL_POLYGON_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_POLYGON_OFFSET_LINE);
-  glPolygonOffset(1, 2);
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stPolygonOffsetLine);
+  rci.GLStates.SetPolygonOffset(1, 2);
 
-  glColor4fv(GeomColor.AsAddress);
-  for i:=0 to FODEBehaviours.Count-1 do
+  for i := 0 to FODEBehaviours.Count - 1 do begin
+    if ODEBehaviours[i] is TGLODEDynamic then
+      if TGLODEDynamic(ODEBehaviours[i]).GetEnabled then
+        GL.Color4fv(GeomColorDynE.AsAddress)
+      else
+        GL.Color4fv(GeomColorDynD.AsAddress)
+    else
+      GL.Color4fv(GeomColorStat.AsAddress);
+
     ODEBehaviours[i].Render(rci);
-
-  glPopAttrib;
+  end;
 end;
 
 // RenderPointFreed
@@ -1679,21 +1721,56 @@ begin
   end;
 end;
 
-// SetGeomColor
+// SetGeomColorDynD
 //
-procedure TGLODEManager.SetGeomColor(const Value: TGLColor);
+
+procedure TGLODEManager.SetGeomColorDynD(const Value: TGLColor);
 begin
-  FGeomColor.Assign(Value);
+  FGeomColorDynD.Assign(Value);
   NotifyChange(Self);
 end;
 
-// GeomColorChange
+// GeomColorChangeDynD
 //
-procedure TGLODEManager.GeomColorChange(Sender:TObject);
+
+procedure TGLODEManager.GeomColorChangeDynD(Sender: TObject);
 begin
   NotifyChange(Self);
 end;
 
+// SetGeomColorDynE
+//
+
+procedure TGLODEManager.SetGeomColorDynE(const Value: TGLColor);
+begin
+  FGeomColorDynE.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// GeomColorChangeDynE
+//
+
+procedure TGLODEManager.GeomColorChangeDynE(Sender: TObject);
+begin
+  NotifyChange(Self);
+end;
+
+// SetGeomColorStat
+//
+
+procedure TGLODEManager.SetGeomColorStat(const Value: TGLColor);
+begin
+  FGeomColorStat.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// GeomColorChangeStat
+//
+
+procedure TGLODEManager.GeomColorChangeStat(Sender: TObject);
+begin
+  NotifyChange(Self);
+end;
 
 // ---------------
 // --------------- TODECollisionSurface ---------------
@@ -2055,7 +2132,7 @@ end;
 procedure TGLODEBehaviour.NotifyChange(Sender: TObject);
 begin
   if Assigned(Manager) then
-    Manager.NotifyChange(Sender);
+    Manager.NotifyChange(Self);
 end;
 
 // SetManager
@@ -2070,9 +2147,9 @@ begin
     end;
     FManager:=Value;
     if Assigned(FManager) then begin
-      FManager.RegisterODEBehaviour(Self);
-      if not (csDesigning in TComponent(Owner.Owner).ComponentState) then
+      if not (csDesigning in TComponent(Owner.Owner).ComponentState) then // mrqzzz moved here
         Initialize;
+      FManager.RegisterODEBehaviour(Self);
     end;
   end;
 end;
@@ -2086,7 +2163,7 @@ end;
 
 // GetAbsoluteMatrix
 //
-function TGLODEBehaviour.GetAbsoluteMatrix;
+function TGLODEBehaviour.GetAbsoluteMatrix : TMatrix;
 begin
   Result:=IdentityHMGMatrix;
   if Assigned(Owner.Owner) then
@@ -2113,9 +2190,9 @@ end;
 //
 destructor TGLODEDynamic.Destroy;
 begin
-  inherited;
   FElements.Free;
   FJointRegister.Free;
+  inherited;
 end;
 
 // Render
@@ -2125,16 +2202,15 @@ var
   mat : TMatrix;
 begin
   if Assigned(Owner.Owner) then begin
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
+    rci.PipelineTransformation.Push;
     mat:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    glMultMatrixf(@mat[0][0]);
+    rci.PipelineTransformation.ModelMatrix := mat;
   end;
 
   Elements.Render(rci);
 
   if Assigned(Owner.Owner) then
-    glPopMatrix;
+    rci.PipelineTransformation.Pop;
 end;
 
 // FriendlyName
@@ -2158,7 +2234,9 @@ begin
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
-  dBodySetMass(FBody,@FMass);
+  CalibrateCenterOfMass;
+  if (FMass.mass>0) and (FBody<>nil) then // mrqzzz
+     dBodySetMass(FBody,@FMass);
   Enabled:=FEnabled;
 
   for i:=0 to FJointRegister.Count-1 do
@@ -2240,13 +2318,12 @@ function TGLODEDynamic.AddNewElement(AChild:TODEElementClass):TODEElementBase;
 var
   calcmass : TdMass;
 begin
-  Result:=nil;
-  if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
-  FElements.Add(Result);
+  //FElements.Add(Result);
   Result.Initialize;
   calcmass:=CalculateMass;
-  dBodySetMass(FBody,@calcmass);
+  if (calcMass.mass>0) and (FBody<>nil) then // mrqzzz
+     dBodySetMass(FBody,@calcmass);
 end;
 
 // AlignObject
@@ -2259,7 +2336,7 @@ var
 begin
   pos:=dBodyGetPosition(Body);
   R:=dBodyGetRotation(Body);
-  ODERToGLSceneMatrix(m,R^,pos^);
+  ODEGL.ODERToGLSceneMatrix(m,R^,pos^);
   if OwnerBaseSceneObject.Parent is TGLBaseSceneObject then
     m:=MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
   OwnerBaseSceneObject.Matrix:=m;
@@ -2272,11 +2349,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
+  R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
+  R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
+  dBodySetPosition(FBody,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
 end;
 
 // CalculateMass
@@ -2299,12 +2376,10 @@ end;
 procedure TGLODEDynamic.CalibrateCenterOfMass;
 var
   pos : TAffineVector;
-  i : integer;
 begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);
-  for i:=0 to FElements.Count-1 do
-    TODEElementBase(FElements[i]).Position.Translate(pos);
+  dMassTranslate(Fmass,pos.V[0],pos.V[1],pos.V[2]);
 end;
 
 // GetMass
@@ -2320,7 +2395,7 @@ end;
 procedure TGLODEDynamic.SetMass(const value: TdMass);
 begin
   FMass:=value;
-  dBodySetMass(FBody,@FMass);
+  if FMass.mass>0 then dBodySetMass(FBody,@FMass);
 end;
 
 // UniqueItem
@@ -2355,7 +2430,7 @@ end;
 procedure TGLODEDynamic.AddForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddForce(FBody,Force.V[0],Force.V[1],Force.V[2]);
 end;
 
 // AddlForceAtPos
@@ -2363,7 +2438,8 @@ end;
 procedure TGLODEDynamic.AddForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.V[0],Force.V[1],Force.V[2],
+                        Pos.V[0],Pos.V[1],Pos.V[2]);
 end;
 
 // AddForceAtRelPos
@@ -2371,7 +2447,7 @@ end;
 procedure TGLODEDynamic.AddForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtRelPos(FBody,Force.V[0],Force.V[1],Force.V[2],Pos.V[0],Pos.V[1],Pos.V[2]);
 end;
 
 // AddRelForce
@@ -2379,7 +2455,7 @@ end;
 procedure TGLODEDynamic.AddRelForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddRelForce(FBody,Force.V[0],Force.V[1],Force.V[2]);
 end;
 
 // AddRelForceAtPos
@@ -2387,7 +2463,8 @@ end;
 procedure TGLODEDynamic.AddRelForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.V[0],Force.V[1],Force.V[2],
+                       Pos.V[0],Pos.V[1],Pos.V[2]);
 end;
 
 // AddRelForceAtRelPos
@@ -2395,7 +2472,8 @@ end;
 procedure TGLODEDynamic.AddRelForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddRelForceAtRelPos(FBody,Force.V[0],Force.V[1],Force.V[2],
+                             Pos.V[0],Pos.V[1],Pos.V[2]);
 end;
 
 // AddTorque
@@ -2403,7 +2481,7 @@ end;
 procedure TGLODEDynamic.AddTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddTorque(FBody,Torque.V[0],Torque.V[1],Torque.V[2]);
 end;
 
 // AddRelTorque
@@ -2411,7 +2489,7 @@ end;
 procedure TGLODEDynamic.AddRelTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddRelTorque(FBody,Torque.V[0],Torque.V[1],Torque.V[2]);
 end;
 
 
@@ -2431,8 +2509,8 @@ end;
 //
 destructor TGLODEStatic.Destroy;
 begin
-  inherited;
   FElements.Free;
+  inherited;
 end;
 
 // Render
@@ -2442,16 +2520,15 @@ var
   mat : TMatrix;
 begin
   if Assigned(Owner.Owner) then begin
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix;
+    rci.PipelineTransformation.Push;
     mat:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
-    glMultMatrixf(@mat[0][0]);
+    rci.PipelineTransformation.ModelMatrix := mat;
   end;
 
   Elements.Render(rci);
 
   if Assigned(Owner.Owner) then
-    glPopMatrix;
+    rci.PipelineTransformation.Pop;
 end;
 
 // FriendlyName
@@ -2598,7 +2675,7 @@ procedure TODEElements.NotifyChange(Sender: TObject);
 begin
   if Assigned(Owner) then
     if Owner is TGLODEBehaviour then
-      TGLODEBehaviour(Owner).NotifyChange(Sender);
+      TGLODEBehaviour(Owner).NotifyChange(Self);
 end;
 
 
@@ -2741,7 +2818,7 @@ end;
 //
 function TODEElementBase.AbsolutePosition: TAffineVector;
 begin
-  Result:=AffineVectorMake(AbsoluteMatrix[3]);
+  Result:=AffineVectorMake(AbsoluteMatrix.V[3]);
 end;
 
 // AlignGeomElementToMatrix
@@ -2751,10 +2828,10 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FGeomElement) then exit;
-  dGeomSetPosition(FGeomElement,Mat[3][0],Mat[3][1],Mat[3][2]);
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  dGeomSetPosition(FGeomElement,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
+  R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
+  R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
+  R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
   dGeomSetRotation(FGeomElement,R);
   FRealignODE:=False;
 end;
@@ -2786,11 +2863,22 @@ function TODEElementBase.CalculateMass: TdMass;
 var
   R : TdMatrix3;
 begin
-  R[0]:=FLocalMatrix[0][0]; R[1]:=FLocalMatrix[1][0]; R[2]:= FLocalMatrix[2][0]; R[3]:= 0;
-  R[4]:=FLocalMatrix[0][1]; R[5]:=FLocalMatrix[1][1]; R[6]:= FLocalMatrix[2][1]; R[7]:= 0;
-  R[8]:=FLocalMatrix[0][2]; R[9]:=FLocalMatrix[1][2]; R[10]:=FLocalMatrix[2][2]; R[11]:=0;
+  R[0]:=FLocalMatrix.V[0].V[0];
+  R[1]:=FLocalMatrix.V[1].V[0];
+  R[2]:=FLocalMatrix.V[2].V[0];
+  R[3]:= 0;
+  R[4]:=FLocalMatrix.V[0].V[1];
+  R[5]:=FLocalMatrix.V[1].V[1];
+  R[6]:=FLocalMatrix.V[2].V[1];
+  R[7]:= 0;
+  R[8]:=FLocalMatrix.V[0].V[2];
+  R[9]:=FLocalMatrix.V[1].V[2];
+  R[10]:=FLocalMatrix.V[2].V[2];
+  R[11]:=0;
   dMassRotate(FMass,R);
-  dMassTranslate(FMass,FLocalMatrix[3][0],FLocalMatrix[3][1],FLocalMatrix[3][2]);
+  dMassTranslate(FMass,FLocalMatrix.V[3].V[0],
+                       FLocalMatrix.V[3].V[1],
+                       FLocalMatrix.V[3].V[2]);
   result:=FMass;
 end;
 
@@ -2829,7 +2917,7 @@ begin
       FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
       FDirection.Normalize;
     end;
-    NotifyChange(Sender);
+    NotifyChange(Self);
   finally
     FIsCalculating:=False;
   end;
@@ -2854,19 +2942,19 @@ end;
 //
 procedure TODEElementBase.RebuildMatrix;
 begin
-  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix[0]);
-  SetVector(FLocalMatrix[1],FUp.AsVector);
-  SetVector(FLocalMatrix[2],FDirection.AsVector);
-  SetVector(FLocalMatrix[3],FPosition.AsVector);
+  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix.V[0]);
+  SetVector(FLocalMatrix.V[1],FUp.AsVector);
+  SetVector(FLocalMatrix.V[2],FDirection.AsVector);
+  SetVector(FLocalMatrix.V[3],FPosition.AsVector);
 end;
 
 // RebuildVectors
 //
 procedure TODEElementBase.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix[1][0],FLocalMatrix[1][1],FLocalMatrix[1][2]);
-  FDirection.SetVector(FLocalMatrix[2][0],FLocalMatrix[2][1],FLocalMatrix[2][2]);
-  FPosition.SetPoint(FLocalMatrix[3][0],FLocalMatrix[3][1],FLocalMatrix[3][2]);
+  FUp.SetVector(FLocalMatrix.V[1].V[0],FLocalMatrix.V[1].V[1],FLocalMatrix.V[1].V[2]);
+  FDirection.SetVector(FLocalMatrix.V[2].V[0],FLocalMatrix.V[2].V[1],FLocalMatrix.V[2].V[2]);
+  FPosition.SetPoint(FLocalMatrix.V[3].V[0],FLocalMatrix.V[3].V[1],FLocalMatrix.V[3].V[2]);
 end;
 
 // SetDensity
@@ -2930,36 +3018,36 @@ end;
 //
 procedure TODEElementBox.Render(var rci : TRenderContextInfo);
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
-  glBegin(GL_LINE_LOOP);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINE_LOOP);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+  GL.End_;
 
-  glBegin(GL_LINE_LOOP);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINE_LOOP);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+  GL.End_;
 
-  glBegin(GL_LINES);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-  glEnd;
+  GL.Begin_(GL_LINES);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+  GL.End_;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3119,15 +3207,15 @@ end;
 //
 procedure TODEElementSphere.Render(var rci : TRenderContextInfo);
 var
-  AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Extended;
-  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Extended;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
   FTop, FBottom, FStart, FStop : Single;
   I, J, FSlices, FStacks: Integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
-  glScalef(Radius, Radius, Radius);
+  GL.MultMatrixf(@FLocalMatrix);
+  GL.Scalef(Radius, Radius, Radius);
 
   FTop:=90;
   FBottom:=-90;
@@ -3150,13 +3238,13 @@ begin
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
 
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCos(Theta, SinT, CosT);
-      glVertex3f(CosP*SinT,SinP,CosP*CosT);
+      GL.Vertex3f(CosP*SinT,SinP,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    glEnd;
+    GL.End_;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
@@ -3168,18 +3256,18 @@ begin
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
 
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCos(Theta, SinT, CosT);
-      glVertex3f(SinP,CosP*SinT,CosP*CosT);
+      GL.Vertex3f(SinP,CosP*SinT,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    glEnd;
+    GL.End_;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3291,49 +3379,49 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
-    glEnd;
+        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+    GL.End_;
   end;
 
   // Middle vertical lines
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
     end;
-  glEnd;
+  GL.End_;
 
   // Cap XZ half-circles
-  glPushMatrix;
+  GL.PushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
     // Top
-    glBegin(GL_LINE_STRIP);
+    GL.Begin_(GL_LINE_STRIP);
       for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
-    glEnd;
+        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
+    GL.End_;
 
     // Bottom
-    glBegin(GL_LINE_STRIP);
+    GL.Begin_(GL_LINE_STRIP);
       for i:=0 to Slices do
-        glVertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
-    glEnd;
-    glRotatef(360/Slices,0,0,1);
+        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
+    GL.End_;
+    GL.Rotatef(360/Slices,0,0,1);
   end;
-  glPopMatrix;
-  glPopMatrix;
+  GL.PopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3352,7 +3440,7 @@ begin
   if FInitialized then exit;
   if not IsODEInitialized then exit;
 
-  FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
+  FGeomElement:=dCreateCapsule(nil,FRadius,FLength);
   inherited;
 end;
 
@@ -3405,7 +3493,7 @@ end;
 //
 function TODEElementCapsule.CalculateMass: TdMass;
 begin
-  dMassSetCappedCylinder(FMass,FDensity,3,FRadius,FLength);
+  dMassSetCapsule(FMass,FDensity,3,FRadius,FLength);
   result:=inherited CalculateMass;
 end;
 
@@ -3416,7 +3504,7 @@ var
   rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
-    dGeomCCylinderGetParams(Geom,rad,len);
+    dGeomCapsuleGetParams(Geom,rad,len);
     FRadius:=rad;
   end;
   result:=FRadius;
@@ -3429,7 +3517,7 @@ var
   rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
-    dGeomCCylinderGetParams(Geom,rad,len);
+    dGeomCapsuleGetParams(Geom,rad,len);
     FLength:=len;
   end;
   result:=FLength;
@@ -3440,7 +3528,7 @@ end;
 procedure TODEElementCapsule.ODERebuild;
 begin
   if Assigned(Geom) then
-    dGeomCCylinderSetParams(Geom,FRadius,FLength);
+    dGeomCapsuleSetParams(Geom,FRadius,FLength);
   inherited;
 end;
 
@@ -3472,45 +3560,45 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  glPushMatrix;
+  GL.PushMatrix;
 
-  glMultMatrixf(@FLocalMatrix);
+  GL.MultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    glBegin(GL_LINE_LOOP);
+    GL.Begin_(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
-    glEnd;
+        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
+    GL.End_;
   end;
 
   // Middle vertical lines
-  glBegin(GL_LINES);
+  GL.Begin_(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
+      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
     end;
-  glEnd;
+  GL.End_;
 
   // Caps
-  glPushMatrix;
+  GL.PushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
-    glBegin(GL_LINES);
-      glVertex3f(-FRadius,FLength/2,0);
-      glVertex3f(FRadius,FLength/2,0);
-      glVertex3f(-FRadius,-FLength/2,0);
-      glVertex3f(FRadius,-FLength/2,0);
-    glEnd;
-    glRotatef(360/Slices,0,1,0);
+    GL.Begin_(GL_LINES);
+      GL.Vertex3f(-FRadius,FLength/2,0);
+      GL.Vertex3f(FRadius,FLength/2,0);
+      GL.Vertex3f(-FRadius,-FLength/2,0);
+      GL.Vertex3f(FRadius,-FLength/2,0);
+    GL.End_;
+    GL.Rotatef(360/Slices,0,1,0);
   end;
-  glPopMatrix;
+  GL.PopMatrix;
 
-  glPopMatrix;
+  GL.PopMatrix;
 end;
 
 // Create
@@ -3637,207 +3725,6 @@ begin
   ODERebuild;
 end;
 
-
-// ---------------
-// --------------- TODEElementCone ---------------
-// ---------------
-
-// Render
-//
-procedure TODEElementCone.Render(var rci : TRenderContextInfo);
-var
-  i,j,
-  Stacks,
-  Slices : integer;
-begin
-  glPushMatrix;
-
-  glMultMatrixf(@FLocalMatrix);
-
-  Stacks:=8;
-  Slices:=16;
-
-  // Middle horizontal circles
-  for j:=1 to Stacks do begin
-    glBegin(GL_LINE_LOOP);
-      for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices)*j/Stacks,FRadius*cos(2*i*PI/Slices)*j/Stacks,FLength*(1-j/Stacks));
-    glEnd;
-  end;
-
-  // Middle vertical lines
-  glBegin(GL_LINES);
-    for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),0);
-      glVertex3f(0,0,FLength);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),0);
-      glVertex3f(0,0,FLength);
-    end;
-  glEnd;
-
-  // Cap
-  glPushMatrix;
-  for j:=0 to (Slices div 2)-1 do begin
-    glBegin(GL_LINES);
-      glVertex3f(-FRadius,0,0);
-      glVertex3f(FRadius,0,0);
-    glEnd;
-    glRotatef(360/Slices,0,0,1);
-  end;
-  glPopMatrix;
-
-  glPopMatrix;
-end;
-
-// Create
-//
-constructor TODEElementCone.Create(AOwner: TXCollection);
-begin
-  inherited;
-  FRadius:=0.5;
-  FLength:=1;
-end;
-
-// Initialize
-//
-procedure TODEElementCone.Initialize;
-begin
-  if FInitialized then exit;
-  if not IsODEInitialized then exit;
-
-  FGeomElement:=dCreateCone(nil,FRadius,FLength);
-  inherited;
-end;
-
-// WriteToFiler
-//
-procedure TODEElementCone.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-  with writer do begin
-    WriteInteger(0); // Archive version
-    WriteFloat(Radius);
-    WriteFloat(Length);
-  end;
-end;
-
-// ReadFromFiler
-//
-procedure TODEElementCone.ReadFromFiler(reader : TReader);
-begin
-  inherited;
-  with reader do begin
-    Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadFloat;
-    Length:=ReadFloat;
-  end;
-end;
-
-// FriendlyName
-//
-class function TODEElementCone.FriendlyName : String;
-begin
-  Result:='Cone';
-end;
-
-// FriendlyDescription
-//
-class function TODEElementCone.FriendlyDescription : String;
-begin
-  Result:='The ODE cone element implementation';
-end;
-
-// ItemCategory
-//
-class function TODEElementCone.ItemCategory : String;
-begin
-  Result:='Primitives';
-end;
-
-// CalculateMass
-//
-function TODEElementCone.CalculateMass: TdMass;
-
-  procedure dMassSetCone(var m : TdMass; const density, radius, length : Single);
-  var
-    ms, Rsqr, Lsqr,
-    Ixx, Iyy, Izz : Single;
-  begin
-    // Calculate Mass
-    Rsqr:=radius*radius;
-    Lsqr:=length*length;
-    ms:=Pi*Rsqr*length*density/3;
-
-    // Calculate Mass Moments of Inertia about the Centroid
-    Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-    Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
-    Izz:=0.3*ms*Rsqr;
-
-    // Set the ODE Mass parameters
-    with m do begin
-      mass:=ms;
-      c[0]:=0; c[1]:=0; c[2]:=0.25*length;
-      I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
-      I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
-      I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
-    end;
-  end;
-
-begin
-  dMassSetCone(FMass,FDensity,FRadius,FLength);
-  result:=inherited CalculateMass;
-end;
-
-// GetRadius
-//
-function TODEElementCone.GetRadius: TdReal;
-var
-  rad, len : TdReal;
-begin
-  if Assigned(FGeomElement) then begin
-    dGeomConeGetParams(Geom,rad,len);
-    FRadius:=rad;
-  end;
-  result:=FRadius;
-end;
-
-// GetLength
-//
-function TODEElementCone.GetLength: TdReal;
-var
-  rad, len : TdReal;
-begin
-  if Assigned(FGeomElement) then begin
-    dGeomConeGetParams(Geom,rad,len);
-    FLength:=len;
-  end;
-  result:=FLength;
-end;
-
-// ODERebuild
-//
-procedure TODEElementCone.ODERebuild;
-begin
-  if Assigned(Geom) then
-    dGeomConeSetParams(Geom,FRadius,FLength);
-  inherited;
-end;
-
-// SetRadius
-//
-procedure TODEElementCone.SetRadius(const Value: TdReal);
-begin
-  FRadius:=Value;
-  ODERebuild;
-end;
-
-// SetLength
-//
-procedure TODEElementCone.SetLength(const Value: TdReal);
-begin
-  FLength:=Value;
-  ODERebuild;
-end;
 
 
 // ---------------
@@ -3991,7 +3878,9 @@ end;
 //
 procedure TODEElementPlane.WriteToFiler(writer : TWriter);
 begin
-  writer.WriteInteger(0);
+  // ArchiveVersion 1, added inherited call
+  writer.WriteInteger(1);
+  inherited;
 end;
 
 // ReadFromFiler
@@ -4001,7 +3890,9 @@ var
   archiveVersion : Integer;
 begin
   archiveVersion:=reader.ReadInteger;
-  Assert(archiveVersion = 0);
+  Assert(archiveVersion in [0..1]);
+  if archiveVersion >= 1 then
+    inherited;
 end;
 
 // FriendlyName
@@ -4042,8 +3933,8 @@ var
   d : Single;
 begin
   if not Assigned(FGeomElement) then exit;
-  d:=VectorDotProduct(Mat[2], Mat[3]);
-  dynode.dGeomPlaneSetParams(FGeomElement,Mat[2][0],Mat[2][1],Mat[2][2],d);
+  d:=VectorDotProduct(Mat.V[2], Mat.V[3]);
+  dGeomPlaneSetParams(FGeomElement,Mat.V[2].V[0],Mat.V[2].V[1],Mat.V[2].V[2],d);
 end;
 
 
@@ -4181,7 +4072,7 @@ end;
 constructor TODEJointBase.Create(AOwner : TXCollection);
 begin
   inherited;
-  FJointID:=0;
+  FJointID:=nil;
   FEnabled:=True;
   FInitialized:=False;
 end;
@@ -4218,7 +4109,7 @@ begin
     UnregisterJointWithObject(FObject1);
   if Assigned(FObject2) then
     UnregisterJointWithObject(FObject2);
-  if FJointID<>0 then
+  if FJointID<>nil then
     dJointDestroy(FJointID);
 
   FInitialized:=False;
@@ -4261,30 +4152,8 @@ end;
 // Loaded
 //
 procedure TODEJointBase.Loaded;
-var
-  mng : TComponent;
-  obj : TGLBaseSceneObject;
 begin
-  inherited;
-  if FManagerName<>'' then begin
-    mng:=FindManager(TGLODEManager, FManagerName);
-    if Assigned(mng) then
-      Manager:=TGLODEManager(mng);
-    FManagerName:='';
-  end;
-  if FObject1Name<>'' then begin
-    obj:=GetGLSceneObject(FObject1Name);
-    if Assigned(obj) then
-      Object1:=obj;
-    FObject1Name:='';
-  end;
-  if FObject2Name<>'' then begin
-    obj:=GetGLSceneObject(FObject2Name);
-    if Assigned(obj) then
-      Object2:=obj;
-    FObject2Name:='';
-  end;
-  Attach;
+     DoLoaded;
 end;
 
 // RegisterJointWithObject
@@ -4328,7 +4197,7 @@ procedure TODEJointBase.Attach;
 var
   Body1, Body2 : PdxBody;
 begin
-  if (FJointID=0) or not FInitialized then exit;
+  if (FJointID=nil) or not FInitialized then exit;
 
   if Enabled then begin
     Body1:=GetBodyFromGLSceneObject(FObject1);
@@ -4414,6 +4283,36 @@ begin
   // nothing yet
 end;
 
+// DoLoaded (public proc for Loaded)
+//
+procedure TODEJointBase.DoLoaded;
+var
+  mng : TComponent;
+  obj : TGLBaseSceneObject;
+begin
+  inherited;
+  if FManagerName<>'' then begin
+    mng:=FindManager(TGLODEManager, FManagerName);
+    if Assigned(mng) then
+      Manager:=TGLODEManager(mng);
+    FManagerName:='';
+  end;
+  if FObject1Name<>'' then begin
+    obj:=GetGLSceneObject(FObject1Name);
+    if Assigned(obj) then
+      Object1:=obj;
+    FObject1Name:='';
+  end;
+  if FObject2Name<>'' then begin
+    obj:=GetGLSceneObject(FObject2Name);
+    if Assigned(obj) then
+      Object2:=obj;
+    FObject2Name:='';
+  end;
+  Attach;
+end;
+
+
 // IsAttached
 //
 function TODEJointBase.IsAttached : Boolean;
@@ -4421,7 +4320,7 @@ var
   body1, body2 : PdxBody;
 begin
   Result:=False;
-  if JointID<>0 then begin
+  if JointID<>nil then begin
     body1:=dJointGetBody(JointID, 0);
     body2:=dJointGetBody(JointID, 1);
     if joBothObjectsMustBeAssigned in JointOptions then
@@ -4531,7 +4430,7 @@ end;
 function TODEJointParams.GetLoStop : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamLoStop, FLoStop);
+    GetCallback(dParamLoStop1, FLoStop);
   Result:=FLoStop;
 end;
 
@@ -4540,7 +4439,7 @@ end;
 function TODEJointParams.GetHiStop : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamHiStop, FHiStop);
+    GetCallback(dParamHiStop1, FHiStop);
   Result:=FHiStop;
 end;
 
@@ -4549,7 +4448,7 @@ end;
 function TODEJointParams.GetVel : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamVel, FVel);
+    GetCallback(dParamVel1, FVel);
   Result:=FVel;
 end;
 
@@ -4558,7 +4457,7 @@ end;
 function TODEJointParams.GetFMax : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamFMax, FFMax);
+    GetCallback(dParamFMax1, FFMax);
   Result:=FFMax;
 end;
 
@@ -4567,7 +4466,7 @@ end;
 function TODEJointParams.GetFudgeFactor : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamFudgeFactor, FFudgeFactor);
+    GetCallback(dParamFudgeFactor1, FFudgeFactor);
   Result:=FFudgeFactor;
 end;
 
@@ -4576,7 +4475,7 @@ end;
 function TODEJointParams.GetBounce : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamBounce, FBounce);
+    GetCallback(dParamBounce1, FBounce);
   Result:=FBounce;
 end;
 
@@ -4585,7 +4484,7 @@ end;
 function TODEJointParams.GetCFM : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamCFM, FCFM);
+    GetCallback(dParamCFM1, FCFM);
   Result:=FCFM;
 end;
 
@@ -4594,7 +4493,7 @@ end;
 function TODEJointParams.GetStopERP : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamStopERP, FStopERP);
+    GetCallback(dParamStopERP1, FStopERP);
   Result:=FStopERP;
 end;
 
@@ -4603,7 +4502,7 @@ end;
 function TODEJointParams.GetStopCFM : TdReal;
 begin
   if Assigned(GetCallback) then
-    GetCallback(dParamStopCFM, FStopCFM);
+    GetCallback(dParamStopCFM1, FStopCFM);
   Result:=FStopCFM;
 end;
 
@@ -4632,7 +4531,7 @@ begin
   if Value<>FLoStop then begin
     FLoStop:=Value;
     if Assigned(SetCallback) then
-      FFlagLoStop:=not SetCallback(dParamLoStop, FLoStop)
+      FFlagLoStop:=not SetCallback(dParamLoStop1, FLoStop)
     else
       FFlagLoStop:=True;
   end;
@@ -4645,7 +4544,7 @@ begin
   if Value<>FHiStop then begin
     FHiStop:=Value;
     if Assigned(SetCallback) then
-      FFlagHiStop:=not SetCallback(dParamHiStop, FHiStop)
+      FFlagHiStop:=not SetCallback(dParamHiStop1, FHiStop)
     else
       FFlagHiStop:=True;
   end;
@@ -4658,7 +4557,7 @@ begin
   if Value<>FVel then begin
     FVel:=Value;
     if Assigned(SetCallback) then
-      FFlagVel:=not SetCallback(dParamVel, FVel)
+      FFlagVel:=not SetCallback(dParamVel1, FVel)
     else
       FFlagVel:=True;
   end;
@@ -4671,7 +4570,7 @@ begin
   if Value<>FFMax then begin
     FFMax:=Value;
     if Assigned(SetCallback) then
-      FFlagFMax:=not SetCallback(dParamFMax, FFMax)
+      FFlagFMax:=not SetCallback(dParamFMax1, FFMax)
     else
       FFlagFMax:=True;
   end;
@@ -4684,7 +4583,7 @@ begin
   if Value<>FFudgeFactor then begin
     FFudgeFactor:=Value;
     if Assigned(SetCallback) then
-      FFlagFudgeFactor:=not SetCallback(dParamFudgeFactor, FFudgeFactor)
+      FFlagFudgeFactor:=not SetCallback(dParamFudgeFactor1, FFudgeFactor)
     else
       FFlagFudgeFactor:=True;
   end;
@@ -4697,7 +4596,7 @@ begin
   if Value<>FBounce then begin
     FBounce:=Value;
     if Assigned(SetCallback) then
-      FFlagBounce:=not SetCallback(dParamBounce, FBounce)
+      FFlagBounce:=not SetCallback(dParamBounce1, FBounce)
     else
       FFlagBounce:=True;
   end;
@@ -4710,7 +4609,7 @@ begin
   if Value<>FCFM then begin
     FCFM:=Value;
     if Assigned(SetCallback) then
-      FFlagCFM:=not SetCallback(dParamCFM, FCFM)
+      FFlagCFM:=not SetCallback(dParamCFM1, FCFM)
     else
       FFlagCFM:=True;
   end;
@@ -4723,7 +4622,7 @@ begin
   if Value<>FStopERP then begin
     FStopERP:=Value;
     if Assigned(SetCallback) then
-      FFlagStopERP:=not SetCallback(dParamStopERP, FStopERP)
+      FFlagStopERP:=not SetCallback(dParamStopERP1, FStopERP)
     else
       FFlagStopERP:=True;
   end;
@@ -4736,7 +4635,7 @@ begin
   if Value<>FStopCFM then begin
     FStopCFM:=Value;
     if Assigned(SetCallback) then
-      FFlagStopCFM:=not SetCallback(dParamStopCFM, FStopCFM)
+      FFlagStopCFM:=not SetCallback(dParamStopCFM1, FStopCFM)
     else
       FFlagStopCFM:=True;
   end;
@@ -4773,15 +4672,15 @@ end;
 procedure TODEJointParams.ApplyFlagged;
 begin
   if not Assigned(SetCallback) then Exit;
-  if FFlagLoStop then SetCallback(dParamLoStop, FLoStop);
-  if FFlagHiStop then SetCallback(dParamHiStop, FHiStop);
-  if FFlagVel then SetCallback(dParamVel, FVel);
-  if FFlagFMax then SetCallback(dParamFMax, FFMax);
-  if FFlagFudgeFactor then SetCallback(dParamFudgeFactor, FFudgeFactor);
-  if FFlagBounce then SetCallback(dParamBounce, FBounce);
-  if FFlagCFM then SetCallback(dParamCFM, FCFM);
-  if FFlagStopERP then SetCallback(dParamStopERP, FStopERP);
-  if FFlagStopCFM then SetCallback(dParamStopCFM, FStopCFM);
+  if FFlagLoStop then SetCallback(dParamLoStop1, FLoStop);
+  if FFlagHiStop then SetCallback(dParamHiStop1, FHiStop);
+  if FFlagVel then SetCallback(dParamVel1, FVel);
+  if FFlagFMax then SetCallback(dParamFMax1, FFMax);
+  if FFlagFudgeFactor then SetCallback(dParamFudgeFactor1, FFudgeFactor);
+  if FFlagBounce then SetCallback(dParamBounce1, FBounce);
+  if FFlagCFM then SetCallback(dParamCFM1, FCFM);
+  if FFlagStopERP then SetCallback(dParamStopERP1, FStopERP);
+  if FFlagStopCFM then SetCallback(dParamStopCFM1, FStopCFM);
   if FFlagSuspensionERP then SetCallback(dParamSuspensionERP, FSuspensionERP);
   if FFlagSuspensionCFM then SetCallback(dParamSuspensionCFM, FSuspensionCFM);
 end;
@@ -4803,6 +4702,7 @@ begin
   FAxisParams:=TODEJointParams.Create(Self);
   FAxisParams.SetCallback:=SetAxisParam;
   FAxisParams.GetCallback:=GetAxisParam;
+
 end;
 
 // Destroy
@@ -4819,7 +4719,7 @@ end;
 procedure TODEJointHinge.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge(FManager.World,0);
+  FJointID:=dJointCreateHinge(FManager.World,nil);
   inherited;
 end;
 
@@ -4962,7 +4862,7 @@ end;
 procedure TODEJointBall.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateBall(FManager.World,0);
+  FJointID:=dJointCreateBall(FManager.World,nil);
   inherited;
 end;
 
@@ -5054,7 +4954,7 @@ end;
 procedure TODEJointSlider.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateSlider(FManager.World,0);
+  FJointID:=dJointCreateSlider(FManager.World,nil);
   inherited;
 end;
 
@@ -5163,7 +5063,7 @@ end;
 procedure TODEJointFixed.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateFixed(FManager.World,0);
+  FJointID:=dJointCreateFixed(FManager.World,nil);
   inherited;
 end;
 
@@ -5243,7 +5143,7 @@ end;
 procedure TODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateHinge2(FManager.World,0);
+  FJointID:=dJointCreateHinge2(FManager.World,nil);
   inherited;
 end;
 
@@ -5429,7 +5329,7 @@ begin
   FAnchor.OnNotifyChange:=AnchorChange;
   FAxis1:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
   FAxis1.OnNotifyChange:=Axis1Change;
-  FAxis2:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
+  FAxis2:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
   FAxis2.OnNotifyChange:=Axis2Change;
   FAxis1Params:=TODEJointParams.Create(Self);
   FAxis1Params.SetCallback:=SetAxis1Param;
@@ -5457,7 +5357,7 @@ end;
 procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  FJointID:=dJointCreateUniversal(FManager.World,0);
+  FJointID:=dJointCreateUniversal(FManager.World,nil);
   inherited;
 end;
 
@@ -5633,6 +5533,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -5647,7 +5548,6 @@ initialization
   RegisterXCollectionItemClass(TODEElementSphere);
   RegisterXCollectionItemClass(TODEElementCapsule);
   RegisterXCollectionItemClass(TODEElementCylinder);
-  RegisterXCollectionItemClass(TODEElementCone);
   RegisterXCollectionItemClass(TODEElementTriMesh);
   RegisterXCollectionItemClass(TODEElementPlane);
 
@@ -5675,7 +5575,6 @@ finalization
   UnregisterXCollectionItemClass(TODEElementSphere);
   UnregisterXCollectionItemClass(TODEElementCapsule);
   UnregisterXCollectionItemClass(TODEElementCylinder);
-  UnregisterXCollectionItemClass(TODEElementCone);
   UnregisterXCollectionItemClass(TODEElementTriMesh);
   UnregisterXCollectionItemClass(TODEElementPlane);
 
@@ -5686,6 +5585,6 @@ finalization
   UnregisterXCollectionItemClass(TODEJointHinge2);
   UnregisterXCollectionItemClass(TODEJointUniversal);
 
-  CloseODE;
+//  CloseODE;
 
 end.

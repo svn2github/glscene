@@ -1,9 +1,20 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLODESkeletonColliders<p>
 
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
    <b>History :</b><font size=-1><ul>
-     <li>04/12/03 - SG - Creation.
+      <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
+      <li>17/11/09 - DaStr - Improved Unix compatibility
+                             (thanks Predator) (BugtrackerID = 2893580)
+      <li>12/04/08 - DaStr - Cleaned up uses section
+                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
+      <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
+                             CCilinder (ode 0.8) with Capsule(ode 0.9))
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+      <li>04/12/03 - SG - Creation.
    </ul></font>
 }
 unit GLODESkeletonColliders;
@@ -11,8 +22,7 @@ unit GLODESkeletonColliders;
 interface
 
 uses
-  Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,
-  dynode;
+  Classes, GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects, ODEImport;
 
 type
   
@@ -39,10 +49,10 @@ type
   {: Sphere shaped ODE geom in a skeleton collider. }
   TSCODESphere = class(TSCODEBase)
     private
-      FRadius : Single;
+      FRadius : TdReal;
 
     protected
-      procedure SetRadius(const val : Single);
+      procedure SetRadius(const val : TdReal);
 
     public
       constructor Create; override;
@@ -50,7 +60,7 @@ type
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToSpace(Space : PdxSpace); override;
 
-      property Radius : Single read FRadius write SetRadius;
+      property Radius : TdReal read FRadius write SetRadius;
   end;
 
   // TSCODECCylinder
@@ -83,12 +93,12 @@ type
     private
       FBoxWidth,
       FBoxHeight,
-      FBoxDepth : Single;
+      FBoxDepth : TdReal;
 
     protected
-      procedure SetBoxWidth(const val : Single);
-      procedure SetBoxHeight(const val : Single);
-      procedure SetBoxDepth(const val : Single);
+      procedure SetBoxWidth(const val : TdReal);
+      procedure SetBoxHeight(const val : TdReal);
+      procedure SetBoxDepth(const val : TdReal);
 
     public
       constructor Create; override;
@@ -96,9 +106,9 @@ type
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToSpace(Space : PdxSpace); override;
 
-      property BoxWidth : Single read FBoxWidth write SetBoxWidth;
-      property BoxHeight : Single read FBoxHeight write SetBoxHeight;
-      property BoxDepth : Single read FBoxDepth write SetBoxDepth;
+      property BoxWidth : TdReal read FBoxWidth write SetBoxWidth;
+      property BoxHeight : TdReal read FBoxHeight write SetBoxHeight;
+      property BoxDepth : TdReal read FBoxDepth write SetBoxDepth;
   end;
 
 {: After loading call this function to add all the geoms in a
@@ -174,10 +184,10 @@ begin
   inherited;
   if Assigned(FGeom) then begin
     Mat:=GlobalMatrix;
-    dGeomSetPosition(FGeom,Mat[3][0],Mat[3][1],Mat[3][2]);
-    R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-    R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-    R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+    dGeomSetPosition(FGeom,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
+    R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
+    R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
+    R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
     dGeomSetRotation(FGeom,R);
   end;
 end;
@@ -230,7 +240,7 @@ end;
 
 // SetRadius
 //
-procedure TSCODESphere.SetRadius(const val : Single);
+procedure TSCODESphere.SetRadius(const val : TdReal);
 begin
   if val<>FRadius then begin
     FRadius:=val;
@@ -284,7 +294,7 @@ end;
 //
 procedure TSCODECCylinder.AddToSpace(Space : PdxSpace);
 begin
-  FGeom:=dCreateCCylinder(Space,FRadius,FLength);
+  FGeom:=dCreateCapsule(Space,FRadius,FLength);
   inherited;
 end;
 
@@ -295,7 +305,7 @@ begin
   if val<>FRadius then begin
     FRadius:=val;
     if Assigned(FGeom) then
-      dGeomCcylinderSetParams(FGeom,FRadius,FLength);
+      dGeomCapsuleSetParams(FGeom,FRadius,FLength);
   end;
 end;
 
@@ -306,7 +316,7 @@ begin
   if val<>FLength then begin
     FLength:=val;
     if Assigned(FGeom) then
-      dGeomCcylinderSetParams(FGeom,FRadius,FLength);
+      dGeomCapsuleSetParams(FGeom,FRadius,FLength);
   end;
 end;
 
@@ -363,7 +373,7 @@ end;
 
 // SetBoxWidth
 //
-procedure TSCODEBox.SetBoxWidth(const val : Single);
+procedure TSCODEBox.SetBoxWidth(const val : TdReal);
 begin
   if val<>FBoxWidth then begin
     FBoxWidth:=val;
@@ -377,7 +387,7 @@ end;
 
 // SetBoxHeight
 //
-procedure TSCODEBox.SetBoxHeight(const val : Single);
+procedure TSCODEBox.SetBoxHeight(const val : TdReal);
 begin
   if val<>FBoxHeight then begin
     FBoxHeight:=val;
@@ -391,7 +401,7 @@ end;
 
 // SetBoxDepth
 //
-procedure TSCODEBox.SetBoxDepth(const val : Single);
+procedure TSCODEBox.SetBoxDepth(const val : TdReal);
 begin
   if val<>FBoxDepth then begin
     FBoxDepth:=val;

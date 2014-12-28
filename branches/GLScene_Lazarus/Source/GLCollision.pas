@@ -1,24 +1,40 @@
-// GLCollision
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLCollision<p>
 
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/11/14 - PW - Refactored TCollisionManager to TGLCollisionManager
+      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+      <li>21/01/11 - DanB - Added "inherited" call to TGLBCollision.WriteToFiler
+      <li>03/04/07 - DaStr - Added "public" to TCollisionNode for FPC compatibility
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>19/10/06 - LC - Fixed memory leak in TCollisionManager.CheckCollisions. Bugtracker ID=1548618
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>09/05/03 - DanB - fixed for collisions with bounding-box unproperly defined (min>max)
       <li>09/05/03 - DanB - Added FastCheckCubeVsFace (Matheus Degiovani)
       <li>13/02/03 - DanB - New collision code, and support for scaled objects
       <li>22/02/01 - Egg - Included new collision code by Uwe Raabe
       <li>08/08/00 - Egg - Fixed TGLBCollision.Assign
       <li>16/07/00 - Egg - Added support for all bounding modes (most are un-tested)
-	   <li>23/05/00 - Egg - Creation
+	    <li>23/05/00 - Egg - Creation
 	</ul></font>
 }
 unit GLCollision;
 
 interface
 
-uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObjects,
-   GeometryBB, GLCrossPlatform;
+{$I GLScene.inc}
+
+uses
+  Classes, SysUtils,
+  //GLS
+  GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
+  GLGeometryBB, GLCrossPlatform,
+  GLManager , GLVectorTypes;
+
 
 type
 
@@ -43,9 +59,9 @@ type
    TFastCollisionChecker = function (obj1, obj2 : TGLBaseSceneObject) : Boolean;
    PFastCollisionChecker = ^TFastCollisionChecker;
 
-	// TCollisionManager
+	// TGLCollisionManager
 	//
-	TCollisionManager = class (TComponent)
+	TGLCollisionManager = class (TComponent)
 	   private
 	      { Private Declarations }
          FClients : TList;
@@ -81,14 +97,14 @@ type
 		private
 			{ Private Declarations }
          FBoundingMode : TCollisionBoundingMode;
-         FManager : TCollisionManager;
+         FManager : TGLCollisionManager;
          FManagerName : String; // NOT persistent, temporarily used for persistence
          FGroupIndex : Integer;
 
 		protected
 			{ Protected Declarations }
          procedure SetGroupIndex(const value : Integer);
-         procedure SetManager(const val : TCollisionManager);
+         procedure SetManager(const val : TGLCollisionManager);
 
 			procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
@@ -107,7 +123,7 @@ type
 		published
 			{ Published Declarations }
          {: Refers the collision manager. }
-         property Manager : TCollisionManager read FManager write SetManager;
+         property Manager : TGLCollisionManager read FManager write SetManager;
          property BoundingMode : TCollisionBoundingMode read FBoundingMode write FBoundingMode;
          property GroupIndex : Integer read FGroupIndex write SetGroupIndex;
 	end;
@@ -151,8 +167,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLMisc, Octree;
-
 const
    cEpsilon : Single = 1e-6;
 
@@ -191,7 +205,7 @@ begin
    DivideVector(v, obj2.AxisAlignedDimensionsUnscaled);
 //   ScaleVector(v,obj2.Scale.AsVector);
 //   ScaleVector();
-   v[3]:=0;
+   v.V[3]:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1{Sqr(obj2.BoundingSphereRadius)});  //DanB - since radius*radius = 1/2*1/2 = 1/4 for unit sphere
 end;
@@ -231,7 +245,7 @@ begin
    aad:=VectorAdd(obj2.AxisAlignedDimensions, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
       ScaleVector(v,obj2.Scale.AsVector);  //by DanB
-   v[3]:=0;
+   v.V[3]:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
 end;
@@ -246,49 +260,49 @@ begin
    // v gives the vector from obj2 to obj1 expressed in obj2's local system
    v := VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
    // because of symmetry we can make abs(v)
-   v[0] := abs(v[0]);
-   v[1] := abs(v[1]);
-   v[2] := abs(v[2]);
+   v.V[0] := abs(v.V[0]);
+   v.V[1] := abs(v.V[1]);
+   v.V[2] := abs(v.V[2]);
    ScaleVector(v,obj2.Scale.AsVector);  //by DanB
 
    aad := obj2.AxisAlignedDimensions; // should be abs at all!
 
    VectorSubtract(v, aad, v); // v holds the distance in each axis
-   v[3] := 0;
+   v.V[3] := 0;
 
    r := obj1.BoundingSphereRadius{UnScaled};
    r2 := Sqr(r);
-   if (v[0]>0) then begin
-     if (v[1]>0) then begin
-       if (v[2]>0) then begin
+   if (v.V[0]>0) then begin
+     if (v.V[1]>0) then begin
+       if (v.V[2]>0) then begin
          // v is outside axis parallel projection, so use distance to edge point
          result := (VectorNorm(v)<=r2);
        end else begin
          // v is inside z axis projection, but outside x-y projection
-         result := (VectorNorm(v[0],v[1])<=r2);
+         result := (VectorNorm(v.V[0],v.V[1])<=r2);
        end
      end else begin
-       if (v[2]>0) then begin
+       if (v.V[2]>0) then begin
          // v is inside y axis projection, but outside x-z projection
-         result := (VectorNorm(v[0],v[2])<=r2);
+         result := (VectorNorm(v.V[0],v.V[2])<=r2);
        end else begin
          // v is inside y-z axis projection, but outside x projection
-         result := (v[0]<=r);
+         result := (v.V[0]<=r);
        end
      end
    end else begin
-     if (v[1]>0) then begin
-       if (v[2]>0) then begin
+     if (v.V[1]>0) then begin
+       if (v.V[2]>0) then begin
          // v is inside x axis projection, but outside y-z projection
-         result := (VectorNorm(v[1],v[2])<=r2);
+         result := (VectorNorm(v.V[1],v.V[2])<=r2);
        end else begin
          // v is inside x-z projection, but outside y projection
-         result := (v[1]<=r);
+         result := (v.V[1]<=r);
        end
      end else begin
-       if (v[2]>0) then begin
+       if (v.V[2]>0) then begin
          // v is inside x-y axis projection, but outside z projection
-         result := (v[2]<=r);
+         result := (v.V[2]<=r);
        end else begin
          // v is inside all axes parallel projection, so it is inside cube
          result := true;
@@ -316,13 +330,13 @@ begin
    // calc local vector, and rescale to unit dimensions
    //VectorSubstract(pt, obj2.AbsolutePosition, v1);
    DivideVector(v1, obj2.AxisAlignedDimensions);
-   v1[3]:=0;
+   v1.V[3]:=0;
    // express in local coordinates (for obj1)
    v2:=VectorTransform(obj2.AbsolutePosition, obj1.InvAbsoluteMatrix);
    // calc local vector, and rescale to unit dimensions
    //VectorSubstract(pt, obj1.AbsolutePosition, v2);
    DivideVector(v2, obj1.AxisAlignedDimensions);
-   v2[3]:=0;
+   v2.V[3]:=0;
    // if sum of norms is below 2, collision
    Result:=(VectorNorm(v1)+VectorNorm(v2)<=2);
 end;
@@ -340,7 +354,7 @@ begin
    // calc local vector, and rescale to unit dimensions
    aad:=VectorAdd(obj2.AxisAlignedDimensionsUnscaled, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
-   v[3]:=0;
+   v.V[3]:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
 
@@ -364,14 +378,14 @@ end;
 procedure InitArray(v:TVector; var pt:array of TVector);
 // calculate the cube edge points from the axis aligned dimension
 begin
-  pt[0] := VectorMake(-v[0],-v[1],-v[2],1);
-  pt[1] := VectorMake( v[0],-v[1],-v[2],1);
-  pt[2] := VectorMake( v[0], v[1],-v[2],1);
-  pt[3] := VectorMake(-v[0], v[1],-v[2],1);
-  pt[4] := VectorMake(-v[0],-v[1], v[2],1);
-  pt[5] := VectorMake( v[0],-v[1], v[2],1);
-  pt[6] := VectorMake( v[0], v[1], v[2],1);
-  pt[7] := VectorMake(-v[0], v[1], v[2],1);
+  pt[0] := VectorMake(-v.V[0],-v.V[1],-v.V[2],1);
+  pt[1] := VectorMake( v.V[0],-v.V[1],-v.V[2],1);
+  pt[2] := VectorMake( v.V[0], v.V[1],-v.V[2],1);
+  pt[3] := VectorMake(-v.V[0], v.V[1],-v.V[2],1);
+  pt[4] := VectorMake(-v.V[0],-v.V[1], v.V[2],1);
+  pt[5] := VectorMake( v.V[0],-v.V[1], v.V[2],1);
+  pt[6] := VectorMake( v.V[0], v.V[1], v.V[2],1);
+  pt[7] := VectorMake(-v.V[0], v.V[1], v.V[2],1);
 end;
 
 function DoCubesIntersectPrim(obj1, obj2 : TGLBaseSceneObject) : Boolean;
@@ -398,24 +412,26 @@ function DoCubesIntersectPrim(obj1, obj2 : TGLBaseSceneObject) : Boolean;
     result := true;
     VectorSubtract(p1, p0, d);    // d: direction p0 -> p1
     for i:=0 to 2 do begin
-      if d[i]=0 then begin       // wire is parallel to plane
+      if d.V[i]=0 then begin       // wire is parallel to plane
         // this case will be handled by the other planes
       end else begin
         j := (i+1) mod 3;
         k := (j+1) mod 3;
-        t := (pl[i]-p0[i])/d[i];   // t: line parameter of intersection
+        t := (pl.V[i]-p0.V[i])/d.V[i];   // t: line parameter of intersection
         if IsInRange(t, 0, 1) then begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s[j],-pl[j],pl[j]) and IsInRange(s[k],-pl[k],pl[k]) then Exit;
+          if IsInRange(s.V[j],-pl.V[j],pl.V[j]) and
+             IsInRange(s.V[k],-pl.V[k],pl.V[k]) then Exit;
         end;
-        t := (-pl[i]-p0[i])/d[i];   // t: parameter of intersection
+        t := (-pl.V[i]-p0.V[i])/d.V[i];   // t: parameter of intersection
         if IsInRange(t,0,1) then begin
           s := p0;
           CombineVector(s,d,t);    // calculate intersection
           // if the other two coordinates lie within the ranges, collision
-          if IsInRange(s[j],-pl[j],pl[j]) and IsInRange(s[k],-pl[k],pl[k]) then Exit;
+          if IsInRange(s.V[j],-pl.V[j],pl.V[j]) and
+          IsInRange(s.V[k],-pl.V[k],pl.V[k]) then Exit;
         end;
       end;
     end;
@@ -600,306 +616,47 @@ end;
 
 // Create
 //
-constructor TCollisionManager.Create(AOwner: TComponent);
+constructor TGLCollisionManager.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FClients:=TList.Create;
    RegisterManager(Self);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
 
 // Destroy
 //
-destructor TCollisionManager.Destroy;
+destructor TGLCollisionManager.Destroy;
 begin
 	DeRegisterAllClients;
    DeRegisterManager(Self);
    FClients.Free;
 	inherited Destroy;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // RegisterClient
 //
-procedure TCollisionManager.RegisterClient(aClient : TGLBCollision);
+procedure TGLCollisionManager.RegisterClient(aClient : TGLBCollision);
 begin
    if Assigned(aClient) then
       if FClients.IndexOf(aClient)<0 then begin
          FClients.Add(aClient);
          aClient.FManager:=Self;
       end;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
 
 // DeRegisterClient
 //
-procedure TCollisionManager.DeRegisterClient(aClient : TGLBCollision);
+procedure TGLCollisionManager.DeRegisterClient(aClient : TGLBCollision);
 begin
    if Assigned(aClient) then begin
       aClient.FManager:=nil;
       FClients.Remove(aClient);
    end;
-
-
-
 end;
 
 // DeRegisterAllClients
 //
-procedure TCollisionManager.DeRegisterAllClients;
+procedure TGLCollisionManager.DeRegisterAllClients;
 var
    i : Integer;
 begin
@@ -967,6 +724,7 @@ end;
 type
    //only add collision node to list if GroupIndex>=0
    TCollisionNode = class
+     public
       Collision:TGLBCollision;
       AABB:TAABB;
       constructor Create(Collision:TGLBCollision; AABB:TAABB);
@@ -984,11 +742,11 @@ end;
       d : Extended;
    begin
       //  Z-axis sort
-      d:=(TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2]);
+      d:=(TCollisionNode(Item2).AABB.min.V[2]-TCollisionNode(Item1).AABB.min.V[2]);
       if d>0 then Result:=-1 else if d<0 then Result:=1 else Result:=0;
    end;
 
-procedure TCollisionManager.CheckCollisions;
+procedure TGLCollisionManager.CheckCollisions;
 var
   NodeList:TList;
   CollisionNode1, CollisionNode2:TCollisionNode;
@@ -1002,62 +760,64 @@ begin
 
   //this next bit of code would be faster if bounding box was stored
   NodeList:=TList.Create;
-  NodeList.Count:=0;
 
-  for i:=0 to FClients.Count-1 do begin
-    cli1:=TGLBCollision(FClients[i]);
-    grp1:=cli1.GroupIndex;
-    if grp1<0 then        //if groupindex is negative don't add to list
-      Continue;
-    obj1:=cli1.OwnerBaseSceneObject;
-    //TODO:  need to do different things for different objects, especially points (to improve speed)
-    box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
-    if box1.min[2]>=box1.max[2] then continue;          //check for case where no bb exists
-    AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
-    CollisionNode1:=TCollisionNode.Create(cli1,box1);
-    NodeList.Add(CollisionNode1);
-  end;
+  try
+     NodeList.Count:=0;
 
-  if NodeList.Count<2 then Exit;
-  NodeList.Sort(@CompareDistance);       //depth-sort bounding boxes (min bb.z values)
+     for i:=0 to FClients.Count-1 do begin
+       cli1:=TGLBCollision(FClients[i]);
+       grp1:=cli1.GroupIndex;
+       if grp1<0 then        //if groupindex is negative don't add to list
+         Continue;
+       obj1:=cli1.OwnerBaseSceneObject;
+       //TODO:  need to do different things for different objects, especially points (to improve speed)
+       box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
+       if box1.min.V[2]>=box1.max.V[2] then continue;          //check for case where no bb exists
+       AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
+       CollisionNode1:=TCollisionNode.Create(cli1,box1);
+       NodeList.Add(CollisionNode1);
+     end;
 
-   for i:=0 to NodeList.Count-2 do
-   begin
-     CollisionNode1:=TCollisionNode(NodeList[i]);
-     cli1:=CollisionNode1.Collision;
-     grp1:=cli1.GroupIndex;
+     if NodeList.Count<2 then Exit;
+     NodeList.Sort(@CompareDistance);       //depth-sort bounding boxes (min bb.z values)
 
-      for j:=i+1 to NodeList.Count-1 do begin
-       CollisionNode2:=TCollisionNode(NodeList[j]);
-       cli2:=CollisionNode2.Collision;
-       
-       //Check BBox1 and BBox2 overlap in the z-direction
-       if (CollisionNode2.AABB.min[2]>CollisionNode1.AABB.max[2]) then
-         Break;
+     for i:=0 to NodeList.Count-2 do begin
+        CollisionNode1:=TCollisionNode(NodeList[i]);
+        cli1:=CollisionNode1.Collision;
+        grp1:=cli1.GroupIndex;
 
-       grp2:=cli2.GroupIndex;
-       
-       // if either one GroupIndex=0 or both are different, check for collision
-       if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Continue;
+        for j:=i+1 to NodeList.Count-1 do begin
+          CollisionNode2:=TCollisionNode(NodeList[j]);
+          cli2:=CollisionNode2.Collision;
 
-       //check whether box1 and box2 overlap in the XY Plane
-         if IntersectAABBsAbsoluteXY(CollisionNode1.AABB,CollisionNode2.AABB) then
-         begin
+          //Check BBox1 and BBox2 overlap in the z-direction
+          if (CollisionNode2.AABB.min.V[2]>CollisionNode1.AABB.max.V[2]) then
+            Break;
+
+          grp2:=cli2.GroupIndex;
+
+          // if either one GroupIndex=0 or both are different, check for collision
+          if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Continue;
+
+          //check whether box1 and box2 overlap in the XY Plane
+          if IntersectAABBsAbsoluteXY(CollisionNode1.AABB,CollisionNode2.AABB) then begin
            obj1:=cli1.OwnerBaseSceneObject;
            obj2:=cli2.OwnerBaseSceneObject;
             if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
               FOnCollision(Self, obj1, obj2);
-         end;
+          end;
+        end;
       end;
-   end;
 
-   for i:=0 to NodeList.Count-1 do
-   begin
-     CollisionNode1 := NodeList.Items[i];
-     CollisionNode1.Free;
-   end;
+   finally
+      for i:=0 to NodeList.Count-1 do
+      begin
+        CollisionNode1 := NodeList.Items[i];
+        CollisionNode1.Free;
+      end;
 
-   NodeList.Free;
+      NodeList.Free;
+  end;
 end;
 
 // new CheckCollisions / Dan Bartlett -----]
@@ -1082,27 +842,6 @@ destructor TGLBCollision.Destroy;
 begin
    Manager:=nil;
    inherited Destroy;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end;
 
 // FriendlyName
@@ -1110,10 +849,6 @@ end;
 class function TGLBCollision.FriendlyName : String;
 begin
    Result:='Collision';
-
-
-
-
 end;
 
 // FriendlyDescription
@@ -1121,7 +856,6 @@ end;
 class function TGLBCollision.FriendlyDescription : String;
 begin
    Result:='Collision-detection registration';
-
 end;
 
 // WriteToFiler
@@ -1129,7 +863,10 @@ end;
 procedure TGLBCollision.WriteToFiler(writer : TWriter);
 begin
    with writer do begin
-      WriteInteger(1); // ArchiveVersion 1, added FGroupIndex
+      // ArchiveVersion 1, added FGroupIndex
+      // ArchiveVersion 2, added inherited call
+      WriteInteger(2);
+      inherited;
       if Assigned(FManager) then
          WriteString(FManager.GetNamePath)
       else WriteString('');
@@ -1146,7 +883,9 @@ var
 begin
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0..1]);
+      Assert(archiveVersion in [0..2]);
+      if archiveVersion>=2 then
+        inherited;
       FManagerName:=ReadString;
       BoundingMode:=TCollisionBoundingMode(ReadInteger);
       Manager:=nil;
@@ -1164,9 +903,9 @@ var
 begin
    inherited;
    if FManagerName<>'' then begin
-      mng:=FindManager(TCollisionManager, FManagerName);
+      mng:=FindManager(TGLCollisionManager, FManagerName);
       if Assigned(mng) then
-         Manager:=TCollisionManager(mng);
+         Manager:=TGLCollisionManager(mng);
       FManagerName:='';
    end;
 end;
@@ -1191,16 +930,13 @@ end;
 
 // SetManager
 //
-procedure TGLBCollision.SetManager(const val : TCollisionManager);
+procedure TGLBCollision.SetManager(const val : TGLCollisionManager);
 begin
    if val<>FManager then begin
       if Assigned(FManager) then
          FManager.DeRegisterClient(Self);
       if Assigned(val) then
          val.RegisterClient(Self);
-
-
-
    end;
 end;
 
@@ -1209,17 +945,7 @@ end;
 procedure TGLBCollision.SetGroupIndex(const value : Integer);
 begin
    FGroupIndex:=value;
-
-
-
-
 end;
-
-
-
-
-
-
 
 // GetOrCreateCollision (TGLBehaviours)
 //
@@ -1240,18 +966,6 @@ begin
 	Result:=GetOrCreateCollision(obj.Behaviours);
 end;
 
-
-
-
-
-
-
-
-
-
-
-
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1262,6 +976,10 @@ initialization
 
 	// class registrations
 	RegisterXCollectionItemClass(TGLBCollision);
+
+finalization
+
+	UnregisterXCollectionItemClass(TGLBCollision);
 
 end.
 

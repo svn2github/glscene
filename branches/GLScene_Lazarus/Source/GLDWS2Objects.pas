@@ -13,7 +13,7 @@ interface
 
 uses
   Classes, SysUtils, dws2Comp, dws2Exprs, dws2Symbols,
-  GLScene, GLMisc, XCollection, GLScriptDWS2;
+  GLScene, XCollection, GLScriptDWS2, GLBaseClasses, GLManager;
 
 type
   // TGLDWS2ActiveBehaviour

@@ -6,6 +6,17 @@
    Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/04/10 - Yar - Fixes after GLState revision
+      <li>22/01/10 - Yar   - Added GLTextureFormat to uses
+      <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+                              to GLGraphics.pas (BugTracker ID = 1923844)
+      <li>02/04/07 - DaStr - TGLMaterialScripter is now notified of
+                               DebugMemo's and MaterialLibrary's destruction
+                             TGLShaderItems and TGLMaterialLibraryItems now
+                               descent from TOwnedCollection
+                             Removed unused stuff from "uses" section
+                             Alligned and formated the "interface" section
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
 	</ul></font>
 }
@@ -37,218 +48,219 @@ unit GLMaterialScript;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, StdCtrls, GLTexture, GLMisc,
-  ExtCtrls, GLUtils;
+  // System
+  SysUtils, Classes,
+  // VCL
+{$IFDEF GLS_DELPHI_XE2_UP}
+  VCL.StdCtrls,
+{$ELSE}
+  StdCtrls,
+{$ENDIF}
+  // GLScene
+  GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
+  GLMaterial, GLState;
 
 type
-   TGLShaderItem = class (TCollectionItem)
-	            private
-                       FShader: TGLShader;
-                       FName: String;
-                       procedure SetShader(const Value: TGLShader);
-                       procedure SetName(const Value: String);
-	            { Private Declarations }
+  TGLShaderItem = class(TCollectionItem)
+  private
+    FShader: TGLShader;
+    FName: string;
+    procedure SetShader(const Value: TGLShader);
+    procedure SetName(const Value: string);
+    { Private Declarations }
 
-	            protected
-	            { Protected Declarations }
-                       function GetDisplayName : String; override;
+  protected
+    { Protected Declarations }
+    function GetDisplayName: string; override;
 
-                    public
-	            { Public Declarations }
-	               constructor Create(Collection : TCollection); override;
-	               destructor Destroy; override;
-                       procedure Assign(Source: TPersistent); override;
+  public
+    { Public Declarations }
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
 
-                    published
-	            { Published Declarations }
-                       property Shader : TGLShader read FShader write SetShader;
-                       property Name : String read FName write SetName;
-	            end;
+  published
+    { Published Declarations }
+    property Shader: TGLShader read FShader write SetShader;
+    property Name: string read FName write SetName;
+  end;
 
-   TGLShaderItems = class (TCollection)
-	             protected
-	             { Protected Declarations }
-             	        Owner : TComponent;
-	                function GetOwner: TPersistent; override;
-                        procedure SetItems(index : Integer; const val : TGLShaderItem);
-	                function GetItems(index : Integer) : TGLShaderItem;
+  TGLShaderItems = class(TOwnedCollection)
+  private
+    { Protected Declarations }
+    procedure SetItems(Index: Integer; const Val: TGLShaderItem);
+    function GetItems(Index: Integer): TGLShaderItem;
 
-                     public
-	             { Public Declarations }
-	                constructor Create(AOwner : TComponent);
-                        property Items[index : Integer] : TGLShaderItem read GetItems write SetItems; default;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent);
+    property Items[Index: Integer]: TGLShaderItem read GetItems write SetItems; default;
 
-                     end;
+  end;
 
-   TGLMaterialLibraryItem = class (TCollectionItem)
-	                     private
-                                FMaterialLibrary: TGLMaterialLibrary;
-                                FName: String;
-                                procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
-                                procedure SetName(const Value: String);
-	                     { Private Declarations }
+  TGLMaterialLibraryItem = class(TCollectionItem)
+  private
+    FMaterialLibrary: TGLMaterialLibrary;
+    FName: string;
+    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+    procedure SetName(const Value: string);
+    { Private Declarations }
 
-	                     protected
-	                     { Protected Declarations }
-                                function GetDisplayName : String; override;
+  protected
+    { Protected Declarations }
+    function GetDisplayName: string; override;
 
-                             public
-	                     { Public Declarations }
-	                        constructor Create(Collection : TCollection); override;
-	                        destructor Destroy; override;
-                                procedure Assign(Source: TPersistent); override;
+  public
+    { Public Declarations }
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
 
-                             published
-	                     { Published Declarations }
-                             property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-                             property Name : String read FName write SetName;
-	                  end;
+  published
+    { Published Declarations }
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property Name: string read FName write SetName;
+  end;
 
-   TGLMaterialLibraryItems = class (TCollection)
-	                      protected
-	                      { Protected Declarations }
-             	                 Owner : TComponent;
-	                         function GetOwner: TPersistent; override;
-                                 procedure SetItems(index : Integer; const val : TGLMaterialLibraryItem);
-	                         function GetItems(index : Integer) : TGLMaterialLibraryItem;
+  TGLMaterialLibraryItems = class(TOwnedCollection)
+  private
+    { Protected Declarations }
+    procedure SetItems(Index: Integer; const Val: TGLMaterialLibraryItem);
+    function GetItems(Index: Integer): TGLMaterialLibraryItem;
 
-                              public
-	                      { Public Declarations }
-	                         constructor Create(AOwner : TComponent);
-                                 property Items[index : Integer] : TGLMaterialLibraryItem read GetItems write SetItems; default;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent);
+    property Items[Index: Integer]: TGLMaterialLibraryItem read GetItems write SetItems; default;
 
-                           end;
+  end;
 
 
-   TGLMaterialScripter = class(TComponent)
-                         protected
-                         { Protected declarations }
+  TGLMaterialScripter = class(TComponent)
+  private
+    { Private declarations }
+    FShaderItems: TGLShaderItems;
+    FMaterialLibraryItems: TGLMaterialLibraryItems;
+    FAppend: Boolean;
+    FOverwrite: Boolean;
 
-                            FScript : TStrings;
-                            FMemo: TMemo;
-                            FMaterialLibrary: TGLMaterialLibrary;
+    FScript: TStrings;
+    FMemo: TMemo;
+    FMaterialLibrary: TGLMaterialLibrary;
 
-                            Count  : longint;
-                            infini : longint;
-                            done : boolean;
+    Count: Longint;
+    infini: Longint;
+    done: Boolean;
 
-                            NewMat : TGLLibMaterial;
+    NewMat: TGLLibMaterial;
 
-                            tmpcoords : TGLCoordinates;
-                            tmpcolor : TGLColor;
-                            tmpcoords4 : TGLCoordinates4;
-                            tmpstr : string;
+    tmpcoords: TGLCoordinates;
+    tmpcolor: TGLColor;
+    tmpcoords4: TGLCoordinates4;
+    tmpstr: string;
 
-                            procedure SetScript(const Value: TStrings);
-                            procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
-                            procedure SetMemo(const Value: TMemo);
+    procedure SeTGLShaderItems(const Value: TGLShaderItems);
+    procedure SeTGLMaterialLibraryItems(const Value: TGLMaterialLibraryItems);
+    procedure SetAppend(const Value: Boolean);
+    procedure SetOverwrite(const Value: Boolean);
 
-                            // error checking
-                            procedure CheckError;
-                            function  ClassExists(arguement : string) : boolean;
-                            function  CheckRepeatDone : boolean;
-                            // extraction functions
-                            function  ExtractValue : string;
-                            procedure ExtractCoords3;
-                            procedure ExtractCoords4;
-                            procedure ExtractColors;
-                            function  DeleteSpaces(value : string) : string;
-                            function  SubstrExists(substr : string) : boolean;
-                            function  ValueExists(value : string) : boolean;
-                            // these are our viable scripts
-                            procedure ZMaterial;
-                            // internally called scripts for value extraction
-                            procedure XMaterial;
-                            procedure XName;
-                            procedure XShader;
-                            procedure XTexture2Name;
-                            procedure XTextureOffset;
-                            procedure XTextureScale;
-                            procedure XTexture;
-                            procedure XCompression;
-                            procedure XEnvColor;
-                            procedure XFilteringQuality;
-                            procedure XImageAlpha;
-                            procedure XImageBrightness;
-                            procedure XImageClass;
-                            procedure XImageGamma;
-                            procedure XMagFilter;
-                            procedure XMappingMode;
-                            procedure XMappingSCoordinates;
-                            procedure XMappingTCoordinates;
-                            procedure XMinFilter;
-                            procedure XNormalMapScale;
-                            procedure XTextureFormat;
-                            procedure XTextureMode;
-                            procedure XTextureWrap;
-                            procedure XBlendingMode;
-                            procedure XFacingCulling;
-                            procedure XLibMaterialName;
-                            procedure XMaterialOptions;
-                            procedure XMaterialLibrary;
-                            procedure XBackProperties;
-                            procedure XBackAmbient;
-                            procedure XBackDiffuse;
-                            procedure XBackEmission;
-                            procedure XBackPolygonMode;
-                            procedure XBackShininess;
-                            procedure XBackSpecular;
-                            procedure XFrontProperties;
-                            procedure XFrontAmbient;
-                            procedure XFrontDiffuse;
-                            procedure XFrontEmission;
-                            procedure XFrontPolygonMode;
-                            procedure XFrontShininess;
-                            procedure XFrontSpecular;
-                            procedure XPersistantImage;
-                            procedure XBlankImage;
-                            procedure XPictureFileName;
-                            procedure XPicturePX;
-                            procedure XPictureNX;
-                            procedure XPicturePY;
-                            procedure XPictureNY;
-                            procedure XPicturePZ;
-                            procedure XPictureNZ;
-                         private
-                            FShaderItems: TGLShaderItems;
-                            FMaterialLibraryItems: TGLMaterialLibraryItems;
-                            FAppend: boolean;
-                            FOverwrite: boolean;
-                            procedure SeTGLShaderItems(const Value: TGLShaderItems);
-                            procedure SeTGLMaterialLibraryItems(const Value: TGLMaterialLibraryItems);
-                            procedure SetAppend(const Value: boolean);
-                            procedure SetOverwrite(const Value: boolean);
-                         { Private declarations }
+    procedure SetScript(const Value: TStrings);
+    procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+    procedure SetMemo(const Value: TMemo);
 
-                         public
-                         { Public declarations }
+    // error checking
+    procedure CheckError;
+    function ClassExists(arguement: string): Boolean;
+    function CheckRepeatDone: Boolean;
+    // extraction functions
+    function ExtractValue: string;
+    procedure ExtractCoords3;
+    procedure ExtractCoords4;
+    procedure ExtractColors;
+    function DeleteSpaces(Value: string): string;
+    function SubstrExists(substr: string): Boolean;
+    function ValueExists(Value: string): Boolean;
+    // these are our viable scripts
+    procedure ZMaterial;
+    // internally called scripts for value extraction
+    procedure XMaterial;
+    procedure XName;
+    procedure XShader;
+    procedure XTexture2Name;
+    procedure XTextureOffset;
+    procedure XTextureScale;
+    procedure XTexture;
+    procedure XCompression;
+    procedure XEnvColor;
+    procedure XFilteringQuality;
+    procedure XImageAlpha;
+    procedure XImageBrightness;
+    procedure XImageClass;
+    procedure XImageGamma;
+    procedure XMagFilter;
+    procedure XMappingMode;
+    procedure XMappingSCoordinates;
+    procedure XMappingTCoordinates;
+    procedure XMinFilter;
+    procedure XNormalMapScale;
+    procedure XTextureFormat;
+    procedure XTextureMode;
+    procedure XTextureWrap;
+    procedure XBlendingMode;
+    procedure XPolygonMode;
+    procedure XFacingCulling;
+    procedure XLibMaterialName;
+    procedure XMaterialOptions;
+    procedure XMaterialLibrary;
+    procedure XBackProperties;
+    procedure XBackAmbient;
+    procedure XBackDiffuse;
+    procedure XBackEmission;
+    procedure XBackShininess;
+    procedure XBackSpecular;
+    procedure XFrontProperties;
+    procedure XFrontAmbient;
+    procedure XFrontDiffuse;
+    procedure XFrontEmission;
+    procedure XFrontShininess;
+    procedure XFrontSpecular;
+    procedure XPersistantImage;
+    procedure XBlankImage;
+    procedure XPictureFileName;
+    procedure XPicturePX;
+    procedure XPictureNX;
+    procedure XPicturePY;
+    procedure XPictureNY;
+    procedure XPicturePZ;
+    procedure XPictureNZ;
 
-                            property DebugMemo : TMemo read FMemo write SetMemo;
-                            constructor Create(AOwner : TComponent); override;
-                            destructor  Destroy; override;
+  protected
+    { Protected declarations }
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-                            procedure CompileScript;
+  public
+    { Public declarations }
+    property DebugMemo: TMemo read FMemo write SetMemo;
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
 
-                         published
-                         { Published declarations }
-                            property Script : TStrings read FScript write SetScript;
-                            property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-                            property Shaders : TGLShaderItems read FShaderItems write SeTGLShaderItems;
-                            property MaterialLibraries : TGLMaterialLibraryItems read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
-                            property AppendToMaterialLibrary : boolean read FAppend write SetAppend;
-                            property OverwriteToMaterialLibrary : boolean read FOverwrite write SetOverwrite;
-                            
-                         end;
+    procedure CompileScript;
 
-procedure Register;
+  published
+    { Published declarations }
+    property Script: TStrings read FScript write SetScript;
+    property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+    property Shaders: TGLShaderItems read FShaderItems write SeTGLShaderItems;
+    property MaterialLibraries: TGLMaterialLibraryItems read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
+    property AppendToMaterialLibrary: Boolean read FAppend write SetAppend;
+    property OverwriteToMaterialLibrary: Boolean read FOverwrite write SetOverwrite;
+
+  end;
 
 implementation
-
-procedure Register;
-begin
-  RegisterComponents('GLScene Utils', [TGLMaterialScripter]);
-end;
 
 procedure TGLShaderItem.SetShader(const Value: TGLShader);
 begin
@@ -289,10 +301,9 @@ end;
 
 { TGLShaderItems }
 
-constructor TGLShaderItems.Create(AOwner: TComponent);
+constructor TGLShaderItems.Create(AOwner: TPersistent);
 begin
-   Owner := AOwner;
-   inherited Create(TGLShaderItem);
+   inherited Create(AOwner, TGLShaderItem);
 end;
 
 function TGLShaderItems.GetItems(index: Integer): TGLShaderItem;
@@ -300,10 +311,6 @@ begin
    Result:=TGLShaderItem(inherited Items[index]);
 end;
 
-function TGLShaderItems.GetOwner: TPersistent;
-begin
-   Result:=Owner;
-end;
 
 procedure TGLShaderItems.SetItems(index: Integer; const val: TGLShaderItem);
 begin
@@ -351,14 +358,16 @@ end;
 procedure TGLMaterialScripter.SetMaterialLibrary(
   const Value: TGLMaterialLibrary);
 begin
-  if assigned(value) then
+  if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
   FMaterialLibrary := Value;
+  if FMaterialLibrary <> nil then FMaterialLibrary.FreeNotification(Self);
 end;
 
 procedure TGLMaterialScripter.SetMemo(const Value: TMemo);
 begin
-  if assigned(value) then
+  if FMemo <> nil then FMemo.RemoveFreeNotification(Self);
   FMemo := Value;
+  if FMemo <> nil then FMemo.FreeNotification(Self);
 end;
 
 procedure TGLMaterialScripter.SetScript(const Value: TStrings);
@@ -459,13 +468,13 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcolor.Alpha := strtofloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcolor.Alpha := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcolor.Red := strtofloatDef(copy(val, 1, pos(';',val) - 1));
+      tmpcolor.Red := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcolor.Green := strtofloatDef(copy(val, 1, pos(';',val) - 1));
+      tmpcolor.Green := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcolor.Blue := strtofloatDef(copy(val, 1, pos(')',val) - 1));
+      tmpcolor.Blue := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -475,11 +484,11 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcoords.X := strtofloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcoords.X := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcoords.Y := strtofloatDef(copy(val, 1, pos(';',val) - 1));
+      tmpcoords.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords.Z := strtofloatDef(copy(val, 1, pos(')',val) - 1));
+      tmpcoords.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -489,13 +498,13 @@ begin
    val := Extractvalue;
    if pos('(',val) > 0 then
    begin
-      tmpcoords4.W := strtofloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
+      tmpcoords4.W := GLUtils.StrToFloatDef(copy(val, pos('(',val) + 1, pos(';',val) - 2));
       delete(val,1,pos(';',val));
-      tmpcoords4.X := strtofloatDef(copy(val, 1, pos(';',val) - 1));
+      tmpcoords4.X := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords4.Y := strtofloatDef(copy(val, 1, pos(';',val) - 1));
+      tmpcoords4.Y := GLUtils.StrToFloatDef(copy(val, 1, pos(';',val) - 1));
       delete(val,1,pos(';',val));
-      tmpcoords4.Z := strtofloatDef(copy(val, 1, pos(')',val) - 1));
+      tmpcoords4.Z := GLUtils.StrToFloatDef(copy(val, 1, pos(')',val) - 1));
    end;
 end;
 
@@ -711,17 +720,6 @@ begin
    end;
 end;
 
-procedure TGLMaterialScripter.XBackPolygonMode;
-begin
-   if classexists('polygonmode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('pmFill') then Newmat.Material.BackProperties.PolygonMode := pmFill;
-      if valueexists('pmLines') then Newmat.Material.BackProperties.PolygonMode := pmLines;
-      if valueexists('pmPoints') then Newmat.Material.BackProperties.PolygonMode := pmPoints;
-   end;
-end;
-
 
 procedure TGLMaterialScripter.XBackShininess;
 begin
@@ -750,6 +748,17 @@ begin
       if valueexists('bmAdditive') then Newmat.Material.BlendingMode := bmAdditive;
       if valueexists('bmAlphaTest100') then Newmat.Material.BlendingMode := bmAlphaTest100;
       if valueexists('bmAlphaTest50') then Newmat.Material.BlendingMode := bmAlphaTest50;
+   end;
+end;
+
+procedure TGLMaterialScripter.XPolygonMode;
+begin
+   if classexists('polygonmode') then
+   begin
+      tmpstr := extractvalue;
+      if valueexists('pmFill') then Newmat.Material.PolygonMode := pmFill;
+      if valueexists('pmLines') then Newmat.Material.PolygonMode := pmLines;
+      if valueexists('pmPoints') then Newmat.Material.PolygonMode := pmPoints;
    end;
 end;
 
@@ -829,18 +838,6 @@ begin
    end;
 end;
 
-procedure TGLMaterialScripter.XfrontPolygonMode;
-begin
-   if classexists('polygonmode') then
-   begin
-      tmpstr := extractvalue;
-      if valueexists('pmFill') then Newmat.Material.frontProperties.PolygonMode := pmFill;
-      if valueexists('pmLines') then Newmat.Material.frontProperties.PolygonMode := pmLines;
-      if valueexists('pmPoints') then Newmat.Material.frontProperties.PolygonMode := pmPoints;
-   end;
-end;
-
-
 procedure TGLMaterialScripter.XfrontShininess;
 begin
    if classexists('shininess') then
@@ -880,7 +877,7 @@ procedure TGLMaterialScripter.XImageBrightness;
 begin
    if classexists('imagebrightness') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageBrightness := strtofloatDef(extractvalue);
+      NewMat.Material.Texture.ImageBrightness := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 
@@ -888,7 +885,7 @@ procedure TGLMaterialScripter.XImageGamma;
 begin
    if classexists('imagegamma') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageGamma := strtofloatDef(extractvalue);
+      NewMat.Material.Texture.ImageGamma := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XLibMaterialName;
@@ -990,7 +987,7 @@ procedure TGLMaterialScripter.XNormalMapScale;
 begin
    if classexists('normalmapscale') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.NormalMapScale := strtofloatDef(extractvalue);
+      NewMat.Material.Texture.NormalMapScale := GLUtils.StrToFloatDef(extractvalue);
 end;
 
 
@@ -1105,6 +1102,7 @@ begin
    XMaterialOptions;
    XLibMaterialName;
    XBlendingMode;
+   XPolygonMode;
    XFacingCulling;
    XMaterialLibrary;
 end;
@@ -1124,7 +1122,6 @@ begin
          XfrontAmbient;
          XfrontDiffuse;
          XfrontEmission;
-         XfrontPolygonMode;
          XfrontShininess;
          XfrontSpecular;
 
@@ -1198,7 +1195,6 @@ begin
          XBackAmbient;
          XBackDiffuse;
          XBackEmission;
-         XBackPolygonMode;
          XBackShininess;
          XBackSpecular;
 
@@ -1211,21 +1207,15 @@ end;
 
 { TGLMaterialLibraryItems }
 
-constructor TGLMaterialLibraryItems.Create(AOwner: TComponent);
+constructor TGLMaterialLibraryItems.Create(AOwner: TPersistent);
 begin
-   Owner := AOwner;
-   inherited Create(TGLMaterialLibraryItem);
+   inherited Create(AOwner, TGLMaterialLibraryItem);
 end;
 
 function TGLMaterialLibraryItems.GetItems(index: Integer): TGLMaterialLibraryItem;
 begin
    Result:=TGLMaterialLibraryItem(inherited Items[index]);
 
-end;
-
-function TGLMaterialLibraryItems.GetOwner: TPersistent;
-begin
-   Result:=Owner;
 end;
 
 procedure TGLMaterialLibraryItems.SetItems(index: Integer;
@@ -1293,6 +1283,19 @@ end;
 procedure TGLMaterialScripter.SetOverwrite(const Value: boolean);
 begin
   FOverwrite := Value;
+end;
+
+procedure TGLMaterialScripter.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited;
+  if Operation = opRemove then
+  begin
+    if AComponent = FMaterialLibrary then
+      FMaterialLibrary := nil
+    else if AComponent = FMemo then
+      FMemo := nil;
+  end;
 end;
 
 end.
