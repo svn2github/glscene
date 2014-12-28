@@ -1,9 +1,18 @@
-{: GLVectorFileObjects<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLStrings<p>
 
-	Vector File related objects for GLScene<p>
+	String constants that are used in many GLScene units<p>
 
 	<b>History :</b><font size=-1><ul>
-      26/08/02 - EG - Added missing header, added glsUnknownExtension
+      <li>16/09/10 - YP - Added glsUnknownParam
+      <li>23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
+                         glsUnknownType, glsShaderNeedsAtLeastOneLightSource(Ex),
+                         glsCadencerNotDefined(Ex), glsSceneViewerNotDefined
+      <li>16/02/07 - DaStr - Added glsOCProxyObjects, glsError, glsErrorEx,
+                         glsMatLibNotDefined, glsMaterialNotFoundInMatlib(Ex)
+      <li>26/08/02 - EG - Added missing header, added glsUnknownExtension
 	</ul></font>
 }
 unit GLStrings;
@@ -11,6 +20,10 @@ unit GLStrings;
 interface
 
 resourcestring
+  // General
+  glsDot = '.';
+  glsError   = 'Error!';
+  glsErrorEx = 'Error: ';
 
   // SceneViewer
   glsNoRenderingContext = 'Could not create a rendering context';
@@ -20,6 +33,15 @@ resourcestring
   glsWrongBitmapCanvas  = 'Couldn''t create a rendering context for the given bitmap';
   glsWrongPrinter       = 'Couldn''t render to printer';
   glsAlreadyRendering   = 'Already rendering';
+  glsSceneViewerNotDefined = 'SceneViewer not defined!';
+
+  // GLCadencer
+  glsCadencerNotDefined   = 'Cadencer not defined!';
+  glsCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
+
+  // Shaders
+  glsShaderNeedsAtLeastOneLightSource   = 'This shader needs at least one LightSource!';
+  glsShaderNeedsAtLeastOneLightSourceEx = 'Shader ''%s'' needs at least one LightSource!';
 
   // GLTree
   glsSceneRoot  = 'Scene root';
@@ -31,6 +53,11 @@ resourcestring
   glsImageInvalid = 'Could not load texture, image is invalid';
   glsNoNewTexture = 'Could not get new texture name';
 
+  // GLMaterials
+  glsMatLibNotDefined = 'Material Library not defined!';
+  glsMaterialNotFoundInMatlib = 'Material not found in current Material Library!';
+  glsMaterialNotFoundInMatlibEx = 'Material "%s" not found in current Material Library!';
+
   // GLObjects
   glsSphereTopBottom = 'The top angle must be higher than the bottom angle';
   glsSphereStartStop = 'The start angle must be smaller than then stop angle';
@@ -38,12 +65,20 @@ resourcestring
   glsInterleaveNotSupported = 'Interleaved Array format not supported yet. Sorry.';
 
   // common messages
+  glsUnknownArchive = '%s : unknown archive version %d';
   glsOutOfMemory = 'Fatal: Out of memory';
+  glsFileNotFound = 'File %s not found';
   glsFailedOpenFile = 'Could not open file: %s';
+  glsFailedOpenFileFromCurrentDir = 'Could not open file: %s'#13#10'(Current directory is %s)';
   glsNoDescriptionAvailable = 'No description available';
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
   glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
+  glsMissingResource = 'Missing application resource: %s: %s';
+
+  glsIncompatibleTypes = 'Incompatible types!';
+  glsUnknownType       = 'Unknown type!';
+  glsUnsupportedType   = 'Unsupported type!';
 
   // object categories
   glsOCBasicGeometry = 'Basic geometry';
@@ -56,6 +91,11 @@ resourcestring
   glsOCDoodad = 'Doodad objects';
   glsOCHUDObjects = 'HUD objects';
   glsOCGuiObjects = 'GUI objects';
+  glsOCProxyObjects = 'Proxy objects';
+  glsOCExperimental = 'Experimental objects';
+
+  glsUnknownParam =
+    'Unknown %s "%s" for "%s" or program not in use';
 
 implementation
 

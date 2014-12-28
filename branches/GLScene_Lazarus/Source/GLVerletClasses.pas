@@ -7,6 +7,7 @@
    objects easy.
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
       <li>13/04/04 - MF - Verlet call now uses TVerletProgressTimes
       <li>06/03/04 - MF - Creation
    </ul>
@@ -16,7 +17,7 @@ unit GLVerletClasses;
 interface
 
 uses
-  VerletClasses, VectorGeometry, GLScene, GLObjects;
+  GLVerletTypes, GLVectorGeometry, GLScene, GLObjects, GLVectorTypes;
 
 type
   // TGLVerletNode
@@ -39,8 +40,11 @@ type
   end;
 
   function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
-
+//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
 
 function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 begin

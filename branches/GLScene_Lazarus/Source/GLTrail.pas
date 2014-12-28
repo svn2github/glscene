@@ -1,11 +1,21 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLTrail<p>
 
 	Creates a trail-like mesh.
-        Based on Jason Lanford's demo. <p>
+  Based on Jason Lanford's demo. <p>
 
 	<b>History : </b><font size=-1><ul>
-	<li>09/12/04 - LR - Suppress windows uses
-        <li>12/10/2004 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
+        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+        <li>03/04/07 - DaStr - Added default values to some properties
+                               Added TGLTrail.AntiZFightOffset
+                               Subscribed for Notification in TGLTrail.SetTrailObject
+        <li>28/03/07 - DaStr - Renamed parameters in some methods
+                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+        <li>19/12/06 - DaS - msRight (TMarkStyle) support added
+        <li>09/12/04 - LR  - Suppress windows uses
+        <li>12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
    </ul></font>
 }
 
@@ -13,23 +23,32 @@ unit GLTrail;
 
 interface
 
-uses  GLScene, VectorTypes, MeshUtils ,
-      VectorGeometry, GLVectorFileObjects,
-      GLMesh, GLObjects,Classes, GLMisc,  OpenGL1x, GLTexture;
+{$I GLScene.inc}
+
+uses
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+
+  // GLScene
+  GLScene, GLVectorTypes, GLMeshUtils, GLVectorGeometry, GLVectorFileObjects,
+  GLMesh, GLObjects, GLMaterial, GLStrings, GLBaseClasses;
 
 
-    const cMaxVerts = 2000;
+const cMaxVerts = 2000;
 
 type
 
-TMarkStyle = (msUp, msDirection, msFaceCamera );
+  TMarkStyle = (msUp, msDirection, msFaceCamera, msRight);
 
-TGLTrail = class(TGlMesh)
+  TGLTrail = class(TGlMesh)
   private
 
     fVertLimit: integer;
     fTimeLimit: single;
-    fMinDistance: single; // don't createmark unless moved atleast
+    fMinDistance: single;
     fAlpha: single;
     fAlphaFade: Boolean;
     fUVScale: Single;
@@ -48,6 +67,7 @@ TGLTrail = class(TGlMesh)
     FMarkStyle: TMarkStyle;
     FMarkWidth: single;
     FEnabled: boolean;
+    FAntiZFightOffset: Single;
     procedure SetTrailObject(const Value: TGLBaseSceneObject);
     procedure SetMarkStyle(const Value: TMarkStyle);
     procedure SetAlpha(const Value: single);
@@ -58,6 +78,7 @@ TGLTrail = class(TGlMesh)
     procedure SetVertLimit(const Value: integer);
     procedure SetMarkWidth(const Value: single);
     procedure SetEnabled(const Value: boolean);
+    function StoreAntiZFightOffset: Boolean;
     
   protected
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -70,24 +91,29 @@ TGLTrail = class(TGlMesh)
     destructor Destroy; override;
 
     procedure CreateMark(obj: TGlBaseSceneObject; width: single;CurrentTime : Double); overload;
-    procedure CreateMark(pos,dir,up: TVector3f; width: single;CurrentTime : Double); overload;
+    procedure CreateMark(APos,ADir,AUp: TVector3f; AWidth: single;ACurrentTime : Double); overload;
     function CreateMark(p1,p2: TVector3f;CurrentTime : Double):boolean; overload;
 
     procedure ClearMarks;
 
   published
+    {: Add a tiny bit of offset to help prevent z-fighting..
+       Need a better solution here as this will get out of whack on really
+       long trails and is dependant on scene scale. }
+     property AntiZFightOffset: Single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
 
-     property VertLimit: integer  read FVertLimit write SetVertLimit;
+     property VertLimit: integer  read FVertLimit write SetVertLimit default 150;
      property TimeLimit: single  read FTimeLimit write SetTimeLimit;
+     {: Don't create mark unless moved at least this distance. }
      property MinDistance: single  read FMinDistance write SetMinDistance;
      property Alpha: single  read FAlpha write SetAlpha;
-     property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade;
+     property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade default True;
      property UVScale: single  read FUVScale write SetUVScale;
-     property MarkStyle : TMarkStyle read FMarkStyle write SetMarkStyle;
-     property TrailObject : TGLBaseSceneObject read FTrailObject write SetTrailObject;
+     property MarkStyle : TMarkStyle read FMarkStyle write SetMarkStyle default msFaceCamera;
+     property TrailObject : TGLBaseSceneObject read FTrailObject write SetTrailObject default nil;
      property MarkWidth : single read FMarkWidth write SetMarkWidth;
-     property Enabled : boolean read FEnabled write SetEnabled;
-    end;
+     property Enabled : boolean read FEnabled write SetEnabled default True;
+  end;
 
 
 implementation
@@ -98,6 +124,7 @@ begin
  inherited Create(AOwner);
  vertices.Clear;    // inherited tglmesh makes a triangle... remove it.
  Mode := mmTriangleStrip;
+ FAntiZFightOffset := 0.0000266;
  VertexMode := vmVNCT;
  fVertStart := 1;
  fVertEnd := 0;
@@ -131,8 +158,6 @@ begin
   end;
 end;
 
-
-
 procedure TGLTrail.ClearMarks;
 begin
  Vertices.Clear;
@@ -155,6 +180,9 @@ begin
                          v := AffinevectorMake(obj.AbsoluteDirection);
 
                     end;
+     msRight:       begin
+                         v := AffinevectorMake(obj.AbsoluteRight);
+                    end;
      msFaceCamera: begin
                          c := Scene.CurrentGLCamera;
                          if c<>nil then
@@ -165,6 +193,7 @@ begin
 
                          end;
                     end;
+     else Assert(False, glsErrorEx + glsUnknownType);
      end;
      v0 := AffinevectorMake(Obj.AbsolutePosition);
      VectorScale(v,width,v);
@@ -182,16 +211,6 @@ begin
      begin
           fLastV0Pos := v0;
      end;
-     
-
-     {with Scene.FindSceneObject('GLArrowLine1') do
-     begin
-          position.SetPoint(V0);
-          Direction.SetVector(v);
-     end;}
-
-
-
 end;
 
 
@@ -219,8 +238,8 @@ begin
 
     if distance = 0 then
     begin
-         apoint1 := AffineVectorMake(fLastp1[0],fLastp1[1],fLastp1[2]);
-         apoint2 := AffineVectorMake(fLastp2[0],fLastp2[1],fLastp2[2]);
+         apoint1 := AffineVectorMake(fLastp1.V[0],fLastp1.V[1],fLastp1.V[2]);
+         apoint2 := AffineVectorMake(fLastp2.V[0],fLastp2.V[1],fLastp2.V[2]);
     end;
 
     uvsize :=  distance / fUVScale; // scale UV's
@@ -300,16 +319,16 @@ begin
                   currentvert := (i + fVertStart);
 
               if fAlphaFade then
-                 color[3] :=  (ramp * i)
+                 color.V[3] :=  (ramp * i)
               else
-                  color[3] := fAlpha;
+                  color.V[3] := fAlpha;
               // add a tiny bit of offset to help prevent z-fighting..
               // need a better solution here
               // as this will get out of whack on really long trails
               // and is dependant on scene scale
-              TinyOffset[0] := 0.0000266 * i;
-              TinyOffset[1] := 0.0000266 * i;
-              TinyOffset[2] := 0.0000266 * i;
+              TinyOffset.V[0] := FAntiZFightOffset * i;
+              TinyOffset.V[1] := FAntiZFightOffset * i;
+              TinyOffset.V[2] := FAntiZFightOffset * i;
               TinyOffset :=  VectorAdd( fVerts[ currentvert ],Tinyoffset);
               //TinyOffset := fVerts[ currentvert]; // bypass
               Vertices.AddVertex( TinyOffset, NullVector, Color, fUVs[currentvert]  );
@@ -318,27 +337,27 @@ begin
 
 end;
 
-procedure TGLTrail.CreateMark(pos,dir,up: TVector3f; width: single;CurrentTime : Double);
+procedure TGLTrail.CreateMark(APos,ADir,AUp: TVector3f; AWidth: single;ACurrentTime : Double);
 var
 apoint1,apoint2,crossp: TVector3f;
 begin
 
     if fMinDistance > 0 then
-        if vectorDistance(pos,fLastPos) < fMinDistance then
+        if vectorDistance(APos,fLastPos) < fMinDistance then
            exit;
 
-    fLastPos := pos;
-    fLastDir := dir;
-    fLastUp := up;
+    fLastPos := APos;
+    fLastDir := ADir;
+    fLastUp := AUp;
 
-    apoint1 := pos;
-    apoint2 := pos;
-    crossp :=  vectorcrossproduct(dir,up);
+    apoint1 := APos;
+    apoint2 := APos;
+    crossp :=  vectorcrossproduct(ADir,AUp);
 
-    CombineVector( apoint1,vectornormalize(crossp),width);
-    CombineVector( apoint2,vectornormalize(VectorNegate(crossp)),width);
+    CombineVector( apoint1,vectornormalize(crossp),AWidth);
+    CombineVector( apoint2,vectornormalize(VectorNegate(crossp)),AWidth);
 
-    CreateMark( apoint1, apoint2,CurrentTime);
+    CreateMark( apoint1, apoint2,ACurrentTime);
 
 end;
 
@@ -381,7 +400,9 @@ if directmode then
 
 procedure TGLTrail.SetTrailObject(const Value: TGLBaseSceneObject);
 begin
+  if FTrailObject <> nil then FTrailObject.RemoveFreeNotification(Self);
   FTrailObject := Value;
+  if FTrailObject <> nil then FTrailObject.FreeNotification(Self);
 end;
 
 procedure TGLTrail.SetMarkStyle(const Value: TMarkStyle);
@@ -438,6 +459,10 @@ begin
   FEnabled := Value;
 end;
 
+function TGLTrail.StoreAntiZFightOffset: Boolean;
+begin
+  Result := FAntiZFightOffset <> 0.0000266;
+end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

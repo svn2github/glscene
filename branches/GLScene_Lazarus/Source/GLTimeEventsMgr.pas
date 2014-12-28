@@ -1,18 +1,36 @@
-// GLTimeEventsMgr
 //
-// by GliGli
+// This unit is part of the GLScene Project, http://glscene.org
 //
-// Time based events mannager using the Cadencer
-// can be useful to make animations with GlScene 
-//
-// 07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
-//
+{: GLTimeEventsMgr<p>
+     by GliGli
+
+   Time based events mannager using the Cadencer<p>
+   can be useful to make animations with GlScene<p>
+
+	<b>History : </b><font size=-1><ul>
+      <li>07/01/10 - DaStr - Added TGLTimeEventsMGR.Reset()
+                             Fixed code formating
+      <li>25/11/09 - DanB - Changed TTimeEvent.Name from ShortString to String
+      <li>11/10/07 - DaStr - TTimeEvent.SetEnabled now updates StartTime to
+                             Cadencers's current time.
+                             (Thanks Lukasz Sokol) (BugTracker ID = 1811141)
+      <li>28/03/07 - DaStr - Cosmetic fix for FPC compatibility
+      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+      <li>07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
+}
+
 unit GLTimeEventsMgr;
 
 interface
 
 uses
-  GLCadencer, SysUtils, Classes, GLMisc;
+  {$IFDEF GLS_DELPHI_XE2_UP}
+    System.Classes, System.SysUtils,
+  {$ELSE}
+    Classes, SysUtils,
+  {$ENDIF}
+
+  GLCadencer,  GLBaseClasses;
 
 type
 
@@ -42,6 +60,7 @@ type
       destructor Destroy; override;
 
       procedure DoProgress(const progressTime : TProgressTimes); override;
+      procedure Reset();
 
    published
       { Déclarations publiées }
@@ -54,22 +73,22 @@ type
 	// TTimeEvents
 	//
 	TTimeEvents = class (TCollection)
-	   protected
-	      { Protected Declarations }
-	      Owner : TComponent;
-	      function GetOwner: TPersistent; override;
-         procedure SetItems(index : Integer; const val : TTimeEvent);
-	      function GetItems(index : Integer) : TTimeEvent;
+   protected
+      { Protected Declarations }
+      Owner : TComponent;
+      function GetOwner: TPersistent; override;
+      procedure SetItems(index : Integer; const val : TTimeEvent);
+      function GetItems(index : Integer) : TTimeEvent;
 
-      public
-	      { Public Declarations }
-	      constructor Create(AOwner : TComponent);
+   public
+      { Public Declarations }
+      constructor Create(AOwner : TComponent);
 
-         function Add: TTimeEvent;
-	      function FindItemID(ID: Integer): TTimeEvent;
-         function EventByName(name:ShortString): TTimeEvent;
+      function Add: TTimeEvent;
+      function FindItemID(ID: Integer): TTimeEvent;
+      function EventByName(name:String): TTimeEvent;
 
-	      property Items[index : Integer] : TTimeEvent read GetItems write SetItems; default;
+      property Items[index : Integer] : TTimeEvent read GetItems write SetItems; default;
    end;
 
    TTimeEventType = (etOneShot, etContinuous, etPeriodic);
@@ -80,7 +99,7 @@ type
    TTimeEvent = class (TCollectionItem)
       private
          { Private Declarations }
-         FName: ShortString;
+         FName: String;
          FStartTime, FEndTime, FElapsedTime : Double;
          FPeriod : Double;
          FEventType: TTimeEventType;
@@ -88,11 +107,12 @@ type
          FEnabled: boolean;
 
          FTickCount : Cardinal;
+         procedure SetEnabled(const Value: Boolean);
 
       protected
          { Protected Declarations }
          function GetDisplayName : String; override;
-         procedure SetName(val : ShortString);
+         procedure SetName(val : String);
 
          procedure DoEvent(const curTime : Double);
 
@@ -108,17 +128,15 @@ type
 
       published
          { Published Declarations }
-         property Name : ShortString read FName write SetName;
+         property Name : String read FName write SetName;
          property StartTime : Double read FStartTime write FStartTime;
          property EndTime : Double read FEndTime write FEndTime;
          property Period : Double read  FPeriod write FPeriod;
          property EventType : TTimeEventType read FEventType write FEventType default etOneShot;
          property OnEvent : TTimeEventProc read FOnEvent write FOnEvent;
-         property Enabled : boolean read FEnabled write FEnabled  default True;
+         property Enabled : Boolean read FEnabled write SetEnabled  default True;
 
     end;
-
-procedure Register;
 
 implementation
 
@@ -212,6 +230,16 @@ begin
    end;
 end;
 
+// Reset
+//
+procedure TGLTimeEventsMGR.Reset;
+var
+  I: Integer;
+begin
+  if FEvents.Count <> 0 then
+    for I := 0 to FEvents.Count - 1 do
+      FEvents[I].FTickCount := 0;
+end;
 
 
 // ------------------
@@ -263,7 +291,7 @@ end;
 
 // EventByName
 //
-function TTimeEvents.EventByName(name:ShortString): TTimeEvent;
+function TTimeEvents.EventByName(name:String): TTimeEvent;
 var i:integer;
 begin
     i:=0;
@@ -312,7 +340,7 @@ end;
 
 // SetName
 //
-procedure TTimeEvent.SetName(val : ShortString);
+procedure TTimeEvent.SetName(val : String);
 var
    i : Integer;
    ok : Boolean;
@@ -336,14 +364,12 @@ begin
    Inc(FTickCount);
 end;
 
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-//***********************************************************************************
-Procedure Register;   // a mettre dans GLSceneRegister
+// SetEnabled
+//
+procedure TTimeEvent.SetEnabled(const Value: Boolean);
 begin
-  RegisterComponents('GLScene Utils', [TGLTimeEventsMGR]);
+  FEnabled := Value;
+  FStartTime := ((GetOwner as TTimeEvents).Owner as TGLTimeEventsMGR).Cadencer.CurrentTime;
 end;
 
 end.

@@ -1,7 +1,18 @@
-// GLTilePlane
-{: Implements a tiled texture plane.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTilePlane<p>
+
+   Implements a tiled texture plane.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>28/03/07 - DaStr - Renamed parameters in some methods
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+      <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
       <li>23/03/04 - EG - Added NoZWrite
       <li>09/01/04 - EG - Creation
    </ul></font>
@@ -10,8 +21,11 @@ unit GLTilePlane;
 
 interface
 
-uses Classes, GLScene, VectorGeometry, OpenGL1x, GLMisc, GLTexture, GLObjects,
-   GLCrossPlatform, PersistentClasses, VectorLists;
+{$I GLScene.inc}
+
+uses
+  Classes, GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLMaterial, GLObjects,
+  GLCrossPlatform, GLPersistentClasses, GLVectorLists, GLRenderContextInfo;
 
 type
 
@@ -120,8 +134,8 @@ type
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          //: Access to the TiledArea data
@@ -211,7 +225,7 @@ var
 begin
    startSkip:=MaxInt;
    for i:=0 to FData.Count-1 do begin
-      if FData.List[i]<>0 then begin
+      if FData.List^[i]<>0 then begin
          startSkip:=i;
          Break;
       end;
@@ -221,7 +235,7 @@ begin
       FColMax:=ColMin-1;
    end else begin
       for i:=FData.Count-1 downto 0 do begin
-         if FData.List[i]<>0 then begin
+         if FData.List^[i]<>0 then begin
             FData.Count:=i+1;
             FColMax:=FColMin+FData.Count-1;
             Break;
@@ -366,12 +380,12 @@ begin
    lastNonNil:=-1;
    firstNonNil:=FRows.Count;
    for i:=0 to FRows.Count-1 do begin
-      r:=TGLTiledAreaRow(FRows.List[i]);
+      r:=TGLTiledAreaRow(FRows.List^[i]);
       if Assigned(r) then begin
          r.Pack;
          if r.FData.Count=0 then begin
             r.Free;
-            FRows.List[i]:=nil;
+            FRows.List^[i]:=nil;
          end;
       end;
       if Assigned(r) then begin
@@ -564,8 +578,8 @@ end;
 
 // DoRender
 //
-procedure TGLTilePlane.DoRender(var rci : TRenderContextInfo;
-                                renderSelf, renderChildren : Boolean);
+procedure TGLTilePlane.DoRender(var ARci : TRenderContextInfo;
+                                ARenderSelf, ARenderChildren : Boolean);
 var
    i : Integer;
 begin
@@ -586,10 +600,10 @@ type
 
    procedure IssueQuad(col, row : Integer);
    begin
-      xglTexCoord2f(col, row);      glVertex2f(col, row);
-      xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
-      xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
-      xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
+      xgl.TexCoord2f(col, row);      GL.Vertex2f(col, row);
+      xgl.TexCoord2f(col+1, row);    GL.Vertex2f(col+1, row);
+      xgl.TexCoord2f(col+1, row+1);  GL.Vertex2f(col+1, row+1);
+      xgl.TexCoord2f(col, row+1);    GL.Vertex2f(col, row+1);
    end;
 
 var
@@ -600,12 +614,12 @@ var
 begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
-   glNormal3fv(@ZVector);
+   GL.Normal3fv(@ZVector);
    if FNoZWrite then
-      glDepthMask(False);
+      rci.GLStates.DepthWriteMask := False;
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
-      for i:=1 to High(quadInfos) do begin
+      for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
          quadInfos[i].x:=TIntegerList.Create;
          quadInfos[i].y:=TIntegerList.Create;
       end;
@@ -615,7 +629,7 @@ begin
          if Assigned(r) then begin
             for col:=r.ColMin to r.ColMax do begin
                t:=r.Cell[col] and $FFFF;
-               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+               if (t>-1) and (t<MaterialLibrary.Materials.Count) then begin //correction in (t>-1) from (t>0)
                   quadInfos[t].x.Add(col);
                   quadInfos[t].y.Add(row);
                end;
@@ -623,15 +637,15 @@ begin
          end;
       end;
       // render and cleanup
-      for i:=1 to High(quadInfos) do begin
+      for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
          if quadInfos[i].x.Count>0 then begin
             libMat:=MaterialLibrary.Materials[i];
             libMat.Apply(rci);
             repeat
-               glBegin(GL_QUADS);
+               GL.Begin_(GL_QUADS);
                with quadInfos[i] do for j:=0 to x.Count-1 do
                   IssueQuad(x[j], y[j]);
-               glEnd;
+               GL.End_;
             until not libMat.UnApply(rci);
          end;
          quadInfos[i].x.Free;
@@ -644,13 +658,13 @@ begin
          if Assigned(r) then begin
             for col:=r.ColMin to r.ColMax do begin
                t:=r.Cell[col] and $FFFF;
-               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+               if (t>-1) and (t<MaterialLibrary.Materials.Count) then begin //correction in (t>-1) from (t>0)
                   libMat:=MaterialLibrary.Materials[t];
                   libMat.Apply(rci);
                   repeat
-                     glBegin(GL_QUADS);
+                     GL.Begin_(GL_QUADS);
                      IssueQuad(col, row);
-                     glEnd;
+                     GL.End_;
                   until not libMat.UnApply(rci);
                end;
             end;
@@ -658,7 +672,7 @@ begin
       end;
    end;
    if FNoZWrite then
-      glDepthMask(True);
+      rci.GLStates.DepthWriteMask := True;
 end;
 
 //-------------------------------------------------------------

@@ -1,3 +1,4 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLVerletClothify<p>
@@ -5,6 +6,15 @@
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
+      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      <li>06/06/10 - Yar - Fixed warnings
+      <li>05/03/10 - DanB - More state added to TGLStateCache
+      <li>22/02/10 - Yar - Optimization of switching states
+      <li>30/03/07 - DaStr - Added $I GLScene.inc
+      <li>28/03/07 - DaStr - Added explicit pointer dereferencing (even more)
+      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
       <li>27/05/04 - MF - Added some length information to edges
       <li>24/06/03 - MF - Removed several embarrassing warnings
       <li>17/06/03 - MF - Creation
@@ -15,9 +25,15 @@ unit GLVerletClothify;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-  Classes,  GLVectorFileObjects, VerletClasses, VectorTypes, VectorLists,
-  VectorGeometry, GLTexture, OpenGL1x, SysUtils;
+  Classes, SysUtils,
+  //GLS
+  GLVectorFileObjects, GLVerletTypes, GLVectorTypes, GLVectorLists,
+  GLVectorGeometry, GLTexture, OpenGLTokens, GLRenderContextInfo,
+  GLState, GLContext;
+
 
 type
   {: Class that represents a face. This structure is not used for rendering, but
@@ -68,6 +84,8 @@ type
     property EdgeDoublesSkipped : integer read FEdgeDoublesSkipped;
 
     property GLBaseMesh : TGLBaseMesh read FGLBaseMesh;
+
+    property NodeList : TVerletNodeList read FNodeList;
 
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
 
@@ -149,9 +167,10 @@ type
   end;
 
   TMeshObjectVerletNode = class(TVerletNode)
+  private
     MeshObject : TMeshObject;
     VertexIndices : TIntegerList;
-
+  public
     procedure AfterProgress; override;
 
     constructor CreateOwned(const aOwner : TVerletWorld); override;
@@ -203,7 +222,7 @@ begin
       for iFace := 0 to FaceGroup.TriangleCount - 1 do
       begin
         List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
-        AddFace(List[0], List[1], List[2], MeshObject);
+        AddFace(List^[0], List^[1], List^[2], MeshObject);
       end;
     end;
 
@@ -213,9 +232,9 @@ begin
       begin
         List := @FaceGroup.VertexIndices.List[iFace];
         if (iFace and 1)=0 then
-           AddFace(List[0], List[1], List[2], MeshObject)
+           AddFace(List^[0], List^[1], List^[2], MeshObject)
         else
-           AddFace(List[2], List[1], List[0], MeshObject);
+           AddFace(List^[2], List^[1], List^[0], MeshObject);
       end;
     end;
 
@@ -224,7 +243,7 @@ begin
       List := @FaceGroup.VertexIndices.List;
 
       for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
-        AddFace(List[0], List[iVertex-1], List[iVertex], MeshObject)
+        AddFace(List^[0], List^[iVertex-1], List^[iVertex], MeshObject)
     end;
     else
       Assert(false,'Not supported');
@@ -287,7 +306,7 @@ end;
 
 function TFaceList.GetItems(i: integer): TFace;
 begin
-  result := Get(i);
+  result := TFace(Get(i));
 end;
 
 procedure TFaceList.SetItems(i: integer; const Value: TFace);
@@ -299,7 +318,7 @@ end;
 
 function TEdgeList.GetItems(i: integer): TEdge;
 begin
-  result := Get(i);
+  result := TEdge(Get(i));
 end;
 
 function TEdgeList.InsertSorted(AEdge: TEdge): integer;
@@ -338,7 +357,7 @@ end;
 
 procedure TEdgeList.SortByLength;
 begin
-  Sort(EdgeLength);
+  Sort(@EdgeLength);
 end;
 
 { TMeshObjectVerletNode }
@@ -561,12 +580,11 @@ var
 begin
   if EdgeList.Count>0 then
   begin
-    glDisable(GL_LIGHTING);
+    rci.GLStates.Disable(stLighting);
+    rci.GLStates.LineWidth := 3;
+    GL.Color3f(1,1,1);
 
-    glLineWidth(3);
-    glColor3f(1,1,1);
-
-    glBegin(GL_LINES);
+    GL.Begin_(GL_LINES);
       for i := 0 to EdgeList.Count - 1 do
       begin
         Edge := EdgeList[i];
@@ -574,11 +592,10 @@ begin
         Vertex0 := Edge.MeshObject.Vertices[Edge.Vertices[0]];
         Vertex1 := Edge.MeshObject.Vertices[Edge.Vertices[1]];
 
-        glVertex3fv(PGLfloat(@Vertex0));
-        glVertex3fv(PGLfloat(@Vertex1));
+        GL.Vertex3fv(PGLfloat(@Vertex0));
+        GL.Vertex3fv(PGLfloat(@Vertex1));
       end;
-    glEnd;
-    glEnable(GL_LIGHTING);
+    GL.End_;
   end;//}
 end;
 

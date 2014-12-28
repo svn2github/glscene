@@ -1,22 +1,57 @@
-// GLTree
-{: Dynamic tree generation in GLScene<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTree<p>
+
+   Dynamic tree generation in GLScene<p>
 
    This code was adapted from the nVidia Tree Demo:
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
    History:<ul>
+     <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+     <li>30/03/07 - DaStr - Added $I GLScene.inc
+     <li>28/03/07 - DaStr - Renamed parameters in some methods
+                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
+     <li>13/01/07 - DaStr - Added changes proposed by Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
+                         Modified the code to create much more realistic trees -
+                          added third branch for every node and modified constants
+                          to make the tree look more "alive".
+                         Also removed the "fractal effect" that ocurred, when
+                          rendering with the older engine - the leaves and
+                          branches were much more "in order".
+                         Added Center* declarations, CenterBranchConstant,
+                         Added AutoRebuild flag.
+     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
      <li>14/04/04 - SG - Added AutoCenter property.
      <li>03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
      <li>24/11/03 - SG - Creation.
    </ul>
+
+   Some info:
+  <ul>CenterBranchConstant</ul> -
+    Defines, how big the central branch is. When around 50%
+    it makes a small branch inside the tree, for higher values
+    much more branches and leaves are created, so either use it
+    with low depth, or set it to zero, and have two-branched tree.
+    Default : 0.5
+  <ul>"AutoRebuild" flag</ul> -
+    Rebuild tree after property change.
+    Default: True
 }
 unit GLTree;
 
 interface
 
+{$I GLScene.inc}
+
 uses
-   Classes, SysUtils, GLScene, GLTexture, VectorGeometry, VectorLists,
-   OpenGL1x, GLMisc, GLVectorFileObjects, ApplicationFileIO;
+   Classes, SysUtils,
+   //GLS
+   GLScene, GLMaterial, GLVectorGeometry, GLVectorLists,
+   OpenGLTokens, GLVectorFileObjects, GLApplicationFileIO, GLRenderContextInfo,
+   XOpenGL, GLContext , GLVectorTypes;
 
 type
    TGLTree = class;
@@ -57,6 +92,7 @@ type
          { Private Declarations }
          FOwner : TGLTreeBranches;
          FLeft : TGLTreeBranch;
+         FCenter : TGLTreeBranch;
          FRight : TGLTreeBranch;
          FParent : TGLTreeBranch;
          FBranchID : Integer;
@@ -73,9 +109,10 @@ type
          { Public Declarations }
          constructor Create(AOwner : TGLTreeBranches; AParent : TGLTreeBranch);
          destructor Destroy; override;
-         
+
          property Owner : TGLTreeBranches read FOwner;
          property Left : TGLTreeBranch read FLeft;
+         property Center : TGLTreeBranch read FCenter;
          property Right : TGLTreeBranch read FRight;
          property Parent : TGLTreeBranch read FParent;
          property Matrix : TMatrix read FMatrix;
@@ -125,9 +162,10 @@ type
       private
          { Private Declarations }
          FBranchNoise : Single;
-         FLeft, FRight : TGLTreeBranchNoise;
+         FLeft, FRight, FCenter : TGLTreeBranchNoise;
 
          function GetLeft : TGLTreeBranchNoise;
+         function GetCenter : TGLTreeBranchNoise;
          function GetRight : TGLTreeBranchNoise;
 
       public
@@ -136,6 +174,7 @@ type
          destructor Destroy; override;
 
          property Left : TGLTreeBranchNoise read GetLeft;
+         property Center : TGLTreeBranchNoise read GetCenter;
          property Right : TGLTreeBranchNoise read GetRight;
          property BranchNoise : Single read FBranchNoise;
    end;
@@ -159,6 +198,8 @@ type
          FCentralLeader : Boolean;
          FSeed : Integer;
          FAutoCenter : Boolean;
+         FAutoRebuild : Boolean;
+         FCenterBranchConstant : Single;
 
          FLeaves : TGLTreeLeaves;
          FBranches : TGLTreeBranches;
@@ -189,6 +230,8 @@ type
          procedure SetCentralLeader(const Value : Boolean);
          procedure SetSeed(const Value : Integer);
          procedure SetAutoCenter(const Value : Boolean);
+         procedure SetAutoRebuild(const Value : Boolean);
+         procedure SetCenterBranchConstant(const Value : Single);
 
          procedure SetMaterialLibrary(const Value : TGLMaterialLibrary);
          procedure SetLeafMaterialName(const Value : TGLLibMaterialName);
@@ -203,8 +246,8 @@ type
          destructor Destroy; override;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
+         procedure DoRender(var ARci : TRenderContextInfo;
+                            ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
          procedure StructureChanged; override;
 
@@ -256,14 +299,17 @@ type
          property Seed : Integer read FSeed write SetSeed;
          {: Automatically center the tree's vertices after building them. }
          property AutoCenter : Boolean read FAutoCenter write SetAutoCenter;
+         {: Automatically rebuild the tree after changing the settings }
+         property AutoRebuild : Boolean read FAutoRebuild write SetAutoRebuild;
+         {: Central branch can be thinner(lower values)/thicker(->1) depending on this constant.
+            The effect also depends on the BranchAngle variable. }
+         property CenterBranchConstant : Single read FCenterBranchConstant write SetCenterBranchConstant;
 
          property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
          property LeafMaterialName : TGLLibMaterialName read FLeafMaterialName write SetLeafMaterialName;
          property LeafBackMaterialName : TGLLibMaterialName read FLeafBackMaterialName write SetLeafBackMaterialName;
          property BranchMaterialName : TGLLibMaterialName read FBranchMaterialName write SetBranchMaterialName;
    end;
-
-procedure Register;
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -272,13 +318,6 @@ implementation
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
-
-uses XOpenGL, GLState;
-
-procedure Register;
-begin
-   RegisterClasses([TGLTree]);
-end;
 
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves
@@ -315,11 +354,11 @@ begin
    radius:=Owner.LeafSize;
    Inc(FCount);
 
-   pos:=matrix[3];
-   Matrix[3]:=NullHMGPoint;
+   pos:=matrix.V[3];
+   Matrix.V[3]:=NullHMGPoint;
    Matrix:=Roll(matrix, FCount/10);
    NormalizeMatrix(matrix);
-   Matrix[3]:=pos;
+   Matrix.V[3]:=pos;
 
    FVertices.Add(VectorTransform(PointMake(0, -radius, 0), matrix));
    FVertices.Add(VectorTransform(PointMake(0, radius, 0), matrix));
@@ -342,15 +381,15 @@ begin
    if Assigned(libMat) then
       libMat.Apply(rci);
 
-   glEnableClientState(GL_VERTEX_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   GL.EnableClientState(GL_VERTEX_ARRAY);
+   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
-   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+   GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   xgl.TexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    for i:=0 to (FVertices.Count div 4)-1 do begin
-      glNormal3fv(@FNormals.List[i]);
-      glDrawArrays(GL_QUADS, 4*i, 4);
+      GL.Normal3fv(@FNormals.List[i]);
+      GL.DrawArrays(GL_QUADS, 4*i, 4);
    end;
 
    with Owner do if LeafMaterialName<>LeafBackMaterialName then begin
@@ -364,13 +403,13 @@ begin
    rci.GLStates.InvertGLFrontFace;
    for i:=0 to (FVertices.Count div 4)-1 do begin
       n:=VectorNegate(FNormals[i]);
-      glNormal3fv(@n);
-      glDrawArrays(GL_QUADS, 4*i, 4);
+      GL.Normal3fv(@n);
+      GL.DrawArrays(GL_QUADS, 4*i, 4);
    end;
    rci.GLStates.InvertGLFrontFace;
 
-   glDisableClientState(GL_VERTEX_ARRAY);
-   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+   GL.DisableClientState(GL_VERTEX_ARRAY);
+   xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    if Assigned(libMat) then
       libMat.UnApply(rci);
@@ -431,13 +470,14 @@ var
    Branches : TGLTreeBranches;
    Facets : Integer;
    t,c,s : Single;
-   Radius, LeftRadius,  RightRadius : Single;
-   BranchAngle, LeftAngle, RightAngle : Single;
+   Radius, LeftRadius,  RightRadius, CenterRadius : Single;
+   BranchAngle, LeftAngle, RightAngle, CenterAngle : Single;
    BranchAngleBias, BranchTwist, Taper : Single;
-   LeftBranchNoiseValue, RightBranchNoiseValue : Single;
+   LeftBranchNoiseValue, RightBranchNoiseValue, CenterBranchNoiseValue : Single;
    LeftBranchNoise : TGLTreeBranchNoise;
+   CenterBranchNoise : TGLTreeBranchNoise;
    RightBranchNoise : TGLTreeBranchNoise;
-   LeftMatrix, RightMatrix : TMatrix;
+   LeftMatrix, RightMatrix, CenterMatrix : TMatrix;
    central_leader : Boolean;
 begin
    Assert(Assigned(FOwner),'Incorrect use of TGLTreeBranch');
@@ -461,19 +501,25 @@ begin
    BranchTwist:=Twist+Tree.BranchTwist;
 
    LeftBranchNoise:=BranchNoise.Left;
+   CenterBranchNoise:=BranchNoise.Center;
    RightBranchNoise:=BranchNoise.Right;
 
-   LeftBranchNoiseValue:=((LeftBranchNoise.BranchNoise*0.3)-0.1)*Tree.BranchNoise;
-   LeftRadius:=Sqrt(1-BranchAngle)+LeftBranchNoiseValue;
+   LeftBranchNoiseValue:=((LeftBranchNoise.BranchNoise*0.4)-0.1)*Tree.BranchNoise;
+   LeftRadius:=Sqrt(1-BranchAngle+LeftBranchNoiseValue);
    LeftRadius:=ClampValue(LeftRadius,0,1);
-   LeftAngle:=BranchAngle*90*BranchAngleBias;
+   LeftAngle:=BranchAngle*90*BranchAngleBias+10*LeftBranchNoiseValue;
 
-   RightBranchNoiseValue:=((RightBranchNoise.BranchNoise*0.3)-0.1)*Tree.BranchNoise;
-   RightRadius:=Sqrt(BranchAngle)+RightBranchNoiseValue;
+   CenterBranchNoiseValue:=((CenterBranchNoise.BranchNoise*0.9)-0.1)*Tree.BranchNoise;
+   CenterRadius:=Sqrt(Tree.CenterBranchConstant-BranchAngle+CenterBranchNoiseValue);
+   CenterRadius:=ClampValue(CenterRadius,0,1);
+   CenterAngle:=(1-BranchAngle)*50*CenterBranchNoiseValue*BranchAngleBias;
+
+   RightBranchNoiseValue:=((RightBranchNoise.BranchNoise*0.6)-0.1)*Tree.BranchNoise;
+   RightRadius:=Sqrt(BranchAngle+RightBranchNoiseValue);
    RightRadius:=ClampValue(RightRadius,0,1);
-   RightAngle:=(1-BranchAngle)*-90*BranchAngleBias;
+   RightAngle:=(1-BranchAngle)*-90*BranchAngleBias+10*RightBranchNoiseValue;
 
-   Taper:=MaxFloat(LeftRadius,RightRadius);
+   Taper:=MaxFloat(LeftRadius, RightRadius, CenterRadius);
 
    // Build cylinder lower
    for i:=0 to Facets do begin
@@ -524,6 +570,13 @@ begin
       LeftMatrix,
       MatrixMultiply(CreateTranslationMatrix(AffineVectorMake(0,0,Tree.BranchSize*(1-LeftBranchNoiseValue))),Matrix));
 
+   CenterMatrix:=MatrixMultiply(
+      CreateScaleMatrix(AffineVectorMake(CenterRadius,CenterRadius,CenterRadius)),
+      CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(CenterAngle)));
+   CenterMatrix:=MatrixMultiply(
+      CenterMatrix,
+      MatrixMultiply(CreateTranslationMatrix(AffineVectorMake(0,0,Tree.BranchSize*(1-CenterBranchNoiseValue))),Matrix));
+
    RightMatrix:=MatrixMultiply(
       CreateScaleMatrix(AffineVectorMake(RightRadius,RightRadius,RightRadius)),
       CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(RightAngle)));
@@ -538,6 +591,14 @@ begin
       FLeft:=TGLTreeBranch.Create(Owner,Self);
       FLeft.FCentralLeader:=central_leader and (LeftRadius>=RightRadius);
       FLeft.BuildBranch(LeftBranchNoise,LeftMatrix,TexCoordY,BranchTwist,Level+1);
+   end;
+
+   if (((Level+1)>=Tree.Depth) or (CenterRadius<Tree.LeafThreshold)) then begin
+      Tree.Leaves.AddNew(CenterMatrix);
+   end else begin
+      Inc(Branches.FCount);
+      FCenter:=TGLTreeBranch.Create(Owner,Self);
+      FCenter.BuildBranch(CenterBranchNoise,CenterMatrix,TexCoordY,BranchTwist,Level+1);
    end;
 
    if (((Level+1)>=Tree.Depth) or (RightRadius<Tree.LeafThreshold)) then begin
@@ -556,6 +617,13 @@ begin
    if Assigned(FRight) then begin
       for i:=0 to Facets do begin
          Branches.FIndices.Add(Right.Lower[i]);
+         Branches.FIndices.Add(Upper[i]);
+      end;
+   end;
+
+   if Assigned(FCenter) then begin
+      for i:=0 to Facets do begin
+         Branches.FIndices.Add(Center.Lower[i]);
          Branches.FIndices.Add(Upper[i]);
       end;
    end;
@@ -637,7 +705,7 @@ begin
       Owner.Leaves.Vertices.Translate(delta);
    end;
 
-   Owner.FAxisAlignedDimensionsCache[0]:=-1;
+   Owner.FAxisAlignedDimensionsCache.V[0]:=-1;
 end;
 
 // BuildList
@@ -653,22 +721,22 @@ begin
    if Assigned(libMat) then
       libMat.Apply(rci);
 
-   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
-   glNormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
-   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+   GL.VertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   GL.NormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
+   xgl.TexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
-   glEnableClientState(GL_VERTEX_ARRAY);
-   glEnableClientState(GL_NORMAL_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   GL.EnableClientState(GL_VERTEX_ARRAY);
+   GL.EnableClientState(GL_NORMAL_ARRAY);
+   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
 
    repeat
       for i:=0 to (FIndices.Count div stride)-1 do
-         glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
+         GL.DrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
    until (not Assigned(libMat)) or (not libMat.UnApply(rci));
 
-   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-   glDisableClientState(GL_NORMAL_ARRAY);
-   glDisableClientState(GL_VERTEX_ARRAY);
+   xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+   GL.DisableClientState(GL_NORMAL_ARRAY);
+   GL.DisableClientState(GL_VERTEX_ARRAY);
 end;
 
 // Clear
@@ -725,6 +793,12 @@ begin
    Result:=FRight;
 end;
 
+function TGLTreeBranchNoise.GetCenter: TGLTreeBranchNoise;
+begin
+   if not Assigned(FCenter) then
+      FCenter:=TGLTreeBranchNoise.Create;
+   Result:=FCenter;
+end;
 
 // -----------------------------------------------------------------------------
 // TGLTree
@@ -736,7 +810,7 @@ constructor TGLTree.Create(AOwner: TComponent);
 begin
    inherited;
    // Default tree setting
-   FDepth:=7;
+   FDepth:=5;
    FLeafThreshold:=0.02;
    FBranchAngleBias:=0.6;
    FBranchAngle:=0.4;
@@ -749,6 +823,8 @@ begin
    FCentralLeader:=False;
    FSeed:=0;
    FAutoCenter:=False;
+   FAutoRebuild:=True;
+   FCenterBranchConstant:=0.5;
 
    FLeaves:=TGLTreeLeaves.Create(Self);
    FBranches:=TGLTreeBranches.Create(Self);
@@ -784,8 +860,8 @@ end;
 
 // DoRender
 //
-procedure TGLTree.DoRender(var rci : TRenderContextInfo;
-                           renderSelf, renderChildren : Boolean);
+procedure TGLTree.DoRender(var ARci : TRenderContextInfo;
+                           ARenderSelf, ARenderChildren : Boolean);
 begin
    MaterialLibrary.LibMaterialByName(BranchMaterialName).PrepareBuildList;
    MaterialLibrary.LibMaterialByName(LeafMaterialName).PrepareBuildList;
@@ -809,7 +885,7 @@ end;
 //
 procedure TGLTree.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache[0]:=-1;
+  FAxisAlignedDimensionsCache.V[0]:=-1;
   inherited;
 end;
 
@@ -835,7 +911,7 @@ procedure TGLTree.BuildMesh(GLBaseMesh : TGLBaseMesh);
       NormalizeMatrix(mat);
       if MatrixDecompose(mat,trans) then begin
          SetVector(rot,trans[ttRotateX],trans[ttRotateY],trans[ttRotateZ]);
-         SetVector(pos,mat[3]);
+         SetVector(pos,mat.V[3]);
       end else begin
          rot:=NullVector;
         pos:=NullVector;
@@ -971,7 +1047,7 @@ procedure TGLTree.SetBranchAngle(const Value: Single);
 begin
    if Value<>FBranchAngle then begin
       FBranchAngle:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -981,7 +1057,7 @@ procedure TGLTree.SetBranchAngleBias(const Value: Single);
 begin
    if Value<>FBranchAngleBias then begin
       FBranchAngleBias:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -991,7 +1067,7 @@ procedure TGLTree.SetBranchNoise(const Value: Single);
 begin
    if Value<>FBranchNoise then begin
       FBranchNoise:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1001,7 +1077,7 @@ procedure TGLTree.SetBranchRadius(const Value: Single);
 begin
    if Value<>FBranchRadius then begin
       FBranchRadius:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1011,7 +1087,7 @@ procedure TGLTree.SetBranchSize(const Value: Single);
 begin
    if Value<>FBranchSize then begin
       FBranchSize:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1021,7 +1097,7 @@ procedure TGLTree.SetBranchTwist(const Value: Single);
 begin
    if Value<>FBranchTwist then begin
       FBranchTwist:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1031,7 +1107,7 @@ procedure TGLTree.SetDepth(const Value: Integer);
 begin
    if Value<>FDepth then begin
       FDepth:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1041,7 +1117,7 @@ procedure TGLTree.SetBranchFacets(const Value: Integer);
 begin
    if Value<>FBranchFacets then begin
       FBranchFacets:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1051,7 +1127,7 @@ procedure TGLTree.SetLeafSize(const Value: Single);
 begin
    if Value<>FLeafSize then begin
       FLeafSize:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1061,7 +1137,7 @@ procedure TGLTree.SetLeafThreshold(const Value: Single);
 begin
    if Value<>FLeafThreshold then begin
       FLeafThreshold:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1071,7 +1147,7 @@ procedure TGLTree.SetCentralLeaderBias(const Value: Single);
 begin
    if Value<>FCentralLeaderBias then begin
       FCentralLeaderBias:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1081,7 +1157,7 @@ procedure TGLTree.SetCentralLeader(const Value: Boolean);
 begin
    if Value<>FCentralLeader then begin
       FCentralLeader:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
 
@@ -1091,7 +1167,17 @@ procedure TGLTree.SetSeed(const Value: Integer);
 begin
    if Value<>FSeed then begin
       FSeed:=Value;
-      ForceTotalRebuild;
+      if (FAutoRebuild) then ForceTotalRebuild;
+   end;
+end;
+
+// SetCenterBranchConstant
+//
+procedure TGLTree.SetCenterBranchConstant(const Value : Single);
+begin
+   if Value<>CenterBranchConstant then begin
+      FCenterBranchConstant:=Value;
+      if (FAutoRebuild) then ForceTotalRebuild;
    end;
 end;
 
@@ -1284,13 +1370,13 @@ begin
      bmax:=NullVector;
    end;
 
-   min[0]:=MinFloat([lmin[0], lmax[0], bmin[0], bmax[0]]);
-   min[1]:=MinFloat([lmin[1], lmax[1], bmin[1], bmax[1]]);
-   min[2]:=MinFloat([lmin[2], lmax[2], bmin[2], bmax[2]]);
+   min.V[0]:=MinFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
+   min.V[1]:=MinFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
+   min.V[2]:=MinFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
 
-   max[0]:=MaxFloat([lmin[0], lmax[0], bmin[0], bmax[0]]);
-   max[1]:=MaxFloat([lmin[1], lmax[1], bmin[1], bmax[1]]);
-   max[2]:=MaxFloat([lmin[2], lmax[2], bmin[2], bmax[2]]);
+   max.V[0]:=MaxFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
+   max.V[1]:=MaxFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
+   max.V[2]:=MaxFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
 end;
 
 // AxisAlignedDimensionsUnscaled
@@ -1299,11 +1385,11 @@ function TGLTree.AxisAlignedDimensionsUnscaled : TVector;
 var
    dMin, dMax : TAffineVector;
 begin
-   if FAxisAlignedDimensionsCache[0]<0 then begin
+   if FAxisAlignedDimensionsCache.V[0]<0 then begin
       GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+      FAxisAlignedDimensionsCache.V[0]:=MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
+      FAxisAlignedDimensionsCache.V[1]:=MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
+      FAxisAlignedDimensionsCache.V[2]:=MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -1314,8 +1400,21 @@ procedure TGLTree.SetAutoCenter(const Value: Boolean);
 begin
    if Value<>FAutoCenter then begin
       FAutoCenter:=Value;
-      RebuildTree;
+      if (FAutoRebuild) then RebuildTree;
    end;
 end;
+
+// SetAutoRebuild
+//
+procedure TGLTree.SetAutoRebuild(const Value: Boolean);
+begin
+   if Value<>FAutoRebuild then begin
+      FAutoRebuild:=Value;
+   end;
+end;
+
+initialization
+
+   RegisterClasses([TGLTree]);
 
 end.
