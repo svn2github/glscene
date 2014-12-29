@@ -1,5 +1,6 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 { : GLTerrainRenderer<p>
 
   GLScene's brute-force terrain renderer.<p>
@@ -55,15 +56,15 @@ uses
   Classes, SysUtils,
   // GLS
   GLScene, GLHeightData, GLMaterial, GLVectorGeometry, GLContext, GLROAMPatch,
-  GLVectorLists, GLRenderContextInfo, OpenGLTokens, XOpenGL, GLUtils
-, GLVectorTypes;
+  GLVectorLists, GLRenderContextInfo, OpenGLTokens, XOpenGL, GLUtils, 
+  GLVectorTypes;
 
 const
   cTilesHashSize = 255;
 
 type
 
-  TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
+  TGetTerrainBoundsEvent = procedure(var l, t, r, b: Single) of object;
   TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;
     const patches: TList) of object;
   THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo;
@@ -79,7 +80,7 @@ type
   TTileManagementFlags = set of TTileManagementFlag;
 
   // TGLTerrainRenderer
-
+  //
   { : Basic terrain renderer.<p>
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
@@ -87,15 +88,14 @@ type
     terrain renderers.<p>
     The Terrain heightdata is retrieved directly from a THeightDataSource, and
     expressed as z=f(x, y) data. }
-  // TGLTerrainRenderer = class (TGLSceneObject)
   TGLTerrainRenderer = class(TGLSceneObject)
   private
     { Private Declarations }
     FHeightDataSource: THeightDataSource;
     FTileSize: Integer;
-    FQualityDistance, FinvTileSize: single;
+    FQualityDistance, FinvTileSize: Single;
     FLastTriangleCount: Integer;
-    FTilesPerTexture: single;
+    FTilesPerTexture: Single;
     FMaxCLODTriangles, FCLODPrecision: Integer;
     FBufferVertices: TAffineVectorList;
     FBufferTexPoints: TTexPointList;
@@ -118,13 +118,13 @@ type
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
-      canAllocate: boolean = True): THeightData; overload;
-    function HashedTile(const xLeft, yTop: Integer; canAllocate: boolean = True)
+      canAllocate: Boolean = True): THeightData; overload;
+    function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True)
       : THeightData; overload;
 
     procedure SetHeightDataSource(const val: THeightDataSource);
     procedure SetTileSize(const val: Integer);
-    procedure SetTilesPerTexture(const val: single);
+    procedure SetTilesPerTexture(const val: Single);
     procedure SetCLODPrecision(const val: Integer);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
     procedure SetQualityStyle(const val: TTerrainHighResStyle);
@@ -137,7 +137,7 @@ type
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
     function GetPreparedPatch(const tilePos, eyePos: TAffineVector;
-      texFactor: single; hdList: TList): TGLROAMPatch;
+      texFactor: Single; hdList: TList): TGLROAMPatch;
 
   public
     { Public Declarations }
@@ -152,12 +152,12 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : boolean; override;
+      : Boolean; override;
 
     { : Interpolates height for the given point.<p>
       Expects a point expressed in absolute coordinates. }
-    function InterpolatedHeight(const p: TVector): single; overload; virtual;
-    function InterpolatedHeight(const p: TAffineVector): single; overload;
+    function InterpolatedHeight(const p: TVector): Single; overload; virtual;
+    function InterpolatedHeight(const p: TAffineVector): Single; overload;
     { : Triangle count for the last render. }
     property LastTriangleCount: Integer read FLastTriangleCount;
     function HashedTileCount: Integer;
@@ -171,7 +171,7 @@ type
       Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
     { : Number of tiles required for a full texture map. }
-    property TilesPerTexture: single read FTilesPerTexture
+    property TilesPerTexture: Single read FTilesPerTexture
       write SetTilesPerTexture;
     { : Link to the material library holding terrain materials.<p>
       If unspecified, and for all terrain tiles with unspecified material,
@@ -185,7 +185,7 @@ type
       expressed in absolute coordinates units.<p>
       All tiles closer than this distance are rendered according to
       QualityStyle and with a static resolution. }
-    property QualityDistance: single read FQualityDistance
+    property QualityDistance: Single read FQualityDistance
       write FQualityDistance;
     { : Determines how high-res tiles (closer than QualityDistance) are rendered.<p>
       hrsFullGeometry (default value) means that the high-res tiles are rendered
@@ -284,7 +284,7 @@ end;
 // ------------------
 
 // Create
-
+//
 constructor TGLTerrainRenderer.Create(AOwner: TComponent);
 var
   i: Integer;
@@ -307,7 +307,7 @@ begin
 end;
 
 // Destroy
-
+//
 destructor TGLTerrainRenderer.Destroy;
 var
   i: Integer;
@@ -325,7 +325,7 @@ begin
 end;
 
 // Notification
-
+//
 procedure TGLTerrainRenderer.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -340,7 +340,7 @@ begin
 end;
 
 // DestroyHandle
-
+//
 procedure TGLTerrainRenderer.DestroyHandle;
 begin
   inherited;
@@ -350,13 +350,13 @@ begin
 end;
 
 // RayCastIntersect
-
+//
 function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   p1, d, p2, p3: TVector;
-  step, i, h, minH, maxH, p1height: single;
-  startedAbove: boolean;
+  step, i, h, minH, maxH, p1height: Single;
+  startedAbove: Boolean;
   failSafe: Integer;
   AbsX, AbsY, AbsZ: TVector;
 begin
@@ -441,7 +441,7 @@ begin
 end;
 
 // ReleaseAllTiles
-
+//
 procedure TGLTerrainRenderer.ReleaseAllTiles;
 var
   i, k: Integer;
@@ -462,10 +462,10 @@ begin
 end;
 
 // OnTileDestroyed
-
+//
 procedure TGLTerrainRenderer.OnTileDestroyed(Sender: TObject);
 var
-  list: TList;
+  List: TList;
 begin
   with Sender as THeightData do
   begin
@@ -474,22 +474,22 @@ begin
       ObjectTag.Free;
       ObjectTag := nil;
     end;
-    list := FTilesHash[HashKey(xLeft, yTop)];
-    Assert(Assigned(list));
-    list.Remove(Sender);
+    List := FTilesHash[HashKey(xLeft, yTop)];
+    Assert(Assigned(List));
+    List.Remove(Sender);
   end;
 end;
 
 // InterpolatedHeight (hmg)
 
-function TGLTerrainRenderer.InterpolatedHeight(const p: TVector): single;
+function TGLTerrainRenderer.InterpolatedHeight(const p: TVector): Single;
 var
   pLocal: TVector;
 begin
   if Assigned(HeightDataSource) then
   begin
     pLocal := AbsoluteToLocal(p);
-    Result := HeightDataSource.InterpolatedHeight(pLocal.V[0], pLocal.V[1],
+    Result := HeightDataSource.InterpolatedHeight(pLocal.X, pLocal.Y,
       TileSize + 1) * Scale.Z * (1 / 128);
   end
   else
@@ -498,7 +498,7 @@ end;
 
 // InterpolatedHeight (affine)
 
-function TGLTerrainRenderer.InterpolatedHeight(const p: TAffineVector): single;
+function TGLTerrainRenderer.InterpolatedHeight(const p: TAffineVector): Single;
 begin
   Result := InterpolatedHeight(PointMake(p));
 end;
@@ -512,16 +512,16 @@ var
   deltaX, nbX, iX: Integer;
   deltaY, nbY, iY: Integer;
   n, rpIdxDelta, accumCount: Integer;
-  f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist: single;
+  f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist: Single;
   patch, prevPatch: TGLROAMPatch;
   patchList, rowList, prevRow, buf: TList;
   postRenderPatchList, postRenderHeightDataList: TList;
   rcci: TRenderContextClippingInfo;
-  currentMaterialName: string;
-  maxTilePosX, maxTilePosY, minTilePosX, minTilePosY: single;
-  t_l, t_t, t_r, t_b: single;
+  currentMaterialName: String;
+  maxTilePosX, maxTilePosY, minTilePosX, minTilePosY: Single;
+  t_l, t_t, t_r, t_b: Single;
 
-  procedure ApplyMaterial(const materialName: string);
+  procedure ApplyMaterial(const materialName: String);
   begin
     if (MaterialLibrary = nil) or (currentMaterialName = materialName) then
       Exit;
@@ -560,9 +560,9 @@ begin
   vEye := VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
   vEyeDirection := VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
   SetVector(observer, vEye);
-  vEye.V[0] := Round(vEye.V[0] * FinvTileSize - 0.5) * TileSize +
+  vEye.X := Round(vEye.X * FinvTileSize - 0.5) * TileSize +
     TileSize * 0.5;
-  vEye.V[1] := Round(vEye.V[1] * FinvTileSize - 0.5) * TileSize +
+  vEye.Y := Round(vEye.Y * FinvTileSize - 0.5) * TileSize +
     TileSize * 0.5;
   tileGroundRadius := Sqr(TileSize * 0.5 * Scale.X) +
     Sqr(TileSize * 0.5 * Scale.Y);
@@ -570,13 +570,13 @@ begin
   tileGroundRadius := Sqrt(tileGroundRadius);
   // now, we render a quad grid centered on eye position
   SetVector(tilePos, vEye);
-  tilePos.V[2] := 0;
+  tilePos.Z := 0;
   f := (rci.rcci.farClippingDistance + tileGroundRadius) / Scale.X;
   f := Round(f * FinvTileSize + 1.0) * TileSize;
-  maxTilePosX := vEye.V[0] + f;
-  maxTilePosY := vEye.V[1] + f;
-  minTilePosX := vEye.V[0] - f;
-  minTilePosY := vEye.V[1] - f;
+  maxTilePosX := vEye.X + f;
+  maxTilePosY := vEye.Y + f;
+  minTilePosX := vEye.X - f;
+  minTilePosY := vEye.Y - f;
 
   if Assigned(FOnGetTerrainBounds) then
   begin
@@ -662,14 +662,14 @@ begin
   AbsoluteMatrix; // makes sure it is available
 
   // determine orientation (to render front-to-back)
-  if vEyeDirection.V[0] >= 0 then
+  if vEyeDirection.X >= 0 then
     deltaX := TileSize
   else
   begin
     deltaX := -TileSize;
     minTilePosX := maxTilePosX;
   end;
-  if vEyeDirection.V[1] >= 0 then
+  if vEyeDirection.Y >= 0 then
     deltaY := TileSize
   else
   begin
@@ -679,10 +679,10 @@ begin
 
   tileRadius := tileRadius;
 
-  tilePos.V[1] := minTilePosY;
+  tilePos.Y := minTilePosY;
   for iY := 0 to nbY - 1 do
   begin
-    tilePos.V[0] := minTilePosX;
+    tilePos.X := minTilePosX;
     prevPatch := nil;
     n := 0;
     for iX := 0 to nbX do
@@ -748,10 +748,10 @@ begin
         prevPatch := nil;
         rowList.Add(nil);
       end;
-      tilePos.V[0] := tilePos.V[0] + deltaX;
+      tilePos.X := tilePos.X + deltaX;
       Inc(n);
     end;
-    tilePos.V[1] := tilePos.V[1] + deltaY;
+    tilePos.Y := tilePos.Y + deltaY;
     buf := prevRow;
     prevRow := rowList;
     rowList := buf;
@@ -787,14 +787,12 @@ begin
       end;
     end;
   end;
-
   if (GetROAMTrianglesCapacity > MaxCLODTriangles) and
     Assigned(FOnMaxCLODTrianglesReached) then
   begin
     FOnMaxCLODTrianglesReached(rci);
     // Fire an event if the MaxCLODTriangles limit was reached
   end;
-
   TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices,
     FBufferTexPoints);
 
@@ -881,7 +879,7 @@ begin
 end;
 
 // HashedTileCount
-
+//
 function TGLTerrainRenderer.HashedTileCount: Integer;
 var
   i: Integer;
@@ -899,11 +897,11 @@ end;
 
 
 // MarkHashedTileAsUsed
-
+//
 procedure TGLTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
   hd: THeightData;
-  canAllocate: boolean;
+  canAllocate: Boolean;
 begin
   if not(tmMarkUsedTiles in TileManagement) then
     Exit; // Mark used tiles option
@@ -915,21 +913,21 @@ begin
 end;
 
 // HashedTile
-
+//
 function TGLTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: Boolean = True): THeightData;
 var
   xLeft, yTop: Integer;
 begin
-  xLeft := Round(tilePos.V[0] * FinvTileSize - 0.5) * (TileSize);
-  yTop := Round(tilePos.V[1] * FinvTileSize - 0.5) * (TileSize);
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
 // HashedTile
-
+//
 function TGLTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: Boolean = True): THeightData;
 var
   i: Integer;
   hd: THeightData;
@@ -944,8 +942,8 @@ begin
     begin
       if hd.DontUse then
       begin
-        hashList.Remove(hd);
         // This tile has now been replaced. Remove it from the hash-table.
+        hashList.Remove(hd);
       end
       else
       begin
@@ -969,18 +967,18 @@ begin
 end;
 
 // GetPreparedPatch
-
+//
 function TGLTerrainRenderer.GetPreparedPatch(const tilePos,
-  eyePos: TAffineVector; texFactor: single; hdList: TList): TGLROAMPatch;
+  eyePos: TAffineVector; texFactor: Single; hdList: TList): TGLROAMPatch;
 var
   tile: THeightData;
   patch: TGLROAMPatch;
   xLeft, yTop: Integer;
-  canAllocate: boolean;
+  canAllocate: Boolean;
 begin
   canAllocate := tmAllocateNewTiles in TileManagement;
-  xLeft := Round(tilePos.V[0] * FinvTileSize - 0.5) * TileSize;
-  yTop := Round(tilePos.V[1] * FinvTileSize - 0.5) * TileSize;
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * TileSize;
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * TileSize;
   tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
   if not Assigned(tile) then
@@ -1072,7 +1070,7 @@ end;
 
 // SetTilesPerTexture
 
-procedure TGLTerrainRenderer.SetTilesPerTexture(const val: single);
+procedure TGLTerrainRenderer.SetTilesPerTexture(const val: Single);
 begin
   if val <> FTilesPerTexture then
   begin

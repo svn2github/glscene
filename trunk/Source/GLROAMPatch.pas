@@ -6,6 +6,7 @@
   Class for managing a ROAM (square) patch.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
   <li>22/08/10 - DaStr - Fixed compiler warning
   <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
   <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
@@ -93,8 +94,6 @@ type
     procedure RenderAsStrips(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList);
 
-    function Tesselate: boolean;
-    // Returns false if MaxCLODTriangles limit is reached(Lin)
   public
     { Public Declarations }
     constructor Create;
@@ -106,6 +105,8 @@ type
     procedure ConnectToTheWest(westPatch: TGLROAMPatch);
     procedure ConnectToTheNorth(northPatch: TGLROAMPatch);
 
+    // Returns false if MaxCLODTriangles limit is reached(Lin)
+    function Tesselate: boolean;
     { : AV free version of Tesselate.<p>
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
@@ -294,9 +295,10 @@ begin
     exit; // dont split if tri already has a left child
   with tri^ do 
   begin 
+      // If this triangle is not in a proper diamond, force split our base neighbor
     if Assigned(base) and (base.base <> tri) then
 	  Split(base);
-   // If this triangle is not in a proper diamond, force split our base neighbor
+
     n := vNbTris;
   end;
 
@@ -334,14 +336,16 @@ begin
 
     Inc(vNbTris, 2);
 
-    if Assigned(left) then // Link our Left Neighbour to the new children
+      // Link our Left Neighbor to the new children
+      if Assigned(left) then
       if left.base = tri then
         left.base := lc
       else if left.left = tri then
         left.left := lc
       else
         left.right := lc;
-    if Assigned(right) then // Link our Right Neighbour to the new children
+      // Link our Right Neighbor to the new children
+      if Assigned(right) then
       if right.base = tri then
         right.base := rc
       else if right.left = tri then
@@ -691,7 +695,7 @@ end;
 
 
 // SafeTesselate
-
+//
 function TGLROAMPatch.SafeTesselate: boolean;
 var
   Fail: boolean;
@@ -700,7 +704,7 @@ begin
   Fail := True;
   repeat
     try
-      ResetTessellation;
+      //ResetTessellation;  <- caused gaps between tiles
       Result := Tesselate;
       Fail := False;
     except

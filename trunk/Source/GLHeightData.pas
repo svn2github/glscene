@@ -75,7 +75,6 @@ uses
 {$IFDEF MSWINDOWS}
   Windows, // for CreateMonochromeBitmap
 {$ENDIF}
-{$IFDEF FPC}, IntfGraphics, {$ENDIF}
   GLApplicationFileIO, GLUtils,
   GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
 
@@ -210,7 +209,7 @@ type
     property DefaultHeight: Single read FDefaultHeight write FDefaultHeight;
 
     { : Interpolates height for the given point. }
-    function InterpolatedHeight(x, y: Single; tileSize: Integer)
+    function InterpolatedHeight(x, y: Single; TileSize: Integer)
       : Single; virtual;
 
     function Width: Integer; virtual; abstract;
@@ -495,9 +494,6 @@ type
     { Private Declarations }
     FScanLineCache: array of PByteArray;
     FBitmap: TGLBitmap;
-{$IFDEF FPC}
-    IntfImg1: TLazIntfImage;
-{$ENDIF}
     FPicture: TGLPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
@@ -672,6 +668,7 @@ implementation
 type
   THeightDataSourceThread = class(TThread)
     FOwner: THeightDataSource;
+    FIdleLoops: Integer;
     procedure Execute; override;
     function WaitForTile(HD: THeightData; seconds: Integer): boolean;
     procedure HDSIdle;
@@ -721,9 +718,9 @@ begin
     if (TdCtr = 0) then
       synchronize(HDSIdle);
     if (TdCtr = 0) then
-      sleep(10)
+      Sleep(10)
     else
-      sleep(0); // sleep longer if no Queued tiles were found
+      Sleep(0); // sleep longer if no Queued tiles were found
   end;
 end;
 
@@ -771,14 +768,10 @@ begin
     FDataHash[i] := TList.Create;
   // FReleaseLatency:=15/(3600*24);
   FThread := THeightDataSourceThread.Create(True);
-  FThread.FreeOnTerminate := false;
+  FThread.FreeOnTerminate := False;
   THeightDataSourceThread(FThread).FOwner := self;
   if self.MaxThreads > 0 then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FThread.Resume;
-{$ELSE}
     FThread.Start;
-{$ENDIF}
 end;
 
 // Destroy
@@ -791,11 +784,7 @@ begin
   if Assigned(FThread) then
   begin
     FThread.Terminate;
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FThread.Resume;
-{$ELSE}
     FThread.Start;
-{$ENDIF}
     FThread.WaitFor;
     FThread.Free;
   end;
@@ -1102,11 +1091,7 @@ begin
     // If we didn't do threading, but will now
     // resume our thread
     if (FMaxThreads <= 0) then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-      FThread.Resume;
-{$ELSE}
       FThread.Start;
-{$ENDIF}
     FMaxThreads := Val;
   end;
 end;
@@ -1188,7 +1173,7 @@ end;
 // InterpolatedHeight
 //
 function THeightDataSource.InterpolatedHeight(x, y: Single;
-  tileSize: Integer): Single;
+  TileSize: Integer): Single;
 var
   i: Integer;
   HD, foundHd: THeightData;
@@ -1215,9 +1200,9 @@ begin
   if (foundHd = nil) or foundHd.Dirty then
   begin
     // not found, request one... slowest mode (should be avoided)
-    if tileSize > 1 then
-      foundHd := GetData(Round(x / (tileSize - 1) - 0.5) * (tileSize - 1),
-        Round(y / (tileSize - 1) - 0.5) * (tileSize - 1), tileSize, hdtDefault)
+    if TileSize > 1 then
+      foundHd := GetData(Round(x / (TileSize - 1) - 0.5) * (TileSize - 1),
+        Round(y / (TileSize - 1) - 0.5) * (TileSize - 1), TileSize, hdtDefault)
     else
     begin
       Result := DefaultHeight;
@@ -1260,7 +1245,7 @@ begin
 
   OldVersion := nil;
   NewVersion := nil;
-  DontUse := false;
+  DontUse := False;
 end;
 
 // Destroy
@@ -1304,7 +1289,7 @@ begin
     hdtDefault:
       ; // nothing
   else
-    Assert(false);
+    Assert(False);
   end;
   // ----------------------
   self.LibMaterial := nil; // release a used material
@@ -1440,7 +1425,7 @@ begin
             hdtSingle:
               ConvertByteToSingle;
           else
-            Assert(false);
+            Assert(False);
           end;
         hdtSmallInt:
           case Val of
@@ -1449,7 +1434,7 @@ begin
             hdtSingle:
               ConvertSmallIntToSingle;
           else
-            Assert(false);
+            Assert(False);
           end;
         hdtSingle:
           case Val of
@@ -1458,12 +1443,12 @@ begin
             hdtSmallInt:
               ConvertSingleToSmallInt;
           else
-            Assert(false);
+            Assert(False);
           end;
         hdtDefault:
           ; // nothing, assume StartPreparingData knows what it's doing
       else
-        Assert(false);
+        Assert(False);
       end;
     end;
     FDataType := Val;
@@ -1804,9 +1789,9 @@ begin
       dy := (Height(x, y) - Height(x, y - 1))
   else
     dy := (Height(x, y + 1) - Height(x, y));
-  Result.V[0] := dx * scale.V[1] * scale.V[2];
-  Result.V[1] := dy * scale.V[0] * scale.V[2];
-  Result.V[2] := scale.V[0] * scale.V[1];
+  Result.X := dx * scale.Y * scale.Z;
+  Result.Y := dy * scale.X * scale.Z;
+  Result.Z := 1 * scale.X * scale.Y;
   NormalizeVector(Result);
 end;
 
@@ -1823,9 +1808,9 @@ begin
   Hxy := Height(x, y);
   dx := Height(x + 1, y) - Hxy;
   dy := Height(x, y + 1) - Hxy;
-  Result.V[0] := dx * scale.V[1] * scale.V[2]; // Result[0]:=dx/scale[0];
-  Result.V[1] := dy * scale.V[0] * scale.V[2]; // Result[1]:=dy/scale[1];
-  Result.V[2] := 1 * scale.V[0] * scale.V[1]; // Result[2]:=1 /scale[2];
+  Result.X := dx * scale.Y * scale.Z; // Result.X:=dx/scale.X;
+  Result.Y := dy * scale.X * scale.Z; // Result.Y:=dy/scale.Y;
+  Result.Z := 1 * scale.X * scale.Y;  // Result.Z:=1 /scale.Z;
   NormalizeVector(Result);
 end;
 
@@ -1976,10 +1961,6 @@ begin
   finally
     Picture.OnChange := OnPictureChanged;
   end;
-{$IFDEF FPC}
-  IntfImg1 := TLazIntfImage.Create(0, 0);
-  IntfImg1.LoadFromBitmap(FBitmap.Handle, FBitmap.MaskHandle);
-{$ENDIF}
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);
 end;
@@ -1997,10 +1978,6 @@ begin
   SetLength(FScanLineCache, 0);
   FBitmap.Free;
   FBitmap := nil;
-{$IFDEF FPC}
-  IntfImg1.Free;
-  IntfImg1 := nil;
-{$ENDIF}
 end;
 
 // GetScanLine
@@ -2010,11 +1987,7 @@ begin
   Result := FScanLineCache[y];
   if not Assigned(Result) then
   begin
-{$IFNDEF FPC}
     Result := BitmapScanLine(FBitmap, y); // FBitmap.ScanLine[y];
-{$ELSE}
-    Result := IntfImg1.GetDataLineStart(y);
-{$ENDIF}
     FScanLineCache[y] := Result;
   end;
 end;
