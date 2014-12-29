@@ -36,10 +36,6 @@
 #include "GLFireFX.hpp"
 #include <Vcl.Menus.hpp>
 
-//#include "Bass.hpp"
-
-//#include "Bass.hpp"
-
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

@@ -33,7 +33,6 @@ object Form1: TForm1
     BevelInner = bvRaised
     BevelOuter = bvLowered
     TabOrder = 0
-    ExplicitHeight = 0
     object ComboBox1: TComboBox
       Left = 16
       Top = 344

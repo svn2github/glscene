@@ -11,7 +11,7 @@
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
 
-#include "AsyncTimer.hpp"
+#include "GLAsyncTimer.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLBehaviours.hpp"
 #include "GLCadencer.hpp"

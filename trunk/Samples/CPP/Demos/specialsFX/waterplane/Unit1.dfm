@@ -51,16 +51,17 @@ object Form1: TForm1
       Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
       Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
       Material.Texture.Disabled = False
+      Material.MaterialLibrary = GLMaterialLibrary1
       Direction.Coordinates = {00000000FFFF7F3F0100003300000000}
       Position.Coordinates = {00000000000080BF000000000000803F}
       Scale.Coordinates = {1F85EB3D1F85EB3D0000003F00000000}
       Up.Coordinates = {2FBD3B3302000033000080BF00000000}
       XSamplingScale.Min = -63.000000000000000000
-      XSamplingScale.max = 63.000000000000000000
-      XSamplingScale.step = 2.000000000000000000
+      XSamplingScale.Max = 63.000000000000000000
+      XSamplingScale.Step = 2.000000000000000000
       YSamplingScale.Min = -63.000000000000000000
-      YSamplingScale.max = 63.000000000000000000
-      YSamplingScale.step = 2.000000000000000000
+      YSamplingScale.Max = 63.000000000000000000
+      YSamplingScale.Step = 2.000000000000000000
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLWaterPlane1: TGLWaterPlane
@@ -107,6 +108,7 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Shader = GLUserShader1
       end>
+    TexturePaths = '..\\..\\..\\..\\media'
     Left = 192
     Top = 24
   end

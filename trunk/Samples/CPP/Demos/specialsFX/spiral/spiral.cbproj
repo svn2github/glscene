@@ -84,7 +84,7 @@
         <BCC_PCHCache>true</BCC_PCHCache>
         <PackageImports>rtl.bpi;vcl.bpi;$(PackageImports)</PackageImports>
         <BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime_VCL.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <TASM_Defines>_DEBUG;$(TASM_Defines)</TASM_Defines>
@@ -118,7 +118,7 @@
         <ILINK_LibraryPath>..\..\..\..\..\Source\lib\;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
-        <LinkPackageStatics>GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLScene_RunTime_VCL.lib;xmlrtl.lib;vclimg.lib;fmx.lib</LinkPackageStatics>
         <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">

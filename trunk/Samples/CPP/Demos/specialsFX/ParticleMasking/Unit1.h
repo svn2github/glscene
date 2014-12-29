@@ -8,7 +8,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
-#include "AsyncTimer.hpp"
+#include "GLAsyncTimer.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLBitmapFont.hpp"
 #include "GLCadencer.hpp"
@@ -22,6 +22,7 @@
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
 #include "GLWindowsFont.hpp"
+#include "GLAsyncTimer.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

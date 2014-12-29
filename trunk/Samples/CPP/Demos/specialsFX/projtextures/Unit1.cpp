@@ -87,10 +87,10 @@ void __fastcall TForm1::viewerMouseMove(TObject *Sender, TShiftState Shift,
 {
   if (mk == 1)
   {
-    if (Shift.Contains(ssLeft))
-	  GLCamera1->MoveAroundTarget(Y - my, X - mx);
+	if (Shift.Contains(ssLeft))
+	  GLCamera1->MoveAroundTarget(my - Y, mx - X);
 	else if (Shift.Contains(ssRight))
-	  GLCamera1->AdjustDistanceToTarget(1.0 + (Y - my) / 100);
+	  GLCamera1->AdjustDistanceToTarget(1.0 + (my - Y) * 0.01);
   }
 
   mx = X;

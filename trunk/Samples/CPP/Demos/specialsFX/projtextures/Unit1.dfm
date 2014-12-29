@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 198
   Top = 138
-  Caption = 'GLScene Projected Textures'
+  Caption = 'Projected Textures'
   ClientHeight = 444
   ClientWidth = 684
   Color = clBtnFace
@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   PixelsPerInch = 96
@@ -55,8 +57,8 @@ object Form1: TForm1
             Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
             Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
             Radius = 0.050000000745058060
-            Slices = 4
-            Stacks = 4
+            Slices = 8
+            Stacks = 8
           end
           object emitter2: TGLTextureEmitter
             FOVy = 90.000000000000000000
@@ -77,8 +79,8 @@ object Form1: TForm1
             Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
             Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
             Radius = 0.050000000745058060
-            Slices = 4
-            Stacks = 4
+            Slices = 8
+            Stacks = 8
           end
           object emitter1: TGLTextureEmitter
             FOVy = 90.000000000000000000
@@ -126,6 +128,7 @@ object Form1: TForm1
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
+      SceneScale = 2.000000000000000000
       TargetObject = scenery
       Position.Coordinates = {000040400000003F000020400000803F}
       Left = 328

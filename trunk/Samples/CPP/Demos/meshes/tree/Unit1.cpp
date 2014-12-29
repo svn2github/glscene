@@ -57,7 +57,6 @@ void TForm1::NewTree()
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   SetGLSceneMediaDir();
-//  GLMaterialLibrary1->TexturePaths = MediaPath;
   // Set up default textures
   TGLLibMaterial *lm =
 	GLMaterialLibrary1->AddTextureMaterial("LeafFront", "maple_multi.tga", true);

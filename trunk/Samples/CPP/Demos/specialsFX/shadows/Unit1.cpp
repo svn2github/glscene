@@ -6,7 +6,7 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "AsyncTimer"
+#pragma link "GLAsyncTimer"
 #pragma link "GLBaseClasses"
 #pragma link "GLBehaviours"
 #pragma link "GLCadencer"
@@ -144,7 +144,7 @@ void __fastcall TForm1::AsyncTimer1Timer(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::RotateBoxClick(TObject *Sender)
 {
-//AsyncTimer1->Enabled =RotateBox->Checked;
+//GLAsyncTimer1->Enabled =RotateBox->Checked;
   GLCadencer1->Enabled = RotateBox->Checked;
 }
 //---------------------------------------------------------------------------

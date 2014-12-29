@@ -19,7 +19,8 @@
 #include "GLScene.hpp"
 #include "GLSimpleNavigation.hpp"
 #include "GLWin32Viewer.hpp"
-#include "NewtonImport.hpp";
+#include "NewtonImport.hpp"
+#include "GLBitmapFont.hpp";
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -48,6 +49,7 @@ __published:	// IDE-managed Components
 	TGLCadencer *GLCadencer1;
 	TGLSimpleNavigation *GLSimpleNavigation1;
 	TGLNGDManager *GLNGDManager1;
+	TGLBitmapFont *GLBitmapFont1;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,

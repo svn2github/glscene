@@ -9,8 +9,8 @@ uses
   //GLScene
   GLScene, GLCadencer, GLObjects, GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS,
   GLTexture, GLHUDObjects, GLMaterial, GLSkydome, GLWin32Viewer, GLWindowsFont,
-  GLBitmapFont, GLCrossPlatform, GLCoordinates, GLRoamPatch, GLRenderContextInfo,
-  GLColor, GLVectorFileObjects, GLBaseClasses, GLVectorLists, GLVectorTypes,
+  GLBitmapFont, GLCrossPlatform, GLCoordinates, GLRenderContextInfo, GLColor,
+  GLVectorFileObjects, GLBaseClasses, GLVectorLists, GLVectorTypes,
   GLVectorGeometry, GLKeyboard, OpenGLTokens, GLContext, GLState, GLTextureFormat;
 
 type

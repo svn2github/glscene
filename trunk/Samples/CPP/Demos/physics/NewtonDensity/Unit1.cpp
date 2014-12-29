@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
+#include <tchar.h>
+
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -19,6 +21,7 @@
 #pragma link "GLWin32Viewer"
 #pragma link "NewtonImport"
 
+#pragma link "GLBitmapFont"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
@@ -42,7 +45,7 @@ int __cdecl BuoyancyPlaneCallback(const int collisionID, void *context,
   // This can be used to simulate boats and lighter than air vehicles etc..
   PlaneEquation = MyForm->GLPlane1->Direction->AsVector;
   // the distance along this normal, to the origin.
-  PlaneEquation.V[3] = MyForm->GLPlane1->Position->Y;
+  PlaneEquation.W = MyForm->GLPlane1->Position->Y;
   globalSpacePlane = PlaneEquation.V;
 
   return 1;
@@ -58,10 +61,11 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   // To use Buoyancy effect, set a custom forceAndTorqueEvent were you can call
   // NewtonBodyAddBuoyancyForce API function
-
-///  for (int i = 0; i < obj->Count - 1; i++)
-///	GetNGDDynamic(obj[i])->CustomForceAndTorqueEvent = MyForceAndTorqueDensity();
-
+  for (int i = 0; i < obj->Count - 1; i++)
+  {
+	GetNGDDynamic(obj->Children[i])->CustomForceAndTorqueEvent =
+	  NULL; //must be MyForceAndTorqueDensity();
+  }
 }
 //---------------------------------------------------------------------------
 void TForm1::Shoot(void)

@@ -65,32 +65,45 @@ void __fastcall TForm1::GLODEManager1Collision(TObject *Sender, TObject *Object1
 //---------------------------------------------------------------------------
 void __fastcall TForm1::TrackBarMotionSpeedChange(TObject *Sender)
 {
-  GetOrCreateOdeStatic(ConveyorBelt1)->Surface->Motion1 = TrackBarMotionSpeed->Position;
+  TGLODEStatic *AODEStatic;
+  AODEStatic = (TGLODEStatic*)(ConveyorBelt1->Behaviours->Items[0]);
+  AODEStatic->Surface->Motion1 = TrackBarMotionSpeed->Position;
 }
+
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FrictionChange(TObject *Sender)
+{
+  TGLODEStatic *AODEStatic;
+  AODEStatic = (TGLODEStatic*)(ConveyorBelt1->Behaviours->Items[0]);
+  AODEStatic->Surface->Mu =
+  	Glutils::StrToFloatDef(Friction->Text, GetOrCreateOdeStatic(ConveyorBelt1)->Surface->Mu);
+  FrictionFeedback->Caption = Format("µs = %.2f", ARRAYOFCONST((GetOrCreateOdeStatic(ConveyorBelt1)->Surface->Mu)));
+}
+
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::AddODECubeClick(TObject *Sender)
 {
-  TGLCube* ACube;
-  TGLODEDynamic* AODEDynamic;
-  TODEElementBox* AODEElementBox;
+  TGLCube *ACube;
+  TGLODEDynamic *AODEDynamic;
+  TODEElementBox *AODEElementBox;
 
   // Create a new GLScene cube and add it to the current GLScene1
-  ACube = new (TGLCube)(GLScene1->Objects);
+  ACube = (TGLCube *)(SpawnPoint->AddNewChild(__classid(TGLCube)));
   ACube->Parent = GLScene1->Objects;
   ACube->Position->Assign(SpawnPoint->Position);
   ACube->Material->FrontProperties->Diffuse->RandomColor();
 
   // Add ODE Dynamic behaviour on it
-  AODEDynamic = GetOrCreateOdeDynamic(ACube);
+  AODEDynamic = new TGLODEDynamic(ACube->Behaviours);
   AODEDynamic->Manager = GLODEManager1;
 
   // Set µs value to 1 (default=1000), just uses the one from the conveyor
   AODEDynamic->Surface->Mu = 1;
 
   // Finally create physical data in this behaviour
-  ///AODEElementBox := TODEElementBox(AODEDynamic.AddNewElement(TODEElementBox));  - Delphi
-  ///AODEElementBox = (TODEElementBox*) AODEDynamic->AddNewElement(TODEElementBox); - ???
+  AODEElementBox = (TODEElementBox *) AODEDynamic->AddNewElement(__classid(TODEElementBox));
   if (AODEElementBox)
   {
 	AODEElementBox->BoxWidth = ACube->CubeWidth;

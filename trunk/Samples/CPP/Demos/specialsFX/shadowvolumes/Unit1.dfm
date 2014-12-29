@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 73
   Top = 86
-  Caption = 'GLScene Shadow Volumes'
+  Caption = 'Shadow Volumes'
   ClientHeight = 441
   ClientWidth = 695
   Color = clBtnFace
@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
@@ -51,8 +53,6 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
-    ExplicitLeft = 540
-    ExplicitTop = -7
     DesignSize = (
       159
       441)

@@ -67,7 +67,7 @@
         <ILINK_AppType>Windows</ILINK_AppType>
         <UsePackages>true</UsePackages>
         <DynamicRTL>true</DynamicRTL>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <ILINK_LibraryPath>$(BDS)\lib\obj;$(BDS)\lib;..\..\..\..\lib;..\..\..\..\dcu;$(BDS)\lib\psdk;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
@@ -118,7 +118,7 @@
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <ILINK_LibraryPath>..\..\..\..\..\Source\lib\;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
-        <LinkPackageStatics>GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>

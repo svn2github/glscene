@@ -23,6 +23,7 @@ object Form1: TForm1
     Width = 526
     Height = 410
     Camera = GLCamera1
+    Buffer.BackgroundColor = clTeal
     FieldOfView = 152.586074829101600000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown

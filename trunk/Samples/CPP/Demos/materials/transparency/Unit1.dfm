@@ -128,6 +128,14 @@ object Form1: TForm1
       Position.Coordinates = {0000A041000048420000F0410000803F}
       SpotCutOff = 180.000000000000000000
     end
+    object GLCamera1: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 60.000000000000000000
+      TargetObject = DCCentral
+      Position.Coordinates = {0000A04000002040000020400000803F}
+      Left = 240
+      Top = 144
+    end
     object BaseDummyCube: TGLDummyCube
       ObjectsSorting = osRenderFarthestFirst
       CubeSize = 1.000000000000000000
@@ -170,14 +178,6 @@ object Form1: TForm1
           Radius = 0.600000023841857900
         end
       end
-    end
-    object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 60.000000000000000000
-      TargetObject = DCCentral
-      Position.Coordinates = {0000A04000002040000020400000803F}
-      Left = 240
-      Top = 144
     end
   end
   object GLCadencer1: TGLCadencer

@@ -73,7 +73,7 @@ void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int W
 void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaTime,
           const double newTime)
 {
-  GLCube1->Turn(deltaTime*10);
+  GLCube1->Turn(deltaTime*100);
 }
 //---------------------------------------------------------------------------
 

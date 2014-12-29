@@ -58,6 +58,7 @@ __published:	// IDE-managed Components
           TdContact &Contact, bool &HandleCollision);
 	void __fastcall TrackBarMotionSpeedChange(TObject *Sender);
 	void __fastcall AddODECubeClick(TObject *Sender);
+	void __fastcall FrictionChange(TObject *Sender);
 
 private:	// User declarations
 	Glvectorgeometry::TVector FUserDirection;

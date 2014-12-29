@@ -72,7 +72,7 @@
         <BRCC_IncludePath>$(BDS)\include;$(BDS)\include\vcl;..\..\..\..\include;$(BRCC_IncludePath)</BRCC_IncludePath>
         <FinalOutputDir>.</FinalOutputDir>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <TASM_IncludePath>$(BDS)\include;$(BDS)\include\vcl;..\..\..\..\include;$(TASM_IncludePath)</TASM_IncludePath>
         <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
         <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
@@ -119,7 +119,7 @@
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <LinkPackageStatics>GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib</LinkPackageStatics>
         <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
     </PropertyGroup>

@@ -37,8 +37,6 @@ object Form1: TForm1
     Align = alRight
     Caption = 'Particle Masks'
     TabOrder = 0
-    ExplicitLeft = 587
-    ExplicitHeight = 468
     object XImage: TImage
       Left = 16
       Top = 32
@@ -128,8 +126,6 @@ object Form1: TForm1
     Height = 36
     Align = alBottom
     TabOrder = 2
-    ExplicitTop = 468
-    ExplicitWidth = 769
     object Label1: TLabel
       Left = 8
       Top = 11

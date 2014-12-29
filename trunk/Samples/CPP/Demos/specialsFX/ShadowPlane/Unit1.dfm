@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -103,6 +105,7 @@ object Form1: TForm1
       object GLCamera1: TGLCamera
         DepthOfView = 100.000000000000000000
         FocalLength = 50.000000000000000000
+        SceneScale = 2.000000000000000000
         TargetObject = DCCameraTarget
         Position.Coordinates = {0000A04000008040000040400000803F}
       end

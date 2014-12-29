@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -119,6 +121,7 @@ object Form1: TForm1
       Width = 49
       Height = 21
       TabOrder = 1
+      OnChange = FrictionChange
     end
     object FDirX: TEdit
       Left = 30
