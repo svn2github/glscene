@@ -6,6 +6,7 @@
   Class for managing a ROAM (square) patch.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
   <li>22/08/10 - DaStr - Fixed compiler warning
   <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
   <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
@@ -700,7 +701,7 @@ begin
   Fail := True;
   repeat
     try
-      ResetTessellation;
+      //ResetTessellation; <- creates gaps between tiles
       Result := Tesselate;
       Fail := False;
     except
