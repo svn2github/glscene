@@ -38,7 +38,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.CrossPlatform, GLS.VectorFileObjects, GLS.VectorTypes, GLS.Material,
-  GLS.VectorGeometry, GLS.VectorLists, GLApplicationFileIO;
+  GLS.VectorGeometry, GLS.VectorLists, GLS.ApplicationFileIO;
 
 type
   // TGLMS3DVectorFile
@@ -73,7 +73,7 @@ end;
 
 procedure TGLMS3DVectorFile.LoadFromStream(aStream: TStream);
 var
-  // GLScene
+   
   i, j, k: integer;
   itemp: PtrUInt;
   wtemp: word;

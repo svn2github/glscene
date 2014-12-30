@@ -21,7 +21,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLVectorTypes,
+  GLS.VectorTypes,
   System.SysUtils,
   Winapi.Windows;
 

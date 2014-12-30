@@ -42,7 +42,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-  //GLS
+   
   GLS.VectorTypes, GLS.VectorGeometry,  GLS.GeometryBB, GLS.PersistentClasses;
 
 const

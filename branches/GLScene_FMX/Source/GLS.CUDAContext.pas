@@ -27,7 +27,7 @@ uses
   GLS_CUDA_RunTime,
   GLS_CL_Platform,
   GLS.Context,
-  GLSGenerics,
+  GLS.Generics,
   GLSLog;
 
 type

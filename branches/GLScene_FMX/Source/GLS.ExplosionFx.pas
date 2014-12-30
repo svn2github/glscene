@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLExplosionFx<p>
+{: GLS.ExplosionFx<p>
 
   TGLBExplosionFX Effect<p>
 
@@ -26,15 +26,16 @@
   so if you'll need the mesh after exploding it, you'll have to save the
   MeshObjects property of the mesh, OR load it again.
 }
-unit GLExplosionFx;
+unit GLS.ExplosionFx;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  GLS.OpenGLTokens, GLS.VectorGeometry, GLS.Scene, GLS.VectorFileObjects, GLS.VectorTypes,
-  GLS.VectorLists, XCollection, GLS.Coordinates, GLS.RenderContextInfo;
+  GLS.OpenGLTokens, GLS.VectorGeometry, GLS.Scene, GLS.VectorFileObjects,
+  GLS.VectorTypes, GLS.VectorLists, GLS.XCollection, GLS.Coordinates,
+  GLS.RenderContextInfo, GLS.Context, GLS.State;
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -80,9 +81,6 @@ type
   end;
 
 implementation
-
-uses
-  GLS.Context, GLS.State;
 
 { TGLBExplosionFx }
 

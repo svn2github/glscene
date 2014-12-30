@@ -27,9 +27,9 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
-  GLS_RGBE, GLApplicationFileIO, GLS.VectorGeometry, GLS.Strings;
+  GLS.RGBE, GLS.ApplicationFileIO, GLS.VectorGeometry, GLS.Strings;
 
 type
 

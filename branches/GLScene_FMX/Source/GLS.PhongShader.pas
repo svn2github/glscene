@@ -24,12 +24,12 @@ interface
 {$I GLScene.inc }
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, GLS.OpenGLTokens, GLS.Context,
-  GLAsmShader, GLS.RenderContextInfo, GLCustomShader, GLS.State;
+  GLAsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)

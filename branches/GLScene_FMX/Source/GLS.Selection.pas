@@ -18,7 +18,7 @@ interface
 
 uses
   System.SysUtils, System.Classes,
-  //GLS
+   
   GLS.OpenGLTokens, GLS.Context, GLS.VectorLists, GLS.VectorGeometry,
   GLS.BaseClasses, GLS.PersistentClasses;
 

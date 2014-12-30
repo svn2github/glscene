@@ -10,10 +10,10 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
+      <li>23/01/11 - DanB - Entry points now use procedural types from GLS.OpenGLTokens.pas
                             Added OpenGL 4.1 + ARB extensions
                             Switched to use GLS_REGIONS define
-      <li>23/08/10 - Yar - Moved tokens part to OpenGLTokens.pas
+      <li>23/08/10 - Yar - Moved tokens part to GLS.OpenGLTokens.pas
       <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
       <li>01/06/10 - Yar - Fixes for Linux x64
       <li>31/05/10 - Yar - Added WGL_NV_gpu_affinity
@@ -47,7 +47,7 @@
       <li>04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
       <li>28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
       <li>20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
-      <li>05/10/08 - DanB - Moved error handling code here from GLContext.pas
+      <li>05/10/08 - DanB - Moved error handling code here from GLS.Context.pas
                             OpenGL 3.0 support, new core features + ARB extensions
       <li>23/03/08 - DanB - Added more Vendor/EXT extensions
       <li>17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..."
@@ -55,7 +55,7 @@
       <li>16/03/08 - DanB - Major rewrite of unit, including:
                             OpenGL 1.3, 1.4, 1.5, 2.0, 2.1 support.
                             removed TRCOptions (not used).
-                            moved MRT_BUFFERS constant to GLContext.pas (isn't core openGL).
+                            moved MRT_BUFFERS constant to GLS.Context.pas (isn't core openGL).
                             several new ARB extensions added.
                             several new Vendor/EXT exensions added.
                             new function IsOpenGLVersionMet added.
@@ -109,7 +109,7 @@ interface
 {.$define MULTITHREADOPENGL}
 
 uses
-  SysUtils, OpenGLTokens, GLVectorTypes,
+  System.SysUtils, GLS.OpenGLTokens, GLS.VectorTypes,
   {$IFDEF MSWINDOWS}
     Windows
   {$ENDIF }

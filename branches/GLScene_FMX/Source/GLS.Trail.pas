@@ -32,7 +32,7 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  // GLScene
+   
   GLS.Scene, GLS.VectorTypes, GLS.MeshUtils, GLS.VectorGeometry, GLS.VectorFileObjects,
   GLMesh, GLS.Objects, GLS.Material, GLS.Strings, GLS.BaseClasses;
 

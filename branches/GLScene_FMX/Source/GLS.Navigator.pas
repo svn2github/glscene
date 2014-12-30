@@ -37,10 +37,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.SysUtils, System.Classes,
 
-  // GLScene
+   
   GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates, GLS.Screen
   , GLS.VectorTypes;
 

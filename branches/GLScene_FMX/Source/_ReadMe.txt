@@ -1,1 +1,0 @@
-The directory for GLScene source files based on Embarcadero RAD Studio FMX platform

@@ -20,7 +20,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLVectorFileObjects, GLEllipseCollision, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.VectorFileObjects, GLEllipseCollision, GLS.VectorGeometry, GLS.VectorLists,
   GLS.Scene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy
   , GLS.VectorTypes;
 

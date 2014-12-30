@@ -22,7 +22,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.VectorFileObjects, GLS.VectorGeometry, GLApplicationFileIO,
+  System.Classes, GLS.VectorFileObjects, GLS.VectorGeometry, GLS.ApplicationFileIO,
   FileOCT
   {$IFDEF FPC}
   , intfgraphics

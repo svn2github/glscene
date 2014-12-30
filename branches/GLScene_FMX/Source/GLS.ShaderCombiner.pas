@@ -25,10 +25,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  //VCL
   System.Classes,
 
-  //GLScene
+   
   GLS.Material, GLS.Scene, GLS.VectorGeometry, GLS.Strings, GLS.RenderContextInfo;
 
 type

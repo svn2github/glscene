@@ -84,9 +84,9 @@ uses
   System.Classes,
   System.SysUtils,
 
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.VectorGeometry,
-  GLS.Scene,  GLVectorFileObjects, GLS.VectorLists,  GLS.Texture,  GLS.Color,
+  GLS.Scene,  GLS.VectorFileObjects, GLS.VectorLists,  GLS.Texture,  GLS.Color,
   GLS.RenderContextInfo, GLS.Material;
 
 const
@@ -225,7 +225,7 @@ begin
 end;
 
 { ** TOBJFGVertexNormalTexIndexList ****************************************** }
-{ - based on TFGVertexNormalTexIndexList (GLVectorFileObjects.pas)
+{ - based on TFGVertexNormalTexIndexList (GLS.VectorFileObjects.pas)
   - adds support for polygons and for "missing" normals and
     texture-coordinates. Pass -1 to Add for the index of a missing object.
   - Polygons are defined by counting off the number of vertices added to the
@@ -1569,8 +1569,8 @@ end;
 initialization
 
   { Register this Fileformat-Handler with GLScene }
-  GLVectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
-  GLVectorFileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
+  GLS.VectorFileObjects.RegisterVectorFileFormat('obj', 'WaveFront model file', TGLOBJVectorFile);
+  GLS.VectorFileObjects.RegisterVectorFileFormat('objf', 'Stripe model file', TGLOBJVectorFile);
   RegisterClass(TOBJFGVertexNormalTexIndexList);
 
 end.

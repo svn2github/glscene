@@ -12,8 +12,9 @@ unit GLDWS2Objects;
 interface
 
 uses
-  System.Classes, System.SysUtils, dws2Comp, dws2Exprs, dws2Symbols,
-  GLS.Scene, XCollection, GLS.ScriptDWS2, GLS.BaseClasses, GLManager;
+  System.Classes, System.SysUtils, 
+  dws2Comp, dws2Exprs, dws2Symbols,
+  GLS.Scene, GLS.XCollection, GLS.ScriptDWS2, GLS.BaseClasses, GLS.Manager;
 
 type
   // TGLDWS2ActiveBehaviour

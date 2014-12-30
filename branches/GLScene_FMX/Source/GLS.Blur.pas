@@ -40,7 +40,7 @@ uses
   {$ELSE}
     System.Classes, System.SysUtils,  Graphics,
   {$ENDIF}
-  // GLScene
+   
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
   GLHudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
   XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;

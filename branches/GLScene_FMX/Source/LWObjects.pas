@@ -632,7 +632,7 @@ type
 implementation
 
 uses
-  System.SysUtils, GLApplicationFileIO;
+  System.SysUtils, GLS.ApplicationFileIO;
 
 type
   PWord = ^Word;

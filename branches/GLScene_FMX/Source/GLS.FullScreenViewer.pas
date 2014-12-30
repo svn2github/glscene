@@ -26,9 +26,9 @@ uses
   Winapi.Messages, Winapi.Windows,
   System.Classes, System.SysUtils,
   Fmx.Forms, Fmx.Controls, Fmx.Menus,
-  //GLScene
+   
   GLS.Scene, GLS.Context, GLS.SceneContext, GLS.OpenGLTokens,
-  GLCrossPlatform, GLS.OpenGLAdapter;
+  GLS.CrossPlatform, GLS.OpenGLAdapter;
 
 type
 

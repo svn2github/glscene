@@ -28,7 +28,7 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  // GLScene
+   
   GLS.PersistentClasses,  GLS.BaseClasses,  GLS.CrossPlatform,  GLS.Context,
   GLS.VectorGeometry,  GLS.VectorTypes,  GLS.VectorLists,  GLS.Graphics,
   GLS_CL_Platform,  GLS_CUDA_API,  GLS_CUDA_RUNTIME,  GLSCUDAParser,

@@ -22,7 +22,7 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Winapi.Windows, System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
+  Winapi.Windows, System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
   VCL.ImgList, VCL.Controls, VCL.Graphics,
 {$ELSE}
   Winapi.Windows, System.Classes, Forms, ComCtrls, StdCtrls, ImgList, Controls, Graphics,

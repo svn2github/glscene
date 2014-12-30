@@ -19,7 +19,9 @@ interface
 {$R-}
 
 uses
-  System.Classes, TypesB3D, GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists;
+  System.Classes, System.SysUtils,
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists,
+  TypesB3D;
 
 type
   TB3DMaterial = class
@@ -69,16 +71,13 @@ type
     procedure LoadFromStream(aStream : TStream);
     //for test only
     procedure Check;
-    
+
     property Textures: TStringList read fTextures;
     property Materials: TStringList read fMaterials;
     property Nodes: TB3DNode read fNodes;
   end;
 
 implementation
-
-uses
-  SysUtils{, Windows};
 
 constructor TB3DMaterial.Create;
 begin

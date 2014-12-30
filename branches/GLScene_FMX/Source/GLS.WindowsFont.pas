@@ -121,7 +121,7 @@ uses
   System.SysUtils,
   GLS.VectorGeometry,
   GLS.OpenGLTokens,
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLS.VectorTypes;
 
 const

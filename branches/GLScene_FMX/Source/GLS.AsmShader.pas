@@ -31,10 +31,9 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLX
   GLS.OpenGLTokens,  GLS.Context,
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture,
-  GLCustomShader, GLS.RenderContextInfo;
+  GLS.CustomShader, GLS.RenderContextInfo;
 
 type
   TGLCustomAsmShader = class;

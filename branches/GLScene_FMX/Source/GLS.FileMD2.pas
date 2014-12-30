@@ -8,7 +8,7 @@
 	<b>History :</b><font size=-1><ul>
       <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
       <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
 unit GLFileMD2;
@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO, FileMD2, TypesMD2;
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, FileMD2, TypesMD2;
 
 type
    // TGLMD2VectorFile

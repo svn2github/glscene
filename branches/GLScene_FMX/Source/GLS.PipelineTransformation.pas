@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPipelineTransformation<p>
+{: GLS.PipelineTransformation<p>
 
    <b>History : </b><font size=-1><ul>
     <li>13/12/13 - PW - Added GLSLog unit
@@ -11,7 +11,7 @@
  </ul></font>
 }
 
-unit GLPipelineTransformation;
+unit GLS.PipelineTransformation;
 
 interface
 

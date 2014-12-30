@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLHeightTileFile<p>
+{: GLS.HeightTileFile<p>
 
    Access to large tiled height data files.<p>
 
@@ -17,13 +17,13 @@
    </ul><p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
+      <li>17/11/14 - PW - Renamed from HeightTileFile.pas to GLS.HeightTileFile.pas
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>30/03/07 - DaStr - Added $I GLScene.inc
       <li>21/12/01 - Egg - Creation
    </ul></font>
 }
-unit GLHeightTileFile;
+unit GLS.HeightTileFile;
 
 interface
 
@@ -31,8 +31,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
-  GLS.CrossPlatform, GLApplicationFileIO;
+   
+  GLS.CrossPlatform, GLS.ApplicationFileIO;
 
 type
 

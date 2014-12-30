@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLConsole <p>
+{: GLS.Console <p>
 
    The console is a popdown window that appears on a game for text output/input.<p>
 
@@ -67,20 +67,16 @@
                                    Code ready to be donated to GLScene
 }
 
-unit GLConsole;
+unit GLS.Console;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, System.TypInfo, Vcl.Graphics,
-{$ELSE}
-  System.Classes, System.SysUtils, TypInfo, Graphics,
-{$ENDIF}
-  // GLScene
-  GLS.Scene, GLS.Objects, GLS.HUDObjects, GLViewer, GLS.BitmapFont,
+
+  GLS.Scene, GLS.Objects, GLS.HUDObjects, GLS.Viewer, GLS.BitmapFont,
   GLS.PersistentClasses, GLS.Context, GLS.Texture, GLS.Utils, GLS.Strings,
   GLS.CrossPlatform, GLS.Material, GLS.VectorTypes;
 

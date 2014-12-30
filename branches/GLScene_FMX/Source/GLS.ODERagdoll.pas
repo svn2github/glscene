@@ -27,7 +27,7 @@ interface
 
 uses
   GLRagdoll, ODEImport, GLS.Scene, GLS.Objects, GLS.VectorGeometry, ODEGL, GLS.Texture,
-  GLVectorFileObjects;
+  GLS.VectorFileObjects;
 
 const
      cMaxContacts = 4;

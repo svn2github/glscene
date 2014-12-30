@@ -48,8 +48,9 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages,
-  System.Classes, System.Types, VCL.Forms,
-  GLS.Scene, GLCrossPlatform, GLBaseClasses;
+  System.Classes, System.Types, System.SysUtils, FMX.Forms,
+
+  GLS.Scene, GLS.CrossPlatform, GLS.BaseClasses;
 
 //**************************************
 
@@ -254,8 +255,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
-uses SysUtils;
 
 const
   cTickGLCadencer = 'TickGLCadencer';

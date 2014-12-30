@@ -23,7 +23,7 @@ interface
 
 uses
   GLS.PersistentClasses, GLS.VectorGeometry, GLS.State,
-  GLPipelineTransformation, GLS.Color;
+  GLS.PipelineTransformation, GLS.Color;
 
 type
 

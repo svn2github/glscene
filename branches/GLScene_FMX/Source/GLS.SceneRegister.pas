@@ -102,7 +102,7 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Winapi.Windows,
+  Winapi.Windows,
   System.Classes,
   System.SysUtils,
   System.TypInfo,
@@ -126,7 +126,7 @@ uses
   DesignIntf,
   DesignEditors,
   VCLEditors,
-//GLS
+ 
   GLS.Scene,
   GLS.Context,
   GLS.Color,
@@ -484,7 +484,7 @@ uses
   FShaderUniformEditor,
   FVectorEditor,
   GLAnimatedSprite,
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLAsmShader,
   GLS.AsyncHDS,
   GLS.AsyncTimer,
@@ -517,7 +517,7 @@ uses
   GLS.Graph,
   GLS.Graphics,
   GLS.Gui,
-  GLHeightData,
+  GLS.HeightData,
   GLHeightTileFileHDS,
   GLHiddenLineShader,
   GLS.HUDObjects,
@@ -534,10 +534,10 @@ uses
   GLMultiPolygon,
   GLMultiProxy,
   GLS.Navigator,
-  GLNodes,
+  GLS.Nodes,
   GLS.Objects,
   GLOutlineShader,
-  GLParticleFX,
+  GLS.ParticleFX,
   GLParticles,
   GLPerlin,
   GLPerlinPFX,
@@ -588,7 +588,7 @@ uses
 {$ENDIF}
   GLUserShader,
   GLS.Utils,
-  GLVectorFileObjects,
+  GLS.VectorFileObjects,
   GLVfsPAK,
   GLViewer,
   GLWaterPlane,
@@ -1811,7 +1811,7 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLPipe,
     ['Division', 'Radius', 'Slices']);
 
-  { GLVectorFileObjects }
+  { GLS.VectorFileObjects }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TActorAnimationMode), TypeInfo(TActorAnimations),
     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
@@ -1878,7 +1878,7 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TMirrorOptions),
     TypeInfo(TGLBaseSceneObject)]);
 
-  { GLParticleFX }
+  { GLS.ParticleFX }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TBlendingMode)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors),
@@ -1979,7 +1979,7 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapFont,
     ['Char*', '*Interval*', '*Space', 'Glyphs']);
 
-  { GLHeightData }
+  { GLS.HeightData }
   // TGLBitmapHDS
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLBitmapHDS,
     ['MaxPoolSize']);
@@ -2216,7 +2216,7 @@ initialization
 GLS.CrossPlatform.IsDesignTime := True;
 GLS.CrossPlatform.vProjectTargetName := GetProjectTargetName;
 GLS.Color.vUseDefaultColorSets := True;
-GLCoordinates.vUseDefaultCoordinateSets := True;
+GLS.Coordinates.vUseDefaultCoordinateSets := True;
 ReadVideoModes;
 
 with ObjectManager do

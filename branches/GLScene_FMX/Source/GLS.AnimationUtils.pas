@@ -21,8 +21,8 @@ interface
 
 uses
   System.SysUtils, Classes,
-  //GLS
-  GLCrossPlatform, GLVectorTypes, GLVectorGeometry;
+
+  GLS.CrossPlatform, GLS.VectorTypes, GLS.VectorGeometry;
 
 type
 

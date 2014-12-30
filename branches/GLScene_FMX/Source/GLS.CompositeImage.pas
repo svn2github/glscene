@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCompositeImage<p>
+{: GLS.CompositeImage<p>
 
     This class is required for loading images such classes as TGLDDSImage,
     TGLO3TCImage, TGLHDRImage etc.
@@ -15,12 +15,14 @@
    </ul><p>
 }
 
-unit GLCompositeImage;
+unit GLS.CompositeImage;
 
 interface
 
 uses
-  System.Classes, GLS.OpenGLTokens, GLS.Graphics, GLS.Texture, GLS.TextureFormat;
+  System.Classes,
+  GLS.OpenGLTokens, GLS.Graphics, GLS.Texture, GLS.TextureFormat, GLS.Context;
+
 
 type
 
@@ -63,9 +65,6 @@ type
   end;
 
 implementation
-
-uses
-  GLS.Context;
 
 // ------------------
 // ------------------ TGLCompositeImage ------------------

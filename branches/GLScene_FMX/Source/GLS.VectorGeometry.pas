@@ -60,7 +60,7 @@
       <li>02/04/10 - Yar - Added inline directive for small vector operations
       <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
       <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
-                            use TRenderContextClippingInfo to GLRenderContextInfo.pas
+                            use TRenderContextClippingInfo to GLS.RenderContextInfo.pas
       <li>21/02/07 - DaStr - Bugfixed InterpolatePower() to support negative Base
                                and not round Exponent parameters
       <li>12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett

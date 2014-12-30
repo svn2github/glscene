@@ -14,7 +14,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects, GLVerletTypes,
   GLS.VectorTypes;
 

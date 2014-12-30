@@ -8,7 +8,7 @@ uses
   FMX.Layouts, FMX.ListBox, System.Rtti, FMX.Grid, FMX.Controls.Presentation,
   FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Objects,
 
-  //GLScene
+   
   GLGui;
 
 type

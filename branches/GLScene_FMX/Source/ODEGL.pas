@@ -44,7 +44,7 @@ uses
   GLS.VectorLists,
   GLS.Objects,
   GLVerletClothify,
-  GLVectorFileObjects;
+  GLS.VectorFileObjects;
 
 procedure DrawBox(Sides: TdVector3);
 procedure setTransform(pos: TdVector3; R: TdMatrix3);

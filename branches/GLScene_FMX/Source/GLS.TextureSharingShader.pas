@@ -36,9 +36,9 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Scene, GLS.VectorGeometry, GLS.Color, GLS.Material, GLS.Strings,
-  GLVectorFileObjects, XOpenGL, GLS.State, GLS.PersistentClasses,
+  GLS.VectorFileObjects, XOpenGL, GLS.State, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.Coordinates, GLS.RenderContextInfo;
 
 type

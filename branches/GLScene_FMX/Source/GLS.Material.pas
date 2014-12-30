@@ -48,17 +48,12 @@ unit GLS.Material;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    System.Classes, System.SysUtils, Types,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Types,
 
-  //GLScene
   GLS.RenderContextInfo, GLS.BaseClasses, GLS.OpenGLTokens, GLS.Context,
   GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.State, GLS.TextureFormat, GLS.Strings, XOpenGL,
-  GLApplicationFileIO, GLS.Graphics, GLS.Utils, GLSLog;
+  GLS.ApplicationFileIO, GLS.Graphics, GLS.Utils, GLSLog;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}

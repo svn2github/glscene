@@ -114,7 +114,7 @@
   <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
   <li>09/01/04 - EG - Added TGLCameraInvariantObject
   <li>06/12/03 - EG - TGLColorProxy moved to new GLProxyObjects unit,
-  GLVectorFileObjects dependency cut.
+  GLS.VectorFileObjects dependency cut.
   <li>06/12/03 - EG - New FramesPerSecond logic
   <li>04/12/03 - Dave - Added ProxyObject.OctreeRayCastIntersect
   <li>26/12/03 - EG - Removed last TList dependencies
@@ -357,7 +357,7 @@ uses
   FMX.Graphics,
   FMX.Controls,
 
-  // GLScene
+   
   GLS.Context,
   GLS.OpenGLTokens,
   GLS.VectorGeometry,
@@ -367,22 +367,22 @@ uses
   GLS.PersistentClasses,
   GLS.GeometryBB,
   GLS.CrossPlatform,
-  XCollection,
-  GLSilhouette,
-  GLState,
-  GLGraphics,
-  GLTexture,
-  GLColor,
+  GLS.XCollection,
+  GLS.Silhouette,
+  GLS.State,
+  GLS.Graphics,
+  GLS.GLTexture,
+  GLS.GLColor,
   GLS.Coordinates,
-  GLRenderContextInfo,
-  GLMaterial,
-  GLTextureFormat,
+  GLS.RenderContextInfo,
+  GLS.Material,
+  GLS.TextureFormat,
   GLSelection,
   GLS.Strings,
   XOpenGL,
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLS.Utils,
-  GLSLog;
+  GLS.Log;
 
 type
 

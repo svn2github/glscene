@@ -21,7 +21,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, 
-  GLVectorFileObjects, GLS.Material, GLApplicationFileIO,
+  GLS.VectorFileObjects, GLS.Material, GLS.ApplicationFileIO,
   GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists, VRMLParser, GLS.MeshUtils;
 
 type

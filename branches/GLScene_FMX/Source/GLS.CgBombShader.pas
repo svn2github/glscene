@@ -41,7 +41,6 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLS
   GLS.Texture, GLS.Cadencer, GLS.Context, GLS.OpenGLTokens, GLS.Strings, GLS.Material,
   GLS.RenderContextInfo, GLS.TextureFormat,
 

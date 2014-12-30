@@ -20,7 +20,7 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  GLS.OpenGLTokens, GLS.Context,  GLS.Scene, GLS.VectorGeometry, GLSilhouette,
+  GLS.OpenGLTokens, GLS.Context,  GLS.Scene, GLS.VectorGeometry, GLS.Silhouette,
   GLS.RenderContextInfo, GLS.BaseClasses, GLS.VectorTypes;
 
 type

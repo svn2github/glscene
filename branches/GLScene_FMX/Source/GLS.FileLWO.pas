@@ -25,7 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses System.Classes,
-  GLVectorFileObjects,
+  GLS.VectorFileObjects,
   LWObjects;
 
 type

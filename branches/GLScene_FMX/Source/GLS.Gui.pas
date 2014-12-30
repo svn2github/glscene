@@ -36,7 +36,7 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  // GLScene
+   
   GLS.Scene, GLS.BitmapFont, GLS.Material, GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context,
   GLS.PersistentClasses, GLS.VectorGeometry, GLS.Coordinates, GLS.BaseClasses;
 

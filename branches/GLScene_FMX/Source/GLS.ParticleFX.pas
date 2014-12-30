@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLParticleFX<p>
+{: GLS.ParticleFX<p>
 
    Base classes for scene-wide blended particles FX.<p>
 
@@ -63,26 +63,22 @@
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
       <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
       <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
-      <li>08/09/01 - EG - Creation (GLParticleFX.omm)
+      <li>08/09/01 - EG - Creation (GLS.ParticleFX.omm)
    </ul></font>
 }
-unit GLParticleFX;
+unit GLS.ParticleFX;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    System.Classes, System.SysUtils, Types,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Types,
 
-  GLS.Scene,  GLS.OpenGLTokens,  GLS.CrossPlatform,  GLS.State
-  , GLS.VectorTypes,
-  GLS.PersistentClasses,  GLS.VectorGeometry,  XCollection,  GLS.Material,
-  GLS.Cadencer, GLS.VectorLists,  GLS.Graphics,  GLS.Context,  GLS.Color,  GLS.BaseClasses,
+  GLS.Scene,  GLS.OpenGLTokens,  GLS.CrossPlatform,  GLS.State,
+  GLS.VectorTypes, GLS.PersistentClasses,  GLS.VectorGeometry,
+  GLS.XCollection,  GLS.Material, GLS.Cadencer, GLS.VectorLists,
+  GLS.Graphics,  GLS.Context,  GLS.Color,  GLS.BaseClasses,
   GLS.Coordinates,  GLS.RenderContextInfo,  GLS.Manager,  GLS.TextureFormat;
 
 const

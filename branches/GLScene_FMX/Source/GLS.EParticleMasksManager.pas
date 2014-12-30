@@ -51,15 +51,15 @@ interface
 uses
   // System
   System.SysUtils, System.Classes,
-  // VCL
+   
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Graphics,
 {$ELSE}
   Graphics,
 {$ENDIF}
-  // GLScene
+   
   GLS.Texture, GLS.Material, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes,
-  GLParticleFX, GLS.CrossPlatform, GLCoordinates;
+  GLS.ParticleFX, GLS.CrossPlatform, GLS.Coordinates;
 
 type
 

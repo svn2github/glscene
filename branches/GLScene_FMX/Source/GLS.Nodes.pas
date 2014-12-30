@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLNodes<p>
+{ : GLS.Nodes<p>
 
   Nodes are used to describe lines, polygons + more.<p>
 
@@ -17,13 +17,13 @@
   <li>05/10/08 - DanB - Created from GLMisc.pas split
   </ul></font>
 }
-unit GLNodes;
+unit GLS.Nodes;
 
 interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLS.VectorGeometry, GLS.OpenGLTokens, OpenGLAdapter, GLS.Context, GLS.BaseClasses,
   GLS.Coordinates, GLS.Spline,
   XOpenGL

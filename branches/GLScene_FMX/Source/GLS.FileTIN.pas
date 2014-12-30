@@ -7,7 +7,7 @@
   <b>History :</b><font size=-1><ul>
       <li>08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
       <li>17/11/05 - PW - Added support for ascii TIN files with materials
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
 unit GLS.FileTIN;
@@ -18,7 +18,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO;
+  GLS.VectorFileObjects, GLS.ApplicationFileIO;
 
 type
    // TGLTINVectorFile

@@ -21,7 +21,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context,
   GLS.RenderContextInfo, GLS.VectorTypes;
 

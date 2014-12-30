@@ -12,7 +12,7 @@
       <li>14/01/07 - DaStr - Fixed bone weights for HL2 models (thanks DIVON)
       <li>24/01/05 - SG - Fix for comma decimal separator in save function (dikoe Kenguru)
       <li>30/03/04 - EG - Basic Half-Life2/XSI support
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
 unit GLFileSMD;
@@ -21,7 +21,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLS.Texture, GLApplicationFileIO,
+  GLS.VectorFileObjects, GLS.Texture, GLS.ApplicationFileIO,
   GLS.VectorTypes, GLS.VectorGeometry, GLS.Material;
 
 type

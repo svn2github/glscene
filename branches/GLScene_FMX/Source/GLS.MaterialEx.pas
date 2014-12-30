@@ -37,7 +37,7 @@ uses
   GLS.Material, GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry, GLS.Graphics,
   GLS.PersistentClasses, GLS.CrossPlatform, GLS.State, GLS.TextureFormat, XCollection,
   GLS.TextureCombiners, GLS.OpenGLTokens, GLSLParameter,
-  GLApplicationFileIO, GLS.Strings, GLImageUtils, GLS.Utils, XOpenGL,
+  GLS.ApplicationFileIO, GLS.Strings, GLImageUtils, GLS.Utils, XOpenGL,
   GLSLog;
 
 

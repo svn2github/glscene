@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSDLWindow<p>
+{ : GLS.SDLWindow<p>
 
   Non visual wrapper around basic SDL window features.<p>
 
@@ -26,7 +26,7 @@
   <li>11/12/01 - Egg - Creation
   </ul></font>
 }
-unit GLSDLWindow;
+unit GLS.SDLWindow;
 
 interface
 
@@ -34,8 +34,8 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.SyncObjs,
-  // GLS
-  GLSDL;
+ 
+  GLS.SDL;
 
 type
   // TSDLWindowPixelDepth

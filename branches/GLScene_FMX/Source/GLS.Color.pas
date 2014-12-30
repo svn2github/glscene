@@ -30,7 +30,7 @@ uses
   System.SysUtils, System.Classes, Dialogs, Graphics,
 {$ENDIF}
 
-  // GLScene
+   
   GLS.VectorTypes, GLS.VectorGeometry, GLS.CrossPlatform,
   GLS.PersistentClasses, GLS.BaseClasses;
 

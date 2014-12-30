@@ -61,7 +61,7 @@ uses
   XOpenGL,  GLS.Context
   , GLS.VectorTypes,
   GLS.VectorGeometry,  GLS.VectorLists,  GLS.PersistentClasses,
-  GLS.Scene,  GLS.Objects,  GLGeomObjects,  GLNodes,  GLS.BaseClasses,
+  GLS.Scene,  GLS.Objects,  GLGeomObjects,  GLS.Nodes,  GLS.BaseClasses,
   GLS.Coordinates,  GLS.RenderContextInfo;
 
 type

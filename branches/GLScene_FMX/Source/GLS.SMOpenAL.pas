@@ -32,7 +32,7 @@ interface
 uses
    System.Classes, System.SysUtils,
    FMX.Forms, FMX.Dialogs,
-   //GLS
+    
    GLS.VectorGeometry, OpenAL{al, alut, alTypes},
    GLS.Sound, GLS.Scene, GLS.SoundFileObjects;
 

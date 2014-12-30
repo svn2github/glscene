@@ -14,7 +14,7 @@
 
    <b>History : </b><font size=-1><ul>
       <li>28/01/13 - PW - Added CPP compatibility, moved function
-                          IsPointInPolygon to GLVectorgeometry unit;
+                          IsPointInPolygon to GLS.VectorGeometry unit;
       <li>24/08/10 - Yar - Replaced OpenGL1x to GLS.OpenGLTokens
       <li>31/05/10 - Yar - Fixed warnings
       <li>22/04/10 - Yar - Fixes after GLS.State revision
@@ -75,7 +75,7 @@ uses
   // Standard
   {$IFDEF MSWINDOWS}Windows,{$ENDIF} System.Classes, System.SysUtils,
 
-  // GLScene
+   
   OpenGL1x, GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
   GLGeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
   GLS.Coordinates, GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes, GLCanvas,

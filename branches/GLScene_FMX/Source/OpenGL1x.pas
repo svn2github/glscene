@@ -1603,7 +1603,7 @@ var
    glXReleaseTexImageARB: PFNGLXRELEASETEXIMAGEARBPROC;
    glxDrawableAttribARB: PFNGLXDRAWABLEATTRIBARBPROC;
 
-   //GLS 1.4
+   //GLX 1.4
    // GLX_ARB_create_context (EXT #56)
    glXCreateContextAttribsARB: PFNGLXCREATECONTEXTATTRIBSARBPROC;
    glXGetProcAddress: PFNGLXGETPROCADDRESSPROC;
@@ -1636,7 +1636,7 @@ var
    glXBindTexImageEXT: PFNGLXBINDTEXIMAGEEXTPROC;
    glXReleaseTexImageEXT: PFNGLXRELEASETEXIMAGEEXTPROC;
 
-   //GLS 1.4
+   //GLX 1.4
    glXMakeCurrentReadSGI: PFNGLXMAKECURRENTREADSGIPROC;
    glXGetCurrentReadDrawableSGI: PFNGLXGETCURRENTREADDRAWABLESGIPROC;
    glXGetFBConfigAttribSGIX: PFNGLXGETFBCONFIGATTRIBSGIXPROC;
@@ -4531,7 +4531,7 @@ begin
    glXGetProcAddress := GLLibGetProcAddress('glXGetProcAddress');
    glXGetProcAddressARB := GLLibGetProcAddress('glXGetProcAddressARB');
 
-   //GLS 1.3 and later
+   //GLX 1.3 and later
    glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
    glXGetFBConfigAttrib := GLGetProcAddress('glXGetFBConfigAttrib');
    glXGetFBConfigs := GLGetProcAddress('glXGetFBConfigs');
@@ -4553,7 +4553,7 @@ begin
    glXReleaseTexImageARB := GLGetProcAddress('glXReleaseTexImageARB');
    glxDrawableAttribARB := GLGetProcAddress('glxDrawableAttribARB');
 
-   //GLS 1.4
+   //GLX 1.4
    // GLX_ARB_create_context (EXT #56)
    glXCreateContextAttribsARB := GLGetProcAddress('glXCreateContextAttribsARB');
 
@@ -4579,7 +4579,7 @@ begin
     glXBindTexImageEXT := GLGetProcAddress('glXBindTexImageEXT');
     glXReleaseTexImageEXT := GLGetProcAddress('glXReleaseTexImageEXT');
 
-    //GLS 1.4
+    //GLX 1.4
     glXMakeCurrentReadSGI := GLGetProcAddress('glXMakeCurrentReadSGI');
     glXGetCurrentReadDrawableSGI := GLGetProcAddress('glXGetCurrentReadDrawableSGI');
     glXGetFBConfigAttribSGIX := GLGetProcAddress('glXGetFBConfigAttribSGIX');

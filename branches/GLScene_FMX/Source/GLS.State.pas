@@ -64,7 +64,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLS.CrossPlatform,
   GLS.VectorTypes,
   GLS.VectorGeometry,

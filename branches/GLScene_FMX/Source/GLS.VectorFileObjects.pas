@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVectorFileObjects<p>
+{: GLS.VectorFileObjects<p>
 
  Vector File related objects for GLScene<p>
 
@@ -194,7 +194,7 @@
                           fixed class registrations and formats unregistration
  </ul></font>
 }
-unit GLVectorFileObjects;
+unit GLS.VectorFileObjects;
 
 interface
 
@@ -208,8 +208,8 @@ uses
   {$ENDIF}
 
   GLS.Scene, GLS.OpenGLTokens, GLS.VectorGeometry,  GLS.Texture,
-  GLS.Material, GLMesh, GLS.VectorLists, GLS.PersistentClasses, GLOctree, GLS.GeometryBB,
-  GLApplicationFileIO, GLSilhouette, GLS.Context, GLS.Color, GLS.RenderContextInfo,
+  GLS.Material, GLMesh, GLS.VectorLists, GLS.PersistentClasses, GLS.Octree, GLS.GeometryBB,
+  GLS.ApplicationFileIO, GLS.Silhouette, GLS.Context, GLS.Color, GLS.RenderContextInfo,
   GLS.Coordinates, GLS.BaseClasses, GLS.TextureFormat;
 
 type

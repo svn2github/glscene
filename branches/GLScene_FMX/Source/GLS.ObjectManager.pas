@@ -42,7 +42,7 @@ uses
   Controls,
   Menus,
 {$ENDIF}
-  //GLS
+   
   GLS.CrossPlatform,
   GLScene
 {$IFDEF FPC}

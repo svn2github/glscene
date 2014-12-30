@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLOctree<p>
+{ : GLS.Octree<p>
 
   Octree management classes and structures.<p>
 
   TODO: move the many public vars/fields to private/protected<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>10/11/14 - PW - Renamed from "Octree.pas" to "GLOctree.pas" and added ListHandle in TOctreeNode
+  <li>10/11/14 - PW - Renamed from "Octree.pas" to "GLS.Octree.pas" and added ListHandle in TOctreeNode
   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
   <li>30/03/07 - DaStr - Added $I GLScene.inc
   <li>28/03/07 - DaStr - Renamed parameters in some methods
@@ -23,12 +23,12 @@
   <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
   <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
   <li>29/11/02 - EG - Added triangleInfo
-  <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
+  <li>14/07/02 - EG - Dropped GLS.VectorFileObjects dependency
   <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
   <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
   </ul></font>
 }
-unit GLOctree;
+unit GLS.Octree;
 
 interface
 

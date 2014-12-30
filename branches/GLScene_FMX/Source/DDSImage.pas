@@ -33,11 +33,16 @@ uses
 {$ENDIF}
   System.Classes,
   System.SysUtils,
+
   GLS.CrossPlatform,
   GLS.VectorGeometry,
   GLS.Graphics,
   GLS.OpenGLTokens,
-  GLS.Context;
+  GLS.Context,
+  GLS.FileDDS,
+  GLS.TextureFormat,
+  DXTC;
+
 
 type
 
@@ -52,14 +57,6 @@ type
 
 implementation
 
-uses
-{$IFDEF FPC}graphtype,
-  LCLType,
-{$ENDIF}
-  DXTC,
-  GLFileDDS,
-  GLS.TextureFormat;
-
 // ------------------
 // ------------------ TDDSImage ------------------
 // ------------------
@@ -70,12 +67,8 @@ procedure TDDSImage.LoadFromStream(stream: TStream);
 var
   FullDDS: TGLDDSImage;
   bCubeMap: Boolean;
-{$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
-{$ELSE}
-  RIMG: TRawImage;
-{$ENDIF}
 begin
   FullDDS := TGLDDSImage.Create;
   try
@@ -93,7 +86,6 @@ begin
   Width := FullDDS.LevelWidth[0];
   Height := FullDDS.LevelHeight[0];
 
-{$IFNDEF FPC}
   src := PGLubyte(FullDDS.Data);
   if bCubeMap then
     for y := 0 to Height - 1 do
@@ -109,19 +101,6 @@ begin
       BGRA32ToRGBA32(src, dst, Width);
       Inc(src, Width * 4);
     end;
-{$ELSE}
-  RIMG.Init;
-  rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
-  rimg.Description.RedShift := 16;
-  rimg.Description.BlueShift := 0;
-  if bCubeMap then
-    rimg.Description.LineOrder := riloTopToBottom
-  else
-    rimg.Description.LineOrder := riloBottomToTop;
-  RIMG.DataSize := Width * Height * 4;
-  rimg.Data := PByte(FullDDS.Data);
-  LoadFromRawImage(rimg, false);
-{$ENDIF}
   FullDDS.Free;
 end;
 
@@ -133,9 +112,7 @@ const
 var
   header: TDDSHeader;
   rowSize: integer;
-{$IFNDEF FPC}
   i: Integer;
-{$ENDIF}
 begin
   FillChar(header, SizeOf(TDDSHeader), 0);
   header.magic := cardinal(Magic);
@@ -177,12 +154,8 @@ begin
     dwPitchOrLinearSize := dwHeight * cardinal(rowSize);
     dwCaps := DDSCAPS_TEXTURE;
     stream.Write(header, SizeOf(TDDSHeader));
-{$IFNDEF FPC}
     for i := 0 to Height - 1 do
       stream.Write(ScanLine[i]^, rowSize);
-{$ELSE}
-    stream.Write(RawImage.Data^, Width * Height * header.SurfaceFormat.ddpf.dwRGBBitCount div 4);
-{$ENDIF}
   end;
 end;
 

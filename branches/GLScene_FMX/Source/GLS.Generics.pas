@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSGenerics<p>
+{ : GLS.Generics<p>
 
   GLScene cross IDE generic classes collection.<p>
 
@@ -11,7 +11,7 @@
   </ul></font>
 }
 
-unit GLSGenerics;
+unit GLS.Generics;
 
 interface
 

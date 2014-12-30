@@ -59,7 +59,7 @@ uses
 {$ELSE}
   System.Classes, System.SysUtils, Types,
 {$ENDIF}
-  //GLScene
+   
   GLS.CrossPlatform, GLS.VectorGeometry, GLS.VectorLists, GLSpacePartition,
   GLS.GeometryBB, GLS.VectorTypes;
 

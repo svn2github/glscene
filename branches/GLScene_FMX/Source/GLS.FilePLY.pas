@@ -8,7 +8,7 @@
 	<b>History :</b><font size=-1><ul>
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
 unit GLFilePLY;
@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO, FileMD2, TypesMD2;
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, FileMD2, TypesMD2;
 
 type
    // TGLPLYVectorFile

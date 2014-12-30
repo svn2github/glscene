@@ -10,7 +10,7 @@
 	<b>History : </b><font size=-1><ul>
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>22/11/02 - EG - Write capability now properly declared
-      <li>17/10/02 - EG - Created from split of GLVectorFileObjects,
+      <li>17/10/02 - EG - Created from split of GLS.VectorFileObjects,
                           ASCII STL support (Adem)
    </ul><p>
 }
@@ -19,7 +19,7 @@ unit GLFileSTL;
 interface
 
 uses
-  System.Classes, GLS.VectorFileObjects, GLApplicationFileIO, GLS.CrossPlatform;
+  System.Classes, GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.CrossPlatform;
 
 type
 

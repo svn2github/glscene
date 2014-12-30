@@ -30,7 +30,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes; // for TStringList
+uses
+  System.Classes; // for TStringList
 
 //---------------- commonly used structures ----------------------------------
 

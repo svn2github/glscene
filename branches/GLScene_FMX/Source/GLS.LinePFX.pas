@@ -24,7 +24,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, GLS.PersistentClasses, GLS.VectorGeometry,
-  GLParticleFX, GLS.Texture, GLS.Color, GLS.RenderContextInfo,
+  GLS.ParticleFX, GLS.Texture, GLS.Color, GLS.RenderContextInfo,
   GLS.OpenGLTokens, GLS.Context , GLS.VectorTypes;
 
 type

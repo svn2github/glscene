@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFireFX<p>
+{: GLS.FireFX<p>
 
  Fire special effect<p>
 
@@ -30,25 +30,19 @@
     <li>08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
  </ul></font>
 }
-unit GLFireFX;
+unit GLS.FireFX;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  GLS.Scene,  XCollection,  GLS.VectorGeometry,
-  GLS.OpenGLTokens,  GLS.Context,  GLS.VectorLists
-  , GLS.VectorTypes,
-
-  GLS.Cadencer,  GLS.Color,  GLS.BaseClasses,  GLS.Coordinates,
-  GLS.Manager,  GLS.RenderContextInfo,  GLS.State,  GLS.TextureFormat;
+  GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
+  GLS.OpenGLTokens, GLS.Context, GLS.VectorLists, GLS.VectorTypes,
+  GLS.Cadencer, GLS.Color, GLS.BaseClasses, GLS.Coordinates,
+  GLS.Manager, GLS.RenderContextInfo, GLS.State, GLS.TextureFormat;
 
 type
 

@@ -20,10 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Texture,  GLS.Cadencer, GLS.Context, GLS.OpenGLTokens, GLS.Scene,
   GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat,
 

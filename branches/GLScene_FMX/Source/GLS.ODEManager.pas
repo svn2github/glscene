@@ -104,7 +104,7 @@
     <li>26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
                         dropped Contnrs dependency (D5 compatibility)
     <li>23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
-                        terrain demo (buggy caused assertion error in GLHeightData.pas).
+                        terrain demo (buggy caused assertion error in GLS.HeightData.pas).
     <li>13/06/03 - SG - Added more joints.
     <li>11/06/03 - SG - Base joint classes implemented and added hinge joint.
     <li>09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
@@ -128,7 +128,7 @@ interface
 
 uses
   System.Classes, ODEGL, ODEImport, GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.OpenGLTokens,
-  XOpenGL, System.SysUtils, GLS.Objects, XCollection, GLS.PersistentClasses, GLS.VectorLists,
+  XOpenGL, System.SysUtils, GLS.Objects, GLS.XCollection, GLS.PersistentClasses, GLS.VectorLists,
   GLS.Color, GLS.Coordinates, GLS.RenderContextInfo, GLS.Manager, GLS.State;
 
 type

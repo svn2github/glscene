@@ -19,7 +19,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
-  GLApplicationFileIO;
+  GLS.ApplicationFileIO;
 
 type
 

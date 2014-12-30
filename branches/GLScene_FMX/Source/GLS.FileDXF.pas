@@ -28,9 +28,9 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
-  GLApplicationFileIO, GLS.VectorGeometry, GLS.VectorLists, GLS.Scene, GLS.Texture,
-  GLVectorFileObjects, GLS.Material;
+  
+  GLS.ApplicationFileIO, GLS.VectorGeometry, GLS.VectorLists, GLS.Scene, GLS.Texture,
+  GLS.VectorFileObjects, GLS.Material;
 
 type
   TGLDXFVectorFile = class(TVectorFile)

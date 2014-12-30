@@ -18,8 +18,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
-  GLVectorFileObjects, GLApplicationFileIO, GLS.Texture, GLS.TextureFormat,
+   
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.Texture, GLS.TextureFormat,
   GLS.Material, GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists,
 
   FileB3D, TypesB3D;

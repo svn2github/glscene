@@ -450,7 +450,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLApplicationFileIO;
+  GLS.ApplicationFileIO;
 
 resourcestring
   cInvalidFileSignature = 'Invalid file signature';

@@ -46,7 +46,7 @@ uses
   OpenGLAdapter,
   GLS.Context,
   GLS.Objects,
-  GLSilhouette,
+  GLS.Silhouette,
   GLS.VectorTypes,
   GLS.GeometryBB,
   GLS.RenderContextInfo;

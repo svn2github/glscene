@@ -18,11 +18,9 @@ interface
 {$i GLScene.inc}
 
 uses
-  // VCL
   System.Classes, System.SysUtils,
-
-  // GLScene
-  GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists, GLS.PersistentClasses, GLS.Utils;
+  GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.PersistentClasses, GLS.Utils;
 
 type
   TDXNode = class;

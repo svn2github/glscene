@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDCE<p>
+{: GLS.DCE<p>
 
   How to use:
   - Add a DCEManager to you form and configure its properties
@@ -43,23 +43,19 @@
   </ul></font>
 }
 
-unit GLDCE;
+unit GLS.DCE;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  GLS.Scene, XCollection, GLS.VectorGeometry, GLS.VectorLists, GLS.VectorFileObjects,
-  GLS.CrossPlatform, GLDCEMisc, GLEllipseCollision,
-  GLTerrainRenderer, GLS.Coordinates, GLS.BaseClasses, GLManager
-  , GLS.VectorTypes;
+  GLS.Scene, XCollection, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.VectorFileObjects, GLS.CrossPlatform, GLS.DCEMisc, GLS.EllipseCollision,
+  GLS.TerrainRenderer, GLS.Coordinates, GLS.BaseClasses, GLS.Manager,
+  GLS.VectorTypes;
 
 type
   {Only csEllipsoid can have dynamic behaviour}

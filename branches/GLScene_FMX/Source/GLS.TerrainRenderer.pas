@@ -54,7 +54,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   // GLS
-  GLS.Scene, GLHeightData, GLS.Material, GLS.VectorGeometry, GLS.Context, GLROAMPatch,
+  GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context, GLROAMPatch,
   GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens, XOpenGL, GLS.Utils
 , GLS.VectorTypes;
 

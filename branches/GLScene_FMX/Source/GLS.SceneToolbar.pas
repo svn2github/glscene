@@ -27,7 +27,7 @@ uses
   ActnList,
   ToolsAPI,
   GLS.Scene,
-  GLSGenerics;
+  GLS.Generics;
 
 const
   cGLSceneViewerToolbar = 'GLSceneViewerToolbar';

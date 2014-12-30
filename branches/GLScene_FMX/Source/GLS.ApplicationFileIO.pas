@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLApplicationFileIO<p>
+{: GLS.ApplicationFileIO<p>
 
    Components and fonction that abstract file I/O access for an application.<br>
    Allows re-routing file reads to reads from a single archive file f.i.<p>
@@ -19,31 +19,22 @@
       <li>21/11/02 - EG - Creation
  </ul></font>
 }
-unit GLApplicationFileIO;
+unit GLS.ApplicationFileIO;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes,
-  System.SysUtils,
-  GLBaseClasses
-  {$IFDEF FPC}
-  ,
-  LResources
-  {$ELSE}
-  ,
-  Windows
-  {$ENDIF}
-  , GLSLog;
+  Winapi.Windows, System.Classes, System.SysUtils,
+  GLS.BaseClasses, GLSLog;
 
 
 const
-  GLS_RC_DDS_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'DDS'{$ENDIF};
-  GLS_RC_JPG_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'JPG'{$ENDIF};
-  GLS_RC_XML_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'XML'{$ENDIF};
-  GLS_RC_String_Type = {$IFNDEF FPC}RT_RCDATA{$ELSE} 'STR'{$ENDIF};
+  GLS_RC_DDS_Type = RT_RCDATA;
+  GLS_RC_JPG_Type = RT_RCDATA;
+  GLS_RC_XML_Type = RT_RCDATA;
+  GLS_RC_String_Type = RT_RCDATA;
 
 type
 
@@ -74,7 +65,7 @@ type
 
   // TGLApplicationFileIO
   //
-    {: Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream.<p>
+    {: Allows specifying a custom behaviour for GLS.ApplicationFileIO's CreateFileStream.<p>
        The component should be considered a helper only, you can directly specify
        a function via the vAFIOCreateFileStream variable.<br>
        If multiple TGLApplicationFileIO components exist in the application,
@@ -147,9 +138,9 @@ type
   end;
 
   TDataFileClass = class of TDataFile;
-  TGLSResourceStream = {$IFNDEF FPC}TResourceStream{$ELSE}TLazarusResourceStream{$ENDIF};
+  TGLSResourceStream = TResourceStream;
 
-  //: Returns true if an GLApplicationFileIO has been defined
+  //: Returns true if an GLS.ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
 {: Creates a file stream corresponding to the fileName.<p>
@@ -183,7 +174,6 @@ var
 
 // ApplicationFileIODefined
 //
-
 function ApplicationFileIODefined: Boolean;
 begin
   Result := (Assigned(vAFIOCreateFileStream) and Assigned(vAFIOFileStreamExists))
@@ -213,7 +203,6 @@ end;
 
 // FileStreamExists
 //
-
 function FileStreamExists(const fileName: string): Boolean;
 begin
   if Assigned(vAFIOFileStreamExists) then
@@ -229,36 +218,14 @@ end;
 
 // FileStreamExists
 //
-
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
-{$IFNDEF FPC}
 var
   InfoBlock: HRSRC;
-{$ELSE}
-  {$ifndef ver2_2}
-var
-  FPResource: TFPResourceHandle;
-  function IsResourceExist: Boolean;
-  begin
-    FPResource := FindResource(HInstance, PChar(ResName), ResType);
-    Result := FPResource <> 0;
-  end;
-  {$ENDIF}
-{$ENDIF}
 begin
   Result := nil;
-{$IFNDEF FPC}
   InfoBlock := FindResource(HInstance, PChar(ResName), ResType);
   if InfoBlock <> 0 then
     Result := TResourceStream.Create(HInstance, ResName, ResType)
-{$ELSE}
-  if LazarusResources.Find(ResName, ResType) <> nil then
-    Result := TLazarusResourceStream.Create(ResName, ResType)
-  {$ifndef ver2_2}
-  else if IsResourceExist then
-    Result := TLazarusResourceStream.CreateFromHandle(HInstance, FPResource)
-  {$ENDIF}
-{$ENDIF}
   else
     GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));
 end;
@@ -269,7 +236,6 @@ end;
 
 // Create
 //
-
 constructor TGLApplicationFileIO.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);

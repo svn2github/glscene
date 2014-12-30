@@ -69,7 +69,7 @@ uses
   System.Classes,
   Forms,
 
-  //GLS
+   
   GLS.OpenGLTokens,
   OpenGLAdapter,
   GLS.Context,

@@ -31,7 +31,7 @@
 
 
     This is a collection of GLSL Diffuse Specular shaders, comes in these variaties
-              (to know what these suffixes and prefixes mean see GLCustomShader.pas):
+              (to know what these suffixes and prefixes mean see GLS.CustomShader.pas):
       - TGLSLDiffuseSpecularShader
       - TGLSLDiffuseSpecularShaderMT
 
@@ -63,7 +63,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings, GLS.CustomShader,
   GLSL.Shader, GLS.Color, GLS.RenderContextInfo, GLS.Material;
 

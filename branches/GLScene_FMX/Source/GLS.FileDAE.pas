@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO{, Fmx.FileDAE};
+  GLS.VectorFileObjects, GLS.ApplicationFileIO{, Fmx.FileDAE};
 
 type
    // TGLDAEVectorFile

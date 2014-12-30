@@ -50,8 +50,8 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  // GLScene
-  GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.Material, GLSilhouette, GLS.Strings,
+   
+  GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.Material, GLS.Silhouette, GLS.Strings,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.RenderContextInfo, GLS.BaseClasses,
   GLS.Context , GLS.VectorTypes;
 

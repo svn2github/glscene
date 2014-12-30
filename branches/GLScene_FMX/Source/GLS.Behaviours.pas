@@ -1,7 +1,7 @@
 
 // This unit is part of the GLScene Project, http://glscene.org
 
-{: GLBehaviours<p>
+{: GLS.Behaviours<p>
 
   Standard TGLBehaviour subclasses for GLScene<p>
 
@@ -20,25 +20,21 @@
     <li>05/04/00 - Egg - Creation
   </ul></font>
 }
-unit GLBehaviours;
+unit GLS.Behaviours;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils
-  {$ELSE}
-    System.Classes, SysUtils
-  {$ENDIF}
-  ,
+  System.Classes, System.SysUtils,
+
   GLS.VectorTypes,
   GLS.Scene,
   GLS.VectorGeometry,
-  XCollection,
+  GLS.XCollection,
   GLS.BaseClasses,
-  GLCoordinates;
+  GLS.Coordinates;
 
 type
 

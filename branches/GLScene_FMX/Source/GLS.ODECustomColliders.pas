@@ -62,7 +62,7 @@ uses
   System.SysUtils,
  {$ENDIF}
 
-  // GLscene
+   
   GLODEManager,
   ODEGL,
   ODEImport,
@@ -71,7 +71,7 @@ uses
   GLS.Scene,
   GLTerrainRenderer,
   GLS.Graph,
-  XCollection,
+  GLS.XCollection,
   GLS.OpenGLTokens,
   GLS.Context,
   GLS.Texture,

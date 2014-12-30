@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFPSMovement<p>
+{ : GLS.FPSMovement<p>
 
   FPS-like movement behaviour and manager.<p>
 
@@ -21,23 +21,19 @@
   <li>09/06/04 - Mathx - Creation
   </ul></font>
 }
-unit GLFPSMovement;
+unit GLS.FPSMovement;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, VCL.Graphics,
-{$ELSE}
-  System.Classes,  System.SysUtils, Graphics,
-{$ENDIF}
-  // GLScene
-  GLS.OpenGLTokens, GLS.Context, GLS.CrossPlatform,
-  GLS.VectorGeometry, GLS.Scene, GLS.VectorFileObjects,
-  GLS.VectorLists, XCollection, GLS.GeomObjects,
-  GLS.Navigator, GLS.RenderContextInfo, GLS.BaseClasses, GLS.Manager, GLS.State;
+
+  GLS.OpenGLTokens, GLS.Context, GLS.CrossPlatform, GLS.VectorGeometry,
+  GLS.Scene, GLS.VectorFileObjects, GLS.VectorLists, GLS.XCollection,
+  GLS.GeomObjects, GLS.Navigator, GLS.RenderContextInfo, GLS.BaseClasses,
+  GLS.Manager, GLS.State;
 
 type
   TContactPoint = record
@@ -207,8 +203,13 @@ function GetOrCreateFPSMovement(behaviours: TGLBehaviours)
 function GetOrCreateFPSMovement(obj: TGLBaseSceneObject)
   : TGLBFPSMovement; overload;
 
-
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 function GetFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 var

@@ -7,7 +7,7 @@
 
   <b>History :</b><font size=-1><ul>
   <li>05/12/14 - PW - Added to GLScene_Runtime.dpk
-  <li>10/04/09 - PW - Separated from GLVectorFileObjects.pas
+  <li>10/04/09 - PW - Separated from GLS.VectorFileObjects.pas
   </ul></font>
 }
 unit GLFileGRD;
@@ -19,9 +19,9 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorFileObjects,
-  GLApplicationFileIO, GLS.Graph, GLS.Types;
+  GLS.ApplicationFileIO, GLS.Graph, GLS.Types;
 
 type
   // GLFileGRD

@@ -26,8 +26,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
-  GLHeightData, GLHeightTileFile;
+   
+  GLS.HeightData, GLS.HeightTileFile;
 
 type
 
@@ -63,7 +63,7 @@ type
 	      { Published Declarations }
 
          {: FileName of the HTF file.<p>
-            Note that it is accessed via the services of GLApplicationFileIO,
+            Note that it is accessed via the services of GLS.ApplicationFileIO,
             so this may not necessarily be a regular file on a disk... }
          property HTFFileName : String read FHTFFileName write SetHTFFileName;
          {: If true the height field is wrapped indefinetely. }

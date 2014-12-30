@@ -14,8 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
-  XCollection, GLS.ScriptBase, GLS.Manager,
+  GLS.XCollection, GLS.ScriptBase, GLS.Manager,
 
   // Python
   PythonEngine;

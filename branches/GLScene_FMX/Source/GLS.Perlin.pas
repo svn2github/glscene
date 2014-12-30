@@ -25,7 +25,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorGeometry, GLPerlinBase, GLHeightData,
+  GLS.VectorGeometry, GLPerlinBase, GLS.HeightData,
   GLS.CrossPlatform;
 
 Type

@@ -23,7 +23,7 @@
 
 
     This is a collection of GLSL Bump shaders, comes in these variaties
-         (to know what these abriviations mean, see GLCustomShader.pas):
+         (to know what these abriviations mean, see GLS.CustomShader.pas):
 
       - TGLSLBumpShader
       - TGLSLBumpShaderMT
@@ -55,7 +55,7 @@
       v1.4    16 December  '2006  All Shaders renamed according to the new
                                     naming convention
                                   SCS_SHADER_NEEDS_AT_LEAST_ONE_LIGHT_SOURCE
-                                    moved to GLCustomShader
+                                    moved to GLS.CustomShader
                                   TGLBaseCustomGLSLBumpShader,
                                     TGLBaseMatlibGLSLBumpShader(MT) abstracted
                                   7 diferent versions of this shader added

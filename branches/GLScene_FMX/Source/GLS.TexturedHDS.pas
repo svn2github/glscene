@@ -1,4 +1,4 @@
-//GLS.TexturedHDS
+//TexturedHDS
 {: Implements a HDS, which automatically maps textures onto a parent HDS .<p>
    This HDS links to and extracts its height data from a parent HDS. (like TGLHeightTileFile)
 
@@ -28,7 +28,7 @@ interface
 
 {$I GLScene.inc}
 
-uses System.Classes, GLS.CrossPlatform, GLHeightData, GLS.Material;
+uses System.Classes, GLS.CrossPlatform, GLS.HeightData, GLS.Material;
 
 type
 	TGLTexturedHDS = class (THeightDataSource)

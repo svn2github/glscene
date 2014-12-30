@@ -25,7 +25,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //
-  GLVectorFileObjects, GLApplicationFileIO, GLS.VectorGeometry,
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorGeometry,
   GLS.VectorTypes, GLS.VectorLists, Q3BSP, GLBSP, GLS.Texture,
   GLS.Graphics, GLS.CrossPlatform, GLS.State, GLS.Utils,
   GLS.Material, GLS.TextureFormat

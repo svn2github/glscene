@@ -36,7 +36,7 @@ interface
 uses
   System.Classes, System.SysUtils, FMX.Forms,
 
-  //GLS
+   
   GLS.Sound, GLS.Scene, GLS.VectorGeometry, Bass;
 
 type

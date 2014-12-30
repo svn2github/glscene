@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLCoordinates<p>
+{ : GLS.Coordinates<p>
 
   Coordinate related classes.<p>
 
@@ -13,7 +13,7 @@
   <li>05/10/08 - DanB - Created, from GLMisc.pas
   </ul></font>
 }
-unit GLCoordinates;
+unit GLS.Coordinates;
 
 interface
 
@@ -24,7 +24,7 @@ uses
     System.Classes, System.SysUtils,
   {$ENDIF}
 
-  //GLScene
+   
   GLS.VectorGeometry, GLS.VectorTypes, GLS.OpenGLTokens, GLS.BaseClasses,
   GLS.CrossPlatform;
 

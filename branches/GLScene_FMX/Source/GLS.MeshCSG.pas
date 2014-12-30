@@ -29,7 +29,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //GLS
+   
   GLS.Scene, GLS.VectorTypes, GLS.VectorFileObjects,
   GLS.VectorGeometry, GLBSP, GLS.VectorLists;
 

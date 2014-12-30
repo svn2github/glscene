@@ -52,10 +52,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes,
 
-  // GLScene
+   
   GLS.Navigator, GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates,
   GLS.Screen, XCollection;
 

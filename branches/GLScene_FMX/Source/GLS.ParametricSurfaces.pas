@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLParametricSurfaces<p>
+{: GLS.ParametricSurfaces<p>
 
    Parametric surface implementation (like Bezier and BSpline surfaces)
    for GLScene.<p>
@@ -35,22 +35,23 @@
       <li>18/07/03 - SG - Creation.
    </ul></font>
 }
-unit GLParametricSurfaces;
+unit GLS.ParametricSurfaces;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLVectorFileObjects,
-  GLCurvesAndSurfaces,
+  GLS.VectorFileObjects,
+  GLS.CurvesAndSurfaces,
   GLS.VectorGeometry,
   GLS.VectorLists,
   GLS.PersistentClasses,
   GLS.Texture,
   GLS.OpenGLTokens,
-  OpenGLAdapter,
+  GLS.OpenGLAdapter,
   GLS.State,
+  GLS.Context,
   GLS.RenderContextInfo;
 
 type
@@ -191,8 +192,6 @@ implementation
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-uses
-  GLS.Context;
 // ------------------
 // ------------------ TMOParametricSurface ------------------
 // ------------------

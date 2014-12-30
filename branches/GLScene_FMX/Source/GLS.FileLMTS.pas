@@ -43,7 +43,7 @@ uses
   Graphics,
 {$ENDIF}
   System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO, GLS.VectorLists, GLS.VectorGeometry,
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorLists, GLS.VectorGeometry,
   GLS.Texture, GLS.PersistentClasses, GLS.Graphics, GLS.Material;
 
 const

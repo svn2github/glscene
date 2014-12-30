@@ -136,7 +136,7 @@
   <li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
   <li>14/03/00 - EG - Added subobjects Barycenter support for TGLDummyCube
   <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
-  FreeForm and vector file stuff moved to new GLVectorFileObjects
+  FreeForm and vector file stuff moved to new GLS.VectorFileObjects
   <li>08/02/00 - EG - Added TGLDummyCube
   <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
                       TVertexList.AddVertex, "default"s to properties
@@ -153,8 +153,8 @@ uses
 
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Scene, GLS.OpenGLAdapter,
   GLS.OpenGLTokens, GLS.VectorLists, GLS.CrossPlatform, GLS.Context,
-  GLSilhouette, GLColor, GLRenderContextInfo, GLS.BaseClasses,
-  GLNodes, GLCoordinates;
+  GLS.Silhouette, GLS.Color, GLS.RenderContextInfo, GLS.BaseClasses,
+  GLS.Nodes, GLS.Coordinates;
 
 type
 
@@ -994,7 +994,7 @@ implementation
 uses
   GLSpline,
   XOpenGL,
-  GLState;
+  GLS.State;
 
 const
   cDefaultPointSize: Single = 1.0;

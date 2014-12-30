@@ -28,7 +28,7 @@ uses
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLS.CrossPlatform;
 
 type
@@ -64,7 +64,7 @@ type
 implementation
 
 uses
-  GLS_RGBE,
+  GLS.RGBE,
   GLS.VectorTypes,
   GLS.VectorGeometry;
 

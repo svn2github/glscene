@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLSCUDAContext,
   GLSCUDA,
   GLS_CUDA_API,

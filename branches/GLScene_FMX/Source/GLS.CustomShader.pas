@@ -1,6 +1,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCustomShader<p>
+{: GLS.CustomShader<p>
 
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
@@ -100,17 +100,17 @@
 
 
 }
-unit GLCustomShader;
+unit GLS.CustomShader;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.Cadencer, GLS.OpenGLTokens, GLS.Scene,
   GLS.Strings, GLS.CrossPlatform, GLS.Context, GLS.RenderContextInfo, GLS.Material,
   GLS.VectorLists, GLS.TextureFormat, GLSLParameter;

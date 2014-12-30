@@ -32,7 +32,7 @@ uses
   System.Classes, System.Variants,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListBox,
-  //GLS
+   
   GLS.Graphics, GLS.TextureFormat, GLS.Texture, GLS.TextureImageEditors;
 
 type

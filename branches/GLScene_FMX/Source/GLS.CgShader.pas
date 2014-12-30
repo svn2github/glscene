@@ -73,7 +73,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.VectorGeometry, GLS.VectorLists, GLS.VectorTypes, GLS.Texture, GLS.Strings,
   GLS.Cadencer, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.Context, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.Material, GLS.TextureFormat,
@@ -290,7 +290,7 @@ type
     property Direction : TCGenum read FDirection write FDirection;
     property Variability : TCGenum read FVariability write FVariability;
 
-    // GLScene-friendly properties
+     -friendly properties
     property AsVector : TVector write SetAsVector4f; // position f.i.
     property AsAffineVector : TAffineVector write SetAsVector3f; // normal f.i.
     property AsVector2f : TVector2f write SetAsVector2f; // texCoord f.i.

@@ -284,7 +284,7 @@ type
 
     { TGLSceneSimpleFileDescriptor }
     // аﲲ褐౮櫲 便硹驠殮ﱬ+ 믬௭殲
-    //Glscene, GLCamera GlCube GLLigthSource
+     , GLCamera GlCube GLLigthSource
 
     TGLSceneSimpleFileDescriptor = class(TGLSceneBaseFileDescriptor)
     public

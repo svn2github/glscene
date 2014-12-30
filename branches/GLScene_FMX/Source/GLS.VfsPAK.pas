@@ -5,7 +5,7 @@
 
 	Support-code for loading files from Quake II PAK Files.<p>
    When instance is created all LoadFromFile methods using
-   GLApplicationFileIO mechanism will be pointed into PAK file.<p>
+   GLS.ApplicationFileIO mechanism will be pointed into PAK file.<p>
    You can change current PAK file by ActivePak variable.<p>
 
 	<b>History :</b><font size=-1><ul>
@@ -36,7 +36,7 @@ unit GLVfsPAK;
 interface
 
 uses
-  System.Classes, Contnrs, System.SysUtils, GLApplicationFileIO
+  System.Classes, Contnrs, System.SysUtils, GLS.ApplicationFileIO
 {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
 
 const
@@ -125,7 +125,7 @@ type
 
    end;
 
-// GLApplicationFileIO
+// GLS.ApplicationFileIO
 function PAKCreateFileStream(const fileName: string; mode: word): TStream;
 function PAKFileStreamExists(const fileName: string): boolean;
 
@@ -149,7 +149,7 @@ begin
          Result[i] := s[i];
 end;
 
-// GLApplicationFileIO begin
+// GLS.ApplicationFileIO begin
 function PAKCreateFileStream(const fileName: string; mode: word): TStream;
 var
    i: integer;
@@ -200,7 +200,7 @@ begin
    end;
    Result := SysUtils.FileExists(fileName);
 end;
-// GLApplicationFileIO end
+// GLS.ApplicationFileIO end
 
 function TGLVfsPAK.GetStreamNumber: integer;
 begin

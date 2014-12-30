@@ -94,17 +94,17 @@ uses
   FMX.Controls,
 
 {$IFDEF GLS_SERVICE_CONTEXT}
-  GLSGenerics,
+  GLS.Generics,
 {$ENDIF}
   GLS.OpenGLTokens,
-  GLCrossPlatform,
-  OpenGLAdapter,
-  GLVectorGeometry,
+  GLS.CrossPlatform,
+  GLS.OpenGLAdapter,
+  GLS.VectorGeometry,
   GLS.Strings,
-  GLVectorTypes,
-  GLState,
-  GLPipelineTransformation,
-  GLTextureFormat;
+  GLS.VectorTypes,
+  GLS.State,
+  GLS.PipelineTransformation,
+  GLS.TextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const

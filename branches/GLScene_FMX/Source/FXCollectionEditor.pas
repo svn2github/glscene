@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// GLS.FXCollectionEditor
+// FXCollectionEditor
 { : Egg<p>
 
   Edits a TXCollection<p>
@@ -28,7 +28,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListView.Types, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListView,
 
- //GLS
+  
   GLS.CrossPlatform, XCollection;
 
 type

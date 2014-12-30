@@ -45,11 +45,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils,
 
-  // GLScene
-  GLS.Scene, GLS.Texture, GLS.OpenGLTokens, GLS.Graphics, GLS.Strings, GLCustomShader,
+   
+  GLS.Scene, GLS.Texture, GLS.OpenGLTokens, GLS.Graphics, GLS.Strings, GLS.CustomShader,
   GLS.Context, GLS.VectorGeometry, GLS.RenderContextInfo, GLS.Material, GLS.TextureFormat;
 
 type

@@ -68,7 +68,7 @@ type
        particle.<br>
        All direct access to a TGLParticles children should be avoided.<p>
        For high-performance particle systems of basic particles, you should
-       look into GLParticleFX instead, TGLParticles being rather focused on
+       look into GLS.ParticleFX instead, TGLParticles being rather focused on
        complex particles.
   }
   TGLParticles = class(TGLImmaterialSceneObject)

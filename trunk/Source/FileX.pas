@@ -18,7 +18,6 @@ interface
 {$i GLScene.inc}
 
 uses
-  // VCL
   Classes, SysUtils,
 
   // GLScene
@@ -314,13 +313,13 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
-      Result.V[2]:=StrToFloatDef(TempBuffer[2]);
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=StrToFloatDef(TempBuffer[1]);
+      Result.Z:=StrToFloatDef(TempBuffer[2]);
     end else begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=ReadSingle;
-      Result.V[2]:=ReadSingle;
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=ReadSingle;
+      Result.Z:=ReadSingle;
     end;
   end;
 
@@ -332,15 +331,15 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
-      Result.V[2]:=StrToFloatDef(TempBuffer[2]);
-      Result.V[3]:=StrToFloatDef(TempBuffer[3]);
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=StrToFloatDef(TempBuffer[1]);
+      Result.Z:=StrToFloatDef(TempBuffer[2]);
+      Result.W:=StrToFloatDef(TempBuffer[3]);
     end else begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=ReadSingle;
-      Result.V[2]:=ReadSingle;
-      Result.V[3]:=ReadSingle;
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=ReadSingle;
+      Result.Z:=ReadSingle;
+      Result.W:=ReadSingle;
     end;
   end;
 
@@ -352,13 +351,13 @@ var
     str:=StringReplace(str, ';', ' ', [rfReplaceAll]);
     TempBuffer.CommaText:=str;
     if TempBuffer.Count > 1 then begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=StrToFloatDef(TempBuffer[1]);
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=StrToFloatDef(TempBuffer[1]);
     end else begin
-      Result.V[0]:=StrToFloatDef(TempBuffer[0]);
-      Result.V[1]:=ReadSingle;
+      Result.X:=StrToFloatDef(TempBuffer[0]);
+      Result.Y:=ReadSingle;
     end;
-    Result.V[2]:=0;
+    Result.Z:=0;
   end;
 
   procedure ReadMeshVectors(VectorList : TAffineVectorList);

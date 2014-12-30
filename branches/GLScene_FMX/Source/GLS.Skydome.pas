@@ -46,7 +46,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Graphics,
@@ -54,7 +54,7 @@ uses
   Graphics,
 {$ENDIF}
 
-  // GLSCene
+   
   GLS.Scene,
   GLS.VectorGeometry,
   GLS.Graphics,

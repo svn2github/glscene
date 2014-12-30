@@ -17,7 +17,9 @@ interface
 
 {$I GLScene.inc}
 
-uses System.Classes, GLS.VectorGeometry, GLS.VectorLists;
+uses
+  System.Classes, System.SysUtils,
+  GLS.VectorGeometry, GLS.MeshUtils, GLS.VectorLists;
 
 type
 
@@ -97,8 +99,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses System.SysUtils, GLS.MeshUtils;
 
 // ------------------
 // ------------------ TOCTFile ------------------

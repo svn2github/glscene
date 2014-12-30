@@ -25,7 +25,10 @@ interface
 {$R-}
 {$I GLScene.inc}
 
-uses System.Classes, TypesMD2, GLS.CrossPlatform;
+uses
+  System.Classes, System.SysUtils,
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.CrossPlatform,
+  TypesMD2;
 
 type
   // TFileMD2
@@ -58,10 +61,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  System.SysUtils,
-  GLS.VectorGeometry, GLS.VectorTypes;
 
 // ------------------
 // ------------------ TFileMD2 ------------------

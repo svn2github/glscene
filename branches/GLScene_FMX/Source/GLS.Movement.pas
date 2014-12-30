@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMovement<p>
+{: GLS.Movement<p>
 
    Movement path behaviour by Roger Cao<p>
 
@@ -38,20 +38,15 @@
       <li>24/08/00 - RoC - TGLMovement and relative class added
    </ul></font>
 }
-unit GLMovement;
+unit GLS.Movement;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  // GLScene
   GLS.Scene, GLS.VectorGeometry, XCollection, GLS.OpenGLTokens, GLS.Spline, GLS.Objects,
   GLS.CrossPlatform, GLS.Strings, GLS.BaseClasses;
 
@@ -64,7 +59,7 @@ type
     FPosition: TVector;
     FScale: TVector;
     FRotation: TVector;
-    
+
     FDirection: TVector;
     FUp: TVector;
 

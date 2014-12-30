@@ -39,7 +39,7 @@ interface
 
 uses
   System.Classes,
-  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context, GLSilhouette,
+  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context, GLS.Silhouette,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.GeometryBB, GLS.Color,
   GLS.RenderContextInfo;
 

@@ -10,8 +10,9 @@ unit GLS.ScriptDWS2;
 interface
 
 uses
-  System.Classes, System.SysUtils, XCollection, GLS.ScriptBase, dws2Comp, dws2Exprs,
-  dws2Symbols, GLManager;
+  System.Classes, System.SysUtils, 
+  dws2Comp, dws2Exprs, dws2Symbols, 
+  GLS.XCollection, GLS.ScriptBase, GLManager;
 
 type
   // TGLDelphiWebScriptII

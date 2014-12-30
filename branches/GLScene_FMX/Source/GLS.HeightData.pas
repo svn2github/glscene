@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLHeightData<p>
+{ : GLS.HeightData<p>
 
   Classes for height data access.<p>
 
@@ -35,9 +35,9 @@
   Called from TGLBitmapHDS and TGLHeightTileFileHDS
   Many tweaks and changes to threading. (I hope I havent broken anything)
   <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
-  <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
-  GLHeightData is now derived from TGLUpdateAbleObject
-  GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
+  <li>30/01/07 - LIN- Added GLS.HeightData.LibMaterial. (Use instead of MaterialName)
+  GLS.HeightData is now derived from TGLUpdateAbleObject
+  GLS.HeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
   <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
   <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
   <li>03/07/04 - LR - Corrections for Linux compatibility
@@ -60,7 +60,7 @@
   <li>11/02/01 - EG - Creation
   </ul></font>
 }
-unit GLHeightData;
+unit GLS.HeightData;
 
 interface
 
@@ -76,7 +76,7 @@ uses
   Winapi.Windows, // for CreateMonochromeBitmap
 {$ENDIF}
 {$IFDEF FPC}, IntfGraphics, {$ENDIF}
-  GLApplicationFileIO, GLS.Utils,
+  GLS.ApplicationFileIO, GLS.Utils,
   GLS.VectorGeometry, GLS.CrossPlatform, GLS.Material, GLS.BaseClasses;
 
 type

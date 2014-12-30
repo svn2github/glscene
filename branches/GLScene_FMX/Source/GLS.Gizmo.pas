@@ -70,7 +70,7 @@ uses
   // Standard
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
   GLGeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
   GLS.Coordinates, GLS.RenderContextInfo, GLS.State, GLSelection

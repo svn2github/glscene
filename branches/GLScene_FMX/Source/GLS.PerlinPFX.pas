@@ -24,8 +24,8 @@ interface
 
 uses
   System.Classes,
-  //GLS
-  GLParticleFX, GLS.Graphics, GLS.CrossPlatform,
+   
+  GLS.ParticleFX, GLS.Graphics, GLS.CrossPlatform,
   GLPerlinNoise3D, GLS.OpenGLTokens, GLS.VectorGeometry;
 
 type

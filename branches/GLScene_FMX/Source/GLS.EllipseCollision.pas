@@ -20,7 +20,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLS.VectorGeometry, GLOctree, GLS.VectorLists , GLS.VectorTypes;
+  GLS.VectorGeometry, GLS.Octree, GLS.VectorLists , GLS.VectorTypes;
 
 type
   TECPlane = class

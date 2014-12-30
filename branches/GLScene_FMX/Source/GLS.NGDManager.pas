@@ -78,7 +78,7 @@ uses
   NewtonImport, NewtonImport_JointLibrary, // Newton
   GLS.VectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLS.VectorLists, // TaffineVectorList for Tree
-  XCollection, // GLS TXCollection file function
+  GLS.XCollection, // GLS TXCollection file function
   GLS.BaseClasses, GLS.Scene, GLS.Manager, GLS.CrossPlatform,
   GLS.Coordinates, GLS.Objects, GLS.GeomObjects,
   GLS.VectorFileObjects, // cube cone freeform...

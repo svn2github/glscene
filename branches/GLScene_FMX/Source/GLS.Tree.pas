@@ -48,9 +48,9 @@ interface
 
 uses
    System.Classes, System.SysUtils,
-   //GLS
+    
    GLS.Scene, GLS.Material, GLS.VectorGeometry, GLS.VectorLists,
-   GLS.OpenGLTokens, GLS.VectorFileObjects, GLApplicationFileIO, GLS.RenderContextInfo,
+   GLS.OpenGLTokens, GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.RenderContextInfo,
    XOpenGL, GLS.Context , GLS.VectorTypes;
 
 type

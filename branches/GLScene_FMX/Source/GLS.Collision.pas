@@ -30,10 +30,10 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
-  GLS.Scene, XCollection, GLS.VectorGeometry, GLS.VectorLists, GLS.VectorFileObjects,
-  GLS.GeometryBB, GLS.CrossPlatform,
-  GLManager , GLS.VectorTypes;
+
+  GLS.Scene, GLS.XCollection, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.VectorFileObjects, GLS.GeometryBB, GLS.CrossPlatform,
+  GLS.Manager , GLS.VectorTypes;
 
 
 type

@@ -1,6 +1,6 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {: GLFile3DS<p>
 
   3DStudio 3DS vector file format implementation.<p>
@@ -42,7 +42,7 @@
       <li>28/01/07 - DaStr - Added transparency and opacity texture support (thanks DIVON)
       <li>09/12/04 - LR - Add Integer cast line 94 for Linux
       <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+      <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
   </ul></font>
 }
 unit GLFile3DS;
@@ -52,13 +52,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils, System.Math,
 
-  // GLScene
-  GLS.Scene, GLS.Objects, GLS.VectorFileObjects, GLS.Texture, GLApplicationFileIO,
+   
+  GLS.Scene, GLS.Objects, GLS.VectorFileObjects, GLS.Texture, GLS.ApplicationFileIO,
   GLS.VectorGeometry, File3DS, Types3DS, GLS.OpenGLTokens, GLS.Context, GLS.PersistentClasses,
-  GLS.Strings, GLFile3DSSceneObjects, GLS.CrossPlatform, GLS.VectorTypes, GLS.VectorLists,
+  GLS.Strings, GLS.File3DSSceneObjects, GLS.CrossPlatform, GLS.VectorTypes, GLS.VectorLists,
   GLS.RenderContextInfo, GLS.Material;
 
 type

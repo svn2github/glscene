@@ -69,7 +69,6 @@ uses
   FMX.Forms,
 ///  FMX.Platform.Win,
 
-  // GLS
   GLS.Context,
   GLS.OpenGLTokens,
   GLS.OpenGLAdapter,

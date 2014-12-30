@@ -18,7 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes,
   {$IFDEF FPC}
     propedits, GLSceneRegisterLCL,
@@ -27,7 +27,7 @@ uses
     GLSceneRegister,
   {$ENDIF}
 
-  // GLScene
+   
   GLS.Material,
 
   // CG

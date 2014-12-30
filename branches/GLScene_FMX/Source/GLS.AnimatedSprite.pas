@@ -12,7 +12,7 @@
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
                               TSpriteAnimation (BugTracker ID = 1938988)
-      <li>25/03/07 - DaStr - Added GLCrossPlatform to uses for Delphi5 compatibility
+      <li>25/03/07 - DaStr - Added GLS.CrossPlatform to uses for Delphi5 compatibility
       <li>14/03/07 - DaStr - Added IGLMaterialLibrarySupported to TSpriteAnimation
                              Published TGLAnimatedSprite.Visible
                              Fixed TGLAnimatedSprite.SetMaterialLibrary
@@ -32,18 +32,17 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  //GLX
   GLS.Scene,
   GLS.Context,
   GLS.OpenGLTokens,
-  GLVectorGeometry,
-  GLMaterial,
-  GLPersistentClasses,
-  XCollection,
-  GLCrossPlatform,
-  GLRenderContextInfo,
-  GLBaseClasses,
-  GLState;
+  GLS.VectorGeometry,
+  GLS.Material,
+  GLS.PersistentClasses,
+  GLS.CrossPlatform,
+  GLS.RenderContextInfo,
+  GLS.BaseClasses,
+  GLS.State,
+  GLS.XCollection;
 
 type
   TSpriteAnimFrame = class;

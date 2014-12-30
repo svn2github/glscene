@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSilhouette<p>
+{: GLS.Silhouette<p>
 
    Enhanced silhouette classes.<p>
 
@@ -21,7 +21,7 @@
       <li>10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
 }
-unit GLSilhouette;
+unit GLS.Silhouette;
 
 interface
 

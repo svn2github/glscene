@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+  
   GLS.PersistentClasses, GLS.ApplicationFileIO;
 
 Type
@@ -245,7 +245,7 @@ Type
   //Внимание!!! Работает только для одного Менеджера Архивов
   function GetArchiveManager: TGLSArchiveManager;
 
-  // GLApplicationFileIO
+  // GLS.ApplicationFileIO
   //Эти функции служат для автоматизации загрузки
   //Пользователь вводит LoadFromFile а через эти функции получает результат.
 

@@ -36,11 +36,11 @@ interface
 {$i GLScene.inc}
 
 uses
-  // VCL
+   
   System.Classes, System.SysUtils,
 
-  // GLScene
-  GLVectorFileObjects, GLApplicationFileIO, GLS.VectorGeometry, GLS.Texture,
+   
+  GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorGeometry, GLS.Texture,
   GLS.VectorLists, GLS.Material,
 
   // Misc

@@ -66,7 +66,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLS.Material, GLS.Graphics, GLS.Utils, GLS.VectorGeometry, GLS.OpenGLTokens,
   GLS.Context, GLS.VectorLists, GLS.Color, GLS.RenderContextInfo, GLS.State,
   GLS.TextureFormat;

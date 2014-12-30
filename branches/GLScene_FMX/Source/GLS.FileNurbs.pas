@@ -15,7 +15,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, GLS.VectorFileObjects,
-  GLS.VectorGeometry, GLS.VectorLists, GLApplicationFileIO,
+  GLS.VectorGeometry, GLS.VectorLists, GLS.ApplicationFileIO,
   GLParametricSurfaces, GLS.Utils;
 
 type

@@ -50,14 +50,14 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Winapi.Windows, WinApi.Messages, System.Classes, System.UITypes,
+  Winapi.Windows, WinApi.Messages, System.Classes, System.UITypes,
   VCL.Dialogs, VCL.Graphics, VCL.Controls,
 {$ELSE}
   Winapi.Windows, Messages, Classes
   Dialogs, Graphics, Controls,
 {$ENDIF}
 
-  // GLScene
+   
   GLS.Scene, GLS.OpenGLTokens, GLS.Texture, GLS.Context, GLS.VectorGeometry, GLS.Strings,
   GLS.RenderContextInfo, GLS.State;
 

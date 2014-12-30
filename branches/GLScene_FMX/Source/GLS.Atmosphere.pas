@@ -68,13 +68,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   System.SysUtils, System.Classes,
 
-  // GLScene
   GLS.Scene, GLS.Objects, GLS.Cadencer, GLS.OpenGLTokens, GLS.VectorGeometry,
-  GLS.Context, GLS.Strings, GLS.Color, GLS.RenderContextInfo, GLS.State, GLS.CrossPlatform,
-  GLS.VectorTypes;
+  GLS.Context, GLS.Strings, GLS.Color, GLS.RenderContextInfo, GLS.State,
+  GLS.CrossPlatform, GLS.VectorTypes;
 
 type
    EGLAtmosphereException = class(Exception);

@@ -36,7 +36,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+
   GLS.VectorGeometry, GLS.VectorLists, GLS.Scene, GLS.VectorFileObjects,
   GLS.Texture, GLS.RenderContextInfo, GLS.Context, GLS.State, GLS.OpenGLTokens,
   GLS.MeshUtils, GLS.VectorTypes;

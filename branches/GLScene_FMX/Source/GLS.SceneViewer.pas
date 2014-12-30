@@ -6,6 +6,7 @@
   GLScene cross-platform viewer.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>22/12/14 - PW - Removed SetupVSync from GLViewer.pas to GLS.SceneViewer.pas
       <li>22/12/14 - PW - Upgraded  "GLWin32Viewer.pas" to "GLS.SceneViewer.pas"
       <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
       <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
@@ -40,10 +41,10 @@ unit GLS.SceneViewer;
 interface
 
 uses
-  WinApi.Winapi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  System.Types, FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
+  Winapi.Windows, WinApi.Messages,
+  System.Classes, System.SysUtils, System.Types,
+  FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
 
-  // GLX
   GLS.Scene, GLS.SceneContext,  GLS.Context;
 
 type

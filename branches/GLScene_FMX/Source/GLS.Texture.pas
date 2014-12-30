@@ -224,10 +224,10 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.Strings, GLS.CrossPlatform, GLS.BaseClasses, GLS.OpenGLTokens,
   GLS.VectorGeometry, GLS.Graphics, GLS.Context, GLS.State, GLS.Color, GLS.Coordinates,
-  GLS.RenderContextInfo, GLS.TextureFormat, GLApplicationFileIO, GLS.Utils;
+  GLS.RenderContextInfo, GLS.TextureFormat, GLS.ApplicationFileIO, GLS.Utils;
 
 const
   cDefaultNormalMapScale = 0.125;

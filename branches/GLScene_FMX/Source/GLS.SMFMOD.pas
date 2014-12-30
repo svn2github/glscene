@@ -39,7 +39,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  //GLS
+   
   GLS.Sound, GLS.Scene, GLS.VectorGeometry,
   FMod, FmodTypes, FmodPresets;
 

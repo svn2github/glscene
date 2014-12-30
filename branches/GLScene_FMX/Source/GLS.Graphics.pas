@@ -111,7 +111,7 @@ uses
   Intfgraphics,
   GraphType,
 {$ENDIF}
-  GLApplicationFileIO,
+  GLS.ApplicationFileIO,
   GLS.PersistentClasses,
   GLS.OpenGLTokens,
   GLS.Context,

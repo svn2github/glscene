@@ -29,7 +29,7 @@ interface
 
 uses
   Classes,{$IFDEF MSWINDOWS}MMSystem,{$ENDIF}
-  GLApplicationFileIO, GLS.CrossPlatform;
+  GLS.ApplicationFileIO, GLS.CrossPlatform;
 
 type
 

@@ -74,7 +74,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLScene
+   
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.OpenGLTokens, GLS.Context, GLS.CustomShader,
   GLS.RenderContextInfo, GLS.TextureFormat, GLSL.Parameter;
 

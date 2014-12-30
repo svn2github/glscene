@@ -60,7 +60,7 @@ interface
 uses
   System.Classes,
   GLS.OpenGLTokens,  GLS.Context,  GLS.Objects,  GLS.Scene, GLMultiPolygon,
-  GLS.Color, GLS.VectorGeometry, GLS.RenderContextInfo, GLNodes,
+  GLS.Color, GLS.VectorGeometry, GLS.RenderContextInfo, GLS.Nodes,
   GLS.State, GLS.VectorTypes;
 
 type

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FileGL2<p>
 
 	Ghoul2 (GLM/GLA) file format loading structures<p>
@@ -16,7 +19,8 @@ unit FileGL2;
 interface
 
 uses
-  System.Classes, GLS.VectorTypes, System.SysUtils, GLS.VectorGeometry;
+  System.Classes, System.SysUtils,
+  GLS.VectorTypes, GLS.VectorGeometry;
 
 type
   TGLMHeader = record

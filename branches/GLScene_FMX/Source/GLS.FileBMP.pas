@@ -24,7 +24,7 @@ uses
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,
-  GLApplicationFileIO;
+  GLS.ApplicationFileIO;
 
 type
 

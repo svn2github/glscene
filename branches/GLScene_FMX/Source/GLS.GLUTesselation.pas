@@ -27,7 +27,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLVectorFileObjects,
+  GLS.VectorFileObjects,
   GLS.VectorLists,
   GLS.VectorGeometry;
 

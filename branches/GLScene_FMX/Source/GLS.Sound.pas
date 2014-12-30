@@ -26,8 +26,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
 
-  //GLS
-  GLSoundFileObjects, GLS.Scene, XCollection, GLS.VectorGeometry,
+  GLSoundFileObjects, GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
   GLS.Cadencer, GLS.BaseClasses, GLS.CrossPlatform, GLS.Utils;
 
 {$I GLScene.inc}
