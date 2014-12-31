@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
-        <IncludeFiles Value='../../Source/"/>
-        <OtherUnitFiles Value='../../Source/"/>
+        <IncludeFiles Value='../Source/"/>
+        <OtherUnitFiles Value='../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -23,32 +23,32 @@
     <Version Major="1" Build="3"/>
     <Files Count="7">
       <Item1>
-        <Filename Value='../../Source/Joystick.pas"/>
+        <Filename Value='../Source/Joystick.pas"/>
         <UnitName Value="Joystick"/>
       </Item1>
       <Item2>
-        <Filename Value='../../Source/ScreenSaver.pas"/>
+        <Filename Value='../Source/ScreenSaver.pas"/>
         <UnitName Value="ScreenSaver"/>
       </Item2>
       <Item3>
-        <Filename Value='../../Source/GLSMWaveOut.pas"/>
+        <Filename Value='../Source/GLSMWaveOut.pas"/>
         <UnitName Value="GLSMWaveOut"/>
       </Item3>
       <Item4>
-        <Filename Value='../../Source/GLAVIRecorder.pas"/>
+        <Filename Value='../Source/GLAVIRecorder.pas"/>
         <UnitName Value="GLAVIRecorder"/>
       </Item4>
       <Item5>
-        <Filename Value='../../Source/GLSceneRegisterWinOnlyLCL.pas"/>
+        <Filename Value='../Source/GLSceneRegisterWinOnlyLCL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSceneRegisterWinOnlyLCL"/>
       </Item5>
       <Item6>
-        <Filename Value='../../Source/GLSVfw.pas"/>
+        <Filename Value='../Source/GLSVfw.pas"/>
         <UnitName Value="GLSVfw"/>
       </Item6>
       <Item7>
-        <Filename Value='../../Source/GLSpaceText.pas"/>
+        <Filename Value='../Source/GLSpaceText.pas"/>
         <UnitName Value="GLSpaceText"/>
       </Item7>
     </Files>

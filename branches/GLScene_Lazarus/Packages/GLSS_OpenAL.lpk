@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="GLSS_BASS"/>
+    <Name Value="GLSS_OpenAL"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value='../../Source/"/>
-        <OtherUnitFiles Value='../../Source/"/>
+        <IncludeFiles Value='../Source/"/>
+        <OtherUnitFiles Value='../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -29,16 +29,12 @@
     </CompilerOptions>
     <Description Value="GLScene FMOD support"/>
     <Version Major="1" Build="3"/>
-    <Files Count="2">
+    <Files Count="1">
       <Item1>
-        <Filename Value='../../Source/GLSMBASS.pas"/>
+        <Filename Value='../Source/GLSMOpenAL.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="GLSMBASS"/>
+        <UnitName Value="GLSMOpenAL"/>
       </Item1>
-      <Item2>
-        <Filename Value='../../Source/Bass.pas"/>
-        <UnitName Value="Bass"/>
-      </Item2>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

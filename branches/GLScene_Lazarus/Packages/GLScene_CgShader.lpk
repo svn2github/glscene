@@ -1,17 +1,19 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="GLScene_ODE"/>
+    <Name Value="GLScene_CgShader"/>
     <CompilerOptions>
-      <Version Value="8"/>
+      <Version Value="9"/>
       <SearchPaths>
-        <IncludeFiles Value='../../Source/"/>
-        <OtherUnitFiles Value='../../Source/"/>
+        <IncludeFiles Value='../Source/"/>
+        <OtherUnitFiles Value='../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value='../Source/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
           <SyntaxMode Value="Delphi"/>
+          <UseAnsiStrings Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <CodeGeneration>
@@ -27,46 +29,34 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="GLScene ODE support"/>
+    <Description Value="glscene cg shader support package"/>
     <Version Major="1" Build="3"/>
-    <Files Count="9">
+    <Files Count="6">
       <Item1>
-        <Filename Value='../../Source/GLODERegister.pas"/>
+        <Filename Value='../Source/GLCgRegister.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="GLODERegister"/>
+        <UnitName Value="GLCgRegister"/>
       </Item1>
       <Item2>
-        <Filename Value='../../Source/GLODECustomColliders.pas"/>
-        <UnitName Value="GLODECustomColliders"/>
+        <Filename Value='../Source/GLCgShader.pas"/>
+        <UnitName Value="GLCgShader"/>
       </Item2>
       <Item3>
-        <Filename Value='../../Source/GLODEManager.pas"/>
-        <UnitName Value="GLODEManager"/>
+        <Filename Value='../Source/cg.pas"/>
+        <UnitName Value="Cg"/>
       </Item3>
       <Item4>
-        <Filename Value='../../Source/dynodegl.pas"/>
-        <UnitName Value="dynodegl"/>
+        <Filename Value='../Source/cgGL.pas"/>
+        <UnitName Value="CgGL"/>
       </Item4>
       <Item5>
-        <Filename Value='../../Source/ODEImport.pas"/>
-        <UnitName Value="ODEImport"/>
+        <Filename Value='../Source/GLCgBombShader.pas"/>
+        <UnitName Value="GLCgBombShader"/>
       </Item5>
       <Item6>
-        <Filename Value='../../Source/ODEGL.pas"/>
-        <UnitName Value="ODEGL"/>
+        <Filename Value='../Source/CGPostTransformationShader.pas"/>
+        <UnitName Value="CGPostTransformationShader"/>
       </Item6>
-      <Item7>
-        <Filename Value='../../Source/GLODERagdoll.pas"/>
-        <UnitName Value="GLODERagdoll"/>
-      </Item7>
-      <Item8>
-        <Filename Value='../../Source/GLODESkeletonColliders.pas"/>
-        <UnitName Value="GLODESkeletonColliders"/>
-      </Item8>
-      <Item9>
-        <Filename Value='../../Source/delphiode.inc"/>
-        <Type Value="Include"/>
-      </Item9>
     </Files>
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="2">
@@ -78,8 +68,6 @@
       </Item2>
     </RequiredPkgs>
     <UsageOptions>
-      <CustomOptions Value="-dUseCThreads
-"/>
       <UnitPath Value="$(PkgOutDir)/"/>
     </UsageOptions>
     <PublishOptions>
