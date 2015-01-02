@@ -22,8 +22,8 @@ unit GLFileHDR;
 interface
 
 uses
-  System.Classes,
-  System.SysUtils,
+  Classes,
+  SysUtils,
   //GLS
   OpenGLTokens,
   GLContext,

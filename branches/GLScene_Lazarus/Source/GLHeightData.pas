@@ -75,7 +75,7 @@ uses
 {$IFDEF MSWINDOWS}
   Windows, // for CreateMonochromeBitmap
 {$ENDIF}
-{$IFDEF FPC}, IntfGraphics, {$ENDIF}
+{$IFDEF FPC}IntfGraphics, {$ENDIF}
   GLApplicationFileIO, GLUtils,
   GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
 
@@ -1972,7 +1972,7 @@ begin
   // some picture formats trigger a "change" when drawed
   Picture.OnChange := nil;
   try
-    FBitmap.Canvas.StretchDraw(Rect(0, 0, size, size), Picture.Graphic);
+    FBitmap.Canvas.StretchDraw(Classes.Rect(0, 0, Size, Size), Picture.Graphic);
   finally
     Picture.OnChange := OnPictureChanged;
   end;

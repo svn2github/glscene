@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value='../Source/"/>
-        <OtherUnitFiles Value='../Source/"/>
+        <IncludeFiles Value="../Source/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -22,12 +22,12 @@
     <Version Major="1" Build="3"/>
     <Files Count="2">
       <Item1>
-        <Filename Value='../Source/SDLWindow.pas"/>
+        <Filename Value="../Source/SDLWindow.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="SDLWindow"/>
       </Item1>
       <Item2>
-        <Filename Value='../Source/GLSDLContext.pas"/>
+        <Filename Value="../Source/GLSDLContext.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSDLContext"/>
       </Item2>

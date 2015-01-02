@@ -13,8 +13,9 @@ interface
 
 
 uses
+  lresources, 
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-  lresources, Forms, GLScene, Classes,  Controls, Buttons, StdCtrls,
+  Forms, GLScene, Classes,  Controls, Buttons, StdCtrls,
   ComCtrls, ExtCtrls, Graphics, Menus;
 
 
@@ -391,7 +392,7 @@ initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-  {$i InfoLCL.lrs}
+  {$i FInfoLCL.lrs}
 
    RegisterInfoForm(ShowInfoForm);
 

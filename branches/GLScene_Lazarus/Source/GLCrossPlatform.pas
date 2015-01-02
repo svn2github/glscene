@@ -849,7 +849,7 @@ begin
 
   LClassInfo := anObject.ClassInfo;
   if LClassInfo <> nil then
-    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
+   Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
 end;
 {$ENDIF}
 
@@ -1341,4 +1341,4 @@ initialization
   Init_vProgStartSecond;
 {$ENDIF}
 {$ENDIF}
-end.
+end.

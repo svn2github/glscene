@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value='../Source/"/>
-        <OtherUnitFiles Value='../Source/"/>
+        <IncludeFiles Value="../Source/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -31,7 +31,7 @@
     <Version Major="1" Build="3"/>
     <Files Count="1">
       <Item1>
-        <Filename Value='../Source/GLSMOpenAL.pas"/>
+        <Filename Value="../Source/GLSMOpenAL.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSMOpenAL"/>
       </Item1>

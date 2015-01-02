@@ -219,7 +219,7 @@ constructor TNotifyCollection.Create(AOwner: TPersistent; AItemClass: TCollectio
 begin
   inherited Create(AOwner, AItemClass);
   if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
-    OnNotifyChange := TGLUpdateAbleComponent(AOwner).NotifyChange;
+  OnNotifyChange := TGLUpdateAbleComponent(AOwner).NotifyChange;
 end;
 
 // Update

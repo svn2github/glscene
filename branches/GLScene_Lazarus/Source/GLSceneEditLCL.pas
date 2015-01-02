@@ -6,6 +6,7 @@
    Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>02/01/15 - PW - Fixed for Lazarus 1.2.6
   <li>20/05/10 - Yar - Fixes for Linux x64
   <li>18/05/10 - Yar - Fixed for Lazarus-0.9.29-25483 (thanks Predator)
   <li>26/03/10 - Yar - Added Expand and Collapse buttons, fix for Unix-based systems
@@ -58,14 +59,23 @@ interface
 {$I GLScene.inc}
 
 uses
+  lresources,
+  lclintf,
   {$IFDEF MSWINDOWS}
   Registry,
   {$ENDIF}
   XCollection, GLScene, Classes, SysUtils,
-  Controls,  Forms, ComCtrls,
+  Controls, Forms, ComCtrls,
   Dialogs, Menus, ActnList, ExtCtrls, StdCtrls,
-  propedits, componenteditors, lclintf, lresources
-;
+  propedits, componenteditors,
+
+  GLViewer, 
+  GLSceneRegisterLCL, 
+  GLStrings, 
+  FInfoLCL, 
+  OpenGL1x, 
+  GLCrossPlatform, 
+  ClipBrd;
 
 
 const
@@ -237,12 +247,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLViewer, GLSceneRegisterLCL, GLStrings, InfoLCL, OpenGL1x, GLCrossPlatform,
-  ClipBrd;
-
-
 
 resourcestring
    cGLSceneEditor = 'GLScene Editor';
@@ -1138,6 +1142,7 @@ end;
 // IsPastePossible
 //
 function TGLSceneEditorForm.IsPastePossible : Boolean;
+{$IFDEF GLS_DELPHI_6_UP}
 
    function PossibleStream(const S: string): Boolean;
    var
@@ -1162,7 +1167,8 @@ begin
    if (selNode<>nil) and (selNode.Parent<>nil)
       {$IFDEF MSWINDOWS}
       and (ClipBoard.HasFormat(CF_COMPONENT) or (Clipboard.HasFormat(CF_TEXT) and
-      PossibleStream(Clipboard.AsText))) {$ENDIF} then begin
+      PossibleStream(Clipboard.AsText))) {$ENDIF} then
+      begin
       TmpContainer := TComponent.Create(self);
       try
          ComponentList := TDesignerSelections.Create;
@@ -1176,18 +1182,25 @@ begin
          TmpContainer.Free;
       end;
    end else Result:=False;
+{$ELSE}
+begin
+   Result:=False;
+{$ENDIF}
 end;
 
 // CanPaste
 //
+{$IFDEF GLS_DELPHI_6_UP}
 function TGLSceneEditorForm.CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
 begin
    Result:= Assigned(obj) and Assigned(destination);
 end;
+{$ENDIF}
 
 // ACCopyExecute
 //
 procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
+{$IFDEF GLS_DELPHI_6_UP}
 var
    ComponentList: IDesignerSelections;
 begin
@@ -1195,11 +1208,15 @@ begin
    ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
    CopyComponents(FScene.Owner, ComponentList);
    ACPaste.Enabled:=IsPastePossible;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 // ACCutExecute
 //
 procedure TGLSceneEditorForm.ACCutExecute(Sender: TObject);
+{$IFDEF GLS_DELPHI_6_UP}
 var
   AObject: TGLBaseSceneObject;
   ComponentList: IDesignerSelections;
@@ -1216,12 +1233,16 @@ begin
     Tree.Selected.Free;
     ACPaste.Enabled:=IsPastePossible;
   end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
 
 // ACPasteExecute
 //
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
+{$IFDEF GLS_DELPHI_6_UP}
 var
    selNode : TTreeNode;
 	destination : TGLBaseSceneObject;
@@ -1240,8 +1261,12 @@ begin
       end;
       FCurrentDesigner.Modified;
    end;
+{$ELSE}
+begin
+{$ENDIF}
 end;
 
+{$IFDEF GLS_DELPHI_6_UP}
 // CopyComponents
 //
 procedure TGLSceneEditorForm.CopyComponents(Root: TComponent; const Components: IDesignerSelections);
@@ -1314,6 +1339,7 @@ procedure TGLSceneEditorForm.ComponentRead(Component: TComponent);
 begin
    FPasteSelection.Add(Component);
 end;
+{$ENDIF}
 
 procedure TGLSceneEditorForm.BehavioursListViewClick(Sender: TObject);
 begin

@@ -5,8 +5,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <IncludeFiles Value='../Source/"/>
-        <OtherUnitFiles Value='../Source/"/>
+        <IncludeFiles Value="../Source/"/>
+        <OtherUnitFiles Value="../Source/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -31,12 +31,12 @@
     <Version Major="1" Build="3"/>
     <Files Count="2">
       <Item1>
-        <Filename Value='../Source/GLSMBASS.pas"/>
+        <Filename Value="../Source/GLSMBASS.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="GLSMBASS"/>
       </Item1>
       <Item2>
-        <Filename Value='../Source/Bass.pas"/>
+        <Filename Value="../Source/Bass.pas"/>
         <UnitName Value="Bass"/>
       </Item2>
     </Files>
