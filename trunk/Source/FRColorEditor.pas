@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FRColorEditor<p>
 
    RGB+Alpha color editor.<p>
@@ -18,7 +21,6 @@ interface
 {$i GLScene.inc}
 
 uses
-
 {$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,
   VCL.ComCtrls, VCL.ExtCtrls, VCL.Dialogs, VCL.Controls, VCL.Graphics,
@@ -117,10 +119,10 @@ end;
 //
 procedure TRColorEditor.SetColor(const val : THomogeneousFltVector);
 begin
-  RedValue:=Round(val.V[0]*255);
-  GreenValue:=Round(val.V[1]*255);
-  BlueValue:=Round(val.V[2]*255);
-  AlphaValue:=Round(val.V[3]*1000);
+  RedValue:=Round(val.X*255);
+  GreenValue:=Round(val.Y*255);
+  BlueValue:=Round(val.Z*255);
+  AlphaValue:=Round(val.W*1000);
 
   ContentsChanged;
 end;

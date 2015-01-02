@@ -1,5 +1,7 @@
-// FRTextureEdit
-{ : Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : FRTextureEdit<p>
 
   Basic editing frame for TGLTexture<p>
 
@@ -27,11 +29,12 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.TypInfo, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+  System.Classes, System.SysUtils, System.TypInfo, VCL.Forms, VCL.StdCtrls,
+  VCL.Buttons, VCL.Controls,
 {$ELSE}
-  Classes, TypInfo, Forms, StdCtrls, Buttons, Controls,
+  Classes, SysUtils, TypInfo, Forms, StdCtrls, Buttons, Controls,
 {$ENDIF}
-  GLGraphics, GLTextureFormat, GLTexture;
+  GLGraphics, GLTextureFormat, GLTexture, GLState, GLTextureImageEditors;
 
 type
   TRTextureEdit = class(TFrame)
@@ -85,9 +88,6 @@ type
 implementation
 
 {$R *.dfm}
-
-uses
-  SysUtils, GLState, GLTextureImageEditors;
 
 // Create
 //

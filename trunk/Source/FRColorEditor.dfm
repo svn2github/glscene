@@ -156,7 +156,7 @@ object RColorEditor: TRColorEditor
     OnChange = AlphaEditChange
   end
   object ColorDialog: TColorDialog
-    Left = 8
+    Left = 240
     Top = 8
   end
 end

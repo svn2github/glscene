@@ -2726,6 +2726,10 @@ object InfoForm: TInfoForm
     end
     object TabSheetInformation: TTabSheet
       Caption = 'Information'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
@@ -3450,6 +3454,10 @@ object InfoForm: TInfoForm
     object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
@@ -3476,6 +3484,10 @@ object InfoForm: TInfoForm
     end
     object TabSheetContributors: TTabSheet
       Caption = 'Contributors'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object MemoContributors: TMemo
         Left = 0
         Top = 0
@@ -3546,6 +3558,10 @@ object InfoForm: TInfoForm
     end
     object TabSheetAbout: TTabSheet
       Caption = 'About'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object WebsiteLbl: TLabel
         Left = 57
         Top = 274
@@ -3593,7 +3609,6 @@ object InfoForm: TInfoForm
             'and more.'
           '')
         TabOrder = 0
-        ExplicitTop = 9
       end
     end
   end
