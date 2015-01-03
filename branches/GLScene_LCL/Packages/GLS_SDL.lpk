@@ -22,9 +22,9 @@
     <Version Major="1" Build="3"/>
     <Files Count="2">
       <Item1>
-        <Filename Value="../Source/SDLWindow.pas"/>
+        <Filename Value="../Source/GLSDLWindow.pas"/>
         <HasRegisterProc Value="True"/>
-        <UnitName Value="SDLWindow"/>
+        <UnitName Value="GLSDLWindow"/>
       </Item1>
       <Item2>
         <Filename Value="../Source/GLSDLContext.pas"/>

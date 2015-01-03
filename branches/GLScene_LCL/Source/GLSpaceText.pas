@@ -53,7 +53,7 @@ uses
   WinApi.Windows, WinApi.Messages, System.Classes, System.UITypes,
   VCL.Dialogs, VCL.Graphics, VCL.Controls,
 {$ELSE}
-  Windows, Messages, Classes
+  Windows, Messages, Classes,
   Dialogs, Graphics, Controls,
 {$ENDIF}
 

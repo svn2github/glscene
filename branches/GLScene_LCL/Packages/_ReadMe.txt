@@ -1,1 +1,0 @@
-The directory for Lazarus Free Pascal LCL packages of GLScene

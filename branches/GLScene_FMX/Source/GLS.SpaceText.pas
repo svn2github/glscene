@@ -53,7 +53,7 @@ uses
   Winapi.Windows, WinApi.Messages, System.Classes, System.UITypes,
   FMX.Dialogs, FMX.Graphics, FMX.Controls,
 {$ELSE}
-  Winapi.Windows, Messages, Classes
+  Winapi.Windows, Messages, Classes,
   Dialogs, Graphics, Controls,
 {$ENDIF}
 

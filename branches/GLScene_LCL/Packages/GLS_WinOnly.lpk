@@ -23,11 +23,11 @@
     <Version Major="1" Build="3"/>
     <Files Count="7">
       <Item1>
-        <Filename Value="../Source/Joystick.pas"/>
+        <Filename Value="../Source/GLJoystick.pas"/>
         <UnitName Value="Joystick"/>
       </Item1>
       <Item2>
-        <Filename Value="../Source/ScreenSaver.pas"/>
+        <Filename Value="../Source/GLScreenSaver.pas"/>
         <UnitName Value="ScreenSaver"/>
       </Item2>
       <Item3>
