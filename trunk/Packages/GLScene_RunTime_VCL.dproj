@@ -124,7 +124,6 @@
         <DCCReference Include="..\Source\GLBehaviours.pas"/>
         <DCCReference Include="..\Source\GLScreenSaver.pas"/>
         <DCCReference Include="..\Source\GLCadencer.pas"/>
-        <DCCReference Include="..\Source\XCollection.pas"/>
         <DCCReference Include="..\Source\GLParticles.pas"/>
         <DCCReference Include="..\Source\GLObjects.pas"/>
         <DCCReference Include="..\Source\GLCollision.pas"/>
@@ -357,6 +356,9 @@
         <DCCReference Include="..\Source\GLFileDXF.pas"/>
         <DCCReference Include="..\Source\GLFileGRD.pas"/>
         <DCCReference Include="..\Source\GLSMemo.pas"/>
+        <DCCReference Include="..\Source\FileX.pas"/>
+        <DCCReference Include="..\Source\XCollection.pas"/>
+        <DCCReference Include="..\Source\GLSRedBlackTree.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

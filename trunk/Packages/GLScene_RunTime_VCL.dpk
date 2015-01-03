@@ -53,7 +53,6 @@ contains
   GLBehaviours in '..\Source\GLBehaviours.pas',
   GLScreenSaver in '..\Source\GLScreenSaver.pas',
   GLCadencer in '..\Source\GLCadencer.pas',
-  XCollection in '..\Source\XCollection.pas',
   GLParticles in '..\Source\GLParticles.pas',
   GLObjects in '..\Source\GLObjects.pas',
   GLCollision in '..\Source\GLCollision.pas',
@@ -285,6 +284,9 @@ contains
   GLAnimationUtils in '..\Source\GLAnimationUtils.pas',
   GLFileDXF in '..\Source\GLFileDXF.pas',
   GLFileGRD in '..\Source\GLFileGRD.pas',
-  GLSMemo in '..\Source\GLSMemo.pas';
+  GLSMemo in '..\Source\GLSMemo.pas',
+  FileX in '..\Source\FileX.pas',
+  XCollection in '..\Source\XCollection.pas',
+  GLSRedBlackTree in '..\Source\GLSRedBlackTree.pas';
 
 end.

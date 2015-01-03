@@ -100,36 +100,28 @@ uses
    VCL.Consts,   VCL.Graphics,
    VCL.Controls,  VCL.Forms,  VCL.Dialogs
 {$ELSE}
-{$IFNDEF FPC}
    Consts,
-{$ENDIF}
    Classes, SysUtils, StrUtils, Graphics,  Controls,
    Forms,  Dialogs
 {$ENDIF}
-
-{$IFDEF FPC}
-    ,LCLVersion,  LCLType,  FileUtil
-{$ENDIF}
   ;
 
-{$IFNDEF FPC}
 const
   FPC_VERSION = 0;
   FPC_RELEASE = 0;
   FPC_PATCH = 0;
   LCL_RELEASE = 0;
-{$ENDIF}
 
 type
-{$IFNDEF FPC}
+  THalfFloat = type Word;
+  PHalfFloat = ^THalfFloat;
+
   // These new types were added to be able to cast pointers to integers
   // in 64 bit mode, because in FPC "Integer" type is always 32 bit
   // (or 16 bit in Pascal mode), but in Delphi it is platform-specific and
   // can be 16, 32 or 64 bit.
   ptrInt = Integer;
   PtrUInt = Cardinal;
-{$ENDIF}
-
   // Several aliases to shield us from the need of ifdef'ing between
   // the "almost cross-platform" units like Graphics/QGraphics etc.
   // Gives a little "alien" look to names, but that's the only way around :(
@@ -200,33 +192,16 @@ type
     );
 
   EGLOSError = EOSError;
-  //   {$IFDEF FPC}
-  //      EGLOSError = EWin32Error;
-  //   {$ELSE}
-  //      EGLOSError = EOSError;
-  //   {$ENDIF}
 
   TGLComponent = class(TComponent);
 
-{$IFDEF FPC}
-  DWORD = System.DWORD;
-  TPoint = Types.TPoint;
-  PPoint = ^TPoint;
-  TRect = Types.TRect;
-  PRect = ^TRect;
-
-{$ELSE}
   DWORD = Types.DWORD; {$NODEFINE DWORD}
   TPoint = Types.TPoint;{$NODEFINE TPoint}
   PPoint = Types.PPoint;{$NODEFINE PPoint}
   TRect = Types.TRect;  {$NODEFINE TRect}
   PRect = Types.PRect;  {$NODEFINE PRect}
-{$ENDIF}
 
   TProjectTargetNameFunc = function(): string;
-
-  THalfFloat = type Word;
-  PHalfFloat = ^THalfFloat;
 
 const
 {$IFDEF MSWINDOWS}
@@ -259,25 +234,12 @@ const
   glKey_CONTROL = VK_CONTROL;
 
   // TPenStyle.
-{$IFDEF FPC}
-  //FPC doesn't support TPenStyle "psInsideFrame", so provide an alternative
-  psInsideFrame = psSolid;
-{$ENDIF}
 
   // Several define from unit Consts
 const
-{$IFDEF FPC}
-  glsAllFilter: string = 'All';
-{$ELSE}
   glsAllFilter: string = sAllFilter;
-{$ENDIF}
 
-{$IFDEF GLS_COMPILER_2009_UP}
   GLS_FONT_CHARS_COUNT = 2024;
-{$ELSE}
-  GLS_FONT_CHARS_COUNT = 256;
-{$ENDIF}
-
 var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
@@ -358,11 +320,6 @@ procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
-
-{$IFNDEF GLS_COMPILER_2009_UP}
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
-function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean; overload;
-{$ENDIF}
 
 function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
@@ -521,11 +478,7 @@ procedure RaiseLastOSError;
 var
   e: EGLOSError;
 begin
-{$IFDEF FPC}
-  e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastOSError));
-{$ELSE}
   e := EGLOSError.Create('OS Error : ' + SysErrorMessage(GetLastError));
-{$ENDIF}
   raise e;
 end;
 
@@ -614,12 +567,7 @@ end;
 
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 begin
-{$IFDEF FPC}
-  Assert(False, 'BitmapScanLine unsupported');
-  Result := nil;
-{$ELSE}
   Result := aBitmap.ScanLine[aRow];
-{$ENDIF}
 end;
 
 procedure FixPathDelimiter(var S: string);
@@ -633,11 +581,7 @@ end;
 
 function RelativePath(const S: string): string;
 var
-{$IFNDEF FPC}
   path: string;
-{$ELSE}
-  path: UTF8String;
-{$ENDIF}
 begin
   Result := S;
   if IsDesignTime then
@@ -656,13 +600,8 @@ begin
   end
   else
   begin
-{$IFNDEF FPC}
     path := ExtractFilePath(ParamStr(0));
     path := IncludeTrailingPathDelimiter(path);
-{$ELSE}
-    path := ExtractFilePath(ParamStrUTF8(0));
-    path := IncludeTrailingPathDelimiter(path);
-{$ENDIF}
   end;
   if Pos(path, S) = 1 then
     Delete(Result, 1, Length(path));
@@ -809,91 +748,29 @@ end;
 // RDTSC
 //
 function RDTSC: Int64;
-{$IFDEF FPC}
-begin
-  raise exception.create('Using GLCrossPlatform.RDTSC is a bad idea!');
-  Result := 0;
-end;
-{$ELSE}
 asm
    db $0f, $31
 end;
-{$ENDIF}
-
-{$IFNDEF GLS_COMPILER_2009_UP}
-type
-  PClassData = ^TClassData;
-  TClassData = record
-    ClassType: TClass;
-    ParentInfo: Pointer;
-    PropCount: SmallInt;
-    UnitName: ShortString;
-  end;
-{$ENDIF}
 
 function FindUnitName(anObject: TObject): string;
-{$IFDEF GLS_COMPILER_2009_UP}
 begin
   if Assigned(anObject) then
     Result := anObject.UnitName
   else
     Result := '';
 end;
-{$ELSE}
-var
-  LClassInfo: Pointer;
-begin
-  Result := '';
-  if anObject = nil then
-    Exit;
-
-  LClassInfo := anObject.ClassInfo;
-  if LClassInfo <> nil then
-    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
-end;
-{$ENDIF}
 
 function FindUnitName(aClass: TClass): string;
-{$IFDEF GLS_COMPILER_2009_UP}
 begin
   if Assigned(aClass) then
     Result := aClass.UnitName
   else
     Result := '';
 end;
-{$ELSE}
-var
-  LClassInfo: Pointer;
-begin
-  Result := '';
-  if aClass = nil then
-    Exit;
-
-  LClassInfo := aClass.ClassInfo;
-  if LClassInfo <> nil then
-    Result := string(PClassData(Integer(LClassInfo) + 2 + PByte(Integer(LClassInfo) + 1)^).UnitName);
-end;
-{$ENDIF}
-
-{$IFNDEF GLS_COMPILER_2009_UP}
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
-begin
-  Result := C in CharSet;
-end;
-
-function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean;
-begin
-  Result := (C < #$0100) and (AnsiChar(C) in CharSet);
-end;
-{$ENDIF}
 
 procedure SetExeDirectory;
 var
-{$IFNDEF FPC}
   path: string;
-{$ELSE}
-  path: UTF8String;
-{$ENDIF}
 begin
   if IsDesignTime then
   begin
@@ -905,48 +782,28 @@ begin
       else
         vLastProjectTargetName := path;
       path := IncludeTrailingPathDelimiter(ExtractFilePath(path));
-{$IFNDEF FPC}
       SetCurrentDir(path);
-{$ELSE}
-      SetCurrentDirUTF8(path);
-{$ENDIF}
     end;
   end
   else
   begin
-{$IFNDEF FPC}
     path := ExtractFilePath(ParamStr(0));
     path := IncludeTrailingPathDelimiter(path);
     SetCurrentDir(path);
-{$ELSE}
-    path := ExtractFilePath(ParamStrUTF8(0));
-    path := IncludeTrailingPathDelimiter(path);
-    SetCurrentDirUTF8(path);
-{$ENDIF}
   end;
 end;
 
 function GetDecimalSeparator: Char;
 begin
   Result :=
-{$IFDEF FPC}
-  {$IF (lcl_release > 29) }
-  DefaultFormatSettings.
-  {$IFEND}
-{$ENDIF}
-{$IFDEF GLS_DELPHI_XE_UP}
+ {$IFDEF GLS_DELPHI_XE_UP}
   FormatSettings.
-  {$ENDIF}
+ {$ENDIF}
   DecimalSeparator;
 end;
 
 procedure SetDecimalSeparator(AValue: Char);
 begin
-{$IFDEF FPC}
-  {$IF (lcl_release > 29) }
-  DefaultFormatSettings.
-  {$IFEND}
-{$ENDIF}
 {$IFDEF GLS_DELPHI_XE_UP}
   FormatSettings.
 {$ENDIF}
@@ -1336,9 +1193,7 @@ end;
 
 initialization
   vGLSStartTime := GLSTime;
-{$IFDEF FPC}
 {$IFDEF UNIX}
   Init_vProgStartSecond;
 {$ENDIF}
-{$ENDIF}
-end.
+end.

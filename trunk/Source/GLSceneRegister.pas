@@ -1988,24 +1988,25 @@ begin
 end;
 
 procedure Register;
-begin
+begin 
   RegisterComponents('GLScene', [TGLScene, TGLSceneViewer, TGLMemoryViewer,
-    TGLMaterialLibrary, TGLMaterialLibraryEx, TGLCadencer, TGLGuiLayout,
-    TGLBitmapFont, TGLWindowsBitmapFont, TGLScriptLibrary, TGLSoundLibrary,
-    TGLSMWaveOut, TGLFullScreenViewer]);
-
-  RegisterComponents('GLScene PFX', [TGLCustomPFXManager, TGLPolygonPFXManager,
+  TGLMaterialLibrary, TGLMaterialLibraryEx, TGLCadencer, TGLGuiLayout, 
+  TGLBitmapFont, TGLWindowsBitmapFont, TGLScriptLibrary, TGLSoundLibrary,
+  TGLSMWaveOut, TGLFullScreenViewer]);
+  
+  RegisterComponents('GLScene PFX', 
+    [TGLCustomPFXManager, TGLPolygonPFXManager,
     TGLPointLightPFXManager, TGLCustomSpritePFXManager, TGLPerlinPFXManager,
     TGLLinePFXManager, TGLFireFXManager, TGLThorFXManager,
-    TGLEParticleMasksManager]);
-
+    TGLEParticleMasksManager]);  
+	
   RegisterComponents('GLScene Utils', [TGLAsyncTimer, TGLStaticImposterBuilder,
-    TGLCollisionManager, TGLAnimationControler, TGLAVIRecorder, TGLDCEManager,
-    TGLFPSMovementManager, TGLMaterialScripter, TGLUserInterface, TGLNavigator,
-    TGLSmoothNavigator, TGLSmoothUserInterface, TGLTimeEventsMGR,
-    TGLApplicationFileIO, TGLVfsPAK, TGLSimpleNavigation, TGLGizmo,
-    TGLCameraController, TGLSLanguage, TGLSLogger, TGLSArchiveManager,
-    TGLJoystick, TGLScreenSaver, TGLSSynHiMemo]);
+	TGLCollisionManager, TGLAnimationControler, TGLAVIRecorder, TGLDCEManager,
+	TGLFPSMovementManager, TGLMaterialScripter, TGLUserInterface, TGLNavigator,
+	TGLSmoothNavigator, TGLSmoothUserInterface, TGLTimeEventsMGR,
+	TGLApplicationFileIO, TGLVfsPAK, TGLSimpleNavigation, TGLGizmo, 
+	TGLCameraController, TGLSLanguage, TGLSLogger, TGLSArchiveManager, 
+	TGLJoystick, TGLScreenSaver, TGLSSynHiMemo]);
 
   RegisterComponents('GLScene Terrain', [TGLBitmapHDS, TGLCustomHDS,
     TGLHeightTileFileHDS, TGLBumpmapHDS, TGLPerlinHDS, TGLTexturedHDS,
@@ -2179,25 +2180,7 @@ begin
   Project := GetActiveProject;
   if Assigned(Project) then
   begin
-{$IFDEF GLS_DELPHI_2005_UP}
     Result := Project.ProjectOptions.TargetName;
-{$ELSE}
-    if Project.ProjectOptions.Values['GenPackage'] then // package project
-    begin
-      // use project options if specified
-      Result := Project.ProjectOptions.Values['PkgDllDir'];
-      // otherwise use environment options
-      if Result = '' then
-        Result := (BorlandIDEServices as IOTAServices)
-          .GetEnvironmentOptions.Values['PackageDPLOutput'];
-    end
-    else // non-package project, use project options
-      Result := Project.ProjectOptions.Values['OutputDir'];
-
-    // default is the project's path
-    if Result = '' then
-      Result := ExtractFilePath(Project.FileName);
-{$ENDIF}
     if Length(Result) > 0 then
       ForceDirectories(ExtractFilePath(Result));
   end;
@@ -2209,10 +2192,8 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFDEF GLS_DELPHI_2005_UP}
-  SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
-  LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'SVN version');
-{$ENDIF}
+SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
+LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'SVN version');
 GLCrossPlatform.IsDesignTime := True;
 GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
 GLColor.vUseDefaultColorSets := True;
