@@ -24,8 +24,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLMaterial, GLObjects,
-  GLCrossPlatform, GLPersistentClasses, GLVectorLists, GLRenderContextInfo;
+  Classes, GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLMaterial,
+  GLObjects, GLCrossPlatform, GLPersistentClasses, GLVectorLists,
+  GLRenderContextInfo, XOpenGL;
 
 type
 
@@ -162,12 +163,6 @@ type
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-uses XOpenGL;
-
 // ------------------
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------

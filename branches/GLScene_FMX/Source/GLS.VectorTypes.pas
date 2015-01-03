@@ -37,47 +37,44 @@ unit GLS.VectorTypes;
 
 interface
 
-uses
-  GLS.CrossPlatform;
-
 
 type
   //2
   TVector2d = record
     case Integer of
-      0 : (V: array[0..1] of double);
-      1 : (X: double;
-           Y: double);
+      0 : (V: array[0..1] of Double);
+      1 : (X: Double;
+           Y: Double);
   end;
   TVector2f = record
     case Integer of
-      0 : (V: array[0..1] of single);
-      1 : (X,Y: single);
+      0 : (V: array[0..1] of Single);
+      1 : (X,Y: Single);
   end;
   TVector2h = record
     case Integer of
-      0 : (V: array[0..1] of THalfFloat);
-      1 : (X,Y: THalfFloat);
+      0 : (V: array[0..1] of Word);
+      1 : (X,Y: Word);
   end;
   TVector2i = record
     case Integer of
-      0 : (V: array[0..1] of longint);
-      1 : (X,Y: longint);
+      0 : (V: array[0..1] of Longint);
+      1 : (X,Y: Longint);
   end;
   TVector2ui = record
     case Integer of
-      0 : (V: array[0..1] of longword);
-      1 : (X,Y: longword);
+      0 : (V: array[0..1] of Longword);
+      1 : (X,Y: Longword);
   end;
   TVector2s = record
     case Integer of
-      0 : (V: array[0..1] of smallint);
-      1 : (X,Y: smallint);
+      0 : (V: array[0..1] of Smallint);
+      1 : (X,Y: Smallint);
   end;
   TVector2b = record
     case Integer of
-      0 : (V: array[0..1] of byte);
-      1 : (X,Y: byte);
+      0 : (V: array[0..1] of Byte);
+      1 : (X,Y: Byte);
   end;
   TVector2sb = record
     case Integer of
@@ -103,23 +100,23 @@ type
   //3
   TVector3d = record
     case Integer of
-      0 : (V: array[0..2] of double);
-      1 : (X,Y,Z: double);
+      0 : (V: array[0..2] of Double);
+      1 : (X,Y,Z: Double);
   end;
   TVector3f = record
     case Integer of
-      0 : (V: array[0..2] of single);
-      1 : (X,Y,Z: single);
+      0 : (V: array[0..2] of Single);
+      1 : (X,Y,Z: Single);
   end;
   TVector3h = record
     case Integer of
-      0 : (V: array[0..2] of THalfFloat);
-      1 : (X,Y,Z: THalfFloat);
+      0 : (V: array[0..2] of Word);
+      1 : (X,Y,Z: Word);
   end;
   TVector3i = record
     case Integer of
-      0 : (V: array[0..2] of longint);
-      1 : (X,Y,Z: longint);
+      0 : (V: array[0..2] of Longint);
+      1 : (X,Y,Z: Longint);
   end;
   TVector3ui = record
     case Integer of
@@ -128,13 +125,13 @@ type
   end;
   TVector3s = record
     case Integer of
-      0 : (V: array[0..2] of smallint);
-      1 : (X,Y,Z: smallint);
+      0 : (V: array[0..2] of Smallint);
+      1 : (X,Y,Z: Smallint);
   end;
   TVector3b = record
     case Integer of
-      0 : (V: array[0..2] of byte);
-      1 : (X,Y,Z: byte);
+      0 : (V: array[0..2] of Byte);
+      1 : (X,Y,Z: Byte);
   end;
   TVector3sb = record
     case Integer of
@@ -160,23 +157,23 @@ type
   //4
   TVector4d = record
     case Integer of
-      0 : (V: array[0..3] of double);
-      1 : (X,Y,Z,W: double);
+      0 : (V: array[0..3] of Double);
+      1 : (X,Y,Z,W: Double);
   end;
   TVector4f = record
     case Integer of
-      0 : (V: array[0..3] of single);
-      1 : (X,Y,Z,W: single);
+      0 : (V: array[0..3] of Single);
+      1 : (X,Y,Z,W: Single);
   end;
   TVector4h = record
     case Integer of
-      0 : (V: array[0..3] of THalfFloat);
-      1 : (X,Y,Z,W: THalfFloat);
+      0 : (V: array[0..3] of Word);
+      1 : (X,Y,Z,W: Word);
   end;
   TVector4i = record
     case Integer of
       0 : (V: array[0..3] of LongInt);
-      1 : (X,Y,Z,W: longint);
+      1 : (X,Y,Z,W: Longint);
   end;
   TVector4ui = record
     case Integer of
@@ -191,7 +188,7 @@ type
   TVector4b = record
     case Integer of
       0 : (V: array[0..3] of Byte);
-      1 : (X,Y,Z,W: byte);
+      1 : (X,Y,Z,W: Byte);
   end;
   TVector4sb = record
     case Integer of

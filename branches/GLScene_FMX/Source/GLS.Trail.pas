@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTrail<p>
+{: GLS.Trail<p>
 
 	Creates a trail-like mesh.
   Based on Jason Lanford's demo. <p>
@@ -19,23 +19,18 @@
    </ul></font>
 }
 
-unit GLTrail;
+unit GLS.Trail;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-   
-  GLS.Scene, GLS.VectorTypes, GLS.MeshUtils, GLS.VectorGeometry, GLS.VectorFileObjects,
-  GLMesh, GLS.Objects, GLS.Material, GLS.Strings, GLS.BaseClasses;
-
+  GLS.Scene, GLS.VectorTypes, GLS.MeshUtils, GLS.VectorGeometry,
+  GLS.VectorFileObjects, GLS.Mesh, GLS.Objects, GLS.Material,
+  GLS.Strings, GLS.BaseClasses;
 
 const cMaxVerts = 2000;
 
@@ -115,9 +110,9 @@ type
      property Enabled : boolean read FEnabled write SetEnabled default True;
   end;
 
-
+//-----------------------------------------------------------------------------
 implementation
-
+//-----------------------------------------------------------------------------
 
 constructor TGLTrail.Create(AOwner: TComponent);
 begin

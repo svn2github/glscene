@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: ZLibEx<p>
+{: GLS.zLibEx<p>
 
   <b>Historique : </b><font size=-1><ul>
       <li>07/05/10 - Yar - Fixed for Linux x64
@@ -97,7 +97,7 @@
 *      2010.04.20  prototyping and assisting with the TZ*Buffer classes      *
 *****************************************************************************}
 
-unit GLSZLibEx;
+unit GLS.zLibEx;
 
 interface
 
@@ -105,7 +105,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils, System.Classes, GLS.CrossPlatform, GLSZLibExApi;
+  System.SysUtils, System.Classes,
+  GLS.CrossPlatform, GLS.zLibExApi;
 
 type
 
@@ -674,7 +675,9 @@ type
   EZCompressionError = class(EZLibError);
   EZDecompressionError = class(EZLibError);
 
+//--------------------------------------------------------------
 implementation
+//--------------------------------------------------------------
 
 const
   SZInvalid = 'Invalid ZStream operation!';

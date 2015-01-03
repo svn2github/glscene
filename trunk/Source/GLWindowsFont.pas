@@ -30,27 +30,31 @@ unit GLWindowsFont;
 
 interface
 
-{$INCLUDE GLScene.inc}
+{$I GLScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLIntf, LCLType, Types, LCLProc, LazUTF8,
-{$ENDIF}
-  GLBitmapFont,
-  GLRenderContextInfo,
   Classes,
-  GLScene,
-  GLTexture,
+  Math,
+  SysUtils,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Graphics, System.Types, System.UITypes,
 {$ELSE}
   Graphics, Types,
 {$ENDIF}
+  GLScene,
+  GLTexture,
+  GLBitmapFont,
+  GLRenderContextInfo,
   GLVectorLists,
-  GLCrossPlatform;
+  GLCrossPlatform,
+  GLUtils,
+  GLVectorGeometry,
+  OpenGLTokens,
+  GLApplicationFileIO,
+  GLVectorTypes;
 
 type
 
@@ -114,15 +118,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLUtils,
-  Math,
-  SysUtils,
-  GLVectorGeometry,
-  OpenGLTokens,
-  GLApplicationFileIO,
-  GLVectorTypes;
 
 const
   cDefaultLast = '}';

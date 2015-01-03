@@ -20,8 +20,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, 
-  GLS.VectorTypes, GLS.VectorLists;
+  System.Classes, System.SysUtils,
+  GLS.VectorTypes, GLS.VectorLists, GLS.Utils;
 
 type
   TVRMLNode = class
@@ -173,9 +173,9 @@ type
 
   end;
 
+//---------------------------------------------------------------------------
 implementation
-
-uses GLS.Utils;
+//---------------------------------------------------------------------------
 
 function CreateVRMLTokenList(Text : String) : TStringList;
 const

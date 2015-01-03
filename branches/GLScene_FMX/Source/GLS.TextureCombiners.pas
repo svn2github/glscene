@@ -22,7 +22,11 @@ interface
 
 {$I GLScene.inc}
 
-uses System.SysUtils, Classes;
+uses
+  System.SysUtils, System.Classes,
+
+  GLS.OpenGLTokens,
+  GLS.Context;
 
 type
 
@@ -72,10 +76,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLS.OpenGLTokens,
-  GLS.Context;
 
 var
   vActiveUnit: Integer;

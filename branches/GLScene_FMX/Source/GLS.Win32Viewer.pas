@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWin32Viewer<p>
+{: GLS.Win32Viewer<p>
 
    Win32 specific Scene viewer.<p>
 
@@ -34,23 +34,17 @@
      <li>12/12/01 - EG - Creation (split from GLScene.pas)
  </ul></font>
 }
-unit GLWin32Viewer;
+unit GLS.Win32Viewer;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
   System.Types, FMX.Graphics, FMX.Forms, FMX.Controls,
-{$ELSE}
-  Winapi.Windows, Messages, System.Classes,  System.SysUtils, Types,
-  Graphics, Forms, Controls,
-{$ENDIF}
 
-   
-  GLS.Scene, GLWin32Context,  GLS.Context;
+  GLS.Scene, GLS.Win32Context,  GLS.Context;
 
 type
   TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
@@ -225,12 +219,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-uses
-  GLViewer;
-
 // ------------------
 // ------------------ TGLSceneViewer ------------------
 // ------------------

@@ -55,7 +55,9 @@ procedure LoadQ3Anims(Animations:TActorAnimations;
 // running this to keep everything nice and clean.
 procedure LoadQ3Skin(FileName:string; Actor:TGLActor);
 
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
 
 // LoadQ3Anims
 //

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletTypes<p>
+{: GLS.VerletTypes<p>
 
    Base Verlet modelling/simulation classes.<p>
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
@@ -47,21 +47,17 @@
       <li>21/06/02 - EG - Creation (original code by Mattias Fagerlund)
    </ul>
 }
-unit GLVerletTypes;
+unit GLS.VerletTypes;
 
 interface
 
 {$I GLScene.inc}
 
 uses
- {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, System.Types,
-{$ELSE}
-  System.Classes, System.SysUtils, Types,
-{$ENDIF}
-   
-  GLS.CrossPlatform, GLS.VectorGeometry, GLS.VectorLists, GLSpacePartition,
-  GLS.GeometryBB, GLS.VectorTypes;
+
+  GLS.CrossPlatform, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.SpacePartition, GLS.GeometryBB, GLS.VectorTypes;
 
 const
    G_DRAG = 0.0001;
@@ -481,7 +477,7 @@ type
    TUpdateSpacePartion = (uspEveryIteration, uspEveryFrame, uspNever);
    TCollisionConstraintTypes = (cctEdge, cctNode);
    TCollisionConstraintTypesSet = set of TCollisionConstraintTypes;
-   
+
    // TVerletWorld
    //
    TVerletWorld = class (TObject)
@@ -863,9 +859,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ TVerletNode ------------------
 // ------------------

@@ -273,7 +273,9 @@ function EncodeGLTextureTarget(const glTarget: TGLEnum): TGLTextureTarget;
 function IsTargetSupportMipmap(const TextureTarget: TGLTextureTarget): Boolean; overload;
 function IsTargetSupportMipmap(const glTarget: TGLEnum): Boolean; overload;
 
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
 
 uses
   GLContext;

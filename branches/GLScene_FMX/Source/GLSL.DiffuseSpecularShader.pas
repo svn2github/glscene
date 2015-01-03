@@ -64,8 +64,8 @@ uses
   System.Classes, System.SysUtils,
 
    
-  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings, GLS.CustomShader,
-  GLSL.Shader, GLS.Color, GLS.RenderContextInfo, GLS.Material;
+  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings,
+  GLS.CustomShader, GLSL.Shader, GLS.Color, GLS.RenderContextInfo, GLS.Material;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
@@ -185,8 +185,13 @@ type
     property LightPower;
     property FogSupport;
   end;
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 procedure GetVertexProgramCode(const Code: TStrings;
   AFogSupport: Boolean; var rci: TRenderContextInfo);

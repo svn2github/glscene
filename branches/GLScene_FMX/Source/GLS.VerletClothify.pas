@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletClothify<p>
+{: GLS.VerletClothify<p>
 
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
@@ -21,7 +21,7 @@
    </ul>
 }
 
-unit GLVerletClothify;
+unit GLS.VerletClothify;
 
 interface
 
@@ -29,8 +29,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
-  GLS.VectorFileObjects, GLVerletTypes, GLS.VectorTypes, GLS.VectorLists,
+
+  GLS.VectorFileObjects, GLS.VerletTypes, GLS.VectorTypes, GLS.VectorLists,
   GLS.VectorGeometry, GLS.Texture, GLS.OpenGLTokens, GLS.RenderContextInfo,
   GLS.State, GLS.Context;
 
@@ -176,9 +176,11 @@ type
     constructor CreateOwned(const aOwner : TVerletWorld); override;
     destructor Destroy; override;
   end;
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 { TFaceExtractor }
 
 procedure TFaceExtractor.Clear;

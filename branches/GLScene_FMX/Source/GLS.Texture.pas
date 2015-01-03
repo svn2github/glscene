@@ -1036,13 +1036,13 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
+// TODO: remove dependancy on GLS.Scene.pas unit (related to tmmCubeMapLight0)
 
 uses
   GLS.Scene,
   GLS.XOpenGL,
-  PictureRegisteredFormats
-  , GLS.VectorTypes;
+  GLS.PictureRegisteredFormats,
+  GLS.VectorTypes;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

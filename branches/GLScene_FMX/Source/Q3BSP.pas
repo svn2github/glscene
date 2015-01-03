@@ -8,14 +8,17 @@
 	<b>History : </b><font size=-1><ul>
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
 	   <li>30/01/03 - Egg - Creation, based on Philip Stefou's document and
-                           bits from Jan Horn's loader 
+                           bits from Jan Horn's loader
 	</ul></font>
 }
 unit Q3BSP;
 
 interface
 
-uses System.Classes, GLS.VectorTypes;
+uses
+  System.Classes,
+  System.SysUtils,
+  GLS.VectorTypes;
 
 const FACE_POLYGON = 1;
 const MAX_TEXTURES = 1000;
@@ -149,12 +152,6 @@ const
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses SysUtils;
-
 // ------------------
 // ------------------ TQ3BSP ------------------
 // ------------------

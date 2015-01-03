@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: XOpenGL<p>
+{: GLS.XOpenGL<p>
 
    "Alternate" OpenGL functions to handle multi-texturing.<p>
 
@@ -36,7 +36,7 @@
       <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
    </ul>
 }
-unit XOpenGL;
+unit GLS.XOpenGL;
 
 interface
 
@@ -152,16 +152,16 @@ type
        Calls to Begin/EndUpdate may be nested. }
     procedure EndUpdate;
 
-    {: Saves XOpenGL State on the stack. }
+    {: Saves GLS.XOpenGL State on the stack. }
     procedure PushState;
-    {: Restores XOpenGL State from the stack. }
+    {: Restores GLS.XOpenGL State from the stack. }
     procedure PopState;
 
     {: Whenever called, 2nd texture units changes will be forbidden to .<p>
        Use this function when you're using the 2nd texture unit for your own
-       purposes and don't want XOpenGL to alter it. }
+       purposes and don't want GLS.XOpenGL to alter it. }
     procedure ForbidSecondTextureUnit;
-    {: Allow XOpenGL to use the second texture unit again. }
+    {: Allow GLS.XOpenGL to use the second texture unit again. }
     procedure AllowSecondTextureUnit;
     {: Returns the complex mapping in bitwise form. }
     function GetBitWiseMapping: Cardinal;

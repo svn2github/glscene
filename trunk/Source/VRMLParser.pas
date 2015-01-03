@@ -20,7 +20,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLVectorTypes, GLVectorLists;
+  Classes, SysUtils,
+
+  GLVectorTypes, GLVectorLists, GLUtils;
 
 type
   TVRMLNode = class
@@ -171,10 +173,9 @@ type
       property AllowUnknownNodes : Boolean read FAllowUnknownNodes write FAllowUnknownNodes;
 
   end;
-
+//----------------------------------------------------------------------------
 implementation
-
-uses GLUtils;
+//----------------------------------------------------------------------------
 
 function CreateVRMLTokenList(Text : String) : TStringList;
 const

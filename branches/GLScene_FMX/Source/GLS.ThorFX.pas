@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLThorFX<p>
+{ : GLS.ThorFX<p>
   <b>History : </b><font size=-1><ul>
   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
   <li>21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
@@ -24,7 +24,7 @@
   <li>09/03/01 - René Lindsay - unit created
   </ul></font>
 }
-unit GLThorFX;
+unit GLS.ThorFX;
 
 interface
 
@@ -35,8 +35,8 @@ uses
 
   GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
   GLS.OpenGLTokens, GLS.Context, GLS.VectorLists, GLS.VectorTypes,
-  GLS.Cadencer, GLS.Color, GLS.BaseClasses, GLS.Coordinates, GLS.RenderContextInfo,
-  GLS.Manager, GLS.State, GLS.TextureFormat;
+  GLS.Cadencer, GLS.Color, GLS.BaseClasses, GLS.Coordinates,
+  GLS.RenderContextInfo, GLS.Manager, GLS.State, GLS.TextureFormat;
 
 type
   PThorpoint = ^TThorpoint;
@@ -153,11 +153,6 @@ function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLThorFXManager ------------------
 // ------------------

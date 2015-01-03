@@ -53,11 +53,12 @@ interface
 
 uses
   {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
+    System.Classes, System.SysUtils, System.Math,
   {$ELSE}
-    Classes, SysUtils,
+    Classes, SysUtils, Math,
   {$ENDIF}
 
+  GLObjects, GLState, GLUtils,
   GLScene, GLHUDObjects, GLMaterial, OpenGLTokens, GLContext,
   GLBitmapFont, GLWindowsFont, GLVectorGeometry, GLGui,
   GLCrossPlatform, GLColor, GLRenderContextInfo, GLBaseClasses;
@@ -681,9 +682,13 @@ type
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;
 
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 implementation
-
-uses GLObjects, GLState, GLUtils, Math;
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;

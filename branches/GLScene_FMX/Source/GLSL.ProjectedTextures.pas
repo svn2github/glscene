@@ -178,6 +178,9 @@ type
     property UseLightmaps: boolean read FUseLightmaps write SetUseLightmaps;
   end;
 
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
 
 // ------------------
@@ -203,7 +206,7 @@ end;
 
 destructor TGLSLTextureEmitter.Destroy;
 begin
-  FColor.free;
+  FColor.Free;
   inherited;
 end;
 // SetupTexMatrix

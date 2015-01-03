@@ -36,7 +36,7 @@ uses
   FMX.Menus,
 
   GLS.CrossPlatform,
-  GLScene;
+  GLS.Scene;
 
 type
 

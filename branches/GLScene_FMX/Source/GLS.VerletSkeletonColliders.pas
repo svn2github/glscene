@@ -1,4 +1,7 @@
-{: GLVerletSkeletonColliders<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.VerletSkeletonColliders<p>
 
    Skeleton colliders for defining and controlling verlet
    constraints.<p>
@@ -8,15 +11,15 @@
      <li>08/10/03 - SG - Creation.
    </ul></font>
 }
-unit GLVerletSkeletonColliders;
+unit GLS.VerletSkeletonColliders;
 
 interface
 
 uses
   System.Classes,
    
-  GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects, GLVerletTypes,
-  GLS.VectorTypes;
+  GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects,
+  GLS.VerletTypes,  GLS.VectorTypes;
 
 type
   

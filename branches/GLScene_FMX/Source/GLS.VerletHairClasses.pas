@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletHairClasses<p>
+{: GLS.VerletHairClasses<p>
 
    Creates a single strand of hair using verlet classes. Can be used to simulate
    ropes, fur or hair.<p>
@@ -11,7 +11,7 @@
       <li>06/03/04 - MF - Creation
    </ul>
 }
-unit GLVerletHairClasses;
+unit GLS.VerletHairClasses;
 
 interface
 
@@ -19,7 +19,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLVerletTypes, GLS.VectorTypes, GLS.VectorLists, GLS.VectorGeometry;
+
+  GLS.VerletTypes, GLS.VectorTypes, GLS.VectorLists, GLS.VectorGeometry;
 
 type
   TVHStiffness = (vhsFull, vhsSkip1Node, vhsSkip2Node, vhsSkip3Node,
@@ -74,8 +75,11 @@ type
     {: Root should be nailed down to give the hair stability }
     property Root : TVerletNode read GetRoot;
   end;
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 { TVerletHair }
 

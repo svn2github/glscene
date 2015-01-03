@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexCombineShader<p>
+{: GLS.TexCombineShader<p>
 
    A shader that allows texture combiner setup.<p>
 
@@ -16,18 +16,24 @@
       <li>16/05/03 - EG - Creation
    </ul></font>
 }
-unit GLTexCombineShader;
+unit GLS.TexCombineShader;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes,
+  System.Classes, System.SysUtils,
+
   GLS.Texture,
   GLS.Material,
   GLS.RenderContextInfo,
-  GLS.TextureCombiners;
+  GLS.TextureCombiners,
+  GLS.OpenGLTokens,
+  GLS.XOpenGL,
+  GLS.Context,
+  GLS.CrossPlatform,
+  GLS.Utils;
 
 type
 
@@ -87,18 +93,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses
-  System.SysUtils,
-  GLS.OpenGLTokens,
-  GLS.XOpenGL,
-  GLS.Context,
-  GLS.CrossPlatform,
-  GLS.Utils;
-
 // ------------------
 // ------------------ TGLTexCombineShader ------------------
 // ------------------

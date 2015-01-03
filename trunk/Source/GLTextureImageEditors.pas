@@ -17,7 +17,9 @@ interface
 {$i GLScene.inc}
 
 uses
-  Classes, GLTexture, GLProcTextures;
+  Classes, SysUtils,
+
+  GLTexture, GLProcTextures;
 
 
 type
@@ -84,7 +86,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-  SysUtils, GLCrossPlatform, GLUtils;
+  GLCrossPlatform, GLUtils;
 
 var
    vTIEClass, vTIEEditor : TList;

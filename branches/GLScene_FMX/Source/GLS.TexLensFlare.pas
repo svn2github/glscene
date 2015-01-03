@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexLensFlare<p>
+{: GLS.TexLensFlare<p>
 
    Texture-based Lens flare object.<p>
 
@@ -16,23 +16,18 @@
       <li>25/09/03 - EG - Creation from GLLensFlare split
  </ul></font><p>
 }
-unit GLTexLensFlare;
+unit GLS.TexLensFlare;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    System.Classes,
-  {$ENDIF}
+  System.Classes,
 
-  GLS.Scene,  GLS.VectorGeometry,  GLS.Objects,  GLS.Texture, GLS.OpenGLTokens,
-  GLS.Context,  GLS.RenderContextInfo,  GLS.BaseClasses,
-  GLS.State
-  , GLS.VectorTypes;
+  GLS.Scene,  GLS.VectorGeometry,  GLS.Objects,  GLS.Texture,
+  GLS.OpenGLTokens, GLS.Context,  GLS.RenderContextInfo,  GLS.BaseClasses,
+  GLS.State, GLS.VectorTypes;
 
 type
 
@@ -94,7 +89,6 @@ type
   end;
 
 implementation
-
 // ------------------
 // ------------------ TGLTextureLensFlare ------------------
 // ------------------

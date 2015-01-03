@@ -1,8 +1,9 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLS.VectorGeometry<p>
 
-	Base classes and structures for GLScene.<p>
+	 Base classes and structures for GLScene.<p>
 
    Most common functions/procedures come in various flavours (using overloads),
    the naming convention is :<ul>
@@ -217,6 +218,7 @@ unit GLS.VectorGeometry;
 interface
 
 uses
+  System.SysUtils, System.Math, System.Types,
   GLS.VectorTypes;
 
 const
@@ -1822,8 +1824,6 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
-
-uses System.SysUtils, Math;
 
 const
 {$ifndef GEOMETRY_NO_ASM}

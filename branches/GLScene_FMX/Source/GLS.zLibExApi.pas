@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: ZLibEx<p>
+{: GLS.zLibEx<p>
 
   <b>Historique : </b><font size=-1><ul>
       <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
@@ -35,7 +35,7 @@
 *      2005.07.25  informing me about the zlib 1.2.3 update                  *
 *****************************************************************************}
 
-unit GLSZLibExApi;
+unit GLS.zLibExApi;
 
 interface
 
@@ -44,16 +44,6 @@ interface
 
 const
   {** version ids ***********************************************************}
-
-{$IFNDEF FPC}
-  ZLIB_VERSION         = '1.2.5';
-  ZLIB_VERNUM          = $1250;
-
-  ZLIB_VER_MAJOR       = 1;
-  ZLIB_VER_MINOR       = 2;
-  ZLIB_VER_REVISION    = 5;
-  ZLIB_VER_SUBREVISION = 0;
-{$ENDIF}
 
   {** compression methods ***************************************************}
 
@@ -187,48 +177,6 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
 {$ENDIF}
 
 {** external routines *******************************************************}
-{$IFDEF FPC}
-function Initzlib : Boolean;
-procedure Closezlib;
-procedure ReadEntryPoints;
-function zlibVersion(): string;
-function ZLIB_VERSION(): PChar;
-function zGetProcAddress(ProcName: PChar): Pointer;
-
-var
-
-zlibVersionpchar: function(): pchar; cdecl;
-zErrorpchar: function (err: integer): pchar; cdecl;
-inflateSyncPoint: function (z: TZstreamRec): integer; cdecl;
-get_crc_table: function (): pointer; cdecl;
-
-deflateInit_: function (var strm: TZStreamRec; level: Integer;
-  version: PAnsiChar; recsize: Integer): Integer; cdecl;
-deflateInit2_: function (var strm: TZStreamRec; level, method, windowBits,
-  memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
-  cdecl;
-deflate: function (var strm: TZStreamRec; flush: Integer): Integer;  cdecl;
-deflateEnd: function (var strm: TZStreamRec): Integer; cdecl;
-deflateReset: function (var strm: TZStreamRec): Integer; cdecl;
-
-inflateInit_: function (var strm: TZStreamRec; version: PAnsiChar;
-  recsize: Integer): Integer; cdecl;
-
-inflateInit2_: function (var strm: TZStreamRec; windowBits: Integer;
-  version: PAnsiChar; recsize: Integer): Integer ;cdecl;
-
-inflate: function (var strm: TZStreamRec; flush: Integer): Integer; cdecl;
-
-inflateEnd: function (var strm: TZStreamRec): Integer; cdecl;
-
-inflateReset: function (var strm: TZStreamRec): Integer; cdecl;
-
-adler32: function (adler: Longint; const buf; len: Integer): Longint;cdecl;
-
-crc32: function (crc: Longint; const buf; len: Integer): Longint; cdecl;
-
-{$ELSE}
-
 function deflateInit_(var strm: TZStreamRec; level: Integer;
   version: PAnsiChar; recsize: Integer): Integer;
 
@@ -256,7 +204,6 @@ function inflateReset(var strm: TZStreamRec): Integer;
 function adler32(adler: Longint; const buf; len: Integer): Longint;
 
 function crc32(crc: Longint; const buf; len: Integer): Longint;
-{$ENDIF}
 
 implementation
 
@@ -313,48 +260,6 @@ begin
 end;
 
 {** external routines *******************************************************}
-{$IFNDEF FPC}
-function deflateInit_(var strm: TZStreamRec; level: Integer;
-  version: PAnsiChar; recsize: Integer): Integer;
-  external;
-
-function deflateInit2_(var strm: TZStreamRec; level, method, windowBits,
-  memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
-  external;
-
-function deflate(var strm: TZStreamRec; flush: Integer): Integer;
-  external;
-
-function deflateEnd(var strm: TZStreamRec): Integer;
-  external;
-
-function deflateReset(var strm: TZStreamRec): Integer;
-  external;
-
-function inflateInit_(var strm: TZStreamRec; version: PAnsiChar;
-  recsize: Integer): Integer;
-  external;
-
-function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
-  version: PAnsiChar; recsize: Integer): Integer;
-  external;
-
-function inflate(var strm: TZStreamRec; flush: Integer): Integer;
-  external;
-
-function inflateEnd(var strm: TZStreamRec): Integer;
-  external;
-
-function inflateReset(var strm: TZStreamRec): Integer;
-  external;
-
-function adler32(adler: Longint; const buf; len: Integer): Longint;
-  external;
-
-function crc32(crc: Longint; const buf; len: Integer): Longint;
-  external;
-{$ELSE}
-
 const
    INVALID_MODULEHANDLE = 0;
 
@@ -428,7 +333,6 @@ function zGetProcAddress(ProcName: PChar):Pointer;
 begin
   result := GetProcAddress(vzHandle, ProcName);
 end;
-{$ENDIF}
 
 {** zlib function implementations *******************************************}
 
@@ -456,15 +360,6 @@ end;
 
 initialization
 
-{$IFDEF FPC}
-if Initzlib then
-  ReadEntryPoints;
-{$ENDIF}
-
 finalization
-
-{$IFDEF FPC}
-Closezlib;
-{$ENDIF}
 
 end.

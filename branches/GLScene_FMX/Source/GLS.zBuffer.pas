@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLzBuffer<p>
+{: GLS.zBuffer<p>
 
    ZBuffer retrieval and computations.<p>
 
@@ -69,7 +69,7 @@
    //------------------------  z:=1-(fp/d-1)/(fp/np-1); //old FtoZ
    //------------------------------------------------------------------------
 
-unit GLzBuffer;
+unit GLS.zBuffer;
 
 interface
 
@@ -78,8 +78,8 @@ interface
 uses
   System.Classes, System.SysUtils,
    
-  GLS.Scene, GLS.VectorGeometry, GLS.Graphics, GLS.Objects, GLS.Context, GLViewer,
-  GLS.Color, GLS.RenderContextInfo, GLS.State, GLS.TextureFormat,
+  GLS.Scene, GLS.VectorGeometry, GLS.Graphics, GLS.Objects, GLS.Context,
+  GLS.SceneViewer, GLS.Color, GLS.RenderContextInfo, GLS.State, GLS.TextureFormat,
   GLS.OpenGLTokens, GLS.XOpenGL , GLS.VectorTypes;
 
 

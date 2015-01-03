@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWaterPlane<p>
+{: GLS.WaterPlane<p>
 
    A plane simulating animated water<p>
 
@@ -22,18 +22,14 @@
    http://users.hol.gr/~sternas/<br>
    Sternas Stefanos 2003
 }
-unit GLWaterPlane;
+unit GLS.WaterPlane;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    System.Classes,
-  {$ENDIF}
+  System.Classes,
 
   GLS.VectorGeometry, GLS.Scene, GLS.OpenGLTokens, GLS.VectorLists,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.BaseClasses,

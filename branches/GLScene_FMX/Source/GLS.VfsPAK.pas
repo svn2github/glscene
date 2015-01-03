@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVfsPAK<p>
+{: GLS.VfsPAK<p>
 
-	Support-code for loading files from Quake II PAK Files.<p>
+	 Support-code for loading files from Quake II PAK Files.<p>
    When instance is created all LoadFromFile methods using
    GLS.ApplicationFileIO mechanism will be pointed into PAK file.<p>
    You can change current PAK file by ActivePak variable.<p>
@@ -13,7 +13,7 @@
       <li>31/03/2007 - DaStr - Added $I GLScene.inc
       <li>29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
       <li>26/10/2006 - LC - Fixed memory leak in TGLVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
-      <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
+      <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk.
       <li>14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
       <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
       <li>04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
@@ -26,7 +26,7 @@
 	</ul></font>
 
 }
-unit GLVfsPAK;
+unit GLS.VfsPAK;
 
 {$I GLScene.inc}
 // Activate support for LZRW1 compression. This line could be moved to GLScene.inc file.
@@ -36,8 +36,8 @@ unit GLVfsPAK;
 interface
 
 uses
-  System.Classes, Contnrs, System.SysUtils, GLS.ApplicationFileIO
-{$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
+  System.Classes, System.Contnrs, System.SysUtils, GLS.ApplicationFileIO
+ {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
 
 const
    SIGN = 'PACK'; //Signature for uncompressed - raw pak.

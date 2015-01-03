@@ -11,9 +11,9 @@
 
 	<b>History : </b><font size=-1><ul>
            <li>07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
-           <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator) 
+           <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
 	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
-                              in Lazarus (thanks Predator)   
+                              in Lazarus (thanks Predator)
 	   <li>08/07/04 - LR - Uses of Graphics replaced by GLS.CrossPlatform for Linux
 	   <li>21/11/02 - Egg - Creation
 	</ul></font>
@@ -24,7 +24,11 @@ interface
 
 {$i GLScene.inc}
 
-uses System.Classes, System.SysUtils, GLS.CrossPlatform;
+uses
+  System.Classes, System.SysUtils,
+
+  GLS.Graphics,
+  GLS.CrossPlatform;
 
 type
 
@@ -62,13 +66,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLS.Graphics
-{$IFDEF FPC}
-  ,GraphType, LCLType
-{$ENDIF}
-  ;
 
 type
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWin32Context<p>
+{: GLS.Win32Context<p>
 
    Win32 specific Context.<p>
 
@@ -54,7 +54,7 @@
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
 }
-unit GLWin32Context;
+unit GLS.Win32Context;
 
 interface
 
@@ -64,56 +64,19 @@ interface
 
 uses
   Winapi.Windows,
-  Messages,
+  Winapi.Messages,
   System.SysUtils,
   System.Classes,
-  Forms,
+  FMX.Forms,
 
-   
+
   GLS.OpenGLTokens,
-  OpenGLAdapter,
+  GLS.OpenGLAdapter,
   GLS.Context,
   GLS.CrossPlatform,
   GLS.State,
-  GLSLog,
+  GLS.Log,
   GLS.VectorGeometry;
-
-
-
-{$IFDEF FPC}
-const
-  WGL_SWAP_MAIN_PLANE = $00000001;
-  WGL_SWAP_OVERLAY1 = $00000002;
-  WGL_SWAP_OVERLAY2 = $00000004;
-  WGL_SWAP_OVERLAY3 = $00000008;
-  WGL_SWAP_OVERLAY4 = $00000010;
-  WGL_SWAP_OVERLAY5 = $00000020;
-  WGL_SWAP_OVERLAY6 = $00000040;
-  WGL_SWAP_OVERLAY7 = $00000080;
-  WGL_SWAP_OVERLAY8 = $00000100;
-  WGL_SWAP_OVERLAY9 = $00000200;
-  WGL_SWAP_OVERLAY10 = $00000400;
-  WGL_SWAP_OVERLAY11 = $00000800;
-  WGL_SWAP_OVERLAY12 = $00001000;
-  WGL_SWAP_OVERLAY13 = $00002000;
-  WGL_SWAP_OVERLAY14 = $00004000;
-  WGL_SWAP_OVERLAY15 = $00008000;
-  WGL_SWAP_UNDERLAY1 = $00010000;
-  WGL_SWAP_UNDERLAY2 = $00020000;
-  WGL_SWAP_UNDERLAY3 = $00040000;
-  WGL_SWAP_UNDERLAY4 = $00080000;
-  WGL_SWAP_UNDERLAY5 = $00100000;
-  WGL_SWAP_UNDERLAY6 = $00200000;
-  WGL_SWAP_UNDERLAY7 = $00400000;
-  WGL_SWAP_UNDERLAY8 = $00800000;
-  WGL_SWAP_UNDERLAY9 = $01000000;
-  WGL_SWAP_UNDERLAY10 = $02000000;
-  WGL_SWAP_UNDERLAY11 = $04000000;
-  WGL_SWAP_UNDERLAY12 = $08000000;
-  WGL_SWAP_UNDERLAY13 = $10000000;
-  WGL_SWAP_UNDERLAY14 = $20000000;
-  WGL_SWAP_UNDERLAY15 = $40000000;
-{$ENDIF}
 
 type
 
@@ -156,10 +119,6 @@ type
     procedure DoDeactivate; override;
     {: DoGetHandles must be implemented in child classes,
        and return the display + window }
-{$IFDEF FPC}
-    procedure DoGetHandles(outputDevice: HWND; out XWin: HDC); virtual;
-      abstract;
-{$ENDIF}
   public
     { Public Declarations }
     constructor Create; override;
@@ -322,7 +281,7 @@ begin
   classRegistered := GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
     tempClass);
   if not classRegistered then
-    Windows.RegisterClass(vUtilWindowClass);
+    RegisterClass(vUtilWindowClass);
   Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
     '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
 end;
@@ -873,10 +832,6 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
-{$IFDEF FPC}
-  DoGetHandles(HWND(ADeviceHandle), ADeviceHandle);
-{$ENDIF}
-
   if vUseWindowTrackingHook and not FLegacyContextsOnly then
     TrackWindow(WindowFromDC(ADeviceHandle), DestructionEarlyWarning);
 
@@ -1420,13 +1375,13 @@ begin
       case Layer of
         clUnderlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY2);
         clUnderlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY1);
-        clMainPlane: Windows.SwapBuffers(FDC);
+        clMainPlane: SwapBuffers(FDC);
         clOverlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY1);
         clOverlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY2);
       end;
     end
     else
-      Windows.SwapBuffers(FDC);
+      SwapBuffers(FDC);
 end;
 
 // RenderOutputDevice
@@ -1444,9 +1399,5 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-{$IFNDEF FPC}
-  RegisterGLContextClass(TGLWin32Context);
-{$ENDIF}
 
 end.

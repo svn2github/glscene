@@ -77,13 +77,10 @@ interface
 (******************************************************************************)
 
 uses
-    Winapi.Windows,
-    MMSystem,
-    Winapi.Messages,
-    CommDlg,
-    ActiveX,
+    Winapi.Windows, Winapi.Messages, Winapi.MMSystem,   Winapi.CommDlg,
+    Winapi.ActiveX,
+
     FMX.Dialogs;
-{$ENDIF}
 
 (****************************************************************************
  *

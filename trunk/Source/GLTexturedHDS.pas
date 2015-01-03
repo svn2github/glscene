@@ -1,5 +1,9 @@
-//GLTexturedHDS
-{: Implements a HDS, which automatically maps textures onto a parent HDS .<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTexturedHDS<p>
+
+   Implements a HDS, which automatically maps textures onto a parent HDS .<p>
    This HDS links to and extracts its height data from a parent HDS. (like TGLHeightTileFile)
 
    The HDS also links to a TGLMaterial Library, and maps ALL textures from the
@@ -18,7 +22,7 @@
       <li>22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
                            Removed 'Active' property
                            Now works with both TGLHeightTileFileHDS AND TGLBitmapHDS
-      <li>19/01/07 - LIN - Creation 
+      <li>19/01/07 - LIN - Creation
 	</ul></font>
 }
 
@@ -28,7 +32,8 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLCrossPlatform, GLHeightData, GLMaterial;
+uses
+  Classes, GLCrossPlatform, GLHeightData, GLMaterial;
 
 type
 	TGLTexturedHDS = class (THeightDataSource)
@@ -190,7 +195,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-Classes.RegisterClasses([TGLTexturedHDS]);
+RegisterClasses([TGLTexturedHDS]);
 
 
 end.

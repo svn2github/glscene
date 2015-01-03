@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTilePlane<p>
+{: GLS.TilePlane<p>
 
    Implements a tiled texture plane.<p>
 
@@ -17,15 +17,17 @@
       <li>09/01/04 - EG - Creation
    </ul></font>
 }
-unit GLTilePlane;
+unit GLS.TilePlane;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context, GLS.Material, GLS.Objects,
-  GLS.CrossPlatform, GLS.PersistentClasses, GLS.VectorLists, GLS.RenderContextInfo;
+  System.Classes, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context,
+  GLS.Material, GLS.Objects, GLS.CrossPlatform, GLS.PersistentClasses,
+  GLS.VectorLists, GLS.RenderContextInfo, GLS.XOpenGL;
+
 
 type
 
@@ -162,12 +164,6 @@ type
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-uses GLS.XOpenGL;
-
 // ------------------
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------

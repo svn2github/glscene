@@ -65,7 +65,7 @@ interface
 uses
   Classes, SysUtils,
   //GLScene
-  GLVectorTypes, GLVectorGeometry, GLPersistentClasses, GLCrossPlatform;
+  GLVectorTypes, GLVectorGeometry, GLPersistentClasses;
 
 type
   // TBaseListOption

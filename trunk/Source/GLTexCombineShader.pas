@@ -24,10 +24,19 @@ interface
 
 uses
   Classes,
+  SysUtils,
+
   GLTexture,
   GLMaterial,
   GLRenderContextInfo,
-  GLTextureCombiners;
+  GLTextureCombiners,
+  OpenGLTokens,
+  XOpenGL,
+  GLContext,
+  GLCrossPlatform,
+  GLUtils;
+
+
 
 type
 
@@ -87,18 +96,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses
-  SysUtils,
-  OpenGLTokens,
-  XOpenGL,
-  GLContext,
-  GLCrossPlatform,
-  GLUtils;
-
 // ------------------
 // ------------------ TGLTexCombineShader ------------------
 // ------------------

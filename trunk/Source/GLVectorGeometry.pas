@@ -1,3 +1,4 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLVectorGeometry<p>
@@ -217,7 +218,9 @@ unit GLVectorGeometry;
 interface
 
 uses
-  GLCrossPlatform, GLVectorTypes;
+  SysUtils, Math, Types,
+
+  GLVectorTypes;
 
 const
    cMaxArray = (MaxInt shr 4);
@@ -1822,8 +1825,6 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
-
-uses SysUtils, Math;
 
 const
 {$ifndef GEOMETRY_NO_ASM}

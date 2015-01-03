@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWindows<p>
+{: GLS.Windows<p>
 
   OpenGL windows management classes and structures<p>
 
@@ -45,22 +45,19 @@
  </ul></font>
 }
 
-unit GLWindows;
+unit GLS.Windows;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Math,
 
   GLS.Scene, GLS.HUDObjects, GLS.Material, GLS.OpenGLTokens, GLS.Context,
-  GLS.BitmapFont, GLWindowsFont, GLS.VectorGeometry, GLS.Gui,
-  GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo, GLS.BaseClasses;
+  GLS.BitmapFont, GLS.WindowsFont, GLS.VectorGeometry, GLS.Gui,
+  GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo, GLS.BaseClasses,
+  GLS.Objects, GLS.State, GLS.Utils;
 
 type
 
@@ -681,9 +678,9 @@ type
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;
 
+//-------------------------------------------------------------------------
 implementation
-
-uses GLS.Objects, GLS.State, GLS.Utils, Math;
+//-------------------------------------------------------------------------
 
 function UnpressGroup(CurrentObject: TGLBaseSceneObject; AGroupID: Integer):
   Boolean;

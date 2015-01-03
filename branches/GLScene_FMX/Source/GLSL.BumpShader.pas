@@ -74,7 +74,7 @@
 
 
 }
-unit GLSLBumpShader;
+unit GLSL.BumpShader;
 
 interface
 
@@ -82,11 +82,12 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  
-  // GLS
-  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes, GLS.Cadencer, GLS.Strings,
-  GLS.OpenGLTokens, GLSL.Shader, GLS.CustomShader, GLS.Color, GLS.RenderContextInfo,
-  GLS.Material;
+
+  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes,
+  GLS.Cadencer, GLS.Strings, GLS.OpenGLTokens, GLS.CustomShader, GLS.Color,
+  GLS.RenderContextInfo, GLS.Material,
+
+  GLSL.Shader;
 
 type
   EGLSLBumpShaderException = class(EGLSLShaderException);
@@ -342,8 +343,13 @@ type
     property LightCompensation;
   end;
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 implementation
-
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 procedure GetVertexProgramCode(const Code: TStrings);
 begin
   with Code do

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWindowsFont<p>
+{: GLS.WindowsFont<p>
 
   TFont Import into a BitmapFont using variable width...<p>
 
@@ -26,31 +26,34 @@
       <li>12/08/02 - JAJ - Made into a standalone unit...
  </ul></font>
 }
-unit GLWindowsFont;
+unit GLS.WindowsFont;
 
 interface
 
-{$INCLUDE GLScene.inc}
+{$I GLScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLIntf, LCLType, Types, LCLProc, LazUTF8,
-{$ENDIF}
-  GLS.BitmapFont,
-  GLS.RenderContextInfo,
   System.Classes,
+  System.Math,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  FMX.Graphics,
+
   GLS.Scene,
   GLS.Texture,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  FMX.Graphics, System.Types, System.UITypes,
-{$ELSE}
-  Graphics, Types,
-{$ENDIF}
+  GLS.BitmapFont,
+  GLS.RenderContextInfo,
   GLS.VectorLists,
-  GLS.CrossPlatform;
+  GLS.CrossPlatform,
+  GLS.Utils,
+  GLS.VectorGeometry,
+  GLS.OpenGLTokens,
+  GLS.ApplicationFileIO,
+  GLS.VectorTypes;
 
 type
 
@@ -114,15 +117,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLS.Utils,
-  System.Math,
-  System.SysUtils,
-  GLS.VectorGeometry,
-  GLS.OpenGLTokens,
-  GLS.ApplicationFileIO,
-  GLS.VectorTypes;
 
 const
   cDefaultLast = '}';

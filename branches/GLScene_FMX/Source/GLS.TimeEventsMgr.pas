@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTimeEventsMgr<p>
+{: GLS.TimeEventsMgr<p>
      by GliGli
 
    Time based events mannager using the Cadencer<p>
@@ -19,16 +19,12 @@
       <li>07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
 }
 
-unit GLTimeEventsMgr;
+unit GLS.TimeEventsMgr;
 
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.Cadencer,  GLS.BaseClasses;
 
@@ -48,14 +44,14 @@ type
       FEvents : TTimeEvents;
 
    protected
-      { Déclarations protégées }
+      { Protected declarations }
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
       procedure SetCadencer(const val : TGLCadencer);
       procedure SetEvents(const val : TTimeEvents);
 
    public
-      { Déclarations publiques }
+      { Public declarations}
       constructor Create(aOwner : TComponent); override;
       destructor Destroy; override;
 
@@ -63,7 +59,7 @@ type
       procedure Reset();
 
    published
-      { Déclarations publiées }
+      { Published declarations }
       property Cadencer : TGLCadencer read FCadencer write SetCadencer;
       property Enabled : boolean read FEnabled write FEnabled default True;
       property FreeEventOnEnd : boolean read FFreeEventOnEnd write FFreeEventOnEnd default False;
@@ -139,7 +135,6 @@ type
     end;
 
 implementation
-
 // ------------------
 // ------------------ TGLTimeEventsMGR ------------------
 // ------------------

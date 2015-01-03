@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletClasses<p>
+{: GLS.VerletClasses<p>
 
    Classes and functions that make integration between verlets and glscene
    objects easy.
@@ -12,12 +12,12 @@
       <li>06/03/04 - MF - Creation
    </ul>
 }
-unit GLVerletClasses;
+unit GLS.VerletClasses;
 
 interface
 
 uses
-  GLVerletTypes, GLS.VectorGeometry, GLS.Scene, GLS.Objects, GLS.VectorTypes;
+  GLS.VerletTypes, GLS.VectorGeometry, GLS.Scene, GLS.Objects, GLS.VectorTypes;
 
 type
   // TGLVerletNode

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTree<p>
+{: GLS.Tree<p>
 
    Dynamic tree generation in GLScene<p>
 
@@ -40,7 +40,7 @@
     Rebuild tree after property change.
     Default: True
 }
-unit GLTree;
+unit GLS.Tree;
 
 interface
 
@@ -48,10 +48,10 @@ interface
 
 uses
    System.Classes, System.SysUtils,
-    
+
    GLS.Scene, GLS.Material, GLS.VectorGeometry, GLS.VectorLists,
-   GLS.OpenGLTokens, GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.RenderContextInfo,
-   GLS.XOpenGL, GLS.Context , GLS.VectorTypes;
+   GLS.OpenGLTokens, GLS.VectorFileObjects, GLS.ApplicationFileIO,
+   GLS.RenderContextInfo, GLS.XOpenGL, GLS.Context, GLS.VectorTypes;
 
 type
    TGLTree = class;
@@ -315,10 +315,6 @@ type
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 implementation
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves
 // -----------------------------------------------------------------------------

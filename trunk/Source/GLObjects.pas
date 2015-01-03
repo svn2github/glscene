@@ -251,12 +251,12 @@ type
       read FOnVisibilityDetermination write FOnVisibilityDetermination;
   end;
 
-  // TPlaneStyle
+  // TGLPlaneStyle
   //
-  TPlaneStyle = (psSingleQuad, psTileTexture);
-  TPlaneStyles = set of TPlaneStyle;
+  TGLPlaneStyle = (psSingleQuad, psTileTexture);
+  TGLPlaneStyles = set of TGLPlaneStyle;
 
-  // Plane
+  // TGLPlane
   //
   { : A simple plane object.<p>
     Note that a plane is always made of a single quad (two triangles) and the
@@ -268,7 +268,7 @@ type
     FXScope, FYScope: TGLFloat;
     FWidth, FHeight: TGLFloat;
     FXTiles, FYTiles: Cardinal;
-    FStyle: TPlaneStyles;
+    FStyle: TGLPlaneStyles;
     FMesh: array of array of TVertexRec;
   protected
     { Protected Declarations }
@@ -282,7 +282,7 @@ type
     procedure SetYScope(const Value: TGLFloat);
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
-    procedure SetStyle(const val: TPlaneStyles);
+    procedure SetStyle(const val: TGLPlaneStyles);
 
   public
     { Public Declarations }
@@ -316,7 +316,7 @@ type
     property YOffset: TGLFloat read FYOffset write SetYOffset;
     property YScope: TGLFloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
-    property Style: TPlaneStyles read FStyle write SetStyle
+    property Style: TGLPlaneStyles read FStyle write SetStyle
       default [psSingleQuad, psTileTexture];
   end;
 
@@ -1842,7 +1842,7 @@ end;
 // SetStyle
 //
 
-procedure TGLPlane.SetStyle(const val: TPlaneStyles);
+procedure TGLPlane.SetStyle(const val: TGLPlaneStyles);
 begin
   if val <> FStyle then
   begin

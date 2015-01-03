@@ -16,6 +16,7 @@ interface
 
 uses
   System.Classes,
+
   GLS.OpenGLTokens, GLS.VectorTypes, GLS.TextureFormat, GLS.RenderContextInfo;
 
 type
@@ -270,7 +271,13 @@ procedure FillUniformAutoSetMethodList(AList: TStrings;
 function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
 function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
 
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 const
   cGLSLTypeComponents: array[TGLSLDataType] of Integer =

@@ -17,8 +17,10 @@ interface
 {$i GLScene.inc}
 
 uses
-  System.Classes, GLS.Texture, GLProcTextures;
+  System.Classes, System.SysUtils,
 
+  GLS.Texture, GLS.ProcTextures,
+  GLS.CrossPlatform, GLS.Utils;
 
 type
 
@@ -82,9 +84,6 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
-uses
-  System.SysUtils, GLS.CrossPlatform, GLS.Utils;
 
 var
    vTIEClass, vTIEEditor : TList;

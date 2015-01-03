@@ -139,9 +139,13 @@ type
     property Materials: TGLTextureSharingShaderMaterials read FMaterials write SetMaterials;
   end;
 
-
-
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 { TGLTextureSharingShaderMaterial }
 
@@ -352,7 +356,7 @@ begin
     begin
       FTextureMatrixIsUnitary := False;
       FTextureMatrix := CreateScaleAndTranslationMatrix(TexScale.AsVector, TexOffset.AsVector)
-    end  
+    end
     else
       FTextureMatrixIsUnitary := True;
     FNeedToUpdateTextureMatrix := False;

@@ -1,6 +1,7 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{ : GLTerrainRenderer<p>
+//
+{ : GLS.TerrainRenderer<p>
 
   GLScene's brute-force terrain renderer.<p>
 
@@ -45,7 +46,7 @@
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
 }
-unit GLTerrainRenderer;
+unit GLS.TerrainRenderer;
 
 interface
 
@@ -53,10 +54,10 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
-  GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context, GLROAMPatch,
-  GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens, GLS.XOpenGL, GLS.Utils
-, GLS.VectorTypes;
+
+  GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context,
+  GLS.ROAMPatch, GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens,
+  GLS.XOpenGL, GLS.Utils, GLS.VectorTypes;
 
 const
   cTilesHashSize = 255;
@@ -265,7 +266,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -27,9 +27,9 @@ interface
 uses
   System.Classes,
 
-  // GLS
   GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.Context,
-  GLSL.Shader, GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat;
+  GLSL.Shader, GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat,
+  GLS.VectorTypes;
 
 type
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -54,11 +54,13 @@ type
   published
     property Threshold;
   end;
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 implementation
-
-uses
-  GLS.VectorTypes;
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 { TGLCustomGLSLPostBlurShader }
 
@@ -70,7 +72,7 @@ begin
   begin
     Add('varying vec2 vTexCoord; ');
     Add(' '); 
-    Add('void main(void) '); 
+    Add('void main(void) ');
     Add('{ '); 
     Add(' '); 
     Add('   // Clean up inaccuracies '); 

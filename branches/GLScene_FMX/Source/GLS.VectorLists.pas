@@ -65,7 +65,7 @@ interface
 uses
   System.Classes, System.SysUtils,
    
-  GLS.VectorTypes, GLS.VectorGeometry, GLS.PersistentClasses, GLS.CrossPlatform;
+  GLS.VectorTypes, GLS.VectorGeometry, GLS.PersistentClasses;
 
 type
   // TBaseListOption
