@@ -153,22 +153,22 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   <td width="99%" style='width:99.66%;padding:.75pt .75pt .75pt .75pt'>
   <p class=MsoNormal><span lang=EN-US>1.</span><span lang=EN-US
   style='font-size:7.0pt'> </span><span lang=EN-US>Download the last release of
-  GLScene from the page <a href="http://sourceforge.net/projects/glscene/files/">http://sourceforge.net/projects/glscene/files/</a>
+  GLScene_LCL for Lazarus from the page <a
+  href="http://sourceforge.net/projects/glscene/files/">http://sourceforge.net/projects/glscene/files/</a>
   as archive file.&nbsp; You may also to check out source codes of current SVN version
   of GLScene from the URL of repository <a
-  href="https://svn.code.sf.net/p/glscene/code/trunk">https://svn.code.sf.net/p/glscene/code/trunk</a>
-  or download the Snapshot of the trunk from the code page
-  http://sourceforge.net/p/glscene/code/HEAD/tree/. </span></p>
+  href="https://svn.code.sf.net/p/glscene/code/branch">https://svn.code.sf.net/p/glscene/code/branch</a>.
+  </span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal><span lang=EN-US>2. For SVN version make a copy of the
   trunk in a separate directory, e.g. in the working directory ../GLScene_LCL,
-  to prevent original sources from occasional changes. You may skip this step
-  if you don’t need to update the code from SVN repository further.</span></p>
+  to prevent original source codes from occasional changes. You may skip this
+  step if you don’t need to update the code from SVN repository further.</span></p>
   <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal><span lang=EN-US>3.</span><span lang=EN-US
-  style='font-size:7.0pt'> </span><span lang=EN-US>Copy auxiliary dynamic
-  libraries from ..GLScene_LCL/Source/external into your system directory to
-  support 3D sounds, shaders and physics (BASS, FMOD, OpenAL, SDL, CG, ODE, Newton).
+  style='font-size:7.0pt'> </span><span lang=EN-US>Copy auxiliary dynamic libraries
+  from ..GLScene_LCL/Source/external into your system directory to support 3D
+  sounds, shaders and physics (BASS, FMOD, OpenAL, SDL, CG, ODE, Newton).
   Otherwise you will need to have ones for every application directory with exe
   file that calls an appropriate dll. </span></p>
   <p class=MsoListParagraph><span lang=EN-US>&nbsp;</span></p>
@@ -179,6 +179,8 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal><span lang=EN-US>5. Open the lpk packages in your
   ../GLScene_LCL/Packages directory, compile and install ones.</span></p>
+  <p class=MsoNormal><span lang=EN-US>Note: SDL package should not be installed
+  on Windows 7/8/8.1 due to conflict with Lazarus environment</span></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal><span lang=EN-US>After installation you can start to work
   with GLScene’s component library and use demos for LCL in
