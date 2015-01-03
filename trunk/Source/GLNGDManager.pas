@@ -75,16 +75,16 @@ interface
 {$ENDIF}
 
 uses
-  Classes // TComponent Tlist TWriter TReader TPersistent
-  , SysUtils //System utilities
-  , Math // Samevalue isZero to compare single
-  , NewtonImport, NewtonImport_JointLibrary // Newton
-  , GLVectorGeometry // PVector TVector TMatrix PMatrix NullHmgVector...
-  , GLVectorLists // TaffineVectorList for Tree
-  , XCollection // GLS TXCollection file function
-  , GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates //
-  , GLObjects, GLGeomObjects, GLVectorFileObjects // cube cone freeform...
-  , GLColor, GLGeometryBB; // For show debug
+  Classes, // TComponent Tlist TWriter TReader TPersistent
+  SysUtils, //System utilities
+  Math, // Samevalue isZero to compare single
+  NewtonImport, NewtonImport_JointLibrary, // Newton
+  GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
+  GLVectorLists, // TaffineVectorList for Tree
+  XCollection, // GLS TXCollection file function
+  GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates, //
+  GLObjects, GLGeomObjects, GLVectorFileObjects, // cube cone freeform...
+  GLColor, GLGeometryBB; // For show debug
 
 type
 
