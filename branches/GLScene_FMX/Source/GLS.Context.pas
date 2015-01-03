@@ -89,7 +89,7 @@ uses
   Winapi.Windows,
   {$ENDIF}
   System.Classes, System.SysUtils, System.Types, System.SyncObjs,
-///  Vcl.Consts,
+///  FMX.Consts,
   FMX.Forms,
   FMX.Controls,
 

@@ -1,4 +1,4 @@
-{: GLHiddenLineShader<p>
+{: GLS.HiddenLineShader<p>
 
    A shader that renders hidden (back-faced) lines differently from visible
    (front) lines. Polygon offset is used to displace fragments depths a little
@@ -19,18 +19,14 @@
                             the multipass demo.
    </ul></font>
 }
-unit GLHiddenLineShader;
+unit GLS.HiddenLineShader;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    System.Classes,
-  {$ENDIF}
+  System.Classes,
 
   GLS.Material, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.Scene, GLS.Color,
   GLS.BaseClasses, GLS.RenderContextInfo, GLS.State, GLS.Context;
@@ -122,9 +118,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ TGLLineSettings ------------------
 // ------------------

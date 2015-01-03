@@ -45,7 +45,7 @@ uses
   GLS.Scene,
   GLS.Texture,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics, System.Types, System.UITypes,
+  FMX.Graphics, System.Types, System.UITypes,
 {$ELSE}
   Graphics, Types,
 {$ENDIF}

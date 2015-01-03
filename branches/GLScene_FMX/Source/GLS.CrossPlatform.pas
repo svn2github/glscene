@@ -89,7 +89,8 @@ uses
 
   System.Types, System.UITypes,
   System.Classes, System.SysUtils, System.StrUtils,
-  FMX.Consts, FMX.Graphics, FMX.Controls,  FMX.Forms,  FMX.Dialogs;
+  FMX.Types, FMX.Objects, FMX.Consts, FMX.Graphics, FMX.Controls,
+  FMX.Forms, FMX.Dialogs;
 
 const
   FPC_VERSION = 0;
@@ -120,10 +121,10 @@ type
   PGLRect = ^TGLRect;
   TDelphiColor = TColorRec;
 
-  TGLPicture = TPicture;
-  TGLGraphic = TGraphic;
+  TGLPicture = TImage;  // instead of TPicture
+  TGLGraphic = TImage; // instead of TGraphic
   TGLBitmap = TBitmap;
-  TGraphicClass = class of TGraphic;
+  TGraphicClass = class of TImage; // instead of TGraphic
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
@@ -132,7 +133,7 @@ type
     Shift: TShiftState; X, Y: Integer) of object;
   TGLMouseMoveEvent = TMouseMoveEvent;
   TGLKeyEvent = TKeyEvent;
-  TGLKeyPressEvent = TKeyPressEvent;
+  TGLKeyPressEvent = TKeyEvent; // instead of TKeyPressEvent;
 
   TPlatformInfo = record
     Major: DWORD;
@@ -184,10 +185,10 @@ type
   TProjectTargetNameFunc = function(): string;
 
 const
-  glpf8Bit = pf8bit;
-  glpf24bit = pf24bit;
-  glpf32Bit = pf32bit;
-  glpfDevice = pfDevice;
+  glpf8Bit = PF_FLOATING_POINT_EMULATED;  // instead of pf8bit;
+  glpf24bit = PF_FLOATING_POINT_EMULATED; // instead of pf24bit;
+  glpf32Bit = PF_FLOATING_POINT_EMULATED; // instead of pf32bit;
+  glpfDevice = PF_FLOATING_POINT_EMULATED; // instead of pfDevice;
 
   // standard keyboard
   glKey_TAB = VK_TAB;
@@ -207,7 +208,7 @@ const
 
   // Several define from unit Consts
 const
-  glsAllFilter: string = sAllFilter;
+  ///glsAllFilter: string = System.String.sAllFilter;
 
   GLS_FONT_CHARS_COUNT = 2024;
 
@@ -292,9 +293,6 @@ procedure MakeSubComponent(const AComponent: TComponent; const Value: Boolean);
 function FindUnitName(anObject: TObject): string; overload;
 function FindUnitName(aClass: TClass): string; overload;
 
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; overload;
-function CharInSet(C: WideChar; const CharSet: TSysCharSet): Boolean; overload;
-
 function FloatToHalf(Float: Single): THalfFloat;
 function HalfToFloat(Half: THalfFloat): Single;
 
@@ -339,7 +337,9 @@ end;
 
 function GLOKMessageBox(const Text, Caption: string): Integer;
 begin
-  Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
+  Application.ProcessMessages;
+  Result := MB_OK;
+// Instead of Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
 end;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);

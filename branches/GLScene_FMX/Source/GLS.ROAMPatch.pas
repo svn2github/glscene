@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLROAMPatch<p>
+{ : GLS.ROAMPatch<p>
 
   Class for managing a ROAM (square) patch.<p>
 
@@ -27,7 +27,7 @@
   <li>10/09/01 - EG - Creation
   </ul></font>
 }
-unit GLROAMPatch;
+unit GLS.ROAMPatch;
 
 interface
 
@@ -35,8 +35,9 @@ interface
 
 uses
   System.SysUtils,
+
   GLS.VectorGeometry, GLS.HeightData, GLS.VectorLists, GLS.CrossPlatform,
-  GLS.Context, GLS.OpenGLTokens, XOpenGL;
+  GLS.Context, GLS.OpenGLTokens, GLS.XOpenGL;
 
 type
 

@@ -25,7 +25,7 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,
+  System.SysUtils, System.Classes, FMX.Dialogs, FMX.Graphics,
 {$ELSE}
   System.SysUtils, System.Classes, Dialogs, Graphics,
 {$ENDIF}

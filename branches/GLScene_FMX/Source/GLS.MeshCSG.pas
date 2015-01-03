@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMeshCSG<p>
+{: GLS.MeshCSG<p>
 
    Constructive Solid Geometry in GLScene.
 
@@ -21,7 +21,7 @@
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
  </ul></font>
 }
-unit GLMeshCSG;
+unit GLS.MeshCSG;
 
 interface
 
@@ -29,16 +29,18 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-   
+
   GLS.Scene, GLS.VectorTypes, GLS.VectorFileObjects,
-  GLS.VectorGeometry, GLBSP, GLS.VectorLists;
+  GLS.VectorGeometry, GLS.BSP, GLS.VectorLists;
 
 type
   TCSGOperation = (CSG_Union, CSG_Subtraction, CSG_Intersection);
 
 procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: TMeshObject; const MaterialName1, MaterialName2: string);
 
+//----------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------
 
 const
   cOwnTriangleEpsilon = 1e-5;

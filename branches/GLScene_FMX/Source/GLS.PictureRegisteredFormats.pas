@@ -33,7 +33,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, VCL.Graphics,
+  System.Classes, FMX.Graphics,
   GLS.CrossPlatform;
 
 {$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif}// Delphi 7

@@ -43,7 +43,7 @@ interface
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  System.Types, VCL.Graphics, VCL.Forms, VCL.Controls,
+  System.Types, FMX.Graphics, FMX.Forms, FMX.Controls,
 {$ELSE}
   Winapi.Windows, Messages, System.Classes,  System.SysUtils, Types,
   Graphics, Forms, Controls,

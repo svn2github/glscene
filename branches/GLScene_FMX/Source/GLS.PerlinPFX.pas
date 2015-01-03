@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPerlinPFX<p>
+{: GLS.PerlinPFX<p>
 
    PFX particle effects revolving around the use of Perlin noise.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
+      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
       <li>23/08/10 - Yar - Added GLS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
       <li>30/03/07 - DaStr - Added $I GLScene.inc
@@ -16,7 +16,7 @@
       <li>15/04/04 - EG - Creation
    </ul></font>
 }
-unit GLPerlinPFX;
+unit GLS.PerlinPFX;
 
 interface
 
@@ -107,10 +107,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLPerlinPFXManager ------------------
 // ------------------

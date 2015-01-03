@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMirror<p>
+{: GLS.Mirror<p>
 
    Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
 
@@ -28,7 +28,7 @@
       <li>07/12/01 - EG - Creation
    </ul></font>
 }
-unit GLMirror;
+unit GLS.Mirror;
 
 interface
 
@@ -36,10 +36,9 @@ interface
 
 uses
   System.Classes,
-  GLS.Scene, GLS.VectorGeometry, OpenGLAdapter, GLS.OpenGLTokens, GLS.Context,
-  GLS.Material, GLS.Color, GLS.RenderContextInfo,
-  GLS.State
-  , GLS.VectorTypes;
+  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLAdapter, GLS.OpenGLTokens,
+  GLS.Context, GLS.Material, GLS.Color, GLS.RenderContextInfo,
+  GLS.State, GLS.VectorTypes;
 
 
 type
@@ -151,10 +150,6 @@ type
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLMirror ------------------
 // ------------------

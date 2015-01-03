@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSLog<p>
+{ : GLS.Log<p>
 
   Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
   You may have only one instance of TGLSLogger<p>
@@ -34,25 +34,19 @@
   Unit contains some text file related utilities and logging class
 }
 
-unit GLSLog;
+unit GLS.Log;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_OR_CPPB}
-  Winapi.Windows,
-{$ENDIF}
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs, VCL.Controls, System.UITypes,
-{$ELSE}
-  Dialogs,
-  Controls,
-{$ENDIF}
- StrUtils, System.Classes, System.SysUtils, GLS.CrossPlatform, System.SyncObjs
-{$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
-{$IFDEF LINUX} , Process {$ENDIF};
+  Winapi.Windows, Winapi.ShellApi,
+  System.UITypes, System.StrUtils, System.Classes, System.SysUtils,
+  System.SyncObjs,
+  FMX.Dialogs, FMX.Controls,
+
+  GLS.CrossPlatform;
 
 type
   { : Levels of importance of log messages }
@@ -834,7 +828,7 @@ begin
   // Reset log counters.
   for i := Ord( Low(TLogLevel)) to Ord( High(TLogLevel)) do
     FLogKindCount[TLogLevel(i)] := 0;
-   
+
   // Print some initial logs.
   if FWriteInternalMessages then
   begin

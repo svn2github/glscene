@@ -137,7 +137,7 @@ implementation
 uses
   OpenGLAdapter,
   GLS.CrossPlatform,
-  XOpenGL;
+  GLS.XOpenGL;
 
 procedure Register;
 begin

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProjectedTextures<p>
+{: GLS.ProjectedTextures<p>
 
    Implements projected textures through a GLScene object.
 
@@ -18,7 +18,7 @@
       <li>01/10/04 - SG - Initial (by Matheus Degiovani)
    </ul></font>
 }
-unit GLProjectedTextures;
+unit GLS.ProjectedTextures;
 
 interface
 
@@ -26,13 +26,15 @@ interface
 
 uses
   System.Classes,
+
   GLS.Scene,
   GLS.Texture,
   GLS.OpenGLTokens,
   GLS.VectorGeometry,
-  XOpenGL,
+  GLS.XOpenGL,
   GLS.RenderContextInfo,
-  GLS.State;
+  GLS.State,
+  GLS.Context;
 
 type
   {: Possible styles of texture projection. Possible values:<ul>
@@ -160,11 +162,6 @@ type
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-uses
-  GLS.Context;
 // ------------------
 // ------------------ TGLTextureEmitter ------------------
 // ------------------

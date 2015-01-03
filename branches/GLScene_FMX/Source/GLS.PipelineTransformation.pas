@@ -22,7 +22,7 @@ uses
   OpenGLAdapter,
   GLS.VectorGeometry,
   GLS.VectorTypes,
-  GLSLog;
+  GLS.Log;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
@@ -118,8 +118,9 @@ type
   TGLCall = function(): TGLExtensionsAndEntryPoints;
 var
   vLocalGL: TGLCall;
-
+//-------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------
 
 constructor TGLTransformation.Create;
 begin

@@ -29,7 +29,7 @@ interface
 uses
   Winapi.Windows, System.Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Controls, VCL.Forms, VCL.Extctrls;
+  FMX.Controls, FMX.Forms, FMX.Extctrls;
 {$ELSE}
   Controls, Forms, Extctrls;
 {$ENDIF}
@@ -176,7 +176,7 @@ implementation
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
+  FMX.Dialogs,
 {$ELSE}
   Dialogs,
 {$ENDIF}

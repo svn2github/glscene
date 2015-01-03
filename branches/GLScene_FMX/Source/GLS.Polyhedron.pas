@@ -1,20 +1,25 @@
-// GLPolyhedron
-{: Standard polyhedrons.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.Polyhedron<p>
 
- <b>History : </b><font size=-1><ul>
+   Standard polyhedrons
+
+   <b>History : </b><font size=-1><ul>
       <li>10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes
       <li>23/08/10 - Yar - Added GLS.OpenGLTokens to uses
       <li>20/01/04 - SG - Added TGLIcosahedron
       <li>21/07/03 - EG - Creation from GLS.Objects split
    </ul></font>
 }
-unit GLPolyhedron;
+unit GLS.Polyhedron;
 
 interface
 
 uses
   System.Classes,
-  GLS.Scene, GLS.VectorGeometry, GLS.RenderContextInfo;
+
+  GLS.Scene, GLS.Objects, GLS.VectorGeometry, GLS.RenderContextInfo;
 
 type
 
@@ -67,12 +72,6 @@ type
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-uses GLS.Objects;
-
 // ------------------
 // ------------------ TGLDodecahedron ------------------
 // ------------------

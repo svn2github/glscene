@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPhongShader<p>
+{: GLS.PhongShader<p>
 
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.<p>
 
@@ -9,25 +9,24 @@
       <li>23/08/10 - Yar - Added GLS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>22/04/10 - Yar - Fixes after GLS.State revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>28/07/09 - DaStr - Small changes and simplifications  
+      <li>28/07/09 - DaStr - Small changes and simplifications
       <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)   
+                              (BugTracker ID = 2826217)
       <li>20/03/07 - DaStr - Moved some of the stuff from TGLCustomAsmShader back here
       <li>25/02/07 - DaStr - Completely replaced with a descendant of TGLCustomAsmShader.
       <li>11/10/04 - SG - Creation.
    </ul></font>
 }
-unit GLPhongShader;
+unit GLS.PhongShader;
 
 interface
 
 {$I GLScene.inc }
 
 uses
-   
+
   System.Classes, System.SysUtils,
 
-   
   GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, GLS.OpenGLTokens, GLS.Context,
   GLAsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
 
@@ -57,7 +56,9 @@ type
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled default False;
   end;
 
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
 
 // DoApply
 //

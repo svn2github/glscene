@@ -53,7 +53,7 @@ uses
   System.SysUtils, System.Classes,
    
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
+  FMX.Graphics,
 {$ELSE}
   Graphics,
 {$ENDIF}

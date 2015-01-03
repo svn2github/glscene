@@ -36,7 +36,7 @@ uses
   GLS.Material,
   GLS.VectorGeometry,
   GLS.OpenGLTokens,
-  XOpenGL,
+  GLS.XOpenGL,
   GLS.RenderContextInfo
 , GLS.VectorTypes;
 

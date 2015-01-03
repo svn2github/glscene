@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneRegister<p>
+{ : GLS.SceneRegister<p>
 
   Registration unit for GLScene library components, property editors and
   IDE experts.<p>
@@ -91,7 +91,7 @@
   <li>05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
   </ul></font>
 }
-unit GLSceneRegister;
+unit GLS.SceneRegister;
 
 // Registration unit for GLScene library
 // 30-DEC-99 ml: scene editor added, structural changes
@@ -101,37 +101,27 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
   System.TypInfo,
-  VCL.Forms,
-  VCL.Dialogs,
-  VCL.Controls,
-  VCL.StdCtrls,
-  VCL.Graphics,
-{$ELSE}
-  Winapi.Windows,
-  System.Classes,
-  System.SysUtils,
-  TypInfo,
-  Forms,
-  Dialogs,
-  Controls,
-  StdCtrls,
-  Graphics,
-{$ENDIF}
+  FMX.Forms,
+  FMX.Dialogs,
+  FMX.Controls,
+  FMX.StdCtrls,
+  FMX.Graphics,
+
+ (*
   ToolsAPI,
   DesignIntf,
   DesignEditors,
   VCLEditors,
- 
+*)
   GLS.Scene,
   GLS.Context,
   GLS.Color,
   GLS.CrossPlatform,
-  GLObjectManager;
+  GLS.ObjectManager;
 
 type
   // TGLLibMaterialNameProperty
@@ -512,7 +502,7 @@ uses
   GLFireFX,
   GLFPSMovement,
   GLGameMenu,
-  GLGeomObjects,
+  GLS.GeomObjects,
   GLGizmo,
   GLS.Graph,
   GLS.Graphics,

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPostEffects<p>
+{: GLS.PostEffects<p>
 
   A collection of components that generate post effects.<p>
 
@@ -35,10 +35,10 @@
                              pepNone preset does not call gl[Read/Draw]Pixels
       <li>23/02/07 - DaStr - Initial version of TGLPostEffect
                                                 (based on OldCity demo by FedeX)
-    </ul></font>                                                
+    </ul></font>
 
 }
-unit GLPostEffects;
+unit GLS.PostEffects;
 
 interface
 
@@ -49,8 +49,9 @@ uses
   System.Classes, System.SysUtils,
 
    
-  GLS.Scene, GLS.Texture, GLS.OpenGLTokens, GLS.Graphics, GLS.Strings, GLS.CustomShader,
-  GLS.Context, GLS.VectorGeometry, GLS.RenderContextInfo, GLS.Material, GLS.TextureFormat;
+  GLS.Scene, GLS.Texture, GLS.OpenGLTokens, GLS.Graphics, GLS.Strings,
+  GLS.CustomShader, GLS.Context, GLS.VectorGeometry, GLS.RenderContextInfo,
+  GLS.Material, GLS.TextureFormat;
 
 type
   EGLPostShaderHolderException = class(Exception);
@@ -160,7 +161,9 @@ type
     property OnProgress;
   end;
 
+//-----------------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------------
 
 { TGLPostEffect }
 

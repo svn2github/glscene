@@ -24,10 +24,9 @@ interface
 uses
   System.Classes, System.SysUtils,
    
-  GLS.VectorGeometry, GLS.OpenGLTokens, OpenGLAdapter, GLS.Context, GLS.BaseClasses,
-  GLS.Coordinates, GLS.Spline,
-  XOpenGL
-, GLS.VectorTypes;
+  GLS.VectorGeometry, GLS.OpenGLTokens, GLS.OpenGLAdapter,
+  GLS.Context, GLS.BaseClasses,  GLS.Coordinates, GLS.Spline,
+  GLS.XOpenGL, GLS.VectorTypes;
 
 
 {$I GLScene.inc}

@@ -51,7 +51,7 @@ interface
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes,  System.SysUtils, System.TypInfo,
-  VCL.Forms, VCL.Controls, VCL.ExtCtrls,
+  FMX.Forms, FMX.Controls, FMX.ExtCtrls,
 {$ELSE}
   System.Classes, System.SysUtils, TypInfo, Forms, Controls, ExtCtrls,
 {$ENDIF}

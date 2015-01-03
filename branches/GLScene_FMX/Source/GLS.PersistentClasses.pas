@@ -48,9 +48,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
-  System.SysUtils,
+  System.Classes, System.SysUtils,
+
   GLS.CrossPlatform;
+
 
 type
 
@@ -409,21 +410,9 @@ type
   TGLInterfacedCollectionItem = class(TCollectionItem, IInterface)
   protected
     // Implementing IInterface.
-  {$IfDef FPC}
-    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
     function _AddRef: Integer; virtual; stdcall;
     function _Release: Integer; virtual; stdcall;
-    {$ELSE}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _AddRef: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _Release: Integer; virtual; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    {$IFEND}
-  {$Else}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
-    function _AddRef: Integer; virtual; stdcall;
-    function _Release: Integer; virtual; stdcall;
-  {$EndIf}
   end;
 
   // EInvalidFileSignature
@@ -448,7 +437,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 uses
   GLS.ApplicationFileIO;
 
@@ -756,6 +744,8 @@ end;
 // QueryInterface
 //
 
+
+
 function TPersistentObject.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
@@ -766,6 +756,7 @@ end;
 
 // _AddRef
 //
+
 function TPersistentObject._AddRef: Integer; stdcall;
 begin
   // ignore
@@ -2287,7 +2278,6 @@ end;
 
 // _AddRef
 //
-
 
 function TGLInterfacedPersistent._AddRef: Integer; stdcall;
 begin

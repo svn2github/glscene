@@ -148,7 +148,7 @@
       <li>26/02/01 - EG - Added support for GL_EXT_texture_filter_anisotropic
       <li>23/02/01 - EG - Fixed texture matrix messup (second was using first)
       <li>21/02/01 - EG - Minor fix for TextureImageRequiredMemory,
-                          TexGen calls now based on XOpenGL
+                          TexGen calls now based on GLS.XOpenGL
       <li>14/02/01 - EG - Added support for texture format & texture compression
       <li>31/01/01 - EG - Added Multitexture support
       <li>28/01/01 - EG - Added MaterialOptions
@@ -1040,7 +1040,7 @@ implementation
 
 uses
   GLS.Scene,
-  XOpenGL,
+  GLS.XOpenGL,
   PictureRegisteredFormats
   , GLS.VectorTypes;
 

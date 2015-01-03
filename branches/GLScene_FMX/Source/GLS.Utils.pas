@@ -36,7 +36,7 @@ interface
 uses
    
   {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Graphics, VCL.Controls, System.UITypes,
+  System.Classes, System.SysUtils, FMX.Graphics, FMX.Controls, System.UITypes,
   {$ELSE}
   System.Classes, System.SysUtils, Graphics, Controls,
 {$ENDIF}
@@ -129,8 +129,8 @@ uses
 {$ENDIF}
   GLS.ApplicationFileIO,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
-  VCL.ExtDlgs;
+  FMX.Dialogs,
+  FMX.ExtDlgs;
 {$ELSE}
   Dialogs,
   ExtDlgs;

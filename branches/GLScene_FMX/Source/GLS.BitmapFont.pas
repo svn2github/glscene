@@ -45,7 +45,7 @@
   <li>20/01/02 - EG - Dropped 'Graphics' dependency
   <li>10/09/01 - EG - Fixed visibility of tile 0
   <li>12/08/01 - EG - Completely rewritten handles management
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+  <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
   <li>15/01/01 - EG - Creation
   </ul></font>
 }
@@ -63,14 +63,14 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Graphics, System.Types,
+  System.Classes, System.SysUtils, FMX.Graphics, System.Types,
 {$ELSE}
   System.Classes, Graphics, System.SysUtils, Types,
 {$ENDIF}
   GLS.Scene, GLS.VectorGeometry, GLS.Context, GLS.CrossPlatform,
   GLS.Texture, GLS.State, GLS.Utils, GLS.Graphics, GLS.Color, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.TextureFormat,
-  GLS.OpenGLTokens, XOpenGL, GLS.VectorTypes;
+  GLS.OpenGLTokens, GLS.XOpenGL, GLS.VectorTypes;
 
 type
 {$IFNDEF GLS_UNICODE_SUPPORT}

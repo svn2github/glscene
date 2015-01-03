@@ -24,7 +24,7 @@
   <li>19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
   <li>06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
   <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+  <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
   <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
                  to workaround the float property default value bug.
   <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
@@ -39,17 +39,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  GLS.Scene,  GLS.OpenGLTokens, GLS.Context,  XOpenGL, GLS.VectorGeometry,
+  GLS.Scene,  GLS.OpenGLTokens, GLS.Context,  GLS.XOpenGL, GLS.VectorGeometry,
   GLS.Material,  GLS.Objects,  GLS.VectorLists, GLS.Color,  GLS.BaseClasses,
-  GLS.RenderContextInfo,
-  GLS.State
- , GLS.VectorTypes;
+  GLS.RenderContextInfo, GLS.State, GLS.VectorTypes;
 
 type
 
@@ -247,11 +241,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLSamplingScale ------------------
 // ------------------

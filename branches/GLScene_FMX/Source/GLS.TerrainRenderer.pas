@@ -55,7 +55,7 @@ uses
   System.Classes, System.SysUtils,
   // GLS
   GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context, GLROAMPatch,
-  GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens, XOpenGL, GLS.Utils
+  GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens, GLS.XOpenGL, GLS.Utils
 , GLS.VectorTypes;
 
 const

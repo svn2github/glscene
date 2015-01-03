@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPolynomials.<p>
+{: GLS.Polynomials.<p>
 
    ********* IN PROGRESS - LIMITED PRECISION **********
 
@@ -26,13 +26,13 @@
       <li>21/07/02 - EG - Added MinPositiveCoef
       <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
                           droped complex stuff,
-                          added utility funcs 
+                          added utility funcs
       <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
 	   <li>21/08/01 - EG - Creation
 	</ul></font>
 
 }
-unit GLPolynomials;
+unit GLS.Polynomials;
 
 interface
 

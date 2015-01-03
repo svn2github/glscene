@@ -182,7 +182,7 @@ uses
 {$ENDIF}
   GLS.Strings,
   GLS.OpenGLTokens,
-  XOpenGL,
+  GLS.XOpenGL,
   GLS.Context,
   GLS.MeshUtils,
   GLS.Utils;

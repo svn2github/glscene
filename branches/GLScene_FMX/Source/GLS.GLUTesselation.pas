@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGLUTesselation<p>
+{: GLS.GLUTesselation<p>
 
     Code to generate triangle strips and fans for polygons.
 
@@ -20,27 +20,27 @@
 
     Contributed to GLScene.<p>
 }
-unit GLGLUTesselation;
+unit GLS.GLUTesselation;
 
 interface
 
 {$I GLScene.inc}
 
 uses
+  System.SysUtils,
+
   GLS.VectorFileObjects,
   GLS.VectorLists,
-  GLS.VectorGeometry;
+  GLS.VectorGeometry,
+  GLS.OpenGLAdapter,
+  GLS.OpenGLTokens,
+  GLS.VectorTypes;
+
 
 {: Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TGLBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
 implementation
-
-uses
-  System.SysUtils,
-  OpenGLAdapter,
-  GLS.OpenGLTokens,
-  GLS.VectorTypes;
 
 var
   TessMesh: TMeshObject;

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGizmo<p>
+{ : GLS.Gizmo<p>
 
   Invisible component for helping to Move, Rotate and Scale an Object
   under GLScene (usefull for an Editor).<p>
@@ -60,21 +60,18 @@
 // use objects' BarryCenter. For Example, if you select Space Text.
 // ------------------------------------------------------------------------------
 
-unit GLGizmo;
+unit GLS.Gizmo;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  // Standard
   System.Classes, System.SysUtils,
 
-   
   GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLGeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
-  GLS.Coordinates, GLS.RenderContextInfo, GLS.State, GLSelection
-, GLS.VectorTypes;
+  GLS.GeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
+  GLS.Coordinates, GLS.RenderContextInfo, GLS.State, GLS.Selection, GLS.VectorTypes;
 
 type
   TGLGizmoUndoCollection = class;
@@ -353,9 +350,9 @@ type
     property PickMode: TGLGizmoPickMode read FPickMode write FPickMode
       default PmGetPickedObjects;
   end;
-
+//-----------------------------------------------------------------------
 implementation
-
+//-----------------------------------------------------------------------
 procedure RotateAroundArbitraryAxis(const AnObject: TGLBaseSceneObject;
   const Axis, Origin: TAffineVector; const Angle: Single);
 var

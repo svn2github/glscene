@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPerlinNoise.<p>
+{: GLS.PerlinNoise.<p>
 
    Classes and function for generation of PerlinNoise.<p>
 
@@ -17,7 +17,7 @@
    Darwin Peachey's chapter in "Texturing & Modeling: A Procedural Approach"
    Further bugs are mine :)
 }
-unit GLPerlinNoise3D;
+unit GLS.PerlinNoise3D;
 
 interface
 
@@ -61,11 +61,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLPerlin3DNoise ------------------
 // ------------------
@@ -82,7 +77,7 @@ end;
 //
 procedure TGLPerlin3DNoise.Initialize(randomSeed : Integer);
 var
-   seedBackup : {$IFDEF FPC}Cardinal{$ELSE}Integer{$ENDIF};
+   seedBackup : Integer;
    i, t, j : Integer;
    z, r : Single;
 begin
@@ -232,4 +227,4 @@ begin
 end;
 
 end.
- 
+

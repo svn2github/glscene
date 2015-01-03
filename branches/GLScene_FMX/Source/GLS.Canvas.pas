@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCanvas<p>
+{: GLS.Canvas<p>
 
  Implements a basic Canvas-like interface over for OpenGL.<p>
    This class can be used for generic OpenGL applications and has no dependencies
@@ -38,7 +38,7 @@
       <li>19/01/02 - EG - Creation
  </ul></font>
 }
-unit GLCanvas;
+unit GLS.Canvas;
 
 interface
 
@@ -46,11 +46,9 @@ interface
 
 uses
   System.Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
+  FMX.Graphics,
+  FMX.Graphics,
+
   GLS.VectorGeometry,
   GLS.Color,
   GLS.CrossPlatform,
@@ -71,7 +69,7 @@ type
        All coordinates are internally maintained with floating point precision.<p>
        Several states are cached and it is of primary importance not to invoke
        OpenGL directly throughout the life of an instance (at the cost of
-       unespected behaviour). }
+       unexpected behaviour). }
   TGLCanvas = class
   private
     { Private Declarations }

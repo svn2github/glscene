@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMultiPolygon<p>
+{: GLS.MultiPolygon<p>
 
    Object with support for complex polygons.<p>
 
@@ -23,7 +23,7 @@
       <li>19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
       <li>29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
-      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
       <li>08/01/01 - EG - Compatibility fix (TGLLineNodes change),
                            Delphi 4 compatibility (removed TVectorPool) and
                            added/renamed some properties, various fixes
@@ -44,25 +44,20 @@
   If anyone feels responsible: it would be fine to have a method ImportFromFile (dxf?) in
   the TGLContour and TGLMultiPolygonBase objects...
 }
-unit GLMultiPolygon;
+unit GLS.MultiPolygon;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.OpenGLTokens,  OpenGLAdapter,  GLS.Spline,
-  XOpenGL,  GLS.Context
-  , GLS.VectorTypes,
-  GLS.VectorGeometry,  GLS.VectorLists,  GLS.PersistentClasses,
-  GLS.Scene,  GLS.Objects,  GLGeomObjects,  GLS.Nodes,  GLS.BaseClasses,
-  GLS.Coordinates,  GLS.RenderContextInfo;
+  GLS.XOpenGL,  GLS.Context, GLS.VectorTypes,
+  GLS.VectorGeometry, GLS.VectorLists, GLS.PersistentClasses,
+  GLS.Scene, GLS.Objects, GLS.GeomObjects, GLS.Nodes, GLS.BaseClasses,
+  GLS.Coordinates, GLS.RenderContextInfo;
 
 type
 

@@ -134,7 +134,7 @@ implementation
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms,
+  FMX.Forms,
 {$ELSE}
   Forms,
 {$ENDIF}

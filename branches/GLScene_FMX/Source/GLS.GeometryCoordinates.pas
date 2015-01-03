@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGeometryCoordinates<p>
+{: GLS.GeometryCoordinates<p>
 
 	Helper functions to convert between different three dimensional coordinate
    systems. Room for optimisations.<p>
@@ -16,7 +16,7 @@
       <li>09/04/03 - ARH - Initial Version (Cylindrical,Spherical)
    </ul>
 }
-unit GLGeometryCoordinates;
+unit GLS.GeometryCoordinates;
 
 interface
 
@@ -95,7 +95,13 @@ procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single; var x,y,z:single;
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double; var x,y,z:double;
   var ierr:integer);overload;
 
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 
 // ----- Cylindrical_Cartesian -------------------------------------------------
 {** Convert Cylindrical to Cartesian with no checks.

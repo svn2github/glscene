@@ -1,4 +1,7 @@
-{: GLOutlineShader<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.OutlineShader<p>
 
    A simple shader that adds an outline to an object. <p>
 
@@ -32,7 +35,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.Material, GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo;
+  System.Classes,
+
+  GLS.Material, GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo,
+  GLS.OpenGLTokens, GLS.Context, GLS.State, GLS.TextureFormat;
 
 type
 
@@ -72,12 +78,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses GLS.OpenGLTokens, GLS.Context, GLS.State, GLS.TextureFormat;
-
 // ------------------
 // ------------------ TGLOutlineShader ------------------
 // ------------------

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects<p>
+{ : GLS.GeomObjects<p>
 
   Geometric objects.<p>
 
@@ -32,7 +32,7 @@
   <li>21/07/03 - EG - Creation from GLS.Objects split
   </ul></font>
 }
-unit GLGeomObjects;
+unit GLS.GeomObjects;
 
 {$I GLScene.inc}
 
@@ -40,6 +40,7 @@ interface
 
 uses
   System.Classes,
+
   GLS.Scene,
   GLS.VectorGeometry,
   GLS.OpenGLTokens,
@@ -49,7 +50,10 @@ uses
   GLS.Silhouette,
   GLS.VectorTypes,
   GLS.GeometryBB,
-  GLS.RenderContextInfo;
+  GLS.RenderContextInfo,
+  GLS.Polynomials,
+  GLS.XOpenGL;
+
 
 type
 
@@ -586,14 +590,6 @@ type
   // -------------------------------------------------------------
   // -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
-uses
-  GLPolynomials,
-  XOpenGL;
 
 // ------------------
 // ------------------ TGLDisk ------------------

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGameMenu<p>
+{: GLS.GameMenu<p>
 
    Manages a basic game menu UI<p>
 
@@ -26,14 +26,17 @@
       <li>03/03/05 - EG - Creation
    </ul></font>
 }
-unit GLGameMenu;
+unit GLS.GameMenu;
 
 interface
 
 {$I GLScene.inc}
 
-uses System.Classes, GLS.Scene, GLS.Material, GLS.BitmapFont, GLS.CrossPlatform, GLS.Color,
-  GLS.RenderContextInfo;
+uses
+  System.Classes, System.SysUtils,
+
+  GLS.Scene, GLS.Material, GLS.BitmapFont, GLS.CrossPlatform, GLS.Color,
+  GLS.RenderContextInfo, GLS.Canvas, GLS.OpenGLTokens, GLS.Context;
 
 type
 
@@ -157,8 +160,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses System.SysUtils, GLCanvas, GLS.OpenGLTokens, GLS.Context;
 
 // ------------------
 // ------------------ TGLGameMenu ------------------

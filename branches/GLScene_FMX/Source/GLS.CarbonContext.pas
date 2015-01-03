@@ -24,7 +24,7 @@ uses
 type
    // TGLCarbonContext
    //
-   {: A context driver for standard XOpenGL. }
+   {: A context driver for standard GLS.XOpenGL. }
    TGLCarbonContext = class (TGLContext)
       private
          { Private Declarations }

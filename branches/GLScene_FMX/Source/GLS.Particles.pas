@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLParticles<p>
+{: GLS.Particles<p>
 
    Particle systems for GLS.Scene, based on replication of full-featured scene objects.<p>
 
@@ -21,18 +21,14 @@
     <li>16/04/00 - EG - Creation
  </ul></font>
 }
-unit GLParticles;
+unit GLS.Particles;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.Scene,
   GLS.VectorGeometry,
@@ -151,12 +147,9 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-//----------------- TGLParticles -----------------------------------------------------
-
+//---------------------------------------------------------------------
+//----------------- TGLParticles --------------------------------------
+//---------------------------------------------------------------------
 // Create
 //
 

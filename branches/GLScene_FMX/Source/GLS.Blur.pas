@@ -36,14 +36,14 @@ interface
 
 uses
   {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, VCL.Graphics,
+    System.Classes, System.SysUtils, FMX.Graphics,
   {$ELSE}
     System.Classes, System.SysUtils,  Graphics,
   {$ENDIF}
    
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
   GLHudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
-  XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;
+  GLS.XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;
 
 type
 

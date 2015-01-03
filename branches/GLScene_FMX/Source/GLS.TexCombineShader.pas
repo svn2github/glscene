@@ -94,7 +94,7 @@ implementation
 uses
   System.SysUtils,
   GLS.OpenGLTokens,
-  XOpenGL,
+  GLS.XOpenGL,
   GLS.Context,
   GLS.CrossPlatform,
   GLS.Utils;

@@ -22,8 +22,8 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
-  VCL.ImgList, VCL.Controls, VCL.Graphics,
+  Winapi.Windows, System.Classes, FMX.Forms, FMX.ComCtrls, FMX.StdCtrls,
+  FMX.ImgList, FMX.Controls, FMX.Graphics,
 {$ELSE}
   Winapi.Windows, System.Classes, Forms, ComCtrls, StdCtrls, ImgList, Controls, Graphics,
 {$ENDIF}

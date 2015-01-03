@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLImageUtils<p>
+{ : GLS.ImageUtils<p>
 
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
@@ -15,7 +15,7 @@
   </ul></font>
 }
 
-unit GLImageUtils;
+unit GLS.ImageUtils;
 
 // DONE: ConvertImage
 // TODO: Complite InfToXXX

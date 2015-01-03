@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMultisampleImage<p>
+{: GLS.MultisampleImage<p>
 
     This unit provides support for two new types of "multisample
     textures" - two-dimensional and two-dimensional array - as well as
@@ -9,12 +9,12 @@
     and to attach such textures to FBOs for rendering.
 
    <b>History : </b><font size=-1><ul>
-      <li>04/11/10- DaStr - Added $I GLScene.inc   
+      <li>04/11/10- DaStr - Added $I GLScene.inc
       <li>23/08/10 - Yar - Added GLS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       <li>16/05/10 - Yar - Creation (thanks to C4)
    </ul></font>
 }
-unit GLMultisampleImage;
+unit GLS.MultisampleImage;
 
 interface
 
@@ -22,6 +22,7 @@ interface
 
 uses
   System.Classes,
+
   GLS.OpenGLTokens,
   GLS.Context,
   GLS.Texture,

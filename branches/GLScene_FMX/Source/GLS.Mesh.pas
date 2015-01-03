@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLMesh<p>
+{ : GLS.Mesh<p>
 
   Raw Mesh support in GLScene.<p>
 
@@ -21,7 +21,7 @@
   <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
   <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
   <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+  <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
   <li>30/01/01 - EG - Added VertexList locking
   <li>19/07/00 - EG - Introduced enhanced mesh structure
   <li>11/07/00 - EG - Just discovered and made use of "fclex" :)
@@ -30,21 +30,17 @@
                     Rewrite of TGLMesh.CalcNormals (smaller & faster)
   </ul></font>
 }
-unit GLMesh;
+unit GLS.Mesh;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils,
-  {$ELSE}
-  System.Classes, System.SysUtils,
-  {$ENDIF}
 
-  GLS.Strings,  XOpenGL,  GLS.Context,  GLS.Scene,
-  GLS.VectorGeometry,  GLS.OpenGLTokens,  OpenGLAdapter,  GLS.State,
+  GLS.Strings,  GLS.XOpenGL,  GLS.Context,  GLS.Scene,
+  GLS.VectorGeometry,  GLS.OpenGLTokens,  GLS.OpenGLAdapter,  GLS.State,
   GLS.Color, GLS.BaseClasses,  GLS.RenderContextInfo, GLS.VectorTypes;
 
 type

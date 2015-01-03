@@ -157,7 +157,7 @@
       <li>15/03/01 - EG - Fix in TActorAnimation.SetEndFrame (thx David Costa)
       <li>08/03/01 - EG - TGL3DSVectorFile now loads materials for TGLBaseMesh
       <li>26/02/01 - EG - Added TBaseMeshObject & BuildNormals, MD2 normals auto-builded
-      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
       <li>15/01/01 - EG - Added Translate methods
       <li>10/01/01 - EG - Fixed in TGLBaseMesh.DoRender for RenderChildren states
       <li>08/01/01 - EG - Fixed TGLBaseMesh.BuildList messup of attrib states
@@ -1993,7 +1993,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLS.Strings, XOpenGL, GLS.CrossPlatform, GLS.MeshUtils, GLS.State, GLS.Utils,
+  GLS.Strings, GLS.XOpenGL, GLS.CrossPlatform, GLS.MeshUtils, GLS.State, GLS.Utils,
   GLS.BaseMeshSilhouette, GLS.VectorTypes;
 
 var

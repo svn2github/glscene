@@ -51,7 +51,7 @@ interface
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, WinApi.Messages, System.Classes, System.UITypes,
-  VCL.Dialogs, VCL.Graphics, VCL.Controls,
+  FMX.Dialogs, FMX.Graphics, FMX.Controls,
 {$ELSE}
   Winapi.Windows, Messages, Classes
   Dialogs, Graphics, Controls,

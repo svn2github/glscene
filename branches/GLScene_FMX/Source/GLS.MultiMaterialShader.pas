@@ -1,4 +1,4 @@
-{: GLMultiMaterialShader<p>
+{: GLS.MultiMaterialShader<p>
 
    A shader that applies a render pass for each material in
    its assigned MaterialLibrary.<p>
@@ -6,7 +6,7 @@
    <b>History : </b><font size=-1><ul>
       <li>22/04/10 - Yar - Fixes after GLS.State revision
       <li>05/03/10 - DanB - Added more state to TGLStateCache
-      <li>03/07/09 - DanB - bug fix to allow multi-pass materials to be used by TGLMultiMaterialShader 
+      <li>03/07/09 - DanB - bug fix to allow multi-pass materials to be used by TGLMultiMaterialShader
       <li>20/01/09 - Mrqzzz - Published property "Shaderstyle"
                              (allows f.ex to have multiple textures using lightmaps)
       <li>25/10/07 - Mrqzzz - commented "glPushAttrib(GL_ALL_ATTRIB_BITS);" in DoApply
@@ -21,7 +21,7 @@
       <li>29/07/03 - SG - Creation
    </ul></font>
 }
-unit GLMultiMaterialShader;
+unit GLS.MultiMaterialShader;
 
 interface
 
@@ -54,10 +54,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLMultiMaterialShader ------------------
 // ------------------

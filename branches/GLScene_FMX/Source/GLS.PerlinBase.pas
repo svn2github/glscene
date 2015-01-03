@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLScene<p>
+{ : GLS.PerlinBase<p>
 
   Functions for generating perlin noise.<p>
 
@@ -12,11 +12,14 @@
   <li>29/01/03 - JaJ - Submitted to GLScene.
   </ul></font>
 }
-unit GLPerlinBase;
+unit GLS.PerlinBase;
 
 interface
 
 {$I GLScene.inc}
+
+uses
+  GLS.CrossPlatform;
 
 type
   T1DPerlinArray = array of Double;
@@ -46,10 +49,9 @@ procedure Smooth_Interpolate_Strip(B1, B2, B3, Res: T1DPerlinArray;
 // result is crap and is only for "random" usage... eg perlin.
 function ExponateCrap(root, exponant: Integer): Integer;
 
+//----------------------------------------------------------------------
 implementation
-
-uses
-  GLS.CrossPlatform;
+//----------------------------------------------------------------------
 
 function ExponateCrap(root, exponant: Integer): Integer;
 var

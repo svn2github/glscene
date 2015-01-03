@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLLensFlare<p>
+{: GLS.LensFlare<p>
 
    Lens flare object.<p>
 
@@ -44,23 +44,18 @@
    eMail   : peirick@onlinehome.de<br>
    Homepage: http://www.TobSoft.de
 }
-unit GLLensFlare;
+unit GLS.LensFlare;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.OpenGLTokens,
-  GLS.Context, GLS.Color, GLS.BaseClasses, GLS.RenderContextInfo, GLS.State
-  , GLS.VectorTypes, GLS.Utils,
-  GLS.TextureFormat;
+  GLS.Context, GLS.Color, GLS.BaseClasses, GLS.RenderContextInfo, GLS.State,
+  GLS.VectorTypes, GLS.Utils, GLS.TextureFormat;
 
 type
 
@@ -251,10 +246,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLFlareGradient ------------------
 // ------------------
@@ -568,7 +559,7 @@ var
   posVector, v, rv: TAffineVector;
   screenPos: TAffineVector;
   flareInViewPort, dynamicSize: Boolean;
-  oldSeed: {$IFDEF FPC}LongWord{$ELSE}LongInt{$ENDIF};
+  oldSeed: LongInt;
   projMatrix: TMatrix;
   CurrentBuffer: TGLSceneBuffer;
 begin

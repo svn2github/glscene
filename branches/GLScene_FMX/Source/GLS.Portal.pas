@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPortal<p>
+{: GLS.Portal<p>
 
 	Portal Rendering support for GLScene.<p>
 
@@ -14,14 +14,16 @@
       <li>13/08/00 - Egg - Creation
 	</ul></font>
 }
-unit GLPortal;
+unit GLS.Portal;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.VectorFileObjects, GLS.Scene, GLS.Material, GLS.VectorGeometry,
+  System.Classes, System.SysUtils,
+
+  GLS.VectorFileObjects, GLS.Scene, GLS.Material, GLS.VectorGeometry,
   GLS.RenderContextInfo;
 
 type
@@ -139,12 +141,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses SysUtils;
-
 // ------------------
 // ------------------ TPortalMeshObjectList ------------------
 // ------------------

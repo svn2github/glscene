@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: RegisterXCollection<p>
+{: GLS.RegisterXCollection<p>
 
 	Register TXCollection property editor<p>
 
@@ -13,16 +13,17 @@
       <li>16/04/00 - Egg - Creation
 	</ul></font>
 }
-unit RegisterXCollection;
+unit GLS.RegisterXCollection;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  System.Classes, XCollection,
+  System.Classes,
+  DesignEditors, DesignIntf,
 
-  DesignEditors, DesignIntf;
+  GLS.XCollection;
 
 type
 
@@ -44,7 +45,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses 
+
+uses
   FXCollectionEditor;
 
 

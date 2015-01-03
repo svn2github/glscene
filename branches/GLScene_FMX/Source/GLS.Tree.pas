@@ -51,7 +51,7 @@ uses
     
    GLS.Scene, GLS.Material, GLS.VectorGeometry, GLS.VectorLists,
    GLS.OpenGLTokens, GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.RenderContextInfo,
-   XOpenGL, GLS.Context , GLS.VectorTypes;
+   GLS.XOpenGL, GLS.Context , GLS.VectorTypes;
 
 type
    TGLTree = class;

@@ -31,7 +31,7 @@
   <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
   <li>18/07/01 - EG - VisibilityCulling compatibility changes
   <li>20/06/01 - EG - Default hud sprite size is now 16x16
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+  <li>21/02/01 - EG - Now GLS.XOpenGL based (multitexture)
   <li>15/01/01 - EG - Creation
   </ul></font>
 }
@@ -43,13 +43,18 @@ interface
 
 uses
   System.Classes,
+
   GLS.Scene,
   GLS.VectorGeometry,
   GLS.Objects,
   GLS.BitmapFont,
   GLS.CrossPlatform,
   GLS.Color,
-  GLS.RenderContextInfo;
+  GLS.RenderContextInfo,
+  GLS.OpenGLTokens,
+  GLS.Context,
+  GLS.State,
+  GLS.XOpenGL;
 
 type
 
@@ -185,16 +190,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-uses GLS.OpenGLTokens,
-  GLS.Context,
-  GLS.State,
-  XOpenGL;
-
 // ------------------
 // ------------------ TGLHUDSprite ------------------
 // ------------------

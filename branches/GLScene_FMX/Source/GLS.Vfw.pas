@@ -82,7 +82,7 @@ uses
     Winapi.Messages,
     CommDlg,
     ActiveX,
-    VCL.Dialogs;
+    FMX.Dialogs;
 {$ENDIF}
 
 (****************************************************************************

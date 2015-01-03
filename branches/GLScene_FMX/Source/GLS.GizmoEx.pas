@@ -72,14 +72,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  // Standard
-  {$IFDEF MSWINDOWS}Windows,{$ENDIF} System.Classes, System.SysUtils,
+  {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF} System.Classes, System.SysUtils,
 
    
   OpenGL1x, GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLGeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
-  GLS.Coordinates, GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes, GLCanvas,
-  GLS.PersistentClasses, GLS.Screen, GLS.State, GLSelection;
+  GLS.GeomObjects, GLS.BitmapFont, GLS.VectorFileObjects, GLS.CrossPlatform,
+  GLS.Coordinates, GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes,
+  GLS.Canvas, GLS.PersistentClasses, GLS.Screen, GLS.State, GLS.Selection,
+  GLS.OpenGLTokens, GLS.Context;
+
 
 type
   TGLGizmoExObjectCollection = class;
@@ -548,9 +549,6 @@ type
 
 
 implementation
-
-uses
-  GLS.OpenGLTokens, GLS.Context;
 
 procedure RotateAroundArbitraryAxis(const anObject: TGLBaseSceneObject; const Axis, Origin: TAffineVector; const angle: Single);
 var

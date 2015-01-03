@@ -47,8 +47,8 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Scene, GLS.VectorGeometry, XCollection, GLS.OpenGLTokens, GLS.Spline, GLS.Objects,
-  GLS.CrossPlatform, GLS.Strings, GLS.BaseClasses;
+  GLS.Scene, GLS.VectorGeometry, GLS.XCollection, GLS.OpenGLTokens, GLS.Spline, GLS.Objects,
+  GLS.CrossPlatform, GLS.Strings, GLS.BaseClasses, GLS.VectorTypes;
 
 type
 
@@ -360,8 +360,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses
-  GLS.VectorTypes;
 //----------------------------- TGLPathNode ------------------------------------
 constructor TGLPathNode.Create(Collection: TCollection);
 begin

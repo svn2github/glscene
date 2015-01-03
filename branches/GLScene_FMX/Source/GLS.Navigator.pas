@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLNavigator<p>
+{: GLS.Navigator<p>
 
   Unit for navigating TGLBaseObjects.<p>
 
@@ -15,11 +15,11 @@
                              Added default values to TGLNavigator and TGLUserInterface
       <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
-      <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
+      <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on
                              the TGLUserInterface component.
       <li>18/12/04 - PhP - Added FlyForward
       <li>03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
-                          GLGetScreenWidth, GLGetScreenHeight for Linux compatibility       
+                          GLGetScreenWidth, GLGetScreenHeight for Linux compatibility
       <li>11/05/04 - JAJ - Added some features and fixed a bug.
       <li>01/06/03 - JAJ - Added notification to movingobject...
       <li>01/06/03 - fig - CurrentHangle implementet...
@@ -30,19 +30,18 @@
       <li>09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
 	</ul></font>
 }
-unit GLNavigator;
+unit GLS.Navigator;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   
+
   System.SysUtils, System.Classes,
 
-   
-  GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates, GLS.Screen
-  , GLS.VectorTypes;
+  GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates,
+  GLS.Screen, GLS.VectorTypes;
 
 type
 
@@ -175,7 +174,9 @@ type
     property GLVertNavigator: TGLNavigator read FGLVertNavigator write setVertNavigator;
   end;
 
+//-------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------
 
 Constructor TGLNavigator.Create(AOwner : TComponent);
 Begin

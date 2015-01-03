@@ -26,7 +26,9 @@ procedure LoadRLEpixels(Stream: TStream; Dst: PSingle;
   Scanline_width, Num_scanlines: Integer);
 procedure LoadRGBEpixels(Stream: TStream; Dst: PSingle; Numpixels: Integer);
 
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
 
 type
   ERGBEexception = class(Exception);

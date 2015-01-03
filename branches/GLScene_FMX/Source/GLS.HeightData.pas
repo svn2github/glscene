@@ -67,15 +67,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils,
-{$ELSE}
-  System.Classes, System.SysUtils,
-{$ENDIF}
 {$IFDEF MSWINDOWS}
   Winapi.Windows, // for CreateMonochromeBitmap
 {$ENDIF}
-{$IFDEF FPC}, IntfGraphics, {$ENDIF}
+  System.Classes, System.SysUtils,
+
   GLS.ApplicationFileIO, GLS.Utils,
   GLS.VectorGeometry, GLS.CrossPlatform, GLS.Material, GLS.BaseClasses;
 
@@ -495,9 +491,6 @@ type
     { Private Declarations }
     FScanLineCache: array of PByteArray;
     FBitmap: TGLBitmap;
-{$IFDEF FPC}
-    IntfImg1: TLazIntfImage;
-{$ENDIF}
     FPicture: TGLPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
@@ -660,11 +653,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
 // ------------------
@@ -774,11 +762,7 @@ begin
   FThread.FreeOnTerminate := false;
   THeightDataSourceThread(FThread).FOwner := self;
   if self.MaxThreads > 0 then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FThread.Resume;
-{$ELSE}
     FThread.Start;
-{$ENDIF}
 end;
 
 // Destroy
@@ -791,11 +775,7 @@ begin
   if Assigned(FThread) then
   begin
     FThread.Terminate;
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FThread.Resume;
-{$ELSE}
     FThread.Start;
-{$ENDIF}
     FThread.WaitFor;
     FThread.Free;
   end;
@@ -1102,11 +1082,7 @@ begin
     // If we didn't do threading, but will now
     // resume our thread
     if (FMaxThreads <= 0) then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-      FThread.Resume;
-{$ELSE}
       FThread.Start;
-{$ENDIF}
     FMaxThreads := Val;
   end;
 end;
@@ -1976,10 +1952,6 @@ begin
   finally
     Picture.OnChange := OnPictureChanged;
   end;
-{$IFDEF FPC}
-  IntfImg1 := TLazIntfImage.Create(0, 0);
-  IntfImg1.LoadFromBitmap(FBitmap.Handle, FBitmap.MaskHandle);
-{$ENDIF}
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);
 end;
@@ -1997,10 +1969,6 @@ begin
   SetLength(FScanLineCache, 0);
   FBitmap.Free;
   FBitmap := nil;
-{$IFDEF FPC}
-  IntfImg1.Free;
-  IntfImg1 := nil;
-{$ENDIF}
 end;
 
 // GetScanLine
@@ -2010,11 +1978,7 @@ begin
   Result := FScanLineCache[y];
   if not Assigned(Result) then
   begin
-{$IFNDEF FPC}
     Result := BitmapScanLine(FBitmap, y); // FBitmap.ScanLine[y];
-{$ELSE}
-    Result := IntfImg1.GetDataLineStart(y);
-{$ENDIF}
     FScanLineCache[y] := Result;
   end;
 end;

@@ -17,7 +17,7 @@
   (Created by Rustam Asmandiarov aka Predator)
   </ul></font>
 }
-unit GLSLanguage;
+unit GLS.Language;
 
 interface
 
@@ -29,7 +29,7 @@ interface
 {$ENDIF}
 
 uses
-  System.Classes, IniFiles, SysUtils;
+  System.Classes, System.IniFiles, System.SysUtils;
 
 type
 {$IFNDEF FPC}
@@ -133,7 +133,7 @@ uses
 {$IFDEF FPC}
   FileUtil, LConvEncoding,
 {$ENDIF}
-  GLS.CrossPlatform, GLSLog;
+  GLS.CrossPlatform, GLS.Log;
 
 { TLanguage }
 

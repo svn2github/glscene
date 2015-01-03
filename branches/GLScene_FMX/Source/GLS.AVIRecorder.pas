@@ -35,7 +35,7 @@ uses
   Winapi.Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Messages, System.Classes, System.SysUtils,
-  VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
+  FMX.Controls, FMX.Forms, FMX.Extctrls, FMX.Graphics, FMX.Dialogs,
 {$ELSE}
   Messages, System.Classes, System.SysUtils,
   Controls, Forms, Extctrls, Graphics, Dialogs,

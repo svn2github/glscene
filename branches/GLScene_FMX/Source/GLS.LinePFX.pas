@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLLinePFX<p>
+{: GLS.LinePFX<p>
 
    A PFX whose particles are lines
 
@@ -16,14 +16,16 @@
       <li>20/02/05 - EG - Creation
    </ul></font>
 }
-unit GLLinePFX;
+unit GLS.LinePFX;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, GLS.PersistentClasses, GLS.VectorGeometry,
+  System.Classes, System.SysUtils,
+
+  GLS.PersistentClasses, GLS.VectorGeometry,
   GLS.ParticleFX, GLS.Texture, GLS.Color, GLS.RenderContextInfo,
   GLS.OpenGLTokens, GLS.Context , GLS.VectorTypes;
 
@@ -99,10 +101,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLLinePFXManager ------------------
 // ------------------

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLPlugInManager<p>
+{ : GLS.PlugInManager<p>
 
   An old PlugIn Manager unit. Don't know if if ever wa used...<p>
 
@@ -10,20 +10,17 @@
   <li>28/07/01 -  EG   - Initial version
   </ul></font>
 }
-unit GLPlugInManager;
+unit GLS.PlugInManager;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, System.Classes, System.SysUtils,
-  VCL.Dialogs, VCL.Forms,
-{$ELSE}
-  Winapi.Windows, System.Classes, System.SysUtils, Dialogs, Forms,
-{$ENDIF}
-  GLPlugInIntf;
+  FMX.Dialogs, FMX.Forms,
+
+  GLS.PlugInIntf;
 
 
 type
@@ -98,9 +95,7 @@ type
   end;
 
   // ------------------------------------------------------------------------------
-
 implementation
-
 // ----------------- TPlugInList ------------------------------------------------
 
 constructor TPlugInList.Create(AOwner: TPlugInManager);

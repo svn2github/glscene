@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLHeightTileFileHDS<p>
+{: GLS.HeightTileFileHDS<p>
 
    HeightDataSource for the HTF (HeightTileFile) format.<p>
 
@@ -18,7 +18,7 @@
       <li>29/01/03 - EG - Creation
 	</ul></font>
 }
-unit GLHeightTileFileHDS;
+unit GLS.HeightTileFileHDS;
 
 interface
 
@@ -82,9 +82,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ TGLHeightTileFileHDS ------------------
 // ------------------

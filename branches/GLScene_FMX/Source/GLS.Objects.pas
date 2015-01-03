@@ -10,7 +10,7 @@
 
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
-  objects can be found GLGeomObjects.<p>
+  objects can be found GLS.GeomObjects.<p>
 
   <b>History : </b><font size=-1><ul>
   <li>12/03/13 - Yar - Added TGLSuperellipsoid (contributed by Eric Hardinge)
@@ -57,7 +57,7 @@
                       TGLDodecahedron moved to new GLPolyhedron unit,
                       TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
                       TGLAnnulus, TGLFrustrum and TGLPolygon moved to new
-                      GLGeomObjects unit
+                      GLS.GeomObjects unit
   <li>16/07/03 - EG - Style changes and cleanups
   <li>19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
   <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
@@ -993,7 +993,7 @@ implementation
 
 uses
   GLSpline,
-  XOpenGL,
+  GLS.XOpenGL,
   GLS.State;
 
 const

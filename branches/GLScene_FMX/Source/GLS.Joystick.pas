@@ -24,7 +24,7 @@ interface
 uses
   Winapi.Windows,
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.Controls,
+  FMX.Forms, FMX.Controls,
 {$ELSE}
   Forms, Controls,
 {$ENDIF}

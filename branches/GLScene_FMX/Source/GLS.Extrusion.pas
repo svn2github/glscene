@@ -38,7 +38,7 @@
                            Fixes in TGLRevolutionSolid
       <li>26/02/01 - Egg - Minor update to RenderSides by Michael Schuricht
       <li>21/02/01 - Egg - New RenderSides code by Michael Schuricht,
-                           now XOpenGL based (multitexture)
+                           now GLS.XOpenGL based (multitexture)
       <li>10/01/01 - Egg - Better aspect when nodeN = NodeN-2 in lines mode
                            (should have only beend encountered when editing)
     <li>06/08/00 - Egg - Creation (from split of GLS.Objects), Added TGLPipe
@@ -356,7 +356,7 @@ uses
   System.SysUtils,
   GLS.Spline,
   GLS.VectorLists,
-  XOpenGL;
+  GLS.XOpenGL;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------

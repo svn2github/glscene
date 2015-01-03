@@ -38,7 +38,7 @@ uses
 
    
   GLS.Scene, GLS.VectorGeometry, GLS.Color, GLS.Material, GLS.Strings,
-  GLS.VectorFileObjects, XOpenGL, GLS.State, GLS.PersistentClasses,
+  GLS.VectorFileObjects, GLS.XOpenGL, GLS.State, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.Coordinates, GLS.RenderContextInfo;
 
 type

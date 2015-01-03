@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects<p>
+{ : GLS.GeomObjects<p>
 
   Geometric objects.<p>
 

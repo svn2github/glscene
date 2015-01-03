@@ -80,7 +80,7 @@ uses
    
   GLS.Scene, GLS.VectorGeometry, GLS.Graphics, GLS.Objects, GLS.Context, GLViewer,
   GLS.Color, GLS.RenderContextInfo, GLS.State, GLS.TextureFormat,
-  GLS.OpenGLTokens, XOpenGL , GLS.VectorTypes;
+  GLS.OpenGLTokens, GLS.XOpenGL , GLS.VectorTypes;
 
 
 type

@@ -12,7 +12,11 @@ unit GLMeshOptimizer;
 interface
 
 uses
-  System.Classes, Sysutils, GLS.VectorGeometry, GLS.VectorFileObjects;
+  System.Classes, System.SysUtils,
+
+  GLS.VectorGeometry, GLS.VectorFileObjects, GLS.PersistentClasses,
+  GLS.VectorLists, GLS.MeshUtils;
+
 
 type
 
@@ -40,9 +44,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLS.PersistentClasses, GLS.VectorLists, GLS.MeshUtils;
 
 // OptimizeMesh (list, default options)
 //

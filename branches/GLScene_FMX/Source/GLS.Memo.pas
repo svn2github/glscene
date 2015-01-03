@@ -1,30 +1,23 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMemo<p>
+{: GLS.Memo<p>
 
  <b>History : </b><font size=-1><ul>
       <li>30/03/11 - Yar - Initial version (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
  </ul></font>
 }
 
-unit GLSMemo;
+unit GLS.Memo;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, WinApi.Messages, System.SysUtils, System.Classes, System.UITypes,
-  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
-  VCL.StdCtrls, VCL.ExtCtrls
-{$ELSE}
-  Winapi.Windows, Messages, System.SysUtils, System.Classes, Controls, Graphics,
-  Forms, Dialogs, ClipBrd, StdCtrls, ExtCtrls
-{$ENDIF};
-
-
+  FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.ClipBrd,
+  FMX.StdCtrls, FMX.ExtCtrls;
 
 type
 
@@ -853,8 +846,9 @@ type
   end;
 
 procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
-
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 const
   cmDelete = VK_DELETE;

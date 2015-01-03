@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProcTextures<p>
+{: GLS.ProcTextures<p>
 
   Procedural textures.<p>
 
@@ -30,12 +30,13 @@
 
   Tobias Peirick
 }
-unit GLProcTextures;
+unit GLS.ProcTextures;
 
 interface
 
-uses System.Classes, GLS.Texture, GLS.Graphics, GLS.OpenGLTokens, GLS.CrossPlatform, System.SysUtils,
-  GLS.TextureFormat;
+uses
+  System.Classes, GLS.Texture, GLS.Graphics, GLS.OpenGLTokens,
+  GLS.CrossPlatform, System.SysUtils, GLS.TextureFormat, GLS.VectorGeometry;
 
 const
   GRADIENT_TABLE_SIZE = 256;
@@ -98,8 +99,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses GLS.VectorGeometry;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
 { PERM array Borrowed from Darwyn Peachey.

@@ -1,4 +1,7 @@
-{: GLRagdoll<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.Ragdoll<p>
 
 	Base abstract ragdoll class. Should be extended to use any physics system. <p>
 
@@ -17,7 +20,7 @@ interface
 
 uses
   GLS.Scene, GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects,
-  GLS.VectorLists, GLS.Objects;
+  GLS.VectorLists, GLS.Objects, GLS.VectorTypes;
 
 type
   TGLRagdoll = class;
@@ -127,11 +130,9 @@ type
     property RootBone : TRagdollBone read FRootBone;
     property Enabled : Boolean read FEnabled;
 	end;
-
+//-----------------------------------------------------------------------
 implementation
-
-uses
-  GLS.VectorTypes;
+//-----------------------------------------------------------------------
 
 { TRagdollBoneList }
 

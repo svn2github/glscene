@@ -128,7 +128,7 @@ interface
 
 uses
   System.Classes, ODEGL, ODEImport, GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.OpenGLTokens,
-  XOpenGL, System.SysUtils, GLS.Objects, GLS.XCollection, GLS.PersistentClasses, GLS.VectorLists,
+  GLS.XOpenGL, System.SysUtils, GLS.Objects, GLS.XCollection, GLS.PersistentClasses, GLS.VectorLists,
   GLS.Color, GLS.Coordinates, GLS.RenderContextInfo, GLS.Manager, GLS.State;
 
 type

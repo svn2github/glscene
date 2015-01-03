@@ -83,7 +83,7 @@ var
 procedure TLayouts_Form.DrawCurrentElement;
 begin
   with Elements_Grid do
-    if (Items_List.ItemIndex > -1) and (Sorted_elements[ColumnIndex + 3 * Row] <> nil)
+    if (Items_List.ItemIndex > -1) and (Sorted_elements[Col + 3 * Row] <> nil)
       then
       with Sorted_Elements[Col + 3 * Row], Image2.Canvas do
       begin

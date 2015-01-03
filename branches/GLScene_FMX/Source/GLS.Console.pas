@@ -74,7 +74,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, Vcl.Graphics,
+  System.Classes, System.SysUtils, System.TypInfo, FMX.Graphics,
 
   GLS.Scene, GLS.Objects, GLS.HUDObjects, GLS.Viewer, GLS.BitmapFont,
   GLS.PersistentClasses, GLS.Context, GLS.Texture, GLS.Utils, GLS.Strings,

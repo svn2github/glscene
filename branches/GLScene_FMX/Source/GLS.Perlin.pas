@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLPerlin<p>
+{ : GLS.Perlin<p>
 
   Classes for generating perlin noise.<p>
 
@@ -17,7 +17,7 @@
   <li>29/01/03 - JaJ - Submitted to GLScene.
   </ul></font>
 }
-unit GLPerlin;
+unit GLS.Perlin;
 
 interface
 
@@ -25,6 +25,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
+
   GLS.VectorGeometry, GLPerlinBase, GLS.HeightData,
   GLS.CrossPlatform;
 
@@ -151,9 +152,9 @@ Type
     Procedure OpdateOutSide;
     Procedure Execute; override;
   end;
-
+//---------------------------------------------------------------------
 implementation
-
+//---------------------------------------------------------------------
 function TGLBasePerlin.PerlinNoise_1D(x: Double): Double;
 
 Var

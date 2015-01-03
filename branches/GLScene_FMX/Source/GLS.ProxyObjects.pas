@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProxyObjects<p>
+{: GLS.ProxyObjects<p>
 
    Implements specific proxying classes.<p>
 
@@ -48,23 +48,18 @@
       <li>06/12/03 - EG - Creation from GLScene.pas split
    </ul></font>
 }
-unit GLProxyObjects;
+unit GLS.ProxyObjects;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-   
-  GLS.Scene,  GLS.VectorGeometry,  GLS.Texture,  GLS.VectorFileObjects,
-  GLS.Strings,  GLS.RenderContextInfo,  GLS.BaseClasses, GLS.Material,
-  GLS.OpenGLTokens,  GLS.Context,  GLS.VectorTypes;
+  GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.VectorFileObjects,
+  GLS.Strings, GLS.RenderContextInfo, GLS.BaseClasses, GLS.Material,
+  GLS.OpenGLTokens, GLS.Context, GLS.VectorTypes;
 
 type
   EGLProxyException = class(Exception);
@@ -297,10 +292,6 @@ type
   //-------------------------------------------------------------
   //-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLColorProxy ------------------
 // ------------------
