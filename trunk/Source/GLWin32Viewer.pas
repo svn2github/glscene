@@ -434,6 +434,11 @@ end;
 {$IFDEF GLS_DELPHI_XE_UP}
 procedure TGLSceneViewer.WMTouch(var Message: TMessage);
 
+  function TOUCH_COORD_TO_PIXEL(l : integer) : integer; // Delphi XE needs this
+  begin
+    result := l div 100;
+  end;
+
   function TouchPointToPoint(const TouchPoint: TTouchInput): TPoint;
   begin
     Result := Point(TOUCH_COORD_TO_PIXEL(TouchPoint.X), TOUCH_COORD_TO_PIXEL(TouchPoint.Y));

@@ -109,22 +109,26 @@ interface
 {.$define MULTITHREADOPENGL}
 
 uses
-  System.SysUtils, OpenGLTokens, GLVectorTypes,
+  {$IFDEF GLS_DELPHI_XE2_UP}
+  System.SysUtils,
+  {$ELSE}
+  System
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
-    Windows
-  {$ENDIF }
+    Windows,
+  {$ENDIF}
   {$IFDEF GLS_X11_SUPPORT}
      X, Xlib, XUtil,
   {$ENDIF}
   {$IFDEF UNIX}
-    {Libc,}Types, LCLType, dynlibs
+    {Libc,}Types, LCLType, dynlibs,
   {$ENDIF}
-  ;
+  OpenGLTokens, GLVectorTypes;
 {$IFDEF GLS_REGIONS} {$region 'OpenGL extension feature checks'} {$ENDIF}
 
 {$IFDEF MULTITHREADOPENGL}
 threadvar
-{$else}
+{$ELSE}
 var
 {$ENDIF}
    // supported version checks

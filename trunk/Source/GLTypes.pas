@@ -114,14 +114,14 @@ type
 //-----------------------
   TGLMatrix2DType = array[0..3] of TGLVector2D;
   {$NODEFINE TGLMatrix2DType}
-  (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TGLVector2D TGLMatrix2DArray[4];'*)
-  (*$HPPEMIT END CLOSENAMESPACE*)
+  {.$HPPEMIT END OPENNAMESPACE}
+  {.$HPPEMIT END 'typedef TGLVector2D TGLMatrix2DArray[4];'}
+  {.$HPPEMIT END CLOSENAMESPACE}
   TGLMatrix3DType = array[0..3] of TGLVector3D;
   {$NODEFINE TGLMatrix3DType}
-  (*$HPPEMIT END OPENNAMESPACE*)
-  (*$HPPEMIT END 'typedef TGLVector3D TGLMatrix3DType[4];'*)
-  (*$HPPEMIT END CLOSENAMESPACE*)
+  {.$HPPEMIT END OPENNAMESPACE}
+  {.$HPPEMIT END 'typedef TGLVector3D TGLMatrix3DType[4];'}
+  {.$HPPEMIT END CLOSENAMESPACE}
 
   TGLMatrix2D = record
   private
