@@ -55,12 +55,18 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <GenPackage>true</GenPackage>
-        <VerInfo_Locale>1049</VerInfo_Locale>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <SanitizedProjectName>GLS_ODE_VCL</SanitizedProjectName>
         <DCC_K>false</DCC_K>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <GenDll>true</GenDll>
-        <DCC_Description>GLScene - ODE Manager</DCC_Description>
+        <DCC_Description>GLScene VCL ODE Manager</DCC_Description>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
         <DCC_E>false</DCC_E>
@@ -146,7 +152,6 @@
                     <Source Name="MainSource">GLS_ODE_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

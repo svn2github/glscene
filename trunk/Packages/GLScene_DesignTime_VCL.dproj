@@ -61,6 +61,7 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <GenPackage>true</GenPackage>
@@ -71,7 +72,7 @@
         <DCC_K>false</DCC_K>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <GenDll>true</GenDll>
-        <DCC_Description>GLScene - OpenGL 3D library</DCC_Description>
+        <DCC_Description>GLScene VCL OpenGL 3D library</DCC_Description>
         <DCC_F>false</DCC_F>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;REST.Authenticator.OAuth.WebForm;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
@@ -106,9 +107,7 @@
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_BpiOutput>..\..\Source\lib\</DCC_BpiOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_ObjOutput>..\..\Source\lib\</DCC_ObjOutput>
@@ -125,8 +124,6 @@
         <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <Import Project="CBOutput.optset" Condition="'$(Base_Win32)'!='' And Exists('CBOutput.optset')"/>

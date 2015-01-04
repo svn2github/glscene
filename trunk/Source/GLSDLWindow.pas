@@ -34,8 +34,8 @@ interface
 
 uses
   Classes, SysUtils, SyncObjs,
-  // GLS
-  GLSDL;
+  // SDL
+  SDL;
 
 type
   // TSDLWindowPixelDepth

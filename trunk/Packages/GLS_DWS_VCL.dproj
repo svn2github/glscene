@@ -40,17 +40,23 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <VerInfo_Locale>1049</VerInfo_Locale>
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <SanitizedProjectName>GLS_DWS_VCL</SanitizedProjectName>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <GenDll>true</GenDll>
         <DCC_E>false</DCC_E>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <DCC_N>false</DCC_N>
-        <DCC_Description>GLScene - DelphiWebScriptII</DCC_Description>
+        <DCC_Description>GLScene VCL DelphiWebScriptII</DCC_Description>
         <GenPackage>true</GenPackage>
         <DCC_S>false</DCC_S>
     </PropertyGroup>
@@ -77,19 +83,16 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_Description>GLScene VCL DelphiWebScriptII</DCC_Description>
         <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Source\ScriptingAPIs\GLSceneVCLDWS2.dcr"/>
+        <DCCReference Include="..\Source\GLSceneVCLDWS2.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="GLScene_RunTime_VCL.dcp"/>
@@ -122,7 +125,6 @@
                     <Source Name="MainSource">GLS_DWS_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

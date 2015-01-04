@@ -27,15 +27,13 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLType,
-{$ENDIF}
   Classes,
   SysUtils,
   GLContext,
   GLSDLWindow,
   GLScene,
-  GLSDL;
+  //SDL
+  SDL;
 
 type
 

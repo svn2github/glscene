@@ -1,7 +1,6 @@
 package GLS_SDL_VCL;
 
 {$R *.res}
-{$R '..\Source\GLSceneVCLSDL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -36,9 +35,8 @@ requires
   GLScene_RunTime_VCL;
 
 contains
+  SDL in '..\Source\SDL.pas',
   GLSDLContext in '..\Source\GLSDLContext.pas',
-  GLSDL in '..\Source\GLSDL.pas',
   GLSDLWindow in '..\Source\GLSDLWindow.pas';
 
 end.
-

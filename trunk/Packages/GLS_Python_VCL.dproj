@@ -40,11 +40,17 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <DesignOnlyPackage>true</DesignOnlyPackage>
         <GenDll>true</GenDll>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <DCC_N>false</DCC_N>
-        <VerInfo_Locale>1049</VerInfo_Locale>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_E>false</DCC_E>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <SanitizedProjectName>GLS_Python_VCL</SanitizedProjectName>
         <DCC_DebugInformation>1</DCC_DebugInformation>
         <DCC_F>false</DCC_F>
@@ -83,8 +89,6 @@
         <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -116,7 +120,6 @@
                     <Source Name="MainSource">GLS_Python_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
