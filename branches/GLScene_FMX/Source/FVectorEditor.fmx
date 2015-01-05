@@ -135,7 +135,7 @@ object VectorEditorForm: TVectorEditorForm
   object Label3: TLabel
     StyledSettings = [Family, Size]
     Position.X = 16.000000000000000000
-    Position.Y = 176.000000000000000000
+    Position.Y = 168.000000000000000000
     Size.Width = 73.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
@@ -146,7 +146,7 @@ object VectorEditorForm: TVectorEditorForm
   object Label2: TLabel
     StyledSettings = [Family, Size]
     Position.X = 16.000000000000000000
-    Position.Y = 152.000000000000000000
+    Position.Y = 144.000000000000000000
     Size.Width = 73.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False
@@ -157,7 +157,7 @@ object VectorEditorForm: TVectorEditorForm
   object Label1: TLabel
     StyledSettings = [Family, Size]
     Position.X = 16.000000000000000000
-    Position.Y = 128.000000000000000000
+    Position.Y = 120.000000000000000000
     Size.Width = 81.000000000000000000
     Size.Height = 17.000000000000000000
     Size.PlatformDefault = False

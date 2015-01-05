@@ -2,30 +2,31 @@ object LibMaterialPicker: TLibMaterialPicker
   Left = 0
   Top = 0
   Caption = 'LibMaterial Picker'
-  ClientHeight = 299
-  ClientWidth = 501
+  ClientHeight = 295
+  ClientWidth = 481
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
   DesignerMasterStyle = 0
   object Label1: TLabel
-    Position.X = 16.000000000000000000
+    Position.X = 8.000000000000000000
     Position.Y = 24.000000000000000000
     Text = 'Available Material'
   end
   object Label2: TLabel
-    Position.X = 184.000000000000000000
+    Position.X = 168.000000000000000000
     Position.Y = 24.000000000000000000
     Text = 'Material Preview'
   end
   object LBMaterials: TListBox
-    Position.X = 16.000000000000000000
-    Position.Y = 56.000000000000000000
+    Position.X = 8.000000000000000000
+    Position.Y = 48.000000000000000000
     Size.Width = 145.000000000000000000
     Size.Height = 225.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
     OnClick = LBMaterialsClick
+    OnDblClick = LBMaterialsDblClick
     DisableFocusEffect = True
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
@@ -33,13 +34,13 @@ object LibMaterialPicker: TLibMaterialPicker
   end
   object BBOK: TButton
     ModalResult = 1
-    Position.X = 408.000000000000000000
-    Position.Y = 56.000000000000000000
+    Position.X = 392.000000000000000000
+    Position.Y = 48.000000000000000000
     Size.Width = 80.000000000000000000
     Size.Height = 25.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'cornerbuttonstyle'
-    TabOrder = 10
+    TabOrder = 8
     Text = 'OK'
     object ImageOK: TImage
       MultiResBitmap.Height = 16
@@ -67,13 +68,13 @@ object LibMaterialPicker: TLibMaterialPicker
   end
   object BBCancel: TButton
     ModalResult = 2
-    Position.X = 408.000000000000000000
-    Position.Y = 96.000000000000000000
+    Position.X = 392.000000000000000000
+    Position.Y = 88.000000000000000000
     Size.Width = 80.000000000000000000
     Size.Height = 25.000000000000000000
     Size.PlatformDefault = False
     StyleLookup = 'cornerbuttonstyle'
-    TabOrder = 11
+    TabOrder = 9
     Text = 'Cancel'
     object ImageCancel: TImage
       MultiResBitmap.Height = 18
@@ -98,6 +99,64 @@ object LibMaterialPicker: TLibMaterialPicker
       Size.Width = 25.000000000000000000
       Size.Height = 25.000000000000000000
       Size.PlatformDefault = False
+    end
+  end
+  object Light: TDummy
+    Width = 1.000000000000000000
+    Height = 1.000000000000000000
+    Depth = 1.000000000000000000
+    object LightSource: TLight
+      Color = claWhite
+      LightType = Directional
+      SpotCutOff = 180.000000000000000000
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object FireSphere: TSphere
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+  end
+  object World: TDummy
+    Width = 1.000000000000000000
+    Height = 1.000000000000000000
+    Depth = 1.000000000000000000
+    object Cube: TCube
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object Sphere: TSphere
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object Cone: TCone
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+      SubdivisionsCap = 3
+    end
+  end
+  inline MPPreview: TRMaterialPreview
+    Position.X = 160.000000000000000000
+    Position.Y = 48.000000000000000000
+    Size.Width = 211.000000000000000000
+    Size.Height = 228.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 14
+    inherited GLSceneViewer: TViewport3D
+      Size.Height = 201.000000000000000000
+    end
+    inherited Camera: TCameraComponent
+      Left = 248
+      Top = 112
+    end
+    inherited LightMaterialSource1: TLightMaterialSource
+      Left = 251
+      Top = 176
     end
   end
 end

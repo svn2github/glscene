@@ -6,7 +6,7 @@
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>10/08/14 - PW - Upgraded to support FMX
+      <li>10/08/14 - PW - Converted to FMX
       <li>05/10/08 - DanB - Removed Kylix support
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>19/12/06 - DaStr - Fixed bug in SetValue, SetValueMin, SetValueMax when

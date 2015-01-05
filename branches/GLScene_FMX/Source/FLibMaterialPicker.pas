@@ -1,3 +1,20 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+// FLibMaterialPicker
+{: Egg<p>
+
+ Allows choosing a material in a material library<p>
+
+    <b>Historique : </b><font size=-1><ul>
+      <li>05/01/14 - PW - Converted to FMX
+      <li>05/09/08 - DanB - Removed Kylix support
+      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+      <li>19/12/06 - DaStr - LBMaterials.OnDblClick now handled
+      <li>03/07/04 - LR  - Make change for Linux
+      <li>14/02/00 - Egg - Creation
+    </ul></font>
+}
 unit FLibMaterialPicker;
 
 interface
@@ -6,8 +23,9 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Media, FMX.Viewport3D,
+  FMX.Controls3D, FMX.Objects3D, FMX.Types3D,
 
-  GLS.Material, FRMaterialPreview;
+  GLS.Material, System.Math.Vectors, FMX.MaterialSources, FRMaterialPreview;
 
 type
   TLibMaterialPicker = class(TForm)
@@ -17,9 +35,11 @@ type
     BBOK: TButton;
     ImageOK: TImage;
     BBCancel: TButton;
-    ImageCancel: TImage;
     MPPreview: TRMaterialPreview;
     procedure LBMaterialsClick(Sender: TObject);
+    procedure LBMaterialsDblClick(Sender: TObject);
+    procedure CBObjectChange(Sender: TObject);
+    procedure CBBackgroundChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -28,12 +48,31 @@ type
       materialLibrary: TGLAbstractMaterialLibrary): Boolean;
   end;
 
-var
-  LibMaterialPicker: TLibMaterialPicker;
+function LibMaterialPicker: TLibMaterialPicker;
+procedure ReleaseLibMaterialPicker;
 
 implementation
 
 {$R *.fmx}
+
+var
+  vLibMaterialPicker: TLibMaterialPicker;
+
+function LibMaterialPicker: TLibMaterialPicker;
+begin
+  if not Assigned(vLibMaterialPicker) then
+    vLibMaterialPicker := TLibMaterialPicker.Create(nil);
+  Result := vLibMaterialPicker;
+end;
+
+procedure ReleaseLibMaterialPicker;
+begin
+  if Assigned(vLibMaterialPicker) then
+  begin
+    vLibMaterialPicker.Free;
+    vLibMaterialPicker := nil;
+  end;
+end;
 
 { TLibMaterialPicker }
 
@@ -65,6 +104,11 @@ begin
   with LBMaterials do
     if ItemIndex >= 0 then
       MPPreview.LibMaterial := TGLAbstractLibMaterial(Items.Objects[ItemIndex]);
+end;
+
+procedure TLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
+begin
+ /// BBOk.Click;
 end;
 
 end.

@@ -13,7 +13,7 @@ object RColorEditor: TRColorEditor
     Size.Height = 110.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    object Edit1: TEdit
+    object RedEdit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 1
       Text = '0'
@@ -22,8 +22,9 @@ object RColorEditor: TRColorEditor
       Size.Width = 49.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
+      OnChange = RedEditChange
     end
-    object Edit2: TEdit
+    object GreenEdit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 2
       Text = '0'
@@ -32,8 +33,9 @@ object RColorEditor: TRColorEditor
       Size.Width = 49.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
+      OnChange = GreenEditChange
     end
-    object Edit3: TEdit
+    object BlueEdit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 3
       Text = '0'
@@ -42,8 +44,9 @@ object RColorEditor: TRColorEditor
       Size.Width = 49.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
+      OnChange = BlueEditChange
     end
-    object Edit4: TEdit
+    object AlphaEdit: TEdit
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       TabOrder = 4
       Text = '0'
@@ -52,15 +55,7 @@ object RColorEditor: TRColorEditor
       Size.Width = 49.000000000000000000
       Size.Height = 22.000000000000000000
       Size.PlatformDefault = False
-    end
-    object ColorBox1: TColorBox
-      Color = claNull
-      Position.X = 128.000000000000000000
-      Position.Y = 8.000000000000000000
-      Size.Width = 89.000000000000000000
-      Size.Height = 89.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 5
+      OnChange = AlphaEditChange
     end
     object Label1: TLabel
       StyledSettings = [Family, Size]
@@ -104,6 +99,12 @@ object RColorEditor: TRColorEditor
       Size.PlatformDefault = False
       TextSettings.Font.Style = [fsBold]
       Text = 'Alpha'
+    end
+    object ColorBox: TColorBox
+      Color = claNull
+      Position.X = 168.000000000000000000
+      Position.Y = 24.000000000000000000
+      TabOrder = 5
     end
   end
 end

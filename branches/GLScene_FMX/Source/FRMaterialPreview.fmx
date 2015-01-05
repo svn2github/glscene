@@ -23,6 +23,9 @@ object RMaterialPreview: TRMaterialPreview
     Size.Width = 211.000000000000000000
     Size.Height = 204.000000000000000000
     Size.PlatformDefault = False
+    OnMouseDown = GLSceneViewerMouseDown
+    OnMouseMove = GLSceneViewerMouseMove
+    OnMouseWheel = GLSceneViewerMouseWheel
   end
   object Camera: TCameraComponent
     Left = 88
@@ -36,5 +39,44 @@ object RMaterialPreview: TRMaterialPreview
     Shininess = 30
     Left = 91
     Top = 152
+  end
+  object World: TDummy
+    Width = 1.000000000000000000
+    Height = 1.000000000000000000
+    Depth = 1.000000000000000000
+    object Cube: TCube
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object Sphere: TSphere
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object Cone: TCone
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+      SubdivisionsCap = 3
+    end
+  end
+  object Light: TDummy
+    Width = 1.000000000000000000
+    Height = 1.000000000000000000
+    Depth = 1.000000000000000000
+    object LightSource: TLight
+      Color = claWhite
+      LightType = Directional
+      SpotCutOff = 180.000000000000000000
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
+    object FireSphere: TSphere
+      Width = 1.000000000000000000
+      Height = 1.000000000000000000
+      Depth = 1.000000000000000000
+    end
   end
 end

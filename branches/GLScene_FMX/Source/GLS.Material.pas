@@ -53,7 +53,7 @@ uses
   GLS.RenderContextInfo, GLS.BaseClasses, GLS.OpenGLTokens, GLS.Context,
   GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.State, GLS.TextureFormat, GLS.Strings, GLS.XOpenGL,
-  GLS.ApplicationFileIO, GLS.Graphics, GLS.Utils, GLSLog;
+  GLS.ApplicationFileIO, GLS.Graphics, GLS.Utils, GLS.Log;
 
 {$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
