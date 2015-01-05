@@ -52,7 +52,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   Classes, SysUtils, Math,
 
   // GLScene

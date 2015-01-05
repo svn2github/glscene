@@ -464,12 +464,12 @@ type
     property CustomForceAndTorqueEvent
       : TApplyForceAndTorqueEvent read FCustomForceAndTorqueEvent write
       FCustomForceAndTorqueEvent;
+    property Velocity: TVector read GetVelocity write SetVelocity;
+    property Omega: TVector read GetOmega write SetOmega;
   published
     { Published Declarations }
     property Force: TGLCoordinates read FForce write FForce;
     property Torque: TGLCoordinates read FTorque write FTorque;
-    property Velocity: TVector read GetVelocity write SetVelocity;
-    property Omega: TVector read GetOmega write SetOmega;
     property CenterOfMass
       : TGLCoordinates read FCenterOfMass write FCenterOfMass;
     property AutoSleep: Boolean read FAutoSleep write SetAutoSleep default True;
