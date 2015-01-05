@@ -109,11 +109,7 @@ interface
 {.$define MULTITHREADOPENGL}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils,
-  {$ELSE}
-  System
-  {$ENDIF}
+  SysUtils,
   {$IFDEF MSWINDOWS}
     Windows,
   {$ENDIF}
