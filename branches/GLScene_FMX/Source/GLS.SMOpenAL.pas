@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLSMOpenAL<p>
 
 	OpenAL based sound-manager (http://www.openal.org).<p>

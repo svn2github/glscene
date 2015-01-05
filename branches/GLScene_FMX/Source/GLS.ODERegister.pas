@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
   GLODERegister - Design time registration code for the ODE Manager
 
@@ -10,7 +13,7 @@ unit GLODERegister;
 interface
 
 uses
-  System.Classes, GLODEManager;
+  System.Classes, GLS.ODEManager;
 
 procedure Register;
 

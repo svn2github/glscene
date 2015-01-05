@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSDLContext<p>
+{: GLS.SDLContext<p>
 
    SDL specific Context and Viewer.<p>
 
@@ -19,7 +19,7 @@
       <li>12/12/01 - EG - Creation
    </ul></font>
 }
-unit GLSDLContext;
+unit GLS.SDLContext;
 
 interface
 
@@ -27,15 +27,12 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLType,
-{$ENDIF}
   System.Classes,
   System.SysUtils,
   GLS.Context,
-  GLSDLWindow,
+  GLS.SDLWindow,
   GLS.Scene,
-  GLSDL;
+  GLS.SDL;
 
 type
 
@@ -135,7 +132,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  OpenGLAdapter,
+  GLS.OpenGLAdapter,
   GLS.CrossPlatform,
   GLS.XOpenGL;
 

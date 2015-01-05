@@ -31,4 +31,9 @@ package GLS_SDL_FMX;
 requires
   rtl;
 
+contains
+  GLS.SDLContext in '..\Source\GLS.SDLContext.pas',
+  GLS.SDLWindow in '..\Source\GLS.SDLWindow.pas',
+  SDL in '..\Source\SDL.pas';
+
 end.

@@ -44,6 +44,7 @@ uses
   Winapi.Windows, WinApi.Messages,
   System.Classes, System.SysUtils, System.Types,
   FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
+  FMX.Viewport3D,
 
   GLS.Scene, GLS.SceneContext,  GLS.Context;
 
@@ -54,9 +55,9 @@ type
     ExStyle: DWORD;
     X, Y: Integer;
     Width, Height: Integer;
-    WndParent: HWnd;
+    //WndParent: HWnd; - not fmx
     Param: Pointer;
-    WindowClass: TWndClass;
+    //WindowClass: TWndClass;  - not fmx
     WinClassName: array[0..63] of Char;
   end;
 
@@ -73,7 +74,7 @@ type
      borderless form).<p>
      This viewer also allows to define rendering options such a fog, face culling,
      depth testing, etc. and can take care of framerate calculation.<p> }
-  TGLSceneViewer = class(TControl)
+  TGLSceneViewer = class(TViewPort3D)
   private
     { Private Declarations }
     FBuffer: TGLSceneBuffer;

@@ -26,7 +26,8 @@ unit GLODERagdoll;
 interface
 
 uses
-  GLRagdoll, ODEImport, GLS.Scene, GLS.Objects, GLS.VectorGeometry, ODEGL, GLS.Texture,
+  ODEImport, ODEGL,
+  GLS.Ragdoll, GLS.Scene, GLS.Objects, GLS.VectorGeometry,  GLS.Texture,
   GLS.VectorFileObjects;
 
 const
@@ -133,7 +134,9 @@ var
   vGLODERagdoll_cDensity : Single;
   vGLODERagdoll_cMass : Single;
 
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
 
 { TODERagdollWorld }
 

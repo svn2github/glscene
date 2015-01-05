@@ -24,10 +24,10 @@
         <Projects Include="GLS_ODE_FMX.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_SDL_FMX.dproj">
+        <Projects Include="GLS_Computing_RunTime_FMX.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_DWS_FMX.dproj">
+        <Projects Include="GLS_Computing_DesignTime_FMX.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="GLCg_RunTime_FMX.dproj">
@@ -36,10 +36,10 @@
         <Projects Include="GLCg_DesignTime_FMX.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_Computing_DesignTime_FMX.dproj">
+        <Projects Include="GLS_SDL_FMX.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_Computing_RunTime_FMX.dproj">
+        <Projects Include="GLS_DWS_FMX.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="GLS_Python_FMX.dproj">
@@ -116,23 +116,23 @@
     <Target Name="GLS_ODE_FMX:Make">
         <MSBuild Projects="GLS_ODE_FMX.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_SDL_FMX">
-        <MSBuild Projects="GLS_SDL_FMX.dproj"/>
+    <Target Name="GLS_Computing_RunTime_FMX">
+        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj"/>
     </Target>
-    <Target Name="GLS_SDL_FMX:Clean">
-        <MSBuild Projects="GLS_SDL_FMX.dproj" Targets="Clean"/>
+    <Target Name="GLS_Computing_RunTime_FMX:Clean">
+        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLS_SDL_FMX:Make">
-        <MSBuild Projects="GLS_SDL_FMX.dproj" Targets="Make"/>
+    <Target Name="GLS_Computing_RunTime_FMX:Make">
+        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_DWS_FMX">
-        <MSBuild Projects="GLS_DWS_FMX.dproj"/>
+    <Target Name="GLS_Computing_DesignTime_FMX">
+        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj"/>
     </Target>
-    <Target Name="GLS_DWS_FMX:Clean">
-        <MSBuild Projects="GLS_DWS_FMX.dproj" Targets="Clean"/>
+    <Target Name="GLS_Computing_DesignTime_FMX:Clean">
+        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLS_DWS_FMX:Make">
-        <MSBuild Projects="GLS_DWS_FMX.dproj" Targets="Make"/>
+    <Target Name="GLS_Computing_DesignTime_FMX:Make">
+        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj" Targets="Make"/>
     </Target>
     <Target Name="GLCg_RunTime_FMX">
         <MSBuild Projects="GLCg_RunTime_FMX.dproj"/>
@@ -152,23 +152,23 @@
     <Target Name="GLCg_DesignTime_FMX:Make">
         <MSBuild Projects="GLCg_DesignTime_FMX.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_Computing_DesignTime_FMX">
-        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj"/>
+    <Target Name="GLS_SDL_FMX">
+        <MSBuild Projects="GLS_SDL_FMX.dproj"/>
     </Target>
-    <Target Name="GLS_Computing_DesignTime_FMX:Clean">
-        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj" Targets="Clean"/>
+    <Target Name="GLS_SDL_FMX:Clean">
+        <MSBuild Projects="GLS_SDL_FMX.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLS_Computing_DesignTime_FMX:Make">
-        <MSBuild Projects="GLS_Computing_DesignTime_FMX.dproj" Targets="Make"/>
+    <Target Name="GLS_SDL_FMX:Make">
+        <MSBuild Projects="GLS_SDL_FMX.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_Computing_RunTime_FMX">
-        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj"/>
+    <Target Name="GLS_DWS_FMX">
+        <MSBuild Projects="GLS_DWS_FMX.dproj"/>
     </Target>
-    <Target Name="GLS_Computing_RunTime_FMX:Clean">
-        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj" Targets="Clean"/>
+    <Target Name="GLS_DWS_FMX:Clean">
+        <MSBuild Projects="GLS_DWS_FMX.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLS_Computing_RunTime_FMX:Make">
-        <MSBuild Projects="GLS_Computing_RunTime_FMX.dproj" Targets="Make"/>
+    <Target Name="GLS_DWS_FMX:Make">
+        <MSBuild Projects="GLS_DWS_FMX.dproj" Targets="Make"/>
     </Target>
     <Target Name="GLS_Python_FMX">
         <MSBuild Projects="GLS_Python_FMX.dproj"/>
@@ -180,13 +180,13 @@
         <MSBuild Projects="GLS_Python_FMX.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTime_FMX;GLScene_DesignTime_FMX;GLSS_BASS_FMX;GLSS_FMOD_FMX;GLSS_OpenAL_FMX;GLS_NGD_FMX;GLS_ODE_FMX;GLS_SDL_FMX;GLS_DWS_FMX;GLCg_RunTime_FMX;GLCg_DesignTime_FMX;GLS_Computing_DesignTime_FMX;GLS_Computing_RunTime_FMX;GLS_Python_FMX"/>
+        <CallTarget Targets="GLScene_RunTime_FMX;GLScene_DesignTime_FMX;GLSS_BASS_FMX;GLSS_FMOD_FMX;GLSS_OpenAL_FMX;GLS_NGD_FMX;GLS_ODE_FMX;GLS_Computing_RunTime_FMX;GLS_Computing_DesignTime_FMX;GLCg_RunTime_FMX;GLCg_DesignTime_FMX;GLS_SDL_FMX;GLS_DWS_FMX;GLS_Python_FMX"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTime_FMX:Clean;GLScene_DesignTime_FMX:Clean;GLSS_BASS_FMX:Clean;GLSS_FMOD_FMX:Clean;GLSS_OpenAL_FMX:Clean;GLS_NGD_FMX:Clean;GLS_ODE_FMX:Clean;GLS_SDL_FMX:Clean;GLS_DWS_FMX:Clean;GLCg_RunTime_FMX:Clean;GLCg_DesignTime_FMX:Clean;GLS_Computing_DesignTime_FMX:Clean;GLS_Computing_RunTime_FMX:Clean;GLS_Python_FMX:Clean"/>
+        <CallTarget Targets="GLScene_RunTime_FMX:Clean;GLScene_DesignTime_FMX:Clean;GLSS_BASS_FMX:Clean;GLSS_FMOD_FMX:Clean;GLSS_OpenAL_FMX:Clean;GLS_NGD_FMX:Clean;GLS_ODE_FMX:Clean;GLS_Computing_RunTime_FMX:Clean;GLS_Computing_DesignTime_FMX:Clean;GLCg_RunTime_FMX:Clean;GLCg_DesignTime_FMX:Clean;GLS_SDL_FMX:Clean;GLS_DWS_FMX:Clean;GLS_Python_FMX:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTime_FMX:Make;GLScene_DesignTime_FMX:Make;GLSS_BASS_FMX:Make;GLSS_FMOD_FMX:Make;GLSS_OpenAL_FMX:Make;GLS_NGD_FMX:Make;GLS_ODE_FMX:Make;GLS_SDL_FMX:Make;GLS_DWS_FMX:Make;GLCg_RunTime_FMX:Make;GLCg_DesignTime_FMX:Make;GLS_Computing_DesignTime_FMX:Make;GLS_Computing_RunTime_FMX:Make;GLS_Python_FMX:Make"/>
+        <CallTarget Targets="GLScene_RunTime_FMX:Make;GLScene_DesignTime_FMX:Make;GLSS_BASS_FMX:Make;GLSS_FMOD_FMX:Make;GLSS_OpenAL_FMX:Make;GLS_NGD_FMX:Make;GLS_ODE_FMX:Make;GLS_Computing_RunTime_FMX:Make;GLS_Computing_DesignTime_FMX:Make;GLCg_RunTime_FMX:Make;GLCg_DesignTime_FMX:Make;GLS_SDL_FMX:Make;GLS_DWS_FMX:Make;GLS_Python_FMX:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

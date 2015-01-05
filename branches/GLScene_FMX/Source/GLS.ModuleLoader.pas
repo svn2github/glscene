@@ -4,7 +4,7 @@
                                                          (BugTracekrID=1681585)
 
 }
-unit GLSModuleLoader;
+unit GLS.ModuleLoader;
 {******************************************************************}
 {                                                                  }
 {       Project JEDI                                               }
@@ -43,7 +43,7 @@ interface
 
 {$IFDEF MSWINDOWS}
 uses
-  Windows;
+  Winapi.Windows;
 
 type
   // Handle to a loaded DLL
@@ -165,17 +165,17 @@ end;
 
 {$ENDIF}
 
-{$IFDEF Unix}
+{$IFDEF UNIX}
 uses
 {$IFDEF UNIX}
   Types,
   Libc;
-{$else}
+{$ELSE}
   dl,
   Types,
   Baseunix,
   Unix;
-{$endif}
+{$ENDIF}
 type
   // Handle to a loaded .so
   TModuleHandle = Pointer;

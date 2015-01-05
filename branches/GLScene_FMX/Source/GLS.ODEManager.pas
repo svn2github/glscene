@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODEManager<p>
+{: GLS.ODEManager<p>
 
   An ODE Manager for GLScene.<p>
 
@@ -120,16 +120,19 @@
   </ul>
 }
 
-unit GLODEManager;
+unit GLS.ODEManager;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, ODEGL, ODEImport, GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.OpenGLTokens,
-  GLS.XOpenGL, System.SysUtils, GLS.Objects, GLS.XCollection, GLS.PersistentClasses, GLS.VectorLists,
-  GLS.Color, GLS.Coordinates, GLS.RenderContextInfo, GLS.Manager, GLS.State;
+  System.Classes, System.SysUtils,
+
+  ODEGL, ODEImport, GLS.Scene, GLS.VectorGeometry, GLS.Texture,
+  GLS.OpenGLTokens, GLS.XOpenGL, GLS.Objects, GLS.XCollection,
+  GLS.PersistentClasses, GLS.VectorLists, GLS.Color, GLS.Coordinates,
+  GLS.RenderContextInfo, GLS.Manager, GLS.State;
 
 type
 

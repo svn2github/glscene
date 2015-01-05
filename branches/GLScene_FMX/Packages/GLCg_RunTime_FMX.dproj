@@ -61,11 +61,16 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_Description>GLScene FMX Cg Shaders</DCC_Description>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <GenPackage>true</GenPackage>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <GenDll>true</GenDll>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>GLCg_RunTime_FMX</SanitizedProjectName>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
@@ -155,7 +160,6 @@
                     <Source Name="MainSource">GLCg_RunTime_FMX.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_CUDA_CL_DesignTime.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

@@ -31,4 +31,14 @@ package GLS_ODE_FMX;
 requires
   rtl;
 
+contains
+  GLS.ModuleLoader in '..\Source\GLS.ModuleLoader.pas',
+  GLS.ODEManager in '..\Source\GLS.ODEManager.pas',
+  GLS.ODERegister in '..\Source\GLS.ODERegister.pas',
+  GLS.ODECustomColliders in '..\Source\GLS.ODECustomColliders.pas',
+  GLS.ODESkeletonColliders in '..\Source\GLS.ODESkeletonColliders.pas',
+  ODEImport in '..\Source\ODEImport.pas',
+  GLS.ODERagdoll in '..\Source\GLS.ODERagdoll.pas',
+  ODEGL in '..\Source\ODEGL.pas';
+
 end.

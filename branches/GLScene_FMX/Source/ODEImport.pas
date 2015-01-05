@@ -164,7 +164,8 @@ uses
   GPCMacOSAll,
   {$ENDIF}
   System.Classes,
-  GLSModuleLoader;
+
+  GLS.ModuleLoader;
 
 const
   // ********************************************************************

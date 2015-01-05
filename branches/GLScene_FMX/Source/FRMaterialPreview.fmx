@@ -1,0 +1,40 @@
+object RMaterialPreview: TRMaterialPreview
+  Size.Width = 211.000000000000000000
+  Size.Height = 228.000000000000000000
+  Size.PlatformDefault = False
+  TabOrder = 0
+  object CBObject: TComboBox
+    Size.Width = 57.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    OnChange = CBObjectChange
+  end
+  object CBBackground: TComboBox
+    Position.X = 57.000000000000000000
+    Size.Width = 152.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    OnChange = CBBackgroundChange
+  end
+  object GLSceneViewer: TViewport3D
+    Position.Y = 24.000000000000000000
+    Size.Width = 211.000000000000000000
+    Size.Height = 204.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object Camera: TCameraComponent
+    Left = 88
+    Top = 96
+  end
+  object LightMaterialSource1: TLightMaterialSource
+    Diffuse = claWhite
+    Ambient = xFF202020
+    Emissive = claNull
+    Specular = xFF606060
+    Shininess = 30
+    Left = 91
+    Top = 152
+  end
+end

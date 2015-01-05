@@ -57,11 +57,17 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <VerInfo_Locale>1049</VerInfo_Locale>
+        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <SanitizedProjectName>GLScene_DesignTime_FMX</SanitizedProjectName>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <GenDll>true</GenDll>
         <DCC_E>false</DCC_E>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_ImageBase>00400000</DCC_ImageBase>
@@ -148,6 +154,15 @@
         <DCCReference Include="..\Source\FXCollectionEditor.pas">
             <Form>XCollectionEditor</Form>
             <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Source\FLibMaterialPicker.pas">
+            <Form>LibMaterialPicker</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Source\FRMaterialPreview.pas">
+            <Form>RMaterialPreview</Form>
+            <FormType>fmx</FormType>
+            <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

@@ -35,15 +35,16 @@ interface
 
 uses
   System.SysUtils,
+
+  ODEImport,
   GLS.OpenGLTokens,
   GLS.Context,
   GLS.VectorGeometry,
-  ODEImport,
   GLS.Scene,
   GLS.VectorTypes,
   GLS.VectorLists,
   GLS.Objects,
-  GLVerletClothify,
+  GLS.VerletClothify,
   GLS.VectorFileObjects;
 
 procedure DrawBox(Sides: TdVector3);

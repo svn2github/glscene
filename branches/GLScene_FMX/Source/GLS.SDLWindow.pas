@@ -35,7 +35,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.SyncObjs,
  
-  GLS.SDL;
+  GLS.SDL, GLS.OpenGLAdapter;
 
 type
   // TSDLWindowPixelDepth
@@ -215,7 +215,7 @@ implementation
 // ---------------------------------------------------------------------
 
 uses
-  OpenGLAdapter, GLS.Context, GLS.VectorGeometry;
+  GLS.Context, GLS.VectorGeometry;
 
 var
   vSDLCS: TCriticalSection;

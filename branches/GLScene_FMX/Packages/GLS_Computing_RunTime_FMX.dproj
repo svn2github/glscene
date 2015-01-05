@@ -61,11 +61,16 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_Description>GLScene FMX GPU Computing</DCC_Description>
+        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
         <GenPackage>true</GenPackage>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <GenDll>true</GenDll>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <SanitizedProjectName>GLS_Computing_RunTime_FMX</SanitizedProjectName>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODESkeletonColliders<p>
+{: GLS.ODESkeletonColliders<p>
 
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
@@ -17,15 +17,18 @@
       <li>04/12/03 - SG - Creation.
    </ul></font>
 }
-unit GLODESkeletonColliders;
+unit GLS.ODESkeletonColliders;
 
 interface
 
 uses
-  System.Classes, GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects, ODEImport;
+  System.Classes,
+
+  ODEImport,
+  GLS.PersistentClasses, GLS.VectorGeometry, GLS.VectorFileObjects;
 
 type
-  
+
   // TSCODEBase
   //
   {: Base ODE skeleton collider class. }
@@ -120,10 +123,6 @@ procedure AddSCODEGeomsToODESpace(
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ Global methods ------------------
 // ------------------

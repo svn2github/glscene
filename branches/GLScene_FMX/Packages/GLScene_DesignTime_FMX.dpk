@@ -40,6 +40,8 @@ contains
   FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
   FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
   FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
-  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor};
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
+  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame};
 
 end.

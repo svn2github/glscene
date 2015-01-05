@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODECustomColliders<p>
+{: GLS.ODECustomColliders<p>
 
   Custom ODE collider implementations.<p>
 
@@ -46,30 +46,23 @@
     <li>30/07/03 - SG - Creation.
   </ul>
 }
-unit GLODECustomColliders;
+unit GLS.ODECustomColliders;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes,
   System.SysUtils,
 
- {$ELSE}
-  System.Classes,
-  System.SysUtils,
- {$ENDIF}
-
-   
-  GLODEManager,
   ODEGL,
   ODEImport,
+  GLS.ODEManager,
   GLS.VectorGeometry,
   GLS.VectorLists,
   GLS.Scene,
-  GLTerrainRenderer,
+  GLS.TerrainRenderer,
   GLS.Graph,
   GLS.XCollection,
   GLS.OpenGLTokens,
