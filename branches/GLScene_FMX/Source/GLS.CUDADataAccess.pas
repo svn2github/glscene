@@ -1,14 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDADataAccess<p>
+{ : GLS.CUDADataAccess<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>03/01/15 - PW - Updated to use with FMX
   <li>13/12/13 - PW - Added GLScene.inc and GLSLog
   <li>24/02/11 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDADataAccess;
+unit GLS.CUDADataAccess;
 
 interface
 
@@ -17,7 +18,7 @@ interface
 uses
   System.SysUtils,
   GLS.CrossPlatform,
-  GLSLog;
+  GLS.Log;
 
 type
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDA<p>
+{ : GLS.CUDA<p>
 
   <b>History : </b><font size=-1><ul>
   <li>26/03/12 - Maverick - Added vectors SetParam routines
@@ -15,26 +15,21 @@
   <li>01/04/10 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDA;
+unit GLS.CUDA;
 
 interface
 
 {$I cuda.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-   
-  GLS.PersistentClasses,  GLS.BaseClasses,  GLS.CrossPlatform,  GLS.Context,
-  GLS.VectorGeometry,  GLS.VectorTypes,  GLS.VectorLists,  GLS.Graphics,
-  GLS_CL_Platform,  GLS_CUDA_API,  GLS_CUDA_RUNTIME,  GLSCUDAParser,
-  GLS_CUDA_FourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
-  GLSCUDADataAccess,  GLS.Strings,  GLS.Utils
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+
+  GLS.PersistentClasses, GLS.BaseClasses, GLS.CrossPlatform, GLS.Context,
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists, GLS.Graphics,
+  GLS.CLPlatform, GLS.CUDAApi, GLS.CUDARuntime, GLS.CUDAParser,
+  GLS.CUDAFourierTransform, GLS.CUDACompiler, GLS.CUDAContext,
+  GLS.CUDADataAccess, GLS.Strings, GLS.Utils, GLS.Log;
 
 type
 

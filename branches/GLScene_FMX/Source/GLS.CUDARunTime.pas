@@ -1,10 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_Runtime<p>
+{ : GLS.CUDARuntime<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
+  <li>03/01/14 - PW - Upgraded to use with FMX
   <li>28/01/10 - Yar - Creation
   </ul></font>
 }
@@ -44,7 +44,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_Runtime;
+unit GLS.CUDARuntime;
 
 interface
 
@@ -56,10 +56,10 @@ uses
   Winapi.Windows,
 {$ENDIF}
   GLS.CrossPlatform,
-  GLS_CL_Platform,
-  GLS_CUDA_API,
-  GLS.OpenGLTokens
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLS.CLPlatform,
+  GLS.CUDAAPI,
+  GLS.OpenGLTokens,
+  GLS.Log;
 
 
 const

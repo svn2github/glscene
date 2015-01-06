@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFilePGM<p>
+{ : GLS.FilePGM<p>
 
   <b>History : </b><font size=-1><ul>
   <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
   <li>04/02/10 - Yar - Creation
   </ul><p>
 }
-unit GLFilePGM;
+unit GLS.FilePGM;
 
 {$I GLScene.inc}
 
@@ -16,6 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
+
   GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
   GLS.ApplicationFileIO;
 
@@ -39,7 +40,7 @@ type
 implementation
 
 uses
-  GLS_CUDA_Utility;
+  GLS.CUDAUtility;
 
 resourcestring
   cCUTILFailed = 'Can not initialize cutil32.dll';

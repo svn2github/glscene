@@ -10,7 +10,7 @@
       <li>19/03/10 - Yar - Creation
 	</ul></font>
 }
-unit GLSCUDAEditor;
+unit FCUDAEditor;
 
 interface
 

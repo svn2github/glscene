@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAFFTPlan <p>
+{ : GLS.CUDAFFTPlan <p>
 
   <b>History : </b><font size=-1><ul>
+  <li>03/01/15 - PW - Upgraded to use with FMX
   <li>13/12/13 - PW - Added GLScene.inc and GLSLog
   <li>04/05/11 - Yar - Fixed Source/Destination size checking
   <li>05/03/11 - Yar - Refactored
@@ -11,7 +12,7 @@
   </ul></font><p>
 }
 
-unit GLSCUDAFFTPlan;
+unit GLS.CUDAFFTPlan;
 
 interface
 
@@ -19,13 +20,13 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
-  GLSCUDAContext,
-  GLSCUDA,
-  GLS_CUDA_API,
-  GLS_CUDA_FourierTransform,
+
+  GLS.CUDAContext,
+  GLS.CUDA,
+  GLS.CUDAAPI,
+  GLS.CUDAFourierTransform,
   GLS.Strings,
-  GLSLog;
+  GLS.Log;
 
 type
 

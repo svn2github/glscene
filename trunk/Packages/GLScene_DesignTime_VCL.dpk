@@ -52,14 +52,14 @@ contains
   FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
   FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
   FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
-  FRFaceEditor in '..\Source\FRFaceEditor.pas',
   FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
   FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
   FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
   FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
   FShaderMemo in '..\Source\FShaderMemo.pas',
   FInfo in '..\Source\FInfo.pas' {InfoForm},
-  GLSceneRegister in '..\Source\GLSceneRegister.pas';
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
+  FRFaceEditor in '..\Source\FRFaceEditor.pas';
 
 end.
 

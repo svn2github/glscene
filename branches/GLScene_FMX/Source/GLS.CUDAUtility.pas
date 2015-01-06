@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLS_CUDA_Utility<p>
+{: GLS.CUDAUtility<p>
 
     Wraper of cutil.<p>
 
@@ -9,7 +9,7 @@
       <li>02/03/10 - Yar - Creation
    </ul></font>
 }
-unit GLS_CUDA_Utility;
+unit GLS.CUDAUtility;
 
 interface
 

@@ -127,7 +127,7 @@
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="GLS_Computing_RunTime_VCL.dcp"/>
         <DCCReference Include="GLScene_DesignTime_VCL.dcp"/>
-        <DCCReference Include="..\Source\GLSCUDAEditor.pas">
+        <DCCReference Include="..\Source\FCUDAEditor.pas">
             <Form>GLSCUDAEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\GLSComputingRegister.pas"/>

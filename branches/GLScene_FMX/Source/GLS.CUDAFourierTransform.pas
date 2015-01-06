@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_FourierTransform<p>
+{ : GLS.CUDAFourierTransform<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>03/01/14 - PW - Upgraded to use with FMX
   <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
   <li>14/02/11 - Yar - Added debug mode
   <li>28/01/10 - Yar - Creation
@@ -45,7 +46,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_FourierTransform;
+unit GLS.CUDAFourierTransform;
 
 interface
 
@@ -54,8 +55,7 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-  GLS.VectorTypes, GLS_CUDA_API, GLS_CUDA_RUNTIME
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLS.VectorTypes, GLS.CUDAAPI, GLS.CUDARunTime, GLS.Log;
 
 
 const

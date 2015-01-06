@@ -83,13 +83,13 @@ implementation
 
 uses
   GLSCUDARunTime,
-  GLSCUDAEditor,
   GLSCUDAContext,
   GLSCUDA,
   GLSCUDACompiler,
   GLSCUDAFFTPlan,
   GLSCUDAGraphics,
-  GLSCUDAParser;
+  GLSCUDAParser,
+  FCUDAEditor;
 
 procedure Register;
 begin

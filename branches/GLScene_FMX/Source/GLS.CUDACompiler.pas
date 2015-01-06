@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDACompiler <p>
+{ : GLS.CUDACompiler <p>
 
   Component allows to compile the CUDA-source (*.cu) file.<p>
   in design- and runtime.<p>
@@ -15,7 +15,7 @@
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
-unit GLSCUDACompiler;
+unit GLS.CUDACompiler;
 
 interface
 
@@ -23,10 +23,9 @@ interface
 
 uses
   System.Classes,
-  Forms,
-  GLSCUDAParser
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  FMX.Forms, FMX.Dialogs,
 
+  GLS.CUDAParser, GLS.ApplicationFileIO, GLS.Log;
 
 type
   TGLSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);
@@ -140,7 +139,7 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}Winapi.Windows, {$ENDIF}
-  System.SysUtils, Dialogs, GLS.ApplicationFileIO,
+  System.SysUtils,
   ShellAPI,
 {$IFNDEF FPC}
   TlHelp32

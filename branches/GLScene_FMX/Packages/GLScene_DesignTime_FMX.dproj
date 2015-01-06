@@ -183,6 +183,14 @@
             <Form>ShaderMemoForm</Form>
             <FormType>fmx</FormType>
         </DCCReference>
+        <DCCReference Include="..\Source\FShaderUniformEditor.pas">
+            <Form>ShaderUniformEditor</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Source\FGuiSkinEditor.pas">
+            <Form>GUISkinEditor</Form>
+            <FormType>fmx</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

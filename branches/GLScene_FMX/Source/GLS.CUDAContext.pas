@@ -4,31 +4,27 @@
 { : GLSCUDAContext <p>
 
   <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
+  <li>03/01/15 - PW - Upgraded to use with FMX
   <li>19/03/10 - Yar - Creation
   </ul></font><p>
 }
 
-unit GLSCUDAContext;
+unit GLS.CUDAContext;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.BaseClasses,
-  GLS_CUDA_API,
-  GLS_CUDA_RunTime,
-  GLS_CL_Platform,
+  GLS.CUDAAPI,
+  GLS.CUDARunTime,
+  GLS.CLPlatform,
   GLS.Context,
   GLS.Generics,
-  GLSLog;
+  GLS.Log;
 
 type
 

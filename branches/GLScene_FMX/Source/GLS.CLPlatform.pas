@@ -1,4 +1,7 @@
-﻿{ : GLS_CL_Platform<p>
+﻿//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : GLS.CLPlatform<p>
 
   Conversion of OpenCL header file: cl_platform.h to Delphi,
   from http://www.khronos.org/registry/cl/.<p>
@@ -30,18 +33,13 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // ****************************************************************************/
 
-unit GLS_CL_Platform;
+unit GLS.CLPlatform;
 
 interface
 
 {$I GLScene.inc}
 
 type
-{$IFDEF FPC}
-  TSize_T = SizeInt;
-  Psize_t = PSizeInt;
-  intptr_t = PtrInt;
-{$ELSE}
 {$IFDEF GLS_DELPHI_2009_UP}
   TSize_T = NativeUInt; // 32 or 64 bit unsigned integer
   Psize_t = ^TSize_T;
@@ -50,7 +48,6 @@ type
   TSize_T = Cardinal; // 32 bit unsigned integer
   Psize_t = ^TSize_T;
   intptr_t = Cardinal;
-{$ENDIF}
 {$ENDIF}
   // Pintptr_t = ^intptr_t;
 

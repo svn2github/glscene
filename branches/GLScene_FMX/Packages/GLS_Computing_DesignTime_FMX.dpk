@@ -31,4 +31,8 @@ package GLS_Computing_DesignTime_FMX;
 requires
   rtl;
 
+contains
+  FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
+  GLS.ComputingRegister in '..\Source\GLS.ComputingRegister.pas';
+
 end.

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_API<p>
+{ : GLS.CUDAAPI<p>
 
   <b>History : </b><font size=-1><ul>
   <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
@@ -56,8 +56,8 @@ interface
 uses
 {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   GLS.CrossPlatform,
-  GLS_CL_Platform
- {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLS.CLPlatform,
+  GLS.Log;
 
 const
   CUDAAPIDLL = 'nvcuda.dll';

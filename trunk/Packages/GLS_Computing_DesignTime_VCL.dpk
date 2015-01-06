@@ -38,7 +38,7 @@ requires
   GLScene_DesignTime_VCL;
 
 contains
-  GLSCUDAEditor in '..\Source\GLSCUDAEditor.pas' {GLSCUDAEditorForm},
+  FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
   GLSComputingRegister in '..\Source\GLSComputingRegister.pas';
 
 end.

@@ -83,10 +83,10 @@ object GUISkinEditor: TGUISkinEditor
     BevelOuter = bvNone
     TabOrder = 2
     object imgFull: TImage
-      Left = 1
+      Left = 6
       Top = 1
-      Width = 309
-      Height = 285
+      Width = 298
+      Height = 279
       OnMouseDown = imgFullMouseDown
       OnMouseMove = imgFullMouseMove
       OnMouseUp = imgFullMouseUp

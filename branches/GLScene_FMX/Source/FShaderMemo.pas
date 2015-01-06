@@ -1,3 +1,18 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: FShaderMemo<p>
+   Shader code editor.<p>
+
+   <b>History : </b><font size=-1><ul>
+      <li>06/01/15 - PW - Converted to FMX
+      <li>31/03/11 - Yar - Creation
+   </ul></font>
+}
+
+// TODO: decide how to load templates from external file,
+//       update it without package recompilation
+
 unit FShaderMemo;
 
 interface

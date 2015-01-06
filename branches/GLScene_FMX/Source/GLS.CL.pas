@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLS_CL<p>
+{: GLS.CL<p>
 
    Conversion of OpenCL header file: cl.h to Delphi,
    from http://www.khronos.org/registry/cl/.<p>
@@ -35,13 +35,13 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // *****************************************************************************
 
-unit GLS_CL;
+unit GLS.CL;
 
 interface
 
 uses
   {$IFDEF MSWINDOWS} Windows,{$ENDIF}
-  GLS_CL_Platform;
+  GLS.CLPlatform;
 
 {$I cl.inc}
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAParser <p>
+{: GLS.CUDAParser <p>
 
    Helper unit for parsing CU modules and get information about.<p>
    kernel's functions, textures, shared and constants memory.<p>
@@ -12,12 +12,12 @@
       <li>19/03/10 - Yar - Creation
    </ul></font><p>
 }
-unit GLSCUDAParser;
+unit GLS.CUDAParser;
 
 interface
 
 uses
-  System.Classes, GLS_CUDA_RUNTIME;
+  System.Classes, GLS.CUDARunTime;
 
 type
 

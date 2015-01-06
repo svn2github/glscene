@@ -47,6 +47,8 @@ contains
   FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
   FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
   FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas',
-  FShaderMemo in '..\Source\FShaderMemo.pas' {ShaderMemoForm};
+  FShaderMemo in '..\Source\FShaderMemo.pas' {ShaderMemoForm},
+  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor};
 
 end.

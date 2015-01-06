@@ -9,7 +9,7 @@
    </ul></font>
 }
 
-// TODO: decide how load templates from external file,
+// TODO: decide how to load templates from external file,
 //       update it without package recompilation
 
 unit FShaderMemo;

@@ -1,16 +1,16 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAGraphics<p>
+{: GLS.CUDAGraphics<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component 
-                           Added to TGLFeedBackMesh vertex attribute collection 
+      <li>05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component
+                           Added to TGLFeedBackMesh vertex attribute collection
       <li>01/04/10 - Yar - Creation
    </ul></font><p>
 }
 
-unit GLSCUDAGraphics;
+unit GLS.CUDAGraphics;
 
 interface
 
@@ -19,8 +19,8 @@ interface
 uses
   System.Classes,
   GLS.CrossPlatform,
-  GLS_CUDA_API,
-  GLSCUDA,
+  GLS.CUDAAPI,
+  GLS.CUDA,
   GLS.OpenGLTokens,
   GLS.Context,
   GLS.State,
@@ -28,8 +28,8 @@ uses
   GLS.Graphics,
   GLS.Material,
   GLS.Texture,
-  GLSLShader,
-  GLSLParameter,
+  GLSL.Shader,
+  GLSL.Parameter,
   GLS.RenderContextInfo;
 
 type
