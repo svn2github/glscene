@@ -49,7 +49,7 @@ type
   private
     { Private declarations }
     FOnChange: TNotifyEvent;
-    updating: Boolean;
+    Updating: Boolean;
     FFaceProperties: TGLFaceProperties;
     procedure SetGLFaceProperties(const val: TGLFaceProperties);
     procedure OnColorChange(Sender: TObject);
@@ -130,7 +130,7 @@ end;
 
 procedure TRFaceEditor.TBEShininessTrackBarChange(Sender: TObject);
 begin
-  if not updating then
+  if not Updating then
   begin
     TBEShininess.TrackBarChange(Sender);
     FFaceProperties.Shininess := TBEShininess.Value;
@@ -143,7 +143,7 @@ end;
 //
 procedure TRFaceEditor.SetGLFaceProperties(const val: TGLFaceProperties);
 begin
-  updating := True;
+  Updating := True;
   try
     CEAmbiant.Color := val.Ambient.Color;
     CEDiffuse.Color := val.Diffuse.Color;

@@ -86,10 +86,8 @@ begin
    BackGroundSprite.Width := GLSceneViewer.Width;
    BackGroundSprite.Height := GLSceneViewer.Height;
 
-   CBObject.ItemIndex:=0;
-   CBObjectChange(Self);
-   CBBackground.ItemIndex:=0;
-   CBBackgroundChange(Self);
+   CBObject.ItemIndex:=0;       CBObjectChange(Self);
+   CBBackground.ItemIndex:=0;   CBBackgroundChange(Self);
 end;
 
 procedure TRMaterialPreview.CBObjectChange(Sender: TObject);

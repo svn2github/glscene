@@ -6,6 +6,7 @@
   Need a short description of what it does here.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>06/01/15 - PW - Converted to FMX
   <li>17/11/14 - PW - Renamed from PlugInManagerPropEditor.pas to FPlugInManagerEditor.pas
   <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
   <li>02/04/07 - DaStr - Added $I GLScene.inc
@@ -17,24 +18,19 @@ unit FPlugInManagerEditor;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
-  VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
-{$ELSE}
-  Classes, SysUtils, Forms, Dialogs, StdCtrls, Controls, Buttons, ExtCtrls,
-  ImgList, ComCtrls, ToolWin,
-{$ENDIF}
-  GLPlugInIntf, GLPlugInManager;
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
+  FMX.Layouts, FMX.ListBox, FMX.Objects,
+
+  GLS.PlugInIntf, GLS.PlugInManager, FMX.Memo;
 
 type
   TPlugInManagerEditor = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
-    GroupBox: TGroupBox;
+    GroupBox1: TGroupBox;
     DescriptionMemo: TMemo;
     Label2: TLabel;
     Label3: TLabel;
@@ -45,10 +41,12 @@ type
     ServiceBox: TComboBox;
     NameBox: TComboBox;
     ToolBar1: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
-    ImageList: TImageList;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
+    Image1: TImage;
+    Image2: TImage;
+    Image3: TImage;
     procedure OKButtonClick(Sender: TObject);
     procedure LoadButtonClick(Sender: TObject);
     procedure ListBoxClick(Sender: TObject);
@@ -69,21 +67,16 @@ var
 
 implementation
 
-{$R *.DFM}
-// ------------------------------------------------------------------------------
+{$R *.fmx}
 
 procedure TPlugInManagerEditor.OKButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
-// ------------------------------------------------------------------------------
-
 procedure TPlugInManagerEditor.LoadButtonClick(Sender: TObject);
-
 var
   I, Index: Integer;
-
 begin
   with OpenDialog do
     if Execute then
@@ -103,10 +96,7 @@ begin
       end;
 end;
 
-// ------------------------------------------------------------------------------
-
 class procedure TPlugInManagerEditor.EditPlugIns(AManager: TPlugInManager);
-
 begin
   // ensure only one instance
   if assigned(PlugInManagerEditor) then
@@ -122,10 +112,7 @@ begin
   PlugInManagerEditor := nil;
 end;
 
-// ------------------------------------------------------------------------------
-
 procedure TPlugInManagerEditor.ListBoxClick(Sender: TObject);
-
 var
   Entry: Integer;
   Service: TPIServiceType;
@@ -184,13 +171,10 @@ begin
   end;
 end;
 
-// ------------------------------------------------------------------------------
-
 procedure TPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
 
 var
   I: Integer;
-
 begin
   for I := 0 to ListBox.Items.Count - 1 do
     if ListBox.Selected[I] then
@@ -220,7 +204,6 @@ end;
 // ------------------------------------------------------------------------------
 
 procedure TPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
-
 begin
   NameBox.Items.Clear;
   with ServiceBox, Items do
@@ -230,7 +213,4 @@ begin
   NameBox.Enabled := True;
 end;
 
-// ------------------------------------------------------------------------------
-
 end.
-

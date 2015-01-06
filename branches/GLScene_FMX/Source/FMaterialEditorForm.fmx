@@ -28,11 +28,65 @@ object MaterialEditorForm: TMaterialEditorForm
       TabOrder = 0
       Text = 'Front'
       inline FEFront: TRFaceEditor
-        Align = Client
-        Size.Width = 425.000000000000000000
-        Size.Height = 273.000000000000000000
+        Position.X = -8.000000000000000000
+        Size.Width = 433.000000000000000000
+        Size.Height = 232.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
+        inherited TabControl: TTabControl
+          inherited TIAmbient: TTabItem
+            Size.Width = 65.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEAmbiant: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TIDiffuse: TTabItem
+            Size.Width = 57.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEDiffuse: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TIEmission: TTabItem
+            Size.Width = 66.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEEmission: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TISpecular: TTabItem
+            Size.Width = 66.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CESpecular: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+        end
       end
     end
     object TIBack: TTabItem
@@ -46,11 +100,66 @@ object MaterialEditorForm: TMaterialEditorForm
       TabOrder = 0
       Text = 'Back'
       inline FEBack: TRFaceEditor
-        Align = Client
-        Size.Width = 425.000000000000000000
-        Size.Height = 273.000000000000000000
+        Position.X = -8.000000000000000000
+        Position.Y = 8.000000000000000000
+        Size.Width = 433.000000000000000000
+        Size.Height = 232.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
+        inherited TabControl: TTabControl
+          inherited TIAmbient: TTabItem
+            Size.Width = 65.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEAmbiant: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TIDiffuse: TTabItem
+            Size.Width = 57.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEDiffuse: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TIEmission: TTabItem
+            Size.Width = 66.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CEEmission: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+          inherited TISpecular: TTabItem
+            Size.Width = 66.000000000000000000
+            Size.Height = 24.000000000000000000
+            inherited CESpecular: TRColorEditor
+              Size.Height = 129.000000000000000000
+              inherited ColorEditorPaintBox: TPaintBox
+                Size.Height = 129.000000000000000000
+              end
+              inherited Panel1: TPanel
+                Size.Height = 123.000000000000000000
+              end
+            end
+          end
+        end
       end
     end
     object TITexture: TTabItem
@@ -63,7 +172,7 @@ object MaterialEditorForm: TMaterialEditorForm
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Texture'
-      inline TRTextureEdit1: TRTextureEdit
+      inline RTextureEdit: TRTextureEdit
         Align = Client
         Size.Width = 425.000000000000000000
         Size.Height = 273.000000000000000000
@@ -189,6 +298,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 11
+    OnChange = OnMaterialChanged
   end
   object CBBlending: TComboBox
     Position.X = 192.000000000000000000
@@ -197,5 +307,6 @@ object MaterialEditorForm: TMaterialEditorForm
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 12
+    OnChange = OnMaterialChanged
   end
 end

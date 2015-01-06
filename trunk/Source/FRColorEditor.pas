@@ -28,7 +28,7 @@ uses
   Windows, Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs,
   Controls, Graphics,
 {$ENDIF}
-  GLVectorGeometry, FRTrackBarEdit, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
+  GLVectorGeometry, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
 
 type
   TRColorEditor = class(TFrame)
@@ -70,12 +70,13 @@ type
     DraggingValue : (None,Red,Green,Blue,Alpha);
     procedure SetColor(const val : THomogeneousFltVector);
     function GetColor : THomogeneousFltVector;
-    Procedure DrawContents;
-    Procedure DragColorSliderToPosition(XPos : integer);
-    Procedure ContentsChanged;
+    procedure DrawContents;
+    procedure DragColorSliderToPosition(XPos : integer);
+    procedure ContentsChanged;
   public
+     { Public declarations }
     constructor Create(AOwner: TComponent); override;
-    Destructor Destroy; override;
+    destructor Destroy; override;
     property Color : THomogeneousFltVector read GetColor write SetColor;
   published
     property OnChange : TNotifyEvent read FOnChange write FOnChange;
@@ -144,7 +145,7 @@ end;
 
 procedure TRColorEditor.ColorEditorPaintBoxPaint(Sender: TObject);
 begin
-  With ColorEditorPaintBox,ColorEditorPaintBox.Canvas do
+  with ColorEditorPaintBox,ColorEditorPaintBox.Canvas do
   begin
     Draw(0,0,WorkBitmap);
   end;
@@ -152,7 +153,6 @@ begin
   GreenEdit.Height := 16;
   BlueEdit.Height := 16;
   AlphaEdit.Height := 16;
-
 end;
 
 constructor TRColorEditor.Create(AOwner: TComponent);
@@ -193,20 +193,19 @@ begin
   GreenEdit.Height := 18;
   BlueEdit.Height := 18;
   AlphaEdit.Height := 18;
-
 end;
 
-Function ColorValueToColorViewPosition(ColorValue : integer) : integer;
+function ColorValueToColorViewPosition(ColorValue : integer) : integer;
 begin
   Result := Round( (ColorSliderMaxValue/(MaxColorValue+1)) * ColorValue);
 end;
 
-Function AlphaValueToColorViewPosition(AlphaValue : integer) : integer;
+function AlphaValueToColorViewPosition(AlphaValue : integer) : integer;
 begin
   Result := Round( (ColorSliderMaxValue/(MaxAlphaValue+1)) * AlphaValue);
 end;
 
-Function ColorViewPositionToColorValue(ColorViewPosition : integer) : integer;
+function ColorViewPositionToColorValue(ColorViewPosition : integer) : integer;
 begin
   if ColorViewPosition < 0 then ColorViewPosition := 0;
   if ColorViewPosition > ColorSliderMaxValue then ColorViewPosition := ColorSliderMaxValue;
@@ -214,7 +213,7 @@ begin
   Result := Round(ColorViewPosition / (ColorSliderMaxValue/(MaxColorValue)));
 end;
 
-Function ColorViewPositionToAlphaValue(ColorViewPosition : integer) : integer;
+function ColorViewPositionToAlphaValue(ColorViewPosition : integer) : integer;
 begin
   if ColorViewPosition < 0 then ColorViewPosition := 0;
   if ColorViewPosition > ColorSliderMaxValue then ColorViewPosition := ColorSliderMaxValue;
@@ -234,7 +233,7 @@ var
   BlackCheckColor : tColor;
   AValue : single;
 begin
-  With WorkBitmap.Canvas do
+  with WorkBitmap.Canvas do
   begin
     Brush.Color := clBtnFace;
     FillRect(Rect(0,0,WorkBitmap.Width,WorkBitmap.Height));
@@ -368,17 +367,14 @@ begin
                       ));
       end;
     end;
-
-
   end;
-
 end;
 
 procedure TRColorEditor.ColorEditorPaintBoxMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   DraggingValue := None;
-  If Button = TMouseButton(mbLeft) then
+  if Button = TMouseButton(mbLeft) then
   begin
     if (X > ColorSliderLeft-5) and ( X < (ColorSliderLeft+ColorSliderMaxValue+5)) then
     begin
@@ -395,7 +391,7 @@ end;
 
 procedure TRColorEditor.DragColorSliderToPosition(XPos: integer);
 begin
-  Case DraggingValue of
+  case DraggingValue of
     Red: RedValue := ColorViewPositionToColorValue(XPos);
     Green: GreenValue := ColorViewPositionToColorValue(XPos);
     Blue: BlueValue := ColorViewPositionToColorValue(XPos);
@@ -432,7 +428,7 @@ end;
 procedure TRColorEditor.ColorEditorPaintBoxMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = TMouseButton(mbLeft) then DraggingValue := None;
+  if Button = TMouseButton(mbLeft) then DraggingValue := None;
 end;
 
 procedure TRColorEditor.RedEditChange(Sender: TObject);

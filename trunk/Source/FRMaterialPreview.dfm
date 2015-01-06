@@ -134,7 +134,7 @@ object RMaterialPreview: TRMaterialPreview
       object Sphere: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary
         Material.LibMaterialName = 'LibMaterial'
-        Radius = 0.800000011920929000
+        Radius = 0.800000011920928900
       end
       object Cone: TGLCone
         Material.MaterialLibrary = GLMaterialLibrary

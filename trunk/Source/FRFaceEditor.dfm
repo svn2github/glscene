@@ -17,7 +17,7 @@ object RFaceEditor: TRFaceEditor
     Top = 56
     Width = 305
     Height = 130
-    ActivePage = TSAmbient
+    ActivePage = TSEmission
     Images = ImageList
     MultiLine = True
     TabOrder = 0
@@ -78,12 +78,12 @@ object RFaceEditor: TRFaceEditor
     end
   end
   inline TBEShininess: TRTrackBarEdit
-    Left = 52
+    Left = 50
     Top = 0
     Width = 201
     Height = 33
     TabOrder = 1
-    ExplicitLeft = 52
+    ExplicitLeft = 50
     ExplicitWidth = 201
     ExplicitHeight = 33
     inherited TrackBar: TTrackBar

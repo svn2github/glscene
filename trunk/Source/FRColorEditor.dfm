@@ -154,9 +154,10 @@ object RColorEditor: TRColorEditor
     TabOrder = 5
     Text = '0'
     OnChange = AlphaEditChange
+    OnDblClick = PAPreviewDblClick
   end
   object ColorDialog: TColorDialog
-    Left = 240
-    Top = 8
+    Left = 232
+    Top = 24
   end
 end

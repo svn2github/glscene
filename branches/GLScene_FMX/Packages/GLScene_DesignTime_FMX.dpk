@@ -42,6 +42,11 @@ contains
   FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
   FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
   FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
-  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame};
+  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FRFaceEditor in '..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
+  FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
+  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas',
+  FShaderMemo in '..\Source\FShaderMemo.pas' {ShaderMemoForm};
 
 end.

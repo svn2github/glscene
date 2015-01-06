@@ -65,18 +65,16 @@ type
     procedure CBFilteringQualityChange(Sender: TObject);
 
   private
-    { Déclarations privées }
+    { Private declarations }
     FTexture: TGLTexture;
     FOnChange: TNotifyEvent;
-    changeing: Boolean;
-
+    Changeing: Boolean;
   protected
-    { Déclarations protégées }
+    { Protected declarations }
     procedure SetTexture(const val: TGLTexture);
     procedure DoOnChange; dynamic;
-
   public
-    { Déclarations publiques }
+    { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -99,7 +97,6 @@ begin
   FTexture := TGLTexture.Create(Self);
   SetTexture(FTexture);
   SetGLTextureImageClassesToStrings(CBImageClass.Items);
-
   for I := 0 to Integer( High(TGLTextureImageAlpha)) do
     CBImageAlpha.Items.Add(GetEnumName(TypeInfo(TGLTextureImageAlpha), I));
   for I := 0 to Integer( High(TGLMagFilter)) do
@@ -140,7 +137,7 @@ begin
     CBTextureWrap.ItemIndex := Integer(FTexture.TextureWrap);
     CBDisabled.Checked := FTexture.Disabled;
   finally
-    changeing := False;
+    Changeing := False;
     DoOnChange;
   end;
 end;

@@ -3,7 +3,18 @@ object RColorEditor: TRColorEditor
   Size.Height = 116.000000000000000000
   Size.PlatformDefault = False
   TabOrder = 0
-  object Panel: TPanel
+  OnResize = FrameResize
+  object ColorEditorPaintBox: TPaintBox
+    Align = Client
+    Size.Width = 302.000000000000000000
+    Size.Height = 116.000000000000000000
+    Size.PlatformDefault = False
+    OnMouseDown = ColorEditorPaintBoxMouseDown
+    OnMouseMove = ColorEditorPaintBoxMouseMove
+    OnMouseUp = ColorEditorPaintBoxMouseUp
+    OnPaint = ColorEditorPaintBoxPaint
+  end
+  object Panel1: TPanel
     Align = Client
     Margins.Left = 3.000000000000000000
     Margins.Top = 3.000000000000000000
@@ -13,98 +24,107 @@ object RColorEditor: TRColorEditor
     Size.Height = 110.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    object RedEdit: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      TabOrder = 1
-      Text = '0'
-      Position.X = 232.000000000000000000
-      Position.Y = 8.000000000000000000
-      Size.Width = 49.000000000000000000
-      Size.Height = 22.000000000000000000
-      Size.PlatformDefault = False
-      OnChange = RedEditChange
-    end
-    object GreenEdit: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      TabOrder = 2
-      Text = '0'
-      Position.X = 232.000000000000000000
-      Position.Y = 32.000000000000000000
-      Size.Width = 49.000000000000000000
-      Size.Height = 22.000000000000000000
-      Size.PlatformDefault = False
-      OnChange = GreenEditChange
-    end
-    object BlueEdit: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      TabOrder = 3
-      Text = '0'
-      Position.X = 232.000000000000000000
-      Position.Y = 56.000000000000000000
-      Size.Width = 49.000000000000000000
-      Size.Height = 22.000000000000000000
-      Size.PlatformDefault = False
-      OnChange = BlueEditChange
-    end
-    object AlphaEdit: TEdit
-      Touch.InteractiveGestures = [LongTap, DoubleTap]
-      TabOrder = 4
-      Text = '0'
-      Position.X = 232.000000000000000000
-      Position.Y = 80.000000000000000000
-      Size.Width = 49.000000000000000000
-      Size.Height = 22.000000000000000000
-      Size.PlatformDefault = False
-      OnChange = AlphaEditChange
-    end
-    object Label1: TLabel
-      StyledSettings = [Family, Size]
-      Position.X = 8.000000000000000000
-      Position.Y = 8.000000000000000000
-      Size.Width = 81.000000000000000000
-      Size.Height = 17.000000000000000000
-      Size.PlatformDefault = False
-      TextSettings.Font.Style = [fsBold]
-      TextSettings.FontColor = claRed
-      Text = 'Red'
-    end
-    object Label2: TLabel
-      StyledSettings = [Family, Size]
-      Position.X = 8.000000000000000000
-      Position.Y = 32.000000000000000000
-      Size.Width = 73.000000000000000000
-      Size.Height = 17.000000000000000000
-      Size.PlatformDefault = False
-      TextSettings.Font.Style = [fsBold]
-      TextSettings.FontColor = claGreen
-      Text = 'Green'
-    end
-    object Label3: TLabel
-      StyledSettings = [Family, Size]
-      Position.X = 8.000000000000000000
-      Position.Y = 56.000000000000000000
-      Size.Width = 73.000000000000000000
-      Size.Height = 17.000000000000000000
-      Size.PlatformDefault = False
-      TextSettings.Font.Style = [fsBold]
-      TextSettings.FontColor = claBlue
-      Text = 'Blue'
-    end
-    object Label4: TLabel
-      StyledSettings = [Family, Size, FontColor]
-      Position.X = 8.000000000000000000
-      Position.Y = 80.000000000000000000
-      Size.Width = 73.000000000000000000
-      Size.Height = 17.000000000000000000
-      Size.PlatformDefault = False
-      TextSettings.Font.Style = [fsBold]
-      Text = 'Alpha'
-    end
-    object ColorBox: TColorBox
-      Color = claNull
-      Position.X = 168.000000000000000000
-      Position.Y = 24.000000000000000000
-      TabOrder = 5
-    end
+  end
+  object AlphaEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 1
+    Text = '0'
+    Position.X = 160.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 49.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnChange = AlphaEditChange
+  end
+  object BlueEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 2
+    Text = '0'
+    Position.X = 160.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 49.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnChange = BlueEditChange
+  end
+  object ColorBox: TColorBox
+    Color = claNull
+    Position.X = 88.000000000000000000
+    Position.Y = 24.000000000000000000
+    TabOrder = 3
+  end
+  object GreenEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 4
+    Text = '0'
+    Position.X = 160.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 49.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnChange = GreenEditChange
+  end
+  object Label1: TLabel
+    StyledSettings = [Family, Size]
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 81.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Style = [fsBold]
+    TextSettings.FontColor = claRed
+    Text = 'Red'
+  end
+  object Label2: TLabel
+    StyledSettings = [Family, Size]
+    Position.X = 8.000000000000000000
+    Position.Y = 32.000000000000000000
+    Size.Width = 73.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Style = [fsBold]
+    TextSettings.FontColor = claGreen
+    Text = 'Green'
+  end
+  object Label3: TLabel
+    StyledSettings = [Family, Size]
+    Position.X = 8.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 73.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Style = [fsBold]
+    TextSettings.FontColor = claBlue
+    Text = 'Blue'
+  end
+  object Label4: TLabel
+    StyledSettings = [Family, Size, FontColor]
+    Position.X = 8.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 73.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    TextSettings.Font.Style = [fsBold]
+    Text = 'Alpha'
+  end
+  object RedEdit: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 9
+    Text = '0'
+    Position.X = 160.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 49.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    OnChange = RedEditChange
+  end
+  object PAPreview: TPanel
+    Position.X = 216.000000000000000000
+    Position.Y = 16.000000000000000000
+    Size.Width = 41.000000000000000000
+    Size.Height = 80.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    OnDblClick = PAPreviewDblClick
   end
 end

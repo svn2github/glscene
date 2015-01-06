@@ -34,7 +34,7 @@ object MaterialEditorForm: TMaterialEditorForm
     Top = 8
     Width = 313
     Height = 217
-    ActivePage = TSTexture
+    ActivePage = TSFront
     Style = tsButtons
     TabOrder = 0
     object TSFront: TTabSheet
@@ -51,11 +51,11 @@ object MaterialEditorForm: TMaterialEditorForm
           ExplicitWidth = 45
         end
         inherited PageControl: TPageControl
-          inherited TSDiffuse: TTabSheet
+          inherited TSAmbient: TTabSheet
             ExplicitTop = 24
             ExplicitHeight = 102
           end
-          inherited TSEmission: TTabSheet
+          inherited TSDiffuse: TTabSheet
             ExplicitTop = 24
             ExplicitHeight = 102
           end
@@ -84,11 +84,11 @@ object MaterialEditorForm: TMaterialEditorForm
           ExplicitWidth = 45
         end
         inherited PageControl: TPageControl
-          inherited TSDiffuse: TTabSheet
+          inherited TSAmbient: TTabSheet
             ExplicitTop = 24
             ExplicitHeight = 102
           end
-          inherited TSEmission: TTabSheet
+          inherited TSDiffuse: TTabSheet
             ExplicitTop = 24
             ExplicitHeight = 102
           end
@@ -264,7 +264,7 @@ object MaterialEditorForm: TMaterialEditorForm
     OnChange = OnMaterialChanged
   end
   object CBPolygonMode: TComboBox
-    Left = 88
+    Left = 82
     Top = 227
     Width = 145
     Height = 21

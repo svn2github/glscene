@@ -22,12 +22,14 @@ unit FMaterialEditorForm;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.TypInfo,
-  System.Classes, System.Variants,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FRFaceEditor,
-  FRTextureEdit, FMX.TabControl, FMX.StdCtrls, FMX.Objects, FRMaterialPreview,
-  FMX.ListBox,
-
+   System.Classes, System.SysUtils, System.TypInfo, System.Types, System.UITypes, 
+  System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, 
+  FMX.TabControl, FMX.StdCtrls, FMX.Objects, FMX.ListBox,
+  
+  
+  FRMaterialPreview, FRColorEditor, FRFaceEditor,  
+  GLS.Texture, FRTextureEdit,
   GLS.Material, GLS.State;
 
 type
@@ -36,7 +38,6 @@ type
     TIFront: TTabItem;
     TIBack: TTabItem;
     TITexture: TTabItem;
-    TRTextureEdit1: TRTextureEdit;
     FEFront: TRFaceEditor;
     FEBack: TRFaceEditor;
     GroupBox1: TGroupBox;
@@ -45,10 +46,12 @@ type
     ImageOK: TImage;
     BBCancel: TButton;
     ImageCancel: TImage;
+    RTextureEdit: TRTextureEdit;
+    CBBlending: TComboBox;
     Label1: TLabel;
     Label2: TLabel;
     CBPolygonMode: TComboBox;
-    CBBlending: TComboBox;
+    procedure OnMaterialChanged(Sender: TObject);
   private
     { Private declarations }
   public
@@ -84,7 +87,8 @@ begin
   end;
 end;
 
-{ TMaterialEditorForm }
+// Create
+//
 
 constructor TMaterialEditorForm.Create(AOwner: TComponent);
 var
@@ -100,6 +104,9 @@ begin
   FEBack.OnChange := OnMaterialChanged;
   RTextureEdit.OnChange := OnMaterialChanged;
 end;
+
+// Execute
+//
 
 function TMaterialEditorForm.Execute(AMaterial: TGLMaterial): Boolean;
 begin
@@ -122,6 +129,22 @@ begin
       BlendingMode := TBlendingMode(CBBlending.ItemIndex);
       PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
     end;
+end;
+
+// OnMaterialChanged
+//
+
+procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
+begin
+  with MPPreview.Material do
+  begin
+    FrontProperties := FEFront.FaceProperties;
+    BackProperties := FEBack.FaceProperties;
+    Texture := RTextureEdit.Texture;
+    BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+    PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
+  end;
+  MPPreview.GLSceneViewer.Invalidate;
 end;
 
 // ------------------------------------------------------------------

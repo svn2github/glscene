@@ -132,7 +132,7 @@ implementation
 {$R *.dfm}
 
 const
-  cRegistryKey = 'Software\GLScene.org\GLSceneShaderEdit';
+  cRegistryKey = 'Software\GLScene\GLSceneShaderEdit';
 
 {$IFDEF GLS_REGION}{$REGION 'Syntax keywords'}{$ENDIF}
 

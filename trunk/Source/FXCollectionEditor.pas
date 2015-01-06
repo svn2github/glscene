@@ -27,7 +27,7 @@ uses
   System.Classes, System.Actions, VCL.Forms, VCL.ImgList, VCL.Controls,
   VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
 {$ELSE}
-  Classes, Forms, ImgList, Controls, ActnList,
+  Classes, Actions, Forms, ImgList, Controls, ActnList,
   Menus, ComCtrls, ToolWin,
 {$ENDIF}
  DesignEditors, DesignIntf,

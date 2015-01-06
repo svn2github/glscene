@@ -63,9 +63,9 @@ object PlugInManagerEditor: TPlugInManagerEditor
   object Label1: TLabel
     Left = 8
     Top = 31
-    Width = 118
+    Width = 124
     Height = 16
-    Caption = 'registered Plug-ins :'
+    Caption = 'Registered Plug-ins :'
   end
   object Label2: TLabel
     Left = 17
@@ -76,7 +76,7 @@ object PlugInManagerEditor: TPlugInManagerEditor
   end
   object Label3: TLabel
     Left = 17
-    Top = 304
+    Top = 303
     Width = 55
     Height = 16
     Caption = 'File size :'
@@ -219,7 +219,7 @@ object PlugInManagerEditor: TPlugInManagerEditor
     Left = 168
     Top = 128
     Bitmap = {
-      494C010103000800200010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010103000800340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
