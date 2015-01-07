@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMWaveOut<p>
+{: GLS.SMWaveOut<p>
 
 	Basic sound manager based on WinMM <p>
 
@@ -13,14 +13,15 @@
       <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
 	</ul></font>
 }
-unit GLSMWaveOut;
+unit GLS.SMWaveOut;
 
 interface
 
 {$I GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
-uses System.Classes, GLSound, MMSystem, GLSoundFileObjects;
+uses 
+  System.Classes, GLSound, MMSystem, GLSoundFileObjects;
 
 type
 
