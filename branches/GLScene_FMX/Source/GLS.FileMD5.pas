@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMD5<p>
+{: GLS.FileMD5<p>
 
    Doom3 MD5 mesh and animation vector file format implementation.<p>
 
@@ -14,13 +14,13 @@
       <li>01/06/04 - SG - Initial
    </ul></font>
 }
-unit GLFileMD5;
+unit GLS.FileMD5;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, GLS.VectorFileObjects, GLS.Utils, GLS.ApplicationFileIO,
-  GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists;
+  System.Classes, System.SysUtils, GLS.VectorFileObjects, GLS.Utils, 
+  GLS.ApplicationFileIO, GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists;
 
 type
 

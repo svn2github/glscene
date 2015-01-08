@@ -54,8 +54,8 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.OpenGLTokens,
-  GLS.Context, GLS.Color, GLS.BaseClasses, GLS.RenderContextInfo, GLS.State,
-  GLS.VectorTypes, GLS.Utils, GLS.TextureFormat;
+  GLS.Context, GLS.Color, GLS.BaseClasses, GLS.RenderContextInfo, 
+  GLS.State, GLS.VectorTypes, GLS.Utils, GLS.TextureFormat;
 
 type
 

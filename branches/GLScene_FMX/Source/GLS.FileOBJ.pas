@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileOBJ<p>
+{: GLS.FileOBJ<p>
 
     Support-Code to load Wavefront OBJ Files into TGLFreeForm-Components
     in GLScene.<p>
@@ -73,7 +73,7 @@
                   Midterm-goal: Import what Poser 4 exports and display it
                                 correctly in an GLScene.<br>
 }
-unit GLFileOBJ;
+unit GLS.FileOBJ;
 
 {$I GLScene.inc}
 {.$DEFINE STATS}{ Define to display statistics after loading. }

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLFileNMF - NormalMapper loading into GLScene FreeForms/Actors
+  GLS.FileNMF - NormalMapper loading into GLScene FreeForms/Actors
   
   Notes:
     NormalMapper can be found at http://www.ati.com/developer/tools.html
@@ -11,7 +11,7 @@
     20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
     16/05/2003 - SG - Creation
 }
-unit GLFileNMF;
+unit GLS.FileNMF;
 
 interface
 

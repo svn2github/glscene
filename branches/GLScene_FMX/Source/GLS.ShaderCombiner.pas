@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShaderCombiner<p>
+{: GLS.ShaderCombiner<p>
 
     Allows to combine shaders in different sequences.
     Note, that can't just take 2 random shaders and combine them, because
@@ -18,7 +18,7 @@
     Previous version history:
       v1.0  02 November    '2006  Creation
 }
-unit GLShaderCombiner;
+unit GLS.ShaderCombiner;
 
 interface
 
@@ -27,7 +27,6 @@ interface
 uses
   System.Classes,
 
-   
   GLS.Material, GLS.Scene, GLS.VectorGeometry, GLS.Strings, GLS.RenderContextInfo;
 
 type

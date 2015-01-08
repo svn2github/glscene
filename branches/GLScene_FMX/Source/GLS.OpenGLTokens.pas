@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: OpenGLTokens<p>
+{: GLS.OpenGLTokens<p>
 
  <b>History : </b><font size=-1><ul>
       <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
@@ -21,9 +21,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLS.VectorTypes,
+  Winapi.Windows,
   System.SysUtils,
-  Winapi.Windows;
+  GLS.VectorTypes;
 
 const
 {$IFDEF MSWINDOWS}

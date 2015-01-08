@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileSTL<p>
+{: GLS.FileSTL<p>
 
     Support-code to load STL Files into TGLFreeForm-Components in GLScene.<p>
     Note that you must manually add this unit to one of your project's uses
@@ -14,7 +14,7 @@
                           ASCII STL support (Adem)
    </ul><p>
 }
-unit GLFileSTL;
+unit GLS.FileSTL;
 
 interface
 

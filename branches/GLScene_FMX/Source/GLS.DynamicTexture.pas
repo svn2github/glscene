@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDynamicTexture<p>
+{: GLS.DynamicTexture<p>
 
   Adds a dynamic texture image, which allows for easy updating of
   texture data.<p>
@@ -22,15 +22,15 @@
    </ul></font>
 }
 
-unit GLDynamicTexture;
+unit GLS.DynamicTexture;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, OpenGLTOkens, GLS.Context, GLS.Texture, GLS.TextureFormat,
-  GLS.Graphics, GLS.CrossPlatform;
+  System.Classes, System.SysUtils, GLS.OpenGLTOkens, GLS.Context, 
+  GLS.Texture, GLS.TextureFormat, GLS.Graphics, GLS.CrossPlatform;
 
 type
   // TGLDynamicTextureImage

@@ -1,5 +1,8 @@
-// GLMeshOptimizer
-{: Mesh optimization for GLScene.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.MeshOptimizer.<p>
+      Mesh optimization for GLScene
 
 	<b>History : </b><font size=-1><ul>
       <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
@@ -7,7 +10,7 @@
       <li>03/06/03 - EG - Creation
 	</ul></font>
 }
-unit GLMeshOptimizer;
+unit GLS.MeshOptimizer;
 
 interface
 

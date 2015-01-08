@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDCEMisc<p>
+{: GLS.DCEMisc<p>
 
   Miscelaneous functions used by DCE (Dynamic Collision Engine).
 
@@ -13,16 +13,15 @@
     <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
-unit GLDCEMisc;
+unit GLS.DCEMisc;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  GLS.VectorFileObjects, GLEllipseCollision, GLS.VectorGeometry, GLS.VectorLists,
-  GLS.Scene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy
-  , GLS.VectorTypes;
+  GLS.VectorFileObjects, GLS.EllipseCollision, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.Scene, GLS.TerrainRenderer, GLS.ProxyObjects, GLS.MultiProxy, GLS.VectorTypes;
 
 //Calculate and set the collision range
 procedure ECSetCollisionRange(var MovePack: TECMovePack);

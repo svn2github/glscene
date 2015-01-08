@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMS3D<p>
+{: GLS.FileMS3D<p>
 
  Support for MS3D file format.<p>
 
@@ -28,7 +28,7 @@
     <li>03/06/03 - EG - Added header, now self-registers
  </ul></font>
 }
-unit GLFileMS3D;
+unit GLS.FileMS3D;
 
 interface
 

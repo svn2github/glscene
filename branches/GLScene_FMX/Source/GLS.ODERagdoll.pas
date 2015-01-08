@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODERagdoll<p>
+{: GLS.ODERagdoll<p>
 
 	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
@@ -21,7 +21,7 @@
   </ul></font>
 }
 
-unit GLODERagdoll;
+unit GLS.ODERagdoll;
 
 interface
 

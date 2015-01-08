@@ -47,7 +47,7 @@
 // * the above Disclaimer and U.S. Government End Users Notice.
 // */
 
-unit GLS_CUDA_API;
+unit GLS.CUDAApi;
 
 interface
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpacePartition<p>
+{ : GLS.SpacePartition<p>
 
   Space Partition speeds up geometrical queries, like what objects does A
   overlap.<p>
@@ -34,7 +34,7 @@
   </ul></font>
 }
 
-unit GLSpacePartition;
+unit GLS.SpacePartition;
 
 interface
 

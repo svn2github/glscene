@@ -21,7 +21,8 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses 
-  System.Classes, GLSound, MMSystem, GLSoundFileObjects;
+  System.Classes, {$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF} 
+  GLS.Sound, GLSoundFileObjects;
 
 type
 

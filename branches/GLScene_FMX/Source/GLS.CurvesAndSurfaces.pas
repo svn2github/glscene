@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCurvesAndSurfaces<p>
+{: GLS.CurvesAndSurfaces<p>
 
    Bezier and B-Spline Curve and Surface Routines.<p>
 
@@ -19,7 +19,7 @@
       <li>10/07/03 - SG - Creation
    </ul></font>
 }
-unit GLCurvesAndSurfaces;
+unit GLS.CurvesAndSurfaces;
 
 interface
 

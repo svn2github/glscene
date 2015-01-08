@@ -17,8 +17,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
   GLS.VectorTypes, GLS.VectorGeometry, GLS.CrossPlatform;
+
 
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
 procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);

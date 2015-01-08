@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileSMD<p>
+{: GLS.FileSMD<p>
 
 	SMD vector file format implementation.<p>
 
@@ -15,7 +15,7 @@
       <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
-unit GLFileSMD;
+unit GLS.FileSMD;
 
 interface
 

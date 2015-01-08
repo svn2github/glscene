@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileWAV<p>
+{: GLS.FileWAV<p>
 
 	Support for Windows WAV format.<p>
 
@@ -13,14 +13,14 @@
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
-unit GLFileWAV;
+unit GLS.FileWAV;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.ApplicationFileIO, GLSoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
+  System.Classes, GLS.ApplicationFileIO, GLS.SoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
 
 type
 

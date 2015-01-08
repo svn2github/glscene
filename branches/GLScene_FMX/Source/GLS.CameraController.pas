@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 
-{: GLCameraController<p>
+{: GLS.CameraController<p>
 
   Component for animating camera movement.
   Can be used to zoom in/out, for linear movement, orbiting and Google Earth - like "fly-to"
@@ -46,13 +46,15 @@
 // methods and properties are explained in the interface section (through comments)
 // additional comments might apear in implementation section where needed
 
-unit GLCameraController;
+unit GLS.CameraController;
 
 interface
 
 uses
-  GLS.Scene, System.Classes, System.SysUtils, Contnrs, GLS.VectorGeometry,
-  GLSmoothNavigator {$IFNDEF GLS_DELPHI},GLS.VectorTypes{$ENDIF};
+  System.Classes, System.SysUtils, Contnrs, 
+
+  GLS.Scene, GLS.VectorGeometry,
+  GLS.SmoothNavigator, GLS.VectorTypes;
 
 type
 

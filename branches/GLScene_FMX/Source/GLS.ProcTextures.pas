@@ -35,8 +35,9 @@ unit GLS.ProcTextures;
 interface
 
 uses
-  System.Classes, GLS.Texture, GLS.Graphics, GLS.OpenGLTokens,
-  GLS.CrossPlatform, System.SysUtils, GLS.TextureFormat, GLS.VectorGeometry;
+  System.Classes, System.SysUtils,
+  GLS.Texture, GLS.Graphics, GLS.OpenGLTokens,
+  GLS.CrossPlatform, GLS.TextureFormat, GLS.VectorGeometry;
 
 const
   GRADIENT_TABLE_SIZE = 256;

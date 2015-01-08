@@ -1,5 +1,8 @@
-// GLShadowHDS
-{: Implements an HDS that automatically generates a terrain lightmap texture.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLShadowHDS.<p>
+     Implements an HDS that automatically generates a terrain lightmap texture
 	<b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>23/08/10 - Yar - Added GLS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -31,7 +34,7 @@ PS. The RayCastShadowHeight function returns the height of the shadow at a point
 on the terrain. This, and the LightVector may come in handy for implementing shadow volumes?
 }
 
-unit GLShadowHDS;
+unit GLS.ShadowHDS;
 
 interface
 

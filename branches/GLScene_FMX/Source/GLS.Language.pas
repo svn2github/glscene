@@ -1,11 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : Eng
+{ : GLS.Language.<p>
+  En:
   Language created to localize your application.
   In Delphi, the text is encoded using Ansi cp1251 and can not be encoded \ decoding.
   In Lazarus has the ability to upload text from any encoding.
-  Ru
+  Ru:
   TLanguage создан для локализации вашего приложения
   В Delphi текст имеет кодировку Ansi cp1251 и не подлежит кодировке\декодировке.
   В Lazarus можно загружать текст любой кодировки

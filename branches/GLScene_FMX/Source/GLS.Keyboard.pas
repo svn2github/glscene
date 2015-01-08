@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLKeyboard<p>
+{: GLS.Keyboard<p>
 
 	Provides on demand state of any key on the keyboard as well as a set of
    utility functions for working with virtual keycodes.<p>
@@ -25,21 +25,15 @@
       <li>03/08/00 - Egg - Creation, partly based Silicon Commander code
 	</ul></font>
 }
-unit GLKeyboard;
+unit GLS.Keyboard;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows;
-{$ELSE}
-  {$IFDEF FPC}
-    // Non-windows platforms are supported only via FPC.
-    lcltype, lclintf;
-  {$ENDIF}
-{$ENDIF}
+  Winapi.Windows,
+  System.SysUtils;
 
 type
    TVirtualKeyCode = Integer;
@@ -94,8 +88,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils;
-
 const
    cLBUTTON = 'Left Mouse Button';
    cMBUTTON = 'Middle Mouse Button';
@@ -149,16 +141,9 @@ begin
    else Result:=False;
 end;
 {$ELSE}
-  {$IFDEF FPC}
-  begin
-    c := UpperCase(c)[1];
-    Result := GetKeyState(Ord(c)) < 0;
-  end;
-  {$ELSE}
   begin
     raise Exception.Create('GLKeyboard.IsKeyDown(c : Char) not yet implemented for your platform!');
   end;
-  {$ENDIF}
 {$ENDIF}
 
 
@@ -184,11 +169,7 @@ begin
    {$IFDEF MSWINDOWS}
       Result := (GetAsyncKeyState(vk) < 0);
    {$ELSE}
-     {$IFDEF FPC}
-      Result := GetKeyState(vk) < 0;
-     {$ELSE}
       raise Exception.Create('GLKeyboard.IsKeyDown(vk : TVirtualKeyCode) not fully yet implemented for your platform!');
-     {$ENDIF}
    {$ENDIF}
    end;
 end;
@@ -334,12 +315,7 @@ begin
    Result:=VkKeyScan(c) and $FF;
    if Result=$FF then Result:=-1;
 {$ELSE}
-  {$IFDEF FPC}
-   c := UpperCase(c)[1];
-   Result := Ord(c);
-  {$ELSE}
    raise Exception.Create('GLKeyboard.CharToVirtualKeyCode not yet implemented for your platform!');
-  {$ENDIF}
 {$ENDIF}
 end;
 

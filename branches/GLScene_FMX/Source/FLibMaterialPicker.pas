@@ -21,11 +21,12 @@ interface
 
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  System.Math.Vectors,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Media, FMX.Viewport3D,
   FMX.Controls3D, FMX.Objects3D, FMX.Types3D,
 
-  GLS.Material, System.Math.Vectors, FMX.MaterialSources, FRMaterialPreview;
+  GLS.Material, FMX.MaterialSources, FRMaterialPreview;
 
 type
   TLibMaterialPicker = class(TForm)

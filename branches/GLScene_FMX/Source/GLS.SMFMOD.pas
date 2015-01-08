@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMFMOD<p>
+{: GLS.SMFMOD<p>
 
 	FMOD based sound-manager (http://www.fmod.org/, free for freeware).<p>
 
@@ -39,9 +39,8 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-   
-  GLS.Sound, GLS.Scene, GLS.VectorGeometry,
-  FMod, FmodTypes, FmodPresets;
+  FMod, FmodTypes, FmodPresets,
+  GLS.Sound, GLS.Scene, GLS.VectorGeometry;
 
 type
 

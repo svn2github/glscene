@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileASE<p>
+{: GLS.FileASE<p>
 
 	 ASE (ASCI Scene Export) file format support for GLScene<p>
 
@@ -25,7 +25,7 @@
 
 
 }
-unit GLFileASE;
+unit GLS.FileASE;
 
 interface
 

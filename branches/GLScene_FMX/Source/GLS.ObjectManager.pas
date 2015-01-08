@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLObjectManager<p>
+{: GLS.ObjectManager<p>
 
    The object manager is used for registering classes together with a category,
    description + icon, so that they can be displayed visually.  This can then
@@ -22,7 +22,7 @@
  </ul></font>
 }
 
-unit GLObjectManager;
+unit GLS.ObjectManager;
 
 interface
 

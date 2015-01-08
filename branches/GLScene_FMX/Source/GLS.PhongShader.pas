@@ -28,7 +28,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, GLS.OpenGLTokens, GLS.Context,
-  GLAsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
+  GLS.AsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
 
 type
   TGLPhongShader = class(TGLCustomAsmShader)

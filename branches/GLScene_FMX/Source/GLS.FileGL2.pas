@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileGL2<p>
+{: GLS.FileGL2<p>
 
 	Vector file object loading of Ghoul2 model and animation 
 	files into GLScene.<p>
@@ -13,7 +13,7 @@
 	   <li>25/03/03 - SG - Creation.
 	</ul></font>
 }
-unit GLFileGL2;
+unit GLS.FileGL2;
 
 interface
 

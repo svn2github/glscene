@@ -1,6 +1,6 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {: Utils3DS<p>
 
    Utility functions for the universal 3DS file reader and writer (TFile3DS).

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileVRML<p>
+{: GLS.FileVRML<p>
 
    Preliminary VRML vector file support for GLScene.<p>
    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -15,7 +15,7 @@
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
-unit GLFileVRML;
+unit GLS.FileVRML;
 
 interface
 

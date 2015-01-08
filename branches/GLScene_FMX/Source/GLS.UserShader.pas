@@ -1,4 +1,7 @@
-{: GLUserShader<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.UserShader<p>
 
    A shader that passes control of the DoApply and DoUnApply
    methods through published events. This component is 
@@ -11,7 +14,7 @@
       <li>05/08/03 - SG - Creation
    </ul></font>
 }
-unit GLUserShader;
+unit GLS.UserShader;
 
 interface
 
@@ -40,10 +43,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLUserShader ------------------
 // ------------------

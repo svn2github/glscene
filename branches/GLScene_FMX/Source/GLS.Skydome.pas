@@ -1,7 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSkydome<p>
+{: GLS.Skydome<p>
 
    Skydome object<p>
 
@@ -39,21 +39,16 @@
       <li>14/01/01 - EG - Creation
  </ul></font>
 }
-unit GLSkydome;
+unit GLS.Skydome;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   
   System.Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
+  System.SysUtils,
   FMX.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
-
    
   GLS.Scene,
   GLS.VectorGeometry,
@@ -326,10 +321,9 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  System.SysUtils,
   GLS.OpenGLTokens,
   GLS.Context,
-  GLStarRecord,
+  GLS.StarRecord,
   GLS.State;
 
 // ------------------

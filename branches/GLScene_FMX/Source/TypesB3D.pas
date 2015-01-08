@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: TypesB3D<p>
 
 	Types used on the B3D file loader<p>

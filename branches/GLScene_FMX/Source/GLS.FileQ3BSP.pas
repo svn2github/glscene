@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileQ3BSP<p>
+{: GLS.FileQ3BSP<p>
 
     Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene.<p>
     Note that you must manually add this unit to one of your project's uses
@@ -16,7 +16,7 @@
       <li>30/01/03 - EG - Creation
    </ul><p>
 }
-unit GLFileQ3BSP;
+unit GLS.FileQ3BSP;
 
 interface
 
@@ -28,10 +28,7 @@ uses
   GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorGeometry,
   GLS.VectorTypes, GLS.VectorLists, Q3BSP, GLBSP, GLS.Texture,
   GLS.Graphics, GLS.CrossPlatform, GLS.State, GLS.Utils,
-  GLS.Material, GLS.TextureFormat
-  {$IFDEF FPC}
-    ,IntfGraphics
-  {$ENDIF} ;
+  GLS.Material, GLS.TextureFormat;
 
 type
 

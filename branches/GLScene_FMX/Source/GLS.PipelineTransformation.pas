@@ -19,7 +19,7 @@ interface
 
 uses
   GLS.OpenGLTokens,
-  OpenGLAdapter,
+  GLS.OpenGLAdapter,
   GLS.VectorGeometry,
   GLS.VectorTypes,
   GLS.Log;

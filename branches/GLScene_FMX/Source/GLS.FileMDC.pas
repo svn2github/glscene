@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileMDC<p>
+{ : GLS.FileMDC<p>
 
   Code for loading animated MDC files into GLScene FreeForms
   and Actors.<p>
@@ -22,7 +22,7 @@
   <li>07/02/04 - OT - Creation (Osman Turan)
   </ul></font>
 }
-unit GLFileMDC;
+unit GLS.FileMDC;
 
 interface
 

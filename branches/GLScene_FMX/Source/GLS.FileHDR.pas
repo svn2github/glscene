@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileHDR<p>
+{: GLS.FileHDR<p>
 
    HDR File support for GLScene.
 
@@ -15,7 +15,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileHDR;
+unit GLS.FileHDR;
 
 {$I GLScene.inc}
 

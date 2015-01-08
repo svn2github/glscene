@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileBMP<p>
+{: GLS.FileBMP<p>
 
    Graphic engine friendly loading of BMP image.
 
@@ -10,7 +10,7 @@
    </ul><p>
 }
 
-unit GLFileBMP;
+unit GLS.FileBMP;
 
 interface
 

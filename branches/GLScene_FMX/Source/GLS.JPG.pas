@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: JPG<p>
+{: GLS.JPG<p>
 
   <b>Historique : </b><font size=-1><ul>
       <li>27/02/10 - Yar - Added to GLScene from Mike Lischke GraphicEx package
   </ul></font>
 }
 
-unit GLSJPG;
+unit GLS.JPG;
 
 interface
 
@@ -16,7 +16,7 @@ interface
 {$Z4}  // Minimum enum size = dword
 
 uses
-  GLS.CrossPlatform, System.SysUtils, Classes;
+  System.SysUtils, System.Classes, GLS.CrossPlatform;
 
 type
   TJPGColorDepth = (jpgAuto, jpgGray, jpg8Bit, jpg24Bit);

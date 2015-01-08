@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBumpShader<p>
+{: GLS.BumpShader<p>
 
    A shader that applies bump mapping.<p>
 
@@ -58,7 +58,7 @@
       <li>22/06/04 - SG - Creation.
    </ul></font>
 }
-unit GLBumpShader;
+unit GLS.BumpShader;
 
 interface
 

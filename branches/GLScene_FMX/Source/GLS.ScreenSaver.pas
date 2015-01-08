@@ -28,12 +28,7 @@ interface
 
 uses
   Winapi.Windows, System.Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
   FMX.Controls, FMX.Forms, FMX.Extctrls;
-{$ELSE}
-  Controls, Forms, Extctrls;
-{$ENDIF}
-
 
 type
 

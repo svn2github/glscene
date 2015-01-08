@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFile3DSSceneObjects<p>
+{: GLS.File3DSSceneObjects<p>
 
   3ds-specific scene objects.<p>
 
@@ -13,20 +13,19 @@
       <li>06/04/08 - DaStr - Initial version (by Lexer)
   </ul></font>
 }
-unit GLFile3DSSceneObjects;
+unit GLS.File3DSSceneObjects;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   
   System.Classes,
   System.SysUtils,
   System.Math,
 
    
-  GLS.VectorGeometry, GLS.OpenGLTokens, OpenGLAdapter, GLS.Context, GLS.Scene,
+  GLS.VectorGeometry, GLS.OpenGLTokens, GLS.OpenGLAdapter, GLS.Context, GLS.Scene,
   GLS.VectorFileObjects, GLS.VectorTypes, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.Coordinates, GLS.RenderContextInfo, GLS.State;
 

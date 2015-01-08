@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneViewerToolbar<p>
+{ : GLS.SceneToolbar<p>
 
   Added GLScene's toolbar to Delphi IDE.<p>
 
@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLSceneToolbar;
+unit GLS.SceneToolbar;
 
 interface
 
@@ -19,13 +19,14 @@ implementation
 uses
   System.Classes,
   System.SysUtils,
-  Graphics,
-  ImgList,
-  Controls,
-  ComCtrls,
-  ExtCtrls,
-  ActnList,
+  FMX.Graphics,
+  FMX.ImgList,
+  FMX.Controls,
+  FMX.ComCtrls,
+  FMX.ExtCtrls,
+  FMX.ActnList,
   ToolsAPI,
+
   GLS.Scene,
   GLS.Generics;
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_VDPAU<p>
+{ : GLS.vdPAU<p>
 
   <b>History : </b><font size=-1><ul>
   <li>23/10/10 - Yar - Creation
@@ -35,14 +35,14 @@
 //  * OTHER DEALINGS IN THE SOFTWARE.
 //}
 
-unit GLS_VDPAU_X11;
+unit GLS.vdPAUX11;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  GLS_VDPAU_API;
+  GLS.vdPAUAPI;
 
 type
 

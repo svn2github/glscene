@@ -34,12 +34,8 @@ interface
 {$I GLScene.inc}
 
 uses
-   
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, FMX.Graphics, FMX.Controls, System.UITypes,
-  {$ELSE}
-  System.Classes, System.SysUtils, Graphics, Controls,
-{$ENDIF}
+  System.Classes, System.SysUtils, System.UITypes,
+  FMX.Graphics, FMX.Controls, 
    
   GLS.VectorGeometry, GLS.CrossPlatform;
 
@@ -124,18 +120,9 @@ implementation
 //------------------------------------------------------
 
 uses
-{$IFDEF FPC}
-  FileUtil,
-{$ENDIF}
-  GLS.ApplicationFileIO,
-{$IFDEF GLS_DELPHI_XE2_UP}
   FMX.Dialogs,
-  FMX.ExtDlgs;
-{$ELSE}
-  Dialogs,
-  ExtDlgs;
-{$ENDIF}
-
+  FMX.ExtDlgs,
+  GLS.ApplicationFileIO;
 
 var
   vSqrt255: TSqrt255Array;
@@ -713,15 +700,15 @@ end;
 
 procedure SetGLSceneMediaDir();
 var
-  {$IFDEF FPC}path: UTF8String{$ELSE}path: String {$ENDIF};
+  path: String;
   p: Integer;
 begin
-   path := {$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF};
+   path := ParamStr(0);
    path := LowerCase(ExtractFilePath(path));
    p := Pos('samples', path);
    Delete(path, p+7, Length(path));
    path := IncludeTrailingPathDelimiter(path) + 'media';
-   {$IFDEF FPC}SetCurrentDirUTF8(path);{$ELSE}SetCurrentDir(path);{$ENDIF}
+   SetCurrentDir(path);
 end;
 
 end.

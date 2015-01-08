@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileLMTS<p>
+{ : GLS.FileLMTS<p>
 
   <b>History : </b><font size=-1><ul>
   <li>31/05/10 - Yar - Fixes for Linux x64
@@ -30,19 +30,16 @@
   <li>10/09/03 - Domin - Creation
   </ul><p>
 }
-unit GLFileLMTS;
+unit GLS.FileLMTS;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  FMX.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
   System.Classes, System.SysUtils,
+  FMX.Graphics,
+
   GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorLists, GLS.VectorGeometry,
   GLS.Texture, GLS.PersistentClasses, GLS.Graphics, GLS.Material;
 

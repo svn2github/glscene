@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileTGA<p>
+{: GLS.FileTGA<p>
 
    Graphic engine friendly loading of TGA image.
 
@@ -10,7 +10,7 @@
    </ul><p>
 }
 
-unit GLFileTGA;
+unit GLS.FileTGA;
 
 interface
 

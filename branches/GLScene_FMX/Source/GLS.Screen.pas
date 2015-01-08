@@ -39,14 +39,12 @@ interface
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
-{$IFDEF FPC} LCLVersion, {$ENDIF}
-  System.Classes, GLS.VectorGeometry, GLS.CrossPlatform;
+  System.Classes, 
+  GLS.VectorGeometry, GLS.CrossPlatform;
 
 const
   MaxVideoModes = 200;
-{$IFNDEF FPC}
   lcl_release = 0;
-{$ENDIF}
 
 type
 
@@ -133,11 +131,7 @@ implementation
 // ------------------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   FMX.Forms,
-{$ELSE}
-  Forms,
-{$ENDIF}
   SysUtils;
 
 type

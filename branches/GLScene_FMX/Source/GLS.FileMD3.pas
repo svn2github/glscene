@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLFileMD3 - Code for loading animated MD3 files into GLScene
+  GLS.FileMD3 - Code for loading animated MD3 files into GLScene
               FreeForms and Actors.
 
   History :
@@ -11,7 +11,7 @@
     <li>21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
     <li>28/02/03 - SG - Creation
 }
-unit GLFileMD3;
+unit GLS.FileMD3;
 
 interface
 

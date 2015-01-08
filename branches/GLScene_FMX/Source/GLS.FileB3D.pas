@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileB3D<p>
+{ : GLS.FileB3D<p>
 
   B3D VectorFile class to load Blitz 3D model files<p>
 
@@ -12,7 +12,7 @@
   <li>22/12/05 - Mathx - Added to the GLScene Project.
   </ul></font>
 }
-unit GLFileB3D;
+unit GLS.FileB3D;
 
 interface
 

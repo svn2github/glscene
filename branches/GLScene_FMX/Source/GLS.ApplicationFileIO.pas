@@ -27,7 +27,7 @@ interface
 
 uses
   Winapi.Windows, System.Classes, System.SysUtils,
-  GLS.BaseClasses, GLSLog;
+  GLS.BaseClasses, GLS.Log;
 
 
 const

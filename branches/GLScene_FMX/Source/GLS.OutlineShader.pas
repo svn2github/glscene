@@ -28,7 +28,7 @@
                             in the multipass demo.
    </ul></font>
 }
-unit GLOutlineShader;
+unit GLS.OutlineShader;
 
 interface
 

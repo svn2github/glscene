@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLEllipseCollision<p>
+{: GLS.EllipseCollision<p>
 
   Ellipsoid collision functions (mainly used by DCE).
 
@@ -13,7 +13,7 @@
     <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
-unit GLEllipseCollision;
+unit GLS.EllipseCollision;
 
 interface
 

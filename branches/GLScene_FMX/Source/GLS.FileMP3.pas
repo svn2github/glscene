@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMP3<p>
+{: GLS.FileMP3<p>
 
 	Support for MP3 format.<p>
 
@@ -10,14 +10,14 @@
       <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
 	</ul></font>
 }
-unit GLFileMP3;
+unit GLS.FileMP3;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.ApplicationFileIO, GLSoundFileObjects;
+  System.Classes, GLS.ApplicationFileIO, GLS.SoundFileObjects;
 
 type
 

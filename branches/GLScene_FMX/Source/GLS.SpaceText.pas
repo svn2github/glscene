@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpaceText<p>
+{ : GLS.SpaceText<p>
 
   3D Text component.<p>
 
@@ -41,7 +41,7 @@
   <li>12/12/01 - EG - Creation (split from GLScene.pas)
   </ul></font>
 }
-unit GLSpaceText;
+unit GLS.SpaceText;
 
 interface
 
@@ -49,14 +49,9 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, WinApi.Messages, System.Classes, System.UITypes,
+  Winapi.Windows, WinApi.Messages, 
+  System.Classes, System.UITypes, System.SysUtils,
   FMX.Dialogs, FMX.Graphics, FMX.Controls,
-{$ELSE}
-  Winapi.Windows, Messages, Classes,
-  Dialogs, Graphics, Controls,
-{$ENDIF}
-
    
   GLS.Scene, GLS.OpenGLTokens, GLS.Texture, GLS.Context, GLS.VectorGeometry, GLS.Strings,
   GLS.RenderContextInfo, GLS.State;
@@ -241,9 +236,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  SysUtils;
 
 const
   cFontManagerMsg = 'GLScene FontManagerMessage';

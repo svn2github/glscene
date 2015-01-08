@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileDAE<p>
+{: GLS.FileDAE<p>
 
 	Quake2 MD2 vector file format implementation.<p>
 
@@ -11,7 +11,7 @@
       <li>15/01/14 - PW - Creation
 	</ul></font>
 }
-unit GLFileDAE;
+unit GLS.FileDAE;
 
 interface
 

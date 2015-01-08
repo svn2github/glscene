@@ -19,6 +19,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
+
   DesignIntf, DesignEditors, STREDIT, ToolsAPI,
 
   GLS.SceneRegister;

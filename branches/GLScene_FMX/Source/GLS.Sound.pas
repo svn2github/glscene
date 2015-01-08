@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSound<p>
+{: GLS.Sound<p>
 
  Base classes and interface for GLScene Sound System<p>
 
@@ -19,14 +19,14 @@
     <li>04/06/00 - EG - Creation
  </ul></font>
 }
-unit GLSound;
+unit GLS.Sound;
 
 interface
 
 uses
   System.Classes, System.SysUtils, System.Types,
 
-  GLSoundFileObjects, GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
+  GLS.SoundFileObjects, GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
   GLS.Cadencer, GLS.BaseClasses, GLS.CrossPlatform, GLS.Utils;
 
 {$I GLScene.inc}

@@ -1,4 +1,7 @@
-{: GLStarRecord<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.StarRecord<p>
 
    Unit to interface with simple star records aimed for background skies.<p>
 
@@ -6,7 +9,7 @@
 	   <li>05/07/03 - EG - Creation
 	</ul></font>
 }
-unit GLStarRecord;
+unit GLS.StarRecord;
 
 interface
 

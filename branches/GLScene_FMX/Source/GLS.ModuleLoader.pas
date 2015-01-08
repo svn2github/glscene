@@ -1,8 +1,10 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
     History:<p>
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC
                                                          (BugTracekrID=1681585)
-
 }
 unit GLS.ModuleLoader;
 {******************************************************************}

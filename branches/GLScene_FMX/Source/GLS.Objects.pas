@@ -992,7 +992,7 @@ implementation
 // -------------------------------------------------------------
 
 uses
-  GLSpline,
+  GLS.Spline,
   GLS.XOpenGL,
   GLS.State;
 

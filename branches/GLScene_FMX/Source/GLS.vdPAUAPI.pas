@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_VDPAU_API<p>
+{ : GLS.vdPAUAPI<p>
 
   <b>History : </b><font size=-1><ul>
   <li>23/10/10 - Yar - Creation
@@ -35,12 +35,9 @@
 // * OTHER DEALINGS IN THE SOFTWARE.
 // }
 
-unit GLS_VDPAU_API;
+unit GLS.vdPAUAPI;
 
 {$I GLScene.inc}
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
 
 interface
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GlFileX<p>
+{: GLS.FileX<p>
 
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
@@ -29,7 +29,7 @@
    </ul></font>
 }
 
-unit GlFileX;
+unit GLS.FileX;
 
 interface
 

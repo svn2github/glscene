@@ -25,8 +25,8 @@ interface
 uses
   System.Classes,
 
-  GLS.Scene,  GLS.VectorGeometry,  GLS.Objects,  GLS.Texture,
-  GLS.OpenGLTokens, GLS.Context,  GLS.RenderContextInfo,  GLS.BaseClasses,
+  GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.Texture,
+  GLS.OpenGLTokens, GLS.Context, GLS.RenderContextInfo, GLS.BaseClasses,
   GLS.State, GLS.VectorTypes;
 
 type

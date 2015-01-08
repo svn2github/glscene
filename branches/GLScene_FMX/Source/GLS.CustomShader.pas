@@ -113,7 +113,7 @@ uses
    
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.Cadencer, GLS.OpenGLTokens, GLS.Scene,
   GLS.Strings, GLS.CrossPlatform, GLS.Context, GLS.RenderContextInfo, GLS.Material,
-  GLS.VectorLists, GLS.TextureFormat, GLSLParameter;
+  GLS.VectorLists, GLS.TextureFormat, GLSL.Parameter;
 
 const
   glsShaderMaxLightSources = 8;

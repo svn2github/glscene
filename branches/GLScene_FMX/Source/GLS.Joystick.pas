@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Joystick<p>
+{: GLS.Joystick<p>
 
 	Component for handling joystick messages<p>
 
@@ -14,7 +14,7 @@
 	   <li>20/03/00 - Egg - Creation from GLScene's TGLJoystick
 	</ul></font>
 }
-unit GLJoystick;
+unit GLS.Joystick;
 
 interface
 
@@ -22,16 +22,11 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Winapi.Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  FMX.Forms, FMX.Controls,
-{$ELSE}
-  Forms, Controls,
-{$ENDIF}
-  System.Classes, Messages;
+  Winapi.Windows, Winapi.Messages,
+  System.Classes, System.SysUtils, System.MMSystem,
+  FMX.Forms, FMX.Controls;
 
 type
-
    TJoystickButton = (jbButton1, jbButton2, jbButton3, jbButton4);
    TJoystickButtons = set of TJoystickButton;
 
@@ -111,8 +106,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
-uses System.SysUtils, MMSystem;
 
 const
   cJoystickIDToNative : array [jidNoJoystick..jidJoystick2] of Byte =

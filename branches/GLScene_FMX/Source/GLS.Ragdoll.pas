@@ -14,7 +14,7 @@
   </ul></font>
 }
 
-unit GLRagdoll;
+unit GLS.Ragdoll;
 
 interface
 

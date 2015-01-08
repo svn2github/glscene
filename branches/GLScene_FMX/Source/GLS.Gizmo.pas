@@ -70,7 +70,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLS.GeomObjects, GLS.BitmapFont, GLViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
+  GLS.GeomObjects, GLS.BitmapFont, GLSceneViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
   GLS.Coordinates, GLS.RenderContextInfo, GLS.State, GLS.Selection, GLS.VectorTypes;
 
 type

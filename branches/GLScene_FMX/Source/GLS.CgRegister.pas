@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCgRegister<p>
+{: GLS.CgRegister<p>
 
    Registration unit for CG shader.<p>
 
@@ -11,23 +11,16 @@
       <li>23/02/07 - DaStr - Initial version
 
 }
-unit GLCgRegister;
+unit GLS.CgRegister;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   
   System.Classes,
-  {$IFDEF FPC}
-    propedits, GLSceneRegisterLCL,
-  {$ELSE}
-    DesignIntf, DesignEditors, VCLEditors,
-    GLSceneRegister,
-  {$ENDIF}
-
-   
+  DesignIntf, DesignEditors, VCLEditors,
+  GLSceneRegister,
   GLS.Material,
 
   // CG

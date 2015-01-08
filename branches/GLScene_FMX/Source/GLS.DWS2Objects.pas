@@ -1,4 +1,4 @@
-// GLDWS2Objects
+// GLS.DWS2Objects
 {: Base classes and logic for DelphiWebScriptII enabled
    objects in GLScene<p>
 
@@ -7,7 +7,7 @@
       <li>06/04/2004 - SG - Creation
    </ul></font>
 }
-unit GLDWS2Objects;
+unit GLS.DWS2Objects;
 
 interface
 

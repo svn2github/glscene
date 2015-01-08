@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBSP<p>
+{ : GLS.BSP<p>
 
   Binary Space Partion mesh support for GLScene.<p>
 
@@ -22,7 +22,7 @@
   <li>30/01/03 - EG - Creation
   </ul></font>
 }
-unit GLBSP;
+unit GLS.BSP;
 
 interface
 

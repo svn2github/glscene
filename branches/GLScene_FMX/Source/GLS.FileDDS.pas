@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileDDS<p>
+{: GLS.FileDDS<p>
 
    DDS File support for GLScene.
 
@@ -19,7 +19,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileDDS;
+unit GLS.FileDDS;
 
 interface
 

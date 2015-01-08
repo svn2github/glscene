@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSimpleNavigation<p>
+{: GLS.SimpleNavigation<p>
 
     A simple component written by request from someone at the www.glscene.ru forums.<p>
     Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff <p>
@@ -42,22 +42,18 @@
                                        Donated to GLScene
 }
 
-unit GLSimpleNavigation;
+unit GLS.SimpleNavigation;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes,  System.SysUtils, System.TypInfo,
   FMX.Forms, FMX.Controls, FMX.ExtCtrls,
-{$ELSE}
-  System.Classes, System.SysUtils, TypInfo, Forms, Controls, ExtCtrls,
-{$ENDIF}
-  // GLSñene
-  GLSceneForm, GLS.VectorGeometry, GLS.Scene,
-  GLViewer, GLS.Strings, GLS.CrossPlatform;
+
+  GLS.SceneForm, GLS.VectorGeometry, GLS.Scene,
+  GLS.SceneViewer, GLS.Strings, GLS.CrossPlatform;
 
 type
 

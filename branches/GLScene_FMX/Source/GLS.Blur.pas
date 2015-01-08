@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBlur<p>
+{: GLS.Blur<p>
 
  Applies a blur effect over the viewport.<p>
 
@@ -28,21 +28,17 @@
         <li>11/06/04 - Mrqzzz - Creation
    </ul></font>
 }
-unit GLBlur;
+unit GLS.Blur;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, FMX.Graphics,
-  {$ELSE}
-    System.Classes, System.SysUtils,  Graphics,
-  {$ENDIF}
+  System.Classes, System.SysUtils, FMX.Graphics,
    
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
-  GLHudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
+  GLS.HudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
   GLS.XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;
 
 type

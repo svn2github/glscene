@@ -1,7 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLExtrusion<p>
+{: GLS.Extrusion<p>
 
  Extrusion objects for GLScene. Extrusion objects are solids defined by the
    surface described by a moving curve.<p>
@@ -51,7 +51,7 @@
        All extrusion objects use actually the same kind of "parts",
        one common type should do.
 }
-unit GLExtrusion;
+unit GLS.Extrusion;
 
 interface
 
@@ -59,7 +59,7 @@ interface
 
 uses
   System.Classes,
-  GLS.OpenGLTokens,  GLS.Context,  GLS.Objects,  GLS.Scene, GLMultiPolygon,
+  GLS.OpenGLTokens,  GLS.Context,  GLS.Objects,  GLS.Scene, GLS.MultiPolygon,
   GLS.Color, GLS.VectorGeometry, GLS.RenderContextInfo, GLS.Nodes,
   GLS.State, GLS.VectorTypes;
 

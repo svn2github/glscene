@@ -40,7 +40,7 @@ uses
   Messages, System.Classes, System.SysUtils,
   Controls, Forms, Extctrls, Graphics, Dialogs,
 {$ENDIF}
-  GLS.Graphics, GLSVfw, GLS.Scene, GLViewer;
+  GLS.Graphics, GLSVfw, GLS.Scene, GLS.SceneViewer;
 
 type
   TAVICompressor = (acDefault, acShowDialog, acDivX);

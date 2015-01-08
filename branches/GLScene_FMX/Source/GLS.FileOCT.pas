@@ -1,7 +1,7 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{: GLFileOCT<p>
+//
+{: GLS.FileOCT<p>
 
     Support-code to load OCT Files into TGLFreeForm-Components in GLScene.<br>
     (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
@@ -15,18 +15,17 @@
       <li>02/02/03 - EG     - Creation
    </ul><p>
 }
-unit GLFileOCT;
+unit GLS.FileOCT;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.VectorFileObjects, GLS.VectorGeometry, GLS.ApplicationFileIO,
-  FileOCT
-  {$IFDEF FPC}
-  , intfgraphics
-  {$ENDIF} ;
+  System.SysUtils,
+  System.Classes, 
+  GLS.VectorFileObjects, GLS.VectorGeometry, GLS.ApplicationFileIO,
+  FileOCT;
 
 type
 
@@ -58,7 +57,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  System.SysUtils, GLS.Texture, GLS.Material, GLS.Graphics, GLS.CrossPlatform, GLS.State,
+  GLS.Texture, GLS.Material, GLS.Graphics, GLS.CrossPlatform, GLS.State,
   GLS.Utils, GLS.TextureFormat;
 
 // ------------------

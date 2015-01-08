@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCelShader<p>
+{: GLS.CelShader<p>
 
    A shader that applies cel shading through a vertex program
    and shade definition texture.<p>
@@ -21,14 +21,15 @@
       <li>28/05/04 - SG - Creation.
    </ul></font>
 }
-unit GLCelShader;
+unit GLS.CelShader;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, GLS.Texture, GLS.Context, GLS.Graphics, GLS.Utils,
+  System.Classes, System.SysUtils, 
+  GLS.Texture, GLS.Context, GLS.Graphics, GLS.Utils,
   GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Color, GLS.RenderContextInfo,
   GLS.Material, GLS.State, GLS.TextureFormat;
 

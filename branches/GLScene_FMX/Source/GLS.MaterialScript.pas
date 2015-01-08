@@ -54,7 +54,6 @@ uses
   System.SysUtils, System.Classes,
   FMX.StdCtrls,
 
-  // GLX
   GLS.Texture, GLS.TextureFormat, GLS.Graphics, GLS.Utils, GLS.Color, GLS.Coordinates,
   GLS.Material, GLS.State;
 

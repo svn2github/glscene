@@ -1,4 +1,7 @@
-{: GLFileNurbs<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.FileNurbs<p>
 
 	Nurbs surfaces vector file loading.<p>
 
@@ -9,14 +12,14 @@
                           by Eric Grange.
 	</ul></font>
 }
-unit GLFileNurbs;
+unit GLS.FileNurbs;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, GLS.VectorFileObjects,
-  GLS.VectorGeometry, GLS.VectorLists, GLS.ApplicationFileIO,
-  GLParametricSurfaces, GLS.Utils;
+  System.Classes, System.SysUtils, 
+  GLS.VectorFileObjects, GLS.VectorGeometry, GLS.VectorLists, 
+  GLS.ApplicationFileIO, GLS.ParametricSurfaces, GLS.Utils;
 
 type
 

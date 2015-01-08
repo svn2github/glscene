@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMBASS<p>
+{: GLS.SMBASS<p>
 
 	BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
 
@@ -36,8 +36,8 @@ interface
 uses
   System.Classes, System.SysUtils, FMX.Forms,
 
-   
-  GLS.Sound, GLS.Scene, GLS.VectorGeometry, Bass;
+  Bass,  
+  GLS.Sound, GLS.Scene, GLS.VectorGeometry;
 
 type
 

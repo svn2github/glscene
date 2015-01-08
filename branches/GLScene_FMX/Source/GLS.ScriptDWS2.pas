@@ -1,5 +1,8 @@
-// GLS.ScriptDWS2
-{: DelphiWebScriptII implementation for the GLScene scripting layer.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.ScriptDWS2.<p>
+   DelphiWebScriptII implementation for the GLScene scripting layer
 
    <b>History : </b><font size=-1><ul>
       <li>04/11/2004 - SG - Creation
@@ -12,7 +15,8 @@ interface
 uses
   System.Classes, System.SysUtils, 
   dws2Comp, dws2Exprs, dws2Symbols, 
-  GLS.XCollection, GLS.ScriptBase, GLManager;
+
+  GLS.XCollection, GLS.ScriptBase, GLS.Manager;
 
 type
   // TGLDelphiWebScriptII

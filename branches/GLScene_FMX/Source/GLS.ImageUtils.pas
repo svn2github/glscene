@@ -90,8 +90,9 @@ procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: T
 procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
 
 procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
-
+//----------------------------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------------------------
 
 resourcestring
   strInvalidType = 'Invalid data type';

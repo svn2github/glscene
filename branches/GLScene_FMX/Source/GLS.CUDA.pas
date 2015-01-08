@@ -24,7 +24,6 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-
   GLS.PersistentClasses, GLS.BaseClasses, GLS.CrossPlatform, GLS.Context,
   GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists, GLS.Graphics,
   GLS.CLPlatform, GLS.CUDAApi, GLS.CUDARuntime, GLS.CUDAParser,

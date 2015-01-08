@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLEParticleMasksManager<p>
+{: GLS.EParticleMasksManager<p>
 
    A pretty particle mask effect manager.<p>
 
@@ -42,7 +42,7 @@ Original Header:
 
 }
 
-unit GLEParticleMasksManager;
+unit GLS.EParticleMasksManager;
 
 interface
 
@@ -51,12 +51,7 @@ interface
 uses
   // System
   System.SysUtils, System.Classes,
-   
-{$IFDEF GLS_DELPHI_XE2_UP}
   FMX.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
    
   GLS.Texture, GLS.Material, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes,
   GLS.ParticleFX, GLS.CrossPlatform, GLS.Coordinates;

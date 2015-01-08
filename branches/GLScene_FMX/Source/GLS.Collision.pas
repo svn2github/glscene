@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCollision<p>
+{: GLS.Collision<p>
 
 	Collision-detection management for GLScene<p>
 
@@ -22,7 +22,7 @@
 	    <li>23/05/00 - Egg - Creation
 	</ul></font>
 }
-unit GLCollision;
+unit GLS.Collision;
 
 interface
 
@@ -37,9 +37,7 @@ uses
 
 
 type
-
    TGLBCollision = class;
-
    TObjectCollisionEvent = procedure (Sender : TObject; object1, object2 : TGLBaseSceneObject) of object;
 
    // TCollisionBoundingMode

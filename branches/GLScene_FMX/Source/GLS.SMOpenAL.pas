@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMOpenAL<p>
+{: GLS.SMOpenAL<p>
 
 	OpenAL based sound-manager (http://www.openal.org).<p>
    OpenAL drivers can be download from the OpenAL site or your soundcard
@@ -35,9 +35,9 @@ interface
 uses
    System.Classes, System.SysUtils,
    FMX.Forms, FMX.Dialogs,
-    
-   GLS.VectorGeometry, OpenAL{al, alut, alTypes},
-   GLS.Sound, GLS.Scene, GLS.SoundFileObjects;
+
+   OpenAL{al, alut, alTypes},  
+   GLS.VectorGeometry, GLS.Sound, GLS.Scene, GLS.SoundFileObjects;
 
 type
 

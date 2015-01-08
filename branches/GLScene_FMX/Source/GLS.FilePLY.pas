@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFilePLY<p>
+{: GLS.FilePLY<p>
 
 	PLY (Stanford Triangle Format) vector file format implementation.<p>
 
@@ -11,7 +11,7 @@
       <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
 	</ul></font>
 }
-unit GLFilePLY;
+unit GLS.FilePLY;
 
 interface
 

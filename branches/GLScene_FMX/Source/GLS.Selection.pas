@@ -1,16 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS.GeomObjects<p>
-
-  Geometric objects.<p>
+{ : GLS.Selection<p>
 
   <b>History : </b><font size=-1><ul>
   <li>03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
   <li>02/09/10 - Yar - Creation
   </ul></font>
 }
-unit GLSelection;
+unit GLS.Selection;
 
 interface
 

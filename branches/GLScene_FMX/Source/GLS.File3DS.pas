@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFile3DS<p>
+{: GLS.File3DS<p>
 
   3DStudio 3DS vector file format implementation.<p>
 
@@ -45,7 +45,7 @@
       <li>05/06/03 - SG - Separated from GLS.VectorFileObjects.pas
   </ul></font>
 }
-unit GLFile3DS;
+unit GLS.File3DS;
 
 interface
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileZLIB<p>
+{: GLS.FileZLIB<p>
 
   <b>History : </b><font size=-1><ul>
       <li>22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII  
@@ -10,14 +10,14 @@
   </ul><p>
 }
 
-unit GLFileZLIB;
+unit GLS.FileZLIB;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  System.Classes, System.SysUtils, GLSArchiveManager, GLSZLibEx;
+  System.Classes, System.SysUtils, GLS.ArchiveManager, GLS.zLibEx;
 
 const
    SIGN = 'ZLIB'; //Signature for compressed zlib.

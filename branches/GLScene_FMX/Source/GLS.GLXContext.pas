@@ -28,7 +28,7 @@ interface
 {$IFDEF SUPPORT_GLX}
 uses
   System.Classes, System.SysUtils, LCLType,
-  GLS.CrossPlatform, GLS.Context, GLS.OpenGLTokens, OpenGLAdapter,
+  GLS.CrossPlatform, GLS.Context, GLS.OpenGLTokens, GLS.OpenGLAdapter,
   x, xlib, xutil;
 
 type

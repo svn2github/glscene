@@ -30,12 +30,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
-
+  System.Classes, System.SysUtils,
    
   GLS.Scene, GLS.BitmapFont, GLS.Material, GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context,
   GLS.PersistentClasses, GLS.VectorGeometry, GLS.Coordinates, GLS.BaseClasses;

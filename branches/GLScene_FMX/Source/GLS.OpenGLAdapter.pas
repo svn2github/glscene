@@ -1,6 +1,7 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{ : OpenGLAdapter<p>
+//
+{ : GLS.OpenGLAdapter<p>
 
   <b>History : </b><font size=-1><ul>
   <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
@@ -21,7 +22,7 @@
   </ul></font>
 }
 
-unit OpenGLAdapter;
+unit GLS.OpenGLAdapter;
 
 interface
 
@@ -41,11 +42,11 @@ uses
   MacOSAll,
 {$ENDIF}
 
-  GLSLog,
+  System.SysUtils,
+  GLS.Log,
   GLS.OpenGLTokens,
   GLS.VectorGeometry,
-  GLS.VectorTypes,
-  SysUtils;
+  GLS.VectorTypes;
 
 type
 

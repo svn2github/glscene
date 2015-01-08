@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileO3TC<p>
+{: GLS.FileO3TC<p>
 
  <b>History : </b><font size=-1><ul>
         <li>23/08/10 - Yar - Replaced OpenGL1x to GLS.OpenGLTokens
@@ -15,7 +15,7 @@
         <li>20/01/10 - Yar - Creation
    </ul><p>
 }
-unit GLFileO3TC;
+unit GLS.FileO3TC;
 
 interface
 

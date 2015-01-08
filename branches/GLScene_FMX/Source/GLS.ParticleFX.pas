@@ -75,11 +75,11 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
 
-  GLS.Scene,  GLS.OpenGLTokens,  GLS.CrossPlatform,  GLS.State,
-  GLS.VectorTypes, GLS.PersistentClasses,  GLS.VectorGeometry,
-  GLS.XCollection,  GLS.Material, GLS.Cadencer, GLS.VectorLists,
-  GLS.Graphics,  GLS.Context,  GLS.Color,  GLS.BaseClasses,
-  GLS.Coordinates,  GLS.RenderContextInfo,  GLS.Manager,  GLS.TextureFormat;
+  GLS.Scene, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.State,
+  GLS.VectorTypes, GLS.PersistentClasses, GLS.VectorGeometry,
+  GLS.XCollection, GLS.Material, GLS.Cadencer, GLS.VectorLists,
+  GLS.Graphics, GLS.Context, GLS.Color, GLS.BaseClasses,
+  GLS.Coordinates, GLS.RenderContextInfo, GLS.Manager, GLS.TextureFormat;
 
 const
   cPFXNbRegions = 128; // number of distance regions

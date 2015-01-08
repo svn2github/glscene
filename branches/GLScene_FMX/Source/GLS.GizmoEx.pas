@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGizmoEx<p>
+{: GLS.GizmoEx<p>
 
    Invisible component for helping to Move, Rotate and Scale an Object
    under GLScene (usefull for an Editor).<p>
@@ -65,7 +65,7 @@
 //  3) Does not work in lazarus
 //------------------------------------------------------------------------------
 
-unit GLGizmoEx;
+unit GLS.GizmoEx;
 
 interface
 
@@ -74,8 +74,8 @@ interface
 uses
   {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF} System.Classes, System.SysUtils,
 
-   
-  OpenGL1x, GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
+  OpenGL1x, 
+  GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
   GLS.GeomObjects, GLS.BitmapFont, GLS.VectorFileObjects, GLS.CrossPlatform,
   GLS.Coordinates, GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes,
   GLS.Canvas, GLS.PersistentClasses, GLS.Screen, GLS.State, GLS.Selection,

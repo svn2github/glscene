@@ -1,7 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneForm<p>
+{ : GLS.SceneForm<p>
 
   <b>History : </b><font size=-1><ul>
   <li>05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
@@ -10,7 +10,7 @@
   </ul></font>
 }
 
-unit GLSceneForm;
+unit GLS.SceneForm;
 
 interface
 

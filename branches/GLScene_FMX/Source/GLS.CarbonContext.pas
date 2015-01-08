@@ -1,4 +1,7 @@
-﻿{: GLCarbonContext<p>
+﻿//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.CarbonContext<p>
 
    Carbon specific Context.<p>
 
@@ -10,7 +13,7 @@
       <li>14/11/08 - Creation
    </ul></font>
 }
-unit GLCarbonContext;
+unit GLS.CarbonContext;
 
 {$i GLScene.inc}
 

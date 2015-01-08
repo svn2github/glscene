@@ -37,7 +37,6 @@ interface
 {$I GLScene.inc}
 
 uses
-
   System.SysUtils, System.Classes,
 
   GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates,

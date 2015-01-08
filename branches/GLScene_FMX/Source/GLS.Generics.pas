@@ -18,9 +18,6 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF FPC}
-  LCLVersion,
-{$ENDIF}
   System.SysUtils,
   System.Classes,
   System.SyncObjs,

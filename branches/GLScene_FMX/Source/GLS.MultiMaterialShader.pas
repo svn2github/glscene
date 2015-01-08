@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLS.MultiMaterialShader<p>
 
    A shader that applies a render pass for each material in

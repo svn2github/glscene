@@ -132,8 +132,6 @@ type
     procedure ParseModule(ASource, AProduct: TStrings);
   end;
 
-
-
 implementation
 
 uses

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSkyBox<p>
+{: GLS.SkyBox<p>
 
    A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
    for use as a skybox always centered on the camera.<p>
@@ -24,7 +24,7 @@
       <li>02/09/03 - MRQZZZ - Creation
    </ul></font>
 }
-unit GLSkyBox;
+unit GLS.SkyBox;
 
 interface
 
@@ -37,8 +37,8 @@ uses
   GLS.VectorGeometry,
   GLS.OpenGLTokens,
   GLS.XOpenGL,
-  GLS.RenderContextInfo
-, GLS.VectorTypes;
+  GLS.RenderContextInfo, 
+  GLS.VectorTypes;
 
 type
 

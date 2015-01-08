@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSoundFileFormat<p>
+{: GLS.SoundFileFormat<p>
 
 	Support classes for loading various fileformats.<p>
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
@@ -21,14 +21,14 @@
       <li>04/06/00 - Egg - Creation
 	</ul></font>
 }
-unit GLSoundFileObjects;
+unit GLS.SoundFileObjects;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  Classes,{$IFDEF MSWINDOWS}MMSystem,{$ENDIF}
+  System.Classes,{$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF}
   GLS.ApplicationFileIO, GLS.CrossPlatform;
 
 type

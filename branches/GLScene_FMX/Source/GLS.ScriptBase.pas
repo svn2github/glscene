@@ -1,5 +1,8 @@
-// GLS.ScriptBase
-{: An abstract scripting interface for GLScene<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLS.ScriptBase.<p>
+   An abstract scripting interface for GLScene
 
    This unit provides the base methods for compiling and executing scripts as
    well as calling scripted functions. No scripting APIs are implemented here,
@@ -14,7 +17,7 @@ unit GLS.ScriptBase;
 interface
 
 uses
-  System.Classes, XCollection;
+  System.Classes, GLS.XCollection;
 
 type
   TGLScriptState = ( ssUncompiled,    // The script has yet to be compiled.

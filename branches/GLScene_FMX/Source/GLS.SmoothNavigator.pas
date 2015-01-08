@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSmoothNavigator<p>
+{: GLS.SmoothNavigator<p>
 
      An extention of TGLNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
@@ -45,19 +45,17 @@
                                     Contributed to GLScene
 }
 
-unit GLSmoothNavigator;
+unit GLS.SmoothNavigator;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-   
   System.Classes,
-
    
   GLS.Navigator, GLS.VectorGeometry, GLS.Scene, GLS.CrossPlatform, GLS.Coordinates,
-  GLS.Screen, XCollection;
+  GLS.Screen, GLS.XCollection;
 
 type
 

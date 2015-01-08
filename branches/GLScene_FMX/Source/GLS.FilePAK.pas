@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFilePAK<p>
+{: GLS.FilePAK<p>
 
   <b>History : </b><font size=-1><ul>
       <li>04/06/10 - Yar - Added to GLScene
@@ -9,14 +9,14 @@
   </ul><p>
 }
 
-unit GLFilePAK;
+unit GLS.FilePAK;
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  System.Classes, System.SysUtils, GLSArchiveManager;
+  System.Classes, System.SysUtils, GLS.ArchiveManager;
 
 const
    SIGN = 'PACK';

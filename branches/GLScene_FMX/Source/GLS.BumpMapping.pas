@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// GLBumpMapping
+// GLS.BumpMapping
 {: Some useful methods for setting up bump maps.<p>
 
    <b>History : </b><font size=-1><ul>
@@ -16,7 +16,7 @@
       <li>28/07/03 - SG - Creation
    </ul></font>
 }
-unit GLBumpMapping;
+unit GLS.BumpMapping;
 
 interface
 

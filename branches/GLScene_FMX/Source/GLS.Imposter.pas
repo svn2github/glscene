@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLImposter<p>
+{: GLS.Imposter<p>
 
    Imposter building and rendering implementation for GLScene.<p>
 
@@ -26,18 +26,14 @@
       <li>24/03/04 - SG - Initial.
    </ul></font><p>
 }
-unit GLImposter;
+unit GLS.Imposter;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    System.Classes, System.SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.Context, GLS.VectorTypes, GLS.VectorGeometry,
   GLS.PersistentClasses, GLS.CrossPlatform, GLS.Graphics, GLS.Color,

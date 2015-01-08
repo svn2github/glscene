@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileGRD<p>
+{ : GLS.FileGRD<p>
 
   GRD (Grid Text Format) vector file format implementation.<p>
 
@@ -10,7 +10,7 @@
   <li>10/04/09 - PW - Separated from GLS.VectorFileObjects.pas
   </ul></font>
 }
-unit GLFileGRD;
+unit GLS.FileGRD;
 
 interface
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShadowVolumes<p>
+{: GLS.ShadowVolumes<p>
 
    Implements basic shadow volumes support.<p>
 
@@ -31,7 +31,7 @@
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
   </ul></font>
 }
-unit GLShadowVolume;
+unit GLS.ShadowVolume;
 
 interface
 

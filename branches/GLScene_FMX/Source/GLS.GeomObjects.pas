@@ -44,7 +44,7 @@ uses
   GLS.Scene,
   GLS.VectorGeometry,
   GLS.OpenGLTokens,
-  OpenGLAdapter,
+  GLS.OpenGLAdapter,
   GLS.Context,
   GLS.Objects,
   GLS.Silhouette,

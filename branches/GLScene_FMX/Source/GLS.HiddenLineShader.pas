@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLS.HiddenLineShader<p>
 
    A shader that renders hidden (back-faced) lines differently from visible

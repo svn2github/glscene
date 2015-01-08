@@ -42,7 +42,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene,  GLS.OpenGLTokens, GLS.Context,  GLS.XOpenGL, GLS.VectorGeometry,
-  GLS.Material,  GLS.Objects,  GLS.VectorLists, GLS.Color,  GLS.BaseClasses,
+  GLS.Material, GLS.Objects, GLS.VectorLists, GLS.Color,  GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.State, GLS.VectorTypes;
 
 type

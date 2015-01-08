@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // GLS.ScriptPython
 {: Python implementation for the GLScene scripting layer.<p>
 

@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSpatialPartitioning<p>
+{: GLS.SpatialPartitioning<p>
 
   <p>Spatial partitioning related code that also uses GLScene objects
 
@@ -22,12 +22,12 @@
   </ul></font>
 }
 
-unit GLSpatialPartitioning;
+unit GLS.SpatialPartitioning;
 
 interface
 
 uses
-  GLViewer, GLSpacePartition, GLS.Scene, GLS.VectorGeometry,
+  GLS.SceneViewer, GLS.SpacePartition, GLS.Scene, GLS.VectorGeometry,
   GLS.OpenGLTokens, GLS.GeometryBB, GLS.RenderContextInfo, GLS.State;
 
 type
@@ -57,8 +57,13 @@ function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
 
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 implementation
-
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 uses
   GLS.VectorTypes,
   GLS.Context;

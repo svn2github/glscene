@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileLWO<p>
+{: GLS.FileLWO<p>
 
     Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
 
@@ -18,13 +18,15 @@
 
    Original code: "Brian Johns" <brianjohns1@hotmail.com>
 }
-unit GLFileLWO;
+unit GLS.FileLWO;
 
 interface
 
 {$I GLScene.inc}
 
-uses System.Classes,
+uses 
+  System.SysUtils,
+  System.Classes,
   GLS.VectorFileObjects,
   LWObjects;
 
@@ -45,7 +47,6 @@ type
 implementation
 
 uses
-  System.SysUtils,
   GLS.VectorGeometry,
   GLS.Texture,
   GLS.Material,

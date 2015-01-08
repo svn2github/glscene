@@ -24,12 +24,7 @@ interface
 {$i GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.SysUtils, System.Classes, FMX.Dialogs, FMX.Graphics,
-{$ELSE}
-  System.SysUtils, System.Classes, Dialogs, Graphics,
-{$ENDIF}
-
    
   GLS.VectorTypes, GLS.VectorGeometry, GLS.CrossPlatform,
   GLS.PersistentClasses, GLS.BaseClasses;
@@ -86,7 +81,6 @@ type
 
          property DefaultColor : TColorVector read FColor;
 
-{$IFNDEF FPC}
   published
     { Published Properties }
     property Red: Single index 0 read GetColorComponent
@@ -97,17 +91,7 @@ type
       write SetColorComponent stored False;
     property Alpha: Single index 3 read GetColorComponent
       write SetColorComponent stored False;
-{$ELSE}
-    property Red: Single index 0 read GetColorComponent
-      write SetColorComponent;
-    property Green: Single index 1 read GetColorComponent
-      write SetColorComponent;
-    property Blue: Single index 2 read GetColorComponent
-      write SetColorComponent;
-    property Alpha: Single index 3 read GetColorComponent
-      write SetColorComponent;
-{$ENDIF}
-	end;
+   end;
 
    PColorEntry = ^TColorEntry;
    TColorEntry = record
