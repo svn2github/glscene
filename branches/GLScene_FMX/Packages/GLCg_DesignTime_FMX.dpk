@@ -30,6 +30,12 @@ package GLCg_DesignTime_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  GLCg_RunTime_FMX,
+  GLScene_RunTime_FMX,
+  GLScene_DesignTime_FMX;
+
+contains
+  GLS.CgRegister in '..\Source\GLS.CgRegister.pas';
 
 end.

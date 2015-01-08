@@ -111,12 +111,12 @@ uses
   FMX.StdCtrls,
   FMX.Graphics,
 
- (*
+
   ToolsAPI,
   DesignIntf,
   DesignEditors,
   VCLEditors,
-*)
+
   GLS.Scene,
   GLS.Context,
   GLS.Color,

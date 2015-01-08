@@ -133,6 +133,10 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="GLCg_RunTime_FMX.dcp"/>
+        <DCCReference Include="GLScene_RunTime_FMX.dcp"/>
+        <DCCReference Include="GLScene_DesignTime_FMX.dcp"/>
+        <DCCReference Include="..\Source\GLS.CgRegister.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -171,6 +175,18 @@
                 </DeployFile>
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLCg_DesignTime_FMX.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
+                        <RemoteName>GLCg_DesignTime_FMX.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\Win64\GLCg_DesignTime_FMX.rsm" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win64">
+                        <RemoteName>GLCg_DesignTime_FMX.rsm</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\Win64\GLCg_DesignTime_FMX.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win64">
                         <RemoteName>GLCg_DesignTime_FMX.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>

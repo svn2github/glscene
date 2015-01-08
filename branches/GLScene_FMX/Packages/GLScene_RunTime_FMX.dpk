@@ -30,7 +30,9 @@ package GLScene_RunTime_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  fmx,
+  rtl,
+  xmlrtl;
 
 contains
   Const3DS in '..\Source\Const3DS.pas',

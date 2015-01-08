@@ -1,11 +1,213 @@
-object Form1: TForm1
+object GLSceneEditorForm: TGLSceneEditorForm
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 683
-  ClientWidth = 654
+  ClientHeight = 633
+  ClientWidth = 600
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignerMasterStyle = 0
+  object ToolBar: TToolBar
+    Size.Width = 600.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+  object PATree: TPanel
+    Align = Left
+    Position.Y = 40.000000000000000000
+    Size.Width = 305.000000000000000000
+    Size.Height = 593.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object PAEffects: TPanel
+      Align = Bottom
+      Position.Y = 468.000000000000000000
+      Size.Width = 305.000000000000000000
+      Size.Height = 125.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object ToolBarEffects: TToolBar
+        Size.Width = 305.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object TBAddEffects: TButton
+          Align = FitLeft
+          Size.Width = 145.454559326171900000
+          Size.Height = 40.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'cornerbuttonstyle'
+          TabOrder = 0
+          Text = 'Effects'
+          TextSettings.HorzAlign = Leading
+        end
+      end
+      object EffectsListView: TListView
+        ItemAppearanceClassName = 'TListItemAppearance'
+        ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+        HeaderAppearanceClassName = 'TListHeaderObjects'
+        FooterAppearanceClassName = 'TListHeaderObjects'
+        Align = Client
+        Size.Width = 305.000000000000000000
+        Size.Height = 85.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+    object Tree: TTreeView
+      Align = Client
+      Size.Width = 305.000000000000000000
+      Size.Height = 340.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+    end
+    object PABehaviours: TPanel
+      Align = Bottom
+      Position.Y = 340.000000000000000000
+      Size.Width = 305.000000000000000000
+      Size.Height = 128.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      object ToolBarBehaviours: TToolBar
+        Size.Width = 305.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 0
+        object TBAddBehaviours: TButton
+          Align = FitLeft
+          PopupMenu = PMBehavioursToolBar
+          Size.Width = 145.454559326171900000
+          Size.Height = 40.000000000000000000
+          Size.PlatformDefault = False
+          StyleLookup = 'cornerbuttonstyle'
+          TabOrder = 0
+          Text = 'Behaviours'
+          TextSettings.HorzAlign = Leading
+        end
+      end
+      object BehavioursListView: TListView
+        ItemAppearanceClassName = 'TListItemAppearance'
+        ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+        HeaderAppearanceClassName = 'TListHeaderObjects'
+        FooterAppearanceClassName = 'TListHeaderObjects'
+        Align = Client
+        Size.Width = 305.000000000000000000
+        Size.Height = 88.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+      end
+    end
+  end
+  object PAGallery: TPanel
+    Align = Client
+    Size.Width = 295.000000000000000000
+    Size.Height = 593.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object GalleryListView: TListView
+      ItemAppearanceClassName = 'TListItemAppearance'
+      ItemEditAppearanceClassName = 'TListItemShowCheckAppearance'
+      HeaderAppearanceClassName = 'TListHeaderObjects'
+      FooterAppearanceClassName = 'TListHeaderObjects'
+      Align = Client
+      Size.Width = 295.000000000000000000
+      Size.Height = 593.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+    end
+  end
+  object PMToolBar: TPopupMenu
+    Left = 104
+    Top = 72
+  end
+  object PopupMenu: TPopupMenu
+    Left = 176
+    Top = 72
+  end
+  object SaveDialog: TSaveDialog
+    Left = 104
+    Top = 136
+  end
+  object OpenDialog: TOpenDialog
+    Left = 32
+    Top = 136
+  end
+  object PMBehavioursToolBar: TPopupMenu
+    Left = 64
+    Top = 200
+  end
+  object PMEffectsToolBar: TPopupMenu
+    Left = 208
+    Top = 200
+  end
+  object BehavioursPopupMenu: TPopupMenu
+    Left = 64
+    Top = 264
+  end
+  object ActionList: TActionList
+    Left = 32
+    Top = 72
+    object ACLoadScene: TAction
+      Text = 'Load scene'
+      Hint = 'Load whole scene'
+    end
+    object ACSaveScene: TAction
+      Text = 'Save scene'
+    end
+    object ACStayOnTop: TAction
+      Text = 'Stay on top'
+    end
+    object ACAddObject: TAction
+      Text = 'Add object'
+      Hint = 'Add object'
+    end
+    object ACAddBehaviour: TAction
+      Text = 'Add behaviour'
+      Hint = 'Add behaviour'
+    end
+    object ACAddEffect: TAction
+      Text = 'Add effect'
+      Hint = 'Add effect'
+    end
+    object ACMoveUp: TAction
+      Text = 'Move object up'
+      Hint = 'Move object up'
+    end
+    object ACMoveDown: TAction
+      Text = 'Move object down'
+      Hint = 'Move object down'
+    end
+    object ACExpand: TAction
+      Text = 'Expand tree'
+      Hint = 'Expand tree'
+    end
+    object ACDeleteObject: TAction
+      Text = 'Delete object'
+      Hint = 'Delete object'
+    end
+    object ACDeleteBehaviour: TAction
+      Text = 'Delete behaviour'
+      Hint = 'Delete behaviour'
+    end
+    object ACCopy: TAction
+      Text = 'Copy'
+      Hint = 'Copy'
+    end
+    object ACCut: TAction
+      Text = 'Cut'
+      Hint = 'Cut'
+    end
+    object ACPaste: TAction
+      Text = 'Paste'
+      Hint = 'Paste'
+    end
+    object ACInfo: TAction
+      Text = 'Info'
+      Hint = 'Info'
+    end
+  end
 end

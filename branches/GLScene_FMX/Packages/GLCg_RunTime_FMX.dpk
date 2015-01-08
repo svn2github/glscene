@@ -30,7 +30,9 @@ package GLCg_RunTime_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  fmx,
+  GLScene_RunTime_FMX;
 
 contains
   cgGL in '..\Source\cgGL.pas',

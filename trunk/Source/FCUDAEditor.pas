@@ -72,7 +72,7 @@ resourcestring
   cCUDAEditor = 'GLScene CUDA Component Editor';
 
 const
-  cRegistryKey = 'Software\GLScene.org\GLSCUDAEditor';
+  cRegistryKey = 'Software\GLScene\GLSCUDAEditor';
 
 var
   vGLSCUDAEditorForm: TGLSCUDAEditorForm;

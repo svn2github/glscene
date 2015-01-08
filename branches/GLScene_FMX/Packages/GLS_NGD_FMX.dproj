@@ -129,6 +129,8 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="fmx.dcp"/>
+        <DCCReference Include="GLScene_RunTime_FMX.dcp"/>
         <DCCReference Include="..\Source\GLS.NGDManager.pas"/>
         <DCCReference Include="..\Source\GLS.NewtonRegister.pas"/>
         <DCCReference Include="..\Source\NewtonImport.pas"/>

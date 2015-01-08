@@ -29,6 +29,8 @@ package GLS_ODE_FMX;
 {$IMPLICITBUILD ON}
 
 requires
+  fmx,
+  GLScene_RunTime_FMX,
   rtl;
 
 contains

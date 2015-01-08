@@ -131,7 +131,9 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="xmlrtl.dcp"/>
         <DCCReference Include="..\Source\Const3DS.pas"/>
         <DCCReference Include="..\Source\DDSImage.pas"/>
         <DCCReference Include="..\Source\DXTC.pas"/>

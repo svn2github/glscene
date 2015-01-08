@@ -20,11 +20,11 @@ interface
 uses
   System.Classes,
   DesignIntf, DesignEditors, VCLEditors,
-  GLSceneRegister,
+  GLS.SceneRegister,
   GLS.Material,
 
   // CG
-  Cg, CgGL, GLCgShader, GLCgBombShader;
+  Cg, CgGL, GLS.CgShader, GLS.CgBombShader;
 
 procedure Register;
 

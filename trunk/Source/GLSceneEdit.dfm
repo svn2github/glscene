@@ -174,7 +174,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object TBStayOnTop: TToolButton
       Left = 56
       Top = 0
-      Hint = 'Stay on top'
       Action = ACStayOnTop
       Style = tbsCheck
     end
@@ -451,7 +450,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object MIAddEffect: TMenuItem
       Action = ACAddEffect
       Caption = 'Add effect'
-      Hint = 'Add effect'
       ImageIndex = 11
     end
     object N1: TMenuItem
@@ -497,6 +495,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ACStayOnTop: TAction
       Caption = 'Stay on top'
+      Hint = 'Stay on top'
       ImageIndex = 12
       OnExecute = ACStayOnTopExecute
     end
@@ -514,6 +513,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ACAddEffect: TAction
       Caption = 'Effects'
+      Hint = 'Add effect'
       ImageIndex = 3
       OnExecute = ACAddEffectExecute
     end
@@ -581,10 +581,10 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Top = 40
   end
   object ImageList: TImageList
-    Left = 16
+    Left = 168
     Top = 96
     Bitmap = {
-      494C01010F001800380210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800400210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1124,25 +1124,25 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 16
-    Top = 160
+    Top = 96
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'gls'
     Filter = 'GLScene file (*.gls)|*.gls|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 88
-    Top = 88
+    Top = 96
   end
   object PMBehavioursToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMBehavioursToolbarPopup
-    Left = 96
+    Left = 48
     Top = 160
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    Left = 206
-    Top = 158
+    Left = 46
+    Top = 230
     object Delete1: TMenuItem
       Action = ACDeleteObject
     end
@@ -1161,7 +1161,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PMEffectsToolbar: TPopupMenu
     Images = ImageList
     OnPopup = PMEffectsToolbarPopup
-    Left = 168
-    Top = 96
+    Left = 160
+    Top = 160
   end
 end

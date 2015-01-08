@@ -134,6 +134,8 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="fmx.dcp"/>
+        <DCCReference Include="GLScene_RunTime_FMX.dcp"/>
         <DCCReference Include="..\Source\cgGL.pas"/>
         <DCCReference Include="..\Source\cg.pas"/>
         <DCCReference Include="..\Source\GLS.CgShader.pas"/>

@@ -131,6 +131,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="GLScene_RunTime_FMX.dcp"/>
         <DCCReference Include="..\Source\Bass.pas"/>
         <DCCReference Include="..\Source\GLS.SMBASS.pas"/>
         <BuildConfiguration Include="Release">

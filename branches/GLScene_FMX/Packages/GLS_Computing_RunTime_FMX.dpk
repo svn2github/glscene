@@ -30,7 +30,9 @@ package GLS_Computing_RunTime_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  fmx,
+  GLScene_RunTime_FMX;
 
 contains
   GLS.CLPlatform in '..\Source\GLS.CLPlatform.pas',

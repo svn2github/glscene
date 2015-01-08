@@ -132,6 +132,8 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="fmx.dcp"/>
+        <DCCReference Include="GLScene_RunTime_FMX.dcp"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="..\Source\openal.pas"/>
         <DCCReference Include="..\Source\GLS.SMOpenAL.pas"/>

@@ -29,7 +29,10 @@ package GLS_Computing_DesignTime_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  fmx,
+  GLS_Computing_RunTime_FMX,
+  GLScene_DesignTime_FMX;
 
 contains
   FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},

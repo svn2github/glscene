@@ -133,9 +133,11 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
+        <DCCReference Include="fmx.dcp"/>
+        <DCCReference Include="GLS_Computing_RunTime_FMX.dcp"/>
+        <DCCReference Include="GLScene_DesignTime_FMX.dcp"/>
         <DCCReference Include="..\Source\FCUDAEditor.pas">
             <Form>GLSCUDAEditorForm</Form>
-            <FormType>fmx</FormType>
         </DCCReference>
         <DCCReference Include="..\Source\GLS.ComputingRegister.pas"/>
         <BuildConfiguration Include="Release">

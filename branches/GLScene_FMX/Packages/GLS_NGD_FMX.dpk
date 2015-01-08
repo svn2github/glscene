@@ -29,7 +29,9 @@ package GLS_NGD_FMX;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  fmx,
+  GLScene_RunTime_FMX;
 
 contains
   GLS.NGDManager in '..\Source\GLS.NGDManager.pas',
