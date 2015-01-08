@@ -154,6 +154,7 @@ end;
 destructor TGLBumpmapHDS.Destroy;
 begin
   BumpmapLibrary := nil;
+  Uno.Free;
   inherited Destroy;
 end;
 
