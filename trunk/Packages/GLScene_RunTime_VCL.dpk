@@ -33,7 +33,8 @@ requires
   vcl,
   rtl,
   vclimg,
-  xmlrtl;
+  xmlrtl,
+  GR32_RSXE3;
 
 contains
   Const3DS in '..\Source\Const3DS.pas',

@@ -5,6 +5,7 @@
   A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.
 
   <b>History : </b><font size=-1><ul>
+  <li>08/01/15 - PW - Fixed a striping effect in PreparingData (thanks to Vu and lnebel)
   <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   <li>22/04/10 - Yar - Fixes after GLState revision
   <li>22/01/10 - Yar - Added GLTextureFormat to uses
@@ -39,11 +40,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  Classes, SysUtils, SyncObjs,
 
   GLHeightData, GLGraphics, GLVectorGeometry,
-  GLTexture, GLMaterial, SyncObjs, OpenGLTokens,
-  GLUtils, GLVectorTypes;
+  GLTexture, GLMaterial, OpenGLTokens, GLUtils, GLVectorTypes;
 
 type
   TGLBumpmapHDS = class;
@@ -121,7 +121,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -229,7 +228,7 @@ end;
 
 procedure TGLBumpmapHDS.PreparingData(heightData: THeightData);
 var
-  HD: THeightData;
+  TmpHD: THeightData;
   libMat: TGLLibMaterial;
   bmp32: TGLBitmap32;
   MatName: string;
@@ -237,8 +236,11 @@ begin
   if not assigned(FBumpmapLibrary) then
     exit;
   // --Generate Normal Map for tile--
-  HD := heightData;
-  MatName := 'BumpHDS_x' + IntToStr(HD.XLeft) + 'y' + IntToStr(HD.YTop) + '.';
+  heightData.TextureCoordinatesMode := tcmLocal;
+  heightData.TextureCoordinatesOffset := NullTexPoint;
+  heightData.TextureCoordinatesScale := XYTexPoint;
+  MatName := 'BumpHDS_x' + IntToStr(heightData.XLeft) + 'y' +
+    IntToStr(heightData.YTop) + '.';
   // name contains xy coordinates of the current tile
   Uno.Acquire;
   libMat := FBumpmapLibrary.Materials.GetLibMaterialByName(MatName);
@@ -247,7 +249,8 @@ begin
   begin
     if (FMaxTextures > 0) then
     begin
-      if HD.Thread = nil { //Dont trim the cache from a sub-thread; } then
+      if heightData.Thread = nil { //Dont trim the cache from a sub-thread; }
+      then
         TrimTextureCache(FMaxTextures)
         // Trim unused textures from the material library
     end;
@@ -255,10 +258,10 @@ begin
     libMat := FBumpmapLibrary.Materials.Add;
     libMat.Name := MatName;
     // Transfer tile texture coordinates to generated texture
-    libMat.TextureScale.X := HD.TextureCoordinatesScale.S;
-    libMat.TextureScale.Y := HD.TextureCoordinatesScale.T;
-    libMat.TextureOffset.X := HD.TextureCoordinatesOffset.S;
-    libMat.TextureOffset.Y := HD.TextureCoordinatesOffset.T;
+    libMat.TextureScale.X := heightData.TextureCoordinatesScale.S;
+    libMat.TextureScale.Y := heightData.TextureCoordinatesScale.T;
+    libMat.TextureOffset.X := heightData.TextureCoordinatesOffset.S;
+    libMat.TextureOffset.Y := heightData.TextureCoordinatesOffset.T;
     // ------------------------------------------------------
     // --Set up new Normalmap texture for the current tile--
     libMat.Material.MaterialOptions := [moNoLighting];
@@ -273,14 +276,17 @@ begin
       TextureFormat := tfRGB16;
       // TextureFormat:=tfRGBA16;
       bmp32 := (Image as TGLBlankImage).GetBitmap32;
-      GenerateNormalMap(HD, bmp32, FBumpScale);
+      TmpHD := HeightDataSource.GetData(heightData.XLeft - 1,
+        heightData.YTop - 1, heightData.Size + 1, heightData.DataType);
+      GenerateNormalMap(TmpHD, bmp32, FBumpScale);
+      TmpHD.Release;
     end;
     // ----------------------------------------------------
   end;
   // HD.MaterialName:=LibMat.Name;
-  HD.LibMaterial := libMat; // attach texture to current tile
+  heightData.LibMaterial := libMat; // attach texture to current tile
   if assigned(FOnNewTilePrepared) then
-    FOnNewTilePrepared(self, HD, libMat);
+    FOnNewTilePrepared(self, heightData, libMat);
   Uno.Release;
 end;
 

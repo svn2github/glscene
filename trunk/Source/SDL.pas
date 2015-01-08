@@ -14,7 +14,7 @@
                                                          (BugTracekrID=1681585)
 	</ul></font>
 }
-unit GLSDL;
+unit SDL;
 {******************************************************************************}
 {                                                                              }
 {       Borland Delphi SDL - Simple DirectMedia Layer                          }

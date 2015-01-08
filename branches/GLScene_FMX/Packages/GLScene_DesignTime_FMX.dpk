@@ -52,7 +52,7 @@ contains
   FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
   GLS.SceneFormDesign in '..\Source\GLS.SceneFormDesign.pas',
   GLS.RegisterXCollection in '..\Source\GLS.RegisterXCollection.pas',
-  GLS.SceneEdit in '..\Source\GLS.SceneEdit.pas' {Form1},
+  GLS.SceneEdit in '..\Source\GLS.SceneEdit.pas' {GLSceneEditorForm},
   GLS.SceneRegister in '..\Source\GLS.SceneRegister.pas';
 
 end.

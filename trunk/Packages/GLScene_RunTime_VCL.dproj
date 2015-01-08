@@ -96,14 +96,11 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_Description>GLScene VCL OpenGL 3D library</DCC_Description>
         <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
         <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
         <DCC_AdditionalSwitches>-LUDesignIDE </DCC_AdditionalSwitches>
         <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -113,6 +110,7 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
+        <DCCReference Include="GR32_RSXE3.dcp"/>
         <DCCReference Include="..\Source\Const3DS.pas"/>
         <DCCReference Include="..\Source\DDSImage.pas"/>
         <DCCReference Include="..\Source\DXTC.pas"/>
@@ -386,6 +384,13 @@
                     <Source Name="MainSource">GLScene_RunTime_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLSS_BASS_VCL.bpl">GLScene VCL BASS Manager</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLSS_FMOD_VCL.bpl">GLScene VCL FMOD Manager</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLSS_OpenAL_VCL.bpl">GLScene VCL OpenAL Manager</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_ODE_VCL.bpl">GLScene VCL ODE Manager</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLCg_DesignTime_VCL.bpl">GLScene VCL Cg Shaders</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_NGD_VCL.bpl">GLScene VCL NGD Manager</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_Computing_DesignTime_VCL.bpl">GLScene VCL GPU Computing</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
