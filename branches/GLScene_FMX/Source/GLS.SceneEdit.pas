@@ -54,8 +54,7 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes,
   System.Variants, System.Actions,
-  FMX.Types, FMX.Controls, FMX.ComCtrls,
-  FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Menus,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Menus,
   FMX.ActnList, FMX.StdCtrls, FMX.Layouts, FMX.TreeView,
   FMX.ListView.Types, FMX.ListView,
 
@@ -65,7 +64,7 @@ uses
   GLS.Strings,
   FInfo,
   GLS.XCollection,
-  GLS.CrossPlatform;
+  GLS.CrossPlatform, FMX.Objects;
 
 type
   TGLSceneEditorForm = class(TForm)
@@ -105,8 +104,43 @@ type
     ACCopy: TAction;
     ACPaste: TAction;
     ACInfo: TAction;
+    TBLoadScene: TSpeedButton;
+    ImLoadScene: TImage;
+    TBInfo: TSpeedButton;
+    ImInfo: TImage;
+    TBPaste: TSpeedButton;
+    ImPaste: TImage;
+    TBCopy: TSpeedButton;
+    ImCopy: TImage;
+    TBCut: TSpeedButton;
+    ImCut: TImage;
+    TBDeleteObject: TSpeedButton;
+    ImDeleteObject: TImage;
+    TBExpand: TSpeedButton;
+    ImExpand: TImage;
+    TBMoveDown: TSpeedButton;
+    ImMoveDown: TImage;
+    TBMoveUp: TSpeedButton;
+    ImMoveUp: TImage;
+    TBCharacterPanels: TSpeedButton;
+    ImCharacterPanels: TImage;
+    TBGalleryPanel: TSpeedButton;
+    ImGalleryPanel: TImage;
+    TBAddObjects: TSpeedButton;
+    ImAddObjects: TImage;
+    TBStayOnTop: TSpeedButton;
+    ImStayOnTop: TImage;
+    TBSaveScene: TSpeedButton;
+    ImSaveScene: TImage;
+    TBSeparator1: TSpeedButton;
+    TBSeparator2: TSpeedButton;
+    TBSeparator3: TSpeedButton;
+    TBSeparator4: TSpeedButton;
+    ACGallery: TAction;
+    ImArrowDown: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure ACInfoExecute(Sender: TObject);
   private
     { Private declarations }
   public
@@ -247,5 +281,24 @@ begin
     reg.Free;
   end;
 end;
+
+// ACInfoExecute
+//
+procedure TGLSceneEditorForm.ACInfoExecute(Sender: TObject);
+var
+  AScene: TGLSceneViewer;
+begin
+  AScene := TGLSceneViewer.Create(Self);
+  AScene.Name := 'GLSceneEditor';
+  AScene.Width := 0;
+  AScene.Height := 0;
+  AScene.parent := Self;
+  try
+    AScene.Buffer.ShowInfo;
+  finally
+    AScene.Free;
+  end;
+end;
+
 
 end.
