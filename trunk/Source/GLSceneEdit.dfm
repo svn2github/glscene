@@ -161,12 +161,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    object ToolButton8: TToolButton
+    object TBLoadScene: TToolButton
       Left = 0
       Top = 0
       Action = ACLoadScene
     end
-    object ToolButton9: TToolButton
+    object TBSaveScene: TToolButton
       Left = 28
       Top = 0
       Action = ACSaveScene
@@ -177,11 +177,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Action = ACStayOnTop
       Style = tbsCheck
     end
-    object ToolButton2: TToolButton
+    object TBSeparator1: TToolButton
       Left = 84
       Top = 0
       Width = 8
-      Caption = 'ToolButton2'
+      Caption = 'TBSeparator1'
       ImageIndex = 2
       Style = tbsSeparator
     end
@@ -211,11 +211,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsCheck
       OnClick = TBCharacterPanelsClick
     end
-    object ToolButton3: TToolButton
+    object TBSeparator2: TToolButton
       Left = 191
       Top = 0
       Width = 8
-      Caption = 'ToolButton3'
+      Caption = 'TBSeparator2'
       ImageIndex = 2
       Style = tbsSeparator
     end
@@ -235,11 +235,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Action = ACExpand
       Style = tbsCheck
     end
-    object ToolButton6: TToolButton
+    object TBSeparator3: TToolButton
       Left = 283
       Top = 0
       Width = 8
-      Caption = 'ToolButton6'
+      Caption = 'TBSeparator3'
       ImageIndex = 4
       Style = tbsSeparator
     end
@@ -263,11 +263,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Top = 0
       Action = ACPaste
     end
-    object ToolButton10: TToolButton
+    object TBSeparator4: TToolButton
       Left = 403
       Top = 0
       Width = 8
-      Caption = 'ToolButton10'
+      Caption = 'TBSeparator4'
       ImageIndex = 5
       Style = tbsSeparator
     end
@@ -455,13 +455,13 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object N1: TMenuItem
       Caption = '-'
     end
-    object Cut1: TMenuItem
+    object MICut: TMenuItem
       Action = ACCut
     end
-    object Copy1: TMenuItem
+    object MICopy: TMenuItem
       Action = ACCopy
     end
-    object Paste1: TMenuItem
+    object MIPaste: TMenuItem
       Action = ACPaste
     end
     object MIDelObject: TMenuItem
@@ -470,10 +470,10 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object N2: TMenuItem
       Caption = '-'
     end
-    object Moveobjectup1: TMenuItem
+    object MIMoveUp: TMenuItem
       Action = ACMoveUp
     end
-    object Moveobjectdown1: TMenuItem
+    object MIMoveDown: TMenuItem
       Action = ACMoveDown
     end
   end
@@ -584,7 +584,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 168
     Top = 96
     Bitmap = {
-      494C01010F001800400210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010F001800580210001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
