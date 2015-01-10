@@ -84,8 +84,6 @@ type
     BehavioursPopupMenu: TPopupMenu;
     ToolBarBehaviours: TToolBar;
     ToolBarEffects: TToolBar;
-    TBAddBehaviours: TButton;
-    TBAddEffects: TButton;
     GalleryListView: TListView;
     BehavioursListView: TListView;
     EffectsListView: TListView;
@@ -138,6 +136,19 @@ type
     TBSeparator4: TSpeedButton;
     ACGallery: TAction;
     ImArrowDown: TImage;
+    ImArrowDownBeh: TImage;
+    ImArrowDownEff: TImage;
+    TBAddBehaviours: TSpeedButton;
+    TBAddEffects: TSpeedButton;
+    MIAddObject: TMenuItem;
+    MIAddBehaviour: TMenuItem;
+    MIAddEffect: TMenuItem;
+    MICut: TMenuItem;
+    MICopy: TMenuItem;
+    MIPaste: TMenuItem;
+    MIDelObject: TMenuItem;
+    MIMoveUp: TMenuItem;
+    MIMoveDown: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACInfoExecute(Sender: TObject);

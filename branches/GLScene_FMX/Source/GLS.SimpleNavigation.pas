@@ -386,9 +386,6 @@ begin
   begin
     FForm.RemoveFreeNotification(Self);
     TForm(FForm).OnMouseWheel := nil;
-{$IFDEF FPC}
-    if FSceneForm then
-{$ENDIF}
       TForm(FForm).OnMouseMove := nil;
     FSceneForm := False;
   end;
@@ -418,18 +415,12 @@ begin
   begin
     FGLSceneViewer.RemoveFreeNotification(Self);
     FGLSceneViewer.OnMouseMove := nil;
-{$IFDEF FPC}
-    FGLSceneViewer.OnMouseWheel := nil;
-{$ENDIF}
   end;
 
   FGLSceneViewer := Value;
 
   if FGLSceneViewer <> nil then
   begin
-{$IFDEF FPC}
-    FGLSceneViewer.OnMouseWheel := ViewerMouseWheel;
-{$ENDIF}
     FGLSceneViewer.OnMouseMove := ViewerMouseMove;
     FGLSceneViewer.FreeNotification(Self);
   end;

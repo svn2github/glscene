@@ -2460,13 +2460,13 @@ var
         Exit;
 
       i := clickX;
-      while (i >= 0){$IFDEF GLS_DELPHI_XE2_UP} and not CharInSet(s[i + 1], stopChars){$ENDIF} do
+      while (i >= 0) and not CharInSet(s[i + 1], stopChars) do
         Dec(i);
       FSelStartY := clickY;
       FSelStartX := i + 1;
 
       i := clickX;
-      while (i < Length(s)){$IFDEF GLS_DELPHI_XE2_UP} and not CharInSet(s[i + 1], stopChars{$ENDIF}) do
+      while (i < Length(s)) and not CharInSet(s[i + 1], stopChars) do
         Inc(i);
       FSelEndY := clickY;
       FSelEndX := i;
@@ -5220,7 +5220,7 @@ begin
     end;
   end;
   // Delimeters
-  if not Done{$IFDEF GLS_DELPHI_XE2_UP} and CharInSet(S[toStart], Delimiters){$ENDIF} then
+  if not Done and CharInSet(S[toStart], Delimiters) then
   begin
     toEnd := toStart;
     StyleNo := FDelimiterStyleNo;
@@ -5228,7 +5228,7 @@ begin
     Done := True;
   end;
   // --- Integer or float type
-  if not Done{$IFDEF GLS_DELPHI_XE2_UP} and CharInSet(S[toStart], ['0'..'9', '.']){$ENDIF} then
+  if not Done and CharInSet(S[toStart], ['0'..'9', '.']) then
   begin
     IntPart := 0;
     WasPoint := False;
@@ -5236,7 +5236,7 @@ begin
     Done := True;
     TokenType := ttInteger;
     StyleNo := FNumberStyleNo;
-    while (toEnd <= Len){$IFDEF GLS_DELPHI_XE2_UP} and CharInSet(S[toEnd], ['0'..'9', '.']){$ENDIF} do
+    while (toEnd <= Len) and CharInSet(S[toEnd], ['0'..'9', '.']) do
     begin
       if S[toEnd] = '.' then
       begin
@@ -5265,7 +5265,7 @@ begin
   if not Done then
   begin
     toEnd := toStart;
-    while (toEnd <= Len){$IFDEF GLS_DELPHI_XE2_UP}and not CharInSet(S[toEnd], Delimiters){$ENDIF} do
+    while (toEnd <= Len)and not CharInSet(S[toEnd], Delimiters) do
       Inc(toEnd);
     Dec(toEnd);
   end;

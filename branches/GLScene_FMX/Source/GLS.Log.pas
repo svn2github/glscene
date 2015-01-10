@@ -457,17 +457,6 @@ begin
   Result := Copy(Result, 1, lExtIndex - 1);
 end;
 
-{$IFDEF FPC}
-
-procedure LogedAssert(const Message, FileName: ShortString; LineNumber: Integer;
-  ErrorAddr: Pointer);
-begin
-  UserLog.Log(Message + ': in ' + FileName + ' at line ' +
-    IntToStr(LineNumber), lkError);
-  Abort;
-end;
-{$ELSE}
-
 procedure LogedAssert(const Message, FileName: string; LineNumber: Integer;
   ErrorAddr: Pointer);
 begin
@@ -475,7 +464,6 @@ begin
     IntToStr(LineNumber), lkError);
   Abort;
 end;
-{$ENDIF}
 
 function FileSize(const aFilename: String): Integer;
 var
@@ -601,15 +589,9 @@ var
       lErrorMessage := 'Renaming of "%s" failed with error : %d. Try again?';
       while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
       begin
-        {$IFDEF FPC}
-        if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-           GetLastOSError]), mtWarning, mbYesNo, -1) = mrNo
-           then Break;
-        {$ELSE}
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
           GetLastError]), mtWarning, [mbNo], 0) = mrNo
           then Break;
-        {$ENDIF}
         AssignFile(lFile, lLogOriginalDir + sRec.Name);
         CloseFile(lFile);
       end;
@@ -666,11 +648,7 @@ begin
   if FLogFileMaxSize > 0 then
   begin
     FCheckLogSizeThread := TLogCheckSizeThread.Create(Self);
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FCheckLogSizeThread.Resume();
-{$ELSE}
     FCheckLogSizeThread.Start();
-{$ENDIF}
   end
   else
   begin
@@ -921,11 +899,7 @@ begin
   if (FBuffered) then
   begin
     FBufferProcessingThread := TLogBufferFlushThread.Create(Self);
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FBufferProcessingThread.Resume();
-{$ELSE}
     FBufferProcessingThread.Start();
-{$ENDIF}
   end
   else
   begin

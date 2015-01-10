@@ -128,7 +128,6 @@ type
 
   // GStack
   //
-{$IFNDEF FPC}
 {$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
@@ -146,7 +145,6 @@ type
   protected
     procedure PushItem(AItem: T); override;
   end;
-{$ENDIF}
 
 implementation
 
@@ -437,7 +435,6 @@ end;
 
 {$ENDREGION}
 
-{$IFNDEF FPC}
 {$REGION 'GStack'}
 procedure GStack{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
 begin
@@ -451,6 +448,5 @@ begin
   List.Insert(0, AItem);
 end;
 {$ENDREGION 'GQueue'}
-{$ENDIF}
 
 end.

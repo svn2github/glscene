@@ -7,6 +7,7 @@
   IDE experts.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>10/01/15 - PW - Converted to FMX platform
   <li>10/03/13 - PW - Added TGLOctahedron and TGLTetrahedron registration
   <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
   <li>04/06/10 - Yar - Added GLSArchiveManager
@@ -110,7 +111,6 @@ uses
   FMX.Controls,
   FMX.StdCtrls,
   FMX.Graphics,
-
 
   ToolsAPI,
   DesignIntf,
@@ -341,8 +341,7 @@ type
   // TGLSArchiveManagerEditor
   //
   { : Editor for GLScene Archive Manager.<p> }
-  TGLSArchiveManagerEditor = class
-    (TReuseableDefaultEditor, IDefaultEditor)
+  TGLSArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
       var Continue: Boolean); override;
@@ -572,10 +571,8 @@ uses
   GLS.TimeEventsMgr,
   GLS.Trail,
   GLS.Tree,
-{$IFDEF GLS_DELPHI_XE2_UP}
   GLS.Types,
   GLS.FileTIN,
-{$ENDIF}
   GLS.UserShader,
   GLS.Utils,
   GLS.VectorFileObjects,
@@ -1666,7 +1663,7 @@ end;
 procedure GLRegisterPropertiesInCategories;
 begin
 
-  { GLViewer }
+  { GL.SceneViewer }
   // property types
 {$IFDEF WIN32}
   RegisterPropertiesInCategory(sOpenGLCategoryName,
@@ -1677,7 +1674,7 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSceneViewer,
     ['*Render']);
 
-  { GLScene }
+  { GLS.Scene }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TGLx.ObjectsSorting), TypeInfo(TGLProgressEvent),
     TypeInfo(TGLBehaviours), TypeInfo(TGLObjectEffects),
@@ -1779,13 +1776,13 @@ begin
   // TGLPolygon
   RegisterPropertiesInCategory(sVisualCategoryName, TGLPolygon, ['Division']);
 
-  { GLMultiPolygon }
+  { GLS.MultiPolygon }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TGLContourNodes),
     TypeInfo(TGLContours)]);
   // TGLMultiPolygon
   RegisterPropertiesInCategory(sVisualCategoryName, TGLContour, ['Division']);
 
-  { GLExtrusion }
+  { GLS.Extrusion }
   RegisterPropertiesInCategory(sVisualCategoryName,
     [TypeInfo(TGLNodes), TypeInfo(TPipeNodesColorMode)]);
   // TGLRevolutionSolid
@@ -1826,7 +1823,7 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLActor,
     ['OverlaySkeleton']);
 
-  { GLMesh }
+  { GLS.Mesh }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
 
@@ -1842,14 +1839,14 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLXYZGrid,
     ['Antialiased', 'Line*']);
 
-  { GLParticles }
+  { GLS.Particles }
   // TGLParticles
   RegisterPropertiesInCategory(sLayoutCategoryName, TGLParticles,
     ['VisibleAtRunTime']);
   RegisterPropertiesInCategory(sVisualCategoryName, TGLParticles,
     ['*Size', 'VisibleAtRunTime']);
 
-  { GLSkydome }
+  { GLS.Skydome }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TSkyDomeBands), TypeInfo(TSkyDomeOptions),
     TypeInfo(TSkyDomeStars)]);
@@ -1863,7 +1860,7 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLEarthSkyDome,
     ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
 
-  { GLMirror }
+  { GLS.Mirror }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TMirrorOptions),
     TypeInfo(TGLBaseSceneObject)]);
 
@@ -1892,14 +1889,14 @@ begin
   RegisterPropertiesInCategory(sVisualCategoryName, TGLPointLightPFXManager,
     ['TexMapSize']);
 
-  { GLTerrainRenderer }
+  { GLS.TerrainRenderer }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(THeightDataSource)]);
   // TGLTerrainRenderer
   RegisterPropertiesInCategory(sVisualCategoryName, TGLTerrainRenderer,
     ['*CLOD*', 'QualityDistance', 'Tile*']);
 
-  { GLzBuffer }
+  { GLS.zBuffer }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TGLMemoryViewer),
     TypeInfo(TGLSceneViewer), TypeInfo(TOptimise)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TOptimise)]);
@@ -1932,18 +1929,18 @@ begin
   { GLS.Cadencer }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TGLCadencer)]);
 
-  { GLCollision }
+  { GLS.Collision }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TObjectCollisionEvent)]);
 
-  { GLFireFX }
+  { GLS.FireFX }
   // TGLFireFXManager
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFireFXManager,
     ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
   RegisterPropertiesInCategory(sVisualCategoryName, TGLFireFXManager,
     ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
 
-  { GLThorFX }
+  { GLS.ThorFX }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TCalcPointEvent)]);
   // GLThorFXManager
@@ -2168,25 +2165,7 @@ begin
   Project := GetActiveProject;
   if Assigned(Project) then
   begin
-{$IFDEF GLS_DELPHI_2005_UP}
     Result := Project.ProjectOptions.TargetName;
-{$ELSE}
-    if Project.ProjectOptions.Values['GenPackage'] then // package project
-    begin
-      // use project options if specified
-      Result := Project.ProjectOptions.Values['PkgDllDir'];
-      // otherwise use environment options
-      if Result = '' then
-        Result := (BorlandIDEServices as IOTAServices)
-          .GetEnvironmentOptions.Values['PackageDPLOutput'];
-    end
-    else // non-package project, use project options
-      Result := Project.ProjectOptions.Values['OutputDir'];
-
-    // default is the project's path
-    if Result = '' then
-      Result := ExtractFilePath(Project.FileName);
-{$ENDIF}
     if Length(Result) > 0 then
       ForceDirectories(ExtractFilePath(Result));
   end;
@@ -2198,10 +2177,9 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFDEF GLS_DELPHI_2005_UP}
-  SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
+SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
   LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'SVN version');
-{$ENDIF}
+
 GLS.CrossPlatform.IsDesignTime := True;
 GLS.CrossPlatform.vProjectTargetName := GetProjectTargetName;
 GLS.Color.vUseDefaultColorSets := True;
@@ -2338,9 +2316,7 @@ begin
   RegisterSceneObject(TGLBlur, 'Blur', glsOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLMotionBlur, 'MotionBlur', glsOCSpecialObjects,
     HInstance);
-{$IFDEF WIN32}
   RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad, HInstance);
-{$ENDIF}
   RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLPostEffect, 'PostEffect', glsOCSpecialObjects,
     HInstance);

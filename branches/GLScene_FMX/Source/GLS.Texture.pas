@@ -930,21 +930,9 @@ type
     FApplied: Boolean;
 
     //implementing IInterface
-    {$IfDef FPC}
-      {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
       function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
       function _AddRef: Integer; stdcall;
       function _Release: Integer; stdcall;
-      {$ELSE}
-      function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-      function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-      function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-      {$IFEND}
-    {$Else}
-      function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-      function _AddRef: Integer; stdcall;
-      function _Release: Integer; stdcall;
-    {$EndIf}
   protected
     { Protected Decalarations }
     function GetDisplayName: string; override;
@@ -1568,7 +1556,7 @@ begin
   begin
     sl := TStringList.Create;
     try
-      sl.LoadFromFile(buf{$IFDEF GLS_DELPHI_2009_UP}, TEncoding.ASCII{$ENDIF});
+      sl.LoadFromFile(buf, TEncoding.ASCII);
       FWidth := StrToInt(sl.Values['Width']);
       FHeight := StrToInt(sl.Values['Height']);
       temp := sl.Values['Depth'];
@@ -3845,15 +3833,7 @@ end;
 // QueryInterface
 //
 
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-{$ELSE}
-  function TGLTextureExItem.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult;
-{$EndIf}
+function TGLTextureExItem.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
     Result := S_OK
@@ -3863,30 +3843,14 @@ end;
 
 // _AddRef
 //
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem._AddRef: Integer; stdcall;
-{$ELSE}
-  function TGLTextureExItem._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLTextureExItem._AddRef: Integer;
-{$EndIf}
+function TGLTextureExItem._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
 
 // _Release
 //
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLTextureExItem._Release: Integer; stdcall;
-{$ELSE}
-  function TGLTextureExItem._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLTextureExItem._Release: Integer;
-{$EndIf}
+function TGLTextureExItem._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;

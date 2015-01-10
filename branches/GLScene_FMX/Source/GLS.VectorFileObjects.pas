@@ -3978,11 +3978,7 @@ begin
       size := ReadInteger;
       ro := 0;
       Read(ro, size);
-{$IFNDEF FPC}
       FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
-{$ELSE}
-      FRenderingOptions := TMeshObjectRenderingOptions(ro);
-{$ENDIF}
       if archiveVersion >= 2 then
       begin
         Count := ReadInteger;

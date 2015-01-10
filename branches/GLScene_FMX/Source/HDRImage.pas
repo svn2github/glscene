@@ -54,12 +54,8 @@ uses
 procedure THDRImage.LoadFromStream(stream: TStream);
 var
   FullHDR: TGLHDRImage;
-{$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
-{$ELSE}
-  RIMG: TRawImage;
-{$ENDIF}
 begin
   FullHDR := TGLHDRImage.Create;
   try

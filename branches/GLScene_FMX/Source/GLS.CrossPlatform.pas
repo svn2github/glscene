@@ -9,7 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>22/04/14 - PW -  Ceased support of GLS_DELPHI_5 and GLS_COMPILER_5 or DOWN
+      <li>22/04/14 - PW -  Droped support of GLS_DELPHI_5 and GLS_COMPILER_5
       <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
       <li>30/06/11 - DaStr - Added CharToWideChar()

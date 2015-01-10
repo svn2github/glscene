@@ -52,21 +52,13 @@
 unit GLS.BitmapFont;
 
 {$I GLScene.inc}
-{$IFDEF GLS_DELPHI_2009_UP}
+
 {$DEFINE GLS_UNICODE_SUPPORT}
-{$ENDIF}
-{$IFDEF FPC}
-{$DEFINE GLS_UNICODE_SUPPORT}
-{$ENDIF}
 
 interface
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, FMX.Graphics, System.Types,
-{$ELSE}
-  System.Classes, Graphics, System.SysUtils, Types,
-{$ENDIF}
   GLS.Scene, GLS.VectorGeometry, GLS.Context, GLS.CrossPlatform,
   GLS.Texture, GLS.State, GLS.Utils, GLS.Graphics, GLS.Color, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.TextureFormat,
@@ -920,13 +912,8 @@ begin
     // due to lazarus doesn't properly support pixel formats
     PixelFormat := glpf32bit;
 {$ENDIF}
-{$IFDEF GLS_DELPHI_XE2_UP}
     Width  := RoundUpToPowerOf2(FTextureWidth);
     Height := RoundUpToPowerOf2(FTextureHeight);
-{$ELSE}
-    SetSize(RoundUpToPowerOf2(FTextureWidth),
-      RoundUpToPowerOf2(FTextureHeight));
-{$ENDIF}
   end;
 
   bitmap32 := TGLBitmap32.Create;

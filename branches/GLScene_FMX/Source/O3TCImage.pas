@@ -43,8 +43,6 @@ type
 implementation
 
 uses
-{$IFDEF FPC}graphtype,
-{$ENDIF}
   GLFileO3TC,
   GLS.TextureFormat;
 
@@ -58,12 +56,8 @@ uses
 procedure TO3TCImage.LoadFromStream(stream: TStream);
 var
   FullO3TC: TGLO3TCImage;
-{$IFNDEF FPC}
   src, dst: PGLubyte;
   y: Integer;
-{$ELSE}
-  RIMG: TRawImage;
-{$ENDIF}
 begin
   FullO3TC := TGLO3TCImage.Create;
   try
@@ -80,7 +74,6 @@ begin
   Transparent := true;
   PixelFormat := glpf32bit;
 
-{$IFNDEF FPC}
   src := PGLubyte(FullO3TC.Data);
   for y := 0 to Height - 1 do
   begin
@@ -88,16 +81,6 @@ begin
     BGRA32ToRGBA32(src, dst, Width);
     Inc(src, Width * 4);
   end;
-{$ELSE}
-  RIMG.Init;
-  rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
-  rimg.Description.RedShift := 16;
-  rimg.Description.BlueShift := 0;
-  rimg.Description.LineOrder := riloBottomToTop;
-  RIMG.DataSize := Width * Height * 4;
-  rimg.Data := PByte(FullO3TC.Data);
-  LoadFromRawImage(rimg, false);
-{$ENDIF}
   FullO3TC.Free;
 end;
 

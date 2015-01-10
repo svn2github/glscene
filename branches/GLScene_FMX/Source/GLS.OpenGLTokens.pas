@@ -142,30 +142,12 @@ type
   p_cl_event = ^_cl_event;
 
   // the size of these depend on platform (32bit or 64bit)
-{$IFDEF FPC}
-  GLintptr = PtrInt;
-  TGLintptr = PtrInt;
-  GLsizeiptr = SizeInt;
-  TGLsizeiptr = SizeInt;
-  GLsync = PtrInt;
-  TGLsync = PtrInt;
-{$ELSE}
-{$IFDEF GLS_DELPHI_2009_UP}
   GLintptr = NativeInt;
   TGLintptr = NativeInt;
   GLsizeiptr = NativeInt;
   TGLsizeiptr = NativeInt;
   GLsync = NativeInt;
   TGLsync = NativeInt;
-{$ELSE}
-  GLintptr = Integer;
-  TGLintptr = Integer;
-  GLsizeiptr = Integer;
-  TGLsizeiptr = Integer;
-  GLsync = Integer;
-  TGLsync = Integer;
-{$ENDIF}
-{$ENDIF}
 
   // Windows types
 {$IFDEF MSWINDOWS}

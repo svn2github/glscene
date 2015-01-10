@@ -159,8 +159,7 @@ function inflateInit(var strm: TZStreamRec): Integer;
 function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
   {$ifdef Version2005Plus} inline; {$endif}
 
-{$IFDEF FPC}
-  const
+const
     {$IFDEF LINUX}
      libz = 'libz.so.1';
     {$ENDIF}
@@ -174,7 +173,6 @@ function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
      //Note that this is the official ZLIB1 .DLL from the http://www.zlib.net/
      libz='zlib1';
      {$ENDIF}
-{$ENDIF}
 
 {** external routines *******************************************************}
 function deflateInit_(var strm: TZStreamRec; level: Integer;
@@ -222,7 +220,6 @@ Uses
 *  note: do not reorder the following -- doing so will result in external    *
 *  functions being undefined                                                 *
 *****************************************************************************}
-{$IFNDEF FPC}
   {$L .\LinkedObjects\deflate.obj}
   {$L .\LinkedObjects\inflate.obj}
   {$L .\LinkedObjects\inftrees.obj}
@@ -232,7 +229,6 @@ Uses
   {$L .\LinkedObjects\compress.obj}
   {$L .\LinkedObjects\adler32.obj}
   {$L .\LinkedObjects\crc32.obj}
-{$ENDIF}
 
 {** macros ******************************************************************}
 

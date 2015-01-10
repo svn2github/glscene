@@ -170,12 +170,9 @@ implementation
 // ---------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  FMX.Dialogs,
-{$ELSE}
-  Dialogs,
-{$ENDIF}
-  System.SysUtils, Registry, Messages;
+  Winapi.Messages,
+  System.SysUtils, System.Win.Registry,
+  FMX.Dialogs;
 
 // GetSystemDirectory
 //
@@ -185,7 +182,7 @@ var
 	newLength : Integer;
 begin
 	SetLength(Result, MAX_PATH);
-	newLength:=Windows.GetSystemDirectory(PChar(Result), MAX_PATH);
+	newLength:=GetSystemDirectory(PChar(Result), MAX_PATH);
 	SetLength(Result, newLength);
 	if Copy(Result, newLength, 1)<>'\' then
 		Result:=Result+'\';
@@ -296,9 +293,7 @@ begin
 			with previewRect do
 				frm.SetBounds(0, 0, Right-Left, Bottom-Top);
 			frm.BorderStyle:=bsNone;
-      {$IFNDEF FPC}
 			frm.ParentWindow:=previewHwnd;
-      {$ENDIF}
 			frm.Cursor:=crNone;
          frm.Visible:=False;
 		end;

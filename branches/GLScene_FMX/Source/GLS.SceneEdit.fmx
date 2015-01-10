@@ -22,6 +22,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImLoadScene: TImage
@@ -71,6 +72,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImInfo: TImage
@@ -108,6 +110,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImPaste: TImage
@@ -158,6 +161,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImCopy: TImage
@@ -203,6 +207,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImCut: TImage
@@ -247,6 +252,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImDeleteObject: TImage
@@ -286,6 +292,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImExpand: TImage
@@ -322,6 +329,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImMoveDown: TImage
@@ -372,6 +380,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImMoveUp: TImage
@@ -420,6 +429,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       object ImCharacterPanels: TImage
         MultiResBitmap.Height = 16
@@ -461,6 +471,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImGalleryPanel: TImage
@@ -498,6 +509,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 61.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImAddObjects: TImage
@@ -562,6 +574,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImStayOnTop: TImage
@@ -602,6 +615,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.Width = 40.000000000000000000
       Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
+      ShowHint = True
       StyleLookup = 'cornerbuttonstyle'
       Visible = True
       object ImSaveScene: TImage
@@ -676,19 +690,50 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.PlatformDefault = False
       TabOrder = 2
       object ToolBarEffects: TToolBar
-        Size.Width = 305.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Position.X = 2.000000000000000000
+        Position.Y = 2.000000000000000000
+        Size.Width = 301.000000000000000000
         Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        object TBAddEffects: TButton
-          Align = FitLeft
-          Size.Width = 145.454559326171900000
+        object TBAddEffects: TSpeedButton
+          Action = ACAddEffect
+          Align = Left
+          Enabled = True
+          PopupMenu = PMEffectsToolBar
+          Size.Width = 110.000000000000000000
           Size.Height = 40.000000000000000000
           Size.PlatformDefault = False
+          ShowHint = True
           StyleLookup = 'cornerbuttonstyle'
-          TabOrder = 0
-          Text = 'Effects'
           TextSettings.HorzAlign = Leading
+          Visible = True
+          object ImArrowDownEff: TImage
+            MultiResBitmap.Height = 21
+            MultiResBitmap.TransparentColor = 12632256
+            MultiResBitmap = <
+              item
+                Width = 21
+                Height = 21
+                PNG = {
+                  89504E470D0A1A0A0000000D4948445200000015000000150806000000A917A5
+                  96000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+                  004649444154384FEDD1310A00200C43D17AFF432B810EA26D8DE022E42D9DF2
+                  979AC8079ADF55F7CBD81A59149870B8AFA25085D3ED290A51B8DC315198C3EC
+                  8672F33C9177CC0636600605DA3E83780000000049454E44AE426082}
+                FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ArrowDown.bmp'
+              end>
+            Align = Right
+            HitTest = False
+            Position.X = 89.000000000000000000
+            Size.Width = 21.000000000000000000
+            Size.Height = 40.000000000000000000
+            Size.PlatformDefault = False
+          end
         end
       end
       object EffectsListView: TListView
@@ -697,16 +742,24 @@ object GLSceneEditorForm: TGLSceneEditorForm
         HeaderAppearanceClassName = 'TListHeaderObjects'
         FooterAppearanceClassName = 'TListHeaderObjects'
         Align = Client
-        Size.Width = 305.000000000000000000
-        Size.Height = 85.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Size.Width = 301.000000000000000000
+        Size.Height = 77.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
       end
     end
     object Tree: TTreeView
       Align = Client
-      Size.Width = 305.000000000000000000
-      Size.Height = 340.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 301.000000000000000000
+      Size.Height = 336.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 3
     end
@@ -718,20 +771,50 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Size.PlatformDefault = False
       TabOrder = 4
       object ToolBarBehaviours: TToolBar
-        Size.Width = 305.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Position.X = 2.000000000000000000
+        Position.Y = 2.000000000000000000
+        Size.Width = 301.000000000000000000
         Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        object TBAddBehaviours: TButton
-          Align = FitLeft
+        object TBAddBehaviours: TSpeedButton
+          Action = ACAddBehaviour
+          Align = Left
+          Enabled = True
           PopupMenu = PMBehavioursToolBar
-          Size.Width = 145.454559326171900000
+          Size.Width = 110.000000000000000000
           Size.Height = 40.000000000000000000
           Size.PlatformDefault = False
+          ShowHint = True
           StyleLookup = 'cornerbuttonstyle'
-          TabOrder = 0
-          Text = 'Behaviours'
           TextSettings.HorzAlign = Leading
+          Visible = True
+          object ImArrowDownBeh: TImage
+            MultiResBitmap.Height = 21
+            MultiResBitmap.TransparentColor = 12632256
+            MultiResBitmap = <
+              item
+                Width = 21
+                Height = 21
+                PNG = {
+                  89504E470D0A1A0A0000000D4948445200000015000000150806000000A917A5
+                  96000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+                  004649444154384FEDD1310A00200C43D17AFF432B810EA26D8DE022E42D9DF2
+                  979AC8079ADF55F7CBD81A59149870B8AFA25085D3ED290A51B8DC315198C3EC
+                  8672F33C9177CC0636600605DA3E83780000000049454E44AE426082}
+                FileName = 'D:\Library\GLScene_FMX\Source\Resources\bitmaps\ArrowDown.bmp'
+              end>
+            Align = Right
+            HitTest = False
+            Position.X = 89.000000000000000000
+            Size.Width = 21.000000000000000000
+            Size.Height = 40.000000000000000000
+            Size.PlatformDefault = False
+          end
         end
       end
       object BehavioursListView: TListView
@@ -740,8 +823,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
         HeaderAppearanceClassName = 'TListHeaderObjects'
         FooterAppearanceClassName = 'TListHeaderObjects'
         Align = Client
-        Size.Width = 305.000000000000000000
-        Size.Height = 88.000000000000000000
+        Margins.Left = 2.000000000000000000
+        Margins.Top = 2.000000000000000000
+        Margins.Right = 2.000000000000000000
+        Margins.Bottom = 2.000000000000000000
+        Size.Width = 301.000000000000000000
+        Size.Height = 80.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
       end
@@ -759,8 +846,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
       HeaderAppearanceClassName = 'TListHeaderObjects'
       FooterAppearanceClassName = 'TListHeaderObjects'
       Align = Client
-      Size.Width = 295.000000000000000000
-      Size.Height = 593.000000000000000000
+      Margins.Left = 2.000000000000000000
+      Margins.Top = 2.000000000000000000
+      Margins.Right = 2.000000000000000000
+      Margins.Bottom = 2.000000000000000000
+      Size.Width = 291.000000000000000000
+      Size.Height = 589.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
     end
@@ -772,6 +863,42 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object PopupMenu: TPopupMenu
     Left = 176
     Top = 72
+    object MIAddObject: TMenuItem
+      Action = ACAddObject
+      Text = 'Add object'
+    end
+    object MIAddBehaviour: TMenuItem
+      Action = ACAddBehaviour
+      Text = 'Add behaviour'
+    end
+    object MIAddEffect: TMenuItem
+      Action = ACAddEffect
+      Text = 'Add effect'
+    end
+    object MICut: TMenuItem
+      Action = ACCut
+      Text = 'Cut'
+    end
+    object MICopy: TMenuItem
+      Action = ACCopy
+      Text = 'Copy'
+    end
+    object MIPaste: TMenuItem
+      Action = ACPaste
+      Text = 'Paste'
+    end
+    object MIDelObject: TMenuItem
+      Action = ACDeleteObject
+      Text = 'Delete object'
+    end
+    object MIMoveUp: TMenuItem
+      Action = ACMoveUp
+      Text = 'Move object up'
+    end
+    object MIMoveDown: TMenuItem
+      Action = ACMoveDown
+      Text = 'Move object down'
+    end
   end
   object SaveDialog: TSaveDialog
     Left = 104
@@ -807,16 +934,20 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Hint = 'Add object'
     end
     object ACAddBehaviour: TAction
+      Text = 'Behaviours'
       Hint = 'Add behaviour'
     end
     object ACAddEffect: TAction
+      Text = 'Effects'
       Hint = 'Add effect'
     end
     object ACMoveUp: TAction
       Hint = 'Move object up'
+      ShortCut = 16469
     end
     object ACMoveDown: TAction
       Hint = 'Move object down'
+      ShortCut = 16452
     end
     object ACExpand: TAction
       Hint = 'Expand tree'
@@ -829,12 +960,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object ACCopy: TAction
       Hint = 'Copy'
+      ShortCut = 16451
     end
     object ACCut: TAction
       Hint = 'Cut'
+      ShortCut = 16472
     end
     object ACPaste: TAction
       Hint = 'Paste'
+      ShortCut = 16470
     end
     object ACInfo: TAction
       Hint = 'Info'

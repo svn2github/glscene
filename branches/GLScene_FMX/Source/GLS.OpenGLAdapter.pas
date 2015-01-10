@@ -7172,17 +7172,7 @@ end;
 
 initialization
 
-{$IFDEF FPC}
-  { according to bug 7570, this is necessary on all x86 platforms,
-    maybe we've to fix the sse control word as well }
-  { Yes, at least for darwin/x86_64 (JM) }
-  {$IF DEFINED(cpui386) or DEFINED(cpux86_64)}
-  SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide,
-    exOverflow, exUnderflow, exPrecision]);
-  {$IFEND}
-{$ELSE}
   Set8087CW($133F);
-{$ENDIF}
 
 finalization
 

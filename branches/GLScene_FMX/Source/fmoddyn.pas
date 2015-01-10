@@ -1528,27 +1528,20 @@ begin
   FMODHandle := INVALID_MODULEHANDLE_VALUE;
 end;
 
-{$IFNDEF FPC}
-
 var
   Saved8087CW: word;
-{$ENDIF}
 
 initialization
 
-{$IFNDEF FPC}
 { Save the current FPU state and then disable FPU exceptions }
 Saved8087CW := Default8087CW;
 Set8087CW($133F); { Disable all fpu exceptions }
-{$ENDIF}
 
 finalization
 
 { Make sure the library is unloaded }
 FMOD_Unload;
-{$IFNDEF FPC}
 { Reset the FPU to the previous state }
 Set8087CW(Saved8087CW);
-{$ENDIF}
 
 end.

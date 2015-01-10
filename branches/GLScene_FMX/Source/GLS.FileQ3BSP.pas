@@ -130,7 +130,6 @@ var
   facePtr: PBSPFace;
   lightmapLib: TGLMaterialLibrary;
   lightmapBmp: TGLBitmap;
-  {$IFDEF FPC}lightbitInfo : TLazIntfImage; {$ENDIF}
   libMat: TGLLibMaterial;
   bspLightMap: PBSPLightmap;
   plane: THmgPlane;
@@ -171,19 +170,9 @@ begin
             GammaCorrectRGBArray(@bspLightMap.imageBits[0], 128 * 128,
               vQ3BSPLightmapGammaCorrection);
           // convert RAW RGB to BMP
-{$IFDEF FPC}
-            lightbitInfo :=  TLazIntfImage.Create(lightmapBmp.RawImage,true);
-{$ENDIF}
           for y := 0 to 127 do
-{$IFDEF FPC}
-            BGR24ToRGB24(@bspLightMap.imageBits[y * 128 * 3],
-            lightbitInfo.GetDataLineStart(127 - y), 128);
-
-{$ELSE}
             BGR24ToRGB24(@bspLightMap.imageBits[y * 128 * 3],
             lightmapBmp.ScanLine[127 - y], 128);
-
-{$ENDIF}
           // spawn lightmap
           libMat := lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
           with libMat.Material.Texture do

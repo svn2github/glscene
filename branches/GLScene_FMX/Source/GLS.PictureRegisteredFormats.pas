@@ -3,7 +3,7 @@
 //-------------------------------------------------------------
 {: GLS.PictureRegisteredFormats<p>
 
-   Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
+   Hacks into the FMX to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
       <li>19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
@@ -36,12 +36,7 @@ uses
   System.Classes, FMX.Graphics,
   GLS.CrossPlatform;
 
-{$ifdef GLS_DELPHI_7} {$define PRF_HACK_PASSES}  {$endif}// Delphi 7
-{$ifdef GLS_DELPHI_2005_UP} {$define PRF_HACK_PASSES} {$endif}// Delphi 2005+
-
-{$ifndef PRF_HACK_PASSES}
-  {$Message Warn 'PRF hack not tested for this Delphi version!'}
-{$endif}
+{$DEFINE PRF_HACK_PASSES}
 
 {: Returns the TGraphicClass associated to the extension, if any.<p>
    Accepts anExtension with or without the '.' }

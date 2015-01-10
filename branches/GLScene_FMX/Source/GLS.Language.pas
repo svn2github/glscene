@@ -24,26 +24,14 @@ interface
 
 {$I GLScene.inc}
 {$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
-{$IFDEF GLS_DELPHI_XE2_UP}
-  {$WARN IMPLICIT_STRING_CAST OFF}
-  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
-{$ENDIF}
+{$WARN IMPLICIT_STRING_CAST OFF}
+{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 
 uses
   System.Classes, System.IniFiles, System.SysUtils;
 
 type
-{$IFNDEF FPC}
   UTF8String = AnsiString;
-{$ENDIF}
-{$IFDEF FPC}
-  TConvertEncodingList = (celAutomatic, celISO_8859_1ToUTF8,
-    celISO_8859_2ToUTF8, celCP1250ToUTF8, celCP1251ToUTF8, celCP1252ToUTF8,
-    celCP1253ToUTF8, celCP1254ToUTF8, celCP1255ToUTF8, celCP1256ToUTF8,
-    celCP1257ToUTF8, celCP1258ToUTF8, celCP437ToUTF8, celCP850ToUTF8,
-    celCP866ToUTF8, celCP874ToUTF8, celKOI8ToUTF8, celUCS2LEToUTF8,
-    celUCS2BEToUTF8);
-{$ENDIF}
 
   TLanguageEntry = record
     ID: AnsiString; // **< identifier (ASCII)
@@ -64,19 +52,12 @@ type
   private
     FCurrentLanguageFile: UTF8String;
     Entry: TLanguageEntryArray; // **< Entrys of Chosen Language
-{$IFDEF FPC}
-    FConvertEncodingList: TConvertEncodingList;
-{$ENDIF}
     function EncodeToUTF8(aValue: AnsiString): UTF8String;
   public
     function FindID(const ID: AnsiString): integer;
     function Translate(const ID: AnsiString): UTF8String;
     procedure LoadLanguageFromFile(const Language: UTF8String);
     property CurrentLanguageFile: UTF8String read FCurrentLanguageFile;
-{$IFDEF FPC}
-    property ConvertEncodingList: TConvertEncodingList read FConvertEncodingList
-      write FConvertEncodingList default celAutomatic;
-{$ENDIF}
   end;
 
   { **
@@ -108,10 +89,6 @@ type
   private
     FLanguage: TLanguageExt;
     FLanguageList: TStrings;
-{$IFDEF FPC}
-    function GetEncodingList: TConvertEncodingList;
-    procedure SetEncodingList(aList: TConvertEncodingList);
-{$ENDIF}
     procedure SetLanguage(aValue: TLanguageExt);
   public
     constructor Create(AOwner: TComponent); override;
@@ -121,19 +98,11 @@ type
     procedure SaveLanguageFromFile; overload;
     function Translate(const ID: AnsiString): UTF8String;
     property Language: TLanguageExt read FLanguage write SetLanguage;
-{$IFDEF FPC}
-  Published
-    property ConvertEncodingList: TConvertEncodingList read GetEncodingList
-      write SetEncodingList;
-{$ENDIF}
   end;
 
 implementation
 
 uses
-{$IFDEF FPC}
-  FileUtil, LConvEncoding,
-{$ENDIF}
   GLS.CrossPlatform, GLS.Log;
 
 { TLanguage }
@@ -232,50 +201,7 @@ end;
 
 function TLanguage.EncodeToUTF8(aValue: AnsiString): UTF8String;
 begin
-{$IFDEF FPC}
-  case ConvertEncodingList of
-    celAutomatic:
-      Result := ConvertEncoding(aValue, GuessEncoding(aValue), EncodingUTF8);
-    celISO_8859_1ToUTF8:
-      Result := ISO_8859_1ToUTF8(aValue);
-    celISO_8859_2ToUTF8:
-      Result := ISO_8859_2ToUTF8(aValue);
-    celCP1250ToUTF8:
-      Result := CP1250ToUTF8(aValue);
-    celCP1251ToUTF8:
-      Result := CP1251ToUTF8(aValue);
-    celCP1252ToUTF8:
-      Result := CP1252ToUTF8(aValue);
-    celCP1253ToUTF8:
-      Result := CP1253ToUTF8(aValue);
-    celCP1254ToUTF8:
-      Result := CP1254ToUTF8(aValue);
-    celCP1255ToUTF8:
-      Result := CP1255ToUTF8(aValue);
-    celCP1256ToUTF8:
-      Result := CP1256ToUTF8(aValue);
-    celCP1257ToUTF8:
-      Result := CP1257ToUTF8(aValue);
-    celCP1258ToUTF8:
-      Result := CP1258ToUTF8(aValue);
-    celCP437ToUTF8:
-      Result := CP437ToUTF8(aValue);
-    celCP850ToUTF8:
-      Result := CP850ToUTF8(aValue);
-    celCP866ToUTF8:
-      Result := CP866ToUTF8(aValue);
-    celCP874ToUTF8:
-      Result := CP874ToUTF8(aValue);
-    celKOI8ToUTF8:
-      Result := KOI8ToUTF8(aValue);
-    celUCS2LEToUTF8:
-      Result := UCS2LEToUTF8(aValue);
-    celUCS2BEToUTF8:
-      Result := UCS2BEToUTF8(aValue);
-  end;
-{$ELSE}
   Result := aValue;
-{$ENDIF}
 end;
 
 { TLanguageExt }
@@ -380,19 +306,6 @@ procedure TGLSLanguage.LoadLanguageFromFile(const Language: UTF8String);
 begin
   FLanguage.LoadLanguageFromFile(Language);
 end;
-
-{$IFDEF FPC}
-
-function TGLSLanguage.GetEncodingList: TConvertEncodingList;
-begin
-  Result := FLanguage.ConvertEncodingList;
-end;
-
-procedure TGLSLanguage.SetEncodingList(aList: TConvertEncodingList);
-begin
-  FLanguage.ConvertEncodingList := aList;
-end;
-{$ENDIF}
 
 procedure TGLSLanguage.SetLanguage(aValue: TLanguageExt);
 begin

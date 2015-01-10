@@ -63,22 +63,12 @@ type
       TValueCompareFunc = function(const Item1, Item2: TValue): Boolean;
       TForEachProc = procedure (AKey: TKey; AValue: TValue; out AContinue: Boolean);
     { Private Declarations }
-    {$IFDEF GLS_DELPHI_OR_CPPB}
        TRBNode = class
          Key: TKey;
          Left, Right, Parent, Twin: TRBNode;
          Color: TRBColor;
          Value: TValue;
        end;
-    {$ELSE}
-       TRBNode = ^TRBNodeRec;
-       TRBNodeRec = record
-         Key: TKey;
-         Left, Right, Parent, Twin: TRBNode;
-         Color: TRBColor;
-         Value: TValue;
-       end;
-    {$ENDIF}
     var
       FRoot: TRBNode;
       FLeftmost: TRBNode;
@@ -226,8 +216,7 @@ begin
   end;
 end;
 
-function GRedBlackTree
-{$IFNDEF FPC} < TKey, TValue > {$ENDIF}.NextDublicate(out Value: TValue): Boolean;
+function GRedBlackTree < TKey, TValue >.NextDublicate(out Value: TValue): Boolean;
 begin
   if Assigned(FLastFound) then
   begin
@@ -241,8 +230,7 @@ begin
   Result := False;
 end;
 
-procedure GRedBlackTree
-< TKey, TValue >.RotateLeft(var x: TRBNode);
+procedure GRedBlackTree < TKey, TValue >.RotateLeft(var x: TRBNode);
 var
   y: TRBNode;
 begin
@@ -269,8 +257,7 @@ begin
   x.parent := y;
 end;
 
-procedure GRedBlackTree
-< TKey, TValue >.RotateRight(var x: TRBNode);
+procedure GRedBlackTree < TKey, TValue >.RotateRight(var x: TRBNode);
 var
   y: TRBNode;
 begin

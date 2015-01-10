@@ -318,51 +318,6 @@ begin
     Application.OnIdle := nil;
 end;
 
-{$IFDEF FPC}
-// Create
-//
-
-constructor TTimerThread.Create(CreateSuspended: Boolean);
-begin
-  inherited Create(CreateSuspended);
-end;
-
-// Execute
-//
-
-procedure TTimerThread.Execute;
-var
-  lastTick, nextTick, curTick, perfFreq: Int64;
-begin
-  QueryPerformanceFrequency(perfFreq);
-  QueryPerformanceCounter(lastTick);
-  nextTick := lastTick + (FInterval * perfFreq) div 1000;
-  while not Terminated do
-  begin
-    FOwner.FMutex.Acquire;
-    FOwner.FMutex.Release;
-    while not Terminated do
-    begin
-      QueryPerformanceCounter(lastTick);
-      if lastTick >= nextTick then
-        break;
-      Sleep(1);
-    end;
-    if not Terminated then
-    begin
-      // if time elapsed run user-event
-      Synchronize(FOwner.TimerProc);
-      QueryPerformanceCounter(curTick);
-      nextTick := lastTick + (FInterval * perfFreq) div 1000;
-      if nextTick <= curTick then
-      begin
-        // CPU too slow... delay to avoid monopolizing what's left
-        nextTick := curTick + (FInterval * perfFreq) div 1000;
-      end;
-    end;
-  end;
-end;
-{$ENDIF}
 // ------------------
 // ------------------ TASAPHandler ------------------
 // ------------------
@@ -373,24 +328,8 @@ end;
 constructor TASAPHandler.Create;
 begin
   inherited Create;
-{$IFDEF FPC}
-  // create timer thread
-  FMutex := TCriticalSection.Create;
-  FMutex.Acquire;
-  FTimerThread := TTimerThread.Create(False);
-
-  with TTimerThread(FTimerThread) do
-  begin
-    FOwner := Self;
-    FreeOnTerminate := False;
-    Priority := tpTimeCritical;
-    FInterval := 1;
-    FMutex.Release;
-  end;
-{$ELSE}
   FWindowHandle := AllocateHWnd(WndProc);
   PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
-{$ENDIF} // FPC
 end;
 
 // Destroy
@@ -408,7 +347,6 @@ end;
 var
   vWndProcInLoop: Boolean;
 
-{$IFDEF MSWINDOWS}
   // WndProc
   //
 
@@ -496,50 +434,6 @@ begin
     Result := 0;
   end;
 end;
-{$ENDIF}
-{$ELSE}
-
-procedure TASAPHandler.TimerProc;
-var
-  NewMsg: TLMessage;
-begin
-  NewMsg.Msg := LM_GLTIMER;
-  Cadence(NewMsg);
-end;
-
-procedure TASAPHandler.Cadence(var Msg: TLMessage);
-var
-  i: Integer;
-  cad: TGLCadencer;
-begin
-  if Assigned(vHandler) and Assigned(vASAPCadencerList)
-    and (vASAPCadencerList.Count <> 0) then
-    for i := vASAPCadencerList.Count - 1 downto 0 do
-    begin
-      cad := TGLCadencer(vASAPCadencerList[i]);
-      if Assigned(cad) and (cad.Mode = cmASAP)
-        and cad.Enabled and (cad.FProgressing = 0) then
-      begin
-        if Application.Terminated then
-        begin
-          // force stop
-          cad.Enabled := False;
-        end
-        else
-        begin
-          try
-            // do stuff
-            cad.Progress;
-          except
-            Application.HandleException(Self);
-            // it faulted, stop it
-            cad.Enabled := False;
-          end
-        end;
-      end;
-    end;
-end;
-{$ENDIF}
 
 // ------------------
 // ------------------ TGLCadencer ------------------

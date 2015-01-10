@@ -1251,11 +1251,7 @@ begin
   begin
     FThread.Terminate;
     if FThread.Suspended then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-      FThread.Resume;
-{$ELSE}
       FThread.Start;
-{$ENDIF}
     FThread.WaitFor;
   end;
 

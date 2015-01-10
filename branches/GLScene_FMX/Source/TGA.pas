@@ -27,8 +27,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Graphics,
-  GLS.CrossPlatform;
+  GLS.Graphics, GLS.CrossPlatform;
 
 type
 
@@ -180,18 +179,10 @@ var
    y, rowSize, bufSize : Integer;
    verticalFlip : Boolean;
    unpackBuf : PAnsiChar;
-   {$IFDEF FPC}
-   rimg: TRawImage;
-   {$ENDIF}
 
    function GetLineAddress(ALine: Integer): PByte;
    begin
-     {$IFDEF GLS_DELPHI_OR_CPPB}
      Result := PByte(ScanLine[ALine]);
-     {$ENDIF}
-     {$IFDEF FPC}
-     Result := PByte(@PGLPixel32Array(rimg.Data)[ALine*Width]);
-     {$ENDIF}
    end;
 
 begin
@@ -213,19 +204,6 @@ begin
    verticalFlip:=((header.ImageDescriptor and $20)=0);
    if header.IDLength>0 then
       stream.Seek(header.IDLength, soFromCurrent);
-
-   {$IFDEF FPC}
-     rimg.Init;
-     rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
-     rimg.Description.RedShift := 16;
-     rimg.Description.BlueShift := 0;
-     if verticalFlip then
-       rimg.Description.LineOrder := riloTopToBottom
-     else
-       rimg.Description.LineOrder := riloBottomToTop;
-     RIMG.DataSize := Width * Height * 4;
-     GetMem(rimg.Data, RIMG.DataSize);
-   {$ENDIF}
 
    try
      case header.ImageType of
@@ -268,13 +246,8 @@ begin
         raise ETGAException.Create('Unsupported TGA ImageType '+IntToStr(header.ImageType));
      end;
 
-     {$IFDEF FPC}
-     LoadFromRawImage(rimg, false);
-     {$ENDIF}
    finally
-     {$IFDEF FPC}
-     FreeMem(rimg.Data);
-     {$ENDIF}
+     //
    end;
 end;
 
@@ -282,9 +255,7 @@ end;
 //
 procedure TTGAImage.SaveToStream(stream : TStream);
 var
-{$IFDEF GLS_DELPHI_OR_CPPB}
    y, rowSize : Integer;
-{$ENDIF}
    header : TTGAHeader;
 begin
    // prepare the header, essentially made up from zeroes
@@ -292,28 +263,18 @@ begin
    header.ImageType:=2;
    header.Width:=Width;
    header.Height:=Height;
-{$IFDEF GLS_DELPHI_OR_CPPB}
    case PixelFormat of
       glpf24bit : header.PixelSize:=24;
       glpf32bit : header.PixelSize:=32;
    else
       raise ETGAException.Create('Unsupported Bitmap format');
    end;
-{$ENDIF}
 
-{$IFDEF FPC}
-   header.PixelSize:=32;
-{$ENDIF}
    stream.Write(header, SizeOf(TTGAHeader));
 
-{$IFDEF GLS_DELPHI_OR_CPPB}
    rowSize:=(Width*header.PixelSize) div 8;
    for y:=0 to Height-1 do
       stream.Write(ScanLine[Height-y-1]^, rowSize);
-{$ENDIF}
-{$IFDEF FPC}
-   stream.Write(RawImage.Data^, Width*Height*4);
-{$ENDIF}
 end;
 
 // ------------------------------------------------------------------

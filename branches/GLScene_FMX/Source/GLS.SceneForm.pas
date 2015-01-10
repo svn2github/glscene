@@ -101,13 +101,13 @@ type
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-{$IFDEF GLS_DELPHI_OR_CPPB}
+
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
     procedure LastFocus(var Mess: TMessage); message WM_ACTIVATE;
-{$ENDIF}
+
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
     procedure ShutdownFS;
@@ -248,7 +248,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_DELPHI_OR_CPPB}
 // WMEraseBkgnd
 //
 
@@ -324,8 +323,6 @@ begin
     end;
   inherited;
 end;
-
-{$ENDIF GLS_DELPHI_OR_CPPB}
 
 procedure TGLFullScreenVideoMode.SetEnabled(aValue: Boolean);
 begin

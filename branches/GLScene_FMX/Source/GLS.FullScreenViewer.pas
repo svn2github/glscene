@@ -533,9 +533,6 @@ end;
 procedure TGLFullScreenViewer.DoActivate(Sender: TObject);
 begin
   (* If not Active and (Form <> nil) then begin
-    {$IFDEF FPC}
-    Application.Restore;
-    {$ENDIF}
     Startup;
     end; *)
 end;
@@ -544,12 +541,8 @@ procedure TGLFullScreenViewer.DoDeactivate(Sender: TObject);
 begin
   (* If Active and (Form <> nil) then begin
     Shutdown;
-    {$IFDEF FPC}
-    Application.Minimize;
-    {$ELSE}
     Form.Height:=0;
     Form.Width:=0;
-    {$ENDIF}
     end; *)
 end;
 
