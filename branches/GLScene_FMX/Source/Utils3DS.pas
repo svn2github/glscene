@@ -35,7 +35,8 @@ interface
 {$I GLScene.inc}
 {$R-}
 
-uses System.Classes,
+uses
+  System.Classes,
   File3DS,
   Types3DS;
 

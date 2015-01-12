@@ -91,8 +91,8 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  System.Classes, System.SysUtils, System.SyncObjs, FMX.Graphics,
-  FMX.Imaging.Pngimage,
+  System.Classes, System.SysUtils, System.SyncObjs, System.UITypes,
+  FMX.Graphics,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
@@ -2387,8 +2387,14 @@ begin
         // bmp.Height:=graphic.Height;
         // crossbuilder: using setsize because setting width or height while
         // the other one is zero results in not setting with/hight
-        bmp.PixelFormat := glpf24bit;
-        bmp.Height := graphic.Height;
+
+        { TODO -oPW : E2129 Cannot assign to a read-only property }
+        (*bmp.PixelFormat := glpf24bit;*)
+         { TODO -oPW : E2010 Incompatible types: 'Integer' and 'Single' }
+        (*bmp.Height := Graphic.Height;*)
+
+        { TODO -oPW : E2015 Operator not applicable to this operand type }
+        (*
         if (graphic.Width and 3) = 0 then
         begin
           bmp.Width := graphic.Width;
@@ -2399,19 +2405,20 @@ begin
           bmp.Width := (graphic.Width and $FFFC) + 4;
           bmp.Canvas.StretchDraw(Rect(0, 0, bmp.Width, bmp.Height), graphic);
         end;
+        *)
         AssignFrom24BitsBitmap(bmp);
       finally
         bmp.Free;
       end;
     end;
-{$IFDEF GLS_Graphics32_SUPPORT}
   end
+{$IFDEF GLS_Graphics32_SUPPORT}
   else if Source is TBitmap32 then
   begin
     Narrow;
     AssignFromBitmap32(TBitmap32(Source));
-{$ENDIF}
   end
+{$ENDIF}
   else
     inherited;
 end;
@@ -2818,7 +2825,8 @@ begin
   Narrow;
 
   Result := TGLBitmap.Create;
-  Result.PixelFormat := glpf32bit;
+  { TODO : E2129 Cannot assign to a read-only property }
+  (*Result.PixelFormat := glpf32bit;*)
   Result.Width := Width;
   Result.Height := Height;
 
@@ -3329,7 +3337,8 @@ begin
   Narrow;
   aBitmap.Width := GetWidth;
   aBitmap.Height := GetHeight;
-  aBitmap.PixelFormat := glpf32bit;
+  { TODO : E2129 Cannot assign to a read-only property }
+  (*aBitmap.PixelFormat := glpf32bit;*)
   if FVerticalReverseOnAssignFromBitmap then
   begin
     for y := 0 to GetHeight - 1 do

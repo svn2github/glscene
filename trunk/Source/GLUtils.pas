@@ -124,9 +124,6 @@ implementation
 //------------------------------------------------------
 
 uses
-{$IFDEF FPC}
-  FileUtil,
-{$ENDIF}
   GLApplicationFileIO,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Dialogs,

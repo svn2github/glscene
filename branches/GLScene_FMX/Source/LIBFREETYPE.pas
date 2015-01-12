@@ -15,10 +15,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLSLog, 
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF Unix} x, dynlibs, {$ENDIF}
-  GLS.CrossPlatform;
+  GLS.Log, GLS.CrossPlatform;
 
 type
   FT_Encoding = array[0..3] of char;

@@ -108,8 +108,8 @@ var
   fileFormat: PFileFormat;
 begin
   {$MESSAGE WARN 'HackTPictureRegisteredFormats will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option'}
-
-  pRegisterFileFormat := PAnsiChar(@TPicture.RegisterFileFormat);
+ { TODO -oPW : FMX.Graphics.TImage has no RegisterFileFormat as VCL.Graphics.TPicture }
+  (*pRegisterFileFormat := PAnsiChar(@TPicture.RegisterFileFormat);*)
   if pRegisterFileFormat[0] = #$FF then // in case of BPL redirector
     pRegisterFileFormat := PAnsiChar(PCardinal(PCardinal(@pRegisterFileFormat[2])^)^);
   pCallGetFileFormat := @pRegisterFileFormat[16];

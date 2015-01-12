@@ -843,7 +843,7 @@ uses
 {$ENDIF}
   dynlibs,
 {$ENDIF}
-  GLSLog;
+  GLS.Log;
 
 const
 {$IFDEF LINUX}

@@ -258,7 +258,6 @@ contains
   GLS.XOpenGL in '..\Source\GLS.XOpenGL.pas',
   GLS.zBuffer in '..\Source\GLS.zBuffer.pas',
   GLS.zLibEx in '..\Source\GLS.zLibEx.pas',
-  GLS.zLibExApi in '..\Source\GLS.zLibExApi.pas',
   GLSL.BumpShader in '..\Source\GLSL.BumpShader.pas',
   GLSL.DiffuseSpecularShader in '..\Source\GLSL.DiffuseSpecularShader.pas',
   GLSL.Parameter in '..\Source\GLSL.Parameter.pas',
@@ -278,6 +277,11 @@ contains
   TypesMDC in '..\Source\TypesMDC.pas',
   TypesMS3D in '..\Source\TypesMS3D.pas',
   TypesSTL in '..\Source\TypesSTL.pas',
-  VRMLParser in '..\Source\VRMLParser.pas';
+  VRMLParser in '..\Source\VRMLParser.pas',
+  GLS.OpenGLAdapter in '..\Source\GLS.OpenGLAdapter.pas',
+  GLS.Utils in '..\Source\GLS.Utils.pas',
+  GLS.zLibExApi in '..\Source\GLS.zLibExApi.pas',
+  Utils3DS in '..\Source\Utils3DS.pas',
+  GLS.PictureRegisteredFormats in '..\Source\GLS.PictureRegisteredFormats.pas';
 
 end.

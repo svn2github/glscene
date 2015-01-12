@@ -6,6 +6,7 @@
    Miscellaneous support utilities & classes.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>12/01/15 - PW - Converted to use under FMX platform
       <li>02/01/13 - Yar - Added SetGLSceneMediaDir
       <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
       <li>04/03/10 - DanB - Now uses CharInSet
@@ -34,8 +35,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.UITypes,
-  FMX.Graphics, FMX.Controls, 
+  System.Classes, System.SysUtils, System.UITypes, System.UIConsts,
+  FMX.Graphics, FMX.Controls,
    
   GLS.VectorGeometry, GLS.CrossPlatform;
 
@@ -105,9 +106,9 @@ function QuestionDlg(const msg: string): Boolean;
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 
 {: Pops up a simple save picture dialog. }
-function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
+function SavePictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 {: Pops up a simple open picture dialog. }
-function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
+function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 
 procedure SetGLSceneMediaDir();
 
@@ -121,7 +122,6 @@ implementation
 
 uses
   FMX.Dialogs,
-  FMX.ExtDlgs,
   GLS.ApplicationFileIO;
 
 var
@@ -639,7 +639,8 @@ end;
 
 function QuestionDlg(const msg: string): Boolean;
 begin
-  Result := (MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0) = mrYes);
+  Result := (MessageDlg(msg, TMsgDlgType.mtConfirmation,
+              [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes);
 end;
 
 // InputDlg
@@ -653,48 +654,42 @@ end;
 // SavePictureDialog
 //
 
-function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
+function SavePictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 var
-  saveDialog: TSavePictureDialog;
+  SaveDialog: TSaveDialog; // in VCL -> TSavePictureDialog;
 begin
-  saveDialog := TSavePictureDialog.Create(nil);
+  SaveDialog := TSaveDialog.Create(nil);
   try
-    with saveDialog do
-    begin
-      Options := [ofHideReadOnly, ofNoReadOnlyReturn];
-      if aTitle <> '' then
-        Title := aTitle;
-      FileName := aFileName;
-      Result := Execute;
-      if Result then
-        aFileName := FileName;
-    end;
+    SaveDialog.Options := [TOpenOption.ofHideReadOnly, TOpenOption.ofNoReadOnlyReturn];
+    if ATitle <> '' then
+      SaveDialog.Title := ATitle;
+    SaveDialog.FileName := AFileName;
+    Result := SaveDialog.Execute;
+    if Result then
+      AFileName := SaveDialog.FileName;
   finally
-    saveDialog.Free;
+    SaveDialog.Free;
   end;
 end;
 
 // OpenPictureDialog
 //
 
-function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
+function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 var
-  openDialog: TOpenPictureDialog;
+  OpenDialog: TOpenDialog;  // in VCL -> TOpenPictureDialog;
 begin
-  openDialog := TOpenPictureDialog.Create(nil);
+  OpenDialog := TOpenDialog.Create(nil);
   try
-    with openDialog do
-    begin
-      Options := [ofHideReadOnly, ofNoReadOnlyReturn];
-      if aTitle <> '' then
-        Title := aTitle;
-      FileName := aFileName;
-      Result := Execute;
-      if Result then
-        aFileName := FileName;
-    end;
+    OpenDialog.Options := [TOpenOption.ofHideReadOnly, TOpenOption.ofNoReadOnlyReturn];
+    if ATitle <> '' then
+      OpenDialog.Title := ATitle;
+    OpenDialog.FileName := AFileName;
+    Result := OpenDialog.Execute;
+    if Result then
+      AFileName := OpenDialog.FileName;
   finally
-    openDialog.Free;
+    OpenDialog.Free;
   end;
 end;
 

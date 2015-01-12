@@ -263,7 +263,6 @@
         <DCCReference Include="..\Source\GLSpatialPartitioning.pas"/>
         <DCCReference Include="..\Source\GLFileVRML.pas"/>
         <DCCReference Include="..\Source\GLFileLWO.pas"/>
-        <DCCReference Include="..\Source\PictureRegisteredFormats.pas"/>
         <DCCReference Include="..\Source\GLLinePFX.pas"/>
         <DCCReference Include="..\Source\GLGameMenu.pas"/>
         <DCCReference Include="..\Source\GLTexturedHDS.pas"/>
@@ -313,8 +312,6 @@
         <DCCReference Include="..\Source\GLSJPG.pas"/>
         <DCCReference Include="..\Source\GLSLanguage.pas"/>
         <DCCReference Include="..\Source\GLMultisampleImage.pas"/>
-        <DCCReference Include="..\Source\GLSZLibEx.pas"/>
-        <DCCReference Include="..\Source\GLSZLibExApi.pas"/>
         <DCCReference Include="..\Source\GLSArchiveManager.pas"/>
         <DCCReference Include="..\Source\GLSCrossXML.pas"/>
         <DCCReference Include="..\Source\GLPipelineTransformation.pas"/>
@@ -363,6 +360,9 @@
         <DCCReference Include="..\Source\XOpenGL.pas"/>
         <DCCReference Include="..\Source\VRMLParser.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
+        <DCCReference Include="..\Source\GLSZLibEx.pas"/>
+        <DCCReference Include="..\Source\GLSZLibExApi.pas"/>
+        <DCCReference Include="..\Source\PictureRegisteredFormats.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

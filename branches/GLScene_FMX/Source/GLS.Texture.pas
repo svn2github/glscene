@@ -222,7 +222,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.Types,
+  FMX.Graphics, FMX.Objects,
 
    
   GLS.Strings, GLS.CrossPlatform, GLS.BaseClasses, GLS.OpenGLTokens,
@@ -1113,18 +1114,19 @@ end;
 // CreateGraphicFromFile
 //
 
-function CreateGraphicFromFile(const fileName: string): TGLGraphic;
+function CreateGraphicFromFile(const FileName: string): TGLGraphic;
 var
   i: Integer;
   ext: string;
   fs: TStream;
-  graphicClass: TGraphicClass;
+  GraphicClass: TGraphicClass;
+  img: TImage;
 begin
   Result := nil;
   if FileStreamExists(fileName) then
   begin
-    graphicClass := nil;
-    ext := LowerCase(ExtractFileExt(fileName));
+    GraphicClass := nil;
+    ext := LowerCase(ExtractFileExt(FileName));
     for i := 0 to High(vTGraphicFileExtension) do
     begin
       if vTGraphicFileExtension[i] = ext then
@@ -1137,9 +1139,10 @@ begin
       graphicClass := GraphicClassForExtension(ext);
     if graphicClass <> nil then
     begin
-      Result := graphicClass.Create;
+      { TODO -oPW : not enouch parameters in GraphicClass.Create(); }
+      (*Result := GraphicClass.Create(img);*)
       try
-        fs := CreateFileStream(fileName, fmOpenRead);
+        fs := CreateFileStream(FileName, fmOpenRead);
         try
           Result.LoadFromStream(fs);
         finally
@@ -1674,7 +1677,7 @@ begin
     else if (Source is TGLImage) then
     begin
       bmp := TGLImage(Source).Create32BitsBitmap;
-      Picture.Graphic := bmp;
+      Picture.Bitmap := bmp;
       bmp.Free;
       FResourceFile := TGLImage(Source).ResourceName;
     end
@@ -1691,7 +1694,7 @@ end;
 procedure TGLPictureImage.BeginUpdate;
 begin
   Inc(FUpdateCounter);
-  Picture.OnChange := nil;
+  Picture.Bitmap.OnChange := nil;
 end;
 
 // EndUpdate
@@ -1701,7 +1704,7 @@ procedure TGLPictureImage.EndUpdate;
 begin
   Assert(FUpdateCounter > 0, ClassName + ': Unbalanced Begin/EndUpdate');
   Dec(FUpdateCounter);
-  Picture.OnChange := PictureChanged;
+  Picture.Bitmap.OnChange := PictureChanged;
   if FUpdateCounter = 0 then
     PictureChanged(Picture);
 end;
@@ -1711,7 +1714,7 @@ end;
 
 function TGLPictureImage.GetHeight: Integer;
 begin
-  Result := Picture.Height;
+  Result := Round(Picture.Height);
 end;
 
 // GetWidth
@@ -1719,7 +1722,7 @@ end;
 
 function TGLPictureImage.GetWidth: Integer;
 begin
-  Result := Picture.Width;
+  Result := Round(Picture.Width);
 end;
 
 // GetDepth
@@ -1740,19 +1743,19 @@ begin
     FBitmap := TGLImage.Create;
     // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
     // for instance, TJPegImage triggers an OnChange when it is drawn...
-    if Assigned(Picture.Graphic) then
+    if Assigned(Picture.Bitmap) then
     begin
-      if Assigned(Picture.OnChange) then
+      if Assigned(Picture.Bitmap.OnChange) then
       begin
-        Picture.OnChange := nil;
+        Picture.Bitmap.OnChange := nil;
         try
-          FBitmap.Assign(Picture.Graphic);
+          FBitmap.Assign(Picture.Bitmap);
         finally
-          Picture.OnChange := PictureChanged;
+          Picture.Bitmap.OnChange := PictureChanged;
         end;
       end
       else
-        FBitmap.Assign(Picture.Graphic);
+        FBitmap.Assign(Picture.Bitmap);
     end
     else
       FBitmap.SetErrorImage;
@@ -1787,8 +1790,9 @@ function TGLPictureImage.GetPicture: TGLPicture;
 begin
   if not Assigned(FGLPicture) then
   begin
-    FGLPicture := TGLPicture.Create;
-    FGLPicture.OnChange := PictureChanged;
+   { TODO -oPW : E2035 Not enough actual parameters }
+    (*FGLPicture := TGLPicture.Create;*)
+    FGLPicture.Bitmap.OnChange := PictureChanged;
   end;
   Result := FGLPicture;
 end;
@@ -1836,10 +1840,10 @@ end;
 // SaveToFile
 //
 
-procedure TGLPersistentImage.SaveToFile(const fileName: string);
+procedure TGLPersistentImage.SaveToFile(const FileName: string);
 begin
-  Picture.SaveToFile(fileName);
-  FResourceFile := fileName;
+  Picture.Bitmap.SaveToFile(fileName);
+  FResourceFile := FileName;
 end;
 
 // LoadFromFile
@@ -1859,17 +1863,17 @@ begin
     gr := CreateGraphicFromFile(buf);
     if Assigned(gr) then
     begin
-      Picture.Graphic := gr;
+      Picture.Bitmap := gr;
       gr.Free;
       Exit;
     end;
   end
   else if FileExists(buf) then
   begin
-    Picture.LoadFromFile(buf);
+    Picture.Bitmap.LoadFromFile(buf);
     Exit;
   end;
-  Picture.Graphic := nil;
+  Picture.Bitmap := nil;
   raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
 end;
 
@@ -1947,12 +1951,12 @@ end;
 
 procedure TGLPicFileImage.Invalidate;
 begin
-  Picture.OnChange := nil;
+  Picture.OnClick := nil;
   try
     Picture.Assign(nil);
     FBitmap := nil;
   finally
-    Picture.OnChange := PictureChanged;
+    Picture.Bitmap.OnChange := PictureChanged;
   end;
   inherited;
 end;
@@ -1991,7 +1995,7 @@ var
 begin
   if (GetWidth <= 0) and (PictureFileName <> '') then
   begin
-    Picture.OnChange := nil;
+    Picture.Bitmap.OnChange := nil;
     try
       buf := PictureFileName;
       SetExeDirectory;
@@ -2000,12 +2004,12 @@ begin
       if FileStreamExists(buf) then
       begin
         gr := CreateGraphicFromFile(buf);
-        Picture.Graphic := gr;
+        Picture.Bitmap := gr;
         gr.Free;
       end
       else
       begin
-        Picture.Graphic := nil;
+        Picture.Bitmap := nil;
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
@@ -2015,9 +2019,9 @@ begin
       Result := inherited GetBitmap32;
       FWidth := Result.Width;
       FHeight := Result.Height;
-      Picture.Graphic := nil;
+      Picture.Bitmap := nil;
     finally
-      Picture.OnChange := PictureChanged;
+      Picture.Bitmap.OnChange := PictureChanged;
     end;
   end
   else
@@ -2090,8 +2094,9 @@ begin
   inherited;
   for i := Low(FPicture) to High(FPicture) do
   begin
-    FPicture[i] := TGLPicture.Create;
-    FPicture[i].OnChange := PictureChanged;
+    { TODO -oPW : E2035 Not enough actual parameters }
+    (*FPicture[i] := TGLPicture.Create();*)
+    FPicture[i].Bitmap.OnChange := PictureChanged;
   end;
 end;
 
@@ -2135,7 +2140,7 @@ end;
 
 function TGLCubeMapImage.GetWidth: Integer;
 begin
-  Result := FPicture[cmtPX].Width;
+  Result := Round(FPicture[cmtPX].Width);
 end;
 
 // GetHeight
@@ -2143,7 +2148,7 @@ end;
 
 function TGLCubeMapImage.GetHeight: Integer;
 begin
-  Result := FPicture[cmtPX].Height;
+  Result := Round(FPicture[cmtPX].Height);
 end;
 
 // GetDepth
@@ -2170,9 +2175,9 @@ begin
   try
     for I := 0 to 5 do
     begin
-      FPicture[TGLCubeMapTarget(I)].OnChange := nil;
+      FPicture[TGLCubeMapTarget(I)].Bitmap.OnChange := nil;
       try
-        LImage.Assign(FPicture[TGLCubeMapTarget(I)].Graphic);
+        LImage.Assign(FPicture[TGLCubeMapTarget(I)].Bitmap);
         if not Assigned(FImage) then
         begin
           FImage := TGLImage.Create;
@@ -2185,7 +2190,7 @@ begin
         end;
         Move(LImage.Data^, TFriendlyImage(FImage).GetLevelAddress(0, I)^, LImage.LevelSizeInByte[0]);
       finally
-        FPicture[TGLCubeMapTarget(I)].OnChange := PictureChanged;
+        FPicture[TGLCubeMapTarget(I)].OnClick := PictureChanged;
       end;
     end;
   finally
@@ -2215,7 +2220,7 @@ var
 begin
   Inc(FUpdateCounter);
   for i := Low(FPicture) to High(FPicture) do
-    FPicture[i].OnChange := nil;
+    FPicture[i].Bitmap.OnChange := nil;
 end;
 
 // EndUpdate
@@ -2228,7 +2233,7 @@ begin
   Assert(FUpdateCounter > 0, ClassName + ': Unbalanced Begin/EndUpdate');
   Dec(FUpdateCounter);
   for i := Low(FPicture) to High(FPicture) do
-    FPicture[i].OnChange := PictureChanged;
+    FPicture[i].Bitmap.OnChange := PictureChanged;
   if FUpdateCounter = 0 then
     PictureChanged(FPicture[cmtPX]);
 end;
@@ -2250,7 +2255,7 @@ begin
     fs.Write(version, 2);
     for i := Low(FPicture) to High(FPicture) do
     begin
-      bmp.Assign(FPicture[i].Graphic);
+      bmp.Assign(FPicture[i].Bitmap);
       bmp.SaveToStream(fs);
     end;
   finally
@@ -2277,7 +2282,7 @@ begin
     for i := Low(FPicture) to High(FPicture) do
     begin
       bmp.LoadFromStream(fs);
-      FPicture[i].Graphic := bmp;
+      FPicture[i].Bitmap := bmp;
     end;
   finally
     bmp.Free;
@@ -2434,7 +2439,7 @@ begin
     else if (Source is TGLGraphic) then
       Image.Assign(Source)
     else if (Source is TGLPicture) then
-      Image.Assign(TGLPicture(Source).Graphic)
+      Image.Assign(TGLPicture(Source).Bitmap)
     else
       inherited Assign(Source);
   end

@@ -9,7 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>22/04/14 - PW -  Droped support of GLS_DELPHI_5 and GLS_COMPILER_5
+      <li>12/01/15 - PW -  Droped support of GLS_XE2_DOWN compilers
       <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
       <li>30/06/11 - DaStr - Added CharToWideChar()
@@ -92,12 +92,6 @@ uses
   FMX.Types, FMX.Objects, FMX.Consts, FMX.Graphics, FMX.Controls,
   FMX.Forms, FMX.Dialogs;
 
-const
-  FPC_VERSION = 0;
-  FPC_RELEASE = 0;
-  FPC_PATCH = 0;
-  LCL_RELEASE = 0;
-
 type
   THalfFloat = type Word;
   PHalfFloat = ^THalfFloat;
@@ -122,9 +116,9 @@ type
   TDelphiColor = TColorRec;
 
   TGLPicture = TImage;  // instead of TPicture
-  TGLGraphic = TImage; // instead of TGraphic
+  TGLGraphic = TBitmap; // instead of TGraphic
   TGLBitmap = TBitmap;
-  TGraphicClass = class of TImage; // instead of TGraphic
+  TGraphicClass = class of TBitmap; // instead class of TGraphic
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
@@ -185,10 +179,18 @@ type
   TProjectTargetNameFunc = function(): string;
 
 const
-  glpf8Bit = PF_FLOATING_POINT_EMULATED;  // instead of pf8bit;
-  glpf24bit = PF_FLOATING_POINT_EMULATED; // instead of pf24bit;
-  glpf32Bit = PF_FLOATING_POINT_EMULATED; // instead of pf32bit;
-  glpfDevice = PF_FLOATING_POINT_EMULATED; // instead of pfDevice;
+{$IFDEF MSWINDOWS}
+  glpf8Bit = TPixelFormat.RGBA; //in VCL ->  pf8bit;
+  glpf24bit = TPixelFormat.RGBA16; //in VCL -> pf24bit;
+  glpf32Bit = TPixelFormat.RGBA32F; //in VCL -> pf32bit;
+  glpfDevice = TPixelFormat.RGBA; //in VCL -> pfDevice;
+{$ENDIF}
+{$IFDEF UNIX}
+  glpf8Bit = pf8bit;
+  glpf24bit = pf32bit;
+  glpf32Bit = pf32bit;
+  glpfDevice = pf32bit;
+{$ENDIF}
 
   // standard keyboard
   glKey_TAB = VK_TAB;
@@ -208,7 +210,7 @@ const
 
   // Several define from unit Consts
 const
-  ///glsAllFilter: string = System.String.sAllFilter;
+  glsAllFilter: string = SMsgDlgAll; //in VCL -> sAllFilter;
 
   GLS_FONT_CHARS_COUNT = 2024;
 
@@ -231,7 +233,7 @@ procedure RaiseLastOSError;
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
-function GetDeviceLogicalPixelsX(device: HDC): Integer;
+function GetDeviceLogicalPixelsX(device: THandle): Integer; ///in VCL -> HDC
 {: Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth: Integer;
 {: Returns the number of color bits associated to the given pixel format. }
@@ -338,13 +340,13 @@ end;
 function GLOKMessageBox(const Text, Caption: string): Integer;
 begin
   Application.ProcessMessages;
-  Result := MB_OK;
-// Instead of Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
+  Result := MB_OK; //<- Instead of Result := Application.MessageBox(PChar(Text), PChar(Caption), MB_OK);
 end;
 
 procedure GLLoadBitmapFromInstance(Instance: LongInt; ABitmap: TBitmap; AName: string);
 begin
-  ABitmap.Handle := LoadBitmap(Instance, PChar(AName));
+   { TODO : Cannot assign to a read-only property E2129 }
+  {ABitmap.Handle := LoadBitmap(Instance, PChar(AName));}
 end;
 
 function GLGetTickCount: int64;
@@ -460,7 +462,7 @@ end;
 
 // GetDeviceLogicalPixelsX
 //
-function GetDeviceLogicalPixelsX(device: HDC): Integer;
+function GetDeviceLogicalPixelsX(device: THandle): Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
 end;
@@ -479,14 +481,12 @@ end;
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 begin
   case aPixelFormat of
-    pfCustom, pfDevice: // use current color depth
-      Result := GetCurrentColorDepth;
-    pf1bit: Result := 1;
-    pf4bit: Result := 4;
-    pf15bit: Result := 15;
-    pf8bit: Result := 8;
-    pf16bit: Result := 16;
-    pf32bit: Result := 32;
+    TPixelFormat.None: Result := GetCurrentColorDepth; // use current color depth
+    TPixelFormat.BGR5_A1: Result := 1;
+    TPixelFormat.BGRA4: Result := 4;
+    TPixelFormat.RGBA: Result := 8;
+    TPixelFormat.RGBA16: Result := 16;
+    TPixelFormat.RGBA32F: Result := 32;
   else
     Result := 24;
   end;
@@ -496,8 +496,11 @@ end;
 //
 
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
+var
+  BitmapData : TBitmapData;
 begin
-  Result := aBitmap.ScanLine[aRow];
+  aBitmap.Map(TMapAccess.ReadWrite, BitmapData);
+  Result := BitmapData.GetScanline(aRow); //in VCL Result := aBitmap.ScanLine[aRow];
 end;
 
 procedure FixPathDelimiter(var S: string);

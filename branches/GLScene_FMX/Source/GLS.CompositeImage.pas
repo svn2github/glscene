@@ -3,7 +3,7 @@
 //
 {: GLS.CompositeImage<p>
 
-    This class is required for loading images such classes as TGLDDSImage,
+    This class is required for loading images such classes as in DDSImage,
     TGLO3TCImage, TGLHDRImage etc.
 
  <b>History : </b><font size=-1><ul>

@@ -189,7 +189,6 @@ contains
   GLSpatialPartitioning in '..\Source\GLSpatialPartitioning.pas',
   GLFileVRML in '..\Source\GLFileVRML.pas',
   GLFileLWO in '..\Source\GLFileLWO.pas',
-  PictureRegisteredFormats in '..\Source\PictureRegisteredFormats.pas',
   GLLinePFX in '..\Source\GLLinePFX.pas',
   GLGameMenu in '..\Source\GLGameMenu.pas',
   GLTexturedHDS in '..\Source\GLTexturedHDS.pas',
@@ -239,8 +238,6 @@ contains
   GLSJPG in '..\Source\GLSJPG.pas',
   GLSLanguage in '..\Source\GLSLanguage.pas',
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
-  GLSZLibEx in '..\Source\GLSZLibEx.pas',
-  GLSZLibExApi in '..\Source\GLSZLibExApi.pas',
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
   GLSCrossXML in '..\Source\GLSCrossXML.pas',
   GLPipelineTransformation in '..\Source\GLPipelineTransformation.pas',
@@ -288,6 +285,9 @@ contains
   XCollection in '..\Source\XCollection.pas',
   XOpenGL in '..\Source\XOpenGL.pas',
   VRMLParser in '..\Source\VRMLParser.pas',
-  Utils3DS in '..\Source\Utils3DS.pas';
+  Utils3DS in '..\Source\Utils3DS.pas',
+  GLSZLibEx in '..\Source\GLSZLibEx.pas',
+  GLSZLibExApi in '..\Source\GLSZLibExApi.pas',
+  PictureRegisteredFormats in '..\Source\PictureRegisteredFormats.pas';
 
 end.

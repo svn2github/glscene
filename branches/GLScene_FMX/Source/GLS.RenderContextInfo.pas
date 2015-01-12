@@ -47,7 +47,7 @@ type
  <li>osRenderNearestFirst : render objects whose Position is the nearest to
   the camera first.
       </ul> }
-  TGLx.ObjectsSorting = (osInherited, osNone,
+  TGLObjectsSorting = (osInherited, osNone,
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);
 
@@ -95,7 +95,7 @@ type
     lightmapLibrary: TObject; //usually TGLMaterialLibrary;
     fogDisabledCounter: Integer;
     drawState: TDrawState;
-    objectsSorting: TGLx.ObjectsSorting;
+    objectsSorting: TGLObjectsSorting;
     visibilityCulling: TGLVisibilityCulling;
     GLStates: TGLStateCache;
     PipelineTransformation: TGLTransformation;

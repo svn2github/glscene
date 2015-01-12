@@ -2524,7 +2524,7 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
       FInternalFormat := TGLInternalFormat(ReadInteger);
       FCompression := TGLTextureCompression(ReadInteger);
@@ -2533,7 +2533,7 @@ begin
       FImageBrightness := ReadFloat;
       FImageGamma := ReadFloat;
       FHeightToNormalScale := ReadFloat;
-      FSourceFile := ReadWideString;
+      FSourceFile := ReadString;
       FInternallyStored := ReadBoolean;
       FMipGenMode := TMipmapGenerationMode(ReadInteger);
       FUseStreaming := ReadBoolean;
@@ -2846,7 +2846,7 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
       FMinFilter := TGLMinFilter(ReadInteger);
       FMagFilter := TGLMagFilter(ReadInteger);
@@ -2957,7 +2957,7 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
     WriteInteger(Integer(FMinFilter));
     WriteInteger(Integer(FMagFilter));
@@ -3071,9 +3071,9 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
-      FScript.Text := ReadWideString;
+      FScript.Text := ReadString;
     end
     else
       RaiseFilerException(archiveVersion);
@@ -3091,9 +3091,9 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
-    WriteWideString(FScript.Text);
+    WriteString(FScript.Text);
   end;
 end;
 
@@ -4440,10 +4440,10 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
-      FSource.Text := ReadWideString;
-      FSourceFile := ReadWideString;
+      FSource.Text := ReadString;
+      FSourceFile := ReadString;
       FShaderType := TGLShaderType(ReadInteger);
       FGeometryInput := TGLgsInTypes(ReadInteger);
       FGeometryOutput := TGLgsOutTypes(ReadInteger);
@@ -4515,13 +4515,13 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
     if Length(FSourceFile) = 0 then
-      WriteWideString(FSource.Text)
+      WriteString(FSource.Text)
     else
-      WriteWideString('');
-    WriteWideString(FSourceFile);
+      WriteString('');
+    WriteString(FSourceFile);
     WriteInteger(Integer(FShaderType));
     WriteInteger(Integer(FGeometryInput));
     WriteInteger(Integer(FGeometryOutput));
@@ -5104,7 +5104,7 @@ begin
     N := LReader.ReadInteger;
     for I := 0 to N - 1 do
     begin
-      str := LReader.ReadWideString;
+      str := LReader.ReadString;
       LClass := CGLAbstractShaderUniform(FindClass(str));
       LUniform := LClass.Create(Self);
       LUniform._AddRef;
@@ -5236,7 +5236,7 @@ begin
     LWriter.WriteInteger(FUniforms.Count);
     for I := 0 to FUniforms.Count - 1 do
     begin
-      LWriter.WriteWideString(FUniforms[I].ClassName);
+      LWriter.WriteString(FUniforms[I].ClassName);
       TGLAbstractShaderUniform(FUniforms[I]).WriteToFiler(LWriter);
     end;
   finally
@@ -5862,8 +5862,8 @@ begin
   with AReader do
   begin
     inherited;
-    LibTextureName := ReadWideString;
-    LibSamplerName := ReadWideString;
+    LibTextureName := ReadString;
+    LibSamplerName := ReadString;
     FSwizzling[0] := TGLTextureSwizzle(ReadInteger);
     FSwizzling[1] := TGLTextureSwizzle(ReadInteger);
     FSwizzling[2] := TGLTextureSwizzle(ReadInteger);
@@ -5957,8 +5957,8 @@ begin
   with AWriter do
   begin
     inherited;
-    WriteWideString(LibTextureName);
-    WriteWideString(LibSamplerName);
+    WriteString(LibTextureName);
+    WriteString(LibSamplerName);
     WriteInteger(Integer(FSwizzling[0]));
     WriteInteger(Integer(FSwizzling[1]));
     WriteInteger(Integer(FSwizzling[2]));
@@ -6314,11 +6314,11 @@ procedure TGLShaderUniform.ReadFromFiler(AReader: TReader);
 begin
   with AReader do
   begin
-    FName := ReadWideString;
+    FName := ReadString;
     FNameHashCode := ComputeNameHashKey(FName);
     FType := TGLSLDataType(ReadInteger);
     FSamplerType := TGLSLSamplerType(ReadInteger);
-    SetAutoSetMethod(ReadWideString);
+    SetAutoSetMethod(ReadString);
   end;
 end;
 
@@ -6458,10 +6458,10 @@ procedure TGLShaderUniform.WriteToFiler(AWriter: TWriter);
 begin
   with AWriter do
   begin
-    WriteWideString(FName);
+    WriteString(FName);
     WriteInteger(Integer(FType));
     WriteInteger(Integer(FSamplerType));
-    WriteWideString(GetAutoSetMethod);
+    WriteString(GetAutoSetMethod);
   end;
 end;
 
@@ -6927,7 +6927,7 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
       FLayered := ReadBoolean;
       FCubeMap := ReadBoolean;
@@ -7053,7 +7053,7 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
     WriteBoolean(FLayered);
     WriteBoolean(FCubeMap);
@@ -7361,10 +7361,10 @@ begin
     archiveVersion := ReadInteger;
     if archiveVersion = 0 then
     begin
-      Name := ReadWideString;
+      Name := ReadString;
       FDefferedInit := ReadBoolean;
-      FSource.Text := ReadWideString;
-      FSourceFile := ReadWideString;
+      FSource.Text := ReadString;
+      FSourceFile := ReadString;
     end
     else
       RaiseFilerException(archiveVersion);
@@ -7391,13 +7391,13 @@ begin
   with AWriter do
   begin
     WriteInteger(0); // archive version
-    WriteWideString(Name);
+    WriteString(Name);
     WriteBoolean(FDefferedInit);
     if Length(FSourceFile) = 0 then
-      WriteWideString(FSource.Text)
+      WriteString(FSource.Text)
     else
-      WriteWideString('');
-    WriteWideString(FSourceFile);
+      WriteString('');
+    WriteString(FSourceFile);
   end;
 end;
 

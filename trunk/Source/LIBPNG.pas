@@ -1,6 +1,6 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {: LIBPNG<p>
 
   <b>Historique : </b><font size=-1><ul>
@@ -21,11 +21,10 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  Classes, SysUtils,
   {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
   {$IFDEF UNIX} dynlibs, {$ENDIF}
-  {$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
-  {$IFDEF FPC} GLSZLibExAPI, {$ENDIF}
-  Classes, SysUtils, GLVectorGeometry, GLCrossPlatform;
+   GLSLog, GLVectorGeometry, GLCrossPlatform;
 
 const
 {$IFDEF MSWINDOWS}

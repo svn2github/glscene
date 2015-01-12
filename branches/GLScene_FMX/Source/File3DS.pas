@@ -258,7 +258,8 @@ type
 
 implementation
 
-uses Const3DS, Utils3DS, System.SysUtils, GLS.ApplicationFileIO;
+uses
+  Const3DS, Utils3DS, System.SysUtils, GLS.ApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin

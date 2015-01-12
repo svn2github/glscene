@@ -590,7 +590,7 @@ var
       while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
       begin
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-          GetLastError]), mtWarning, [mbNo], 0) = mrNo
+          GetLastError]), TMsgDlgType.mtWarning, [TMsgDlgBtn.mbNo], 0) = mrNo
           then Break;
         AssignFile(lFile, lLogOriginalDir + sRec.Name);
         CloseFile(lFile);
@@ -605,7 +605,7 @@ begin
   lLogSaveDir := lLogOriginalDir + FormatDateTime('yyyy-mm-dd  hh-nn-ss', Now);
 
   if not CreateDir(lLogSaveDir) then Exit;
-  lLogSaveDir := lLogSaveDir + SysUtils.PathDelim;
+  lLogSaveDir := lLogSaveDir + PathDelim;
     
   If FindFirst(lLogOriginalDir + lLogFileName + '*' + lLogExt, faAnyfile, sRec) = 0 then
   begin

@@ -50,7 +50,6 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.ApplicationFileIO,
   GLS.CrossPlatform;
 
 type
@@ -437,6 +436,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+uses
+  GLS.ApplicationFileIO;
+
 
 resourcestring
   cInvalidFileSignature = 'Invalid file signature';

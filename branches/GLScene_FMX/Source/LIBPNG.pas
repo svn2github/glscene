@@ -21,11 +21,10 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
+  System.Classes, System.SysUtils,
   {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
   {$IFDEF UNIX} dynlibs, {$ENDIF}
-  {$IFDEF GLS_LOGGING} GLSLog, {$ENDIF}
-  {$IFDEF FPC} GLSZLibExAPI, {$ENDIF}
-  System.Classes, System.SysUtils, GLS.VectorGeometry, GLS.CrossPlatform;
+  GLS.Log, GLS.VectorGeometry, GLS.CrossPlatform;
 
 const
 {$IFDEF MSWINDOWS}

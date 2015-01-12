@@ -789,11 +789,11 @@ type
        If persistent is True, the image will be loaded persistently in memory
        (via a TGLPersistentImage), if false, it will be unloaded after upload
        to OpenGL (via TGLPicFileImage). }
-    function AddTextureMaterial(const materialName, fileName: string;
+    function AddTextureMaterial(const MaterialName, FileName: string;
       persistent: Boolean = True): TGLLibMaterial; overload;
     {: Add a "standard" texture material.<p>
        TGLGraphic based variant. }
-    function AddTextureMaterial(const materialName: string; graphic:
+    function AddTextureMaterial(const MaterialName: string; Graphic:
       TGLGraphic): TGLLibMaterial; overload;
 
     {: Returns libMaterial of given name if any exists. }
@@ -3027,7 +3027,8 @@ begin
       tex := libMat.Material.Texture;
       img := tex.Image;
       pim := TGLPersistentImage(img);
-      if tex.Enabled and (img is TGLPersistentImage) and (pim.Picture.Graphic <>
+      if tex.Enabled and
+             (img is TGLPersistentImage) and (pim.Picture.Bitmap <>
         nil) then
       begin
         WriteBoolean(true);
@@ -3035,7 +3036,7 @@ begin
         try
           bmp := TGLBitmap.Create;
           try
-            bmp.Assign(pim.Picture.Graphic);
+            bmp.Assign(pim.Picture.Bitmap);
             bmp.SaveToStream(ss);
           finally
             bmp.Free;
@@ -3143,14 +3144,14 @@ begin
         img := texExItem.Texture.Image;
         pim := TGLPersistentImage(img);
         if texExItem.Texture.Enabled and (img is TGLPersistentImage)
-          and (pim.Picture.Graphic <> nil) then
+          and (pim.Picture.Bitmap <> nil) then
         begin
           WriteBoolean(True);
           ss := TStringStream.Create('');
           try
             bmp := TGLBitmap.Create;
             try
-              bmp.Assign(pim.Picture.Graphic);
+              bmp.Assign(pim.Picture.Bitmap);
               bmp.SaveToStream(ss);
             finally
               bmp.Free;
@@ -3206,7 +3207,8 @@ begin
             try
               bmp.LoadFromStream(ss);
               if libMat = nil then
-                libMat := AddTextureMaterial(LName, bmp)
+                { TODO : E2250 There is no overloaded version of 'AddTextureMaterial' that can be called with these arguments }
+                (*libMat := AddTextureMaterial(LName, bmp)*)
               else
                 libMat.Material.Texture.Image.Assign(bmp);
             finally
@@ -3434,7 +3436,7 @@ end;
 // AddTextureMaterial
 //
 
-function TGLMaterialLibrary.AddTextureMaterial(const materialName, fileName:
+function TGLMaterialLibrary.AddTextureMaterial(const MaterialName, FileName:
   string;
   persistent: Boolean = True): TGLLibMaterial;
 begin

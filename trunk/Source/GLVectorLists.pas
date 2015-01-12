@@ -1199,13 +1199,13 @@ begin
     begin
       // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
       System.Move(FBaseList[(curIndex + 1) * FItemSize], FBaseList[curIndex * FItemSize],
-        (newIndex - curIndex - 1) * FItemSize);
+        (newIndex - curIndex) * FItemSize);
     end
     else
     begin
       // newIndex+1 necessarily exists since newIndex<curIndex and curIndex<Count
       System.Move(FBaseList[newIndex * FItemSize], FBaseList[(newIndex + 1) * FItemSize],
-        (curIndex - newIndex - 1) * FItemSize);
+        (curIndex - newIndex) * FItemSize);
     end;
     if FItemSize = 4 then
       PInteger(@FBaseList[newIndex * FItemSize])^ := PInteger(BufferItem)^

@@ -14,7 +14,7 @@
       <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
    </ul></font>
 }
-unit GLX.OpenGLTokens;
+unit GLS.OpenGLTokens;
 
 interface
 

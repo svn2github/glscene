@@ -86,12 +86,13 @@ interface
 
 uses
   {$IFDEF MSWINDOWS}
-  Winapi.Windows,
+///  Winapi.Windows,
   {$ENDIF}
   System.Classes, System.SysUtils, System.Types, System.SyncObjs,
-///  FMX.Consts,
+  FMX.Consts,
   FMX.Forms,
   FMX.Controls,
+  FMX.Types,
 
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLS.Generics,
@@ -104,7 +105,8 @@ uses
   GLS.VectorTypes,
   GLS.State,
   GLS.PipelineTransformation,
-  GLS.TextureFormat;
+  GLS.TextureFormat,
+  GLS.Log;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -216,8 +218,8 @@ type
 {$ENDIF}
     procedure PropagateSharedContext;
 
-    procedure DoCreateContext(ADeviceHandle: HDC); virtual; abstract;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
+    procedure DoCreateContext(ADeviceHandle: THandle); virtual; abstract; //VCL -> HDC
+    procedure DoCreateMemoryContext(outputDevice: THandle; width, height: //VCL ->HWND
       Integer; BufferCount: integer = 1); virtual; abstract;
     function DoShareLists(aContext: TGLContext): Boolean; virtual; abstract;
     procedure DoDestroyContext; virtual; abstract;
@@ -275,16 +277,16 @@ type
 
     {: Creates the context.<p>
        This method must be invoked before the context can be used. }
-    procedure CreateContext(ADeviceHandle: HDC); overload;
+    procedure CreateContext(ADeviceHandle: THandle); overload; //VCL -> HDC
     {: Creates an in-memory context.<p>
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
        contexts). }
-    procedure CreateMemoryContext(outputDevice: HWND; width, height:
+    procedure CreateMemoryContext(OutputDevice: THandle; Width, Height: //HWND
       Integer; BufferCount: integer = 1);
     {: Setup display list sharing between two rendering contexts.<p>
        Both contexts must have the same pixel format. }
-    procedure ShareLists(aContext: TGLContext);
+    procedure ShareLists(AContext: TGLContext);
     {: Destroy the context.<p>
        Will fail if no context has been created.<br>
        The method will first invoke the OnDestroyContext
@@ -1322,7 +1324,7 @@ type
   //
   TServiceContextThread = class(TThread)
   private
-    FDC: HDC;
+    FDC: THandle; // VCL -> HDC;
     FWindow: TForm;
     FLastTaskStartTime: Double;
     FReported: Boolean;
@@ -1594,7 +1596,7 @@ end;
 // CreateContext
 //
 
-procedure TGLContext.CreateContext(ADeviceHandle: HDC);
+procedure TGLContext.CreateContext(ADeviceHandle: THandle);
 begin
   if IsValid then
     raise EGLContext.Create(cContextAlreadyCreated);
@@ -1605,12 +1607,12 @@ end;
 // CreateMemoryContext
 //
 
-procedure TGLContext.CreateMemoryContext(outputDevice: HWND;
-  width, height: Integer; BufferCount: integer);
+procedure TGLContext.CreateMemoryContext(OutputDevice: THandle;
+  Width, Height: Integer; BufferCount: integer);
 begin
   if IsValid then
     raise EGLContext.Create(cContextAlreadyCreated);
-  DoCreateMemoryContext(outputDevice, width, height, BufferCount);
+  DoCreateMemoryContext(OutputDevice, Width, Height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
 
@@ -1705,14 +1707,14 @@ end;
 // ShareLists
 //
 
-procedure TGLContext.ShareLists(aContext: TGLContext);
+procedure TGLContext.ShareLists(AContext: TGLContext);
 begin
 {$IFNDEF GLS_MULTITHREAD}
-  if FSharedContexts.IndexOf(aContext) < 0 then
+  if FSharedContexts.IndexOf(AContext) < 0 then
   begin
-    if DoShareLists(aContext) then
+    if DoShareLists(AContext) then
     begin
-      FSharedContexts.Add(aContext);
+      FSharedContexts.Add(AContext);
       PropagateSharedContext;
     end;
   end;
@@ -1721,7 +1723,7 @@ begin
     try
       if IndexOf(aContext) < 0 then
       begin
-        if DoShareLists(aContext) then
+        if DoShareLists(AContext) then
         begin
           Add(aContext);
           PropagateSharedContext;
@@ -4457,6 +4459,7 @@ begin
   Application.Initialize;
   GLContextManager.CreateServiceContext;
 end;
+{$ENDIF}
 
 // Create
 //
@@ -4543,7 +4546,7 @@ begin
     and not FReported then
   begin
     FReported := True;
-    GLSLogger.LogInfo('Service context queue task depleted');
+    GLS.Log.GLSLogger.LogInfo('Service context queue task depleted');
   end;
 end;
 
@@ -4766,16 +4769,18 @@ constructor TServiceContextThread.Create;
 begin
   FWindow := TForm.CreateNew(nil);
   FWindow.Hide;
-  FWindow.Position := poScreenCenter;
+  FWindow.Position := TFormPosition.ScreenCenter;
   FWindow.Width := 1;
   FWindow.Height := 1;
-  FWindow.BorderStyle := bsNone;
-  FWindow.FormStyle := fsStayOnTop;
-  FWindow.Color := 0;
+  FWindow.BorderStyle := TFmxFormBorderStyle.None;
+  { TODO : fsStayOnTop not found in FMX XE7 }
+  ///FWindow.FormStyle := TFormStyle.StayOnTop;
+  FWindow.Fill.Color := 0;
   vServiceWindow := FWindow;
 {$IFDEF MSWINDOWS}
-  FDC := GetDC(FWindow.Handle);
-{$ENDIF}
+  { TODO -oPW : E2010 Incompatible types: 'NativeUInt' and 'TWindowHandle' }
+  (*FDC := GetDeviceContext(FWindow.Handle);*)
+  {$ENDIF}
 {$IFDEF LINUX}
   FDC := FWindow.Handle;
 {$ENDIF}
@@ -4784,7 +4789,7 @@ end;
 
 destructor TServiceContextThread.Destroy;
 begin
-  ReleaseDC(FWindow.Handle, FDC);
+  FWindow.Handle.Free; //VCL -> ReleaseDC(FWindow.Handle, FDC);
   FWindow.Free;
   inherited;
 end;
@@ -4812,7 +4817,8 @@ begin
     begin
       GLSLogger.LogWarning(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
       try
-        GLContextManager.ServiceContext.CreateContext(FDC);
+        { TODO -oPW : E2250 There is no overloaded version of 'CreateContext' that can be called with these arguments }
+        (*GLContextManager.ServiceContext.CreateContext(FDC);*)
       except
         Fail;
         exit;
@@ -4978,4 +4984,6 @@ finalization
   GLwithoutContext := nil;
 
 end.
+
+
 

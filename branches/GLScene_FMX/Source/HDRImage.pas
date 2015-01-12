@@ -21,8 +21,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}Winapi.Windows,
-{$ENDIF}System.Classes,
+ {$IFDEF MSWINDOWS}Winapi.Windows, {$ENDIF}
+  System.Classes,
   System.SysUtils,
   GLS.CrossPlatform,
   GLS.VectorGeometry,

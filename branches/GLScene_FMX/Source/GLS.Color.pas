@@ -6,6 +6,7 @@
    All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>12/01/15 - PW - Converted to use with FMX platform
     <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
     <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
     <li>24/10/10 - DaStr - Removed dependancy from OpenGL
@@ -24,7 +25,9 @@ interface
 {$i GLScene.inc}
 
 uses
-  System.SysUtils, System.Classes, FMX.Dialogs, FMX.Graphics,
+  System.SysUtils, System.Classes, System.Types, System.UITypes,
+
+  FMX.Dialogs, FMX.Graphics,
    
   GLS.VectorTypes, GLS.VectorGeometry, GLS.CrossPlatform,
   GLS.PersistentClasses, GLS.BaseClasses;
@@ -123,9 +126,9 @@ procedure RegisterColor(const aName : String; const aColor : TColorVector);
 procedure UnRegisterColor(const aName : String);
 
 
-function GetRValue(rgb: DWORD): Byte;  {$NODEFINE GetRValue}
-function GetGValue(rgb: DWORD): Byte;  {$NODEFINE GetGValue}
-function GetBValue(rgb: DWORD): Byte;  {$NODEFINE GetBValue}
+function GetRValue(RGB: DWORD): Byte;  {$NODEFINE GetRValue}
+function GetGValue(RGB: DWORD): Byte;  {$NODEFINE GetGValue}
+function GetBValue(RGB: DWORD): Byte;  {$NODEFINE GetBValue}
 
 procedure InitGLSceneColors;
 {: Converts a delphi color into its RGB fragments and correct range. }
@@ -141,7 +144,7 @@ function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 
 // color definitions
 const
-  // Some extra colors, not declared in Graphics.pas
+  // Some extra colors, not declared in System.UITypes.pas
   clForeground = TColor(-1);
   clButton = TColor(-2);
   clLight = TColor(-3);
@@ -211,8 +214,8 @@ const
   clActiveHighlightedText = TColor(clHighlightedText - cloActive);
 
   clFirstSpecialColor = clActiveHighlightedText;
-  clMask = clWhite;
-  clDontMask = clBlack;
+  clMask = TColorRec.White;
+  clDontMask = TColorRec.Black;
 
 // Window's colors (must be filled at program
 // startup, since they depend on the desktop scheme)
@@ -414,13 +417,13 @@ function ConvertWinColor(aColor: TColor; alpha: Single = 1): TColorVector;
 var
   winColor: Integer;
 begin
-  // Delphi color to Windows color
-  winColor := ColorToRGB(aColor);
+  // Convert to Windows color
+  winColor := TColors.ColorToRGB(aColor);
   // convert 0..255 range into 0..1 range
-  Result.V[0] := (winColor and $FF) * (1 / 255);
-  Result.V[1] := ((winColor shr 8) and $FF) * (1 / 255);
-  Result.V[2] := ((winColor shr 16) and $FF) * (1 / 255);
-  Result.V[3] := alpha;
+  Result.X := (winColor and $FF) * (1 / 255);
+  Result.Y := ((winColor shr 8) and $FF) * (1 / 255);
+  Result.Z := ((winColor shr 16) and $FF) * (1 / 255);
+  Result.W := alpha;
 end;
 
 // GetRValue
@@ -448,33 +451,29 @@ end;
 //
 procedure InitGLSceneColors;
 begin
-  clrScrollBar := ConvertWinColor(clScrollBar);
-  clrActiveCaption := ConvertWinColor(clActiveCaption);
-  clrInactiveCaption := ConvertWinColor(clInactiveCaption);
-  clrMenu := ConvertWinColor(clMenu);
-  clrWindow := ConvertWinColor(clWindow);
-  clrWindowFrame := ConvertWinColor(clWindowFrame);
-  clrMenuText := ConvertWinColor(clMenuText);
-  clrWindowText := ConvertWinColor(clWindowText);
-  clrCaptionText := ConvertWinColor(clCaptionText);
-  clrActiveBorder := ConvertWinColor(clActiveBorder);
-  clrInactiveBorder := ConvertWinColor(clInactiveBorder);
-  clrAppWorkSpace := ConvertWinColor(clAppWorkSpace);
-  clrHighlightText := ConvertWinColor(clHighlightText);
-  clrBtnFace := ConvertWinColor(clBtnFace);
-  clrBtnShadow := ConvertWinColor(clBtnShadow);
-  clrGrayText := ConvertWinColor(clGrayText);
-  clrBtnText := ConvertWinColor(clBtnText);
-  clrInactiveCaptionText := ConvertWinColor(clInactiveCaptionText);
-  clrBtnHighlight := ConvertWinColor(clBtnHighlight);
-  clr3DDkShadow := ConvertWinColor(cl3DDkShadow);
-  clr3DLight := ConvertWinColor(cl3DLight);
-  clrInfoText := ConvertWinColor(clInfoText);
-  clrInfoBk := ConvertWinColor(clInfoBk);
-  {$ifndef LCLGTK2}
-  clrHighlight := ConvertWinColor(clHighlight);
-  clrBackground := ConvertWinColor(clBackground);
-  {$ENDIF}
+  clrScrollBar := ConvertWinColor(TColorRec.cSCROLLBAR);
+  clrActiveCaption := ConvertWinColor(TColorRec.cACTIVECAPTION);
+  clrInactiveCaption := ConvertWinColor(TColorRec.cINACTIVECAPTION);
+  clrMenu := ConvertWinColor(TColorRec.cMENU);
+  clrWindow := ConvertWinColor(TColorRec.cWINDOW);
+  clrWindowFrame := ConvertWinColor(TColorRec.cWINDOWFRAME);
+  clrMenuText := ConvertWinColor(TColorRec.cMENUTEXT);
+  clrWindowText := ConvertWinColor(TColorRec.cWINDOWTEXT);
+  clrCaptionText := ConvertWinColor(TColorRec.cCAPTIONTEXT);
+  clrActiveBorder := ConvertWinColor(TColorRec.cACTIVEBORDER);
+  clrInactiveBorder := ConvertWinColor(TColorRec.cINACTIVEBORDER);
+  clrAppWorkSpace := ConvertWinColor(TColorRec.cAPPWORKSPACE);
+  clrHighlightText := ConvertWinColor(TColorRec.cHIGHLIGHTTEXT);
+  clrBtnFace := ConvertWinColor(TColorRec.cBTNFACE);
+  clrBtnShadow := ConvertWinColor(TColorRec.cBTNSHADOW);
+  clrGrayText := ConvertWinColor(TColorRec.cGRAYTEXT);
+  clrBtnText := ConvertWinColor(TColorRec.cBTNTEXT);
+  clrInactiveCaptionText := ConvertWinColor(TColorRec.cINACTIVECAPTIONTEXT);
+  clrBtnHighlight := ConvertWinColor(TColorRec.cBTNHIGHLIGHT);
+  clr3DDkShadow := ConvertWinColor(TColorRec.c3DDKSHADOW);
+  clr3DLight := ConvertWinColor(TColorRec.c3DLIGHT);
+  clrInfoText := ConvertWinColor(TColorRec.cINFOTEXT);
+  clrInfoBk := ConvertWinColor(TColorRec.cINFOBK);
 end;
 
 // ConvertColorVector
@@ -482,9 +481,9 @@ end;
 function ConvertColorVector(const aColor: TColorVector): TColor;
 begin
   Result := RGB(
-    Round(255 * aColor.V[0]),
-    Round(255 * aColor.V[1]),
-    Round(255 * aColor.V[2]));
+    Round(255 * aColor.X),
+    Round(255 * aColor.Y),
+    Round(255 * aColor.Z));
 end;
 
 // ConvertColorVector

@@ -357,7 +357,6 @@
         <DCCReference Include="..\Source\GLS.XOpenGL.pas"/>
         <DCCReference Include="..\Source\GLS.zBuffer.pas"/>
         <DCCReference Include="..\Source\GLS.zLibEx.pas"/>
-        <DCCReference Include="..\Source\GLS.zLibExApi.pas"/>
         <DCCReference Include="..\Source\GLSL.BumpShader.pas"/>
         <DCCReference Include="..\Source\GLSL.DiffuseSpecularShader.pas"/>
         <DCCReference Include="..\Source\GLSL.Parameter.pas"/>
@@ -378,6 +377,11 @@
         <DCCReference Include="..\Source\TypesMS3D.pas"/>
         <DCCReference Include="..\Source\TypesSTL.pas"/>
         <DCCReference Include="..\Source\VRMLParser.pas"/>
+        <DCCReference Include="..\Source\GLS.OpenGLAdapter.pas"/>
+        <DCCReference Include="..\Source\GLS.Utils.pas"/>
+        <DCCReference Include="..\Source\GLS.zLibExApi.pas"/>
+        <DCCReference Include="..\Source\Utils3DS.pas"/>
+        <DCCReference Include="..\Source\GLS.PictureRegisteredFormats.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

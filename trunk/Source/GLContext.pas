@@ -4456,10 +4456,6 @@ end;
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
-{$IFDEF FPC}
-  if Assigned(InitProc) then
-    TProcedure(InitProc);
-{$ENDIF}
   Application.Initialize;
   GLContextManager.CreateServiceContext;
 end;
@@ -4771,7 +4767,7 @@ end;
 
 constructor TServiceContextThread.Create;
 begin
-  FWindow := TForm.CreateNew({$IFDEF FPC}Application{$ELSE}nil{$ENDIF});
+  FWindow := TForm.CreateNew(nil);
   FWindow.Hide;
   FWindow.Position := poScreenCenter;
   FWindow.Width := 1;
@@ -4781,7 +4777,7 @@ begin
   FWindow.Color := 0;
   vServiceWindow := FWindow;
 {$IFDEF MSWINDOWS}
-  FDC := GetDC(FWindow.Handle);
+  FDC := GetDeviceContext(FWindow.Handle);
 {$ENDIF}
 {$IFDEF LINUX}
   FDC := FWindow.Handle;
@@ -4791,10 +4787,8 @@ end;
 
 destructor TServiceContextThread.Destroy;
 begin
-{$IFNDEF FPC}
   ReleaseDC(FWindow.Handle, FDC);
   FWindow.Free;
-{$ENDIF}
   inherited;
 end;
 

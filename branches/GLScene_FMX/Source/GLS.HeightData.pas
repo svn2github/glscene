@@ -1831,8 +1831,8 @@ end;
 constructor TGLBitmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPicture := TGLPicture.Create;
-  FPicture.OnChange := OnPictureChanged;
+  FPicture := TGLPicture.Create(AOwner);
+  FPicture.OnDblClick := OnPictureChanged;
   FInfiniteWrap := True;
   FInverted := True;
 end;
@@ -1866,7 +1866,7 @@ begin
   MaxPoolSize := oldPoolSize;
   // prepare MonoChromeBitmap
   FreeMonochromeBitmap;
-  size := Picture.Width;
+  size := Round(Picture.Width);
   if size > 0 then
     CreateMonochromeBitmap(size);
 end;
@@ -1899,7 +1899,7 @@ begin
   inherited;
   FreeMonochromeBitmap;
   if Picture.Width > 0 then
-    CreateMonochromeBitmap(Picture.Width);
+    CreateMonochromeBitmap(Round(Picture.Width));
 end;
 
 // CreateMonochromeBitmap
@@ -1922,7 +1922,8 @@ var
 begin
   size := RoundUpToPowerOf2(size);
   FBitmap := TGLBitmap.Create;
-  FBitmap.PixelFormat := glpf8bit;
+  { TODO -oPW : E2129 Cannot assign to a read-only property }
+  (*FBitmap.PixelFormat := glpf8bit;*)
   FBitmap.Width := size;
   FBitmap.Height := size;
   for x := 0 to 255 do
@@ -1940,13 +1941,15 @@ begin
   end;
   hPal := CreatePalette(logpal.lpal);
   Assert(hPal <> 0);
-  FBitmap.Palette := hPal;
+  { TODO -oPW : E2003 Undeclared identifier: 'Palette' }
+  (*FBitmap.Palette := hPal;*)
   // some picture formats trigger a "change" when drawed
-  Picture.OnChange := nil;
+  Picture.Bitmap.OnChange := nil;
   try
-    FBitmap.Canvas.StretchDraw(Rect(0, 0, size, size), Picture.Graphic);
+    { TODO -oPW : E2003 Undeclared identifier: 'StretchDraw' }
+    (*FBitmap.StretchDraw(Rect(0, 0, size, size), Picture.Bitmap);*)
   finally
-    Picture.OnChange := OnPictureChanged;
+    Picture.Bitmap.OnChange := OnPictureChanged;
   end;
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);

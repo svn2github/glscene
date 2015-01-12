@@ -8015,7 +8015,7 @@ asm
         FWAIT
 {$else}
 begin
-   Result:=Math.LnXP1(X);
+   Result:=LnXP1(X);
 {$endif}
 end;
 
@@ -8023,35 +8023,35 @@ end;
 //
 function Log10(X: Extended): Extended;
 // Log.10(X):=Log.2(X) * Log.10(2)
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         FLDLG2     { Log base ten of 2 }
         FLD     X
         FYL2X
 {$else}
 begin
-   Result:=Math.Log10(X);
+   Result:=Log10(X);
 {$endif}
 end;
 
 // Log2
 //
 function Log2(X: Extended): Extended;
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
         FYL2X
 {$else}
 begin
-   Result:=Math.Log2(X);
+   Result:=System.Math.Log2(X);
 {$endif}
 end;
 
 // Log2
 //
 function Log2(X: Single): Single;
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
@@ -8059,7 +8059,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.Log2(X);
+   Result:=System.Math.Log2(X);
    {$HINTS ON}
 {$endif}
 end;
@@ -8068,7 +8068,7 @@ end;
 //
 function LogN(Base, X: Extended): Extended;
 // Log.N(X):=Log.2(X) / Log.2(N)
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
@@ -8079,14 +8079,14 @@ asm
         FDIV
 {$else}
 begin
-   Result:=Math.LogN(Base, X);
+   Result:=LogN(Base, X);
 {$endif}
 end;
 
 // IntPower
 //
 function IntPower(Base: Extended; Exponent: Integer) : Extended;
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -8109,7 +8109,7 @@ asm
 @@3:
 {$else}
 begin
-   Result:=Math.IntPower(Base, Exponent);
+   Result:=IntPower(Base, Exponent);
 {$endif}
 end;
 
@@ -8131,7 +8131,7 @@ end;
 // Power (int exponent)
 //
 function Power(Base: Single; Exponent: Integer): Single;
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -8155,7 +8155,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.Power(Base, Exponent);
+   Result:=Power(Base, Exponent);
    {$HINTS ON}
 {$endif}
 end;
@@ -8163,7 +8163,7 @@ end;
 function Power(Base: Single; Exponent: Int64): Single;
 begin
    {$HINTS OFF}
-   Result:= Math.Power(Base, Exponent);
+   Result:= Power(Base, Exponent);
    {$HINTS ON}
 end;
 
@@ -8203,7 +8203,7 @@ function RadToDeg(const Radians: Single): Single;
 //   Result:=Radians * c180divPI;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
-{$ifndef GEOMETRY_NO_ASM}
+{$IFNDEF GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EBP+8]
       FMUL c180divPI
@@ -8271,7 +8271,7 @@ asm
 var
    s, c : Extended;
 begin
-   Math.SinCos(Theta, s, c);
+   SinCos(Theta, s, c);
    {$HINTS OFF}
    Sin:=s; Cos:=c;
    {$HINTS ON}
@@ -8294,7 +8294,7 @@ asm
 var
    s, c : Extended;
 begin
-   Math.SinCos(Theta, s, c);
+   SinCos(Theta, s, c);
    {$HINTS OFF}
    Sin:=s; Cos:=c;
    {$HINTS ON}
@@ -8344,7 +8344,7 @@ asm
 var
    s, c : Extended;
 begin
-   Math.SinCos(Theta, s, c);
+   SinCos(Theta, s, c);
    Sin:=s*radius; Cos:=c*radius;
 {$endif}
 end;
@@ -8367,7 +8367,7 @@ asm
 var
    s, c : Extended;
 begin
-   Math.SinCos(Theta, s, c);
+   SinCos(Theta, s, c);
    Sin:=s*radius; Cos:=c*radius;
 {$endif}
 end;
@@ -8428,7 +8428,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.ArcCos(X);
+   Result:=System.Math.ArcCos(X);
    {$HINTS ON}
 {$endif}
 end;
@@ -8455,7 +8455,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.ArcSin(X);
+   Result:=System.Math.ArcSin(X);
    {$HINTS ON}
 {$endif}
 end;
@@ -8470,7 +8470,7 @@ asm
       FPATAN
 {$else}
 begin
-   Result:=Math.ArcTan2(y, x);
+   Result:=System.Math.ArcTan2(y, x);
 {$endif}
 end;
 
@@ -8485,7 +8485,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.ArcTan2(y, x);
+   Result:=System.Math.ArcTan2(y, x);
    {$HINTS ON}
 {$endif}
 end;
@@ -8521,7 +8521,7 @@ asm
       FSTP ST(0)      // FPTAN pushes 1.0 after result
 {$else}
 begin
-   Result:=Math.Tan(x);
+   Result:=System.Math.Tan(x);
 {$endif}
 end;
 
@@ -8536,7 +8536,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.Tan(x);
+   Result:=System.Math.Tan(x);
    {$HINTS ON}
 {$endif}
 end;
@@ -8551,7 +8551,7 @@ asm
       FDIVRP
 {$else}
 begin
-   Result:=Math.CoTan(x);
+   Result:=System.Math.CoTan(x);
 {$endif}
 end;
 
@@ -8566,7 +8566,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.CoTan(x);
+   Result:=System.Math.CoTan(x);
    {$HINTS ON}
 {$endif}
 end;

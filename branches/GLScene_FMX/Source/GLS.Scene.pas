@@ -351,8 +351,8 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils,
-  FMX.Graphics,  FMX.Controls,
+  System.Classes, System.SysUtils, System.UITypes,
+  FMX.Graphics,  FMX.Controls, FMX.Types,
 
   GLS.OpenGLTokens, GLS.Context, GLS.VectorGeometry, GLS.XCollection, 
   GLS.Silhouette, GLS.PersistentClasses, GLS.State, GLS.Graphics, 
@@ -2032,7 +2032,7 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    procedure CreateRC(AWindowHandle: HWND; memoryContext: Boolean;
+    procedure CreateRC(AWindowHandle: THandle; memoryContext: Boolean;//in VCL -> HWND
       BufferCount: integer = 1); overload;
     procedure ClearBuffers;
     procedure DestroyRC;
@@ -2261,7 +2261,7 @@ type
       SetGLFogEnvironment stored StoreFog;
     {: Color used for filling the background prior to any rendering. }
     property BackgroundColor: TColor read FBackgroundColor write
-      SetBackgroundColor default clBtnFace;
+      SetBackgroundColor default TColors.SysBtnFace;
     {: Scene ambient color vector.<p>
        This ambient color is defined independantly from all lightsources,
        which can have their own ambient components. }
@@ -8046,7 +8046,7 @@ begin
 
   // initialize private state variables
   FFogEnvironment := TGLFogEnvironment.Create(Self);
-  FBackgroundColor := clBtnFace;
+  FBackgroundColor := TColors.SysBtnFace;
   FBackgroundAlpha := 1;
   FAmbientColor := TGLColor.CreateInitialized(Self, clrGray20);
   FDepthTest := True;
@@ -8142,7 +8142,7 @@ begin
   end;
 end;
 
-procedure TGLSceneBuffer.CreateRC(AWindowHandle: HWND; memoryContext:
+procedure TGLSceneBuffer.CreateRC(AWindowHandle: THandle; memoryContext:
   Boolean; BufferCount: Integer);
 begin
   DestroyRC;
@@ -8399,7 +8399,8 @@ begin
   try
     aBitmap.Width := FViewPort.Width;
     aBitmap.Height := FViewPort.Height;
-    aBitmap.PixelFormat := glpf24Bit;
+    { TODO -oPW : E2129 Cannot assign to a read-only property }
+    (*aBitmap.PixelFormat := glpf24Bit;*)
     RenderToBitmap(ABitmap, DPI);
     fileName := aFile;
     if fileName = '' then
@@ -8433,9 +8434,10 @@ begin
   try
     aBitmap.Width := bmpWidth;
     aBitmap.Height := bmpHeight;
-    aBitmap.PixelFormat := glpf24Bit;
+    { TODO -oPW : E2129 Cannot assign to a read-only property }
+    (*aBitmap.PixelFormat := glpf24Bit;*)
     RenderToBitmap(aBitmap,
-      (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle)) * bmpWidth) div
+      (GetDeviceLogicalPixelsX(ABitmap.Handle) * bmpWidth) div
       FViewPort.Width);
     fileName := AFile;
     if fileName = '' then
@@ -8653,7 +8655,7 @@ begin
       Options := []; // no such things for bitmap rendering
       ColorBits := aColorBits; // honour Bitmap's pixel depth
       AntiAliasing := aaNone; // no AA for bitmap rendering
-      CreateContext(ABitmap.Canvas.Handle);
+      CreateContext(ABitmap.Handle);
     end;
     try
       FRenderingContext.Activate;
@@ -8673,7 +8675,7 @@ begin
         ClearBuffers;
         FRenderDPI := DPI;
         if FRenderDPI = 0 then
-          FRenderDPI := GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
+          FRenderDPI := GetDeviceLogicalPixelsX(ABitmap.Handle);
         // render
         DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
         if nativeContext <> nil then
