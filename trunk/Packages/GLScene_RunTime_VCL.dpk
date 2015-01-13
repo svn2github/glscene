@@ -288,6 +288,6 @@ contains
   Utils3DS in '..\Source\Utils3DS.pas',
   GLSZLibEx in '..\Source\GLSZLibEx.pas',
   GLSZLibExApi in '..\Source\GLSZLibExApi.pas',
-  PictureRegisteredFormats in '..\Source\PictureRegisteredFormats.pas';
+  GLPictureRegisteredFormats in '..\Source\GLPictureRegisteredFormats.pas';
 
 end.

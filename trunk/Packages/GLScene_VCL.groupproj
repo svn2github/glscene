@@ -36,9 +36,6 @@
         <Projects Include="GLCg_DesignTime_VCL.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLS_SDL_VCL.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -146,23 +143,14 @@
     <Target Name="GLCg_DesignTime_VCL:Make">
         <MSBuild Projects="GLCg_DesignTime_VCL.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLS_SDL_VCL">
-        <MSBuild Projects="GLS_SDL_VCL.dproj"/>
-    </Target>
-    <Target Name="GLS_SDL_VCL:Clean">
-        <MSBuild Projects="GLS_SDL_VCL.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLS_SDL_VCL:Make">
-        <MSBuild Projects="GLS_SDL_VCL.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTime_VCL;GLScene_DesignTime_VCL;GLSS_BASS_VCL;GLSS_FMOD_VCL;GLSS_OpenAL_VCL;GLS_ODE_VCL;GLS_NGD_VCL;GLS_Computing_RunTime_VCL;GLS_Computing_DesignTime_VCL;GLCg_RunTime_VCL;GLCg_DesignTime_VCL;GLS_SDL_VCL"/>
+        <CallTarget Targets="GLScene_RunTime_VCL;GLScene_DesignTime_VCL;GLSS_BASS_VCL;GLSS_FMOD_VCL;GLSS_OpenAL_VCL;GLS_ODE_VCL;GLS_NGD_VCL;GLS_Computing_RunTime_VCL;GLS_Computing_DesignTime_VCL;GLCg_RunTime_VCL;GLCg_DesignTime_VCL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTime_VCL:Clean;GLScene_DesignTime_VCL:Clean;GLSS_BASS_VCL:Clean;GLSS_FMOD_VCL:Clean;GLSS_OpenAL_VCL:Clean;GLS_ODE_VCL:Clean;GLS_NGD_VCL:Clean;GLS_Computing_RunTime_VCL:Clean;GLS_Computing_DesignTime_VCL:Clean;GLCg_RunTime_VCL:Clean;GLCg_DesignTime_VCL:Clean;GLS_SDL_VCL:Clean"/>
+        <CallTarget Targets="GLScene_RunTime_VCL:Clean;GLScene_DesignTime_VCL:Clean;GLSS_BASS_VCL:Clean;GLSS_FMOD_VCL:Clean;GLSS_OpenAL_VCL:Clean;GLS_ODE_VCL:Clean;GLS_NGD_VCL:Clean;GLS_Computing_RunTime_VCL:Clean;GLS_Computing_DesignTime_VCL:Clean;GLCg_RunTime_VCL:Clean;GLCg_DesignTime_VCL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTime_VCL:Make;GLScene_DesignTime_VCL:Make;GLSS_BASS_VCL:Make;GLSS_FMOD_VCL:Make;GLSS_OpenAL_VCL:Make;GLS_ODE_VCL:Make;GLS_NGD_VCL:Make;GLS_Computing_RunTime_VCL:Make;GLS_Computing_DesignTime_VCL:Make;GLCg_RunTime_VCL:Make;GLCg_DesignTime_VCL:Make;GLS_SDL_VCL:Make"/>
+        <CallTarget Targets="GLScene_RunTime_VCL:Make;GLScene_DesignTime_VCL:Make;GLSS_BASS_VCL:Make;GLSS_FMOD_VCL:Make;GLSS_OpenAL_VCL:Make;GLS_ODE_VCL:Make;GLS_NGD_VCL:Make;GLS_Computing_RunTime_VCL:Make;GLS_Computing_DesignTime_VCL:Make;GLCg_RunTime_VCL:Make;GLCg_DesignTime_VCL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

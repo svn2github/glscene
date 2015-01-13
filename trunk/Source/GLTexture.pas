@@ -1041,8 +1041,8 @@ implementation
 uses
   GLScene,
   XOpenGL,
-  PictureRegisteredFormats
-  , GLVectorTypes;
+  GLPictureRegisteredFormats,
+  GLVectorTypes;
 
 const
   cTextureMode: array[tmDecal..tmAdd] of TGLEnum =

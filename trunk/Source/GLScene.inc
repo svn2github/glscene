@@ -33,7 +33,7 @@
 //
 
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
-{$DEFINE GLS_Graphics32_SUPPORT}
+{.$DEFINE GLS_Graphics32_SUPPORT}
 
 // Activate combined support for Delphi and C++Builder
 {$DEFINE GLS_DELPHI_OR_CPPB}
