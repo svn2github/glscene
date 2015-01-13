@@ -28,7 +28,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, FMX.Graphics,
+  System.Classes, System.SysUtils, System.UITypes,
+  FMX.Graphics,
 
   GLS.OpenGLTokens, GLS.Context, GLS.CrossPlatform, GLS.VectorGeometry,
   GLS.Scene, GLS.VectorFileObjects, GLS.VectorLists, GLS.XCollection,
@@ -624,7 +625,7 @@ end;
 
 constructor TGLBFPSMovement.Create(aOwner: TXCollection);
 
-  procedure setupArrow(arrow: TGLArrowLine; color: TDelphiColor);
+  procedure setupArrow(arrow: TGLArrowLine; color: TColor); //TDelphiColor
   begin
     with arrow do
     begin
@@ -652,17 +653,17 @@ begin
   // FIXME: Creating arrows here, but they should be only added when
   // a "showArrows" property changed
   ArrowLine1 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine1, clRed);
+  setupArrow(ArrowLine1, TColors.Red);
   ArrowLine2 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine2, clGreen);
+  setupArrow(ArrowLine2, TColors.Green);
   ArrowLine3 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine3, clBlue);
+  setupArrow(ArrowLine3, TColors.Blue);
   ArrowLine4 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine4, clSilver);
+  setupArrow(ArrowLine4, TColors.Silver);
   ArrowLine5 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine5, clSilver);
+  setupArrow(ArrowLine5, TColors.Silver);
   ArrowLine6 := TGLArrowLine.Create(nil);
-  setupArrow(ArrowLine6, clSilver);
+  setupArrow(ArrowLine6, TColors.Silver);
 
   dirGl := TGLDirectOpenGL.Create(nil);
   dirGl.OnRender := RenderArrowLines;

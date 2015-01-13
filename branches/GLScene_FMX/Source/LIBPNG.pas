@@ -988,11 +988,14 @@ function __ftol: integer; cdecl;
 var
   f: double;
 begin
+ { TODO : E1025 Unsupported language feature: 'ASM' }
+ (*
   asm
            LEA     EAX, f             //  BC++ passes Singles on the FPU stack
            FSTP    qword ptr [EAX]     //  Delphi passes Singles on the CPU stack
   end;
   Result := Trunc(f);
+  *)
 end;
 
 procedure __streams; cdecl;

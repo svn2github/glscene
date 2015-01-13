@@ -4,7 +4,6 @@
 {: GLS.Windows<p>
 
   OpenGL windows management classes and structures<p>
-
  <b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,
                           renamed lowercase sender and accept to uppercase Sender and Accept
@@ -19,29 +18,29 @@
                              (thanks Nicoara Adrian) (BugtrackerID = 1952711)
       <li>06/06/07 - DaStr - Added GLS.Color to uses (BugtrackerID = 1732211)
       <li>20/12/06 - DaStr - Added: TGLEdit.ReadOnly, TGLScrollbar.Locked,
-                                    TGLStringGrid.ColSelect
+                             TGLStringGrid.ColSelect
       <li>10/11/05 - Mathx - Fixed TGLPopupMenu stack overflow on method internalRender.
                              Related to bug 1193909.
-      <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at
-                            (http://www.sulaco.co.za/opengl/windows.zip)
-      <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the
-                            system have been revised all parts have been rewritten.
-      <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
-      <li>05/01/03 - JAJ - Cleaned up the DesignTime AccessViolations...
-      <li>07/01/03 - JAJ - Jeremy Darling modified the TGLEdit's Render, more
-                            updates on TGLEdit expected...
-      <li>18/01/03 - JAJ - Added TGLStringList, TGLScrollbar, TGLPopupMenu...
-      <li>08/08/03 - PS  - Added Horizontal to GLScrollbar...
-      <li>14/08/03 - SG  - Fixed TGLBaseComponent.SetGuiLayout (Joen Joensen)
-      <li>08/08/03 - JAJ - Merged PS's and SG's update... Added TitleOffset...
+      <li>05/02/05 - AX - TGLLabel correct layout depending on Aligment and TextLayout.
+      <li>25/01/05 - AX - Corrected AlphaChannel default value, must be 1
+                          TGLButton, TGLForm - AlphaChannel behaviour text.
+                          Added events OnMouseEnter/OnMouseLeave for all controls
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Replace TColor, TBitmap, TMouseEvent, TKeyEvent, ...
                           by TGLColor, TGLBitmap, TGLMouseEvent, TGLKeyEvent, ...
-      <li>25/01/05 - AX - Corrected AlphaChannel default value, must be 1
-                          TGLButton, TGLForm - AlphaChannel behaviour text.
-                          Added events OnMouseEnter/OnMouseLeave for all controls
-      <li>05/02/05 - AX - TGLLabel correct layout depending on Aligment and TextLayout.
+      <li>08/08/03 - PS  - Added Horizontal to GLScrollbar...
+      <li>14/08/03 - SG  - Fixed TGLBaseComponent.SetGuiLayout (Joen Joensen)
+      <li>08/08/03 - JAJ - Merged PS's and SG's update... Added TitleOffset...
+      <li>05/01/03 - JAJ - Cleaned up the DesignTime AccessViolations...
+      <li>07/01/03 - JAJ - Jeremy Darling modified the TGLEdit's Render, more
+                            updates on TGLEdit expected...
+      <li>18/01/03 - JAJ - Added TGLStringList, TGLScrollbar, TGLPopupMenu...
+      <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
+      <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the
+                            system have been revised all parts have been rewritten.
+      <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at
+                            (http://www.sulaco.co.za/opengl/windows.zip)
  </ul></font>
 }
 

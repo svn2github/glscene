@@ -219,8 +219,8 @@ type
     procedure PropagateSharedContext;
 
     procedure DoCreateContext(ADeviceHandle: THandle); virtual; abstract; //VCL -> HDC
-    procedure DoCreateMemoryContext(outputDevice: THandle; width, height: //VCL ->HWND
-      Integer; BufferCount: integer = 1); virtual; abstract;
+    procedure DoCreateMemoryContext(OutputDevice: THandle; Width, Height: //VCL ->HWND
+         Integer; BufferCount: integer = 1); virtual; abstract;
     function DoShareLists(aContext: TGLContext): Boolean; virtual; abstract;
     procedure DoDestroyContext; virtual; abstract;
     procedure DoActivate; virtual; abstract;
@@ -4773,8 +4773,7 @@ begin
   FWindow.Width := 1;
   FWindow.Height := 1;
   FWindow.BorderStyle := TFmxFormBorderStyle.None;
-  { TODO : fsStayOnTop not found in FMX XE7 }
-  ///FWindow.FormStyle := TFormStyle.StayOnTop;
+  FWindow.FormStyle := TFormStyle.StayOnTop;
   FWindow.Fill.Color := 0;
   vServiceWindow := FWindow;
 {$IFDEF MSWINDOWS}

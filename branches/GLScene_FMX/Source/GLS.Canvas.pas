@@ -45,8 +45,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
-  FMX.Graphics,
+  System.Classes, System.UITypes,
+
   FMX.Graphics,
 
   GLS.VectorGeometry,
@@ -321,7 +321,7 @@ begin
     SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
     // Setup and backup pen stuff
-    FPenColor := clBlack;
+    FPenColor := TColorRec.Black;
     SetVector(FCurrentPenColorVector, NullHmgPoint);
     GL.Color4fv(@FCurrentPenColorVector);
     FPenWidth := 1;

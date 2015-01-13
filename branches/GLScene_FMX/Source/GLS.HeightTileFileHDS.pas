@@ -240,6 +240,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClasses([TGLHeightTileFileHDS]);
+   RegisterClasses([TGLHeightTileFileHDS]);
 
 end.

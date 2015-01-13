@@ -50,11 +50,11 @@ interface
 
 uses
   // System
-  System.SysUtils, System.Classes,
+  System.SysUtils, System.Classes, System.UITypes,
   FMX.Graphics,
-   
-  GLS.Texture, GLS.Material, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes,
-  GLS.ParticleFX, GLS.CrossPlatform, GLS.Coordinates;
+
+  GLS.Color, GLS.Texture, GLS.Material, GLS.Scene, GLS.VectorGeometry,
+  GLS.VectorTypes, GLS.ParticleFX, GLS.CrossPlatform, GLS.Coordinates;
 
 type
 
@@ -73,8 +73,8 @@ type
     FZMask: TGLLibMaterialName;
     FXMask: TGLLibMaterialName;
     FMaterialLibrary: TGLMaterialLibrary;
-    FBackgroundColor: TDelphiColor;
-    FMaskColor: TDelphiColor;
+    FBackgroundColor: TColor;
+    FMaskColor: TColor;
     FMaxX, FMaxY, FMaxZ, FMinX, FMinY, FMinZ: Integer;
     IXW, IXH, IYW, IYH, IZW, IZH: Integer;
     LX, LY, LZ: Integer;
@@ -129,10 +129,10 @@ type
     property YMask: TGLLibMaterialName read FYMask write SetYMask;
     property ZMask: TGLLibMaterialName read FZMask write SetZMask;
     // background color is the color that prevents particles from being positioned there
-    property BackgroundColor: TDelphiColor read FBackgroundColor write
+    property BackgroundColor: TColor read FBackgroundColor write
       FBackgroundColor;
     // maskcolor is where particles are allowed to be positioned
-    property MaskColor: TDelphiColor read FMaskColor write FMaskColor;
+    property MaskColor: TColor read FMaskColor write FMaskColor;
     // just the average angles for orientation
     property RollAngle: Single read FRollAngle write FRollAngle;
     property PitchAngle: Single read FPitchAngle write FPitchAngle;
@@ -246,8 +246,8 @@ begin
   FPosition := TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
   FMaterialLibrary := nil;
 
-  FMaskColor := clWhite;
-  FBackGroundColor := clBlack;
+  FMaskColor := TColorRec.White;
+  FBackGroundColor := TColorRec.Black;
 
   FTurnAngle := 0;
   FRollAngle := 0;
@@ -266,8 +266,8 @@ begin
   FScale.Free;
   FPosition.Free;
   FMaterialLibrary := nil;
-  FBackgroundColor := clBlack;
-  FMaskColor := clWhite;
+  FBackgroundColor := TColorRec.Black;
+  FMaskColor := TColorRec.White;
   FXMask := '';
   FYMask := '';
   FZMask := '';
@@ -313,27 +313,35 @@ begin
   ToBitMap.Width := FromBitMap.Width;
   ToBitMap.Height := FromBitMap.Height;
 
+  { TODO : E2003 Undeclared identifier: 'Pen' }
+  (*
   ToBitMap.Canvas.Pen.Color := FBackgroundColor;
   ToBitMap.Canvas.Pen.Style := psSolid;
   ToBitMap.Canvas.Brush.Color := FBackgroundColor;
   ToBitMap.Canvas.Brush.Style := bsSolid;
+  *)
 
   Rect.Left := 0;
   Rect.Top := 0;
   Rect.Right := ToBitMap.Width;
   Rect.Bottom := ToBitMap.Height;
 
-  ToBitMap.Canvas.FillRect(Rect);
+  { TODO : E2250 There is no overloaded version of 'FillRect' that can be called with these arguments }
+  (*ToBitMap.Canvas.FillRect(Rect);*)
 
+  { TODO : E2003 Undeclared identifier: 'Pen' }
+  (*
   ToBitMap.Canvas.Pen.Color := FMaskColor;
   ToBitMap.Canvas.Brush.Color := FMaskColor;
-
+  *)
   for X := 0 to ToBitMap.Width do
     for Y := 0 to ToBitMap.Height do
     begin
       // from x mask
       if (FromMask = pptXMask) and (ToMask = pptYMask) then
-        if FromBitMap.Canvas.Pixels[X, Y] = FMaskColor then
+        { TODO : E2003 Undeclared identifier: 'Pixels' }
+        (*
+      if FromBitMap.Canvas.Pixels[X, Y] = FMaskColor then
         begin
           ToBitMap.Canvas.MoveTo(((FromBitmap.Width - Depth) div 2), X);
           ToBitMap.Canvas.LineTo(((FromBitmap.Width + Depth) div 2), X);
@@ -370,7 +378,7 @@ begin
           ToBitMap.Canvas.MoveTo(X, ((FromBitmap.Height - Depth) div 2));
           ToBitMap.Canvas.LineTo(X, ((FromBitmap.Height + Depth) div 2));
         end;
-
+       *)
     end;
 
   UpdateExtents;
@@ -554,7 +562,8 @@ begin
     begin
       if XCan <> nil then
         if (X <= XCan.Width) and (Y <= XCan.Height) then
-          if (XCan.Canvas.Pixels[X, Y] = FMaskColor) then
+          { TODO : E2003 Undeclared identifier: 'Pixels' }
+          (*if (XCan.Canvas.Pixels[X, Y] = FMaskColor) then*)
           begin
             if X > MaxXX then
               MaxXX := X;
@@ -568,7 +577,8 @@ begin
           end;
       if YCan <> nil then
         if (X <= YCan.Width) and (Y <= YCan.Height) then
-          if (YCan.Canvas.Pixels[X, Y] = FMaskColor) then
+         { TODO : E2003 Undeclared identifier: 'Pixels' }
+         (* if (YCan.Canvas.Pixels[X, Y] = FMaskColor) then*)
           begin
             if X > MaxYX then
               MaxYX := X;
@@ -582,7 +592,8 @@ begin
           end;
       if ZCan <> nil then
         if (X <= ZCan.Width) and (Y <= ZCan.Height) then
-          if (ZCan.Canvas.Pixels[X, Y] = FMaskColor) then
+         { TODO : E2003 Undeclared identifier: 'Pixels' }
+         (*if (ZCan.Canvas.Pixels[X, Y] = FMaskColor) then*)
           begin
             if X > MaxZX then
               MaxZX := X;
@@ -771,6 +782,8 @@ procedure TGLEParticleMasksManager.FindParticlePosition(var Vec: TVector3f;
 var
   X, Y, Z: Integer;
 begin
+ { TODO : E2003 Undeclared identifier: 'Pixels' }
+ (*
   repeat
     X := Random(Mask.FMaxX - Mask.FMinX) + Mask.FMinX;
     Y := Random(Mask.FMaxY - Mask.FMinY) + Mask.FMinY;
@@ -778,6 +791,7 @@ begin
   until (Mask.XCan.Canvas.Pixels[Z, Y] = Mask.FMaskColor) and
     (Mask.YCan.Canvas.Pixels[X, Z] = Mask.FMaskColor) and
     (Mask.ZCan.Canvas.Pixels[X, Y] = Mask.FMaskColor);
+  *)
   MakeVector(Vec, X, Y, Z);
 end;
 

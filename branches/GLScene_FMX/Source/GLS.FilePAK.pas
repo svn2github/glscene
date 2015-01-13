@@ -215,7 +215,7 @@ procedure TPAKArchive.AddFromFile(FileName, Path: string);
 var
    FS: TFileStream;
 begin
-   if not SysUtils.FileExists(FileName) then
+   if not FileExists(FileName) then
       exit;
    FS := TFileStream.Create(FileName, fmOpenRead);
    try

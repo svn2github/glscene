@@ -43,6 +43,7 @@ interface
 uses
   Winapi.Windows, WinApi.Messages,
   System.Classes, System.SysUtils, System.Types,
+
   FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
   FMX.Viewport3D,
 
@@ -389,7 +390,8 @@ begin
   with Params do
   begin
     Style := Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-    WindowClass.Style := WindowClass.Style or CS_OWNDC;
+    { TODO : E2003 Undeclared identifier: 'WindowClass'  in FMX.Forms.TCreateParams}
+    (*WindowClass.Style := WindowClass.Style or CS_OWNDC;*)
   end;
 end;
 

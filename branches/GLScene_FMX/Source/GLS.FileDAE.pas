@@ -19,16 +19,18 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorFileObjects, GLS.ApplicationFileIO{, Fmx.FileDAE};
+  FMX.DAE.Importer, FMX.DAE.Model,
+
+  GLS.VectorFileObjects, GLS.ApplicationFileIO;
 
 type
-   // TGLDAEVectorFile
+   // TGLFileDAE
    //
    {: The DAE vector file (COLLADA actor file).<p>
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap).<p>}
-   TGLDAEVectorFile = class(TVectorFile)
+   TGLFileDAE = class(TVectorFile)
       public
          { Public Declarations }
          class function Capabilities : TDataFileCapabilities; override;
@@ -49,22 +51,23 @@ implementation
 
 // Capabilities
 //
-class function TGLDAEVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLFileDAE.Capabilities : TDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
 
 // LoadFromStream
 //
-procedure TGLMD2VectorFile.LoadFromStream(aStream : TStream);
+procedure TGLFileDAE.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
-   DAEFile : TFileDAE;
+   DAEFile : TGLFileDAE;
    mesh : TMorphableMeshObject;
    faceGroup : TFGIndexTexCoordList;
    morphTarget : TMeshMorphTarget;
 begin
-   DAEFile:=TFileDAE.Create;
+   { TODO : E2035 Not enough actual parameters }
+   (*DAEFile:=TGLFileDAE.Create();*)
    DAEFile.LoadFromStream(aStream);
    try
       // retrieve mesh data
@@ -74,6 +77,8 @@ begin
          faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
          with faceGroup do begin
             MaterialName:='';
+            { TODO : E2003 Undeclared identifier: 'iTriangles' }
+            (*
             VertexIndices.Capacity:=iTriangles*3;
             TexCoords.Capacity:=iTriangles*3;
             // copy the face list
@@ -82,8 +87,11 @@ begin
                Add(b, b_s, -b_t);
                Add(c, c_s, -c_t);
             end;
+            *)
          end;
          // retrieve frames data (morph targets)
+         { TODO : E2003 Undeclared identifier: 'iFrames' }
+         (*
          for i:=0 to iFrames-1 do begin
             morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
             with morphTarget do begin
@@ -94,9 +102,12 @@ begin
                BuildNormals(faceGroup.VertexIndices, momTriangles);
             end;
          end;
+         *)
       end;
       if GetOwner is TGLActor then with TGLActor(GetOwner).Animations do begin
          Clear;
+         { TODO : E2003 Undeclared identifier: 'frameNames' }
+         (*
          with DAEFile do for i:=0 to frameNames.Count-1 do with Add do begin
             Name:=frameNames[i];
             Reference:=aarMorph;
@@ -105,6 +116,7 @@ begin
                EndFrame:=Integer(frameNames.Objects[i+1])-1
             else EndFrame:=iFrames-1;
          end;
+         *)
       end;
       if mesh.MorphTargets.Count>0 then
          mesh.MorphTo(0);
@@ -121,6 +133,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterVectorFileFormat('dae', 'COLLADA model files', TGLDAEVectorFile);
+   RegisterVectorFileFormat('dae', 'COLLADA model files', TGLFileDAE);
 
 end.

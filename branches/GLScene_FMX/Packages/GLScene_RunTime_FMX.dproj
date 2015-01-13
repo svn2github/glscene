@@ -192,7 +192,6 @@
         <DCCReference Include="..\Source\GLS.FileGRD.pas"/>
         <DCCReference Include="..\Source\GLS.FileGTS.pas"/>
         <DCCReference Include="..\Source\GLS.FileHDR.pas"/>
-        <DCCReference Include="..\Source\GLS.FileJPEG.pas"/>
         <DCCReference Include="..\Source\GLS.FileLMTS.pas"/>
         <DCCReference Include="..\Source\GLS.FileLWO.pas"/>
         <DCCReference Include="..\Source\GLS.FileMD2.pas"/>
@@ -207,9 +206,7 @@
         <DCCReference Include="..\Source\GLS.FileOBJ.pas"/>
         <DCCReference Include="..\Source\GLS.FileOCT.pas"/>
         <DCCReference Include="..\Source\GLS.FilePAK.pas"/>
-        <DCCReference Include="..\Source\GLS.FilePGM.pas"/>
         <DCCReference Include="..\Source\GLS.FilePLY.pas"/>
-        <DCCReference Include="..\Source\GLS.FilePNG.pas"/>
         <DCCReference Include="..\Source\GLS.FileQ3BSP.pas"/>
         <DCCReference Include="..\Source\GLS.FileSMD.pas"/>
         <DCCReference Include="..\Source\GLS.FileSTL.pas"/>
@@ -218,7 +215,6 @@
         <DCCReference Include="..\Source\GLS.FileVRML.pas"/>
         <DCCReference Include="..\Source\GLS.FileWAV.pas"/>
         <DCCReference Include="..\Source\GLS.FileX.pas"/>
-        <DCCReference Include="..\Source\GLS.FileZLIB.pas"/>
         <DCCReference Include="..\Source\GLS.FireFX.pas"/>
         <DCCReference Include="..\Source\GLS.FPSMovement.pas"/>
         <DCCReference Include="..\Source\GLS.FullScreenViewer.pas"/>
@@ -356,7 +352,6 @@
         <DCCReference Include="..\Source\GLS.XCollection.pas"/>
         <DCCReference Include="..\Source\GLS.XOpenGL.pas"/>
         <DCCReference Include="..\Source\GLS.zBuffer.pas"/>
-        <DCCReference Include="..\Source\GLS.zLibEx.pas"/>
         <DCCReference Include="..\Source\GLSL.BumpShader.pas"/>
         <DCCReference Include="..\Source\GLSL.DiffuseSpecularShader.pas"/>
         <DCCReference Include="..\Source\GLSL.Parameter.pas"/>
@@ -365,7 +360,6 @@
         <DCCReference Include="..\Source\GLSL.Shader.pas"/>
         <DCCReference Include="..\Source\HDRImage.pas"/>
         <DCCReference Include="..\Source\LIBFREETYPE.pas"/>
-        <DCCReference Include="..\Source\LIBPNG.pas"/>
         <DCCReference Include="..\Source\LWObjects.pas"/>
         <DCCReference Include="..\Source\Q3BSP.pas"/>
         <DCCReference Include="..\Source\Q3MD3.pas"/>
@@ -379,9 +373,12 @@
         <DCCReference Include="..\Source\VRMLParser.pas"/>
         <DCCReference Include="..\Source\GLS.OpenGLAdapter.pas"/>
         <DCCReference Include="..\Source\GLS.Utils.pas"/>
-        <DCCReference Include="..\Source\GLS.zLibExApi.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
         <DCCReference Include="..\Source\GLS.PictureRegisteredFormats.pas"/>
+        <DCCReference Include="..\Source\GLS.VectorFileObjects.pas"/>
+        <DCCReference Include="..\Source\GLS.DCEMisc.pas"/>
+        <DCCReference Include="..\Source\GLS.ArchiveManager.pas"/>
+        <DCCReference Include="..\Source\GLS.Canvas.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -279,7 +279,7 @@ type
     procedure SetYScope(const Value: TGLFloat);
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
-    procedure SetStyle(const val: TGLPlaneStyle);
+    procedure SetStyle(const val: TGLPlaneStyles);
 
   public
     { Public Declarations }
@@ -313,7 +313,7 @@ type
     property YOffset: TGLFloat read FYOffset write SetYOffset;
     property YScope: TGLFloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
-    property Style: TGLPlaneStyle read FStyle write SetStyle
+    property Style: TGLPlaneStyles read FStyle write SetStyle
       default [psSingleQuad, psTileTexture];
   end;
 
@@ -1839,7 +1839,7 @@ end;
 // SetStyle
 //
 
-procedure TGLPlane.SetStyle(const val: TGLPlaneStyle);
+procedure TGLPlane.SetStyle(const val: TGLPlaneStyles);
 begin
   if val <> FStyle then
   begin

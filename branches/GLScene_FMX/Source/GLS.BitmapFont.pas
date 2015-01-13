@@ -58,7 +58,10 @@ unit GLS.BitmapFont;
 interface
 
 uses
-  System.Classes, System.SysUtils, FMX.Graphics, System.Types,
+  System.Classes, System.SysUtils, System.Types, System.UITypes,
+  FMX.Graphics, FMX.Types,
+
+
   GLS.Scene, GLS.VectorGeometry, GLS.Context, GLS.CrossPlatform,
   GLS.Texture, GLS.State, GLS.Utils, GLS.Graphics, GLS.Color, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.TextureFormat,
@@ -633,8 +636,8 @@ constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRanges := TBitmapFontRanges.Create(Self);
-  FGlyphs := TGLPicture.Create;
-  FGlyphs.OnChange := OnGlyphsChanged;
+  FGlyphs := TGLPicture.Create(AOwner);
+  FGlyphs.Bitmap.OnChange := OnGlyphsChanged;
   FCharWidth := 16;
   FCharHeight := 16;
   FHSpace := 1;
@@ -844,12 +847,12 @@ procedure TGLCustomBitmapFont.OnGlyphsChanged(Sender: TObject);
 begin
   InvalidateUsers;
   // when empty, width is 0 and roundup give 1
-  if not Glyphs.Graphic.Empty then
+  if not Glyphs.Bitmap.IsEmpty then
   begin
     if FTextureWidth = 0 then
-      FTextureWidth := RoundUpToPowerOf2(Glyphs.Width);
+      FTextureWidth := RoundUpToPowerOf2(Glyphs.Bitmap.Width);
     if FTextureHeight = 0 then
-      FTextureHeight := RoundUpToPowerOf2(Glyphs.Height);
+      FTextureHeight := RoundUpToPowerOf2(Glyphs.Bitmap.Height);
   end;
 end;
 
@@ -898,8 +901,8 @@ begin
 
   X := 0;
   Y := 0;
-  w := Glyphs.Width;
-  h := Glyphs.Height;
+  w := Glyphs.Bitmap.Width;
+  h := Glyphs.Bitmap.Height;
 
   // was an error...
   FTextRows := 1 + (h - 1) div FTextureHeight;
@@ -909,8 +912,8 @@ begin
   with bitmap do
   begin
 {$IFDEF MSWINDOWS}
-    // due to lazarus doesn't properly support pixel formats
-    PixelFormat := glpf32bit;
+   { TODO : E2129 Cannot assign to a read-only property }
+    (*PixelFormat := TPixelFormat.RGBA32F;*)
 {$ENDIF}
     Width  := RoundUpToPowerOf2(FTextureWidth);
     Height := RoundUpToPowerOf2(FTextureHeight);
@@ -929,7 +932,8 @@ begin
     ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
 
     // copy data
-    bitmap.Canvas.Draw(-X, -Y, Glyphs.Graphic);
+    { TODO : E2003 Undeclared identifier: 'Draw', need to use DrawBitmap() }
+    (*bitmap.Canvas.Draw(-X, -Y, Glyphs.Bitmap);*)
     // Clipboard.Assign(bitmap);
     bitmap32.Assign(bitmap);
     bitmap32.Narrow;
@@ -1186,8 +1190,8 @@ end;
 //
 function TGLCustomBitmapFont.CharactersPerRow: Integer;
 begin
-  if FGlyphs.Width > 0 then
-    Result := (FGlyphs.Width + FGlyphsIntervalX)
+  if FGlyphs.Bitmap.Width > 0 then
+    Result := (FGlyphs.Bitmap.Width + FGlyphsIntervalX)
       div (FGlyphsIntervalX + FCharWidth)
   else
     Result := 0;

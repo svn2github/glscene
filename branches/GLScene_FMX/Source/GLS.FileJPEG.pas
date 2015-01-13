@@ -56,7 +56,7 @@ type
 implementation
 
 uses
-  GLSJPG,
+  GLS.JPG,
   GLS.VectorGeometry;
 
 // ------------------

@@ -204,7 +204,7 @@ uses
   System.Classes, System.SysUtils, System.Types,
 
   GLS.Scene, GLS.OpenGLTokens, GLS.VectorGeometry,  GLS.Texture,
-  GLS.Material, GLMesh, GLS.VectorLists, GLS.PersistentClasses, GLS.Octree, GLS.GeometryBB,
+  GLS.Material, GLS.Mesh, GLS.VectorLists, GLS.PersistentClasses, GLS.Octree, GLS.GeometryBB,
   GLS.ApplicationFileIO, GLS.Silhouette, GLS.Context, GLS.Color, GLS.RenderContextInfo,
   GLS.Coordinates, GLS.BaseClasses, GLS.TextureFormat;
 

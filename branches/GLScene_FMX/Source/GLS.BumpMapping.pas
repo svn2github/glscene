@@ -21,6 +21,7 @@ unit GLS.BumpMapping;
 interface
 
 uses
+  System.UITypes,
   GLS.VectorGeometry, GLS.VectorLists, GLS.CrossPlatform, GLS.VectorTypes;
 
 type
@@ -165,7 +166,7 @@ end;
 // Local functions used for creating normal maps
 // ------------------------------------------------------------------------
 
-function ConvertNormalToColor(normal : TAffineVector) : TDelphiColor;
+function ConvertNormalToColor(normal : TAffineVector) : TColor; //In VCL -> TDelphiColor;
 var
   r,g,b : Byte;
 begin
@@ -340,14 +341,18 @@ begin
 
   // Create the bitmap
   Result:=TGLBitmap.Create;
-  Result.Width:=Width;
-  Result.Height:=Height;
-  Result.PixelFormat:=glpf24bit;
+  { TODO : E2129 Cannot assign to a read-only property }
+  (*Result.Image.Width := Width;
+  Result.Image.Height := Height;
+  Result.PixelFormat := TPixelFormat.RGBA;*)
 
   // Paint bitmap with normal map normals (X,Y,Z) -> (R,G,B)
   for i:=0 to NormalMap.Count-1 do
-    Result.Canvas.Pixels[i mod Width, i div Height]:=ConvertNormalToColor(NormalMap[i]);
-
+    { TODO : E2003 Undeclared identifier: 'Pixels' }
+    (*
+    Result.Canvas.Pixels[i mod Width, i div Height]:=
+       ConvertNormalToColor(NormalMap[i]);
+    *)
   NormalMap.Free;
 end;
 
@@ -451,12 +456,14 @@ begin
   Result:=TGLBitmap.Create;
   Result.Width:=Width;
   Result.Height:=Height;
-  Result.PixelFormat:=glpf24bit;
-
+  { TODO : E2129 Cannot assign to a read-only property }
+  (*Result.PixelFormat:=glpf24bit;*)
   // Paint bitmap with normal map normals (X,Y,Z) -> (R,G,B)
   for i:=0 to NormalMap.Count-1 do
-    Result.Canvas.Pixels[i mod Width, i div Height]:=ConvertNormalToColor(NormalMap[i]);
-
+  { TODO : E2003 Undeclared identifier: 'Pixels' }
+    (*
+      Result.Canvas.Pixels[i mod Width, i div Height]:=ConvertNormalToColor(NormalMap[i]);
+     *)
   NormalMap.Free;
 end;
 

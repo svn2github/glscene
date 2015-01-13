@@ -74,12 +74,13 @@ interface
 uses
   {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF} System.Classes, System.SysUtils,
 
-  OpenGL1x, 
-  GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLS.GeomObjects, GLS.BitmapFont, GLS.VectorFileObjects, GLS.CrossPlatform,
-  GLS.Coordinates, GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes,
-  GLS.Canvas, GLS.PersistentClasses, GLS.Screen, GLS.State, GLS.Selection,
-  GLS.OpenGLTokens, GLS.Context;
+  //OpenGL1x,
+  GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material,
+  GLS.Strings, GLS.SceneViewer, GLS.GeomObjects, GLS.BitmapFont,
+  GLS.VectorFileObjects, GLS.CrossPlatform,  GLS.Coordinates,
+  GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes, GLS.Canvas,
+  GLS.PersistentClasses, GLS.Screen, GLS.State, GLS.Selection, GLS.OpenGLTokens,
+  GLS.Context;
 
 
 type
@@ -2126,7 +2127,7 @@ begin
   //according to modes, it's a pity that canvas has restrictions
   if FShowMultiSelecting then
   begin
-    glc := TGLCanvas.Create(Viewer.Width, Viewer.Height);
+    glc := TGLCanvas.Create(Round(Viewer.Width), Round(Viewer.Height));
     glc.PenColor := FSelectionRegionColor.AsWinColor;
     glc.PenWidth := 1;
     LastCurPosX := fLastCursorPos.X;
@@ -2719,10 +2720,10 @@ begin
     if not FCanRemoveObjFromSelectionList and not FCanAddObjtoSelectionList then
       FSelectedObjects.Clear;
 
-    for I := 0 to viewer.Height - 1 do
+    for I := 0 to Round(viewer.Height) - 1 do
       if IsLineIntCirlce(Maxfloat(abs(CurPosX - LastCurPosX),
         abs(CurPosY - LastCurPosY)),
-        flastcursorPos, point(0, I), point(viewer.Width, I), p1, p2) >= 0 then
+        flastcursorPos, point(0, I), point(Round(viewer.Width), I), p1, p2) >= 0 then
         if (I mod 2 = 0) then
         begin
           pick := InternalGetPickedObjects(p2.X - 1, p2.Y - 1, p1.X + 1, p1.Y + 1, 8);
@@ -2746,8 +2747,8 @@ begin
 
         if not FCanRemoveObjFromSelectionList and not FCanAddObjtoSelectionList then
           FSelectedObjects.Clear;
-        for J := 0 to viewer.Height - 1 do
-          for I := 0 to viewer.Width - 1 do
+        for J := 0 to Round(viewer.Height) - 1 do
+          for I := 0 to Round(viewer.Width) - 1 do
           begin
             if IsPointInPolygon(FSelectionRec, point(I, J)) then
             begin
@@ -2787,8 +2788,8 @@ begin
 
     if not FCanRemoveObjFromSelectionList and not FCanAddObjtoSelectionList then
       FSelectedObjects.Clear;
-    for J := 0 to viewer.Height - 1 do
-      for I := 0 to viewer.Width - 1 do
+    for J := 0 to Round(viewer.Height) - 1 do
+      for I := 0 to Round(viewer.Width) - 1 do
       begin
         if IsPointInPolygon(FSelectionRec, point(I, J)) then
         begin
@@ -3156,7 +3157,7 @@ var
   InvertedY: Integer;
 begin
 
-  InvertedY := Viewer.Height - Y;
+  InvertedY := Round(Viewer.Height) - Y;
 
   SetVector(v, X, InvertedY, 0);
 
@@ -3848,9 +3849,9 @@ var
     //Процедура для перевода курсора из начала в конец
     //без потерь операций над обьектом
     GetWindowRect(GetDesktopWindow, R);
-    GetWindowRect(viewer.Handle, VR);
+    { TODO : E2003 Undeclared identifier: 'Handle' }
+    (*GetWindowRect(viewer.Handle, VR);*)
     GLGetCursorPos(cp);
-
     if cp.Y = R.Bottom - 1 then
     begin
       SetCursorPos(cp.X, R.Top + 3);

@@ -26,7 +26,7 @@ uses
   System.Classes, System.SysUtils,
   //
   GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.VectorGeometry,
-  GLS.VectorTypes, GLS.VectorLists, Q3BSP, GLBSP, GLS.Texture,
+  GLS.VectorTypes, GLS.VectorLists, Q3BSP, GLS.BSP, GLS.Texture,
   GLS.Graphics, GLS.CrossPlatform, GLS.State, GLS.Utils,
   GLS.Material, GLS.TextureFormat;
 
@@ -155,7 +155,8 @@ begin
       n := bsp.NumOfLightmaps;
       lightmapBmp := TGLBitmap.Create;
       try
-        lightmapBmp.PixelFormat := glpf24bit;
+        { TODO : E2129 Cannot assign to a read-only property }
+        (*lightmapBmp.PixelFormat := glpf24bit;*)
         lightmapBmp.Width := 128;
         lightmapBmp.Height := 128;
         for i := 0 to n - 1 do
@@ -171,8 +172,11 @@ begin
               vQ3BSPLightmapGammaCorrection);
           // convert RAW RGB to BMP
           for y := 0 to 127 do
+            { TODO : E2003 Undeclared identifier: 'ScanLine' }
+            (*
             BGR24ToRGB24(@bspLightMap.imageBits[y * 128 * 3],
-            lightmapBmp.ScanLine[127 - y], 128);
+                        lightmapBmp.ScanLine[127 - y], 128);
+            *)
           // spawn lightmap
           libMat := lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
           with libMat.Material.Texture do

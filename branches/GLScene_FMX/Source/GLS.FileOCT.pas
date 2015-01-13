@@ -97,7 +97,8 @@ begin
       n := oct.Header.numLightmaps;
       lightmapBmp := TGLBitmap.Create;
       try
-        lightmapBmp.PixelFormat := glpf24bit;
+        { TODO : E2129 Cannot assign to a read-only property }
+        (*lightmapBmp.PixelFormat := glpf24bit;*)
         lightmapBmp.Width := 128;
         lightmapBmp.Height := 128;
         for i := 0 to n - 1 do
@@ -115,7 +116,11 @@ begin
               vGLFileOCTLightmapGammaCorrection);
           // convert RAW RGB to BMP
           for y := 0 to 127 do
-          Move(octLightmap.map[y * 128 * 3], lightmapBmp.ScanLine[127 - y]^, 128 * 3);
+          { TODO : E2003 Undeclared identifier: 'ScanLine' }
+          (*
+          Move(octLightmap.map[y * 128 * 3],
+             lightmapBmp.ScanLine[127 - y]^, 128 * 3);
+          *)
           // spawn lightmap
           libMat := lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
           with libMat.Material.Texture do

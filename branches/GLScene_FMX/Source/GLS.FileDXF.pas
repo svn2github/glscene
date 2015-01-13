@@ -249,11 +249,11 @@ const
     S: String;
     c: CHAR;
   begin
-    c := SysUtils.FormatSettings.DecimalSeparator;
-    SysUtils.FormatSettings.DecimalSeparator := '.';
+    c := FormatSettings.DecimalSeparator;
+    FormatSettings.DecimalSeparator := '.';
     S := Trim(ReadLine);
     result := StrToFloat(S);
-    SysUtils.FormatSettings.DecimalSeparator := c;
+    FormatSettings.DecimalSeparator := c;
   end;
 
   function TGLDXFVectorFile.ReadInt: Integer;
@@ -769,8 +769,11 @@ const
               begin
               end
               else
-                asm nop
-                end    (* put breakpoint here to catch other entities *)
+                { TODO : E1025 Unsupported language feature: 'ASM' }
+                (*
+                asm
+                  nop
+                end *)   (* put breakpoint here to catch other entities *)
             end;
         else
           S := ReadLine;

@@ -35,7 +35,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, FMX.Graphics,
+  System.Classes, System.SysUtils, System.UITypes,
+  FMX.Graphics,
    
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
   GLS.HudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
@@ -195,7 +196,7 @@ begin
   FBlurSelf := true;
   FAdvancedBlurLowClamp := 0;
   FAdvancedBlurHiClamp := 255;
-  FRenderBackgroundColor := ClBlack;
+  FRenderBackgroundColor := TColors.Black;
 end;
 
 destructor TGLBlur.Destroy;

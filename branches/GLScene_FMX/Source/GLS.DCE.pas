@@ -52,7 +52,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Scene, XCollection, GLS.VectorGeometry, GLS.VectorLists,
+  GLS.Scene, GLS.XCollection, GLS.VectorGeometry, GLS.VectorLists,
   GLS.VectorFileObjects, GLS.CrossPlatform, GLS.DCEMisc, GLS.EllipseCollision,
   GLS.TerrainRenderer, GLS.Coordinates, GLS.BaseClasses, GLS.Manager,
   GLS.VectorTypes;

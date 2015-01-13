@@ -300,7 +300,7 @@ begin
           Result := GetContent(fileName);
           Exit;
        end;
-   if SysUtils.FileExists(fileName) then begin
+   if FileExists(fileName) then begin
       Result := TFileStream.Create(FileName, mode);
       Exit;
       //????
@@ -323,7 +323,7 @@ begin
          Result:=True;
          Exit;
       end;
-   Result := SysUtils.FileExists(fileName);
+   Result := FileExists(fileName);
 end;
 
 //******************************************************************************
@@ -359,7 +359,7 @@ procedure TLibArchive.CreateArchive(FileName: string;
 var
   fFile: TFileStream;
 begin
-  if OverwriteExistingFile or not SysUtils.FileExists(FileName) then
+  if OverwriteExistingFile or not FileExists(FileName) then
   begin
    fFile := TFileStream.Create(FileName, fmCreate);
    fFile.Free;
@@ -377,7 +377,7 @@ end;
 
 procedure TLibArchive.LoadFromFile(aFileName, aAchiverType: string);
 begin
-  if not SysUtils.FileExists(aFileName) then
+  if not FileExists(aFileName) then
     Exit;
   ArcClass := GetArchiveFileFormats.FindExt(aAchiverType);
   If ArcClass=nil then

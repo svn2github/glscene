@@ -70,7 +70,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLS.GeomObjects, GLS.BitmapFont, GLSceneViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
+  GLS.GeomObjects, GLS.BitmapFont, GLS.SceneViewer, GLS.VectorFileObjects, GLS.CrossPlatform,
   GLS.Coordinates, GLS.RenderContextInfo, GLS.State, GLS.Selection, GLS.VectorTypes;
 
 type
@@ -1151,7 +1151,7 @@ var
   V: TVector;
   InvertedY: Integer;
 begin
-  InvertedY := Viewer.Height - Y;
+  InvertedY := Round(Viewer.Height) - Y;
   if Assigned(SelectedObj) then
   begin
     SetVector(V, X, InvertedY, 0);

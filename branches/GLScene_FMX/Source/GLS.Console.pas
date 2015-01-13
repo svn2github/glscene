@@ -74,7 +74,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, System.UITypes,
+  System.Classes, System.SysUtils, System.TypInfo, System.UITypes, System.UIConsts,
   FMX.Graphics,
 
   GLS.Scene, GLS.Objects, GLS.HUDObjects, GLS.SceneViewer, GLS.BitmapFont,
@@ -829,8 +829,8 @@ begin
 
   RegisterBuiltIncommands;
   SetVisible(False);
-  SetHUDSpriteColor(clWhite);
-  SetFontColor(clBlue);
+  SetHUDSpriteColor(TColorRec.White);
+  SetFontColor(TColorRec.Blue);
 end;
 
 destructor TGLCustomConsole.Destroy;

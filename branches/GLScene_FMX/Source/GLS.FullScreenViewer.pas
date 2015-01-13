@@ -25,10 +25,10 @@ interface
 uses
   Winapi.Messages, Winapi.Windows,
   System.Classes, System.SysUtils,
-  Fmx.Forms, Fmx.Controls, Fmx.Menus,
-   
-  GLS.Scene, GLS.Context, GLS.SceneContext, GLS.OpenGLTokens,
-  GLS.CrossPlatform, GLS.OpenGLAdapter;
+  FMX.Types, FMX.Forms, FMX.Controls, FMX.Menus,
+
+  GLS.Scene, GLS.SceneViewer, GLS.Context, GLS.SceneContext, GLS.OpenGLTokens,
+  GLS.Crossplatform,  GLS.OpenGLAdapter, GLS.Screen;
 
 type
 
@@ -53,7 +53,7 @@ type
     { Private Declarations }
     FFormIsOwned: Boolean;
     FForm: TForm;
-    FOwnDC: HWND;
+    FOwnDC: THandle; // in VCL HWND;
     FScreenDepth: TGLScreenDepth;
     FActive: Boolean;
     FSwitchedResolution: Boolean;
@@ -62,19 +62,20 @@ type
     FOnMouseDown: TMouseEvent;
     FOnMouseUp: TMouseEvent;
     FOnMouseMove: TMouseMoveEvent;
-    FOnMouseWheel: TMouseWheelEvent;
-    FOnMouseWheelDown: TMouseWheelUpDownEvent;
-    FOnMouseWheelUp: TMouseWheelUpDownEvent;
+    FOnMouseWheel: TMouseWheelEvent; // in VCL TMouseWheelEvent;
+    FOnMouseWheelDown: TMouseWheelEvent; // in VCL TMouseWheelUpDownEvent;
+    FOnMouseWheelUp: TMouseWheelEvent; // in VCL TMouseWheelUpDownEvent;
     FOnClick, FOnDblClick: TNotifyEvent;
     FOnKeyDown: TKeyEvent;
     FOnKeyUp: TKeyEvent;
-    FOnKeyPress: TKeyPressEvent;
+    FOnKeyPress: TKeyEvent; // In VCL TKeyPressEvent;
     FOnClose: TCloseEvent;
     FOnCloseQuery: TCloseQueryEvent;
     FStayOnTop: Boolean;
     FVSync: TVSyncMode;
     FRefreshRate: Integer;
-    FCursor: TCursor;
+    { TODO : E2003 Undeclared identifier: 'TCursor' }
+    (*FCursor: TCursor;*)
     FPopupMenu: TPopupMenu;
     procedure SetScreenDepth(const val: TGLScreenDepth);
     procedure SetActive(const val: Boolean);
@@ -82,23 +83,24 @@ type
     procedure SetOnMouseUp(const val: TMouseEvent);
     procedure SetOnMouseMove(const val: TMouseMoveEvent);
     procedure SetOnMouseWheel(const val: TMouseWheelEvent);
-    procedure SetOnMouseWheelDown(const val: TMouseWheelUpDownEvent);
-    procedure SetOnMouseWheelUp(const val: TMouseWheelUpDownEvent);
+    procedure SetOnMouseWheelDown(const val: TMouseWheelEvent); //in VCL TMouseWheelUpDownEvent
+    procedure SetOnMouseWheelUp(const val: TMouseWheelEvent); //in VCL TMouseWheelUpDownEvent
     procedure SetOnClick(const val: TNotifyEvent);
     procedure SetOnDblClick(const val: TNotifyEvent);
     procedure SetOnCloseQuery(const val: TCloseQueryEvent);
     procedure SetOnClose(const val: TCloseEvent);
     procedure SetOnKeyUp(const val: TKeyEvent);
     procedure SetOnKeyDown(const val: TKeyEvent);
-    procedure SetOnKeyPress(const val: TKeyPressEvent);
+    procedure SetOnKeyPress(const val: TKeyEvent); // in VCL TKeyPressEvent
     procedure SetStayOnTop(const val: Boolean);
-    procedure SetCursor(const val: TCursor);
+    { TODO : E2003 Undeclared identifier: 'TCursor' }
+    (*procedure SetCursor(const val: TCursor);*)
     procedure SetPopupMenu(const val: TPopupMenu);
     procedure SetForm(aVal: TForm);
     procedure SetManualRendering(const val: Boolean);
   protected
     { Protected Declarations }
-    function GetHandle: HWND;
+    function GetHandle: TWindowHandle;
 
     procedure DoBeforeRender(Sender: TObject);
     procedure DoBufferChange(Sender: TObject); override;
@@ -133,7 +135,7 @@ type
     { : Read access to the underlying form handle.<p>
       Returns 0 (zero) if the viewer is not active or has not yet
       instantiated its form. }
-    property Handle: HWND read GetHandle;
+    property Handle: TWindowHandle read GetHandle;
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
@@ -143,7 +145,7 @@ type
     function FramesPerSecondText(decimals: Integer = 1): String;
     procedure ResetPerformanceMonitor;
 
-    property RenderDC: HWND read FOwnDC;
+    property RenderDC: THandle read FOwnDC; //HWND
   published
     { Public Declarations }
     property Form: TForm read FForm write SetForm;
@@ -179,13 +181,14 @@ type
       *reported* compatible with the monitor. }
     property RefreshRate: Integer read FRefreshRate write FRefreshRate;
 
-    property Cursor: TCursor read FCursor write SetCursor default crDefault;
+    { TODO : E2003 Undeclared identifier: 'TCursor' }
+    (*property Cursor: TCursor read FCursor write SetCursor default crDefault;*)
     property PopupMenu: TPopupMenu read FPopupMenu write SetPopupMenu;
 
     property OnClose: TCloseEvent read FOnClose write SetOnClose;
     property OnKeyUp: TKeyEvent read FOnKeyUp write SetOnKeyUp;
     property OnKeyDown: TKeyEvent read FOnKeyDown write SetOnKeyDown;
-    property OnKeyPress: TKeyPressEvent read FOnKeyPress write SetOnKeyPress;
+    property OnKeyPress: TKeyEvent read FOnKeyPress write SetOnKeyPress;
     property OnCloseQuery: TCloseQueryEvent read FOnCloseQuery
       write SetOnCloseQuery;
     property OnClick: TNotifyEvent read FOnClick write SetOnClick;
@@ -196,9 +199,9 @@ type
       write SetOnMouseMove;
     property OnMouseWheel: TMouseWheelEvent read FOnMouseWheel
       write SetOnMouseWheel;
-    property OnMouseWheelDown: TMouseWheelUpDownEvent read FOnMouseWheelDown
+    property OnMouseWheelDown: TMouseWheelEvent read FOnMouseWheelDown
       write SetOnMouseWheelDown;
-    property OnMouseWheelUp: TMouseWheelUpDownEvent read FOnMouseWheelUp
+    property OnMouseWheelUp: TMouseWheelEvent read FOnMouseWheelUp
       write SetOnMouseWheelUp;
   end;
 
@@ -234,7 +237,8 @@ begin
   Height := 600;
   FScreenDepth := sd32bits;
   FVSync := vsmSync;
-  FCursor := crDefault;
+  { TODO : E2003 Undeclared identifier: 'TCursor' }
+  (*FCursor := crDefault;*)
   Buffer.ViewerBeforeRender := DoBeforeRender;
 end;
 
@@ -409,9 +413,10 @@ begin
 
   with FForm do
   begin
-    If BorderStyle <> bsNone then
-      BorderStyle := bsNone;
-    Cursor := Self.Cursor;
+    If BorderStyle <> TFmxFormBorderStyle.None then
+      BorderStyle := TFmxFormBorderStyle.None;
+    { TODO : E2003 Undeclared identifier: 'Cursor' }
+    (*Cursor := Self.Cursor;*)
     PopupMenu := Self.PopupMenu;
     Left := 0;
     Top := 0;
@@ -423,12 +428,15 @@ begin
     if res = 0 then
       raise Exception.Create('Unsupported video mode');
     if StayOnTop then
-      FormStyle := fsStayOnTop
+      FormStyle := TFormStyle.StayOnTop
     else
-      FormStyle := fsNormal;
+      FormStyle := TFormStyle.Normal;
 {$IFDEF MSWINDOWS}
+     { TODO : E2010 Incompatible types: 'HWND' and 'TWindowHandle' }
+     (*
     SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and
       not WS_CAPTION);
+     *)
 {$ENDIF}
     // WindowState:=wsMaximized;
     // Switch video mode
@@ -447,7 +455,8 @@ begin
   end;
 
   Buffer.Resize(0, 0, Width, Height);
-  FOwnDC := GetDC(FForm.Handle);
+  { TODO : E2010 Incompatible types: 'HWND' and 'TWindowHandle' }
+  (*FOwnDC := GetDC(FForm.Handle);*)
   Buffer.CreateRC(FOwnDC, False);
   // Linux Unicode
 {$IFDEF Linux}
@@ -468,7 +477,8 @@ begin
   Buffer.DestroyRC;
   with FForm do
   begin
-    Cursor := crDefault;
+    { TODO : E2003 Undeclared identifier: 'crDefault' }
+    (*Cursor := crDefault;*)
     PopupMenu := nil;
   end;
 {$IFDEF MSWINDOWS}
@@ -505,7 +515,8 @@ begin
       OnKeyUp := FOnKeyUp;
       OnKeyDown := FOnKeyDown;
       OnKeyPress := FOnKeyPress;
-      OnPaint := DoPaint;
+      { TODO : E2009 Incompatible types: 'Parameter lists differ' }
+      (*OnPaint := DoPaint;*)
       OnDestroy := DoFormDestroy;
     end;
 end;
@@ -591,10 +602,10 @@ end;
 
 // SetOnKeyPress
 //
-procedure TGLFullScreenViewer.SetOnKeyPress(const val: TKeyPressEvent);
+procedure TGLFullScreenViewer.SetOnKeyPress(const val: TKeyEvent); //VCL - TKeyPressEvent
 begin
   If Form <> nil then
-    Form.OnKeyPress := val;
+    Form.OnKeyDown := val;
   FOnKeyPress := val;
 end;
 
@@ -628,20 +639,19 @@ end;
 // SetOnMouseWheelDown
 //
 procedure TGLFullScreenViewer.SetOnMouseWheelDown
-  (const val: TMouseWheelUpDownEvent);
+  (const val: TMouseWheelEvent);
 begin
   If Form <> nil then
-    Form.OnMouseWheelDown := val;
+    Form.OnMouseWheel := val;
   FOnMouseWheelDown := val;
 end;
 
 // SetOnMouseWheelUp
 //
-procedure TGLFullScreenViewer.SetOnMouseWheelUp
-  (const val: TMouseWheelUpDownEvent);
+procedure TGLFullScreenViewer.SetOnMouseWheelUp(const val: TMouseWheelEvent);
 begin
   If Form <> nil then
-    Form.OnMouseWheelUp := val;
+    Form.OnMouseWheel := val;
   FOnMouseWheelUp := val;
 end;
 
@@ -650,7 +660,8 @@ end;
 procedure TGLFullScreenViewer.SetOnClick(const val: TNotifyEvent);
 begin
   If Form <> nil then
-    Form.OnClick := val;
+    { TODO : E2003 Undeclared identifier: 'OnClick' }
+    (*Form.OnClick := val;*)
   FOnClick := val;
 end;
 
@@ -659,7 +670,8 @@ end;
 procedure TGLFullScreenViewer.SetOnDblClick(const val: TNotifyEvent);
 begin
   If Form <> nil then
-    Form.OnDblClick := val;
+    { TODO : E2003 Undeclared identifier: 'OnDblClick' }
+    (*Form.OnDblClick := val;*)
   FOnDblClick := val;
 end;
 
@@ -692,6 +704,7 @@ end;
 
 // SetCursor
 //
+(*
 procedure TGLFullScreenViewer.SetCursor(const val: TCursor);
 begin
   if val <> FCursor then
@@ -701,7 +714,7 @@ begin
       FForm.Cursor := val;
   end;
 end;
-
+*)
 // SetPopupMenu
 //
 procedure TGLFullScreenViewer.SetPopupMenu(const val: TPopupMenu);
@@ -710,7 +723,8 @@ begin
   begin
     FPopupMenu := val;
     if Assigned(FForm) then
-      FForm.PopupMenu := val;
+      { TODO : E2003 Undeclared identifier: 'PopupMenu' }
+      (*FForm.PopupMenu := val;*)
   end;
 end;
 
@@ -727,12 +741,12 @@ end;
 
 // GetHandle
 //
-function TGLFullScreenViewer.GetHandle: HWND;
+function TGLFullScreenViewer.GetHandle: TWindowHandle;
 begin
   if Form <> nil then
     Result := FForm.Handle
   else
-    Result := 0;
+    Result := nil;
 end;
 
 // ------------------------------------------------------------------

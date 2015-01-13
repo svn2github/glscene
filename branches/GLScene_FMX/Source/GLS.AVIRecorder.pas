@@ -33,9 +33,11 @@ interface
 
 uses
   Winapi.Windows,
-  WinApi.Messages, System.Classes, System.SysUtils,
+  WinApi.Messages, System.Classes, System.SysUtils, System.UITypes,
   FMX.Controls, FMX.Forms, FMX.Extctrls, FMX.Graphics, FMX.Dialogs,
-  GLS.Graphics, GLSVfw, GLS.Scene, GLS.SceneViewer;
+  FMX.Types,
+
+  GLS.Graphics, GLS.Vfw, GLS.Scene, GLS.SceneViewer, GLS.CrossPlatform;
 
 type
   TAVICompressor = (acDefault, acShowDialog, acDivX);
@@ -176,14 +178,14 @@ implementation
 procedure InitializeBitmapInfoHeader(Bitmap: HBITMAP;
   var BI: TBitmapInfoHeader);
 var
-  BM: Windows.TBitmap;
+  BM: TBitmap;
 begin
   GetObject(Bitmap, SizeOf(BM), @BM);
   with BI do
   begin
     biSize := SizeOf(BI);
-    biWidth := BM.bmWidth;
-    biHeight := BM.bmHeight;
+    biWidth := BM.Width;
+    biHeight := BM.Height;
     biPlanes := 1;
     biXPelsPerMeter := 0;
     biYPelsPerMeter := 0;
@@ -316,7 +318,8 @@ begin
           try
             bmp := bmp32.Create32BitsBitmap;
             try
-              AVIBitmap.Canvas.Draw(0, 0, bmp);
+              { TODO : E2003 Undeclared identifier: 'Draw' }
+              (*AVIBitmap.Canvas.Draw(0, 0, bmp);*)
             finally
               bmp.Free;
             end;
@@ -328,7 +331,7 @@ begin
         begin
           FBuffer.RenderingContext.Activate;
           try
-            BitBlt(AVIBitmap.Canvas.Handle, 0, 0, AVIBitmap.Width,
+            BitBlt(AVIBitmap.Handle, 0, 0, AVIBitmap.Width,
               AVIBitmap.Height, wglGetCurrentDC, 0, 0, SRCCOPY);
           finally
             FBuffer.RenderingContext.Deactivate;
@@ -351,7 +354,8 @@ procedure TGLAVIRecorder.AddAVIFrame(bmp: TBitmap);
 begin
   if RecorderState <> rsRecording then
     raise Exception.Create('Cannot add frame to AVI. AVI file not created.');
-  AVIBitmap.Canvas.Draw(0, 0, bmp);
+  { TODO : E2003 Undeclared identifier: 'Draw' }
+  (*AVIBitmap.Canvas.Draw(0, 0, bmp);*)
 
   InternalAddAVIFrame;
 end;
@@ -390,7 +394,7 @@ begin
     try
       with SaveDialog do
       begin
-        Options := [ofHideReadOnly, ofNoReadOnlyReturn];
+        Options := [TOpenOption.ofHideReadOnly, TOpenOption.ofNoReadOnlyReturn];
         DefaultExt := '.avi';
         Filter := 'AVI Files (*.avi)|*.avi';
         if Execute then
@@ -407,7 +411,7 @@ begin
     if FileExists(FTempName) then
     begin
       Result := (MessageDlg(Format('Overwrite file %s?', [FTempName]),
-        mtConfirmation, [mbYes, mbNo], 0) = mrYes);
+        TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], 0) = mrYes);
       // AVI streamers don't trim the file they're written to, so start from zero
       if Result then
         DeleteFile(FTempName);
@@ -425,7 +429,8 @@ begin
   RecorderState := rsRecording;
 
   try
-    AVIBitmap.PixelFormat := pf24Bit;
+    { TODO : E2129 Cannot assign to a read-only property }
+    (*AVIBitmap.PixelFormat := TPixelFormat.RGBA;*)
     AVIBitmap.Width := FWidth;
     AVIBitmap.Height := FHeight;
 

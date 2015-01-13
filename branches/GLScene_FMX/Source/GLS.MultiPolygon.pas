@@ -53,7 +53,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.OpenGLTokens,  OpenGLAdapter,  GLS.Spline,
+  GLS.OpenGLTokens,  GLS.OpenGLAdapter,  GLS.Spline,
   GLS.XOpenGL,  GLS.Context, GLS.VectorTypes,
   GLS.VectorGeometry, GLS.VectorLists, GLS.PersistentClasses,
   GLS.Scene, GLS.Objects, GLS.GeomObjects, GLS.Nodes, GLS.BaseClasses,
