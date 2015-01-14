@@ -148,7 +148,6 @@ contains
   GLS.MaterialEx in '..\Source\GLS.MaterialEx.pas',
   GLS.MaterialMultiProxy in '..\Source\GLS.MaterialMultiProxy.pas',
   GLS.MaterialScript in '..\Source\GLS.MaterialScript.pas',
-  GLS.Memo in '..\Source\GLS.Memo.pas',
   GLS.Mesh in '..\Source\GLS.Mesh.pas',
   GLS.MeshBuilder in '..\Source\GLS.MeshBuilder.pas',
   GLS.MeshCSG in '..\Source\GLS.MeshCSG.pas',

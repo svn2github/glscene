@@ -52,7 +52,7 @@ interface
 
 uses
   System.SysUtils, System.Classes,
-  FMX.StdCtrls,
+  FMX.StdCtrls, FMX.Memo,
 
   GLS.Texture, GLS.TextureFormat, GLS.Graphics, GLS.Utils, GLS.Color, GLS.Coordinates,
   GLS.Material, GLS.State;
@@ -549,7 +549,7 @@ begin
    if classexists('picturenx') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNX].LoadFromFile(extractvalue);
+         Picture[cmtNX].Bitmap.LoadFromFile(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XPictureNY;
@@ -557,7 +557,7 @@ begin
    if classexists('pictureny') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNY].LoadFromFile(extractvalue);
+         Picture[cmtNY].Bitmap.LoadFromFile(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XPictureNZ;
@@ -565,7 +565,7 @@ begin
    if classexists('picturenz') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtNZ].LoadFromFile(extractvalue);
+         Picture[cmtNZ].Bitmap.LoadFromFile(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XPicturePX;
@@ -573,7 +573,7 @@ begin
    if classexists('picturepx') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPX].LoadFromFile(extractvalue);
+         Picture[cmtPX].Bitmap.LoadFromFile(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XPicturePY;
@@ -581,7 +581,7 @@ begin
    if classexists('picturepy') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPY].LoadFromFile(extractvalue);
+         Picture[cmtPY].Bitmap.LoadFromFile(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XPicturePZ;
@@ -589,7 +589,7 @@ begin
    if classexists('picturepz') then
       if fileexists(extractvalue) then
          with NewMat.Material.Texture.Image as TGLCubeMapImage do
-         Picture[cmtPZ].LoadFromFile(extractvalue);
+         Picture[cmtPZ].Bitmap.LoadFromFile(extractvalue);
 end;
 
 function TGLMaterialScripter.ValueExists(value: string): boolean;

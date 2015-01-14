@@ -15,8 +15,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, WinApi.Messages, System.SysUtils, System.Classes, System.UITypes,
-  FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.ClipBrd,
+  Winapi.Windows, WinApi.Messages,
+  System.SysUtils, System.Classes, System.Types, System.UITypes,
+  FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs,
   FMX.StdCtrls, FMX.ExtCtrls;
 
 type
@@ -107,7 +108,7 @@ type
 
   TGLSMemoScrollBar = class;
 
-  TGLSMemoAbstractScrollableObject = class(TCustomControl)
+  TGLSMemoAbstractScrollableObject = class(TControl) //in VCL TCustomControl
   protected
     { Protected Declarations }
     procedure DoScroll(Sender: TGLSMemoScrollBar; ByValue: integer);
@@ -134,7 +135,7 @@ type
   TGLSMemoScrollBar = class(TGLAbstractMemoObject)
   private
     { Private Declarations }
-    FKind: TScrollBarKind;
+    FKind: TScrollBar;
     FParent: TGLSMemoAbstractScrollableObject;
     FLeft, FTop, FWidth, FHeight: integer;
     FTotal, FMaxPosition, FPosition: integer;
@@ -153,7 +154,7 @@ type
   public
     { Public Declarations }
     constructor Create(AParent: TGLSMemoAbstractScrollableObject;
-      AKind: TScrollBarKind);
+      AKind: TScrollBar);
     procedure PaintTo(ACanvas: TCanvas);
 
     function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
@@ -166,7 +167,7 @@ type
     function MoveThumbTo(X, Y: Integer): integer;
 
     property Parent: TGLSMemoAbstractScrollableObject read FParent;
-    property Kind: TScrollBarKind read FKind write FKind;
+    property Kind: TScrollBar read FKind write FKind;
     property State: TsbState read FState write SetState;
     property Left: integer index 0 read FLeft write SetParams;
     property Top: integer index 1 read FTop write SetParams;
@@ -498,11 +499,12 @@ type
 
   protected
     { Protected Declarations }
-    procedure WndProc(var Message: TMessage); override;
+    { TODO : E2137 Method 'WndProc' not found in base class }
+    (*procedure WndProc(var Message: TMessage); override;*)
 
-    function EditorRect: TRect;
+    function EditorRect: TRectF;
 
-    function LineRangeRect(FromLine, ToLine: integer): TRect;
+    function LineRangeRect(FromLine, ToLine: integer): TRectF;
     function ColRangeRect(FromCol, ToCol: integer): TRect;
     procedure InvalidateLineRange(FromLine, ToLine: integer);
 
@@ -520,21 +522,19 @@ type
 
     function IndentCurrLine: string;
     procedure NewLine;
-
-    procedure CreateParams(var Params: TCreateParams); override;
+     { TODO : E2003 Undeclared identifier: 'TCreateParams' }
+    (*procedure CreateParams(var Params: TCreateParams); override;*)
     procedure Paint; override;
 
     procedure DrawMargin;
     procedure DrawGutter;
     procedure DrawScrollBars;
 
-    procedure KeyDown(var Key: Word; Shift: TShiftState); override;
-    procedure KeyPress(var Key: Char); override;
+    procedure KeyDown(var Key: Word; var KeyChar: WideChar; Shift: TShiftState); override;
 
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y:
-      Integer); override;
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Single); override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Single); override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Single);
       override;
     procedure DblClick; override;
 
@@ -561,7 +561,7 @@ type
     property GutterWidth: integer read FGutterWidth write SetGutterWidth;
     property GutterColor: TColor read GetGutterColor write SetGutterColor;
     property ScrollBars: TScrollStyle read FScrollBars write SetScrollBars
-      default ssBoth;
+      default System.UITypes.TScrollStyle.ssBoth;
     property Font: TFont read FFont write SetFont;
     property ReadOnly: Boolean read FReadOnly write FReadOnly;
     property Lines: TStrings read FLines write SetLines;
@@ -622,7 +622,7 @@ type
     function CellFromPos(X, Y: integer): TCellPos;
     function CharFromPos(X, Y: integer): TFullPos;
     function CellRect(ACol, ARow: integer): TRect;
-    function LineRect(ARow: integer): TRect;
+    function LineRect(ARow: integer): TRectF;
     function ColRect(ACol: integer): TRect;
     function CharStyleNo(LineNo, Pos: integer): integer;
     procedure InsertTemplate(AText: string);
@@ -631,8 +631,11 @@ type
     procedure Redo;
     function CanUndo: Boolean;
     function CanRedo: Boolean;
+    { TODO : E2003 Undeclared identifier: 'TFindOptions' }
+    (*
     function FindText(Text: string; Options: TFindOptions; Select: Boolean):
       Boolean;
+    *)
     property CurX: integer read FCurX write SetCurX;
     property CurY: integer read FCurY write SetCurY;
     property DelErase: Boolean read FDelErase write FDelErase;
@@ -679,15 +682,15 @@ type
     property OnDblClick;
     property OnDragDrop;
     property OnDragOver;
-    property OnEndDrag;
+    property OnDragEnd;  //In VCL OnEndDrag;
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-    property OnStartDrag;
+    property OnDragEnter;  //In VCL OnStartDrag;
     property OnEnter;
     property OnExit;
     property OnKeyDown;
-    property OnKeyPress;
+    (*property OnKeyPress;*)  //In FMX not exists
     property OnKeyUp;
     {: Events }
     property OnGutterDraw;
@@ -807,15 +810,14 @@ type
     property OnDblClick;
     property OnDragDrop;
     property OnDragOver;
-    property OnEndDrag;
+    property OnDragEnd;
     property OnMouseDown;
     property OnMouseMove;
     property OnMouseUp;
-    property OnStartDrag;
+    property OnDragEnter;
     property OnEnter;
     property OnExit;
     property OnKeyDown;
-    property OnKeyPress;
     property OnKeyUp;
     {: Events }
     property OnGutterClick;
@@ -931,6 +933,8 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLSCustomMemo functions'}{$ENDIF}
 
+{ TODO : E2137 Method 'WndProc' not found in base class for FMX}
+(*
 procedure TGLSCustomMemo.WndProc(var Message: TMessage);
   function GetShiftState: Integer;
   begin
@@ -956,7 +960,7 @@ begin
   else
     inherited;
 end;
-
+*)
 //------------------------------------------------
 //    INTELLIMOUSE INIT
 //------------------------------------------------
@@ -1055,17 +1059,17 @@ end;
 
 function TGLSCustomMemo.SelectLine(LineNo, StyleNo: Integer): integer;
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   Result := LineStyle[LineNo];
   LineStyle[LineNo] := StyleNo;
   rct := LineRect(LineNo);
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 end;
 
 procedure TGLSCustomMemo.SelectLines(StartLine, EndLine: Integer);
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   FSelStartX := 0;
   FSelStartY := StartLine;
@@ -1073,24 +1077,24 @@ begin
   FSelEndY := EndLine;
   rct := LineRangeRect(FSelStartY, FSelEndY);
   SelectionChanged;
-  InvalidateRect(Handle, @rct, true);
+  InvalidateRect(rct);
 end;
 
 procedure TGLSCustomMemo.SelectChar(LineNo, Pos, StyleNo: Integer);
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   UnselectChar;
   FSelCharPos.LineNo := LineNo;
   FSelCharPos.Pos := Pos;
   FSelCharStyle := StyleNo;
   rct := LineRect(LineNo);
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 end;
 
 procedure TGLSCustomMemo.UnSelectChar;
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   with FSelCharPos do
   begin
@@ -1101,7 +1105,7 @@ begin
     Pos := -1;
   end;
   FSelCharStyle := -1;
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 end;
 
 //--------------------------------------------------------------
@@ -1117,7 +1121,8 @@ begin
   Lines.Clear;
   TGLSMemoStrings(Lines).DoAdd('');
   ClearUndoList;
-  Invalidate;
+  { TODO : E2003 Undeclared identifier: 'Invalidate' }
+  (*Invalidate;*)
 end;
 
 //--------------------------------------------------------------
@@ -1130,7 +1135,8 @@ begin
   FSelStartX := 0;
   FSelEndY := Lines.Count - 1;
   FSelEndX := Length(Lines[Lines.Count - 1]);
-  Invalidate;
+  { TODO : E2003 Undeclared identifier: 'Invalidate' }
+  (*Invalidate;*)
 end;
 
 //-----------------------------------------------------------
@@ -1165,13 +1171,15 @@ procedure CopyStringToClipboard(const Value: string);
 const
   RusLocale = (SUBLANG_DEFAULT shl $A) or LANG_RUSSIAN;
 begin
-  Clipboard.Open;
+  { TODO : E2003 Undeclared identifier: 'Clipboard' }
+ (* Clipboard.Open;*)
   SetClipboardCodePage(RusLocale);
   try
-    Clipboard.AsText := Value;
+    { TODO : E2003 Undeclared identifier: 'Clipboard' }
+    (*Clipboard.AsText := Value;*)
   finally
     SetClipboardCodePage(RusLocale);
-    Clipboard.Close;
+    (*Clipboard.Close;*)
   end;
 end;
 
@@ -1188,13 +1196,15 @@ var
   H, len: integer;
   Buff: string;
 begin
-  H := ClipBoard.GetAsHandle(CF_TEXT);
+  { TODO : E2003 Undeclared identifier: 'Clipboard' }
+  (*H := ClipBoard.GetAsHandle(CF_TEXT);*)
   len := GlobalSize(H);
   if len = 0 then
     Exit;
 
   SetLength(Buff, len);
-  SetLength(Buff, ClipBoard.GetTextBuf(PChar(Buff), len));
+  { TODO : E2003 Undeclared identifier: 'Clipboard' }
+  (*SetLength(Buff, ClipBoard.GetTextBuf(PChar(Buff), len));*)
   AdjustLineBreaks(Buff);
 
   SetSelText(Buff);
@@ -1254,9 +1264,11 @@ begin
 
   Changed(xSelStartY, -1);
   SelectionChanged;
+ { TODO : E2003 Undeclared identifier: 'Invalidate' }
+ (*
   if bRepaint then
     Invalidate;
-
+  *)
   Undo := TGLSMemoDeleteBufUndo.Create(OldX, OldY, CurX, CurY, S);
   Undo.UndoSelStartX := xSelStartX;
   Undo.UndoSelStartY := xSelStartY;
@@ -1272,7 +1284,8 @@ end;
 
 procedure TGLSCustomMemo.CutToClipBoard;
 begin
-  ClipBoard.SetTextBuf(PChar(GetSelText));
+  { TODO : E2003 Undeclared identifier: 'Clipboard' }
+  (*ClipBoard.SetTextBuf(PChar(GetSelText));*)
   DeleteSelection(True);
 end;
 
@@ -1394,7 +1407,8 @@ begin
   Changed(xSelStartY, -1);
   if Assigned(FUndoList) then
     FUndoList.Add(TGLSMemoPasteUndo.Create(OldX, OldY, CurX, CurY, AValue));
-  Invalidate;
+ {E2003 Undeclared identifier: 'Invalidate'}
+  (*Invalidate;*)
 end;
 
 //--------------------------------------------------------------
@@ -1461,7 +1475,7 @@ end;
 
 procedure TGLSCustomMemo.ClearSelection;
 var
-  rct: TRect;
+  rct: TRectF;
   Changed: Boolean;
 begin
   Changed := not ((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY));
@@ -1475,7 +1489,7 @@ begin
   if Changed then
   begin
     SelectionChanged;
-    InvalidateRect(Handle, @rct, true);
+    InvalidateRect(rct);
   end;
   if Assigned(FOnMoveCursor) then
     FOnMoveCursor(Self);
@@ -1487,7 +1501,7 @@ end;
 
 procedure TGLSCustomMemo.ExpandSelection;
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   rct := LineRangeRect(FPrevSelY, CurY);
   FSelEndX := CurX;
@@ -1495,7 +1509,7 @@ begin
   FPrevSelX := CurX;
   FPrevSelY := CurY;
   SelectionChanged;
-  InvalidateRect(Handle, @rct, true);
+  InvalidateRect(rct); // In VCL InvalidateRect(Handle, @rct, true);
   if Assigned(FOnMoveCursor) then
     FOnMoveCursor(Self);
 end;
@@ -1523,10 +1537,12 @@ end;
 
 procedure TGLSCustomMemo.DoScroll(Sender: TGLSMemoScrollBar; ByValue: integer);
 var
-  eRect, scrRect, sbRect: TRect;
+  eRect, scrRect, sbRect: TRectF;
   Old: integer;
 begin
   eRect := EditorRect;
+  { TODO : E2001 Ordinal type required }
+  (*
   case Sender.Kind of
     sbVertical:
       begin
@@ -1546,9 +1562,9 @@ begin
 
           ScrollDC(Canvas.Handle, 0, (Old - FTopLine) * FCellSize.H,
             eRect, eRect, 0, @scrRect);
-          InvalidateRect(Handle, @scrRect, True);
+          InvalidateRect(scrRect);
           sbRect := Sender.FullRect;
-          InvalidateRect(Handle, @sbRect, True);
+          InvalidateRect(sbRect);
           FGutter.Invalidate;
           ShowCaret(True);
         end;
@@ -1570,13 +1586,14 @@ begin
             CurX := LastVisiblePos;
           ScrollDC(Canvas.Handle, (Old - FLeftCol) * FCellSize.W, 0,
             eRect, eRect, 0, @scrRect);
-          InvalidateRect(Handle, @scrRect, True);
+          InvalidateRect(scrRect);
           sbRect := Sender.FullRect;
-          InvalidateRect(Handle, @sbRect, True);
+          InvalidateRect(sbRect);
           ShowCaret(True);
         end;
       end;
   end;
+  *)
 end;
 
 //--------------------------------------------------------------
@@ -1586,10 +1603,13 @@ end;
 procedure TGLSCustomMemo.DoScrollPage(Sender: TGLSMemoScrollBar; ByValue:
   integer);
 begin
+  { TODO : E2001 Ordinal type required }
+  (*
   case Sender.Kind of
     sbVertical: DoScroll(Sender, ByValue * VisibleLineCount);
     sbHorizontal: DoScroll(Sender, ByValue * VisiblePosCount);
   end;
+  *)
 end;
 
 //--------------------------------------------------------------
@@ -1603,7 +1623,8 @@ begin
     FLines.Assign(ALines);
     Changed(0, -1);
     SelectionChanged;
-    Invalidate;
+    { TODO : E2003 Undeclared identifier: 'Invalidate' }
+    (*Invalidate;*)
   end;
 end;
 
@@ -1839,7 +1860,7 @@ end;
 
 procedure TGLSCustomMemo.MovePage(dP: integer; Shift: TShiftState);
 var
-  eRect: TRect;
+  eRect: TRectF;
   LinesPerPage: integer;
   Selecting: Boolean;
 begin
@@ -1848,7 +1869,8 @@ begin
   Selecting := (ssShift in Shift) and (CurX = FPrevSelX)
     and (CurY = FPrevSelY);
   eRect := EditorRect;
-  LinesPerPage := (eRect.Bottom - eRect.Top) div FCellSize.H - 1;
+  { TODO : E2015 Operator not applicable to this operand type }
+  (*LinesPerPage := (eRect.Bottom - eRect.Top) div FCellSize.H - 1;*)
   CurY := CurY + dP * LinesPerPage;
   if ssCtrl in Shift then
     if dP > 0 then
@@ -1919,7 +1941,7 @@ procedure TGLSCustomMemo.InsertChar(C: Char);
 var
   S, S1: string;
   NewPlace: integer;
-  rct: TRect;
+  rct: TRectF;
   CurX0, CurY0: integer;
 begin
   CurX0 := CurX;
@@ -1944,7 +1966,7 @@ begin
   if Assigned(FUndoList) then
     FUndoList.Add(TGLSMemoInsCharUndo.Create(CurX0, CurY0, CurX, CurY, S1));
 
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 end;
 
 //--------------------------------------------------------------
@@ -2012,7 +2034,7 @@ end;
 procedure TGLSCustomMemo.DeleteChar(OldX, OldY: integer);
 var
   S, S1: string;
-  rct: TRect;
+  rct: TRectF;
   C: char;
   Undo: TGLSMemoDelCharUndo;
   IsBackspace: Boolean;
@@ -2063,7 +2085,7 @@ begin
       FUndoList.Add(Undo);
   end;
   ClearSelection;
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 end;
 
 //--------------------------------------------------------------
@@ -2073,7 +2095,7 @@ end;
 procedure TGLSCustomMemo.DeleteLine(Index, OldX, OldY, NewX, NewY: integer;
   FixUndo: Boolean);
 var
-  rct: TRect;
+  rct: TRectF;
   s: string;
 begin
   if Index < 0 then
@@ -2099,7 +2121,7 @@ begin
   else
     Changed(Index, -1);
   rct := EditorRect;
-  InvalidateRect(Handle, @rct, True);
+  InvalidateRect(rct);
 
   if NewX < 0 then
   begin
@@ -2200,7 +2222,9 @@ begin
   if Assigned(FUndoList) then
     FUndoList.Add(TGLSMemoInsCharUndo.Create(OldX, OldY, CurX, CurY, #13 +
       sIndent));
-  Invalidate;
+
+  { TODO :  E2003 Undeclared identifier: 'Invalidate' }
+  (*Invalidate;*)
   Changed(CurY - 1, -1);
 end;
 
@@ -2281,7 +2305,7 @@ end;
 //        KEY DOWN
 //--------------------------------------------------------------
 
-procedure TGLSCustomMemo.KeyDown(var Key: Word; Shift: TShiftState);
+procedure TGLSCustomMemo.KeyDown(var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
 begin
   ShowCaret(False);
   inherited;
@@ -2300,45 +2324,25 @@ begin
 end;
 
 //--------------------------------------------------------------
-//        KEY PRESS
-//--------------------------------------------------------------
-
-procedure TGLSCustomMemo.KeyPress(var Key: Char);
-begin
-  if FReadOnly then
-    Exit;
-  ShowCaret(False);
-  inherited;
-  if (ord(Key) in [9, 32..255]) and (ord(Key) <> 127) then
-  begin
-    if FDelErase and (not ((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY)))
-      then
-      DeleteSelection(True);
-    InsertChar(Key);
-  end
-  else
-    DoCommand(Ord(Key), []);
-  ShowCaret(True);
-end;
-
-//--------------------------------------------------------------
 //        MOUSE DOWN
 //--------------------------------------------------------------
 
 procedure TGLSCustomMemo.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+  X, Y: Single);
 var
   newPos: TCellPos;
   charPos: TFullPos;
   Selecting: Boolean;
 begin
   inherited;
+  { TODO : E2003 Undeclared identifier: 'Focused' }
+  (*
   if not Focused then
   begin
     SetFocus;
     //     Exit;
   end;
-
+  *)
   if FAfterDoubleClick then
   begin
     FAfterDoubleClick := False;
@@ -2602,9 +2606,9 @@ end;
 //        LINE RECT
 //--------------------------------------------------------------
 
-function TGLSCustomMemo.LineRect(ARow: integer): TRect;
+function TGLSCustomMemo.LineRect(ARow: integer): TRectF;
 var
-  rct: TRect;
+  rct: TRectF;
 begin
   rct := EditorRect;
   ARow := ARow - FTopLine;
@@ -2632,9 +2636,9 @@ end;
 //        LINE RANGE RECT
 //--------------------------------------------------------------
 
-function TGLSCustomMemo.LineRangeRect(FromLine, ToLine: integer): TRect;
+function TGLSCustomMemo.LineRangeRect(FromLine, ToLine: integer): TRectF;
 var
-  rct1, rct2: TRect;
+  rct1, rct2: TRectF;
 begin
   rct1 := LineRect(FromLine);
   rct2 := LineRect(ToLine);
@@ -3075,7 +3079,7 @@ end;
 //        EDITOR RECT
 //--------------------------------------------------------------
 
-function TGLSCustomMemo.EditorRect: TRect;
+function TGLSCustomMemo.EditorRect: TRectF;
 var
   l, t, r, b: integer;
 begin

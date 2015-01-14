@@ -2401,9 +2401,10 @@ begin
             end
             else
             begin
-              LPicture := TGLPicture.Create;
-              LPicture.LoadFromFile(FSourceFile);
-              FImage.Assign(LPicture.Graphic);
+               { TODO : E2035 Not enough actual parameters }
+              (*LPicture := TGLPicture.Create;*)
+              LPicture.Bitmap.LoadFromFile(FSourceFile);
+              FImage.Assign(LPicture.Bitmap);
               LPicture.Destroy;
             end;
           end;

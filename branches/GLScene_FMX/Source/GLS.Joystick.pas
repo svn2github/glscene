@@ -22,8 +22,8 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.SysUtils, System.MMSystem,
+  Winapi.Windows, Winapi.Messages, Winapi.MMSystem,
+  System.Classes, System.SysUtils,
   FMX.Forms, FMX.Controls;
 
 type
