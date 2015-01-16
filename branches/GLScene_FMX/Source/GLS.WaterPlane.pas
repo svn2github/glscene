@@ -30,6 +30,7 @@ interface
 
 uses
   System.Classes,
+  FMX.Types,
 
   GLS.VectorGeometry, GLS.Scene, GLS.OpenGLTokens, GLS.VectorLists,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.BaseClasses,
@@ -166,8 +167,8 @@ begin
    FPlaneQuadTexCoords:=TTexPointList.Create;
    FPlaneQuadVertices:=TAffineVectorList.Create;
    FPlaneQuadNormals:=TAffineVectorList.Create;
-   FMask:=TGLPicture.Create;
-   FMask.OnChange:=DoMaskChanged;
+   FMask:=TGLPicture.Create(AOwner);
+   FMask.Bitmap.OnChange:=DoMaskChanged;
 
    SetResolution(64);
 end;
@@ -323,10 +324,12 @@ begin
    if FMask.Width>0 then begin
       maskBmp:=TGLBitmap.Create;
       try
-         maskBmp.PixelFormat:=glpf32bit;
+         { TODO : E2129 Cannot assign to a read-only property }
+         (*maskBmp.PixelFormat:= TPixelFormat.RGBA32F; //in VCL glpf32bit;*)
          maskBmp.Width:=Resolution;
          maskBmp.Height:=Resolution;
-         maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution), FMask.Graphic);
+         { TODO : E2003 Undeclared identifier: 'StretchDraw' }
+         (*maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution), FMask.Graphic);*)
          for j:=0 to Resolution-1 do begin
             scanLine:=BitmapScanLine(maskBmp, Resolution-1-j); //maskBmp.ScanLine[Resolution-1-j];
             for i:=0 to Resolution-1 do

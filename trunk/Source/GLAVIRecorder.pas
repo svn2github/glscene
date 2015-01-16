@@ -430,7 +430,7 @@ begin
   RecorderState := rsRecording;
 
   try
-    AVIBitmap.PixelFormat := pf24Bit;
+    AVIBitmap.PixelFormat := FMX.Types.TPixelFormat.pf24Bit;
     AVIBitmap.Width := FWidth;
     AVIBitmap.Height := FHeight;
 

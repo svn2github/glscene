@@ -50,7 +50,7 @@ interface
 
 uses
   System.Classes,  System.SysUtils, System.TypInfo,
-  FMX.Forms, FMX.Controls, FMX.ExtCtrls,
+  FMX.Forms, FMX.Controls, FMX.ExtCtrls, FMX.Types,
 
   GLS.SceneForm, GLS.VectorGeometry, GLS.Scene,
   GLS.SceneViewer, GLS.Strings, GLS.CrossPlatform;
@@ -73,7 +73,7 @@ type
 
   TGLSimpleNavigationKeyCombination = class;
   TSimpleNavigationCustomActionEvent =
-    procedure(Sender: TGLSimpleNavigationKeyCombination; Shift: TShiftState; X, Y: Integer) of object;
+    procedure(Sender: TGLSimpleNavigationKeyCombination; Shift: TShiftState; X, Y: Single) of object;
 
   TGLSimpleNavigationKeyCombination = class(TCollectionItem)
   private
@@ -83,7 +83,7 @@ type
     FShiftState: TShiftState;
   protected
     function GetDisplayName: string; override;
-    procedure DoOnCustomAction(Shift: TShiftState; X, Y: Integer); virtual;
+    procedure DoOnCustomAction(Shift: TShiftState; X, Y: Single); virtual;
   public
     constructor Create(Collection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
@@ -110,7 +110,7 @@ type
     FForm: TCustomForm;
     FGLSceneViewer: TGLSceneViewer;
 
-    FOldX, FOldY: Integer;
+    FOldX, FOldY: Single;
     FFormCaption: string;
     FMoveAroundTargetSpeed: Single;
     FZoomSpeed: Single;
@@ -121,7 +121,7 @@ type
     FSceneForm: Boolean;
     procedure ShowFPS(Sender: TObject);
     procedure ViewerMouseMove(Sender: TObject;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: Single);
     procedure ViewerMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TGLPoint; var Handled: Boolean);
 
@@ -269,7 +269,7 @@ begin
 end;
 
 procedure TGLSimpleNavigation.ViewerMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: Single);
 
 var
   lCamera: TGLCamera;
@@ -396,7 +396,8 @@ begin
   begin
     if FFormCaption = vFPSString then
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
-    TForm(FForm).OnMouseWheel := ViewerMouseWheel;
+    { TODO : E2009 Incompatible types: 'Parameter lists differ' }
+    (*TForm(FForm).OnMouseWheel := ViewerMouseWheel;*)
     FForm.FreeNotification(Self);
 {$IFDEF GLS_MULTITHREAD}
     if FForm is TGLSceneForm then
@@ -512,7 +513,7 @@ begin
 end;
 
 procedure TGLSimpleNavigationKeyCombination.DoOnCustomAction(
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: Single);
 begin
   if Assigned(FOnCustomAction) then
     FOnCustomAction(Self, Shift, X, Y);

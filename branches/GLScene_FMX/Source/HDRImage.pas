@@ -34,8 +34,11 @@ type
   THDRImage = class(TGLBitmap)
   public
     { Public Declarations }
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
+    { TODO : E2170 Cannot override a non-virtual method }
+
+    procedure LoadFromStream(stream: TStream); //in VCL override;
+    procedure SaveToStream(stream: TStream); //in VCL override;
+
   end;
 
 implementation
@@ -69,13 +72,17 @@ begin
 
   Width := FullHDR.LevelWidth[0];
   Height := FullHDR.LevelHeight[0];
+  { TODO : E2064 Left side cannot be assigned to }
+  (*
   Transparent := false;
   PixelFormat := glpf32bit;
+  *)
 
   src := PGLubyte(FullHDR.Data);
   for y := 0 to Height - 1 do
   begin
-    dst := ScanLine[Height - 1 - y];
+    { TODO : E2003 Undeclared identifier: 'ScanLine' }
+    (*dst := ScanLine[Height - 1 - y];*)
     Move(src^, dst^, Width * 4);
     Inc(src, Width * 4);
   end;
@@ -97,9 +104,8 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-  TGLPicture.RegisterFileFormat(
-    'HDR', 'High Dynamic Range Image', THDRImage);
+  { TODO : E2003 Undeclared identifier: 'RegisterFileFormat', it needs to be added }
+  (*TGLPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);*)
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
@@ -108,8 +114,8 @@ finalization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-
-  TGLPicture.UnregisterGraphicClass(THDRImage);
+  { TODO : E2003 Undeclared identifier: 'UnregisterFileFormat', it needs to be added }
+  (*TGLPicture.UnregisterGraphicClass(THDRImage);*)
 
 end.
 

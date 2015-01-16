@@ -39,14 +39,11 @@ interface
 uses
 {$IFDEF MSWINDOWS} Windows, {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
-{$IFDEF FPC} LCLVersion, {$ENDIF}
   Classes, GLVectorGeometry, GLCrossPlatform;
 
 const
   MaxVideoModes = 200;
-{$IFNDEF FPC}
   lcl_release = 0;
-{$ENDIF}
 
 type
 

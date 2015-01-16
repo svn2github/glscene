@@ -48,8 +48,8 @@ type
 	      constructor Create; override;
          destructor Destroy; override;
 
-         procedure LoadFromStream(stream : TStream); override;
-         procedure SaveToStream(stream : TStream); override;
+         procedure LoadFromStream(stream : TStream); //in VCL override;
+         procedure SaveToStream(stream : TStream); //in VCL override;
 	end;
 
    // ETGAException
@@ -182,7 +182,8 @@ var
 
    function GetLineAddress(ALine: Integer): PByte;
    begin
-     Result := PByte(ScanLine[ALine]);
+     { TODO : E2003 Undeclared identifier: 'ScanLine' }
+     (*Result := PByte(ScanLine[ALine]);*)
    end;
 
 begin
@@ -191,13 +192,15 @@ begin
    if header.ColorMapType<>0 then
       raise ETGAException.Create('ColorMapped TGA unsupported');
 
+   { TODO : E2129 Cannot assign to a read-only property }
+   (*
    case header.PixelSize of
-      24 : PixelFormat:=glpf24bit;
-      32 : PixelFormat:=glpf32bit;
+      24 : PixelFormat:=TPixelFormat.RGBA; //in VCL glpf24bit;
+      32 : PixelFormat:=TPixelFormat.RGBA32F;  //in VCL glpf32bit;
    else
       raise ETGAException.Create('Unsupported TGA ImageType');
    end;
-
+   *)
    Width:=header.Width;
    Height:=header.Height;
    rowSize:=(Width*header.PixelSize) div 8;
@@ -274,7 +277,8 @@ begin
 
    rowSize:=(Width*header.PixelSize) div 8;
    for y:=0 to Height-1 do
-      stream.Write(ScanLine[Height-y-1]^, rowSize);
+     { TODO : E2003 Undeclared identifier: 'ScanLine' }
+     (*    stream.Write(ScanLine[Height-y-1]^, rowSize);*)
 end;
 
 // ------------------------------------------------------------------
@@ -285,9 +289,10 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
+  { TODO : E2003 Undeclared identifier: 'RegisterFileFormat' }
+  (*  TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage); *)
 
 finalization
-
-   TGLPicture.UnregisterGraphicClass(TTGAImage);
+  { TODO : E2003 Undeclared identifier: 'UNregisterFileFormat' }
+  (*  TGLPicture.UnregisterGraphicClass(TTGAImage); *)
 end.

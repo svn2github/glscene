@@ -115,10 +115,10 @@ type
   PGLRect = ^TGLRect;
   TDelphiColor = TColorRec;
 
-  TGLPicture = TImage;  // instead of TPicture
-  TGLGraphic = TBitmap; // instead of TGraphic
+  TGLPicture = TImage;  // in VCL TPicture
+  TGLGraphic = TBitmap; // in VCL  TGraphic
   TGLBitmap = TBitmap;
-  TGraphicClass = class of TBitmap; // instead class of TGraphic
+  TGraphicClass = class of TBitmap; // in VCL class of TGraphic
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 

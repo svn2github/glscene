@@ -332,10 +332,10 @@ constructor TGLSpaceText.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FFont := TFont.Create;
-  FFont.Name := 'Arial';
+  FFont.Family := 'Arial'; //in VCL FFont.Name
   FontChanged := True;
   CharacterRange := stcrDefault;
-  FFont.OnChange := OnFontChange;
+  FFont.OnChanged := OnFontChange;
   FAdjust := TGLTextAdjust.Create;
   FAdjust.OnChange := OnFontChange;
   FLines := TStringList.Create;
@@ -349,7 +349,7 @@ destructor TGLSpaceText.Destroy;
 begin
   FAdjust.OnChange := nil;
   FAdjust.Free;
-  FFont.OnChange := nil;
+  FFont.OnChanged := nil;
   FFont.Free;
   FLines.Free;
   FontManager.Release(FTextFontEntry, Self);
@@ -964,9 +964,10 @@ begin
     AFont := TFont.Create;
     MemDC := CreateCompatibleDC(0);
     try
-      AFont.Name := AName;
+      AFont.Family := AName;
       AFont.Style := FStyles;
-      SelectObject(MemDC, AFont.handle);
+      { TODO : E2003 Undeclared identifier: 'handle' }
+      (*SelectObject(MemDC, AFont.handle);*)
       FCurrentBase := GL.GenLists(nbLists);
       if FCurrentBase = 0 then
         raise Exception.Create('FontManager: no more display lists available');

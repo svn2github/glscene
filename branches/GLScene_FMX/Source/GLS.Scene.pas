@@ -2071,7 +2071,7 @@ type
        are further from the eye, than its centre.}
     function PixelToDistance(x, y: integer): Single;
     {: Design time notification }
-    procedure NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
+    procedure NotifyMouseMove(Shift: TShiftState; X, Y: Single);
 
     {: Renders the scene on the viewer.<p>
        You do not need to call this method, unless you explicitly want a
@@ -9249,7 +9249,7 @@ end;
 // NotifyMouseMove
 //
 
-procedure TGLSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TGLSceneBuffer.NotifyMouseMove(Shift: TShiftState; X, Y: Single);
 begin
   // Nothing
 end;
@@ -10214,3 +10214,4 @@ initialization
   QueryPerformanceFrequency(vCounterFrequency);
 
 end.
+

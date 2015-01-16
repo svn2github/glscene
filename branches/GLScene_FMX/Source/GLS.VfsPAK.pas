@@ -164,7 +164,7 @@ begin
          Exit;
       end
       else begin
-        if SysUtils.FileExists(fileName) then begin
+        if FileExists(fileName) then begin
           Result := TFileStream.Create(FileName, fmOpenReadWrite or fmShareDenyWrite);
           Exit;
          end
@@ -174,7 +174,7 @@ begin
          end;
       end;
    end;
-   if SysUtils.FileExists(fileName) then begin
+   if FileExists(fileName) then begin
       Result := TFileStream.Create(FileName, fmOpenReadWrite or fmShareDenyWrite);
       Exit;
    end
@@ -198,7 +198,7 @@ begin
          Exit;
       end;
    end;
-   Result := SysUtils.FileExists(fileName);
+   Result := FileExists(fileName);
 end;
 // GLS.ApplicationFileIO end
 
@@ -468,7 +468,7 @@ procedure TGLVfsPAK.AddFromFile(FileName, Path: string);
 var
    F: TFileStream;
 begin
-   if not SysUtils.FileExists(FileName) then
+   if not FileExists(FileName) then
       exit;
    F := TFileStream.Create(FileName, fmOpenRead);
    try

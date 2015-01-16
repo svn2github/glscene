@@ -27,8 +27,14 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Winapi.Windows, System.Classes,
-  FMX.Controls, FMX.Forms, FMX.Extctrls;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
+  System.Win.Registry,
+
+  FMX.Dialogs, FMX.Controls, FMX.Forms, FMX.Extctrls, FMX.Types;
 
 type
 
@@ -101,7 +107,7 @@ type
 			{ Protected Declarations }
 			procedure Loaded; override;
 
-			procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+			procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Single);
 			procedure FormKeyPress(Sender: TObject; var Key: Char);
          procedure OnMouseTimer(Sender: TObject);
 
@@ -169,11 +175,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses
-  Winapi.Messages,
-  System.SysUtils, System.Win.Registry,
-  FMX.Dialogs;
-
 // GetSystemDirectory
 //
 {: Returns system path and makes sure there is a trailing '\'.<p> }
@@ -182,7 +183,7 @@ var
 	newLength : Integer;
 begin
 	SetLength(Result, MAX_PATH);
-	newLength:=GetSystemDirectory(PChar(Result), MAX_PATH);
+	newLength:=Winapi.Windows.GetSystemDirectory(PChar(Result), MAX_PATH);
 	SetLength(Result, newLength);
 	if Copy(Result, newLength, 1)<>'\' then
 		Result:=Result+'\';
@@ -292,10 +293,13 @@ begin
 			GetWindowRect(previewHwnd, previewRect);
 			with previewRect do
 				frm.SetBounds(0, 0, Right-Left, Bottom-Top);
-			frm.BorderStyle:=bsNone;
-			frm.ParentWindow:=previewHwnd;
+			frm.BorderStyle:=TFmxFormBorderStyle.bsNone;
+      { TODO : E2010 Incompatible types: 'TFmxObject' and 'HWND' }
+      (*
+			frm.Parent:=previewHwnd;
 			frm.Cursor:=crNone;
-         frm.Visible:=False;
+      *)
+      frm.Visible:=False;
 		end;
 	end;
 	if Assigned(FOnPreview) then
@@ -313,13 +317,16 @@ begin
 	frm:=(Owner as TForm);
 	if Assigned(frm) then begin
    	if ssoAutoAdjustFormProperties in FOptions then begin
-			frm.FormStyle:=fsStayOnTop;
-			frm.WindowState:=wsMaximized;
-			frm.BorderStyle:=bsNone;
+			frm.FormStyle:= TFormStyle.fsStayOnTop;
+			frm.WindowState:=TWindowState.wsMaximized;
+			frm.BorderStyle:=TFmxFormBorderStyle.bsNone;
 		end;
 		if ssoAutoHookKeyboardEvents in FOptions then begin
-			frm.OnKeyPress:=FormKeyPress;
+      { TODO : E2010 Incompatible types: 'Word' and 'Char' }
+      (*
+			frm.OnKeyDown:=FormKeyPress;
 			frm.KeyPreview:=True;
+      *)
 		end;
 		if ssoAutoHookMouseEvents in FOptions then
 			frm.OnMouseMove:=FormMouseMove;
@@ -349,7 +356,7 @@ const
 var
 	reg : TRegistry;
 	p : TPwdProc;
-	pwdCpl : THandle;
+	pwdCpl : TWindowHandle; // in VCL THandle;
 begin
 	Result:=True;
 	if Assigned(FOnCloseQuery) then begin
@@ -361,17 +368,23 @@ begin
 	reg:=TRegistry.Create;
 	try
 		reg.RootKey:=HKEY_CURRENT_USER;
-		if reg.OpenKey('Control Panel\Desktop', FALSE) then begin
+		if reg.OpenKey('Control Panel\Desktop', FALSE) then
+    begin
 			if reg.ValueExists(cScreenSaveUsePassword) then
-				if reg.ReadInteger(cScreenSaveUsePassword) <> 0 then begin
+				if reg.ReadInteger(cScreenSaveUsePassword) <> 0 then
+        begin
 					// We need to ask for the password!
 					// The Passwords control panel exports a routine that we can use: VerifyScreenSavePwd()
-					pwdCpl:=LoadLibrary(PChar(GetSystemDirectory+'password.cpl'));
-					if pwdCpl<>0 then begin
+           { TODO : E2010 Incompatible types: 'TWindowHandle' and 'NativeUInt' }
+					(*
+          pwdCpl:=LoadLibrary(PChar(GetSystemDirectory+'password.cpl'));
+					if pwdCpl<>0 then
+          begin
 						p:=GetProcAddress(pwdCpl, 'VerifyScreenSavePwd');
 						Result:=p((Owner as TForm).Handle);
 						FreeLibrary(pwdCpl);
-					end;
+    			end;
+          *)
 				end;
 		end;
 	finally
@@ -379,14 +392,15 @@ begin
 	end;
 	if Result then begin
 		ShowCursor(True);
-		SendMessage((Owner as TForm).Handle, WM_CLOSE, 0, 0);
+    { TODO : E2250 There is no overloaded version of 'SendMessage' that can be called with these arguments }
+		(*SendMessage((Owner as TForm).Handle, WM_CLOSE, 0, 0);*)
 	end;
 end;
 
 // FormMouseMove
 //
 procedure TGLScreenSaver.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+  Y: Single);
 begin
 	if mouseEventsToIgnore<=0 then
 		CloseSaver

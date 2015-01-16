@@ -31,6 +31,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.UITypes,
   FMX.Graphics,
   FMX.Controls,
   FMX.Menus,
@@ -57,7 +58,7 @@ type
   private
     { Private Declarations }
     FSceneObjectList: TList;
-    FObjectIcons: TImageList; // a list of icons for scene objects
+    FObjectIcons: TStyleBook; // In VCL FObjectIcons: TImageList; <- a list of icons for scene objects
 {$IFDEF MSWINDOWS}
     FOverlayIndex, // indices into the object icon list
 {$ENDIF}
@@ -81,15 +82,15 @@ type
     function GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
     function GetCategory(ASceneObject: TGLSceneObjectClass): string;
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
-    procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
+    procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; AClickEvent: TNotifyEvent);
     //: Registers a stock object and adds it to the stock object list
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string); overload;
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap); overload;
-    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const AName, ACategory: string); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const AName, ACategory: string; ABitmap: TBitmap); overload;
+    procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const AName, ACategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
     //: Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
-    property ObjectIcons: TImageList read FObjectIcons;
+    property ObjectIcons: TStyleBook read FObjectIcons; //In VCL TImageList
     property SceneRootIndex: Integer read FSceneRootIndex;
     property LightsourceRootIndex: Integer read FLightsourceRootIndex;
     property CameraRootIndex: Integer read FCameraRootIndex;
@@ -112,7 +113,7 @@ begin
   inherited;
   FSceneObjectList := TList.Create;
   // FObjectIcons Width + Height are set when you add the first bitmap
-  FObjectIcons := TImageList.CreateSize(16, 16);
+  FObjectIcons := TStyleBook.Create(AOwner);  //In VCL TImageList.CreateSize(16, 16);
 end;
 
 // Destroy
@@ -204,45 +205,50 @@ begin
 end;
 
 procedure TObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
-  aClickEvent: TNotifyEvent);
+  AClickEvent: TNotifyEvent);
 var
-  objectList: TStringList;
+  ObjectList: TStringList;
   i, j: Integer;
-  item, currentParent: TMenuItem;
-  currentCategory: string;
-  soc: TGLSceneObjectClass;
+  Item, CurrentParent: TMenuItem;
+  CurrentCategory: string;
+  Soc: TGLSceneObjectClass;
 begin
-  objectList := TStringList.Create;
+  ObjectList := TStringList.Create;
   try
-    GetRegisteredSceneObjects(objectList);
-    for i := 0 to objectList.Count - 1 do
-      if objectList[i] <> '' then
+    GetRegisteredSceneObjects(ObjectList);
+    for i := 0 to ObjectList.Count - 1 do
+      if ObjectList[i] <> '' then
       begin
-        currentCategory := GetCategory(TGLSceneObjectClass(objectList.Objects[i]));
-        if currentCategory = '' then
-          currentParent := AMenuItem
+        CurrentCategory := GetCategory(TGLSceneObjectClass(ObjectList.Objects[i]));
+        if CurrentCategory = '' then
+          CurrentParent := AMenuItem
         else
         begin
-          currentParent := NewItem(currentCategory, 0, False, True, nil, 0, '');
-          AMenuItem.Add(currentParent);
+          CurrentParent := TMenuItem.Create(nil);
+          CurrentParent.Text := ObjectList[j];
+          //in VCL CurrentParent := NewItem(CurrentCategory, 0, False, True, nil, 0, '');
+          AMenuItem.AddObject(CurrentParent);
         end;
-        for j := i to objectList.Count - 1 do
-          if objectList[j] <> '' then
+        for j := i to ObjectList.Count - 1 do
+          if ObjectList[j] <> '' then
           begin
-            soc := TGLSceneObjectClass(objectList.Objects[j]);
-            if currentCategory = GetCategory(soc) then
+            Soc := TGLSceneObjectClass(ObjectList.Objects[j]);
+            if CurrentCategory = GetCategory(Soc) then
             begin
-              item := NewItem(objectList[j], 0, False, True, aClickEvent, 0, '');
-              item.ImageIndex := GetImageIndex(soc);
-              currentParent.Add(item);
-              objectList[j] := '';
-              if currentCategory = '' then
+              Item := TMenuItem.Create(nil);
+              Item.Text := ObjectList[j];
+              //in VCL Item := NewItem(ObjectList[j], 0, False, True, AClickEvent, 0, '');
+              { TODO : E2003 Undeclared identifier: 'ImageIndex' }
+              (*Item.ImageIndex := GetImageIndex(Soc);*)
+              CurrentParent.AddObject(Item);
+              ObjectList[j] := '';
+              if CurrentCategory = '' then
                 Break;
             end;
           end;
       end;
   finally
-    objectList.Free;
+    ObjectList.Free;
   end;
 end;
 
@@ -279,9 +285,9 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap);
+procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const AName, ACategory: string; ABitmap: TBitmap);
 var
-  newEntry: PSceneObjectEntry;
+  NewEntry: PSceneObjectEntry;
   bmp: TBitmap;
 begin
   if Assigned(RegisterNoIconProc) then
@@ -307,12 +313,19 @@ begin
           try
             // If we just add the bitmap, and it has different dimensions, then
             // all icons will be cleared, so ensure this doesn't happen
-            bmp.PixelFormat := glpf24bit;
+            { TODO : E2129 Cannot assign to a read-only property }
+            (*bmp.PixelFormat := TPixelFormat.RGBA; //in VCL glpf24bit;*)
+            { TODO : E2003 Undeclared identifier: 'Width', 'Height'}
+            (*
             bmp.Width := FObjectIcons.Width;
             bmp.Height := FObjectIcons.Height;
-            bmp.Canvas.Draw(0, 0, aBitmap);
-            FObjectIcons.AddMasked(bmp, bmp.Canvas.Pixels[0, 0]);
-            ImageIndex := FObjectIcons.Count - 1;
+            *)
+            { TODO : E2003 Undeclared identifiers: 'SrcRect' etc.}
+            (*bmp.Canvas.DrawBitmap(ABitmap, SrcRect, DstRect, AOpacity, HighSpeed);*)
+            //in VCL bmp.Canvas.Draw(0, 0, ABitmap);
+            { TODO : E2003 Undeclared identifier: 'AddMasked' }
+            (*FObjectIcons.AddMasked(bmp, bmp.Canvas.Pixels[0, 0]);*)
+            ImageIndex := FObjectIcons.Index - 1; //in VCL FObjectIcons.Count
           finally
             bmp.free;
           end;
@@ -392,13 +405,17 @@ begin
       Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
 {$ENDIF}
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_root');
-      FSceneRootIndex := AddMasked(bmp, Pixels[0, 0]);
+      { TODO : E2003 Undeclared identifier: 'AddMasked' }
+      (*FSceneRootIndex := AddMasked(bmp, Pixels[0, 0]);*)
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_camera');
-      FCameraRootIndex := AddMasked(bmp, Pixels[0, 0]);
+      { TODO : E2003 Undeclared identifier: 'AddMasked' }
+      (*FCameraRootIndex := AddMasked(bmp, Pixels[0, 0]);*)
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_lights');
-      FLightsourceRootIndex := AddMasked(bmp, Pixels[0, 0]);
+      { TODO : E2003 Undeclared identifier: 'AddMasked' }
+      (*FLightsourceRootIndex := AddMasked(bmp, Pixels[0, 0]);*)
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_objects');
-      FObjectRootIndex := AddMasked(bmp, Pixels[0, 0]);
+      { TODO : E2003 Undeclared identifier: 'AddMasked' }
+      (*FObjectRootIndex := AddMasked(bmp, Pixels[0, 0]);*)
     finally
       bmp.Free;
     end;

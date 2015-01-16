@@ -212,45 +212,45 @@ begin
 end;
 
 procedure TObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
-  aClickEvent: TNotifyEvent);
+  AClickEvent: TNotifyEvent);
 var
-  objectList: TStringList;
+  ObjectList: TStringList;
   i, j: Integer;
-  item, currentParent: TMenuItem;
-  currentCategory: string;
-  soc: TGLSceneObjectClass;
+  Item, CurrentParent: TMenuItem;
+  CurrentCategory: string;
+  Soc: TGLSceneObjectClass;
 begin
-  objectList := TStringList.Create;
+  ObjectList := TStringList.Create;
   try
-    GetRegisteredSceneObjects(objectList);
-    for i := 0 to objectList.Count - 1 do
-      if objectList[i] <> '' then
+    GetRegisteredSceneObjects(ObjectList);
+    for i := 0 to ObjectList.Count - 1 do
+      if ObjectList[i] <> '' then
       begin
-        currentCategory := GetCategory(TGLSceneObjectClass(objectList.Objects[i]));
-        if currentCategory = '' then
-          currentParent := AMenuItem
+        CurrentCategory := GetCategory(TGLSceneObjectClass(ObjectList.Objects[i]));
+        if CurrentCategory = '' then
+          CurrentParent := AMenuItem
         else
         begin
-          currentParent := NewItem(currentCategory, 0, False, True, nil, 0, '');
-          AMenuItem.Add(currentParent);
+          CurrentParent := NewItem(CurrentCategory, 0, False, True, nil, 0, '');
+          AMenuItem.Add(CurrentParent);
         end;
-        for j := i to objectList.Count - 1 do
-          if objectList[j] <> '' then
+        for j := i to ObjectList.Count - 1 do
+          if ObjectList[j] <> '' then
           begin
-            soc := TGLSceneObjectClass(objectList.Objects[j]);
-            if currentCategory = GetCategory(soc) then
+            Soc := TGLSceneObjectClass(ObjectList.Objects[j]);
+            if CurrentCategory = GetCategory(Soc) then
             begin
-              item := NewItem(objectList[j], 0, False, True, aClickEvent, 0, '');
-              item.ImageIndex := GetImageIndex(soc);
-              currentParent.Add(item);
-              objectList[j] := '';
-              if currentCategory = '' then
+              Item := NewItem(objectList[j], 0, False, True, AClickEvent, 0, '');
+              Item.ImageIndex := GetImageIndex(Soc);
+              CurrentParent.Add(Item);
+              ObjectList[j] := '';
+              if CurrentCategory = '' then
                 Break;
             end;
           end;
       end;
   finally
-    objectList.Free;
+    ObjectList.Free;
   end;
 end;
 
@@ -318,7 +318,7 @@ begin
             bmp.PixelFormat := glpf24bit;
             bmp.Width := FObjectIcons.Width;
             bmp.Height := FObjectIcons.Height;
-            bmp.Canvas.Draw(0, 0, aBitmap);
+            bmp.Canvas.Draw(0, 0, ABitmap);
             FObjectIcons.AddMasked(bmp, bmp.Canvas.Pixels[0, 0]);
             ImageIndex := FObjectIcons.Count - 1;
           finally

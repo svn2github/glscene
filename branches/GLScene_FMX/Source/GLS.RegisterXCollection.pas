@@ -21,7 +21,8 @@ interface
 
 uses
   System.Classes,
-  DesignEditors, DesignIntf,
+
+  //in VCL DesignEditors, DesignIntf, not exist in FMX
 
   GLS.XCollection;
 
@@ -29,11 +30,15 @@ type
 
 	// TGLXCollectionProperty
 	//
-	TXCollectionProperty = class(TClassProperty)
+  { TODO : E2003 Undeclared identifier: 'TClassProperty' }
+	(*TXCollectionProperty = class(TClassProperty)*)
+	TXCollectionProperty = class
 		public
 			{ Public Declarations }
-			function GetAttributes: TPropertyAttributes; override;
+      { TODO : E2003 Undeclared identifier: 'TPropertyAttributes' }
+      (*function GetAttributes: TPropertyAttributes; override;
 			procedure Edit; override;
+      *)
 	end;
 
 procedure Register;

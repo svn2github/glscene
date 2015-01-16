@@ -26,7 +26,7 @@ uses
   System.Classes,
    
   GLS.ParticleFX, GLS.Graphics, GLS.CrossPlatform,
-  GLPerlinNoise3D, GLS.OpenGLTokens, GLS.VectorGeometry;
+  GLS.PerlinNoise3D, GLS.OpenGLTokens, GLS.VectorGeometry;
 
 type
 

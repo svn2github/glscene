@@ -63,8 +63,10 @@ interface
 {$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit is Windows specific'}{$ENDIF}
 
 uses
+(*
   Winapi.Windows,
   Winapi.Messages,
+  *)
   System.SysUtils,
   System.Classes,
   FMX.Forms,
@@ -86,8 +88,8 @@ type
   TGLWin32Context = class(TGLContext)
   protected
     { Protected Declarations }
-    FDC: HDC;
-    FRC: HGLRC;
+    FDC: THandle; //in VCL HDC;
+    FRC: THandle; //in VCL HGLRC;
     FShareContext: TGLWin32Context;
     FHPBUFFER: Integer;
     FiAttribs: packed array of Integer;
@@ -95,9 +97,9 @@ type
     FLegacyContextsOnly: Boolean;
     FSwapBufferSupported: Boolean;
 
-    procedure SpawnLegacyContext(aDC: HDC); // used for WGL_pixel_format soup
-    procedure CreateOldContext(aDC: HDC); dynamic;
-    procedure CreateNewContext(aDC: HDC); dynamic;
+    procedure SpawnLegacyContext(aDC: THandle); // used for WGL_pixel_format soup
+    procedure CreateOldContext(aDC: THandle); dynamic; //In VCL HDC;
+    procedure CreateNewContext(aDC: THandle); dynamic; //In VCL HDC;
 
     procedure ClearIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
@@ -108,10 +110,10 @@ type
 
     procedure DestructionEarlyWarning(sender: TObject);
 
-    procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats:
-      PInteger; var nNumFormats: Integer; BufferCount: integer = 1);
-    procedure DoCreateContext(ADeviceHandle: HDC); override;
-    procedure DoCreateMemoryContext(outputDevice: HWND; width, height:
+    procedure ChooseWGLFormat(DC: THandle; nMaxFormats: Cardinal; piFormats:
+      PInteger; var nNumFormats: Integer; BufferCount: integer = 1); //HDC;
+    procedure DoCreateContext(ADeviceHandle: THandle); override; //in VCL  HDC;
+    procedure DoCreateMemoryContext(OutputDevice: THandle; width, height: //in VCL HWND;
       Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
     procedure DoDestroyContext; override;
@@ -129,8 +131,8 @@ type
 
     function RenderOutputDevice: Pointer; override;
 
-    property DC: HDC read FDC;
-    property RC: HGLRC read FRC;
+    property DC: THandle read FDC; // HDC
+    property RC: THandle read FRC;  //HGLRC
   end;
 
 
@@ -147,7 +149,7 @@ resourcestring
   glsOESRC_created = 'OpenGL ES 2.0 context seccussfuly created';
   glsPBufferRC_created = 'Backward compatible core PBuffer context successfully created';
 
-function CreateTempWnd: HWND;
+function CreateTempWnd: THandle; //in VCL HWND;
 
 var
   { This boolean controls a hook-based tracking of top-level forms destruction,
@@ -167,7 +169,7 @@ implementation
 
 var
   vTrackingCount: Integer;
-  vTrackedHwnd: array of HWND;
+  vTrackedHwnd: array of THandle;//HWND;
   vTrackedEvents: array of TNotifyEvent;
   vTrackingHook: HHOOK;
 
@@ -272,7 +274,7 @@ var
   // CreateTempWnd
   //
 
-function CreateTempWnd: HWND;
+function CreateTempWnd: THandle; //in VCL HWND;
 var
   classRegistered: Boolean;
   tempClass: TWndClass;
@@ -281,7 +283,8 @@ begin
   classRegistered := GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
     tempClass);
   if not classRegistered then
-    RegisterClass(vUtilWindowClass);
+    { TODO : E2010 Incompatible types: 'TPersistentClass' and 'tagWNDCLASSW' }
+    (*RegisterClass(vUtilWindowClass);*)
   Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
     '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
 end;
@@ -797,7 +800,7 @@ end;
 // DoCreateContext
 //
 
-procedure TGLWin32Context.DoCreateContext(ADeviceHandle: HDC);
+procedure TGLWin32Context.DoCreateContext(ADeviceHandle: THandle);
 const
   cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
   cBoolToInt: array[False..True] of Integer = (GL_FALSE, GL_TRUE);
@@ -1054,7 +1057,7 @@ end;
 // DoCreateMemoryContext
 //
 
-procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: HWND; width,
+procedure TGLWin32Context.DoCreateMemoryContext(outputDevice: THandle; width,
   height: Integer; BufferCount: integer);
 var
   nbFormats: Integer;

@@ -185,7 +185,6 @@
         <DCCReference Include="..\Source\GLS.FileASE.pas"/>
         <DCCReference Include="..\Source\GLS.FileB3D.pas"/>
         <DCCReference Include="..\Source\GLS.FileBMP.pas"/>
-        <DCCReference Include="..\Source\GLS.FileDAE.pas"/>
         <DCCReference Include="..\Source\GLS.FileDDS.pas"/>
         <DCCReference Include="..\Source\GLS.FileDXF.pas"/>
         <DCCReference Include="..\Source\GLS.FileGL2.pas"/>
@@ -286,15 +285,12 @@
         <DCCReference Include="..\Source\GLS.ProxyObjects.pas"/>
         <DCCReference Include="..\Source\GLS.Ragdoll.pas"/>
         <DCCReference Include="..\Source\GLS.RedBlackTree.pas"/>
-        <DCCReference Include="..\Source\GLS.RegisterXCollection.pas"/>
         <DCCReference Include="..\Source\GLS.RenderContextInfo.pas"/>
         <DCCReference Include="..\Source\GLS.RGBE.pas"/>
         <DCCReference Include="..\Source\GLS.ROAMPatch.pas"/>
         <DCCReference Include="..\Source\GLS.Scene.pas"/>
         <DCCReference Include="..\Source\GLS.SceneContext.pas"/>
         <DCCReference Include="..\Source\GLS.SceneForm.pas"/>
-        <DCCReference Include="..\Source\GLS.SceneRegister.pas"/>
-        <DCCReference Include="..\Source\GLS.SceneToolbar.pas"/>
         <DCCReference Include="..\Source\GLS.SceneViewer.pas"/>
         <DCCReference Include="..\Source\GLS.Screen.pas"/>
         <DCCReference Include="..\Source\GLS.ScreenSaver.pas"/>
@@ -345,7 +341,6 @@
         <DCCReference Include="..\Source\GLS.VfsPAK.pas"/>
         <DCCReference Include="..\Source\GLS.Vfw.pas"/>
         <DCCReference Include="..\Source\GLS.WaterPlane.pas"/>
-        <DCCReference Include="..\Source\GLS.Win32Context.pas"/>
         <DCCReference Include="..\Source\GLS.Windows.pas"/>
         <DCCReference Include="..\Source\GLS.WindowsFont.pas"/>
         <DCCReference Include="..\Source\GLS.XCollection.pas"/>

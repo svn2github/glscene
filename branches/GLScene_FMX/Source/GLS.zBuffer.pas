@@ -257,10 +257,10 @@ end;
 
 procedure TGLzBuffer.LinkToViewer(viewer: TGLSceneViewer); // overload;
 begin
-  if ((FWidth <> Viewer.width) or (FHeight <> Viewer.height)) then
+  if ((FWidth <> Viewer.Buffer.Width) or (FHeight <> Viewer.Buffer.Height)) then
   begin
-    FWidth := Viewer.width;
-    FHeight := Viewer.height;
+    FWidth := Viewer.Buffer.Width;
+    FHeight := Viewer.Buffer.Height;
     PrepareBufferMemory;
   end;
   cam := Viewer.camera;
@@ -1274,8 +1274,8 @@ end;
 procedure TGLZShadows.SetViewer(const val: TGLSceneViewer);
 begin
   FViewer := Val;
-  Width := FViewer.Width;
-  Height := FViewer.Height;
+  Width := FViewer.Buffer.Width;
+  Height := FViewer.Buffer.Height;
 end;
 
 function TGLZShadows.GetCaster: TGLMemoryViewer;

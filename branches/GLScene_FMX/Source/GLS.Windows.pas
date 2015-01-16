@@ -51,7 +51,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes, System.SysUtils, System.Math, System.UITypes,
 
   GLS.Scene, GLS.HUDObjects, GLS.Material, GLS.OpenGLTokens, GLS.Context,
   GLS.BitmapFont, GLS.WindowsFont, GLS.VectorGeometry, GLS.Gui,
@@ -217,8 +217,8 @@ type
     FBitmapFont: TGLCustomBitmapFont;
     FDefaultColor: TColorVector;
   protected
-    function GetDefaultColor: TDelphiColor;
-    procedure SetDefaultColor(value: TDelphiColor);
+    function GetDefaultColor: TColor; //in VCL TDelphiColor
+    procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
     procedure SetBitmapFont(NewFont: TGLCustomBitmapFont);
     function GetBitmapFont: TGLCustomBitmapFont;
     procedure WriteTextAt(var rci: TRenderContextInfo; const X, Y: TGLFloat;
@@ -234,7 +234,7 @@ type
   published
     property BitmapFont: TGLCustomBitmapFont read GetBitmapFont write
       SetBitmapFont;
-    property DefaultColor: TDelphiColor read GetDefaultColor write
+    property DefaultColor: TColor read GetDefaultColor write
       SetDefaultColor;
   end;
 
@@ -263,8 +263,8 @@ type
     procedure InternalKeyUp(var Key: Word; Shift: TShiftState); virtual;
     procedure SetFocused(Value: Boolean); virtual;
     function GetRootControl: TGLBaseControl;
-    function GetFocusedColor: TDelphiColor;
-    procedure SetFocusedColor(const Val: TDelphiColor);
+    function GetFocusedColor: TColor; //in VCL TDelphiColor;
+    procedure SetFocusedColor(const Val: TColor); //in VCL TDelphiColor;
   public
     destructor Destroy; override;
     procedure NotifyHide; override;
@@ -281,7 +281,7 @@ type
   published
     property RootControl: TGLBaseControl read GetRootControl;
     property Focused: Boolean read FFocused write SetFocused;
-    property FocusedColor: TDelphiColor read GetFocusedColor write
+    property FocusedColor: TColor read GetFocusedColor write
       SetFocusedColor;
     property OnKeyDown: TGLKeyEvent read FOnKeyDown write FOnKeyDown;
     property OnKeyUp: TGLKeyEvent read FOnKeyUp write FOnKeyUp;
@@ -390,8 +390,8 @@ type
     procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y:
       Integer); override;
     procedure InternalMouseMove(Shift: TShiftState; X, Y: Integer); override;
-    function GetTitleColor: TDelphiColor;
-    procedure SetTitleColor(value: TDelphiColor);
+    function GetTitleColor: TColor; //in VCL TDelphiColor;
+    procedure SetTitleColor(value: TColor); //in VCL TDelphiColor;
   public
     constructor Create(AOwner: TComponent); override;
     procedure Close;
@@ -405,7 +405,7 @@ type
     procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
-    property TitleColor: TDelphiColor read GetTitleColor write SetTitleColor;
+    property TitleColor: TColor read GetTitleColor write SetTitleColor;
     property OnCanMove: TGLFormCanRequest read FOnCanMove write FOnCanMove;
     property OnCanResize: TGLFormCanRequest read FOnCanResize write
       FOnCanResize;
@@ -638,8 +638,8 @@ type
     procedure SetSelRow(const val: Integer);
     procedure SetRowSelect(const val: Boolean);
     procedure SetDrawHeader(const val: Boolean);
-    function GetHeaderColor: TDelphiColor;
-    procedure SetHeaderColor(const val: TDelphiColor);
+    function GetHeaderColor: TColor;
+    procedure SetHeaderColor(const val: TColor);
     procedure SetMarginSize(const val: Integer);
     procedure SetColumnSize(const val: Integer);
     procedure SetRowHeight(const val: Integer);
@@ -660,7 +660,7 @@ type
     procedure OnStringListChange(Sender: TObject);
     property Row[index: Integer]: TStringList read GetRow write SetRow;
   published
-    property HeaderColor: TDelphiColor read GetHeaderColor write SetHeaderColor;
+    property HeaderColor: TColor read GetHeaderColor write SetHeaderColor; //in VCL TDelphiColor;
     property Columns: TStrings read FColumns write SetColumns;
     property MarginSize: Integer read FMarginSize write SetMarginSize;
     property ColumnSize: Integer read FColumnSize write SetColumnSize;
@@ -1415,19 +1415,22 @@ end;
 procedure TGLFocusControl.InternalKeyPress(var Key: Char);
 begin
   if assigned(FOnKeyPress) then
-    FOnKeyPress(Self, Key);
+ { TODO : E2033 Types of actual and formal var parameters must be identical }
+    (*FOnKeyPress(Self, Key);*)
 end;
 
 procedure TGLFocusControl.InternalKeyDown(var Key: Word; Shift: TShiftState);
 begin
   if assigned(FOnKeyDown) then
-    FOnKeyDown(Self, Key, shift);
+ { TODO : E2033 Types of actual and formal var parameters must be identical }
+  (*  FOnKeyDown(Self, Key, shift); *)
 end;
 
 procedure TGLFocusControl.InternalKeyUp(var Key: Word; Shift: TShiftState);
 begin
   if assigned(FOnKeyUp) then
-    FOnKeyUp(Self, Key, shift);
+ { TODO : E2033 Types of actual and formal var parameters must be identical }
+ (*   FOnKeyUp(Self, Key, shift);*)
 end;
 
 procedure TGLBaseControl.DoMouseEnter;
@@ -1484,13 +1487,13 @@ begin
   FRootControl := FindFirstGui;
 end;
 
-function TGLFocusControl.GetFocusedColor: TDelphiColor;
+function TGLFocusControl.GetFocusedColor: TColor; //in VCL TDelphiColor;
 
 begin
   Result := ConvertColorVector(FFocusedColor);
 end;
 
-procedure TGLFocusControl.SetFocusedColor(const Val: TDelphiColor);
+procedure TGLFocusControl.SetFocusedColor(const Val: TColor); //in VCL TDelphiColor;
 
 begin
   FFocusedColor := ConvertWinColor(val);
@@ -1770,13 +1773,13 @@ begin
     end;
 end;
 
-function TGLBaseFontControl.GetDefaultColor: TDelphiColor;
+function TGLBaseFontControl.GetDefaultColor: TColor;
 
 begin
   Result := ConvertColorVector(FDefaultColor);
 end;
 
-procedure TGLBaseFontControl.SetDefaultColor(value: TDelphiColor);
+procedure TGLBaseFontControl.SetDefaultColor(value: TColor);
 
 begin
   FDefaultColor := ConvertWinColor(value);
@@ -1841,7 +1844,7 @@ function TGLBaseFontControl.GetFontHeight: Integer;
 begin
   if Assigned(BitmapFont) then
     if BitmapFont is TGLWindowsBitmapFont then
-      Result := Abs((BitmapFont as TGLWindowsBitmapFont).Font.Height)
+      Result := Round(Abs((BitmapFont as TGLWindowsBitmapFont).Font.Size)) //in VCL Height;
     else
       Result := BitmapFont.CharHeight
   else
@@ -1903,11 +1906,17 @@ begin
       if not Assigned(FInternalBitmap) then
         FInternalBitmap := TGLBitmap.Create;
 
+      { TODO : E2129 Cannot assign to a read-only property }
+      (*
       FInternalBitmap.PixelFormat := FBitmap.PixelFormat;
+      *)
       FInternalBitmap.Width := RoundUpToPowerOf2(FBitmap.Width);
       FInternalBitmap.Height := RoundUpToPowerOf2(FBitmap.Height);
+      { TODO : E2003 Undeclared identifier: 'CopyRect' }
+      (*
       FInternalBitmap.Canvas.CopyRect(FBitmap.Canvas.ClipRect, FBitmap.Canvas,
         FBitmap.Canvas.ClipRect);
+      *)
       FBitmapChanged := False;
       with Material.GetActualPrimaryTexture do
       begin
@@ -2279,13 +2288,13 @@ begin
     inherited;
 end;
 
-function TGLForm.GetTitleColor: TDelphiColor;
+function TGLForm.GetTitleColor: TColor;
 
 begin
   Result := ConvertColorVector(FTitleColor);
 end;
 
-procedure TGLForm.SetTitleColor(value: TDelphiColor);
+procedure TGLForm.SetTitleColor(value: TColor);
 
 begin
   FTitleColor := ConvertWinColor(value);
@@ -3616,13 +3625,13 @@ begin
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.GetHeaderColor: TDelphiColor;
+function TGLStringGrid.GetHeaderColor: TColor;
 
 begin
   Result := ConvertColorVector(FHeaderColor);
 end;
 
-procedure TGLStringGrid.SetHeaderColor(const val: TDelphiColor);
+procedure TGLStringGrid.SetHeaderColor(const val: TColor);
 
 begin
   FHeaderColor := ConvertWinColor(val);

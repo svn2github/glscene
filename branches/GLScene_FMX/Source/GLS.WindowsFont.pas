@@ -136,10 +136,10 @@ Var
 constructor TGLWindowsBitmapFont.Create(AOwner: TComponent);
 begin
   inherited;
-
   FFont := TFont.Create;
-  FFont.Color := clWhite;
-  FFont.OnChange := NotifyChange;
+  { TODO : E2003 Undeclared identifier: 'Color' }
+  (*FFont.Color := TColors.White;*)
+  FFont.OnChanged := NotifyChange;
   GlyphsAlpha := tiaAlphaFromIntensity;
   EnsureChars(' ', cDefaultLast);
 end;
@@ -159,7 +159,7 @@ end;
 
 function TGLWindowsBitmapFont.FontTextureWidth: Integer;
 begin
-  Result := Glyphs.Width;
+  Result := Glyphs.Bitmap.Width;
 end;
 
 // FontTextureHeight
@@ -167,7 +167,7 @@ end;
 
 function TGLWindowsBitmapFont.FontTextureHeight: Integer;
 begin
-  Result := Glyphs.Height;
+  Result := Glyphs.Bitmap.Height;
 end;
 
 // SetFont
@@ -232,9 +232,13 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
             bitmap.Height := y;
             with bitmap.Canvas do
             begin
+              { TODO : E2003 Undeclared identifier: 'Brush' }
+              (*
               Brush.Style := bsSolid;
-              Brush.Color := clBlack;
-              FillRect(Rect(0, py, x, y));
+              Brush.Color := TColors.Black;
+              *)
+              { TODO : E2250 There is no overloaded version of 'FillRect', not enouph arguments }
+              (*FillRect(Rect(0, py, x, y));*)
             end;
           end;
         end;
@@ -255,7 +259,8 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           // Draw the Char, the trailing space is to properly handle the italics.
 {$IFDEF MSWINDOWS}
           // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
-          Windows.ExtTextOutW(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, buffer, 1, nil);
+          { TODO : E2003 Undeclared identifier: 'Handle' }
+          (*ExtTextOutW(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, buffer, 1, nil);*)
 {$ELSE}
           ConvertUTF16ToUTF8(utfbuffer, 5, buffer, 1,  [toInvalidCharToSymbol], i);
           LCLIntf.ExtTextOut(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, utfbuffer, i-1, nil);
@@ -300,27 +305,34 @@ var
   i, cw, nbChars, n: Integer;
 begin
   InvalidateUsers;
-  Glyphs.OnChange := nil;
+  Glyphs.Bitmap.OnChange := nil;
   //accessing Bitmap might trigger onchange
   bitmap := Glyphs.Bitmap;
 
   bitmap.Height      := 0;
   {$IFDEF MSWINDOWS}
    //due to lazarus doesn't properly support pixel formats
-     bitmap.PixelFormat := glpf32bit;
+     { TODO : E2129 Cannot assign to a read-only property }
+     (*bitmap.PixelFormat := TPixelFormat.RGBA; //in VCL glpf32bit;*)
   {$ENDIF}
   with bitmap.Canvas do
   begin
+    { TODO : E2129 Cannot assign to a read-only property }
+    (*
     Font := Self.Font;
-    Font.Color := clWhite;
+    Font.Color := TColors.White;
+    *)
     // get characters dimensions for the font
     // character size without padding; paddings are used from GlyphsInterval
+    { TODO : E2250 There is no overloaded version of 'MaxInteger' that can be called with these arguments }
+    (*
     CharWidth  := Round(MaxInteger(TextWidth('M'), TextWidth('W'), TextWidth('_')));
     CharHeight := TextHeight('"_pI|,');
+    *)
     // used for padding
     GlyphsIntervalX := 1;
     GlyphsIntervalY := 1;
-    if fsItalic in Font.Style then
+    if TFontStyle.fsItalic in Font.Style then
     begin
       // italics aren't properly acknowledged in font width
       HSpaceFix := -(CharWidth div 3);
@@ -338,7 +350,8 @@ begin
   for i := 0 to nbChars - 1 do
   begin
     ch := TileIndexToChar(i);
-    cw := GetTextSize(bitmap.canvas.Handle, @ch, 1).cx-HSpaceFix;
+    { TODO : E2003 Undeclared identifier: 'Handle' }
+    (*cw := GetTextSize(bitmap.canvas.Handle, @ch, 1).cx-HSpaceFix;*)
     n  := n + cw + GlyphsIntervalX;
     SetCharWidths(i, cw);
   end;
@@ -352,7 +365,7 @@ begin
 
   ComputeCharRects(bitmap);
   FCharsLoaded := true;
-  Glyphs.OnChange := OnGlyphsChanged;
+  Glyphs.Bitmap.OnChange := OnGlyphsChanged;
 end;
 
 // StoreRanges

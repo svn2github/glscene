@@ -86,7 +86,6 @@ contains
   GLS.FileASE in '..\Source\GLS.FileASE.pas',
   GLS.FileB3D in '..\Source\GLS.FileB3D.pas',
   GLS.FileBMP in '..\Source\GLS.FileBMP.pas',
-  GLS.FileDAE in '..\Source\GLS.FileDAE.pas',
   GLS.FileDDS in '..\Source\GLS.FileDDS.pas',
   GLS.FileDXF in '..\Source\GLS.FileDXF.pas',
   GLS.FileGL2 in '..\Source\GLS.FileGL2.pas',
@@ -187,15 +186,12 @@ contains
   GLS.ProxyObjects in '..\Source\GLS.ProxyObjects.pas',
   GLS.Ragdoll in '..\Source\GLS.Ragdoll.pas',
   GLS.RedBlackTree in '..\Source\GLS.RedBlackTree.pas',
-  GLS.RegisterXCollection in '..\Source\GLS.RegisterXCollection.pas',
   GLS.RenderContextInfo in '..\Source\GLS.RenderContextInfo.pas',
   GLS.RGBE in '..\Source\GLS.RGBE.pas',
   GLS.ROAMPatch in '..\Source\GLS.ROAMPatch.pas',
   GLS.Scene in '..\Source\GLS.Scene.pas',
   GLS.SceneContext in '..\Source\GLS.SceneContext.pas',
   GLS.SceneForm in '..\Source\GLS.SceneForm.pas',
-  GLS.SceneRegister in '..\Source\GLS.SceneRegister.pas',
-  GLS.SceneToolbar in '..\Source\GLS.SceneToolbar.pas',
   GLS.SceneViewer in '..\Source\GLS.SceneViewer.pas',
   GLS.Screen in '..\Source\GLS.Screen.pas',
   GLS.ScreenSaver in '..\Source\GLS.ScreenSaver.pas',
@@ -246,7 +242,6 @@ contains
   GLS.VfsPAK in '..\Source\GLS.VfsPAK.pas',
   GLS.Vfw in '..\Source\GLS.Vfw.pas',
   GLS.WaterPlane in '..\Source\GLS.WaterPlane.pas',
-  GLS.Win32Context in '..\Source\GLS.Win32Context.pas',
   GLS.Windows in '..\Source\GLS.Windows.pas',
   GLS.WindowsFont in '..\Source\GLS.WindowsFont.pas',
   GLS.XCollection in '..\Source\GLS.XCollection.pas',
@@ -281,3 +276,4 @@ contains
   GLS.Canvas in '..\Source\GLS.Canvas.pas';
 
 end.
+

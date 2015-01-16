@@ -20,15 +20,16 @@ uses
   Winapi.Windows,
   Winapi.Messages,
   System.Classes,
+  System.UITypes,
   FMX.Controls,
   FMX.Forms,
+  FMX.Types,
 
   GLS.Scene,
   GLS.Context,
   GLS.CrossPlatform,
   GLS.Screen,
-  GLS.SceneViewer,
-  GLS.Win32Viewer;
+  GLS.SceneViewer;
 
 const
   lcl_major = 0;
@@ -115,18 +116,20 @@ type
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure CreateWnd; override;
+    { TODO : E2137 Method 'CreateWnd' not found in base class }
+    (*procedure CreateWnd; override;*)
     procedure Loaded; override;
 
     procedure DoBeforeRender(Sender: TObject); dynamic;
     procedure DoBufferChange(Sender: TObject); virtual;
     procedure DoBufferStructuralChange(Sender: TObject); dynamic;
 
-    procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
+    procedure MouseMove(Shift: TShiftState; X, Y: Single); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DestroyWnd; override;
+    { TODO : E2137 Method 'DestroyWnd' not found in base class }
+    (*procedure DestroyWnd; override;*)
 
     property IsRenderingContextAvailable: Boolean read
       GetIsRenderingContextAvailable;
@@ -205,7 +208,7 @@ end;
 
 // CreateWnd
 //
-
+(*
 procedure TGLSceneForm.CreateWnd;
 begin
   inherited CreateWnd;
@@ -215,10 +218,10 @@ begin
   FOwnDC := GetDC(Handle);
   FBuffer.CreateRC(FOwnDC, false);
 end;
-
+*)
 // DestroyWnd
 //
-
+(*
 procedure TGLSceneForm.DestroyWnd;
 begin
   if Assigned(FBuffer) then
@@ -232,7 +235,7 @@ begin
   end;
   inherited;
 end;
-
+*)
 // Loaded
 //
 
@@ -240,7 +243,8 @@ procedure TGLSceneForm.Loaded;
 begin
   inherited Loaded;
   // initiate window creation
-  HandleNeeded;
+  { TODO : E2003 Undeclared identifier: 'HandleNeeded' }
+  (*HandleNeeded;*)
   if not (csDesigning in ComponentState) then
   begin
     if FFullScreenVideoMode.FEnabled then
@@ -276,12 +280,13 @@ procedure TGLSceneForm.WMPaint(var Message: TWMPaint);
 var
   PS: TPaintStruct;
 begin
-  BeginPaint(Handle, PS);
+  { TODO : E2010 Incompatible types: 'HWND' and 'TWindowHandle' }
+  (*BeginPaint(Handle, PS);*)
   try
     if GetIsRenderingContextAvailable and (Width > 0) and (Height > 0) then
       FBuffer.Render;
   finally
-    EndPaint(Handle, PS);
+  (*  EndPaint(Handle, PS); *)
     Message.Result := 0;
   end;
 end;
@@ -296,7 +301,8 @@ begin
     FBuffer.DestroyRC;
     if FOwnDC <> 0 then
     begin
-      ReleaseDC(Handle, FOwnDC);
+      { TODO : E2010 Incompatible types: 'HWND' and 'TWindowHandle' }
+      (*ReleaseDC(Handle, FOwnDC);*)
       FOwnDC := 0;
     end;
   end;
@@ -397,20 +403,21 @@ begin
 
   Left := 0;
   Top := 0;
-  BorderStyle := bsNone;
-  FormStyle := fsStayOnTop;
+  BorderStyle := TFmxFormBorderStyle.None;
+  FormStyle := TFormStyle.StayOnTop;
   BringToFront;
-  WindowState := wsMaximized;
-  Application.MainFormOnTaskBar := True;
+  WindowState := TWindowState.wsMaximized;
+   { TODO : E2003 Undeclared identifier: 'MainFormOnTaskBar' }
+  (*Application.MainFormOnTaskBar := True;*)
 end;
 
 procedure TGLSceneForm.ShutdownFS;
 begin
   RestoreDefaultMode;
   SendToBack;
-  WindowState := wsNormal;
-  BorderStyle := bsSingle;
-  FormStyle := fsNormal;
+  WindowState := TWindowState.wsNormal;
+  BorderStyle := TFmxFormBorderStyle.bsSingle;
+  FormStyle := TFormStyle.fsNormal;
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
 end;
@@ -437,13 +444,15 @@ end;
 
 procedure TGLSceneForm.DoBufferStructuralChange(Sender: TObject);
 begin
-  RecreateWnd;
+  { TODO : E2003 Undeclared identifier: 'RecreateWnd' }
+  (*RecreateWnd;*)
 end;
 
-procedure TGLSceneForm.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TGLSceneForm.MouseMove(Shift: TShiftState; X, Y: Single);
 begin
   inherited;
-  if csDesignInteractive in ControlStyle then
+  { TODO : E2003 Undeclared identifier: 'csDesignInteractive' }
+  (*if csDesignInteractive in ControlStyle then*)
     FBuffer.NotifyMouseMove(Shift, X, Y);
 end;
 
