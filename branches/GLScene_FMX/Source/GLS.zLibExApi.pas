@@ -45,6 +45,14 @@ interface
 const
   {** version ids ***********************************************************}
 
+  ZLIB_VERSION         = '1.2.5';
+  ZLIB_VERNUM          = $1250;
+
+  ZLIB_VER_MAJOR       = 1;
+  ZLIB_VER_MINOR       = 2;
+  ZLIB_VER_REVISION    = 5;
+  ZLIB_VER_SUBREVISION = 0;
+
   {** compression methods ***************************************************}
 
   Z_DEFLATED = 8;
@@ -148,14 +156,11 @@ type
 
 function deflateInit(var strm: TZStreamRec; level: Integer): Integer;
   {$ifdef Version2005Plus} inline; {$endif}
-
 function deflateInit2(var strm: TZStreamRec; level, method, windowBits,
   memLevel, strategy: Integer): Integer;
   {$ifdef Version2005Plus} inline; {$endif}
-
 function inflateInit(var strm: TZStreamRec): Integer;
   {$ifdef Version2005Plus} inline; {$endif}
-
 function inflateInit2(var strm: TZStreamRec; windowBits: Integer): Integer;
   {$ifdef Version2005Plus} inline; {$endif}
 
@@ -177,39 +182,29 @@ const
 {** external routines *******************************************************}
 function deflateInit_(var strm: TZStreamRec; level: Integer;
   version: PAnsiChar; recsize: Integer): Integer;
-
 function deflateInit2_(var strm: TZStreamRec; level, method, windowBits,
   memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
-
 function deflate(var strm: TZStreamRec; flush: Integer): Integer;
-
 function deflateEnd(var strm: TZStreamRec): Integer;
-
 function deflateReset(var strm: TZStreamRec): Integer;
-
 function inflateInit_(var strm: TZStreamRec; version: PAnsiChar;
   recsize: Integer): Integer;
-
 function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
   version: PAnsiChar; recsize: Integer): Integer;
-
 function inflate(var strm: TZStreamRec; flush: Integer): Integer;
-
 function inflateEnd(var strm: TZStreamRec): Integer;
-
 function inflateReset(var strm: TZStreamRec): Integer;
-
 function adler32(adler: Longint; const buf; len: Integer): Longint;
-
 function crc32(crc: Longint; const buf; len: Integer): Longint;
 
 implementation
 
-Uses
-   GLS.Log,
-  {$IFDEF MSWINDOWS}  Winapi.Windows;  {$ENDIF}
+uses
+  {$IFDEF MSWINDOWS}  Winapi.Windows,  {$ENDIF}
   {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
-  {$IFDEF UNIX} dynlibs; {$ENDIF}
+  {$IFDEF UNIX} dynlibs, {$ENDIF}
+  GLS.Log;
+
 
 {*****************************************************************************
 *  link zlib code                                                            *
@@ -256,79 +251,47 @@ begin
 end;
 
 {** external routines *******************************************************}
-const
-   INVALID_MODULEHANDLE = 0;
 
-var
-   {$IFDEF MSWINDOWS}
-   vzHandle: HINST;//Pointer;
-   {$ENDIF}
-   {$IFDEF UNIX}
-   vzHandle: TLibHandle = 0;//Pointer;
-   {$ENDIF}
+function deflateInit_(var strm: TZStreamRec; level: Integer;
+  version: PAnsiChar; recsize: Integer): Integer;
+  external;
 
-function Initzlib: Boolean;
-begin
-  Result := False;
-  if (vzHandle=INVALID_MODULEHANDLE) then
-  begin
-     Closezlib;
-     vzHandle := LoadLibrary(PChar(libz));
-     if (vzHandle <> INVALID_MODULEHANDLE) then
-      Result := True
-     else begin
-       if vzHandle <> INVALID_MODULEHANDLE then
-         FreeLibrary(vzHandle);
-      {$IFDEF GLS_GLS_LOGGING}
-        GLSLogger.Log('ZLibEx.pas: Zlib library not loaded');
-      {$ENDIF}
-     end;
-  end
-  else Result:=True;
-end;
+function deflateInit2_(var strm: TZStreamRec; level, method, windowBits,
+  memLevel, strategy: Integer; version: PAnsiChar; recsize: Integer): Integer;
+  external;
 
-procedure Closezlib;
-begin
-   if vzHandle<>INVALID_MODULEHANDLE then begin
-      FreeLibrary(vzHandle);
-      vzHandle:=INVALID_MODULEHANDLE;
-   end;
-end;
+function deflate(var strm: TZStreamRec; flush: Integer): Integer;
+  external;
 
-procedure ReadEntryPoints;
-begin
-  zlibVersionpchar := zGetProcAddress('zlibVersion');
-  zErrorpchar := zGetProcAddress('zError');
-  inflateSyncPoint := zGetProcAddress('inflateSyncPoint');
-  get_crc_table := zGetProcAddress('get_crc_table');
-  deflateInit_:= zGetProcAddress('deflateInit_');
-  deflateInit2_:= zGetProcAddress('inflateInit2_');
-  deflate:= zGetProcAddress('deflate');
-  deflateEnd:= zGetProcAddress('deflateEnd');
-  deflateReset:= zGetProcAddress('deflateReset');
-  inflateInit_:= zGetProcAddress('inflateInit_');
-  inflateInit2_:= zGetProcAddress('inflateInit2_');
-  inflate:= zGetProcAddress('inflate');
-  inflateEnd:= zGetProcAddress('inflateEnd');
-  inflateReset:= zGetProcAddress('inflateReset');
-  adler32:= zGetProcAddress('adler32');
-  crc32:= zGetProcAddress('crc32');
-end;
+function deflateEnd(var strm: TZStreamRec): Integer;
+  external;
 
-function zlibversion(): string;
-begin
-   zlibversion := string(zlibversionpchar);
-end;
+function deflateReset(var strm: TZStreamRec): Integer;
+  external;
 
-function ZLIB_VERSION(): PChar;
-begin
-  ZLIB_VERSION := zlibversionpchar;
-end;
+function inflateInit_(var strm: TZStreamRec; version: PAnsiChar;
+  recsize: Integer): Integer;
+  external;
 
-function zGetProcAddress(ProcName: PChar):Pointer;
-begin
-  result := GetProcAddress(vzHandle, ProcName);
-end;
+function inflateInit2_(var strm: TZStreamRec; windowBits: Integer;
+  version: PAnsiChar; recsize: Integer): Integer;
+  external;
+
+function inflate(var strm: TZStreamRec; flush: Integer): Integer;
+  external;
+
+function inflateEnd(var strm: TZStreamRec): Integer;
+  external;
+
+function inflateReset(var strm: TZStreamRec): Integer;
+  external;
+
+function adler32(adler: Longint; const buf; len: Integer): Longint;
+  external;
+
+function crc32(crc: Longint; const buf; len: Integer): Longint;
+  external;
+
 
 {** zlib function implementations *******************************************}
 

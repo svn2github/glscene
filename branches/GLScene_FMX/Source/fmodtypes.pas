@@ -21,14 +21,6 @@
 
 unit fmodtypes;
 
-{$IFDEF FPC}
-  {$MODE DELPHI}
-  {$IFDEF WIN32}
-    {$DEFINE MSWINDOWS}
-  {$ENDIF}
-  {$PACKRECORDS C}
-{$ENDIF}
-
 interface
 
 {$IFDEF MSWINDOWS}
@@ -44,13 +36,6 @@ uses
   Force four-byte enums
 }
 {$Z4}
-
-{
-  Disable warning for unsafe types in Delphi 7
-}
-{$IFDEF VER150}
-{$WARN UNSAFE_TYPE OFF}
-{$ENDIF}
 
 const
   FMOD_VERSION: Single = 3.75;
@@ -485,7 +470,7 @@ const
     [DESCRIPTION]
     A set of predefined environment PARAMETERS, created by Creative Labs
     These are used to initialize an FSOUND_REVERB_PROPERTIES structure statically.
-    ie 
+    ie
     FSOUND_REVERB_PROPERTIES prop = FSOUND_PRESET_GENERIC;
 
     [SEE_ALSO]

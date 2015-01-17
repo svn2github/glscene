@@ -34,9 +34,6 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLType,
-{$ENDIF}
   fmodtypes;
 
 {
