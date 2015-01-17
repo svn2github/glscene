@@ -31,14 +31,10 @@ interface
 
 uses
   GLContext,
-  {$IFDEF GLS_DELPHI_OR_CPPB} GLWin32Viewer; {$ENDIF}
-  {$IFDEF FPC}                GLLCLViewer;   {$ENDIF}
+  GLWin32Viewer;
+
 type
-{$IFDEF FPC}
-  TGLSceneViewer = GLLCLViewer.TGLSceneViewer;
-{$ELSE}
   TGLSceneViewer = GLWin32Viewer.TGLSceneViewer;
-{$ENDIF FPC}
 
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 
@@ -87,7 +83,7 @@ begin
     ctx := GL.aGetCurrentContext();
     if Assigned(ctx) then
       case AVSyncMode of
-        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @ISync); 
+        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @ISync);
         vsmNoSync: GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @INoSync);
       else
          Assert(False);

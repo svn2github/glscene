@@ -2605,9 +2605,6 @@ begin
   end;
 end;
 {$ELSE}
-{$IFDEF FPC}
- {$ASMMODE INTEL}
-{$ENDIF}
 asm
   push edi;
 
@@ -4233,9 +4230,6 @@ begin
   end;
 end;
 {$ELSE}
-{$IFDEF FPC}
- {$ASMMODE INTEL}
-{$ENDIF}
 asm
   push edi;
 

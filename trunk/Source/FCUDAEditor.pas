@@ -20,11 +20,7 @@ uses
 {$IFDEF MSWINDOWS}Registry, {$ENDIF}
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ImgList, StdCtrls, ComCtrls, ToolWin,
-  {$IFNDEF FPC}
   DesignIntf, VCLEditors,
-  {$ELSE}
-  Propedits, Componenteditors,
-  {$ENDIF}
   GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics;
 
 type
@@ -47,9 +43,7 @@ type
     { Private declarations }
     FClassList: TList;
     FCUDA: TGLSCUDA;
-{$IFNDEF FPC}
     FCurrentDesigner: IDesigner;
-{$ENDIF}
   protected
     { Protected declaration }
     procedure Notification(AComponent: TComponent; Operation: TOperation);

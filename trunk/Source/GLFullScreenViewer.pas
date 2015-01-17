@@ -39,19 +39,14 @@ interface
 
 uses
 {$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows, Winapi.Messages, System.Classes, System.SysUtils,
   VCL.Forms, VCL.Controls, VCL.Menus,
 {$ELSE}
+  Windows, Messages, Classes, SysUtils,
   Forms, Controls, Menus,
 {$ENDIF}
 
-  Classes, Messages, GLViewer, GLScene, GLContext
-{$IFDEF FPC}
-    , LcLtype, LCLIntf
-{$ENDIF}
-{$IFDEF MSWindows}
-    , Windows
-{$ENDIF}
-    ;
+  GLViewer, GLScene, GLContext;
 
 type
 
@@ -236,38 +231,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGLTokens, OpenGLAdapter, SysUtils, GLCrossPlatform, GLScreen
-{$IFDEF FPC}
-{$IFDEF Linux}
-{$IFDEF LCLGTK2}
-    , gtk2proc
-{$ENDIF}
-{$IFDEF LCLGTK}
-    , gtkproc
-{$ENDIF}
-{$ENDIF}
-{$IF DEFINED(LCLWIN32) or DEFINED(LCLWIN64)}
-{$IFNDEF CONTEXT_INCLUDED}
-    , GLWidgetContext
-{$DEFINE CONTEXT_INCLUDED}
-{$ENDIF}
-{$IFEND}
-{$IF DEFINED(LCLGTK) or DEFINED(LCLGTK2)}
-{$IFNDEF CONTEXT_INCLUDED}
-    , GLWidgetContext
-{$DEFINE CONTEXT_INCLUDED}
-{$ENDIF}
-{$IFEND}
-{$IFDEF LCLCARBON}
-    , GLCarbonContext
-{$ENDIF}
-{$IFDEF LCLQT}
-{$ERROR unimplemented QT context}
-{$ENDIF}
-{$ELSE}
-    , GLWin32Context
-{$ENDIF}
-    ;
+uses
+  OpenGLTokens, OpenGLAdapter,
+  GLCrossPlatform, GLScreen, GLWin32Context;
 
 const
   cScreenDepthToBPP: array [sd8bits .. sd32bits] of Integer = (8, 16, 24, 32);
@@ -592,9 +558,6 @@ end;
 procedure TGLFullScreenViewer.DoActivate(Sender: TObject);
 begin
   (* If not Active and (Form <> nil) then begin
-    {$IFDEF FPC}
-    Application.Restore;
-    {$ENDIF}
     Startup;
     end; *)
 end;
@@ -603,12 +566,8 @@ procedure TGLFullScreenViewer.DoDeactivate(Sender: TObject);
 begin
   (* If Active and (Form <> nil) then begin
     Shutdown;
-    {$IFDEF FPC}
-    Application.Minimize;
-    {$ELSE}
     Form.Height:=0;
     Form.Width:=0;
-    {$ENDIF}
     end; *)
 end;
 

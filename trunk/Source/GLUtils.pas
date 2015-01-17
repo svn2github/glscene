@@ -124,14 +124,14 @@ implementation
 //------------------------------------------------------
 
 uses
-  GLApplicationFileIO,
 {$IFDEF GLS_DELPHI_XE2_UP}
   VCL.Dialogs,
-  VCL.ExtDlgs;
+  VCL.ExtDlgs,
 {$ELSE}
   Dialogs,
-  ExtDlgs;
+  ExtDlgs,
 {$ENDIF}
+  GLApplicationFileIO;
 
 
 var
@@ -710,15 +710,15 @@ end;
 
 procedure SetGLSceneMediaDir();
 var
-  {$IFDEF FPC}path: UTF8String{$ELSE}path: String {$ENDIF};
+  path: String;
   p: Integer;
 begin
-   path := {$IFDEF FPC}ParamStrUTF8(0){$ELSE}ParamStr(0){$ENDIF};
+   path := ParamStr(0);
    path := LowerCase(ExtractFilePath(path));
    p := Pos('samples', path);
    Delete(path, p+7, Length(path));
    path := IncludeTrailingPathDelimiter(path) + 'media';
-   {$IFDEF FPC}SetCurrentDirUTF8(path);{$ELSE}SetCurrentDir(path);{$ENDIF}
+   SetCurrentDir(path);
 end;
 
 end.

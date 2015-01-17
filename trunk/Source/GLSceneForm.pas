@@ -1,4 +1,4 @@
-//
+﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { : GLSceneForm<p>
@@ -17,25 +17,14 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_OR_CPPB}
-  Windows,
-  Messages,
-{$ELSE}
-  LCLIntf,
-  LCLType,
-  LMessages,
-  LCLVersion,
-{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
-  Windows, // need
-  WSLCLClasses, Win32Int, Win32WSForms,
-  Win32Proc, LCLMessageGlue, Win32WSControls,
-{$IFEND}
-{$ENDIF}
-  Classes,
 {$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows, Winapi.Messages,
+  System.Classes,
   VCL.Controls,
   VCL.Forms,
 {$ELSE}
+  Windows, Messages,
+  Classes,
   Controls,
   Forms,
 {$ENDIF}
@@ -43,14 +32,13 @@ uses
   GLScene,
   GLContext,
   GLCrossPlatform,
-  GLScreen;
+  GLScreen,
+  GLViewer;
 
-{$IFDEF GLS_DELPHI_OR_CPPB}
 const
   lcl_major = 0;
   lcl_minor = 0;
   lcl_release = 0;
-{$ENDIF}
 
 type
 
@@ -118,23 +106,11 @@ type
     function GetFieldOfView: single;
     procedure SetFieldOfView(const Value: single);
     function GetIsRenderingContextAvailable: Boolean;
-{$IFDEF GLS_DELPHI_OR_CPPB}
     procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
     procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
     procedure LastFocus(var Mess: TMessage); message WM_ACTIVATE;
-{$ENDIF}
-{$IFDEF FPC}
-    procedure LMEraseBkgnd(var Message: TLMEraseBkgnd); message LM_ERASEBKGND;
-    procedure LMPaint(var Message: TLMPaint); message LM_PAINT;
-    procedure LMSize(var Message: TLMSize); message LM_SIZE;
-    procedure LMDestroy(var Message: TLMDestroy); message LM_DESTROY;
-    procedure GetFocus(var Mess: TLMessage); message LM_ACTIVATE;
-{$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
-    procedure LastFocus(var Mess: TLMessage); message LM_DEACTIVATE;
-{$IFEND}
-{$ENDIF}
     procedure SetFullScreenVideoMode(AValue: TGLFullScreenVideoMode);
     procedure StartupFS;
     procedure ShutdownFS;
@@ -194,25 +170,8 @@ type
       FFullScreenVideoMode
       write SetFullScreenVideoMode;
   end;
-{$IFDEF FPC}
-  // Code created to workaround black screen and blinking when Manifest is enabled
-  // Код создан для обхода черного экрана и мерцания при включенном Manifest'е
-{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
-
-  TGLSOpenGLForm = class(TWin32WSForm)
-  published
-    class function CreateHandle(const AWinControl: TWinControl; const AParams:
-      TCreateParams): HWND; override;
-  end;
-
-procedure GLRegisterWSComponent(aControl: TComponentClass);
-{$IFEND}
-{$ENDIF}
 
 implementation
-
-uses
-  GLViewer;
 
 constructor TGLSceneForm.Create(AOwner: TComponent);
 begin
@@ -292,7 +251,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_DELPHI_OR_CPPB}
 // WMEraseBkgnd
 //
 
@@ -368,79 +326,6 @@ begin
     end;
   inherited;
 end;
-
-{$ENDIF GLS_DELPHI_OR_CPPB}
-
-{$IFDEF FPC}
-
-procedure TGLSceneForm.LMEraseBkgnd(var Message: TLMEraseBkgnd);
-begin
-  if IsRenderingContextAvailable then
-    Message.Result := 1
-  else
-    inherited;
-end;
-
-procedure TGLSceneForm.LMPaint(var Message: TLMPaint);
-var
-  PS: TPaintStruct;
-begin
-  BeginPaint(Handle, PS);
-  try
-    if IsRenderingContextAvailable and (Width > 0) and (Height > 0) then
-      FBuffer.Render;
-  finally
-    EndPaint(Handle, PS);
-    Message.Result := 0;
-  end;
-end;
-
-procedure TGLSceneForm.LMSize(var Message: TLMSize);
-begin
-  inherited;
-  if Assigned(FBuffer) then
-    FBuffer.Resize(0, 0, Message.Width, Message.Height);
-end;
-
-procedure TGLSceneForm.LMDestroy(var Message: TLMDestroy);
-begin
-  if Assigned(FBuffer) then
-  begin
-    FBuffer.DestroyRC;
-    if FOwnDC <> 0 then
-    begin
-      ReleaseDC(Handle, FOwnDC);
-      FOwnDC := 0;
-    end;
-  end;
-  inherited;
-end;
-
-procedure TGLSceneForm.GetFocus(var Mess: TLMessage);
-begin
-  if not (csDesigning in ComponentState)
-    and FFullScreenVideoMode.FEnabled
-    and FFullScreenVideoMode.FAltTabSupportEnable then
-    begin
-      StartupFS;
-    end;
-  inherited;
-end;
-
-{$IF (lcl_major <= 0) and (lcl_minor <= 9) and (lcl_release < 31)}
-procedure TGLSceneForm.LastFocus(var Mess: TLMessage);
-begin
-  if not (csDesigning in ComponentState)
-    and FFullScreenVideoMode.FEnabled
-    and FFullScreenVideoMode.FAltTabSupportEnable then
-    begin
-      ShutdownFS;
-    end;
-  inherited;
-end;
-{$IFEND}
-
-{$ENDIF FPC}
 
 procedure TGLFullScreenVideoMode.SetEnabled(aValue: Boolean);
 begin
@@ -520,13 +405,7 @@ begin
   BringToFront;
   WindowState := wsMaximized;
 
-{$IFDEF FPC}
-  ShowInTaskBar := stAlways;
-{$ELSE}
-{$IFDEF GLS_DELPHI_2009_UP}
   Application.MainFormOnTaskBar := True;
-{$ENDIF}
-{$ENDIF}
 end;
 
 procedure TGLSceneForm.ShutdownFS;
@@ -562,12 +441,7 @@ end;
 
 procedure TGLSceneForm.DoBufferStructuralChange(Sender: TObject);
 begin
-{$IFNDEF FPC}
   RecreateWnd;
-{$ELSE}
-  DestroyWnd;
-  CreateWnd;
-{$ENDIF}
 end;
 
 procedure TGLSceneForm.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -688,213 +562,6 @@ begin
   Result := FBuffer.RCInstantiated and FBuffer.RenderingContext.IsValid;
 end;
 
-{$IFDEF FPC}
-{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
-// FixBSod
-
-function GlWindowProc(Window: HWND; Msg: UInt; wParam: Windows.wParam; LParam:
-  Windows.LParam): LResult; stdcall;
-var
-  PaintMsg: TLMPaint;
-  winctrl: TWinControl;
-begin
-  case Msg of
-    WM_ERASEBKGND:
-      begin
-        Result := 0;
-      end;
-    WM_PAINT:
-      begin
-        winctrl := GetWin32WindowInfo(Window)^.WinControl;
-        if Assigned(winctrl) then
-        begin
-          FillChar(PaintMsg, SizeOf(PaintMsg), 0);
-          PaintMsg.Msg := LM_PAINT;
-          PaintMsg.DC := wParam;
-          DeliverMessage(winctrl, PaintMsg);
-          Result := PaintMsg.Result;
-        end
-        else
-          Result := WindowProc(Window, Msg, wParam, LParam);
-      end;
-  else
-    Result := WindowProc(Window, Msg, wParam, LParam);
-  end;
-end;
-
-function GetDesigningBorderStyle(const AForm: TCustomForm): TFormBorderStyle;
-begin
-  if csDesigning in AForm.ComponentState then
-    Result := bsSizeable
-  else
-    Result := AForm.BorderStyle;
-end;
-
-function CalcBorderIconsFlags(const AForm: TCustomForm): DWORD;
-var
-  BorderIcons: TBorderIcons;
-begin
-  Result := 0;
-  BorderIcons := AForm.BorderIcons;
-  if (biSystemMenu in BorderIcons) or (csDesigning in AForm.ComponentState) then
-    Result := Result or WS_SYSMENU;
-
-  if GetDesigningBorderStyle(AForm) in [bsNone, bsSingle, bsSizeable] then
-  begin
-    if biMinimize in BorderIcons then
-      Result := Result or WS_MINIMIZEBOX;
-    if biMaximize in BorderIcons then
-      Result := Result or WS_MAXIMIZEBOX;
-  end;
-end;
-
-function CalcBorderIconsFlagsEx(const AForm: TCustomForm): DWORD;
-var
-  BorderIcons: TBorderIcons;
-begin
-  Result := 0;
-  BorderIcons := AForm.BorderIcons;
-  if GetDesigningBorderStyle(AForm) in [bsSingle, bsSizeable, bsDialog] then
-  begin
-    if biHelp in BorderIcons then
-      Result := Result or WS_EX_CONTEXTHELP;
-  end;
-end;
-
-function CalcBorderStyleFlags(const AForm: TCustomForm): DWORD;
-begin
-  Result := WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-  case GetDesigningBorderStyle(AForm) of
-    bsSizeable, bsSizeToolWin:
-      Result := Result or (WS_OVERLAPPED or WS_THICKFRAME or WS_CAPTION);
-    bsSingle, bsToolWindow:
-      Result := Result or (WS_OVERLAPPED or WS_BORDER or WS_CAPTION);
-    bsDialog:
-      Result := Result or (WS_POPUP or WS_BORDER or WS_CAPTION);
-    bsNone:
-      if (AForm.Parent = nil) and (AForm.ParentWindow = 0) then
-        Result := Result or WS_POPUP;
-  end;
-end;
-
-function CalcBorderStyleFlagsEx(const AForm: TCustomForm): DWORD;
-begin
-  Result := 0;
-  case GetDesigningBorderStyle(AForm) of
-    bsDialog:
-      Result := WS_EX_DLGMODALFRAME or WS_EX_WINDOWEDGE;
-    bsToolWindow, bsSizeToolWin:
-      Result := WS_EX_TOOLWINDOW;
-  end;
-end;
-
-procedure CalcFormWindowFlags(const AForm: TCustomForm; var Flags, FlagsEx:
-  DWORD);
-begin
-  Flags := CalcBorderStyleFlags(AForm);
-  if AForm.Parent <> nil then
-    Flags := (Flags or WS_CHILD) and not WS_POPUP;
-  // clear border style flags
-  FlagsEx := FlagsEx and not (WS_EX_DLGMODALFRAME or WS_EX_WINDOWEDGE or
-    WS_EX_TOOLWINDOW);
-  // set border style flags
-  FlagsEx := FlagsEx or CalcBorderStyleFlagsEx(AForm);
-  if (AForm.FormStyle in fsAllStayOnTop) and not (csDesigning in
-    AForm.ComponentState) then
-    FlagsEx := FlagsEx or WS_EX_TOPMOST;
-  Flags := Flags or CalcBorderIconsFlags(AForm);
-  FlagsEx := FlagsEx or CalcBorderIconsFlagsEx(AForm);
-end;
-
-procedure AdjustFormBounds(const AForm: TCustomForm; var SizeRect: TRect);
-begin
-  // the LCL defines the size of a form without border, win32 with.
-  // -> adjust size according to BorderStyle
-  SizeRect := AForm.BoundsRect;
-  Windows.AdjustWindowRectEx(@SizeRect, CalcBorderStyleFlags(AForm),
-    false, CalcBorderStyleFlagsEx(AForm));
-end;
-
-class function TGLSOpenGLForm.CreateHandle(const AWinControl: TWinControl; const
-  AParams: TCreateParams): HWND;
-var
-  Params: TCreateWindowExParams;
-  lForm: TCustomForm absolute AWinControl;
-  Bounds: TRect;
-  SystemMenu: HMenu;
-begin
-  // general initialization of Params
-{$IF (lcl_major = 0) and (lcl_release <= 28) }
-  PrepareCreateWindow(AWinControl, Params);
-{$ELSE}
-  PrepareCreateWindow(AWinControl, AParams, Params);
-{$IFEND}
-  // customization of Params
-  with Params do
-  begin
-    CalcFormWindowFlags(lForm, Flags, FlagsEx);
-    pClassName := @ClsName;
-    WindowTitle := StrCaption;
-    AdjustFormBounds(lForm, Bounds);
-    if (lForm.Position in [poDefault, poDefaultPosOnly]) and not (csDesigning in
-      lForm.ComponentState) then
-    begin
-      Left := CW_USEDEFAULT;
-      Top := CW_USEDEFAULT;
-    end
-    else
-    begin
-      Left := Bounds.Left;
-      Top := Bounds.Top;
-    end;
-    if (lForm.Position in [poDefault, poDefaultSizeOnly]) and not (csDesigning in
-      lForm.ComponentState) then
-    begin
-      Width := CW_USEDEFAULT;
-      Height := CW_USEDEFAULT;
-    end
-    else
-    begin
-      Width := Bounds.Right - Bounds.Left;
-      Height := Bounds.Bottom - Bounds.Top;
-    end;
-    SubClassWndProc := @GlWindowProc;
-    if not (csDesigning in lForm.ComponentState) and lForm.AlphaBlend then
-      FlagsEx := FlagsEx or WS_EX_LAYERED;
-  end;
-  SetStdBiDiModeParams(AWinControl, Params);
-  // create window
-  FinishCreateWindow(AWinControl, Params, false);
-  Result := Params.Window;
-
-  // remove system menu items for bsDialog
-  if (lForm.BorderStyle = bsDialog) and not (csDesigning in lForm.ComponentState)
-    then
-  begin
-    SystemMenu := GetSystemMenu(Result, false);
-    DeleteMenu(SystemMenu, SC_RESTORE, MF_BYCOMMAND);
-    DeleteMenu(SystemMenu, SC_SIZE, MF_BYCOMMAND);
-    DeleteMenu(SystemMenu, SC_MINIMIZE, MF_BYCOMMAND);
-    DeleteMenu(SystemMenu, SC_MAXIMIZE, MF_BYCOMMAND);
-    DeleteMenu(SystemMenu, 1, MF_BYPOSITION);
-      // remove the separator between move and close
-  end;
-
-  // Beginning with Windows 2000 the UI in an application may hide focus
-  // rectangles and accelerator key indication. According to msdn we need to
-  // initialize all root windows with this message
-  if WindowsVersion >= wv2000 then
-    Windows.SendMessage(Result, WM_CHANGEUISTATE, MakeWParam(UIS_INITIALIZE,
-      UISF_HIDEFOCUS or UISF_HIDEACCEL), 0)
-end;
-
-procedure GLRegisterWSComponent(aControl: TComponentClass);
-begin
-  RegisterWSComponent(aControl, TGLSOpenGLForm);
-end;
-{$IFEND}
-{$ENDIF}
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -905,14 +572,5 @@ initialization
   // ------------------------------------------------------------------
 
   RegisterClass(TGLSceneForm);
-{$IFDEF FPC}
-{$IF DEFINED(LCLwin32) or DEFINED(LCLwin64)}
-  // Code created to workaround black screen and blinking when Manifest is enabled
-  // You may comment it for Win2000\98
-  // Код создан для обхода черного экрана и мерцания при включенном Manifest'е
-  // Можно закоментировать для Win2000\98
-  GLRegisterWSComponent(TGLSceneForm);
-{$IFEND}
-{$ENDIF}
 
 end.

@@ -446,14 +446,7 @@ begin
     envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
 {$ELSE} // Not Windows.
 {$IFDEF UNIX}
-{$IFDEF FPC}
-    SDL_putenv('SDL_VIDEODRIVER=windib');
-    envVal := 'SDL_WINDOWID=' + IntToStr(Integer(FWindowHandle));
-{$ELSE}
     .. .Unsupported UNIX target.implement your target code here ! .. .
-{$ENDIF}  // FPC
-{$ELSE}
-      .. .Unsupported target.implement your target code here ! .. .
 {$ENDIF} // UNIX
 {$ENDIF} // MSWINDOWS
       SDL_putenv(PAnsiChar(AnsiString(envVal)));

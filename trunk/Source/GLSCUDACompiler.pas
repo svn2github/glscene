@@ -142,11 +142,7 @@ uses
 {$IFDEF MSWINDOWS}Windows, {$ENDIF}
   SysUtils, Dialogs, GLApplicationFileIO,
   ShellAPI,
-{$IFNDEF FPC}
-  TlHelp32
-{$ELSE}
-  jwatlhelp32 // JEDI
-{$ENDIF};
+  TlHelp32;
 
 resourcestring
   cudasSourceFileNotFound = 'Source file not found';

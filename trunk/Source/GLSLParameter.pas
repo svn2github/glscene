@@ -152,7 +152,6 @@ type
     property Name: string read GetName;
     property GLSLType: TGLSLDataType read GetGLSLType;
     property GLSLSamplerType: TGLSLSamplerType read GetGLSLSamplerType;
-{.$IFDEF GLS_DELPHI_OR_CPPB}
     {: Scalar types.<p>}
     property float: TGLFloat read GetFloat write SetFloat;
     property int: TGLint read GetInt write SetInt;
@@ -177,14 +176,11 @@ type
     property mat2: TMatrix2f read GetMat2 write SetMat2;
     property mat3: TMatrix3f read GetMat3 write SetMat3;
     property mat4: TMatrix4f read GetMat4 write SetMat4;
-{.$ENDIF}
     {: Bindings.<p>}
     property AutoSetMethod: string read GetAutoSetMethod write SetAutoSetMethod;
     property TextureName: string read GetTextureName write SetTextureName;
     property SamplerName: string read GetSamplerName write SetSamplerName;
-{.$IFDEF GLS_DELPHI_OR_CPPB}
     property TextureSwizzle: TSwizzleVector read GetTextureSwizzle write SetTextureSwizzle;
-{.$ENDIF}
   end;
 
 const

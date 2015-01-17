@@ -20,7 +20,7 @@ uses
   VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
   VCL.StdCtrls, VCL.ExtCtrls
 {$ELSE}
-  Windows, Messages, SysUtils, Classes, Controls, Graphics,
+  Windows, Messages, SysUtils, UITypes, Classes, Controls, Graphics,
   Forms, Dialogs, ClipBrd, StdCtrls, ExtCtrls
 {$ENDIF};
 

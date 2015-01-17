@@ -70,9 +70,6 @@ unit GLNGDManager;
 interface
 
 {$I GLScene.inc}
-{$IFDEF FPC}
-{$MODE Delphi}
-{$ENDIF}
 
 uses
   Classes, // TComponent Tlist TWriter TReader TPersistent
@@ -1867,7 +1864,7 @@ end;
 
 class procedure TGLNGDBehaviour.NewtonCollisionIterator
   (const userData: Pointer; vertexCount: Integer; const faceArray: PNGDFloat;
-  faceId: Integer)cdecl; {$IFDEF FPC} static; {$ENDIF}
+  faceId: Integer)cdecl;
 begin
   TGLNGDBehaviour(userData).FCollisionIteratorEvent(userData, vertexCount,
     faceArray, faceId);
@@ -1877,14 +1874,13 @@ end;
 // It's better to save/load big collisions [over 50000 polygones] to reduce
 // loading time
 class procedure TGLNGDBehaviour.NewtonDeserialize(serializeHandle,
-  buffer: Pointer; size: Cardinal)cdecl; {$IFDEF FPC} static; {$ENDIF}
+  buffer: Pointer; size: Cardinal)cdecl;
 begin
   TFileStream(serializeHandle).read(buffer^, size);
 end;
 
 class procedure TGLNGDBehaviour.NewtonSerialize(serializeHandle: Pointer;
-  const buffer: Pointer; size: Cardinal)cdecl; {$IFDEF FPC} static;
-{$ENDIF}
+  const buffer: Pointer; size: Cardinal)cdecl;
 begin
   TFileStream(serializeHandle).write(buffer^, size);
 end;
@@ -2556,7 +2552,6 @@ end;
 
 class procedure TGLNGDDynamic.NewtonApplyForceAndTorque
   (const body: PNewtonBody; timestep: NGDFloat; threadIndex: Integer); cdecl;
-{$IFDEF FPC} static; {$ENDIF}
 begin
   TGLNGDDynamic(NewtonBodyGetUserData(body)).FApplyForceAndTorqueEvent(body,
     timestep, threadIndex);
@@ -2564,7 +2559,6 @@ end;
 
 class procedure TGLNGDDynamic.NewtonSetTransform(const body: PNewtonBody;
   const matrix: PNGDFloat; threadIndex: Integer); cdecl;
-{$IFDEF FPC} static; {$ENDIF}
 begin
   TGLNGDDynamic(NewtonBodyGetUserData(body)).FSetTransformEvent(body, matrix,
     threadIndex);
@@ -2696,7 +2690,6 @@ end;
 class function TNGDSurfacePair.NewtonAABBOverlap
   (const material: PNewtonMaterial;
   const body0, body1: PNewtonBody; threadIndex: Integer): Integer; cdecl;
-{$IFDEF FPC} static; {$ENDIF}
 begin
   Result := Ord(TNGDSurfacePair(NewtonMaterialGetMaterialPairUserData(material))
       .FAABBOverlapEvent(material, body0, body1, threadIndex));
@@ -2704,7 +2697,7 @@ end;
 
 class procedure TNGDSurfacePair.NewtonContactsProcess
   (const contact: PNewtonJoint; timestep: NGDFloat; threadIndex: Integer);
-  cdecl; {$IFDEF FPC} static; {$ENDIF}
+  cdecl;
 begin
   TNGDSurfacePair(NewtonMaterialGetMaterialPairUserData
    (NewtonContactGetMaterial

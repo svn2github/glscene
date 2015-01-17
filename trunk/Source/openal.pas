@@ -40,18 +40,6 @@
 
 unit openal;
 
-{$IFDEF FPC}
- // Added by bero
- {$MODE Delphi}
- {$IFDEF CPUI386}
-  {$DEFINE CPU386}
-  {$ASMMODE INTEL}
- {$ENDIF}
- {$IFNDEF MSWINDOWS}
-  {$LINKLIB c}
- {$ENDIF}
-{$ENDIF}
-
 interface
 
 {$I GLScene.inc}
@@ -1934,39 +1922,6 @@ const
   WAV_STANDARD  = $0001;
   WAV_IMA_ADPCM = $0011;
   WAV_MP3       = $0055;
-
-{$IFDEF FPC}
-{$IFNDEF MSWINDOWS}
-// Added by bero
-const
-  RTLD_LAZY         = $001;
-  RTLD_NOW          = $002;
-  RTLD_BINDING_MASK = $003;
-  LibraryLib        = {$IFDEF Linux}'dl'{$ELSE}'c'{$ENDIF};
-
-function LoadLibraryEx(Name : PAnsiChar; Flags : LongInt) : Pointer; cdecl; external LibraryLib name 'dlopen';
-function GetProcAddressEx(Lib : Pointer; Name : PAnsiChar) : Pointer; cdecl; external LibraryLib name 'dlsym';
-function FreeLibraryEx(Lib : Pointer) : LongInt; cdecl; external LibraryLib name 'dlclose';
-
-function LoadLibrary(Name : PChar) : THandle;
-begin
- Result := THandle(LoadLibraryEx(Name, RTLD_LAZY));
-end;
-
-function GetProcAddress(LibHandle : THandle; ProcName : PAnsiChar) : Pointer;
-begin
- Result := GetProcAddressEx(Pointer(LibHandle), ProcName);
-end;
-
-function FreeLibrary(LibHandle : THandle) : Boolean;
-begin
- if LibHandle = 0 then
-   Result := False
-  else
-   Result := FreeLibraryEx(Pointer(LibHandle)) = 0;
-end;
-{$ENDIF}
-{$ENDIF}
 
 //ProcName can be case sensitive !!!
 function alProcedure(ProcName : PAnsiChar) : Pointer;

@@ -41,18 +41,20 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_OR_CPPB}
-  Windows,
-{$ENDIF}
 {$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs, VCL.Controls, System.UITypes,
+  Winapi.Windows,
+  System.StrUtils, System.Classes, System.SysUtils, System.UITypes,
+  System.SyncObjs,
+  VCL.Dialogs, VCL.Controls,
 {$ELSE}
-  Dialogs,
-  Controls,
+  Windows,
+  StrUtils, Classes, SysUtils, UITypes,
+  SyncObjs,
+  Dialogs, Controls,
 {$ENDIF}
- StrUtils, Classes, SysUtils, GLCrossPlatform, SyncObjs
-{$IFDEF MSWINDOWS} , ShellApi {$ENDIF}
-{$IFDEF LINUX} , Process {$ENDIF};
+  GLCrossPlatform,
+{$IFDEF MSWINDOWS}  ShellApi {$ENDIF}
+{$IFDEF LINUX} Process {$ENDIF};
 
 type
   { : Levels of importance of log messages }
@@ -308,7 +310,13 @@ function ConstArrayToString(const Elements: array of const): String;
 var
   vIDELogProc: TIDELogProc;
 
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
 var
   v_GLSLogger: TLogSession;
@@ -463,17 +471,6 @@ begin
   Result := Copy(Result, 1, lExtIndex - 1);
 end;
 
-{$IFDEF FPC}
-
-procedure LogedAssert(const Message, FileName: ShortString; LineNumber: Integer;
-  ErrorAddr: Pointer);
-begin
-  UserLog.Log(Message + ': in ' + FileName + ' at line ' +
-    IntToStr(LineNumber), lkError);
-  Abort;
-end;
-{$ELSE}
-
 procedure LogedAssert(const Message, FileName: string; LineNumber: Integer;
   ErrorAddr: Pointer);
 begin
@@ -481,7 +478,6 @@ begin
     IntToStr(LineNumber), lkError);
   Abort;
 end;
-{$ENDIF}
 
 function FileSize(const aFilename: String): Integer;
 var
@@ -607,15 +603,9 @@ var
       lErrorMessage := 'Renaming of "%s" failed with error : %d. Try again?';
       while not RenameFile(lLogOriginalDir + sRec.Name, lLogSaveDir + sRec.Name) do
       begin
-        {$IFDEF FPC}
-        if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
-           GetLastOSError]), mtWarning, mbYesNo, -1) = mrNo
-           then Break;
-        {$ELSE}
         if MessageDlg(Format(lErrorMessage, [lLogOriginalDir + sRec.Name,
           GetLastError]), mtWarning, [mbNo], 0) = mrNo
           then Break;
-        {$ENDIF}
         AssignFile(lFile, lLogOriginalDir + sRec.Name);
         CloseFile(lFile);
       end;
@@ -629,7 +619,7 @@ begin
   lLogSaveDir := lLogOriginalDir + FormatDateTime('yyyy-mm-dd  hh-nn-ss', Now);
 
   if not CreateDir(lLogSaveDir) then Exit;
-  lLogSaveDir := lLogSaveDir + SysUtils.PathDelim;
+  lLogSaveDir := lLogSaveDir + PathDelim;
     
   If FindFirst(lLogOriginalDir + lLogFileName + '*' + lLogExt, faAnyfile, sRec) = 0 then
   begin
@@ -672,11 +662,7 @@ begin
   if FLogFileMaxSize > 0 then
   begin
     FCheckLogSizeThread := TLogCheckSizeThread.Create(Self);
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FCheckLogSizeThread.Resume();
-{$ELSE}
     FCheckLogSizeThread.Start();
-{$ENDIF}
   end
   else
   begin
@@ -834,7 +820,7 @@ begin
   // Reset log counters.
   for i := Ord( Low(TLogLevel)) to Ord( High(TLogLevel)) do
     FLogKindCount[TLogLevel(i)] := 0;
-   
+
   // Print some initial logs.
   if FWriteInternalMessages then
   begin
@@ -927,11 +913,7 @@ begin
   if (FBuffered) then
   begin
     FBufferProcessingThread := TLogBufferFlushThread.Create(Self);
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    FBufferProcessingThread.Resume();
-{$ELSE}
     FBufferProcessingThread.Start();
-{$ENDIF}
   end
   else
   begin

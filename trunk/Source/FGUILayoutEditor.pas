@@ -8,9 +8,6 @@ uses
 {$IFDEF MSWINDOWS}
   Windows, ShellApi,
 {$ENDIF}
-{$IFDEF FPC}
-  LCLType,
-{$ENDIF}
 
 {$IFDEF GLS_DELPHI_XE2_UP}
   System.SysUtils, System.Variants, System.Classes,
@@ -326,11 +323,7 @@ begin
   if items_list.ItemIndex = -1 then
     Exit;
   GLGuiLayout1.GuiComponents.Delete(items_list.ItemIndex);
-{$IFDEF FPC}
-  items_list.ClearSelection;
-{$ELSE}
   items_list.DeleteSelected;
-{$ENDIF}
   if items_list.ItemIndex > -1 then
     name_edit.Text := GLGuiLayout1.GuiComponents[items_list.ItemIndex].Name
   else

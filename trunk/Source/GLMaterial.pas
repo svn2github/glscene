@@ -542,21 +542,9 @@ type
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     //implementing IInterface
-  {$IfDef FPC}
-    {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
-    {$ELSE}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    function _Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-    {$IFEND}
-  {$Else}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-  {$EndIf}
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -2015,15 +2003,7 @@ end;
 // QueryInterface
 //
 
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-{$ELSE}
-  function TGLAbstractLibMaterial.QueryInterface(constref IID: TGUID; out Obj): HResult; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult;
-{$EndIf}
+function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
     Result := S_OK
@@ -2033,30 +2013,14 @@ end;
 
 // _AddRef
 //
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLAbstractLibMaterial._AddRef: Integer; stdcall;
-{$ELSE}
-  function TGLAbstractLibMaterial._AddRef: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLAbstractLibMaterial._AddRef: Integer;
-{$EndIf}
+function TGLAbstractLibMaterial._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
 
 // _Release
 //
-{$IfDef FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-  function TGLAbstractLibMaterial._Release: Integer; stdcall;
-{$ELSE}
-  function TGLAbstractLibMaterial._Release: Integer; {$IFNDEF WINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
-{$IFEND}
-{$Else}
-  function TGLAbstractLibMaterial._Release: Integer;
-{$EndIf}
+function TGLAbstractLibMaterial._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;

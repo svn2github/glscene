@@ -32,14 +32,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
   Windows;
-{$ELSE}
-  {$IFDEF FPC}
-    // Non-windows platforms are supported only via FPC.
-    lcltype, lclintf;
-  {$ENDIF}
-{$ENDIF}
 
 type
    TVirtualKeyCode = Integer;
@@ -149,16 +142,9 @@ begin
    else Result:=False;
 end;
 {$ELSE}
-  {$IFDEF FPC}
-  begin
-    c := UpperCase(c)[1];
-    Result := GetKeyState(Ord(c)) < 0;
-  end;
-  {$ELSE}
   begin
     raise Exception.Create('GLKeyboard.IsKeyDown(c : Char) not yet implemented for your platform!');
   end;
-  {$ENDIF}
 {$ENDIF}
 
 
@@ -184,11 +170,7 @@ begin
    {$IFDEF MSWINDOWS}
       Result := (GetAsyncKeyState(vk) < 0);
    {$ELSE}
-     {$IFDEF FPC}
-      Result := GetKeyState(vk) < 0;
-     {$ELSE}
       raise Exception.Create('GLKeyboard.IsKeyDown(vk : TVirtualKeyCode) not fully yet implemented for your platform!');
-     {$ENDIF}
    {$ENDIF}
    end;
 end;
@@ -334,12 +316,7 @@ begin
    Result:=VkKeyScan(c) and $FF;
    if Result=$FF then Result:=-1;
 {$ELSE}
-  {$IFDEF FPC}
-   c := UpperCase(c)[1];
-   Result := Ord(c);
-  {$ELSE}
    raise Exception.Create('GLKeyboard.CharToVirtualKeyCode not yet implemented for your platform!');
-  {$ENDIF}
 {$ENDIF}
 end;
 

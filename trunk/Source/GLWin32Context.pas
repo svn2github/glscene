@@ -832,10 +832,6 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
-{$IFDEF FPC}
-  DoGetHandles(HWND(ADeviceHandle), ADeviceHandle);
-{$ENDIF}
-
   if vUseWindowTrackingHook and not FLegacyContextsOnly then
     TrackWindow(WindowFromDC(ADeviceHandle), DestructionEarlyWarning);
 

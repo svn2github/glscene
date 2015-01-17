@@ -21,12 +21,8 @@ interface
 
 uses
   Classes, XCollection,
-  {$IFDEF FPC}
-     componenteditors, propedits
-  {$ELSE}
-     DesignEditors, DesignIntf
-  {$ENDIF}
-   ;
+
+  DesignEditors, DesignIntf;
 
 type
 
@@ -48,7 +44,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses {$IFNDEF FPC}FXCollectionEditor{$ELSE}FXCollectionEditorLCL{$ENDIF};
+uses
+  FXCollectionEditor;
 
 
 procedure Register;
@@ -70,12 +67,8 @@ end;
 procedure TXCollectionProperty.Edit;
 begin
    with XCollectionEditor do begin
-   {$IFDEF FPC}
-      SetXCollection(TXCollection(GetObjectValue));
-   {$ELSE}
-      SetXCollection(TXCollection(GetOrdValue), Self.Designer);
-   {$ENDIF}
-      Show;
+     SetXCollection(TXCollection(GetOrdValue), Self.Designer);
+     Show;
    end;
 end;
 
@@ -88,5 +81,5 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   
+
 end.

@@ -148,11 +148,7 @@ begin
     if colorType = PNG_COLOR_TYPE_PALETTE then
       _png_set_palette_to_rgb(png_ptr);
     if (colorType = PNG_COLOR_TYPE_GRAY) and (bitDepth < 8) then
-{$IFDEF FPC}
-      _png_set_gray_1_2_4_to_8(png_ptr);
-{$ELSE}
       _png_set_expand_gray_1_2_4_to_8(png_ptr);
-{$ENDIF}
 
     if _png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS) <> 0 then
       _png_set_tRNS_to_alpha(png_ptr);

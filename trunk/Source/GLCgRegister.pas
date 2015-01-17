@@ -18,17 +18,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   Classes,
-  {$IFDEF FPC}
-    propedits, GLSceneRegisterLCL,
-  {$ELSE}
-    DesignIntf, DesignEditors, VCLEditors,
-    GLSceneRegister,
-  {$ENDIF}
 
-  // GLScene
+  DesignIntf,
+  DesignEditors,
+  VCLEditors,
+
+   // GLScene
   GLMaterial,
+  GLSceneRegister,
 
   // CG
   Cg, CgGL, GLCgShader, GLCgBombShader;

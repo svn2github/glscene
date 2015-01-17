@@ -301,9 +301,7 @@ begin
 			with previewRect do
 				frm.SetBounds(0, 0, Right-Left, Bottom-Top);
 			frm.BorderStyle:=bsNone;
-      {$IFNDEF FPC}
 			frm.ParentWindow:=previewHwnd;
-      {$ENDIF}
 			frm.Cursor:=crNone;
          frm.Visible:=False;
 		end;

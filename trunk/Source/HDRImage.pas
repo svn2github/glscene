@@ -41,8 +41,6 @@ type
 implementation
 
 uses
-{$IFDEF FPC}graphtype,
-{$ENDIF}
   GLFileHDR,
   GLTextureFormat;
 
@@ -56,12 +54,8 @@ uses
 procedure THDRImage.LoadFromStream(stream: TStream);
 var
   FullHDR: TGLHDRImage;
-{$IFNDEF FPC}
   src, dst: PGLubyte;
   y: integer;
-{$ELSE}
-  RIMG: TRawImage;
-{$ENDIF}
 begin
   FullHDR := TGLHDRImage.Create;
   try
@@ -78,7 +72,6 @@ begin
   Transparent := false;
   PixelFormat := glpf32bit;
 
-{$IFNDEF FPC}
   src := PGLubyte(FullHDR.Data);
   for y := 0 to Height - 1 do
   begin
@@ -86,16 +79,6 @@ begin
     Move(src^, dst^, Width * 4);
     Inc(src, Width * 4);
   end;
-{$ELSE}
-  RIMG.Init;
-  rimg.Description.Init_BPP32_B8G8R8A8_BIO_TTB(Width, Height);
-  rimg.Description.RedShift := 16;
-  rimg.Description.BlueShift := 0;
-  rimg.Description.LineOrder := riloBottomToTop;
-  RIMG.DataSize := Width * Height * 4;
-  rimg.Data := PByte(FullHDR.Data);
-  LoadFromRawImage(rimg, false);
-{$ENDIF}
   FullHDR.Free;
 end;
 

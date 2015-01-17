@@ -38,9 +38,6 @@
 unit GLSvdPAUAPI;
 
 {$I GLScene.inc}
-{$IFDEF FPC}
-{$PACKRECORDS C}
-{$ENDIF}
 
 interface
 

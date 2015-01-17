@@ -52,12 +52,6 @@
 unit GLBitmapFont;
 
 {$I GLScene.inc}
-{$IFDEF GLS_DELPHI_2009_UP}
-{$DEFINE GLS_UNICODE_SUPPORT}
-{$ENDIF}
-{$IFDEF FPC}
-{$DEFINE GLS_UNICODE_SUPPORT}
-{$ENDIF}
 
 interface
 
@@ -73,9 +67,6 @@ uses
   OpenGLTokens, XOpenGL, GLVectorTypes;
 
 type
-{$IFNDEF GLS_UNICODE_SUPPORT}
-  UnicodeString = WideString; // Use WideString for earlier versions
-{$ENDIF}
 
   // TBitmapFontRange
   //

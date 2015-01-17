@@ -85,22 +85,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS}
-  Windows,
-  {$ENDIF}
   {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, System.Types, VCL.Consts, VCL.Forms,
-  VCL.Controls,
+  Winapi.Windows,
+  System.Classes, System.SysUtils, System.Types, System.SyncObjs,
+  VCL.Forms, VCL.Controls, VCL.Consts,
   {$ELSE}
-  Classes, SysUtils, Types, Forms, Controls,
-  {$IFDEF FPC}
-  LCLVersion, LCLType,
-  {$ELSE}
-  Consts,
-  {$ENDIF}
+  Windows,
+  Classes, SysUtils, Types, SyncObjs,
+  Forms, Controls, Consts,
   {$ENDIF}
 
-  SyncObjs,
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
@@ -1231,7 +1225,7 @@ type
 {$IFDEF GLS_SERVICE_CONTEXT}
     {: Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
-    procedure QueueTaskDepleted; {$IFDEF FPC}register;{$ENDIF}
+    procedure QueueTaskDepleted;
     property ServiceStarter: TEvent read FServiceStarter;
 {$ENDIF}
     property ServiceContext: TGLContext read FServiceContext;

@@ -75,22 +75,9 @@ uses
 {$ENDIF}
 
 {$IFDEF UNIX}
-{$IFDEF FPC}
-  LCLType,
-{$IFDEF Ver1_0}
-  linux,
-{$ELSE}
-  pthreads,
-  baseunix,
-  unix,
-{$ENDIF}
-  x,
-  xlib,
-{$ELSE}
   Types,
   Libc,
   Xlib,
-{$ENDIF}
 {$ENDIF}
 
 {$IFDEF __MACH__}

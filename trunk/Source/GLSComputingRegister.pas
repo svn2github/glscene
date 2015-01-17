@@ -17,12 +17,10 @@ unit GLSComputingRegister;
 interface
 
 uses
-  Classes, SysUtils, GLSceneRegister,
-  {$IFNDEF FPC}
-  DesignIntf, DesignEditors, STREDIT, ToolsAPI
-  {$ELSE}
-  propedits, componenteditors
-  {$ENDIF};
+  Classes, SysUtils,
+  DesignIntf, DesignEditors, STREDIT, ToolsAPI,
+
+  GLSceneRegister;
 
 procedure Register;
 
@@ -52,11 +50,7 @@ type
     procedure RefreshModuleList;
   public
     { Public Declarations }
-    {$IFNDEF FPC}
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
-    {$ELSE}
-    constructor Create(Hook: TPropertyEditorHook; APropCount: Integer); override;
-    {$ENDIF}
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
@@ -68,11 +62,7 @@ type
     FDeviceList: TStringList;
   public
     { Public Declarations }
-    {$IFNDEF FPC}
     constructor Create(const ADesigner: IDesigner; APropCount: Integer); override;
-    {$ELSE}
-    constructor Create(Hook: TPropertyEditorHook; APropCount: Integer); override;
-    {$ENDIF}
     destructor Destroy; override;
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
@@ -337,13 +327,8 @@ end;
 // ------------------ TGLSCUDACompilerSourceProperty ------------------
 // ------------------
 
-{$IFNDEF FPC}
 constructor TGLSCUDACompilerSourceProperty.Create(
     const ADesigner: IDesigner; APropCount: Integer);
-{$ELSE}
-constructor TGLSCUDACompilerSourceProperty.Create(
-       Hook:TPropertyEditorHook; APropCount: Integer);
-{$ENDIF}
 begin
   inherited;
   FModuleList := TStringList.Create;
@@ -433,11 +418,7 @@ end;
 // ------------------ TGLSCUDADeviceProperty ------------------
 // ------------------
 
-{$IFNDEF FPC}
 constructor TGLSCUDADeviceProperty.Create(const ADesigner: IDesigner; APropCount: Integer);
-{$ELSE}
-constructor TGLSCUDADeviceProperty.Create(Hook: TPropertyEditorHook; APropCount: Integer);
-{$ENDIF}
 begin
   inherited;
   FDeviceList := TStringList.Create;

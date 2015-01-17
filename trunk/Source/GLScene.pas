@@ -350,19 +350,14 @@ interface
 {$I GLScene.inc}
 
 uses
- {$IFDEF GLS_DELPHI_OR_CPPB}
-  Windows,
- {$ENDIF}
   {$IFDEF GLS_DELPHI_XE2_UP}
+    Winapi.Windows,
     System.Classes, System.SysUtils,
     VCL.Graphics,  VCL.Controls,
   {$ELSE}
+    Windows,
     Classes, SysUtils, Graphics,  Controls,
   {$ENDIF}
-
-{$IFDEF FPC}
-  LCLType,
-{$ENDIF}
 
   // GLScene
   OpenGLTokens, GLContext, GLVectorGeometry, XCollection, GLSilhouette,

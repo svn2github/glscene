@@ -49,12 +49,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // System
-  SysUtils, Classes,
-  // VCL
 {$IFDEF GLS_DELPHI_XE2_UP}
+  System.SysUtils, System.Classes,
   VCL.Graphics,
 {$ELSE}
+  SysUtils, Classes,
   Graphics,
 {$ENDIF}
   // GLScene
@@ -101,24 +100,9 @@ type
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     //implementing IInterface
-{$IFDEF FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
-{$ELSE}
-    function QueryInterface(constref IID: TGUID; out Obj): HResult;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-    function _AddRef: Integer;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-    function _Release: Integer;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-{$IFEND}
-{$ELSE}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function _AddRef: Integer; stdcall;
-    function _Release: Integer; stdcall;
-{$ENDIF}
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -683,20 +667,7 @@ begin
     TGLPersistentImage).Picture.Bitmap);
 end;
 
-{$IFDEF FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-
-function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
-  stdcall;
-{$ELSE}
-
-function TGLEParticleMask.QueryInterface(constref IID: TGUID; out Obj): HResult;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-{$IFEND}
-{$ELSE}
-
-function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult;
-{$ENDIF}
+function TGLEParticleMask.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
     Result := S_OK
@@ -704,36 +675,12 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-{$IFDEF FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-
 function TGLEParticleMask._AddRef: Integer; stdcall;
-{$ELSE}
-
-function TGLEParticleMask._AddRef: Integer;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-{$IFEND}
-{$ELSE}
-
-function TGLEParticleMask._AddRef: Integer;
-{$ENDIF}
 begin
   Result := -1; //ignore
 end;
 
-{$IFDEF FPC}
-{$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-
 function TGLEParticleMask._Release: Integer; stdcall;
-{$ELSE}
-
-function TGLEParticleMask._Release: Integer;
-{$IFNDEF WINDOWS} cdecl{$ELSE} stdcall{$ENDIF};
-{$IFEND}
-{$ELSE}
-
-function TGLEParticleMask._Release: Integer;
-{$ENDIF}
 begin
   Result := -1; //ignore
 end;
