@@ -72,7 +72,8 @@ begin
   CEDiffuse.OnChange := OnColorChange;
   CEEmission.OnChange := OnColorChange;
   CESpecular.OnChange := OnColorChange;
-  TabControl.DoubleBuffered := True;
+  { TODO : E2003 Undeclared identifier: 'DoubleBuffered' }
+  (*TabControl.DoubleBuffered := True;*)
 end;
 
 destructor TRFaceEditor.Destroy;
@@ -84,16 +85,17 @@ end;
 procedure TRFaceEditor.OnColorChange(Sender: TObject);
 var
   bmp: TBitmap;
-  bmpRect: TRect;
+  bmpRect: TRectF;
 
   procedure AddBitmapFor(ce: TRColorEditor);
   begin
     with bmp.Canvas do
     begin
-      Brush.Color := ce.PAPreview.Color;
-      FillRect(bmpRect);
+      Fill.Color := ce.PAPreview.Color;
+      FillRect(bmpRect,20,40,AllCorners,100);
     end;
-    ImageList.Add(bmp, nil);
+    { TODO : E2003 Undeclared identifier: 'ImageList', to be replaced }
+    (*ImageList.Add(bmp, nil);*)
   end;
 
 begin
@@ -104,9 +106,12 @@ begin
     try
       bmp.Width := 16;
       bmp.Height := 16;
-      bmpRect := Rect(0, 0, 16, 16);
-      ImageList.Clear;
+      bmpRect := TRectF.Create(0, 0, 16, 16);
+    { TODO : E2003 Undeclared identifier: 'ImageList', to be replaced }
+      (*ImageList.Clear;*)
+      bmp.Canvas.BeginScene;
       AddBitmapFor(CEAmbiant);
+      bmp.Canvas.EndScene;
       FFaceProperties.Ambient.Color := CEAmbiant.Color;
       AddBitmapFor(CEDiffuse);
       FFaceProperties.Diffuse.Color := CEDiffuse.Color;
@@ -128,7 +133,7 @@ begin
   if not Updating then
   begin
     TBEShininess.TrackBarChange(Sender);
-    FFaceProperties.Shininess := TBEShininess.Value;
+    FFaceProperties.Shininess := Round(TBEShininess.Value);
     if Assigned(FOnChange) then
       FOnChange(Self);
   end;
@@ -146,7 +151,7 @@ begin
     CESpecular.Color := val.Specular.Color;
     TBEShininess.Value := val.Shininess;
   finally
-    updating := False;
+    Updating := False;
   end;
   OnColorChange(Self);
   TBEShininessTrackBarChange(Self);

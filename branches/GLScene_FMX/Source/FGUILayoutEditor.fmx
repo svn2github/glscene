@@ -326,6 +326,7 @@ object Layouts_Form: TLayouts_Form
       Size.Height = 129.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
+      OnClick = Items_ListClick
       DisableFocusEffect = True
       DefaultItemStyles.ItemStyle = ''
       DefaultItemStyles.GroupHeaderStyle = ''

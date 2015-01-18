@@ -9,7 +9,7 @@ uses
   FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Objects,
 
    
-  GLGui;
+  GLS.Gui;
 
 type
   TLayouts_Form = class(TForm)
@@ -53,6 +53,7 @@ type
     ImageLoadSkin: TImage;
     ImageAdd: TImage;
     ImageDelete: TImage;
+    procedure Items_ListClick(Sender: TObject);
   private
     { Private declarations }
     Rect_point1, Rect_point2: TPoint;
@@ -83,13 +84,14 @@ var
 procedure TLayouts_Form.DrawCurrentElement;
 begin
   with Elements_Grid do
-    if (Items_List.ItemIndex > -1) and (Sorted_elements[Col + 3 * Row] <> nil)
+    if (Items_List.ItemIndex > -1) and (Sorted_elements[ColumnIndex + 3 * Selected] <> nil)
       then
-      with Sorted_Elements[Col + 3 * Row], Image2.Canvas do
+      with Sorted_Elements[ColumnIndex + 3 * Selected], Image2.Canvas do
       begin
-        FillRect(ClipRect);
-        Rectangle(Rect(zoom * Round(TopLeft.X), zoom * Round(TopLeft.Y),
-          zoom * Round(BottomRight.X), zoom * Round(BottomRight.Y)));
+        { TODO : E2250 There is no overloaded version of 'FillRect' not enouph arguments }
+        (*FillRect(ClipRect);*)
+        Rect(zoom * Round(TopLeft.X), zoom * Round(TopLeft.Y),
+          zoom * Round(BottomRight.X), zoom * Round(BottomRight.Y));
       end;
 end;
 
@@ -98,13 +100,46 @@ begin
   Result := Left_Edit.Enabled;
 end;
 
+procedure TLayouts_Form.Items_ListClick(Sender: TObject);
+var
+  i, p: integer;
+begin
+  if Items_list.ItemIndex = -1 then
+    Exit;
+  { TODO : E2003 Undeclared identifier: 'GLGuiLayout1' - GLScene not installed}
+  (*Name_edit.Text := GLGuiLayout1.GuiComponents[Items_list.ItemIndex].Name;*)
+  Elements_grid.Selected := 0;    //in VCL Row
+  Elements_grid.ColumnIndex := 0; //in VCL Col
+  for i := 0 to Length(Sorted_elements) - 1 do
+  begin
+    sorted_elements[i] := nil;
+    if I < 9 then
+      Elements_grid.Cells[i mod 3, i div 3] := #32;
+  end;
+
+ { TODO : E2003 Undeclared identifier: 'GLGuiLayout1' - GLScene not installed}
+ (*
+  with GLGuiLayout1.GuiComponents[Items_list.ItemIndex] do
+    for i := 0 to Elements.Count - 1 do
+    begin
+      p := Integer(Elements[i].Align);
+      Sorted_elements[p] := Elements[i];
+      Elements_grid.Cells[p mod 3, p div 3] := '+';
+    end;
+  Elements_gridClick(nil);
+  *)
+end;
+
 procedure TLayouts_Form.RefreshComponentBox;
 var
   i: integer;
 begin
   Items_List.Clear;
+  { TODO : E2003 Undeclared identifier: 'GLGuiLayout1' - GLScene not installed}
+  (*
   for i := 0 to GLGuiLayout1.GuiComponents.Count - 1 do
     Items_List.Items.Add(GLGuiLayout1.GuiComponents[i].Name);
+  *)
   Items_List.ItemIndex := 0;
   Items_ListClick(nil);
 end;
@@ -121,14 +156,17 @@ procedure TLayouts_Form.SyncImages;
 begin
   Image2.Width := Image1.Width;
   Image2.Height := Image1.Height;
-  Image2.Picture.Bitmap.Width := Image1.Width;
-  Image2.Picture.Bitmap.Height := Image1.Height;
+  Image2.Bitmap.Width := Round(Image1.Width);
+  Image2.Bitmap.Height := Round(Image1.Height);
   PaintBox1.Width := Image1.Width;
   PaintBox1.Height := Image1.Height;
+  { TODO : E2003 Undeclared identifier: 'HorzScrollBar' }
+  (*
   ScrollBox1.HorzScrollBar.Range := Image1.Width;
   ScrollBox1.VertScrollBar.Range := Image1.Height;
   PaintBox1.Canvas.CopyRect(PaintBox1.Canvas.ClipRect,
-  Image1.Canvas, Image1.Canvas.ClipRect);
+            Image1.Canvas, Image1.Canvas.ClipRect);
+  *)
 end;
 
 end.

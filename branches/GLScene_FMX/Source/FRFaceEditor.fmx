@@ -36,23 +36,24 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Height = 5.000000000000000000
+      Size.Width = 65.000000000000000000
+      Size.Height = 24.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Ambient'
       inline CEAmbiant: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 148.000000000000000000
+        Size.Height = 129.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 148.000000000000000000
+          Size.Height = 129.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 142.000000000000000000
+          Size.Height = 123.000000000000000000
         end
       end
     end
@@ -61,23 +62,24 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Height = 5.000000000000000000
+      Size.Width = 57.000000000000000000
+      Size.Height = 24.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Diffuse'
       inline CEDiffuse: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 148.000000000000000000
+        Size.Height = 129.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 148.000000000000000000
+          Size.Height = 129.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 142.000000000000000000
+          Size.Height = 123.000000000000000000
         end
       end
     end
@@ -86,23 +88,24 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = True
-      Size.Height = 5.000000000000000000
+      Size.Width = 66.000000000000000000
+      Size.Height = 24.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Emission'
       inline CEEmission: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 148.000000000000000000
+        Size.Height = 129.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 148.000000000000000000
+          Size.Height = 129.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 142.000000000000000000
+          Size.Height = 123.000000000000000000
         end
       end
     end
@@ -111,23 +114,24 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Height = 5.000000000000000000
+      Size.Width = 66.000000000000000000
+      Size.Height = 24.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       Text = 'Specular'
       inline CESpecular: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 148.000000000000000000
+        Size.Height = 129.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 148.000000000000000000
+          Size.Height = 129.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 142.000000000000000000
+          Size.Height = 123.000000000000000000
         end
       end
     end

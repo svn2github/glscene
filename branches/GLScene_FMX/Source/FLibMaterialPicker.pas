@@ -77,6 +77,16 @@ end;
 
 { TLibMaterialPicker }
 
+procedure TLibMaterialPicker.CBBackgroundChange(Sender: TObject);
+begin
+  //
+end;
+
+procedure TLibMaterialPicker.CBObjectChange(Sender: TObject);
+begin
+  //
+end;
+
 function TLibMaterialPicker.Execute(var materialName: TGLLibMaterialName;
   materialLibrary: TGLAbstractMaterialLibrary): Boolean;
 begin

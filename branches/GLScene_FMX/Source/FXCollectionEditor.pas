@@ -29,7 +29,7 @@ uses
   FMX.ListView.Types, System.Actions, FMX.ActnList, FMX.Menus, FMX.ListView,
 
   
-  GLS.CrossPlatform, XCollection;
+  GLS.CrossPlatform, GLS.XCollection;
 
 type
   TXCollectionEditor = class(TForm)

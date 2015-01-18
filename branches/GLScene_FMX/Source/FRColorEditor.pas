@@ -33,16 +33,14 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    PAPreview: TPanel;
-    ColorBox: TColorBox;
     Panel1: TPanel;
     ColorEditorPaintBox: TPaintBox;
     RedEdit: TEdit;
     GreenEdit: TEdit;
     BlueEdit: TEdit;
     AlphaEdit: TEdit;
+    PAPreview: TColorPanel;
     procedure TBEChange(Sender: TObject);
-    procedure PAPreviewDblClick(Sender: TObject);
     procedure ColorEditorPaintBoxPaint(Sender: TObject; Canvas: TCanvas);
     procedure FrameResize(Sender: TObject);
     procedure ColorEditorPaintBoxMouseDown(Sender: TObject;
@@ -55,11 +53,12 @@ type
     procedure GreenEditChange(Sender: TObject);
     procedure BlueEditChange(Sender: TObject);
     procedure AlphaEditChange(Sender: TObject);
+    procedure PAPreviewDblClick(Sender: TObject);
   private
     { Private declarations }
     FOnChange : TNotifyEvent;
-    updating : Boolean;
-    WorkBitmap : tBitmap;
+    Updating : Boolean;
+    WorkBitmap : TBitmap;
     RedValue : Integer;
     GreenValue : integer;
     BlueValue : integer;
@@ -130,20 +129,10 @@ begin
                       AlphaValue/1000);
 end;
 
-procedure TRColorEditor.PAPreviewDblClick(Sender: TObject);
-begin
-   ColorDialog.Color:=PAPreview.Color;
-   if ColorDialog.Execute then
-      SetColor(ConvertWinColor(ColorDialog.Color));
-end;
-
 procedure TRColorEditor.ColorEditorPaintBoxPaint(Sender: TObject;
   Canvas: TCanvas);
 begin
-  with ColorEditorPaintBox,ColorEditorPaintBox.Canvas do
-  begin
-    Draw(0,0,WorkBitmap);
-  end;
+  ColorEditorPaintBox.Canvas.Bitmap.Assign(WorkBitmap);
   RedEdit.Height := 16;
   GreenEdit.Height := 16;
   BlueEdit.Height := 16;
@@ -154,9 +143,10 @@ constructor TRColorEditor.Create(AOwner: TComponent);
 begin
   inherited;
   WorkBitmap := TBitmap.Create;
+  (* in VCL
   WorkBitmap.PixelFormat := glpf24bit;
-  WorkBitmap.HandleType := bmDib;
-
+  WorkBitmap.Handle := TBitmapHandleType.bmDib;
+  *)
   RedValue := 200;
   GreenValue := 120;
   BlueValue := 60;
@@ -171,15 +161,18 @@ end;
 
 procedure TRColorEditor.FrameResize(Sender: TObject);
 begin
-  WorkBitmap.Width := ColorEditorPaintBox.Width;
-  WorkBitmap.Height := ColorEditorPaintBox.Height;
-  With WorkBitmap.Canvas do
+  WorkBitmap.Width := Round(ColorEditorPaintBox.Width);
+  WorkBitmap.Height := Round(ColorEditorPaintBox.Height);
+  with WorkBitmap.Canvas do
   begin
-    Pen.Color := clLime;
+    { TODO : rewright to use TPath and SVG drawing }
+    (*
+    Pen.Color := TColors.Lime;
     MoveTo(0,0);
     LineTo(Width-1,Height-1);
     MoveTo(Width-1,0);
     LineTo(0,Height-1);
+    *)
   end;
   DrawCOntents;
 
@@ -219,21 +212,24 @@ procedure TRColorEditor.DrawContents;
 var
   Position : integer;
   tx,ty : integer;
-  RViewColor : tColor;
-  GViewColor : tColor;
-  BViewColor : tColor;
-  AViewColor : tColor;
-  ViewLevel : integer;
-  WhiteCheckColor : tColor;
-  BlackCheckColor : tColor;
-  AValue : single;
+  RViewColor : TColor;
+  GViewColor : TColor;
+  BViewColor : TColor;
+  AViewColor : TColor;
+  ViewLevel : Integer;
+  WhiteCheckColor : TColor;
+  BlackCheckColor : TColor;
+  AValue : Single;
+  ARect : TRectF;
 begin
-  with WorkBitmap.Canvas do
-  begin
-    Brush.Color := clBtnFace;
-    FillRect(Rect(0,0,WorkBitmap.Width,WorkBitmap.Height));
-
-    Font.Color := clBlack;
+  WorkBitmap.Canvas.Fill.Color := TColors.cBTNFACE;
+  ARect := TRectF.Create(0,0,WorkBitmap.Width,WorkBitmap.Height);
+  WorkBitmap.Canvas.BeginScene;
+  WorkBitmap.Canvas.FillRect(ARect,20,40,AllCorners,100);
+  WorkBitmap.Canvas.EndScene;
+    { TODO : must be replaced with fmx font, brush and textout }
+    (*
+    Font.Color := TColors.Black;
     Font.Name := 'Arial';
     Font.Height := 14;
 
@@ -242,14 +238,14 @@ begin
     TextOut(6,48,'Blue');
     TextOut(6,70,'Alpha');
 
-    Brush.Color := clBlack;
+    Brush.Color := TColors.Black;
     FrameRect(Rect(ColorSliderLeft,RTop,ColorSliderLeft+ColorSliderWidth,RTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,GTop,ColorSliderLeft+ColorSliderWidth,GTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,BTop,ColorSliderLeft+ColorSliderWidth,BTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,ATop,ColorSliderLeft+ColorSliderWidth,ATop+ColorViewHeight));
 
     // Color View Frames
-    Pen.Color := clBtnShadow;
+    Pen.Color := TColors.cBTNSHADOW;
     PolyLine([  Point(ColorSliderLeft-1,RTop+ColorViewHeight),
                 Point(ColorSliderLeft-1,RTop-1),
                 Point(ColorSliderLeft+ColorSliderWidth+1,RTop-1)  ]);
@@ -266,7 +262,7 @@ begin
                 Point(ColorSliderLeft-1,ATop-1),
                 Point(ColorSliderLeft+ColorSliderWidth+1,ATop-1)  ]);
 
-    Pen.Color := clBtnHighlight;
+    Pen.Color := TColors.cBTNHIGHLIGHT;
 
     PolyLine([  Point(ColorSliderLeft,RTop+ColorViewHeight),
                 Point(ColorSliderLeft+ColorSliderWidth,RTop+ColorViewHeight),
@@ -362,7 +358,7 @@ begin
                       ));
       end;
     end;
-  end;
+    *)
 end;
 
 procedure TRColorEditor.ColorEditorPaintBoxMouseDown(Sender: TObject;
@@ -379,7 +375,8 @@ begin
       If (Y > BTop) and ( (BTop+ColorSliderHeight) > Y ) then DraggingValue := Blue;
       If (Y > ATop) and ( (ATop+ColorSliderHeight) > Y ) then DraggingValue := Alpha;
 
-      If DraggingValue <> None then DragColorSliderToPosition(X-ColorSliderLeft-1);
+      If DraggingValue <> None then
+        DragColorSliderToPosition(Round(X)-ColorSliderLeft-1);
     end
   end;
 end;
@@ -396,12 +393,18 @@ begin
 end;
 
 procedure TRColorEditor.ContentsChanged;
+var
+  ARect : TRectF;
 begin
   if Not Updating then
   begin
     UpDating := True;
     DrawContents;
-    ColorEditorPaintBox.Canvas.Draw(0,0,WorkBitmap);
+    ARect := TRectF.Create(0,0,WorkBitmap.Width,WorkBitmap.Height);
+    WorkBitmap.Canvas.BeginScene();
+    ColorEditorPaintBox.Canvas.DrawBitmap(WorkBitmap,ARect,ARect,50);
+    WorkBitmap.Canvas.EndScene();
+
     RedEdit.Text := IntToStr(RedValue);
     GreenEdit.Text := IntToStr(GreenValue);
     BlueEdit.Text := IntToStr(BlueValue);
@@ -417,7 +420,7 @@ end;
 procedure TRColorEditor.ColorEditorPaintBoxMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Single);
 begin
- if DraggingValue <> None then DragColorSliderToPosition(X-ColorSliderLeft-1);
+ if DraggingValue <> None then DragColorSliderToPosition(Round(X)-ColorSliderLeft-1);
 end;
 
 procedure TRColorEditor.ColorEditorPaintBoxMouseUp(Sender: TObject;
@@ -434,11 +437,11 @@ begin
 
   If (IntValue < 0) or (IntValue > MaxColorValue) then
   begin
-    RedEdit.Color:= TColors.clRed;
+    RedEdit.TextSettings.FontColor:= TColors.Red;
   end
   else
   begin
-    RedEdit.Color:=TColors.clWindow;
+    RedEdit.TextSettings.FontColor:=TColors.cWINDOW;
     RedValue := IntValue;
     ContentsChanged;
   end;
@@ -453,14 +456,19 @@ begin
 
   If (IntValue < 0) or (IntValue > MaxColorValue) then
   begin
-    GreenEdit.Color:=TColors.clRed;
+    GreenEdit.TextSettings.FontColor:=TColors.Red;
   end
   else
   begin
-    GreenEdit.Color:=TColors.clWindow;
+    GreenEdit.TextSettings.FontColor:=TColors.cWINDOW;
     GreenValue := IntValue;
     ContentsChanged;
   end;
+end;
+
+procedure TRColorEditor.PAPreviewDblClick(Sender: TObject);
+begin
+  SetColor(ConvertWinColor(PAPreview.Color));
 end;
 
 procedure TRColorEditor.BlueEditChange(Sender: TObject);
@@ -471,11 +479,11 @@ begin
 
   If (IntValue < 0) or (IntValue > MaxColorValue) then
   begin
-    BlueEdit.Color:=TColors.clRed;
+    BlueEdit.TextSettings.FontColor:=TColors.Red;
   end
   else
   begin
-    BlueEdit.Color:=TColors.clWindow;
+    BlueEdit.TextSettings.FontColor:=TColors.cWINDOW;
     BlueValue := IntValue;
     ContentsChanged;
   end;
@@ -489,11 +497,11 @@ begin
 
   If (IntValue < 0) or (IntValue > MaxAlphaValue) then
   begin
-    AlphaEdit.Color:=TColors.clRed;
+    AlphaEdit.TextSettings.FontColor:=TColors.Red;
   end
   else
   begin
-    AlphaEdit.Color:=TColors.clWindow;
+    AlphaEdit.TextSettings.FontColor:=TColors.cWINDOW;
     AlphaValue := IntValue;
     ContentsChanged;
   end;

@@ -92,7 +92,8 @@ begin
           else
         else
           MessageDlg(Format('Error while loading %s' + #13 +
-            'not a valid GLScene plug-in', [Files[I]]), mtError, [mbOK], 0);
+            'not a valid GLScene plug-in', [Files[I]]),
+            TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
       end;
 end;
 
@@ -122,10 +123,10 @@ begin
   Entry := ListBox.ItemIndex;
   if Entry > -1 then
   begin
-    SizeLabel.Caption := Format('%n KB',
+    SizeLabel.Text := Format('%n KB',
       [FManager.PlugIns[Entry].FileSize / 1000]);
     SizeLabel.Enabled := True;
-    DateLabel.Caption := DateToStr(FManager.PlugIns[Entry].FileDate);
+    DateLabel.Text := DateToStr(FManager.PlugIns[Entry].FileDate);
     DateLabel.Enabled := True;
     DescriptionMemo.Lines.Text :=
       string(FManager.PlugIns[Entry].GetDescription);
@@ -177,7 +178,7 @@ var
   I: Integer;
 begin
   for I := 0 to ListBox.Items.Count - 1 do
-    if ListBox.Selected[I] then
+    if ListBox.Selected then
     begin
       FManager.RemovePlugIn(I);
       ListBox.Items.Delete(I);

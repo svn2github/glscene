@@ -147,16 +147,21 @@ object LibMaterialPicker: TLibMaterialPicker
     Size.Height = 228.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 14
-    inherited GLSceneViewer: TViewport3D
+    inherited GLSViewer: TViewport3D
       Size.Height = 201.000000000000000000
     end
-    inherited Camera: TCameraComponent
-      Left = 248
-      Top = 112
-    end
-    inherited LightMaterialSource1: TLightMaterialSource
+    inherited LightMaterialSource: TLightMaterialSource
       Left = 251
       Top = 176
+    end
+    inherited World: TDummy
+      inherited Teapot: TModel3D
+        Data = {0000}
+      end
+    end
+    inherited Camera: TCamera
+      Left = 248
+      Top = 112
     end
   end
 end
