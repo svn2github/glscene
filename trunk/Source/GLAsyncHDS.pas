@@ -175,11 +175,7 @@ begin
     HDThread.HeightData:=HeightData;
     heightData.Thread:=HDThread;
     HDThread.FreeOnTerminate:=false;
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    HDThread.Resume;
-{$ELSE}
     HDThread.Start;
-{$ENDIF}
   end;
 end;
 

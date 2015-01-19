@@ -38,13 +38,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, Winapi.Messages, System.Classes, System.SysUtils,
   VCL.Forms, VCL.Controls, VCL.Menus,
-{$ELSE}
-  Windows, Messages, Classes, SysUtils,
-  Forms, Controls, Menus,
-{$ENDIF}
 
   GLViewer, GLScene, GLContext;
 

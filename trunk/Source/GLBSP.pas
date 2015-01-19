@@ -405,11 +405,7 @@ begin
       end;
       // render facegroups
       bspNodeList :=
-{$IFDEF GLS_DELPHI_XE2_UP}
         @faceGroupList.List[0];
-{$ELSE}
-        faceGroupList.List;
-{$ENDIF}
       n := bsprci.faceGroups.Count;
       i := 0;
       j := 0;

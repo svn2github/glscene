@@ -24,13 +24,9 @@ unit GLTimeEventsMgr;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  GLCadencer,  GLBaseClasses;
+  GLCadencer, GLBaseClasses;
 
 type
 

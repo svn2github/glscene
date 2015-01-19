@@ -24,11 +24,7 @@ unit GLSound;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Types,
 
   GLSoundFileObjects, GLScene, XCollection, GLVectorGeometry,
   GLCadencer, GLBaseClasses, GLCrossPlatform, GLUtils;

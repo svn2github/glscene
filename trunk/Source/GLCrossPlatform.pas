@@ -9,7 +9,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
  <b>Historique : </b><font size=-1><ul>
-      <li>22/04/14 - PW -  Ceased support of GLS_DELPHI_5 and GLS_COMPILER_5 or DOWN
+      <li>20/01/15 - PW -  Dropped support for GLS_DELPHI_XE2_DOWN compilers
       <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
       <li>30/06/11 - DaStr - Added CharToWideChar()
@@ -94,17 +94,9 @@ uses
 {$IFDEF GLS_X11_SUPPORT}
   xlib,
 {$ENDIF}
-  Types,
-{$IFDEF GLS_DELPHI_XE2_UP}
-   System.Classes, System.SysUtils, System.StrUtils,
-   VCL.Consts,   VCL.Graphics,
-   VCL.Controls,  VCL.Forms,  VCL.Dialogs
-{$ELSE}
-   Consts,
-   Classes, SysUtils, StrUtils, Graphics,  Controls,
-   Forms,  Dialogs
-{$ENDIF}
-  ;
+  System.Types, System.Classes, System.SysUtils, System.StrUtils,
+  VCL.Consts,   VCL.Graphics,
+  VCL.Controls,  VCL.Forms,  VCL.Dialogs;
 
 const
   FPC_VERSION = 0;
@@ -195,11 +187,11 @@ type
 
   TGLComponent = class(TComponent);
 
-  DWORD = Types.DWORD; {$NODEFINE DWORD}
-  TPoint = Types.TPoint;{$NODEFINE TPoint}
-  PPoint = Types.PPoint;{$NODEFINE PPoint}
-  TRect = Types.TRect;  {$NODEFINE TRect}
-  PRect = Types.PRect;  {$NODEFINE PRect}
+  DWORD = System.Types.DWORD; {$NODEFINE DWORD}
+  TPoint = System.Types.TPoint;{$NODEFINE TPoint}
+  PPoint = System.Types.PPoint;{$NODEFINE PPoint}
+  TRect = System.Types.TRect;  {$NODEFINE TRect}
+  PRect = System.Types.PRect;  {$NODEFINE PRect}
 
   TProjectTargetNameFunc = function(): string;
 
@@ -796,18 +788,12 @@ end;
 function GetDecimalSeparator: Char;
 begin
   Result :=
- {$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
- {$ENDIF}
-  DecimalSeparator;
+   FormatSettings.DecimalSeparator;
 end;
 
 procedure SetDecimalSeparator(AValue: Char);
 begin
-{$IFDEF GLS_DELPHI_XE_UP}
-  FormatSettings.
-{$ENDIF}
-  DecimalSeparator := AValue;
+  FormatSettings.DecimalSeparator := AValue;
 end;
 
 function HalfToFloat(Half: THalfFloat): Single;

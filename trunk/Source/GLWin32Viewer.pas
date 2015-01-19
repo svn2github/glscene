@@ -41,15 +41,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  System.Types, VCL.Graphics, VCL.Forms, VCL.Controls,
-{$ELSE}
-  Windows, Messages, Classes,  SysUtils, Types,
-  Graphics, Forms, Controls,
-{$ENDIF}
+  WinApi.Windows, WinApi.Messages,
+  System.Classes, System.SysUtils, System.Types,
+  VCL.Graphics, VCL.Forms, VCL.Controls,
 
-  // GLScene
+  // GLS
   GLScene, GLWin32Context,  GLContext;
 
 type
@@ -84,9 +80,7 @@ type
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
     procedure WMGetDglCode(var Message: TMessage); message WM_GETDLGCODE;
     procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-{$IFDEF GLS_DELPHI_XE_UP}
     procedure WMTouch(var Message: TMessage); message WM_TOUCH;
-{$ENDIF}
     procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
 
@@ -214,10 +208,8 @@ type
     property OnEnter;
     property OnExit;
 
-{$IFDEF GLS_DELPHI_2010_UP}
     property OnGesture;
     property Touch;
-{$ENDIF}
 
   end;
 
@@ -286,9 +278,7 @@ end;
 
 procedure TGLSceneViewer.RegisterTouch;
 begin
-{$IFDEF GLS_DELPHI_2010_UP}
   RegisterTouchWindow(Handle, 0);
-{$ENDIF}
 end;
 
 // SetBeforeRender
@@ -317,9 +307,7 @@ end;
 
 procedure TGLSceneViewer.UnregisterTouch;
 begin
-{$IFDEF GLS_DELPHI_2010_UP}
   UnregisterTouchWindow(Handle);
-{$ENDIF}
 end;
 
 // GetPostRender
@@ -431,7 +419,6 @@ begin
   FBuffer.Resize(0, 0, Message.Width, Message.Height);
 end;
 
-{$IFDEF GLS_DELPHI_XE_UP}
 procedure TGLSceneViewer.WMTouch(var Message: TMessage);
 
   function TOUCH_COORD_TO_PIXEL(l : integer) : integer; // Delphi XE needs this
@@ -490,7 +477,6 @@ begin
       inherited;
   end;
 end;
-{$ENDIF}
 
 // WMPaint
 //

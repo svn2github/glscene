@@ -22,17 +22,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows, Messages,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.Actions, VCL.Forms, VCL.ImgList, VCL.Controls,
-  VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin,
-{$ELSE}
-  Classes, Actions, Forms, ImgList, Controls, ActnList,
-  Menus, ComCtrls, ToolWin,
-{$ENDIF}
- DesignEditors, DesignIntf,
- //GLS
- GLCrossPlatform, XCollection;
+  Winapi.Windows, Winapi.Messages,
+  System.Classes, System.Actions, System.SysUtils,
+  VCL.Forms, VCL.ImgList, VCL.Controls,
+  VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
+
+
+   DesignEditors, DesignIntf,
+   //GLS
+   GLCrossPlatform, XCollection;
 
 type
   TXCollectionEditor = class(TForm)
@@ -101,12 +99,7 @@ implementation
 {$R *.dfm}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
-{$ELSE}
-  Dialogs,
-{$ENDIF}
-  SysUtils, GLBehaviours, GLScene, GLMaterialEx;
+  GLBehaviours, GLScene, GLMaterialEx;
 
 resourcestring
   cXCollectionEditor = 'XCollection editor';

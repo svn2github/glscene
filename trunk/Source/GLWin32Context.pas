@@ -63,11 +63,11 @@ interface
 {$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit is Windows specific'}{$ENDIF}
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Forms,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Forms,
 
   //GLS
   OpenGLTokens,
@@ -281,7 +281,7 @@ begin
   classRegistered := GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
     tempClass);
   if not classRegistered then
-    Windows.RegisterClass(vUtilWindowClass);
+    Winapi.Windows.RegisterClass(vUtilWindowClass);
   Result := CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
     '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
 end;
@@ -1375,13 +1375,13 @@ begin
       case Layer of
         clUnderlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY2);
         clUnderlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_UNDERLAY1);
-        clMainPlane: Windows.SwapBuffers(FDC);
+        clMainPlane: Winapi.Windows.SwapBuffers(FDC);
         clOverlay1: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY1);
         clOverlay2: wglSwapLayerBuffers(FDC, WGL_SWAP_OVERLAY2);
       end;
     end
     else
-      Windows.SwapBuffers(FDC);
+      Winapi.Windows.SwapBuffers(FDC);
 end;
 
 // RenderOutputDevice

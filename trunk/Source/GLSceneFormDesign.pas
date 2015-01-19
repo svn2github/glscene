@@ -17,15 +17,10 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   System.Classes,
   VCL.Forms,
-{$ELSE}
-  Windows,
-  Classes,
-  Forms,
-{$ENDIF}
+
   ToolsAPI;
 
 type
@@ -214,30 +209,23 @@ type
 resourcestring
   //-------------------------Projects------------------------------------------
   rBaseProjectLocalizedName = 'GLScene Base Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
   rBaseProjectLocalizedDescription = 'Template of GLScene Base Application with TGLSceneForm';
 
   rSimpleProjectLocalizedName = 'GLScene Simple Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
   rSimpleProjectLocalizedDescription = 'Template of GLScene Simple Application with TGLSceneForm';
 
   rExtendedProjectLocalizedName = 'GLScene Extended Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
   rExtendedProjectLocalizedDescription = 'Template of GLScene Extended Application with TGLSceneForm';
 
   //--------------------------Units + LFM--------------------------------------
   //Base
   rBaseFormLocalizedName = 'GLSBaseForm';
-  //TGLSceneForm - 顫 ﱬଠ믲ﱠ 溠沠⡱梥 㯩㠍
-  //㽾㦰ࡨ  ﱬ 衯諸﬿沠౮騢泌 殤汨ﲰ楱㦭⡮뮮 ౨쯦殨
   rBaseFormLocalizedDescription = 'GLSceneForm - a special form, which combines '+
                                   'the properties of the viewer and the normal '+
                                   'form and allows you to render directly into '+
                                   'the application window';
   //Simple
   rSimpleFormLocalizedName = 'GLSSimpleForm';
-  //GLSSimpleForm - শ顫 ﱬଠ믲ﱠ 溠沠⡱梥 㯩㠍
-  //㽾㦰ࡨ  ﱬ 衱便缲 ⡧顭᢮ 믬௭殲嬿 﨤ᮨ ౮冷 ౨쯦殨.
   rSimpleFormLocalizedDescription = 'GLSSimpleForm - a special form, which '+
                                     'combines the properties viewer and the '+
                                     'usual form and contains the basic set of '+

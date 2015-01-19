@@ -23,16 +23,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    Classes,
-  {$ENDIF}
+  System.Classes,
 
-  GLScene,  GLVectorGeometry,  GLObjects,  GLTexture, OpenGLTokens,
-  GLContext,  GLRenderContextInfo,  GLBaseClasses,
-  GLState
-  , GLVectorTypes;
+  GLScene, GLVectorGeometry, GLObjects, GLTexture, OpenGLTokens,
+  GLContext, GLRenderContextInfo, GLBaseClasses, GLState, GLVectorTypes;
 
 type
 

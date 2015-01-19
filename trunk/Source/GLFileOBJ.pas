@@ -177,9 +177,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_2009_UP}
   GLVectorTypes,
-{$ENDIF}
   GLStrings,
   OpenGLTokens,
   XOpenGL,

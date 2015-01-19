@@ -17,12 +17,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, System.Classes, System.SysUtils,
   VCL.Dialogs, VCL.Forms,
-{$ELSE}
-  Windows, Classes, SysUtils, Dialogs, Forms,
-{$ENDIF}
   GLPlugInIntf;
 
 
@@ -243,12 +239,7 @@ begin
         Handle := NewHandle;
         FindFirst(Path, faAnyFile, SearchRec);
         FileSize := SearchRec.Size;
-        FileDate :=
-{$IFDEF GLS_DELPHI_XE_UP}
-      SearchRec.TimeStamp;
-{$ELSE}
-      FileDateToDateTime(SearchRec.Time);
-{$ENDIF}
+        FileDate := SearchRec.TimeStamp;
         FindClose(SearchRec);
         GetServices := ServiceFunc;
         EnumResourcenames := GetProcAddress(Handle, 'EnumResourceNames');

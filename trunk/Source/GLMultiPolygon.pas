@@ -51,18 +51,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  OpenGLTokens,  OpenGLAdapter,  GLSpline,
-  XOpenGL,  GLContext
-  , GLVectorTypes,
-  GLVectorGeometry,  GLVectorLists,  GLPersistentClasses,
-  GLScene,  GLObjects,  GLGeomObjects,  GLNodes,  GLBaseClasses,
-  GLCoordinates,  GLRenderContextInfo;
+  OpenGLTokens, OpenGLAdapter, GLSpline, XOpenGL, GLContext, GLVectorTypes,
+  GLVectorGeometry, GLVectorLists, GLPersistentClasses, GLScene, GLObjects,
+  GLGeomObjects, GLNodes, GLBaseClasses, GLCoordinates, GLRenderContextInfo;
 
 type
 

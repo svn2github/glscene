@@ -32,14 +32,10 @@ interface
 {$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Messages, System.Classes, System.SysUtils,
+  Winapi.Windows, WinApi.Messages,
+  System.Classes, System.SysUtils,
   VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
-{$ELSE}
-  Messages, Classes, SysUtils,
-  Controls, Forms, Extctrls, Graphics, Dialogs,
-{$ENDIF}
+
   GLGraphics, GLSVfw, GLScene, GLViewer;
 
 type
@@ -181,7 +177,7 @@ implementation
 procedure InitializeBitmapInfoHeader(Bitmap: HBITMAP;
   var BI: TBitmapInfoHeader);
 var
-  BM: Windows.TBitmap;
+  BM: Winapi.Windows.TBitmap;
 begin
   GetObject(Bitmap, SizeOf(BM), @BM);
   with BI do

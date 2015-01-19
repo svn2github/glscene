@@ -21,12 +21,8 @@ interface
 {$i GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls
-{$ELSE}
-  Classes, SysUtils, Forms, StdCtrls, ComCtrls, Controls
-{$ENDIF}
-;
+  System.Classes, System.SysUtils,
+  VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, VCL.Controls;
 
 type
   TRTrackBarEdit = class(TFrame)
@@ -49,7 +45,9 @@ type
     property ValueMax : Integer read GetValueMax write SetValueMax;
   end;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 {$R *.dfm}
 

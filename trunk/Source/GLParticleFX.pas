@@ -73,17 +73,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Types,
 
-  GLScene,  OpenGLTokens,  GLCrossPlatform,  GLState
-  , GLVectorTypes,
-  GLPersistentClasses,  GLVectorGeometry,  XCollection,  GLMaterial,
-  GLCadencer, GLVectorLists,  GLGraphics,  GLContext,  GLColor,  GLBaseClasses,
-  GLCoordinates,  GLRenderContextInfo,  GLManager,  GLTextureFormat;
+  GLScene, OpenGLTokens, GLCrossPlatform, GLState, GLVectorTypes,
+  GLPersistentClasses, GLVectorGeometry, XCollection, GLMaterial,
+  GLCadencer, GLVectorLists, GLGraphics, GLContext, GLColor, GLBaseClasses,
+  GLCoordinates, GLRenderContextInfo, GLManager, GLTextureFormat;
 
 const
   cPFXNbRegions = 128; // number of distance regions

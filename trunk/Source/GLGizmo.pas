@@ -67,8 +67,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  // Standard
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
 
   // GLScene
   GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,

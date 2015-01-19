@@ -54,12 +54,8 @@ interface
 {$I GLScene.inc}
 
 uses
- {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, System.Types,
-{$ELSE}
-  Classes, SysUtils, Types,
-{$ENDIF}
-  //GLScene
+  //GLS
   GLCrossPlatform, GLVectorGeometry, GLVectorLists, GLSpacePartition,
   GLGeometryBB, GLVectorTypes;
 

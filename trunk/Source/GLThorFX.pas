@@ -31,15 +31,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
   GLScene, XCollection, GLVectorGeometry,
-  OpenGLTokens, GLContext, GLVectorLists
-  , GLVectorTypes,
+  OpenGLTokens, GLContext, GLVectorLists, GLVectorTypes,
   GLCadencer, GLColor, GLBaseClasses, GLCoordinates, GLRenderContextInfo,
   GLManager, GLState, GLTextureFormat;
 

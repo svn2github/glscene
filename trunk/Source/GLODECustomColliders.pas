@@ -53,16 +53,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes,
   System.SysUtils,
 
- {$ELSE}
-  Classes,
-  SysUtils,
- {$ENDIF}
-
-  // GLscene
+  // GLS
   GLODEManager,
   ODEGL,
   ODEImport,
@@ -195,7 +189,13 @@ type
 function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 
 var
   vCustomColliderClass: TdGeomClass;

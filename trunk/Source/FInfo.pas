@@ -35,16 +35,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows,
   System.SysUtils, System.Classes,
   VCL.Forms, VCL.Controls, VCL.Buttons, VCL.StdCtrls, VCL.ComCtrls,
   VCL.ExtCtrls, VCL.Graphics, VCL.Menus, VCL.Imaging.JPEG,
-{$ELSE}
-  SysUtils, Classes,
-  Forms, Controls, Buttons, StdCtrls, ComCtrls,
-  ExtCtrls, Graphics, Menus, JPEG,
-{$ENDIF}
+
   GLScene, GLWin32Viewer,
   OpenGLTokens, OpenGLAdapter, GLContext, GLCrossPlatform;
 

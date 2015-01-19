@@ -77,16 +77,12 @@ interface
 (******************************************************************************)
 
 uses
-    Windows,
-    MMSystem,
-    Messages,
-    CommDlg,
-    ActiveX,
-{$IFDEF GLS_DELPHI_XE2_UP}
+    Winapi.Windows,
+    Winapi.MMSystem,
+    Winapi.Messages,
+    Winapi.CommDlg,
+    Winapi.ActiveX,
     VCL.Dialogs;
-{$ELSE}
-    Dialogs;
-{$ENDIF}
 
 (****************************************************************************
  *

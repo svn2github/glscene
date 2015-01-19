@@ -8,7 +8,7 @@
 
  <b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPPB compatibility: used TAFIOFileStreamEvent as procedure
-                     instead of function for GLS_CPPB
+                     instead of function using GLS_CPPB define
       <li>25/08/10 - DaStr - Fixed compiler warnings
       <li>25/07/10 - Yar - Added TGLSResourceStream class and CreateResourceStream string
       <li>23/01/10 - Yar - Change LoadFromStream to dynamic

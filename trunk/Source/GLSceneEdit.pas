@@ -52,41 +52,22 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows,
   System.Classes,
   System.SysUtils,
   System.Win.Registry,
   System.Actions,
+  VCL.ActnList,
   VCL.Controls,
   VCL.Forms,
   VCL.ComCtrls,
   VCL.ImgList,
   VCL.Dialogs,
   VCL.Menus,
-  VCL.ActnList,
   VCL.ToolWin,
   VCL.ExtCtrls,
   VCL.StdCtrls,
   VCL.ClipBrd,
-{$ELSE}
-  Windows,
-  Classes,
-  SysUtils,
-  Registry,
-  Controls,
-  Forms,
-  ComCtrls,
-  ImgList,
-  Dialogs,
-  Menus,
-  Actions
-  ActnList,
-  ToolWin,
-  ExtCtrls,
-  StdCtrls,
-  ClipBrd,
-{$ENDIF}
 
   DesignIntf,
   VCLEditors,

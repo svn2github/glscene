@@ -21,12 +21,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows, System.Classes, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
   VCL.ImgList, VCL.Controls, VCL.Graphics,
-{$ELSE}
-  Windows, Classes, Forms, ComCtrls, StdCtrls, ImgList, Controls, Graphics,
-{$ENDIF}
+
   FRTrackBarEdit, FRColorEditor,
   GLTexture, GLMaterial, GLState;
 

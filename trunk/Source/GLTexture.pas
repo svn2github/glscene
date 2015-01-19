@@ -1556,7 +1556,7 @@ begin
   begin
     sl := TStringList.Create;
     try
-      sl.LoadFromFile(buf{$IFDEF GLS_DELPHI_2009_UP}, TEncoding.ASCII{$ENDIF});
+      sl.LoadFromFile(buf, TEncoding.ASCII);
       FWidth := StrToInt(sl.Values['Width']);
       FHeight := StrToInt(sl.Values['Height']);
       temp := sl.Values['Depth'];

@@ -52,11 +52,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Math,
-  {$ELSE}
-    Classes, SysUtils, Math,
-  {$ENDIF}
+  System.Classes, System.SysUtils, System.Math,
 
   GLObjects, GLState, GLUtils,
   GLScene, GLHUDObjects, GLMaterial, OpenGLTokens, GLContext,

@@ -21,13 +21,9 @@ interface
 {$i GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,
   VCL.ComCtrls, VCL.ExtCtrls, VCL.Dialogs, VCL.Controls, VCL.Graphics,
-{$ELSE}
-  Windows, Classes, SysUtils, Forms, StdCtrls, ComCtrls, ExtCtrls,  Dialogs,
-  Controls, Graphics,
-{$ENDIF}
+  //GLS
   GLVectorGeometry, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
 
 type

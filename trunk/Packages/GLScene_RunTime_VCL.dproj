@@ -110,7 +110,6 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
-        <DCCReference Include="GR32_RSXE3.dcp"/>
         <DCCReference Include="..\Source\Const3DS.pas"/>
         <DCCReference Include="..\Source\DDSImage.pas"/>
         <DCCReference Include="..\Source\DXTC.pas"/>

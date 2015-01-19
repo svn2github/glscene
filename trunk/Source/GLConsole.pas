@@ -74,12 +74,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, System.TypInfo, Vcl.Graphics,
-{$ELSE}
-  Classes, SysUtils, TypInfo, Graphics,
-{$ENDIF}
-  // GLScene
+
+  // GLS
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
   GLPersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
   GLCrossPlatform, GLMaterial, GLVectorTypes;
@@ -436,7 +433,13 @@ type
     property OnProgress;
   end;
 
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 
 const
   STR_NO_DUPLICATE_NAMES_ALLOWED = 'Duplicate names not allowed!';

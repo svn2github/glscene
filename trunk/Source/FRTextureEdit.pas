@@ -28,12 +28,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, System.TypInfo, VCL.Forms, VCL.StdCtrls,
   VCL.Buttons, VCL.Controls,
-{$ELSE}
-  Classes, SysUtils, TypInfo, Forms, StdCtrls, Buttons, Controls,
-{$ENDIF}
   GLGraphics, GLTextureFormat, GLTexture, GLState, GLTextureImageEditors;
 
 type

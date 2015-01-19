@@ -49,13 +49,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes,  System.SysUtils, System.TypInfo,
+  System.Classes, System.SysUtils, System.TypInfo,
   VCL.Forms, VCL.Controls, VCL.ExtCtrls,
-{$ELSE}
-  Classes, SysUtils, TypInfo, Forms, Controls, ExtCtrls,
-{$ENDIF}
-  // GLSñene
+  // GLS
   GLSceneForm, GLVectorGeometry, GLScene,
   GLViewer, GLStrings, GLCrossPlatform;
 
@@ -158,7 +154,13 @@ type
     property OnMouseMove: TMouseMoveEvent read FOnMouseMove write FOnMouseMove;
   end;
 
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 const
   vFPSString = '%FPS';

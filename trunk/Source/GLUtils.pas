@@ -34,13 +34,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Graphics, VCL.Controls, System.UITypes,
-  {$ELSE}
-  Classes, SysUtils, Graphics, Controls,
-{$ENDIF}
-  // GLScene
+  System.Classes, System.SysUtils, System.UITypes,
+  VCL.Graphics, VCL.Controls, VCL.Dialogs, VCL.ExtDlgs,
+
+  // GLS
   GLVectorGeometry, GLCrossPlatform;
 
 type
@@ -124,13 +121,6 @@ implementation
 //------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
-  VCL.ExtDlgs,
-{$ELSE}
-  Dialogs,
-  ExtDlgs,
-{$ENDIF}
   GLApplicationFileIO;
 
 

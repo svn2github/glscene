@@ -17,17 +17,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, Winapi.Messages,
+  Winapi.Windows,
+  Winapi.Messages,
   System.Classes,
   VCL.Controls,
   VCL.Forms,
-{$ELSE}
-  Windows, Messages,
-  Classes,
-  Controls,
-  Forms,
-{$ENDIF}
 
   GLScene,
   GLContext,

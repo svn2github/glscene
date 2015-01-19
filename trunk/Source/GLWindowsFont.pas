@@ -33,21 +33,14 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   System.Classes,
   System.Math,
   System.SysUtils,
   System.Types, System.UITypes,
   VCL.Graphics,
-{$ELSE}
-  Windows,
-  Classes,
-  Math,
-  SysUtils,
-  Types,
-  Graphics,
-{$ENDIF}
+
+  //GLS
   GLScene,
   GLTexture,
   GLBitmapFont,

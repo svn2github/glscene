@@ -693,11 +693,7 @@ Begin
     Thread.FHeightData := heightData;
     Thread.Perlin := Perlin;
     Thread.PerlinSource := self;
-{$IFDEF GLS_DELPHI_2009_DOWN}
-    Thread.Resume;
-{$ELSE}
     Thread.Start;
-{$ENDIF}
   End
   else
   Begin

@@ -24,13 +24,12 @@ interface
 {$I GLScene.inc}
 
 {$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
-{$IFDEF GLS_DELPHI_XE2_UP}
-  {$WARN IMPLICIT_STRING_CAST OFF}
-  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
-{$ENDIF}
+
+{$WARN IMPLICIT_STRING_CAST OFF}
+{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 
 uses
-  Classes, IniFiles, SysUtils;
+  System.Classes, System.IniFiles, System.SysUtils;
 
 type
   UTF8String = AnsiString;
@@ -102,7 +101,13 @@ type
     property Language: TLanguageExt read FLanguage write SetLanguage;
   end;
 
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 uses
   GLCrossPlatform, GLSLog;

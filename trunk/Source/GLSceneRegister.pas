@@ -101,7 +101,6 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   WinApi.Windows,
   System.Classes,
   System.SysUtils,
@@ -111,21 +110,12 @@ uses
   VCL.Controls,
   VCL.StdCtrls,
   VCL.Graphics,
-{$ELSE}
-  Windows,
-  Classes,
-  SysUtils,
-  TypInfo,
-  Forms,
-  Dialogs,
-  Controls,
-  StdCtrls,
-  Graphics,
-{$ENDIF}
+
   ToolsAPI,
   DesignIntf,
   DesignEditors,
   VCLEditors,
+
 //GLS
   GLScene,
   GLContext,
@@ -582,10 +572,8 @@ uses
   GLTimeEventsMgr,
   GLTrail,
   GLTree,
-{$IFDEF GLS_DELPHI_XE2_UP}
   GLTypes,
   GLFileTIN,
-{$ENDIF}
   GLUserShader,
   GLUtils,
   GLVectorFileObjects,

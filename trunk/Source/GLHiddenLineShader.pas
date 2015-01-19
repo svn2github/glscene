@@ -26,11 +26,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    Classes,
-  {$ENDIF}
+  System.Classes,
 
   GLMaterial, OpenGLTokens, GLCrossPlatform, GLScene, GLColor,
   GLBaseClasses, GLRenderContextInfo, GLState, GLContext;
@@ -122,9 +118,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ TGLLineSettings ------------------
 // ------------------

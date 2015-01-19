@@ -23,6 +23,7 @@ object ShaderMemoForm: TShaderMemoForm
     Left = 0
     Top = 0
     Width = 491
+    Height = 29
     AutoSize = True
     BorderWidth = 1
     ButtonHeight = 28
@@ -174,9 +175,9 @@ object ShaderMemoForm: TShaderMemoForm
   end
   object GLSLMemo: TGLSSynHiMemo
     Left = 0
-    Top = 32
+    Top = 29
     Width = 491
-    Height = 456
+    Height = 459
     Cursor = crIBeam
     Align = alClient
     TabOrder = 3
@@ -212,6 +213,8 @@ object ShaderMemoForm: TShaderMemoForm
     NumberStyle.BkColor = clWhite
     NumberStyle.Style = [fsBold]
     CaseSensitive = True
+    ExplicitTop = 32
+    ExplicitHeight = 456
   end
   object CompilatorLog: TMemo
     Left = 0
@@ -271,7 +274,7 @@ object ShaderMemoForm: TShaderMemoForm
     Left = 80
     Top = 64
     Bitmap = {
-      494C01010E001800980010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800A40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

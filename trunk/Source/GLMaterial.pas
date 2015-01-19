@@ -7,7 +7,7 @@
 
  <b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
-                          in TGLShader and TGLAbstractLibMaterial for GLS_CPPB
+                          in TGLShader and TGLAbstractLibMaterial using GLS_CPPB define
       <li>11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
       <li>20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
       <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
@@ -47,20 +47,17 @@ unit GLMaterial;
 
 interface
 
-uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
+{$I GLScene.inc}
 
-  //GLScene
+uses
+  System.Classes, System.SysUtils, System.Types,
+
+  //GLS
   GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
   GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
   GLCrossPlatform, GLState, GLTextureFormat, GLStrings, XOpenGL,
   GLApplicationFileIO, GLGraphics, GLUtils, GLSLog;
 
-{$I GLScene.inc}
 {$UNDEF GLS_MULTITHREAD}
 type
   TGLFaceProperties = class;

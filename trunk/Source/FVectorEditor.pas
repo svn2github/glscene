@@ -19,14 +19,11 @@ interface
 {$i GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
-  VCL.ExtCtrls, VCL.Buttons, VCL.Graphics, VCL.Controls
-{$ELSE}
-  Classes, Forms, SysUtils, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls
-{$ENDIF}
-  ,GLVectorGeometry, GLUtils, GLVectorTypes
-;
+  System.Classes, System.SysUtils,
+  VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
+  VCL.ExtCtrls, VCL.Buttons, VCL.Graphics, VCL.Controls,
+
+  GLVectorGeometry, GLUtils, GLVectorTypes;
 
 type
   TVectorEditorForm = class(TForm)

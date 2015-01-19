@@ -20,13 +20,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, System.SysUtils, VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
   VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
-{$ELSE}
-  Classes, SysUtils, Forms, Dialogs, StdCtrls, Controls, Buttons, ExtCtrls,
-  ImgList, ComCtrls, ToolWin,
-{$ENDIF}
+
   GLPlugInIntf, GLPlugInManager;
 
 type

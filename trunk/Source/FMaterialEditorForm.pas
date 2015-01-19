@@ -23,13 +23,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows,
   System.Classes, System.TypInfo, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
   VCL.Controls, VCL.Buttons,
-{$ELSE}
-  Classes, TypInfo, Forms, ComCtrls, StdCtrls, Controls, Buttons,
-{$ENDIF}
+
   FRMaterialPreview, FRColorEditor, FRFaceEditor,
   GLTexture,  FRTextureEdit,  GLViewer,
   GLMaterial,  GLState;

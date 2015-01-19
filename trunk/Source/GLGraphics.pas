@@ -88,23 +88,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-{$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows,
   System.Classes, System.SysUtils, System.SyncObjs, VCL.Graphics,
-{$ELSE}
-  Classes, SysUtils, SyncObjs, Graphics,
-{$ENDIF}
+  VCL.Imaging.Pngimage,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
-{$ENDIF}
-{$IFDEF GLS_PngImage_SUPPORT}
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Imaging.Pngimage,
-{$ELSE}
-  Pngimage,
-{$ENDIF}
 {$ENDIF}
   GLApplicationFileIO,
   GLPersistentClasses,
@@ -118,7 +106,6 @@ uses
   GLVectorGeometry,
   GLStrings,
   GLSLog;
-
 
 type
 
@@ -2380,10 +2367,8 @@ begin
       else
         AssignFrom32BitsBitmap(TGLBitmap(Source))
     end
-{$IFDEF GLS_PngImage_SUPPORT}
     else if Source is TPngImage then
       AssignFromPngImage(TPngImage(Source))
-{$ENDIF}
     else
     begin
       graphic := TGLGraphic(Source);
@@ -2671,19 +2656,14 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF GLS_PngImage_SUPPORT}
 // AlphaChannel Support
-
+//
 procedure TGLImage.AssignFromPngImage(aPngImage: TPngImage);
 var
   i, j: Integer;
   SourceScan: PRGBLine;
   DestScan: PGLPixel32Array;
-{$IFDEF GLS_DELPHI_XE2_UP}
   AlphaScan: VCL.Imaging.Pngimage.pByteArray;
-{$ELSE}
-  AlphaScan: Pngimage.pByteArray;
-{$ENDIF}
   Pixel: Integer;
 begin
 {$IFDEF GLS_PngImage_RESIZENEAREST}
@@ -2740,7 +2720,6 @@ begin
     end;
   end;
 end;
-{$ENDIF}
 
 // AssignFromTexture2D
 //

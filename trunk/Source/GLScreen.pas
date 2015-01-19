@@ -37,9 +37,10 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  System.Classes,
+{$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
-  Classes, GLVectorGeometry, GLCrossPlatform;
+  GLVectorGeometry, GLCrossPlatform;
 
 const
   MaxVideoModes = 200;
@@ -130,12 +131,8 @@ implementation
 // ------------------------------------------------------------------------------
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms,
-{$ELSE}
-  Forms,
-{$ENDIF}
-  SysUtils;
+  System.SysUtils,
+  VCL.Forms;
 
 type
   TLowResMode = packed record

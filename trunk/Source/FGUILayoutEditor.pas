@@ -5,23 +5,12 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows, ShellApi,
-{$ENDIF}
-
-{$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows, Winapi.ShellApi,
   System.SysUtils, System.Variants, System.Classes,
   VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
   VCL.ExtDlgs,  VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
-{$ELSE}
-  SysUtils, Variants, Classes,
-  Graphics,  Controls,  Forms,  Dialogs,  Buttons,  ExtDlgs,  StdCtrls,
-  ExtCtrls,  Spin,  Grids,
-{$ENDIF}
 
-  GLCrossPlatform,  GLBaseClasses,  GLGui
-
-{$IFDEF LINUX}, Process{$ENDIF};
+  GLCrossPlatform,  GLBaseClasses,  GLGui;
 
 type
   TLayouts_form = class(TForm)

@@ -22,13 +22,9 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.Controls,
-{$ELSE}
-  Forms, Controls,
-{$ENDIF}
-  Classes, Messages;
+  Winapi.Windows, Winapi.Messages, Winapi.MMSystem,
+  System.SysUtils, System.Classes,
+  VCL.Forms, VCL.Controls;
 
 type
 
@@ -111,8 +107,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
-uses SysUtils, MMSystem;
 
 const
   cJoystickIDToNative : array [jidNoJoystick..jidJoystick2] of Byte =

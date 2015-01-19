@@ -21,11 +21,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
-{$ELSE}
-  Classes, Forms, StdCtrls, Buttons, Controls,
-{$ENDIF}
+
   FRMaterialPreview,  GLViewer,
   GLMaterial;
 

@@ -30,15 +30,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
   VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
   VCL.StdCtrls, VCL.ComCtrls, VCL.ExtCtrls, VCL.Menus,
-{$ELSE}
-  Windows, Messages, SysUtils, Classes,
-  Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ComCtrls, ExtCtrls, Menus,
-{$ENDIF}
 
   GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects,
   GLWin32Viewer, GLGui, GLGraphics, GLUtils,  GLCrossPlatform,
@@ -800,10 +794,7 @@ end;
 procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key > #32) and not CharInSet(Key, ['0'..'9',
-{$IFDEF GLS_DELPHI_XE_UP}
-    FormatSettings.
-{$ENDIF}
-    DecimalSeparator]) then
+    FormatSettings.DecimalSeparator]) then
     Key := #0;
 end;
 

@@ -41,20 +41,12 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows,
-  System.StrUtils, System.Classes, System.SysUtils, System.UITypes,
-  System.SyncObjs,
+ {$IFDEF MSWINDOWS} Winapi.Windows, Winapi.ShellApi, {$ENDIF}
+ {$IFDEF LINUX} Process, {$ENDIF}
+  System.StrUtils, System.Classes, System.SysUtils,
+  System.UITypes, System.SyncObjs,
   VCL.Dialogs, VCL.Controls,
-{$ELSE}
-  Windows,
-  StrUtils, Classes, SysUtils, UITypes,
-  SyncObjs,
-  Dialogs, Controls,
-{$ENDIF}
-  GLCrossPlatform,
-{$IFDEF MSWINDOWS}  ShellApi {$ENDIF}
-{$IFDEF LINUX} Process {$ENDIF};
+  GLCrossPlatform;
 
 type
   { : Levels of importance of log messages }
@@ -82,22 +74,16 @@ type
   TLogTimeFormat = (
     { : doesn't output any time information }
     lfNone,
-
     { : include date in the log }
     lfDate,
-
     { : include time in the log }
     lfTime,
-
     { : include time in the log, including milliseconds }
     lfTimeExact,
-
     { : include date and time in the log }
     lfDateTime,
-
     { : include time elapsed since startup in the log }
     lfElapsed);
-
   {: How log is buffered. }
   TLogBufferingMode =
   (

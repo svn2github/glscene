@@ -15,14 +15,10 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.SysUtils, System.Variants, System.Classes,
   VCL.Graphics, VCL.Controls, VCL.Forms,
   VCL.Dialogs, VCL.StdCtrls, VCL.ExtCtrls, VCL.Buttons,
-{$ELSE}
-  SysUtils, Variants, Classes,  Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons,
-{$ENDIF}
+  //GLS
   GLSLParameter, GLTextureFormat, GLVectorGeometry;
 
 type
@@ -66,7 +62,13 @@ type
 function ShaderUniformEditor: TShaderUniformEditor;
 procedure ReleaseShaderUniformEditor;
 
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 
 {$R *.dfm}
 

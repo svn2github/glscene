@@ -51,15 +51,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // System
-  SysUtils, Classes,
-  // VCL
-{$IFDEF GLS_DELPHI_XE2_UP}
+  System.SysUtils, System.Classes,
   VCL.StdCtrls,
-{$ELSE}
-  StdCtrls,
-{$ENDIF}
-  // GLScene
+
+  // GLS
   GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
   GLMaterial, GLState;
 
@@ -260,7 +255,13 @@ type
 
   end;
 
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 procedure TGLShaderItem.SetShader(const Value: TGLShader);
 begin

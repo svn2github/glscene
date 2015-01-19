@@ -29,19 +29,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.Classes,
   System.SysUtils,
   VCL.Graphics,
   VCL.Controls,
   VCL.Menus,
-{$ELSE}
-  Classes,
-  SysUtils,
-  Graphics,
-  Controls,
-  Menus,
-{$ENDIF}
   //GLS
   GLCrossPlatform,
   GLScene;

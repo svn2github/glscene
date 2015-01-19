@@ -350,23 +350,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    Winapi.Windows,
-    System.Classes, System.SysUtils,
-    VCL.Graphics,  VCL.Controls,
-  {$ELSE}
-    Windows,
-    Classes, SysUtils, Graphics,  Controls,
-  {$ENDIF}
+  Winapi.Windows,
+  System.Classes, System.SysUtils,
+  VCL.Graphics,  VCL.Controls,
 
-  // GLScene
+  // GLS
   OpenGLTokens, GLContext, GLVectorGeometry, XCollection, GLSilhouette,
   GLPersistentClasses, GLState, GLGraphics, GLGeometryBB, GLCrossPlatform,
   GLVectorLists, GLTexture, GLColor, GLBaseClasses, GLCoordinates,
   GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection,
-  GLStrings, XOpenGL, GLVectorTypes, GLApplicationFileIO,
-  GLUtils,  GLSLog;
-
+  GLStrings, XOpenGL, GLVectorTypes, GLApplicationFileIO, GLUtils, GLSLog;
 
 
 type

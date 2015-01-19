@@ -56,11 +56,9 @@ unit GLBitmapFont;
 interface
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, VCL.Graphics, System.Types,
-{$ELSE}
-  Classes, Graphics, SysUtils, Types,
-{$ENDIF}
+  System.Classes, System.SysUtils, System.Types,
+  VCL.Graphics,
+
   GLScene, GLVectorGeometry, GLContext, GLCrossPlatform,
   GLTexture, GLState, GLUtils, GLGraphics, GLColor, GLBaseClasses,
   GLRenderContextInfo, GLTextureFormat,
@@ -377,11 +375,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TBitmapFontRange ------------------
 // ------------------
@@ -911,13 +904,8 @@ begin
     // due to lazarus doesn't properly support pixel formats
     PixelFormat := glpf32bit;
 {$ENDIF}
-{$IFDEF GLS_DELPHI_XE2_UP}
-    Width  := RoundUpToPowerOf2(FTextureWidth);
-    Height := RoundUpToPowerOf2(FTextureHeight);
-{$ELSE}
     SetSize(RoundUpToPowerOf2(FTextureWidth),
       RoundUpToPowerOf2(FTextureHeight));
-{$ENDIF}
   end;
 
   bitmap32 := TGLBitmap32.Create;

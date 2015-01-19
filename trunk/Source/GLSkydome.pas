@@ -46,15 +46,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes,
+  System.SysUtils,
   VCL.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
 
-  // GLSCene
+  // GLS
   GLScene,
   GLVectorGeometry,
   GLGraphics,
@@ -326,7 +322,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils,
   OpenGLTokens,
   GLContext,
   GLStarRecord,

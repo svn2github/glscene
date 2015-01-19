@@ -49,14 +49,10 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   System.SysUtils, System.Classes,
   VCL.Graphics,
-{$ELSE}
-  SysUtils, Classes,
-  Graphics,
-{$ENDIF}
-  // GLScene
+
+  // GLS
   GLTexture, GLMaterial, GLScene, GLVectorGeometry, GLVectorTypes,
   GLParticleFX, GLCrossPlatform, GLCoordinates;
 

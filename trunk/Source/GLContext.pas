@@ -85,15 +85,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   System.Classes, System.SysUtils, System.Types, System.SyncObjs,
   VCL.Forms, VCL.Controls, VCL.Consts,
-  {$ELSE}
-  Windows,
-  Classes, SysUtils, Types, SyncObjs,
-  Forms, Controls, Consts,
-  {$ENDIF}
 
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,

@@ -39,17 +39,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
+  System.Classes, System.SysUtils,
 
-  GLScene,  OpenGLTokens, GLContext,  XOpenGL, GLVectorGeometry,
-  GLMaterial,  GLObjects,  GLVectorLists, GLColor,  GLBaseClasses,
-  GLRenderContextInfo,
-  GLState
- , GLVectorTypes;
+  GLScene, OpenGLTokens, GLContext, XOpenGL, GLVectorGeometry,
+  GLMaterial, GLObjects, GLVectorLists, GLColor, GLBaseClasses,
+  GLRenderContextInfo, GLState, GLVectorTypes;
 
 type
 
@@ -247,11 +241,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLSamplingScale ------------------
 // ------------------

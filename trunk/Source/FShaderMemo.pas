@@ -19,8 +19,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLSMemo,
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows,
   Winapi.Messages,
   System.SysUtils,
@@ -37,26 +35,9 @@ uses
   VCL.ToolWin,
   VCL.ExtCtrls,
   VCL.StdCtrls,
-  VCL.Graphics
-{$ELSE}
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Controls,
-  Registry,
-  Forms,
-  ComCtrls,
-  ImgList,
-  Dialogs,
-  ActnList,
-  ToolWin,
-  ExtCtrls,
-  StdCtrls,
-  Menus,
-  Graphics
-{$ENDIF};
+  VCL.Graphics,
+  //GLS
+  GLSMemo;
 
 type
 
@@ -127,7 +108,13 @@ type
 function GLShaderEditorForm: TShaderMemoForm;
 procedure ReleaseGLShaderEditor;
 
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 
 {$R *.dfm}
 
@@ -875,11 +862,7 @@ begin
       Brush.Color := clWhite;
       Font.Style := Font.Style + [fsBold];
       txt := IntToStr(LineNo+1);
-{$IFDEF GLS_DELPHI_2009_UP}
       TextRect(rct, txt, [tfCenter]);
-{$ELSE}
-      TextRect(rct, (rct.Left+rct.Right) div 2, (rct.Top+rct.Bottom) div 2, txt);
-{$ENDIF}
     end;
 end;
 

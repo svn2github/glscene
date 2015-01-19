@@ -47,13 +47,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
   Winapi.Windows, Winapi.Messages,
   System.Classes, System.Types, VCL.Forms,
-{$ELSE}
-  Windows, Messages,
-  Classes, Types, Forms,
-{$ENDIF}
+
   GLScene, GLCrossPlatform, GLBaseClasses;
 
 //**************************************

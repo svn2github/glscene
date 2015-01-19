@@ -27,12 +27,9 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Windows, Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Controls, VCL.Forms, VCL.Extctrls;
-{$ELSE}
-  Controls, Forms, Extctrls;
-{$ENDIF}
+  Winapi.Windows, Winapi.Messages,
+  System.Classes, System.SysUtils, System.Win.Registry,
+  VCL.Dialogs, VCL.Controls, VCL.Forms, VCL.Extctrls;
 
 
 type
@@ -174,14 +171,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Dialogs,
-{$ELSE}
-  Dialogs,
-{$ENDIF}
-  SysUtils, Registry, Messages;
-
 // GetSystemDirectory
 //
 {: Returns system path and makes sure there is a trailing '\'.<p> }
@@ -190,7 +179,7 @@ var
 	newLength : Integer;
 begin
 	SetLength(Result, MAX_PATH);
-	newLength:=Windows.GetSystemDirectory(PChar(Result), MAX_PATH);
+	newLength:= Winapi.Windows.GetSystemDirectory(PChar(Result), MAX_PATH);
 	SetLength(Result, newLength);
 	if Copy(Result, newLength, 1)<>'\' then
 		Result:=Result+'\';

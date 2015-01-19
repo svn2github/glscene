@@ -45,12 +45,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
+  System.Classes,
   VCL.Graphics,
-{$ELSE}
-  Graphics,
-{$ENDIF}
+
   GLVectorGeometry,
   GLColor,
   GLCrossPlatform,

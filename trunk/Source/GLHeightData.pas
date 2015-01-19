@@ -67,14 +67,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
+  Winapi.Windows, // for CreateMonochromeBitmap
   System.Classes, System.SysUtils,
-{$ELSE}
-  Classes, SysUtils,
-{$ENDIF}
-{$IFDEF MSWINDOWS}
-  Windows, // for CreateMonochromeBitmap
-{$ENDIF}
+
   GLApplicationFileIO, GLUtils,
   GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
 
@@ -1260,11 +1255,7 @@ begin
   begin
     FThread.Terminate;
     if FThread.Suspended then
-{$IFDEF GLS_DELPHI_2009_DOWN}
-      FThread.Resume;
-{$ELSE}
       FThread.Start;
-{$ENDIF}
     FThread.WaitFor;
   end;
 
