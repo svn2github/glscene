@@ -6,7 +6,7 @@
   Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
 
   <b>History : </b><font size=-1><ul>
-  <li>09/01/15 - PW - Converted to support FMX platform
+  <li>20/01/15 - PW - Converted to support FMX platform, added StyleBook to store icons
   <li>06/12/14 - PW -  Reduced doubled Camera and Expand/Collapse buttons, added GalleryListView
   <li>20/01/10 - Yar - TGLSceneEditorForm.IsPastePossible now uses CharInSet
   <li>20/01/10 - Yar - Added Expand and Collapse buttons (thanks to lolo)
@@ -149,6 +149,7 @@ type
     MIDelObject: TMenuItem;
     MIMoveUp: TMenuItem;
     MIMoveDown: TMenuItem;
+    StyleBook: TStyleBook;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACInfoExecute(Sender: TObject);

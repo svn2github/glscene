@@ -913,12 +913,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Top = 200
   end
   object PMEffectsToolBar: TPopupMenu
-    Left = 208
+    Left = 192
     Top = 200
   end
   object BehavioursPopupMenu: TPopupMenu
     Left = 64
     Top = 264
+  end
+  object StyleBook: TStyleBook
+    Left = 427
+    Top = 66
+    ResourcesBin = {464D585F5354594C4520322E350100}
   end
   object ActionList: TActionList
     Left = 32
