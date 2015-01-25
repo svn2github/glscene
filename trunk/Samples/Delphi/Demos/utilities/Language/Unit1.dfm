@@ -78,6 +78,9 @@ object Form1: TForm1
         end
       end
     end
+    object mHelp: TMenuItem
+      Caption = 'Help'
+    end
   end
   object GLSLanguage1: TGLSLanguage
     Left = 168

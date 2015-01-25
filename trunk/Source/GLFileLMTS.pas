@@ -69,24 +69,24 @@ type
   PLMTS_TexData = ^TLMTS_TexData;
 
   TLMTS_TexData = record // packed
-    fName: array [0 .. C_LMTS_TEXFNLEN] of ansichar;
-    Flags: word;
+    fName: array [0 .. C_LMTS_TEXFNLEN] of AnsiChar;
+    Flags: Word;
   end;
 
   PLMTS_Subset = ^TLMTS_Subset;
 
   TLMTS_Subset = record // packed
-    Offset: longint;
-    Count: longint;
-    TextID1: word;
-    TextID2: word;
+    Offset: LongInt;
+    Count: LongInt;
+    TextID1: Word;
+    TextID2: Word;
   end;
 
   PLMTS_Vertex = ^TLMTS_Vertex;
 
   TLMTS_Vertex = record // packed
-    x, y, z: single;
-    u1, v1, u2, v2: single;
+    x, y, z: Single;
+    u1, v1, u2, v2: Single;
   end;
 
   PLMTS = ^TLMTS;
@@ -154,16 +154,16 @@ var
   T: TLMTS_TexData;
   V: array [0 .. 2] of TLMTS_Vertex;
   S: TLMTS_Subset;
-  _4cc: cardinal;
-  C: integer;
+  _4cc: Cardinal;
+  C: Integer;
   fName: string;
   vi: Tintegerlist;
   libmat: TGLLibmaterial;
   lmnames, matnames: TStringlist;
-  MatInfoHeader: array [0 .. 3] of ansichar;
-  MatInfoCount: cardinal;
+  MatInfoHeader: array [0 .. 3] of AnsiChar;
+  MatInfoCount: Cardinal;
   Matinfo: array of TMaterialInfo;
-  i, j: integer;
+  i, j: Integer;
 begin
   owner.MeshObjects.Clear;
 
@@ -486,12 +486,12 @@ begin
 
       if matindex = -1 then // not a duplicate, so add it
       begin
-        setlength(texData, length(texData) + 1);
+        SetLength(texData, length(texData) + 1);
         with texData[high(texData)] do
         begin
           matindex := high(texData);
 
-          strpcopy(pansichar(@fName), matname);
+          StrPCopy(@fName, matname);
           Flags := 0;
         end;
 
@@ -657,10 +657,10 @@ begin
             end;
           if matindex = -1 then // not a duplicate, so add it
           begin
-            setlength(texData, length(texData) + 1);
+            SetLength(texData, length(texData) + 1);
             with texData[high(texData)] do
             begin
-              strpcopy(pansichar(@fName), matname);
+              StrPCopy(pansichar(@fName), matname);
               Flags := 1;
             end;
           end;

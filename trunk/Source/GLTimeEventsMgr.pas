@@ -108,9 +108,9 @@ type
       protected
          { Protected Declarations }
          function GetDisplayName : String; override;
-         procedure SetName(val : String);
+         procedure SetName(Val : String);
 
-         procedure DoEvent(const curTime : Double);
+         procedure DoEvent(const CurTime : Double);
 
       public
          { Public Declarations }
@@ -120,7 +120,7 @@ type
          //: Number of times the event was triggered since activation
          property TickCount : Cardinal read FTickCount;
          //: Elapsed time since the event was activated
-         property ElapsedTime : Double read FElapsedTime; 
+         property ElapsedTime : Double read FElapsedTime;
 
       published
          { Published Declarations }
@@ -336,7 +336,7 @@ end;
 
 // SetName
 //
-procedure TTimeEvent.SetName(val : String);
+procedure TTimeEvent.SetName(Val : String);
 var
    i : Integer;
    ok : Boolean;
@@ -346,7 +346,7 @@ begin
        for i:=0 to Count-1 do
            if Items[i].FName = val then Ok := False;
 
-   if Ok and (val<>'') then FName:=val;
+   if Ok and (Val<>'') then FName:=Val;
 end;
 
 // DoEvent

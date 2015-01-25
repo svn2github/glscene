@@ -96,7 +96,7 @@ type
 
    PColorEntry = ^TColorEntry;
    TColorEntry = record
-                   Name  : String[31];
+                   Name  : String;
                    Color : TColorVector;
                  end;
 
@@ -885,7 +885,7 @@ begin
    if newEntry = nil then
       raise Exception.Create('Could not allocate memory for color registration!');
    with newEntry^ do begin
-     Name:=shortstring(AName);
+     Name := AName;
      SetVector(Color, aColor);
    end;
    Add(newEntry);

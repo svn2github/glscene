@@ -42,7 +42,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes,
+
   GLScene,
   GLVectorGeometry,
   GLObjects,
@@ -190,7 +191,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGLTokens,
+uses
+  OpenGLTokens,
   GLContext,
   GLState,
   XOpenGL;

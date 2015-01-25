@@ -748,7 +748,7 @@ const
     begin
       repeat
         code := GetCode;
-        /// DoProgress (psRunning,FSourceStream.Position/FSourceStream.Size*100,false,'');
+        // DoProgress (psRunning,FSourceStream.Position/FSourceStream.Size*100,false,'');
         case code of
           0:
             begin
@@ -766,7 +766,8 @@ const
               begin
               end
               else
-                asm nop
+                asm
+                  nop
                 end    (* put breakpoint here to catch other entities *)
             end;
         else

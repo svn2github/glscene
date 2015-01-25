@@ -3,8 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
-  Menus, StdCtrls, ExtCtrls,
+  System.Classes, System.SysUtils,
+  Vcl.Forms, Vcl.Controls, Vcl.Graphics, Vcl.Dialogs, Vcl.Menus,
+  Vcl.StdCtrls, Vcl.ExtCtrls,
+
   //GLS
   GLScene, GLObjects, GLSLanguage;
 
@@ -25,6 +27,7 @@ type
     mOption: TMenuItem;
     Panel1: TPanel;
     mDeutsch: TMenuItem;
+    mHelp: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure mEnglishClick(Sender: TObject);
     procedure mRussianClick(Sender: TObject);
@@ -55,6 +58,7 @@ begin
     mLanguage.Caption := Translate('mLanguage');
     mEnglish.Caption := Translate('mEnglish');
     mRussian.Caption := Translate('mRussian');
+    mHelp.Caption := Translate('mHelp');
     Form1.Caption := Translate('Form1Caption');
     GroupBox1.Caption := Translate('GroupBox1');
     Button.Caption := Translate('Button');
