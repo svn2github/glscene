@@ -37,7 +37,8 @@ uses
   System.Classes,
   System.Math,
   System.SysUtils,
-  System.Types, System.UITypes,
+  System.Types,
+  System.UITypes,
   VCL.Graphics,
 
   //GLS
@@ -90,7 +91,7 @@ type
     function FontTextureWidth: Integer;
     function FontTextureHeight: Integer;
 
-    procedure EnsureString(const s : UnicodeString); overload;
+    procedure EnsureString(const s : String); overload;
     procedure EnsureChars(const AStart, AEnd: widechar);
 
     property Glyphs;
@@ -398,7 +399,7 @@ end;
 //add characters to internal list
 procedure TGLWindowsBitmapFont.EnsureChars(const AStart, AEnd: widechar);
 var
-  c : widechar;
+  c : WideChar;
   ACharList : TIntegerList;
 begin
   ACharList := TIntegerList.Create;
@@ -409,13 +410,13 @@ begin
 end;
 
 //add characters to internal list
-procedure TGLWindowsBitmapFont.EnsureString(const s: UnicodeString);
+procedure TGLWindowsBitmapFont.EnsureString(const s: String);
 var
-  i : integer;
+  i : Integer;
   ACharList : TIntegerList;
 begin
   ACharList := TIntegerList.Create;
-  for i := 1 to length(s) do
+  for i := Low(s) to High(s) do
       ACharList.Add(integer(s[i]));
   SetList(ACharList);
   ACharList.Free;

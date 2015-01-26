@@ -1,4 +1,7 @@
-{ : GLFileDXF<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : GLS.FileDXF<p>
 
   Support-Code to load DXF (Drawing eXchange Files) TGLFreeForm or
   TGLActor Components in GLScene.<p>
@@ -27,7 +30,7 @@ unit GLFileDXF;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   // GLS
   GLApplicationFileIO, GLVectorGeometry, GLVectorLists, GLScene, GLTexture,
   GLVectorFileObjects, GLMaterial;
@@ -246,11 +249,11 @@ const
     S: String;
     c: CHAR;
   begin
-    c := SysUtils.FormatSettings.DecimalSeparator;
-    SysUtils.FormatSettings.DecimalSeparator := '.';
+    c := FormatSettings.DecimalSeparator;
+    FormatSettings.DecimalSeparator := '.';
     S := Trim(ReadLine);
     result := StrToFloat(S);
-    SysUtils.FormatSettings.DecimalSeparator := c;
+    FormatSettings.DecimalSeparator := c;
   end;
 
   function TGLDXFVectorFile.ReadInt: Integer;
