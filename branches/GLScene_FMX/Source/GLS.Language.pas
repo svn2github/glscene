@@ -12,7 +12,7 @@
   В Lazarus можно загружать текст любой кодировки
 
   <b>History : </b><font size=-1><ul>
-  <li>01/12/14 - PW - Fixed usage of IFDEF GLS_LOGGING in LoadLanguageFromFile
+  <li>25/01/15 - PW - Fixed usage of String instead of AnsiString types
   <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
   <li>20/04/10 - Yar - Added to GLScene
   (Created by Rustam Asmandiarov aka Predator)
@@ -23,19 +23,15 @@ unit GLS.Language;
 interface
 
 {$I GLScene.inc}
-{$H+} // use AnsiString instead of ShortString as String-type (default in Delphi)
-{$WARN IMPLICIT_STRING_CAST OFF}
-{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 
 uses
   System.Classes, System.IniFiles, System.SysUtils;
 
 type
-  UTF8String = AnsiString;
 
   TLanguageEntry = record
-    ID: AnsiString; // **< identifier (ASCII)
-    Text: UTF8String; // **< translation (UTF-8)
+    ID: String; // **< identifier
+    Text: String; // **< translation
   end;
 
   TLanguageEntryArray = array of TLanguageEntry;
@@ -43,21 +39,20 @@ type
   { TLanguage }
   { **
     * Eng
-    *   Class TLanguage used interpretation to download and translation, as in the final product is no need for text  processing.
+    *   Class TLanguage is used for downloading and translation, as in the final product it's no need for text processing.
     * Ru
     *   Класс TLanguage используется толко для загрузки и перевода текста, так как в конечном
     *   продукте нет необходимости в обработке текста.
     * }
   TLanguage = class
   private
-    FCurrentLanguageFile: UTF8String;
+    FCurrentLanguageFile: String;
     Entry: TLanguageEntryArray; // **< Entrys of Chosen Language
-    function EncodeToUTF8(aValue: AnsiString): UTF8String;
   public
-    function FindID(const ID: AnsiString): integer;
-    function Translate(const ID: AnsiString): UTF8String;
-    procedure LoadLanguageFromFile(const Language: UTF8String);
-    property CurrentLanguageFile: UTF8String read FCurrentLanguageFile;
+    function FindID(const ID: String): integer;
+    function Translate(const ID: String): String;
+    procedure LoadLanguageFromFile(const Language: String);
+    property CurrentLanguageFile: String read FCurrentLanguageFile;
   end;
 
   { **
@@ -72,12 +67,12 @@ type
     procedure SetEntry(Index: integer; aValue: TLanguageEntry);
     function GetCount: integer;
   public
-    procedure AddConst(const ID: AnsiString; const Text: UTF8String);
+    procedure AddConst(const ID: String; const Text: String);
     procedure AddConsts(aValues: TStrings);
-    procedure ChangeConst(const ID: AnsiString; const Text: UTF8String);
+    procedure ChangeConst(const ID: String; const Text: String);
     property Items[Index: integer]: TLanguageEntry read GetEntry write SetEntry;
     property Count: integer read GetCount;
-    procedure SaveLanguageFromFile(const Language: UTF8String); overload;
+    procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
   end;
 
@@ -93,14 +88,20 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure LoadLanguageFromFile(const Language: UTF8String);
-    procedure SaveLanguageFromFile(const Language: UTF8String); overload;
+    procedure LoadLanguageFromFile(const Language: String);
+    procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
-    function Translate(const ID: AnsiString): UTF8String;
+    function Translate(const ID: String): String;
     property Language: TLanguageExt read FLanguage write SetLanguage;
   end;
 
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 uses
   GLS.CrossPlatform, GLS.Log;
@@ -110,7 +111,7 @@ uses
 { **
   * Load the specified LanguageFile
   * }
-procedure TLanguage.LoadLanguageFromFile(const Language: UTF8String);
+procedure TLanguage.LoadLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -150,8 +151,8 @@ begin
   for E := 0 to high(Entry) do
     If S.Names[E] <> '' then
     begin
-      Entry[E].ID := EncodeToUTF8(S.Names[E]);
-      Entry[E].Text := EncodeToUTF8(GetValueFromStringsIndex(S, E));
+      Entry[E].ID := S.Names[E];
+      Entry[E].Text := GetValueFromStringsIndex(S, E);
     end;
   S.Free;
   IniFile.Free;
@@ -161,7 +162,7 @@ end;
   * Find the index of ID an array of language entry.
   * @returns the index on success, -1 otherwise.
   * }
-function TLanguage.FindID(const ID: AnsiString): integer;
+function TLanguage.FindID(const ID: String): integer;
 var
   Index: integer;
 begin
@@ -182,7 +183,7 @@ end;
   * setting. If Text is not a known ID, it will be returned as is.
   * @param Text either an ID or an UTF-8 encoded string
   * }
-function TLanguage.Translate(const ID: AnsiString): UTF8String;
+function TLanguage.Translate(const ID: String): String;
 var
   EntryIndex: integer;
 begin
@@ -199,17 +200,12 @@ begin
   end;
 end;
 
-function TLanguage.EncodeToUTF8(aValue: AnsiString): UTF8String;
-begin
-  Result := aValue;
-end;
-
 { TLanguageExt }
 
 { **
   * Add a Constant ID that will be Translated but not Loaded from the LanguageFile
   * }
-procedure TLanguageExt.AddConst(const ID: AnsiString; const Text: UTF8String);
+procedure TLanguageExt.AddConst(const ID: String; const Text: String);
 begin
   SetLength(Entry, Length(Entry) + 1);
   Entry[high(Entry)].ID := ID;
@@ -223,15 +219,14 @@ begin
   if aValues <> nil then
     for I := 0 to aValues.Count - 1 do
       If aValues.Names[I] <> '' then
-        AddConst(EncodeToUTF8(aValues.Names[I]),
-          EncodeToUTF8(GetValueFromStringsIndex(aValues, I)));
+        AddConst(aValues.Names[I],GetValueFromStringsIndex(aValues, I));
 end;
 
 { **
   * Change a Constant Value by ID
   * }
-procedure TLanguageExt.ChangeConst(const ID: AnsiString;
-  const Text: UTF8String);
+procedure TLanguageExt.ChangeConst(const ID: String;
+  const Text: String);
 var
   I: integer;
 begin
@@ -263,7 +258,7 @@ end;
 { **
   * Save Update Language File
   * }
-procedure TLanguageExt.SaveLanguageFromFile(const Language: UTF8String);
+procedure TLanguageExt.SaveLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -302,7 +297,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TGLSLanguage.LoadLanguageFromFile(const Language: UTF8String);
+procedure TGLSLanguage.LoadLanguageFromFile(const Language: String);
 begin
   FLanguage.LoadLanguageFromFile(Language);
 end;
@@ -313,7 +308,7 @@ begin
     FLanguage := aValue;
 end;
 
-procedure TGLSLanguage.SaveLanguageFromFile(const Language: UTF8String);
+procedure TGLSLanguage.SaveLanguageFromFile(const Language: String);
 begin
   if Language = '' then
     Exit;
@@ -326,7 +321,7 @@ begin
   FLanguage.SaveLanguageFromFile;
 end;
 
-function TGLSLanguage.Translate(const ID: AnsiString): UTF8String;
+function TGLSLanguage.Translate(const ID: String): String;
 begin
   Result := FLanguage.Translate(ID);
 end;
