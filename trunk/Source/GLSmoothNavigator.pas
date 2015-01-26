@@ -52,12 +52,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
+  System.Classes,
 
-  // GLScene
-  GLNavigator, GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates,
-  GLScreen, XCollection;
+  // GLS
+  GLScene, GLVectorTypes, GLNavigator, GLVectorGeometry,  GLCrossPlatform,
+  GLCoordinates, GLScreen, XCollection;
 
 type
 
