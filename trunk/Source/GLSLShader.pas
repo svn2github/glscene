@@ -6,6 +6,7 @@
     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/01/15 - NelC - Added TGLCustomGLSLShader.SetTex()
       <li>09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>18/02/11 - Yar - Fixed transform feedback varyings activation
@@ -72,12 +73,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
 
-  // GLScene
+  // GLS
   GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat, GLSLParameter;
+  GLRenderContextInfo, GLTextureFormat, GLSLParameter, GLMaterial;
 
 type
   TGLSLShaderParameter = class;
@@ -112,6 +112,8 @@ type
     FOnInitializeEx: TGLSLShaderEventEx;
     FOnApplyEx: TGLSLShaderEventEx;
 
+    FNextTexIndex : integer;
+
     function GetParam(const Index: string): TGLSLShaderParameter;
     function GetDirectParam(const Index: Cardinal): TGLSLShaderParameter;
     procedure OnChangeActiveVarying(Sender: TObject);
@@ -136,6 +138,13 @@ type
     procedure Assign(Source: TPersistent); override;
     function ShaderSupported: Boolean; override;
     function GetActiveAttribs: TGLActiveAttribArray;
+
+    // SetTex() sets texture with automatic book-keeping of texture unit indices.
+    // Users can just call SetTex() in the OnApply event without keeping track of texture unit indices.
+    procedure SetTex(TexParamName : String; Tex : TGLTexture); overload;
+    procedure SetTex(TexParamName : String; Mat : TGLLibMaterial); overload;
+    procedure SetTex(TexParam : TGLSLShaderParameter; Tex : TGLTexture); overload;
+    procedure SetTex(TexParam : TGLSLShaderParameter; Mat : TGLLibMaterial); overload;
 
     property Param[const Index: string]: TGLSLShaderParameter read GetParam;
     property DirectParam[const Index: Cardinal]: TGLSLShaderParameter read GetDirectParam;
@@ -219,9 +228,13 @@ type
     property ActiveVarying;
     property TransformFeedBackMode;
   end;
-
-
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 
 uses
   GLState;
@@ -231,6 +244,7 @@ uses
 procedure TGLCustomGLSLShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 begin
   FGLSLProg.UseProgramObject;
+  FNextTexIndex := 0;
   if Assigned(FOnApply) then
     FOnApply(Self);
   if Assigned(FOnApplyEx) then
@@ -485,6 +499,27 @@ end;
 procedure TGLCustomGLSLShader.OnChangeActiveVarying(Sender: TObject);
 begin
   NotifyChange(Self);
+end;
+
+procedure TGLCustomGLSLShader.SetTex(TexParam : TGLSLShaderParameter; Tex : TGLTexture);
+begin
+  TexParam.AsTexture[FNextTexIndex] := Tex;
+  inc(FNextTexIndex);
+end;
+
+procedure TGLCustomGLSLShader.SetTex(TexParam : TGLSLShaderParameter; Mat : TGLLibMaterial);
+begin
+  SetTex(TexParam, Mat.Material.Texture);
+end;
+
+procedure TGLCustomGLSLShader.SetTex(TexParamName: String; Tex: TGLTexture);
+begin
+  SetTex(Param[TexParamName], Tex);
+end;
+
+procedure TGLCustomGLSLShader.SetTex(TexParamName: String; Mat: TGLLibMaterial);
+begin
+  SetTex(TexParamName, Mat.Material.Texture);
 end;
 
 { TGLSLShaderParameter }

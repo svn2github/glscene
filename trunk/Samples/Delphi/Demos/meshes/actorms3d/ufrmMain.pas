@@ -332,9 +332,9 @@ end;
 
 procedure TfrmMain.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
 begin
-  Shader.Param['TextureMap'].AsTexture2D[0]:= MatLib.TextureByName('floor_parquet');
-  Shader.Param['ShadowMap'].AsTexture2D[1]:= MatLib.TextureByName(GLFrameBuffer.DepthTextureName);
-  Shader.Param['LightspotMap'].AsTexture2D[2]:= MatLib.TextureByName('Lightspot');
+  Shader.SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
+  Shader.SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));
+  Shader.SetTex('LightspotMap', MatLib.TextureByName('Lightspot'));
 end;
 
 procedure TfrmMain.SetAppPath(const Value: string);
