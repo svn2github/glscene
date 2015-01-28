@@ -56,7 +56,6 @@ uses
   System.Classes,
   System.SysUtils,
   System.Win.Registry,
-  System.Actions,
   VCL.ActnList,
   VCL.Controls,
   VCL.Forms,

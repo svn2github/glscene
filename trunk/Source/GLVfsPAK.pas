@@ -142,7 +142,7 @@ var
    i: integer;
 begin
    SetLength(Result, Length(s));
-   for i := Low(s) to High(s) do
+   for i := 1 to Length(s) do
       if s[i] = '\' then
          Result[i] := '/'
       else

@@ -416,7 +416,7 @@ var
   ACharList : TIntegerList;
 begin
   ACharList := TIntegerList.Create;
-  for i := Low(s) to High(s) do
+  for i := 1 to length(s) do
       ACharList.Add(integer(s[i]));
   SetList(ACharList);
   ACharList.Free;

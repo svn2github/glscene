@@ -409,7 +409,7 @@ type
     FSelStartX, FSelStartY,
       FSelEndX, FSelEndY,
       FPrevSelX, FPrevSelY: integer;
-    FScrollBars: System.UITypes.TScrollStyle;
+    FScrollBars: TScrollStyle;
     FScrollBarWidth: integer;
     FGutter: TGLSMemoGutter;
     FGutterWidth: integer;
@@ -440,7 +440,7 @@ type
 
     procedure SetHiddenCaret(Value: Boolean);
 
-    procedure SetScrollBars(Value: System.UITypes.TScrollStyle);
+    procedure SetScrollBars(Value: TScrollStyle);
 
     procedure SetGutterWidth(Value: integer);
     procedure SetGutterColor(Value: TColor);

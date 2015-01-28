@@ -23,7 +23,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages,
-  System.Classes, System.Actions, System.SysUtils,
+  System.Classes, System.SysUtils,
   VCL.Forms, VCL.ImgList, VCL.Controls,
   VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
 
