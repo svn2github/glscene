@@ -4765,7 +4765,7 @@ begin
   FWindow.Color := 0;
   vServiceWindow := FWindow;
 {$IFDEF MSWINDOWS}
-  FDC := GetDeviceContext(FWindow.Handle);
+  FDC := GetDC(FWindow.Handle);
 {$ENDIF}
 {$IFDEF LINUX}
   FDC := FWindow.Handle;
