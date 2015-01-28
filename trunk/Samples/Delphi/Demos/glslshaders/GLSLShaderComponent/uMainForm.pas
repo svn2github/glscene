@@ -129,7 +129,7 @@ begin
     Param['DiffuseColor'].AsVector4f := VectorMake(1, 1, 1, 1);
     Param['AmbientColor'].AsVector4f := VectorMake(0.2, 0.2, 0.2, 1);
     Param['LightIntensity'].AsVector1f := 1;
-    Param['MainTexture'].AsTexture2D[0] := TGLLibMaterial(Sender).Material.Texture;
+    SetTex('MainTexture', TGLLibMaterial(Sender).Material.Texture);
   end;
 end;
 
@@ -147,7 +147,7 @@ begin
   with Shader do
   begin
     // For AMD's shaders validation
-    Param['MainTexture'].AsTexture2D[0] := TGLLibMaterial(Sender).Material.Texture;
+    SetTex('MainTexture', TGLLibMaterial(Sender).Material.Texture);
   end;
 end;
 

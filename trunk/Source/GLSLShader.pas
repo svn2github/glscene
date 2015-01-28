@@ -112,7 +112,7 @@ type
     FOnInitializeEx: TGLSLShaderEventEx;
     FOnApplyEx: TGLSLShaderEventEx;
 
-    FNextTexIndex : integer;
+    FNextTexIndex : integer; // for auto texture unit indicing
 
     function GetParam(const Index: string): TGLSLShaderParameter;
     function GetDirectParam(const Index: Cardinal): TGLSLShaderParameter;
@@ -141,6 +141,7 @@ type
 
     // SetTex() sets texture with automatic book-keeping of texture unit indices.
     // Users can just call SetTex() in the OnApply event without keeping track of texture unit indices.
+    // Call from OnApply() only.
     procedure SetTex(TexParamName : String; Tex : TGLTexture); overload;
     procedure SetTex(TexParamName : String; Mat : TGLLibMaterial); overload;
     procedure SetTex(TexParam : TGLSLShaderParameter; Tex : TGLTexture); overload;

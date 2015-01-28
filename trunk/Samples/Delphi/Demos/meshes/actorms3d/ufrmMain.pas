@@ -42,7 +42,6 @@ type
     aniPos: TTrackBar;
     Timer1: TTimer;
     GLSArchiveManager1: TGLSArchiveManager;
-    procedure GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure btnStartStopClick(Sender: TObject);
@@ -321,20 +320,14 @@ procedure TfrmMain.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
   with Shader, MatLib do
   begin
-    Param['ShadowMap'].AsTexture2D[1] :=
-      TextureByName(GLFrameBuffer.DepthTextureName);
-    Param['LightspotMap'].AsTexture2D[2] := TextureByName('Lightspot');
+    SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
+    SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));
+    SetTex('LightspotMap', MatLib.TextureByName('Lightspot'));
+
     Param['Scale'].AsFloat := 16.0;
     Param['Softly'].AsInteger := 1;
     Param['EyeToLightMatrix'].AsMatrix4f := FEyeToLightMatrix;
   end;
-end;
-
-procedure TfrmMain.GLSLShader1Initialize(Shader: TGLCustomGLSLShader);
-begin
-  Shader.SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
-  Shader.SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));
-  Shader.SetTex('LightspotMap', MatLib.TextureByName('Lightspot'));
 end;
 
 procedure TfrmMain.SetAppPath(const Value: string);

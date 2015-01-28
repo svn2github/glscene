@@ -255,7 +255,6 @@ object frmMain: TfrmMain
   object GLSLShader1: TGLSLShader
     Enabled = False
     OnApply = GLSLShader1Apply
-    OnInitialize = GLSLShader1Initialize
     Left = 28
     Top = 148
   end
