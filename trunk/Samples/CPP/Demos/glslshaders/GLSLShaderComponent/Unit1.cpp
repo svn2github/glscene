@@ -74,8 +74,7 @@ void __fastcall TForm1::GLSLShaderApply(TGLCustomGLSLShader *Shader)
 	Shader->Param["DiffuseColor"]->AsVector4f = VectorMake(1, 1, 1, 1);
 	Shader->Param["AmbientColor"]->AsVector4f = VectorMake(0.2, 0.2, 0.2, 1);
 	Shader->Param["LightIntensity"]->AsVector1f = 1;
-	Shader->Param["MainTexture"]->AsTexture2D[0] =
-	   MaterialLibrary->LibMaterialByName("Earth")->Material->Texture;
+	Shader->SetTex("MainTexture", MaterialLibrary->LibMaterialByName("Earth")->Material->Texture);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLSLShaderInitialize(TGLCustomGLSLShader *Shader)
