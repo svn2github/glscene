@@ -55,6 +55,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  System.Math,
 
   // GLS
   GLODEManager,
@@ -479,7 +480,7 @@ begin
     AddContact(0, 0.5 * len, 0);
     for i := 0 to res - 1 do
     begin
-      SinCos(2 * Pi * i / res, rad, dy, dx);
+      SinCosine(2 * Pi * i / res, rad, dy, dx);
       AddContact(dx, -0.5 * len, dy);
       AddContact(dx, 0, dy);
       AddContact(dx, 0.5 * len, dy);
@@ -489,7 +490,7 @@ begin
 
       for j := 1 to (res div 2) - 1 do
       begin
-        SinCos(2 * Pi * i / res, rad * j / (res div 2), dy, dx);
+        SinCosine(2 * Pi * i / res, rad * j / (res div 2), dy, dx);
         AddContact(dx, -0.5 * len, dy);
         AddContact(dx, 0.5 * len, dy);
       end;

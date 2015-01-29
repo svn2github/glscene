@@ -126,7 +126,7 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
       object GLLensFlare1: TGLLensFlare
         Seed = 1465
-        FlareIsNotOccluded = False
+        FlareIsNotOccluded = True
       end
     end
   end

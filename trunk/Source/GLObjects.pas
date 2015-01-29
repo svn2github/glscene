@@ -149,7 +149,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.Math,
 
   GLVectorGeometry, GLVectorTypes, GLScene, OpenGLAdapter,
   OpenGLTokens, GLVectorLists, GLCrossPlatform, GLContext, GLSilhouette,
@@ -3659,7 +3659,7 @@ begin
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    GLVectorGeometry.SinCos(AngTop, SinP, CosP);
+    SinCosine(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
@@ -3678,7 +3678,7 @@ begin
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
-      GLVectorGeometry.SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       v1.V[0] := CosP * SinT;
       v1.V[2] := CosP * CosT;
       if FTopCap = ctCenter then
@@ -3704,8 +3704,8 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    GLVectorGeometry.SinCos(Phi, SinP, CosP);
-    GLVectorGeometry.SinCos(Phi2, SinP2, CosP2);
+    SinCos(Phi, SinP, CosP);
+    SinCos(Phi2, SinP2, CosP2);
     v1.V[1] := SinP;
     V2.V[1] := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
@@ -3852,7 +3852,7 @@ begin
   angleFactor := (2 * PI) / Segments;
   for i := 0 to Segments - 1 do
   begin
-    SinCos(i * angleFactor, FRadius, s, C);
+    SinCosine(i * angleFactor, FRadius, s, C);
     Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
     j := (i + 1) mod Segments;
     Result.Indices.Add(i, j);
@@ -4508,7 +4508,7 @@ begin
   angleFactor := (2 * PI) / Segments;
   for i := 0 to Segments - 1 do
   begin
-    SinCos(i * angleFactor, FRadius, s, C);
+    SinCosine(i * angleFactor, FRadius, s, C);
     Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
     j := (i + 1) mod Segments;
     Result.Indices.Add(i, j);

@@ -36,6 +36,10 @@ object InfoForm: TInfoForm
     object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Image: TImage
         Left = 1
         Top = 2

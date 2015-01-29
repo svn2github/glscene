@@ -47,11 +47,11 @@ interface
 {$I GLScene.inc}
 
 uses
-   Classes, SysUtils,
+   System.Classes, System.SysUtils, System.Math,
    //GLS
    GLScene, GLMaterial, GLVectorGeometry, GLVectorLists,
    OpenGLTokens, GLVectorFileObjects, GLApplicationFileIO, GLRenderContextInfo,
-   XOpenGL, GLContext , GLVectorTypes;
+   XOpenGL, GLContext, GLVectorTypes;
 
 type
    TGLTree = class;

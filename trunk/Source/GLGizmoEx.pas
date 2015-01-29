@@ -641,7 +641,7 @@ begin
   b := LP1.Y - K * LP1.X;
   //determine decrement of quadratic equation
 
-  d := (power((2 * K * b - 2 * CC.X - 2 * CC.Y * K), 2) - (4 + 4 * K * K) * (b * b - cr * cr + CC.X * CC.X + CC.Y * CC.Y - 2 * CC.Y * b));
+  d := (PowerInteger((2 * K * b - 2 * CC.X - 2 * CC.Y * K), 2) - (4 + 4 * K * K) * (b * b - cr * cr + CC.X * CC.X + CC.Y * CC.Y - 2 * CC.Y * b));
   //if decrement = 0, then no decision and line and circle do not intersect
   if (d < 0) then
   begin

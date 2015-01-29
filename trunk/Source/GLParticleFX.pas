@@ -2402,7 +2402,7 @@ begin
   doFriction := (FFriction <> 1);
   if doFriction then
   begin
-    frictionScale := Power(FFriction, dt)
+    frictionScale := PowerSingle(FFriction, dt)
   end
   else
     frictionScale := 1;
@@ -2817,7 +2817,7 @@ begin
   rotateAngle := rotateAngle + offsetAngle;
   if lifeRotationApplied or (rotateAngle <> 0) then
   begin
-    diff := DegToRad(rotateAngle);
+    diff := DegToRadian(rotateAngle);
     rotMatrix := CreateRotationMatrix(axis, diff);
     buf.TransformAsVectors(rotMatrix);
   end;
@@ -2996,7 +2996,7 @@ begin
   FVertices.Capacity := FNbSides;
   for i := 0 to FNbSides - 1 do
   begin
-    SinCos(i * c2PI / FNbSides, s, c);
+    SinCosine(i * c2PI / FNbSides, s, c);
     FVertices.Add(VectorCombine(FVx, Fvy, c, s));
   end;
   FVertBuf := TAffineVectorList.Create;
@@ -3256,7 +3256,7 @@ begin
   FVertices := TAffineVectorList.Create;
   for i := 0 to 3 do
   begin
-    SinCos(i * cPIdiv2 + cPIdiv4, s, c);
+    SinCosine(i * cPIdiv2 + cPIdiv4, s, c);
     FVertices.Add(VectorCombine(Fvx, Fvy, c, s));
   end;
   if FRotation <> 0 then

@@ -1256,10 +1256,10 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FChildObject),
           GetBodyFromGLSceneObject(FParentObject));
         BallAndSocketSetConeAngle(FNewtonUserJoint,
-          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FConeAngle));
+          DegToRadian(FCustomBallAndSocketOptions.FConeAngle));
         BallAndSocketSetTwistAngle(FNewtonUserJoint,
-          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMinTwistAngle),
-          GLVectorGeometry.DegToRad(FCustomBallAndSocketOptions.FMaxTwistAngle));
+          DegToRadian(FCustomBallAndSocketOptions.FMinTwistAngle),
+          DegToRadian(FCustomBallAndSocketOptions.FMaxTwistAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
           FStiffness);
@@ -1294,8 +1294,8 @@ procedure TGLNGDManager.RebuildAllJoint(Sender: TObject);
           GetBodyFromGLSceneObject(FParentObject));
         HingeEnableLimits(FNewtonUserJoint, 1);
         HingeSetLimits(FNewtonUserJoint,
-          GLVectorGeometry.DegToRad(FCustomHingeOptions.FMinAngle),
-          GLVectorGeometry.DegToRad(FCustomHingeOptions.FMaxAngle));
+          DegToRadian(FCustomHingeOptions.FMinAngle),
+          DegToRadian(FCustomHingeOptions.FMaxAngle));
         CustomSetBodiesCollisionState(FNewtonUserJoint, Ord(FCollisionState));
         NewtonJointSetStiffness(CustomGetNewtonJoint(FNewtonUserJoint),
           FStiffness);

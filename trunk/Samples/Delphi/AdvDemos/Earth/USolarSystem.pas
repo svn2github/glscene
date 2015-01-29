@@ -14,7 +14,7 @@ unit USolarSystem;
 interface
 
 uses
-  SysUtils,
+  System.SysUtils, System.Math,
   GLVectorGeometry;
 
 type

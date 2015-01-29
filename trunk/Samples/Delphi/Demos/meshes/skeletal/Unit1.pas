@@ -3,7 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Windows, Messages, SysUtils, Classes, Math,
+  Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls,
 
   //GLS

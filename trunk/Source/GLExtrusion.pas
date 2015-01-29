@@ -1288,7 +1288,7 @@ const
         end;
       pnmAdvanced:
         begin
-          smoothanglerad := DegToRad(NormalSmoothAngle);
+          smoothanglerad := DegToRadian(NormalSmoothAngle);
           for j := 0 to Slices do
           begin
             curRow.node[j].sidedir :=
@@ -1915,7 +1915,7 @@ var
   s, c: Single;
 begin
   FMinSmoothAngle := Value;
-  SinCos(Value * cPidiv180, s, c);
+  SinCosine(Value * cPidiv180, s, c);
   FMinSmoothAngleCos := c;
 end;
 

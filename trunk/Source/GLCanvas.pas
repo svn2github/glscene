@@ -940,7 +940,7 @@ begin
   StartPrimitive(GL_LINE_STRIP);
   while AngleCurrent >= AngleBegin - AngleDiff do
   begin
-    SinCos(AngleCurrent, s, c);
+    SinCosine(AngleCurrent, s, c);
     x := Xc + (Rx * c);
     y := Yc + (Ry * s);
 
@@ -949,7 +949,7 @@ begin
     AngleCurrent := AngleCurrent - AngleStep; // always step down, rotate only one way to draw it
   end;
 
-  SinCos(AngleEnd, s, c);
+  SinCosine(AngleEnd, s, c);
   x := Xc + (Rx * c);
   y := Yc + (Ry * s);
 

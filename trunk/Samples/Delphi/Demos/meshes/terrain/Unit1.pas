@@ -5,14 +5,10 @@ interface
 {$I GLScene.inc}
 
 uses
- {$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, System.Math,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.GIFImg, Vcl.Imaging.Jpeg,
-  {$ELSE}
-  Windows, Messages, SysUtils, Classes, ExtCtrls, StdCtrls,
-  Graphics, Controls, Forms, Dialogs, GIFImg, Jpeg,
-  {$ENDIF}
+
   //GLScene
   GLScene, GLObjects, GLTerrainRenderer, GLHeightData, GLColor,
   GLCadencer, GLTexture, GLBitmapFont, GLKeyboard, GLSkydome,
@@ -261,7 +257,7 @@ begin
    end else begin
       // wolf howl at some distance, at ground level
       wolfPos:=GLCamera1.AbsolutePosition;
-      SinCos(Random*c2PI, 100+Random(1000), s, c);
+      SinCosine(Random*c2PI, 100+Random(1000), s, c);
       wolfPos.V[0]:=wolfPos.V[0]+c;
       wolfPos.V[2]:=wolfPos.V[2]+s;
       wolfPos.V[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);

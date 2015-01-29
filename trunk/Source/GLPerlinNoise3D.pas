@@ -93,7 +93,7 @@ begin
    for i:=0 to cPERLIN_TABLE_SIZE-1 do begin
       z:=1-2*Random;
       r:=Sqrt(1-z*z);
-      SinCos(c2PI*Random, r, FGradients[i*3], FGradients[i*3+1]);
+      SinCosine(c2PI*Random, r, FGradients[i*3], FGradients[i*3+1]);
       FGradients[i*3+2]:=z;
    end;
    // Initialize permutations table

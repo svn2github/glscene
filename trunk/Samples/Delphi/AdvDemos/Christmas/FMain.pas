@@ -5,14 +5,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,  Vcl.Dialogs,
   Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
-  {$ELSE}
-  Windows, Messages, SysUtils, Classes, Graphics, Controls,
-  Forms, Dialogs,  ExtCtrls, Jpeg,
-  {$ENDIF}
 
   //GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,

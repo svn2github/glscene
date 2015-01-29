@@ -218,7 +218,7 @@ unit GLVectorGeometry;
 interface
 
 uses
-  SysUtils, Math, Types,
+  System.SysUtils, System.Math, System.Types,
 
   GLVectorTypes;
 
@@ -1331,17 +1331,17 @@ function LogN(Base, X: Extended): Extended;
 function IntPower(Base: Extended; Exponent: Integer): Extended;
 {: Raise base to any power.<p>
    For fractional exponents, or |exponents| > MaxInt, base must be > 0. }
-function Power(const Base, Exponent: Single): Single; overload;
+function PowerSingle(const Base, Exponent: Single): Single; overload;
 {: Raise base to an integer. }
-function Power(Base: Single; Exponent: Integer): Single; overload;
-function Power(Base: Single; Exponent: Int64): Single; overload;
+function PowerInteger(Base: Single; Exponent: Integer): Single; overload;
+function PowerInt64(Base: Single; Exponent: Int64): Single; overload;
 
 //------------------------------------------------------------------------------
 // Trigonometric functions
 //------------------------------------------------------------------------------
 
-function DegToRad(const Degrees: Extended): Extended; overload;
-function DegToRad(const Degrees: Single): Single; overload;
+function DegToRadian(const Degrees: Extended): Extended; overload;
+function DegToRadian(const Degrees: Single): Single; overload;
 function RadToDeg(const Radians: Extended): Extended; overload;
 function RadToDeg(const Radians: Single): Single; overload;
 
@@ -1352,23 +1352,23 @@ function NormalizeDegAngle(angle : Single) : Single;
 
 //: Calculates sine and cosine from the given angle Theta
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-procedure SinCos(const Theta: Extended; out Sin, Cos: Extended); overload;
+procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended); overload;
 {$ENDIF}
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Double; out Sin, Cos: Double); overload;
+procedure SinCosine(const Theta: Double; out Sin, Cos: Double); overload;
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Single; out Sin, Cos: Single); overload;
+procedure SinCosine(const Theta: Single; out Sin, Cos: Single); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended); overload;
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Extended); overload;
 {$ENDIF}
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Double); overload;
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Double); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Single; out Sin, Cos: Single); overload;
+procedure SinCosine(const theta, radius : Single; out Sin, Cos: Single); overload;
 
 {: Fills up the two given dynamic arrays with sin cos values.<p>
    start and stop angles must be given in degrees, the number of steps is
@@ -4213,10 +4213,10 @@ begin
   if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
   begin
     i := Round(DistortionDegree);
-    Result := (Stop - Start) * GLVectorGeometry.Power(Delta, i) + Start;
+    Result := (Stop - Start) * GLVectorGeometry.PowerInteger(Delta, i) + Start;
   end
   else
-    Result := (Stop - Start) * GLVectorGeometry.Power(Delta, DistortionDegree) + Start;
+    Result := (Stop - Start) * Power(Delta, DistortionDegree) + Start;
 end;
 
 // MatrixLerp
@@ -5726,7 +5726,7 @@ procedure RotateVectorAroundY(var v : TAffineVector; alpha : Single);
 var
    c, s, v0 : Single;
 begin
-   GLVectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    v0:=v.X;
    v.X:=c*v0+s*v.Z;
    v.Z:=c*v.Z-s*v0;
@@ -5738,7 +5738,7 @@ function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GLVectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.X:=v.X;
    Result.Y:=c*v.Y+s*v.Z;
    Result.Z:=c*v.Z-s*v.Y;
@@ -5750,7 +5750,7 @@ function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GlVectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.Y:=v.Y;
    Result.X:=c*v.X+s*v.Z;
    Result.Z:=c*v.Z-s*v.X;
@@ -5762,7 +5762,7 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 var
    c, s : Single;
 begin
-   GLVectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    vr.Y:=v.Y;
    vr.X:=c*v.X+s*v.Z;
    vr.Z:=c*v.Z-s*v.X;
@@ -5774,7 +5774,7 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GLVectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.X:=c*v.X+s*v.Y;
    Result.Y:=c*v.Y-s*v.X;
    Result.Z:=v.Z;
@@ -5966,7 +5966,7 @@ function CreateRotationMatrixX(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLVectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixX(s, c);
 end;
 
@@ -5989,7 +5989,7 @@ function CreateRotationMatrixY(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLVectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixY(s, c);
 end;
 
@@ -6012,7 +6012,7 @@ function CreateRotationMatrixZ(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLVectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixZ(s, c);
 end;
 
@@ -6023,7 +6023,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   GLVectorGeometry.SinCos(angle, sine, cosine);
+   SinCosine(angle, sine, cosine);
    one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6062,7 +6062,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   GLVectorGeometry.SinCos(Angle, Sine, Cosine);
+   SinCosine(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6914,7 +6914,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * GLVectorGeometry.Tan(GLVectorGeometry.DegToRad(FOV) * 0.5);
+  y:= ZNear * GLVectorGeometry.Tan(DegToRadian(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -7900,7 +7900,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   GLVectorGeometry.SinCos(GLVectorGeometry.DegToRad(angle*cOneDotFive), s, c);
+   SinCosine(DegToRadian(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart.V[0]:=axis.V[0]*f;
@@ -8110,13 +8110,13 @@ asm
 @@3:
 {$else}
 begin
-   Result:=Math.IntPower(Base, Exponent);
+   Result:=IntPower(Base, Exponent);
 {$endif}
 end;
 
 // Power
 //
-function Power(const base, exponent : Single) : Single;
+function PowerSingle(const base, exponent : Single) : Single;
 begin
    {$HINTS OFF}
    if exponent=cZero then
@@ -8129,9 +8129,10 @@ begin
    {$HINTS ON}
 end;
 
+
 // Power (int exponent)
 //
-function Power(Base: Single; Exponent: Integer): Single;
+function PowerInteger(Base: Single; Exponent: Integer): Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
@@ -8156,28 +8157,28 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=Math.Power(Base, Exponent);
+   Result:=Power(Base, Exponent);
    {$HINTS ON}
 {$endif}
 end;
 
-function Power(Base: Single; Exponent: Int64): Single;
+function PowerInt64(Base: Single; Exponent: Int64): Single;
 begin
    {$HINTS OFF}
-   Result:= Math.Power(Base, Exponent);
+   Result:= System.Math.Power(Base, Exponent);
    {$HINTS ON}
 end;
 
 // DegToRad (extended)
 //
-function DegToRad(const Degrees: Extended): Extended;
+function DegToRadian(const Degrees: Extended): Extended;
 begin
    Result:=Degrees*(PI/180);
 end;
 
 // DegToRad (single)
 //
-function DegToRad(const Degrees : Single) : Single;
+function DegToRadian(const Degrees : Single) : Single;
 //   Result:=Degrees * cPIdiv180;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
@@ -8237,9 +8238,9 @@ begin
 end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-// SinCos (Extended)
+// SinCosine (Extended)
 //
-procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
+procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8258,7 +8259,7 @@ end;
 
 // SinCos (Double)
 //
-procedure SinCos(const Theta: Double; out Sin, Cos: Double);
+procedure SinCosine(const Theta: Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8281,7 +8282,7 @@ end;
 
 // SinCos (Single)
 //
-procedure SinCos(const Theta: Single; out Sin, Cos: Single);
+procedure SinCosine(const Theta: Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8305,7 +8306,7 @@ end;
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 // SinCos (Extended w radius)
 //
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8329,7 +8330,7 @@ end;
 
 // SinCos (Double w radius)
 //
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Double);
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8352,7 +8353,7 @@ end;
 
 // SinCos (Single w radius)
 //
-procedure SinCos(const theta, radius : Single; out Sin, Cos: Single);
+procedure SinCosine(const theta, radius : Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8391,7 +8392,7 @@ begin
       // Fast computation (approx 5.5x)
       alpha:=2*Sqr(Sin(d*0.5));
       beta:=Sin(d);
-      GLVectorGeometry.SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
+      SinCosine(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
       for i:=Low(s) to High(s)-1 do begin
          // Make use of the incremental formulae:
          // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
@@ -8403,7 +8404,7 @@ begin
       // Slower, but maintains precision when steps are small
       startAngle:=startAngle*cPIdiv180;
       for i:=Low(s) to High(s) do
-         GLVectorGeometry.SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+         SinCosine((i-Low(s))*d+startAngle, s[i], c[i]);
    end;
 end;
 
@@ -8809,7 +8810,7 @@ begin
    p.V[2]:=2*Random-1;
    t:=2*PI*Random;
    w:=Sqrt(1-p.V[2]*p.V[2]);
-   GLVectorGeometry.SinCos(t, w, p.V[1], p.V[0]);
+   SinCosine(t, w, p.V[1], p.V[0]);
 end;
 
 // RoundInt (single)
@@ -12272,13 +12273,13 @@ begin
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
     pitchNow := GLVectorGeometry.ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + GLVectorGeometry.DegToRad(pitchDelta), 0 + 0.025, PI -
+    pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
     // into the new position
     SetVector(normalT2C, AMovingObjectUp);
     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-    RotateVector(normalT2C, AMovingObjectUp, -GLVectorGeometry.DegToRad(turnDelta));
+    RotateVector(normalT2C, AMovingObjectUp, -DegToRadian(turnDelta));
     ScaleVector(normalT2C, dist);
     Result := VectorAdd(AMovingObjectPosition, VectorSubtract(normalT2C,
       originalT2C));

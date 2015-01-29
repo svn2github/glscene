@@ -20,7 +20,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes,
+  System.SysUtils, System.Classes, System.Math,
   //GLS
   GLCrossPlatform, GLVectorTypes, GLVectorGeometry;
 

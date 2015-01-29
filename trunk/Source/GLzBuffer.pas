@@ -470,8 +470,8 @@ begin
   vw := Fwidth / 2;
   vh := Fheight / 2;
   scal := vw / hcvec.V[0];
-  SinCos(-ang1, s1, c1);
-  SinCos(-ang2, s2, c2);
+  SinCosine(-ang1, s1, c1);
+  SinCosine(-ang2, s2, c2);
   //------------------------------------------
   //--------------------2-----------------
   vec := self.FastScreenToVector(0, 1);

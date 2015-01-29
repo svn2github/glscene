@@ -474,11 +474,11 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
       GL.Color4fv(@colStart);
       GL.Vertex3f(0, 0, -1);
       f := 2 * PI / Slices;
-      SinCos(GLVectorGeometry.DegToRad(stop), vertex1.V[2], r);
+      SinCosine(DegToRadian(stop), vertex1.V[2], r);
       GL.Color4fv(@colStop);
       for i := 0 to Slices do
       begin
-        SinCos(i * f, r, vertex1.V[1], vertex1.V[0]);
+        SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
         GL.Vertex4fv(@vertex1);
       end;
       GL.End_;
@@ -490,11 +490,11 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
       GL.Color4fv(@colStop);
       GL.Vertex3fv(@ZHmgPoint);
       f := 2 * PI / Slices;
-      SinCos(GLVectorGeometry.DegToRad(start), vertex1.V[2], r);
+      SinCosine(DegToRadian(start), vertex1.V[2], r);
       GL.Color4fv(@colStart);
       for i := Slices downto 0 do
       begin
-        SinCos(i * f, r, vertex1.V[1], vertex1.V[0]);
+        SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
         GL.Vertex4fv(@vertex1);
       end;
       GL.End_;
@@ -505,14 +505,14 @@ procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
       // triangle strip
       GL.Begin_(GL_TRIANGLE_STRIP);
       f := 2 * PI / Slices;
-      SinCos(GLVectorGeometry.DegToRad(start), vertex1.V[2], r);
-      SinCos(GLVectorGeometry.DegToRad(stop), vertex2.V[2], r2);
+      SinCosine(DegToRadian(start), vertex1.V[2], r);
+      SinCosine(DegToRadian(stop), vertex2.V[2], r2);
       for i := 0 to Slices do
       begin
-        SinCos(i * f, r, vertex1.V[1], vertex1.V[0]);
+        SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
         GL.Color4fv(@colStart);
         GL.Vertex4fv(@vertex1);
-        SinCos(i * f, r2, vertex2.V[1], vertex2.V[0]);
+        SinCosine(i * f, r2, vertex2.V[1], vertex2.V[0]);
         GL.Color4fv(@colStop);
         GL.Vertex4fv(@vertex2);
       end;
@@ -697,8 +697,8 @@ begin
   for i := 0 to Count - 1 do
   begin
     star := Items[i];
-    SinCos(star.DEC * cPIdiv180, decS, decC);
-    SinCos(star.RA * cPIdiv180, decC, raS, raC);
+    SinCosine(star.DEC * cPIdiv180, decS, decC);
+    SinCosine(star.RA * cPIdiv180, decC, raS, raC);
     star.FCacheCoord.V[0] := raC;
     star.FCacheCoord.V[1] := raS;
     star.FCacheCoord.V[2] := decS;
@@ -1240,11 +1240,11 @@ begin
   end;
   FSunElevation := cHourToElevation1[Round(HH)] + cHourToElevation2[Round(HH)]*MM;
 
-  ts := DegToRad(90 - FSunElevation);
+  ts := DegToRadian(90 - FSunElevation);
   // Mix base colors
   fts := exp(-6 * (PI / 2 - ts));
   VectorLerp(SunZenithColor.Color, SunDawnColor.Color, fts, FCurSunColor);
-  fts := Power(1 - cos(ts - 0.5), 2);
+  fts := PowerInteger(1 - cos(ts - 0.5), 2);
   VectorLerp(HazeColor.Color, NightColor.Color, fts, FCurHazeColor);
   VectorLerp(SkyColor.Color, NightColor.Color, fts, FCurSkyColor);
   // Precalculate Turbidity factors
@@ -1252,7 +1252,7 @@ begin
   FCurSunSkyTurbid := -(121 - Turbidity);
 
   //fade stars if required
-  if SunElevation>-40 then ts:=power(1-(SunElevation+40)/90,11)else ts:=1;
+  if SunElevation>-40 then ts:=PowerInteger(1-(SunElevation+40)/90,11)else ts:=1;
   color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
   if esoFadeStarsWithSun in ExtendedOptions then for i:=0 to Stars.Count-1 do stars[i].Color:=color;
 
@@ -1291,11 +1291,11 @@ var
   i: integer;
   color: TColor;
 begin
-  ts := DegToRad(90 - SunElevation);
+  ts := DegToRadian(90 - SunElevation);
   // Precompose base colors
   fts := exp(-6 * (PI / 2 - ts));
   VectorLerp(SunZenithColor.Color, SunDawnColor.Color, fts, FCurSunColor);
-  fts := Power(1 - cos(ts - 0.5), 2);
+  fts := PowerInteger(1 - cos(ts - 0.5), 2);
   VectorLerp(HazeColor.Color, NightColor.Color, fts, FCurHazeColor);
   VectorLerp(SkyColor.Color, NightColor.Color, fts, FCurSkyColor);
   // Precalculate Turbidity factors
@@ -1304,7 +1304,7 @@ begin
 
   //fade stars if required
   if SunElevation>-40 then
-    ts := power(1 - (SunElevation+40) / 90, 11)
+    ts := PowerInteger(1 - (SunElevation+40) / 90, 11)
   else
     ts := 1;
   color := RGB(round(ts * 255), round(ts * 255), round(ts * 255));
@@ -1380,8 +1380,8 @@ var
     color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
     GL.Color4fv(DeepColor.AsAddress);
     GL.Vertex3f(0, 0, -1);
-    SinCos(GLVectorGeometry.DegToRad(stop), vertex1.V[2], r);
-    thetaStart := GLVectorGeometry.DegToRad(90 - stop);
+    SinCosine(DegToRadian(stop), vertex1.V[2], r);
+    thetaStart := DegToRadian(90 - stop);
     for i := 0 to steps - 1 do
     begin
       vertex1.V[0] := r * cosTable[i];
@@ -1408,8 +1408,8 @@ var
       color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
       GL.Color4fv(@color);
       GL.Vertex4fv(@ZHmgPoint);
-      SinCos(GLVectorGeometry.DegToRad(start), vertex1.V[2], r);
-      thetaStart := GLVectorGeometry.DegToRad(90 - start);
+      SinCosine(DegToRadian(start), vertex1.V[2], r);
+      thetaStart := DegToRadian(90 - start);
       for i := 0 to steps - 1 do
       begin
         vertex1.V[0] := r * cosTable[i];
@@ -1425,10 +1425,10 @@ var
       vertex2.V[3] := 1;
       // triangle strip
       GL.Begin_(GL_TRIANGLE_STRIP);
-      SinCos(GLVectorGeometry.DegToRad(start), vertex1.V[2], r);
-      SinCos(GLVectorGeometry.DegToRad(stop), vertex2.V[2], r2);
-      thetaStart := GLVectorGeometry.DegToRad(90 - start);
-      thetaStop := GLVectorGeometry.DegToRad(90 - stop);
+      SinCosine(DegToRadian(start), vertex1.V[2], r);
+      SinCosine(DegToRadian(stop), vertex2.V[2], r2);
+      thetaStart := DegToRadian(90 - start);
+      thetaStop := DegToRadian(90 - stop);
       for i := 0 to steps - 1 do
       begin
         vertex1.V[0] := r * cosTable[i];
@@ -1450,7 +1450,7 @@ var
   n, i, sdiv2: Integer;
   t, t2, p, fs: Single;
 begin
-  ts := GLVectorGeometry.DegToRad(90 - SunElevation);
+  ts := DegToRadian(90 - SunElevation);
   SetVector(sunPos, sin(ts), 0, cos(ts));
   // prepare sin/cos LUT, with a higher sampling around 0Ѝ
   n := Slices div 2;
@@ -1460,7 +1460,7 @@ begin
   for i := 1 to n do
   begin
     p := (1 - Sqrt(Cos((i / n) * cPIdiv2))) * PI;
-    SinCos(p, sinTable[n + i], cosTable[n + i]);
+    SinCosine(p, sinTable[n + i], cosTable[n + i]);
     sinTable[n - i] := -sinTable[n + i];
     cosTable[n - i] := cosTable[n + i];
   end;

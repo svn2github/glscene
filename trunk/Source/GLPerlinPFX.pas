@@ -23,7 +23,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes, System.Math,
   //GLS
   GLParticleFX, GLGraphics, GLCrossPlatform,
   GLPerlinNoise3D, OpenGLTokens, GLVectorGeometry;

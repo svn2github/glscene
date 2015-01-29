@@ -3,12 +3,14 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,  ExtCtrls,
-  FileCtrl, Jpeg,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,  Vcl.ExtCtrls,
+  Vcl.FileCtrl, Vcl.Imaging.Jpeg,
   //GLS
-  GLScene, GLObjects, GLWin32Viewer, GLSkydome, GLTexture,
-  GLCadencer, GLLensFlare, GLTexCombineShader, GLMaterial, GLCoordinates,
-  GLCrossPlatform, GLBaseClasses, GLRenderContextInfo, GLColor, GLState,
+  GLMaterial, GLTexCombineShader, GLCadencer, GLLensFlare,
+  GLScene, GLObjects, GLCoordinates, GLSkydome, GLCrossPlatform, GLBaseClasses,
+  GLWin32Viewer, GLTexture, GLRenderContextInfo, GLColor, GLState,
   GLUtils, OpenGLTokens, OpenGL1x, GLVectorGeometry, GLContext, GLTextureFormat;
 
 
@@ -290,8 +292,8 @@ var
   var
     f: Single;
   begin
-    SinCos(lat * (PI / 180), Result.Y, f);
-    SinCos(lon * (360 / 24 * PI / 180), f,
+    SinCosine(lat * (PI / 180), Result.Y, f);
+    SinCosine(lon * (360 / 24 * PI / 180), f,
       Result.X, Result.Z);
   end;
 

@@ -3,7 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, SysUtils, Jpeg, StdCtrls, Buttons, Controls, ExtCtrls,
+  Windows, SysUtils, Math,
+  Jpeg, StdCtrls, Buttons, Controls, ExtCtrls,
   ComCtrls, Classes, Forms,
 
   //GLS

@@ -50,6 +50,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.TypInfo,
+  System.Math,
   VCL.Forms, VCL.Controls, VCL.ExtCtrls,
   // GLS
   GLSceneForm, GLVectorGeometry, GLScene,

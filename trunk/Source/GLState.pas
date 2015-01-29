@@ -3581,7 +3581,7 @@ begin
     else
     begin
       FSpotCutoff[I] := Value;
-      FLightStates.SpotCosCutoffExponent[I].V[0] := cos(GLVectorGeometry.DegToRad(Value));
+      FLightStates.SpotCosCutoffExponent[I].V[0] := cos(DegToRadian(Value));
     end;
 	
     if FFFPLight then

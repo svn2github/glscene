@@ -89,7 +89,8 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.SyncObjs, VCL.Graphics,
+  System.Classes, System.SysUtils, System.SyncObjs, System.Math,
+  VCL.Graphics,
   VCL.Imaging.Pngimage,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,

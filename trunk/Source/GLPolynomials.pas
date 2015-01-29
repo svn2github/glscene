@@ -212,9 +212,9 @@ end;
 function cbrt(const x : Double) : Double;
 begin
    if x>0 then
-      Result:=Power(x, c1div3)
+      Result:=PowerSingle(x, c1div3)
    else if x<0 then
-      Result:=-Power(-x, c1div3)
+      Result:=-PowerSingle(-x, c1div3)
    else Result:=0;
 end;
 

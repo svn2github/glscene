@@ -20,8 +20,8 @@ interface
 {$WARNINGS OFF}
 
 uses
-  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  Classes, SysUtils,
+  {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
+  System.Classes, System.SysUtils, System.Math,
   {$IFDEF GLS_X11_SUPPORT} x, {$ENDIF}
   {$IFDEF UNIX} dynlibs, {$ENDIF}
    GLSLog, GLVectorGeometry, GLCrossPlatform;

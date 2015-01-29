@@ -24,7 +24,9 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes,
+uses
+  System.Classes,
+  System.Math,
   GLVectorFileObjects,
   LWObjects;
 

@@ -2,22 +2,15 @@ unit FMain;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
-  System.IniFiles, System.Win.Registry,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, System.IniFiles, System.Win.Registry,
+  System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin, Vcl.ComCtrls,
   Vcl.ExtDlgs, Vcl.ExtCtrls,
-  {$ELSE}
-  Windows, Messages, SysUtils, Classes, IniFiles, Registry, Graphics, Controls,
-  Forms, Dialogs, Actions, ActnList, Menus, ImgList, ToolWin, ComCtrls,
-  ExtDlgs, ExtCtrls,
-  {$ENDIF}
 
-  //GLScene
+  //GLS
   GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, GLVectorGeometry,
   GLTexture, GLContext,  GLVectorLists, GLCadencer,  GLCoordinates,  GLCrossPlatform,
   GLBaseClasses, GLMeshOptimizer, GLState, GLRenderContextInfo, GLTextureFormat,

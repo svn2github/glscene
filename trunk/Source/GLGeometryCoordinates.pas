@@ -103,7 +103,7 @@ Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html}
 procedure Cylindrical_Cartesian(const r,theta,z1:single;var x,y,z:single);
 
 begin
-  GLVectorGeometry.sincos(theta,r,y,x);
+  SinCosine(theta,r,y,x);
   z := z1;
 end;
 // ----- Cylindrical_Cartesian -------------------------------------------------
@@ -112,7 +112,7 @@ Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html}
 procedure Cylindrical_Cartesian(const r,theta,z1:double;var x,y,z:double);
 
 begin
-  GLVectorGeometry.sincos(theta,r,y,x);
+  SinCosine(theta,r,y,x);
   z := z1;
 end;
 // ----- Cylindrical_Cartesian -------------------------------------------------
@@ -136,7 +136,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(theta,r,y,x);
+    SinCosine(theta,r,y,x);
     z := z1;
   end;
 end;
@@ -161,7 +161,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(theta,r,y,x);
+    SinCosine(theta,r,y,x);
     z := z1;
   end;
 end;
@@ -171,7 +171,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:single; var r,theta,z:single);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := GLVectorGeometry.arctan2(y,x);
+  theta := arctan2(y,x);
   z := z1;
 end;
 // ----- Cartesian_Cylindrical -------------------------------------------------
@@ -192,8 +192,8 @@ var
   a : single;
 
 begin
-  GLVectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-  GLVectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+  SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+  SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
 {** Convert Spherical to Cartesian with no checks. Double version.
@@ -204,8 +204,8 @@ var
   a : double;
 
 begin
-  GLVectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-  GLVectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+  SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+  SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
 {** Convert Spherical to Cartesian with checks.
@@ -232,8 +232,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-    GLVectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+    SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+    SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
   end;
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
@@ -261,8 +261,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-    GLVectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+    SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+    SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
   end;
 end;
 
@@ -316,8 +316,8 @@ var
   sn,cs,snphi,csphi,shx,chx : single;
 
 begin
-  GLVectorGeometry.sincos(eta,a,sn,cs);
-  GLVectorGeometry.SinCos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
   shx:=sinh(xi);
   chx:=cosh(xi);
   x := sn*shx*csphi;   // x = a*sin(eta)*sinh(xi)*cos(phi)
@@ -340,8 +340,8 @@ var
   sn,cs,snphi,csphi,shx,chx : double;
 
 begin
-  GLVectorGeometry.sincos(eta,a,sn,cs);
-  GLVectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
   shx:=sinh(xi);
   chx:=cosh(xi);
   x := sn*shx*csphi;   // x = a*sin(eta)*sinh(xi)*cos(phi)
@@ -373,8 +373,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(eta,a,sn,cs);
-    GLVectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -409,8 +409,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.sincos(eta,a,sn,cs);
-    GLVectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -436,8 +436,8 @@ var
   sn,cs,snphi,csphi,shx,chx : single;
 
 begin
-  GLVectorGeometry.sincos(eta,a,sn,cs);
-  GLVectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
 
   shx:=sinh(xi);
   chx:=cosh(xi);
@@ -462,8 +462,8 @@ var
   sn,cs,snphi,csphi,shx,chx : double;
 
 begin
-  GLVectorGeometry.sincos(eta,a,sn,cs);
-  GLVectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
 
   shx:=sinh(xi);
   chx:=cosh(xi);
@@ -497,8 +497,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.SinCos(eta,a,sn,cs);
-    GLVectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -533,8 +533,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.SinCos(eta,a,sn,cs);
-    GLVectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -553,7 +553,7 @@ var
   cs,sn,shx,chx:single;
 
 begin
-  GLVectorGeometry.SinCos(u,sn,cs);
+  SinCosine(u,sn,cs);
   shx:=sinh(v);
   chx:=cosh(v);
 
@@ -570,7 +570,7 @@ var
   cs,sn,shx,chx:double;
 
 begin
-  GLVectorGeometry.SinCos(u,sn,cs);
+  SinCosine(u,sn,cs);
   shx:=sinh(v);
   chx:=cosh(v);
 
@@ -599,7 +599,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.SinCos(u,sn,cs);
+    SinCosine(u,sn,cs);
 
     shx:=sinh(v);
     chx:=cosh(v);
@@ -630,7 +630,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLVectorGeometry.SinCos(u,sn,cs);
+    SinCosine(u,sn,cs);
     shx:=sinh(v);
     chx:=cosh(v);
 
