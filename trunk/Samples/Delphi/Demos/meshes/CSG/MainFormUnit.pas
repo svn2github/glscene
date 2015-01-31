@@ -3,11 +3,11 @@ unit MainFormUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, ComCtrls,  Dialogs,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Dialogs,
 
   //GLS
-  GLScene, GLVectorFileObjects, StdCtrls, GLBSP, GLMeshCSG,
+  GLScene, GLVectorFileObjects, Vcl.StdCtrls, GLBSP, GLMeshCSG,
   GLWin32Viewer, GLObjects, GLTexture, GLFile3DS,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState,
   GLVectorGeometry, GLUtils;

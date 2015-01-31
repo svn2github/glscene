@@ -38,7 +38,6 @@ object Form1: TForm1
     Height = 616
     Align = alLeft
     TabOrder = 1
-    ExplicitLeft = -6
     object Bevel1: TBevel
       Left = 1
       Top = 1

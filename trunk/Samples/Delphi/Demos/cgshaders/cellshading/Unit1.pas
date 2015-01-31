@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Jpeg, Controls, Forms,
-  Dialogs,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Imaging.Jpeg, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   //nVIDIA
   CgGL,
   //GLS

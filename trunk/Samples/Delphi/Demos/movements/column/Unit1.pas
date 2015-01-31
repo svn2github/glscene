@@ -3,7 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, Classes, Controls, SysUtils, ExtCtrls, StdCtrls,
+  System.Classes, System.SysUtils,
+  Vcl.Forms, Vcl.Controls, Vcl.ExtCtrls, Vcl.StdCtrls,
 
   //GLS
   GLScene, GLObjects, GLTexture,
@@ -24,9 +25,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-	 { Déclarations privées }
+	 { Private declarations }
   public
-	 { Déclarations publiques }
+	 { Public declarations }
   end;
 
 var

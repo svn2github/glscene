@@ -2,11 +2,9 @@ unit uMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  // VCL
-  Forms, StdCtrls, Classes, Controls, ExtCtrls, Jpeg,
+  System.Classes,
+  Vcl.Forms, Vcl.StdCtrls, Vcl.Controls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,

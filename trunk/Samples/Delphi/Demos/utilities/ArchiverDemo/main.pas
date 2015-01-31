@@ -3,11 +3,13 @@ unit Main;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, GLScene,
+  System.Classes, System.SysUtils,
+  Vcl.Forms, Vcl.Controls, Vcl.Graphics, Vcl.Dialogs,
   //GLS
-  GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer, GLSArchiveManager,
-  GLBaseClasses, GLVectorGeometry, GLFileMS3D, TGA, GLFileZLIB, GLCoordinates,
-  GLCrossPlatform, GLWin32Viewer, GLVectorTypes, GLUtils;
+  GLScene, GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer,
+  GLSArchiveManager, GLBaseClasses, GLVectorGeometry, GLFileMS3D,
+  TGA, GLFileZLIB, GLCoordinates, GLCrossPlatform, GLWin32Viewer,
+  GLVectorTypes, GLUtils;
 
 
 type

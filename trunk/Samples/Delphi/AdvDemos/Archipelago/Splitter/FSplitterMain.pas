@@ -3,16 +3,9 @@ unit FSplitterMain;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  ComCtrls;
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
+  Vcl.StdCtrls, Vcl.ComCtrls;
 
 type
   TForm1 = class(TForm)
@@ -41,7 +34,6 @@ implementation
 {$R *.dfm}
 
 uses
-  Jpeg,
   GLVectorLists;
 
 procedure TForm1.Button1Click(Sender: TObject);

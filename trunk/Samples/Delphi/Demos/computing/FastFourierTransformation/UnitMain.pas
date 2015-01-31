@@ -3,12 +3,13 @@ unit UnitMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, Types, Math,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Types, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
 
   //GLScene
   GLUtils,
-  GLFilePGM, GLGraphics, GLS_CUDA_Utility, GLSCUDADataAccess,
+  GLFilePGM, GLGraphics, GLSCUDAUtility, GLSCUDADataAccess,
   GLVectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;
 
 type

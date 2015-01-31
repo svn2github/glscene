@@ -3,8 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Jpeg, ExtCtrls, StdCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls, Vcl.StdCtrls,
 
   //GLS
   GLScene, GLTexture, GLCadencer,   GLFPSMovement, GLKeyboard,
@@ -73,8 +75,8 @@ begin
   map2.LoadFromFile('beer.3ds');
   map2.BuildOctree;
 
-  showCursor(false);
-  setcursorpos(screen.width div 2, screen.Height div 2);
+  ShowCursor(false);
+  SetCursorPos(screen.width div 2, screen.Height div 2);
 
   behav := GetFPSMovement(player);
   behav2 := GetFPSMovement(bot);

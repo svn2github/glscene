@@ -2,14 +2,13 @@ unit UMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  // VCL
-  SysUtils, Classes, Graphics, Controls, Forms, CheckLst, ExtCtrls, StdCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, CheckLst,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
-  GLTexture, GLCadencer, GLViewer, GLWin32Viewer, GLScene, GLPostEffects,
+  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
   GLGraph, GLUtils, GLContext, GLVectorGeometry, GLGeomObjects, GLCoordinates,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform, GLMaterial,
   GLBaseClasses,
@@ -18,7 +17,7 @@ uses
   GLSLPostBlurShader, CGPostTransformationShader,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG;
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS;
 
 type
   TPostShaderDemoForm = class(TForm)

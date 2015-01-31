@@ -3,17 +3,16 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, Jpeg,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
 
   //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
-  GLShadowVolume,
-
-  GLKeyboard, OpenGL1x, OpenGLTokens, GLVectorGeometry, GLGeometryBB,
-  GLVerletTypes, GLSpacePartition, GLCrossPlatform, GLMaterial, GLBaseClasses,
-  GLRenderContextInfo, GLContext, GLUtils, GLCoordinates;
+  GLShadowVolume, GLKeyboard, OpenGL1x, OpenGLTokens, GLVectorGeometry,
+  GLGeometryBB, GLVerletTypes, GLSpacePartition, GLCrossPlatform, GLMaterial,
+  GLBaseClasses, GLRenderContextInfo, GLContext, GLUtils, GLCoordinates;
 
 type
   TForm1 = class(TForm)
@@ -42,7 +41,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
-    procedure OctreeRendererRender(Sender : TObject; var rci: TRenderContextInfo);
+    procedure OctreeRendererRender(Sender: TObject; var rci: TRenderContextInfo);
   private
     { Private declarations }
   public
@@ -216,7 +215,7 @@ begin
   GLLightSource1.PointTo(GLActor1,YHMGVector);
 end;
 
-procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.OctreeRendererRender(Sender: TObject; var rci: TRenderContextInfo);
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
     glColor3f(r,g,b);

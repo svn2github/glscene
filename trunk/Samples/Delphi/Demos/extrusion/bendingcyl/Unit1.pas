@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
   //GLS
   GLScene, GLObjects, GLExtrusion, GLCadencer, GLVectorGeometry,
   GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;

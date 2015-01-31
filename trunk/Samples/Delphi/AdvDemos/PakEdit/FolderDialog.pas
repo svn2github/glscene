@@ -2,8 +2,8 @@ unit FolderDialog;
 
 interface
 
-uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
-  Buttons, ExtCtrls;
+uses Windows, System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Forms, Vcl.Controls, Vcl.StdCtrls, 
+  Buttons, Vcl.ExtCtrls;
 
 type
   TFDialog = class(TForm)

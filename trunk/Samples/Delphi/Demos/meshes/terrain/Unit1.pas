@@ -2,10 +2,9 @@ unit Unit1;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, System.Math,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Math,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.GIFImg, Vcl.Imaging.Jpeg,
 

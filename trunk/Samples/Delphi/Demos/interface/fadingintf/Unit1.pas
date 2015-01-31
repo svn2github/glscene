@@ -3,11 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, GLTexture, Classes, Controls,
-  ExtCtrls, SysUtils,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Forms, Vcl.Controls,
+  Vcl.ExtCtrls,
   //GLS
-  GLVectorGeometry, GLWin32Viewer, GLGeomObjects, GLColor,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene, GLObjects, GLTexture, GLVectorGeometry, GLWin32Viewer,
+  GLGeomObjects, GLColor, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -90,7 +92,7 @@ var
 begin
 	with Sender as TGLCustomSceneObject do begin
 		// if we are picked, target color is red, else it is black (no emission)
-		if Sender=currentPick then
+		if Sender = currentPick then
 			targetColor:=clrRed
 		else targetColor:=clrBlack;
 		// Set new color at 66% between current and target color

@@ -3,9 +3,9 @@ unit uDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs,
-  //GLScene
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  //GLS
   GLScene, GLVectorGeometry, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLSimpleNavigation, GLObjects, GLCoordinates, GLContext,
   GLSCUDA, GLSCUDACompiler,  GLSCUDAContext, GLSCUDAGraphics,

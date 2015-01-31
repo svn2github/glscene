@@ -10,8 +10,10 @@ unit Main;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StrUtils, Menus, ImgList, ExtCtrls, ComCtrls, Jpeg,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.StrUtils,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Menus, Vcl.ImgList, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
   // GLS
   GLSArchiveManager, GLFilePAK, GLFileZLIB, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLScene, GLSimpleNavigation, GLMaterial, GLVectorFileObjects,

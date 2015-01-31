@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Jpeg, StdCtrls, ExtCtrls, ComCtrls,
+  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //nVIDIA
   Cg, cgGL,
@@ -226,12 +226,12 @@ end;
 
 procedure TForm1.CBVertexProgramClick(Sender: TObject);
 begin
-   CgShader1.VertexProgram.Enabled:=(sender as TCheckBox).checked;
+   CgShader1.VertexProgram.Enabled:=(Sender as TCheckBox).checked;
 end;
 
 procedure TForm1.CBFragmentProgramClick(Sender: TObject);
 begin
-   CgShader1.FragmentProgram.Enabled:=(sender as TCheckBox).checked;
+   CgShader1.FragmentProgram.Enabled:=(Sender as TCheckBox).checked;
 end;
 
 procedure TForm1.ButtonApplyFPClick(Sender: TObject);

@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, Menus,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.ExtCtrls, Vcl.Menus,
   //GLS
   GLScene, GLHUDObjects, GLObjects, GLCadencer,
   GLBitmapFont, GLWin32Viewer, GLWindowsFont, GLWindows, GLGui,
@@ -64,7 +65,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure GLCanvasMouseUp(Sender: TObject;
       Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLCanvasRender(sender: TGLCustomControl; Bitmap: TBitmap);
+    procedure GLCanvasRender(Sender: TGLCustomControl; Bitmap: TBitmap);
     procedure FormCreate(Sender: TObject);
     procedure WhiteButtonButtonClick(Sender: TObject);
     procedure BlackButtonButtonClick(Sender: TObject);

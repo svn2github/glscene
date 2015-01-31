@@ -1977,6 +1977,10 @@ object Form1: TForm1
     object TabSheet2: TTabSheet
       Caption = 'Colors Settings'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 5
         Top = 6
@@ -2048,6 +2052,10 @@ object Form1: TForm1
     object TabSheet3: TTabSheet
       Caption = 'About'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label8: TLabel
         Left = 5
         Top = 3

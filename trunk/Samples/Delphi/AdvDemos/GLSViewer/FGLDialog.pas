@@ -3,8 +3,8 @@ unit FGLDialog;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls,
+  Windows, Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
 
   //GLScene
   FGLForm;

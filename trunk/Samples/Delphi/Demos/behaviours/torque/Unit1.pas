@@ -3,9 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Forms, GLObjects, GLScene, StdCtrls, ExtCtrls, Controls, Classes,
-  GLCadencer, GLWin32Viewer, GLPolyhedron, GLCrossPlatform, GLCoordinates,
-  GLBaseClasses;
+  System.Classes, System.SysUtils,
+  Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Controls,
+
+  GLObjects, GLScene, GLCadencer, GLWin32Viewer, GLPolyhedron,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses, GLBehaviours;
 
 type
   TForm1 = class(TForm)
@@ -47,8 +49,6 @@ var
 implementation
 
 {$R *.DFM}
-
-uses SysUtils, GLBehaviours;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

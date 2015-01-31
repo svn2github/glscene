@@ -3,10 +3,10 @@ unit uDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   //CUDA
-  GLSCUDACompiler, GLSCUDAContext, GLSCUDA, GLS_CUDA_Utility;
+  GLSCUDACompiler, GLSCUDAContext, GLSCUDA, GLSCUDAUtility;
 
 
 type

@@ -3,8 +3,9 @@ unit ExPolygon1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  //GLS
   GLScene, GLObjects, GLGeomObjects, GLTexture, GLMultiPolygon,
   GLVectorGeometry,  GLWin32Viewer, GLCrossPlatform, GLMaterial,
   GLCoordinates, GLBaseClasses;

@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms,  Classes, Controls, SysUtils, Graphics, StdCtrls,
-  ExtCtrls, ComCtrls, Math,
+  System.Classes, System.SysUtils, System.Math,
+  Vcl.Forms, Vcl.Controls, Vcl.Graphics, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //GLScene
   GLScene, GLObjects, GLWin32Viewer,  GLVectorGeometry,  GLSpaceText,
@@ -169,7 +170,7 @@ end;
 procedure TForm1.CollisionManager1Collision(Sender: TObject; object1,
   object2: TGLBaseSceneObject);
 begin
-   if Sender=CollisionManager1 then
+   if Sender = CollisionManager1 then
    begin
    CollisionDetected:=True;
    Memo1.Lines.Add(object1.Name+'('+StringNames[Ord(TGLBCollision(object1.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+')' +

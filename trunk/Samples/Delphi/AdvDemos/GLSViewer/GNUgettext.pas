@@ -100,7 +100,7 @@ uses
   CWString,
 {$endif}
 {$endif}
-  Classes, StrUtils, SysUtils, TypInfo;
+  System.Classes, System.StrUtils, System.SysUtils, System.TypInfo;
 
  (*****************************************************************************)
  (*                                                                           *)
@@ -2795,7 +2795,7 @@ begin
           SetLength(filename8bit, offset - fs.position);
           fs.ReadBuffer(filename8bit[1], offset - fs.position);
           filename := trim(string(filename8bit));
-          if PreferExternal and SysUtils.fileexists(basedirectory + filename) then
+          if PreferExternal and FileExists(basedirectory + filename) then
           begin
             // Disregard the internal version and use the external version instead
             FreeAndNil(fi);
@@ -3399,8 +3399,8 @@ initialization
   {$else}
   HookLoadResString := THook.Create(@system.LoadResString, @LoadResStringA);
   {$endif}
-  HookLoadStr := THook.Create(@SysUtils.LoadStr, @SysUtilsLoadStr);
-  HookFmtLoadStr := THook.Create(@SysUtils.FmtLoadStr, @SysUtilsFmtLoadStr);
+  HookLoadStr := THook.Create(@LoadStr, @SysUtilsLoadStr);
+  HookFmtLoadStr := THook.Create(@FmtLoadStr, @SysUtilsFmtLoadStr);
   param0 := lowercase(extractfilename(ParamStr(0)));
   if (param0 <> 'delphi32.exe') and (param0 <> 'kylix') and (param0 <> 'bds.exe') then
     HookIntoResourceStrings(AutoCreateHooks, False);

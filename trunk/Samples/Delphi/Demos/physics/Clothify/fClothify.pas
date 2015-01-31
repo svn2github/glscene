@@ -3,8 +3,9 @@ unit fClothify;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls, ComCtrls,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
 
   //GLS
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
@@ -81,7 +82,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TrackBar_FrictionChange(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure Button_OpenLoadFormClick(Sender: TObject);
     procedure Button_CancelLoadClick(Sender: TObject);
     procedure ComboBox_ShadowChange(Sender: TObject);
@@ -497,7 +498,7 @@ begin
       TVerletGlobalFrictionConstraint(VerletWorld.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
 
-procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TfrmClothify.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
     GL.Color3f(r,g,b);

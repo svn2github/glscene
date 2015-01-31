@@ -3,12 +3,12 @@ unit uDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls, Graphics,
+  System.SysUtils, System.Classes,
+  Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.Graphics,
   // GLScene
   GLScene, GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
   GLCoordinates, GLContext, GLGui, GLBitmapFont, GLWindowsFont, GLCustomShader,
-  GLRenderContextInfo, GLState,
-  GLMaterial, GLSLShader, GLWindows,
+  GLRenderContextInfo, GLState, GLMaterial, GLSLShader, GLWindows,
   // CUDA
   GLSCUDAContext, GLSCUDA, GLSCUDACompiler, GLSCUDAFFTPlan, GLSCUDAGraphics;
 

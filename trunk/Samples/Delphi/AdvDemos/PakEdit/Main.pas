@@ -8,8 +8,8 @@ unit Main;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StrUtils, Menus, ImgList, ExtCtrls, ComCtrls, GLVfsPAK;
+  Winapi.Windows, System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StrUtils, Vcl.Menus, Vcl.ImgList, Vcl.ExtCtrls, Vcl.ComCtrls, GLVfsPAK;
 
 type
   TForm1 = class(TForm)

@@ -3,12 +3,13 @@ unit Main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, StdCtrls, ComCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Imaging.JPeg,
 
   //GLS
   GLScene, GLGraph, GLObjects, GLTexture,
-  JPeg, GLGraphics, GLVectorTypes, GLVectorGeometry, GLHUDObjects,
+  GLGraphics, GLVectorTypes, GLVectorGeometry, GLHUDObjects,
   GLzBuffer, GLCadencer, GLAsyncTimer, GLWin32Viewer, GLTeapot,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLBehaviours, GLUtils;

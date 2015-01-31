@@ -2,21 +2,20 @@ unit uMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  // VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Vcl.Imaging.Jpeg,
 
-  // GLScene
+  // GLS
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
   GLVectorFileObjects, GLGraph, GLGeomObjects, GLVectorGeometry, GLSLBumpShader,
   GLCustomShader, GLSLShader, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLBaseClasses,
+  GLBaseClasses, GLUtils,
+
 
   // FileFormats
-  TGA, GLFileMS3D, GLFile3DS, JPEG, DDSImage, GLFileMD2, GLFileSMD;
+  TGA, GLFileMS3D, GLFile3DS, DDSImage, GLFileMD2, GLFileSMD;
 
 type
   TGLSLTestForm = class(TForm)
@@ -81,9 +80,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLUtils;
 
 procedure TGLSLTestForm.FormCreate(Sender: TObject);
 var

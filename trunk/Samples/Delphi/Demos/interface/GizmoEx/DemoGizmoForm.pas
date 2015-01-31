@@ -3,8 +3,9 @@ unit DemoGizmoForm;
 interface
 
 uses
-  SysUtils, Classes, Windows,
-  Controls,  Forms, StdCtrls, ExtCtrls, Buttons, ComCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls,
 
   // GLScene
   GLScene, GLCadencer, GLObjects,

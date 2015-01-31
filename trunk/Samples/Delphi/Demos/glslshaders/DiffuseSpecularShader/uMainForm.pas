@@ -2,12 +2,9 @@ unit uMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  // VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls,
+  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLGraph,
@@ -16,7 +13,7 @@ uses
   GLSimpleNavigation, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLUtils,
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, JPEG, DDSImage;
+  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
 
 type
   TGLSLTestForm = class(TForm)

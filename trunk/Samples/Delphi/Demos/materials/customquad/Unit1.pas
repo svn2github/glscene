@@ -3,7 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
+  //GLS
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
   GLCoordinates, GLBaseClasses, GLRenderContextInfo;
@@ -19,7 +21,7 @@ type
     DirectOpenGL1: TGLDirectOpenGL;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
-    procedure DirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations  }
@@ -34,7 +36,7 @@ implementation
 
 {$R *.DFM}
 
-uses OpenGLTokens, GLContext, GLState, JPeg, GLUtils;
+uses OpenGLTokens, GLContext, GLState, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -54,7 +56,7 @@ begin
    end;
 end;
 
-procedure TForm1.DirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.DirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 var
    material : TGLLibMaterial;
 begin

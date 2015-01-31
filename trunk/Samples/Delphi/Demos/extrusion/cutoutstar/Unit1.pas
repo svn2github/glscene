@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
 
   //GLS
   GLCadencer, GLScene, GLExtrusion, GLVectorGeometry, GLMultiPolygon,
@@ -48,7 +48,7 @@ begin
    with ExtrusionSolid.Contours do begin
       with Add.Nodes do for i:=0 to cSteps do begin
          r:=2+(i and 1)*2;
-         SinCos(i*c2PI/cSteps, y, x);
+         SinCosine(i*c2PI/cSteps, y, x);
          AddNode(x*r, y*r, 0);
       end;
       // add an empty contour for the square cutout (see progress event)
@@ -67,7 +67,7 @@ begin
    // At each frame, we drop the cutout and make a new.
    // Note that we could also have defined it once in the FormCreate and then moved
    // it around with the TGLNodes methods.
-   SinCos(newTime, 2, y, x);
+   SinCosine(newTime, 2, y, x);
    with ExtrusionSolid.Contours do begin
       Items[1].Free;
       with Add.Nodes do begin

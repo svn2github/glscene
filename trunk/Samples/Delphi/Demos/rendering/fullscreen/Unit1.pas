@@ -3,7 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, Controls, SysUtils, Classes, Graphics,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Forms, Vcl.Controls,
 
   //GLScene
   GLScene, GLObjects, GLTeapot, GLCanvas, GLCoordinates, GLCrossPlatform,
@@ -44,7 +45,7 @@ begin
    GLFullScreenViewer1.Active:=True;
    while GLFullScreenViewer1.Active do begin
       // Message queue is not operational, but there may still be some messages
-      Forms.Application.ProcessMessages;
+      Application.ProcessMessages;
       // Relinquish some of that CPU time
       Sleep(1);
       // Slowly rotate the teapot and the blue light

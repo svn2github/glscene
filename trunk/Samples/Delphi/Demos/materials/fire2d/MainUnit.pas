@@ -3,14 +3,14 @@ unit MainUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls, ComCtrls, GLAsyncTimer,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls, GLAsyncTimer,
 
   //Graphics 32
   GR32, GR32_OrdinalMaps, GR32_Image,
   //GLS
-  GLScene,
-  GLObjects, GLHUDObjects, GLWin32Viewer, GLCadencer,
+  GLScene, GLObjects, GLHUDObjects, GLWin32Viewer, GLCadencer,
   GLCoordinates, GLCrossPlatform, GLBaseClasses, OpenGLTokens, GLMaterial;
 
 type

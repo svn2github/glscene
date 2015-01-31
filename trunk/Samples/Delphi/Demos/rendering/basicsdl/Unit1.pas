@@ -3,7 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Forms, SysUtils, Classes, GLScene, GLObjects, GLSDLContext, GLSDL,
+  System.SysUtils, System.Classes,
+  Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
+  //GLS
+  GLScene, GLObjects, GLSDLContext, SDL,
   GLTeapot, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLColor;
 
 type
@@ -32,9 +35,7 @@ implementation
 
 uses
   GLContext,
-  Dialogs,
   GLTexture,
-  Jpeg,
   GLUtils;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
@@ -45,7 +46,7 @@ begin
    GLSDLViewer1.Render;
    while GLSDLViewer1.Active do begin
       // Message queue is not operational, but there may still be some messages
-      Forms.Application.ProcessMessages;
+      Application.ProcessMessages;
       // Relinquish some of that CPU time
       SDL_Delay(1);
       // Slowly rotate the teapot

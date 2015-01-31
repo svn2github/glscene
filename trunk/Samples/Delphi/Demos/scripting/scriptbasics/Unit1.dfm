@@ -58,7 +58,7 @@ object Form1: TForm1
       Lines.Strings = (
         'var ScriptObject : TGLBaseSceneObject;'
         ''
-        'procedure OnBeginProgram(Sender : TObject);'
+        'procedure OnBeginProgram(Sender: TObject);'
         'begin'
         '  ScriptObject:=nil;'
         '  if Sender is TGLBaseSceneObject then'
@@ -96,7 +96,7 @@ object Form1: TForm1
       Lines.Strings = (
         'var ScriptObject : TGLBaseSceneObject;'
         ''
-        'procedure OnBeginProgram(Sender : TObject);'
+        'procedure OnBeginProgram(Sender: TObject);'
         'begin'
         '  ScriptObject:=nil;'
         '  if Sender is TGLBaseSceneObject then'

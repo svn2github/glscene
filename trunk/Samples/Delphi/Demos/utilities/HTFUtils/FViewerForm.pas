@@ -3,9 +3,11 @@ unit FViewerForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ActnList, StdCtrls, ExtCtrls, ComCtrls, ImgList,
-  ToolWin, Menus, Actions,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Actions,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ActnList,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.ImgList,
+  Vcl.ToolWin, Vcl.Menus,
   //GR32
   GR32_Image, GR32,
   //GLS

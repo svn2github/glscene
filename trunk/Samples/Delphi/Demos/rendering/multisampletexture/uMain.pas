@@ -3,7 +3,9 @@ unit uMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCrossPlatform, GLCoordinates,

@@ -3,11 +3,11 @@ unit uDemo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   //GLS
   GLUtils,GLSCUDAContext, GLSCUDA, GLSCUDACompiler,  GLFilePGM,
-  GLS_CUDA_Utility, GLGraphics, GLTextureFormat;
+  GLSCUDAUtility, GLGraphics, GLTextureFormat;
 
 type
   TForm1 = class(TForm)

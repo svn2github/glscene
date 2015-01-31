@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Forms, GLScene, GLObjects, GLTexture, Classes, Controls, Dialogs,
+  System.Classes, Vcl.Controls, Vcl.Dialogs, Vcl.Forms,
   //GLS
+  GLScene, GLObjects, GLTexture,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform, GLCoordinates,
   GLBaseClasses;
 

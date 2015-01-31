@@ -3,8 +3,9 @@ unit fRagdoll;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ComCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Variants, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCadencer, ODEImport,

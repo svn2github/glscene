@@ -5,19 +5,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows,  Winapi.Messages,
-  System.SysUtils,  System.Classes, System.Math,
-  Vcl.Graphics,  Vcl.Controls,  Vcl.Forms,
-  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
 
   //GLScene
-  GLWin32Viewer,  GLCadencer,  GLTexture,  GLVectorTypes,  GLVectorGeometry, GLScene,
-  GLObjects,   GLTree,  TGA,  GLKeyboard,  GLVectorLists,  GLBitmapFont,  GLContext,
-  GLWindowsFont,  GLHUDObjects,  GLSkydome,  GLImposter,  GLParticleFX,
-  GLGraphics,  GLPersistentClasses,  OpenGLTokens,   XOpenGL, GLBaseClasses,
-  GLTextureCombiners, GLTextureFormat, GLMaterial,  GLCoordinates,  GLCrossPlatform,
-  GLTerrainRenderer,  GLHeightData, GLHeightTileFileHDS,
-  GLRenderContextInfo,   GLScreen,  GLState, GLUtils;
+  GLWin32Viewer, GLCadencer, GLTexture, GLVectorTypes, GLVectorGeometry, GLScene,
+  GLObjects, GLTree, TGA, GLKeyboard, GLVectorLists, GLBitmapFont, GLContext,
+  GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX,
+  GLGraphics, GLPersistentClasses, OpenGLTokens, XOpenGL, GLBaseClasses,
+  GLTextureCombiners, GLTextureFormat, GLMaterial, GLCoordinates, GLCrossPlatform,
+  GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS,
+  GLRenderContextInfo, GLScreen, GLState, GLUtils;
 
 type
   TForm1 = class(TForm)

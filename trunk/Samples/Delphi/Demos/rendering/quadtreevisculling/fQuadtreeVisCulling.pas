@@ -3,8 +3,10 @@ unit fQuadtreeVisCulling;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Jpeg, ExtCtrls, StdCtrls, ComCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
 
   //GLS
   GLScene, GLWin32Viewer, GLSkydome, GLObjects, GLKeyboard,

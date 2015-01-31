@@ -3,8 +3,8 @@ unit Frm_CompressionRatio;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, GLVfsPAK;
+  Windows, Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Dialogs, Vcl.StdCtrls, GLVfsPAK;
 
 type
   TFrmCompressionRatio = class(TForm)

@@ -3,8 +3,9 @@ unit ufrmMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //GLS
   GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene,
@@ -258,7 +259,7 @@ end;
 procedure TfrmMain.FormShow(Sender: TObject);
 begin
   aniBox.ItemIndex := 0;
-  aniBoxSelect(sender);
+  aniBoxSelect(Sender);
 end;
 
 procedure TfrmMain.GLCadencer1Progress(Sender: TObject; const deltaTime,

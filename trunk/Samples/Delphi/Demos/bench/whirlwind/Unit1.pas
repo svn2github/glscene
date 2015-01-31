@@ -3,7 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
 
   //GLS
@@ -54,7 +56,7 @@ begin
 	with particle do begin
 		alpha:=Random*2*PI;
 		r:=2*Random;
-      SinCos(alpha, r*r, sr, cr);
+      SinCosine(alpha, r*r, sr, cr);
 		Children[0].Position.SetPoint(sr, 3*r-3, cr);
 		GetOrCreateInertia(particle).TurnSpeed:=Random(30);
 		TGLCustomSceneObject(particle).TagFloat:=GLCadencer1.CurrentTime;

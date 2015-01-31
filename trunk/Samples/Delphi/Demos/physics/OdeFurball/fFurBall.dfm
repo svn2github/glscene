@@ -49,9 +49,6 @@ object frmFurBall: TfrmFurBall
     Height = 49
     Align = alTop
     TabOrder = 1
-    ExplicitLeft = 8
-    ExplicitTop = 48
-    ExplicitWidth = 593
     object Label1: TLabel
       Left = 327
       Top = 2

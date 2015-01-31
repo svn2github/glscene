@@ -3,8 +3,8 @@ unit FNavForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   //GR32
   GR32_Image, GR32, GR32_Layers,
   //GLS
@@ -33,7 +33,8 @@ implementation
 
 {$R *.dfm}
 
-uses FViewerForm;
+uses
+  FViewerForm;
 
 function TNavForm.Execute(htf : THeightTileFile) : Boolean;
 var

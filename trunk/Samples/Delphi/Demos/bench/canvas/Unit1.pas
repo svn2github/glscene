@@ -3,12 +3,13 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, ExtCtrls, StdCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
 
   //GLS
-  GLWin32Viewer, GLBitmapFont, GLWindowsFont, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLCanvas, GLTexture, GLRenderContextInfo;
+  GLScene, GLWin32Viewer, GLBitmapFont, GLWindowsFont, GLCoordinates,
+  GLCrossPlatform, GLBaseClasses, GLCanvas, GLTexture, GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
@@ -33,7 +34,7 @@ type
     procedure BUPointsClick(Sender: TObject);
     procedure BURectsClick(Sender: TObject);
     procedure BUTextOutClick(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure BUArcClick(Sender: TObject);
   private
     { Private declarations }
@@ -124,7 +125,7 @@ begin
    LAGDI.Caption:=Format('GDI: %.1f msec', [StopPrecisionTimer(t)*1000]);
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 var
    i, x, y : Integer;
    glc : TGLCanvas;

@@ -1,3 +1,6 @@
+{
+ Demo showing GLTrail object
+}
 program TrailDemo;
 
 uses

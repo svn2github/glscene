@@ -3,12 +3,12 @@ unit FMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
+  Winapi.Windows,
   System.SysUtils, System.Classes, System.IniFiles, System.Win.Registry,
-  System.Math,
+  System.Math, System.Actions,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  System.Actions, Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin, Vcl.ComCtrls,
-  Vcl.ExtDlgs, Vcl.ExtCtrls,
+  Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin,
+  Vcl.ComCtrls, Vcl.ExtDlgs, Vcl.ExtCtrls,
 
   //GLS
   GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, GLVectorGeometry,
@@ -206,11 +206,11 @@ type
          BackgroundColor : TColorVector;
          PassCount : Integer;
       public
-         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender: TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
    end;
 
-procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
+procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender: TObject);
 begin
    PassCount:=1;
    with rci.GLStates do

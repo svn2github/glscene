@@ -3,8 +3,10 @@ unit UPfxGallery;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  ExtCtrls, StdCtrls, JPeg,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
   //GLScene
   GLVectorGeometry, GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,

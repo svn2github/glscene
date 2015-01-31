@@ -3,8 +3,9 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Jpeg,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
 
   //GLS
   GLScene, GLObjects, GLWin32Viewer, GLWaterPlane,
@@ -38,7 +39,7 @@ type
     procedure GLUserShader1DoApply(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var color: TVector4f; var texPoint: TTexPoint);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
@@ -149,7 +150,7 @@ begin
    reflectionToggle:=False;   // toggle for environment sphere
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
 begin
    reflectionToggle:=True;    // toggle for pond/water plane
 end;

@@ -3,10 +3,12 @@ unit main;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, StdCtrls, ExtCtrls,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
   //GLS
-  GLObjects, GLWin32Viewer, dws2Comp,
+  GLObjects, GLWin32Viewer, dws2Comp, GLScene,
   dws2OpenGL1x, GLDWS2Objects, dws2Exprs, GLTexture, GLCadencer, GLAsyncTimer,
   GLBitmapFont, GLWindowsFont, GLHUDObjects,
   dws2VectorGeometry, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLScriptDWS2,

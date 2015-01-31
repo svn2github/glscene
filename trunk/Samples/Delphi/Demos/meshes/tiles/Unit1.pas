@@ -3,9 +3,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Math,
-  Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, Jpeg, StdCtrls,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
+  Vcl.Imaging.Jpeg, Vcl.StdCtrls,
   //GLS
   GLObjects, GLGraph, GLScene, GLWin32Viewer, GLVectorGeometry, GLTilePlane,
   GLTexture, GLCadencer, OpenGLTokens, GLContext, GLCrossPlatform, GLMaterial,
@@ -42,7 +43,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure GLDirectOpenGLRender(Sender : TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
     procedure BUPackClick(Sender: TObject);
     procedure CBShowGridClick(Sender: TObject);
     procedure CBSortByMaterialsClick(Sender: TObject);
@@ -154,7 +155,7 @@ begin
    GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLDirectOpenGLRender(Sender : TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
 begin
    // we clear the depth buffer, so that the grid is always in front of the
    // tile plane and won't Z-Fight with it

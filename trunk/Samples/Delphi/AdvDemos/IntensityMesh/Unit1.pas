@@ -3,7 +3,6 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ComCtrls, Vcl.StdCtrls,
   Vcl.ExtCtrls,

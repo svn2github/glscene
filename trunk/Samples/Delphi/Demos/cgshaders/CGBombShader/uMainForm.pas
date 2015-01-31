@@ -5,8 +5,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls, Jpeg,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ComCtrls,
+  Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLTexture, GLCadencer, GLSimpleNavigation,

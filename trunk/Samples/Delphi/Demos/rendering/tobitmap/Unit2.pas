@@ -3,7 +3,8 @@ unit Unit2;
 interface
 
 uses
-  Windows, Forms, Classes, Controls, ExtCtrls;
+  System.Classes,
+  Vcl.Forms, Vcl.Controls, Vcl.ExtCtrls;
 
 type
   TForm2 = class(TForm)

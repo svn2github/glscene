@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //nVIDIA
   Cg, cgGL,
@@ -67,7 +67,7 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
+    procedure CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -128,7 +128,7 @@ begin
 end;
 
 
-procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
+procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);
 var
   v : TVector;
   Param: TCgParameter;
@@ -164,12 +164,12 @@ end;
 
 procedure TForm1.CBVertexProgramClick(Sender: TObject);
 begin
-   CgShader1.VertexProgram.Enabled:=(sender as TCheckBox).checked;
+   CgShader1.VertexProgram.Enabled:=(Sender as TCheckBox).checked;
 end;
 
 procedure TForm1.CBFragmentProgramClick(Sender: TObject);
 begin
-   CgShader1.FragmentProgram.Enabled:=(sender as TCheckBox).checked;
+   CgShader1.FragmentProgram.Enabled:=(Sender as TCheckBox).checked;
 end;
 
 procedure TForm1.ButtonApplyFPClick(Sender: TObject);

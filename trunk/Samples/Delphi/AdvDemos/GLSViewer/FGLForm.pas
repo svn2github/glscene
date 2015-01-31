@@ -13,13 +13,12 @@ interface
 
 uses
   Windows,
+  System.SysUtils,
+  System.IniFiles,
   Vcl.Forms,
   Vcl.Graphics,
   Vcl.Menus,
-  Vcl.Actnlist,
-
-  SysUtils,
-  IniFiles;
+  Vcl.Actnlist;
 
 type
   TGLForm = class(TForm)

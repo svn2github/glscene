@@ -16,8 +16,10 @@ unit Unit2;
 interface
 
 uses
-  Windows, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
-  GLObjects, StdCtrls, GLTexture, GLCadencer, GLWin32Viewer, GLSpaceText,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls,
+  //GLS
+  GLScene, GLObjects, GLTexture, GLCadencer, GLWin32Viewer, GLSpaceText,
   GLGeomObjects, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLBehaviours;
 
 type

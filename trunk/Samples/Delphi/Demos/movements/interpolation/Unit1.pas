@@ -1,46 +1,33 @@
 unit Unit1;
 
-
-{ : Tweener interpolation demo.<p>
-
-  Original Tweener (caurina.transitions.Tweener) is a Class used to create tweenings
-  and other transitions via ActionScript code for projects built on the Flash platform.
-
-  Current unit is a demonstration project of the GLScene's delphi implementation of
-  the tweener library : AnimationUtils.pas
-
-  <b>History : </b><font size=-1><ul>
-  <li>11/10/12 - YP - Created by Yann Papouin
-  </ul>
-}
-
 interface
 
 uses
   Windows,
   Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Forms,
-  Dialogs,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Controls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Samples.Spin
+  //GLS
   GLScene,
   GLObjects,
   GLCoordinates,
   GLWin32Viewer,
   GLCrossPlatform,
-  BaseClasses,
+  GLBaseClasses,
   GLCadencer,
-  StdCtrls,
-  ExtCtrls,
-  AnimationUtils,
-  VectorGeometry,
+  GLAnimationUtils,
+  GLVectorGeometry,
   GLBitmapFont,
   GLWindowsFont,
-  Controls,
-  TypInfo,
-  Spin;
+  TypInfo;
 
 type
 

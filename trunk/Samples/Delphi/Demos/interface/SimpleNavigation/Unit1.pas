@@ -2,11 +2,9 @@ unit Unit1;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCadencer, GLSimpleNavigation,

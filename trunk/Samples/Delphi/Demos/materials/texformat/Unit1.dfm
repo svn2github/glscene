@@ -34,8 +34,6 @@ object Form1: TForm1
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
-    ExplicitLeft = 316
-    ExplicitHeight = 337
     object Label2: TLabel
       Left = 16
       Top = 100

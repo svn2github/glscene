@@ -3,8 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls,
-  Forms, Dialogs, ExtCtrls,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
   //GLS
   GLScene, GLHUDObjects, GLObjects, GLCadencer,
   GLBitmapFont, GLWin32Viewer, GLTeapot, GLCrossPlatform,
@@ -66,7 +66,9 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+   FormatSettings.DecimalSeparator :=',';
+   HUDTextFPS.Text := FloatToStr(-2.01);
+//   HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

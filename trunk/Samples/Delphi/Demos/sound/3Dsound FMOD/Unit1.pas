@@ -3,7 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Classes, Forms, ExtCtrls, ComCtrls, Controls, StdCtrls, SysUtils,
+  System.Classes, System.SysUtils, System.Math,
+  Vcl.Forms, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Controls, Vcl.StdCtrls,
 
   //GLScene
   GLCadencer, GLScene, GLObjects, GLSound, GLSMFMOD, GLWin32Viewer,

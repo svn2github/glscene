@@ -3,7 +3,6 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,  Vcl.ExtCtrls,
   Vcl.FileCtrl, Vcl.Imaging.Jpeg,
@@ -65,10 +64,6 @@ var
 implementation
 
 {$R *.dfm}
-
-{$IFNDEF VER130}
-{$WARN UNIT_PLATFORM OFF}
-{$ENDIF}
 
 uses
 // accurate movements left for later... or the astute reader

@@ -3,8 +3,10 @@ unit UnitM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Graphics, Controls, Forms, ExtCtrls, Classes,
-  Dialogs, StdCtrls, Jpeg,
+  Winapi.Windows,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
   GLScene, GLObjects, GLWin32Viewer, GLGeomObjects,

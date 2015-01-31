@@ -2,10 +2,10 @@ unit uMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
-  Windows, Classes, Graphics, Controls, Forms,  ExtCtrls, StdCtrls, SysUtils,
+  Winapi.Windows,
+  System.Classes, System.SysUtils,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls,
 
   // GLScene
   GLCadencer, GLWin32Viewer, GLKeyboard, GLVectorGeometry, GLGeomObjects,

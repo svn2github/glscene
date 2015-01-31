@@ -3,9 +3,11 @@ unit FMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, Actions, Math, FViewerForm,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Actions, System.Math,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ValEdit, 
+  Vcl.Grids, Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin, 
+  Vcl.ExtCtrls, Vcl.ActnList, Vcl.ImgList,
   //GLS
   GLHeightTileFile;
 
@@ -128,6 +130,9 @@ var
   MainForm: TMainForm;
 
 implementation
+
+uses
+  FViewerForm;
 
 {$R *.dfm}
 

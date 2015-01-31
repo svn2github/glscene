@@ -1,13 +1,12 @@
-// This demo is part of the GLSCene project
-// Advanced GLBlur demo
-// by Marcus Oblak
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Jpeg, ComCtrls, StdCtrls, ExtCtrls,
+//  Windows, Messages,
+  System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
+  Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls,
   //GLS
   GLWin32Viewer, GLScene, GLObjects, GLHUDObjects, GLGeomObjects, GLCadencer,
   GLBlur, GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,

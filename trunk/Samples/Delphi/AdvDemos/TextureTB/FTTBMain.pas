@@ -3,9 +3,10 @@ unit FTTBMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Actions, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ExtDlgs, StdCtrls, ComCtrls, ActnList, ToolWin,
-  Menus, ImgList, Jpeg,
+  Winapi.Windows,
+  System.SysUtils, System.Classes, System.Actions, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ExtDlgs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ActnList, 
+  Vcl.ToolWin, Vcl.Menus, Vcl.ImgList, Vcl.Imaging.Jpeg,
   //GLS
   GLObjects, GLHUDObjects, GLScene, GLWin32Viewer, TGA,
   GLCoordinates, GLCrossPlatform, GLBaseClasses,

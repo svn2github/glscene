@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 106
   BorderWidth = 3
   Caption = 'Bending Cylinder'
-  ClientHeight = 379
-  ClientWidth = 534
+  ClientHeight = 373
+  ClientWidth = 528
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,15 +19,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 534
-    Height = 379
+    Width = 528
+    Height = 373
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 150.438476562500000000
+    FieldOfView = 149.984252929687500000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 534
+    ExplicitHeight = 379
   end
   object CBSpline: TCheckBox
     Left = 112

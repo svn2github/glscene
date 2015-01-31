@@ -3,9 +3,9 @@ unit uMainForm;
 interface
 
 uses
-  // VCL
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls, Jpeg,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
+  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
 
   // GLScene
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,

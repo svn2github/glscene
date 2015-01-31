@@ -3,8 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, GLScene, GLObjects, GLTexture, GLHUDObjects,
+  System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
+  //GLS
+  GLScene, GLObjects, GLTexture, GLHUDObjects,
   GLCadencer, GLWin32Viewer, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type
@@ -46,7 +49,8 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg, GLTextureFormat, GLUtils;
+uses
+  GLTextureFormat, GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
