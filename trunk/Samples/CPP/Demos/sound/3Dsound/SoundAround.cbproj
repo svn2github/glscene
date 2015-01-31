@@ -65,7 +65,7 @@
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSS_FMOD_VCL.lib;GLSS_BASS_VCL.lib;GLSS_OpenAL.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime_VCL.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSS_FMOD_VCL.lib;GLSS_BASS_VCL.lib;GLSS_OpenAL_VCL.lib</AllPackageLibs>
         <ILINK_LibraryPath>D:\Library\GLScene\Samples\CPP\Demos\sound\3Dsound\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>
@@ -114,11 +114,12 @@
         <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <LinkPackageStatics>GLSS_OpenAL_VCL.lib</LinkPackageStatics>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <ILINK_LibraryPath>$(BDS)\lib\win32\release\;..\..\..\..\..\Source\lib\;C:\Library\GLScene\Source\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <Defines>_DEBUG;$(Defines)</Defines>
-        <LinkPackageImports>rtl.bpi;vcl.bpi;GLScene_RunTime_VCL.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi;GLSS_FMOD_VCL.bpi;GLSS_BASS_VCL.bpi;GLSS_OpenAL.bpi</LinkPackageImports>
+        <LinkPackageImports>rtl.bpi;vcl.bpi;GLScene_RunTime_VCL.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi;GLSS_FMOD_VCL.bpi;GLSS_BASS_VCL.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <Defines>_DEBUG;$(Defines)</Defines>

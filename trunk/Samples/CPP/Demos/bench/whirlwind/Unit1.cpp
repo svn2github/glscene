@@ -36,7 +36,7 @@ void __fastcall TForm1::GLParticles1ActivateParticle(TObject *Sender, TGLBaseSce
 
 	alpha = Random()*2*M_PI;
 	r = 2*Random();
-	SinCos(alpha, r*r, sr, cr);
+	SinCosine(alpha, r*r, sr, cr);
 	particle->Children[0]->Position->SetPoint(sr, 3*r-3, cr);
 	GetOrCreateInertia(particle)->TurnSpeed = Random(30);
 	particle->TagFloat = GLCadencer1->CurrentTime;

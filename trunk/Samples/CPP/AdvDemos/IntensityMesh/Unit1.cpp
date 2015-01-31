@@ -6,7 +6,6 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLBaseClasses"
 #pragma link "GLBitmapFont"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"

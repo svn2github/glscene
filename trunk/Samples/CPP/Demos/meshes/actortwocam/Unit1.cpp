@@ -20,7 +20,6 @@
 #pragma link "GLFile3DS"
 #pragma link "GLFileMD2"
 
-
 #pragma resource "*.dfm"
 TForm1 *Form1;
 

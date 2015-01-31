@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #include <tchar.h>
-#include <math.h>
+#include <System.Math.hpp>
 #pragma hdrstop
 
 #include "Unit1.h"
@@ -190,7 +190,7 @@ void __fastcall TForm1::ViewerMouseMove(TObject *Sender, TShiftState Shift, int 
           int Y)
 {
   if (Shift.Contains(ssRight) && Shift.Contains(ssLeft))
-	Camera->AdjustDistanceToTarget(Glvectorgeometry::Power(1.01, Y - my));
+	Camera->AdjustDistanceToTarget(Power(1.01, Y - my));
   else
   if (Shift.Contains(ssRight) || Shift.Contains(ssLeft))
 	Camera->MoveAroundTarget(my - Y, mx - X);
@@ -210,7 +210,7 @@ void __fastcall TForm1::Timer1Timer(TObject *Sender)
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled)
 {
-  Camera->AdjustDistanceToTarget(Glvectorgeometry::Power(1.1, WheelDelta / 120));
+  Camera->AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
 }
 //---------------------------------------------------------------------------
 

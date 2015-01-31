@@ -8,7 +8,6 @@
 #include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "GLCadencer"
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLTexture"

@@ -286,7 +286,7 @@ void __fastcall TForm1::TISoundTimer(TObject * Sender)
   {
     // wolf howl at some distance, at ground level
     wolfPos = GLCamera1->AbsolutePosition;
-    SinCos(random() * Glvectorgeometry::c2PI, 100 + random(1000), s, c);
+    SinCosine(random() * Glvectorgeometry::c2PI, 100 + random(1000), s, c);
 	wolfPos.X = wolfPos.X + c;
 	wolfPos.Z = wolfPos.Z + s;
 	wolfPos.Y = TerrainRenderer1->InterpolatedHeight(wolfPos);

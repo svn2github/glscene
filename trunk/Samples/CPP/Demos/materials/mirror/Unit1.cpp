@@ -120,7 +120,7 @@ void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int W
 		  TPoint &MousePos, bool &Handled)
 {
   GLCamera1->
-   AdjustDistanceToTarget(Power(1.1, (float)((float)WheelDelta / 120.0)));
+   AdjustDistanceToTarget(Power(1.1, (WheelDelta / 120.0)));
 }
 //---------------------------------------------------------------------------
 

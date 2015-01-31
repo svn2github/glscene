@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include "vfw_BCB.h"
 #include "GLAVIRecorder.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
@@ -12,6 +13,7 @@
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
+
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------

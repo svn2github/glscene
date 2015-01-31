@@ -39,7 +39,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	  for (i=0; i<cSteps; i++)
 	  {
 		 r =2+(i && 1)*2; //r :=2+(i and 1)*2;
-		 SinCos(i*(float)c2/cSteps, y, x);
+		 SinCosine(i*(float)c2/cSteps, y, x);
 		 ExtrusionSolid->Contours->Add()->Nodes->AddNode(x*r, y*r, 0);
 	  }
 	  // add an empty contour for the square cutout (see progress event)
@@ -58,7 +58,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaT
    // At each frame, we drop the cutout and make a new.
    // Note that we could also have defined it once in the FormCreate and then moved
    // it around with the TGLNodes methods.
-	SinCos(newTime, 2, y, x);
+	SinCosine(newTime, 2, y, x);
 	ExtrusionSolid->Contours->Items[1]->Free();
 	ExtrusionSolid->Contours->Add()->Nodes->AddNode(x-1, y-1, 0);
 	ExtrusionSolid->Contours->Add()->Nodes->AddNode(x+1, y-1, 0);

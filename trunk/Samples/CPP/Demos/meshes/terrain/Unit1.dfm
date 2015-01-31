@@ -14,6 +14,8 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnKeyPress = FormKeyPress
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer

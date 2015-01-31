@@ -12,6 +12,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.Jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLCadencer.hpp"
@@ -25,7 +26,6 @@
 #include "GLSkydome.hpp"
 #include "GLVectorFileObjects.hpp"
 #include "GLKeyboard.hpp"
-#include "Jpeg.hpp"
 #include "GLVectorGeometry.hpp"
 
 //---------------------------------------------------------------------------

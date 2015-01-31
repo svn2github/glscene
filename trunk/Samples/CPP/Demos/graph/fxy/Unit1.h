@@ -3,10 +3,11 @@
 #ifndef Unit1H
 #define Unit1H
 //---------------------------------------------------------------------------
-#include <Classes.hpp>
-#include <Controls.hpp>
-#include <StdCtrls.hpp>
-#include <Forms.hpp>
+#include <System.Classes.hpp>
+#include <System.Math.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
 #include "GLScene.hpp"
 
