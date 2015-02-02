@@ -291,7 +291,7 @@ begin
 	      Result[1]:=-u;
       end;
    end else if D<0 then begin // Casus irreducibilis: three real solutions
-	   phi:=c1div3*ArcCos(-q*RSqrt(-cb_p));
+	   phi:=c1div3*ArcCosine(-q*RSqrt(-cb_p));
 	   t:=2*Sqrt(-p);
       SetLength(Result, 3);
 	   Result[0]:= t*Cos(phi);

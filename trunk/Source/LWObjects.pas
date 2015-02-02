@@ -39,7 +39,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorGeometry;
+  System.Classes, System.Math,
+  GLVectorGeometry;
 
 type
 

@@ -317,7 +317,6 @@
         <DCCReference Include="..\Source\GLTextureFormat.pas"/>
         <DCCReference Include="..\Source\GLSRGBE.pas"/>
         <DCCReference Include="..\Source\GLSMWaveOut.pas"/>
-        <DCCReference Include="..\Source\GLSJPG.pas"/>
         <DCCReference Include="..\Source\GLSLanguage.pas"/>
         <DCCReference Include="..\Source\GLMultisampleImage.pas"/>
         <DCCReference Include="..\Source\GLSArchiveManager.pas"/>
@@ -349,7 +348,6 @@
         <DCCReference Include="..\Source\GLWindows.pas"/>
         <DCCReference Include="..\Source\GLWindowsFont.pas"/>
         <DCCReference Include="..\Source\HDRImage.pas"/>
-        <DCCReference Include="..\Source\LIBPNG.pas"/>
         <DCCReference Include="..\Source\LWObjects.pas"/>
         <DCCReference Include="..\Source\Q3BSP.pas"/>
         <DCCReference Include="..\Source\Q3MD3.pas"/>
@@ -368,8 +366,6 @@
         <DCCReference Include="..\Source\XOpenGL.pas"/>
         <DCCReference Include="..\Source\VRMLParser.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
-        <DCCReference Include="..\Source\GLSZLibEx.pas"/>
-        <DCCReference Include="..\Source\GLSZLibExApi.pas"/>
         <DCCReference Include="..\Source\GLPictureRegisteredFormats.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -392,6 +388,8 @@
                     <Source Name="MainSource">GLScene_RunTime_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLS_Computing_DesignTime_VCL.bpl">GLScene VCL GPU Computing</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLCg_DesignTime_VCL.bpl">GLScene VCL Cg Shaders</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k210.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp210.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k210.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>

@@ -234,7 +234,6 @@ contains
   GLTextureFormat in '..\Source\GLTextureFormat.pas',
   GLSRGBE in '..\Source\GLSRGBE.pas',
   GLSMWaveOut in '..\Source\GLSMWaveOut.pas',
-  GLSJPG in '..\Source\GLSJPG.pas',
   GLSLanguage in '..\Source\GLSLanguage.pas',
   GLMultisampleImage in '..\Source\GLMultisampleImage.pas',
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
@@ -266,7 +265,6 @@ contains
   GLWindows in '..\Source\GLWindows.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
   HDRImage in '..\Source\HDRImage.pas',
-  LIBPNG in '..\Source\LIBPNG.pas',
   LWObjects in '..\Source\LWObjects.pas',
   Q3BSP in '..\Source\Q3BSP.pas',
   Q3MD3 in '..\Source\Q3MD3.pas',
@@ -285,8 +283,6 @@ contains
   XOpenGL in '..\Source\XOpenGL.pas',
   VRMLParser in '..\Source\VRMLParser.pas',
   Utils3DS in '..\Source\Utils3DS.pas',
-  GLSZLibEx in '..\Source\GLSZLibEx.pas',
-  GLSZLibExApi in '..\Source\GLSZLibExApi.pas',
   GLPictureRegisteredFormats in '..\Source\GLPictureRegisteredFormats.pas';
 
 end.

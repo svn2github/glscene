@@ -33,7 +33,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.Math,
 
   GLScene, GLContext, GLVectorTypes, GLVectorGeometry,
   GLPersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
@@ -1190,7 +1190,7 @@ begin // inherited; exit;
     localCameraPos.V[1] / VectorLength(localCameraPos.V[0], localCameraPos.V[2]));
 
   // determine closest sample in corona
-  azimuthAngle := FastArcTan2(localCameraPos.V[2], localCameraPos.V[0]) + cPI;
+  azimuthAngle := FastArcTangent2(localCameraPos.V[2], localCameraPos.V[0]) + cPI;
   i := Round(azimuthAngle * bestCorona.Samples * cInv2PI);
   if i < 0 then
     i := 0

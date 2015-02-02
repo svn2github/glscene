@@ -351,7 +351,7 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.Math,
   VCL.Graphics,  VCL.Controls,
 
   // GLS
@@ -4033,7 +4033,7 @@ var
 begin
   FIsCalculating := True;
   try
-    angle := -DegToRadian(angle);
+    angle := -DegToRad(angle);
     rightVector := Right;
     FUp.Rotate(rightVector, angle);
     FUp.Normalize;
@@ -4515,7 +4515,7 @@ begin
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
     pitchNow := ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
+    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
     // into the new position
@@ -6042,7 +6042,7 @@ begin
           case FKeepFOVMode of
             ckmVerticalFOV:
             begin
-              ymax := FNearPlane * tan(FFOVY / 2);
+              ymax := FNearPlane * Tan(FFOVY / 2);
               xmax := ymax * AWidth / AHeight;
             end;
             ckmHorizontalFOV:

@@ -39,17 +39,10 @@ unit GLGeomObjects;
 interface
 
 uses
-  Classes,
-  GLScene,
-  GLVectorGeometry,
-  OpenGLTokens,
-  OpenGLAdapter,
-  GLContext,
-  GLObjects,
-  GLSilhouette,
-  GLVectorTypes,
-  GLGeometryBB,
-  GLRenderContextInfo;
+  System.Classes, System.Math,
+
+  GLScene, GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext,
+  GLObjects, GLSilhouette, GLVectorTypes, GLGeometryBB, GLRenderContextInfo;
 
 type
 
@@ -754,7 +747,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * arctan2(localIntPoint.V[0], localIntPoint.V[1]);
+          angle := 180 / pi * ArcTangent2(localIntPoint.V[0], localIntPoint.V[1]);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range

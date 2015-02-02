@@ -51,8 +51,11 @@ unit GLCameraController;
 interface
 
 uses
-  GLScene, Classes, SysUtils, Contnrs, GLVectorGeometry,
-  GLSmoothNavigator {$IFNDEF GLS_DELPHI},GLVectorTypes{$ENDIF};
+  System.Classes, System.SysUtils, System.Math, System.Contnrs,
+
+  //GLS
+  GLScene, GLVectorGeometry,
+  GLSmoothNavigator,GLVectorTypes;
 
 type
 
@@ -686,7 +689,7 @@ begin
   if FJobList.FController.FCamera.Parent <> nil then
     FFinalPos := FJobList.FController.FCamera.Parent.AbsoluteToLocal(FFinalPos);
 
-  FRotateSpeed := GLVectorGeometry.GetSafeTurnAngle(
+  FRotateSpeed := GetSafeTurnAngle(
     FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector, FTargetPosition,
     FJobList.FController.FCameraTarget.AbsolutePosition);
 

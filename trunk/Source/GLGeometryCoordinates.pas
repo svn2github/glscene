@@ -171,7 +171,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:single; var r,theta,z:single);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := arctan2(y,x);
+  theta := ArcTangent2(y,x);
   z := z1;
 end;
 // ----- Cartesian_Cylindrical -------------------------------------------------
@@ -180,7 +180,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:double; var r,theta,z:double);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := GLVectorGeometry.arctan2(y,x);
+  theta := ArcTangent2(y,x);
   z := z1;
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
@@ -275,17 +275,17 @@ procedure Cartesian_Spherical(const x,y,z:single; var r,theta,phi:single);
 
 begin
   r := sqrt((x*x)+(y*y)+(z*z));
-  theta := GLVectorGeometry.arctan2(y,x);
-  phi := GLVectorGeometry.arccos(z/r);
+  theta := ArcTangent2(y,x);
+  phi := ArcCosine(z/r);
 end;
 
 // Cartesian_Spherical
 //
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
 begin
-   r:=VectorLength(v);
-   theta:=ArcTan2(v.V[1], v.V[0]);
-   phi:=ArcCos(v.V[2]/r);
+   r := VectorLength(v);
+   theta := ArcTangent2(v.V[1], v.V[0]);
+   phi := ArcCosine(v.V[2]/r);
 end;
 
 // ----- Cartesian_Spherical ---------------------------------------------------
@@ -296,9 +296,9 @@ NB: Could be optimised by using jclmath.pas unit?
 procedure Cartesian_Spherical(const x,y,z:double; var r,theta,phi:double);
 
 begin
-  r := sqrt((x*x)+(y*y)+(z*z));
-  theta := GLVectorGeometry.arctan2(y,x);
-  phi := GLVectorGeometry.arccos(z/r);
+  r := Sqrt((x*x)+(y*y)+(z*z));
+  theta := ArcTangent2(y,x);
+  phi := ArcCosine(z/r);
 end;
 // ----- ProlateSpheroidal_Cartesian -------------------------------------------
 {** Convert Prolate-Spheroidal to Cartesian with no checks.

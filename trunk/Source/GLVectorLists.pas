@@ -63,8 +63,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-  //GLScene
+  System.Classes, System.SysUtils,
+  //GLS
   GLVectorTypes, GLVectorGeometry, GLPersistentClasses;
 
 type
@@ -89,7 +89,7 @@ type
   protected
     { Protected Declarations }
     //: The base list pointer (untyped)
-    FBaseList: GLVectorGeometry.PByteArray;
+    FBaseList: PByteArray;
     //: Must be defined by all subclasses in their constructor(s)
     FItemSize: Integer;
 

@@ -283,7 +283,7 @@ begin
 
   v1 := AffineVectorMake(v.V[0], v.V[1], 0);
   NormalizeVector(v1);
-  ang := GLVectorGeometry.arccos(VectorDotProduct(v, v1));
+  ang := ArcCos(VectorDotProduct(v, v1));
 
   rci.GLStates.PolygonMode := pmLines;
 

@@ -201,7 +201,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
+  System.Classes, System.SysUtils, System.Types, System.Math,
 
   GLScene, OpenGLTokens, GLVectorGeometry, GLTexture,
   GLMaterial, GLMesh, GLVectorLists, GLPersistentClasses, GLOctree, GLGeometryBB,
@@ -8773,9 +8773,9 @@ begin
     begin
       baseDelta := anim.EndFrame - anim.StartFrame;
       lerpFactor := anim.StartFrame + baseDelta * Ratio;
-      frameIndex1 := GLVectorGeometry.Trunc(lerpFactor);
+      frameIndex1 := Trunc(lerpFactor);
       frameIndex2 := frameIndex1 + 1;
-      lerpFactor := GLVectorGeometry.Frac(lerpFactor);
+      lerpFactor := Frac(lerpFactor);
     end;
     weight := 1;
     externalRotations := nil;

@@ -4,12 +4,13 @@
 {: GLFilePNG<p>
 
  <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-        <li>31/05/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>16/03/10 - Yar - Improved FPC compatibility
-        <li>05/03/10 - Yar - Creation
+    <li>02/02/15 - PW - Changed usage of LIBPNG with PngImage unit
+    <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+    <li>31/05/10 - Yar - Fixes for Linux x64
+    <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
+    <li>22/04/10 - Yar - Fixes after GLState revision
+    <li>16/03/10 - Yar - Improved FPC compatibility
+    <li>05/03/10 - Yar - Creation
    </ul><p>
 }
 unit GLFilePNG;
@@ -19,7 +20,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils, System.Math,
+  Vcl.Imaging.PngImage,
+  //GLS
   GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics,
   GLTextureFormat, GLApplicationFileIO;
 
@@ -44,9 +47,6 @@ type
   end;
 
 implementation
-
-uses
-  LIBPNG;
 
 resourcestring
   sLIBPNGerror = 'LIBPNG error';
@@ -96,6 +96,7 @@ end;
 //
 
 procedure TGLPNGImage.LoadFromStream(stream: TStream);
+(*
 var
   sig: array[0..7] of Byte;
   png_ptr: png_structp;
@@ -105,7 +106,9 @@ var
   rowPointers: array of PGLUbyte;
   ii: Integer;
   use16: Boolean;
+*)
 begin
+(*
   stream.Read(sig, 8);
 
   if _png_sig_cmp(@sig, 0, 8) <> 0 then
@@ -245,12 +248,14 @@ begin
   finally
     _png_destroy_read_struct(@png_ptr, @info_ptr, nil);
   end;
+*)
 end;
 
 // SaveToStream
 //
 
 procedure TGLPNGImage.SaveToStream(stream: TStream);
+(*
 var
   png_ptr: png_structp;
   info_ptr: png_infop;
@@ -259,7 +264,9 @@ var
   canSave: Boolean;
   rowPointers: array of PGLUbyte;
   ii: Integer;
+*)
 begin
+(*
   png_ptr := _png_create_write_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
 
   if not Assigned(png_ptr) then
@@ -317,6 +324,7 @@ begin
   finally
     _png_destroy_write_struct(@png_ptr, @info_ptr);
   end;
+*)
 end;
 
 // AssignFromTexture

@@ -769,9 +769,11 @@ const
               begin
               end
               else
+                (*
                 asm
                   nop
-                end    (* put breakpoint here to catch other entities *)
+                end    // put breakpoint here to catch other entities
+                *)
             end;
         else
           S := ReadLine;

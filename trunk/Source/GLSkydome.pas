@@ -46,18 +46,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
-  System.SysUtils,
+  System.Classes, System.SysUtils, System.Math,
   VCL.Graphics,
 
   // GLS
-  GLScene,
-  GLVectorGeometry,
-  GLGraphics,
-  GLCrossPlatform,
-  GLVectorTypes,
-  GLColor,
-  GLRenderContextInfo;
+  GLScene, GLVectorGeometry, GLGraphics, GLCrossPlatform,
+  GLVectorTypes, GLColor, GLRenderContextInfo;
 
 type
 
