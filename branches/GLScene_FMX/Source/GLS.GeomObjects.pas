@@ -750,7 +750,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * arctan2(localIntPoint.V[0], localIntPoint.V[1]);
+          angle := 180 / pi * ArcTangent2(localIntPoint.V[0], localIntPoint.V[1]);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range
@@ -2178,17 +2178,17 @@ begin
     jFact := 1 / FSides;
     if toSides in FParts then
     begin
-      Theta := DegToRad(FStartAngle) - ringDelta;
+      Theta := DegToRadian(FStartAngle) - ringDelta;
       for i := FRings downto 0 do
       begin
         SetLength(FMesh[i], FSides + 1);
         Theta1 := Theta + ringDelta;
-        SinCos(Theta1, sinTheta1, cosTheta1);
+        SinCosine(Theta1, sinTheta1, cosTheta1);
         Phi := 0;
         for j := FSides downto 0 do
         begin
           Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
+          SinCosine(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
 
           FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
@@ -2211,8 +2211,8 @@ begin
     if toStartDisk in FParts then
     begin
       SetLength(FMesh[MeshIndex], FSides + 1);
-      Theta1 := DegToRad(FStartAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStartAngle);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       if toSides in FParts then
       begin
@@ -2233,7 +2233,7 @@ begin
         for j := FSides downto 0 do
         begin
           Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
+          SinCosine(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
           FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, FMinorRadius * sinPhi);
@@ -2258,8 +2258,8 @@ begin
     if toStopDisk in FParts then
     begin
       SetLength(FMesh[MeshIndex], FSides + 1);
-      Theta1 := DegToRad(FStopAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStopAngle);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       if toSides in FParts then
       begin
@@ -2280,7 +2280,7 @@ begin
         for j := FSides downto 0 do
         begin
           Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
+          SinCosine(Phi, sinPhi, cosPhi);
           dist := FMajorRadius + FMinorRadius * cosPhi;
           FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, FMinorRadius * sinPhi);
@@ -2962,23 +2962,23 @@ begin
         begin
           if aaBottomArrow in Parts then
             StartOffset :=
-              RadToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius))
+              RadianToDeg(ArcTan(0.5 * fBottomArrowHeadHeight / fArcRadius))
           else
             StartOffset :=0;
           if aaTopArrow in Parts then
             StopOffset :=
-              RadToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius))
+              RadianToDeg(ArcTan(0.5 * fTopArrowHeadHeight / fArcRadius))
           else
             StopOffset :=0;
         end ;
       ahssIncluded:
         begin
           if aaBottomArrow in Parts then
-            StartOffset := RadToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius))
+            StartOffset := RadianToDeg(ArcTan(fBottomArrowHeadHeight / fArcRadius))
           else
             StartOffset :=0;
           if aaTopArrow in Parts then
-            StopOffset := RadToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius))
+            StopOffset := RadianToDeg(ArcTan(fTopArrowHeadHeight / fArcRadius))
           else
             StopOffset :=0;
         end ;
@@ -2993,17 +2993,17 @@ begin
     jFact := 1 / FSlices;
     if aaArc in FParts then
     begin
-      Theta := DegToRad(FStartAngle + StartOffset) - ringDelta;
+      Theta := DegToRadian(FStartAngle + StartOffset) - ringDelta;
       for i := FStacks downto 0 do
       begin
         SetLength(FMesh[i], FSlices + 1);
         Theta1 := Theta + ringDelta;
-        SinCos(Theta1, sinTheta1, cosTheta1);
+        SinCosine(Theta1, sinTheta1, cosTheta1);
         Phi := 0;
         for j := FSlices downto 0 do
         begin
           Phi := Phi + sideDelta;
-          SinCos(Phi, sinPhi, cosPhi);
+          SinCosine(Phi, sinPhi, cosPhi);
           dist := fArcRadius + Lerp(FTopRadius, FBottomRadius, i * iFact) * cosPhi;
 
           FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
@@ -3068,8 +3068,8 @@ begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
       SetLength(FMesh[MeshIndex + 1], FSlices + 1);
       SetLength(FMesh[MeshIndex + 2], FSlices + 1);
-      Theta1 := DegToRad(FStartAngle + StartOffset);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStartAngle + StartOffset);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
         -sinTheta1 * fArcRadius, 0);
@@ -3078,7 +3078,7 @@ begin
       for j := FSlices downto 0 do
       begin
         Phi := Phi + sideDelta;
-        SinCos(Phi, sinPhi, cosPhi);
+        SinCosine(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fBottomArrowHeadRadius * cosPhi;
 
         // Cap
@@ -3177,14 +3177,14 @@ begin
     else
     begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
-      Theta1 := DegToRad(FStartAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStartAngle);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       Phi := 0;
       for j := FSlices downto 0 do
       begin
         Phi := Phi + sideDelta;
-        SinCos(Phi, sinPhi, cosPhi);
+        SinCosine(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fBottomRadius * cosPhi;
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, FBottomRadius * sinPhi);
@@ -3235,8 +3235,8 @@ begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
       SetLength(FMesh[MeshIndex + 1], FSlices + 1);
       SetLength(FMesh[MeshIndex + 2], FSlices + 1);
-      Theta1 := DegToRad(FStopAngle - StopOffset);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStopAngle - StopOffset);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       ConeCenter.Position := Vector3fMake(cosTheta1 * fArcRadius,
         -sinTheta1 * fArcRadius, 0);
@@ -3245,7 +3245,7 @@ begin
       for j := FSlices downto 0 do
       begin
         Phi := Phi + sideDelta;
-        SinCos(Phi, sinPhi, cosPhi);
+        SinCosine(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fTopArrowHeadRadius * cosPhi;
 
         // Cap
@@ -3343,14 +3343,14 @@ begin
     else
     begin
       SetLength(FMesh[MeshIndex], FSlices + 1);
-      Theta1 := DegToRad(FStopAngle);
-      SinCos(Theta1, sinTheta1, cosTheta1);
+      Theta1 := DegToRadian(FStopAngle);
+      SinCosine(Theta1, sinTheta1, cosTheta1);
 
       Phi := 0;
       for j := FSlices downto 0 do
       begin
         Phi := Phi + sideDelta;
-        SinCos(Phi, sinPhi, cosPhi);
+        SinCosine(Phi, sinPhi, cosPhi);
         dist := fArcRadius + fTopRadius * cosPhi;
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, fTopRadius * sinPhi);
@@ -3457,7 +3457,7 @@ begin
   begin
     angle := ArcTan(FApexHeight / HBD);
     // angle of front plane with bottom plane
-    SinCos(angle, ASin, ACos);
+    SinCosine(angle, ASin, ACos);
     if fpFront in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, Sign * ASin);
@@ -3487,7 +3487,7 @@ begin
   if [fpLeft, fpRight] * FParts <> [] then
   begin
     angle := ArcTan(FApexHeight / HBW); // angle of side plane with bottom plane
-    SinCos(angle, ASin, ACos);
+    SinCosine(angle, ASin, ACos);
     if fpLeft in FParts then
     begin
       GL.Normal3f(-Sign * ASin, Sign * ACos, 0);

@@ -109,7 +109,7 @@ Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html}
 procedure Cylindrical_Cartesian(const r,theta,z1:single;var x,y,z:single);
 
 begin
-  GLS.VectorGeometry.sincos(theta,r,y,x);
+  SinCosine(theta,r,y,x);
   z := z1;
 end;
 // ----- Cylindrical_Cartesian -------------------------------------------------
@@ -118,7 +118,7 @@ Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html}
 procedure Cylindrical_Cartesian(const r,theta,z1:double;var x,y,z:double);
 
 begin
-  GLS.VectorGeometry.sincos(theta,r,y,x);
+  SinCosine(theta,r,y,x);
   z := z1;
 end;
 // ----- Cylindrical_Cartesian -------------------------------------------------
@@ -142,7 +142,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(theta,r,y,x);
+    SinCosine(theta,r,y,x);
     z := z1;
   end;
 end;
@@ -167,7 +167,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(theta,r,y,x);
+    SinCosine(theta,r,y,x);
     z := z1;
   end;
 end;
@@ -177,7 +177,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:single; var r,theta,z:single);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := GLS.VectorGeometry.arctan2(y,x);
+  theta := ArcTangent2(y,x);
   z := z1;
 end;
 // ----- Cartesian_Cylindrical -------------------------------------------------
@@ -186,7 +186,7 @@ procedure Cartesian_Cylindrical(const x,y,z1:double; var r,theta,z:double);
 
 begin
   r := sqrt(x*x+y*y);
-  theta := GLS.VectorGeometry.arctan2(y,x);
+  theta := ArcTangent2(y,x);
   z := z1;
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
@@ -198,8 +198,8 @@ var
   a : single;
 
 begin
-  GLS.VectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-  GLS.VectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+  SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+  SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
 {** Convert Spherical to Cartesian with no checks. Double version.
@@ -210,8 +210,8 @@ var
   a : double;
 
 begin
-  GLS.VectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-  GLS.VectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+  SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+  SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
 {** Convert Spherical to Cartesian with checks.
@@ -238,8 +238,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-    GLS.VectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+    SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+    SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
   end;
 end;
 // ----- Spherical_Cartesian ---------------------------------------------------
@@ -267,8 +267,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
-    GLS.VectorGeometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
+    SinCosine(phi,r,a,z);   // z = r*cos(phi), a=r*sin(phi)
+    SinCosine(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
   end;
 end;
 
@@ -281,17 +281,17 @@ procedure Cartesian_Spherical(const x,y,z:single; var r,theta,phi:single);
 
 begin
   r := sqrt((x*x)+(y*y)+(z*z));
-  theta := GLS.VectorGeometry.arctan2(y,x);
-  phi := GLS.VectorGeometry.arccos(z/r);
+  theta := ArcTangent2(y,x);
+  phi := ArcCosine(z/r);
 end;
 
 // Cartesian_Spherical
 //
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
 begin
-   r:=VectorLength(v);
-   theta:=ArcTan2(v.V[1], v.V[0]);
-   phi:=ArcCos(v.V[2]/r);
+   r := VectorLength(v);
+   theta := ArcTangent2(v.V[1], v.V[0]);
+   phi := ArcCosine(v.V[2]/r);
 end;
 
 // ----- Cartesian_Spherical ---------------------------------------------------
@@ -302,9 +302,9 @@ NB: Could be optimised by using jclmath.pas unit?
 procedure Cartesian_Spherical(const x,y,z:double; var r,theta,phi:double);
 
 begin
-  r := sqrt((x*x)+(y*y)+(z*z));
-  theta := GLS.VectorGeometry.arctan2(y,x);
-  phi := GLS.VectorGeometry.arccos(z/r);
+  r := Sqrt((x*x)+(y*y)+(z*z));
+  theta := ArcTangent2(y,x);
+  phi := ArcCosine(z/r);
 end;
 // ----- ProlateSpheroidal_Cartesian -------------------------------------------
 {** Convert Prolate-Spheroidal to Cartesian with no checks.
@@ -322,8 +322,8 @@ var
   sn,cs,snphi,csphi,shx,chx : single;
 
 begin
-  GLS.VectorGeometry.sincos(eta,a,sn,cs);
-  GLS.VectorGeometry.SinCos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
   shx:=sinh(xi);
   chx:=cosh(xi);
   x := sn*shx*csphi;   // x = a*sin(eta)*sinh(xi)*cos(phi)
@@ -346,8 +346,8 @@ var
   sn,cs,snphi,csphi,shx,chx : double;
 
 begin
-  GLS.VectorGeometry.sincos(eta,a,sn,cs);
-  GLS.VectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
   shx:=sinh(xi);
   chx:=cosh(xi);
   x := sn*shx*csphi;   // x = a*sin(eta)*sinh(xi)*cos(phi)
@@ -379,8 +379,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(eta,a,sn,cs);
-    GLS.VectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -415,8 +415,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.sincos(eta,a,sn,cs);
-    GLS.VectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -442,8 +442,8 @@ var
   sn,cs,snphi,csphi,shx,chx : single;
 
 begin
-  GLS.VectorGeometry.sincos(eta,a,sn,cs);
-  GLS.VectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
 
   shx:=sinh(xi);
   chx:=cosh(xi);
@@ -468,8 +468,8 @@ var
   sn,cs,snphi,csphi,shx,chx : double;
 
 begin
-  GLS.VectorGeometry.sincos(eta,a,sn,cs);
-  GLS.VectorGeometry.sincos(phi,snphi,csphi);
+  SinCosine(eta,a,sn,cs);
+  SinCosine(phi,snphi,csphi);
 
   shx:=sinh(xi);
   chx:=cosh(xi);
@@ -503,8 +503,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.SinCos(eta,a,sn,cs);
-    GLS.VectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -539,8 +539,8 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.SinCos(eta,a,sn,cs);
-    GLS.VectorGeometry.sincos(phi,snphi,csphi);
+    SinCosine(eta,a,sn,cs);
+    SinCosine(phi,snphi,csphi);
 
     shx:=sinh(xi);
     chx:=cosh(xi);
@@ -559,7 +559,7 @@ var
   cs,sn,shx,chx:single;
 
 begin
-  GLS.VectorGeometry.SinCos(u,sn,cs);
+  SinCosine(u,sn,cs);
   shx:=sinh(v);
   chx:=cosh(v);
 
@@ -576,7 +576,7 @@ var
   cs,sn,shx,chx:double;
 
 begin
-  GLS.VectorGeometry.SinCos(u,sn,cs);
+  SinCosine(u,sn,cs);
   shx:=sinh(v);
   chx:=cosh(v);
 
@@ -605,7 +605,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.SinCos(u,sn,cs);
+    SinCosine(u,sn,cs);
 
     shx:=sinh(v);
     chx:=cosh(v);
@@ -636,7 +636,7 @@ begin
 
   if (ierr = 0) then
   begin
-    GLS.VectorGeometry.SinCos(u,sn,cs);
+    SinCosine(u,sn,cs);
     shx:=sinh(v);
     chx:=cosh(v);
 

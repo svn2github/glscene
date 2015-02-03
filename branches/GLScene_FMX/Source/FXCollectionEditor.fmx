@@ -7,6 +7,9 @@ object XCollectionEditor: TXCollectionEditor
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnHide = FormHide
   DesignerMasterStyle = 0
   object ToolBar1: TToolBar
     Size.Width = 310.000000000000000000
@@ -61,6 +64,7 @@ object XCollectionEditor: TXCollectionEditor
     Size.Height = 411.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
+    OnChange = ListViewChange
   end
   object PMListView: TPopupMenu
     Left = 48

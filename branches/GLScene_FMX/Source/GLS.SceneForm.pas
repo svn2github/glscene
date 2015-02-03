@@ -416,8 +416,8 @@ begin
   RestoreDefaultMode;
   SendToBack;
   WindowState := TWindowState.wsNormal;
-  BorderStyle := TFmxFormBorderStyle.bsSingle;
-  FormStyle := TFormStyle.fsNormal;
+  BorderStyle := TFmxFormBorderStyle.Single;
+  FormStyle := TFormStyle.Normal;
   Left := (Screen.Width div 2) - (Width div 2);
   Top := (Screen.Height div 2) - (Height div 2);
 end;

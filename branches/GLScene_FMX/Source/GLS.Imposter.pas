@@ -1132,7 +1132,7 @@ begin
   FCoronaTangentLookup[Count - 1].minTan := 1e30;
   for i := 0 to Count - 2 do
   begin
-    boundary := Tan((0.5 * cPIdiv180) * (FCoronaTangentLookup[i].corona.Elevation
+    boundary := Tangent((0.5 * cPIdiv180) * (FCoronaTangentLookup[i].corona.Elevation
       + FCoronaTangentLookup[i + 1].corona.Elevation));
     FCoronaTangentLookup[i].maxTan := boundary;
     FCoronaTangentLookup[i + 1].minTan := boundary;
@@ -1190,7 +1190,7 @@ begin // inherited; exit;
     localCameraPos.V[1] / VectorLength(localCameraPos.V[0], localCameraPos.V[2]));
 
   // determine closest sample in corona
-  azimuthAngle := FastArcTan2(localCameraPos.V[2], localCameraPos.V[0]) + cPI;
+  azimuthAngle := FastArcTangent2(localCameraPos.V[2], localCameraPos.V[0]) + cPI;
   i := Round(azimuthAngle * bestCorona.Samples * cInv2PI);
   if i < 0 then
     i := 0

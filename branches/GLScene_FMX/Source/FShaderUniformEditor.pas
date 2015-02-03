@@ -144,10 +144,10 @@ begin
   AutoSetBox.ItemIndex := 0;
   TextureBox.ItemIndex := 0;
   SamplerBox.ItemIndex := 0;
-  RedGroup.ItemIndex := -1;
-  GreenGroup.ItemIndex := -1;
-  BlueGroup.ItemIndex := -1;
-  AlphaGroup.ItemIndex := -1;
+  RedGroup.Index := -1;
+  GreenGroup.Index := -1;
+  BlueGroup.Index := -1;
+  AlphaGroup.Index := -1;
 end;
 
 procedure TShaderUniformEditor.Execute;
@@ -193,10 +193,10 @@ begin
       SamplerBox.ItemIndex :=
         MaxInteger(SamplerBox.Items.IndexOf(IParam.SamplerName), 0);
       SV := IParam.GetTextureSwizzle;
-      RedGroup.ItemIndex := Ord(SV[0]);
-      GreenGroup.ItemIndex := Ord(SV[1]);
-      BlueGroup.ItemIndex := Ord(SV[2]);
-      AlphaGroup.ItemIndex := Ord(SV[3]);
+      RedGroup.Index := Ord(SV[0]);
+      GreenGroup.Index := Ord(SV[1]);
+      BlueGroup.Index := Ord(SV[2]);
+      AlphaGroup.Index := Ord(SV[3]);
     end
     else
     begin
@@ -205,10 +205,10 @@ begin
       FillUniformAutoSetMethodList(AutoSetBox.Items, IParam.GLSLType);
       AutoSetBox.ItemIndex :=
         MaxInteger(AutoSetBox.Items.IndexOf(IParam.AutoSetMethod), 0);
-      RedGroup.ItemIndex := -1;
-      GreenGroup.ItemIndex := -1;
-      BlueGroup.ItemIndex := -1;
-      AlphaGroup.ItemIndex := -1;
+      RedGroup.Index := -1;
+      GreenGroup.Index := -1;
+      BlueGroup.Index := -1;
+      AlphaGroup.Index := -1;
     end;
   end;
 end;
@@ -246,7 +246,7 @@ begin
     if FUniformList[LBUniforms.ItemIndex].GLSLSamplerType = GLSLSamplerUndefined then
       exit;
     SV := FUniformList[LBUniforms.ItemIndex].GetTextureSwizzle;
-    SV[TRadioGroup(Sender).Tag] := TGLTextureSwizzle(TRadioGroup(Sender).ItemIndex);
+    SV[TGroupBox(Sender).Tag] := TGLTextureSwizzle(TGroupBox(Sender).Index);
     FUniformList[LBUniforms.ItemIndex].SetTextureSwizzle(SV);
   end;
 end;

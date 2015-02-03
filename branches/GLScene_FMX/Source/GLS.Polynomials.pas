@@ -41,6 +41,7 @@ interface
 uses
   GLS.VectorGeometry;
 
+
 type
    TDoubleArray = array of Double;
 
@@ -212,9 +213,9 @@ end;
 function cbrt(const x : Double) : Double;
 begin
    if x>0 then
-      Result:=Power(x, c1div3)
+      Result:=PowerSingle(x, c1div3)
    else if x<0 then
-      Result:=-Power(-x, c1div3)
+      Result:=-PowerSingle(-x, c1div3)
    else Result:=0;
 end;
 
@@ -291,7 +292,7 @@ begin
 	      Result[1]:=-u;
       end;
    end else if D<0 then begin // Casus irreducibilis: three real solutions
-	   phi:=c1div3*ArcCos(-q*RSqrt(-cb_p));
+	   phi:=c1div3*ArcCosine(-q*RSqrt(-cb_p));
 	   t:=2*Sqrt(-p);
       SetLength(Result, 3);
 	   Result[0]:= t*Cos(phi);

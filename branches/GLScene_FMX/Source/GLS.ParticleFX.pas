@@ -73,7 +73,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
+  System.Classes, System.SysUtils, System.Types, System.Math,
 
   GLS.Scene, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.State,
   GLS.VectorTypes, GLS.PersistentClasses, GLS.VectorGeometry,

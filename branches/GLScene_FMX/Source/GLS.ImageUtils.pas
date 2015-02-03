@@ -36,12 +36,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils,
-  System.Classes,
-  GLS.CrossPlatform,
-  GLS.OpenGLTokens,
-  GLS.TextureFormat,
-  GLS.VectorGeometry;
+  System.SysUtils, System.Classes,  System.Math,
+
+  GLS.CrossPlatform, GLS.OpenGLTokens, GLS.TextureFormat, GLS.VectorGeometry;
 
 var
   vImageScaleFilterWidth: Integer = 5; // Relative sample radius for filtering

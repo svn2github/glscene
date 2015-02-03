@@ -26,6 +26,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.Math,
   GLS.VectorGeometry, GLS.VectorLists;
 
 type

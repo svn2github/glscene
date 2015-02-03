@@ -271,4 +271,19 @@ object GUISkinEditor: TGUISkinEditor
       Size.PlatformDefault = False
     end
   end
+  object GLCamera1: TCamera
+    AngleOfView = 45.000000000000000000
+    Position.Z = -5.000000000000000000
+    Width = 1.000000000000000000
+    Height = 1.000000000000000000
+    Depth = 1.000000000000000000
+  end
+  object GLPanel1: TPanel
+    HitTest = False
+    Size.Width = 256.000000000000000000
+    Size.Height = 256.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 6
+  end
 end

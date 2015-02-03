@@ -91,7 +91,7 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  System.Classes, System.SysUtils, System.SyncObjs, System.UITypes,
+  System.Classes, System.SysUtils, System.SyncObjs, System.UITypes, System.Math,
   FMX.Graphics,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,

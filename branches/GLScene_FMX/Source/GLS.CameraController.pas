@@ -51,7 +51,7 @@ unit GLS.CameraController;
 interface
 
 uses
-  System.Classes, System.SysUtils, Contnrs, 
+  System.Classes, System.SysUtils, System.Math, System.Contnrs,
 
   GLS.Scene, GLS.VectorGeometry,
   GLS.SmoothNavigator, GLS.VectorTypes;
@@ -688,7 +688,7 @@ begin
   if FJobList.FController.FCamera.Parent <> nil then
     FFinalPos := FJobList.FController.FCamera.Parent.AbsoluteToLocal(FFinalPos);
 
-  FRotateSpeed := GLS.VectorGeometry.GetSafeTurnAngle(
+  FRotateSpeed := GetSafeTurnAngle(
     FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector, FTargetPosition,
     FJobList.FController.FCameraTarget.AbsolutePosition);
 

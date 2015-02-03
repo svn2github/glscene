@@ -189,7 +189,6 @@
             <Form>GUISkinEditor</Form>
             <FormType>fmx</FormType>
         </DCCReference>
-        <DCCReference Include="..\Source\GLS.SceneFormDesign.pas"/>
         <DCCReference Include="..\Source\GLS.RegisterXCollection.pas"/>
         <DCCReference Include="..\Source\GLS.SceneEdit.pas">
             <Form>GLSceneEditorForm</Form>

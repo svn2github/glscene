@@ -2530,7 +2530,7 @@ begin
       TextureOffset.AsVector);
     if StoreTextureRotate then
       FTextureMatrix := MatrixMultiply(FTextureMatrix,
-        CreateRotationMatrixZ(DegToRad(FTextureRotate)));
+        CreateRotationMatrixZ(DegToRadian(FTextureRotate)));
   end;
   FTextureOverride := False;
   NotifyUsers;

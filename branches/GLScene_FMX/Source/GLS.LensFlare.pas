@@ -453,7 +453,7 @@ begin
   GL.Begin_(GL_LINES);
   for i := 0 to NumStreaks - 1 do
   begin
-    SinCos(StreakAngle * cPIdiv180 + a * i, f, s, c);
+    SinCosine(StreakAngle * cPIdiv180 + a * i, f, s, c);
     GL.Color4fv(StreaksGradient.FromColor.AsAddress);
     GL.Vertex3fv(@NullVector);
     GL.Color4fv(StreaksGradient.ToColor.AsAddress);

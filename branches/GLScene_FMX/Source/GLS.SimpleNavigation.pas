@@ -49,7 +49,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,  System.SysUtils, System.TypInfo,
+  System.Classes,  System.SysUtils, System.TypInfo, System.Math,
   FMX.Forms, FMX.Controls, FMX.ExtCtrls, FMX.Types,
 
   GLS.SceneForm, GLS.VectorGeometry, GLS.Scene,

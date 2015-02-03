@@ -25,8 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses 
-  System.SysUtils,
-  System.Classes,
+  System.SysUtils, System.Classes, System.Math,
   GLS.VectorFileObjects,
   LWObjects;
 

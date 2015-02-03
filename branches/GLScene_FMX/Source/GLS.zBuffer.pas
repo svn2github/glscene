@@ -457,12 +457,12 @@ begin
   MakeVector(hnorm, normal);
 
   MakeVector(hcVec, lb); //---Corner Vector---
-  ang1 := ArcTan2(Hnorm.V[0], Hnorm.V[2]);
+  ang1 := ArcTangent2(Hnorm.V[0], Hnorm.V[2]);
   SetVector(axs, 0, 1, 0);
   RotateVector(hnorm, axs, ang1);
   RotateVector(hcvec, axs, ang1);
 
-  ang2 := ArcTan2(Hnorm.V[1], Hnorm.V[2]);
+  ang2 := ArcTangent2(Hnorm.V[1], Hnorm.V[2]);
   SetVector(axs, 1, 0, 0);
   RotateVector(hcvec, axs, -ang2);
 
@@ -470,8 +470,8 @@ begin
   vw := Fwidth / 2;
   vh := Fheight / 2;
   scal := vw / hcvec.V[0];
-  SinCos(-ang1, s1, c1);
-  SinCos(-ang2, s2, c2);
+  SinCosine(-ang1, s1, c1);
+  SinCosine(-ang2, s2, c2);
   //------------------------------------------
   //--------------------2-----------------
   vec := self.FastScreenToVector(0, 1);

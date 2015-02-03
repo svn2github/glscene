@@ -368,8 +368,8 @@ begin
   SetVector(nvec, FTarget.x, FTarget.y, FTarget.z);
   len := VectorLength(nvec);
   NormalizeVector(nvec);
-  a := ArcCos(nvec.V[2]);
-  b := ArcTan2(nvec.V[0], nvec.V[1]);
+  a := ArcCosine(nvec.V[2]);
+  b := ArcTangent2(nvec.V[0], nvec.V[1]);
 
   N := 0;
   While (N < Maxpoints) do

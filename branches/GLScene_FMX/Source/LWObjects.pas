@@ -2181,7 +2181,7 @@ begin
       begin
         if Pnts.PntsInfo[PntIdx].pols[k] = PolyIdx then continue;
 
-        if ArcCos(VecDot(FPolsInfo[PolyIdx].norm,FPolsInfo[Pnts.PntsInfo[PntIdx].pols[k]].norm)) > sman then continue;
+        if ArcCosine(VecDot(FPolsInfo[PolyIdx].norm,FPolsInfo[Pnts.PntsInfo[PntIdx].pols[k]].norm)) > sman then continue;
 
         FPolsInfo[PolyIdx].vnorms[j-1]:=VecAdd(FPolsInfo[PolyIdx].vnorms[j-1],FPolsInfo[Pnts.PntsInfo[PntIdx].pols[k]].norm);
       end;

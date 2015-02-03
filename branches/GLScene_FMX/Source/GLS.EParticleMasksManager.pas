@@ -705,20 +705,20 @@ end;
 procedure TGLEParticleMasksManager.ApplyRotation(var Vec: TVector3f; Mask:
   TGLEParticleMask);
 begin
-  Vec := VectorRotateAroundX(Vec, DegToRad(Mask.FPitchAngle));
-  Vec := VectorRotateAroundY(Vec, DegToRad(Mask.FTurnAngle));
-  Vec := VectorRotateAroundZ(Vec, DegToRad(Mask.FRollAngle));
+  Vec := VectorRotateAroundX(Vec, DegToRadian(Mask.FPitchAngle));
+  Vec := VectorRotateAroundY(Vec, DegToRadian(Mask.FTurnAngle));
+  Vec := VectorRotateAroundZ(Vec, DegToRadian(Mask.FRollAngle));
 end;
 
 procedure TGLEParticleMasksManager.ApplyRotationTarget(var Vec: TVector3f; Mask:
   TGLEParticleMask; TargetObject: TGLBaseSceneObject);
 begin
 
-  Vec := VectorRotateAroundX(Vec, DegToRad(Mask.FPitchAngle +
+  Vec := VectorRotateAroundX(Vec, DegToRadian(Mask.FPitchAngle +
     TargetObject.Rotation.X));
-  Vec := VectorRotateAroundY(Vec, DegToRad(Mask.FTurnAngle +
+  Vec := VectorRotateAroundY(Vec, DegToRadian(Mask.FTurnAngle +
     TargetObject.Rotation.Y));
-  Vec := VectorRotateAroundZ(Vec, DegToRad(Mask.FRollAngle +
+  Vec := VectorRotateAroundZ(Vec, DegToRadian(Mask.FRollAngle +
     TargetObject.Rotation.Z));
 end;
 

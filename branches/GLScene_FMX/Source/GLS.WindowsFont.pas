@@ -92,7 +92,7 @@ type
     function FontTextureWidth: Integer;
     function FontTextureHeight: Integer;
 
-    procedure EnsureString(const s : UnicodeString); overload;
+    procedure EnsureString(const s : String); overload;
     procedure EnsureChars(const AStart, AEnd: widechar);
 
     property Glyphs;
@@ -201,10 +201,6 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
     buffer : array[0..2] of WideChar;
     p : PCharInfo;
     r : TGLRect;
-{$IFNDEF MSWINDOWS}
-    utfbuffer: array[0..5] of Char;
-    i: SizeUInt;
-{$ENDIF}
   begin
     buffer[1] := WideChar(#32);
     buffer[2] := WideChar(#0);
@@ -257,15 +253,10 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
           r.Bottom := py + PaddedHeight;
           buffer[0] := TileIndexToChar(n);
           // Draw the Char, the trailing space is to properly handle the italics.
-{$IFDEF MSWINDOWS}
           // credits to the Unicode version of SynEdit for this function call. GPL/MPL as GLScene
           { TODO : E2003 Undeclared identifier: 'Handle' }
           (*ExtTextOutW(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, buffer, 1, nil);*)
-{$ELSE}
-          ConvertUTF16ToUTF8(utfbuffer, 5, buffer, 1,  [toInvalidCharToSymbol], i);
-          LCLIntf.ExtTextOut(bitmap.Canvas.Handle, p.l, p.t, ETO_CLIPPED, @r, utfbuffer, i-1, nil);
-{$ENDIF}
-        end;
+       end;
         Inc(px, cw);
       end
       else
@@ -283,7 +274,6 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   begin
     Result.cx := 0;
     Result.cy := 0;
-{$IFDEF MSWINDOWS}
     GetTextExtentPoint32W(DC, Str, Count, Result);
     if not Win32PlatformIsUnicode then
     begin
@@ -293,10 +283,6 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
       else
         Result.cx := tm.tmAveCharWidth * Count;
     end;
-{$ELSE}
-    if ConvertUTF16ToUTF8(LString, 5, Str, Count,  [toInvalidCharToSymbol], i) = trNoError then
-      GetTextExtentPoint32(DC, LString, i-1, Result);
-{$ENDIF}
   end;
 
 var
@@ -310,11 +296,10 @@ begin
   bitmap := Glyphs.Bitmap;
 
   bitmap.Height      := 0;
-  {$IFDEF MSWINDOWS}
-   //due to lazarus doesn't properly support pixel formats
-     { TODO : E2129 Cannot assign to a read-only property }
+  //due to lazarus doesn't properly support pixel formats
+    { TODO : E2129 Cannot assign to a read-only property }
      (*bitmap.PixelFormat := TPixelFormat.RGBA; //in VCL glpf32bit;*)
-  {$ENDIF}
+
   with bitmap.Canvas do
   begin
     { TODO : E2129 Cannot assign to a read-only property }
@@ -430,7 +415,7 @@ end;
 //add characters to internal list
 procedure TGLWindowsBitmapFont.EnsureChars(const AStart, AEnd: widechar);
 var
-  c : widechar;
+  c : WideChar;
   ACharList : TIntegerList;
 begin
   ACharList := TIntegerList.Create;
@@ -441,13 +426,13 @@ begin
 end;
 
 //add characters to internal list
-procedure TGLWindowsBitmapFont.EnsureString(const s: UnicodeString);
+procedure TGLWindowsBitmapFont.EnsureString(const s: String);
 var
-  i : integer;
+  i : Integer;
   ACharList : TIntegerList;
 begin
   ACharList := TIntegerList.Create;
-  for i := 1 to length(s) do
+  for i := Low(s) to High(s) do
       ACharList.Add(integer(s[i]));
   SetList(ACharList);
   ACharList.Free;
@@ -474,9 +459,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
-{$IFDEF MSWINDOWS}
   Win32PlatformIsUnicode := (Win32Platform = VER_PLATFORM_WIN32_NT);
-{$ENDIF}
 
    // class registrations
   RegisterClasses([TGLWindowsBitmapFont]);

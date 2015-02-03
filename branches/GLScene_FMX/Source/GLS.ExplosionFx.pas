@@ -212,9 +212,9 @@ begin
       SetVector(Normal, VectorCrossProduct(v1, v2)); // use of procedure is faster: PhP
   // randomly rotate the normal vector so the faces are somewhat scattered
       case Random(3) of
-        0: RotateVector(Normal, XVector, DegToRad(45.0*Random));
-        1: RotateVector(Normal, YVector, DegToRad(45.0*Random));
-        2: RotateVector(Normal, ZVector, DegToRad(45.0*Random));
+        0: RotateVector(Normal, XVector, DegToRadian(45.0*Random));
+        1: RotateVector(Normal, YVector, DegToRadian(45.0*Random));
+        2: RotateVector(Normal, ZVector, DegToRadian(45.0*Random));
       end;
       NormalizeVector(Normal);
       FDirList.Add(Normal);
@@ -227,7 +227,7 @@ begin
     posi.V[2] := (p1.V[2] + p2.V[2] + p3.V[2]) / 3;
     FPosList.add(posi);
   // random rotation (in degrees)
-    FRotList.Add(DegToRad(3.0*Random), DegToRad(3.0*Random), DegToRad(3.0*Random));
+    FRotList.Add(DegToRadian(3.0*Random), DegToRadian(3.0*Random), DegToRadian(3.0*Random));
   end;
   // Dispose the struture of the mesh
   TGLBaseMesh(OwnerBaseSceneObject).MeshObjects.Clear;

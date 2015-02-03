@@ -260,7 +260,7 @@ Begin
     FCurrentHAngle :=  (TempVal-Floor(TempVal))*360;
   End;
 
-  Angle := DegToRad(Angle); {make it ready for Cos and Sin }
+  Angle := DegToRadian(Angle); {make it ready for Cos and Sin }
   If FUseVirtualUp Then
   Begin
     SetVector(U, VirtualUp.AsVector);
@@ -309,8 +309,8 @@ Begin
     FCurrentVAngle := (TempVal-Floor(TempVal))*360-180;
   End;
 
-  Angle := DegToRad(Angle); {make it ready for Cos and Sin }
-  SinCos(Angle,SinAngle,CosAngle);
+  Angle := DegToRadian(Angle); {make it ready for Cos and Sin }
+  SinCosine(Angle,SinAngle,CosAngle);
   Direction := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,CosAngle,SinAngle);
   MovingObject.Up.AsVector := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,SinAngle,CosAngle);
   MovingObject.Direction.AsVector := Direction;

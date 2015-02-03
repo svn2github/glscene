@@ -202,4 +202,13 @@ object ShaderMemoForm: TShaderMemoForm
     Size.PlatformDefault = False
     TabOrder = 2
   end
+  object GLSLMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    Position.X = 16.000000000000000000
+    Position.Y = 56.000000000000000000
+    Size.Width = 441.000000000000000000
+    Size.Height = 329.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+  end
 end

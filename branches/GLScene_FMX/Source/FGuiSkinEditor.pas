@@ -29,11 +29,13 @@ unit FGuiSkinEditor;
 interface
 
 uses
+  System.Messaging,
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Controls.Presentation, FMX.Edit,
 
-  GLS.Gui, GLS.Texture, GLS.BaseClasses, GLS.Material;
+  GLS.Gui, GLS.Texture, GLS.BaseClasses, GLS.Material, System.Math.Vectors,
+  FMX.Controls3D;
 
 type
   TGUISkinEditor = class(TForm)
@@ -64,6 +66,8 @@ type
     Label5: TLabel;
     EditWidth: TEdit;
     EditHeight: TEdit;
+    GLCamera1: TCamera;
+    GLPanel1: TPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -129,6 +133,8 @@ end;
 procedure TGUISkinEditor.FormCreate(Sender: TObject);
 begin
   //override original WndProc to capture image mouse leave message
+  //with FMX tools
+  (*
   FOriginalWndProc := ImgFull.WindowProc;
   imgFull.WindowProc := ImageWndProc;
 
@@ -160,6 +166,7 @@ begin
   panZoomImage.ParentBackground := False;
   panZoomImage.ParentBackground := True;
   panZoomImage.ParentBackground := False;
+ *)
 end;
 
 procedure TGUISkinEditor.FormDestroy(Sender: TObject);
@@ -179,8 +186,11 @@ begin
     TGLGuiLayout;
   Mat := GuiLayout.Material;
   GLPanel1.Visible := True;
+   { TODO : E2003 Undeclared identifier: 'GuiLayout' }
+   (*
   GLPanel1.GuiLayout := GuiLayout;
   GLPanel1.GuiLayoutName := (GuiComponent.GetOwner as TGLGuiComponent).Name;
+  *)
   Zoom := 1.0;
 
   if (Assigned(mat.MaterialLibrary)
@@ -192,17 +202,20 @@ begin
   end;
   Width := Mat.Texture.Image.Width;
   Height := Mat.Texture.Image.Height;
+   { TODO : E2003 Undeclared identifier }
+   (*
   WidthEdit.Text := IntToStr(Mat.Texture.Image.Width);
   HeightEdit.Text := IntToStr(Mat.Texture.Image.Height);
-
   GLPanel1.GuiLayout.Material.Assign(Mat);
-
+  *)
   Tex.Assign(mat.Texture);
-  imgPreview.Picture.Bitmap.Canvas.StretchDraw(imgPreview.ClientRect, (Tex.Image
-    as TGLPersistentImage).Picture.Graphic);
+   { TODO : E2003 Undeclared identifier }
+   (*
+  imgPreview.Bitmap.Canvas.StretchDraw(imgPreview.ClientRect, (Tex.Image
+    as TGLPersistentImage).Picture.Bitmap);
   PreviewWidth := (Tex.Image as TGLPersistentImage).Picture.Width;
   Previewheight := (Tex.Image as TGLPersistentImage).Picture.Height;
-
+  *)
   lbElements.Clear;
   for XC := 0 to TheGuiComponent.Count - 1 do
   begin

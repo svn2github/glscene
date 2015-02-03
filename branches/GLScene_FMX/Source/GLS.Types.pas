@@ -82,10 +82,10 @@ type
 
   TGLVector2D = record
     private
-      function Add(const AVector2D: TGLVector2D): TGLVector2D;
       function Norm: Single;
     public
       function Create(const AX, AY, AW : Single): TGLVector2D;
+      function Add(const AVector2D: TGLVector2D): TGLVector2D;
       function Length: Single;
     case Integer of
       0: (V: TGLVector2DType;);
@@ -96,10 +96,10 @@ type
 
   TGLVector3D = record
     private
-      function Add(const AVector3D: TGLVector3D): TGLVector3D;
       function Norm: Single;
     public
       function Create(const AX, AY, AZ, AW : Single): TGLVector3D;
+      function Add(const AVector3D: TGLVector3D): TGLVector3D;
       function Length: Single;
     case Integer of
       0: (V: TGLVector3DType;);

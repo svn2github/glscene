@@ -273,8 +273,12 @@ contains
   GLS.VectorFileObjects in '..\Source\GLS.VectorFileObjects.pas',
   GLS.DCEMisc in '..\Source\GLS.DCEMisc.pas',
   GLS.ArchiveManager in '..\Source\GLS.ArchiveManager.pas',
-  GLS.Canvas in '..\Source\GLS.Canvas.pas';
+  GLS.Canvas in '..\Source\GLS.Canvas.pas',
+  GLS.FilePNG in '..\Source\GLS.FilePNG.pas',
+  GLS.FileJPEG in '..\Source\GLS.FileJPEG.pas',
+  GLS.CameraController in '..\Source\GLS.CameraController.pas';
 
 end.
+
 
 

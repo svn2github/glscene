@@ -22,8 +22,8 @@ unit FMaterialEditorForm;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, System.Types, System.UITypes, 
-  System.Variants,
+  System.Classes, System.SysUtils, System.TypInfo, System.Types,
+  System.UITypes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, 
   FMX.TabControl, FMX.StdCtrls, FMX.Objects, FMX.ListBox,
   
@@ -136,6 +136,7 @@ end;
 
 procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
+  MPPreview.GLSViewer.BeginUpdate;
   with MPPreview.Material do
   begin
     FrontProperties := FEFront.FaceProperties;
@@ -144,7 +145,7 @@ begin
     BlendingMode := TBlendingMode(CBBlending.ItemIndex);
     PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
   end;
-  MPPreview.GLSceneViewer.Invalidate;
+  MPPreview.GLSViewer.EndUpdate;
 end;
 
 // ------------------------------------------------------------------

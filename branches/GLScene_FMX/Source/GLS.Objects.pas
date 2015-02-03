@@ -149,7 +149,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.Math,
 
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Scene, GLS.OpenGLAdapter,
   GLS.OpenGLTokens, GLS.VectorLists, GLS.CrossPlatform, GLS.Context,
@@ -3647,10 +3647,10 @@ begin
     rci.GLStates.InvertGLFrontFace;
 
   // common settings
-  AngTop := DegToRad(1.0 * FTop);
-  AngBottom := DegToRad(1.0 * FBottom);
-  AngStart := DegToRad(1.0 * FStart);
-  AngStop := DegToRad(1.0 * FStop);
+  AngTop := DegToRadian(1.0 * FTop);
+  AngBottom := DegToRadian(1.0 * FBottom);
+  AngStart := DegToRadian(1.0 * FStart);
+  AngStop := DegToRadian(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
   GL.PushMatrix;
@@ -3660,7 +3660,7 @@ begin
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    GLS.VectorGeometry.SinCos(AngTop, SinP, CosP);
+    SinCosine(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
@@ -3679,7 +3679,7 @@ begin
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
-      GLS.VectorGeometry.SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       v1.V[0] := CosP * SinT;
       v1.V[2] := CosP * CosT;
       if FTopCap = ctCenter then
@@ -3705,8 +3705,8 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    GLS.VectorGeometry.SinCos(Phi, SinP, CosP);
-    GLS.VectorGeometry.SinCos(Phi2, SinP2, CosP2);
+    SinCosine(Phi, SinP, CosP);
+    SinCosine(Phi2, SinP2, CosP2);
     v1.V[1] := SinP;
     V2.V[1] := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
@@ -3716,7 +3716,7 @@ begin
     for i := 0 to FSlices do
     begin
 
-      SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       v1.V[0] := CosP * SinT;
       V2.V[0] := CosP2 * SinT;
       v1.V[2] := CosP * CosT;
@@ -3754,7 +3754,7 @@ begin
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngBottom, SinP, CosP);
+    SinCosine(AngBottom, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, 1, 0)
@@ -3777,7 +3777,7 @@ begin
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
-      SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       v1.V[0] := CosP * SinT;
       v1.V[2] := CosP * CosT;
       if FBottomCap = ctCenter then
@@ -3853,7 +3853,7 @@ begin
   angleFactor := (2 * PI) / Segments;
   for i := 0 to Segments - 1 do
   begin
-    SinCos(i * angleFactor, FRadius, s, C);
+    SinCosine(i * angleFactor, FRadius, s, C);
     Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
     j := (i + 1) mod Segments;
     Result.Indices.Add(i, j);
@@ -4192,10 +4192,10 @@ begin
     rci.GLStates.InvertGLFrontFace;
 
   // common settings
-  AngTop := DegToRad(1.0 * FTop);
-  AngBottom := DegToRad(1.0 * FBottom);
-  AngStart := DegToRad(1.0 * FStart);
-  AngStop := DegToRad(1.0 * FStop);
+  AngTop := DegToRadian(1.0 * FTop);
+  AngBottom := DegToRadian(1.0 * FBottom);
+  AngStart := DegToRadian(1.0 * FStart);
+  AngStop := DegToRadian(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
 
@@ -4211,7 +4211,7 @@ begin
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngTop, SinP, CosP);
+    SinCosine(AngTop, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
@@ -4244,7 +4244,7 @@ begin
 
     for i := 0 to FSlices do
     begin
-      SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
       if (Sign(CosP) = 1) or (tc1 = xyCurve) then
         CosPc1 := Power(CosP, xyCurve)
@@ -4290,8 +4290,8 @@ begin
   for j := 0 to FStacks - 1 do
   begin
     Theta := AngStart;
-    SinCos(Phi, SinP, CosP);
-    SinCos(Phi2, SinP2, CosP2);
+    SinCosine(Phi, SinP, CosP);
+    SinCosine(Phi2, SinP2, CosP2);
 
     if (Sign(SinP) = 1) or (tc1 = xyCurve) then
       SinPc1 := Power(SinP, xyCurve)
@@ -4311,7 +4311,7 @@ begin
     GL.Begin_(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
-      SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
 
       if (Sign(CosP) = 1) or (tc1 = xyCurve) then
         CosPc1 := Power(CosP, xyCurve)
@@ -4383,7 +4383,7 @@ begin
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
     GL.Begin_(GL_TRIANGLE_FAN);
-    SinCos(AngBottom, SinP, CosP);
+    SinCosine(AngBottom, SinP, CosP);
     xgl.TexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, 1, 0)
@@ -4414,7 +4414,7 @@ begin
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
-      SinCos(Theta, SinT, CosT);
+      SinCosine(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
       if (Sign(CosP) = 1) or (tc1 = xyCurve) then
         CosPc1 := Power(CosP, xyCurve)
@@ -4509,7 +4509,7 @@ begin
   angleFactor := (2 * PI) / Segments;
   for i := 0 to Segments - 1 do
   begin
-    SinCos(i * angleFactor, FRadius, s, C);
+    SinCosine(i * angleFactor, FRadius, s, C);
     Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
     j := (i + 1) mod Segments;
     Result.Indices.Add(i, j);

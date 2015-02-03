@@ -3810,7 +3810,7 @@ begin
   vr := vr * 0.98;
   for i := 0 to cNbSegments - 1 do
   begin
-    SinCos(i * angleFactor, vr, s, c);
+    SinCosine(i * angleFactor, vr, s, c);
     Result.Vertices.AddPoint(VectorCombine(sVec, tVec, s, c));
     j := (i + 1) mod cNbSegments;
     Result.Indices.Add(i, j);
@@ -3994,17 +3994,17 @@ begin
   if rx <> 0 then
   begin
     SetVector(v, AbsoluteToLocal(XVector));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRad(rx)), resMat);
+    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRadian(rx)), resMat);
   end;
   if ry <> 0 then
   begin
     SetVector(v, AbsoluteToLocal(YVector));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRad(ry)), resMat);
+    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRadian(ry)), resMat);
   end;
   if rz <> 0 then
   begin
     SetVector(v, AbsoluteToLocal(ZVector));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRad(rz)), resMat);
+    resMat := MatrixMultiply(CreateRotationMatrix(v, -DegToRadian(rz)), resMat);
   end;
   Matrix := resMat;
 end;
@@ -4020,7 +4020,7 @@ begin
   if angle <> 0 then
   begin
     SetVector(v, AbsoluteToLocal(axis));
-    Matrix := MatrixMultiply(CreateRotationMatrix(v, DegToRad(angle)), Matrix);
+    Matrix := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(angle)), Matrix);
   end;
 end;
 
@@ -4034,13 +4034,13 @@ var
 begin
   FIsCalculating := True;
   try
-    angle := -DegToRad(angle);
+    angle := -DegToRadian(angle);
     rightVector := Right;
     FUp.Rotate(rightVector, angle);
     FUp.Normalize;
     FDirection.Rotate(rightVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X,
+    r := -RadianToDeg(ArcTangent2(FDirection.Y, VectorLength(FDirection.X,
       FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
@@ -4068,7 +4068,7 @@ begin
     begin
       FIsCalculating := True;
       try
-        diff := DegToRad(FRotation.X - AValue);
+        diff := DegToRadian(FRotation.X - AValue);
         rotMatrix := CreateRotationMatrix(Right, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -4094,7 +4094,7 @@ var
 begin
   FIsCalculating := True;
   try
-    angle := DegToRad(angle);
+    angle := DegToRadian(angle);
     directionVector := Direction.AsVector;
     FUp.Rotate(directionVector, angle);
     FUp.Normalize;
@@ -4103,7 +4103,7 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadToDeg(ArcTan2(rightVector.V[1],
+    r := -RadianToDeg(ArcTangent2(rightVector.V[1],
               VectorLength(rightVector.V[0],
                            rightVector.V[2])));
     if rightVector.V[0] < 0 then
@@ -4132,7 +4132,7 @@ begin
     begin
       FIsCalculating := True;
       try
-        diff := DegToRad(FRotation.Z - AValue);
+        diff := DegToRadian(FRotation.Z - AValue);
         rotMatrix := CreateRotationMatrix(Direction.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -4158,13 +4158,13 @@ var
 begin
   FIsCalculating := True;
   try
-    angle := DegToRad(angle);
+    angle := DegToRadian(angle);
     upVector := Up.AsVector;
     FUp.Rotate(upVector, angle);
     FUp.Normalize;
     FDirection.Rotate(upVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y,
+    r := -RadianToDeg(ArcTangent2(FDirection.X, VectorLength(FDirection.Y,
       FDirection.Z)));
     if FDirection.X < 0 then
       if FDirection.Y < 0 then
@@ -4192,7 +4192,7 @@ begin
     begin
       FIsCalculating := True;
       try
-        diff := DegToRad(FRotation.Y - AValue);
+        diff := DegToRadian(FRotation.Y - AValue);
         rotMatrix := CreateRotationMatrix(Up.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -4515,14 +4515,14 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + DegToRad(pitchDelta), 0 + 0.025, PI -
+    pitchNow := ArcCosine(VectorDotProduct(AbsoluteUp, normalT2C));
+    pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
     // into the new position
     SetVector(normalT2C, AbsoluteUp);
     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-    RotateVector(normalT2C, AbsoluteUp, -DegToRad(turnDelta));
+    RotateVector(normalT2C, AbsoluteUp, -DegToRadian(turnDelta));
     ScaleVector(normalT2C, dist);
     newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C,
       originalT2C));
@@ -4576,12 +4576,12 @@ begin
 
     // vector Target to camera
     T2C:= VectorSubtract(AbsolutePosition,anObject.AbsolutePosition);
-    RotateVector(T2C,rightvector,DegToRad(-PitchDelta));
-    RotateVector(T2C,upvector,DegToRad(-TurnDelta));
+    RotateVector(T2C,rightvector,DegToRadian(-PitchDelta));
+    RotateVector(T2C,upvector,DegToRadian(-TurnDelta));
     AbsolutePosition := VectorAdd(anObject.AbsolutePosition, T2C);
 
     //now update new up vector
-    RotateVector(upvector,rightvector,DegToRad(-PitchDelta));
+    RotateVector(upvector,rightvector,DegToRadian(-PitchDelta));
     AbsoluteUp := upvector;
     AbsoluteDirection := VectorSubtract(anObject.AbsolutePosition,AbsolutePosition);
 
@@ -6036,19 +6036,19 @@ begin
         begin
           if FFOVY < 0 then // Need Update FOV
           begin
-            FFOVY := ArcTan2(vTop - vBottom, 2 * FNearPlane) * 2;
-            FFOVX := ArcTan2(vRight - vLeft, 2 * FNearPlane) * 2;
+            FFOVY := ArcTangent2(vTop - vBottom, 2 * FNearPlane) * 2;
+            FFOVX := ArcTangent2(vRight - vLeft, 2 * FNearPlane) * 2;
           end;
 
           case FKeepFOVMode of
             ckmVerticalFOV:
             begin
-              ymax := FNearPlane * tan(FFOVY / 2);
+              ymax := FNearPlane * Tangent(FFOVY / 2);
               xmax := ymax * AWidth / AHeight;
             end;
             ckmHorizontalFOV:
             begin
-              xmax := FNearPlane * tan(FFOVX / 2);
+              xmax := FNearPlane * Tangent(FFOVX / 2);
               ymax := xmax * AHeight / AWidth;
             end;
             else
@@ -6094,7 +6094,7 @@ var
   rightVector, rotAxis: TVector;
   angle: Single;
 begin
-  angle := RadToDeg(arccos(VectorDotProduct(FUp.AsVector, YVector)));
+  angle := RadianToDeg(ArcCosine(VectorDotProduct(FUp.AsVector, YVector)));
   rotAxis := VectorCrossProduct(YHmgVector, FUp.AsVector);
   if (angle > 1) and (VectorLength(rotAxis) > 0) then
   begin
@@ -6103,7 +6103,7 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z := -RadToDeg(ArcTan2(RightVector.V[1],
+    FRotation.Z := -RadianToDeg(ArcTangent2(RightVector.V[1],
       VectorLength(RightVector.V[0], RightVector.V[2])));
   end;
 end;
@@ -6216,19 +6216,19 @@ begin
   if rollDelta <> 0 then
   begin
     SetVector(v, obj.AbsoluteToLocal(vDir));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRad(rollDelta)),
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(rollDelta)),
       resMat);
   end;
   if turnDelta <> 0 then
   begin
     SetVector(v, obj.AbsoluteToLocal(vUp));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRad(turnDelta)),
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(turnDelta)),
       resMat);
   end;
   if pitchDelta <> 0 then
   begin
     SetVector(v, obj.AbsoluteToLocal(vRight));
-    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRad(pitchDelta)),
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(pitchDelta)),
       resMat);
   end;
   obj.Matrix := resMat;
@@ -6498,7 +6498,7 @@ begin
   if FFocalLength = 0 then
     result := 0
   else
-    result := RadToDeg(2 * ArcTan2(AViewportDimension * 0.5, FFocalLength));
+    result := RadianToDeg(2 * ArcTangent2(AViewportDimension * 0.5, FFocalLength));
 end;
 
 // SetFieldOfView
@@ -6507,7 +6507,7 @@ end;
 procedure TGLCamera.SetFieldOfView(const AFieldOfView,
   AViewportDimension: single);
 begin
-  FocalLength := AViewportDimension / (2 * Tan(DegToRad(AFieldOfView / 2)));
+  FocalLength := AViewportDimension / (2 * Tangent(DegToRadian(AFieldOfView / 2)));
 end;
 
 // SetCameraStyle

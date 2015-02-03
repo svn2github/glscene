@@ -178,15 +178,15 @@ var
   I: Integer;
 begin
   for I := 0 to ListBox.Items.Count - 1 do
-    if ListBox.Selected then
+//    if ListBox.Selected then
     begin
       FManager.RemovePlugIn(I);
       ListBox.Items.Delete(I);
     end;
-  DescriptionMemo.Clear;
-  DateLabel.Caption := '???';
+  DescriptionMemo.Lines.Clear;
+  DateLabel.Text := '???';
   DateLabel.Enabled := False;
-  SizeLabel.Caption := '???';
+  SizeLabel.Text := '???';
   SizeLabel.Enabled := False;
   ServiceBox.ItemIndex := -1;
   ServiceBox.Enabled := False;

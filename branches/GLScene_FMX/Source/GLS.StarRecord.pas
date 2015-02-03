@@ -49,8 +49,8 @@ function StarRecordPositionYUp(const starRecord : TGLStarRecord) : TAffineVector
 var
    f : Single;
 begin
-   SinCos(starRecord.DEC*(0.01*PI/180), Result.V[1], f);
-   SinCos(starRecord.RA*(0.01*PI/180), f, Result.V[0], Result.V[2]);
+   SinCosine(starRecord.DEC*(0.01*PI/180), Result.V[1], f);
+   SinCosine(starRecord.RA*(0.01*PI/180), f, Result.V[0], Result.V[2]);
 end;
 
 // StarRecordPositionZUp
@@ -59,8 +59,8 @@ function StarRecordPositionZUp(const starRecord : TGLStarRecord) : TAffineVector
 var
    f : Single;
 begin
-   SinCos(starRecord.DEC*(0.01*PI/180), Result.V[2], f);
-   SinCos(starRecord.RA*(0.01*PI/180), f, Result.V[0], Result.V[1]);
+   SinCosine(starRecord.DEC*(0.01*PI/180), Result.V[2], f);
+   SinCosine(starRecord.RA*(0.01*PI/180), f, Result.V[0], Result.V[1]);
 end;
 
 // StarRecordColor
@@ -88,7 +88,7 @@ begin
    else Result:=cBV135;
    // compute transparency for VMag
    // the actual factor is 2.512, and not used here
-   Result.V[3]:=Power(1.2, -(starRecord.VMagnitude*0.1-bias));
+   Result.V[3]:=PowerSingle(1.2, -(starRecord.VMagnitude*0.1-bias));
 end;
 
 end.

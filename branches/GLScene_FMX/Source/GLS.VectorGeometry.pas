@@ -3,7 +3,7 @@
 //
 {: GLS.VectorGeometry<p>
 
-	 Base classes and structures for GLScene.<p>
+	Base classes and structures for GLScene.<p>
 
    Most common functions/procedures come in various flavours (using overloads),
    the naming convention is :<ul>
@@ -61,7 +61,7 @@
       <li>02/04/10 - Yar - Added inline directive for small vector operations
       <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
       <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
-                            use TRenderContextClippingInfo to GLS.RenderContextInfo.pas
+                            use TRenderContextClippingInfo to GLRenderContextInfo.pas
       <li>21/02/07 - DaStr - Bugfixed InterpolatePower() to support negative Base
                                and not round Exponent parameters
       <li>12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett
@@ -74,7 +74,7 @@
                              (thanks Biot!) (BugTracker ID = 1782005)
       <li>23/08/07 - LC - Added BarycentricCoordinates
       <li>16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in "VectorTypes.pas")
-      <li>25/03/07 - DaStr - Replaced Types with GLS.CrossPlatform for Delphi 5 support
+      <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
                              Added YZHmgVector and XZHmgVector
       <li>21/03/07 - DaStr - Bugfixed MatrixDecompose
                              (thanks Burkhard Carstens) (BugTrackerID=1684438)
@@ -218,7 +218,7 @@ unit GLS.VectorGeometry;
 interface
 
 uses
-  System.SysUtils, System.Math, System.Types,
+  System.SysUtils, System.Types, System.Math,
   GLS.VectorTypes;
 
 const
@@ -1330,19 +1330,19 @@ function LogN(Base, X: Extended): Extended;
 function IntPower(Base: Extended; Exponent: Integer): Extended;
 {: Raise base to any power.<p>
    For fractional exponents, or |exponents| > MaxInt, base must be > 0. }
-function Power(const Base, Exponent: Single): Single; overload;
+function PowerSingle(const Base, Exponent: Single): Single; overload;
 {: Raise base to an integer. }
-function Power(Base: Single; Exponent: Integer): Single; overload;
-function Power(Base: Single; Exponent: Int64): Single; overload;
+function PowerInteger(Base: Single; Exponent: Integer): Single; overload;
+function PowerInt64(Base: Single; Exponent: Int64): Single; overload;
 
 //------------------------------------------------------------------------------
 // Trigonometric functions
 //------------------------------------------------------------------------------
 
-function DegToRad(const Degrees: Extended): Extended; overload;
-function DegToRad(const Degrees: Single): Single; overload;
-function RadToDeg(const Radians: Extended): Extended; overload;
-function RadToDeg(const Radians: Single): Single; overload;
+function DegToRadian(const Degrees: Extended): Extended; overload;
+function DegToRadian(const Degrees: Single): Single; overload;
+function RadianToDeg(const Radians: Extended): Extended; overload;
+function RadianToDeg(const Radians: Single): Single; overload;
 
 //: Normalize to an angle in the [-PI; +PI] range
 function NormalizeAngle(angle : Single) : Single;
@@ -1351,23 +1351,23 @@ function NormalizeDegAngle(angle : Single) : Single;
 
 //: Calculates sine and cosine from the given angle Theta
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-procedure SinCos(const Theta: Extended; out Sin, Cos: Extended); overload;
+procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended); overload;
 {$ENDIF}
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Double; out Sin, Cos: Double); overload;
+procedure SinCosine(const Theta: Double; out Sin, Cos: Double); overload;
 //: Calculates sine and cosine from the given angle Theta
-procedure SinCos(const Theta: Single; out Sin, Cos: Single); overload;
+procedure SinCosine(const Theta: Single; out Sin, Cos: Single); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended); overload;
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Extended); overload;
 {$ENDIF}
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Double); overload;
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Double); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
-procedure SinCos(const theta, radius : Single; out Sin, Cos: Single); overload;
+procedure SinCosine(const theta, radius : Single; out Sin, Cos: Single); overload;
 
 {: Fills up the two given dynamic arrays with sin cos values.<p>
    start and stop angles must be given in degrees, the number of steps is
@@ -1375,18 +1375,18 @@ procedure SinCos(const theta, radius : Single; out Sin, Cos: Single); overload;
 procedure PrepareSinCosCache(var s, c : array of Single;
                              startAngle, stopAngle : Single);
 
-function  ArcCos(const X: Extended) : Extended; overload;
-function  ArcCos(const x : Single) : Single; overload;
-function  ArcSin(const X : Extended) : Extended; overload;
-function  ArcSin(const X : Single) : Single; overload;
-function  ArcTan2(const Y, X : Extended) : Extended; overload;
-function  ArcTan2(const Y, X : Single) : Single; overload;
-{: Fast ArcTan2 approximation, about 0.07 rads accuracy. }
-function  FastArcTan2(y, x : Single) : Single;
-function  Tan(const X : Extended) : Extended; overload;
-function  Tan(const X : Single) : Single; overload;
-function  CoTan(const X : Extended) : Extended; overload;
-function  CoTan(const X : Single) : Single; overload;
+function  ArcCosine(const X: Extended) : Extended; overload;
+function  ArcCosine(const x : Single) : Single; overload;
+function  ArcSine(const X : Extended) : Extended; overload;
+function  ArcSine(const X : Single) : Single; overload;
+function  ArcTangent2(const Y, X : Extended) : Extended; overload;
+function  ArcTangent2(const Y, X : Single) : Single; overload;
+{: Fast ArcTangent2 approximation, about 0.07 rads accuracy. }
+function  FastArcTangent2(y, x : Single) : Single;
+function  Tangent(const X : Extended) : Extended; overload;
+function  Tangent(const X : Single) : Single; overload;
+function  CoTangent(const X : Extended) : Extended; overload;
+function  CoTangent(const X : Single) : Single; overload;
 
 //------------------------------------------------------------------------------
 // Hyperbolic Trigonometric functions
@@ -3927,8 +3927,8 @@ begin
    if VectorEquals(v1, v2) then begin
       Result:=v1;
    end else begin
-      q1:=QuaternionFromEuler(GLS.VectorGeometry.RadToDeg(v1.X), GLS.VectorGeometry.RadToDeg(v1.Y), GLS.VectorGeometry.RadToDeg(v1.Z), eulZYX);
-      q2:=QuaternionFromEuler(GLS.VectorGeometry.RadToDeg(v2.X), GLS.VectorGeometry.RadToDeg(v2.Y), GLS.VectorGeometry.RadToDeg(v2.Z), eulZYX);
+      q1:=QuaternionFromEuler(RadToDeg(v1.X), RadToDeg(v1.Y), RadToDeg(v1.Z), eulZYX);
+      q2:=QuaternionFromEuler(RadToDeg(v2.X), RadToDeg(v2.Y), RadToDeg(v2.Z), eulZYX);
       qr:=QuaternionSlerp(q1, q2, t);
       m:=QuaternionToMatrix(qr);
       MatrixDecompose(m, tran);
@@ -4200,7 +4200,7 @@ end;
 //
 function InterpolateTan(const Start, Stop, Delta: Single): Single;
 begin
-  Result := (Stop - Start) * GLS.VectorGeometry.Tan(Delta * Pi / 4) + Start;
+  Result := (Stop - Start) * Tan(Delta * Pi / 4) + Start;
 end;
 
 // InterpolatePower
@@ -4212,10 +4212,10 @@ begin
   if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
   begin
     i := Round(DistortionDegree);
-    Result := (Stop - Start) * GLS.VectorGeometry.Power(Delta, i) + Start;
+    Result := (Stop - Start) * PowerInteger(Delta, i) + Start;
   end
   else
-    Result := (Stop - Start) * GLS.VectorGeometry.Power(Delta, DistortionDegree) + Start;
+    Result := (Stop - Start) * Power(Delta, DistortionDegree) + Start;
 end;
 
 // MatrixLerp
@@ -5725,7 +5725,7 @@ procedure RotateVectorAroundY(var v : TAffineVector; alpha : Single);
 var
    c, s, v0 : Single;
 begin
-   GLS.VectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    v0:=v.X;
    v.X:=c*v0+s*v.Z;
    v.Z:=c*v.Z-s*v0;
@@ -5737,7 +5737,7 @@ function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GLS.VectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.X:=v.X;
    Result.Y:=c*v.Y+s*v.Z;
    Result.Z:=c*v.Z-s*v.Y;
@@ -5749,7 +5749,7 @@ function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GLS.VectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.Y:=v.Y;
    Result.X:=c*v.X+s*v.Z;
    Result.Z:=c*v.Z-s*v.X;
@@ -5761,7 +5761,7 @@ procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : 
 var
    c, s : Single;
 begin
-   GLS.VectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    vr.Y:=v.Y;
    vr.X:=c*v.X+s*v.Z;
    vr.Z:=c*v.Z-s*v.X;
@@ -5773,7 +5773,7 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 var
    c, s : Single;
 begin
-   GLS.VectorGeometry.SinCos(alpha, s, c);
+   SinCosine(alpha, s, c);
    Result.X:=c*v.X+s*v.Y;
    Result.Y:=c*v.Y-s*v.X;
    Result.Z:=v.Z;
@@ -5965,7 +5965,7 @@ function CreateRotationMatrixX(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLS.VectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixX(s, c);
 end;
 
@@ -5988,7 +5988,7 @@ function CreateRotationMatrixY(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLS.VectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixY(s, c);
 end;
 
@@ -6011,7 +6011,7 @@ function CreateRotationMatrixZ(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
-   GLS.VectorGeometry.SinCos(angle, s, c);
+   SinCosine(angle, s, c);
    Result:=CreateRotationMatrixZ(s, c);
 end;
 
@@ -6022,7 +6022,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   GLS.VectorGeometry.SinCos(angle, sine, cosine);
+   SinCosine(angle, sine, cosine);
    one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6061,7 +6061,7 @@ var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   GLS.VectorGeometry.SinCos(Angle, Sine, Cosine);
+   SinCosine(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
    axis:=VectorNormalize(anAxis);
 
@@ -6851,13 +6851,13 @@ begin
   end;
 
   // now, get the rotations out, as described in the gem
-  Tran[ttRotateY]:=GLS.VectorGeometry.ArcSin(-row0.V[Z]);
+  Tran[ttRotateY] := ArcSine(-row0.V[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=GLS.VectorGeometry.ArcTan2(row1.V[Z], row2.V[Z]);
-    Tran[ttRotateZ]:=GLS.VectorGeometry.ArcTan2(row0.V[Y], row0.V[X]);
+    Tran[ttRotateX] := ArcTangent2(row1.V[Z], row2.V[Z]);
+    Tran[ttRotateZ] := ArcTangent2(row0.V[Y], row0.V[X]);
   end else begin
-    tran[ttRotateX]:=GLS.VectorGeometry.ArcTan2(row1.V[X], row1.V[Y]);
-    tran[ttRotateZ]:=0;
+    tran[ttRotateX] := ArcTangent2(row1.V[X], row1.V[Y]);
+    tran[ttRotateZ] := 0;
   end;
   // All done!
   Result:=True;
@@ -6913,7 +6913,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * GLS.VectorGeometry.Tan(GLS.VectorGeometry.DegToRad(FOV) * 0.5);
+  y:= ZNear * Tangent(DegToRadian(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -7899,7 +7899,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   GLS.VectorGeometry.SinCos(GLS.VectorGeometry.DegToRad(angle*cOneDotFive), s, c);
+   SinCosine(DegToRadian(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart.V[0]:=axis.V[0]*f;
@@ -8015,7 +8015,7 @@ asm
         FWAIT
 {$else}
 begin
-   Result:=LnXP1(X);
+   Result := System.Math.LnXP1(X);
 {$endif}
 end;
 
@@ -8023,35 +8023,35 @@ end;
 //
 function Log10(X: Extended): Extended;
 // Log.10(X):=Log.2(X) * Log.10(2)
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLDLG2     { Log base ten of 2 }
         FLD     X
         FYL2X
 {$else}
 begin
-   Result:=Log10(X);
+   Result := System.Math.Log10(X);
 {$endif}
 end;
 
 // Log2
 //
 function Log2(X: Extended): Extended;
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
         FYL2X
 {$else}
 begin
-   Result:=System.Math.Log2(X);
+   Result := System.Math.Log2(X);
 {$endif}
 end;
 
 // Log2
 //
 function Log2(X: Single): Single;
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
@@ -8059,7 +8059,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.Log2(X);
+   Result := System.Math.Log2(X);
    {$HINTS ON}
 {$endif}
 end;
@@ -8068,7 +8068,7 @@ end;
 //
 function LogN(Base, X: Extended): Extended;
 // Log.N(X):=Log.2(X) / Log.2(N)
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
@@ -8079,14 +8079,14 @@ asm
         FDIV
 {$else}
 begin
-   Result:=LogN(Base, X);
+   Result := System.Math.LogN(Base, X);
 {$endif}
 end;
 
 // IntPower
 //
 function IntPower(Base: Extended; Exponent: Integer) : Extended;
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -8115,7 +8115,7 @@ end;
 
 // Power
 //
-function Power(const base, exponent : Single) : Single;
+function PowerSingle(const base, exponent : Single) : Single;
 begin
    {$HINTS OFF}
    if exponent=cZero then
@@ -8128,10 +8128,11 @@ begin
    {$HINTS ON}
 end;
 
+
 // Power (int exponent)
 //
-function Power(Base: Single; Exponent: Integer): Single;
-{$IFNDEF GEOMETRY_NO_ASM}
+function PowerInteger(Base: Single; Exponent: Integer): Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -8160,23 +8161,23 @@ begin
 {$endif}
 end;
 
-function Power(Base: Single; Exponent: Int64): Single;
+function PowerInt64(Base: Single; Exponent: Int64): Single;
 begin
    {$HINTS OFF}
-   Result:= Power(Base, Exponent);
+   Result:= System.Math.Power(Base, Exponent);
    {$HINTS ON}
 end;
 
 // DegToRad (extended)
 //
-function DegToRad(const Degrees: Extended): Extended;
+function DegToRadian(const Degrees: Extended): Extended;
 begin
    Result:=Degrees*(PI/180);
 end;
 
-// DegToRad (single)
+// DegToRadian (single)
 //
-function DegToRad(const Degrees : Single) : Single;
+function DegToRadian(const Degrees : Single) : Single;
 //   Result:=Degrees * cPIdiv180;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
@@ -8190,20 +8191,20 @@ begin
 {$endif}
 end;
 
-// RadToDeg (extended)
+// RadianToDeg (extended)
 //
-function RadToDeg(const Radians: Extended): Extended;
+function RadianToDeg(const Radians: Extended): Extended;
 begin
    Result:=Radians*(180/PI);
 end;
 
 // RadToDeg (single)
 //
-function RadToDeg(const Radians: Single): Single;
+function RadianToDeg(const Radians: Single): Single;
 //   Result:=Radians * c180divPI;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
-{$IFNDEF GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EBP+8]
       FMUL c180divPI
@@ -8236,9 +8237,9 @@ begin
 end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-// SinCos (Extended)
+// SinCosine (Extended)
 //
-procedure SinCos(const Theta: Extended; out Sin, Cos: Extended);
+procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8255,9 +8256,9 @@ begin
 end;
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCos (Double)
+// SinCosine (Double)
 //
-procedure SinCos(const Theta: Double; out Sin, Cos: Double);
+procedure SinCosine(const Theta: Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8278,9 +8279,9 @@ begin
 {$endif}
 end;
 
-// SinCos (Single)
+// SinCosine (Single)
 //
-procedure SinCos(const Theta: Single; out Sin, Cos: Single);
+procedure SinCosine(const Theta: Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8302,9 +8303,9 @@ begin
 end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-// SinCos (Extended w radius)
+// SinCosine (Extended w radius)
 //
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Extended);
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8326,9 +8327,9 @@ begin
 end;
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCos (Double w radius)
+// SinCosine (Double w radius)
 //
-procedure SinCos(const theta, radius : Double; out Sin, Cos: Double);
+procedure SinCosine(const theta, radius : Double; out Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8349,9 +8350,9 @@ begin
 {$endif}
 end;
 
-// SinCos (Single w radius)
+// SinCosine (Single w radius)
 //
-procedure SinCos(const theta, radius : Single; out Sin, Cos: Single);
+procedure SinCosine(const theta, radius : Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -8390,7 +8391,7 @@ begin
       // Fast computation (approx 5.5x)
       alpha:=2*Sqr(Sin(d*0.5));
       beta:=Sin(d);
-      GLS.VectorGeometry.SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
+      SinCosine(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
       for i:=Low(s) to High(s)-1 do begin
          // Make use of the incremental formulae:
          // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
@@ -8402,20 +8403,20 @@ begin
       // Slower, but maintains precision when steps are small
       startAngle:=startAngle*cPIdiv180;
       for i:=Low(s) to High(s) do
-         GLS.VectorGeometry.SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+         SinCosine((i-Low(s))*d+startAngle, s[i], c[i]);
    end;
 end;
 
-// ArcCos (Extended)
+// ArcCosine (Extended)
 //
-function ArcCos(const x : Extended): Extended;
+function ArcCosine(const x : Extended): Extended;
 begin
-   Result:= GLS.VectorGeometry.ArcTan2(Sqrt(1 - Sqr(X)), X);
+   Result := ArcTangent2(Sqrt(1 - Sqr(X)), X);
 end;
 
-// ArcCos (Single)
+// ArcCosine (Single)
 //
-function ArcCos(const x : Single): Single;
+function ArcCosine(const x : Single): Single;
 // Result:=ArcTan2(Sqrt(c1 - X * X), X);
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8428,21 +8429,21 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.ArcCos(X);
+   Result := ArcCos(X);
    {$HINTS ON}
 {$endif}
 end;
 
-// ArcSin (Extended)
+// ArcSine (Extended)
 //
-function ArcSin(const x : Extended) : Extended;
+function ArcSine(const x : Extended) : Extended;
 begin
-   Result:= GLS.VectorGeometry.ArcTan2(X, Sqrt(1 - Sqr(X)))
+   Result:= ArcTangent2(X, Sqrt(1 - Sqr(X)))
 end;
 
-// ArcSin (Single)
+// ArcSine (Single)
 //
-function ArcSin(const x : Single) : Single;
+function ArcSine(const x : Single) : Single;
 //   Result:=ArcTan2(X, Sqrt(1 - X * X))
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8455,14 +8456,14 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.ArcSin(X);
+   Result := ArcSin(X);
    {$HINTS ON}
 {$endif}
 end;
 
-// ArcTan2 (Extended)
+// ArcTangent2 (Extended)
 //
-function ArcTan2(const y, x : Extended) : Extended;
+function ArcTangent2(const y, x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  Y
@@ -8470,13 +8471,13 @@ asm
       FPATAN
 {$else}
 begin
-   Result:=System.Math.ArcTan2(y, x);
+   Result := ArcTan2(y, x);
 {$endif}
 end;
 
-// ArcTan2 (Single)
+// ArcTangent2 (Single)
 //
-function ArcTan2(const y, x : Single) : Single;
+function ArcTangent2(const y, x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  Y
@@ -8485,14 +8486,14 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.ArcTan2(y, x);
+   Result := ArcTan2(y, x);
    {$HINTS ON}
 {$endif}
 end;
 
-// FastArcTan2
+// FastArcTangent2
 //
-function FastArcTan2(y, x : Single) : Single;
+function FastArcTangent2(y, x : Single) : Single;
 // accuracy of about 0.07 rads
 const
    cEpsilon : Single = 1e-10;
@@ -8511,9 +8512,9 @@ begin
    end;
 end;
 
-// Tan (Extended)
+// Tangent (Extended)
 //
-function Tan(const x : Extended) : Extended;
+function Tangent(const x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
@@ -8521,13 +8522,13 @@ asm
       FSTP ST(0)      // FPTAN pushes 1.0 after result
 {$else}
 begin
-   Result:=System.Math.Tan(x);
+   Result := Tan(x);
 {$endif}
 end;
 
-// Tan (Single)
+// Tangent (Single)
 //
-function Tan(const x : Single) : Single;
+function Tangent(const x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
@@ -8536,14 +8537,14 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.Tan(x);
+   Result := Tan(x);
    {$HINTS ON}
 {$endif}
 end;
 
-// CoTan (Extended)
+// CoTangent (Extended)
 //
-function CoTan(const x : Extended) : Extended;
+function CoTangent(const x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
@@ -8551,13 +8552,13 @@ asm
       FDIVRP
 {$else}
 begin
-   Result:=System.Math.CoTan(x);
+   Result := CoTan(x);
 {$endif}
 end;
 
-// CoTan (Single)
+// CoTangent (Single)
 //
-function CoTan(const x : Single) : Single;
+function CoTangent(const x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
@@ -8566,7 +8567,7 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result:=System.Math.CoTan(x);
+   Result := CoTan(x);
    {$HINTS ON}
 {$endif}
 end;
@@ -8808,7 +8809,7 @@ begin
    p.V[2]:=2*Random-1;
    t:=2*PI*Random;
    w:=Sqrt(1-p.V[2]*p.V[2]);
-   GLS.VectorGeometry.SinCos(t, w, p.V[1], p.V[0]);
+   SinCosine(t, w, p.V[1], p.V[0]);
 end;
 
 // RoundInt (single)
@@ -10231,10 +10232,10 @@ begin
    end;
 
    cost1:=1 - cost;
-   SetVector(Result, sqrt((M.X.X-cost) / cost1),
-                     sqrt((M.Y.Y-cost) / cost1),
-                     sqrt((M.Z.Z-cost) / cost1),
-                     GLS.VectorGeometry.arccos(cost));
+   SetVector(Result, Sqrt((M.X.X-cost) / cost1),
+                     Sqrt((M.Y.Y-cost) / cost1),
+                     Sqrt((M.Z.Z-cost) / cost1),
+                     ArcCosine(cost));
 
    sint:=2 * Sqrt(1 - cost * cost); // This is actually 2 Sin(t)
 
@@ -10282,19 +10283,19 @@ begin
       beta:=1 - t
    else begin
       // normal case
-      theta:=GLS.VectorGeometry.arccos(cost);
-      phi:=theta + Spin * Pi;
-      sint:=sin(theta);
-      beta:=sin(theta - t * phi) / sint;
-      t:=sin(t * phi) / sint;
+      theta := ArcCosine(cost);
+      phi := theta + Spin * Pi;
+      sint := Sin(theta);
+      beta := Sin(theta - t * phi) / sint;
+      t := Sin(t * phi) / sint;
    end;
 
    if bflip then t:=-t;
 
    // interpolate
-   Result.ImagPart.V[X]:=beta * QStart.ImagPart.V[X] + t * QEnd.ImagPart.V[X];
-   Result.ImagPart.V[Y]:=beta * QStart.ImagPart.V[Y] + t * QEnd.ImagPart.V[Y];
-   Result.ImagPart.V[Z]:=beta * QStart.ImagPart.V[Z] + t * QEnd.ImagPart.V[Z];
+   Result.ImagPart.V[X] := beta * QStart.ImagPart.V[X] + t * QEnd.ImagPart.V[X];
+   Result.ImagPart.V[Y] := beta * QStart.ImagPart.V[Y] + t * QEnd.ImagPart.V[Y];
+   Result.ImagPart.V[Z] := beta * QStart.ImagPart.V[Z] + t * QEnd.ImagPart.V[Z];
    Result.RealPart:=beta * QStart.RealPart + t * QEnd.RealPart;
 end;
 
@@ -10327,10 +10328,10 @@ begin
    end;
    // calculate coefficients
    if ((1.0-cosom)>EPSILON2) then begin // standard case (slerp)
-      omega:=GLS.VectorGeometry.ArcCos(cosom);
-      sinom:=1/Sin(omega);
-      scale0:=Sin((1.0-t)*omega)*sinom;
-      scale1:=Sin(t*omega)*sinom;
+      omega := ArcCosine(cosom);
+      sinom := 1/Sin(omega);
+      scale0 := Sin((1.0-t)*omega)*sinom;
+      scale1 := Sin(t*omega)*sinom;
    end else begin // "from" and "to" quaternions are very close
 	          //  ... so we can do a linear interpolation
       scale0:=1.0-t;
@@ -12161,8 +12162,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result.X := GLS.VectorGeometry.RadToDeg(-pitchangledif);
-  Result.Y := GLS.VectorGeometry.RadToDeg(turnangledif);
+  Result.X := RadianToDeg(-pitchangledif);
+  Result.Y := RadianToDeg(turnangledif);
 end;
 
 function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
@@ -12245,8 +12246,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result.X := GLS.VectorGeometry.RadToDeg(-pitchangledif);
-  Result.Y := GLS.VectorGeometry.RadToDeg(turnangledif);
+  Result.X := RadianToDeg(-pitchangledif);
+  Result.Y := RadianToDeg(turnangledif);
 end;
 
 function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
@@ -12270,14 +12271,14 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := GLS.VectorGeometry.ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
-    pitchNow := ClampValue(pitchNow + GLS.VectorGeometry.DegToRad(pitchDelta), 0 + 0.025, PI -
+    pitchNow := ArcCosine(VectorDotProduct(AMovingObjectUp, normalT2C));
+    pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
     // into the new position
     SetVector(normalT2C, AMovingObjectUp);
     RotateVector(normalT2C, normalCameraRight, -pitchNow);
-    RotateVector(normalT2C, AMovingObjectUp, -GLS.VectorGeometry.DegToRad(turnDelta));
+    RotateVector(normalT2C, AMovingObjectUp, -DegToRadian(turnDelta));
     ScaleVector(normalT2C, dist);
     Result := VectorAdd(AMovingObjectPosition, VectorSubtract(normalT2C,
       originalT2C));
@@ -12286,14 +12287,14 @@ end;
 {: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single;
 begin
-  Result := GLS.VectorGeometry.ArcCos(VectorAngleCosine(
+  Result := ArcCosine(VectorAngleCosine(
     VectorNormalize(VectorSubtract(A, ACenterPoint)),
     VectorNormalize(VectorSubtract(B, ACenterPoint))));
 end;
 {: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single;
 begin
-  Result := GLS.VectorGeometry.ArcCos(VectorAngleCosine(
+  Result := ArcCosine(VectorAngleCosine(
     VectorNormalize(VectorSubtract(A, ACenterPoint)),
     VectorNormalize(VectorSubtract(B, ACenterPoint))));
 end;

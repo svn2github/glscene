@@ -2614,20 +2614,20 @@ begin
           begin
             if Rotation[i].V[0] <> 0 then
             begin
-              SinCos(Rotation[i].V[0], s, c);
+              SinCosine(Rotation[i].V[0], s, c);
               mat := CreateRotationMatrixX(s, c);
             end
             else
               mat := IdentityHmgMatrix;
             if Rotation[i].V[1] <> 0 then
             begin
-              SinCos(Rotation[i].V[1], s, c);
+              SinCosine(Rotation[i].V[1], s, c);
               rmat := CreateRotationMatrixY(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
             if Rotation[i].V[2] <> 0 then
             begin
-              SinCos(Rotation[i].V[2], s, c);
+              SinCosine(Rotation[i].V[2], s, c);
               rmat := CreateRotationMatrixZ(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
@@ -2705,13 +2705,13 @@ begin
   for i := 0 to Rotation.Count - 1 do
   begin
     mat := IdentityHmgMatrix;
-    SinCos(Rotation[i].V[0], s, c);
+    SinCosine(Rotation[i].V[0], s, c);
     rmat := CreateRotationMatrixX(s, c);
     mat := MatrixMultiply(mat, rmat);
-    SinCos(Rotation[i].V[1], s, c);
+    SinCosine(Rotation[i].V[1], s, c);
     rmat := CreateRotationMatrixY(s, c);
     mat := MatrixMultiply(mat, rmat);
-    SinCos(Rotation[i].V[2], s, c);
+    SinCosine(Rotation[i].V[2], s, c);
     rmat := CreateRotationMatrixZ(s, c);
     mat := MatrixMultiply(mat, rmat);
     Quaternion.Add(QuaternionFromMatrix(mat));

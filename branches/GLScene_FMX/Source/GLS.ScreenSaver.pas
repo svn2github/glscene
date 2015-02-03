@@ -293,7 +293,7 @@ begin
 			GetWindowRect(previewHwnd, previewRect);
 			with previewRect do
 				frm.SetBounds(0, 0, Right-Left, Bottom-Top);
-			frm.BorderStyle:=TFmxFormBorderStyle.bsNone;
+			frm.BorderStyle:=TFmxFormBorderStyle.None;
       { TODO : E2010 Incompatible types: 'TFmxObject' and 'HWND' }
       (*
 			frm.Parent:=previewHwnd;
@@ -317,9 +317,9 @@ begin
 	frm:=(Owner as TForm);
 	if Assigned(frm) then begin
    	if ssoAutoAdjustFormProperties in FOptions then begin
-			frm.FormStyle:= TFormStyle.fsStayOnTop;
+			frm.FormStyle:= TFormStyle.StayOnTop;
 			frm.WindowState:=TWindowState.wsMaximized;
-			frm.BorderStyle:=TFmxFormBorderStyle.bsNone;
+			frm.BorderStyle:=TFmxFormBorderStyle.None;
 		end;
 		if ssoAutoHookKeyboardEvents in FOptions then begin
       { TODO : E2010 Incompatible types: 'Word' and 'Char' }

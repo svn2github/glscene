@@ -218,9 +218,9 @@ begin
   NormalizeVector(V2);
   NormalizeVector(V3);
 
-  Total_angles := Total_angles + Arccos(VectorDotProduct(V1, V2));
-  Total_angles := Total_angles + Arccos(VectorDotProduct(V2, V3));
-  Total_angles := Total_angles + Arccos(VectorDotProduct(V3, V1));
+  Total_angles := Total_angles + ArcCosine(VectorDotProduct(V1, V2));
+  Total_angles := Total_angles + ArcCosine(VectorDotProduct(V2, V3));
+  Total_angles := Total_angles + ArcCosine(VectorDotProduct(V3, V1));
 
   if (Abs(Total_angles - 2 * PI) <= 0.005) then
     Result := TRUE

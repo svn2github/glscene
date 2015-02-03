@@ -890,10 +890,10 @@ begin
     SwapSingle(@y1, @y2);
 
   NormalizePoint(x1, y1, x2, y2, x3, y3, @x, @y);
-  AngleBegin := ArcTan2(y, x);
+  AngleBegin := ArcTangent2(y, x);
 
   NormalizePoint(x1, y1, x2, y2, x4, y4, @x, @y);
-  AngleEnd := ArcTan2(y, x);
+  AngleEnd := ArcTangent2(y, x);
 
   DrawArc(x1, y1, x2, y2, AngleBegin, AngleEnd, UpdateCurrentPos);
 end;
@@ -941,7 +941,7 @@ begin
   StartPrimitive(GL_LINE_STRIP);
   while AngleCurrent >= AngleBegin - AngleDiff do
   begin
-    SinCos(AngleCurrent, s, c);
+    SinCosine(AngleCurrent, s, c);
     x := Xc + (Rx * c);
     y := Yc + (Ry * s);
 
@@ -950,7 +950,7 @@ begin
     AngleCurrent := AngleCurrent - AngleStep; // always step down, rotate only one way to draw it
   end;
 
-  SinCos(AngleEnd, s, c);
+  SinCosine(AngleEnd, s, c);
   x := Xc + (Rx * c);
   y := Yc + (Ry * s);
 

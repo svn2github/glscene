@@ -1114,13 +1114,13 @@ begin
 
   if Value > 1 then
   begin
-    FMovementInertia := FMovementInertia * GLS.VectorGeometry.Power(2, 1 / Value);
-    FTurnInertia := FTurnInertia * GLS.VectorGeometry.Power(2, 1 / Value);
+    FMovementInertia := FMovementInertia * PowerSingle(2, 1 / Value);
+    FTurnInertia := FTurnInertia * PowerSingle(2, 1 / Value);
   end
   else
   begin
-    FMovementInertia := FMovementInertia / GLS.VectorGeometry.Power(2, Value);
-    FTurnInertia := FTurnInertia / GLS.VectorGeometry.Power(2, Value);
+    FMovementInertia := FMovementInertia / PowerSingle(2, Value);
+    FTurnInertia := FTurnInertia / PowerSingle(2, Value);
   end;
   FTurnMaxAngle := FTurnMaxAngle / Value;
   FTurnSpeed := FTurnSpeed * Value;
@@ -1236,9 +1236,9 @@ begin
   Assert(Value > 0);
 
   if Value < 1 then
-    FInertia := FInertia / GLS.VectorGeometry.Power(2, Value)
+    FInertia := FInertia / PowerSingle(2, Value)
   else
-    FInertia := FInertia * GLS.VectorGeometry.Power(2, 1 / Value);
+    FInertia := FInertia * PowerSingle(2, 1 / Value);
 
   FMaxAngle := FMaxAngle / Value;
   FPitchSpeed := FPitchSpeed * Value;
@@ -1356,9 +1356,9 @@ begin
   Assert(Value > 0);
 
   if Value < 1 then
-    FInertia := FInertia / GLS.VectorGeometry.Power(2, Value)
+    FInertia := FInertia / PowerSingle(2, Value)
   else
-    FInertia := FInertia * GLS.VectorGeometry.Power(2, 1 / Value);
+    FInertia := FInertia * PowerSingle(2, 1 / Value);
 end;
 
 function TGLNavigatorAbstractParameters.StoreCutoff: Boolean;
@@ -1457,9 +1457,9 @@ begin
   Assert(Value > 0);
 
   if Value < 1 then
-    FInertia := FInertia / GLS.VectorGeometry.Power(2, Value)
+    FInertia := FInertia / PowerSingle(2, Value)
   else
-    FInertia := FInertia * GLS.VectorGeometry.Power(2, 1 / Value);
+    FInertia := FInertia * PowerSingle(2, 1 / Value);
 end;
 
 function TGLNavigatorSmoothChangeItem.StoreCutoff: Boolean;

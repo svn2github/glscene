@@ -587,7 +587,6 @@ uses
   GLS.Windows,
   GLS.WindowsFont,
   GLS.zBuffer,
-  GLS.Memo,
   GLS.VectorTypes,
   GLS.VectorGeometry,
   // Image file formats

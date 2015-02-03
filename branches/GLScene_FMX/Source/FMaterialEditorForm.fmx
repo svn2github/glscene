@@ -196,13 +196,18 @@ object MaterialEditorForm: TMaterialEditorForm
       Size.Height = 228.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
-      inherited Camera: TCameraComponent
-        Left = 544
-        Top = 104
-      end
-      inherited LightMaterialSource1: TLightMaterialSource
+      inherited LightMaterialSource: TLightMaterialSource
         Left = 547
         Top = 168
+      end
+      inherited World: TDummy
+        inherited Teapot: TModel3D
+          Data = {0000}
+        end
+      end
+      inherited Camera: TCamera
+        Left = 544
+        Top = 104
       end
     end
   end

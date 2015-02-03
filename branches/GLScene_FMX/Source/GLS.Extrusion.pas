@@ -748,7 +748,7 @@ begin
         polygon := Nodes.CreateCopy(nil);
         with polygon do
         begin
-          RotateAroundY(RadToDeg(startAlpha));
+          RotateAroundY(RadianToDeg(startAlpha));
           Translate(AffineVectorMake(0, startYOffset, 0));
           if invertedNormals then
             alpha := startAlpha + PI / 2
@@ -770,7 +770,7 @@ begin
         polygon := Nodes.CreateCopy(nil);
         with polygon do
         begin
-          RotateAroundY(RadToDeg(stopAlpha));
+          RotateAroundY(RadianToDeg(stopAlpha));
           Translate(AffineVectorMake(0, startYOffset + (stopAlpha - startAlpha)
             * YOffsetPerTurn / (2 * PI), 0));
           if invertedNormals then
@@ -1288,7 +1288,7 @@ const
         end;
       pnmAdvanced:
         begin
-          smoothanglerad := DegToRad(NormalSmoothAngle);
+          smoothanglerad := DegToRadian(NormalSmoothAngle);
           for j := 0 to Slices do
           begin
             curRow.node[j].sidedir :=
@@ -1915,7 +1915,7 @@ var
   s, c: Single;
 begin
   FMinSmoothAngle := Value;
-  SinCos(Value * cPidiv180, s, c);
+  SinCosine(Value * cPidiv180, s, c);
   FMinSmoothAngleCos := c;
 end;
 

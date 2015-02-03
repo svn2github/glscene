@@ -37,13 +37,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,
-  System.SysUtils,
-  System.Types,
+  System.Classes, System.SysUtils, System.Types,
 
-  GLS.CrossPlatform,
-  GLS.PersistentClasses
+  GLS.CrossPlatform, GLS.PersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
+
 
 type
   TXCollection = class;
@@ -60,6 +58,7 @@ type
     <li>Subclasses must be registered using the RegisterXCollectionItemClass
     function for proper operation
     </ul> }
+
   TXCollectionItem = class(TGLInterfacedPersistent)
   private
     { Private Declarations }

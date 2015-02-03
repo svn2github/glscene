@@ -72,7 +72,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF} System.Classes, System.SysUtils,
+  {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF}
+  System.Classes, System.SysUtils, System.Math,
 
   //OpenGL1x,
   GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material,

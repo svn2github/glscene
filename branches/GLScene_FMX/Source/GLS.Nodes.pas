@@ -416,12 +416,12 @@ var
 begin
   BeginUpdate;
   try
-    StartAngle := DegToRad(StartAngle);
-    StopAngle := DegToRad(StopAngle);
+    StartAngle := DegToRadian(StartAngle);
+    StopAngle := DegToRadian(StopAngle);
     F := (StopAngle - StartAngle) / NbSegments;
     for I := 0 to NbSegments do
     begin
-      SinCos(I * F + StartAngle, S, C);
+      SinCosine(I * F + StartAngle, S, C);
       SetVector(Add.FCoords, Center.V[0] + XRadius * C,
                              Center.V[1] + YRadius * S,
                              Center.V[2], 1);
@@ -598,7 +598,7 @@ var
   C, S, V2: Single;
   V: PAffineVector;
 begin
-  SinCos(CPIDiv180 * Angle, S, C);
+  SinCosine(CPIDiv180 * Angle, S, C);
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
@@ -618,7 +618,7 @@ var
   C, S, V0: Single;
   V: PAffineVector;
 begin
-  SinCos(CPIDiv180 * Angle, S, C);
+  SinCosine(CPIDiv180 * Angle, S, C);
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
@@ -638,7 +638,7 @@ var
   C, S, V1: Single;
   V: PAffineVector;
 begin
-  SinCos(CPIDiv180 * Angle, S, C);
+  SinCosine(CPIDiv180 * Angle, S, C);
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);

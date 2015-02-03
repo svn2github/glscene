@@ -546,7 +546,7 @@ begin
    TexCoordY:=TexCoordY+2*Radius;
 
    // BuildMatrices
-   SinCos(DegToRad(BranchTwist),s,c);
+   SinCosine(DegToRadian(BranchTwist),s,c);
 
    if Level=0 then
       central_leader:=FCentralLeader
@@ -556,11 +556,11 @@ begin
    if central_leader then begin
       LeftMatrix:=MatrixMultiply(
          CreateScaleMatrix(AffineVectorMake(LeftRadius,LeftRadius,LeftRadius)),
-         CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(LeftAngle)*Tree.CentralLeaderBias));
+         CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRadian(LeftAngle)*Tree.CentralLeaderBias));
    end else begin
       LeftMatrix:=MatrixMultiply(
          CreateScaleMatrix(AffineVectorMake(LeftRadius,LeftRadius,LeftRadius)),
-         CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(LeftAngle)));
+         CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRadian(LeftAngle)));
    end;
    LeftMatrix:=MatrixMultiply(
       LeftMatrix,
@@ -568,14 +568,14 @@ begin
 
    CenterMatrix:=MatrixMultiply(
       CreateScaleMatrix(AffineVectorMake(CenterRadius,CenterRadius,CenterRadius)),
-      CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(CenterAngle)));
+      CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRadian(CenterAngle)));
    CenterMatrix:=MatrixMultiply(
       CenterMatrix,
       MatrixMultiply(CreateTranslationMatrix(AffineVectorMake(0,0,Tree.BranchSize*(1-CenterBranchNoiseValue))),Matrix));
 
    RightMatrix:=MatrixMultiply(
       CreateScaleMatrix(AffineVectorMake(RightRadius,RightRadius,RightRadius)),
-      CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRad(RightAngle)));
+      CreateRotationMatrix(AffineVectorMake(s,c,0),DegToRadian(RightAngle)));
    RightMatrix:=MatrixMultiply(
       RightMatrix,
       MatrixMultiply(CreateTranslationMatrix(AffineVectorMake(0,0,Tree.BranchSize*(1-RightBranchNoiseValue))),Matrix));

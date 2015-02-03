@@ -291,8 +291,10 @@ initialization
 // ------------------------------------------------------------------
   { TODO : E2003 Undeclared identifier: 'RegisterFileFormat' }
   (*  TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage); *)
+  //?  RegisterRasterFormat('tga', 'Targa', TTGAImage);
 
 finalization
   { TODO : E2003 Undeclared identifier: 'UNregisterFileFormat' }
   (*  TGLPicture.UnregisterGraphicClass(TTGAImage); *)
+
 end.

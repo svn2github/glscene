@@ -3936,7 +3936,7 @@ begin
       TextureOffset.AsVector);
     if StoreTextureRotate then
       FTextureMatrix := MatrixMultiply(FTextureMatrix,
-        CreateRotationMatrixZ(DegToRad(FTextureRotate)));
+        CreateRotationMatrixZ(DegToRadian(FTextureRotate)));
   end;
   FTextureOverride := False;
   NotifyChange(Self);
@@ -6315,7 +6315,7 @@ begin
     FNameHashCode := ComputeNameHashKey(FName);
     FType := TGLSLDataType(ReadInteger);
     FSamplerType := TGLSLSamplerType(ReadInteger);
-    SetAutoSetMethod(ReadWideString);
+    SetAutoSetMethod(ReadString);
   end;
 end;
 

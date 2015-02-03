@@ -18,11 +18,10 @@ unit FShaderMemo;
 interface
 
 uses
+  System.Win.Registry,
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.Objects, FMX.Layouts, FMX.Memo,
-
-  GLS.Memo;
+  FMX.Objects, FMX.Layouts, FMX.Menus, FMX.Memo;
 
 type
   TShaderMemoForm = class(TForm)
@@ -40,6 +39,7 @@ type
     Image2: TImage;
     SBHelp: TSpeedButton;
     Image3: TImage;
+    GLSLMemo: TMemo;
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -57,9 +57,6 @@ implementation
 
 const
   cRegistryKey = 'Software\GLScene\GLSceneShaderEdit';
-
-type
-  TFriendlyMemo = class(TGLSSynHiMemo);
 
 var
   vGLShaderEditor: TShaderMemoForm;
@@ -109,25 +106,27 @@ begin
     reg.Free;
   end;
 
-  No := GLSLMemo.Styles.Add(clRed, clWhite, []);
+  { TODO : Replace with FMX.Memo routines }
+  (*
+  No := GLSLMemo.Styles.Add(TColors.Red, TColors.White, []);
   GLSLMemo.AddWord(No, GLSLDirectives);
 
-  No := GLSLMemo.Styles.Add(clPurple, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add(TColors.Purple, TColors.White, [TFontStyle.fsBold]);
   GLSLMemo.AddWord(No, GLSLQualifiers);
 
-  No := GLSLMemo.Styles.Add(clBlue, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add(TColors.Blue, TColors.White, [TFontStyle.fsBold]);
   GLSLMemo.AddWord(No, GLSLTypes);
 
-  No := GLSLMemo.Styles.Add(clGray, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add(TColors.Gray, TColors.White, [TFontStyle.fsBold]);
   GLSLMemo.AddWord(No, GLSLBuildIn);
 
-  No := GLSLMemo.Styles.Add(clGreen, clWhite, [fsItalic]);
+  No := GLSLMemo.Styles.Add(TColors.Green, TColors.White, [TFontStyle.fsItalic]);
   GLSLMemo.AddWord(No, GLSLFunctions);
 
-  No := GLSLMemo.Styles.Add(clYellow, clSilver, [fsItalic]);
+  No := GLSLMemo.Styles.Add(TColors.Yellow, TColors.Silver, [TFontStyle.fsItalic]);
   GLSLMemo.AddWord(No, GLSLFunctions);
 
-  FLightLineStyle := GLSLMemo.Styles.Add(clBlack, clLtGray, []);
+  FLightLineStyle := GLSLMemo.Styles.Add(TColors.Black, TColors.LtGray, []);
 
   GLSLMemo.MultiCommentLeft := '/*';
   GLSLMemo.MultiCommentRight := '*/';
@@ -163,6 +162,7 @@ begin
   item := NewItem('Geometry program, edge detection', 0, False, True, OnTemplateClick, 0, '');
   item.Tag := 4;
   GLSL330.Add(item);
+  *)
 end;
 
 end.
