@@ -25,8 +25,6 @@ uses
 
 type
 
-{$REGION 'DELPHI'}
-
   // TGLBaseSceneFormWizard
   //
 
@@ -204,8 +202,6 @@ type
     procedure NewDefaultProjectModule(const Project: IOTAProject); override;
   end;
 
-{$ENDREGION 'DELPHI'}
-
 resourcestring
   //-------------------------Projects------------------------------------------
   rBaseProjectLocalizedName = 'GLScene Base Application';
@@ -271,8 +267,6 @@ begin
 
 end;
 
-{$REGION 'DELPHI'}
-
 type
 
   TDelphiFile = class(TInterfacedObject)
@@ -337,7 +331,7 @@ begin
     LCategory := Manager.FindCategory(sCategoryDelphiNew);
     if Assigned(LCategory) then
       vCategory := Manager.AddCategory(LCategory, sCategoryGLSceneNew,
-        'GLScene for Delphi', 0);
+        'GLScene VCL', 0);
   end;
 end;
 
@@ -1261,7 +1255,7 @@ end;
 
 function TGLBaseSceneFormWizard.GetPage: string;
 begin
-  Result := 'GLScene for Delphi';
+  Result := 'GLScene VCL';
 end;
 
 function TGLBaseSceneFormWizard.GetAuthor: string;
@@ -1491,7 +1485,7 @@ end;
 
 function TGLBaseSceneProjectWizard.GetPage: string;
 begin
-  Result := 'GLScene for Delphi';
+  Result := 'GLScene VCL';
 end;
 
 function TGLBaseSceneProjectWizard.GetGlyph: Cardinal;
@@ -1708,8 +1702,6 @@ begin
     FClassName,
     FFileName));
 end;
-
-{$ENDREGION 'DELPHI'}
 
 initialization
   InitModule;

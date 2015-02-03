@@ -800,7 +800,7 @@ begin
     else
       coord.V[2] := Random * 2 - 1;
     // calculate RA and Dec
-    star.Dec := ArcSin(coord.V[2]) * c180divPI;
+    star.Dec := ArcSine(coord.V[2]) * c180divPI;
     star.Ra := Random * 360 - 180;
     // pick a color
     star.Color := color;
@@ -837,7 +837,7 @@ begin
     else
       coord.V[2] := Random * 2 - 1;
     // calculate RA and Dec
-    star.Dec := ArcSin(coord.V[2]) * c180divPI;
+    star.Dec := ArcSine(coord.V[2]) * c180divPI;
     star.Ra := Random * 360 - 180;
     // pick a color
     star.Color := RGB(RandomTT(ColorMin.V[0], ColorMax.V[0]),
@@ -1238,7 +1238,7 @@ begin
   // Mix base colors
   fts := exp(-6 * (PI / 2 - ts));
   VectorLerp(SunZenithColor.Color, SunDawnColor.Color, fts, FCurSunColor);
-  fts := PowerInteger(1 - cos(ts - 0.5), 2);
+  fts := IntPower(1 - cos(ts - 0.5), 2);
   VectorLerp(HazeColor.Color, NightColor.Color, fts, FCurHazeColor);
   VectorLerp(SkyColor.Color, NightColor.Color, fts, FCurSkyColor);
   // Precalculate Turbidity factors

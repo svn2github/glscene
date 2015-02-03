@@ -4213,7 +4213,7 @@ begin
   if (Round(DistortionDegree) <> DistortionDegree) and (Delta < 0) then
   begin
     i := Round(DistortionDegree);
-    Result := (Stop - Start) * GLVectorGeometry.PowerInteger(Delta, i) + Start;
+    Result := (Stop - Start) * PowerInteger(Delta, i) + Start;
   end
   else
     Result := (Stop - Start) * Power(Delta, DistortionDegree) + Start;
@@ -6852,12 +6852,12 @@ begin
   end;
 
   // now, get the rotations out, as described in the gem
-  Tran[ttRotateY] := ArcSin(-row0.V[Z]);
+  Tran[ttRotateY] := ArcSine(-row0.V[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX] := ArcTan2(row1.V[Z], row2.V[Z]);
-    Tran[ttRotateZ] := ArcTan2(row0.V[Y], row0.V[X]);
+    Tran[ttRotateX] := ArcTangent2(row1.V[Z], row2.V[Z]);
+    Tran[ttRotateZ] := ArcTangent2(row0.V[Y], row0.V[X]);
   end else begin
-    tran[ttRotateX] := ArcTan2(row1.V[X], row1.V[Y]);
+    tran[ttRotateX] := ArcTangent2(row1.V[X], row1.V[Y]);
     tran[ttRotateZ] := 0;
   end;
   // All done!
@@ -6914,7 +6914,7 @@ var
   x, y: Single;
 begin
   FOV := MinFloat(179.9, MaxFloat(0, FOV));
-  y:= ZNear * Tan(DegToRadian(FOV) * 0.5);
+  y:= ZNear * Tangent(DegToRadian(FOV) * 0.5);
   x:= y * Aspect;
   Result := CreateMatrixFromFrustum(-x, x, -y, y, ZNear, ZFar);
 end;
@@ -8176,7 +8176,7 @@ begin
    Result:=Degrees*(PI/180);
 end;
 
-// DegToRad (single)
+// DegToRadian (single)
 //
 function DegToRadian(const Degrees : Single) : Single;
 //   Result:=Degrees * cPIdiv180;
@@ -8257,7 +8257,7 @@ begin
 end;
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCos (Double)
+// SinCosine (Double)
 //
 procedure SinCosine(const Theta: Double; out Sin, Cos: Double);
 // EAX contains address of Sin
@@ -8280,7 +8280,7 @@ begin
 {$endif}
 end;
 
-// SinCos (Single)
+// SinCosine (Single)
 //
 procedure SinCosine(const Theta: Single; out Sin, Cos: Single);
 // EAX contains address of Sin
@@ -8304,7 +8304,7 @@ begin
 end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
-// SinCos (Extended w radius)
+// SinCosine (Extended w radius)
 //
 procedure SinCosine(const theta, radius : Double; out Sin, Cos: Extended);
 // EAX contains address of Sin
@@ -8328,7 +8328,7 @@ begin
 end;
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCos (Double w radius)
+// SinCosine (Double w radius)
 //
 procedure SinCosine(const theta, radius : Double; out Sin, Cos: Double);
 // EAX contains address of Sin
@@ -8351,7 +8351,7 @@ begin
 {$endif}
 end;
 
-// SinCos (Single w radius)
+// SinCosine (Single w radius)
 //
 procedure SinCosine(const theta, radius : Single; out Sin, Cos: Single);
 // EAX contains address of Sin
@@ -8408,11 +8408,11 @@ begin
    end;
 end;
 
-// ArcCos (Extended)
+// ArcCosine (Extended)
 //
 function ArcCosine(const x : Extended): Extended;
 begin
-   Result := ArcTan2(Sqrt(1 - Sqr(X)), X);
+   Result := ArcTangent2(Sqrt(1 - Sqr(X)), X);
 end;
 
 // ArcCosine (Single)
@@ -8435,14 +8435,14 @@ begin
 {$endif}
 end;
 
-// ArcSin (Extended)
+// ArcSine (Extended)
 //
 function ArcSine(const x : Extended) : Extended;
 begin
-   Result:= ArcTan2(X, Sqrt(1 - Sqr(X)))
+   Result:= ArcTangent2(X, Sqrt(1 - Sqr(X)))
 end;
 
-// ArcSin (Single)
+// ArcSine (Single)
 //
 function ArcSine(const x : Single) : Single;
 //   Result:=ArcTan2(X, Sqrt(1 - X * X))
@@ -8462,7 +8462,7 @@ begin
 {$endif}
 end;
 
-// ArcTan2 (Extended)
+// ArcTangent2 (Extended)
 //
 function ArcTangent2(const y, x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
@@ -8476,7 +8476,7 @@ begin
 {$endif}
 end;
 
-// ArcTan2 (Single)
+// ArcTangent2 (Single)
 //
 function ArcTangent2(const y, x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
@@ -8492,7 +8492,7 @@ begin
 {$endif}
 end;
 
-// FastArcTan2
+// FastArcTangent2
 //
 function FastArcTangent2(y, x : Single) : Single;
 // accuracy of about 0.07 rads
@@ -8513,7 +8513,7 @@ begin
    end;
 end;
 
-// Tan (Extended)
+// Tangent (Extended)
 //
 function Tangent(const x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
@@ -8527,7 +8527,7 @@ begin
 {$endif}
 end;
 
-// Tan (Single)
+// Tangent (Single)
 //
 function Tangent(const x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
@@ -8543,7 +8543,7 @@ begin
 {$endif}
 end;
 
-// CoTan (Extended)
+// CoTangent (Extended)
 //
 function CoTangent(const x : Extended) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
@@ -8557,7 +8557,7 @@ begin
 {$endif}
 end;
 
-// CoTan (Single)
+// CoTangent (Single)
 //
 function CoTangent(const x : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
@@ -10236,7 +10236,7 @@ begin
    SetVector(Result, Sqrt((M.X.X-cost) / cost1),
                      Sqrt((M.Y.Y-cost) / cost1),
                      Sqrt((M.Z.Z-cost) / cost1),
-                     ArcCos(cost));
+                     ArcCosine(cost));
 
    sint:=2 * Sqrt(1 - cost * cost); // This is actually 2 Sin(t)
 
@@ -10284,7 +10284,7 @@ begin
       beta:=1 - t
    else begin
       // normal case
-      theta := ArcCos(cost);
+      theta := ArcCosine(cost);
       phi := theta + Spin * Pi;
       sint := Sin(theta);
       beta := Sin(theta - t * phi) / sint;
@@ -10329,7 +10329,7 @@ begin
    end;
    // calculate coefficients
    if ((1.0-cosom)>EPSILON2) then begin // standard case (slerp)
-      omega := ArcCos(cosom);
+      omega := ArcCosine(cosom);
       sinom := 1/Sin(omega);
       scale0 := Sin((1.0-t)*omega)*sinom;
       scale1 := Sin(t*omega)*sinom;
@@ -12163,8 +12163,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result.X := RadToDeg(-pitchangledif);
-  Result.Y := RadToDeg(turnangledif);
+  Result.X := RadianToDeg(-pitchangledif);
+  Result.Y := RadianToDeg(turnangledif);
 end;
 
 function GetSafeTurnAngle(const AOriginalPosition, AOriginalUpVector,
@@ -12247,8 +12247,8 @@ begin
     turnangledif:=-abs(turnangledif)/turnangledif*(2*pi-abs(turnangledif));
 
   // Determine rotation speeds
-  Result.X := RadToDeg(-pitchangledif);
-  Result.Y := RadToDeg(turnangledif);
+  Result.X := RadianToDeg(-pitchangledif);
+  Result.Y := RadianToDeg(turnangledif);
 end;
 
 function MoveObjectAround(const AMovingObjectPosition, AMovingObjectUp, ATargetPosition: TVector;
@@ -12272,7 +12272,7 @@ begin
       NormalizeVector(normalCameraRight);
     // calculate the current pitch.
     // 0 is looking down and PI is looking up
-    pitchNow := ArcCos(VectorDotProduct(AMovingObjectUp, normalT2C));
+    pitchNow := ArcCosine(VectorDotProduct(AMovingObjectUp, normalT2C));
     pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025, PI -
       0.025);
     // create a new vector pointing up and then rotate it down
@@ -12288,14 +12288,14 @@ end;
 {: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const A, B, ACenterPoint: TVector): Single;
 begin
-  Result := ArcCos(VectorAngleCosine(
+  Result := ArcCosine(VectorAngleCosine(
     VectorNormalize(VectorSubtract(A, ACenterPoint)),
     VectorNormalize(VectorSubtract(B, ACenterPoint))));
 end;
 {: Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const A, B, ACenterPoint: TAffineVector): Single;
 begin
-  Result := ArcCos(VectorAngleCosine(
+  Result := ArcCosine(VectorAngleCosine(
     VectorNormalize(VectorSubtract(A, ACenterPoint)),
     VectorNormalize(VectorSubtract(B, ACenterPoint))));
 end;

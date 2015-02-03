@@ -7,7 +7,7 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Upgraded program hadles
+      <li>23/08/10 - Yar - Upgraded program handles
       <li>22/04/10 - Yar - Fixes after GLState revision
       <li>05/03/10 - DanB - More state added to TGLStateCache
       <li>22/01/10 - Yar   - Added bmp32.Blank:=false for memory allocation
@@ -28,7 +28,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLTexture, GLContext, GLGraphics, GLUtils,
+  System.Classes, System.SysUtils,
+  //GLS
+  GLTexture, GLContext, GLGraphics, GLUtils,
   GLVectorGeometry, OpenGLTokens, GLColor, GLRenderContextInfo,
   GLMaterial, GLState, GLTextureFormat;
 
@@ -92,10 +94,6 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLCelShader ------------------
 // ------------------

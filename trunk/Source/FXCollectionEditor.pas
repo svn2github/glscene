@@ -27,10 +27,9 @@ uses
   VCL.Forms, VCL.ImgList, VCL.Controls,
   VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
 
-
-   DesignEditors, DesignIntf,
-   //GLS
-   GLCrossPlatform, XCollection;
+  DesignEditors, DesignIntf,
+  //GLS
+  GLCrossPlatform, XCollection, System.Actions;
 
 type
   TXCollectionEditor = class(TForm)
@@ -66,11 +65,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    { Déclarations privées }
+    { Private declarations }
     FXCollection: TXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
-    updatingListView: Boolean;
+    UpdatingListView: Boolean;
     procedure PrepareListView;
     procedure PrepareXCollectionItemPopup(parent: TMenuItem);
     procedure OnAddXCollectionItemClick(Sender: TObject);
@@ -80,7 +79,7 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
   public
-    { Déclarations publiques }
+    { Public declarations }
     procedure SetXCollection(aXCollection: TXCollection; designer: IDesigner );
   end;
 
@@ -124,6 +123,7 @@ begin
 end;
 
 // FormCreate
+//
 procedure TXCollectionEditor.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
