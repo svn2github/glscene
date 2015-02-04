@@ -1,10 +1,9 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {: GLFileJPEG<p>
 
   <b>History : </b><font size=-1><ul>
-      <li>02/02/15 - PW - Changed usage of GLSJPG with Jpeg unit
       <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
       <li>29/06/10 - Yar - Improved FPC compatibility
       <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
@@ -19,11 +18,10 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  Vcl.Imaging.Jpeg,
 
   //GLS
   GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  GLApplicationFileIO;
+  GLApplicationFileIO, GLSJPG, GLVectorGeometry;
 
 type
 
@@ -57,12 +55,10 @@ type
     property ProgressiveEncoding: boolean read FProgressiveEncoding;
   end;
 
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 implementation
-
-uses
-  GLVectorGeometry;
-
-
 // ------------------
 // ------------------ TGLJPEGImage ------------------
 // ------------------
@@ -115,15 +111,12 @@ end;
 // LoadFromStream
 
 procedure TGLJPEGImage.LoadFromStream(stream: TStream);
-(*
 var
   LinesPerCall, LinesRead: integer;
   DestScanLine: Pointer;
-  PtrInc: int64;
+  PtrInc: int64; // DestScanLine += PtrInc * LinesPerCall
   jc: TJPEGContext;
-*)
 begin
-(*
   if Stream.Size > 0 then
   begin
     FAbortLoading := False;
@@ -250,7 +243,6 @@ begin
       jc.common.err := nil;
     end;
   end;
-*)
 end;
 
 procedure TGLJPEGImage.SaveToStream(stream: TStream);

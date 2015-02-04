@@ -200,7 +200,6 @@
         <DCCReference Include="..\Source\GLFileBMP.pas"/>
         <DCCReference Include="..\Source\GLFileDXF.pas"/>
         <DCCReference Include="..\Source\GLFileGRD.pas"/>
-        <DCCReference Include="..\Source\GLFileJPEG.pas"/>
         <DCCReference Include="..\Source\GLFireFX.pas"/>
         <DCCReference Include="..\Source\GLFileMD2.pas"/>
         <DCCReference Include="..\Source\GLFileMD3.pas"/>
@@ -210,7 +209,6 @@
         <DCCReference Include="..\Source\GLFileMP3.pas"/>
         <DCCReference Include="..\Source\GLFile3DS.pas"/>
         <DCCReference Include="..\Source\GLFilePLY.pas"/>
-        <DCCReference Include="..\Source\GLFilePNG.pas"/>
         <DCCReference Include="..\Source\GLFileGL2.pas"/>
         <DCCReference Include="..\Source\GLFileLMTS.pas"/>
         <DCCReference Include="..\Source\GLFileSTL.pas"/>
@@ -367,6 +365,10 @@
         <DCCReference Include="..\Source\VRMLParser.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
         <DCCReference Include="..\Source\GLPictureRegisteredFormats.pas"/>
+        <DCCReference Include="..\Source\GLSJPG.pas"/>
+        <DCCReference Include="..\Source\LIBPNG.pas"/>
+        <DCCReference Include="..\Source\GLFileJPEG.pas"/>
+        <DCCReference Include="..\Source\GLFilePNG.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

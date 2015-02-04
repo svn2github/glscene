@@ -117,7 +117,6 @@ contains
   GLFileBMP in '..\Source\GLFileBMP.pas',
   GLFileDXF in '..\Source\GLFileDXF.pas',
   GLFileGRD in '..\Source\GLFileGRD.pas',
-  GLFileJPEG in '..\Source\GLFileJPEG.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
   GLFileMD2 in '..\Source\GLFileMD2.pas',
   GLFileMD3 in '..\Source\GLFileMD3.pas',
@@ -127,7 +126,6 @@ contains
   GLFileMP3 in '..\Source\GLFileMP3.pas',
   GLFile3DS in '..\Source\GLFile3DS.pas',
   GLFilePLY in '..\Source\GLFilePLY.pas',
-  GLFilePNG in '..\Source\GLFilePNG.pas',
   GLFileGL2 in '..\Source\GLFileGL2.pas',
   GLFileLMTS in '..\Source\GLFileLMTS.pas',
   GLFileSTL in '..\Source\GLFileSTL.pas',
@@ -283,6 +281,10 @@ contains
   XOpenGL in '..\Source\XOpenGL.pas',
   VRMLParser in '..\Source\VRMLParser.pas',
   Utils3DS in '..\Source\Utils3DS.pas',
-  GLPictureRegisteredFormats in '..\Source\GLPictureRegisteredFormats.pas';
+  GLPictureRegisteredFormats in '..\Source\GLPictureRegisteredFormats.pas',
+  GLSJPG in '..\Source\GLSJPG.pas',
+  LIBPNG in '..\Source\LIBPNG.pas',
+  GLFileJPEG in '..\Source\GLFileJPEG.pas',
+  GLFilePNG in '..\Source\GLFilePNG.pas';
 
 end.

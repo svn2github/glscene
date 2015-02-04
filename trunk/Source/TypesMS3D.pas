@@ -24,7 +24,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorTypes, GLColor;
+  System.Classes,
+  GLVectorTypes, GLColor;
 
 const
   MAX_MS3D_VERTICES  = 8192;

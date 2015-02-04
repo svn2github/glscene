@@ -4,7 +4,8 @@
 {: GLFileZLIB<p>
 
   <b>History : </b><font size=-1><ul>
-      <li>22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII  
+      <li>04/02/15 - PW - Changed using GLSZLibEx to System.ZLib
+      <li>22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII
       <li>04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
   </ul><p>
@@ -17,7 +18,9 @@ unit GLFileZLIB;
 interface
 
 uses
-  Classes, SysUtils, GLSArchiveManager, GLSZLibEx;
+  System.Classes, System.SysUtils, System.ZLib,
+
+  GLSArchiveManager;
 
 const
    SIGN = 'ZLIB'; //Signature for compressed zlib.
@@ -147,20 +150,19 @@ begin
       If FStream = nil then exit;
       Result := aStream;
 
-      //Ищем файл
+      //Find file
       FStream.Seek(FHeader.DirOffset + SizeOf(TFileSection) * index, soFromBeginning);
       FStream.Read(Dir, SizeOf(TFileSection));
       FStream.Seek(Dir.FilePos, soFromBeginning);
 
-      //копируем файл из общего потока во временный поток
+      //Copy file to temp stream
       tempStream := TMemoryStream.Create;
       tempStream.CopyFrom(FStream, Dir.FileLength);
       tempStream.Position := 0;
 
-      //декомпрессим
+      //decompress
        decompr := TZDecompressionStream.Create(tempStream);
        try
-         //Копируем результат
          Result.CopyFrom(decompr, 0);
        finally
         decompr.Free;
@@ -202,8 +204,7 @@ var
    Temp, compressed: TMemoryStream;
    FCompressor: TZCompressionStream;
 begin
-   //Добавление файла
-   If (FStream = nil) or ContentExists(ContentName) then exit;
+   if (FStream = nil) or ContentExists(ContentName) then exit;
 
    FStream.Position := FHeader.DirOffset;
    //???
@@ -219,17 +220,15 @@ begin
    Dir.FilePos    := FHeader.DirOffset;
    Dir.CbrMode := compressionLevel;
 
-   //Создаем поток для разархивации в него
    compressed := TMemoryStream.Create;
 
-   //Разархивируем данные в него
-   FCompressor := TZCompressionStream.Create(compressed,TZCompressionLevel(compressionLevel));
+   //Unarchive data to stream
+   FCompressor := TZCompressionStream.Create(compressed);
    FCompressor.CopyFrom(FS,   FS.Size);
    FCompressor.Free;
 
-   //Копируем результат
+   //Copy results
    FStream.CopyFrom(compressed, 0);
-   //Запоминаем  размер файла
    Dir.FileLength := compressed.Size;
    Compressed .Free;
 
@@ -240,11 +239,8 @@ begin
       FStream.CopyFrom(Temp, 0);
       Temp.Free;
    end;
-   //Складываем имя файла с каталогом
    StrPCopy(Dir.FileName, AnsiString(Path + ExtractFileName(ContentName)));
-   //Записываем данные о файле
    FStream.WriteBuffer(Dir, SizeOf(TFileSection));
-   //Записываем изменения в хидер
    FHeader.DirLength := FHeader.DirLength + SizeOf(TFileSection);
    FStream.Position  := 0;
    FStream.WriteBuffer(FHeader, SizeOf(TZLibHeader));
@@ -255,7 +251,7 @@ procedure TZLibArchive.AddFromFile(FileName, Path: string);
 var
    FS: TFileStream;
 begin
-   if not SysUtils.FileExists(FileName) then
+   if not FileExists(FileName) then
       exit;
    FS := TFileStream.Create(FileName, fmOpenRead);
    try
@@ -337,7 +333,6 @@ begin
 end;
 
 initialization
-  // Файл использующий Алгоритм сжатия zlib
   RegisterArchiveFormat('zlib', 'GLScene file uses the zlib compression algorithm', TZLibArchive);
 
 end.
