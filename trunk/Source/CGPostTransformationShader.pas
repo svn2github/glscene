@@ -20,10 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes, SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  // GLScene
+  // GLS
   GLTexture,  GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
   GLRenderContextInfo, GLTextureFormat,
 
@@ -54,8 +54,13 @@ type
     property TransformationTexture;
   end;
 
-
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 
 { TGLCustomCGPostTransformationShader }
 

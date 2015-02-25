@@ -28,7 +28,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-
+  //GLS
   GLRenderContextInfo, GLBaseClasses, GLContext, GLVectorTypes, GLMaterial,
   GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLGraphics,
   GLPersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
@@ -899,14 +899,11 @@ type
     FStoreProgram: TGLuint;
     FAutoSet: TUniformAutoSetMethod;
     function GetProgram: TGLuint;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
+{$IFDEF GLS_INLINE} inline;{$ENDIF}
     procedure PushProgram;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
+{$IFDEF GLS_INLINE} inline;{$ENDIF}
     procedure PopProgram;
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
+{$IFDEF GLS_INLINE} inline;{$ENDIF}
 
     function GetFloat: Single; override;
     function GetVec2: TVector2f; override;
@@ -1455,9 +1452,8 @@ var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
   vStoreBegin: procedure(mode: TGLEnum);
-{$IFDEF MSWINDOWS}stdcall;
-{$ENDIF}{$IFDEF UNIX}cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall;{$ENDIF}
+{$IFDEF UNIX}cdecl;{$ENDIF}
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
@@ -1481,8 +1477,7 @@ begin
 end;
 
 procedure Div2(var Value: Integer);
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
+{$IFDEF GLS_INLINE} inline;{$ENDIF}
 begin
   Value := Value div 2;
   if Value = 0 then

@@ -33,7 +33,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, VCL.Graphics,
+  System.Classes,
+  VCL.Graphics,
   GLCrossPlatform;
 
 {$DEFINE PRF_HACK_PASSES}

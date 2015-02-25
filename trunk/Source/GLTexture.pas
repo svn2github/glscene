@@ -222,12 +222,24 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes,
+  System.SysUtils,
 
-  // GLScene
-  GLStrings, GLCrossPlatform, GLBaseClasses, OpenGLTokens,
-  GLVectorGeometry, GLGraphics, GLContext, GLState, GLColor, GLCoordinates,
-  GLRenderContextInfo, GLTextureFormat, GLApplicationFileIO, GLUtils;
+  // GLS
+  GLCrossPlatform,
+  GLBaseClasses,
+  OpenGLTokens,
+  GLVectorGeometry,
+  GLGraphics,
+  GLContext,
+  GLState,
+  GLColor,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLApplicationFileIO,
+  GLUtils,
+  GLStrings;
 
 const
   cDefaultNormalMapScale = 0.125;
@@ -240,6 +252,9 @@ const
   CmtNZ = 5;
 
 type
+  TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace, tmAdd);
+  TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal, twSeparate);
+
   TGLMinFilter =
   (
     miNearest,
@@ -251,9 +266,6 @@ type
   );
 
   TGLMagFilter = (maNearest, maLinear);
-
-  TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace, tmAdd);
-  TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal, twSeparate);
 
   // Specifies how depth values should be treated
   // during filtering and texture application

@@ -127,11 +127,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-
+  System.Classes, System.SysUtils, System.Math, System.Types,
+  //GLS
   ODEGL, ODEImport, GLScene, GLVectorGeometry, GLTexture, OpenGLTokens,
   XOpenGL, GLObjects, XCollection, GLPersistentClasses, GLVectorLists,
-  GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
+  GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState,
+  GLVectorTypes;
 
 type
 

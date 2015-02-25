@@ -45,10 +45,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes, SysUtils,
-
-  // GLScene
+  System.Classes, System.SysUtils,
+  // GLS
   GLScene, GLTexture, OpenGLTokens, GLGraphics, GLStrings, GLCustomShader,
   GLContext, GLVectorGeometry, GLRenderContextInfo, GLMaterial, GLTextureFormat;
 
@@ -160,7 +158,13 @@ type
     property OnProgress;
   end;
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 { TGLPostEffect }
 

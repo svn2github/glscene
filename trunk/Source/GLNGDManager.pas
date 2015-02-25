@@ -72,16 +72,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, // TComponent Tlist TWriter TReader TPersistent
-  SysUtils, //System utilities
-  Math, // Samevalue isZero to compare single
+  System.Classes, // TComponent Tlist TWriter TReader TPersistent
+  System.SysUtils, //System utilities
+  System.Math, // Samevalue isZero to compare single
+  System.Types,
   NewtonImport, NewtonImport_JointLibrary, // Newton
+  //GLS
   GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLVectorLists, // TaffineVectorList for Tree
   XCollection, // GLS TXCollection file function
   GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates, //
   GLObjects, GLGeomObjects, GLVectorFileObjects, // cube cone freeform...
-  GLColor, GLGeometryBB; // For show debug
+  GLColor, GLGeometryBB, // For show debug
+  GLVectorTypes;
 
 type
 
@@ -816,7 +819,13 @@ function GetOrCreateNGDDynamic(Obj: TGLBaseSceneObject): TGLNGDDynamic;
 
 function GetBodyFromGLSceneObject(Obj: TGLBaseSceneObject): PNewtonBody;
 
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 const
   epsilon = 0.0000001; // 1E-07

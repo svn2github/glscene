@@ -34,8 +34,11 @@ unit GLProcTextures;
 
 interface
 
-uses Classes, GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform, SysUtils,
-  GLTextureFormat;
+uses
+  System.Classes, System.SysUtils,
+  //GLS
+  GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform,
+  GLTextureFormat, GLVectorGeometry;
 
 const
   GRADIENT_TABLE_SIZE = 256;
@@ -98,8 +101,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses GLVectorGeometry;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
 { PERM array Borrowed from Darwyn Peachey.

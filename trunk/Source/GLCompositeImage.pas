@@ -20,7 +20,9 @@ unit GLCompositeImage;
 interface
 
 uses
-  Classes, OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
+  System.Classes,
+  //GLS
+  OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
 
 type
 
@@ -62,14 +64,16 @@ type
     property Depth: Integer read GetDepth write SetDepth;
   end;
 
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 uses
   GLContext;
-
-// ------------------
-// ------------------ TGLCompositeImage ------------------
-// ------------------
 
 // Create
 //

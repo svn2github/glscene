@@ -25,12 +25,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
-
-  // GLScene
+  System.Classes,
+  // GLS
   GLTexture, GLScene, GLVectorGeometry, GLContext,
-  GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat;
+  GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat,
+  GLVectorTypes;
+
 
 type
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -56,10 +56,13 @@ type
     property Threshold;
   end;
 
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 implementation
-
-uses
-  GLVectorTypes;
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 { TGLCustomGLSLPostBlurShader }
 
@@ -70,7 +73,7 @@ begin
   with VertexProgram.Code do
   begin
     Add('varying vec2 vTexCoord; ');
-    Add(' '); 
+    Add(' ');
     Add('void main(void) '); 
     Add('{ '); 
     Add(' '); 
