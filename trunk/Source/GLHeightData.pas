@@ -68,7 +68,9 @@ interface
 
 uses
   Winapi.Windows, // for CreateMonochromeBitmap
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
 
   GLApplicationFileIO, GLUtils,
   GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;

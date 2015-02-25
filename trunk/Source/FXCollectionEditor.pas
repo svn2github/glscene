@@ -1,5 +1,7 @@
-// FXCollectionEditor
-{ : Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ : FXCollectionEditor<p>
 
   Edits a TXCollection<p>
 
@@ -22,14 +24,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.SysUtils,
-  VCL.Forms, VCL.ImgList, VCL.Controls,
-  VCL.ActnList, VCL.Menus, VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
+  System.Classes, System.SysUtils, System.Actions,
+  VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList, VCL.Menus,
+  VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
 
-  DesignEditors, DesignIntf,
+  DesignIntf,
+
   //GLS
-  GLCrossPlatform, XCollection, System.Actions;
+  GLScene,
+  GLBehaviours,
+  GLMaterialEx,
+  XCollection;
 
 type
   TXCollectionEditor = class(TForm)
@@ -90,15 +95,11 @@ procedure ReleaseXCollectionEditor;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 {$R *.dfm}
-
-uses
-  GLBehaviours, GLScene, GLMaterialEx;
 
 resourcestring
   cXCollectionEditor = 'XCollection editor';
