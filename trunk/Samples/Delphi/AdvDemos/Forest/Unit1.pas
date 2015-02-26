@@ -6,7 +6,7 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils, System.Classes, System.Math, System.Types,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
 
@@ -426,8 +426,8 @@ begin
   Result := nil;
   if not FileExists(cImposterCacheFile) then
     Exit;
-  cacheAge := FileDateToDateTime(FileAge(cImposterCacheFile));
-  exeAge := FileDateToDateTime(FileAge(Application.ExeName));
+  FileAge(cImposterCacheFile, cacheAge, True);
+  FileAge(Application.ExeName, exeAge, True);
   if cacheAge < exeAge then
     Exit;
 
@@ -673,8 +673,8 @@ begin
   begin
     reflectionProgram := TGLProgramHandle.CreateAndAllocate;
 
-    reflectionProgram.AddShader(TGLVertexShaderHandle, LoadAnsiStringFromFile('data\water_vp.glsl'));
-    reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadAnsiStringFromFile('data\water_fp.glsl'));
+    reflectionProgram.AddShader(TGLVertexShaderHandle, string(LoadAnsiStringFromFile('data\water_vp.glsl')),True);
+    reflectionProgram.AddShader(TGLFragmentShaderHandle, string(LoadAnsiStringFromFile('data\water_fp.glsl')),True);
     if not reflectionProgram.LinkProgram then
       raise Exception.Create(reflectionProgram.InfoLog);
     if not reflectionProgram.ValidateProgram then
