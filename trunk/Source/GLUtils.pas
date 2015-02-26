@@ -6,11 +6,12 @@
    Miscellaneous support utilities & classes.<p>
 
  <b>History : </b><font size=-1><ul>
+      <li>26/02/15 - PW - Added SaveStringToFile and LoadStringFromFile
       <li>02/01/13 - Yar - Added SetGLSceneMediaDir
       <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
       <li>04/03/10 - DanB - Now uses CharInSet
-      <li>27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
-      <li>24/03/09 - DanB - removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
+      <li>27/05/09 - DanB - Re-added TryStrToFloat, since it ignores user's locale.
+      <li>24/03/09 - DanB - Removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
                             changed StrToFloatDef to accept only 1 param + now overloaded
       <li>24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
                             they work on all platforms (with FPC)
@@ -80,10 +81,15 @@ function ParseInteger(var p: PChar): Integer;
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
 
-{: Saves "data" to "filename". }
+{: Saves ansistring "data" to "filename". }
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
-{: Returns the content of "filename". }
+{: Returns the ansistring content of "filename". }
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
+
+{: Saves string "data" to "filename". }
+procedure SaveStringToFile(const fileName: string; const data: String);
+{: Returns the string content of "filename". }
+function LoadStringFromFile(const fileName: string): String;
 
 {: Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
@@ -491,7 +497,7 @@ begin
     Result := -Result;
 end;
 
-// SaveStringToFile
+// SaveAnsiStringToFile
 //
 
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
@@ -509,7 +515,7 @@ begin
   end;
 end;
 
-// LoadStringFromFile
+// LoadAnsiStringFromFile
 //
 
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
@@ -532,6 +538,49 @@ begin
   else
     Result := '';
 end;
+
+// SaveStringToFile
+//
+
+procedure SaveStringToFile(const fileName: string; const data: String);
+var
+  n: Cardinal;
+  fs: TStream;
+begin
+  fs := CreateFileStream(fileName, fmCreate);
+  try
+    n := Length(data);
+    if n > 0 then
+      fs.Write(data[1], n);
+  finally
+    fs.Free;
+  end;
+end;
+
+// LoadStringFromFile
+//
+
+function LoadStringFromFile(const fileName: string): String;
+var
+  n: Cardinal;
+  fs: TStream;
+begin
+  if FileExists(fileName) then
+  begin
+    fs := CreateFileStream(fileName, fmOpenRead + fmShareDenyNone);
+    try
+      n := fs.Size;
+      SetLength(Result, n);
+      if n > 0 then
+        fs.Read(Result[1], n);
+    finally
+      fs.Free;
+    end;
+  end
+  else
+    Result := '';
+end;
+
 
 // SaveComponentToFile
 //

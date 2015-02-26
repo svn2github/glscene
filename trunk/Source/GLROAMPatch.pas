@@ -34,7 +34,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils,
+  System.SysUtils,
   GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
   OpenGLTokens, XOpenGL;
 
@@ -46,7 +46,6 @@ type
   // TROAMTriangleNode
   //
   PROAMTriangleNode = ^TROAMTriangleNode;
-
   TROAMTriangleNode = packed record
     base, left, right: PROAMTriangleNode;
     leftChild, rightChild: PROAMTriangleNode;
@@ -90,9 +89,11 @@ type
     procedure SetOcclusionSkip(val: Integer);
 
     procedure RenderROAM(vertices: TAffineVectorList;
-      vertexIndices: TIntegerList; texCoords: TTexPointList);
+                         vertexIndices: TIntegerList;
+                         texCoords: TTexPointList);
     procedure RenderAsStrips(vertices: TAffineVectorList;
-      vertexIndices: TIntegerList; texCoords: TTexPointList);
+                         vertexIndices: TIntegerList;
+                         texCoords: TTexPointList);
 
   public
     { Public Declarations }
@@ -106,13 +107,13 @@ type
     procedure ConnectToTheNorth(northPatch: TGLROAMPatch);
 
     // Returns false if MaxCLODTriangles limit is reached(Lin)
-    function Tesselate: boolean;
+    function Tesselate: Boolean;
     { : AV free version of Tesselate.<p>
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
-    function SafeTesselate: boolean;
+    function SafeTesselate: Boolean;
 
     { : Render the patch in high-resolution.<p>
       The lists are assumed to have enough capacity to allow AddNC calls
@@ -138,20 +139,17 @@ type
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
 
-    property ObserverPosition: TAffineVector read FObserverPosition
-      write FObserverPosition;
+    property ObserverPosition: TAffineVector read FObserverPosition write FObserverPosition;
 
     property TextureScale: TAffineVector read FTextureScale write FTextureScale;
-    property TextureOffset: TAffineVector read FTextureOffset
-      write FTextureOffset;
+    property TextureOffset: TAffineVector read FTextureOffset write FTextureOffset;
 
     property HighRes: Boolean read FHighRes write FHighRes;
 
     { : Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
     { : Number of frames remaining to next occlusion test. }
-    property OcclusionCounter: Integer read FOcclusionCounter
-      write FOcclusionCounter;
+    property OcclusionCounter: Integer read FOcclusionCounter write FOcclusionCounter;
     { : Result for the last occlusion test.<p>
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
@@ -293,11 +291,11 @@ begin
   Result := Assigned(tri.leftChild);
   if Result then
     exit; // dont split if tri already has a left child
-  with tri^ do 
-  begin 
-      // If this triangle is not in a proper diamond, force split our base neighbor
+  with tri^ do
+  begin
+    // If this triangle is not in a proper diamond, force split our base neighbor
     if Assigned(base) and (base.base <> tri) then
-	  Split(base);
+      Split(base);
 
     n := vNbTris;
   end;
@@ -336,16 +334,16 @@ begin
 
     Inc(vNbTris, 2);
 
-      // Link our Left Neighbor to the new children
-      if Assigned(left) then
+    // Link our Left Neighbor to the new children
+    if Assigned(left) then
       if left.base = tri then
         left.base := lc
       else if left.left = tri then
         left.left := lc
       else
         left.right := lc;
-      // Link our Right Neighbor to the new children
-      if Assigned(right) then
+    // Link our Right Neighbor to the new children
+    if Assigned(right) then
       if right.base = tri then
         right.base := rc
       else if right.left = tri then
@@ -471,10 +469,10 @@ var
   end;
 
   function RecursComputeVariance(const left, right, apex: TROAMVariancePoint;
-    node: Integer): Cardinal;
+    node: Integer): cardinal;
   var
     half: TROAMVariancePoint;
-    v: Cardinal;
+    v: cardinal;
     n2: Integer;
   begin
     with half do
@@ -569,13 +567,13 @@ end;
 // Tessellate
 //
 var
-  tessMaxVariance: Cardinal;
-  tessMaxDepth: Cardinal;
+  tessMaxVariance: cardinal;
+  tessMaxDepth: cardinal;
   tessCurrentVariance: PIntegerArray;
   tessObserverPosX, tessObserverPosY: Integer;
 
 function RecursTessellate(tri: PROAMTriangleNode; n: cardinal;
-  const left, right, apex: cardinal): boolean;
+  const left, right, apex: cardinal): Boolean;
 // returns false if tessellation failed due to MaxCLODTriangles limit
 var
   d: Integer;
@@ -597,7 +595,7 @@ begin
   end;
 end;
 
-function TGLROAMPatch.Tesselate: boolean;
+function TGLROAMPatch.Tesselate: Boolean;
 // Returns false if MaxCLODTriangles limit is reached.
 var
   tessFrameVarianceDelta: Integer;
@@ -616,9 +614,9 @@ var
     Result := Round(Sqrt(f) + f * c1Div100);
   end;
 
-procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal); forward;
+procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal); forward;
 
-  procedure FullLeftTess(tri: PROAMTriangleNode; n: Cardinal);
+  procedure FullLeftTess(tri: PROAMTriangleNode; n: cardinal);
   begin
     if Split(tri) then
     begin
@@ -628,7 +626,7 @@ procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal); forward;
     end;
   end;
 
-  procedure FullRightTess(tri: PROAMTriangleNode; n: Cardinal);
+  procedure FullRightTess(tri: PROAMTriangleNode; n: cardinal);
   begin
     if Split(tri) then
     begin
@@ -638,7 +636,7 @@ procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal); forward;
     end;
   end;
 
-  procedure FullBaseTess(tri: PROAMTriangleNode; n: Cardinal);
+  procedure FullBaseTess(tri: PROAMTriangleNode; n: cardinal);
   begin
     if Split(tri) then
     begin
@@ -693,18 +691,17 @@ begin
       VertexDist(0, s), VertexDist(s, s));
 end;
 
-
 // SafeTesselate
 //
-function TGLROAMPatch.SafeTesselate: boolean;
+function TGLROAMPatch.SafeTesselate: Boolean;
 var
-  Fail: boolean;
+  Fail: Boolean;
 begin
   Result := False;
   Fail := True;
   repeat
     try
-      //ResetTessellation;  <- caused gaps between tiles
+      //ResetTessellation; // <- caused gaps between tiles
       Result := Tesselate;
       Fail := False;
     except
@@ -823,7 +820,7 @@ class procedure TGLROAMPatch.FlushAccum(vertices: TAffineVectorList;
   vertexIndices: TIntegerList; texCoords: TTexPointList);
 begin
   if vertexIndices.Count = 0 then
-    Exit;
+    exit;
 
   if GL.ARB_vertex_buffer_object then
   begin

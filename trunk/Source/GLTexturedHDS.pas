@@ -33,7 +33,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLCrossPlatform, GLHeightData, GLMaterial;
+  System.Classes,
+  //GLS
+  GLCrossPlatform, GLHeightData, GLMaterial;
 
 type
 	TGLTexturedHDS = class (THeightDataSource)
