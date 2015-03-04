@@ -1735,7 +1735,6 @@ begin
         if EXT_direct_state_access then
           TextureParameterf(
             glHandle,
-            glTarget,
             GL_GENERATE_MIPMAP_SGIS,
             GL_TRUE)
         else
@@ -1754,7 +1753,6 @@ begin
       if EXT_direct_state_access then
         TextureParameterf(
           glHandle,
-          glTarget,
           GL_TEXTURE_MAX_LEVEL_SGIS,
           LLevelCount - 1)
       else
