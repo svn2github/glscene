@@ -2402,7 +2402,6 @@ type
     MatrixLoadTransposed: PFNGLMATRIXLOADTRANSPOSEDEXTPROC;
     MatrixMultTransposef: PFNGLMATRIXMULTTRANSPOSEFEXTPROC;
     MatrixMultTransposed: PFNGLMATRIXMULTTRANSPOSEDEXTPROC;
-    TextureParameterf: PFNGLTEXTUREPARAMETERFEXTPROC;
     TextureParameterfv: PFNGLTEXTUREPARAMETERFVEXTPROC;
     TextureParameteri: PFNGLTEXTUREPARAMETERIEXTPROC;
     TextureParameteriv: PFNGLTEXTUREPARAMETERIVEXTPROC;
@@ -4865,7 +4864,6 @@ begin
   MatrixLoadTransposed := GetAddress('MatrixLoadTransposed');
   MatrixMultTransposef := GetAddress('MatrixMultTransposef');
   MatrixMultTransposed := GetAddress('MatrixMultTransposed');
-  TextureParameterf := GetAddress('TextureParameterf');
   TextureParameterfv := GetAddress('TextureParameterfv');
   TextureParameteri := GetAddress('TextureParameteri');
   TextureParameteriv := GetAddress('TextureParameteriv');
@@ -6245,7 +6243,6 @@ begin
   MatrixLoadTransposed := GetCapAddress();
   MatrixMultTransposef := GetCapAddress();
   MatrixMultTransposed := GetCapAddress();
-  TextureParameterf := GetCapAddress();
   TextureParameterfv := GetCapAddress();
   TextureParameteri := GetCapAddress();
   TextureParameteriv := GetCapAddress();

@@ -1732,13 +1732,7 @@ begin
     begin
       if SGIS_generate_mipmap then
       begin
-        if EXT_direct_state_access then
-          TextureParameterf(
-            glHandle,
-            GL_GENERATE_MIPMAP_SGIS,
-            GL_TRUE)
-        else
-          TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+        TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
       end
       else
       begin
@@ -1750,13 +1744,7 @@ begin
 
     // Setup top limitation of LODs
     if SGIS_texture_lod and (LLevelCount > 1) then
-      if EXT_direct_state_access then
-        TextureParameterf(
-          glHandle,
-          GL_TEXTURE_MAX_LEVEL_SGIS,
-          LLevelCount - 1)
-      else
-        TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL_SGIS, LLevelCount - 1);
+      TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL_SGIS, LLevelCount - 1);
 
     // Select transfer method
     if bCompress then

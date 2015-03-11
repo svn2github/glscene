@@ -7035,7 +7035,6 @@ const
   PFNGLMATRIXLOADTRANSPOSEDEXTPROC = procedure(mode: GLenum; const m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLMATRIXMULTTRANSPOSEFEXTPROC = procedure(mode: GLenum; const m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLMATRIXMULTTRANSPOSEDEXTPROC = procedure(mode: GLenum; const m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXTUREPARAMETERFEXTPROC = procedure(texture: GLuint; pname: GLenum; param: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTEXTUREPARAMETERFVEXTPROC = procedure(texture: GLuint; target: GLenum; pname: GLenum; const params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTEXTUREPARAMETERIEXTPROC = procedure(texture: GLuint; target: GLenum; pname: GLenum; param: GLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTEXTUREPARAMETERIVEXTPROC = procedure(texture: GLuint; target: GLenum; pname: GLenum; const params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
