@@ -122,7 +122,7 @@ begin
    FStream.ReadBuffer(FHeader, SizeOf(TZlibHeader));
    if FHeader.Signature <> SIGN    then
    begin
-      FStream.Free;
+      FreeAndNil(FStream); // nil it too to avoid Clear() giving AV
       raise Exception.Create(FileName+' - This is not ZLIB file');
       Exit;
    end;

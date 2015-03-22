@@ -123,7 +123,7 @@ begin
    FStream.ReadBuffer(FHeader, SizeOf(TPakHeader));
    if (FHeader.Signature <> SIGN)  then
    begin
-      FStream.Free;
+      FreeAndNil(FStream); // nil it too to avoid own Clear() giving AV
       raise Exception.Create(FileName+' - This is not PAK file');
       Exit;
    end;
