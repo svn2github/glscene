@@ -141,7 +141,7 @@ Type
 
     property CompressionLevel: TCompressionLevel
                read GetCompressionLevel
-               write SetCompressionLevel default clNone;
+               write SetCompressionLevel default clDefault;
 
     procedure CreateArchive(FileName: string;
               OverwriteExistingFile: boolean = False);
@@ -349,7 +349,7 @@ end;
 
 function TLibArchive.GetCompressionLevel: TCompressionLevel;
 begin
-  Result := clNone;
+  Result := clDefault;
   if vArchive = nil then Exit;
   Result := vArchive.CompressionLevel;
 end;
@@ -707,7 +707,7 @@ constructor TBaseArchive.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
   FContentList := TStringList.Create;
-  FCompressionLevel := clNone;
+  FCompressionLevel := clDefault;
 end;
 
 destructor TBaseArchive.Destroy;

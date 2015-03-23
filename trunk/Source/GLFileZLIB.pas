@@ -122,7 +122,7 @@ begin
    FStream.ReadBuffer(FHeader, SizeOf(TZlibHeader));
    if FHeader.Signature <> SIGN    then
    begin
-      FreeAndNil(FStream); // nil it too to avoid Clear() giving AV
+      FreeAndNil(FStream); // nil it too to avoid own Clear() giving AV
       raise Exception.Create(FileName+' - This is not ZLIB file');
       Exit;
    end;
@@ -203,6 +203,7 @@ procedure TZLibArchive.AddFromStream(ContentName, Path: string; FS: TStream);
 var
    Temp, compressed: TMemoryStream;
    FCompressor: TZCompressionStream;
+   LCompLevel : TZCompressionLevel;
 begin
    if (FStream = nil) or ContentExists(ContentName) then exit;
 
@@ -217,22 +218,30 @@ begin
    end
    else
      Temp := nil;
-   Dir.FilePos    := FHeader.DirOffset;
+   Dir.FilePos := FHeader.DirOffset;
    Dir.CbrMode := compressionLevel;
 
    compressed := TMemoryStream.Create;
 
-   //Unarchive data to stream
-   FCompressor := TZCompressionStream.Create(compressed);
+   // Archive data to stream
+   case CompressionLevel of
+     clNone    : LCompLevel := zcNone;
+     clFastest : LCompLevel := zcFastest;
+     clMax     : LCompLevel := zcMax;
+   else
+     LCompLevel := zcDefault;
+   end;
+   FCompressor := TZCompressionStream.Create(compressed, LCompLevel, 15);
+
    FCompressor.CopyFrom(FS,   FS.Size);
    FCompressor.Free;
 
-   //Copy results
+   // Copy results
    FStream.CopyFrom(compressed, 0);
    Dir.FileLength := compressed.Size;
    Compressed .Free;
 
-   //???
+   // ???
    FHeader.DirOffset := FStream.Position;
    if FHeader.DirLength > 0 then
    begin
