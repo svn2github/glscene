@@ -282,7 +282,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Top = 26
     Width = 277
     Height = 498
-    Align = alClient
+    Align = alRight
     TabOrder = 1
     Visible = False
     object GalleryListView: TListView
@@ -300,7 +300,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Top = 26
     Width = 257
     Height = 498
-    Align = alLeft
+    Align = alClient
     TabOrder = 2
     object Tree: TTreeView
       Left = 1
