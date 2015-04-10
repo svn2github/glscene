@@ -29,7 +29,7 @@ uses
   Classes, SysUtils,
   //GLS
   GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  GLSrgbe, GLApplicationFileIO, GLVectorGeometry, GLStrings;
+  GLSRGBE, GLApplicationFileIO, GLVectorGeometry, GLStrings;
 
 type
 

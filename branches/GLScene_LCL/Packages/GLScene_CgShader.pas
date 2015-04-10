@@ -8,7 +8,7 @@ interface
 
 uses
     GLCgRegister, GLCgShader, cg, cgGL, GLCgBombShader, 
-  CGPostTransformationShader, LazarusPackageIntf;
+  cgPostTransformationShader, LazarusPackageIntf;
 
 implementation
 
