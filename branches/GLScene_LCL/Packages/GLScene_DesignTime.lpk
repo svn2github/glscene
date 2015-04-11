@@ -2,6 +2,7 @@
 <CONFIG>
   <Package Version="4">
     <Name Value="GLScene_DesignTime"/>
+    <Type Value="DesignTime"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
       <Version Value="11"/>
@@ -20,9 +21,7 @@
       <Other>
         <CompilerMessages>
           <IgnoredMessages idx4055="True" idx5024="True"/>
-          <UseMsgFile Value="True"/>
         </CompilerMessages>
-        <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Version Major="1"/>
@@ -123,7 +122,6 @@
       <EnableI18N Value="True"/>
       <OutDir Value="../Locale/Languages/Lazarus"/>
     </i18n>
-    <Type Value="DesignTime"/>
     <RequiredPkgs Count="5">
       <Item1>
         <PackageName Value="codetools"/>

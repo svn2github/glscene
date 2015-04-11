@@ -27,7 +27,6 @@
         <Verbosity>
           <ShowHints Value="False"/>
         </Verbosity>
-        <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Description Value="GLScene - OpenGL 3D library

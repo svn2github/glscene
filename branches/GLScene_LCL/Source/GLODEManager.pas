@@ -1592,7 +1592,7 @@ begin
   dSpaceCollide(FSpace,Self,nearCallback);
   case FSolver of
     osmDefault   : dWorldStep(FWorld, deltaTime);
-    osmStepFast  : dWorldStepFast1(FWorld, deltaTime, FIterations);
+    osmStepFast,   //dWorldStepFast1 has been removed from ODE 0.12
     osmQuickStep : dWorldQuickStep(FWorld, deltaTime);
   end;
   dJointGroupEmpty(FContactGroup);
