@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 146
   Caption = 'Shaded Terrain'
   ClientHeight = 408
-  ClientWidth = 573
+  ClientWidth = 788
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,13 +14,14 @@ object Form1: TForm1
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
+  OnMouseWheel = FormMouseWheel
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 65
-    Width = 573
+    Width = 788
     Height = 343
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
@@ -40,7 +41,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 573
+    Width = 788
     Height = 65
     Align = alTop
     BevelOuter = bvLowered
@@ -53,29 +54,50 @@ object Form1: TForm1
       Caption = 'Bumpmap Sub-sampling'
     end
     object LASubFactor: TLabel
-      Left = 320
+      Left = 306
       Top = 8
-      Width = 19
+      Width = 62
       Height = 13
-      Caption = 'Sub'
+      Caption = 'LASubFactor'
     end
     object Label2: TLabel
       Left = 8
       Top = 40
-      Width = 109
+      Width = 89
       Height = 13
-      Caption = 'Bumpmapping Intensity'
+      Caption = 'Bumpmap Intensity'
     end
     object LABumpIntensity: TLabel
-      Left = 320
-      Top = 40
-      Width = 79
+      Left = 308
+      Top = 38
+      Width = 59
       Height = 13
-      Caption = 'LABumpIntensity'
+      Caption = 'LABIntensity'
+    end
+    object LaScaleZ: TLabel
+      Left = 474
+      Top = 8
+      Width = 37
+      Height = 13
+      Caption = 'Scale Z'
+    end
+    object LabelZ: TLabel
+      Left = 703
+      Top = 8
+      Width = 47
+      Height = 13
+      Caption = 'LAScaleZ'
+    end
+    object LabelContInterval: TLabel
+      Left = 703
+      Top = 35
+      Width = 70
+      Height = 13
+      Caption = 'LAContInterval'
     end
     object TBSubSampling: TTrackBar
-      Left = 136
-      Top = 1
+      Left = 127
+      Top = 3
       Width = 177
       Height = 29
       Max = 3
@@ -88,8 +110,8 @@ object Form1: TForm1
       OnChange = TBSubSamplingChange
     end
     object TBIntensity: TTrackBar
-      Left = 136
-      Top = 33
+      Left = 125
+      Top = 30
       Width = 177
       Height = 29
       Max = 100
@@ -102,16 +124,58 @@ object Form1: TForm1
       TickMarks = tmBoth
       OnChange = TBIntensityChange
     end
+    object TBContourInterval: TTrackBar
+      Left = 520
+      Top = 30
+      Width = 177
+      Height = 29
+      Max = 4000
+      Min = 1000
+      PageSize = 1
+      Frequency = 10
+      Position = 2000
+      TabOrder = 2
+      TabStop = False
+      ThumbLength = 10
+      TickMarks = tmBoth
+      OnChange = TBContourIntervalChange
+    end
+    object TBScaleZ: TTrackBar
+      Left = 520
+      Top = 1
+      Width = 177
+      Height = 29
+      Max = 50
+      PageSize = 1
+      Frequency = 10
+      Position = 10
+      TabOrder = 3
+      TabStop = False
+      ThumbLength = 10
+      TickMarks = tmBoth
+      OnChange = TBScaleZChange
+    end
+    object CBContourIntervals: TCheckBox
+      Left = 422
+      Top = 35
+      Width = 97
+      Height = 17
+      Caption = 'Contour Interval'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+      OnClick = CBContourIntervalsClick
+    end
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
-    Left = 56
-    Top = 96
+    Left = 104
+    Top = 88
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
-    Left = 56
-    Top = 136
+    Left = 24
+    Top = 88
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
@@ -141,21 +205,23 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Position.Coordinates = {00000C430000C842000096420000803F}
-        Width = 60.000000000000000000
-        Height = 60.000000000000000000
+        VisibilityCulling = vcHierarchical
+        Position.Coordinates = {0000164300000C43000020420000803F}
+        Width = 20.000000000000000000
+        Height = 20.000000000000000000
         Rotation = 0.000000000000000000
       end
     end
     object DummyCube1: TGLDummyCube
-      Position.Coordinates = {0000000000000041000000000000803F}
+      Direction.Coordinates = {D8B3DDB2000000000000803F00000000}
+      Position.Coordinates = {0000484200000041000000000000803F}
       CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
         DepthOfView = 650.000000000000000000
         FocalLength = 50.000000000000000000
         NearPlaneBias = 0.100000001490116100
         TargetObject = DummyCube1
-        Position.Coordinates = {0000A040000020410000C8410000803F}
+        Position.Coordinates = {0000A04000002041000020420000803F}
         Direction.Coordinates = {0000803F000000000000000000000000}
         Left = 264
         Top = 160
@@ -165,7 +231,7 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'ground'
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Scale.Coordinates = {00008040000080400000803E00000000}
+      Scale.Coordinates = {00008040000080400000003F00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLBumpmapHDS1
       TileSize = 256
@@ -187,14 +253,14 @@ object Form1: TForm1
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 56
-    Top = 176
+    Left = 24
+    Top = 208
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 16
-    Top = 96
+    Left = 24
+    Top = 144
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
@@ -434,8 +500,8 @@ object Form1: TForm1
         Material.Texture.EnvColor.Color = {0000003F0000003F0000003F0000003F}
         Material.Texture.Disabled = False
       end>
-    Left = 16
-    Top = 136
+    Left = 104
+    Top = 144
   end
   object GLTexCombineShader1: TGLTexCombineShader
     Combiners.Strings = (
@@ -447,8 +513,8 @@ object Form1: TForm1
     MaterialLibrary = GLMaterialLibrary1
     LibMaterial3Name = 'detail'
     LibMaterial4Name = 'texture'
-    Left = 96
-    Top = 136
+    Left = 208
+    Top = 144
   end
   object GLBumpmapHDS1: TGLBumpmapHDS
     MaxPoolSize = 20
@@ -458,7 +524,7 @@ object Form1: TForm1
     OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
     BumpScale = 0.001000000047497451
     MaxTextures = 0
-    Left = 96
-    Top = 96
+    Left = 208
+    Top = 88
   end
 end
