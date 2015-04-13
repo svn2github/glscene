@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // GLBumpmapHDS
 { : Implements a HDS that automatically generates an elevation bumpmap.<p>
 
@@ -10,24 +13,22 @@
   <li>22/04/10 - Yar - Fixes after GLState revision
   <li>22/01/10 - Yar - Added GLTextureFormat to uses
   <li>13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
-  Also takes advantage of texture-coodrinates, calculated by HeightDataSource
+      Also takes advantage of texture-coodrinates, calculated by HeightDataSource
   <li>02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
-  HeightDataSource replaces ElevationHDS.
-  (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
+      HeightDataSource replaces ElevationHDS.
+      (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
   <li>01/02/07 - LIN- Added 'MaxTextures' property.
-  if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
-  Set MaxTextures=0 to disable Auto-deletes, and manage your normal-map textures manually.
-
-  WARNING: If you use THeightData.MaterialName, instead of THeightData.LibMaterial,
-  then HeightData does NOT register the texture as being used.
-  So make sure MaxTextures=0 if you use MaterialName.
-
+      if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
+      Set MaxTextures=0 to disable Auto-deletes, and manage your normal-map textures manually.
+      WARNING: If you use THeightData.MaterialName, instead of THeightData.LibMaterial,
+      then HeightData does NOT register the texture as being used.
+      So make sure MaxTextures=0 if you use MaterialName.
   <li>25/01/07 - LIN- Replaced 'StartPreparingData' and 'GenerateBumpmap' functions.
-  Now supports a TGLBitmap with multiple tiles.
-  Now works with HeightTileFileHDS.
-  World texture coordinates for individual textures are now calculated,
-  (TGLLibMaterial.TextureOffset and TGLLibMaterial.TextureScale)
-  Bugfix: Terrain position no longer jumps when InfiniteWrap is turned off.
+      Now supports a TGLBitmap with multiple tiles.
+      Now works with HeightTileFileHDS.
+      World texture coordinates for individual textures are now calculated,
+      (TGLLibMaterial.TextureOffset and TGLLibMaterial.TextureScale)
+      Bugfix: Terrain position no longer jumps when InfiniteWrap is turned off.
   <li>15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
   <li>20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
   <li>20/02/04 - EG - Creation
@@ -40,8 +41,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, SyncObjs,
-
+  System.Classes, System.SysUtils, System.SyncObjs,
+  // GLS
   GLHeightData, GLGraphics, GLVectorGeometry,
   GLTexture, GLMaterial, OpenGLTokens, GLUtils, GLVectorTypes;
 
@@ -121,16 +122,13 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
+// ------------------
+// ------------------ TGLBumpmapHDS ------------------
+// ------------------
 
 const
   cDefaultBumpScale = 0.01;
-
-  // ------------------
-  // ------------------ TGLBumpmapHDS ------------------
-  // ------------------
 
   // Create
   //
@@ -177,7 +175,7 @@ begin
   libMat := aHeightData.LibMaterial;
   aHeightData.MaterialName := '';
   if (FMaxTextures > 0) and (assigned(libMat)) and (libMat.IsUsed = false) then
-    libMat.free;
+    libMat.Free;
   inherited;
 end;
 
@@ -218,7 +216,7 @@ begin
       if libMat.IsUsed then
         i := i + 1
       else
-        libMat.free;
+        libMat.Free;
       cnt := matLib.Materials.Count;
     end;
   end;

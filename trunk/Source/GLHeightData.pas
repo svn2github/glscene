@@ -21,27 +21,26 @@
   <li>17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
   <li>17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
   <li>03/04/07 - DaStr - Commented out lines that caused compiler hints
-  Added more explicit pointer dereferencing
-  Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
-  FPC compatibility (thanks Burkhard Carstens)
+      Added more explicit pointer dereferencing
+      Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
+      FPC compatibility (thanks Burkhard Carstens)
   <li>27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
-  -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
-  -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
-  -AfterPreparingData  : (Main Thread) - Perform any cleanup, which cant be done from a sub-thread
+     -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
+     -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
+     -AfterPreparingData  : (Main Thread) - Perform any cleanup, which cant be done from a sub-thread
   <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+  <li>14/03/07 - DaStr - Added explicit pointer dereferencing (thanks Burkhard Carstens)
   <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
-  Called from TGLBitmapHDS and TGLHeightTileFileHDS
-  Many tweaks and changes to threading. (I hope I havent broken anything)
+     Called from TGLBitmapHDS and TGLHeightTileFileHDS
+     Many tweaks and changes to threading. (I hope I havent broken anything)
   <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
   <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
-  GLHeightData is now derived from TGLUpdateAbleObject
-  GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
+     GLHeightData is now derived from TGLUpdateAbleObject
+     GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
   <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
   <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
   <li>03/07/04 - LR - Corrections for Linux compatibility
-  CreateMonochromeBitmap NOT implemented for Linux
+     CreateMonochromeBitmap NOT implemented for Linux
   <li>12/07/03 - EG - Further InterpolatedHeight fixes
   <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
   <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
@@ -51,7 +50,7 @@
   <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
   <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
   <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
-  THeightData now has a MaterialName property
+     THeightData now has a MaterialName property
   <li>24/02/02 - EG - Faster Cleanup & cache management
   <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
   <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
@@ -1906,7 +1905,6 @@ end;
 // CreateMonochromeBitmap
 //
 procedure TGLBitmapHDS.CreateMonochromeBitmap(size: Integer);
-{$IFDEF MSWINDOWS}
 type
   TPaletteEntryArray = array [0 .. 255] of TPaletteEntry;
   PPaletteEntryArray = ^TPaletteEntryArray;
@@ -1952,12 +1950,6 @@ begin
   SetLength(FScanLineCache, 0); // clear the cache
   SetLength(FScanLineCache, size);
 end;
-{$ENDIF}
-{$IFDEF UNIX}
-begin
-{$MESSAGE Warn 'CreateMonochromeBitmap: Needs to be implemented'}
-end;
-{$ENDIF}
 
 // FreeMonochromeBitmap
 //
