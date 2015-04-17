@@ -455,7 +455,7 @@ type
 
   // TGLSourcePFXDispersionMode
   //
-  TGLSourcePFXDispersionMode = (sdmFast, sdmIsotropic);
+  TGLSourcePFXDispersionMode = (sdmFast, sdmIsotropic, sdmGaussian);
 
   // TGLSourcePFXEffect
   //
@@ -979,14 +979,32 @@ begin
   end;
 end;
 
+function GaussianRandom(Sigma : single): single;
+begin
+  Result := Sigma * Sqrt(-2.0 * Ln(Random)) * Cos(2 * Pi * Random);
+end;
+
 // RndVector
 //
 
 procedure RndVector(const dispersion: TGLSourcePFXDispersionMode;
   var v: TAffineVector; var f: Single;
   dispersionRange: TGLCoordinates);
+
+  function GetRandomVector(NotIsotropic : boolean) : TVector3f;
+  // Isotropic gives constrainted vector within a radius
+  const
+    LRadius = 0.5;
+  begin
+    repeat
+      Result.V[0] := (Random - 0.5);
+      Result.V[1] := (Random - 0.5);
+      Result.V[2] := (Random - 0.5);
+    until NotIsotropic or (VectorNorm(Result) <= LRadius * LRadius);
+  end;
+
 var
-  f2, fsq: Single;
+  f2: Single;
   p: TVector;
 begin
   f2 := 2 * f;
@@ -994,24 +1012,14 @@ begin
     p := VectorScale(dispersionRange.DirectVector, f2)
   else
     p := VectorScale(XYZHmgVector, f2);
-  case dispersion of
-    sdmFast:
-      begin
-        v.V[0] := (Random - 0.5) * p.V[0];
-        v.V[1] := (Random - 0.5) * p.V[1];
-        v.V[2] := (Random - 0.5) * p.V[2];
-      end;
-  else
-    fsq := Sqr(0.5);
-    repeat
-      v.V[0] := (Random - 0.5);
-      v.V[1] := (Random - 0.5);
-      v.V[2] := (Random - 0.5);
-    until VectorNorm(v) <= fsq;
-    v.V[0] := v.V[0] * p.V[0];
-    v.V[1] := v.V[1] * p.V[1];
-    v.V[2] := v.V[2] * p.V[2];
-  end;
+
+  v := GetRandomVector(dispersion = sdmFast);
+  if dispersion = sdmGaussian then
+    ScaleVector(v, MinFloat(0.5, GaussianRandom(0.6)));
+
+  v.V[0] := v.V[0] * p.V[0];
+  v.V[1] := v.V[1] * p.V[1];
+  v.V[2] := v.V[2] * p.V[2];
 end;
 
 // ------------------
