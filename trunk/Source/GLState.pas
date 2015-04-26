@@ -63,7 +63,7 @@ interface
 {.$DEFINE GLS_CACHE_MISS_CHECK}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLCrossPlatform,
   GLVectorTypes,

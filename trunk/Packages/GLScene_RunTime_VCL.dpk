@@ -285,6 +285,7 @@ contains
   GLSJPG in '..\Source\GLSJPG.pas',
   LIBPNG in '..\Source\LIBPNG.pas',
   GLFileJPEG in '..\Source\GLFileJPEG.pas',
-  GLFilePNG in '..\Source\GLFilePNG.pas';
+  GLFilePNG in '..\Source\GLFilePNG.pas',
+  GLIsosurface in '..\Source\GLIsosurface.pas';
 
 end.

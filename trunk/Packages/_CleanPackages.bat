@@ -9,7 +9,7 @@ del *.dsk /s
 del *.ddp /s
 del *.log /s
 del *.tvsconfig /s
-
+del *.stat /s
 
 echo --------------------------------------------------------
 echo delete directories with subdirectories and files 
