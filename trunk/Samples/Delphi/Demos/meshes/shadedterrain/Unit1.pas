@@ -7,8 +7,7 @@ uses
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Imaging.Jpeg,
   Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls,
-
-  // GLScene
+  // GLS
   GLScene, GLObjects, GLKeyboard, GLTerrainRenderer, GLHeightData,
   GLCadencer, GLTexture, GLSkydome, GLWin32Viewer, GLVectorGeometry,
   GLLensFlare, GLBumpmapHDS, GLTexCombineShader, GLMaterial, GLCoordinates,
@@ -102,7 +101,7 @@ begin
 
   // apply texture map scale (our heightmap size is 256)
   TerrainRenderer1.TilesPerTexture := 1; // 256/TerrainRenderer1.TileSize;
-  TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
+  //TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
   TerrainRenderer1.ContourWidth := 2;
 
   // initialize intensity texture
@@ -319,7 +318,7 @@ begin
     TerrainRenderer1.ContourInterval := TBContourInterval.Position
   else
     TerrainRenderer1.ContourInterval := 0;
-  GLSceneViewer1.SetFocus;
+  SetFocus;
 end;
 
 end.

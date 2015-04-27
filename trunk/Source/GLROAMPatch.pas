@@ -7,7 +7,7 @@
 
   <b>History : </b><font size=-1><ul>
   <li>29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
-  and added contouring
+                      and added contouring
   <li>22/08/10 - DaStr - Fixed compiler warning
   <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
   <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
@@ -15,11 +15,11 @@
   <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
   <li>30/03/07 - DaStr - Added $I GLScene.inc
   <li>19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
-  It will now increase the buffer instead of not splitting. Bugtracker ID=1574111
+                 It will now increase the buffer instead of not splitting. Bugtracker ID=1574111
   <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.
   <li>09/06/06 - Lin - Bugfix: Stop splitting Triangles when MaxCLODTriangles is reached (prevents Access Violations)
   <li>10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
-  but not GL_EXT_draw_range_elements
+                         but not GL_EXT_draw_range_elements
   <li>25/04/04 - EG - Occlusion testing support
   <li>06/02/03 - EG - Adaptative variance computation
   <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
@@ -38,7 +38,7 @@ uses
   System.SysUtils,
   // GLS
   GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
-  OpenGLTokens, XOpenGL;
+  OpenGLTokens, XOpenGL, GLIsolines;
 
 type
 
@@ -173,9 +173,6 @@ type
   { : Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
-{ : Defines contouring segments inside a triangle using elevations }
-procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
-  ElevationDelta: Single; Segments: TAffineVectorList);
 { : Draw contours on rendering terrain patches }
 procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
@@ -231,61 +228,6 @@ end;
 function GetROAMTrianglesCapacity: Integer;
 begin
   Result := vTriangleNodesCapacity;
-end;
-
-// TriangleElevationSegments
-//
-procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
-  ElevationDelta: Single; Segments: TAffineVectorList);
-
-  function SegmentIntersect(const a, b: TAffineVector; e: Single): Integer;
-  var
-    f: Single;
-  begin
-    if a.Z < b.Z then
-    begin
-      if (e >= a.Z) and (e < b.Z) then
-      begin
-        f := (e - a.Z) / (b.Z - a.Z);
-        Segments.Add(VectorLerp(a, b, f));
-        Result := 1;
-      end
-      else
-        Result := 0;
-    end
-    else if a.Z > b.Z then
-    begin
-      if (e > b.Z) and (e <= a.Z) then
-      begin
-        f := (e - b.Z) / (a.Z - b.Z);
-        Segments.Add(VectorLerp(b, a, f));
-        Result := 1;
-      end
-      else
-        Result := 0;
-    end
-    else
-      Result := 0;
-  end;
-
-var
-  i, n, LowElev, HighElev: Integer;
-  e: Single;
-
-begin
-  LowElev := Round(MinFloat(p1.Z, p2.Z, p3.Z) / ElevationDelta - 0.5);
-  HighElev := Round(MaxFloat(p1.Z, p2.Z, p3.Z) / ElevationDelta + 0.5);
-  for i := LowElev to HighElev do
-  begin
-    e := i * ElevationDelta + 0.1;
-    { add a real offset - this avoids all the special cases }
-    n := SegmentIntersect(p1, p2, e);
-    If n < 2 then
-      n := n + SegmentIntersect(p2, p3, e);
-    if n < 2 then
-      n := n + SegmentIntersect(p3, p1, e);
-    Assert((n = 2) or (n = 0));
-  end;
 end;
 
 // DrawContours

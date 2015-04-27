@@ -7,6 +7,7 @@
    Do not include any other units in uses clause <p>
 
 	<b>History : </b><font size=-1><ul>
+    <li>25/04/15 - PW - Added TGLVector and TGLMatrix as arrays instead of records
     <li>01/11/13 - PW - Fixed XE5 error: E2376 static can only be used on non-virtual class methods
     <li>12/12/12 - PW - Added TGLVector's and TGLMatrix's types
     <li>11/11/11 - PW - Creation. Defined TGLPoint, TGLPolygon and TGLPolyhedron types
@@ -77,6 +78,8 @@ type
 //-----------------------
 // Vector types
 //-----------------------
+  TGLVector = array of Single;
+
   TGLVector2DType = array [0..1] of Single;
   TGLVector3DType = array [0..2] of Single;
 
@@ -112,6 +115,9 @@ type
 //-----------------------
 // Matrix types
 //-----------------------
+  TGLMatrix = array of array of Single;
+  TGLByteMatrix = array of array of Byte;
+
   TGLMatrix2DType = array[0..3] of TGLVector2D;
   {$NODEFINE TGLMatrix2DType}
   {.$HPPEMIT END OPENNAMESPACE}
@@ -172,12 +178,13 @@ type
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 //---------------------------------------------------------------
-
-
 implementation
+//---------------------------------------------------------------
+//---------------------------------------------------------------
+//---------------------------------------------------------------
 
 { TGLPoint2D }
-
+//
 function TGLPoint2D.Create(X, Y : Single): TGLPoint2D;
 begin
   Result.X := X;
@@ -212,7 +219,7 @@ begin
 end;
 
 { TGLPoint3D }
-
+//
 function TGLPoint3D.Create(X, Y, Z: Single): TGLPoint3D;
 begin
   Result.X := X;
@@ -252,7 +259,7 @@ begin
 end;
 
 { TGLVector2D }
-
+//
 function TGLVector2D.Create(const AX, AY, AW: Single): TGLVector2D;
 begin
   Result.X := AX;
@@ -278,7 +285,7 @@ begin
 end;
 
 { TGLVector3D }
-
+//
 function TGLVector3D.Create(const AX, AY, AZ, AW: Single): TGLVector3D;
 begin
   Result.X := AX;
@@ -304,6 +311,5 @@ function TGLVector3D.Length: Single;
 begin
   Result := Sqrt(Self.Norm);
 end;
-
 
 end.

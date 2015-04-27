@@ -27,7 +27,7 @@ Overall
 
 	<b>History : </b><font size=-1><ul>
      <li>05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
-	   <li>12/06/04 - Wolf Blecher - Created, first implementation (Blechwolf@myrealbox.com)
+	   <li>12/06/04 - Wolf Blecher - Created, the first implementation
 	</ul></font>
 }
 
@@ -37,6 +37,8 @@ interface
 
 uses
   GLVectorGeometry;
+  
+ {$i GLScene.inc}   
 
 type
   TSingle3DArray = array of array of array of Single;
@@ -46,7 +48,7 @@ type
 // TIsoSurfaceExtractor
 //
 {: 3D isosurface extractor class.<p>
-   This class allows to calculate and exctract isosurfaces from scalar field
+   This class allows to calculate and extract isosurfaces from scalar field
    voxel models using a given isovalue.<p>
 }
   TIsoSurfaceExtractor = class(TObject)
@@ -401,10 +403,10 @@ const
 
 {-------------------------------------------------------------------------
  Class IsoSurfaceExtractor
- Purpose: Extract an Isosurface from volume dataset
+ Purpose: Extract an Isosurface from volume dataset for given Isovalue
  -------------------------------------------------------------------------}
 
-// Build Index depending on wether the edges are outside or inside the surface
+// Build Index depending on whether the edges are outside or inside the surface
 //
 function TIsoSurfaceExtractor.BuildIndex(var ADatavals: array of Single;
   Isovalue: Single): word;

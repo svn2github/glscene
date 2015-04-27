@@ -238,6 +238,7 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = GLMaterialLibrary1
       CLODPrecision = 30
+      ContourWidth = 0
     end
     object GLLensFlare: TGLLensFlare
       Size = 100
