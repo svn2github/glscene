@@ -276,9 +276,11 @@ contains
   GLS.Canvas in '..\Source\GLS.Canvas.pas',
   GLS.FilePNG in '..\Source\GLS.FilePNG.pas',
   GLS.FileJPEG in '..\Source\GLS.FileJPEG.pas',
-  GLS.CameraController in '..\Source\GLS.CameraController.pas';
+  GLS.CameraController in '..\Source\GLS.CameraController.pas',
+  GLS.Isosurface in '..\Source\GLS.Isosurface.pas';
 
 end.
+
 
 
 
