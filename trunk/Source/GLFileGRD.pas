@@ -6,7 +6,7 @@
   GRD (Grid Text Format) vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>
-  <li>05/12/14 - PW - Added to GLScene_Runtime.dpk
+  <li>01/05/15 - PW - Fixed LoadFromStrem procedure
   <li>10/04/09 - PW - Separated from GLVectorFileObjects.pas
   </ul></font>
 }
@@ -17,14 +17,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
 
-  // GLScene
+  // GLS
   GLVectorGeometry, GLVectorTypes, GLVectorFileObjects,
   GLApplicationFileIO, GLGraph, GLTypes;
 
 type
-  // GLFileGRD
+  // TGLGRDVectorFile
   //
   { : The GRD file represents ascii grid formats in 2D/3D.<p>
     This is a format for storing regular grids as a

@@ -52,9 +52,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, Math,
-
-  // GLScene
+  System.Classes, System.SysUtils, System.Math,
+  // GLS
   GLScene, GLObjects, GLVectorFileObjects, GLTexture, GLApplicationFileIO,
   GLVectorGeometry, File3DS, Types3DS, OpenGLTokens, GLContext, GLPersistentClasses,
   GLStrings, GLFile3DSSceneObjects, GLCrossPlatform, GLVectorTypes, GLVectorLists,
@@ -70,9 +69,9 @@ type
     ModelMatrix: TMatrix;
     Color: TVector;            // Omni Light.
     TargetPos: TAffineVector;  // Spot Light.
-    SpotLightCutOff: single;
-    HotSpot: single;
-    Roll: single;
+    SpotLightCutOff: Single;
+    HotSpot: Single;
+    Roll: Single;
   end;
 
   {: TGLFile3DSAnimationKeys.
@@ -80,7 +79,7 @@ type
      An abstract class that describes how to interpolate animation keys. }
   TGLFile3DSAnimationKeys = class(TPersistentObject)
   private
-    FNumKeys: integer;
+    FNumKeys: Integer;
     FKeys: array of TKeyHeader3DS;
     procedure InterpolateFrame(var I: integer; var w: real; const AFrame: real);
   protected
@@ -168,7 +167,7 @@ type
 
   TGLFile3DSSpotLightCutOffAnimationKeys = class(TGLFile3DSAnimationKeys)
   private
-    FFall: array of single;
+    FFall: array of Single;
   public
     procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
       const AData: Pointer); override;
@@ -181,7 +180,7 @@ type
 
   TGLFile3DSLightHotSpotAnimationKeys = class(TGLFile3DSAnimationKeys)
   private
-    FHot: array of single;
+    FHot: array of Single;
   public
     procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
       const AData: Pointer); override;
@@ -194,7 +193,7 @@ type
 
   TGLFile3DSRollAnimationKeys = class(TGLFile3DSAnimationKeys)
   private
-    FRoll: array of single;
+    FRoll: array of Single;
   public
     procedure LoadData(const ANumKeys: integer; const Keys: PKeyHeaderList;
       const AData: Pointer); override;

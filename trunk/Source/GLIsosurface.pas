@@ -36,19 +36,17 @@ unit GLIsosurface;
 interface
 
 uses
-  GLVectorGeometry;
-  
- {$i GLScene.inc}   
+  GLVectorGeometry, GLVectorTypes;
 
 type
   TSingle3DArray = array of array of array of Single;
-  TVertexArray = array of TVertex;
+  TVertexArray = array of TVector3f;
   TIntegerArray = array of Integer;
 
 // TIsoSurfaceExtractor
 //
 {: 3D isosurface extractor class.<p>
-   This class allows to calculate and extract isosurfaces from scalar field
+   This class allows to calculate and exctract isosurfaces from scalar field
    voxel models using a given isovalue.<p>
 }
   TIsoSurfaceExtractor = class(TObject)
@@ -83,6 +81,9 @@ implementation
 //-------------------------------------------------------------------------
 
 const
+
+// Marching Cube TriTable
+//
  (*
      4----4------5
     /|          /|
@@ -97,8 +98,6 @@ const
  |/          |/
  3-----2-----2
  *)
-// Marching Cube TriTable
-//
   MC_TRITABLE: array [0 .. 255, 0 .. 15] of Integer =
     ((-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
     (0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
@@ -362,6 +361,9 @@ const
   MC_EDGETABLE: array [0 .. 11, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 3),
     (3, 0), (4, 5), (5, 6), (6, 7), (7, 4), (0, 4), (1, 5), (2, 6), (3, 7));
 
+
+// Marching Tetrahedra TriTable
+//
 (*
         + 0
          /|\
@@ -379,9 +381,6 @@ const
          \|/
         + 2
 *)
-
-// Marching Tetrahedra TriTable
-//
   MT_TRITABLE: array [0 .. 15, 0 .. 6] of Integer =
     ((-1, -1, -1, -1, -1, -1, -1), (2, 3, 0, -1, -1, -1, -1),
     (4, 1, 0, -1, -1, -1, -1), (2, 4, 1, 3, 4, 2, -1),
@@ -591,15 +590,15 @@ var
     edge := 0;
     while MC_TRITABLE[index, edge] <> -1 do
     begin
-      ver1 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]],
+      Ver1 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]],
         CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]], Isovalue);
-      ver2 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
+      Ver2 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
         CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 1]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 1]], Isovalue);
-      ver3 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
+      Ver3 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
         CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 1]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 1]], Isovalue);
@@ -649,7 +648,7 @@ begin
         CubeData[6] := Data[i + 1, j - 1, k + 1];
         CubeData[7] := Data[i, j - 1, k + 1];
 
-        index := BuildIndex(CubeData, Isovalue);
+        Index := BuildIndex(CubeData, Isovalue);
         AppendTri();
       end; // for k
     end; // for j

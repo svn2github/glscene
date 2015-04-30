@@ -7,7 +7,7 @@
    Do not include any other units in uses clause <p>
 
 	<b>History : </b><font size=-1><ul>
-    <li>25/04/15 - PW - Added TGLVector and TGLMatrix as arrays instead of records
+    <li>25/04/15 - PW - Added 2D/3D vector and matrix arrays
     <li>01/11/13 - PW - Fixed XE5 error: E2376 static can only be used on non-virtual class methods
     <li>12/12/12 - PW - Added TGLVector's and TGLMatrix's types
     <li>11/11/11 - PW - Creation. Defined TGLPoint, TGLPolygon and TGLPolyhedron types
@@ -16,11 +16,6 @@
 unit GLTypes;
 
 interface
-
-type
-  TGLBox = record
-    ALeft, ATop, ANear, ARight, ABottom, AFar: Single;
-  end;
 
 //-----------------------
 //Point types
@@ -54,9 +49,9 @@ type
       procedure Offset(const ADeltaX, ADeltaY, ADeltaZ : Single);
   end;
 
+//Point Arrays
   TGLPoint2DArray = array of TGLPoint2D;
   TGLPoint3DArray = array of TGLPoint3D;
-
 
 //-----------------------
 //Polygon types
@@ -68,7 +63,6 @@ const
    ClosedPolygon2D: TGLPoint2D = (X: $FFFF; Y: $FFFF);
    ClosedPolygon3D: TGLPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
 
-
 //-----------------------
 //Polyhedron types
 //-----------------------
@@ -78,7 +72,6 @@ type
 //-----------------------
 // Vector types
 //-----------------------
-  TGLVector = array of Single;
 
   TGLVector2DType = array [0..1] of Single;
   TGLVector3DType = array [0..2] of Single;
@@ -112,19 +105,21 @@ type
           W: Single;)
   end;
 
+//Vector Arrays
+  TGLVector2DArray = array of TGLVector2D;
+  TGLVector3DArray = array of TGLVector3D;
+
+
 //-----------------------
 // Matrix types
 //-----------------------
-  TGLMatrix = array of array of Single;
-  TGLByteMatrix = array of array of Byte;
-
   TGLMatrix2DType = array[0..3] of TGLVector2D;
-  {$NODEFINE TGLMatrix2DType}
+  {.$NODEFINE TGLMatrix2DType}
   {.$HPPEMIT END OPENNAMESPACE}
   {.$HPPEMIT END 'typedef TGLVector2D TGLMatrix2DArray[4];'}
   {.$HPPEMIT END CLOSENAMESPACE}
   TGLMatrix3DType = array[0..3] of TGLVector3D;
-  {$NODEFINE TGLMatrix3DType}
+  {.$NODEFINE TGLMatrix3DType}
   {.$HPPEMIT END OPENNAMESPACE}
   {.$HPPEMIT END 'typedef TGLVector3D TGLMatrix3DType[4];'}
   {.$HPPEMIT END CLOSENAMESPACE}
@@ -150,9 +145,14 @@ type
           e41, e42, e43, e44: Single);
   end;
 
+//Matrix Arrays
   TGLMatrix2DArray = array of TGLMatrix2D;
   TGLMatrix3DArray = array of TGLMatrix3D;
 
+
+//--------------------------
+// Mesh simple record types
+//--------------------------
 type
    TGLMesh2DVertex = packed record
     X, Y: Single;
@@ -169,11 +169,24 @@ type
   TGLMesh2D = array of TGLMesh2DVertex;
   TGLMesh3D = array of TGLMesh3DVertex;
 
+//--------------------------
+// Quaternion record types
+//--------------------------
+type
 
-  TGLQuaternion3D = record
+  TGLQuaternion = record
     ImPart: TGLVector3D;
     RePart: Single;
   end;
+
+  TGLQuaternionArray = array of TGLQuaternion;
+
+
+type
+  TGLBox = record
+    ALeft, ATop, ANear, ARight, ABottom, AFar: Single;
+  end;
+
 
 //---------------------------------------------------------------
 //---------------------------------------------------------------

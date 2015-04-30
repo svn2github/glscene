@@ -7,9 +7,9 @@
 
   <b>History : </b><font size=-1><ul>
   25/04/15 - PW - Fixed TriangleElevationSegments procedure
-  06/07/02 - Phil Scadden - Added TContour class and Initialise_Isolining procedure
+  06/07/02 - Phil Scadden - Added TGLIsoline class and Initialise_Isolining procedure
   15/08/01 - Alexander Weidauer - Added CONREC Delphi implementation
-             (based on Nicholas Yue CONREC.C and  Paul D. Bourke CONREC.F)
+             (based on Nicholas Yue CONREC.C and  Paul Bourke CONREC.F)
   15/07/01 - PW - Creation of the unit
 }
 unit GLIsolines;
@@ -21,9 +21,15 @@ uses
   //GLS
   GLVectorGeometry, GLVectorLists, GLTypes, GLSpline;
 
-{$i GLScene.inc}   
- 
+{$i GLScene.inc}
+
 type
+  TGLVector = array of Single;
+  TGLByteVector = array of Byte;
+
+  TGLMatrix = array of array of Single;
+  TGLByteMatrix = array of array of Byte;
+
   TVectorL4D = array [0 .. 4] of Single;
   TVectorL4I = array [0 .. 4] of Integer;
   TCastArray = array [0 .. 2, 0 .. 2, 0 .. 2] of Integer;
@@ -31,20 +37,20 @@ type
   TGLIsoline2D = array [0 .. 32767] of TGLPoint2D;
   PGLIsoline2D = ^TGLIsoline2D;
 
-  TIsoline = class
-    NP: integer;
+  TGLIsoline = class
+    NP: Integer;
     Line: PGLIsoline2D;
     constructor Create(LineSize: integer); virtual;
     destructor Destroy; override;
   end;
-  PIsoline = ^TIsoline;
+  PGLIsoline = ^TGLIsoline;
 
-  TIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
+  TGLIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TIsolines = class
+  TGLIsolines = class
     CoordRange: Integer;
     LineList: TList;
-    IsolineState: TIsolineState;
+    IsolineState: TGLIsolineState;
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
@@ -55,7 +61,7 @@ type
 procedure Initialize_Isolining(var DataGrid: TGLMatrix;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
 procedure Release_Memory_Isolining;
-function GetNextIsoline(var Isoline: TIsoline): Boolean;
+function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 
 { : Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
@@ -82,7 +88,7 @@ procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   Z - values of cut levels
 }
 procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-  x: TGLVector; y: TGLVector; nc: Integer; z: TGLVector; Isoline: TIsoline);
+  X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
 
 
 //----------------------------------------------------------------------
@@ -94,13 +100,13 @@ implementation
 //----------------------------------------------------------------------
 
 var
-  ii, jj: integer;
+  ii, jj: Integer;
   Visited: TGLByteMatrix; // 0 = not visited
   // 1 = visited
   // if it is a saddle points, then bits 1-4 also encode
   // which exit and entry points were used.
   Grid: TGLMatrix;
-  NX, NY: integer;
+  NX, NY: Integer;
   LineX1, LineY1, LineX2, LineY2: TGLVector;
 
 function EqAdd(a, b: integer): integer;
@@ -117,22 +123,22 @@ procedure Initialize_Isolining;
 
 var
   i, j: Integer;
-  maxnp: Integer;
+  Maxnp: Integer;
 begin
   ii := 1;
   jj := 1;
   NX := NXpoints;
   NY := NYpoints;
-  maxnp := NX * NY div 256;
+  Maxnp := NX * NY div 256;
   SetLength(Visited, NX, NY);
   for i := 0 to NX - 1 do
     for j := 0 to NY - 1 do
       Visited[i, j] := 0;
   SetLength(Grid, NX + 1, NY + 1);
-  SetLength(LineX1, maxnp);
-  SetLength(LineY1, maxnp);
-  SetLength(LineX2, maxnp);
-  SetLength(LineY2, maxnp);
+  SetLength(LineX1, Maxnp);
+  SetLength(LineY1, Maxnp);
+  SetLength(LineX2, Maxnp);
+  SetLength(LineY2, Maxnp);
   // Generate a grid of data relative to the Isoline level
   for i := 1 to NX do
   begin
@@ -162,7 +168,7 @@ end;
 
 // Cuts
 //
-procedure Cuts(const g: TGLMatrix; i, j: integer; var s: array of integer);
+procedure Cuts(const g: TGLMatrix; i, j: Integer; var s: array of Integer);
 begin
   s[0] := 0;
   if g[i][j + 1] * g[i + 1][j + 1] < 0 then
@@ -190,27 +196,27 @@ end;
 // Intercept
 //
 procedure Intercept(const g: TGLMatrix; i, j, s: Integer;
-  var x, y: single);
+  var x, y: Single);
 begin
   case s of
     1:
       begin
-        x := abs(g[i][j + 1] / (g[i + 1][j + 1] - g[i][j + 1])) + i;
+        x := Abs(g[i][j + 1] / (g[i + 1][j + 1] - g[i][j + 1])) + i;
         y := 1 + j;
       end;
     2:
       begin
-        y := abs(g[i + 1][j] / (g[i + 1][j + 1] - g[i + 1][j])) + j;
+        y := Abs(g[i + 1][j] / (g[i + 1][j + 1] - g[i + 1][j])) + j;
         x := 1 + i;
       end;
     3:
       begin
-        x := abs(g[i][j] / (g[i + 1][j] - g[i][j])) + i;
+        x := Abs(g[i][j] / (g[i + 1][j] - g[i][j])) + i;
         y := j;
       end;
     4:
       begin
-        y := abs(g[i][j] / (g[i][j + 1] - g[i][j])) + j;
+        y := Abs(g[i][j] / (g[i][j + 1] - g[i][j])) + j;
         x := i;
       end;
   end;
@@ -222,17 +228,17 @@ function Free_Exit(const Visited: TGLByteMatrix;
   i, j, NX, NY, Lexit: Integer): Boolean;
 var
   ni, nj: Integer;
-  entry: Integer;
+  Entry: Integer;
 begin
-  nj := j + EqAdd(lexit, 1) - EqAdd(lexit, 3);
-  ni := i + EqAdd(lexit, 2) - EqAdd(lexit, 4);
+  nj := j + EqAdd(Lexit, 1) - EqAdd(Lexit, 3);
+  ni := i + EqAdd(Lexit, 2) - EqAdd(Lexit, 4);
   if (ni < 1) or (ni >= NX) or (nj < 1) or (nj >= NY) or (Visited[ni][nj] = 0)
   then
     Result := True // can always exit on an edge
   else
   begin
-    entry := ((lexit + 1) mod 4) + 1;
-    Result := (((Visited[ni][nj] shr entry) and 1) = 0);
+    Entry := ((Lexit + 1) mod 4) + 1;
+    Result := (((Visited[ni][nj] shr Entry) and 1) = 0);
   end;
 end;
 
@@ -245,7 +251,7 @@ var
   ni, nj, si, sj: Integer;
   p, q: Integer;
   s: array [0 .. 5] of Integer;
-  entry: integer;
+  Entry: integer;
 
 begin
   ni := i;
@@ -255,7 +261,7 @@ begin
   NP := 0;
   offgrid := False;
   Visited[i][j] := 1;
-  Intercept(Grid, i, j, lexit, LineX[NP], LineY[NP]);
+  Intercept(Grid, i, j, Lexit, LineX[NP], LineY[NP]);
   NP := 1;
   while True do
   begin
@@ -270,7 +276,7 @@ begin
     entry := ((lexit + 1) mod 4) + 1;
     Cuts(Grid, ni, nj, s);
     // Have come to a new point on the Isoline
-    lexit := 0;
+    Lexit := 0;
     if (s[0] = 2) then
     begin
       // If there are two cuts then choose the one that is not the entry
@@ -319,10 +325,10 @@ end;
   sufficient space has been allocated to store the coordinates of
   any feasible Isoline }
 //
-function GetNextIsoline(var Isoline: TIsoline): Boolean;
+function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 var
   OffGrid: boolean;
-  lexit: integer;
+  Lexit: integer;
   np1, np2: integer;
   i, j, k: integer;
   s: array [0 .. 4] of integer;
@@ -347,7 +353,7 @@ begin
             TraceIsoline(i, j, Lexit, NX, NY, Grid, Visited, LineX2, LineY2,
               np2, offgrid);
             // Copy both bits of line into Isoline
-            Isoline := TIsoline.Create(np1 + np2);
+            Isoline := TGLIsoline.Create(np1 + np2);
             for k := 0 to np2 - 1 do
             begin
               Isoline.Line^[k].x := LineX2[np2 - k - 1];
@@ -362,7 +368,7 @@ begin
           else
           begin
             // Just copy the single Isoline loop into LineX & LineY
-            Isoline := TIsoline.Create(np1);
+            Isoline := TGLIsoline.Create(np1);
             for k := 0 to np1 - 1 do
             begin
               Isoline.Line^[k].x := LineX1[k];
@@ -444,36 +450,36 @@ end;
 
 // TIsolines class
 //
-constructor TIsolines.Create;
+constructor TGLIsolines.Create;
 begin
   inherited;
   LineList := TList.Create;
   IsolineState := ilsEmpty;
 end;
 
-destructor TIsolines.Destroy;
+destructor TGLIsolines.Destroy;
 begin
   FreeList;
   inherited;
 end;
 
-procedure TIsolines.FreeList;
+procedure TGLIsolines.FreeList;
 var
   i: integer;
 begin
   for i := LineList.Count - 1 downto 0 do
   begin
-    with TIsoline(LineList.Items[i]) do
+    with TGLIsoline(LineList.Items[i]) do
       Free;
   end;
   LineList.Clear;
   IsolineState := ilsEmpty;
 end;
 
-procedure TIsolines.MakeIsolines(var Depths: TGLMatrix; bmSize: integer;
+procedure TGLIsolines.MakeIsolines(var Depths: TGLMatrix; bmSize: integer;
   StartDepth, EndDepth: Single; Interval: Integer);
 var
-  Isoline: TIsoline;
+  Isoline: TGLIsoline;
 
 begin
   IsolineState := ilsCalculating;
@@ -491,14 +497,14 @@ begin
   IsolineState := ilsReady;
 end;
 
-constructor TIsoline.Create(LineSize: integer);
+constructor TGLIsoline.Create(LineSize: Integer);
 begin
   inherited Create;
   NP := LineSize;
   Getmem(Line, NP * 2 * Sizeof(Single));
 end;
 
-destructor TIsoline.Destroy;
+destructor TGLIsoline.Destroy;
 begin
   inherited;
   if Assigned(Line) then
@@ -509,7 +515,7 @@ end;
 // Conrec
 //
 procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-  x: TGLVector; y: TGLVector;  nc: Integer; z: TGLVector; Isoline: TIsoline);
+  X: TGLVector; Y: TGLVector;  NC: Integer; Z: TGLVector; var F: Text);
 // ------------------------------------------------------------------------------
 const
   im: array [0 .. 3] of Integer = (0, 1, 1, 0); // coord. cast array west - east
@@ -723,9 +729,8 @@ begin
                       y2 := Ysec(m1, m2);
                     end;
                 end; // ---  -Case deside;
-                // -------Output of results ---------------------
-                GetNextIsoline(Isoline);
-                //Writeln(Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
+                // -------Output of results in File ---------------------
+                Writeln(F, Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
                 // ---------------------------------------------------------
               end; // ----  -if Not(deside=0)
             end; // ----  -for m
