@@ -17,7 +17,7 @@ unit GLFileB3D;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLVectorFileObjects, GLApplicationFileIO, GLTexture, GLTextureFormat,
   GLMaterial, GLVectorTypes, GLVectorGeometry, GLVectorLists,

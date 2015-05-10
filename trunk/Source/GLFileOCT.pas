@@ -22,7 +22,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes, System.SysUtils,
   GLVectorFileObjects, GLVectorGeometry, GLApplicationFileIO,
   FileOCT;
 
@@ -56,7 +56,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils, GLTexture, GLMaterial, GLGraphics, GLCrossPlatform, GLState,
+  GLTexture, GLMaterial, GLGraphics, GLCrossPlatform, GLState,
   GLUtils, GLTextureFormat;
 
 // ------------------

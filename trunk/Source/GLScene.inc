@@ -35,9 +35,6 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
-// Activate support of C++ differences for Delphi compiler
-{$DEFINE GLS_CPPB}
-
 // Activate support for png images (using pngimage.pas library)
 // GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
 // Also, Define "Auto" Resize To Nearest 8 Multiple Size
@@ -139,7 +136,7 @@
 {$UNDEF GLS_UNSUPPORTED}
 
 {$IFDEF GLS_UNSUPPORTED}
-  Error: unsupported version, requires at least Delphi 5
+  Error: unsupported version, requires at least Delphi XE2
 {$ENDIF}
 
 {$IFNDEF GLS_NO_INLINE}

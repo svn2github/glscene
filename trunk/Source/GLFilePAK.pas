@@ -16,7 +16,8 @@ unit GLFilePAK;
 interface
 
 uses
-  Classes, SysUtils, GLSArchiveManager;
+  System.Classes, System.SysUtils, 
+  GLSArchiveManager;
 
 const
    SIGN = 'PACK';
@@ -69,8 +70,13 @@ Type
       procedure Extract(index: integer; NewName: string); override;
       procedure Extract(ContentName, NewName: string); override;
   end;
-
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
 implementation
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
 
 var
    Dir: TFileSection;

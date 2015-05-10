@@ -17,14 +17,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
-  GLApplicationFileIO, GLSJPG, GLVectorGeometry;
+  GLSJPG,
+  GLCrossPlatform,
+  OpenGLTokens,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
+  GLApplicationFileIO,
+  GLVectorGeometry;
 
 type
-
   TGLJPEGImage = class(TGLBaseImage)
   private
     FAbortLoading: boolean;
@@ -224,7 +229,7 @@ begin
         jpeg_read_scanlines(@jc.d, @DestScanline, LinesPerCall);
       end;
 
-      // letzter Pass für progressive JPGs, erster & einziger für Baseline-JPGs
+        // final image pass for progressive, first and only pass for baseline
       while (jc.d.output_scanline < jc.d.output_height) do
       begin
         LinesRead := jpeg_read_scanlines(@jc.d, @DestScanline, LinesPerCall);

@@ -23,8 +23,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-  //
+  System.Classes, System.SysUtils,
+  //GLS
   GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry,
   GLVectorTypes, GLVectorLists, Q3BSP, GLBSP, GLTexture,
   GLGraphics, GLCrossPlatform, GLState, GLUtils,
@@ -48,14 +48,11 @@ var
   vQ3BSPLightmapGammaCorrection: Single = 2.5;
   vQ3BSPLightmapBrightness: Single = 2; // scaling factor, 1.0 = unchanged
   vGLFileQ3BSPLoadMaterials: boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions like GlaredX)
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 
+ // ------------------------------------------------------------------
+ // ------------------------------------------------------------------
+ // ------------------------------------------------------------------
+implementation
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
 // ------------------

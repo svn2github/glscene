@@ -32,7 +32,9 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLScene, GLMaterial, GLBitmapFont, GLCrossPlatform, GLColor,
+uses 
+  System.Classes, System.SysUtils,
+  GLScene, GLMaterial, GLBitmapFont, GLCrossPlatform, GLColor,
   GLRenderContextInfo;
 
 type
@@ -158,7 +160,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLCanvas, OpenGLTokens, GLContext;
+uses 
+  GLCanvas, OpenGLTokens, GLContext;
 
 // ------------------
 // ------------------ TGLGameMenu ------------------

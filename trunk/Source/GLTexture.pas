@@ -355,10 +355,10 @@ type
     FResourceFile: string;
     class function IsSelfLoading: Boolean; virtual;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
-    function GetTextureTarget: TGLTextureTarget; virtual; abstract;
-    function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetDepth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetTextureTarget: TGLTextureTarget; virtual;
+    function GetHeight: Integer; virtual;
+    function GetWidth: Integer; virtual;
+    function GetDepth: Integer; virtual;
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
@@ -373,7 +373,7 @@ type
     {: Save textureImage to file.<p>
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    procedure SaveToFile(const fileName: string); dynamic;
     {: Load textureImage from a file.<p>
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture.<br>
@@ -383,7 +383,7 @@ type
     {: Returns a user-friendly denomination for the class.<p>
      This denomination is used for picking a texture image class
      in the IDE expert. }
-    class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    class function FriendlyName: string; virtual;
     {: Returns a user-friendly description for the class.<p>
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
@@ -396,7 +396,7 @@ type
     {: Returns image's bitmap handle.<p>
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32: TGLImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetBitmap32: TGLImage; virtual;
     {: Request for unloading bitmapData, to free some memory.<p>
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap.<br>
@@ -1070,9 +1070,12 @@ var
 type
   TFriendlyImage = class(TGLBaseImage);
 
-{$IFDEF GLS_CPPB}
   // Dummy methods for CPP
   //
+function TGLTextureImage.GetTextureTarget: TGLTextureTarget;
+begin
+end;
+
 function TGLTextureImage.GetHeight: Integer;
 begin
   Result := 0;
@@ -1088,7 +1091,6 @@ begin
   Result := 0;
 end;
 
-
 procedure TGLTextureImage.SaveToFile(const FileName: String);
 begin
 end;
@@ -1102,7 +1104,7 @@ function TGLTextureImage.GetBitmap32: TGLImage;
 begin
   Result := nil;
 end;
-{$ENDIF}
+
 
 
 {$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}

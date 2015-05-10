@@ -3,7 +3,7 @@
 //
 {: GLFileDAE<p>
 
-	Quake2 MD2 vector file format implementation.<p>
+	COLLADA DAE file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
       <li>17/01/14 - PW - Bugfixed for XE5
@@ -18,8 +18,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO{, Fmx.FileDAE};
+  System.Classes, System.SysUtils,
+  GLVectorFileObjects, GLApplicationFileIO {, Fmx.FileDAE};
 
 type
    // TGLDAEVectorFile

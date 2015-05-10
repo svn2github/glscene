@@ -19,7 +19,9 @@ unit GLFileSTL;
 interface
 
 uses
-  Classes, GLVectorFileObjects, GLApplicationFileIO, GLCrossPlatform;
+  System.Classes, 
+  System.SysUtils,
+  GLVectorFileObjects, GLApplicationFileIO, GLCrossPlatform;
 
 type
 
@@ -49,7 +51,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils,
   TypesSTL, GLVectorGeometry, GLVectorLists,  GLUtils;
 
 const

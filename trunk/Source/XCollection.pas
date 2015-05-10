@@ -100,8 +100,7 @@ type
     { : Returns a user-friendly denomination for the class.<p>
       This denomination is used for picking a texture image class
       in the IDE expert. }
-    class function FriendlyName: String; virtual; {$IFNDEF GLS_CPPB}abstract;
-    {$ENDIF}
+    class function FriendlyName: String; virtual;
     { : Returns a user-friendly description for the class.<p>
       This denomination is used for helping the user when picking a
       texture image class in the IDE expert. If it's not overriden,
@@ -236,13 +235,11 @@ var
   vXCollectionDestroyEvent: TNotifyEvent;
 
   // Dummy method for CPP
-{$IFDEF GLS_CPPB}
-
 class function TXCollectionItem.FriendlyName: String;
 begin
   result := '';
 end;
-{$ENDIF}
+
 // ---------- internal global routines (used by xcollection editor) -------------
 
 // RegisterXCollectionDestroyEvent

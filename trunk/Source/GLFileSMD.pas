@@ -20,7 +20,7 @@ unit GLFileSMD;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   GLVectorFileObjects, GLTexture, GLApplicationFileIO,
   GLVectorTypes, GLVectorGeometry, GLMaterial;
 

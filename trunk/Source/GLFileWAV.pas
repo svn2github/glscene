@@ -20,7 +20,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLApplicationFileIO, GLSoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
+  System.Classes, 
+  GLApplicationFileIO, GLSoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
 
 type
 
@@ -57,7 +58,13 @@ type
 	      function LengthInBytes : Integer; override;
    end;
 
+//------------------------------------------------------
+//------------------------------------------------------
+//------------------------------------------------------
 implementation
+//------------------------------------------------------
+//------------------------------------------------------
+//------------------------------------------------------
 
  {$IFDEF MSWINDOWS}
 type

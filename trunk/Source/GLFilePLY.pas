@@ -18,7 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   GLVectorFileObjects, GLApplicationFileIO, FileMD2, TypesMD2;
 
 type
@@ -44,7 +44,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLUtils;
+uses 
+  GLUtils;
 
 // ------------------
 // ------------------ TGLPLYVectorFile ------------------

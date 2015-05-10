@@ -17,8 +17,8 @@ interface
 {.$I GLScene.inc}
 
 uses
-  Classes,
-  SysUtils,
+  System.Classes,
+  System.SysUtils,
   GLCrossPlatform,
   OpenGLTokens,
   GLContext,

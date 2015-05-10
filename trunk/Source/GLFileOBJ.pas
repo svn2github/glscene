@@ -81,8 +81,8 @@ unit GLFileOBJ;
 interface
 
 uses
-  Classes,
-  SysUtils,
+  System.Classes,
+  System.SysUtils,
 
   GLApplicationFileIO,
   GLCrossPlatform, GLPersistentClasses, GLVectorGeometry,

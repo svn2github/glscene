@@ -7,7 +7,7 @@
    systems. Room for optimisations.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed GeometryCoordinates unit to GLGeometryCoordinates
+      <li>10/12/14 - PW - Renamed GeometryCoordinates unit into GLGeometryCoordinates
       <li>30/04/03 - EG - Hyperbolic functions moved to GLVectorGeometry.pas
       <li>30/04/03 - ARH - Remove math.pas dependency
       <li>24/04/03 - ARH - Double versions added
@@ -95,9 +95,15 @@ procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single; var x,y,z:single;
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double; var x,y,z:double;
   var ierr:integer);overload;
 
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
-// ----- Cylindrical_Cartesian -------------------------------------------------
+// ----- Cylindrical_Cartesian ---------------------------------------------
 {** Convert Cylindrical to Cartesian with no checks.
 Ref: http://mathworld.wolfram.com/CylindricalCoordinates.html}
 procedure Cylindrical_Cartesian(const r,theta,z1:single;var x,y,z:single);

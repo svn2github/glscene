@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GlFileX<p>
+{: GLFileX<p>
 
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
@@ -29,17 +29,15 @@
    </ul></font>
 }
 
-unit GlFileX;
+unit GLFileX;
 
 interface
 
 {$i GLScene.inc}
 
 uses
-  // VCL
-  Classes, SysUtils,
-
-  // GLScene
+  System.Classes, System.SysUtils,
+  // GLS
   GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry, GLTexture,
   GLVectorLists, GLMaterial,
 
@@ -54,7 +52,13 @@ type
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
 class function TGLXVectorFile.Capabilities : TDataFileCapabilities;
 begin

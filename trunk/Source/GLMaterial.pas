@@ -139,12 +139,10 @@ type
     {: Request to apply the shader.<p>
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
-       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     {: Request to un-apply the shader.<p>
        Subclasses can assume the shader has been applied previously.<br>
        Return True to request a multipass. }
     function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
-       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     {: Invoked once, before the destruction of context or release of shader.<p>
        The call happens with the OpenGL context being active. }
     procedure DoFinalize; dynamic;
@@ -547,7 +545,7 @@ type
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TGLLibMaterialName);
-    procedure Loaded; virtual;{$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+    procedure Loaded; virtual;
 
   public
     { Public Declarations }
@@ -556,9 +554,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+    procedure Apply(var ARci: TRenderContextInfo); virtual;
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual;
 
     procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
@@ -847,8 +845,8 @@ resourcestring
 
   // Dummy methods for CPP
   //
-{$IFDEF GLS_CPPB}
-procedure TGLShader.DoApply(var Rci: TRenderContextInfo; Sender: TObject);
+procedure TGLShader.DoApply
+(var Rci: TRenderContextInfo; Sender: TObject);
 begin
 end;
 
@@ -869,8 +867,6 @@ function TGLAbstractLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
 begin
   Result := True;
 end;
-{$ENDIF}
-
 
   // ------------------
   // ------------------ TGLFaceProperties ------------------

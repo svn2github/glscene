@@ -32,7 +32,7 @@ type
 			{: Request to edit a textureImage.<p>
 				Returns True if changes have been made.<br>
 				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;
    end;
 
    TGLTextureImageEditorClass = class of TGLTextureImageEditor;
@@ -93,12 +93,10 @@ var
 
   // Dummy method for CPP
   //
-{$IFDEF GLS_CPPB}
 class function TGLTextureImageEditor.Edit(ATexImage: TGLTextureImage): Boolean;
 begin
   Result := True;
 end;
-{$ENDIF}
 
 // EditGLTextureImage
 //
