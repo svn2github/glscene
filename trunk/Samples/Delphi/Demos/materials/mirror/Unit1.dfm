@@ -12,6 +12,9 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
+  OnCreate = FormCreate
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
@@ -64,6 +67,8 @@ object Form1: TForm1
       Width = 73
       Height = 17
       Caption = 'Opaque'
+      Checked = True
+      State = cbChecked
       TabOrder = 0
       OnClick = CBOpaqueClick
     end
@@ -84,8 +89,6 @@ object Form1: TForm1
       Width = 90
       Height = 17
       Caption = 'ClearZBuffer'
-      Checked = True
-      State = cbChecked
       TabOrder = 2
       OnClick = CBClearZClick
     end
@@ -179,6 +182,13 @@ object Form1: TForm1
       Material.FrontProperties.Ambient.Color = {00000000000000000000803F0000803F}
       Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F9A99993E}
       Material.BlendingMode = bmTransparency
+      Material.Texture.ImageClassName = 'TGLBlankImage'
+      Material.Texture.Image.Width = 64
+      Material.Texture.Image.Height = 64
+      Material.Texture.Image.ColorFormat = 6408
+      Material.Texture.MagFilter = maNearest
+      Material.Texture.MinFilter = miNearest
+      Material.Texture.Compression = tcNone
       ObjectsSorting = osNone
       Direction.Coordinates = {000000800000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}

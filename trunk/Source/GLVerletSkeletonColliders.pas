@@ -13,7 +13,7 @@ unit GLVerletSkeletonColliders;
 interface
 
 uses
-  Classes,
+  System.Classes,
   //GLS
   GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects, GLVerletTypes,
   GLVectorTypes;
@@ -89,9 +89,6 @@ procedure AddSCVerletConstriantsToVerletWorld(
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ Global methods ------------------
 // ------------------

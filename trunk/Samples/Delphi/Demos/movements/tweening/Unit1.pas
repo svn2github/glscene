@@ -3,18 +3,19 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
+  Winapi.Windows,
+  Winapi.Messages,
   System.SysUtils,
   System.Variants,
   System.Classes,
+  System.TypInfo,
   Vcl.Graphics,
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Controls,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  Vcl.Samples.Spin
+  Vcl.Samples.Spin,
   //GLS
   GLScene,
   GLObjects,
@@ -26,8 +27,7 @@ uses
   GLAnimationUtils,
   GLVectorGeometry,
   GLBitmapFont,
-  GLWindowsFont,
-  TypInfo;
+  GLWindowsFont;
 
 type
 
@@ -191,12 +191,12 @@ procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton; 
 begin
   if ssCtrl in Shift then
   begin
-    if (Button = mbLeft) then
+    if (Button = TMouseButton.mbLeft) then
     begin
       PointA.Position.X := X;
       PointA.Position.Y := GLSceneViewer1.Height-Y;
     end
-    else if (Button = mbRight) then
+    else if (Button = TMouseButton.mbRight) then
     begin
       PointB.Position.X := X;
       PointB.Position.Y := GLSceneViewer1.Height-Y;

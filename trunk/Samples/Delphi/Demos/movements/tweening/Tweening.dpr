@@ -1,17 +1,17 @@
-{ : Tweener interpolation demo.<p>
+{ : Tweening demo.<p>
 
   Original Tweener (caurina.transitions.Tweener) is a Class used to create tweenings
   and other transitions via ActionScript code for projects built on the Flash platform.
 
-  Current unit is a demonstration project of the GLScene's delphi implementation of
-  the tweener library : AnimationUtils.pas
+  Current demo is an example project of the GLScene's delphi implementation of
+  the tweener library in GLAnimationUtils.pas unit
 
   <b>History : </b><font size=-1><ul>
   <li>11/10/12 - YP - Created by Yann Papouin
   </ul>
 }
 
-program interpolation;
+program Tweening;
 
 uses
   Forms,

@@ -27,6 +27,9 @@
         <Projects Include="SmoothNavigator\SmoothNavigator.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="tweening\Tweening.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -107,14 +110,23 @@
     <Target Name="SmoothNavigator:Make">
         <MSBuild Projects="SmoothNavigator\SmoothNavigator.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Tweening">
+        <MSBuild Projects="tweening\Tweening.dproj"/>
+    </Target>
+    <Target Name="Tweening:Clean">
+        <MSBuild Projects="tweening\Tweening.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Tweening:Make">
+        <MSBuild Projects="tweening\Tweening.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Column;events;Hierarchy;Manual;objmove;pointto;Pong;SmoothNavigator"/>
+        <CallTarget Targets="Column;events;Hierarchy;Manual;objmove;pointto;Pong;SmoothNavigator;Tweening"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Column:Clean;events:Clean;Hierarchy:Clean;Manual:Clean;objmove:Clean;pointto:Clean;Pong:Clean;SmoothNavigator:Clean"/>
+        <CallTarget Targets="Column:Clean;events:Clean;Hierarchy:Clean;Manual:Clean;objmove:Clean;pointto:Clean;Pong:Clean;SmoothNavigator:Clean;Tweening:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Column:Make;events:Make;Hierarchy:Make;Manual:Make;objmove:Make;pointto:Make;Pong:Make;SmoothNavigator:Make"/>
+        <CallTarget Targets="Column:Make;events:Make;Hierarchy:Make;Manual:Make;objmove:Make;pointto:Make;Pong:Make;SmoothNavigator:Make;Tweening:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

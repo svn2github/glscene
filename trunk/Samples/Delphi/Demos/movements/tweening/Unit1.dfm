@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 325
   Top = 237
-  Width = 732
-  Height = 521
-  Caption = 'Form1'
+  Caption = 'Tweener'
+  ClientHeight = 482
+  ClientWidth = 716
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -18,11 +20,11 @@ object Form1: TForm1
     Left = 0
     Top = 129
     Width = 716
-    Height = 354
+    Height = 353
     Camera = GLCamera1
     Buffer.BackgroundColor = clMedGray
     Buffer.Lighting = False
-    FieldOfView = 148.451522827148400000
+    FieldOfView = 148.366622924804700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     TabOrder = 0
@@ -70,8 +72,8 @@ object Form1: TForm1
       Height = 13
       AutoSize = False
       Caption = 
-        '- Note that interpolation can be used for any data (Position, Co' +
-        'lor, etc.)'
+        '- Note that tweening can be used for any data (Position, Color, ' +
+        'etc.)'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -86,8 +88,8 @@ object Form1: TForm1
       Height = 29
       AutoSize = False
       Caption = 
-        '- Note that interpolation is time dependant (it will play at the' +
-        ' same speed on different computers)'
+        '- Note that tweening is time dependant (it will play at the same' +
+        ' speed on different computers)'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -128,7 +130,6 @@ object Form1: TForm1
       Width = 155
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 3
     end
     object EaseTypeB: TComboBox
@@ -137,7 +138,6 @@ object Form1: TForm1
       Width = 155
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       TabOrder = 4
     end
     object TimeA: TSpinEdit
@@ -179,7 +179,7 @@ object Form1: TForm1
       Position.Coordinates = {0000164400009643000000000000803F}
       NoZWrite = False
       Static = False
-      size = 10.000000000000000000
+      Size = 10.000000000000000000
       Style = psRound
       object GLFlatText1: TGLFlatText
         Position.Coordinates = {000000000000A041000000000000803F}
@@ -194,7 +194,7 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000000000000803F}
       NoZWrite = False
       Static = False
-      size = 10.000000000000000000
+      Size = 10.000000000000000000
       Style = psRound
       object GLFlatText2: TGLFlatText
         Position.Coordinates = {000000000000A041000000000000803F}
