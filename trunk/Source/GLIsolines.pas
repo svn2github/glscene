@@ -19,7 +19,7 @@ interface
 uses
   System.SysUtils, System.Classes, System.Math,
   //GLS
-  GLVectorGeometry, GLVectorLists, GLTypes, GLSpline;
+  GLVectorGeometry, GLVectorLists, GLObjects, GLTypes, GLSpline;
 
 {$i GLScene.inc}
 
@@ -37,7 +37,7 @@ type
   TGLIsoline2D = array [0 .. 32767] of TGLPoint2D;
   PGLIsoline2D = ^TGLIsoline2D;
 
-  TGLIsoline = class
+  TGLIsoline = class (TObject)
     NP: Integer;
     Line: PGLIsoline2D;
     constructor Create(LineSize: integer); virtual;
@@ -47,15 +47,38 @@ type
 
   TGLIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
-  TGLIsolines = class
-    CoordRange: Integer;
-    LineList: TList;
-    IsolineState: TGLIsolineState;
+  TGLIsolines = class (TGLLines)
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
-    constructor Create; virtual;
+    constructor Create(AOwner: TComponent); virtual;
     destructor Destroy; override;
+  { : CONREC is a contouring routine for rectangular spaced data or regular 2D grids
+    It takes each rectangle of adjacent data points and splits it
+    into 4 triangles after choosing the height at the centre of the rectangle.
+    For each of the triangles the line segment resulting from the intersection
+    with each contour plane.
+    A routine is then called with the starting and stopping coordinates
+    of the line segment that make up a contour curve and then output these
+    isolines. See details in http://paulbourke.net/papers/conrec/
+
+    The input parameters are as follows :
+    Data -  Scalar field in 2D grid
+    ilb - lower bound in west - east direction
+    iub - upper bound in west - east direction
+    jlb - lower bound in north - south direction
+    jub upper bound in north - south direction
+    X - coord. vector for west - east
+    Y - coord. vector for north - south
+    nc - number of cut levels
+    Z - values of cut levels
+  }
+    procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+       X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
+    private
+      CoordRange: Integer;
+      LineList: TList;
+      IsolineState: TGLIsolineState;
   end;
 
 procedure Initialize_Isolining(var DataGrid: TGLMatrix;
@@ -66,29 +89,6 @@ function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 { : Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
-
-{ : CONREC is a contouring routine for rectangular spaced data or regular 2D grids
-  It takes each rectangle of adjacent data points and splits it
-  into 4 triangles after choosing the height at the centre of the rectangle.
-  For each of the triangles the line segment resulting from the intersection
-  with each contour plane.
-  A routine is then called with the starting and stopping coordinates
-  of the line segment that make up a contour curve and then output these
-  isolines. See details in http://paulbourke.net/papers/conrec/
-
-  The input parameters are as follows :
-  Data -  Scalar field in 2D grid
-  ilb - lower bound in west - east direction
-  iub - upper bound in west - east direction
-  jlb - lower bound in north - south direction
-  jub upper bound in north - south direction
-  X - coord. vector for west - east
-  Y - coord. vector for north - south
-  nc - number of cut levels
-  Z - values of cut levels
-}
-procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-  X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
 
 
 //----------------------------------------------------------------------
@@ -450,9 +450,8 @@ end;
 
 // TIsolines class
 //
-constructor TGLIsolines.Create;
+constructor TGLIsolines.Create(AOwner: TComponent);
 begin
-  inherited;
   LineList := TList.Create;
   IsolineState := ilsEmpty;
 end;
@@ -514,7 +513,7 @@ end;
 
 // Conrec
 //
-procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+procedure TGLIsolines.Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
   X: TGLVector; Y: TGLVector;  NC: Integer; Z: TGLVector; var F: Text);
 // ------------------------------------------------------------------------------
 const
@@ -730,6 +729,7 @@ begin
                     end;
                 end; // ---  -Case deside;
                 // -------Output of results in File ---------------------
+                //Writeln(Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
                 Writeln(F, Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
                 // ---------------------------------------------------------
               end; // ----  -if Not(deside=0)
