@@ -288,6 +288,7 @@ contains
   GLFileJPEG in '..\Source\GLFileJPEG.pas',
   LIBPNG in '..\Source\LIBPNG.pas',
   GLSJPG in '..\Source\GLSJPG.pas',
-  GLTriangulation in '..\Source\GLTriangulation.pas';
+  GLTriangulation in '..\Source\GLTriangulation.pas',
+  GLMeshLines in '..\Source\GLMeshLines.pas';
 
 end.

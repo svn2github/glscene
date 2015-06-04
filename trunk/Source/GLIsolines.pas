@@ -19,7 +19,8 @@ interface
 uses
   System.SysUtils, System.Classes, System.Math,
   //GLS
-  GLVectorGeometry, GLVectorLists, GLObjects, GLTypes, GLSpline;
+  GLVectorGeometry, GLVectorLists, GLObjects, GLMultiPolygon,  GLCoordinates,
+  GLTypes, GLSpline;
 
 {$i GLScene.inc}
 
@@ -48,6 +49,7 @@ type
   TGLIsolineState = (ilsEmpty, ilsCalculating, ilsReady);
 
   TGLIsolines = class (TGLLines)
+  public
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
@@ -73,11 +75,13 @@ type
     nc - number of cut levels
     Z - values of cut levels
   }
-    procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-       X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
-    private
+      procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+         X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
+   private
       CoordRange: Integer;
       LineList: TList;
+      IsoVertix: TAffineVector;
+      GLContours: TGLContours;
       IsolineState: TGLIsolineState;
   end;
 
@@ -546,6 +550,7 @@ var
   end;
 
 begin
+  GLContours.Create(nil);
   // set casting array
   CastTab[0, 0, 0] := 0;
   CastTab[0, 0, 1] := 0;
@@ -729,8 +734,11 @@ begin
                     end;
                 end; // ---  -Case deside;
                 // -------Output of results in File ---------------------
-                //Writeln(Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
                 Writeln(F, Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
+                IsoVertix.X := x1;   IsoVertix.Y := y1;
+                GLContours.Add.Nodes.AddNode(IsoVertix);
+                IsoVertix.X := x2;   IsoVertix.Y := y2;
+                GLContours.Add.Nodes.AddNode(IsoVertix);
                 // ---------------------------------------------------------
               end; // ----  -if Not(deside=0)
             end; // ----  -for m

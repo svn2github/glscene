@@ -31,7 +31,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLPersistentClasses, GLVectorLists, GLVectorGeometry, GLVectorTypes;
+  System.Classes,  System.SysUtils,
+  //GLS
+  GLPersistentClasses, GLVectorLists, GLVectorGeometry, GLVectorTypes;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -193,7 +195,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLCrossPlatform, SysUtils;
+uses 
+  GLCrossPlatform;
 
 var
    v0to255reciproquals : array of Single;
