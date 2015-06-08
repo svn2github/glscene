@@ -151,8 +151,8 @@ object Form1: TForm1
     Panels = <>
   end
   object GLScene1: TGLScene
-    Left = 136
-    Top = 112
+    Left = 96
+    Top = 56
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000000000000A0400000A0400000803F}
@@ -330,7 +330,7 @@ object Form1: TForm1
         Material.Texture.Disabled = False
       end>
     TexturePaths = 'jpgs'
-    Left = 136
-    Top = 144
+    Left = 104
+    Top = 128
   end
 end

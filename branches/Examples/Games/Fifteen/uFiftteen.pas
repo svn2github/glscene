@@ -3,8 +3,10 @@ unit uFiftteen;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Math, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ComCtrls, Jpeg,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Variants, System.Math, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ComCtrls,
+  Vcl.Imaging.Jpeg,
   //GLS
   GLScene, GLObjects, GLWin32Viewer, GLVectorFileObjects, GLVectortypes,
   GLVectorGeometry, GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
