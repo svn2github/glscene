@@ -11,9 +11,9 @@ type
     ColorDialog: TColorDialog;
     OpenDialog: TOpenDialog;
     SaveDialog: TSaveDialog;
-    ODTextures: TOpenDialog;
-    SDTextures: TSaveDialog;
-    OpenPictureDialog: TOpenPictureDialog;
+    odTextures: TOpenDialog;
+    sdTextures: TSaveDialog;
+    opDialog: TOpenPictureDialog;
   private
     { Private declarations }
   public

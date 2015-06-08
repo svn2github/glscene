@@ -20,8 +20,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-
+  System.Classes, System.SysUtils, System.Types,
+  //GLS
   GLVectorTypes, GLVectorLists, GLUtils;
 
 type
@@ -173,8 +173,13 @@ type
       property AllowUnknownNodes : Boolean read FAllowUnknownNodes write FAllowUnknownNodes;
 
   end;
+
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
 
 function CreateVRMLTokenList(Text : String) : TStringList;

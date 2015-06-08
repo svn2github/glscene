@@ -117,7 +117,6 @@ inherited GLAbout: TGLAbout
     00000509030000000000000000000000000000050000FFFF0000FC3F0000F00F
     0000C003000000000000000000000000000080010000C0030000C0070000000F
     00000019000080200000C2600000E7F10000FFFB0000}
-  Position = poMainFormCenter
   ExplicitWidth = 462
   ExplicitHeight = 362
   PixelsPerInch = 96
@@ -130,10 +129,10 @@ inherited GLAbout: TGLAbout
     object LabelVersion: TLabel
       Left = 144
       Top = 63
-      Width = 44
+      Width = 64
       Height = 16
       Anchors = [akTop, akRight]
-      Caption = 'version'
+      Caption = 'version 1.4'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -156,12 +155,12 @@ inherited GLAbout: TGLAbout
       IsControl = True
     end
     object Label2: TLabel
-      Left = 75
+      Left = 119
       Top = 41
-      Width = 289
+      Width = 212
       Height = 16
       Alignment = taCenter
-      Caption = 'Based on Eric Grange'#39's GLSViewer for GLScene'
+      Caption = 'Based on Eric Grange'#39's GLSViewer'
     end
     object StaticTextVersion: TStaticText
       Left = 228
@@ -2390,9 +2389,9 @@ inherited GLAbout: TGLAbout
     object Label1: TLabel
       Left = 288
       Top = 159
-      Width = 95
+      Width = 65
       Height = 16
-      Caption = 'GLScene Team'
+      Caption = 'GLS Team'
     end
     object Label3: TLabel
       Left = 123
@@ -2402,7 +2401,7 @@ inherited GLAbout: TGLAbout
       Caption = '3D view, 3D file formats support:'
     end
     object FreeAndOpenSource: TLabel
-      Left = 123
+      Left = 144
       Top = 6
       Width = 130
       Height = 16

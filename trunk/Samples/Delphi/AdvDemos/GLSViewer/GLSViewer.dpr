@@ -2,13 +2,15 @@ program GLSViewer;
 
 uses
   Forms,
-  FMain in 'FMain.pas' {Main},
-  GNUgettext in 'GNUgettext.pas',
-  DGLSViewer in 'DGLSViewer.pas' {dmGLSViewer: TDataModule},
-  FGLForm in 'FGLForm.pas' {GLForm},
-  FGLDialog in 'FGLDialog.pas' {GLDialog},
-  FGLAbout in 'FGLAbout.pas' {GLAbout},
-  FGLOptions in 'FGLOptions.pas' {fmOptions};
+  DGLSViewer in 'Source\DGLSViewer.pas' {dmGLSViewer: TDataModule},
+  FGLForm in 'Source\FGLForm.pas' {GLForm},
+  FGLDialog in 'Source\FGLDialog.pas' {GLDialog},
+  FGLOptions in 'Source\FGLOptions.pas' {fmOptions},
+  FMain in 'Source\FMain.pas' {Main},
+  FGLAbout in 'Source\FGLAbout.pas' {GLAbout},
+  GNUgettext in 'Source\GNUgettext.pas',
+  UGlobals in 'Source\UGlobals.pas',
+  USettings in 'Source\USettings.pas';
 
 {$R *.res}
 

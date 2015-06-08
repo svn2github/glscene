@@ -21,6 +21,7 @@ del *.cvsignore /s
 del *.identcache /s
 del *.otares /s
 del *.tvsconfig /s
+del *.stat /s
 
 
 echo _

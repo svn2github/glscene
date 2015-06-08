@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // This unit is part of the GLSceneViewer, http://sourceforge.net/projects/glscene
 //------------------------------------------------------------------------------
-{! The FGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer project}
+{! The FGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer}
 {
   History :
      01/04/09 - PW - Created

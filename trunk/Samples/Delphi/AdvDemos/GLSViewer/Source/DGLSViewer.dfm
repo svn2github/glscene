@@ -18,21 +18,21 @@ object dmGLSViewer: TdmGLSViewer
     Left = 232
     Top = 24
   end
-  object ODTextures: TOpenDialog
+  object odTextures: TOpenDialog
     DefaultExt = 'glml'
     Filter = 'GLScene Material Library (*.glml)|*.glml|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 46
     Top = 80
   end
-  object SDTextures: TSaveDialog
+  object sdTextures: TSaveDialog
     DefaultExt = 'glml'
     Filter = 'GLScene Material Library (*.glml)|*.glml|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 150
     Top = 80
   end
-  object OpenPictureDialog: TOpenPictureDialog
+  object opDialog: TOpenPictureDialog
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 230
     Top = 80

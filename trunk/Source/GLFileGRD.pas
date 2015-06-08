@@ -31,16 +31,16 @@ type
   { : The GRD file represents ascii grid formats in 2D/3D.<p>
     This is a format for storing regular grid values as a
     matrices of cell centers. The format supports variations and
-    subformats. This importer works for Sutfer, ArcInfo and GMS formats}
+    subformats. This importer works for Sutfer, ArcInfo and GMS formats }
 
   TGLGRDVectorFile = class(TVectorFile)
-   public
+  public
     { Public Declarations }
     HeightField: TGLHeightField;
     Nodes: array of TSingleArray;
     class function Capabilities: TDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
-   private
+  private
     StrVal: String;
     StrLine: String;
     MaxZ: Single;
@@ -55,16 +55,17 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
+
 // ------------------
 // ------------------ TGLGRDVectorFile ------------------
 // ------------------
 
 const
   dSURFBLANKVAL = 1.70141E38; // default value in Surfer for blanking
-  NODATA_value =  -9999; //default value in GIS ArcInfo for blanking
+  NODATA_value = -9999; // default value in GIS ArcInfo for blanking
 
-// Capabilities
-//
+  // Capabilities
+  //
 class function TGLGRDVectorFile.Capabilities: TDataFileCapabilities;
 begin
   Result := [dfcRead];
@@ -81,14 +82,14 @@ begin
   while ((I <= Length(S)) and (Count <> N)) do
   begin
     // skip over delimiters
-    while (I <= Length(S)) and (S[I] in WordDelims) do
+    while (I <= Length(S)) and CharInSet(S[I], WordDelims) do
       Inc(I);
     // if we're not beyond end of S, we're at the start of a word
     if I <= Length(S) then
       Inc(Count);
     // if not finished, find the end of the current word
     if Count <> N then
-      while (I <= Length(S)) and not(S[I] in WordDelims) do
+      while (I <= Length(S)) and not CharInSet(S[I], WordDelims) do
         Inc(I)
     else
       Result := I;
@@ -108,7 +109,7 @@ begin
   I := WordPosition(N, S, WordDelims);
   if (I <> 0) then
     // find the end of the current word
-    while (I <= Length(S)) and not(S[I] in WordDelims) do
+    while (I <= Length(S)) and not CharInSet(S[I], WordDelims) do
     begin
       // add the I'th character to result
       Inc(Len);
@@ -124,27 +125,27 @@ end;
 procedure TGLGRDVectorFile.LoadFromStream(aStream: TStream);
 var
   I, J, K: Integer;
-  N : Integer; // N => counter to increment through file
+  N: Integer; // N => counter to increment through file
   Sl, Tl: TStringList;
 
   Nx, Ny: Integer;
   Dx, Dy: Single;
   Xo, Xe, Yo, Ye, Zo, Ze: Single;
-  NBlanks : Integer; // Number of blank nodes
-  BlankVal, NoData : Double;
+  NBlanks: Integer; // Number of blank nodes
+  BlankVal, NoData: Double;
 
   { sub } function ReadLine: string;
-  begin
-    Result := Sl[N];
-    Inc(N);
-  end;
+begin
+  Result := Sl[N];
+  Inc(N);
+end;
 
 begin
-  sl := TStringList.Create;
-  tl := TStringList.Create;
+  Sl := TStringList.Create;
+  Tl := TStringList.Create;
   try
-    sl.LoadFromStream(aStream);
-    if (Copy(sl[0], 1, 4) <> 'DSAA') and (Copy(sl[0], 1, 5) <> 'ncols') then
+    Sl.LoadFromStream(aStream);
+    if (Copy(Sl[0], 1, 4) <> 'DSAA') and (Copy(Sl[0], 1, 5) <> 'ncols') then
     begin
       raise Exception.Create('Not a valid grd file !');
       Exit;
@@ -179,7 +180,7 @@ begin
 
       SetLength(Nodes, Ny, Nx);
 
-      Nblanks := 0;
+      NBlanks := 0;
       BlankVal := dSURFBLANKVAL;
       NoData := BlankVal; // NoData value
 
@@ -200,7 +201,7 @@ begin
             if Nodes[I, J] > MaxZ then
               MaxZ := Nodes[I, J];
             if (Nodes[I, J] >= BlankVal) then
-              Nblanks := Nblanks + 1;
+              NBlanks := NBlanks + 1;
 
             Inc(J);
             Inc(K);
@@ -223,7 +224,7 @@ begin
       Yo := StrToFloat(Tl[1]); // yllcorner
       Tl.DelimitedText := Sl[4];
       Dx := StrToFloat(Tl[1]);
-      Dy := Dx;     // cellsize
+      Dy := Dx; // cellsize
       Tl.DelimitedText := Sl[5];
       NoData := StrToFloat(Tl[1]); // NoData value
 
@@ -249,8 +250,8 @@ begin
     HeightField.YSamplingScale.Max := (Ny div 2);
 
   finally
-    tl.Free;
-    sl.Free;
+    Tl.Free;
+    Sl.Free;
   end;
 end;
 
