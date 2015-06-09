@@ -1,7 +1,7 @@
 {: GLScene Viewer based on GLSViewer by Eric Grange
    http://www.sourceforge.net/projects/glscene
 }
-unit MainForm;
+unit FMain;
 
 interface
 
