@@ -181,7 +181,7 @@ object Main: TMain
       Left = 334
       Top = 2
       Width = 150
-      Height = 26
+      Height = 22
       ActionManager = ActionManager
       Caption = 'Tools'
       Color = clMenuBar
@@ -201,7 +201,7 @@ object Main: TMain
       Left = 102
       Top = 2
       Width = 219
-      Height = 26
+      Height = 22
       ActionManager = ActionManager
       Caption = 'View'
       Color = clMenuBar
@@ -221,7 +221,7 @@ object Main: TMain
       Left = 11
       Top = 2
       Width = 78
-      Height = 26
+      Height = 22
       ActionManager = ActionManager
       Caption = 'File'
       Color = clMenuBar
@@ -262,7 +262,7 @@ object Main: TMain
     Left = 32
     Top = 232
     Bitmap = {
-      494C01010E009800940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E0098009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000424242004242420042424200424242000000
@@ -1565,8 +1565,8 @@ object Main: TMain
         ActionBar = atbFile
       end>
     Images = ImageListMenu
-    Left = 280
-    Top = 96
+    Left = 552
+    Top = 88
     StyleName = 'Platform Default'
     object acOptimizeMesh: TAction
       Category = 'Processing'
@@ -1611,7 +1611,6 @@ object Main: TMain
     end
     object acToolsTexturing: TAction
       Category = 'Tools'
-      AutoCheck = True
       Caption = 'Texturing'
       Checked = True
       ImageIndex = 10
@@ -1619,7 +1618,6 @@ object Main: TMain
     end
     object acToolsLighting: TAction
       Category = 'Tools'
-      AutoCheck = True
       Caption = 'Lighting'
       Checked = True
       ImageIndex = 12
@@ -1861,7 +1859,7 @@ object Main: TMain
     Left = 120
     Top = 232
     Bitmap = {
-      494C010115001800340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101150018003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000006000000001002000000000000060
       000000000000000000000000000000000000000000007FC8F70089CDF70092D0
       F8009DD5F8002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF00D8EE

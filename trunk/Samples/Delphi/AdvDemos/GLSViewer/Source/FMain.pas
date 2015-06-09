@@ -801,7 +801,7 @@ end;
 
 procedure TMain.acViewAxesExecute(Sender: TObject);
 begin
-  DCAxis.ShowAxes := (Sender as TfmOptions).CheckBoxAxis.Checked;
+  (Sender as TfmOptions).CheckBoxAxisClick(nil);
 end;
 
 procedure TMain.acViewFlatShadingExecute(Sender: TObject);

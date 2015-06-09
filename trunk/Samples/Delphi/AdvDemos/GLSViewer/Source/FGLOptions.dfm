@@ -17,9 +17,8 @@ inherited fmOptions: TfmOptions
       Top = 32
       Width = 113
       Height = 17
-      Caption = 'Show Axes'
+      Action = Main.acViewAxes
       TabOrder = 0
-      OnClick = CheckBoxAxisClick
     end
     object RadioGroupLanguage: TRadioGroup
       Left = 96
