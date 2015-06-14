@@ -38,7 +38,7 @@ uses
   System.SysUtils,
   // GLS
   GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
-  OpenGLTokens, XOpenGL, GLIsolines;
+  OpenGLTokens, XOpenGL, GLContouring;
 
 type
 

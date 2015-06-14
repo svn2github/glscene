@@ -91,7 +91,8 @@ begin
   GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
 
   // load the texture maps
-  GLMaterialLibrary1.LibMaterialByName('details').Material.Texture.Image.LoadFromFile('detailmap.jpg');
+  GLMaterialLibrary1.LibMaterialByName('details')
+    .Material.Texture.Image.LoadFromFile('detailmap.jpg');
   SPSun.Material.Texture.Image.LoadFromFile('flare1.bmp');
 
   // Could've been done at design time, but then it hurts the eyes ;)
@@ -101,7 +102,7 @@ begin
 
   // apply texture map scale (our heightmap size is 256)
   TerrainRenderer1.TilesPerTexture := 1; // 256/TerrainRenderer1.TileSize;
-  //TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
+  // TerrainRenderer1.MaterialLibrary := GLMaterialLibrary1;
   TerrainRenderer1.ContourWidth := 2;
 
   // initialize intensity texture
@@ -122,16 +123,16 @@ procedure TForm1.GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
 var
   n: TVector;
 begin
-  HeightData.MaterialName := normalMapMaterial.Name;
-  NormalMapMaterial.Texture2Name := 'contrast';
-  NormalMapMaterial.Shader := GLTexCombineShader1;
-  NormalMapMaterial.Material.MaterialOptions := [moNoLighting];
+  heightData.MaterialName := normalMapMaterial.Name;
+  normalMapMaterial.Texture2Name := 'contrast';
+  normalMapMaterial.Shader := GLTexCombineShader1;
+  normalMapMaterial.Material.MaterialOptions := [moNoLighting];
   n := VectorNormalize(SPSun.AbsolutePosition);
   ScaleVector(n, 0.5);
   n.Y := -n.Y;
   n.Z := -n.Z;
   AddVector(n, 0.5);
-  NormalMapMaterial.Material.FrontProperties.Diffuse.Color := n;
+  normalMapMaterial.Material.FrontProperties.Diffuse.Color := n;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
@@ -253,7 +254,7 @@ begin
   if GLTexCombineShader1.Enabled then
   begin
     GLSceneViewer1.Buffer.RenderingContext.Activate;
-    texunits := GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits];
+    TexUnits := GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits];
     GLSceneViewer1.Buffer.RenderingContext.Deactivate;
     if TexUnits < 4 then
     begin

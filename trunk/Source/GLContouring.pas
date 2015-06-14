@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLIsolines<p>
+{ : GLContouring<p>
 
   Class and routines to output isolines.<p>
 
@@ -12,7 +12,7 @@
              (based on Nicholas Yue CONREC.C and  Paul Bourke CONREC.F)
   15/07/01 - PW - Creation of the unit
 }
-unit GLIsolines;
+unit GLContouring;
 
 interface
 
@@ -20,7 +20,7 @@ uses
   System.SysUtils, System.Classes, System.Math,
   //GLS
   GLVectorGeometry, GLVectorLists, GLObjects, GLMultiPolygon,  GLCoordinates,
-  GLTypes, GLSpline;
+  GLTypes, GLColor, GLSpline;
 
 {$i GLScene.inc}
 
@@ -55,6 +55,7 @@ type
     procedure FreeList;
     constructor Create(AOwner: TComponent); virtual;
     destructor Destroy; override;
+
   { : CONREC is a contouring routine for rectangular spaced data or regular 2D grids
     It takes each rectangle of adjacent data points and splits it
     into 4 triangles after choosing the height at the centre of the rectangle.
@@ -72,28 +73,28 @@ type
     jub upper bound in north - south direction
     X - coord. vector for west - east
     Y - coord. vector for north - south
-    nc - number of cut levels
-    Z - values of cut levels
+    NC - number of cut levels
+    HgtL - values of cut levels
   }
-      procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-         X: TGLVector; Y: TGLVector; NC: Integer; Z: TGLVector; var F: Text);
+    procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+         X: TGLVector; Y: TGLVector; NC: Integer; HgtL: TGLVector);
    private
-      CoordRange: Integer;
-      LineList: TList;
-      IsoVertix: TAffineVector;
-      GLContours: TGLContours;
-      IsolineState: TGLIsolineState;
+     CoordRange: Integer;
+     LineList: TList;
+     IsolineState: TGLIsolineState;
+   public
+     IsoVertix: TAffineVector;
+     GLContours: TGLContours;
   end;
 
-procedure Initialize_Isolining(var DataGrid: TGLMatrix;
+procedure Initialize_Contouring(var DataGrid: TGLMatrix;
   NXpoints, NYpoints: integer; CurrentIsoline: Single);
-procedure Release_Memory_Isolining;
+procedure Release_Memory_Isoline;
 function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 
 { : Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
-
 
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
@@ -121,9 +122,9 @@ begin
     Result := 0;
 end;
 
-// Initialize_Isolining
+// Initialize_Contouring
 //
-procedure Initialize_Isolining;
+procedure Initialize_Contouring;
 
 var
   i, j: Integer;
@@ -158,9 +159,9 @@ begin
   end;
 end;
 
-// Release_Memory_Isolining
+// Release_Memory_Isoline
 //
-procedure Release_Memory_Isolining;
+procedure Release_Memory_Isoline;
 begin
   SetLength(Visited, 0);
   SetLength(Grid, 0);
@@ -458,11 +459,13 @@ constructor TGLIsolines.Create(AOwner: TComponent);
 begin
   LineList := TList.Create;
   IsolineState := ilsEmpty;
+  Nodes.Create(Self);
 end;
 
 destructor TGLIsolines.Destroy;
 begin
   FreeList;
+  Nodes.Free;
   inherited;
 end;
 
@@ -489,12 +492,12 @@ begin
   CoordRange := bmSize;
   FreeList;
   repeat
-    Initialize_Isolining(Depths, bmSize, bmSize, StartDepth);
+    Initialize_Contouring(Depths, bmSize, bmSize, StartDepth);
     while GetNextIsoline(Isoline) do
     begin
       LineList.Add(Isoline);
     end;
-    Release_Memory_Isolining;
+    Release_Memory_Isoline;
     StartDepth := StartDepth + Interval;
   until StartDepth > EndDepth;
   IsolineState := ilsReady;
@@ -518,7 +521,7 @@ end;
 // Conrec
 //
 procedure TGLIsolines.Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-  X: TGLVector; Y: TGLVector;  NC: Integer; Z: TGLVector; var F: Text);
+  X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector);
 // ------------------------------------------------------------------------------
 const
   im: array [0 .. 3] of Integer = (0, 1, 1, 0); // coord. cast array west - east
@@ -526,10 +529,9 @@ const
   // coord. cast array north - south
   // ------------------------------------------------------------------------------
 var
-  m1, m2, m3,
-  Deside: Integer;
+  m1, m2, m3, Deside: Integer;
   dmin, dmax, x1, x2, y1, y2: Single;
-  lcnt, i, j, k, m: Integer;
+  i, j, k, lcnt, m: Integer;
   CastTab: TCastArray;
   h: TVectorL4D;
   sh: TVectorL4I;
@@ -550,7 +552,6 @@ var
   end;
 
 begin
-  GLContours.Create(nil);
   // set casting array
   CastTab[0, 0, 0] := 0;
   CastTab[0, 0, 1] := 0;
@@ -584,30 +585,30 @@ begin
 
   // set line counter
   lcnt := 0;
-  // -----------------------------------------------------------------------------
+  // ------- Create the level curves ----------------------------------------------
   for j := jub - 1 downto jlb do
   begin // over all north - south and              +for j
     for i := ilb to iub - 1 do
     begin // east - west coordinates of datafield    +for i
-      // set casting bounds from array
+          // set casting bounds from array
       temp1 := Min(Data[i, j], Data[i, j + 1]);
       temp2 := Min(Data[i + 1, j], Data[i + 1, j + 1]);
       dmin := Min(temp1, temp2);
       temp1 := Max(Data[i, j], Data[i, j + 1]);
       temp2 := Max(Data[i + 1, j], Data[i + 1, j + 1]);
       dmax := Max(temp1, temp2);
-      if (dmax >= z[0]) and (dmin <= z[nc - 1]) then
-      begin // ask horizontal cut avail.    +If dmin && dmax in z[0] .. z[nc-1]
-        for k := 0 to nc - 1 do
+      if (dmax >= HgtL[0]) and (dmin <= HgtL[nc - 1]) then
+      begin // ask horizontal cut available ----  +If dmin && dmax in z[0] .. z[nc-1]
+        for k := 0 to NC - 1 do
         begin // over all possible cuts ---- +for k
-          if (z[k] > dmin) and (z[k] <= dmax) then
-          begin // aks for cut intervall ----- +If z[k] in dmin .. dmax
+          if (HgtL[k] > dmin) and (HgtL[k] <= dmax) then
+          begin // ask for cut interval ----- +if z[k] in dmin .. dmax
             // -----------------------------------------------------------------------
             for m := 4 downto 0 do
             begin // deteriening the cut casts and set the ---- +for m
               if (m > 0) then
               begin // height and coordinate vectors
-                h[m] := Data[i + im[m - 1], j + jm[m - 1]] - z[k];
+                h[m] := Data[i + im[m - 1], j + jm[m - 1]] - HgtL[k];
                 xh[m] := x[i + im[m - 1]];
                 yh[m] := y[j + jm[m - 1]];
               end
@@ -666,9 +667,9 @@ begin
                 m3 := 1;
               Deside := CastTab[sh[m1] + 1, sh[m2] + 1, sh[m3] + 1];
               if not(Deside = 0) then
-              begin // ask is there a desition available ---+if if not(Deside=0)
+              begin // ask if there a decision available ---+if if not(Deside=0)
                 case Deside of
-                // ---- determin the by desided cast cuts ---- +Case deside;
+                // ---- determine by desided cast cuts ---- +Case deside;
                   1:
                     begin
                       x1 := xh[m1];
@@ -733,12 +734,9 @@ begin
                       y2 := Ysec(m1, m2);
                     end;
                 end; // ---  -Case deside;
-                // -------Output of results in File ---------------------
-                Writeln(F, Format('%2.2f %2.2f %2.2f %2.2f %2.2f', [z[k], x1, y1, x2, y2]));
-                IsoVertix.X := x1;   IsoVertix.Y := y1;
-                GLContours.Add.Nodes.AddNode(IsoVertix);
-                IsoVertix.X := x2;   IsoVertix.Y := y2;
-                GLContours.Add.Nodes.AddNode(IsoVertix);
+                // -------Output results ---------------------
+                Nodes.AddNode(x1, y1, 5);
+                Nodes.AddNode(x2, y2, 5);
                 // ---------------------------------------------------------
               end; // ----  -if Not(deside=0)
             end; // ----  -for m
