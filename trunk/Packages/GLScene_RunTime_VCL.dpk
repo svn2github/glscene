@@ -283,7 +283,7 @@ contains
   Utils3DS in '..\Source\Utils3DS.pas',
   GLPictureRegisteredFormats in '..\Source\GLPictureRegisteredFormats.pas',
   GLIsosurface in '..\Source\GLIsosurface.pas',
-  GLIsolines in '..\Source\GLIsolines.pas',
+  GLContouring in '..\Source\GLContouring.pas',
   GLFilePNG in '..\Source\GLFilePNG.pas',
   GLFileJPEG in '..\Source\GLFileJPEG.pas',
   LIBPNG in '..\Source\LIBPNG.pas',
