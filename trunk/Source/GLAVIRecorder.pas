@@ -33,7 +33,7 @@ interface
 
 uses
   Winapi.Windows, WinApi.Messages,
-  System.Classes, System.SysUtils,
+  System.Classes, System.SysUtils, System.UITypes,
   VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
 
   GLGraphics, GLSVfw, GLScene, GLViewer;

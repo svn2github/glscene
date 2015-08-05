@@ -262,7 +262,7 @@ object Main: TMain
     Left = 32
     Top = 232
     Bitmap = {
-      494C01010E0098009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E009800A80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000424242004242420042424200424242000000
@@ -937,7 +937,6 @@ object Main: TMain
             Items = <
               item
                 Action = acViewSmoothShading
-                Caption = '&Smooth Shading'
                 ImageIndex = 9
               end
               item
@@ -1102,7 +1101,6 @@ object Main: TMain
         Items = <
           item
             Action = acViewSmoothShading
-            Caption = '&Smooth Shading'
             ImageIndex = 9
             ShowCaption = False
           end
@@ -1255,7 +1253,6 @@ object Main: TMain
             Items = <
               item
                 Action = acViewSmoothShading
-                Caption = '&Smooth Shading'
                 ImageIndex = 9
               end
               item
@@ -1492,7 +1489,6 @@ object Main: TMain
         Items = <
           item
             Action = acViewSmoothShading
-            Caption = '&Smooth Shading'
             ImageIndex = 9
             ShowCaption = False
           end
@@ -1613,6 +1609,7 @@ object Main: TMain
       Category = 'Tools'
       Caption = 'Texturing'
       Checked = True
+      Hint = 'Tools|Texturing'
       ImageIndex = 10
       OnExecute = acToolsTexturingExecute
     end
@@ -1620,6 +1617,7 @@ object Main: TMain
       Category = 'Tools'
       Caption = 'Lighting'
       Checked = True
+      Hint = 'Tools|Lighting'
       ImageIndex = 12
       OnExecute = acToolsLightingExecute
     end
@@ -1636,9 +1634,10 @@ object Main: TMain
     object acViewSmoothShading: TAction
       Category = 'View'
       AutoCheck = True
-      Caption = 'Smooth Shading'
+      Caption = '&Smooth Shading'
       Checked = True
       GroupIndex = 1
+      HelpType = htContext
       Hint = 'View|Smooth shading'
       ImageIndex = 9
       OnExecute = acViewSmoothShadingExecute
@@ -1648,6 +1647,8 @@ object Main: TMain
       AutoCheck = True
       Caption = 'Flat Shading'
       GroupIndex = 1
+      HelpType = htContext
+      Hint = 'View|Flat Shading'
       ImageIndex = 7
       OnExecute = acViewFlatShadingExecute
     end
@@ -1656,6 +1657,8 @@ object Main: TMain
       AutoCheck = True
       Caption = 'Flat Shading with Lines'
       GroupIndex = 1
+      HelpType = htContext
+      Hint = 'View|Flat Shading with Lines'
       ImageIndex = 11
       OnExecute = acViewFlatLinesExecute
     end
@@ -1664,6 +1667,8 @@ object Main: TMain
       AutoCheck = True
       Caption = 'Hidden Lines'
       GroupIndex = 1
+      HelpType = htContext
+      Hint = 'View|Hidden Lines'
       ImageIndex = 8
       OnExecute = acViewHiddenLinesExecute
     end
@@ -1672,30 +1677,36 @@ object Main: TMain
       AutoCheck = True
       Caption = 'Wireframe'
       GroupIndex = 1
+      HelpType = htContext
+      Hint = 'View|Wireframe'
       ImageIndex = 6
       OnExecute = acViewWireFrameExecute
     end
     object acViewZoomIn: TAction
       Category = 'View'
       Caption = 'Zoom In'
+      Hint = 'View|Zoom In'
       ImageIndex = 2
       OnExecute = acViewZoomInExecute
     end
     object acViewZoomOut: TAction
       Category = 'View'
       Caption = 'Zoom Out'
+      Hint = 'View|Zoom Out'
       ImageIndex = 3
       OnExecute = acViewZoomOutExecute
     end
     object acViewReset: TAction
       Category = 'View'
       Caption = 'Reset View'
+      Hint = 'View|Reset View'
       ImageIndex = 5
       OnExecute = acViewResetExecute
     end
     object acFileOpen: TAction
       Category = 'File'
       Caption = '&Open...'
+      HelpType = htContext
       Hint = 'Open|Open file'
       ImageIndex = 0
       OnExecute = acFileOpenExecute
@@ -1711,6 +1722,7 @@ object Main: TMain
     object acFileOpenTexLib: TAction
       Category = 'File'
       Caption = 'Open Texture Library...'
+      HelpType = htContext
       Hint = 'Open|Open texture library'
       OnExecute = acFileOpenTexLibExecute
     end
@@ -1726,6 +1738,7 @@ object Main: TMain
       Category = 'File'
       Caption = 'Save Textures...'
       Enabled = False
+      HelpType = htContext
       Hint = 'Save|Save textures'
       OnExecute = acFileSaveTexturesExecute
     end
@@ -1789,6 +1802,7 @@ object Main: TMain
       Category = 'View'
       Caption = 'Show Axes'
       GroupIndex = 1
+      Hint = 'View|Show Axes'
       ImageIndex = 20
       OnExecute = acViewAxesExecute
     end
@@ -1859,7 +1873,7 @@ object Main: TMain
     Left = 120
     Top = 232
     Bitmap = {
-      494C0101150018003C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010115001800480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000006000000001002000000000000060
       000000000000000000000000000000000000000000007FC8F70089CDF70092D0
       F8009DD5F8002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF00D8EE

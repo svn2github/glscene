@@ -21,7 +21,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorFileObjects, GLScene, GLMaterial, GLVectorGeometry,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorFileObjects, GLScene, GLMaterial, GLVectorGeometry,
   GLRenderContextInfo;
 
 type
@@ -142,8 +145,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils;
 
 // ------------------
 // ------------------ TPortalMeshObjectList ------------------

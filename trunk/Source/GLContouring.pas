@@ -50,6 +50,11 @@ type
 
   TGLIsolines = class (TGLLines)
   public
+    CoordRange: Integer;
+    IsoVertix: TAffineVector;
+    GLContours: TGLContours;
+    IsolineState: TGLIsolineState;
+    LineList: TList;
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
@@ -79,12 +84,7 @@ type
     procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
          X: TGLVector; Y: TGLVector; NC: Integer; HgtL: TGLVector);
    private
-     CoordRange: Integer;
-     LineList: TList;
-     IsolineState: TGLIsolineState;
-   public
-     IsoVertix: TAffineVector;
-     GLContours: TGLContours;
+     //
   end;
 
 procedure Initialize_Contouring(var DataGrid: TGLMatrix;

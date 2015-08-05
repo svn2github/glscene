@@ -16,9 +16,9 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLScene, GLObjects, GLTexture, GLVectorFileObjects, GLCoordinates,
-  OpenGLTokens, GLContext, GLMaterial, GLColor, GLState,
-  GLNodes, GLVectorGeometry, GLSpline, GLVectorLists, GLRenderContextInfo;
+  GLScene, GLObjects, GLTexture, GLVectorFileObjects, GLCoordinates, OpenGLTokens,
+  GLContext, GLMaterial, GLColor, GLState, GLNodes, GLVectorGeometry, GLSpline,
+  GLVectorTypes, GLVectorLists, GLRenderContextInfo;
 
 type
    // TLineNode
@@ -687,7 +687,7 @@ var
   lNodeWasSelected: Boolean;
 begin
   Result := nil;
-  if assigned(FSelectedLineItem) and not lNodeWasSelected then
+  if Assigned(FSelectedLineItem) and not lNodeWasSelected then
     lStartPoint := FSelectedLineItem.ID + 1
   else
     lStartPoint := 0;
@@ -708,7 +708,7 @@ begin
     end;
   end;
 
-  if not assigned(Result) then
+  if not Assigned(Result) then
   begin
     for i := 0 to lStartPoint - 1 do
     begin
@@ -764,7 +764,7 @@ var
   xp, yp: single;
   lDist: Single;
 begin
-  result:= false;
+  Result:= false;
   lDist := (LineWidth/2) * Tolerance;
   xt:= EndNode.X - StartNode.X;
   yt:= EndNode.Z - StartNode.Z;
@@ -780,7 +780,7 @@ begin
   xt:= StartNode.X + xt * u;
   yt:= StartNode.Z + yt * u;
   // find the distance to the line, and see if it's closer than the specified distance
-  result:= sqrt(sqr(xt - X) + sqr(yt - Z)) <= lDist;
+  Result:= sqrt(sqr(xt - X) + sqr(yt - Z)) <= lDist;
 end;
 
 procedure TGLMeshLines.StitchStrips(idx: TIntegerList);

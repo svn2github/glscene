@@ -440,7 +440,7 @@ type
 
     procedure SetHiddenCaret(Value: Boolean);
 
-    procedure SetScrollBars(Value: TScrollStyle);
+    procedure SetScrollBars(Value: System.UITypes.TScrollStyle);
 
     procedure SetGutterWidth(Value: integer);
     procedure SetGutterColor(Value: TColor);
@@ -562,7 +562,7 @@ type
     property AutoIndent: Boolean read FAutoIndent write FAutoIndent;
     property GutterWidth: integer read FGutterWidth write SetGutterWidth;
     property GutterColor: TColor read GetGutterColor write SetGutterColor;
-    property ScrollBars: TScrollStyle read FScrollBars write SetScrollBars
+    property ScrollBars: System.UITypes.TScrollStyle read FScrollBars write SetScrollBars
       default ssBoth;
     property Font: TFont read FFont write SetFont;
     property ReadOnly: Boolean read FReadOnly write FReadOnly;
@@ -3590,7 +3590,7 @@ end;
 //        SET SCROLL BARS
 //--------------------------------------------------------------
 
-procedure TGLSCustomMemo.SetScrollBars(Value: TScrollStyle);
+procedure TGLSCustomMemo.SetScrollBars(Value: System.UITypes.TScrollStyle);
 begin
   if FScrollBars <> Value then
   begin

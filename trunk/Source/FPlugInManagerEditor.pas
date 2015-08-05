@@ -20,9 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
+  System.Classes, System.SysUtils, System.ImageList,
+  VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
   VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
-
+  //GLS
   GLPlugInIntf, GLPlugInManager;
 
 type
@@ -210,7 +211,7 @@ end;
 procedure NameCallback(Name: PAnsiChar); stdcall;
 
 begin
-  PlugInManagerEditor.NameBox.Items.Add(string(StrPas(Name)));
+  PlugInManagerEditor.NameBox.Items.Add(String(Name));
 end;
 
 // ------------------------------------------------------------------------------
