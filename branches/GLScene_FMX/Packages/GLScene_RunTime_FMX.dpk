@@ -279,7 +279,7 @@ contains
   GLS.CameraController in '..\Source\GLS.CameraController.pas',
   GLS.Isosurface in '..\Source\GLS.Isosurface.pas',
   GLS.MeshLines in '..\Source\GLS.MeshLines.pas',
-  GLS.Isolines in '..\Source\GLS.Isolines.pas';
+  GLS.Contouring in '..\Source\GLS.Contouring.pas';
 
 end.
 

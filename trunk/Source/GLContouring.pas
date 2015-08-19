@@ -18,9 +18,14 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
+  System.Generics.Collections,
+
   //GLS
   GLVectorGeometry, GLVectorLists, GLObjects, GLMultiPolygon,  GLCoordinates,
-  GLTypes, GLColor, GLSpline;
+  GLTypes, GLColor, GLSpline, GLspaceText,
+  GLVectorFileObjects;
+
+
 
 {$i GLScene.inc}
 
@@ -50,11 +55,8 @@ type
 
   TGLIsolines = class (TGLLines)
   public
-    CoordRange: Integer;
     IsoVertix: TAffineVector;
-    GLContours: TGLContours;
-    IsolineState: TGLIsolineState;
-    LineList: TList;
+    GLSpaceTextSF: array of TGLSpaceText;
     procedure MakeIsolines(var Depths: TGLMatrix; bmSize: Integer;
       StartDepth, EndDepth: Single; Interval: Integer);
     procedure FreeList;
@@ -81,10 +83,13 @@ type
     NC - number of cut levels
     HgtL - values of cut levels
   }
-    procedure Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-         X: TGLVector; Y: TGLVector; NC: Integer; HgtL: TGLVector);
+    procedure Conrec(PlaneSF: TGLFreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+         X: TGLVector; Y: TGLVector; NC: Integer; HgtL: TGLVector; Z_Kfix: Single;
+         res3Dmax, res3Dmin: Single);
    private
-     //
+     CoordRange: Integer;
+     LineList: TList;
+     IsolineState: TGLIsolineState;
   end;
 
 procedure Initialize_Contouring(var DataGrid: TGLMatrix;
@@ -113,6 +118,7 @@ var
   Grid: TGLMatrix;
   NX, NY: Integer;
   LineX1, LineY1, LineX2, LineY2: TGLVector;
+
 
 function EqAdd(a, b: integer): integer;
 begin
@@ -200,8 +206,7 @@ end;
 
 // Intercept
 //
-procedure Intercept(const g: TGLMatrix; i, j, s: Integer;
-  var x, y: Single);
+procedure Intercept(const g: TGLMatrix; i, j, s: Integer; var x, y: Single);
 begin
   case s of
     1:
@@ -520,8 +525,9 @@ end;
 
 // Conrec
 //
-procedure TGLIsolines.Conrec(Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
-  X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector);
+procedure TGLIsolines.Conrec(PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+  X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector;
+  Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
 const
   im: array [0 .. 3] of Integer = (0, 1, 1, 0); // coord. cast array west - east
@@ -531,13 +537,15 @@ const
 var
   m1, m2, m3, Deside: Integer;
   dmin, dmax, x1, x2, y1, y2: Single;
-  i, j, k, lcnt, m: Integer;
+  minY1, maxY1, minX1, maxX1, ScaleFont, ActualValue: Single;
+  I, J, K, V, lcnt, m: Integer;
   CastTab: TCastArray;
   h: TVectorL4D;
   sh: TVectorL4I;
   xh, yh: TVectorL4D;
   temp1, temp2: Single;
   r: Byte;
+  IUniqueList: TList<Single>;
 
   // ------- service xsec west east lin. interpol -------------------------------
   function Xsec(p1, p2: Integer): Single;
@@ -552,6 +560,11 @@ var
   end;
 
 begin
+ SetLength(GLSpaceTextSF, NC-1);
+ IUniqueList := TList<Single>.Create;
+
+ ScaleFont:= 0.040 * MaxValue(Y);      // 050515
+
   // set casting array
   CastTab[0, 0, 0] := 0;
   CastTab[0, 0, 1] := 0;
@@ -599,6 +612,7 @@ begin
       dmax := Max(temp1, temp2);
       if (dmax >= HgtL[0]) and (dmin <= HgtL[nc - 1]) then
       begin // ask horizontal cut available ----  +If dmin && dmax in z[0] .. z[nc-1]
+
         for k := 0 to NC - 1 do
         begin // over all possible cuts ---- +for k
           if (HgtL[k] > dmin) and (HgtL[k] <= dmax) then
@@ -607,21 +621,21 @@ begin
             for m := 4 downto 0 do
             begin // deteriening the cut casts and set the ---- +for m
               if (m > 0) then
-              begin // height and coordinate vectors
-                h[m] := Data[i + im[m - 1], j + jm[m - 1]] - HgtL[k];
-                xh[m] := x[i + im[m - 1]];
-                yh[m] := y[j + jm[m - 1]];
-              end
+                  begin // height and coordinate vectors
+                    h[m] := Data[i + im[m - 1], j + jm[m - 1]] - HgtL[k];
+                    xh[m] := X[i + im[m - 1]];
+                    yh[m] := Y[j + jm[m - 1]];
+                  end
               else
-              begin
-                h[0] := (h[1] + h[2] + h[3] + h[4]) / 4;
-                xh[0] := (x[i] + x[i + 1]) / 2;
-                yh[0] := (y[j] + y[j + 1]) / 2;
-              end; // if m>0 then else
-              if h[m] > 0 then
-                sh[m] := 1
-              else If h[m] < 0 then
-                sh[m] := -1
+                  begin
+                    h[0] := (h[1] + h[2] + h[3] + h[4]) / 4;
+                    xh[0] := (X[i] + X[i + 1]) / 2;
+                    yh[0] := (Y[j] + Y[j + 1]) / 2;
+                  end; // if m>0 then else
+              if h[m] > 0 then      
+			    sh[m] := 1
+              else If h[m] < 0 then 
+			    sh[m] := -1
               else
                 sh[m] := 0;
             end; // --- -for m
@@ -734,9 +748,45 @@ begin
                       y2 := Ysec(m1, m2);
                     end;
                 end; // ---  -Case deside;
+
                 // -------Output results ---------------------
-                Nodes.AddNode(x1, y1, 5);
-                Nodes.AddNode(x2, y2, 5);
+                 Nodes.AddNode(x1, y1, Z_kfix);
+                 Nodes.AddNode(x2, y2, Z_kfix);
+
+                  if ODD(K) then
+                         begin
+                           MinY1:= 0.1*MaxValue(Y) ; MaxY1:= 0.6*MaxValue(Y);
+                           MinX1:= 0.2*MaxValue(X) ; MaxX1:= 0.4*MaxValue(X);
+                         end
+                  else
+                         begin
+                           MinY1:= 0.55*MaxValue(Y) ; MaxY1:= 0.9*MaxValue(Y);
+                           MinX1:= 0.3*MaxValue(X) ; MaxX1:= 0.7*MaxValue(X);
+                         end ;
+
+                 if (not IUniqueList.Contains(HgtL[K]))
+                                 and
+                    ( (y1<MaxY1) and (y1>MinY1)
+                  and (x1<MaxX1) and (x1>MinX1)     )   then
+                   begin
+                     GlSpaceTextSF[K].Free;
+                     GlSpaceTextSF[K]:= TGlspacetext.CreateAsChild(self);
+
+                     with GlspaceTextSF[K] do
+                     begin
+                       Scale.AsVector := VectorMake(scaleFont, scaleFont, scaleFont);
+                       Material.FrontProperties.Emission.Color :=  clryellow;
+                       Material.FrontProperties.Ambient.SetColor(1, 1, 1, 1);
+
+                       ActualValue:= HgtL[K]* (res3Dmax - res3Dmin) +  res3Dmin;
+                       Extrusion:= 0.5;
+                       Text:= FloatToStrF(ActualValue, ffFixed, 4, 0)  ;
+
+                       Position.AsVector :=  VectorMake(x1,0.99*y1,1.01*Z_kfix);
+                       StructureChanged;
+                     end;
+                     IUniqueList.Add(HgtL[k]);
+                   end;
                 // ---------------------------------------------------------
               end; // ----  -if Not(deside=0)
             end; // ----  -for m
@@ -749,3 +799,5 @@ end;
 // ------ End of ----------------------------------------------------------------
 
 end.
+
+

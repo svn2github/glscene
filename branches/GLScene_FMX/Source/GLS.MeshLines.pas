@@ -17,7 +17,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLS.Scene, GLS.Objects, GLS.Texture, GLS.VectorFileObjects, GLS.Coordinates,
-  OpenGLTokens, GLS.Context, GLS.Material, GLS.Color, GLS.State,
+  GLS.OpenGLTokens, GLS.Context, GLS.Material, GLS.Color, GLS.State,
   GLS.Nodes, GLS.VectorGeometry, GLS.Spline, GLS.VectorLists, GLS.RenderContextInfo;
 
 type
