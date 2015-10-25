@@ -4,14 +4,15 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants, System.Classes, System.IniFiles, System.UITypes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, 
+  System.SysUtils, System.Variants, System.Classes, System.IniFiles,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ExtCtrls,
 
   //
   DGLSViewer, FGLForm, FGLDialog;
 
 type
-  TfmOptions = class(TGLDialog)
+  TGLOptions = class(TGLDialog)
     CheckBoxAxis: TCheckBox;
     Label1: TLabel;
     RadioGroupLanguage: TRadioGroup;
@@ -32,7 +33,7 @@ type
   end;
 
 var
-  fmOptions: TfmOptions;
+  GLOptions: TGLOptions;
 
 implementation
 
@@ -42,19 +43,19 @@ uses
   GNUgettext, FMain;
 
 
-procedure TfmOptions.FormCreate(Sender: TObject);
+procedure TGLOptions.FormCreate(Sender: TObject);
 begin
   inherited;
   ReadIniFile;
 end;
 
-procedure TfmOptions.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TGLOptions.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   WriteIniFile;
   inherited;
 end;
 
-procedure TfmOptions.ReadIniFile;
+procedure TGLOptions.ReadIniFile;
 begin
   inherited;
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
@@ -78,7 +79,7 @@ begin
     end;
 end;
 
-procedure TfmOptions.RadioGroupLanguageClick(Sender: TObject);
+procedure TGLOptions.RadioGroupLanguageClick(Sender: TObject);
 begin
   case RadioGroupLanguage.ItemIndex of
     0: CurLangID := LANG_ENGLISH;
@@ -92,7 +93,7 @@ begin
   end;
 end;
 
-procedure TfmOptions.WriteIniFile;
+procedure TGLOptions.WriteIniFile;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   with IniFile do
@@ -106,16 +107,16 @@ begin
   inherited;
 end;
 
-procedure TfmOptions.CheckBoxAxisClick(Sender: TObject);
+procedure TGLOptions.CheckBoxAxisClick(Sender: TObject);
 begin
   if CheckBoxAxis.Checked then
-    Main.DCAxis.Visible := True
+    MainForm.DCAxis.Visible := True
   else
-    Main.DCAxis.Visible := False;
+    MainForm.DCAxis.Visible := False;
 end;
 
 
-procedure TfmOptions.PanelBackgroundClick(Sender: TObject);
+procedure TGLOptions.PanelBackgroundClick(Sender: TObject);
 var
    bmp : TBitmap;
    col : TColor;
@@ -125,11 +126,11 @@ begin
    if dmGLSViewer.ColorDialog.Execute then
    begin
      PanelBackground.Color :=  dmGLSViewer.ColorDialog.Color;
-     Main.ApplyBgColor;
+     MainForm.ApplyBgColor;
    end;
 end;
 
-procedure TfmOptions.ButtonOKClick(Sender: TObject);
+procedure TGLOptions.ButtonOKClick(Sender: TObject);
 var
   FileName: TFileName;
 begin

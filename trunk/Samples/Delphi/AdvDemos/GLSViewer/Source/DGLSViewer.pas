@@ -4,7 +4,8 @@ unit DGLSViewer;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.ExtDlgs;
+  System.SysUtils, System.Classes,
+  Vcl.Dialogs, Vcl.ExtDlgs;
 
 type
   TdmGLSViewer = class(TDataModule)

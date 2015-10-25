@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // This unit is part of the GLSceneViewer, http://sourceforge.net/projects/glscene
 //------------------------------------------------------------------------------
-{! The FGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer}
+{! The FGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer project}
 {
   History :
      01/04/09 - PW - Created
@@ -12,7 +12,7 @@ unit FGLForm;
 interface
 
 uses
-  Windows,
+  Winapi.Windows,
   System.SysUtils,
   System.IniFiles,
   Vcl.Forms,
@@ -53,27 +53,22 @@ uses
 //
 procedure TGLForm.FormCreate(Sender: TObject);
 begin
+  inherited;
   SetLanguage;
   TranslateComponent(Self);
 end;
 
 procedure TGLForm.SetLanguage;
 var
-  I : Integer;
-  GLScenePath : TFileName;
+  LocalePath : TFileName;
   IniFile : TIniFile;
 
 begin
-  GLScenePath := ExtractFilePath(ParamStr(0)); // Path to GLSViewer
-  I := Pos(UpperCase('glscene'), UpperCase(GLScenePath));
-  if (I <> 0) then
-  begin
-    Delete(GLScenePath, I+7, Length(GLScenePath)-I);
-    GLScenePath := GLScenePath + PathDelim + 'Locale' + PathDelim;
-  end;
+  LocalePath := ExtractFileDir(ParamStr(0)); // Path to GLSViewer
+  LocalePath := LocalePath + PathDelim + 'Locale' + PathDelim;
 
   Textdomain('glscene');
-  BindTextDomain ('glscene', GLScenePath);
+  BindTextDomain ('glscene', LocalePath);
 
   ReadIniFile;
   if (LangID <> LANG_ENGLISH) then
@@ -82,36 +77,44 @@ begin
       LANG_RUSSIAN:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(GLScenePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
       end;
       LANG_SPANISH:
       begin
         UseLanguage('es');
-        Application.HelpFile := UpperCase(GLScenePath + 'es'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'es'+ PathDelim+'GLScene.chm');
       end;
       LANG_GERMAN:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(GLScenePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
       end;
       LANG_FRENCH:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(GLScenePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
       end
       else
       begin
         UseLanguage('en');
-        Application.HelpFile := UpperCase(GLScenePath + 'en'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLScene.chm');
       end;
     end;
   end
   else
   begin
     UseLanguage('en');
-    Application.HelpFile := UpperCase(GLScenePath + 'en'+ PathDelim+'GLScene.chm');
+    Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLScene.chm');
   end;
   TP_IgnoreClass(TFont);
+  TranslateComponent(Self);
+  //TP_GlobalIgnoreClass(TGLLibMaterial);
+  //TP_GlobalIgnoreClass(TGLMaterialLibrary);
+  //TP_GlobalIgnoreClass(TListBox);
+  //TP_GlobalIgnoreClassProperty(TAction, 'Category');
+
+  //LoadNewResourceModule(Language);//when using ITE, ENU for English USA
+
 end;
 
 
@@ -121,7 +124,7 @@ begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   with IniFile do
     try
-      LangID := ReadInteger('fmOptions', 'RadioGroupLanguage', 0);
+      LangID := ReadInteger('GLOptions', 'RadioGroupLanguage', 0);
     finally
       IniFile.Free;
     end;

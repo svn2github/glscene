@@ -93,14 +93,14 @@ interface
 
 uses
 {$ifdef MSWINDOWS}
-  Windows,
+  Winapi.Windows,
 {$else}
   Libc,
 {$ifdef FPC}
   CWString,
 {$endif}
 {$endif}
-  System.Classes, System.StrUtils, System.SysUtils, System.TypInfo;
+  Classes, StrUtils, SysUtils, TypInfo;
 
  (*****************************************************************************)
  (*                                                                           *)
@@ -111,7 +111,7 @@ uses
 type
   {$IFNDEF UNICODE}
   UnicodeString  = WideString;
-  RawUtf8String  = ansistring;
+  RawUtf8String  = AnsiString;
   {$ELSE}
   RawUtf8String=RawByteString;
   {$ENDIF}
@@ -209,9 +209,6 @@ const
 
 procedure HookIntoResourceStrings(Enabled: boolean = True;
   SupportPackages: boolean = False);
-
-
-
 
  (*****************************************************************************)
  (*                                                                           *)
@@ -567,11 +564,11 @@ var
 begin
   Result := '';
   SetLength(W, 1);
-  Len := Windows.GetEnvironmentVariableW(PWideChar(Name), PWideChar(W), 1);
+  Len := GetEnvironmentVariableW(PWideChar(Name), PWideChar(W), 1);
   if Len > 0 then
   begin
     SetLength(Result, Len - 1);
-    Windows.GetEnvironmentVariableW(PWideChar(Name), PWideChar(Result), Len);
+    GetEnvironmentVariableW(PWideChar(Name), PWideChar(Result), Len);
   end;
 end;
 
@@ -597,7 +594,7 @@ var
 {$endif}
 begin
   {$ifdef MSWINDOWS}
-  Assert(sLinebreak = ansistring(#13#10));
+  Assert(sLinebreak = AnsiString(#13#10));
   i := 1;
   while i <= length(s) do
   begin
@@ -1110,7 +1107,7 @@ var
 begin
   SetLength(Result, 2000);
   errcode := GetLastError();
-  Windows.FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, nil, errcode, 0,
+  FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, nil, errcode, 0,
     PWideChar(Result), 2000, nil);
   Result := PWideChar(Result);
 end;
@@ -2795,7 +2792,7 @@ begin
           SetLength(filename8bit, offset - fs.position);
           fs.ReadBuffer(filename8bit[1], offset - fs.position);
           filename := trim(string(filename8bit));
-          if PreferExternal and FileExists(basedirectory + filename) then
+          if PreferExternal and SysUtils.fileexists(basedirectory + filename) then
           begin
             // Disregard the internal version and use the external version instead
             FreeAndNil(fi);
@@ -3399,8 +3396,8 @@ initialization
   {$else}
   HookLoadResString := THook.Create(@system.LoadResString, @LoadResStringA);
   {$endif}
-  HookLoadStr := THook.Create(@LoadStr, @SysUtilsLoadStr);
-  HookFmtLoadStr := THook.Create(@FmtLoadStr, @SysUtilsFmtLoadStr);
+  HookLoadStr := THook.Create(@SysUtils.LoadStr, @SysUtilsLoadStr);
+  HookFmtLoadStr := THook.Create(@SysUtils.FmtLoadStr, @SysUtilsFmtLoadStr);
   param0 := lowercase(extractfilename(ParamStr(0)));
   if (param0 <> 'delphi32.exe') and (param0 <> 'kylix') and (param0 <> 'bds.exe') then
     HookIntoResourceStrings(AutoCreateHooks, False);

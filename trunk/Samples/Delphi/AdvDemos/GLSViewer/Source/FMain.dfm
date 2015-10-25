@@ -1,4 +1,4 @@
-object Main: TMain
+object MainForm: TMainForm
   Left = 188
   Top = 87
   Caption = 'GLSViewer'
@@ -262,7 +262,7 @@ object Main: TMain
     Left = 32
     Top = 232
     Bitmap = {
-      494C01010E009800A80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E009800BC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000424242004242420042424200424242000000
@@ -1638,7 +1638,7 @@ object Main: TMain
       Checked = True
       GroupIndex = 1
       HelpType = htContext
-      Hint = 'View|Smooth shading'
+      Hint = 'Smooth shading|Smooth shading'
       ImageIndex = 9
       OnExecute = acViewSmoothShadingExecute
     end
@@ -1648,7 +1648,7 @@ object Main: TMain
       Caption = 'Flat Shading'
       GroupIndex = 1
       HelpType = htContext
-      Hint = 'View|Flat Shading'
+      Hint = 'Flat Shading|Flat Shading'
       ImageIndex = 7
       OnExecute = acViewFlatShadingExecute
     end
@@ -1658,7 +1658,7 @@ object Main: TMain
       Caption = 'Flat Shading with Lines'
       GroupIndex = 1
       HelpType = htContext
-      Hint = 'View|Flat Shading with Lines'
+      Hint = 'Flat Shading with Lines'
       ImageIndex = 11
       OnExecute = acViewFlatLinesExecute
     end
@@ -1668,7 +1668,7 @@ object Main: TMain
       Caption = 'Hidden Lines'
       GroupIndex = 1
       HelpType = htContext
-      Hint = 'View|Hidden Lines'
+      Hint = 'Hidden Lines'
       ImageIndex = 8
       OnExecute = acViewHiddenLinesExecute
     end
@@ -1678,28 +1678,28 @@ object Main: TMain
       Caption = 'Wireframe'
       GroupIndex = 1
       HelpType = htContext
-      Hint = 'View|Wireframe'
+      Hint = 'Wireframe'
       ImageIndex = 6
       OnExecute = acViewWireFrameExecute
     end
     object acViewZoomIn: TAction
       Category = 'View'
       Caption = 'Zoom In'
-      Hint = 'View|Zoom In'
+      Hint = 'Zoom In'
       ImageIndex = 2
       OnExecute = acViewZoomInExecute
     end
     object acViewZoomOut: TAction
       Category = 'View'
       Caption = 'Zoom Out'
-      Hint = 'View|Zoom Out'
+      Hint = 'Zoom Out'
       ImageIndex = 3
       OnExecute = acViewZoomOutExecute
     end
     object acViewReset: TAction
       Category = 'View'
       Caption = 'Reset View'
-      Hint = 'View|Reset View'
+      Hint = 'Reset View'
       ImageIndex = 5
       OnExecute = acViewResetExecute
     end
@@ -1707,7 +1707,7 @@ object Main: TMain
       Category = 'File'
       Caption = '&Open...'
       HelpType = htContext
-      Hint = 'Open|Open file'
+      Hint = 'File|Open'
       ImageIndex = 0
       OnExecute = acFileOpenExecute
     end
@@ -1715,7 +1715,7 @@ object Main: TMain
       Category = 'File'
       Caption = 'Pick texture...'
       HelpType = htContext
-      Hint = 'Pick|Pick texture'
+      Hint = 'File|Pick texture'
       ImageIndex = 1
       OnExecute = acFilePickExecute
     end
@@ -1723,14 +1723,14 @@ object Main: TMain
       Category = 'File'
       Caption = 'Open Texture Library...'
       HelpType = htContext
-      Hint = 'Open|Open texture library'
+      Hint = 'File|Open texture library'
       OnExecute = acFileOpenTexLibExecute
     end
     object acFileSaveAs: TAction
       Category = 'File'
       Caption = 'Save As...'
       HelpType = htContext
-      Hint = 'Save As|Save the model as'
+      Hint = 'File|Save as'
       ImageIndex = 4
       OnUpdate = acSaveAsUpdate
     end
@@ -1739,42 +1739,44 @@ object Main: TMain
       Caption = 'Save Textures...'
       Enabled = False
       HelpType = htContext
-      Hint = 'Save|Save textures'
+      Hint = 'File|Save textures...'
       OnExecute = acFileSaveTexturesExecute
     end
     object acFileExit: TAction
       Category = 'File'
       Caption = 'Exit'
-      Hint = 'Exit|Exit the GLScene Viewer'
+      Hint = 'File|Exit'
       OnExecute = acFileExitExecute
     end
     object acHelpContents: THelpContents
       Category = 'Help'
       Caption = '&Contents'
       Enabled = False
-      Hint = 'Help Contents'
+      Hint = 'Contents|Help Contents'
       ImageIndex = 13
     end
     object acHelpTopicSearch: THelpTopicSearch
       Category = 'Help'
       Caption = '&Topic Search'
       Enabled = False
-      Hint = 'Topic Search'
+      Hint = 'Help|Topic Search'
       ImageIndex = 14
     end
     object acHelpOnHelp: THelpOnHelp
       Category = 'Help'
       Caption = '&Help on Help'
       Enabled = False
-      Hint = 'Help on help'
+      Hint = 'Help|Help on help'
     end
     object acHelpGLSHomePage: TAction
       Category = 'Help'
       Caption = 'GLScene Home Page'
+      Hint = 'Help|Home page'
     end
     object acHelpAbout: TAction
       Category = 'Help'
       Caption = 'About...'
+      Hint = 'Help|About...'
       OnExecute = acHelpAboutExecute
     end
     object acAADefault: TAction
@@ -1802,21 +1804,21 @@ object Main: TMain
       Category = 'View'
       Caption = 'Show Axes'
       GroupIndex = 1
-      Hint = 'View|Show Axes'
+      Hint = 'Show Axes'
       ImageIndex = 20
       OnExecute = acViewAxesExecute
     end
     object acEditUndo: TEditUndo
       Category = 'Edit'
       Caption = '&Undo'
-      Hint = 'Undo|Reverts the last action'
+      Hint = 'Undo|Reverts'
       ImageIndex = 18
       ShortCut = 16474
     end
     object acEditCut: TEditCut
       Category = 'Edit'
       Caption = 'Cu&t'
-      Hint = 'Cut|Cuts the selection and puts it on the Clipboard'
+      Hint = 'Cut|Cut the selection and puts it on the Clipboard'
       ImageIndex = 15
       ShortCut = 16472
     end
@@ -1873,7 +1875,7 @@ object Main: TMain
     Left = 120
     Top = 232
     Bitmap = {
-      494C010115001800480010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101150018005C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000006000000001002000000000000060
       000000000000000000000000000000000000000000007FC8F70089CDF70092D0
       F8009DD5F8002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF00D8EE

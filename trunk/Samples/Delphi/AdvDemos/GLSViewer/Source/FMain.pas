@@ -1,6 +1,3 @@
-{: GLScene Viewer based on GLSViewer by Eric Grange
-   http://www.sourceforge.net/projects/glscene
-}
 unit FMain;
 
 interface
@@ -12,6 +9,8 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin,
   Vcl.ComCtrls, Vcl.ExtDlgs, Vcl.ExtCtrls,
+  Vcl.ActnMan, Vcl.ActnCtrls, Vcl.ActnMenus, Vcl.StdActns, Vcl.BandActn,
+  Vcl.PlatformDefaultStyleActnCtrls,
 
   // GLS
   GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects,
@@ -21,12 +20,10 @@ uses
   GLVectorTypes,
 
   //GLSViewer
-  FGLForm, FGLAbout, GNUgettext, FGLOptions, DGLSViewer, Vcl.ActnMan,
-  Vcl.ActnCtrls, Vcl.ActnMenus, Vcl.StdActns, Vcl.BandActn,
-  Vcl.PlatformDefaultStyleActnCtrls;
+  FGLForm, FGLAbout, GNUgettext, FGLOptions, DGLSViewer;
 
 type
-  TMain = class(TGLForm)
+  TMainForm = class(TGLForm)
     ImageList: TImageList;
     StatusBar: TStatusBar;
     GLScene: TGLScene;
@@ -162,7 +159,7 @@ type
   end;
 
 var
-  Main: TMain;
+  MainForm: TMainForm;
 
 implementation
 
@@ -224,14 +221,8 @@ begin
   end;
 end;
 
-procedure TMain.FormCreate(Sender: TObject);
-var
-  reg: TRegistry;
-  shellCmd: String;
-  keyOkay: Boolean;
-const
-  cKeyName: String = 'Applications\GLSViewer.exe\shell\open\command';
-  cFriendlyKeyName: String = 'Applications\GLSViewer.exe';
+procedure TMainForm.FormCreate(Sender: TObject);
+
 begin
   inherited;
  // instantiate our specific hidden-lines shader
@@ -239,34 +230,9 @@ begin
 
   FreeForm.IgnoreMissingTextures := True;
 
-  // register as an application that handles arbitrary file classes
-  try
-    reg := TRegistry.Create;
-    try
-      shellCmd := '"' + Application.ExeName + '" "%1"';
-      reg.RootKey := HKEY_CLASSES_ROOT;
-      keyOkay := False;
-      if reg.OpenKeyReadOnly(cKeyName) then
-        keyOkay := (reg.ReadString('') = shellCmd);
-      if not keyOkay then
-      begin
-        reg.CloseKey;
-        if reg.OpenKey(cKeyName, True) then
-          reg.WriteString('', shellCmd);
-        reg.CloseKey;
-        if reg.OpenKey(cFriendlyKeyName, True) then
-          reg.WriteString('FriendlyAppName',
-            'GLSViewer, OpenGL 3D Files Viewer');
-      end;
-    finally
-      reg.Free;
-    end;
-  except
-    // ignore all registry issues (not critical)
-  end;
 end;
 
-procedure TMain.FormShow(Sender: TObject);
+procedure TMainForm.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
@@ -284,18 +250,18 @@ begin
   end;
 end;
 
-procedure TMain.acFileExitExecute(Sender: TObject);
+procedure TMainForm.acFileExitExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TMain.acFileOpenExecute(Sender: TObject);
+procedure TMainForm.acFileOpenExecute(Sender: TObject);
 begin
   if dmGLSViewer.OpenDialog.Execute then
     DoOpen(dmGLSViewer.OpenDialog.fileName);
 end;
 
-procedure TMain.acFileOpenTexLibExecute(Sender: TObject);
+procedure TMainForm.acFileOpenTexLibExecute(Sender: TObject);
 var
   I: Integer;
 begin
@@ -311,7 +277,7 @@ begin
     end;
 end;
 
-procedure TMain.acFilePickExecute(Sender: TObject);
+procedure TMainForm.acFilePickExecute(Sender: TObject);
 begin
   if dmGLSViewer.opDialog.Execute then
   begin
@@ -329,7 +295,7 @@ begin
   end;
 end;
 
-procedure TMain.acFileSaveAsExecute(Sender: TObject);
+procedure TMainForm.acFileSaveAsExecute(Sender: TObject);
 var
   ext : String;
 begin
@@ -349,14 +315,14 @@ begin
   end;
 end;
 
-procedure TMain.acFileSaveTexturesExecute(Sender: TObject);
+procedure TMainForm.acFileSaveTexturesExecute(Sender: TObject);
 begin
   if dmGLSViewer.SDTextures.Execute then
     GLMaterialLibrary.SaveToFile(dmGLSViewer.SDTextures.fileName);
 end;
 
 
-procedure TMain.GLSceneViewerBeforeRender(Sender: TObject);
+procedure TMainForm.GLSceneViewerBeforeRender(Sender: TObject);
 begin
   THiddenLineShader(hlShader).LinesColor := VectorMake(107 / 256, 123 / 256,
     173 / 256, 1);
@@ -374,13 +340,13 @@ begin
   end;
 end;
 
-procedure TMain.GLSceneViewerAfterRender(Sender: TObject);
+procedure TMainForm.GLSceneViewerAfterRender(Sender: TObject);
 begin
   ApplyFSAA;
   Screen.Cursor := crDefault;
 end;
 
-procedure TMain.DoResetCamera;
+procedure TMainForm.DoResetCamera;
 var
   objSize: Single;
 begin
@@ -405,7 +371,7 @@ begin
   end;
 end;
 
-procedure TMain.ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
+procedure TMainForm.ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
 begin
   with aMaterial do
   begin
@@ -442,7 +408,7 @@ begin
   end;
 end;
 
-procedure TMain.ApplyShadeMode;
+procedure TMainForm.ApplyShadeMode;
 var
   i: Integer;
 begin
@@ -459,7 +425,7 @@ begin
   FreeForm.StructureChanged;
 end;
 
-procedure TMain.ApplyFSAA;
+procedure TMainForm.ApplyFSAA;
 begin
   with GLSceneViewer.Buffer do
   begin
@@ -480,7 +446,7 @@ begin
   end;
 end;
 
-procedure TMain.ApplyFaceCull;
+procedure TMainForm.ApplyFaceCull;
 begin
   with GLSceneViewer.Buffer do
   begin
@@ -497,7 +463,7 @@ begin
   end;
 end;
 
-procedure TMain.ApplyBgColor;
+procedure TMainForm.ApplyBgColor;
 var
   bmp: TBitmap;
   col: TColor;
@@ -519,7 +485,7 @@ begin
   end;
 end;
 
-procedure TMain.ApplyTexturing;
+procedure TMainForm.ApplyTexturing;
 var
   i: Integer;
 begin
@@ -537,7 +503,7 @@ begin
   FreeForm.StructureChanged;
 end;
 
-procedure TMain.ApplyFPS;
+procedure TMainForm.ApplyFPS;
 begin
   if acToolsShowFPS.Checked then
   begin
@@ -552,7 +518,7 @@ begin
   end;
 end;
 
-procedure TMain.SetupFreeFormShading;
+procedure TMainForm.SetupFreeFormShading;
 var
   i: Integer;
   libMat: TGLLibMaterial;
@@ -575,7 +541,7 @@ begin
   ApplyFPS;
 end;
 
-procedure TMain.DoOpen(const fileName: String);
+procedure TMainForm.DoOpen(const fileName: String);
 var
   min, max: TAffineVector;
 begin
@@ -612,7 +578,7 @@ begin
   DoResetCamera;
 end;
 
-procedure TMain.GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TMainForm.GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   mx := X;
@@ -620,7 +586,7 @@ begin
   md := True;
 end;
 
-procedure TMain.GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+procedure TMainForm.GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   d: Single;
@@ -654,13 +620,13 @@ begin
   end;
 end;
 
-procedure TMain.GLSceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TMainForm.GLSceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   md := False;
 end;
 
-procedure TMain.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
   if FreeForm.MeshObjects.Count > 0 then
@@ -672,14 +638,14 @@ begin
   Handled := True;
 end;
 
-procedure TMain.GLMaterialLibraryTextureNeeded(Sender: TObject;
+procedure TMainForm.GLMaterialLibraryTextureNeeded(Sender: TObject;
   var textureFileName: String);
 begin
   if not acToolsTexturing.Enabled then
     textureFileName := '';
 end;
 
-procedure TMain.acInvertNormalsExecute(Sender: TObject);
+procedure TMainForm.acInvertNormalsExecute(Sender: TObject);
 var
   i: Integer;
 begin
@@ -689,7 +655,7 @@ begin
   FreeForm.StructureChanged;
 end;
 
-procedure TMain.acReverseRenderingOrderExecute(Sender: TObject);
+procedure TMainForm.acReverseRenderingOrderExecute(Sender: TObject);
 var
   i, j, n: Integer;
   fg: TFaceGroup;
@@ -718,12 +684,12 @@ begin
   FreeForm.StructureChanged;
 end;
 
-procedure TMain.acSaveAsUpdate(Sender: TObject);
+procedure TMainForm.acSaveAsUpdate(Sender: TObject);
 begin
   acFileSaveAs.Enabled := (FreeForm.MeshObjects.Count > 0);
 end;
 
-procedure TMain.acHelpAboutExecute(Sender: TObject);
+procedure TMainForm.acHelpAboutExecute(Sender: TObject);
 begin
   with TGLAbout.Create(Self) do
     try
@@ -733,13 +699,13 @@ begin
     end;
 end;
 
-procedure TMain.acAADefaultExecute(Sender: TObject);
+procedure TMainForm.acAADefaultExecute(Sender: TObject);
 begin
   (Sender as TAction).Checked := True;
   ApplyFSAA;
 end;
 
-procedure TMain.acConvertToIndexedTrianglesExecute(Sender: TObject);
+procedure TMainForm.acConvertToIndexedTrianglesExecute(Sender: TObject);
 var
   v: TAffineVectorList;
   i: TIntegerList;
@@ -772,7 +738,7 @@ begin
   SetupFreeFormShading;
 end;
 
-procedure TMain.acStripifyExecute(Sender: TObject);
+procedure TMainForm.acStripifyExecute(Sender: TObject);
 var
   i: Integer;
   mo: TMeshObject;
@@ -799,65 +765,65 @@ begin
   end;
 end;
 
-procedure TMain.acViewAxesExecute(Sender: TObject);
+procedure TMainForm.acViewAxesExecute(Sender: TObject);
 begin
-  (Sender as TfmOptions).CheckBoxAxisClick(nil);
+  (Sender as TGLOptions).CheckBoxAxisClick(nil);
 end;
 
-procedure TMain.acViewFlatShadingExecute(Sender: TObject);
-begin
-  ApplyShadeMode;
-end;
-
-procedure TMain.acViewHiddenLinesExecute(Sender: TObject);
+procedure TMainForm.acViewFlatShadingExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TMain.acViewResetExecute(Sender: TObject);
+procedure TMainForm.acViewHiddenLinesExecute(Sender: TObject);
+begin
+  ApplyShadeMode;
+end;
+
+procedure TMainForm.acViewResetExecute(Sender: TObject);
 begin
   DoResetCamera;
 end;
 
-procedure TMain.acViewFlatLinesExecute(Sender: TObject);
+procedure TMainForm.acViewFlatLinesExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TMain.acViewSmoothShadingExecute(Sender: TObject);
+procedure TMainForm.acViewSmoothShadingExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TMain.acViewWireFrameExecute(Sender: TObject);
+procedure TMainForm.acViewWireFrameExecute(Sender: TObject);
 begin
   ApplyShadeMode;
 end;
 
-procedure TMain.acViewZoomInExecute(Sender: TObject);
+procedure TMainForm.acViewZoomInExecute(Sender: TObject);
 var
   h: Boolean;
 begin
   FormMouseWheel(Self, [], -120 * 4, Point(0, 0), h);
 end;
 
-procedure TMain.acViewZoomOutExecute(Sender: TObject);
+procedure TMainForm.acViewZoomOutExecute(Sender: TObject);
 var
   h: Boolean;
 begin
   FormMouseWheel(Self, [], 120 * 4, Point(0, 0), h);
 end;
 
-procedure TMain.acOptimizeExecute(Sender: TObject);
+procedure TMainForm.acOptimizeExecute(Sender: TObject);
 begin
   OptimizeMesh(FreeForm.MeshObjects, [mooVertexCache, mooSortByMaterials]);
   FreeForm.StructureChanged;
   SetupFreeFormShading;
 end;
 
-procedure TMain.acToolsOptionsExecute(Sender: TObject);
+procedure TMainForm.acToolsOptionsExecute(Sender: TObject);
 begin
-  with TfmOptions.Create(Self) do
+  with TGLOptions.Create(Self) do
     try
       ShowModal;
     finally
@@ -865,26 +831,26 @@ begin
     end;
 end;
 
-procedure TMain.acToolsFaceCullingExecute(Sender: TObject);
+procedure TMainForm.acToolsFaceCullingExecute(Sender: TObject);
 begin
   acToolsFaceCulling.Checked := not acToolsFaceCulling.Checked;
   ApplyFaceCull;
 end;
 
-procedure TMain.acToolsLightingExecute(Sender: TObject);
+procedure TMainForm.acToolsLightingExecute(Sender: TObject);
 begin
   acToolsLighting.Checked := not acToolsLighting.Checked;
   // TBLighting
   ApplyShadeMode;
 end;
 
-procedure TMain.acToolsShowFPSExecute(Sender: TObject);
+procedure TMainForm.acToolsShowFPSExecute(Sender: TObject);
 begin
   acToolsShowFPS.Checked := not acToolsShowFPS.Checked;
   ApplyFPS;
 end;
 
-procedure TMain.acToolsTexturingExecute(Sender: TObject);
+procedure TMainForm.acToolsTexturingExecute(Sender: TObject);
 begin
   acToolsTexturing.Checked := not acToolsTexturing.Checked;
   if acToolsTexturing.Checked then
@@ -898,7 +864,7 @@ begin
     ApplyTexturing;
 end;
 
-procedure TMain.GLCadencerProgress(Sender: TObject;
+procedure TMainForm.GLCadencerProgress(Sender: TObject;
   const deltaTime, newTime: Double);
 begin
   if Self.Focused then
@@ -906,14 +872,14 @@ begin
 end;
 
 
-procedure TMain.TimerTimer(Sender: TObject);
+procedure TMainForm.TimerTimer(Sender: TObject);
 begin
   StatusBar.Panels[1].Text := Format('%.1f FPS',
     [GLSceneViewer.FramesPerSecond]);
   GLSceneViewer.ResetPerformanceMonitor;
 end;
 
-procedure TMain.ReadIniFile;
+procedure TMainForm.ReadIniFile;
 begin
   inherited;
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
@@ -930,7 +896,7 @@ begin
     end;
 end;
 
-procedure TMain.WriteIniFile;
+procedure TMainForm.WriteIniFile;
 begin
   IniFile := TIniFile.Create(ChangeFileExt(Application.ExeName, '.ini'));
   with IniFile do

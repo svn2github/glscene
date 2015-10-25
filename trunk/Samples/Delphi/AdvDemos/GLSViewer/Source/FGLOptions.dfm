@@ -1,4 +1,4 @@
-inherited fmOptions: TfmOptions
+inherited GLOptions: TGLOptions
   HelpContext = 0
   Caption = 'Options'
   OnClose = FormClose
@@ -17,8 +17,9 @@ inherited fmOptions: TfmOptions
       Top = 32
       Width = 113
       Height = 17
-      Action = Main.acViewAxes
+      Caption = 'Show Axes'
       TabOrder = 0
+      OnClick = CheckBoxAxisClick
     end
     object RadioGroupLanguage: TRadioGroup
       Left = 96

@@ -13,6 +13,7 @@ object GLForm: TGLForm
   OldCreateOrder = False
   Position = poMainFormCenter
   Scaled = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 16
 end
