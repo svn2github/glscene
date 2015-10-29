@@ -30,7 +30,10 @@ interface
 {$I GLScene.inc}
 
 uses
-   Classes, GLSound, GLScene, SysUtils, GLSoundFileObjects;
+   System.Classes, System.SysUtils,
+   Vcl.Forms, Vcl.Dialogs,
+   //GLS
+   GLScene, GLSound, GLSoundFileObjects;
 
 type
 
@@ -38,7 +41,7 @@ type
 	//
 	TGLSMOpenAL = class (TGLSoundManager)
       private
-         FActivated : Boolean;      
+         FActivated : Boolean;
       protected
 	      { Protected Declarations }
          function DoActivate : Boolean; override;
@@ -62,7 +65,6 @@ type
 	      destructor Destroy; override;
 
          procedure UpdateSources; override;
-
          function EAXSupported : Boolean; override;
 	end;
 
@@ -79,7 +81,6 @@ implementation
 // ---------------------------------------------------------------------
 
 uses
-  Forms, Dialogs,
   GLVectorGeometry, OpenAL{al, alut, alTypes};
 
 procedure Register;

@@ -38,14 +38,14 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *)
 
-unit openal;
+unit OpenAL;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  SysUtils{$IFDEF MSWINDOWS},Windows{$ENDIF};
+  SysUtils{$IFDEF MSWINDOWS},  Winapi.Windows{$ENDIF};
 
 { $ DEFINE ALUT} //define ALUT to use alut.dll
 
@@ -114,7 +114,7 @@ type
   // Openal clamped double.
   TALclampd = TALdouble;
   PALclampd = ^TALclampd;
-  
+
   // ALC enumerations.
   TALCenum = integer;
   PALCenum = ^TALCenum;

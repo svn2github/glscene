@@ -87,11 +87,7 @@ uses
 
 const
 {$IFDEF WIN32}
-  {$IFDEF NEWTONTUTORIAL}
-   NewtonDLL = '..\..\sdk\dll\Newton.dll';
-  {$ELSE}
    NewtonDLL = 'Newton.dll';
-  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF WIN64}
