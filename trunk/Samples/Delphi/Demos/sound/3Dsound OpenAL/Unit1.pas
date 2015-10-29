@@ -8,7 +8,7 @@ uses
   //GLS
   GLCadencer, GLScene, GLObjects, GLSound, GLWin32Viewer,
   GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, GLBaseClasses,
-  GLFileWAV, GLFileMP3;
+  GLFileWAV, GLFileMP3, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -44,9 +44,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure btnHowlClick(Sender: TObject);
   private
-    { Déclarations privées }
+    { private declarations }
   public
-    { Déclarations publiques }
+    { public declarations }
   end;
 
 var
@@ -60,22 +60,12 @@ uses
   GLVectorGeometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  MediaPath : String;
-  I : Integer;
 begin
-  MediaPath := ExtractFilePath(ParamStr(0));
-  I := Pos(UpperCase('Samples'), UpperCase(MediaPath));
-  if (I <> 0) then
-  begin
-    Delete(MediaPath, I+8, Length(MediaPath)-I);
-    MediaPath := MediaPath+'Media\';
-    SetCurrentDir(MediaPath);
-  end;
-   // Load our sound sample
-   GLSoundLibrary.Samples.AddFile('drumloop.wav','drumloop.wav');
-   GLSoundLibrary.Samples.AddFile('chimes.wav','chimes.wav');
-   GLSoundLibrary.Samples.AddFile('howl.mp3','howl.mp3');
+  SetGLSceneMediaDir;
+  // Load our sound sample
+  GLSoundLibrary.Samples.AddFile('drumloop.wav','drumloop.wav');
+  GLSoundLibrary.Samples.AddFile('chimes.wav','chimes.wav');
+  GLSoundLibrary.Samples.AddFile('howl.mp3','howl.mp3');
 end;
 
 procedure TForm1.SphereProgress(Sender: TObject; const deltaTime,
