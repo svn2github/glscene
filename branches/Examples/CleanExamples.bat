@@ -51,7 +51,7 @@ echo             Don't delete some files
 echo ************************************************
 echo _
 
-del *.res /s
+rem del *.res /s  - don't remove resources like cursors.res
 rem del *.ico /s  - some projects have own icos
 rem del *.obj /s  - obj models and resources for lazarus
 rem del *.cfg /s  - there are quake's animations
