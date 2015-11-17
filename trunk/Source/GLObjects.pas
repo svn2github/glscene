@@ -914,7 +914,7 @@ type
   TGLSuperellipsoid = class(TGLQuadricObject)
   private
     { Private Declarations }
-    FRadius, FxyCurve, FzCurve: TGLFloat;
+    FRadius, FVCurve, FHCurve: TGLFloat;
     FSlices, FStacks: TGLInt;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
@@ -924,15 +924,14 @@ type
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
     procedure SetRadius(const aValue: TGLFloat);
-    procedure SetxyCurve(const aValue: TGLFloat);
-    procedure SetzCurve(const aValue: TGLFloat);
+    procedure SetVCurve(const aValue: TGLFloat);
+    procedure SetHCurve(const aValue: TGLFloat);
     procedure SetSlices(aValue: TGLInt);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
     procedure SetStacks(aValue: TGLInt);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
-
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -952,8 +951,8 @@ type
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
     property Radius: TGLFloat read FRadius write SetRadius;
-    property xyCurve: TGLFloat read FxyCurve write SetxyCurve;
-    property zCurve: TGLFloat read FzCurve write SetzCurve;
+    property VCurve: TGLFloat read FVCurve write SetVCurve;
+    property HCurve: TGLFloat read FHCurve write SetHCurve;
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property Stacks: TGLInt read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
@@ -4160,8 +4159,8 @@ constructor TGLSuperellipsoid.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRadius := 0.5;
-  FxyCurve := 1.0;
-  FzCurve := 1.0;
+  FVCurve := 1.0;
+  FHCurve := 1.0;
   FSlices := 16;
   FStacks := 16;
   FTop := 90;
@@ -4199,12 +4198,12 @@ begin
   StepV := (AngTop - AngBottom) / FStacks;
 
   { Even integer used with the Power function, only produce positive points }
-  tc1 := trunc(xyCurve);
-  tc2 := trunc(zCurve);
+  tc1 := trunc(VCurve);
+  tc2 := trunc(HCurve);
   if tc1 mod 2 = 0 then
-    xyCurve := xyCurve + 1e-6;
+    VCurve := VCurve + 1e-6;
   if tc2 mod 2 = 0 then
-    zCurve := zCurve - 1e-6;
+    HCurve := HCurve - 1e-6;
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
@@ -4221,10 +4220,10 @@ begin
       GL.Vertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
-      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-        SinPc1 := Power(SinP, xyCurve)
+      if (Sign(SinP) = 1) or (tc1 = VCurve) then
+        SinPc1 := Power(SinP, VCurve)
       else
-        SinPc1 := -Power(-SinP, xyCurve);
+        SinPc1 := -Power(-SinP, VCurve);
       GL.Vertex3f(0, SinPc1*Radius, 0);
 
       N1 := YVector;
@@ -4233,10 +4232,10 @@ begin
     end; { FTopCap = ctFlat }
 
     //  v1.Y := SinP;
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
     Theta := AngStart;
@@ -4245,22 +4244,22 @@ begin
     begin
       SinCos(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
+        CosPc1 := -Power(-CosP, VCurve);
 
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
 
       //    v1.Z := CosP * CosT;
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
 
       if FTopCap = ctCenter then
@@ -4292,16 +4291,16 @@ begin
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
 
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
-    if (Sign(SinP2) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP2, xyCurve)
+    if (Sign(SinP2) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP2, VCurve)
     else
-      SinPc1 := -Power(-SinP2, xyCurve);
+      SinPc1 := -Power(-SinP2, VCurve);
     v2.Y := SinPc1;
 
     vTexCoord0 := 1 - j * vTexFactor;
@@ -4312,38 +4311,38 @@ begin
     begin
       SinCos(Theta, SinT, CosT);
 
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
+        CosPc1 := -Power(-CosP, VCurve);
 
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
 
-      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP2, xyCurve)
+      if (Sign(CosP2) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP2, VCurve)
       else
-        CosPc1 := -Power(-CosP2, xyCurve);
+        CosPc1 := -Power(-CosP2, VCurve);
       V2.X := CosPc1 * SinTc2;
 
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
+        CosPc1 := -Power(-CosP, VCurve);
 
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
 
-      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP2, xyCurve)
+      if (Sign(CosP2) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP2, VCurve)
       else
-        CosPc1 := -Power(-CosP2, xyCurve);
+        CosPc1 := -Power(-CosP2, VCurve);
       V2.Z := CosPc1 * CosTc2;
 
       uTexCoord := i * uTexFactor;
@@ -4392,10 +4391,10 @@ begin
       GL.Vertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
-      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-        SinPc1 := Power(SinP, xyCurve)
+      if (Sign(SinP) = 1) or (tc1 = VCurve) then
+        SinPc1 := Power(SinP, VCurve)
       else
-        SinPc1 := -Power(-SinP, xyCurve);
+        SinPc1 := -Power(-SinP, VCurve);
       GL.Vertex3f(0, SinPc1*Radius, 0);
 
       if DoReverse then
@@ -4404,10 +4403,10 @@ begin
         N1 := YVector;
     end;
     //  v1.Y := SinP;
-    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
-      SinPc1 := Power(SinP, xyCurve)
+    if (Sign(SinP) = 1) or (tc1 = VCurve) then
+      SinPc1 := Power(SinP, VCurve)
     else
-      SinPc1 := -Power(-SinP, xyCurve);
+      SinPc1 := -Power(-SinP, VCurve);
     v1.Y := SinPc1;
 
     Theta := AngStop;
@@ -4415,22 +4414,22 @@ begin
     begin
       SinCos(Theta, SinT, CosT);
       //    v1.X := CosP * SinT;
-      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
-        CosPc1 := Power(CosP, xyCurve)
+      if (Sign(CosP) = 1) or (tc1 = VCurve) then
+        CosPc1 := Power(CosP, VCurve)
       else
-        CosPc1 := -Power(-CosP, xyCurve);
+        CosPc1 := -Power(-CosP, VCurve);
 
-      if (Sign(SinT) = 1) or (tc2 = zCurve) then
-        SinTc2 := Power(SinT, zCurve)
+      if (Sign(SinT) = 1) or (tc2 = HCurve) then
+        SinTc2 := Power(SinT, HCurve)
       else
-        SinTc2 := -Power(-SinT, zCurve);
+        SinTc2 := -Power(-SinT, HCurve);
       v1.X := CosPc1 * SinTc2;
 
       //    v1.Z := CosP * CosT;
-      if (Sign(CosT) = 1) or (tc2 = zCurve) then
-        CosTc2 := Power(CosT, zCurve)
+      if (Sign(CosT) = 1) or (tc2 = HCurve) then
+        CosTc2 := Power(CosT, HCurve)
       else
-        CosTc2 := -Power(-CosT, zCurve);
+        CosTc2 := -Power(-CosT, HCurve);
       v1.Z := CosPc1 * CosTc2;
 
       if FBottomCap = ctCenter then
@@ -4543,6 +4542,18 @@ begin
   end;
 end;
 
+// SetHCurve
+//
+
+procedure TGLSuperellipsoid.SetHCurve(const aValue: TGLFloat);
+begin
+  if aValue <> FHCurve then
+  begin
+    FHCurve := aValue;
+    StructureChanged;
+  end;
+end;
+
 // SetRadius
 //
 
@@ -4555,29 +4566,6 @@ begin
   end;
 end;
 
-// SetxyCurve
-//
-
-procedure TGLSuperellipsoid.SetxyCurve(const aValue: TGLFloat);
-begin
-  if aValue <> FxyCurve then
-  begin
-    FxyCurve := aValue;
-    StructureChanged;
-  end;
-end;
-
-// SetzCurve
-//
-
-procedure TGLSuperellipsoid.SetzCurve(const aValue: TGLFloat);
-begin
-  if aValue <> FzCurve then
-  begin
-    FzCurve := aValue;
-    StructureChanged;
-  end;
-end;
 
 // SetSlices
 //
@@ -4655,6 +4643,18 @@ begin
   if FTopCap <> aValue then
   begin
     FTopCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetVCurve
+//
+
+procedure TGLSuperellipsoid.SetVCurve(const aValue: TGLFloat);
+begin
+  if aValue <> FVCurve then
+  begin
+    FVCurve := aValue;
     StructureChanged;
   end;
 end;

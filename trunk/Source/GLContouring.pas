@@ -83,7 +83,7 @@ type
     NC - number of cut levels
     HgtL - values of cut levels
   }
-    procedure Conrec(PlaneSF: TGLFreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+    procedure Conrec(PlaneSFindex:Integer; PlaneSF: TGLFreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
          X: TGLVector; Y: TGLVector; NC: Integer; HgtL: TGLVector; Z_Kfix: Single;
          res3Dmax, res3Dmin: Single);
    private
@@ -478,13 +478,16 @@ procedure TGLIsolines.FreeList;
 var
   i: integer;
 begin
-  for i := LineList.Count - 1 downto 0 do
+ if LineList<>nil then
   begin
-    with TGLIsoline(LineList.Items[i]) do
-      Free;
+    for i := LineList.Count - 1 downto 0 do
+    begin
+      with TGLIsoline(LineList.Items[i]) do
+        Free;
+    end;
+    LineList.Clear;
+    IsolineState := ilsEmpty;
   end;
-  LineList.Clear;
-  IsolineState := ilsEmpty;
 end;
 
 procedure TGLIsolines.MakeIsolines(var Depths: TGLMatrix; bmSize: integer;
@@ -525,7 +528,7 @@ end;
 
 // Conrec
 //
-procedure TGLIsolines.Conrec(PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
+procedure TGLIsolines.Conrec(PlaneSFindex:Integer;PlaneSF:TGLfreeForm; Data: TGLMatrix; ilb, iub, jlb, jub: Integer;
   X: TGLVector; Y: TGLVector;  NC: Integer; HgtL: TGLVector;
   Z_Kfix: Single; res3Dmax,res3Dmin: Single);
 // ------------------------------------------------------------------------------
@@ -563,7 +566,7 @@ begin
  SetLength(GLSpaceTextSF, NC-1);
  IUniqueList := TList<Single>.Create;
 
- ScaleFont:= 0.040 * MaxValue(Y);      // 050515
+ ScaleFont:= 0.025 * MaxValue(Y);      // 050515
 
   // set casting array
   CastTab[0, 0, 0] := 0;
@@ -750,8 +753,21 @@ begin
                 end; // ---  -Case deside;
 
                 // -------Output results ---------------------
-                 Nodes.AddNode(x1, y1, Z_kfix);
-                 Nodes.AddNode(x2, y2, Z_kfix);
+
+                case PlaneSFindex of              // suggestion3Planes
+                   0:  begin
+                        Nodes.AddNode(x1, y1, Z_kfix);
+                        Nodes.AddNode(x2, y2, Z_kfix);
+                       end ;
+                   1: begin
+                        Nodes.AddNode(Z_kfix,x1, y1);
+                        Nodes.AddNode(Z_kfix,x2, y2);
+                       end ;
+                   2: begin
+                        Nodes.AddNode(y1, Z_kfix, x1);
+                        Nodes.AddNode(y2, Z_kfix, x2);
+                       end ;
+                end;
 
                   if ODD(K) then
                          begin
@@ -782,7 +798,22 @@ begin
                        Extrusion:= 0.5;
                        Text:= FloatToStrF(ActualValue, ffFixed, 4, 0)  ;
 
-                       Position.AsVector :=  VectorMake(x1,0.99*y1,1.01*Z_kfix);
+
+
+                       case PlaneSFindex of              // suggestion3Planes
+                         0:  begin
+                             Position.AsVector :=  VectorMake(x1,0.99*y1,1.01*Z_kfix);
+                             Direction.AsVector :=  VectorMake(0,0,1);
+                             end ;
+                         1: begin
+                              Position.AsVector :=  VectorMake(1.01*Z_kfix,x1,0.99*y1);
+                              Direction.AsVector :=  VectorMake(1,0,0);
+                             end ;
+                         2: begin
+                             Position.AsVector :=  VectorMake(y1,1.01*Z_kfix,0.99*x1);
+                              Direction.AsVector :=  VectorMake(0,1,0);
+                             end ;
+                       end;
                        StructureChanged;
                      end;
                      IUniqueList.Add(HgtL[k]);
