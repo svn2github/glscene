@@ -238,7 +238,7 @@ object MainForm: TMainForm
       Max = 15
       Min = 1
       PageSize = 1
-      Position = 5
+      Position = 10
       TabOrder = 0
       TickStyle = tsNone
       OnChange = RadiusTrackBarChange
@@ -253,7 +253,7 @@ object MainForm: TMainForm
       Max = 15
       Min = 1
       PageSize = 1
-      Position = 5
+      Position = 10
       TabOrder = 1
       TickStyle = tsNone
       OnChange = RadiusTrackBarChange
@@ -268,7 +268,7 @@ object MainForm: TMainForm
       Max = 15
       Min = 1
       PageSize = 1
-      Position = 5
+      Position = 10
       TabOrder = 2
       TickStyle = tsNone
       OnChange = RadiusTrackBarChange
@@ -329,7 +329,7 @@ object MainForm: TMainForm
       Cursor = crHandPoint
       Anchors = [akLeft, akBottom]
       Max = 128
-      Min = 4
+      Min = 2
       PageSize = 4
       Position = 16
       TabOrder = 7
@@ -344,7 +344,7 @@ object MainForm: TMainForm
       Cursor = crHandPoint
       Anchors = [akLeft, akBottom]
       Max = 128
-      Min = 4
+      Min = 2
       PageSize = 4
       Position = 16
       TabOrder = 8
@@ -481,6 +481,14 @@ object MainForm: TMainForm
           SpotCutOff = 180.000000000000000000
         end
       end
+      object GLSuperellipsoid: TGLSuperellipsoid
+        Radius = 0.500000000000000000
+        VCurve = 1.000000000000000000
+        HCurve = 1.000000000000000000
+      end
+      object GLMesh: TGLMesh
+        Mode = mmTriangles
+      end
     end
     object ObjectsCube: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
@@ -538,7 +546,7 @@ object MainForm: TMainForm
         Parts = [gpX, gpZ]
       end
     end
-    object GLHUDText1: TGLHUDText
+    object GLHUDText: TGLHUDText
       Position.Coordinates = {0000804000000000000000000000803F}
       BitmapFont = GLWindowsBitmapFont1
       Rotation = 0.000000000000000000

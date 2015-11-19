@@ -17,6 +17,7 @@ uses
 
 type
   TMainForm = class(TForm)
+    StatusBar: TStatusBar;
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     CameraCube: TGLDummyCube;
@@ -25,51 +26,57 @@ type
     ArrowZ: TGLArrowLine;
     ArrowY: TGLArrowLine;
     ArrowX: TGLArrowLine;
-    StatusBar: TStatusBar;
-    GLXYZGridXZ: TGLXYZGrid;
+
     GLLightSource1: TGLLightSource;
     Panel1: TPanel;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label10: TLabel;
+    Label12: TLabel;
+
     xRadiusTrackBar: TTrackBar;
     yRadiusTrackBar: TTrackBar;
     zRadiusTrackBar: TTrackBar;
+
     VCurveTrackBar: TTrackBar;
     HCurveTrackBar: TTrackBar;
     GridCheckBox: TCheckBox;
     ArrowsCheckBox: TCheckBox;
-    Label5: TLabel;
     SlicesTrackBar: TTrackBar;
-    Label8: TLabel;
     StacksTrackBar: TTrackBar;
-    Label9: TLabel;
-    Label7: TLabel;
+    TopCapRadioGroup: TRadioGroup;
     BottomTrackBar: TTrackBar;
     TopTrackBar: TTrackBar;
-    TopCapRadioGroup: TRadioGroup;
-    BottomCapRadioGroup: TRadioGroup;
-    Label10: TLabel;
     StartTrackBar: TTrackBar;
-    Label12: TLabel;
     StopTrackBar: TTrackBar;
+
+    BottomCapRadioGroup: TRadioGroup;
     Button1: TButton;
+    GLXYZGridXZ: TGLXYZGrid;
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
-    GLHUDText1: TGLHUDText;
+    GLHUDText: TGLHUDText;
     Button2: TButton;
     GLCadencer1: TGLCadencer;
     GLLightSource: TGLLightSource;
+    GLSuperellipsoid: TGLSuperellipsoid;
+    GLMesh: TGLMesh;
 
     procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure FormCreate(Sender: TObject);
+
     procedure RadiusTrackBarChange(Sender: TObject);
     procedure VCurveTrackBarChange(Sender: TObject);
     procedure HCurveTrackBarChange(Sender: TObject);
@@ -90,7 +97,6 @@ type
   private
     { Private declarations }
     MousePoint: TPoint;
-    Superellipsoid: TGLSuperellipsoid;
     Superellipsoids: array[0..5, 0..5] of TGLSuperellipsoid;
     procedure ShowCameraLocation;
     procedure ShowFocalLength;
@@ -133,14 +139,13 @@ begin
   Screen.Cursors[crZoom] := LoadCursor(HInstance, 'ZOOM');
 
   Randomize;
-  Superellipsoid := TGLSuperellipsoid
-    (GLScene1.Objects.AddNewChild(TGLSuperellipsoid));
-  Superellipsoid.Direction.SetVector(0, 0, 1);
-  Superellipsoid.Up.SetVector(0, 1, 0);
-  Superellipsoid.Position.SetPoint(0, 1, 0);
-  Superellipsoid.Material.FrontProperties.Ambient.RandomColor;
-  Superellipsoid.Material.FrontProperties.Diffuse.RandomColor;
-  Superellipsoid.Material.FrontProperties.Shininess := 100;
+  GLSuperellipsoid := TGLSuperellipsoid(GLScene1.Objects.AddNewChild(TGLSuperellipsoid));
+  GLSuperellipsoid.Direction.SetVector(0, 0, 1);
+  GLSuperellipsoid.Up.SetVector(0, 1, 0);
+  GLSuperellipsoid.Position.SetPoint(0, 1, 0);
+  GLSuperellipsoid.Material.FrontProperties.Ambient.RandomColor;
+  GLSuperellipsoid.Material.FrontProperties.Diffuse.RandomColor;
+  GLSuperellipsoid.Material.FrontProperties.Shininess := 100;
 
 end;
 
@@ -269,7 +274,7 @@ var
 
 begin
   n := VCurveTrackBar.Position / 10;
-  Superellipsoid.VCurve := n;
+  GLSuperellipsoid.VCurve := n;
   ShowSuperellipsoid;
 end;
 
@@ -279,7 +284,7 @@ var
 
 begin
   n := HCurveTrackBar.Position / 10;
-  Superellipsoid.HCurve := n;
+  GLSuperellipsoid.HCurve := n;
   ShowSuperellipsoid;
 end;
 
@@ -313,34 +318,34 @@ begin
     - nsFlat : facetted look<br>
     - nsSmooth : smooth look<br>
     - nsNone : unlighted rendering, usefull for decla texturing }
-  Superellipsoid.Scale.SetVector(xRadiusTrackBar.Position,
+  GLSuperellipsoid.Scale.SetVector(xRadiusTrackBar.Position,
     yRadiusTrackBar.Position, zRadiusTrackBar.Position);
-  Superellipsoid.Slices := SlicesTrackBar.Position;
-  Superellipsoid.Stacks := StacksTrackBar.Position;
-  Superellipsoid.Top := TopTrackBar.Position;
+  GLSuperellipsoid.Slices := SlicesTrackBar.Position;
+  GLSuperellipsoid.Stacks := StacksTrackBar.Position;
+  GLSuperellipsoid.Top := TopTrackBar.Position;
 
   case TopCapRadioGroup.ItemIndex of
-    0: Superellipsoid.TopCap := ctNone;
-    1: Superellipsoid.TopCap := ctCenter;
-    2: Superellipsoid.TopCap := ctFlat;
+    0: GLSuperellipsoid.TopCap := ctNone;
+    1: GLSuperellipsoid.TopCap := ctCenter;
+    2: GLSuperellipsoid.TopCap := ctFlat;
   end;
 
-  Superellipsoid.Bottom := -BottomTrackBar.Position;
+  GLSuperellipsoid.Bottom := -BottomTrackBar.Position;
 
   case BottomCapRadioGroup.ItemIndex of
-    0: Superellipsoid.BottomCap := ctNone;
-    1: Superellipsoid.BottomCap := ctCenter;
-    2: Superellipsoid.BottomCap := ctFlat;
+    0: GLSuperellipsoid.BottomCap := ctNone;
+    1: GLSuperellipsoid.BottomCap := ctCenter;
+    2: GLSuperellipsoid.BottomCap := ctFlat;
   end;
 
   if (StartTrackBar.Position <= StopTrackBar.Position) and
     (StartTrackBar.Position < 360) then
   begin
-    Superellipsoid.Start := StartTrackBar.Position;
-    Superellipsoid.Stop := StopTrackBar.Position;
+    GLSuperellipsoid.Start := StartTrackBar.Position;
+    GLSuperellipsoid.Stop := StopTrackBar.Position;
   end;
-  // Superellipsoid.Normals := nsNone;
-  GLHUDText1.Text := 'Scale:' + FloatToStrF(xRadiusTrackBar.Position / 10,
+  // GLSuperellipsoid.Normals := nsNone;
+  GLHUDText.Text := 'Scale:' + FloatToStrF(xRadiusTrackBar.Position / 10,
     ffNumber, 6, 2) + ', ' + FloatToStrF(yRadiusTrackBar.Position / 10,
     ffNumber, 6, 2) + ', ' + FloatToStrF(zRadiusTrackBar.Position / 10,
     ffNumber, 6, 2) + #13#10'VCurve:' +
@@ -400,7 +405,7 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-  with Superellipsoid.Material.Texture do
+  with GLSuperellipsoid.Material.Texture do
   begin
     // We need a CubeMapImage, which unlike the "regular Images" stores
     // multiple images.
@@ -424,7 +429,7 @@ begin
     // That's all folks, let us see the thing!
     Disabled := False;
   end;
-  // Button1.Visible := False;
+  Button1.Visible := False;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
@@ -477,6 +482,7 @@ begin
       end;
     end;
   end;
+  Button2.Visible := False;
 end;
 
 procedure TMainForm.checkclick(Sender: TObject);
