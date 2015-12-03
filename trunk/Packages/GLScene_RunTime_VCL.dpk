@@ -289,6 +289,13 @@ contains
   LIBPNG in '..\Source\LIBPNG.pas',
   GLSJPG in '..\Source\GLSJPG.pas',
   GLTriangulation in '..\Source\GLTriangulation.pas',
-  GLMeshLines in '..\Source\GLMeshLines.pas';
+  GLMeshLines in '..\Source\GLMeshLines.pas',
+  GLSLPostDreamVisionShader in '..\Source\GLSLPostDreamVisionShader.pas',
+  GLSLPostFrostShader in '..\Source\GLSLPostFrostShader.pas',
+  GLSLPostNightVisionShader in '..\Source\GLSLPostNightVisionShader.pas',
+  GLSLPostPixelateShader in '..\Source\GLSLPostPixelateShader.pas',
+  GLSLPostPosterizeShader in '..\Source\GLSLPostPosterizeShader.pas',
+  GLSLPostThermalVisionShader in '..\Source\GLSLPostThermalVisionShader.pas',
+  GLSLPostTroubleShader in '..\Source\GLSLPostTroubleShader.pas';
 
 end.
