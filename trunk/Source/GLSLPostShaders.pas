@@ -7,11 +7,14 @@
 
    <b>History : </b><font size=-1><ul>
     <li>04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit
-    <li>01/11/15 - J.Delauney - Initial version for
+    <li>01/11/15 - J.Delauney - Initial versions for
                                 GLSLPostThermalVisionShader
                                 GLSLPostDreamVisionShader
                                 GLSLPostNightVisionShader
-                                GLSLPostPixelizedVisionShader
+                                GLSLPostPixelateShader
+                                GLSLPostPosterizeShader
+                                GLSLPostFrostShader
+                                GLSLPostTroubleShader
     <li>05/04/07 - DaStr - Initial version for GLSLPostBlurShader
                            based on RenderMonkey demo
 }
