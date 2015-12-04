@@ -7,22 +7,16 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, CheckLst,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg, Vcl.ComCtrls,
 
-  // GLScene
+  // GLS
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
   GLGraph, GLUtils, GLContext, GLVectorGeometry, GLGeomObjects, GLCoordinates,
   GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform, GLMaterial,
   GLBaseClasses,
 
-  // GlScene shaders
-  GLSLPostBlurShader,
+  // GLSL shaders
+  GLSLPostShaders,
+  //nVidia CG Shader
   CGPostTransformationShader,
-  GLSLPostThermalVisionShader,
-  GLSLPostDreamVisionShader,
-  GLSLPostNightVisionShader,
-  GLSLPostPixelateShader,
-  GLSLPostPosterizeShader,
-  GLSLPostFrostShader,
-  GLSLPostTroubleShader,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS;

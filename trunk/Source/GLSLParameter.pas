@@ -15,8 +15,11 @@ interface
 {$M-}
 
 uses
-  Classes,
-  OpenGLTokens, GLVectorTypes, GLTextureFormat, GLRenderContextInfo;
+  System.Classes,
+  OpenGLTokens, 
+  GLVectorTypes, 
+  GLTextureFormat, 
+  GLRenderContextInfo;
 
 type
 
@@ -266,7 +269,9 @@ procedure FillUniformAutoSetMethodList(AList: TStrings;
 function GetUniformAutoSetMethod(AMethodName: string): TUniformAutoSetMethod;
 function GetUniformAutoSetMethodName(AMethod: TUniformAutoSetMethod): string;
 
+//---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
 
 const
   cGLSLTypeComponents: array[TGLSLDataType] of Integer =

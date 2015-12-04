@@ -241,7 +241,6 @@ contains
   GLImageUtils in '..\Source\GLImageUtils.pas',
   GLSGenerics in '..\Source\GLSGenerics.pas',
   GLSLog in '..\Source\GLSLog.pas',
-  GLSLParameter in '..\Source\GLSLParameter.pas',
   GLMaterialEx in '..\Source\GLMaterialEx.pas',
   GLSceneForm in '..\Source\GLSceneForm.pas',
   GLPluginIntf in '..\Source\GLPluginIntf.pas',
@@ -249,7 +248,6 @@ contains
   GLTextureImageEditors in '..\Source\GLTextureImageEditors.pas',
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
   GLPhongShader in '..\Source\GLPhongShader.pas',
-  GLSLPostBlurShader in '..\Source\GLSLPostBlurShader.pas',
   GLSMemo in '..\Source\GLSMemo.pas',
   GLTypes in '..\Source\GLTypes.pas',
   GLTexLensFlare in '..\Source\GLTexLensFlare.pas',
@@ -290,12 +288,6 @@ contains
   GLSJPG in '..\Source\GLSJPG.pas',
   GLTriangulation in '..\Source\GLTriangulation.pas',
   GLMeshLines in '..\Source\GLMeshLines.pas',
-  GLSLPostDreamVisionShader in '..\Source\GLSLPostDreamVisionShader.pas',
-  GLSLPostFrostShader in '..\Source\GLSLPostFrostShader.pas',
-  GLSLPostNightVisionShader in '..\Source\GLSLPostNightVisionShader.pas',
-  GLSLPostPixelateShader in '..\Source\GLSLPostPixelateShader.pas',
-  GLSLPostPosterizeShader in '..\Source\GLSLPostPosterizeShader.pas',
-  GLSLPostThermalVisionShader in '..\Source\GLSLPostThermalVisionShader.pas',
-  GLSLPostTroubleShader in '..\Source\GLSLPostTroubleShader.pas';
+  GLSLPostPixelateShader in '..\Source\GLSLPostPixelateShader.pas';
 
 end.
