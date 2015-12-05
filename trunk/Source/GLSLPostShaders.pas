@@ -699,7 +699,7 @@ begin
    Add('  uvv.x = 0.4*sin(elapsedTime*50.0); ');
    Add('  uvv.y = 0.4*cos(elapsedTime*50.0); ');
    Add('  float m = 1; ');
-   Add('  if (useMask==1) { m = texture2D(maskTex, uv.st).r; } ');  // Problem Here I don't know how to solve ????
+   Add('  if (useMask==1) { m = texture2D(maskTex, vTexCoord.st).r; } ');  // Problem Here I don't know how to solve ????
    Add('  vec3 n = texture2D(noiseTex,(uv.st*3.5) + uvv).rgb; ');
    Add('  vec3 c = texture2DRect(ScreenTex, uv.st+(n.xy*0.005)).rgb; ');
    Add('    float lum = dot(vec3(0.30, 0.59, 0.11), c); ');
@@ -725,14 +725,13 @@ procedure TGLCustomGLSLPostNightVisionShader.DoApply(var rci: TRenderContextInfo
 begin
 
   GetGLSLProg.UseProgramObject;
-  GetGLSLProg.Uniform1f['luminanceThreshold'] := FLuminanceThreshold;
-  GetGLSLProg.Uniform1f['colorAmplification'] := FColorAmplification;
-  GetGLSLProg.Uniform1f['elapsedTime'] := FElapsedTime;
-  GetGLSLProg.Uniform1i['useMask'] := FUseMask;
-  GetGLSLProg.Uniform2f['ScreenExtents'] := Vector2fMake(rci.viewPortSize.cx, rci.viewPortSize.cy);
-  GetGLSLProg.UniformTextureHandle['noiseTex',0,ttTexture2D]:= FNoiseTex.Handle;
-  GetGLSLProg.UniformTextureHandle['maskTex',1,ttTexture2D]:= FMaskTex.Handle;
-
+  param['luminanceThreshold'].AsVector1f := FLuminanceThreshold;
+  param['colorAmplification'].AsVector1f := FColorAmplification;
+  param['elapsedTime'].AsVector1f := FElapsedTime;
+  param['useMask'].AsVector1i := FUseMask;
+  param['ScreenExtents'].AsVector2f := Vector2fMake(rci.viewPortSize.cx, rci.viewPortSize.cy);
+  param['noiseTex'].AsTexture2D[1]:= FNoiseTex;
+  param['maskTex'].AsTexture2D[2]:= FMaskTex;
 end;
 
 function TGLCustomGLSLPostNightVisionShader.DoUnApply(
@@ -1259,7 +1258,8 @@ begin
   GetGLSLProg.Uniform1f['PixelY'] := FPixelY;
   GetGLSLProg.Uniform1f['Freq'] := FFreq;
   GetGLSLProg.Uniform2f['ScreenExtents'] := Vector2fMake(rci.viewPortSize.cx, rci.viewPortSize.cy);
-  GetGLSLProg.UniformTextureHandle['noiseTex',0,ttTexture2D]:= FNoiseTex.Handle;
+
+  param['noiseTex'].AsTexture2D[1]:= FNoiseTex;
 
 end;
 
