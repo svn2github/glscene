@@ -28,7 +28,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
 		  TPoint &MousePos, bool &Handled)
 {
- GLCamera1->AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
+ GLCamera1->AdjustDistanceToTarget(System::Math::Power(1.1, WheelDelta/120));
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Timer1Timer(TObject *Sender)

@@ -26,8 +26,6 @@ object Form1: TForm1
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 339
-    ExplicitHeight = 196
   end
   object GLScene1: TGLScene
     ObjectsSorting = osNone
@@ -52,7 +50,7 @@ object Form1: TForm1
       Stacks = 6
       EffectsData = {
         0458434F4C02010201060A54474C424669726546580201020012000000000200
-        02001200000000}
+        02000610474C4669726546584D616E6167657231}
       object GLLightSource2: TGLLightSource
         Ambient.Color = {0000803F0000803F0000803F0000803F}
         ConstAttenuation = 1.000000000000000000

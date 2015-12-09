@@ -7,6 +7,9 @@
   IDE experts.<p>
 
   <b>History : </b><font size=-1><ul>
+  <li>09/12/15 - PW - Registered TGLSLPostThermalVisionShader, TGLSLPostDreamVisionShader,
+                      TGLSLPostNightVisionShader, TGLSLPostPixelateShader, TGLSLPostPosterizeShader,
+                      TGLSLPostFrostShader, TGLSLPostTroubleShader (by J.Delauney)
   <li>10/03/13 - PW - Added TGLOctahedron and TGLTetrahedron registration
   <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
   <li>04/06/10 - Yar - Added GLSArchiveManager
@@ -15,51 +18,50 @@
   <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
   <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
   <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
-  editors to interface section, and made their methods public.
+                        editors to interface section, and made their methods public.
   <li>08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
-  + register TGLSLPostBlurShader
+                        + register TGLSLPostBlurShader
   <li>05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
-  + GLMisc split, tidied up some old ifdefs
+                       + GLMisc split, tidied up some old ifdefs
   <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-  to GLGraphics.pas (BugTracker ID = 1923844)
+                        to GLGraphics.pas (BugTracker ID = 1923844)
   <li>21/03/08 - DaStr - Renamed TMMat to TGLTextureSharingShaderMaterial
   <li>17/03/08 - mrqzzz - Registered TGLTextureSharingShader
   <li>20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
-  Registered TGLGizmo
+                         Registered TGLGizmo
   <li>06/11/07 - mrqzzz - Registered material picker for TGLActorProxy
   <li>18/09/07 - DaStr - Added TGLMaterialProxy, TGLAbsoluteHUDText,
-  TGLResolutionIndependantHUDText
+                         TGLResolutionIndependantHUDText
   <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
-  (Bugtracker ID = 1684432)
+                         (Bugtracker ID = 1684432)
   <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
   <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
   <li>23/03/07 - fig - Added TGLSLProjectedTextures
   <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
   <li>14/03/07 - DaStr - SpriteAnimation now makes use of
-  TGLLibMaterialName's property editor
+                         TGLLibMaterialName's property editor
   <li>04/03/07 - DaStr - Added TGLPostShaderHolder
   <li>28/02/07 - LIN   - Added GLShadowHDS
   <li>25/02/07 - DaStr - Added TGLPostEffect
-  Moved all terrain components to a separate tab
-  Moved all shader components registration here
+                         Moved all terrain components to a separate tab
+                         Moved all shader components registration here
   <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
-  TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
-  TGLSmoothNavigator, TGLSmoothUserInterface
-  Moved TGLLibMaterialNameProperty to the interface
-  section
+                        TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
+                        TGLSmoothNavigator, TGLSmoothUserInterface
+                        Moved TGLLibMaterialNameProperty to the interface section
   <li>21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
   <li>16/02/07 - DaStr - Added GLMaterialMultiProxy
   <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
   <li>13/02/07 - LIN   - Added GLAsyncHDS and GLTexturedHDS
   <li>06/02/07 - DaStr - Added GLSimpleNavigation
   <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
-  procedures from other units to this one
+                          procedures from other units to this one
   <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
-  (to support IGLMaterialLibrarySupported)
+                         (to support IGLMaterialLibrarySupported)
   <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
   <li>13/10/04 - MRQZZZ - Added GLTrail
   <li>03/07/04 - LR - Completly review to take account designtime for Linux
-  Note a problem with TGLColorProperty
+                      Note a problem with TGLColorProperty
   <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
   <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
   <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
@@ -75,19 +77,19 @@
   <li>16/05/00 - EG - Delphi 4 Compatibility
   <li>28/04/00 - EG - Removed ObjectStock in TObjectManager (was useless)
   <li>26/04/00 - EG - Added Categories in ObjectManager,
-  enhanced GetRegisteredSceneObjects
+                      enhanced GetRegisteredSceneObjects
   <li>16/04/00 - EG - Objects icons are now loaded from ressources using
-  ClassName (more VCL-like)
+                      ClassName (more VCL-like)
   <li>11/04/00 - EG - Components now install under 'GLScene',
-  Fixed DestroySceneObjectList (thanks Uwe Raabe)
+                      Fixed DestroySceneObjectList (thanks Uwe Raabe)
   <li>06/04/00 - EG - Added TGLBehavioursProperty
   <li>18/03/00 - EG - Added TGLImageClassProperty
   <li>13/03/00 - EG - Updated TGLTextureImageProperty
   <li>14/02/00 - EG - Added MaterialLibrary editor and picker
   <li>09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
-  object-oriented and encapsulated
+                      object-oriented and encapsulated
   <li>06/02/00 - EG - Fixed TGLScenedEditor logic
-  (was causing Delphi IDE crashes on package unload)
+                      (was causing Delphi IDE crashes on package unload)
   <li>05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
   </ul></font>
 }
@@ -552,7 +554,7 @@ uses
   GLSLanguage,
   GLSLBumpShader,
   GLSLDiffuseSpecularShader,
-  GLSLPostBlurShader,
+  GLSLPostShaders,
   GLSLProjectedTextures,
   GLSLShader,
   GLSmoothNavigator,
@@ -2004,7 +2006,10 @@ begin
     TGLUserShader, TGLHiddenLineShader, TGLCelShader, TGLOutlineShader,
     TGLMultiMaterialShader, TGLBumpShader, TGLSLShader,
     TGLSLDiffuseSpecularShader, TGLSLBumpShader, TGLAsmShader,
-    TGLShaderCombiner, TGLTextureSharingShader, TGLSLPostBlurShader]);
+    TGLShaderCombiner, TGLTextureSharingShader, TGLSLPostBlurShader,
+    TGLSLPostThermalVisionShader, TGLSLPostDreamVisionShader, TGLSLPostNightVisionShader,
+    TGLSLPostPixelateShader, TGLSLPostPosterizeShader, TGLSLPostFrostShader,
+    TGLSLPostTroubleShader]);
 
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);

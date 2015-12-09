@@ -116,7 +116,7 @@ object Form1: TForm1
     ParticleInterval = 0.070000000298023220
     UseInterval = False
     Reference = Sphere1
-    Left = 64
-    Top = 88
+    Left = 120
+    Top = 56
   end
 end

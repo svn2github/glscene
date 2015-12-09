@@ -188,6 +188,7 @@ begin
   NightVisionShader.MaterialLibrary := MaterialLibrary;
   NightVisionShader.NoiseTexName:='Noise';
   NightVisionShader.MaskTexName:='Mask';
+  NightVisionShader.UseMask:=1;
   PostShaderHolder.Shaders.Add.Shader := NightVisionShader;
   ShaderCheckListBox.Items.AddObject('Night Vision Shader', NightVisionShader);
   ShaderCheckListBox.Checked[3] := False;

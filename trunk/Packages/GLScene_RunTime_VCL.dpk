@@ -288,6 +288,6 @@ contains
   GLSJPG in '..\Source\GLSJPG.pas',
   GLTriangulation in '..\Source\GLTriangulation.pas',
   GLMeshLines in '..\Source\GLMeshLines.pas',
-  GLSLPostPixelateShader in '..\Source\GLSLPostPixelateShader.pas';
+  GLSLPostShaders in '..\Source\GLSLPostShaders.pas';
 
 end.
