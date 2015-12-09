@@ -378,8 +378,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 6530$';
-  GLSCENE_VERSION = '1.3.0.%s';
+  GLSCENE_REVISION = '$Revision: 6695$';
+  GLSCENE_VERSION = '1.4.0.%s';
 
 type
 

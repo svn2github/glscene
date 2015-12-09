@@ -36,10 +36,6 @@ object InfoForm: TInfoForm
     object TabSheetGLScene: TTabSheet
       Caption = 'GLScene'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Image: TImage
         Left = 1
         Top = 2
@@ -2730,10 +2726,6 @@ object InfoForm: TInfoForm
     end
     object TabSheetInformation: TTabSheet
       Caption = 'Information'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ScrollBoxInfo: TScrollBox
         Left = 0
         Top = 0
@@ -2742,7 +2734,6 @@ object InfoForm: TInfoForm
         Align = alClient
         BorderStyle = bsNone
         TabOrder = 0
-        ExplicitTop = 1
         object Label1: TLabel
           Left = 10
           Top = 29
@@ -3458,10 +3449,6 @@ object InfoForm: TInfoForm
     object TabSheetExtensions: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ListBoxExtensions: TListBox
         Left = 0
         Top = 0
@@ -3488,10 +3475,6 @@ object InfoForm: TInfoForm
     end
     object TabSheetContributors: TTabSheet
       Caption = 'Contributors'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object MemoContributors: TMemo
         Left = 0
         Top = 0
@@ -3522,7 +3505,8 @@ object InfoForm: TInfoForm
           'fig'
           'filippo'
           'Gabriel Corneanu'
-          'J.Delauney'
+          'Ivan Lee Herring'
+          'Jerome Delauney'
           'Joen A. Joensen'
           'Joen Joensen'
           'Kapitan'
@@ -3549,6 +3533,7 @@ object InfoForm: TInfoForm
           'Roshal Sasha'
           'Rustam Asmandiarov'
           'Sandor Domokos'
+          'Sergio'
           'Solerman Kaplon'
           'Sternas Stefanos'
           'Stuart Gooding'
@@ -3562,10 +3547,6 @@ object InfoForm: TInfoForm
     end
     object TabSheetAbout: TTabSheet
       Caption = 'About'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object WebsiteLbl: TLabel
         Left = 57
         Top = 274
