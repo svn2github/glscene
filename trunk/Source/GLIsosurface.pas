@@ -1,34 +1,35 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLIsosurface<p>
+{ : GLIsosurface<p>
   Polygonising a scalar field by construction of isosurfaces <p>
 
-Algorithms
-----------
-Marching Cubes
- - Exploits a coarser Mesh then Marching Tetrahedra but produces less triangles
- - based on "Marching Cubes: A High Resolution 3D Surface
-   Construction Algorithm" by W.E.Lorensen and H.E.Cline
- - patent free since 2005
+  Algorithms
+  ----------
+  Marching Cubes
+  - Exploits a coarser Mesh then Marching Tetrahedra but produces less triangles
+  - based on "Marching Cubes: A High Resolution 3D Surface
+  Construction Algorithm" by W.E.Lorensen and H.E.Cline
+  - patent free since 2005
 
-Marching Tetrahedra
- - Finer Mesh, better feature preservation
- - based on "A new tetrahedral tesselation scheme for isosurface generation"
-   by S.L.Chan and E.O.Purisima
- - patent free
+  Marching Tetrahedra
+  - Finer Mesh, better feature preservation
+  - based on "A new tetrahedral tesselation scheme for isosurface generation"
+  by S.L.Chan and E.O.Purisima
+  - patent free
 
-Lookuptables
- - by Paul Bourke (http://paulbourke.net/geometry/polygonise/)
+  Lookuptables
+  - by Paul Bourke (http://paulbourke.net/geometry/polygonise/)
 
-Overall
- - Simple Data Structures to store Mesh. Vertices are calculated and stored twice
-   or even more often.
+  Overall
+  - Simple Data Structures to store Mesh. Vertices are calculated and stored twice
+  or even more often.
 
-	<b>History : </b><font size=-1><ul>
-     <li>05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
-	   <li>12/06/04 - Wolf Blecher - Created, the first implementation
-	</ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>10/12/15 - PW - Implemented a polished mode of interpolation by Chris Rorden
+  <li>05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
+  <li>12/06/04 - Wolf Blecher - Created, the first implementation
+  </ul></font>
 }
 
 unit GLIsosurface;
@@ -43,12 +44,12 @@ type
   TVertexArray = array of TVector3f;
   TIntegerArray = array of Integer;
 
-// TIsoSurfaceExtractor
-//
-{: 3D isosurface extractor class.<p>
-   This class allows to calculate and exctract isosurfaces from scalar field
-   voxel models using a given isovalue.<p>
-}
+  // TIsoSurfaceExtractor
+  //
+  { : 3D isosurface extractor class.<p>
+    This class allows to calculate and exctract isosurfaces from scalar field
+    voxel models using a given isovalue.<p>
+  }
   TIsoSurfaceExtractor = class(TObject)
   private
     Data: TSingle3DArray;
@@ -56,48 +57,49 @@ type
 
     function BuildIndex(var ADatavals: array of Single; Isovalue: Single): word;
     function Interpolate(V0, V1: TAffineVector;
-      var Val0, Val1, Isovalue: Single): TVertex;
+      var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
 
   public
     constructor Create(); overload;
-    constructor Create(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray); overload;
+    constructor Create(Xdim, Ydim, Zdim: Integer;
+      var AData: TSingle3DArray); overload;
     destructor Destroy();
 
-    procedure AssignData(Xdim, Ydim, Zdim: Integer;
-      var AData: TSingle3DArray);
+    procedure AssignData(Xdim, Ydim, Zdim: Integer; var AData: TSingle3DArray);
 
     procedure MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
-      out Triangles: TIntegerArray);
+      out Triangles: TIntegerArray; isPolished: boolean);
     procedure MarchingTetrahedra(Isovalue: Single; out Vertices: TVertexArray;
-      out Triangles: TIntegerArray);
+      out Triangles: TIntegerArray; isPolished: boolean);
   end;
 
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------
 implementation
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
-//-------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 
 const
 
-// Marching Cube TriTable
-//
- (*
-     4----4------5
+  // Marching Cube TriTable
+  //
+  (*
+    4----4------5
     /|          /|
-   7 |         5 |
-  /  |        /  |
- 7-----6----6    |
- |   8       |   9
- |   |       |   |
- |   0----0--|---1
- 11 /        10 /
- | 3         | 1
- |/          |/
- 3-----2-----2
- *)
+    7 |         5 |
+    /  |        /  |
+    7-----6----6    |
+    |   8       |   9
+    |   |       |   |
+    |   0----0--|---1
+    11 /        10 /
+    | 3         | 1
+    |/          |/
+    3-----2-----2
+  *)
   MC_TRITABLE: array [0 .. 255, 0 .. 15] of Integer =
     ((-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
     (0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
@@ -356,31 +358,30 @@ const
     (0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
     (-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1));
 
-// Marching Cube EdgeTable
-//
+  // Marching Cube EdgeTable
+  //
   MC_EDGETABLE: array [0 .. 11, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 3),
     (3, 0), (4, 5), (5, 6), (6, 7), (7, 4), (0, 4), (1, 5), (2, 6), (3, 7));
 
-
-// Marching Tetrahedra TriTable
-//
-(*
-        + 0
-         /|\
-        / | \
-       /  |  0
-      3   |   \
-     /    2    \
+  // Marching Tetrahedra TriTable
+  //
+  (*
+    + 0
+    /|\
+    / | \
+    /  |  0
+    3   |   \
+    /    2    \
     /     |     \
-   +----4--------+ 1
-  3 \     |     /
-     \    |    /
-      5   |   1
-       \  |  /
-        \ | /
-         \|/
-        + 2
-*)
+    +----4--------+ 1
+    3 \     |     /
+    \    |    /
+    5   |   1
+    \  |  /
+    \ | /
+    \|/
+    + 2
+  *)
   MT_TRITABLE: array [0 .. 15, 0 .. 6] of Integer =
     ((-1, -1, -1, -1, -1, -1, -1), (2, 3, 0, -1, -1, -1, -1),
     (4, 1, 0, -1, -1, -1, -1), (2, 4, 1, 3, 4, 2, -1),
@@ -390,23 +391,23 @@ const
     (2, 4, 3, 1, 4, 2, -1), (0, 1, 4, -1, -1, -1, -1),
     (0, 3, 2, -1, -1, -1, -1), (-1, -1, -1, -1, -1, -1, -1));
 
-// Marching Tetrahedra EdgeTable
-//
+  // Marching Tetrahedra EdgeTable
+  //
   MT_EDGETABLE: array [0 .. 5, 0 .. 1] of Integer = ((0, 1), (1, 2), (2, 0),
     (0, 3), (1, 3), (2, 3));
 
-// Marching Tetrahedra CubeSplit
-//
+  // Marching Tetrahedra CubeSplit
+  //
   MT_CUBESPLIT: array [0 .. 5, 0 .. 3] of Integer = ((0, 5, 1, 6), (0, 1, 2, 6),
     (0, 2, 3, 6), (0, 3, 7, 6), (0, 7, 4, 6), (0, 4, 5, 6));
 
-{-------------------------------------------------------------------------
- Class IsoSurfaceExtractor
- Purpose: Extract an Isosurface from volume dataset for given Isovalue
- -------------------------------------------------------------------------}
+  { -------------------------------------------------------------------------
+    Class IsoSurfaceExtractor
+    Purpose: Extract an Isosurface from volume dataset for given Isovalue
+    ------------------------------------------------------------------------- }
 
-// Build Index depending on whether the edges are outside or inside the surface
-//
+  // Build Index depending on whether the edges are outside or inside the surface
+  //
 function TIsoSurfaceExtractor.BuildIndex(var ADatavals: array of Single;
   Isovalue: Single): word;
 var
@@ -425,7 +426,7 @@ end;
 
 // Compute intersection point of edge and surface by linear interpolation
 //
-function TIsoSurfaceExtractor.Interpolate(V0, V1: TAffineVector;
+function InterpolateRugged(V0, V1: TAffineVector;
   var Val0, Val1, Isovalue: Single): TVertex;
 var
   Diff: Single;
@@ -435,20 +436,44 @@ begin
   begin
     Diff := Val0 / (Val0 + Val1);
     for i := 0 to 2 do
-      Interpolate.V[i] := V0.V[i] + Diff * (V1.V[i] - V0.V[i]);
+      Result.V[i] := V0.V[i] + Diff * (V1.V[i] - V0.V[i]);
   end
   else
   begin
     Diff := Val1 / (Val0 + Val1);
     for i := 0 to 2 do
-      Interpolate.V[i] := V1.V[i] + Diff * (V0.V[i] - V1.V[i]);
+      Result.V[i] := V1.V[i] + Diff * (V0.V[i] - V1.V[i]);
   end;
+end;
+
+function InterpolatePolished(V0, V1: TAffineVector;
+  var Val0, Val1, Isovalue: Single): TVertex;
+var
+  w0, w1: Single;
+begin
+  if (Val0 = Val1) then
+    w1 := 0.5
+  else
+    w1 := (Isovalue - Val0) / (Val1 - Val0);
+  w0 := 1.0 - w1;
+  Result.X := w0 * V0.X + w1 * V1.X;
+  Result.Y := w0 * V0.Y + w1 * V1.Y;
+  Result.Z := w0 * V0.Z + w1 * V1.Z;
+end;
+
+function TIsoSurfaceExtractor.Interpolate(V0, V1: TAffineVector;
+  var Val0, Val1, Isovalue: Single; isPolished: boolean): TVertex;
+begin
+  if isPolished then
+    Result := InterpolatePolished(V0, V1, Val0, Val1, Isovalue)
+  else
+    Result := InterpolateRugged(V0, V1, Val0, Val1, Isovalue)
 end;
 
 // Launch Marching Tetrahedra
 //
-procedure TIsoSurfaceExtractor.MarchingTetrahedra(Isovalue: Single; out Vertices: TVertexArray;
-  out Triangles: TIntegerArray);
+procedure TIsoSurfaceExtractor.MarchingTetrahedra(Isovalue: Single;
+  out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
   i, j, k: Integer;
   index: word;
@@ -467,18 +492,18 @@ var
     edge := 0;
     while MT_TRITABLE[index, edge] <> -1 do
     begin
-      Ver1 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge], 0]],
-        Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge], 1]],
+      Ver1 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge], 0]
+        ], Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge], 1]],
         DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge], 0]],
-        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge], 1]], Isovalue);
-      Ver2 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 0]
-        ], Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 1]],
+        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge], 1]], Isovalue, isPolished);
+      Ver2 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 1],
+        0]], Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 1]],
         DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 0]],
-        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 1]], Isovalue);
-      Ver3 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 0]
-        ], Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 1]],
+        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 1], 1]], Isovalue, isPolished);
+      Ver3 := Interpolate(Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 2],
+        0]], Tetrahedron[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 1]],
         DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 0]],
-        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 1]], Isovalue);
+        DataTetra[MT_EDGETABLE[MT_TRITABLE[index, edge + 2], 1]], Isovalue, isPolished);
       VListlength := Length(Vertices) + 3;
       TListlength := Length(Triangles) + 3;
       SetLength(Vertices, VListlength);
@@ -504,8 +529,8 @@ var
       for j := 0 to 3 do
       begin
         Tetrahedron[j] := CubeVertices[MT_CUBESPLIT[i, j]];
-        DataTetra[j] := Data[Trunc(Tetrahedron[j].V[0]), Trunc(Tetrahedron[j].V[1]),
-          Trunc(Tetrahedron[j].V[2])];
+        DataTetra[j] := Data[Trunc(Tetrahedron[j].V[0]),
+          Trunc(Tetrahedron[j].V[1]), Trunc(Tetrahedron[j].V[2])];
       end;
       index := BuildIndex(DataTetra, Isovalue);
       AppendTri();
@@ -513,14 +538,14 @@ var
   end;
 
 begin
-(*
-      1----2
-     /|   /|
+  (*
+    1----2
+    /|   /|
     0----3 |
     | 5--|-6
     |/   |/
     4----7
-*)
+  *)
   SetLength(CubeVertices, 8);
   for k := 0 to Dimensions['z'] - 2 do
   begin
@@ -572,8 +597,8 @@ end;
 
 // Launch Marching Cubes
 //
-procedure TIsoSurfaceExtractor.MarchingCubes(Isovalue: Single; out Vertices: TVertexArray;
-  out Triangles: TIntegerArray);
+procedure TIsoSurfaceExtractor.MarchingCubes(Isovalue: Single;
+  out Vertices: TVertexArray; out Triangles: TIntegerArray; isPolished: boolean);
 var
   i, j, k: Integer;
   index: word;
@@ -590,18 +615,18 @@ var
     edge := 0;
     while MC_TRITABLE[index, edge] <> -1 do
     begin
-      Ver1 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]],
-        CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]],
+      Ver1 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]
+        ], CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]],
         CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge], 0]],
-        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]], Isovalue);
-      Ver2 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
-        CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 1]],
-        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
-        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 1]], Isovalue);
-      Ver3 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
-        CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 1]],
-        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
-        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 1]], Isovalue);
+        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge], 1]], Isovalue, isPolished);
+      Ver2 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index,
+        edge + 1], 0]], CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 1],
+        1]], CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 0]],
+        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 1], 1]], Isovalue, isPolished);
+      Ver3 := Interpolate(CubeVertices[MC_EDGETABLE[MC_TRITABLE[index,
+        edge + 2], 0]], CubeVertices[MC_EDGETABLE[MC_TRITABLE[index, edge + 2],
+        1]], CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 0]],
+        CubeData[MC_EDGETABLE[MC_TRITABLE[index, edge + 2], 1]], Isovalue, isPolished);
       VListlength := Length(Vertices) + 3;
       TListlength := Length(Triangles) + 3;
       SetLength(Vertices, VListlength);
@@ -617,14 +642,14 @@ var
   end;
 
 begin
-(*
-       7----6
-      /|   /|
-     3----2 |
+  (*
+    7----6
+    /|   /|
+    3----2 |
     | 4--|-5
     |/   |/
     0----1
-*)
+  *)
   for i := 0 to Dimensions['x'] - 2 do
   begin
     for j := 1 to Dimensions['y'] - 1 do
