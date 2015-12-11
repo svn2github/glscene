@@ -148,10 +148,10 @@ begin
   case RGAlgorithm.ItemIndex of
     0:
       IsoSurfaceEx.MarchingTetrahedra(StrToFloat(LEIsoVal.Text), ExtractedVertices,
-        ExtractedTriangles);
+        ExtractedTriangles, False);
     1:
       IsoSurfaceEx.MarchingCubes(StrToFloat(LEIsoVal.Text), ExtractedVertices,
-        ExtractedTriangles);
+        ExtractedTriangles, False);
   end;
 
   lblVertices.Caption := Format('%d', [Length(ExtractedVertices)]);
