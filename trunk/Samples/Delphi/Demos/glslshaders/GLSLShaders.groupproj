@@ -18,6 +18,9 @@
         <Projects Include="PostShaders\PostShader.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="ShadersLab\ShadersLab.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -71,14 +74,23 @@
     <Target Name="PostShader:Make">
         <MSBuild Projects="PostShaders\PostShader.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ShadersLab">
+        <MSBuild Projects="ShadersLab\ShadersLab.dproj"/>
+    </Target>
+    <Target Name="ShadersLab:Clean">
+        <MSBuild Projects="ShadersLab\ShadersLab.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ShadersLab:Make">
+        <MSBuild Projects="ShadersLab\ShadersLab.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="BumpShader;DiffuseSpecularShader;ShaderComponent;Ocean;PostShader"/>
+        <CallTarget Targets="BumpShader;DiffuseSpecularShader;ShaderComponent;Ocean;PostShader;ShadersLab"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="BumpShader:Clean;DiffuseSpecularShader:Clean;ShaderComponent:Clean;Ocean:Clean;PostShader:Clean"/>
+        <CallTarget Targets="BumpShader:Clean;DiffuseSpecularShader:Clean;ShaderComponent:Clean;Ocean:Clean;PostShader:Clean;ShadersLab:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="BumpShader:Make;DiffuseSpecularShader:Make;ShaderComponent:Make;Ocean:Make;PostShader:Make"/>
+        <CallTarget Targets="BumpShader:Make;DiffuseSpecularShader:Make;ShaderComponent:Make;Ocean:Make;PostShader:Make;ShadersLab:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
