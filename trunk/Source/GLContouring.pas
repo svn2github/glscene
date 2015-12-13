@@ -22,7 +22,7 @@ uses
 
   //GLS
   GLVectorGeometry, GLVectorLists, GLObjects, GLMultiPolygon,  GLCoordinates,
-  GLTypes, GLColor, GLSpline, GLspaceText,
+  GLTypes, GLColor, GLSpline, GLspaceText, GLVectorTypes,
   GLVectorFileObjects;
 
 

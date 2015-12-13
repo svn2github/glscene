@@ -50,12 +50,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
+  System.Classes, System.SysUtils, System.Types,
+  //GLS
   GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
-  GLTerrainRenderer, GLCoordinates, GLBaseClasses, GLManager
-  , GLVectorTypes;
+  GLTerrainRenderer, GLCoordinates, GLBaseClasses,
+  GLManager, GLVectorTypes;
 
 type
   {Only csEllipsoid can have dynamic behaviour}

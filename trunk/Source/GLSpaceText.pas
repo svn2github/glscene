@@ -49,7 +49,7 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  WinApi.Windows, WinApi.Messages, System.Classes, System.UITypes,
+  WinApi.Windows, WinApi.Messages, System.Classes, System.UITypes, System.Types,
   VCL.Dialogs, VCL.Graphics, VCL.Controls,
 
   // GLS
