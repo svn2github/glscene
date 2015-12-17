@@ -114,14 +114,14 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Source\GLSceneVCLNGD.dcr"/>
+        <DCCReference Include="..\Source\PhysicsAPIs\GLSceneVCLNGD.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="GLScene_RunTime_VCL.dcp"/>
-        <DCCReference Include="..\Source\GLNGDManager.pas"/>
-        <DCCReference Include="..\Source\GLNewtonRegister.pas"/>
-        <DCCReference Include="..\Source\NewtonImport.pas"/>
-        <DCCReference Include="..\Source\NewtonImport_JointLibrary.pas"/>
+        <DCCReference Include="..\Source\PhysicsAPIs\GLNGDManager.pas"/>
+        <DCCReference Include="..\Source\PhysicsAPIs\GLNewtonRegister.pas"/>
+        <DCCReference Include="..\Source\PhysicsAPIs\NewtonImport.pas"/>
+        <DCCReference Include="..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -155,7 +155,16 @@
                 <Platform value="Win64">True</Platform>
             </Platforms>
             <Deployment Version="2">
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -469,16 +478,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

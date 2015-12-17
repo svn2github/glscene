@@ -1,7 +1,7 @@
 package GLSS_FMOD_VCL;
 
 {$R *.res}
-{$R '..\Source\GLSceneVCLFMod.dcr'}
+{$R '..\Source\SoundAPIs\GLSceneVCLFMod.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -35,10 +35,10 @@ requires
   rtl;
 
 contains
-  fmod in '..\Source\fmod.pas',
-  GLSMFMOD in '..\Source\GLSMFMOD.pas',
-  fmodpresets in '..\Source\fmodpresets.pas',
-  fmodtypes in '..\Source\fmodtypes.pas',
-  fmoderrors in '..\Source\fmoderrors.pas';
+  fmod in '..\Source\SoundAPIs\fmod.pas',
+  GLSMFMOD in '..\Source\SoundAPIs\GLSMFMOD.pas',
+  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
+  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas';
 
 end.

@@ -1,7 +1,7 @@
 package GLS_Computing_DesignTime_VCL;
 
 {$R *.res}
-{$R '..\Source\GLSceneVCLCUDA.dcr'}
+{$R '..\Source\ComputeAPIs\GLSceneVCLCUDA.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -39,6 +39,6 @@ requires
 
 contains
   FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLSComputingRegister in '..\Source\GLSComputingRegister.pas';
+  GLSComputingRegister in '..\Source\ComputeAPIs\GLSComputingRegister.pas';
 
 end.

@@ -1,7 +1,7 @@
 package GLS_ODE_VCL;
 
 {$R *.res}
-{$R '..\Source\GLSceneVCLODE.dcr'}
+{$R '..\Source\PhysicsAPIs\GLSceneVCLODE.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -35,13 +35,13 @@ requires
   rtl;
 
 contains
-  GLODEManager in '..\Source\GLODEManager.pas',
-  GLODERegister in '..\Source\GLODERegister.pas',
-  GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
-  ODEImport in '..\Source\ODEImport.pas',
-  ODEGL in '..\Source\ODEGL.pas',
-  GLODERagdoll in '..\Source\GLODERagdoll.pas',
-  GLSModuleLoader in '..\Source\GLSModuleLoader.pas';
+  GLODEManager in '..\Source\PhysicsAPIs\GLODEManager.pas',
+  GLODERegister in '..\Source\PhysicsAPIs\GLODERegister.pas',
+  GLODECustomColliders in '..\Source\PhysicsAPIs\GLODECustomColliders.pas',
+  GLODESkeletonColliders in '..\Source\PhysicsAPIs\GLODESkeletonColliders.pas',
+  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
+  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
+  GLODERagdoll in '..\Source\PhysicsAPIs\GLODERagdoll.pas',
+  GLSModuleLoader in '..\Source\PhysicsAPIs\GLSModuleLoader.pas';
 
 end.
