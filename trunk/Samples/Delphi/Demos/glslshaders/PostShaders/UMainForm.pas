@@ -16,7 +16,7 @@ uses
   // GLSL shaders
   GLSLPostShaders,
   //nVidia CG Shader
-  CGPostTransformationShader,
+  GLcgPostTransformationShader,
 
   // FileFormats
   TGA, GLFileMD2, GLFileMS3D, GLFile3DS;

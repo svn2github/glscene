@@ -24,8 +24,8 @@
 #include "GLWin32Viewer.hpp"
 #include "GLUtils.hpp"
 
-#include "GLSLPostBlurShader.hpp"
-#include "CGPostTransformationShader.hpp"
+#include "GLSLPostShaders.hpp"
+#include "GLCGPostTransformationShader.hpp"
 
 // FileFormats
 #include "TGA.hpp"
