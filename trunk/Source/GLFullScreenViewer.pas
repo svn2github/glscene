@@ -13,7 +13,7 @@
   with DoActivate DoDeactivate.
   Ru(CP1251)
   В лазарусе есть проблемы минимизации - нормализации окна.
-  Смотри код DoAvtivate DoDeactivate.
+  См. код DoAvtivate DoDeactivate.
   Тесты проводились на лазарусе 0.9.29.24627.
   В случае устранения проблем в лазарусе,
   удалите код лазаруса оставив тот который для делфи.
@@ -38,9 +38,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages, System.Classes, System.SysUtils,
+  Winapi.Windows, Winapi.Messages, 
+  System.Classes, System.SysUtils,
   VCL.Forms, VCL.Controls, VCL.Menus,
-
+  //GLS
+  OpenGLTokens, OpenGLAdapter,
   GLViewer, GLScene, GLContext;
 
 type
@@ -227,7 +229,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  OpenGLTokens, OpenGLAdapter,
   GLCrossPlatform, GLScreen, GLWin32Context;
 
 const

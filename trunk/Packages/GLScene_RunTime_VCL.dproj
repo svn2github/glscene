@@ -122,60 +122,55 @@
         <DCCReference Include="xmlrtl.dcp"/>
         <DCCReference Include="..\Source\GLAnimatedSprite.pas"/>
         <DCCReference Include="..\Source\GLAnimationUtils.pas"/>
-        <DCCReference Include="..\Source\GLApplicationFileIO.pas"/>
-        <DCCReference Include="..\Source\GLAsyncTimer.pas"/>
+        <DCCReference Include="..\Source\Base\GLApplicationFileIO.pas"/>
+        <DCCReference Include="..\Source\Base\GLAsyncTimer.pas"/>
         <DCCReference Include="..\Source\GLAtmosphere.pas"/>
         <DCCReference Include="..\Source\GLBehaviours.pas"/>
         <DCCReference Include="..\Source\GLBitmapFont.pas"/>
         <DCCReference Include="..\Source\GLBumpmapHDS.pas"/>
         <DCCReference Include="..\Source\GLBlur.pas"/>
         <DCCReference Include="..\Source\GLCadencer.pas"/>
-        <DCCReference Include="..\Source\GLCanvas.pas"/>
         <DCCReference Include="..\Source\GLCameraController.pas"/>
         <DCCReference Include="..\Source\GLCollision.pas"/>
         <DCCReference Include="..\Source\GLCompositeImage.pas"/>
         <DCCReference Include="..\Source\GLGraph.pas"/>
-        <DCCReference Include="..\Source\GLJoystick.pas"/>
+        <DCCReference Include="..\Source\Base\GLCanvas.pas"/>
+        <DCCReference Include="..\Source\Base\GLJoystick.pas"/>
         <DCCReference Include="..\Source\GLScene.pas"/>
         <DCCReference Include="..\Source\GLStrings.pas"/>
         <DCCReference Include="..\Source\GLTexture.pas"/>
         <DCCReference Include="..\Source\GLScreen.pas"/>
         <DCCReference Include="..\Source\GLSRedBlackTree.pas"/>
-        <DCCReference Include="..\Source\GLScreenSaver.pas"/>
+        <DCCReference Include="..\Source\Base\GLScreenSaver.pas"/>
         <DCCReference Include="..\Source\GLParticles.pas"/>
-        <DCCReference Include="..\Source\GLObjects.pas"/>
-        <DCCReference Include="..\Source\GLSpline.pas"/>
-        <DCCReference Include="..\Source\GLMesh.pas"/>
-        <DCCReference Include="..\Source\GLExtrusion.pas"/>
-        <DCCReference Include="..\Source\GLPortal.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLObjects.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLSpline.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMesh.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLPortal.pas"/>
         <DCCReference Include="..\Source\GLGraphics.pas"/>
-        <DCCReference Include="..\Source\GLMultiPolygon.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMultiPolygon.pas"/>
         <DCCReference Include="..\Source\GLNavigator.pas"/>
         <DCCReference Include="..\Source\GLMovement.pas"/>
         <DCCReference Include="..\Source\GLSkydome.pas"/>
         <DCCReference Include="..\Source\GLHUDObjects.pas"/>
         <DCCReference Include="..\Source\GLTerrainRenderer.pas"/>
         <DCCReference Include="..\Source\GLThorFX.pas"/>
-        <DCCReference Include="..\Source\GLPersistentClasses.pas"/>
-        <DCCReference Include="..\Source\GLGeometryBB.pas"/>
         <DCCReference Include="..\Source\GLContext.pas"/>
-        <DCCReference Include="..\Source\GLPolynomials.pas"/>
         <DCCReference Include="..\Source\GLWin32Context.pas"/>
         <DCCReference Include="..\Source\GLCrossPlatform.pas"/>
         <DCCReference Include="..\Source\GLParticleFX.pas"/>
         <DCCReference Include="..\Source\GLzBuffer.pas"/>
         <DCCReference Include="..\Source\GLMirror.pas"/>
-        <DCCReference Include="..\Source\GLHeightTileFile.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLHeightTileFile.pas"/>
         <DCCReference Include="..\Source\GLSpaceText.pas"/>
         <DCCReference Include="..\Source\GLTimeEventsMGR.pas"/>
-        <DCCReference Include="..\Source\GLOctree.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLOctree.pas"/>
         <DCCReference Include="..\Source\GLExplosionFX.pas"/>
         <DCCReference Include="..\Source\GLGui.pas"/>
         <DCCReference Include="..\Source\GLShadowPlane.pas"/>
         <DCCReference Include="..\Source\GLLensFlare.pas"/>
         <DCCReference Include="..\Source\GLProcTextures.pas"/>
-        <DCCReference Include="..\Source\GLMeshUtils.pas"/>
-        <DCCReference Include="..\Source\GLHeightTileFileHDS.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMeshUtils.pas"/>
         <DCCReference Include="..\Source\GLBSP.pas"/>
         <DCCReference Include="..\Source\GLFireFX.pas"/>
         <DCCReference Include="..\Source\GLFullScreenViewer.pas"/>
@@ -183,25 +178,25 @@
         <DCCReference Include="..\Source\GLTextureCombiners.pas"/>
         <DCCReference Include="..\Source\GLShadowVolume.pas"/>
         <DCCReference Include="..\Source\GLSilhouette.pas"/>
-        <DCCReference Include="..\Source\GLBaseMeshSilhouette.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLBaseMeshSilhouette.pas"/>
         <DCCReference Include="..\Source\GLStarRecord.pas"/>
-        <DCCReference Include="..\Source\GLGeomObjects.pas"/>
-        <DCCReference Include="..\Source\GLPolyhedron.pas"/>
-        <DCCReference Include="..\Source\GLTeapot.pas"/>
-        <DCCReference Include="..\Source\GLCurvesAndSurfaces.pas"/>
-        <DCCReference Include="..\Source\GLParametricSurfaces.pas"/>
-        <DCCReference Include="..\Source\GLVerletTypes.pas"/>
-        <DCCReference Include="..\Source\GLSpacePartition.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGeomObjects.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLPolyhedron.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLTeapot.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLCurvesAndSurfaces.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLParametricSurfaces.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVerletTypes.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLSpacePartition.pas"/>
         <DCCReference Include="..\Source\GLMultiProxy.pas"/>
         <DCCReference Include="..\Source\GLSkyBox.pas"/>
-        <DCCReference Include="..\Source\GLTree.pas"/>
-        <DCCReference Include="..\Source\GLMeshCSG.pas"/>
-        <DCCReference Include="..\Source\GLVerletSkeletonColliders.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLTree.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMeshCSG.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVerletSkeletonColliders.pas"/>
         <DCCReference Include="..\Source\GLProxyObjects.pas"/>
         <DCCReference Include="..\Source\GLState.pas"/>
         <DCCReference Include="..\Source\GLUtils.pas"/>
         <DCCReference Include="..\Source\GLTilePlane.pas"/>
-        <DCCReference Include="..\Source\GLMeshOptimizer.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMeshOptimizer.pas"/>
         <DCCReference Include="..\Source\GLImposter.pas"/>
         <DCCReference Include="..\Source\GLWaterPlane.pas"/>
         <DCCReference Include="..\Source\GLPerlinPFX.pas"/>
@@ -212,16 +207,14 @@
         <DCCReference Include="..\Source\GLDCEMisc.pas"/>
         <DCCReference Include="..\Source\GLEllipseCollision.pas"/>
         <DCCReference Include="..\Source\GLDCE.pas"/>
-        <DCCReference Include="..\Source\GLProjectedTextures.pas"/>
         <DCCReference Include="..\Source\GLPerlinBase.pas"/>
         <DCCReference Include="..\Source\GLPerlin.pas"/>
         <DCCReference Include="..\Source\GLTrail.pas"/>
-        <DCCReference Include="..\Source\GLSpatialPartitioning.pas"/>
         <DCCReference Include="..\Source\GLLinePFX.pas"/>
         <DCCReference Include="..\Source\GLGameMenu.pas"/>
         <DCCReference Include="..\Source\GLTexturedHDS.pas"/>
-        <DCCReference Include="..\Source\GLHeightData.pas"/>
-        <DCCReference Include="..\Source\GLAsyncHDS.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLHeightData.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLAsyncHDS.pas"/>
         <DCCReference Include="..\Source\GLEParticleMasksManager.pas"/>
         <DCCReference Include="..\Source\GLConsole.pas"/>
         <DCCReference Include="..\Source\GLSmoothNavigator.pas"/>
@@ -231,27 +224,24 @@
         <DCCReference Include="..\Source\GLShadowHDS.pas"/>
         <DCCReference Include="..\Source\GLSLProjectedTextures.pas"/>
         <DCCReference Include="..\Source\GLViewer.pas"/>
-        <DCCReference Include="..\Source\GLGizmo.pas"/>
-        <DCCReference Include="..\Source\GLGizmoEx.pas"/>
-        <DCCReference Include="..\Source\GLColor.pas"/>
-        <DCCReference Include="..\Source\GLBaseClasses.pas"/>
-        <DCCReference Include="..\Source\GLCoordinates.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGizmo.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGizmoEx.pas"/>
         <DCCReference Include="..\Source\GLManager.pas"/>
-        <DCCReference Include="..\Source\GLNodes.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLNodes.pas"/>
         <DCCReference Include="..\Source\GLRenderContextInfo.pas"/>
-        <DCCReference Include="..\Source\GLGLUTesselation.pas"/>
-        <DCCReference Include="..\Source\GLMeshBuilder.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGLUTesselation.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMeshBuilder.pas"/>
         <DCCReference Include="..\Source\GLMaterial.pas"/>
         <DCCReference Include="..\Source\GLDynamicTexture.pas"/>
         <DCCReference Include="..\Source\GLRagdoll.pas"/>
-        <DCCReference Include="..\Source\GLVerletClasses.pas"/>
-        <DCCReference Include="..\Source\GLBumpMapping.pas"/>
-        <DCCReference Include="..\Source\GLGeometryCoordinates.pas"/>
-        <DCCReference Include="..\Source\GLVerletHairClasses.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVerletClasses.pas"/>
+        <DCCReference Include="..\Source\Base\GLBumpMapping.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGeometryCoordinates.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVerletHairClasses.pas"/>
         <DCCReference Include="..\Source\GLObjectManager.pas"/>
         <DCCReference Include="..\Source\GLFBO.pas"/>
         <DCCReference Include="..\Source\GLFBORenderer.pas"/>
-        <DCCReference Include="..\Source\GLKeyboard.pas"/>
+        <DCCReference Include="..\Source\Base\GLKeyboard.pas"/>
         <DCCReference Include="..\Source\GLTextureFormat.pas"/>
         <DCCReference Include="..\Source\FileFormats\GLSRGBE.pas"/>
         <DCCReference Include="..\Source\GLSLanguage.pas"/>
@@ -264,20 +254,19 @@
         <DCCReference Include="..\Source\GLSGenerics.pas"/>
         <DCCReference Include="..\Source\GLSLog.pas"/>
         <DCCReference Include="..\Source\GLMaterialEx.pas"/>
-        <DCCReference Include="..\Source\GLSceneForm.pas"/>
         <DCCReference Include="..\Source\GLPluginIntf.pas"/>
         <DCCReference Include="..\Source\GLPlugInManager.pas"/>
         <DCCReference Include="..\Source\GLTextureImageEditors.pas"/>
-        <DCCReference Include="..\Source\GLROAMPatch.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLROAMPatch.pas"/>
         <DCCReference Include="..\Source\Shaders\GLPhongShader.pas"/>
         <DCCReference Include="..\Source\GLSMemo.pas"/>
-        <DCCReference Include="..\Source\GLTypes.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLTypes.pas"/>
         <DCCReference Include="..\Source\GLTexLensFlare.pas"/>
-        <DCCReference Include="..\Source\GLVectorGeometry.pas"/>
-        <DCCReference Include="..\Source\GLVectorFileObjects.pas"/>
-        <DCCReference Include="..\Source\GLVectorLists.pas"/>
-        <DCCReference Include="..\Source\GLVectorTypes.pas"/>
-        <DCCReference Include="..\Source\GLVerletClothify.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVectorGeometry.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVectorFileObjects.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVectorLists.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVectorTypes.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLVerletClothify.pas"/>
         <DCCReference Include="..\Source\GLWin32Viewer.pas"/>
         <DCCReference Include="..\Source\GLWindows.pas"/>
         <DCCReference Include="..\Source\GLWindowsFont.pas"/>
@@ -286,18 +275,17 @@
         <DCCReference Include="..\Source\FileFormats\Q3BSP.pas"/>
         <DCCReference Include="..\Source\FileFormats\Q3MD3.pas"/>
         <DCCReference Include="..\Source\FileFormats\O3TCImage.pas"/>
-        <DCCReference Include="..\Source\OpenGLAdapter.pas"/>
-        <DCCReference Include="..\Source\OpenGLTokens.pas"/>
-        <DCCReference Include="..\Source\OpenGL1x.pas"/>
+        <DCCReference Include="..\Source\Base\OpenGLAdapter.pas"/>
+        <DCCReference Include="..\Source\Base\OpenGLTokens.pas"/>
+        <DCCReference Include="..\Source\Base\OpenGL1x.pas"/>
         <DCCReference Include="..\Source\FileFormats\TGA.pas"/>
-        <DCCReference Include="..\Source\XCollection.pas"/>
-        <DCCReference Include="..\Source\XOpenGL.pas"/>
+        <DCCReference Include="..\Source\Base\XCollection.pas"/>
+        <DCCReference Include="..\Source\Base\XOpenGL.pas"/>
         <DCCReference Include="..\Source\GLPictureRegisteredFormats.pas"/>
-        <DCCReference Include="..\Source\GLIsosurface.pas"/>
-        <DCCReference Include="..\Source\GLContouring.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLIsosurface.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLContouring.pas"/>
         <DCCReference Include="..\Source\ScriptingAPIs\GLScriptBase.pas"/>
-        <DCCReference Include="..\Source\GLTriangulation.pas"/>
-        <DCCReference Include="..\Source\GLMeshLines.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLTriangulation.pas"/>
         <DCCReference Include="..\Source\Shaders\GLSLPostShaders.pas"/>
         <DCCReference Include="..\Source\Shaders\GLAsmShader.pas"/>
         <DCCReference Include="..\Source\Shaders\GLMultiMaterialShader.pas"/>
@@ -370,6 +358,18 @@
         <DCCReference Include="..\Source\FileFormats\FileNMF.pas"/>
         <DCCReference Include="..\Source\FileFormats\FileOCT.pas"/>
         <DCCReference Include="..\Source\FileFormats\FileX.pas"/>
+        <DCCReference Include="..\Source\Base\GLColor.pas"/>
+        <DCCReference Include="..\Source\Base\GLPersistentClasses.pas"/>
+        <DCCReference Include="..\Source\Base\GLBaseClasses.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLGeometryBB.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLCoordinates.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLExtrusion.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLPolynomials.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLHeightTileFileHDS.pas"/>
+        <DCCReference Include="..\Source\GLProjectedTextures.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLSpatialPartitioning.pas"/>
+        <DCCReference Include="..\Source\DesignTime\GLSceneForm.pas"/>
+        <DCCReference Include="..\Source\Geometry\GLMeshLines.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -415,16 +415,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -738,7 +729,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

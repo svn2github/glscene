@@ -22,7 +22,7 @@ uses
   System.Classes,
   VCL.Controls,
   VCL.Forms,
-
+  //GLS
   GLScene,
   GLContext,
   GLCrossPlatform,

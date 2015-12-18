@@ -20,7 +20,8 @@ interface
 {$i GLScene.inc}
 
 uses
-  Classes, XCollection,
+  System.Classes,
+  XCollection,
 
   DesignEditors, DesignIntf;
 

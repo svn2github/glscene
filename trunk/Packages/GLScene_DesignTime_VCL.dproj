@@ -128,66 +128,63 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Source\GLSceneObjects.dcr"/>
-        <DCCReference Include="..\Source\GLSceneVCL.dcr"/>
-        <DCCReference Include="..\Source\nonGLSceneVCL.dcr"/>
+        <DCCReference Include="..\Source\DesignTime\GLSceneObjects.dcr"/>
+        <DCCReference Include="..\Source\DesignTime\GLSceneVCL.dcr"/>
+        <DCCReference Include="..\Source\DesignTime\nonGLSceneVCL.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="designide.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
         <DCCReference Include="GLScene_RunTime_VCL.dcp"/>
-        <DCCReference Include="..\Source\FXCollectionEditor.pas">
-            <Form>XCollectionEditor</Form>
-        </DCCReference>
-        <DCCReference Include="..\Source\GLSceneEdit.pas">
+        <DCCReference Include="..\Source\DesignTime\GLSceneEdit.pas">
             <Form>GLSceneEditorForm</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\RegisterXCollection.pas"/>
-        <DCCReference Include="..\Source\GLSceneFormDesign.pas"/>
-        <DCCReference Include="..\Source\FLibMaterialPicker.pas">
+        <DCCReference Include="..\Source\DesignTime\GLSceneFormDesign.pas"/>
+        <DCCReference Include="..\Source\DesignTime\FLibMaterialPicker.pas">
             <Form>LibMaterialPicker</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FMaterialEditorForm.pas">
+        <DCCReference Include="..\Source\DesignTime\FMaterialEditorForm.pas">
             <Form>MaterialEditorForm</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FGUILayoutEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FGUILayoutEditor.pas">
             <Form>Layouts_form</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FRMaterialPreview.pas">
+        <DCCReference Include="..\Source\DesignTime\FRMaterialPreview.pas">
             <Form>RMaterialPreview</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Source\FGuiSkinEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FGuiSkinEditor.pas">
             <Form>GUISkinEditor</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FShaderUniformEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FShaderUniformEditor.pas">
             <Form>ShaderUniformEditor</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FRColorEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FRColorEditor.pas">
             <Form>RColorEditor</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Source\FRTextureEdit.pas">
+        <DCCReference Include="..\Source\DesignTime\FRTextureEdit.pas">
             <Form>RTextureEdit</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Source\FRTrackBarEdit.pas">
+        <DCCReference Include="..\Source\DesignTime\FRTrackBarEdit.pas">
             <Form>RTrackBarEdit</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Source\FVectorEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FVectorEditor.pas">
             <Form>VectorEditorForm</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FPlugInManagerEditor.pas">
+        <DCCReference Include="..\Source\DesignTime\FPlugInManagerEditor.pas">
             <Form>PlugInManagerEditor</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\FShaderMemo.pas"/>
-        <DCCReference Include="..\Source\FInfo.pas">
+        <DCCReference Include="..\Source\DesignTime\FShaderMemo.pas"/>
+        <DCCReference Include="..\Source\DesignTime\FInfo.pas">
             <Form>InfoForm</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\GLSceneRegister.pas"/>
-        <DCCReference Include="..\Source\FRFaceEditor.pas"/>
+        <DCCReference Include="..\Source\DesignTime\GLSceneRegister.pas"/>
+        <DCCReference Include="..\Source\DesignTime\FRFaceEditor.pas"/>
+        <DCCReference Include="..\Source\DesignTime\RegisterXCollection.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -209,6 +206,15 @@
                     <Source Name="MainSource">GLScene_DesignTime_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLScene_DesignTime_VCL.bpl">GLScene VCL OpenGL 3D library</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_BASS_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_BASS_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_FMOD_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_FMOD_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_OpenAL_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_OpenAL_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_ODE_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_ODE_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_NGD_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_NGD_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_Computing_DesignTime_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_Computing_DesignTime_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLCg_DesignTime_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLCg_DesignTime_VCL.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GBComp.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GBComp.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -221,7 +227,7 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment Version="2">
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLScene_DesignTime_VCL.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLScene_DesignTime_VCL.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>GLScene_DesignTime_VCL.bpl</RemoteName>
                         <Overwrite>true</Overwrite>

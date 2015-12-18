@@ -25,7 +25,6 @@ interface
 
 uses
   System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,
-
   // GLS
   GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
   GLPersistentClasses, GLBaseClasses;
@@ -38,7 +37,7 @@ type
   TRGBColor = TVector3b;
 
    // TGLColor
-	//
+   //
    {: Wraps an OpenGL color. }
    TGLColor = class(TGLUpdateAbleObject)
       private

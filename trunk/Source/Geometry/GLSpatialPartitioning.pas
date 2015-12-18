@@ -27,8 +27,16 @@ unit GLSpatialPartitioning;
 interface
 
 uses
-  GLViewer, GLSpacePartition, GLScene, GLVectorGeometry,
-  OpenGLTokens, GLGeometryBB, GLRenderContextInfo, GLState;
+  GLScene,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLContext,
+  GLViewer,
+  GLSpacePartition,
+  OpenGLTokens,
+  GLGeometryBB,
+  GLRenderContextInfo,
+  GLState;
 
 type
   {: Object for holding glscene objects in a spatial partitioning }
@@ -57,11 +65,13 @@ function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
 
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 implementation
-
-uses
-  GLVectorTypes,
-  GLContext;
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
 
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB);
 begin

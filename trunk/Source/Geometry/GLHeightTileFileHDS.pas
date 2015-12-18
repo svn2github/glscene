@@ -25,7 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLHeightData, GLHeightTileFile;
 
@@ -85,9 +85,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-// ------------------
-// ------------------ TGLHeightTileFileHDS ------------------
-// ------------------
 
 // Create
 //
@@ -243,6 +240,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClasses([TGLHeightTileFileHDS]);
+   RegisterClasses([TGLHeightTileFileHDS]);
 
 end.

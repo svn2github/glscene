@@ -18,3 +18,4 @@ del *.hpp /s
 del *.bpi /s
 del *.lib /s
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (__recovery) do if exist "%%R" (rd /s /q "%%R")

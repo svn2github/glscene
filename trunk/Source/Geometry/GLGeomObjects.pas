@@ -40,7 +40,7 @@ interface
 
 uses
   System.Classes, System.Math,
-
+  //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext,
   GLObjects, GLSilhouette, GLVectorTypes, GLGeometryBB, GLRenderContextInfo;
 
