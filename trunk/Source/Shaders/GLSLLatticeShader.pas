@@ -7,7 +7,7 @@
    At this time only one light source is supported
 
    <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Made compatible with the latest CVS version of GLScene
+    <li>08/12/15 - J.Delauney - Made compatible with the latest SVN version of GLScene
     <li>02/11/06 - Da Stranger - Creation
 }
 
@@ -19,7 +19,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   System.Classes,
   // GLS
   GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,

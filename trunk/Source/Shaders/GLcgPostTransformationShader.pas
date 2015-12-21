@@ -22,9 +22,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-
   // GLS
-  GLTexture,  GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
+  GLTexture, GLCadencer, GLContext, OpenGLTokens, GLScene, GLCustomShader,
   GLRenderContextInfo, GLTextureFormat,
 
   // CG Shaders

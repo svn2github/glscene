@@ -3,12 +3,12 @@
 //
 {: GLSLErosionShader <p>
 
-   Erosision shader Erode surface object and render with Anisotropic Specular Reflection<p>
+   Erosion shader Erode surface object and render with Anisotropic Specular Reflection<p>
 
    At this time one light source is supported
 
    <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest CVS version of GLScene
+    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
     <li>02/11/06 - Da Stranger - Creation
 }
 unit GLSLErosionShader;
@@ -18,7 +18,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   System.Classes,
   // GLS
   GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,
@@ -263,8 +262,6 @@ begin
     Add('  gl_FragColor = vec4(FinalColour,intensity); ');
     Add('} '); 
   end;
-
-
 
   //setup initial parameters
 

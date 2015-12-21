@@ -25,7 +25,6 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   System.Classes,
   // GLS
   GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,

@@ -4,11 +4,11 @@
 
    Glass shader : Environment mapping with an
    equirectangular 2D texture and refraction mapping
-   with a background texture blended together using the fresnel terms<p>
+   with a background texture blended together using the Fresnel terms<p>
 
 
    <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest CVS version of GLScene
+    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
     <li>02/11/06 - Da Stranger - Creation
 
 }
@@ -18,11 +18,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
   System.Classes,
   // GLS
   GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,
-  GLVectorGeometry, GLCoordinates,//GLWin32Viewer,
+  GLVectorGeometry, GLCoordinates, 
   GLTextureFormat,GLColor, GLTexture, GLMaterial, GLPersistentClasses,GLGraphics,
   GLSLShader, GLCustomShader;
 

@@ -62,8 +62,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
-  // GLScene
+  // GLS
   GLTexture, GLScene, GLVectorGeometry, OpenGLTokens, GLStrings, GLCustomShader,
   GLSLShader, GLColor, GLRenderContextInfo, GLMaterial;
 

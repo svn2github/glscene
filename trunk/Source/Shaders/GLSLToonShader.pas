@@ -18,12 +18,10 @@ interface
 //{$I GLScene.inc}
 
 uses
-  // VCL
   System.Classes,
-  // GLScene
+  // GLS
   GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,
-  GLVectorGeometry, GLCoordinates,
-  GLTextureFormat,GLColor, GLTexture, GLMaterial,
+  GLVectorGeometry, GLCoordinates, GLTextureFormat,GLColor, GLTexture, GLMaterial,
   GLSLShader, GLCustomShader;
 
 //TGLCustomGLSLToonShader

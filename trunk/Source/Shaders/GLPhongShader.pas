@@ -24,10 +24,8 @@ interface
 {$I GLScene.inc }
 
 uses
-  // VCL
-  Classes, SysUtils,
-
-  // GLScene
+  System.Classes, System.SysUtils,
+  // GLS
   GLTexture, GLVectorGeometry, GLVectorLists, OpenGLTokens, GLContext,
   GLAsmShader, GLRenderContextInfo, GLCustomShader, GLState;
 

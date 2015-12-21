@@ -72,7 +72,6 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
   // GLS
   GLVectorGeometry, GLVectorLists, GLVectorTypes, GLTexture, GLStrings,
   GLCadencer, OpenGLTokens, GLCrossPlatform, GLContext, GLBaseClasses,

@@ -16,6 +16,7 @@ interface
 
 uses
   System.Classes,
+  //GLS
   OpenGLTokens, 
   GLVectorTypes, 
   GLTextureFormat, 

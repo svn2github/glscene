@@ -37,7 +37,6 @@ uses
   GLUtils;
 
 
-
 type
 
   // TGLTexCombineShader
