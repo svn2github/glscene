@@ -35,23 +35,23 @@ requires
   GLScene_RunTime_FMX;
 
 contains
-  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {Layouts_Form},
-  FInfo in '..\Source\FInfo.pas' {InfoForm},
-  FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
-  FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
-  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
-  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
-  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
-  FRFaceEditor in '..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
-  FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
-  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
-  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas',
-  FShaderMemo in '..\Source\FShaderMemo.pas' {ShaderMemoForm},
-  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
-  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
-  GLS.RegisterXCollection in '..\Source\GLS.RegisterXCollection.pas',
-  GLS.SceneEdit in '..\Source\GLS.SceneEdit.pas' {GLSceneEditorForm},
-  GLS.SceneRegister in '..\Source\GLS.SceneRegister.pas';
+  FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {Layouts_Form},
+  FInfo in '..\Source\DesignTime\FInfo.pas' {InfoForm},
+  FRTextureEdit in '..\Source\DesignTime\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FRTrackBarEdit in '..\Source\DesignTime\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FVectorEditor in '..\Source\DesignTime\FVectorEditor.pas' {VectorEditorForm},
+  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  FLibMaterialPicker in '..\Source\DesignTime\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FRMaterialPreview in '..\Source\DesignTime\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FRFaceEditor in '..\Source\DesignTime\FRFaceEditor.pas' {RFaceEditor: TFrame},
+  FRColorEditor in '..\Source\DesignTime\FRColorEditor.pas' {RColorEditor: TFrame},
+  FPlugInManagerEditor in '..\Source\DesignTime\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FMaterialEditorForm in '..\Source\DesignTime\FMaterialEditorForm.pas',
+  FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas' {ShaderMemoForm},
+  FShaderUniformEditor in '..\Source\DesignTime\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  FGuiSkinEditor in '..\Source\DesignTime\FGuiSkinEditor.pas' {GUISkinEditor},
+  GLS.RegisterXCollection in '..\Source\DesignTime\GLS.RegisterXCollection.pas',
+  GLS.SceneEdit in '..\Source\DesignTime\GLS.SceneEdit.pas' {GLSceneEditorForm},
+  GLS.SceneRegister in '..\Source\DesignTime\GLS.SceneRegister.pas';
 
 end.

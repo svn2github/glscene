@@ -50,7 +50,7 @@ echo             Don't delete some files
 echo ************************************************
 echo _
 
-del *.res /s
+rem del *.res /s  - some cursors may be in use
 rem del *.ico /s  - some projects have own icos
 rem del *.obj /s  - obj models and resources for lazarus
 rem del *.cfg /s  - there are quake's animations
@@ -67,4 +67,5 @@ for /r %1 %%R in (iOS) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Android) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Debug_Build) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Release_Build) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")

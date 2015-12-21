@@ -35,7 +35,7 @@ requires
   GLScene_DesignTime_FMX;
 
 contains
-  FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLS.ComputingRegister in '..\Source\GLS.ComputingRegister.pas';
+  FCUDAEditor in '..\Source\ComputeAPIs\FCUDAEditor.pas' {GLSCUDAEditorForm},
+  GLS.ComputingRegister in '..\Source\ComputeAPIs\GLS.ComputingRegister.pas';
 
 end.

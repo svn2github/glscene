@@ -33,7 +33,7 @@ requires
   GLScene_RunTime_FMX;
 
 contains
-  Bass in '..\Source\Bass.pas',
-  GLS.SMBASS in '..\Source\GLS.SMBASS.pas';
+  Bass in '..\Source\SoundAPIs\Bass.pas',
+  GLS.SMBASS in '..\Source\SoundAPIs\GLS.SMBASS.pas';
 
 end.

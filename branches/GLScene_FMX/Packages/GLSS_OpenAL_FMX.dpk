@@ -34,7 +34,7 @@ requires
   rtl;
 
 contains
-  openal in '..\Source\openal.pas',
-  GLS.SMOpenAL in '..\Source\GLS.SMOpenAL.pas';
+  openal in '..\Source\SoundAPIs\openal.pas',
+  GLS.SMOpenAL in '..\Source\SoundAPIs\GLS.SMOpenAL.pas';
 
 end.

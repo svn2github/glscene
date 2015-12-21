@@ -36,6 +36,6 @@ requires
   GLScene_DesignTime_FMX;
 
 contains
-  GLS.CgRegister in '..\Source\GLS.CgRegister.pas';
+  GLS.CgRegister in '..\Source\Shaders\GLS.CgRegister.pas';
 
 end.

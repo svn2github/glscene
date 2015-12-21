@@ -32,8 +32,8 @@ requires
   rtl;
 
 contains
-  GLS.SDLContext in '..\Source\GLS.SDLContext.pas',
-  GLS.SDLWindow in '..\Source\GLS.SDLWindow.pas',
+  GLS.SDLContext in '..\Source\GameAPIs\GLS.SDLContext.pas',
+  GLS.SDLWindow in '..\Source\GameAPIs\GLS.SDLWindow.pas',
   SDL in '..\Source\SDL.pas';
 
 end.

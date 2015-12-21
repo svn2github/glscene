@@ -34,10 +34,10 @@ requires
   rtl;
 
 contains
-  fmod in '..\Source\fmod.pas',
-  fmodtypes in '..\Source\fmodtypes.pas',
-  fmoderrors in '..\Source\fmoderrors.pas',
-  fmodpresets in '..\Source\fmodpresets.pas',
-  GLS.SMFMOD in '..\Source\GLS.SMFMOD.pas';
+  fmod in '..\Source\SoundAPIs\fmod.pas',
+  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas',
+  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
+  GLS.SMFMOD in '..\Source\SoundAPIs\GLS.SMFMOD.pas';
 
 end.
