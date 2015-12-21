@@ -85,13 +85,13 @@
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=preferExternal;largeHeap=False;theme=TitleBar;hardwareAccelerated=true</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;GLScene_RunTime;GLScene_RunTime_VCL;vclactnband;vclx;vcldb;bdertl;GbComp;GLCg_RunTime_VCL;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;GLScene_RunTime;GLScene_RunTime_VCL;vclactnband;vclx;vcldb;bdertl;GbComp;GLCg_RunTime_VCL;GLSS_BASS_VCL;GLSS_FMOD_VCL;GLS_Computing_RunTime_VCL;GLS_NGD_VCL;GLS_ODE_VCL;GLSS_OpenAL_VCL;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;vclactnband;vclx;vcldb;GLCg_RunTime_VCL;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;vclactnband;vclx;vcldb;GLCg_RunTime_VCL;GLS_Computing_RunTime_VCL;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -206,14 +206,6 @@
                     <Source Name="MainSource">GLScene_DesignTime_VCL.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLScene_DesignTime_VCL.bpl">GLScene VCL OpenGL 3D library</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_BASS_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_BASS_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_FMOD_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_FMOD_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_OpenAL_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSS_OpenAL_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_ODE_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_ODE_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_NGD_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_NGD_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_Computing_DesignTime_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLS_Computing_DesignTime_VCL.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLCg_DesignTime_VCL.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLCg_DesignTime_VCL.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GBComp.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GBComp.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>

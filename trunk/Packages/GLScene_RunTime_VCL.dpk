@@ -87,7 +87,7 @@ contains
   GLLensFlare in '..\Source\GLLensFlare.pas',
   GLProcTextures in '..\Source\GLProcTextures.pas',
   GLMeshUtils in '..\Source\Geometry\GLMeshUtils.pas',
-  GLBSP in '..\Source\GLBSP.pas',
+  GLBSP in '..\Source\Geometry\GLBSP.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
   GLFullScreenViewer in '..\Source\GLFullScreenViewer.pas',
   GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
