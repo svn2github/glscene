@@ -5,6 +5,7 @@ interface
 uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
   //GLS
   GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
   GLCadencer, GLCrossPlatform, GLBaseClasses, GLWin32Viewer, GLCustomShader,
@@ -68,8 +69,7 @@ var
   NativeDir: string;
 begin
   SetGLSceneMediaDir();
-  GLMaterialLibrary1.TextureByName('Surround').Image.LoadFromFile
-    ('WHEATFLD.JPG');
+  GLMaterialLibrary1.TextureByName('Surround').Image.LoadFromFile('WHEATFLD.JPG');
   GLSLShader1.LoadShaderPrograms(
     'OIT_vtx.glsl',
     'OIT_frag.glsl');

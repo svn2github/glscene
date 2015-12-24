@@ -11,7 +11,7 @@ uses
   //GLS
   GLNGDManager, GLMaterial, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLScene, GLGeomObjects, GLBitmapFont, GLWindowsFont, GLObjects,
-  GLCoordinates, GLFile3DS, GLFileJPEG, GLNavigator, GLKeyboard, GLVectorGeometry,
+  GLCoordinates, GLFile3DS, GLNavigator, GLKeyboard, GLVectorGeometry,
   GLVectorTypes, GLVectorFileObjects, GLColor, GLHUDObjects,
   GLTexture, GLUtils;
 

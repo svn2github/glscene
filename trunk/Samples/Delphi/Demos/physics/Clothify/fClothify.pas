@@ -6,12 +6,11 @@ uses
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
-
   //GLS
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
   GLFileMS3D, GLVerletTypes, GLVectorTypes, GLVectorLists, GLVectorGeometry,
   GLTexture, OpenGLTokens, GLFileSMD, GLCadencer, GLShadowPlane,
-  GLVerletClothify, GLFileJPEG, GLFile3DS, ODEImport, ODEGL,
+  GLVerletClothify, GLFile3DS, ODEImport, ODEGL,
   GLGeometryBB, GLSpacePartition, GLGeomObjects, GLShadowVolume, GLUtils,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLRenderContextInfo,
   GLState, GLContext, GLBaseClasses;

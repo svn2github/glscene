@@ -6,10 +6,9 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Imaging.Jpeg, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-
   //GLS
   GLWin32Viewer, GLScene, GLObjects, GLTexture, GLHudObjects, GLCompositeImage,
-  GLFileJPEG, GLCadencer, GLBlur, GLCrossPlatform, GLMaterial, GLCoordinates,
+  GLCadencer, GLBlur, GLCrossPlatform, GLMaterial, GLCoordinates,
   GLBaseClasses, GLUtils;
 
 type

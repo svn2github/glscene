@@ -4,10 +4,8 @@ interface
 
 uses
   System.SysUtils, System.Variants, System.Classes,
-
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.ExtCtrls, Vcl.ComCtrls,
-
   //GLS
   GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene,
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,

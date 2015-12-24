@@ -11,7 +11,7 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.StrUtils,
+  System.SysUtils, System.Classes, System.StrUtils, System.ImageList,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Menus, Vcl.ImgList, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
   // GLS
@@ -20,8 +20,7 @@ uses
   GLObjects, GLCoordinates, GLGraphics, GLState, GLCompositeImage,
   // FileFormats 3D
   GLFileMS3D, GLFile3DS, GLFileMD2, GLFileMD3, GLFileLMTS, GLFileOBJ, GLFileSMD,
-  // FileFormats 3D
-  GLFileJpeg, TGA, GLFilePNG, GLFileDDS;
+  TGA, GLFilePNG, GLFileDDS;
 
 type
   TForm1 = class(TForm)
