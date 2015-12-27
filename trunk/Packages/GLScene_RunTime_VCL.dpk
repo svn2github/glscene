@@ -285,5 +285,7 @@ contains
   Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
   XCollection in '..\Source\Base\XCollection.pas',
-  XOpenGL in '..\Source\Base\XOpenGL.pas';
+  XOpenGL in '..\Source\Base\XOpenGL.pas',
+  GLSLParameter in '..\Source\Shaders\GLSLParameter.pas';
+
 end.

@@ -22,7 +22,9 @@ del *.identcache /s
 del *.otares /s
 del *.tvsconfig /s
 del *.stat /s
-
+del *.hpp /s
+del *.bpi /s
+del *.lib /s
 
 echo _
 echo ************************************************

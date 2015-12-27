@@ -5441,13 +5441,13 @@ object Form1: TForm1
     Top = 16
     object miMerryCristmas: TMenuItem
       Caption = 'Merry Christmas'
-      Checked = True
       GroupIndex = 1
       RadioItem = True
       OnClick = miMerryCristmasClick
     end
     object miHappyNewYear: TMenuItem
       Caption = 'Happy New Year'
+      Checked = True
       GroupIndex = 1
       RadioItem = True
       OnClick = miHappyNewYearClick

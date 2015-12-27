@@ -4,6 +4,7 @@
 {! The FGLForm unit for TGLForm class as parent for all child forms of GLSceneViewer project}
 {
   History :
+     25/12/15 - PW - Fixed localization using gnugettext
      01/04/09 - PW - Created
 }
 
@@ -67,8 +68,8 @@ begin
   LocalePath := ExtractFileDir(ParamStr(0)); // Path to GLSViewer
   LocalePath := LocalePath + PathDelim + 'Locale' + PathDelim;
 
-  Textdomain('glscene');
-  BindTextDomain ('glscene', LocalePath);
+  Textdomain('glsviewer');
+  BindTextDomain ('glsviewer', LocalePath);
 
   ReadIniFile;
   if (LangID <> LANG_ENGLISH) then
@@ -77,34 +78,34 @@ begin
       LANG_RUSSIAN:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLSViewer.chm');
       end;
       LANG_SPANISH:
       begin
         UseLanguage('es');
-        Application.HelpFile := UpperCase(LocalePath + 'es'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'es'+ PathDelim+'GLSViewer.chm');
       end;
       LANG_GERMAN:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLSViewer.chm');
       end;
       LANG_FRENCH:
       begin
         UseLanguage('ru');
-        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'ru'+ PathDelim+'GLSViewer.chm');
       end
       else
       begin
         UseLanguage('en');
-        Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLScene.chm');
+        Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLSViewer.chm');
       end;
     end;
   end
   else
   begin
     UseLanguage('en');
-    Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLScene.chm');
+    Application.HelpFile := UpperCase(LocalePath + 'en'+ PathDelim+'GLSViewer.chm');
   end;
   TP_IgnoreClass(TFont);
   TranslateComponent(Self);

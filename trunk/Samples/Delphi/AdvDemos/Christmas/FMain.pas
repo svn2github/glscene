@@ -6,15 +6,15 @@ uses
   Winapi.Windows,
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,  Vcl.Dialogs,
-  Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
+  Vcl.ExtCtrls, Vcl.Imaging.Jpeg, Vcl.Menus,
 
-  //GLScene
+  //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLTexture, GLCadencer, GLSkydome, GLParticleFX, GLVectorGeometry,
-  GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects,
+  GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLVectorTypes,
   GLScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects, GLMaterial,
   GLCoordinates, GLBaseClasses, GLCrossPlatform, GLColor,
-  GLSound, GLSMBASS, GLFileWAV, Bass, Vcl.Menus;
+  GLSound, GLSMBASS, GLFileWAV, Bass;
 
 type
   TMain = class(TForm)
