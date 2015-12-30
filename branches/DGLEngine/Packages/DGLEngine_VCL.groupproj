@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{F660B6AB-C593-458E-8959-646DB5442BB4}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DGLEngine_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DGLEngine_Designtime.dproj">
+            <Dependencies>DGLEngine_RunTime.dproj</Dependencies>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DGLEngine_RunTime">
+        <MSBuild Projects="DGLEngine_RunTime.dproj"/>
+    </Target>
+    <Target Name="DGLEngine_RunTime:Clean">
+        <MSBuild Projects="DGLEngine_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGLEngine_RunTime:Make">
+        <MSBuild Projects="DGLEngine_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime" DependsOnTargets="DGLEngine_RunTime">
+        <MSBuild Projects="DGLEngine_Designtime.dproj"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime:Clean" DependsOnTargets="DGLEngine_RunTime:Clean">
+        <MSBuild Projects="DGLEngine_Designtime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime:Make" DependsOnTargets="DGLEngine_RunTime:Make">
+        <MSBuild Projects="DGLEngine_Designtime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DGLEngine_RunTime;DGLEngine_Designtime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DGLEngine_RunTime:Clean;DGLEngine_Designtime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DGLEngine_RunTime:Make;DGLEngine_Designtime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

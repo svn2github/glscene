@@ -1,0 +1,51 @@
+package DGLEngine_Designtime;
+
+{$R *.res}
+{$R '..\Source\ressources\DGLEngineObjects.dcr'}
+{$R '..\Source\ressources\DGLEngineVCL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  vclimg,
+  vcl,
+  VclSmp,
+  DGLEngine_RunTime;
+
+contains
+  DGLEngineRegister in '..\Source\Designtime\DGLEngineRegister.pas',
+  DGLSceneEdit in '..\Source\Designtime\DGLSceneEdit.pas' {DGLSceneEditorForm},
+  DGLSceneForm in '..\Source\Designtime\DGLSceneForm.pas',
+  FDGLShaderUniformEditor in '..\Source\Designtime\FDGLShaderUniformEditor.pas' {DGLShaderUniformEditor},
+  FDGLVectorEditor in '..\Source\Designtime\FDGLVectorEditor.pas' {DGLVectorEditorForm},
+  FDGLXCollectionEditor in '..\Source\Designtime\FDGLXCollectionEditor.pas' {DGLXCollectionEditor},
+  RegisterDGLXCollection in '..\Source\Designtime\RegisterDGLXCollection.pas',
+  DGLObjectManager in '..\Source\DGLObjectManager.pas';
+
+end.

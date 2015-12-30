@@ -1,0 +1,48 @@
+DGLENGINE PROJECT ROAD MAP
+
+- Source
+    * DGLColor    : DONE
+	* DGLTextureCombiner : NEED CORRECTIONS
+	* DGLMaterial             : NEED CORRECTIONS AND IMPROVED
+	* DGLScene               : NEED CORRECTIONS AND IMPROVED
+	* DGLViewer              : DONE
+	* DGLEngine.inc         : DONE
+	* DGLObjects            : TODO
+    - Base
+	  * GLSLog                   : DONE	  	 
+	  * DGLBaseClasses        : UPDATED AND DONE
+	  * DGLPersistentClasses : DONE
+	  * DGLXCollection         : DONE
+	  * DGLUtils                  : DONE
+	  * DGLKeyboard           : DONE
+	  * DGLGraphics            : UPDATED AND DONE
+	  * DGLContext             : UPDATED AND DONE
+	  * DGLApplicationFileIO  : DONE
+	  
+	  * DGLXOpenGL            : NEED CORRECTIONS
+	  
+	  + DGLTypes                : NEED KEEP UPDATED
+	  * DGLResStrings          : NEED KEEP UPDATED
+	  * DGLImageUtils                  : DONE - NEED UPDATED
+	  * DGLTextureFormat            : DONE - NEED UPDATED AND IMPROVED
+	  * DGLState                        : DONE - NEED IMPROVED
+	  + DGLContextHandles           : DONE - NEED CORRECTIONS AND IMPROVED
+	  * DGLRenderContextInfo       : DONE - NEED IMPROVED
+	  * DGLPipelineTransformation  : DONE - NEEDED IMPROVED ???
+	  
+	  + DGLShaders                     : TODO
+	  
+	- PlateFormes
+	  * DGLCrossPlatform  : DONE
+	  * DGLWin32Context  : UPDATED AND DONE
+	  * DGLWin32Viewer   : DONE 
+	  
+	- Geometry
+	  * DGLVectorTypes   : DONE
+	  * DGLVectorLists     : DONE - NEED SOME REFINEMENTS
+	  * DGLVectorMaths   : DONE
+	  * DGLCoordinates    : DONE
+	  
+
+	
+

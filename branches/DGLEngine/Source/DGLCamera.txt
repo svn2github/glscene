@@ -1,0 +1,1041 @@
+//
+// This unit is part of the DGLEngine Project, http://DGLEngine.org
+//
+{ : DGLCamera<p>
+
+  Base class for Camera.<p>
+
+  <b>Historique : </b><font size=-1><ul>
+  <li>21/12/15 - JD -  Imported From GLScene
+  </ul></font>
+}
+unit DGLCamera;
+
+interface
+
+{$I DGLEngine.inc}
+
+uses
+  Winapi.Windows,
+  System.Classes, System.SysUtils, System.Math,
+  VCL.Graphics, VCL.Controls,
+
+  // DGLE
+  dglOpenGL, DGLCrossPlatform, DGLContext,
+  GLSLog,
+
+  GLState,
+
+  DGLResStrings,
+  GLRenderContextInfo,
+  GLBaseClasses,
+  GLPersistentClasses,
+  XCollection,
+
+  DGLBaseObjects,
+  DGLVectorMaths,
+  GLVectorTypes,
+  GLVectorLists,
+  GLGeometryBB,
+  GLCoordinates,
+
+  GLGraphics,
+  GLColor,
+  GLTextureFormat,
+  GLTexture,
+  GLMaterial,
+
+  GLSilhouette,
+  GLSelection,
+
+  DGLApplicationFileIO,
+  GLUtils;
+
+Type
+
+  // TDGLCameraStyle
+  //
+
+  TDGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D, csCustom, csInfinitePerspective, csPerspectiveKeepFOV);
+
+  TDGLCameraKeepFOVMode = (ckmHorizontalFOV, ckmVerticalFOV);
+
+  // TOnCustomPerspective
+  //
+  TOnCustomPerspective = procedure(const viewport: TRectangle; width, height: Integer; DPI: Integer; var viewPortRadius: Single) of object;
+
+  // TDGLCamera
+  //
+  { : Camera object.<p>
+    This object is commonly referred by TGLSceneViewer and defines a position,
+    direction, focal length, depth of view... all the properties needed for
+    defining a point of view and optical characteristics. }
+  TDGLCamera = class(TDGLBaseSceneObject)
+  private
+    { Private Declarations }
+    FFocalLength:         Single;
+    FDepthOfView:         Single;
+    FNearPlane:           Single; // nearest distance to the camera
+    FNearPlaneBias:       Single; // scaling bias applied to near plane
+    FViewPortRadius:      Single; // viewport bounding radius per distance unit
+    FTargetObject:        TDGLBaseSceneObject;
+    FLastDirection:       TVector; // Not persistent
+    FCameraStyle:         TDGLCameraStyle;
+    FKeepFOVMode:         TDGLCameraKeepFOVMode;
+    FSceneScale:          Single;
+    FDeferredApply:       TNotifyEvent;
+    FOnCustomPerspective: TOnCustomPerspective;
+    FDesign:              Boolean;
+    FFOVY, FFOVX:         Double;
+
+  protected
+    { Protected Declarations }
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure SetTargetObject(const val: TDGLBaseSceneObject);
+    procedure SetDepthOfView(AValue: Single);
+    procedure SetFocalLength(AValue: Single);
+    procedure SetCameraStyle(const val: TDGLCameraStyle);
+    procedure SetKeepFOVMode(const val: TDGLCameraKeepFOVMode);
+    procedure SetSceneScale(value: Single);
+    function StoreSceneScale: Boolean;
+    procedure SetNearPlaneBias(value: Single);
+    function StoreNearPlaneBias: Boolean;
+
+  public
+    { Public Declarations }
+    constructor Create(aOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    { : Nearest clipping plane for the frustum.<p>
+      This value depends on the FocalLength and DepthOfView fields and
+      is calculated to minimize Z-Buffer crawling as suggested by the
+      OpenGL documentation. }
+    property NearPlane: Single read FNearPlane;
+
+    // : Apply camera transformation
+    procedure Apply;
+    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
+    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
+
+    procedure ApplyPerspective(const AViewport: TRectangle; AWidth, AHeight: Integer; ADPI: Integer);
+    procedure AutoLeveling(Factor: Single);
+    procedure Reset(aSceneBuffer: TDGLSceneBuffer);
+    // : Position the camera so that the whole scene can be seen
+    procedure ZoomAll(aSceneBuffer: TDGLSceneBuffer);
+
+    procedure RotateObject(obj: TDGLBaseSceneObject; pitchDelta, turnDelta: Single; rollDelta: Single = 0);
+    procedure RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single = 0);
+
+    { : Change camera's position to make it move around its target.<p>
+      If TargetObject is nil, nothing happens. This method helps in quickly
+      implementing camera controls. Camera's Up and Direction properties
+      are unchanged.<br>
+      Angle deltas are in degrees, camera parent's coordinates should be identity.<p>
+      Tip : make the camera a child of a "target" dummycube and make
+      it a target the dummycube. Now, to pan across the scene, just move
+      the dummycube, to change viewing angle, use this method. }
+    procedure MoveAroundTarget(pitchDelta, turnDelta: Single);
+    { : Change camera's position to make it move all around its target.<p>
+      If TargetObject is nil, nothing happens. This method helps in quickly
+      implementing camera controls. Camera's Up and Direction properties
+      are changed.<br>
+      Angle deltas are in degrees.<p> }
+    procedure MoveAllAroundTarget(pitchDelta, turnDelta: Single);
+    { : Moves the camera in eye space coordinates. }
+    procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
+    { : Moves the target in eye space coordinates. }
+    procedure MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
+    { : Computes the absolute vector corresponding to the eye-space translations. }
+    function AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance: Single): TVector;
+    { : Adjusts distance from camera to target by applying a ratio.<p>
+      If TargetObject is nil, nothing happens. This method helps in quickly
+      implementing camera controls. Only the camera's position is changed. }
+    procedure AdjustDistanceToTarget(distanceRatio: Single);
+    { : Returns the distance from camera to target.<p>
+      If TargetObject is nil, returns 1. }
+    function DistanceToTarget: Single;
+    { : Computes the absolute normalized vector to the camera target.<p>
+      If no target is defined, AbsoluteDirection is returned. }
+    function AbsoluteVectorToTarget: TVector;
+    { : Computes the absolute normalized right vector to the camera target.<p>
+      If no target is defined, AbsoluteRight is returned. }
+    function AbsoluteRightVectorToTarget: TVector;
+    { : Computes the absolute normalized up vector to the camera target.<p>
+      If no target is defined, AbsoluteUpt is returned. }
+    function AbsoluteUpVectorToTarget: TVector;
+    { : Calculate an absolute translation vector from a screen vector.<p>
+      Ratio is applied to both screen delta, planeNormal should be the
+      translation plane's normal. }
+    function ScreenDeltaToVector(deltaX, deltaY: Integer; ratio: Single; const planeNormal: TVector): TVector;
+    { : Same as ScreenDeltaToVector but optimized for XY plane. }
+    function ScreenDeltaToVectorXY(deltaX, deltaY: Integer; ratio: Single): TVector;
+    { : Same as ScreenDeltaToVector but optimized for XZ plane. }
+    function ScreenDeltaToVectorXZ(deltaX, deltaY: Integer; ratio: Single): TVector;
+    { : Same as ScreenDeltaToVector but optimized for YZ plane. }
+    function ScreenDeltaToVectorYZ(deltaX, deltaY: Integer; ratio: Single): TVector;
+    { : Returns true if a point is in front of the camera. }
+    function PointInFront(const point: TVector): Boolean; overload;
+    { : Calculates the field of view in degrees, given a viewport dimension
+      (width or height). F.i. you may wish to use the minimum of the two. }
+    function GetFieldOfView(const AViewportDimension: Single): Single;
+    { : Sets the FocalLength in degrees, given a field of view and a viewport
+      dimension (width or height). }
+    procedure SetFieldOfView(const AFieldOfView, AViewportDimension: Single);
+  published
+    { Published Declarations }
+    { : Depth of field/view.<p>
+      Adjusts the maximum distance, beyond which objects will be clipped
+      (ie. not visisble).<p>
+      You must adjust this value if you are experiencing disappearing
+      objects (increase the value) of Z-Buffer crawling (decrease the
+      value). Z-Buffer crawling happens when depth of view is too large
+      and the Z-Buffer precision cannot account for all that depth
+      accurately : objects farther overlap closer objects and vice-versa.<p>
+      Note that this value is ignored in cSOrtho2D mode. }
+    property DepthOfView: Single read FDepthOfView write SetDepthOfView;
+    { : Focal Length of the camera.<p>
+      Adjusting this value allows for lens zooming effects (use SceneScale
+      for linear zooming). This property affects near/far planes clipping. }
+    property FocalLength: Single read FFocalLength write SetFocalLength;
+    { : Scene scaling for camera point.<p>
+      This is a linear 2D scaling of the camera's output, allows for
+      linear zooming (use FocalLength for lens zooming). }
+    property SceneScale: Single read FSceneScale write SetSceneScale stored StoreSceneScale;
+    { : Scaling bias applied to near-plane calculation.<p>
+      Values inferior to one will move the nearplane nearer, and also
+      reduce medium/long range Z-Buffer precision, values superior
+      to one will move the nearplane farther, and also improve medium/long
+      range Z-Buffer precision. }
+    property NearPlaneBias: Single read FNearPlaneBias write SetNearPlaneBias stored StoreNearPlaneBias;
+    { : If set, camera will point to this object.<p>
+      When camera is pointing an object, the Direction vector is ignored
+      and the Up vector is used as an absolute vector to the up. }
+    property TargetObject: TDGLBaseSceneObject read FTargetObject write SetTargetObject;
+    { : Adjust the camera style.<p>
+      Three styles are available :<ul>
+      <li>csPerspective, the default value for perspective projection
+      <li>csOrthogonal, for orthogonal (or isometric) projection.
+      <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
+      (in x or y) represents 1 pixel.
+      <li>csInfinitePerspective, for perspective view without depth limit.
+      <li>csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
+      <li>csCustom, setup is deferred to the OnCustomPerspective event.
+      </ul> }
+    property CameraStyle: TDGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
+
+    { : Keep camera angle mode. <p>
+      When CameraStyle is csKeepCamAnglePerspective, select which camera angle you want to keep.
+      <li>kaHeight, for Keep Height oriented camera angle
+      <li>kaWidth,  for Keep Width oriented camera angle
+    }
+    property KeepFOVMode: TDGLCameraKeepFOVMode read FKeepFOVMode write SetKeepFOVMode default ckmHorizontalFOV;
+
+    { : Custom perspective event.<p>
+      This event allows you to specify your custom perpective, either
+      with a glFrustrum, a glOrtho or whatever method suits you.<br>
+      You must compute viewPortRadius for culling to work.<br>
+      This event is only called if CameraStyle is csCustom. }
+    property OnCustomPerspective: TOnCustomPerspective read FOnCustomPerspective write FOnCustomPerspective;
+
+    property Position;
+    property Direction;
+    property Up;
+    property OnProgress;
+  end;
+
+implementation
+
+// ------------------
+// ------------------ TDGLCamera ------------------
+// ------------------
+
+// Create
+//
+
+constructor TDGLCamera.Create(aOwner: TComponent);
+begin
+  inherited Create(aOwner);
+  FFocalLength   := 50;
+  FDepthOfView   := 100;
+  FNearPlaneBias := 1;
+  FDirection.Initialize(VectorMake(0, 0, -1, 0));
+  FCameraStyle := csPerspective;
+  FSceneScale  := 1;
+  FDesign      := False;
+  FFOVY        := -1;
+  FKeepFOVMode := ckmHorizontalFOV;
+end;
+
+// destroy
+//
+
+destructor TDGLCamera.Destroy;
+begin
+  TargetObject := nil;
+  inherited;
+end;
+
+procedure TDGLCamera.Assign(Source: TPersistent);
+var
+  cam: TDGLCamera;
+  dir: TVector;
+begin
+  if Assigned(Source) then
+  begin
+    inherited Assign(Source);
+
+    if Source is TDGLCamera then
+    begin
+      cam := TDGLCamera(Source);
+      SetDepthOfView(cam.DepthOfView);
+      SetFocalLength(cam.FocalLength);
+      SetCameraStyle(cam.CameraStyle);
+      SetSceneScale(cam.SceneScale);
+      SetNearPlaneBias(cam.NearPlaneBias);
+      SetScene(cam.Scene);
+      SetKeepFOVMode(cam.FKeepFOVMode);
+
+      if Parent <> nil then
+      begin
+        SetTargetObject(cam.TargetObject);
+      end
+      else // Design camera
+      begin
+        Position.AsVector := cam.AbsolutePosition;
+        if Assigned(cam.TargetObject) then
+        begin
+          VectorSubtract(cam.TargetObject.AbsolutePosition, AbsolutePosition, dir);
+          NormalizeVector(dir);
+          Direction.AsVector := dir;
+        end;
+      end;
+    end;
+  end;
+end;
+
+// AbsoluteVectorToTarget
+//
+
+function TDGLCamera.AbsoluteVectorToTarget: TVector;
+begin
+  if TargetObject <> nil then
+  begin
+    VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition, Result);
+    NormalizeVector(Result);
+  end
+  else
+    Result := AbsoluteDirection;
+end;
+
+// AbsoluteRightVectorToTarget
+//
+
+function TDGLCamera.AbsoluteRightVectorToTarget: TVector;
+begin
+  if TargetObject <> nil then
+  begin
+    VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition, Result);
+    Result := VectorCrossProduct(Result, AbsoluteUp);
+    NormalizeVector(Result);
+  end
+  else
+    Result := AbsoluteRight;
+end;
+
+// AbsoluteUpVectorToTarget
+//
+
+function TDGLCamera.AbsoluteUpVectorToTarget: TVector;
+begin
+  if TargetObject <> nil then
+    Result := VectorCrossProduct(AbsoluteRightVectorToTarget, AbsoluteVectorToTarget)
+  else
+    Result := AbsoluteUp;
+end;
+
+// Apply
+//
+
+procedure TDGLCamera.Apply;
+var
+  v, d, v2: TVector;
+  absPos:   TVector;
+  LM, mat:  TMatrix;
+begin
+  if Assigned(FDeferredApply) then
+    FDeferredApply(Self)
+  else
+  begin
+    if Assigned(FTargetObject) then
+    begin
+      v      := TargetObject.AbsolutePosition;
+      absPos := AbsolutePosition;
+      VectorSubtract(v, absPos, d);
+      NormalizeVector(d);
+      FLastDirection := d;
+      LM             := CreateLookAtMatrix(absPos, v, Up.AsVector);
+    end
+    else
+    begin
+      if Assigned(Parent) then
+        mat := Parent.AbsoluteMatrix
+      else
+        mat          := IdentityHmgMatrix;
+      absPos         := AbsolutePosition;
+      v              := VectorTransform(Direction.AsVector, mat);
+      FLastDirection := v;
+      d              := VectorTransform(Up.AsVector, mat);
+      v2             := VectorAdd(absPos, v);
+      LM             := CreateLookAtMatrix(absPos, v2, d);
+    end;
+    with CurrentGLContext.PipelineTransformation do
+      ViewMatrix := MatrixMultiply(LM, ViewMatrix);
+    ClearStructureChanged;
+  end;
+end;
+
+// ApplyPerspective
+//
+
+procedure TDGLCamera.ApplyPerspective(const AViewport: TRectangle; AWidth, AHeight: Integer; ADPI: Integer);
+var
+  vLeft, vRight, vBottom, vTop, vFar: Single;
+  MaxDim, ratio, f:                   Double;
+  xmax, ymax:                         Double;
+  mat:                                TMatrix;
+const
+  cEpsilon: Single = 1E-4;
+
+  function IsPerspective(CamStyle: TDGLCameraStyle): Boolean;
+  begin
+    Result := CamStyle in [csPerspective, csInfinitePerspective, csPerspectiveKeepFOV];
+  end;
+
+begin
+  if (AWidth <= 0) or (AHeight <= 0) then
+    Exit;
+
+  if CameraStyle = csOrtho2D then
+  begin
+    vLeft      := 0;
+    vRight     := AWidth;
+    vBottom    := 0;
+    vTop       := AHeight;
+    FNearPlane := -1;
+    vFar       := 1;
+    mat        := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+    with CurrentGLContext.PipelineTransformation do
+      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+    FViewPortRadius    := VectorLength(AWidth, AHeight) / 2;
+  end
+  else if CameraStyle = csCustom then
+  begin
+    FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
+    if Assigned(FOnCustomPerspective) then
+      FOnCustomPerspective(AViewport, AWidth, AHeight, ADPI, FViewPortRadius);
+  end
+  else
+  begin
+    // determine biggest dimension and resolution (height or width)
+    MaxDim := AWidth;
+    if AHeight > MaxDim then
+      MaxDim := AHeight;
+
+    // calculate near plane distance and extensions;
+    // Scene ratio is determined by the window ratio. The viewport is just a
+    // specific part of the entire window and has therefore no influence on the
+    // scene ratio. What we need to know, though, is the ratio between the window
+    // borders (left, top, right and bottom) and the viewport borders.
+    // Note: viewport.top is actually bottom, because the window (and viewport) origin
+    // in OGL is the lower left corner
+
+    if IsPerspective(CameraStyle) then
+      f := FNearPlaneBias / (AWidth * FSceneScale)
+    else
+      f := 100 * FNearPlaneBias / (FocalLength * AWidth * FSceneScale);
+
+    // calculate window/viewport ratio for right extent
+    ratio := (2 * AViewport.width + 2 * AViewport.Left - AWidth) * f;
+    // calculate aspect ratio correct right value of the view frustum and take
+    // the window/viewport ratio also into account
+    vRight := ratio * AWidth / (2 * MaxDim);
+
+    // the same goes here for the other three extents
+    // left extent:
+    ratio := (AWidth - 2 * AViewport.Left) * f;
+    vLeft := -ratio * AWidth / (2 * MaxDim);
+
+    if IsPerspective(CameraStyle) then
+      f := FNearPlaneBias / (AHeight * FSceneScale)
+    else
+      f := 100 * FNearPlaneBias / (FocalLength * AHeight * FSceneScale);
+
+    // top extent (keep in mind the origin is left lower corner):
+    ratio := (2 * AViewport.height + 2 * AViewport.Top - AHeight) * f;
+    vTop  := ratio * AHeight / (2 * MaxDim);
+
+    // bottom extent:
+    ratio   := (AHeight - 2 * AViewport.Top) * f;
+    vBottom := -ratio * AHeight / (2 * MaxDim);
+
+    FNearPlane := FFocalLength * 2 * ADPI / (25.4 * MaxDim) * FNearPlaneBias;
+    vFar       := FNearPlane + FDepthOfView;
+
+    // finally create view frustum (perspective or orthogonal)
+    case CameraStyle of
+      csPerspective:
+        begin
+          mat := CreateMatrixFromFrustum(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+        end;
+      csPerspectiveKeepFOV:
+        begin
+          if FFOVY < 0 then // Need Update FOV
+          begin
+            FFOVY := ArcTan2(vTop - vBottom, 2 * FNearPlane) * 2;
+            FFOVX := ArcTan2(vRight - vLeft, 2 * FNearPlane) * 2;
+          end;
+
+          case FKeepFOVMode of
+            ckmVerticalFOV:
+              begin
+                ymax := FNearPlane * Tan(FFOVY / 2);
+                xmax := ymax * AWidth / AHeight;
+              end;
+            ckmHorizontalFOV:
+              begin
+                xmax := FNearPlane * Tan(FFOVX / 2);
+                ymax := xmax * AHeight / AWidth;
+              end;
+          else
+            begin
+              xmax := 0;
+              ymax := 0;
+              Assert(False, 'Unknown keep camera angle mode');
+            end;
+          end;
+          mat := CreateMatrixFromFrustum(-xmax, xmax, -ymax, ymax, FNearPlane, vFar);
+        end;
+      csInfinitePerspective:
+        begin
+          mat           := IdentityHmgMatrix;
+          mat.v[0].v[0] := 2 * FNearPlane / (vRight - vLeft);
+          mat.v[1].v[1] := 2 * FNearPlane / (vTop - vBottom);
+          mat.v[2].v[0] := (vRight + vLeft) / (vRight - vLeft);
+          mat.v[2].v[1] := (vTop + vBottom) / (vTop - vBottom);
+          mat.v[2].v[2] := cEpsilon - 1;
+          mat.v[2].v[3] := -1;
+          mat.v[3].v[2] := FNearPlane * (cEpsilon - 2);
+          mat.v[3].v[3] := 0;
+        end;
+      csOrthogonal:
+        begin
+          mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
+        end;
+    else
+      Assert(False);
+    end;
+
+    with CurrentGLContext.PipelineTransformation do
+      ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+
+    FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
+  end;
+end;
+
+// ------------------------------------------------------------------------------
+
+procedure TDGLCamera.AutoLeveling(Factor: Single);
+var
+  rightVector, rotAxis: TVector;
+  angle:                Single;
+begin
+  angle   := RadToDeg(arccos(VectorDotProduct(FUp.AsVector, YVector)));
+  rotAxis := VectorCrossProduct(YHmgVector, FUp.AsVector);
+  if (angle > 1) and (VectorLength(rotAxis) > 0) then
+  begin
+    rightVector := VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
+    FUp.Rotate(AffineVectorMake(rotAxis), angle / (10 * Factor));
+    FUp.Normalize;
+    // adjust local coordinates
+    FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
+    FRotation.Z             := -RadToDeg(ArcTan2(rightVector.v[1], VectorLength(rightVector.v[0], rightVector.v[2])));
+  end;
+end;
+
+// Notification
+//
+
+procedure TDGLCamera.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+  if (Operation = opRemove) and (AComponent = FTargetObject) then
+    TargetObject := nil;
+  inherited;
+end;
+
+// SetTargetObject
+//
+
+procedure TDGLCamera.SetTargetObject(const val: TGLBaseSceneObject);
+begin
+  if (FTargetObject <> val) then
+  begin
+    if Assigned(FTargetObject) then
+      FTargetObject.RemoveFreeNotification(Self);
+    FTargetObject := val;
+    if Assigned(FTargetObject) then
+      FTargetObject.FreeNotification(Self);
+    if not(csLoading in ComponentState) then
+      TransformationChanged;
+  end;
+end;
+
+// Reset
+//
+
+procedure TDGLCamera.Reset(aSceneBuffer: TGLSceneBuffer);
+var
+  Extent: Single;
+begin
+  FRotation.Z  := 0;
+  FFocalLength := 50;
+  with aSceneBuffer do
+  begin
+    ApplyPerspective(FViewport, FViewport.width, FViewport.height, FRenderDPI);
+    FUp.DirectVector := YHmgVector;
+    if FViewport.height < FViewport.width then
+      Extent := FViewport.height * 0.25
+    else
+      Extent := FViewport.width * 0.25;
+  end;
+  FPosition.SetPoint(0, 0, FNearPlane * Extent);
+  FDirection.SetVector(0, 0, -1, 0);
+  TransformationChanged;
+end;
+
+// ZoomAll
+//
+
+procedure TDGLCamera.ZoomAll(aSceneBuffer: TGLSceneBuffer);
+var
+  Extent: Single;
+begin
+  with aSceneBuffer do
+  begin
+    if FViewport.height < FViewport.width then
+      Extent := FViewport.height * 0.25
+    else
+      Extent               := FViewport.width * 0.25;
+    FPosition.DirectVector := NullHmgPoint;
+    Move(-FNearPlane * Extent);
+    // let the camera look at the scene center
+    FDirection.SetVector(-FPosition.X, -FPosition.Y, -FPosition.Z, 0);
+  end;
+end;
+
+// RotateObject
+//
+
+procedure TDGLCamera.RotateObject(obj: TGLBaseSceneObject; pitchDelta, turnDelta: Single; rollDelta: Single = 0);
+var
+  resMat:            TMatrix;
+  vDir, vUp, vRight: TVector;
+  v:                 TAffineVector;
+  position1:         TVector;
+  Scale1:            TVector;
+begin
+  // First we need to compute the actual camera's vectors, which may not be
+  // directly available if we're in "targeting" mode
+  vUp := AbsoluteUp;
+  if TargetObject <> nil then
+  begin
+    vDir   := AbsoluteVectorToTarget;
+    vRight := VectorCrossProduct(vDir, vUp);
+    vUp    := VectorCrossProduct(vRight, vDir);
+  end
+  else
+  begin
+    vDir   := AbsoluteDirection;
+    vRight := VectorCrossProduct(vDir, vUp);
+  end;
+
+  // save scale & position info
+  Scale1    := obj.Scale.AsVector;
+  position1 := obj.Position.AsVector;
+  resMat    := obj.Matrix;
+  // get rid of scaling & location info
+  NormalizeMatrix(resMat);
+  // Now we build rotation matrices and use them to rotate the obj
+  if rollDelta <> 0 then
+  begin
+    SetVector(v, obj.AbsoluteToLocal(vDir));
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(rollDelta)), resMat);
+  end;
+  if turnDelta <> 0 then
+  begin
+    SetVector(v, obj.AbsoluteToLocal(vUp));
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(turnDelta)), resMat);
+  end;
+  if pitchDelta <> 0 then
+  begin
+    SetVector(v, obj.AbsoluteToLocal(vRight));
+    resMat := MatrixMultiply(CreateRotationMatrix(v, DegToRadian(pitchDelta)), resMat);
+  end;
+  obj.Matrix := resMat;
+  // restore scaling & rotation info
+  obj.Scale.AsVector    := Scale1;
+  obj.Position.AsVector := position1;
+end;
+
+// RotateTarget
+//
+
+procedure TDGLCamera.RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single = 0);
+begin
+  if Assigned(FTargetObject) then
+    RotateObject(FTargetObject, pitchDelta, turnDelta, rollDelta)
+end;
+
+// MoveAroundTarget
+//
+
+procedure TDGLCamera.MoveAroundTarget(pitchDelta, turnDelta: Single);
+begin
+  MoveObjectAround(FTargetObject, pitchDelta, turnDelta);
+end;
+
+// MoveAllAroundTarget
+//
+
+procedure TDGLCamera.MoveAllAroundTarget(pitchDelta, turnDelta: Single);
+begin
+  MoveObjectAllAround(FTargetObject, pitchDelta, turnDelta);
+end;
+
+// MoveInEyeSpace
+//
+
+procedure TDGLCamera.MoveInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
+var
+  trVector: TVector;
+begin
+  trVector := AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance);
+  if Assigned(Parent) then
+    Position.Translate(Parent.AbsoluteToLocal(trVector))
+  else
+    Position.Translate(trVector);
+end;
+
+// MoveTargetInEyeSpace
+//
+
+procedure TDGLCamera.MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
+var
+  trVector: TVector;
+begin
+  if TargetObject <> nil then
+  begin
+    trVector := AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance);
+    TargetObject.Position.Translate(TargetObject.Parent.AbsoluteToLocal(trVector));
+  end;
+end;
+
+// AbsoluteEyeSpaceVector
+//
+
+function TDGLCamera.AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance: Single): TVector;
+begin
+  Result := NullHmgVector;
+  if forwardDistance <> 0 then
+    CombineVector(Result, AbsoluteVectorToTarget, forwardDistance);
+  if rightDistance <> 0 then
+    CombineVector(Result, AbsoluteRightVectorToTarget, rightDistance);
+  if upDistance <> 0 then
+    CombineVector(Result, AbsoluteUpVectorToTarget, upDistance);
+end;
+
+// AdjustDistanceToTarget
+//
+
+procedure TDGLCamera.AdjustDistanceToTarget(distanceRatio: Single);
+var
+  vect: TVector;
+begin
+  if Assigned(FTargetObject) then
+  begin
+    // calculate vector from target to camera in absolute coordinates
+    vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+    // ratio -> translation vector
+    ScaleVector(vect, -(1 - distanceRatio));
+    AddVector(vect, AbsolutePosition);
+    if Assigned(Parent) then
+      vect            := Parent.AbsoluteToLocal(vect);
+    Position.AsVector := vect;
+  end;
+end;
+
+// DistanceToTarget
+//
+
+function TDGLCamera.DistanceToTarget: Single;
+var
+  vect: TVector;
+begin
+  if Assigned(FTargetObject) then
+  begin
+    vect   := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+    Result := VectorLength(vect);
+  end
+  else
+    Result := 1;
+end;
+
+// ScreenDeltaToVector
+//
+
+function TDGLCamera.ScreenDeltaToVector(deltaX, deltaY: Integer; ratio: Single; const planeNormal: TVector): TVector;
+var
+  screenY, screenX:           TVector;
+  screenYoutOfPlaneComponent: Single;
+begin
+  // calculate projection of direction vector on the plane
+  if Assigned(FTargetObject) then
+    screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
+  else
+    screenY                  := Direction.AsVector;
+  screenYoutOfPlaneComponent := VectorDotProduct(screenY, planeNormal);
+  screenY                    := VectorCombine(screenY, planeNormal, 1, -screenYoutOfPlaneComponent);
+  NormalizeVector(screenY);
+  // calc the screenX vector
+  screenX := VectorCrossProduct(screenY, planeNormal);
+  // and here, we're done
+  Result := VectorCombine(screenX, screenY, deltaX * ratio, deltaY * ratio);
+end;
+
+// ScreenDeltaToVectorXY
+//
+
+function TDGLCamera.ScreenDeltaToVectorXY(deltaX, deltaY: Integer; ratio: Single): TVector;
+var
+  screenY:     TVector;
+  dxr, dyr, d: Single;
+begin
+  // calculate projection of direction vector on the plane
+  if Assigned(FTargetObject) then
+    screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
+  else
+    screenY := Direction.AsVector;
+  d         := VectorLength(screenY.v[0], screenY.v[1]);
+  if d <= 1E-10 then
+    d := ratio
+  else
+    d := ratio / d;
+  // and here, we're done
+  dxr         := deltaX * d;
+  dyr         := deltaY * d;
+  Result.v[0] := screenY.v[1] * dxr + screenY.v[0] * dyr;
+  Result.v[1] := screenY.v[1] * dyr - screenY.v[0] * dxr;
+  Result.v[2] := 0;
+  Result.v[3] := 0;
+end;
+
+// ScreenDeltaToVectorXZ
+//
+
+function TDGLCamera.ScreenDeltaToVectorXZ(deltaX, deltaY: Integer; ratio: Single): TVector;
+var
+  screenY:     TVector;
+  d, dxr, dzr: Single;
+begin
+  // calculate the projection of direction vector on the plane
+  if Assigned(FTargetObject) then
+    screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
+  else
+    screenY := Direction.AsVector;
+  d         := VectorLength(screenY.v[0], screenY.v[2]);
+  if d <= 1E-10 then
+    d := ratio
+  else
+    d         := ratio / d;
+  dxr         := deltaX * d;
+  dzr         := deltaY * d;
+  Result.v[0] := -screenY.v[2] * dxr + screenY.v[0] * dzr;
+  Result.v[1] := 0;
+  Result.v[2] := screenY.v[2] * dzr + screenY.v[0] * dxr;
+  Result.v[3] := 0;
+end;
+
+// ScreenDeltaToVectorYZ
+//
+
+function TDGLCamera.ScreenDeltaToVectorYZ(deltaX, deltaY: Integer; ratio: Single): TVector;
+var
+  screenY:     TVector;
+  d, dyr, dzr: Single;
+begin
+  // calculate the projection of direction vector on the plane
+  if Assigned(FTargetObject) then
+    screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
+  else
+    screenY := Direction.AsVector;
+  d         := VectorLength(screenY.v[1], screenY.v[2]);
+  if d <= 1E-10 then
+    d := ratio
+  else
+    d         := ratio / d;
+  dyr         := deltaX * d;
+  dzr         := deltaY * d;
+  Result.v[0] := 0;
+  Result.v[1] := screenY.v[2] * dyr + screenY.v[1] * dzr;
+  Result.v[2] := screenY.v[2] * dzr - screenY.v[1] * dyr;
+  Result.v[3] := 0;
+end;
+
+// PointInFront
+//
+
+function TDGLCamera.PointInFront(const point: TVector): Boolean;
+begin
+  Result := PointIsInHalfSpace(point, AbsolutePosition, AbsoluteDirection);
+end;
+
+// SetDepthOfView
+//
+
+procedure TDGLCamera.SetDepthOfView(AValue: Single);
+begin
+  if FDepthOfView <> AValue then
+  begin
+    FDepthOfView := AValue;
+    FFOVY        := -1;
+    if not(csLoading in ComponentState) then
+      TransformationChanged;
+  end;
+end;
+
+// SetFocalLength
+//
+
+procedure TDGLCamera.SetFocalLength(AValue: Single);
+begin
+  if AValue <= 0 then
+    AValue := 1;
+  if FFocalLength <> AValue then
+  begin
+    FFocalLength := AValue;
+    FFOVY        := -1;
+    if not(csLoading in ComponentState) then
+      TransformationChanged;
+  end;
+end;
+
+// GetFieldOfView
+//
+
+function TDGLCamera.GetFieldOfView(const AViewportDimension: Single): Single;
+begin
+  if FFocalLength = 0 then
+    Result := 0
+  else
+    Result := RadToDeg(2 * ArcTan2(AViewportDimension * 0.5, FFocalLength));
+end;
+
+// SetFieldOfView
+//
+
+procedure TDGLCamera.SetFieldOfView(const AFieldOfView, AViewportDimension: Single);
+begin
+  FocalLength := AViewportDimension / (2 * Tan(DegToRadian(AFieldOfView / 2)));
+end;
+
+// SetCameraStyle
+//
+
+procedure TDGLCamera.SetCameraStyle(const val: TDGLCameraStyle);
+begin
+  if FCameraStyle <> val then
+  begin
+    FCameraStyle := val;
+    FFOVY        := -1;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetKeepCamAngleMode
+//
+
+procedure TDGLCamera.SetKeepFOVMode(const val: TDGLCameraKeepFOVMode);
+begin
+  if FKeepFOVMode <> val then
+  begin
+    FKeepFOVMode := val;
+    FFOVY        := -1;
+    if FCameraStyle = csPerspectiveKeepFOV then
+      NotifyChange(Self);
+  end;
+end;
+
+// SetSceneScale
+//
+
+procedure TDGLCamera.SetSceneScale(value: Single);
+begin
+  if value = 0 then
+    value := 1;
+  if FSceneScale <> value then
+  begin
+    FSceneScale := value;
+    FFOVY       := -1;
+    NotifyChange(Self);
+  end;
+end;
+
+// StoreSceneScale
+//
+
+function TDGLCamera.StoreSceneScale: Boolean;
+begin
+  Result := (FSceneScale <> 1);
+end;
+
+// SetNearPlaneBias
+//
+
+procedure TDGLCamera.SetNearPlaneBias(value: Single);
+begin
+  if value <= 0 then
+    value := 1;
+  if FNearPlaneBias <> value then
+  begin
+    FNearPlaneBias := value;
+    FFOVY          := -1;
+    NotifyChange(Self);
+  end;
+end;
+
+// StoreNearPlaneBias
+//
+
+function TDGLCamera.StoreNearPlaneBias: Boolean;
+begin
+  Result := (FNearPlaneBias <> 1);
+end;
+
+// DoRender
+//
+
+procedure TDGLCamera.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+begin
+  if ARenderChildren and (Count > 0) then
+    Self.RenderChildren(0, Count - 1, ARci);
+end;
+
+// RayCastIntersect
+//
+
+function TDGLCamera.RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+begin
+  Result := False;
+end;
+
+end.

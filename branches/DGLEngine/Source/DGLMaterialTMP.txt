@@ -1,0 +1,6033 @@
+unit DGLMaterialTMP;
+
+interface
+
+{$I DGLEngine.inc}
+
+uses
+  System.Classes,
+  System.SysUtils,
+
+  // GLS
+  DGLCrossPlatform,
+  DGLResStrings,
+  GLSLog,
+
+  dglOpenGL,
+  DGLXOpenGL,
+
+  DGLTypes,
+  DGLBaseClasses,
+  DGLPersistentClasses,
+  DGLXCollection,
+
+  DGLApplicationFileIO,
+  DGLUtils,
+
+  DGLContext,
+  DGLContextHandles,
+  DGLState,
+  DGLRenderContextInfo,
+
+  DGLVectorTypes,
+  DGLVectorMaths,
+  DGLCoordinates,
+
+  DGLGraphics,
+  DGLTextureFormat,
+  DGLColor;
+
+const
+  cDefaultNormalMapScale = 0.125;
+
+  CmtPX = 0;
+  CmtNX = 1;
+  CmtPY = 2;
+  CmtNY = 3;
+  CmtPZ = 4;
+  CmtNZ = 5;
+
+type
+
+  TDGLMaterialComponentName   = string;
+  TDGLAbstractMaterialLibrary = class;
+  TDGLMaterialLibrary         = class;
+  TGLLibMaterial              = class;
+  // TDGLMaterial = class;
+
+  // TDGLMatLibComponents      = class;
+  // TDGLLibMaterialEx         = class;
+  // TDGLBaseShaderModel       = class;
+  // TDGLASMVertexProgram      = class;
+
+  // TDGLTextureCompression
+  //
+  TDGLTextureCompression = TDGLInternalCompression;
+
+  // TTextureNeededEvent
+  //
+  TTextureNeededEvent = procedure(Sender: TObject; var textureFileName: string) of object;
+
+  TDGLTextureChange  = (tcImage, tcParams);
+  TDGLTextureChanges = set of TDGLTextureChange;
+
+  // an interface for proper TDGLLibMaterialNameProperty support
+  IGLMaterialLibrarySupported = interface(IInterface)
+    ['{8E442AF9-D212-4A5E-8A88-92F798BABFD1}']
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+  end;
+
+  // TDGLTexture = class;
+  IGLTextureNotifyAble = interface(IGLNotifyAble)
+    ['{0D9DC0B0-ECE4-4513-A8A1-5AE7022C9426}']
+    procedure NotifyTexMapChange(Sender: TObject);
+  end;
+
+  // TGLShader
+  //
+  { : Generic, abstract shader class.<p>
+    Shaders are modeled here as an abstract material-altering entity with
+    transaction-like behaviour. The base class provides basic context and user
+    tracking, as well as setup/application facilities.<br>
+    Subclasses are expected to provide implementation for DoInitialize,
+    DoApply, DoUnApply and DoFinalize. }
+  TGLShader = class(TDGLUpdateAbleComponent)
+  private
+    { Private Declarations }
+    FEnabled:          Boolean;
+    FLibMatUsers:      TList;
+    FVirtualHandle:    TDGLVirtualHandle;
+    FShaderStyle:      TGLShaderStyle;
+    FUpdateCount:      Integer;
+    FShaderActive:     Boolean;
+    FFailedInitAction: TGLShaderFailedInitAction;
+
+  protected
+    { Protected Declarations }
+    { : Invoked once, before the first call to DoApply.<p>
+      The call happens with the OpenGL context being active. }
+    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); dynamic;
+    { : Request to apply the shader.<p>
+      Always followed by a DoUnApply when the shader is no longer needed. }
+    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
+    { : Request to un-apply the shader.<p>
+      Subclasses can assume the shader has been applied previously.<br>
+      Return True to request a multipass. }
+    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
+    { : Invoked once, before the destruction of context or release of shader.<p>
+      The call happens with the OpenGL context being active. }
+    procedure DoFinalize; dynamic;
+
+    function GetShaderInitialized: Boolean;
+    procedure InitializeShader(var rci: TRenderContextInfo; Sender: TObject);
+    procedure FinalizeShader;
+    procedure OnVirtualHandleAllocate(Sender: TDGLVirtualHandle; var handle: Cardinal);
+    procedure OnVirtualHandleDestroy(Sender: TDGLVirtualHandle; var handle: Cardinal);
+    procedure SetEnabled(val: Boolean);
+
+    property ShaderInitialized: Boolean read GetShaderInitialized;
+    property ShaderActive: Boolean read FShaderActive;
+
+    procedure RegisterUser(libMat: TGLLibMaterial);
+    procedure UnRegisterUser(libMat: TGLLibMaterial);
+
+    { : Used by the DoInitialize procedure of descendant classes to raise errors. }
+    procedure HandleFailedInitialization(const LastErrorMessage: string = ''); virtual;
+
+    { : May be this should be a function inside HandleFailedInitialization... }
+    function GetStardardNotSupportedMessage: string; virtual;
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    { : Subclasses should invoke this function when shader properties are altered.
+      This procedure can also be used to reset/recompile the shader. }
+    procedure NotifyChange(Sender: TObject); override;
+    procedure BeginUpdate;
+    procedure EndUpdate;
+
+    { : Apply shader to OpenGL state machine. }
+    procedure Apply(var rci: TRenderContextInfo; Sender: TObject);
+    { : UnApply shader.<p>
+      When returning True, the caller is expected to perform a multipass
+      rendering by re-rendering then invoking UnApply again, until a
+      "False" is returned. }
+    function UnApply(var rci: TRenderContextInfo): Boolean;
+
+    { : Shader application style (default is ssLowLevel). }
+    property ShaderStyle: TGLShaderStyle read FShaderStyle write FShaderStyle default ssLowLevel;
+
+    procedure Assign(Source: TPersistent); override;
+
+    { : Defines if shader is supported by hardware/drivers.
+      Default - always supported. Descendants are encouraged to override
+      this function. }
+    function ShaderSupported: Boolean; virtual;
+
+    { : Defines what to do if for some reason shader failed to initialize.
+      Note, that in some cases it cannon be determined by just checking the
+      required OpenGL extentions. You need to try to compile and link the
+      shader - only at that stage you might catch an error }
+    property FailedInitAction: TGLShaderFailedInitAction read FFailedInitAction write FFailedInitAction default fiaRaiseStandardException;
+
+  published
+    { Published Declarations }
+    { : Turns on/off shader application.<p>
+      Note that this only turns on/off the shader application, if the
+      ShaderStyle is ssReplace, the material won't be applied even if
+      the shader is disabled. }
+    property Enabled: Boolean read FEnabled write SetEnabled default True;
+  end;
+
+  TGLShaderClass = class of TGLShader;
+
+  TShininess = 0 .. 128;
+
+  // TGLFaceProperties
+  //
+  { : Stores basic face lighting properties.<p>
+    The lighting is described with the standard ambient/diffuse/emission/specular
+    properties that behave like those of most rendering tools.<br>
+    You also have control over shininess (governs specular lighting) and
+    polygon mode (lines / fill). }
+  TGLFaceProperties = class(TDGLUpdateAbleObject)
+  private
+    { Private Declarations }
+    FAmbient, FDiffuse, FSpecular, FEmission: TDGLColor;
+    FShininess:                               TShininess;
+
+  protected
+    { Protected Declarations }
+    procedure SetAmbient(AValue: TDGLColor);
+    procedure SetDiffuse(AValue: TDGLColor);
+    procedure SetEmission(AValue: TDGLColor);
+    procedure SetSpecular(AValue: TDGLColor);
+    procedure SetShininess(AValue: TShininess);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Apply(var rci: TRenderContextInfo; aFace: TCullFaceMode);
+    procedure ApplyNoLighting(var rci: TRenderContextInfo; aFace: TCullFaceMode);
+    procedure Assign(Source: TPersistent); override;
+
+  published
+    { Published Declarations }
+    property Ambient:   TDGLColor read FAmbient write SetAmbient;
+    property Diffuse:   TDGLColor read FDiffuse write SetDiffuse;
+    property Emission:  TDGLColor read FEmission write SetEmission;
+    property Shininess: TShininess read FShininess write SetShininess default 0;
+    property Specular:  TDGLColor read FSpecular write SetSpecular;
+  end;
+
+  TGLDepthProperties = class(TDGLUpdateAbleObject)
+  private
+    { Private Declarations }
+    FDepthTest:    Boolean;
+    FDepthWrite:   Boolean;
+    FZNear, FZFar: Single;
+    FCompareFunc:  TDepthfunction;
+    FDepthClamp:   Boolean;
+  protected
+    { Protected Declarations }
+    procedure SetZNear(Value: Single);
+    procedure SetZFar(Value: Single);
+    procedure SetCompareFunc(Value: TDGLDepthCompareFunc);
+    procedure SetDepthTest(Value: Boolean);
+    procedure SetDepthWrite(Value: Boolean);
+    procedure SetDepthClamp(Value: Boolean);
+
+    function StoreZNear: Boolean;
+    function StoreZFar: Boolean;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+
+    procedure Apply(var rci: TRenderContextInfo);
+    procedure Assign(Source: TPersistent); override;
+
+  published
+    { Published Declarations }
+    { : Specifies the mapping of the near clipping plane to
+      window coordinates.  The initial value is 0. }
+    property ZNear: Single read FZNear write SetZNear stored StoreZNear;
+    { : Specifies the mapping of the far clipping plane to
+      window coordinates.  The initial value is 1. }
+    property ZFar: Single read FZFar write SetZFar stored StoreZFar;
+    { : Specifies the function used to compare each
+      incoming pixel depth value with the depth value present in
+      the depth buffer. }
+    property DepthCompareFunction: TDepthfunction read FCompareFunc write SetCompareFunc default cfLequal;
+    { : DepthTest enabling.<p>
+      When DepthTest is enabled, objects closer to the camera will hide
+      farther ones (via use of Z-Buffering).<br>
+      When DepthTest is disabled, the latest objects drawn/rendered overlap
+      all previous objects, whatever their distance to the camera.<br>
+      Even when DepthTest is enabled, objects may chose to ignore depth
+      testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
+    property DepthTest: Boolean read FDepthTest write SetDepthTest default True;
+    { : If True, object will not write to Z-Buffer. }
+    property DepthWrite: Boolean read FDepthWrite write SetDepthWrite default True;
+    { : Enable clipping depth to the near and far planes }
+    property DepthClamp: Boolean read FDepthClamp write SetDepthClamp default False;
+  end;
+
+  TGLLibMaterialName = string;
+
+
+
+  // TGLBlendingParameters
+  //
+  TGLBlendingParameters = class(TDGLUpdateAbleObject)
+  private
+    FUseAlphaFunc:          Boolean;
+    FUseBlendFunc:          Boolean;
+    FSeparateBlendFunc:     Boolean;
+    FAlphaFuncType:         TGlAlphaFunc;
+    FAlphaFuncRef:          TGLclampf;
+    FBlendFuncSFactor:      TBlendFunction;
+    FBlendFuncDFactor:      TBlendFunction;
+    FAlphaBlendFuncSFactor: TBlendFunction;
+    FAlphaBlendFuncDFactor: TBlendFunction;
+    procedure SetUseAlphaFunc(const Value: Boolean);
+    procedure SetUseBlendFunc(const Value: Boolean);
+    procedure SetSeparateBlendFunc(const Value: Boolean);
+    procedure SetAlphaFuncRef(const Value: TGLclampf);
+    procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
+    procedure SetBlendFuncDFactor(const Value: TBlendFunction);
+    procedure SetBlendFuncSFactor(const Value: TBlendFunction);
+    procedure SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
+    procedure SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
+    function StoreAlphaFuncRef: Boolean;
+  public
+    constructor Create(AOwner: TPersistent); override;
+    procedure Apply(var rci: TRenderContextInfo);
+  published
+    property UseAlphaFunc:   Boolean read FUseAlphaFunc write SetUseAlphaFunc default False;
+    property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write SetAlphaFuncType default cfGreater;
+    property AlphaFuncRef:   TGLclampf read FAlphaFuncRef write SetAlphaFuncRef stored StoreAlphaFuncRef;
+
+    property UseBlendFunc:          Boolean read FUseBlendFunc write SetUseBlendFunc default True;
+    property SeparateBlendFunc:     Boolean read FSeparateBlendFunc write SetSeparateBlendFunc default False;
+    property BlendFuncSFactor:      TBlendFunction read FBlendFuncSFactor write SetBlendFuncSFactor default bfSrcAlpha;
+    property BlendFuncDFactor:      TBlendFunction read FBlendFuncDFactor write SetBlendFuncDFactor default bfOneMinusSrcAlpha;
+    property AlphaBlendFuncSFactor: TBlendFunction read FAlphaBlendFuncSFactor write SetAlphaBlendFuncSFactor default bfSrcAlpha;
+    property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
+  end;
+
+
+
+
+  TMaterialOptions = set of TMaterialOption;
+
+
+  // TGLBaseLibMaterial
+  //
+
+  TGLAbstractLibMaterial = class(TCollectionItem, IGLMaterialLibrarySupported, IGLNotifyAble)
+  protected
+    { Protected Declarations }
+    FUserList:    TList;
+    FName:        TGLLibMaterialName;
+    FNameHashKey: Integer;
+    FTag:         Integer;
+    FNotifying:   Boolean; // used for recursivity protection
+    // implementing IGLMaterialLibrarySupported
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+    // implementing IInterface
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: Integer; stdcall;
+    function _Release: Integer; stdcall;
+  protected
+    { Protected Declarations }
+    function GetDisplayName: string; override;
+    class function ComputeNameHashKey(const name: string): Integer;
+    procedure SetName(const val: TGLLibMaterialName);
+    procedure Loaded; virtual;
+
+  public
+    { Public Declarations }
+    constructor Create(ACollection: TCollection); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    procedure Apply(var ARci: TRenderContextInfo); virtual;
+    // : Restore non-standard material states that were altered
+    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual;
+
+    procedure RegisterUser(Obj: TDGLUpdateAbleObject); overload;
+    procedure UnRegisterUser(Obj: TDGLUpdateAbleObject); overload;
+    procedure RegisterUser(comp: TDGLUpdateAbleComponent); overload;
+    procedure UnRegisterUser(comp: TDGLUpdateAbleComponent); overload;
+    procedure RegisterUser(libMaterial: TGLLibMaterial); overload;
+    procedure UnRegisterUser(libMaterial: TGLLibMaterial); overload;
+    procedure NotifyUsers;
+    function IsUsed: Boolean; // returns true if the texture has registed users
+    property NameHashKey: Integer read FNameHashKey;
+    procedure NotifyChange(Sender: TObject); virtual;
+    function Blended: Boolean; virtual;
+    property MaterialLibrary: TDGLAbstractMaterialLibrary read GetMaterialLibrary;
+  published
+    { Published Declarations }
+    property Name: TGLLibMaterialName read FName write SetName;
+    property Tag:  Integer read FTag write FTag;
+  end;
+
+  // TGLAbstractMaterialLibrary
+  //
+
+  TDGLAbstractMaterialLibrary = class(TDGLCadenceAbleComponent)
+  protected
+    { Protected Declarations }
+    FMaterials:           TDGLAbstractLibMaterials;
+    FLastAppliedMaterial: TGLAbstractLibMaterial;
+    FTexturePaths:        string;
+    FTexturePathList:     TStringList;
+    procedure SetTexturePaths(const val: string);
+    property TexturePaths: string read FTexturePaths write SetTexturePaths;
+    procedure Loaded; override;
+  public
+    { Public Declarations }
+
+    procedure SetNamesToTStrings(AStrings: TStrings);
+    { : Applies the material of given name.<p>
+      Returns False if the material could not be found. ake sure this
+      call is balanced with a corresponding UnApplyMaterial (or an
+      assertion will be triggered in the destructor).<br>
+      If a material is already applied, and has not yet been unapplied,
+      an assertion will be triggered. }
+    function ApplyMaterial(const AName: string; var ARci: TRenderContextInfo): Boolean; virtual;
+    { : Un-applies the last applied material.<p>
+      Use this function in conjunction with ApplyMaterial.<br>
+      If no material was applied, an assertion will be triggered. }
+    function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
+  end;
+
+  // TDGLBaseMaterialCollectionItem
+  //
+
+  TDGLBaseMaterialCollectionItem = class(TDGLXCollectionItem, IGLMaterialLibrarySupported)
+  private
+    { Private Declarations }
+    FNameHashKey:  Integer;
+    FUserList:     TPersistentObjectList;
+    FDefferedInit: Boolean;
+    FNotifying:    Boolean;
+    FIsValid:      Boolean;
+    function GetUserList: TPersistentObjectList;
+    function GetMaterialLibrary: TDGLMaterialLibrary;
+  protected
+    { Protected Declarations }
+    procedure SetName(const AValue: TDGLMaterialComponentName); override;
+    procedure NotifyChange(Sender: TObject); virtual;
+    property UserList: TPersistentObjectList read GetUserList;
+    procedure DoOnPrepare(Sender: TDGLContext); virtual; abstract;
+  public
+    { Public Declarations }
+    destructor Destroy; override;
+
+    procedure RegisterUser(AUser: TDGLUpdateAbleObject);
+    procedure UnRegisterUser(AUser: TDGLUpdateAbleObject);
+    function GetUserCount: Integer;
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+
+    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLibrary;
+    property IsValid: Boolean read FIsValid;
+  published
+    { Published Declarations }
+    property Name: TDGLMaterialComponentName read GetName write SetName;
+    { : Run-time flag, indicate that resource
+      should initialize in case of failure material's level. }
+    property DefferedInit: Boolean read FDefferedInit write FDefferedInit default False;
+  end;
+
+
+  // TDGLTextureSampler
+  //
+
+  TDGLTextureSampler = class(TDGLBaseMaterialCollectionItem)
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); override;
+    procedure ReadFromFiler(AReader: TReader); override;
+  private
+    { Private Declarations }
+    FHandle:           TDGLSamplerHandle;
+    FMinFilter:        TDGLMinFilter;
+    FMagFilter:        TDGLMagFilter;
+    FFilteringQuality: TDGLTextureFilteringQuality;
+    FLODBias:          Integer;
+    FLODBiasFract:     Single;
+    FWrap:             array [0 .. 2] of TDGLSeparateTextureWrap;
+    FBorderColor:      TDGLColor;
+    FCompareMode:      TDGLTextureCompareMode;
+    FCompareFunc:      TDepthfunction;
+    FDecodeSRGB:       Boolean;
+    procedure SetMagFilter(AValue: TDGLMagFilter);
+    procedure SetMinFilter(AValue: TDGLMinFilter);
+    procedure SetLODBias(AValue: Integer);
+    procedure SetFilteringQuality(AValue: TDGLTextureFilteringQuality);
+    function GetWrap(Index: Integer): TDGLSeparateTextureWrap;
+    procedure SetWrap(Index: Integer; AValue: TDGLSeparateTextureWrap);
+    procedure SetBorderColor(const AValue: TDGLColor);
+    procedure SetCompareMode(AValue: TDGLTextureCompareMode);
+    procedure SetCompareFunc(AValue: TDepthfunction);
+    procedure SetDecodeSRGB(AValue: Boolean);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TDGLXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure DoOnPrepare(Sender: TDGLContext); override;
+    procedure Apply(var ARci: TRenderContextInfo);
+    procedure UnApply(var ARci: TRenderContextInfo);
+
+    class function FriendlyName: string; override;
+
+    property handle: TDGLSamplerHandle read FHandle;
+  published
+    { Published Declarations }
+
+    { : Texture magnification filter. }
+    property MagFilter: TDGLMagFilter read FMagFilter write SetMagFilter default maLinear;
+    { : Texture minification filter. }
+    property MinFilter:        TDGLMinFilter read FMinFilter write SetMinFilter default miLinearMipMapLinear;
+    property FilteringQuality: TDGLTextureFilteringQuality read FFilteringQuality write SetFilteringQuality default tfAnisotropic;
+    { : Texture LOD bias. }
+    property LodBias: Integer read FLODBias write SetLODBias default 0;
+    { : Address mode for the texture. }
+    property WrapX: TDGLSeparateTextureWrap index 0 read GetWrap write SetWrap default twRepeat;
+    property WrapY: TDGLSeparateTextureWrap index 1 read GetWrap write SetWrap default twRepeat;
+    property WrapZ: TDGLSeparateTextureWrap index 2 read GetWrap write SetWrap default twRepeat;
+    { : Texture border color. }
+    property BorderColor: TDGLColor read FBorderColor write SetBorderColor;
+    { : Compare mode and function for depth texture. }
+    property CompareMode: TDGLTextureCompareMode read FCompareMode write SetCompareMode default tcmNone;
+    property CompareFunc: TDepthfunction read FCompareFunc write SetCompareFunc default cfLequal;
+    { : Force retrieving the undecoded sRGB data from the
+      texture and manipulate that directly. }
+    property sRGB_Encode: Boolean read FDecodeSRGB write SetDecodeSRGB default True;
+  end;
+
+
+  // TDGLAbstractTexture
+  //
+
+  TDGLAbstractTexture = class(TDGLBaseMaterialCollectionItem)
+  protected
+    { Protected Declarations }
+    FHandle:            TDGLTextureHandle;
+    FInternalFormat:    TGLInternalFormat;
+    FWidth:             Integer;
+    FHeight:            Integer;
+    FDepth:             Integer;
+    FSwizzles:          TSwizzleVector;
+    FApplicableSampler: TDGLTextureSampler;
+    FLastSampler:       TDGLTextureSampler;
+    function GetTextureTarget: TDGLTextureTarget;
+    procedure Apply(var ARci: TRenderContextInfo); virtual; abstract;
+    procedure UnApply(var ARci: TRenderContextInfo); virtual; abstract;
+  public
+    { Public Declarations }
+    property handle: TDGLTextureHandle read FHandle;
+  published
+    { Published Declarations }
+    property Shape: TDGLTextureTarget read GetTextureTarget;
+  end;
+
+  TMipmapGenerationMode = (mgmNoMip, mgmLeaveExisting, mgmOnFly, mgmBoxFilter, mgmTriangleFilter, mgmHermiteFilter, mgmBellFilter, mgmSplineFilter, mgmLanczos3Filter, mgmMitchellFilter);
+
+  // TDGLTextureImageEx
+  //
+
+  TGLTextureImage = class(TDGLAbstractTexture)
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); override;
+    procedure ReadFromFiler(AReader: TReader); override;
+  private
+    { Private Declarations }
+    FCompression:         TDGLTextureCompression;
+    FImage:               TDGLImage;
+    FImageAlpha:          TDGLTextureImageAlpha;
+    FImageBrightness:     Single;
+    FImageGamma:          Single;
+    FHeightToNormalScale: Single;
+    FSourceFile:          string;
+    FApplyCounter:        Integer;
+    FInternallyStored:    Boolean;
+    FMipGenMode:          TMipmapGenerationMode;
+    FUseStreaming:        Boolean;
+    FBaseLevel:           Integer;
+    FMaxLevel:            Integer;
+    FLastTime:            Double;
+
+    procedure UploadTexture;
+    function GetReadPBO: GLUint;
+    function GetWritePBO: GLUint;
+    procedure FreePBO;
+
+    procedure SetInternalFormat(const AValue: TGLInternalFormat);
+    procedure SetImageAlpha(const AValue: TDGLTextureImageAlpha);
+    procedure SetImageBrightness(const AValue: Single);
+    function StoreBrightness: Boolean;
+    procedure SetImageGamma(const AValue: Single);
+    function StoreGamma: Boolean;
+    procedure SetNormalMapScale(const AValue: Single);
+    function StoreNormalMapScale: Boolean;
+    procedure SetCompression(const AValue: TDGLTextureCompression);
+    procedure SetSourceFile(AValue: string);
+    procedure SetInternallyStored(const AValue: Boolean);
+    procedure SetMipGenMode(const AValue: TMipmapGenerationMode);
+    procedure SetUseStreaming(const AValue: Boolean);
+    procedure PrepareImage;
+    procedure FullTransfer;
+    procedure StreamTransfer;
+    procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TDGLXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure DoOnPrepare(Sender: TDGLContext); override;
+    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure UnApply(var ARci: TRenderContextInfo); override;
+
+    class function FriendlyName: string; override;
+  published
+    { Published Declarations }
+    // Pixel Buffer Object Access
+    property PBOReadBuffer: GLUint read GetReadPBO;
+    property PBOWriteBuffer: GLUint read GetWritePBO;
+    // Factual texture properties
+    property InternalWidth:  Integer read FWidth;
+    property InternalHeight: Integer read FHeight;
+    property InternalDepth:  Integer read FDepth;
+    property InternalFormat: TGLInternalFormat read FInternalFormat write SetInternalFormat default tfRGBA8;
+
+    { : Automatic Image Alpha setting.<p>
+      Allows to control how and if the image's Alpha channel (transparency)
+      is computed. }
+    property ImageAlpha: TDGLTextureImageAlpha read FImageAlpha write SetImageAlpha default tiaDefault;
+    { : Texture brightness correction.<p>
+      This correction is applied upon loading a TDGLTextureImage, it's a
+      simple saturating scaling applied to the RGB components of
+      the 32 bits image, before it is passed to OpenGL, and before
+      gamma correction (if any). }
+    property ImageBrightness: Single read FImageBrightness write SetImageBrightness stored StoreBrightness;
+    { : Texture gamma correction.<p>
+      The gamma correction is applied upon loading a TDGLTextureImage,
+      applied to the RGB components of the 32 bits image, before it is
+      passed to OpenGL, after brightness correction (if any). }
+    property ImageGamma: Single read FImageGamma write SetImageGamma stored StoreGamma;
+    { : Texture compression control.<p>
+      If True the compressed TextureFormat variant (the OpenGL ICD must
+      support GL_ARB_texture_compression, or this option is ignored). }
+    property Compression: TDGLTextureCompression read FCompression write SetCompression default tcDefault;
+    { : Normal Map scaling.<p>
+      Force normal map generation from height map and controls
+      the intensity of the bumps. }
+    property HeightToNormalScale: Single read FHeightToNormalScale write SetNormalMapScale stored StoreNormalMapScale;
+    { : Source file path and name. }
+    property SourceFile: string read FSourceFile write SetSourceFile;
+    { : Force to store image levels in separate files in ready to transfer format. }
+    property InternallyStored: Boolean read FInternallyStored write SetInternallyStored default False;
+    { : Mipmap generation mode. }
+    property MipGenMode: TMipmapGenerationMode read FMipGenMode write SetMipGenMode default mgmOnFly;
+    { : Enable streaming loading. }
+    property UseStreaming: Boolean read FUseStreaming write SetUseStreaming default False;
+  end;
+
+
+ TGLTextureImageClass = class of TGLTextureImage;
+
+  // TGLBlankImage
+  //
+  {: A texture image with no specified content, only a size.<p>
+       This texture image type is of use if the context of your texture is
+       calculated at run-time (with a TGLMemoryViewer for instance). }
+  TGLBlankImage = class(TGLTextureImage)
+  private
+    { Private Declarations }
+    procedure SetWidth(val: Integer);
+    procedure SetHeight(val: Integer);
+    procedure SetDepth(val: Integer);
+    procedure SetCubeMap(const val: Boolean);
+    procedure SetArray(const val: Boolean);
+  protected
+    { Protected Declarations }
+    fBitmap: TGLImage;
+
+    fWidth, fHeight, fDepth: Integer;
+    {: Store a icolor format, because fBitmap is not always defined}
+    fColorFormat: GLenum;
+    {: Blank Cube Map }
+    fCubeMap: Boolean;
+    {: Flag to interparate depth as layer }
+    fArray: Boolean;
+
+    function GetWidth: Integer; override;
+    function GetHeight: Integer; override;
+    function GetDepth: Integer; override;
+    function GetTextureTarget: TGLTextureTarget; override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    function GetBitmap32: TGLImage; override;
+    procedure ReleaseBitmap32; override;
+
+    procedure SaveToFile(const fileName: string); override;
+    procedure LoadFromFile(const fileName: string); override;
+    class function FriendlyName: string; override;
+    class function FriendlyDescription: string; override;
+
+  published
+    { Published Declarations }
+    {: Width, heigth and depth of the blank image (for memory allocation). }
+    property Width: Integer read GetWidth write SetWidth default 256;
+    property Height: Integer read GetHeight write SetHeight default 256;
+    property Depth: Integer read GetDepth write SetDepth default 0;
+    property CubeMap: Boolean read fCubeMap write SetCubeMap default false;
+    property TextureArray: Boolean read fArray write SetArray default false;
+    property ColorFormat: GLenum read fColorFormat write fColorFormat;
+  end;
+
+  // TGLPictureImage
+  //
+  {: Base class for image data classes internally based on a TPicture. }
+  TGLPictureImage = class(TGLTextureImage)
+  private
+    { Private Declarations }
+    FBitmap: TGLImage;
+    FGLPicture: TGLPicture;
+    FUpdateCounter: Integer;
+
+  protected
+    { Protected Declarations }
+    function GetHeight: Integer; override;
+    function GetWidth: Integer; override;
+    function GetDepth: Integer; override;
+    function GetTextureTarget: TGLTextureTarget; override;
+
+    function GetPicture: TGLPicture;
+    procedure SetPicture(const aPicture: TGLPicture);
+    procedure PictureChanged(Sender: TObject);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    {: Use this function if you are going to modify the Picture directly.<p>
+     Each invokation MUST be balanced by a call to EndUpdate. }
+    procedure BeginUpdate;
+    {: Ends a direct picture modification session.<p>
+       Follows a BeginUpdate. }
+    procedure EndUpdate;
+    function GetBitmap32: TGLImage; override;
+    procedure ReleaseBitmap32; override;
+
+    {: Holds the image content. }
+    property Picture: TGLPicture read GetPicture write SetPicture;
+  end;
+
+  // TGLPersistentImage
+  //
+  {: Stores any image compatible with Delphi's TPicture mechanism.<p>
+   The picture's data is actually stored into the DFM, the original
+   picture name or path is not remembered. It is similar in behaviour
+   to Delphi's TImage.<p>
+   Note that if original image is for instance JPEG format, only the JPEG
+   data will be stored in the DFM (compact) }
+  TGLPersistentImage = class(TGLPictureImage)
+  private
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure SaveToFile(const fileName: string); override;
+    procedure LoadFromFile(const fileName: string); override;
+    class function FriendlyName: string; override;
+    class function FriendlyDescription: string; override;
+    property NativeTextureTarget;
+  published
+    { Published Declarations }
+    property Picture;
+  end;
+
+  // TGLPicFileImage
+  //
+  {: Uses a picture whose data is found in a file (only filename is stored).<p>
+       The image is unloaded after upload to OpenGL. }
+  TGLPicFileImage = class(TGLPictureImage)
+  private
+    FPictureFileName: string;
+    FAlreadyWarnedAboutMissingFile: Boolean;
+    FWidth: Integer;
+    FHeight: Integer;
+
+  protected
+    procedure SetPictureFileName(const val: string);
+    function GetWidth: Integer; override;
+    function GetHeight: Integer; override;
+    function GetDepth: Integer; override;
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    //: Only picture file name is saved
+    procedure SaveToFile(const fileName: string); override;
+    {: Load picture file name or use fileName as picture filename.<p>
+       The autodetection is based on the filelength and presence of zeros. }
+    procedure LoadFromFile(const fileName: string); override;
+    class function FriendlyName: string; override;
+    class function FriendlyDescription: string; override;
+    property NativeTextureTarget;
+
+    function GetBitmap32: TGLImage; override;
+    procedure Invalidate; override;
+
+  published
+    {: Filename of the picture to use. }
+    property PictureFileName: string read FPictureFileName write
+      SetPictureFileName;
+  end;
+
+
+  // TGLCubeMapTarget
+  //
+ TGLCubeMapTarget = Integer;
+
+  // TGLCubeMapImage
+  //
+  {: A texture image used for specifying and stroing a cube map.<p>
+       Not unlike TGLPictureImage, but storing 6 of them instead of just one.<br>
+       Saving & loading as a whole currently not supported. }
+  TGLCubeMapImage = class(TGLTextureImage)
+  private
+    { Private Declarations }
+    FImage: TGLImage;
+    FUpdateCounter: Integer;
+    FPicture: array[cmtPX..cmtNZ] of TGLPicture;
+  protected
+    { Protected Declarations }
+    function GetWidth: Integer; override;
+    function GetHeight: Integer; override;
+    function GetDepth: Integer; override;
+    procedure SetPicture(index: TGLCubeMapTarget; const val: TGLPicture);
+    function GetPicture(index: TGLCubeMapTarget): TGLPicture;
+    function GetTextureTarget: TGLTextureTarget; override;
+
+    procedure PictureChanged(Sender: TObject);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    function GetBitmap32: TGLImage; override;
+    procedure ReleaseBitmap32; override;
+
+    {: Use this function if you are going to modify the Picture directly.<p>
+     Each invokation MUST be balanced by a call to EndUpdate. }
+    procedure BeginUpdate;
+    procedure EndUpdate;
+
+    procedure SaveToFile(const fileName: string); override;
+    procedure LoadFromFile(const fileName: string); override;
+    class function FriendlyName: string; override;
+    class function FriendlyDescription: string; override;
+    property NativeTextureTarget;
+
+    {: Indexed access to the cube map's sub pictures. }
+    property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write
+    SetPicture;
+
+  published
+    { Public Declarations }
+    property PicturePX: TGLPicture index cmtPX read GetPicture write SetPicture;
+    property PictureNX: TGLPicture index cmtNX read GetPicture write SetPicture;
+    property PicturePY: TGLPicture index cmtPY read GetPicture write SetPicture;
+    property PictureNY: TGLPicture index cmtNY read GetPicture write SetPicture;
+    property PicturePZ: TGLPicture index cmtPZ read GetPicture write SetPicture;
+    property PictureNZ: TGLPicture index cmtNZ read GetPicture write SetPicture;
+  end;
+
+
+  // TDGLFrameBufferAttachment
+  //
+
+  TDGLFrameBufferAttachment = class(TDGLAbstractTexture)
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); override;
+    procedure ReadFromFiler(AReader: TReader); override;
+  private
+    { Private Declarations }
+    FRenderBufferHandle:   TDGLRenderbufferHandle;
+    FLayered:              Boolean;
+    FCubeMap:              Boolean;
+    FSamples:              Integer;
+    FOnlyWrite:            Boolean;
+    FFixedSamplesLocation: Boolean;
+    procedure SetWidth(AValue: Integer);
+    procedure SetHeight(AValue: Integer);
+    procedure SetDepth(AValue: Integer);
+    procedure SetInternalFormat(const AValue: TGLInternalFormat);
+    procedure SetOnlyWrite(AValue: Boolean);
+    procedure SetLayered(AValue: Boolean);
+    procedure SetCubeMap(AValue: Boolean);
+    procedure SetSamples(AValue: Integer);
+    procedure SetFixedSamplesLocation(AValue: Boolean);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TDGLXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure DoOnPrepare(Sender: TDGLContext); override;
+    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure UnApply(var ARci: TRenderContextInfo); override;
+
+    class function FriendlyName: string; override;
+  published
+    { Published Declarations }
+    property InternalWidth:  Integer read FWidth write SetWidth default 256;
+    property InternalHeight: Integer read FHeight write SetHeight default 256;
+    property InternalDepth:  Integer read FDepth write SetDepth default 0;
+    property InternalFormat: TGLInternalFormat read FInternalFormat write SetInternalFormat default tfRGBA8;
+    { : This flag makes use render buffer as target which makes
+      it impossible to read it as texture, but improves efficiency. }
+    property OnlyWrite: Boolean read FOnlyWrite write SetOnlyWrite default False;
+    { : Force targe be texture array. }
+    property Layered: Boolean read FLayered write SetLayered default False;
+    { : Force target be cube map. }
+    property CubeMap: Boolean read FCubeMap write SetCubeMap default False;
+    { : Number of samples. Positive value makes texture be multisample. }
+    property Samples: Integer read FSamples write SetSamples default -1;
+    { : FixedSamplesLocation flag makes image will use identical
+      sample locations and the same number of samples for all texels in
+      the image, and the sample locations will not depend on the
+      internalformat or size of the image. }
+    property FixedSamplesLocation: Boolean read FFixedSamplesLocation write SetFixedSamplesLocation default False;
+  end;
+
+  // TDGLTextureSwizzling
+  //
+  { : Swizzle the components of a texture fetches in
+    shader or fixed-function pipeline. }
+  TDGLTextureSwizzling = class(TDGLUpdateAbleObject)
+  private
+    { Private Declarations }
+    FSwizzles: TSwizzleVector;
+    function GetSwizzle(AIndex: Integer): TDGLTextureSwizzle;
+    procedure SetSwizzle(AIndex: Integer; AValue: TDGLTextureSwizzle);
+    function StoreSwizzle(AIndex: Integer): Boolean;
+  public
+    constructor Create(AOwner: TPersistent); override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure WriteToFiler(AWriter: TWriter);
+    procedure ReadFromFiler(AReader: TReader);
+  published
+    { Published Declarations }
+    property RedFrom:   TDGLTextureSwizzle index 0 read GetSwizzle write SetSwizzle stored StoreSwizzle;
+    property GreenFrom: TDGLTextureSwizzle index 1 read GetSwizzle write SetSwizzle stored StoreSwizzle;
+    property BlueFrom:  TDGLTextureSwizzle index 2 read GetSwizzle write SetSwizzle stored StoreSwizzle;
+    property AlphaFrom: TDGLTextureSwizzle index 3 read GetSwizzle write SetSwizzle stored StoreSwizzle;
+  end;
+
+  // TDGLLibMaterialProperty
+  //
+
+  TDGLLibMaterialProperty = class(TDGLUpdateAbleObject, IGLMaterialLibrarySupported)
+  protected
+    { Protected Declarations }
+    FEnabled:      Boolean;
+    FNextPassName: TDGLMaterialComponentName;
+    function GetMaterial: TDGLMaterial;
+    function GetMaterialLibraryEx: TDGLMaterialLibrary;
+    procedure SetEnabled(AValue: Boolean); virtual;
+    procedure SetNextPass(const AValue: TDGLMaterialComponentName);
+    procedure Loaded; virtual;
+    property NextPass: TDGLMaterialComponentName read FNextPassName write SetNextPass;
+  public
+    { Public Declarations }
+    procedure NotifyChange(Sender: TObject); override;
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+
+    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLibraryEx;
+  published
+    { Published Declarations }
+    property Enabled: Boolean read FEnabled write SetEnabled;
+  end;
+
+  // TDGLTextureProperties
+  //
+
+  TDGLTextureProperties = class(TDGLLibMaterialProperty)
+  private
+    { Private Declarations }
+    FLibTextureName:               TDGLMaterialComponentName;
+    FLibSamplerName:               TDGLMaterialComponentName;
+    FLibTexture:                   TDGLAbstractTexture;
+    FLibSampler:                   TDGLTextureSampler;
+    FTextureOffset, FTextureScale: TDGLCoordinates;
+    FTextureRotate:                Single;
+    FTextureMatrixIsIdentity:      Boolean;
+    FTextureOverride:              Boolean;
+    FTextureMatrix:                TMatrix;
+    FMappingMode:                  TDGLTextureMappingMode;
+    FEnvColor:                     TDGLColor;
+    FMapSCoordinates:              TDGLCoordinates4;
+    FMapTCoordinates:              TDGLCoordinates4;
+    FMapRCoordinates:              TDGLCoordinates4;
+    FMapQCoordinates:              TDGLCoordinates4;
+    FSwizzling:                    TDGLTextureSwizzling;
+    function GetLibTextureName: TDGLMaterialComponentName;
+    function GetLibSamplerName: TDGLMaterialComponentName;
+    procedure SetLibTextureName(const AValue: TDGLMaterialComponentName);
+    procedure SetLibSamplerName(const AValue: TDGLMaterialComponentName);
+    function GetTextureOffset: TDGLCoordinates;
+    procedure SetTextureOffset(const AValue: TDGLCoordinates);
+    function StoreTextureOffset: Boolean;
+    function GetTextureScale: TDGLCoordinates;
+    procedure SetTextureScale(const AValue: TDGLCoordinates);
+    function StoreTextureScale: Boolean;
+    procedure SetTextureMatrix(const AValue: TMatrix);
+    procedure SetTextureRotate(AValue: Single);
+    function StoreTextureRotate: Boolean;
+    procedure SetMappingMode(const AValue: TDGLTextureMappingMode);
+    function GetMappingSCoordinates: TDGLCoordinates4;
+    procedure SetMappingSCoordinates(const AValue: TDGLCoordinates4);
+    function StoreMappingSCoordinates: Boolean;
+    function GetMappingTCoordinates: TDGLCoordinates4;
+    procedure SetMappingTCoordinates(const AValue: TDGLCoordinates4);
+    function StoreMappingTCoordinates: Boolean;
+    function GetMappingRCoordinates: TDGLCoordinates4;
+    procedure SetMappingRCoordinates(const AValue: TDGLCoordinates4);
+    function StoreMappingRCoordinates: Boolean;
+    function GetMappingQCoordinates: TDGLCoordinates4;
+    procedure SetMappingQCoordinates(const AValue: TDGLCoordinates4);
+    function StoreMappingQCoordinates: Boolean;
+    procedure SetSwizzling(const AValue: TDGLTextureSwizzling);
+    function StoreSwizzling: Boolean;
+    procedure SetEnvColor(const AValue: TDGLColor);
+
+    procedure CalculateTextureMatrix;
+    procedure ApplyMappingMode;
+    procedure UnApplyMappingMode;
+  protected
+    procedure Loaded; override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
+    procedure Notification(Sender: TObject; Operation: TOperation); override;
+
+    function IsValid: Boolean;
+    procedure Apply(var ARci: TRenderContextInfo);
+    procedure UnApply(var ARci: TRenderContextInfo);
+
+    property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
+  published
+    { Published Declarations }
+    property LibTextureName: TDGLMaterialComponentName read GetLibTextureName write SetLibTextureName;
+    property LibSamplerName: TDGLMaterialComponentName read GetLibSamplerName write SetLibSamplerName;
+    property TextureOffset:  TDGLCoordinates read GetTextureOffset write SetTextureOffset stored StoreTextureOffset;
+    { : Texture coordinates scaling.<p>
+      Scaling is applied before applying the offset, and is applied
+      to the texture coordinates, meaning that a scale factor of (2, 2, 2)
+      will make your texture look twice <i>smaller</i>. }
+    property TextureScale: TDGLCoordinates read GetTextureScale write SetTextureScale stored StoreTextureScale;
+    { : Texture coordinates rotating.<p>
+      Rotating is applied after applying offset and scale,
+      and rotate ST direction around R axis. }
+    property TextureRotate: Single read FTextureRotate write SetTextureRotate stored StoreTextureRotate;
+    { : Texture Environment color. }
+    property EnvColor: TDGLColor read FEnvColor write SetEnvColor;
+    { : Texture coordinates mapping mode.<p>
+      This property controls automatic texture coordinates generation. }
+    property MappingMode: TDGLTextureMappingMode read FMappingMode write SetMappingMode default tmmUser;
+    { : Texture mapping coordinates mode for S, T, R and Q axis.<p>
+      This property stores the coordinates for automatic texture
+      coordinates generation. }
+    property MappingSCoordinates: TDGLCoordinates4 read GetMappingSCoordinates write SetMappingSCoordinates stored StoreMappingSCoordinates;
+    property MappingTCoordinates: TDGLCoordinates4 read GetMappingTCoordinates write SetMappingTCoordinates stored StoreMappingTCoordinates;
+    property MappingRCoordinates: TDGLCoordinates4 read GetMappingRCoordinates write SetMappingRCoordinates stored StoreMappingRCoordinates;
+    property MappingQCoordinates: TDGLCoordinates4 read GetMappingQCoordinates write SetMappingQCoordinates stored StoreMappingQCoordinates;
+    { : Texture color fetching parameters. }
+    property Swizzling: TDGLTextureSwizzling read FSwizzling write SetSwizzling stored StoreSwizzling;
+  end;
+
+
+  // TDGLTextureCombiner
+  //
+
+  TDGLTextureCombiner = class(TDGLBaseMaterialCollectionItem)
+  protected
+    { Protected Declarations }
+    procedure WriteToFiler(AWriter: TWriter); override;
+    procedure ReadFromFiler(AReader: TReader); override;
+  private
+    { Private Declarations }
+    FHandle:       TDGLVirtualHandle;
+    FScript:       TStringList;
+    FCommandCache: TCombinerCache;
+    procedure SetScript(AValue: TStringList);
+    procedure DoAllocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+    procedure DoDeallocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TDGLXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure DoOnPrepare(Sender: TDGLContext); override;
+
+    class function FriendlyName: string; override;
+  published
+    { Published Declarations }
+    property Script: TStringList read FScript write SetScript;
+  end;
+
+
+  // TDGLMultitexturingProperties
+  //
+
+  TDGLMultitexturingProperties = class(TDGLLibMaterialProperty)
+  private
+    FLibCombiner: TDGLTextureCombiner;
+    // FLibAsmProg:       TDGLASMVertexProgram;
+    FLibCombinerName: TDGLMaterialComponentName;
+    // FLibAsmProgName:   TDGLMaterialComponentName;
+    FTexProps:    array [0 .. 3] of TDGLTextureProperties;
+    FTextureMode: TDGLTextureMode;
+    // FLightDir:         TLightDir2TexEnvColor;
+    // FLightSourceIndex: Integer;
+    function GetLibCombinerName: string;
+    function GetLibAsmProgName: string;
+    procedure SetLibCombinerName(const AValue: string);
+    procedure SetLibAsmProgName(const AValue: string);
+    function GetTexProps(AIndex: Integer): TDGLTextureProperties;
+    procedure SetTexProps(AIndex: Integer; AValue: TDGLTextureProperties);
+    procedure SetTextureMode(AValue: TDGLTextureMode);
+    procedure SetLightSourceIndex(AValue: Integer);
+  protected
+    procedure Loaded; override;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Notification(Sender: TObject; Operation: TOperation); override;
+
+    function IsValid: Boolean;
+    procedure Apply(var ARci: TRenderContextInfo);
+    procedure UnApply(var ARci: TRenderContextInfo);
+  published
+    { Published Declarations }
+    property LibCombinerName: string read GetLibCombinerName write SetLibCombinerName;
+    property LibAsmProgName:  string read GetLibAsmProgName write SetLibAsmProgName;
+    property Texture0:        TDGLTextureProperties index 0 read GetTexProps write SetTexProps;
+    property Texture1:        TDGLTextureProperties index 1 read GetTexProps write SetTexProps;
+    property Texture2:        TDGLTextureProperties index 2 read GetTexProps write SetTexProps;
+    property Texture3:        TDGLTextureProperties index 3 read GetTexProps write SetTexProps;
+    { : Texture application mode. }
+    property TextureMode: TDGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
+    { : Pass light source direction to enviroment color of choosen texture.
+      Vector in model space. }
+    // property LightDirTo: TLightDir2TexEnvColor read FLightDir write FLightDir default l2eNone;
+    { : Specify index of light source for LightDirTo. }
+    // property LightSourceIndex: Integer read FLightSourceIndex write SetLightSourceIndex default 0;
+    { : Next pass of combiner. }
+    property NextPass;
+  end;
+
+
+  // TDGLFixedFunctionProperties
+  //
+  TDGLMaterialProperties = class(TDGLLibMaterialProperty)
+  private
+    { Private Declarations }
+    FFrontProperties: TFaceProperties;
+    FBackProperties:  TFaceProperties;
+    FDepthProperties: TDepthProperties;
+    FBlendingMode:    TBlendingMode;
+    FBlendingParams:  TBlendingParameters;
+    FTexProp:         TDGLTextureProperties;
+    FMaterialOptions: TMaterialOptions;
+    FFaceCulling:     TFaceCulling;
+    FPolygonMode:     TPolygonMode;
+    FTextureMode:     TDGLTextureMode;
+    function GetBackProperties: TDGLFaceProperties;
+    procedure SetBackProperties(AValues: TDGLFaceProperties);
+    procedure SetFrontProperties(AValues: TDGLFaceProperties);
+    procedure SetDepthProperties(AValues: TDGLDepthProperties);
+    procedure SetBlendingMode(const AValue: TBlendingMode);
+    procedure SetMaterialOptions(const AValue: TMaterialOptions);
+    procedure SetFaceCulling(const AValue: TFaceCulling);
+    procedure SetPolygonMode(AValue: TPolygonMode);
+    procedure SetBlendingParams(const AValue: TDGLBlendingParameters);
+    procedure SetTexProp(AValue: TDGLTextureProperties);
+    procedure SetTextureMode(AValue: TDGLTextureMode);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure Apply(var ARci: TRenderContextInfo);
+    procedure UnApply(var ARci: TRenderContextInfo);
+    { : Returns True if the material is blended.<p> }
+    function Blended: Boolean;
+
+  published
+    { Published Declarations }
+    property MaterialOptions: TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
+
+    property BackProperties:  TDGLFaceProperties read GetBackProperties write SetBackProperties;
+    property FrontProperties: TDGLFaceProperties read FFrontProperties write SetFrontProperties;
+    property DepthProperties: TDGLDepthProperties read FDepthProperties write SetDepthProperties;
+    property BlendingMode:    TBlendingMode read FBlendingMode write SetBlendingMode default bmOpaque;
+    property BlendingParams:  TDGLBlendingParameters read FBlendingParams write SetBlendingParams;
+
+    property FaceCulling: TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
+    property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
+    property Texture:     TDGLTextureProperties read FTexProp write SetTexProp;
+    { : Texture application mode. }
+    property TextureMode: TDGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
+    { : Next pass of FFP. }
+    property NextPass;
+  end;
+
+  /// / @TODO ADD SHADER ITEMS
+
+  // TDGLLibMaterialEx
+  //
+
+  TDGLLibMaterial = class(TDGLAbstractLibMaterial, IGLMaterialLibrarySupported, IGLNotifyAble, IGLTextureNotifyAble)
+  private
+    { Private Declarations }
+    FHandle:              TDGLVirtualHandle;
+    FApplicableLevel:     TDGLMaterialLevel;
+    FSelectedLevel:       TDGLMaterialLevel;
+    FFixedFunc:           TDGLFixedFunctionProperties;
+    FMultitexturing:      TDGLMultitexturingProperties;
+    FSM3:                 TDGLShaderModel3;
+    FSM4:                 TDGLShaderModel4;
+    FSM5:                 TDGLShaderModel5;
+    FOnAsmProgSetting:    TOnAsmProgSetting;
+    FOnSM3UniformInit:    TOnUniformInitialize;
+    FOnSM3UniformSetting: TOnUniformSetting;
+    FOnSM4UniformInit:    TOnUniformInitialize;
+    FOnSM4UniformSetting: TOnUniformSetting;
+    FOnSM5UniformInit:    TOnUniformInitialize;
+    FOnSM5UniformSetting: TOnUniformSetting;
+    FNextPass:            TDGLLibMaterialEx;
+    FStoreAmalgamating:   Boolean;
+    procedure SetLevel(AValue: TDGLMaterialLevel);
+    procedure SetFixedFunc(AValue: TDGLFixedFunctionProperties);
+    procedure SetMultitexturing(AValue: TDGLMultitexturingProperties);
+    procedure SetSM3(AValue: TDGLShaderModel3);
+    procedure SetSM4(AValue: TDGLShaderModel4);
+    procedure SetSM5(AValue: TDGLShaderModel5);
+    procedure DoAllocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+    procedure DoDeallocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+  protected
+    procedure Loaded; override;
+    procedure RemoveDefferedInit;
+    procedure DoOnPrepare(Sender: TDGLContext);
+  public
+    { Public Declarations }
+    constructor Create(ACollection: TCollection); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure Apply(var ARci: TRenderContextInfo); override;
+    function UnApply(var ARci: TRenderContextInfo): Boolean; override;
+
+    function Blended: Boolean; override;
+  published
+    { Published Declarations }
+    property ApplicableLevel: TDGLMaterialLevel read FApplicableLevel write SetLevel default mlAuto;
+    property SelectedLevel:   TDGLMaterialLevel read FSelectedLevel;
+    property FixedFunction:   TDGLFixedFunctionProperties read FFixedFunc write SetFixedFunc;
+    property Multitexturing:  TDGLMultitexturingProperties read FMultitexturing write SetMultitexturing;
+    property ShaderModel3:    TDGLShaderModel3 read FSM3 write SetSM3;
+    property ShaderModel4:    TDGLShaderModel4 read FSM4 write SetSM4;
+    property ShaderModel5:    TDGLShaderModel5 read FSM5 write SetSM5;
+
+    // Asm vertex program event
+    property OnAsmProgSetting: TOnAsmProgSetting read FOnAsmProgSetting write FOnAsmProgSetting;
+    // Shader model 3 event
+    property OnSM3UniformInitialize: TOnUniformInitialize read FOnSM3UniformInit write FOnSM3UniformInit;
+    property OnSM3UniformSetting:    TOnUniformSetting read FOnSM3UniformSetting write FOnSM3UniformSetting;
+    // Shader model 4 event
+    property OnSM4UniformInitialize: TOnUniformInitialize read FOnSM4UniformInit write FOnSM4UniformInit;
+    property OnSM4UniformSetting:    TOnUniformSetting read FOnSM4UniformSetting write FOnSM4UniformSetting;
+    // Shader model 5 event
+    property OnSM5UniformInitialize: TOnUniformInitialize read FOnSM5UniformInit write FOnSM5UniformInit;
+    property OnSM5UniformSetting:    TOnUniformSetting read FOnSM5UniformSetting write FOnSM5UniformSetting;
+  end;
+
+  // TDGLLibMaterialsEx
+  //
+
+  TDGLLibMaterials = class(TDGLAbstractLibMaterials)
+  protected
+    procedure SetItems(AIndex: Integer; const AValue: TDGLLibMaterial);
+    function GetItems(AIndex: Integer): TDGLLibMaterial;
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent);
+
+    function MaterialLibrary: TDGLMaterialLibrary;
+
+    function IndexOf(const Item: TDGLLibMaterial): Integer;
+    function Add: TDGLLibMaterialEx;
+    function FindItemID(ID: Integer): TDGLLibMaterial;
+    property Items[index: Integer]: TDGLLibMaterial read GetItems write SetItems; default;
+    function GetLibMaterialByName(const AName: TDGLLibMaterialName): TDGLLibMaterial;
+  end;
+
+  // TDGLMatLibComponents
+  //
+
+  TDGLMatLibComponents = class(TDGLXCollection)
+  protected
+    { Protected Declarations }
+    function GetItems(Index: Integer): TDGLBaseMaterialCollectionItem;
+  public
+    { Public Declarations }
+    function GetNamePath: string; override;
+    class function ItemsClass: TDGLXCollectionItemClass; override;
+    property Items[index: Integer]: TDGLBaseMaterialCollectionItem read GetItems; default;
+
+    function GetItemByName(const AName: TDGLMaterialComponentName): TDGLBaseMaterialCollectionItem;
+    function GetTextureByName(const AName: TDGLMaterialComponentName): TDGLAbstractTexture;
+    function GetAttachmentByName(const AName: TDGLMaterialComponentName): TDGLFrameBufferAttachment;
+    function GetSamplerByName(const AName: TDGLMaterialComponentName): TDGLTextureSampler;
+    function GetCombinerByName(const AName: TDGLMaterialComponentName): TDGLTextureCombiner;
+    function GetShaderByName(const AName: TDGLMaterialComponentName): TDGLShaderEx;
+    function GetAsmProgByName(const AName: TDGLMaterialComponentName): TDGLASMVertexProgram;
+    function MakeUniqueName(const AName: TDGLMaterialComponentName): TDGLMaterialComponentName;
+  end;
+
+  // TDGLMaterialLibraryEx
+  //
+
+  TDGLMaterialLibrary = class(TDGLAbstractMaterialLibrary)
+  private
+    { Private Declarations }
+    FComponents: TDGLMatLibComponents;
+  protected
+    { Protected Declarations }
+    procedure Loaded; override;
+    function GetMaterials: TDGLLibMaterials;
+    procedure SetMaterials(AValue: TDGLLibMaterials);
+    function StoreMaterials: Boolean;
+    procedure SetComponents(AValue: TDGLMatLibComponents);
+
+    procedure DefineProperties(Filer: TFiler); override;
+    procedure WriteComponents(AStream: TStream);
+    procedure ReadComponents(AStream: TStream);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure GetNames(Proc: TGetStrProc; AClass: CGLBaseMaterialCollectionItem); overload;
+
+    function AddTexture(const AName: TDGLMaterialComponentName): TDGLTextureImage;
+    function AddAttachment(const AName: TDGLMaterialComponentName): TDGLFrameBufferAttachment;
+    function AddSampler(const AName: TDGLMaterialComponentName): TDGLTextureSampler;
+    function AddCombiner(const AName: TDGLMaterialComponentName): TDGLTextureCombiner;
+    function AddShader(const AName: TDGLMaterialComponentName): TDGLShaderEx;
+    function AddAsmProg(const AName: TDGLMaterialComponentName): TDGLASMVertexProgram;
+
+    procedure SetLevelForAll(const ALevel: TDGLMaterialLevel);
+  published
+    { Published Declarations }
+    { : The materials collection. }
+    property Materials:  TDGLLibMaterialsEx read GetMaterials write SetMaterials stored StoreMaterials;
+    property Components: TDGLMatLibComponents read FComponents write SetComponents;
+    property TexturePaths;
+  end;
+
+procedure RegisterGLMaterialNameChangeEvent(AEvent: TNotifyEvent);
+procedure DeRegisterGLMaterialNameChangeEvent(AEvent: TNotifyEvent);
+
+implementation
+
+type
+  TFriendlyImage = class(TDGLBaseImage);
+
+var
+  vGLMaterialNameChangeEvent: TNotifyEvent;
+  // vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
+  vStoreBegin: procedure(mode: TDGLEnum); {$IFDEF MSWINDOWS}stdcall; {$ENDIF}{$IFDEF UNIX}cdecl; {$ENDIF}
+
+procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
+begin
+  vGLMaterialNameChangeEvent := AEvent;
+end;
+
+procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
+begin
+  vGLMaterialNameChangeEvent := nil;
+end;
+
+function ComputeNameHashKey(const AName: string): Integer;
+var
+  i, n: Integer;
+begin
+  n        := Length(AName);
+  Result   := n;
+  for i    := 1 to n do
+    Result := (Result shl 1) + Byte(AName[i]);
+end;
+
+procedure Div2(var Value: Integer);
+{$IFDEF GLS_INLINE} inline; {$ENDIF}
+begin
+  Value := Value div 2;
+  if Value = 0 then
+    Value := 1;
+end;
+
+function CalcTextureLevelNumber(ATarget: TDGLTextureTarget; w, h, d: Integer): Integer;
+begin
+  Result := 0;
+
+  case ATarget of
+
+    ttNoShape:
+      ;
+
+    ttTexture1D, ttTexture1DArray, ttTextureCube, ttTextureCubeArray:
+      repeat
+        Inc(Result);
+        Div2(w);
+      until w <= 1;
+
+      ttTexture2D, ttTexture2DArray: repeat Inc(Result);
+    Div2(w);
+    Div2(h);
+    until (w <= 1) and (h <= 1);
+
+    ttTexture3D:
+      repeat
+        Inc(Result);
+        Div2(w);
+        Div2(h);
+        Div2(d);
+      until (w <= 1) and (h <= 1) and (d <= 1);
+
+      ttTextureRect, ttTextureBuffer, ttTexture2DMultisample, ttTexture2DMultisampleArray: Result := 1;
+  end;
+end;
+
+// Dummy methods for CPP
+//
+procedure TGLShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+begin
+end;
+
+function TGLShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+begin
+  Result := True;
+end;
+
+procedure TGLAbstractLibMaterial.Loaded;
+begin
+end;
+
+procedure TGLAbstractLibMaterial.Apply(var ARci: TRenderContextInfo);
+begin
+end;
+
+function TGLAbstractLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+begin
+  Result := True;
+end;
+
+// ------------------
+// ------------------ TGLFaceProperties ------------------
+// ------------------
+
+// Create
+//
+
+constructor TGLFaceProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  // OpenGL default colors
+  FAmbient   := TDGLColor.CreateInitialized(Self, clrGray20);
+  FDiffuse   := TDGLColor.CreateInitialized(Self, clrGray80);
+  FEmission  := TDGLColor.Create(Self);
+  FSpecular  := TDGLColor.Create(Self);
+  FShininess := 0;
+end;
+
+// Destroy
+//
+destructor TGLFaceProperties.Destroy;
+begin
+  FAmbient.Free;
+  FDiffuse.Free;
+  FEmission.Free;
+  FSpecular.Free;
+  inherited Destroy;
+end;
+
+// Apply
+//
+procedure TGLFaceProperties.Apply(var rci: TRenderContextInfo; aFace: TCullFaceMode);
+begin
+  with rci.GLStates do
+  begin
+    SetGLMaterialColors(aFace, Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
+  end;
+end;
+
+// ApplyNoLighting
+//
+procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo; aFace: TCullFaceMode);
+begin
+  glColor4fv(Diffuse.AsAddress);
+end;
+
+// Assign
+//
+procedure TGLFaceProperties.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TGLFaceProperties) then
+  begin
+    FAmbient.DirectColor  := TGLFaceProperties(Source).Ambient.Color;
+    FDiffuse.DirectColor  := TGLFaceProperties(Source).Diffuse.Color;
+    FEmission.DirectColor := TGLFaceProperties(Source).Emission.Color;
+    FSpecular.DirectColor := TGLFaceProperties(Source).Specular.Color;
+    FShininess            := TGLFaceProperties(Source).Shininess;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetAmbient
+//
+
+procedure TGLFaceProperties.SetAmbient(AValue: TDGLColor);
+begin
+  FAmbient.DirectColor := AValue.Color;
+  NotifyChange(Self);
+end;
+
+// SetDiffuse
+//
+
+procedure TGLFaceProperties.SetDiffuse(AValue: TDGLColor);
+begin
+  FDiffuse.DirectColor := AValue.Color;
+  NotifyChange(Self);
+end;
+
+// SetEmission
+//
+
+procedure TGLFaceProperties.SetEmission(AValue: TDGLColor);
+begin
+  FEmission.DirectColor := AValue.Color;
+  NotifyChange(Self);
+end;
+
+// SetSpecular
+//
+
+procedure TGLFaceProperties.SetSpecular(AValue: TDGLColor);
+begin
+  FSpecular.DirectColor := AValue.Color;
+  NotifyChange(Self);
+end;
+
+// SetShininess
+//
+
+procedure TGLFaceProperties.SetShininess(AValue: TShininess);
+begin
+  if FShininess <> AValue then
+  begin
+    FShininess := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+// ------------------
+// ------------------ TGLDepthProperties ------------------
+// ------------------
+
+constructor TGLDepthProperties.Create(AOwner: TPersistent);
+begin
+  inherited Create(AOwner);
+  FDepthTest   := True;
+  FDepthWrite  := True;
+  FZNear       := 0;
+  FZFar        := 1;
+  FCompareFunc := cfLequal;
+  FDepthClamp  := False;
+end;
+
+procedure TGLDepthProperties.Apply(var rci: TRenderContextInfo);
+begin
+  with rci.GLStates do
+  begin
+    if FDepthTest and rci.bufferDepthTest then
+      Enable(stDepthTest)
+    else
+      Disable(stDepthTest);
+    DepthWriteMask := FDepthWrite;
+    DepthFunc      := FCompareFunc;
+    SetDepthRange(FZNear, FZFar);
+    if GL.ARB_depth_clamp then
+      if FDepthClamp then
+        Enable(stDepthClamp)
+      else
+        Disable(stDepthClamp);
+  end;
+end;
+
+procedure TGLDepthProperties.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TGLDepthProperties) then
+  begin
+    FDepthTest   := TGLDepthProperties(Source).FDepthTest;
+    FDepthWrite  := TGLDepthProperties(Source).FDepthWrite;
+    FZNear       := TGLDepthProperties(Source).FZNear;
+    FZFar        := TGLDepthProperties(Source).FZFar;
+    FCompareFunc := TGLDepthProperties(Source).FCompareFunc;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetZNear(Value: Single);
+begin
+  Value := ClampValue(Value, 0, 1);
+  if Value <> FZNear then
+  begin
+    FZNear := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetZFar(Value: Single);
+begin
+  Value := ClampValue(Value, 0, 1);
+  if Value <> FZFar then
+  begin
+    FZFar := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetCompareFunc(Value: TDepthfunction);
+begin
+  if Value <> FCompareFunc then
+  begin
+    FCompareFunc := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetDepthTest(Value: Boolean);
+begin
+  if Value <> FDepthTest then
+  begin
+    FDepthTest := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetDepthWrite(Value: Boolean);
+begin
+  if Value <> FDepthWrite then
+  begin
+    FDepthWrite := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLDepthProperties.SetDepthClamp(Value: Boolean);
+begin
+  if Value <> FDepthClamp then
+  begin
+    FDepthClamp := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+function TGLDepthProperties.StoreZNear: Boolean;
+begin
+  Result := FZNear <> 0.0;
+end;
+
+function TGLDepthProperties.StoreZFar: Boolean;
+begin
+  Result := FZFar <> 1.0;
+end;
+
+// ------------------
+// ------------------ TGLShader ------------------
+// ------------------
+
+// Create
+//
+
+constructor TGLShader.Create(AOwner: TComponent);
+begin
+  FLibMatUsers              := TList.Create;
+  FVirtualHandle            := TDGLVirtualHandle.Create;
+  FVirtualHandle.OnAllocate := OnVirtualHandleAllocate;
+  FVirtualHandle.OnDestroy  := OnVirtualHandleDestroy;
+  FShaderStyle              := ssLowLevel;
+  FEnabled                  := True;
+  FFailedInitAction         := fiaRaiseStandardException;
+  inherited;
+end;
+
+// Destroy
+//
+
+destructor TGLShader.Destroy;
+var
+  i:    Integer;
+  list: TList;
+begin
+  FVirtualHandle.DestroyHandle;
+  FinalizeShader;
+  inherited;
+  list                             := FLibMatUsers;
+  FLibMatUsers                     := nil;
+  for i                            := list.Count - 1 downto 0 do
+    TGLLibMaterial(list[i]).Shader := nil;
+  list.Free;
+  FVirtualHandle.Free;
+end;
+
+// NotifyChange
+//
+
+procedure TGLShader.NotifyChange(Sender: TObject);
+var
+  i: Integer;
+begin
+  if FUpdateCount = 0 then
+  begin
+    for i := FLibMatUsers.Count - 1 downto 0 do
+      TGLLibMaterial(FLibMatUsers[i]).NotifyUsers;
+    FinalizeShader;
+  end;
+end;
+
+// BeginUpdate
+//
+
+procedure TGLShader.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+// EndUpdate
+//
+
+procedure TGLShader.EndUpdate;
+begin
+  Dec(FUpdateCount);
+  if FUpdateCount = 0 then
+    NotifyChange(Self);
+end;
+
+// DoInitialize
+//
+
+procedure TGLShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+begin
+  // nothing here
+end;
+
+// DoFinalize
+//
+
+procedure TGLShader.DoFinalize;
+begin
+  // nothing here
+end;
+
+// GetShaderInitialized
+//
+
+function TGLShader.GetShaderInitialized: Boolean;
+begin
+  Result := (FVirtualHandle.handle <> 0);
+end;
+
+// InitializeShader
+//
+
+procedure TGLShader.InitializeShader(var rci: TRenderContextInfo; Sender: TObject);
+begin
+  FVirtualHandle.AllocateHandle;
+  if FVirtualHandle.IsDataNeedUpdate then
+  begin
+    DoInitialize(rci, Sender);
+    FVirtualHandle.NotifyDataUpdated;
+  end;
+end;
+
+// FinalizeShader
+//
+
+procedure TGLShader.FinalizeShader;
+begin
+  FVirtualHandle.NotifyChangesOfData;
+  DoFinalize;
+end;
+
+// Apply
+//
+
+procedure TGLShader.Apply(var rci: TRenderContextInfo; Sender: TObject);
+begin
+  {$IFNDEF GLS_MULTITHREAD}
+  Assert(not FShaderActive, 'Unbalanced shader application.');
+  {$ENDIF}
+  // Need to check it twice, because shader may refuse to initialize
+  // and choose to disable itself during initialization.
+  if FEnabled then
+    if FVirtualHandle.IsDataNeedUpdate then
+      InitializeShader(rci, Sender);
+
+  if FEnabled then
+    DoApply(rci, Sender);
+
+  FShaderActive := True;
+end;
+
+// UnApply
+//
+
+function TGLShader.UnApply(var rci: TRenderContextInfo): Boolean;
+begin
+  {$IFNDEF GLS_MULTITHREAD}
+  Assert(FShaderActive, 'Unbalanced shader application.');
+  {$ENDIF}
+  if Enabled then
+  begin
+    Result := DoUnApply(rci);
+    if not Result then
+      FShaderActive := False;
+  end
+  else
+  begin
+    FShaderActive := False;
+    Result        := False;
+  end;
+end;
+
+// OnVirtualHandleDestroy
+//
+
+procedure TGLShader.OnVirtualHandleDestroy(Sender: TDGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 0;
+end;
+
+// OnVirtualHandleAllocate
+//
+
+procedure TGLShader.OnVirtualHandleAllocate(Sender: TDGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 1;
+end;
+
+// SetEnabled
+//
+
+procedure TGLShader.SetEnabled(val: Boolean);
+begin
+  {$IFNDEF GLS_MULTITHREAD}
+  Assert(not FShaderActive, 'Shader is active.');
+  {$ENDIF}
+  if val <> FEnabled then
+  begin
+    FEnabled := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// RegisterUser
+//
+
+procedure TGLShader.RegisterUser(libMat: TGLLibMaterial);
+var
+  i: Integer;
+begin
+  i := FLibMatUsers.IndexOf(libMat);
+  if i < 0 then
+    FLibMatUsers.Add(libMat);
+end;
+
+// UnRegisterUser
+//
+
+procedure TGLShader.UnRegisterUser(libMat: TGLLibMaterial);
+begin
+  if Assigned(FLibMatUsers) then
+    FLibMatUsers.Remove(libMat);
+end;
+
+// Assign
+//
+
+procedure TGLShader.Assign(Source: TPersistent);
+begin
+  if Source is TGLShader then
+  begin
+    FShaderStyle      := TGLShader(Source).FShaderStyle;
+    FFailedInitAction := TGLShader(Source).FFailedInitAction;
+    Enabled           := TGLShader(Source).FEnabled;
+  end
+  else
+    inherited Assign(Source); // to the pit of doom ;)
+end;
+
+// Assign
+//
+
+function TGLShader.ShaderSupported: Boolean;
+begin
+  Result := True;
+end;
+
+// HandleFailedInitialization
+//
+
+procedure TGLShader.HandleFailedInitialization(const LastErrorMessage: string = '');
+begin
+  case FailedInitAction of
+    fiaSilentdisable:
+      ; // Do nothing ;)
+    fiaRaiseHandledException:
+      try
+        raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+      except
+      end;
+    fiaRaiseStandardException:
+      raise EGLShaderException.Create(GetStardardNotSupportedMessage);
+    fiaReRaiseException:
+      begin
+        if LastErrorMessage <> '' then
+          raise EGLShaderException.Create(LastErrorMessage)
+        else
+          raise EGLShaderException.Create(GetStardardNotSupportedMessage)
+      end;
+    // fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
+    // // which may choose to override this procedure.
+  else
+    Assert(False, glsErrorEx + glsUnknownType);
+  end;
+end;
+
+// GetStardardNotSupportedMessage
+//
+
+function TGLShader.GetStardardNotSupportedMessage: string;
+begin
+  if Name <> '' then
+    Result := 'Your hardware/driver doesn''t support shader "' + Name + '"!'
+  else
+    Result := 'Your hardware/driver doesn''t support shader "' + ClassName + '"!';
+end;
+
+{ TGLBlendingParameters }
+
+{$IFDEF GLS_REGION}{$REGION 'TGLBlendingParameters'}{$ENDIF}
+
+procedure TGLBlendingParameters.Apply(var rci: TRenderContextInfo);
+begin
+  if FUseAlphaFunc then
+  begin
+    rci.GLStates.Enable(stAlphaTest);
+    rci.GLStates.SetGLAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
+  end
+  else
+    rci.GLStates.Disable(stAlphaTest);
+  if FUseBlendFunc then
+  begin
+    rci.GLStates.Enable(stBlend);
+    if FSeparateBlendFunc then
+      rci.GLStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor, FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
+    else
+      rci.GLStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+  end
+  else
+    rci.GLStates.Disable(stBlend);
+end;
+
+constructor TGLBlendingParameters.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FUseAlphaFunc  := False;
+  FAlphaFuncType := cfGreater;
+  FAlphaFuncRef  := 0;
+
+  FUseBlendFunc          := True;
+  FSeparateBlendFunc     := False;
+  FBlendFuncSFactor      := bfSrcAlpha;
+  FBlendFuncDFactor      := bfOneMinusSrcAlpha;
+  FAlphaBlendFuncSFactor := bfSrcAlpha;
+  FAlphaBlendFuncDFactor := bfOneMinusSrcAlpha;
+end;
+
+procedure TGLBlendingParameters.SetAlphaFuncRef(const Value: TGLclampf);
+begin
+  if (FAlphaFuncRef <> Value) then
+  begin
+    FAlphaFuncRef := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetAlphaFuncType(const Value: TGlAlphaFunc);
+begin
+  if (FAlphaFuncType <> Value) then
+  begin
+    FAlphaFuncType := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetBlendFuncDFactor(const Value: TBlendFunction);
+begin
+  if (FBlendFuncDFactor <> Value) then
+  begin
+    FBlendFuncDFactor := Value;
+    if not FSeparateBlendFunc then
+      FAlphaBlendFuncDFactor := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetBlendFuncSFactor(const Value: TBlendFunction);
+begin
+  if (FBlendFuncSFactor <> Value) then
+  begin
+    FBlendFuncSFactor := Value;
+    if not FSeparateBlendFunc then
+      FAlphaBlendFuncSFactor := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetAlphaBlendFuncDFactor(const Value: TBlendFunction);
+begin
+  if FSeparateBlendFunc and (FAlphaBlendFuncDFactor <> Value) then
+  begin
+    FAlphaBlendFuncDFactor := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetAlphaBlendFuncSFactor(const Value: TBlendFunction);
+begin
+  if FSeparateBlendFunc and (FAlphaBlendFuncSFactor <> Value) then
+  begin
+    FAlphaBlendFuncSFactor := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetUseAlphaFunc(const Value: Boolean);
+begin
+  if (FUseAlphaFunc <> Value) then
+  begin
+    FUseAlphaFunc := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetUseBlendFunc(const Value: Boolean);
+begin
+  if (FUseBlendFunc <> Value) then
+  begin
+    FUseBlendFunc := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLBlendingParameters.SetSeparateBlendFunc(const Value: Boolean);
+begin
+  if (FSeparateBlendFunc <> Value) then
+  begin
+    FSeparateBlendFunc := Value;
+    if not Value then
+    begin
+      FAlphaBlendFuncSFactor := FBlendFuncSFactor;
+      FAlphaBlendFuncDFactor := FBlendFuncDFactor;
+    end;
+    NotifyChange(Self);
+  end;
+end;
+
+function TGLBlendingParameters.StoreAlphaFuncRef: Boolean;
+begin
+  Result := (Abs(AlphaFuncRef) > 0.001);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+// ------------------
+// ------------------ TGLAbstractLibMaterial ------------------
+// ------------------
+{$IFDEF GLS_REGION}{$REGION 'TGLAbstractLibMaterial'}{$ENDIF}
+
+// Create
+//
+constructor TGLAbstractLibMaterial.Create(ACollection: TCollection);
+begin
+  inherited Create(ACollection);
+  FUserList := TList.Create;
+  if Assigned(ACollection) then
+  begin
+    FName        := TGLAbstractLibMaterials(ACollection).MakeUniqueName('LibMaterial');
+    FNameHashKey := ComputeNameHashKey(FName);
+  end;
+end;
+
+// Destroy
+//
+
+destructor TGLAbstractLibMaterial.Destroy;
+begin
+  FUserList.Free;
+  inherited Destroy;
+end;
+
+// Assign
+//
+
+procedure TGLAbstractLibMaterial.Assign(Source: TPersistent);
+begin
+  if Source is TGLAbstractLibMaterial then
+  begin
+    FName        := TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).name);
+    FNameHashKey := ComputeNameHashKey(FName);
+  end
+  else
+    inherited; // Raise AssignError
+end;
+
+// QueryInterface
+//
+
+function TGLAbstractLibMaterial.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+begin
+  if GetInterface(IID, Obj) then
+    Result := S_OK
+  else
+    Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TGLAbstractLibMaterial._AddRef: Integer; stdcall;
+begin
+  Result := -1; // ignore
+end;
+
+// _Release
+//
+function TGLAbstractLibMaterial._Release: Integer; stdcall;
+begin
+  Result := -1; // ignore
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(Obj: TDGLUpdateAbleObject);
+begin
+  Assert(FUserList.IndexOf(Obj) < 0);
+  FUserList.Add(Obj);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(Obj: TDGLUpdateAbleObject);
+begin
+  FUserList.Remove(Obj);
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(comp: TDGLUpdateAbleComponent);
+begin
+  Assert(FUserList.IndexOf(comp) < 0);
+  FUserList.Add(comp);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(comp: TDGLUpdateAbleComponent);
+begin
+  FUserList.Remove(comp);
+end;
+
+// RegisterUser
+//
+
+procedure TGLAbstractLibMaterial.RegisterUser(libMaterial: TGLLibMaterial);
+begin
+  Assert(FUserList.IndexOf(libMaterial) < 0);
+  FUserList.Add(libMaterial);
+end;
+
+// UnregisterUser
+//
+
+procedure TGLAbstractLibMaterial.UnRegisterUser(libMaterial: TGLLibMaterial);
+begin
+  FUserList.Remove(libMaterial);
+end;
+
+// NotifyUsers
+//
+
+procedure TGLAbstractLibMaterial.NotifyChange(Sender: TObject);
+begin
+  NotifyUsers();
+end;
+
+// NotifyUsers
+//
+
+procedure TGLAbstractLibMaterial.NotifyUsers;
+var
+  i:   Integer;
+  Obj: TObject;
+begin
+  if FNotifying then
+    Exit;
+  FNotifying := True;
+  try
+    for i := 0 to FUserList.Count - 1 do
+    begin
+      Obj := TObject(FUserList[i]);
+      if Obj is TDGLUpdateAbleObject then
+        TDGLUpdateAbleObject(FUserList[i]).NotifyChange(Self)
+      else if Obj is TDGLUpdateAbleComponent then
+        TDGLUpdateAbleComponent(FUserList[i]).NotifyChange(Self)
+      else
+      begin
+        Assert(Obj is TGLAbstractLibMaterial);
+        TGLAbstractLibMaterial(FUserList[i]).NotifyUsers;
+      end;
+    end;
+  finally
+    FNotifying := False;
+  end;
+end;
+
+// IsUsed
+//
+
+function TGLAbstractLibMaterial.IsUsed: Boolean;
+begin
+  Result := Assigned(Self) and (FUserList.Count > 0);
+end;
+
+// GetDisplayName
+//
+
+function TGLAbstractLibMaterial.GetDisplayName: string;
+begin
+  Result := Name;
+end;
+
+// GetMaterialLibrary
+//
+
+function TGLAbstractLibMaterial.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+var
+  LOwner: TPersistent;
+begin
+  Result := nil;
+  if Assigned(Collection) then
+  begin
+    LOwner := TGLAbstractLibMaterials(Collection).Owner;
+    if LOwner is TGLAbstractMaterialLibrary then
+      Result := TGLAbstractMaterialLibrary(LOwner);
+  end;
+end;
+
+// Blended
+//
+
+function TGLAbstractLibMaterial.Blended: Boolean;
+begin
+  Result := False;
+end;
+
+// ComputeNameHashKey
+//
+
+class function TGLAbstractLibMaterial.ComputeNameHashKey(const name: string): Integer;
+var
+  i, n: Integer;
+begin
+  n        := Length(name);
+  Result   := n;
+  for i    := 1 to n do
+    Result := (Result shl 1) + Byte(name[i]);
+end;
+
+// SetName
+//
+
+procedure TGLAbstractLibMaterial.SetName(const val: TGLLibMaterialName);
+begin
+  if val <> FName then
+  begin
+    if not(csLoading in TComponent(Collection.Owner).ComponentState) then
+    begin
+      if TGLLibMaterials(Collection).GetLibMaterialByName(val) <> Self then
+        FName := TGLLibMaterials(Collection).MakeUniqueName(val)
+      else
+        FName := val;
+    end
+    else
+      FName      := val;
+    FNameHashKey := ComputeNameHashKey(FName);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLAbstractMaterialLibrary'}{$ENDIF}
+// SetTexturePaths
+//
+
+procedure TGLAbstractMaterialLibrary.SetTexturePaths(const val: string);
+var
+  i, lp: Integer;
+
+  procedure AddCurrent;
+  var
+    buf: string;
+  begin
+    buf := Trim(Copy(val, lp + 1, i - lp - 1));
+    if Length(buf) > 0 then
+    begin
+      // make sure '\' is the terminator
+      buf := IncludeTrailingPathDelimiter(buf);
+      FTexturePathList.Add(buf);
+    end;
+  end;
+
+begin
+  FTexturePathList.Free;
+  FTexturePathList := nil;
+  FTexturePaths    := val;
+  if val <> '' then
+  begin
+    FTexturePathList := TStringList.Create;
+    lp               := 0;
+    for i            := 1 to Length(val) do
+    begin
+      if val[i] = ';' then
+      begin
+        AddCurrent;
+        lp := i;
+      end;
+    end;
+    i := Length(val) + 1;
+    AddCurrent;
+  end;
+end;
+
+// ApplyMaterial
+//
+
+function TGLAbstractMaterialLibrary.ApplyMaterial(const AName: string; var ARci: TRenderContextInfo): Boolean;
+begin
+  FLastAppliedMaterial := FMaterials.GetMaterial(AName);
+  Result               := Assigned(FLastAppliedMaterial);
+  if Result then
+    FLastAppliedMaterial.Apply(ARci);
+end;
+
+// UnApplyMaterial
+//
+
+function TGLAbstractMaterialLibrary.UnApplyMaterial(var ARci: TRenderContextInfo): Boolean;
+begin
+  if Assigned(FLastAppliedMaterial) then
+  begin
+    Result := FLastAppliedMaterial.UnApply(ARci);
+    if not Result then
+      FLastAppliedMaterial := nil;
+  end
+  else
+    Result := False;
+end;
+
+// SetNamesToTStrings
+//
+
+procedure TGLAbstractMaterialLibrary.SetNamesToTStrings(AStrings: TStrings);
+var
+  i:  Integer;
+  lm: TGLAbstractLibMaterial;
+begin
+  with AStrings do
+  begin
+    BeginUpdate;
+    Clear;
+    for i := 0 to FMaterials.Count - 1 do
+    begin
+      lm := TGLAbstractLibMaterial(FMaterials.Items[i]);
+      AddObject(lm.name, lm);
+    end;
+    EndUpdate;
+  end;
+end;
+
+// Loaded
+//
+
+procedure TGLAbstractMaterialLibrary.Loaded;
+begin
+  inherited;
+  FMaterials.Loaded;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLBaseMaterialCollectionItem'}{$ENDIF}
+
+destructor TDGLBaseMaterialCollectionItem.Destroy;
+var
+  i: Integer;
+begin
+  if Assigned(FUserList) then
+  begin
+    FNotifying := True;
+    for i      := FUserList.Count - 1 downto 0 do
+      TDGLLibMaterialProperty(FUserList[i]).Notification(Self, opRemove);
+    FreeAndNil(FUserList);
+  end;
+  inherited;
+end;
+
+function TDGLBaseMaterialCollectionItem.GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+begin
+  Result := TDGLAbstractMaterialLibrary(TDGLMatLibComponents(Owner).Owner);
+end;
+
+function TDGLBaseMaterialCollectionItem.GetMaterialLibraryEx: TDGLMaterialLibraryEx;
+begin
+  Result := TDGLMaterialLibraryEx(TDGLMatLibComponents(Owner).Owner);
+end;
+
+function TDGLBaseMaterialCollectionItem.GetUserCount: Integer;
+begin
+  if Assigned(FUserList) then
+    Result := FUserList.Count
+  else
+    Result := 0;
+end;
+
+function TDGLBaseMaterialCollectionItem.GetUserList: TPersistentObjectList;
+begin
+  if FUserList = nil then
+  begin
+    FUserList  := TPersistentObjectList.Create;
+    FNotifying := False;
+  end;
+  Result := FUserList;
+end;
+
+procedure TDGLBaseMaterialCollectionItem.NotifyChange(Sender: TObject);
+var
+  i: Integer;
+begin
+  if FNotifying then
+    Exit;
+  FNotifying := True;
+  if GetUserCount > 0 then
+    for i := 0 to FUserList.Count - 1 do
+      TDGLUpdateAbleObject(FUserList[i]).NotifyChange(Self);
+  FNotifying := False;
+end;
+
+procedure TDGLBaseMaterialCollectionItem.RegisterUser(AUser: TDGLUpdateAbleObject);
+begin
+  if not FNotifying and (UserList.IndexOf(AUser) < 0) then
+    UserList.Add(AUser);
+end;
+
+procedure TDGLBaseMaterialCollectionItem.UnRegisterUser(AUser: TDGLUpdateAbleObject);
+begin
+  if not FNotifying then
+    UserList.Remove(AUser);
+end;
+
+procedure TDGLBaseMaterialCollectionItem.SetName(const AValue: string);
+begin
+  if AValue <> Name then
+  begin
+    if not IsValidIdent(AValue) then
+    begin
+      if IsDesignTime then
+        InformationDlg(AValue + ' - is not valid component name');
+      Exit;
+    end;
+    if not(csLoading in MaterialLibrary.ComponentState) then
+    begin
+      if TDGLMatLibComponents(Owner).GetItemByName(AValue) <> Self then
+        inherited SetName(TDGLMatLibComponents(Owner).MakeUniqueName(AValue))
+      else
+        inherited SetName(AValue);
+    end
+    else
+      inherited SetName(AValue);
+    FNameHashKey := ComputeNameHashKey(Name);
+    // Notify users
+    NotifyChange(Self);
+    // Notify designer
+    if Assigned(vGLMaterialExNameChangeEvent) then
+      vGLMaterialExNameChangeEvent(Self);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLFixedFunctionProperties'}{$ENDIF}
+
+procedure TDGLFixedFunctionProperties.Apply(var ARci: TRenderContextInfo);
+begin
+  with ARci.GLStates do
+  begin
+    Disable(stColorMaterial);
+    PolygonMode := FPolygonMode;
+
+    // Fixed functionality state
+    if not ARci.GLStates.ForwardContext then
+    begin
+      // Lighting switch
+      if (moNoLighting in MaterialOptions) or not ARci.bufferLighting then
+      begin
+        Disable(stLighting);
+        FFrontProperties.ApplyNoLighting(ARci, cmFront);
+      end
+      else
+      begin
+        Enable(stLighting);
+        FFrontProperties.Apply(ARci, cmFront);
+      end;
+
+      if FPolygonMode = pmLines then
+        Disable(stLineStipple);
+
+      // Fog switch
+      if (moIgnoreFog in MaterialOptions) or not ARci.bufferFog then
+        Disable(stFog)
+      else
+        Enable(stFog);
+    end;
+
+    // Apply FaceCulling and BackProperties (if needs be)
+    case FFaceCulling of
+      fcBufferDefault:
+        begin
+          if ARci.bufferFaceCull then
+            Enable(stCullFace)
+          else
+            Disable(stCullFace);
+          BackProperties.Apply(ARci, cmBack);
+        end;
+      fcCull:
+        Enable(stCullFace);
+      fcNoCull:
+        begin
+          Disable(stCullFace);
+          BackProperties.Apply(ARci, cmBack);
+        end;
+    end;
+    // note: Front + Back with different PolygonMode are no longer supported.
+    // Currently state cache just ignores back facing mode changes, changes to
+    // front affect both front + back PolygonMode
+
+    // Apply Blending mode
+    if not ARci.ignoreBlendingRequests then
+      case FBlendingMode of
+        bmOpaque:
+          begin
+            Disable(stBlend);
+            Disable(stAlphaTest);
+          end;
+        bmTransparency:
+          begin
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            SeTDGLAlphaFunction(cfGreater, 0);
+          end;
+        bmAdditive:
+          begin
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfSrcAlpha, bfOne);
+            SeTDGLAlphaFunction(cfGreater, 0);
+          end;
+        bmAlphaTest50:
+          begin
+            Disable(stBlend);
+            Enable(stAlphaTest);
+            SeTDGLAlphaFunction(cfGEqual, 0.5);
+          end;
+        bmAlphaTest100:
+          begin
+            Disable(stBlend);
+            Enable(stAlphaTest);
+            SeTDGLAlphaFunction(cfGEqual, 1.0);
+          end;
+        bmModulate:
+          begin
+            Enable(stBlend);
+            Enable(stAlphaTest);
+            SetBlendFunc(bfDstColor, bfZero);
+            SeTDGLAlphaFunction(cfGreater, 0);
+          end;
+        bmCustom:
+          begin
+            FBlendingParams.Apply(ARci);
+          end;
+      end;
+
+    // Apply depth properties
+    if not ARci.ignoreDepthRequests then
+      FDepthProperties.Apply(ARci);
+
+    // Apply texturing
+    if ARci.currentMaterialLevel = mlFixedFunction then
+    begin
+      if FTexProp.Enabled and FTexProp.IsValid then
+      begin
+        ARci.GLStates.ActiveTexture := 0;
+        FTexProp.Apply(ARci);
+        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      end;
+    end;
+
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.Assign(Source: TPersistent);
+var
+  LFFP: TDGLFixedFunctionProperties;
+begin
+  if Source is TDGLFixedFunctionProperties then
+  begin
+    LFFP := TDGLFixedFunctionProperties(Source);
+    if Assigned(LFFP.FBackProperties) then
+      BackProperties.Assign(LFFP.BackProperties)
+    else
+      FreeAndNil(FBackProperties);
+    FFrontProperties.Assign(LFFP.FFrontProperties);
+    FPolygonMode     := LFFP.FPolygonMode;
+    FBlendingMode    := LFFP.FBlendingMode;
+    FMaterialOptions := LFFP.FMaterialOptions;
+    FFaceCulling     := LFFP.FFaceCulling;
+    FDepthProperties.Assign(LFFP.FDepthProperties);
+    FTexProp.Assign(LFFP.FTexProp);
+    FTextureMode := LFFP.TextureMode;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+function TDGLFixedFunctionProperties.Blended: Boolean;
+begin
+  Result := not(FBlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100, bmCustom]);
+end;
+
+constructor TDGLFixedFunctionProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FFrontProperties := TDGLFaceProperties.Create(Self);
+  FFaceCulling     := fcBufferDefault;
+  FPolygonMode     := pmFill;
+  FBlendingParams  := TDGLBlendingParameters.Create(Self);
+  FDepthProperties := TDGLDepthProperties.Create(Self);
+  FTexProp         := TDGLTextureProperties.Create(Self);
+  FTextureMode     := tmDecal;
+  FEnabled         := True;
+end;
+
+destructor TDGLFixedFunctionProperties.Destroy;
+begin
+  FFrontProperties.Destroy;
+  FBackProperties.Free;
+  FDepthProperties.Destroy;
+  FBlendingParams.Destroy;
+  FTexProp.Destroy;
+  inherited;
+end;
+
+function TDGLFixedFunctionProperties.GetBackProperties: TDGLFaceProperties;
+begin
+  if not Assigned(FBackProperties) then
+    FBackProperties := TDGLFaceProperties.Create(Self);
+  Result            := FBackProperties;
+end;
+
+procedure TDGLFixedFunctionProperties.SetBackProperties(AValues: TDGLFaceProperties);
+begin
+  BackProperties.Assign(AValues);
+  NotifyChange(Self);
+end;
+
+procedure TDGLFixedFunctionProperties.SetBlendingMode(const AValue: TBlendingMode);
+begin
+  if AValue <> FBlendingMode then
+  begin
+    FBlendingMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.SetBlendingParams(const AValue: TDGLBlendingParameters);
+begin
+  FBlendingParams.Assign(AValue);
+  NotifyChange(Self);
+end;
+
+procedure TDGLFixedFunctionProperties.SetDepthProperties(AValues: TDGLDepthProperties);
+begin
+  FDepthProperties.Assign(AValues);
+  NotifyChange(Self);
+end;
+
+procedure TDGLFixedFunctionProperties.SetTexProp(AValue: TDGLTextureProperties);
+begin
+  FTexProp.Assign(AValue);
+end;
+
+procedure TDGLFixedFunctionProperties.SetTextureMode(AValue: TDGLTextureMode);
+begin
+  if AValue <> FTextureMode then
+  begin
+    FTextureMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.SetFaceCulling(const AValue: TFaceCulling);
+begin
+  if AValue <> FFaceCulling then
+  begin
+    FFaceCulling := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.SetFrontProperties(AValues: TDGLFaceProperties);
+begin
+  FFrontProperties.Assign(AValues);
+  NotifyChange(Self);
+end;
+
+procedure TDGLFixedFunctionProperties.SetMaterialOptions(const AValue: TMaterialOptions);
+begin
+  if AValue <> FMaterialOptions then
+  begin
+    FMaterialOptions := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.SetPolygonMode(AValue: TPolygonMode);
+begin
+  if AValue <> FPolygonMode then
+  begin
+    FPolygonMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFixedFunctionProperties.UnApply(var ARci: TRenderContextInfo);
+begin
+  if FTexProp.Enabled and FTexProp.IsValid then
+    FTexProp.UnApply(ARci);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLAbstractTexture'}{$ENDIF}
+
+function TDGLAbstractTexture.GetTextureTarget: TDGLTextureTarget;
+begin
+  Result := FHandle.Target;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureImageEx'}{$ENDIF}
+
+procedure TDGLTextureImageEx.Apply(var ARci: TRenderContextInfo);
+begin
+  if FIsValid then
+  begin
+    // Just bind
+    with ARci.GLStates do
+    begin
+      TextureBinding[ActiveTexture, FHandle.Target] := FHandle.handle;
+      ActiveTextureEnabled[FHandle.Target]          := True;
+    end;
+
+    if not IsDesignTime then
+    begin
+      if not FUseStreaming and Assigned(FImage) then
+      begin
+        Inc(FApplyCounter);
+        if FApplyCounter > 16 then
+          FreeAndNil(FImage);
+      end;
+
+      if FUseStreaming then
+      begin
+        StreamTransfer;
+      end;
+    end;
+  end
+  else
+    with ARci.GLStates do
+      TextureBinding[ActiveTexture, FHandle.Target] := 0;
+end;
+
+procedure TDGLTextureImageEx.Assign(Source: TPersistent);
+var
+  LTexture: TDGLTextureImageEx;
+begin
+  if Source is TDGLTextureImageEx then
+  begin
+    LTexture     := TDGLTextureImageEx(Source);
+    FCompression := LTexture.FCompression;
+    if Assigned(LTexture.FImage) then
+    begin
+      if not Assigned(FImage) then
+        FImage := TDGLImage.Create;
+      FImage.Assign(LTexture.FImage);
+    end
+    else
+      FreeAndNil(FImage);
+    FImageAlpha          := LTexture.FImageAlpha;
+    FImageBrightness     := LTexture.FImageBrightness;
+    FImageGamma          := LTexture.FImageGamma;
+    FHeightToNormalScale := LTexture.FHeightToNormalScale;
+    FSourceFile          := LTexture.FSourceFile;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+constructor TDGLTextureImageEx.Create(AOwner: TDGLXCollection);
+begin
+  inherited;
+  FDefferedInit        := False;
+  FHandle              := TDGLTextureHandle.Create;
+  FHandle.OnPrapare    := DoOnPrepare;
+  FCompression         := tcDefault;
+  FImageAlpha          := tiaDefault;
+  FImageBrightness     := 1.0;
+  FImageGamma          := 1.0;
+  FHeightToNormalScale := 1.0;
+  FInternalFormat      := tfRGBA8;
+  FInternallyStored    := False;
+  FMipGenMode          := mgmOnFly;
+  FUseStreaming        := False;
+  Name                 := TDGLMatLibComponents(AOwner).MakeUniqueName('Texture');
+end;
+
+destructor TDGLTextureImageEx.Destroy;
+begin
+  FHandle.Destroy;
+  FImage.Free;
+  inherited;
+end;
+
+procedure TDGLTextureImageEx.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TDGLTextureImageEx.DoOnPrepare(Sender: TDGLContext);
+var
+  LTarget: TDGLTextureTarget;
+  rowSize: Integer;
+begin
+  if IsDesignTime and FDefferedInit then
+    Exit;
+
+  FHandle.AllocateHandle;
+  if not FHandle.IsDataNeedUpdate then
+    Exit;
+
+  try
+    PrepareImage;
+
+    // Target
+    LTarget := FImage.GetTextureTarget;
+
+    // Check supporting
+    if not IsTargetSupported(LTarget) or not IsFormatSupported(FInternalFormat) then
+      Abort;
+
+    if (FHandle.Target <> LTarget) and (FHandle.Target <> ttNoShape) then
+    begin
+      FHandle.DestroyHandle;
+      FHandle.AllocateHandle;
+    end;
+    FHandle.Target := LTarget;
+
+    // Check streaming support
+    if not IsDesignTime then
+    begin
+      FUseStreaming := FUseStreaming and TDGLUnpackPBOHandle.IsSupported;
+      FUseStreaming := FUseStreaming and IsServiceContextAvaible;
+      FUseStreaming := FUseStreaming and (LTarget = ttTexture2D);
+    end;
+
+    with Sender.GLStates do
+    begin
+      ActiveTextureEnabled[FHandle.Target]          := True;
+      TextureBinding[ActiveTexture, FHandle.Target] := FHandle.handle;
+      UnpackRowLength                               := 0;
+      UnpackSkipRows                                := 0;
+      UnpackSkipPixels                              := 0;
+      rowSize                                       := FImage.LevelWidth[0] * FImage.ElementSize;
+      if (rowSize mod 8 = 0) and (FImage.ElementSize > 4) then
+        UnpackAlignment := 8
+      else if rowSize mod 4 = 0 then
+        UnpackAlignment := 4
+      else if rowSize mod 2 = 0 then
+        UnpackAlignment := 2
+      else
+        UnpackAlignment := 1;
+    end;
+
+    if not IsDesignTime and FUseStreaming then
+    begin
+      TFriendlyImage(FImage).StartStreaming;
+      FLastTime := GLSTime;
+      StreamTransfer;
+      FHandle.NotifyDataUpdated;
+    end
+    else
+      FullTransfer;
+
+    Sender.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+
+    FApplyCounter := 0;
+    FIsValid      := True;
+  except
+    FIsValid := False;
+  end;
+end;
+
+procedure TDGLTextureImageEx.FullTransfer;
+var
+  LCompression: TDGLTextureCompression;
+  glFormat:     TDGLEnum;
+begin
+  with GL do
+  begin
+    if ARB_texture_compression then
+    begin
+      if Compression = tcDefault then
+        if vDefaultTextureCompression = tcDefault then
+          LCompression := tcNone
+        else
+          LCompression := vDefaultTextureCompression
+      else
+        LCompression := Compression;
+    end
+    else
+      LCompression := tcNone;
+
+    if LCompression <> tcNone then
+      with CurrenTDGLContext.GLStates do
+      begin
+        case LCompression of
+          tcStandard:
+            TextureCompressionHint := hintDontCare;
+          tcHighQuality:
+            TextureCompressionHint := hintNicest;
+          tcHighSpeed:
+            TextureCompressionHint := hintFastest;
+        else
+          Assert(False, glsErrorEx + glsUnknownType);
+        end;
+        if not GetGenericCompressedFormat(FInternalFormat, FImage.ColorFormat, glFormat) then
+          glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+      end
+    else
+      glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+
+    FImage.RegisterAsOpenGLTexture(FHandle, FMipGenMode = mgmOnFly, glFormat, FWidth, FHeight, FDepth);
+
+    if GetError <> GL_NO_ERROR then
+    begin
+      ClearError;
+      CurrenTDGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+      GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.name]);
+      Abort;
+    end
+    else
+      FHandle.NotifyDataUpdated;
+  end;
+end;
+
+procedure TDGLTextureImageEx.CalcLODRange(out AFirstLOD, ALastLOD: Integer);
+var
+  i, MaxLODSize, MinLODSize, MaxLODZSize: Integer;
+begin
+  case FHandle.Target of
+    ttTexture3D:
+      begin
+        MaxLODSize  := CurrenTDGLContext.GLStates.Max3DTextureSize;
+        MaxLODZSize := MaxLODSize;
+      end;
+
+    ttTextureCube:
+      begin
+        MaxLODSize  := CurrenTDGLContext.GLStates.MaxCubeTextureSize;
+        MaxLODZSize := 0;
+      end;
+
+    ttTexture1DArray, ttTexture2DArray, ttTextureCubeArray, ttTexture2DMultisampleArray:
+      begin
+        MaxLODSize  := CurrenTDGLContext.GLStates.MaxTextureSize;
+        MaxLODZSize := CurrenTDGLContext.GLStates.MaxArrayTextureSize;
+      end;
+
+  else
+    begin
+      MaxLODSize  := CurrenTDGLContext.GLStates.MaxTextureSize;
+      MaxLODZSize := 0;
+    end;
+  end;
+
+  MinLODSize := 1;
+
+  AFirstLOD := 0;
+
+  for i := 0 to High(TDGLImagePiramid) do
+  begin
+    if (FImage.LevelWidth[i] <= MaxLODSize) and (FImage.LevelHeight[i] <= MaxLODSize) and (FImage.LevelDepth[i] <= MaxLODZSize) then
+      break;
+    Inc(AFirstLOD);
+  end;
+
+  AFirstLOD := MinInteger(AFirstLOD, FImage.LevelCount - 1);
+  ALastLOD  := AFirstLOD;
+
+  for i := AFirstLOD to High(TDGLImagePiramid) do
+  begin
+    if (FImage.LevelWidth[i] < MinLODSize) or (FImage.LevelHeight[i] < MinLODSize) then
+      break;
+    Inc(ALastLOD);
+  end;
+  ALastLOD := MinInteger(ALastLOD, FImage.LevelCount - 1);
+end;
+
+procedure TDGLTextureImageEx.StreamTransfer;
+var
+  LImage:              TFriendlyImage;
+  bContinueStreaming:  Boolean;
+  OldBaseLevel, level: Integer;
+  newTime:             Double;
+  glInternalFormat:    TDGLEnum;
+  transferMethod:      0 .. 3;
+begin
+  LImage       := TFriendlyImage(FImage);
+  OldBaseLevel := FBaseLevel;
+  CalcLODRange(FBaseLevel, FMaxLevel);
+
+  // Select transfer method
+  if FImage.IsCompressed then
+    transferMethod := 1
+  else
+    transferMethod := 0;
+  if GL.EXT_direct_state_access then
+    transferMethod := transferMethod + 2;
+
+  bContinueStreaming := False;
+  for level          := FMaxLevel downto FBaseLevel do
+  begin
+
+    case LImage.LevelStreamingState[level] of
+
+      ssKeeping:
+        begin
+          if FBaseLevel < level then
+            FBaseLevel                      := FMaxLevel;
+          LImage.LevelStreamingState[level] := ssLoading;
+          LImage.DoStreaming;
+          bContinueStreaming := True;
+        end;
+
+      ssLoading:
+        begin
+          LImage.DoStreaming;
+          bContinueStreaming := True;
+          if FBaseLevel < level then
+            FBaseLevel := FMaxLevel;
+        end;
+
+      ssLoaded:
+        with GL do
+        begin
+          LImage.LevelPixelBuffer[level].AllocateHandle;
+          LImage.LevelPixelBuffer[level].Bind;
+          glInternalFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+          case transferMethod of
+            0:
+              TexImage2D(GL_TEXTURE_2D, level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
+            1:
+              CompressedTexImage2D(GL_TEXTURE_2D, level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[level], nil);
+            2:
+              TextureImage2D(FHandle.handle, GL_TEXTURE_2D, level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
+            3:
+              CompressedTextureImage2D(FHandle.handle, GL_TEXTURE_2D, level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[level], nil);
+          end;
+          LImage.LevelPixelBuffer[level].UnBind;
+          LImage.LevelStreamingState[level] := ssTransfered;
+          GLSLogger.LogDebug(Format('Texture "%s" level %d loaded', [Name, level]));
+        end;
+
+      ssTransfered:
+        begin
+          if LImage.LevelPixelBuffer[level].IsAllocatedForContext then
+            LImage.LevelPixelBuffer[level].DestroyHandle;
+          FBaseLevel := level;
+        end;
+    end; // of case
+
+    if bContinueStreaming then
+      break;
+  end; // for level
+
+  if bContinueStreaming then
+    with GL do
+    begin
+      TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, FMaxLevel);
+      TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, FBaseLevel);
+    end;
+
+  // Smooth transition between levels
+  if Assigned(FApplicableSampler) then
+    with FApplicableSampler do
+    begin
+      newTime := GLSTime;
+      if FLODBiasFract > 0 then
+        FLODBiasFract := FLODBiasFract - 0.05 * (newTime - FLastTime)
+      else if FLODBiasFract < 0 then
+        FLODBiasFract := 0;
+      FLastTime       := newTime;
+      if OldBaseLevel > FBaseLevel then
+        FLODBiasFract := FLODBiasFract + (OldBaseLevel - FBaseLevel);
+
+      if FApplicableSampler.IsValid then
+        GL.SamplerParameterf(FApplicableSampler.handle.handle, GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract)
+      else
+        // To refrash texture parameters when sampler object not supported
+        FLastSampler := nil;
+    end;
+end;
+
+class function TDGLTextureImageEx.FriendlyName: string;
+begin
+  Result := 'Texture Image';
+end;
+
+procedure TDGLTextureImageEx.PrepareImage;
+const
+  cAlphaProc: array [TDGLTextureImageAlpha] of TImageAlphaProc = (nil, ImageAlphaFromIntensity, ImageAlphaSuperBlackTransparent, ImageAlphaLuminance, ImageAlphaLuminanceSqrt, ImageAlphaOpaque, ImageAlphaTopLeftPointColorTransparent,
+    ImageAlphaInverseLuminance, ImageAlphaInverseLuminanceSqrt, ImageAlphaBottomRightPointColorTransparent);
+
+var
+  ext, filename:             string;
+  BaseImageClass:            TDGLBaseImageClass;
+  LPicture:                  TDGLPicture;
+  LGraphic:                  TDGLGraphic;
+  LImage:                    TDGLImage;
+  level:                     Integer;
+  glColorFormat, glDataType: TDGLEnum;
+  bReadFromSource:           Boolean;
+  LStream:                   TStream;
+  ptr:                       PByte;
+
+  procedure ReplaceImageClass;
+  begin
+    if not(FImage is TDGLImage) then
+    begin
+      LImage := TDGLImage.Create;
+      LImage.Assign(FImage);
+      FImage.Destroy;
+      FImage := LImage;
+    end
+    else
+      LImage := TDGLImage(FImage);
+  end;
+
+begin
+  if not Assigned(FImage) then
+  begin
+    try
+      SetExeDirectory;
+      bReadFromSource := True;
+
+      if FInternallyStored and not IsDesignTime then
+      begin
+        filename := Name + '.image';
+        if FileStreamExists(filename) then
+        begin
+          FImage              := TDGLImage.Create;
+          FImage.ResourceName := filename;
+          TFriendlyImage(FImage).LoadHeader;
+          if not FUseStreaming then
+          begin
+            ReallocMem(TFriendlyImage(FImage).fData, FImage.DataSize);
+            for level := FImage.LevelCount - 1 downto 0 do
+            begin
+              LStream := CreateFileStream(filename + IntToHex(level, 2), fmOpenRead);
+              ptr     := PByte(TFriendlyImage(FImage).GetLevelAddress(level));
+              LStream.Read(ptr^, FImage.LevelSizeInByte[level]);
+              LStream.Destroy;
+            end;
+          end;
+          bReadFromSource := False;
+        end
+        else
+        begin
+          FInternallyStored := False;
+          FUseStreaming     := False;
+        end;
+      end;
+
+      if bReadFromSource then
+      begin
+        if (Length(FSourceFile) > 0) and FileStreamExists(FSourceFile) then
+        begin
+          // At first check moder image file loaders
+          ext := ExtractFileExt(FSourceFile);
+          System.Delete(ext, 1, 1);
+          BaseImageClass := GetRasterFileFormats.FindExt(ext);
+
+          if Assigned(BaseImageClass) then
+          begin
+            FImage := BaseImageClass.Create;
+            FImage.LoadFromFile(FSourceFile);
+          end
+          else
+          begin
+            // Check old loaders
+            FImage := TDGLImage.Create;
+            if ApplicationFileIODefined then
+            begin
+              LGraphic := CreateGraphicFromFile(FSourceFile);
+              FImage.Assign(LGraphic);
+              LGraphic.Free;
+            end
+            else
+            begin
+              LPicture := TDGLPicture.Create;
+              LPicture.LoadFromFile(FSourceFile);
+              FImage.Assign(LPicture.Graphic);
+              LPicture.Destroy;
+            end;
+          end;
+
+          if FInternalFormat <> FImage.InternalFormat then
+          begin
+            ReplaceImageClass;
+            FindCompatibleDataFormat(FInternalFormat, glColorFormat, glDataType);
+            TDGLImage(FImage).SetColorFormatDataType(glColorFormat, glDataType);
+            TFriendlyImage(FImage).FInternalFormat := FInternalFormat;
+          end;
+
+          if (ImageAlpha <> tiaDefault) or (FImageBrightness <> 1.0) or (FImageGamma <> 1.0) then
+          begin
+            ReplaceImageClass;
+            for level := 0 to FImage.LevelCount - 1 do
+            begin
+              AlphaGammaBrightCorrection(TFriendlyImage(FImage).GetLevelAddress(level), FImage.ColorFormat, FImage.DataType, FImage.LevelWidth[level], FImage.LevelHeight[level], cAlphaProc[ImageAlpha], FImageBrightness, FImageGamma);
+            end;
+          end
+          else if FHeightToNormalScale <> 1.0 then
+          begin
+            ReplaceImageClass;
+            // HeightToNormalMap();
+            {$MESSAGE Hint 'TDGLTextureImageEx.HeightToNormalScale not yet implemented' }
+          end;
+
+          case FMipGenMode of
+            mgmNoMip:
+              FImage.UnMipmap;
+
+            mgmLeaveExisting, mgmOnFly:
+              ;
+
+            mgmBoxFilter:
+              FImage.GenerateMipmap(ImageBoxFilter);
+
+            mgmTriangleFilter:
+              FImage.GenerateMipmap(ImageTriangleFilter);
+
+            mgmHermiteFilter:
+              FImage.GenerateMipmap(ImageHermiteFilter);
+
+            mgmBellFilter:
+              FImage.GenerateMipmap(ImageBellFilter);
+
+            mgmSplineFilter:
+              FImage.GenerateMipmap(ImageSplineFilter);
+
+            mgmLanczos3Filter:
+              FImage.GenerateMipmap(ImageLanczos3Filter);
+
+            mgmMitchellFilter:
+              FImage.GenerateMipmap(ImageMitchellFilter);
+          end;
+
+          // Store cooked image
+          if FInternallyStored and IsDesignTime then
+          begin
+            filename            := Name + '.image';
+            FImage.ResourceName := filename;
+            TFriendlyImage(FImage).SaveHeader;
+            for level := FImage.LevelCount - 1 downto 0 do
+            begin
+              LStream := CreateFileStream(filename + IntToHex(level, 2), fmOpenWrite or fmCreate);
+              ptr     := PByte(TFriendlyImage(FImage).GetLevelAddress(level));
+              LStream.Write(ptr^, FImage.LevelSizeInByte[level]);
+              LStream.Destroy;
+            end;
+          end;
+
+        end
+        else
+        begin // no SourceFile
+          FImage := TDGLImage.Create;
+          FImage.SetErrorImage;
+          GLSLogger.LogErrorFmt('Source file of texture "%s" image not found', [Self.name]);
+        end;
+      end; // if bReadFromSource
+
+    except
+      on E: Exception do
+      begin
+        FImage.Free;
+        FImage := TDGLImage.Create;
+        FImage.SetErrorImage;
+        if IsDesignTime then
+          InformationDlg(Self.name + ' - ' + E.ClassName + ': ' + E.Message)
+        else
+          GLSLogger.LogError(Self.name + ' - ' + E.ClassName + ': ' + E.Message);
+      end;
+    end;
+  end; // of not Assigned
+end;
+
+procedure TDGLTextureImageEx.ReadFromFiler(AReader: TReader);
+var
+  archiveVersion: Integer;
+begin
+  with AReader do
+  begin
+    archiveVersion := ReadInteger;
+    if archiveVersion = 0 then
+    begin
+      Name                 := ReadString;
+      FDefferedInit        := ReadBoolean;
+      FInternalFormat      := TGLInternalFormat(ReadInteger);
+      FCompression         := TDGLTextureCompression(ReadInteger);
+      FImageAlpha          := TDGLTextureImageAlpha(ReadInteger);
+      FImageBrightness     := ReadFloat;
+      FImageBrightness     := ReadFloat;
+      FImageGamma          := ReadFloat;
+      FHeightToNormalScale := ReadFloat;
+      FSourceFile          := ReadString;
+      FInternallyStored    := ReadBoolean;
+      FMipGenMode          := TMipmapGenerationMode(ReadInteger);
+      FUseStreaming        := ReadBoolean;
+    end
+    else
+      RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetCompression(const AValue: TDGLTextureCompression);
+begin
+  if AValue <> FCompression then
+  begin
+    FCompression := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetImageAlpha(const AValue: TDGLTextureImageAlpha);
+begin
+  if FImageAlpha <> AValue then
+  begin
+    FImageAlpha := AValue;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetImageBrightness(const AValue: Single);
+begin
+  if FImageBrightness <> AValue then
+  begin
+    FImageBrightness := AValue;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetImageGamma(const AValue: Single);
+begin
+  if FImageGamma <> AValue then
+  begin
+    FImageGamma := AValue;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetInternalFormat(const AValue: TGLInternalFormat);
+begin
+  if AValue <> FInternalFormat then
+  begin
+    FInternalFormat := AValue;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetInternallyStored(const AValue: Boolean);
+begin
+  if FInternallyStored <> AValue then
+  begin
+    FInternallyStored := AValue;
+    if not AValue then
+      FUseStreaming := AValue
+    else
+      FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetMipGenMode(const AValue: TMipmapGenerationMode);
+begin
+  if FMipGenMode <> AValue then
+  begin
+    FMipGenMode := AValue;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetNormalMapScale(const AValue: Single);
+begin
+  if AValue <> FHeightToNormalScale then
+  begin
+    FHeightToNormalScale := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetSourceFile(AValue: string);
+begin
+  FixPathDelimiter(AValue);
+  if FSourceFile <> AValue then
+  begin
+    FSourceFile   := AValue;
+    FUseStreaming := False;
+    FreeAndNil(FImage);
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureImageEx.SetUseStreaming(const AValue: Boolean);
+begin
+  if AValue <> FUseStreaming then
+  begin
+    if AValue then
+    begin
+      if not Assigned(FImage) then
+        Exit;
+      if FImage.LevelCount = 1 then
+      begin
+        if IsDesignTime then
+          InformationDlg('Image must be more than one level');
+        Exit;
+      end;
+      FInternallyStored := True;
+    end;
+    FUseStreaming := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+function TDGLTextureImageEx.StoreBrightness: Boolean;
+begin
+  Result := (FImageBrightness <> 1.0);
+end;
+
+function TDGLTextureImageEx.StoreGamma: Boolean;
+begin
+  Result := (FImageGamma <> 1.0);
+end;
+
+function TDGLTextureImageEx.StoreNormalMapScale: Boolean;
+begin
+  Result := (FHeightToNormalScale <> cDefaultNormalMapScale);
+end;
+
+procedure TDGLTextureImageEx.UnApply(var ARci: TRenderContextInfo);
+begin
+  ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+end;
+
+procedure TDGLTextureImageEx.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0); // archive version
+    WriteString(Name);
+    WriteBoolean(FDefferedInit);
+    WriteInteger(Integer(FInternalFormat));
+    WriteInteger(Integer(FCompression));
+    WriteInteger(Integer(FImageAlpha));
+    WriteFloat(FImageBrightness);
+    WriteFloat(FImageBrightness);
+    WriteFloat(FImageGamma);
+    WriteFloat(FHeightToNormalScale);
+    WriteString(FSourceFile);
+    WriteBoolean(FInternallyStored);
+    WriteInteger(Integer(FMipGenMode));
+    WriteBoolean(FUseStreaming);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureSampler'}{$ENDIF}
+
+procedure TDGLTextureSampler.Apply(var ARci: TRenderContextInfo);
+begin
+  if FIsValid then
+    ARci.GLStates.SamplerBinding[ARci.GLStates.ActiveTexture] := FHandle.handle;
+end;
+
+procedure TDGLTextureSampler.Assign(Source: TPersistent);
+var
+  LSampler: TDGLTextureSampler;
+begin
+  if Source is TDGLTextureSampler then
+  begin
+    LSampler          := TDGLTextureSampler(Source);
+    FMinFilter        := LSampler.FMinFilter;
+    FMagFilter        := LSampler.FMagFilter;
+    FFilteringQuality := LSampler.FFilteringQuality;
+    FLODBias          := LSampler.FLODBias;
+    FLODBiasFract     := 0;
+    FBorderColor.Assign(LSampler.FBorderColor);
+    FWrap        := LSampler.FWrap;
+    FCompareMode := LSampler.FCompareMode;
+    FCompareFunc := LSampler.FCompareFunc;
+    FDecodeSRGB  := LSampler.FDecodeSRGB;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+constructor TDGLTextureSampler.Create(AOwner: TDGLXCollection);
+begin
+  inherited;
+  FDefferedInit     := False;
+  FHandle           := TDGLSamplerHandle.Create;
+  FHandle.OnPrapare := DoOnPrepare;
+  FMagFilter        := maLinear;
+  FMinFilter        := miLinearMipMapLinear;
+  FFilteringQuality := tfAnisotropic;
+  FLODBias          := 0;
+  FLODBiasFract     := 0;
+  FWrap[0]          := twRepeat;
+  FWrap[1]          := twRepeat;
+  FWrap[2]          := twRepeat;
+  FBorderColor      := TDGLColor.CreateInitialized(Self, clrTransparent);
+  FCompareMode      := tcmNone;
+  FCompareFunc      := cfLequal;
+  FDecodeSRGB       := True;
+  Name              := TDGLMatLibComponents(AOwner).MakeUniqueName('Sampler');
+end;
+
+destructor TDGLTextureSampler.Destroy;
+begin
+  FHandle.Destroy;
+  FBorderColor.Destroy;
+  inherited;
+end;
+
+function TDGLTextureSampler.GetWrap(Index: Integer): TDGLSeparateTextureWrap;
+begin
+  Result := FWrap[Index];
+end;
+
+procedure TDGLTextureSampler.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TDGLTextureSampler.DoOnPrepare(Sender: TDGLContext);
+var
+  ID: TGLuint;
+begin
+  if IsDesignTime and FDefferedInit then
+    Exit;
+  try
+    if FHandle.IsSupported then
+    begin
+      FHandle.AllocateHandle;
+      ID := FHandle.handle;
+      if FHandle.IsDataNeedUpdate then
+        with Sender.GL do
+        begin
+          SamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
+          SamplerParameteri(ID, GL_TEXTURE_WRAP_S, cTextureWrapMode[FWrap[0]]);
+          SamplerParameteri(ID, GL_TEXTURE_WRAP_T, cTextureWrapMode[FWrap[1]]);
+          SamplerParameteri(ID, GL_TEXTURE_WRAP_R, cTextureWrapMode[FWrap[2]]);
+          SamplerParameterf(ID, GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract);
+          SamplerParameteri(ID, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+          SamplerParameteri(ID, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+
+          if EXT_texture_filter_anisotropic then
+          begin
+            if FFilteringQuality = tfAnisotropic then
+              SamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, CurrenTDGLContext.GLStates.MaxTextureAnisotropy)
+            else
+              SamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+          end;
+
+          SamplerParameteri(ID, GL_TEXTURE_COMPARE_MODE, cTextureCompareMode[FCompareMode]);
+          SamplerParameteri(ID, GL_TEXTURE_COMPARE_FUNC, cGLComparisonFunctionToGLEnum[FCompareFunc]);
+
+          if EXT_texture_sRGB_decode then
+          begin
+            if FDecodeSRGB then
+              SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
+            else
+              SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT, GL_SKIP_DECODE_EXT);
+          end;
+          {$IFDEF GLS_OPENGL_DEBUG}
+          CheckError;
+          {$ENDIF}
+          FHandle.NotifyDataUpdated;
+        end;
+      FIsValid := True;
+    end
+    else
+      FIsValid := False;
+
+  except
+    FIsValid := False;
+  end;
+end;
+
+class function TDGLTextureSampler.FriendlyName: string;
+begin
+  Result := 'Texture Sampler';
+end;
+
+procedure TDGLTextureSampler.ReadFromFiler(AReader: TReader);
+var
+  archiveVersion: Integer;
+begin
+  with AReader do
+  begin
+    archiveVersion := ReadInteger;
+    if archiveVersion = 0 then
+    begin
+      Name              := ReadString;
+      FDefferedInit     := ReadBoolean;
+      FMinFilter        := TDGLMinFilter(ReadInteger);
+      FMagFilter        := TDGLMagFilter(ReadInteger);
+      FFilteringQuality := TDGLTextureFilteringQuality(ReadInteger);
+      FLODBias          := ReadInteger;
+      FWrap[0]          := TDGLSeparateTextureWrap(ReadInteger);
+      FWrap[1]          := TDGLSeparateTextureWrap(ReadInteger);
+      FWrap[2]          := TDGLSeparateTextureWrap(ReadInteger);
+      Read(FBorderColor.AsAddress^, SizeOf(TColorVector));
+      FCompareMode := TDGLTextureCompareMode(ReadInteger);
+      FCompareFunc := TDepthfunction(ReadInteger);
+      FDecodeSRGB  := ReadBoolean;
+    end
+    else
+      RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetBorderColor(const AValue: TDGLColor);
+begin
+  FBorderColor.Assign(AValue);
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureSampler.SetCompareFunc(AValue: TDepthfunction);
+begin
+  if FCompareFunc <> AValue then
+  begin
+    FCompareFunc := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetCompareMode(AValue: TDGLTextureCompareMode);
+begin
+  if FCompareMode <> AValue then
+  begin
+    FCompareMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetDecodeSRGB(AValue: Boolean);
+begin
+  if FDecodeSRGB <> AValue then
+  begin
+    FDecodeSRGB := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetFilteringQuality(AValue: TDGLTextureFilteringQuality);
+begin
+  if FFilteringQuality <> AValue then
+  begin
+    FFilteringQuality := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetLODBias(AValue: Integer);
+begin
+  if FLODBias <> AValue then
+  begin
+    FLODBias := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetMagFilter(AValue: TDGLMagFilter);
+begin
+  if FMagFilter <> AValue then
+  begin
+    FMagFilter := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetMinFilter(AValue: TDGLMinFilter);
+begin
+  if FMinFilter <> AValue then
+  begin
+    FMinFilter := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.SetWrap(Index: Integer; AValue: TDGLSeparateTextureWrap);
+begin
+  if FWrap[Index] <> AValue then
+  begin
+    FWrap[Index] := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureSampler.UnApply(var ARci: TRenderContextInfo);
+begin
+  if FHandle.IsSupported then
+    with ARci.GLStates do
+      SamplerBinding[ActiveTexture] := 0;
+end;
+
+procedure TDGLTextureSampler.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0); // archive version
+    WriteString(Name);
+    WriteBoolean(FDefferedInit);
+    WriteInteger(Integer(FMinFilter));
+    WriteInteger(Integer(FMagFilter));
+    WriteInteger(Integer(FFilteringQuality));
+    WriteInteger(FLODBias);
+    WriteInteger(Integer(FWrap[0]));
+    WriteInteger(Integer(FWrap[1]));
+    WriteInteger(Integer(FWrap[2]));
+    Write(FBorderColor.AsAddress^, SizeOf(TColorVector));
+    WriteInteger(Integer(FCompareMode));
+    WriteInteger(Integer(FCompareFunc));
+    WriteBoolean(FDecodeSRGB);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureCombiner'}{$ENDIF}
+
+procedure TDGLTextureCombiner.Assign(Source: TPersistent);
+var
+  LCombiner: TDGLTextureCombiner;
+begin
+  if Source is TDGLTextureCombiner then
+  begin
+    LCombiner := TDGLTextureCombiner(Source);
+    FScript.Assign(LCombiner.FScript);
+  end;
+  inherited;
+end;
+
+constructor TDGLTextureCombiner.Create(AOwner: TDGLXCollection);
+begin
+  inherited;
+  FDefferedInit      := False;
+  FHandle            := TDGLVirtualHandle.Create;
+  FHandle.OnAllocate := DoAllocate;
+  FHandle.OnDestroy  := DoDeallocate;
+  FHandle.OnPrapare  := DoOnPrepare;
+  FScript            := TStringList.Create;
+  FScript.OnChange   := NotifyChange;
+  FIsValid           := True;
+  Name               := TDGLMatLibComponents(AOwner).MakeUniqueName('Combiner');
+end;
+
+destructor TDGLTextureCombiner.Destroy;
+begin
+  FHandle.Destroy;
+  FScript.Destroy;
+  inherited;
+end;
+
+procedure TDGLTextureCombiner.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TDGLTextureCombiner.DoAllocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+begin
+  handle := 1;
+end;
+
+procedure TDGLTextureCombiner.DoDeallocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+begin
+  handle := 0;
+end;
+
+procedure TDGLTextureCombiner.DoOnPrepare(Sender: TDGLContext);
+begin
+  if IsDesignTime and FDefferedInit then
+    Exit;
+  if Sender.GL.ARB_multitexture then
+  begin
+    FHandle.AllocateHandle;
+    if FHandle.IsDataNeedUpdate then
+    begin
+      try
+        FCommandCache := GetTextureCombiners(FScript);
+        FIsValid      := True;
+      except
+        on E: Exception do
+        begin
+          FIsValid := False;
+          if IsDesignTime then
+            InformationDlg(E.ClassName + ': ' + E.Message)
+          else
+            GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+        end;
+      end;
+      FHandle.NotifyDataUpdated;
+    end;
+  end
+  else
+    FIsValid := False;
+end;
+
+class function TDGLTextureCombiner.FriendlyName: string;
+begin
+  Result := 'Texture Combiner';
+end;
+
+procedure TDGLTextureCombiner.ReadFromFiler(AReader: TReader);
+var
+  archiveVersion: Integer;
+begin
+  with AReader do
+  begin
+    archiveVersion := ReadInteger;
+    if archiveVersion = 0 then
+    begin
+      Name          := ReadString;
+      FDefferedInit := ReadBoolean;
+      FScript.Text  := ReadString;
+    end
+    else
+      RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TDGLTextureCombiner.SetScript(AValue: TStringList);
+begin
+  FScript.Assign(AValue);
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureCombiner.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0); // archive version
+    WriteString(Name);
+    WriteBoolean(FDefferedInit);
+    WriteString(FScript.Text);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLLibMaterialEx'}{$ENDIF}
+
+procedure TDGLLibMaterialEx.Apply(var ARci: TRenderContextInfo);
+var
+  LevelReady:  array [TDGLMaterialLevel] of Boolean;
+  L, MaxLevel: TDGLMaterialLevel;
+begin
+  if Assigned(FNextPass) then
+  begin
+    FNextPass := nil;
+    Exit;
+  end;
+
+  FHandle.AllocateHandle;
+  if FHandle.IsDataNeedUpdate then
+  begin
+    // Other value than mlAuto indicates a level failure
+    // Need remove deffered initialization and reinitialize used resources
+    if not IsDesignTime and (FSelectedLevel <> mlAuto) then
+      RemoveDefferedInit;
+    // Level selection
+    LevelReady[mlFixedFunction]  := FFixedFunc.Enabled;
+    LevelReady[mlMultitexturing] := FMultitexturing.Enabled and FMultitexturing.IsValid;
+    LevelReady[mlSM3]            := FSM3.Enabled and FSM3.IsValid;
+    LevelReady[mlSM4]            := FSM4.Enabled and FSM4.IsValid;
+    LevelReady[mlSM5]            := FSM5.Enabled and FSM5.IsValid;
+
+    if FApplicableLevel = mlAuto then
+      MaxLevel := mlSM5
+    else
+      MaxLevel := FApplicableLevel;
+
+    FSelectedLevel := mlAuto;
+    for L          := MaxLevel downto mlFixedFunction do
+      if LevelReady[L] then
+      begin
+        FSelectedLevel := L;
+        break;
+      end;
+
+    FStoreAmalgamating := ARci.amalgamating;
+    ARci.amalgamating  := True;
+    FHandle.NotifyDataUpdated;
+  end;
+
+  ARci.currentMaterialLevel := FSelectedLevel;
+
+  case FSelectedLevel of
+    mlAuto:
+      ; // No one level can be used. Worst case.
+
+    mlFixedFunction:
+      begin
+        FFixedFunc.Apply(ARci);
+      end;
+
+    mlMultitexturing:
+      begin
+        if LevelReady[mlFixedFunction] then
+          FFixedFunc.Apply(ARci);
+        FMultitexturing.Apply(ARci);
+      end;
+
+    mlSM3:
+      begin
+        if LevelReady[mlFixedFunction] then
+          FFixedFunc.Apply(ARci);
+        FSM3.Apply(ARci);
+      end;
+
+    mlSM4:
+      begin
+        if LevelReady[mlFixedFunction] then
+          FFixedFunc.Apply(ARci);
+        FSM4.Apply(ARci);
+      end;
+
+    mlSM5:
+      begin
+        if LevelReady[mlFixedFunction] then
+          FFixedFunc.Apply(ARci);
+        FSM5.Apply(ARci);
+      end;
+  end;
+end;
+
+procedure TDGLLibMaterialEx.Assign(Source: TPersistent);
+var
+  LMaterial: TDGLLibMaterialEx;
+begin
+  if Source is TDGLLibMaterialEx then
+  begin
+    LMaterial := TDGLLibMaterialEx(Source);
+    FFixedFunc.Assign(LMaterial.FFixedFunc);
+    FMultitexturing.Assign(LMaterial.FMultitexturing);
+    FSM3.Assign(LMaterial.FSM3);
+    FSM4.Assign(LMaterial.FSM4);
+    FSM5.Assign(LMaterial.FSM5);
+    FApplicableLevel := LMaterial.FApplicableLevel;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+function TDGLLibMaterialEx.Blended: Boolean;
+begin
+  Result := FFixedFunc.Blended;
+end;
+
+constructor TDGLLibMaterialEx.Create(ACollection: TCollection);
+begin
+  inherited;
+  FHandle            := TDGLVirtualHandle.Create;
+  FHandle.OnAllocate := DoAllocate;
+  FHandle.OnDestroy  := DoDeallocate;
+  FHandle.OnPrapare  := DoOnPrepare;
+  FApplicableLevel   := mlAuto;
+  FSelectedLevel     := mlAuto;
+  FFixedFunc         := TDGLFixedFunctionProperties.Create(Self);
+  FMultitexturing    := TDGLMultitexturingProperties.Create(Self);
+  FSM3               := TDGLShaderModel3.Create(Self);
+  FSM4               := TDGLShaderModel4.Create(Self);
+  FSM5               := TDGLShaderModel5.Create(Self);
+end;
+
+type
+  TDGLFreindlyMaterial = class(TDGLMaterial);
+
+destructor TDGLLibMaterialEx.Destroy;
+var
+  i:     Integer;
+  LUser: TObject;
+begin
+  FHandle.Destroy;
+  FFixedFunc.Destroy;
+  FMultitexturing.Destroy;
+  FSM3.Destroy;
+  FSM4.Destroy;
+  FSM5.Destroy;
+  for i := 0 to FUserList.Count - 1 do
+  begin
+    LUser := TObject(FUserList[i]);
+    if LUser is TDGLMaterial then
+      TDGLFreindlyMaterial(LUser).NotifyLibMaterialDestruction;
+  end;
+  inherited;
+end;
+
+procedure TDGLLibMaterialEx.DoAllocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+begin
+  handle := 1;
+end;
+
+procedure TDGLLibMaterialEx.DoDeallocate(Sender: TDGLVirtualHandle; var handle: TGLuint);
+begin
+  handle := 0;
+end;
+
+procedure TDGLLibMaterialEx.DoOnPrepare(Sender: TDGLContext);
+begin
+end;
+
+procedure TDGLLibMaterialEx.Loaded;
+begin
+  FFixedFunc.FTexProp.Loaded;
+  FMultitexturing.Loaded;
+  FSM3.Loaded;
+  FSM4.Loaded;
+  FSM5.Loaded;
+end;
+
+procedure TDGLLibMaterialEx.NotifyChange(Sender: TObject);
+begin
+  inherited;
+  FHandle.NotifyChangesOfData;
+end;
+
+procedure TDGLLibMaterialEx.RemoveDefferedInit;
+var
+  i:  Integer;
+  ST: TDGLShaderType;
+begin
+  if FFixedFunc.FTexProp.Enabled then
+  begin
+    if Assigned(FFixedFunc.FTexProp.FLibTexture) then
+      FFixedFunc.FTexProp.FLibTexture.FDefferedInit := False;
+    if Assigned(FFixedFunc.FTexProp.FLibSampler) then
+      FFixedFunc.FTexProp.FLibSampler.FDefferedInit := False;
+  end;
+
+  if FMultitexturing.Enabled then
+  begin
+    if Assigned(FMultitexturing.FLibCombiner) then
+    begin
+      FMultitexturing.FLibCombiner.FDefferedInit := False;
+      for i                                      := 0 to 3 do
+        if Assigned(FMultitexturing.FTexProps[i]) then
+          with FMultitexturing.FTexProps[i] do
+          begin
+            if Assigned(FLibTexture) then
+              FLibTexture.FDefferedInit := False;
+            if Assigned(FLibSampler) then
+              FLibSampler.FDefferedInit := False;
+          end;
+    end;
+  end;
+
+  if FSM3.Enabled then
+  begin
+    for ST := Low(TDGLShaderType) to High(TDGLShaderType) do
+      if Assigned(FSM3.FShaders[ST]) then
+        FSM3.FShaders[ST].FDefferedInit := False;
+  end;
+
+  if FSM4.Enabled then
+  begin
+    for ST := Low(TDGLShaderType) to High(TDGLShaderType) do
+      if Assigned(FSM4.FShaders[ST]) then
+        FSM4.FShaders[ST].FDefferedInit := False;
+  end;
+
+  if FSM5.Enabled then
+  begin
+    for ST := Low(TDGLShaderType) to High(TDGLShaderType) do
+      if Assigned(FSM5.FShaders[ST]) then
+        FSM5.FShaders[ST].FDefferedInit := False;
+  end;
+
+  CurrenTDGLContext.PrepareHandlesData;
+end;
+
+procedure TDGLLibMaterialEx.SetMultitexturing(AValue: TDGLMultitexturingProperties);
+begin
+  FMultitexturing.Assign(AValue);
+end;
+
+procedure TDGLLibMaterialEx.SetFixedFunc(AValue: TDGLFixedFunctionProperties);
+begin
+  FFixedFunc.Assign(AValue);
+end;
+
+procedure TDGLLibMaterialEx.SetLevel(AValue: TDGLMaterialLevel);
+begin
+  if FApplicableLevel <> AValue then
+  begin
+    FApplicableLevel := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLLibMaterialEx.SetSM3(AValue: TDGLShaderModel3);
+begin
+  FSM3.Assign(AValue);
+end;
+
+procedure TDGLLibMaterialEx.SetSM4(AValue: TDGLShaderModel4);
+begin
+  FSM4.Assign(AValue);
+end;
+
+procedure TDGLLibMaterialEx.SetSM5(AValue: TDGLShaderModel5);
+begin
+  FSM5.Assign(AValue);
+end;
+
+function TDGLLibMaterialEx.UnApply(var ARci: TRenderContextInfo): Boolean;
+
+  procedure GetNextPass(AProp: TDGLLibMaterialProperty);
+  begin
+    if Length(AProp.NextPass) > 0 then
+      FNextPass := TDGLMaterialLibraryEx(GetMaterialLibrary).Materials.GetLibMaterialByName(AProp.NextPass)
+    else
+      FNextPass := nil;
+
+    if FNextPass = Self then
+    begin
+      AProp.NextPass := '';
+      FNextPass      := nil;
+    end;
+  end;
+
+begin
+  if FStoreAmalgamating <> ARci.amalgamating then
+    ARci.amalgamating := FStoreAmalgamating;
+
+  if Assigned(FNextPass) then
+  begin
+    Result := FNextPass.UnApply(ARci);
+    if Result then
+      FNextPass.Apply(ARci)
+    else
+      FNextPass := nil;
+    Exit;
+  end;
+
+  case FSelectedLevel of
+    mlFixedFunction:
+      begin
+        FFixedFunc.UnApply(ARci);
+        GetNextPass(FFixedFunc);
+      end;
+
+    mlMultitexturing:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.UnApply(ARci);
+        FMultitexturing.UnApply(ARci);
+        GetNextPass(FMultitexturing);
+      end;
+
+    mlSM3:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.UnApply(ARci);
+        FSM3.UnApply(ARci);
+        GetNextPass(FSM3);
+      end;
+
+    mlSM4:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.UnApply(ARci);
+        FSM4.UnApply(ARci);
+        GetNextPass(FSM4);
+      end;
+
+    mlSM5:
+      begin
+        if FFixedFunc.Enabled then
+          FFixedFunc.UnApply(ARci);
+        FSM5.UnApply(ARci);
+        GetNextPass(FSM5);
+      end;
+  else
+    FNextPass := nil;
+  end;
+  ARci.GLStates.ActiveTexture := 0;
+
+  Result := Assigned(FNextPass);
+  if Result then
+    FNextPass.Apply(ARci);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLMultitexturingProperties'}{$ENDIF}
+
+procedure TDGLMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
+var
+  n, U: Integer;
+  LDir: TVector;
+begin
+  if FEnabled then
+  begin
+    if Assigned(FLibCombiner) and not FLibCombiner.FIsValid then
+      Exit;
+    if Assigned(FLibAsmProg) and not FLibAsmProg.FIsValid then
+      Exit;
+
+    U     := 0;
+    for n := 0 to High(FTexProps) do
+    begin
+      if Assigned(FTexProps[n]) and FTexProps[n].Enabled then
+      begin
+        ARci.GLStates.ActiveTexture := n;
+        FTexProps[n].Apply(ARci);
+        if Ord(FLightDir) = n + 1 then
+        begin
+          LDir := ARci.GLStates.LightPosition[FLightSourceIndex];
+          LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
+          NormalizeVector(LDir);
+          GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
+        end;
+        U := U or (1 shl n);
+      end;
+    end;
+
+    if Assigned(FLibAsmProg) then
+    begin
+      FLibAsmProg.handle.Bind;
+      GL.Enable(GL_VERTEX_PROGRAM_ARB);
+      if Assigned(GetMaterial.FOnAsmProgSetting) then
+        GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
+    end;
+
+    with GL, ARci.GLStates do
+    begin
+      if Assigned(FLibCombiner) and (Length(FLibCombiner.FCommandCache) > 0) then
+      begin
+        for n := 0 to High(FLibCombiner.FCommandCache) do
+        begin
+          ActiveTexture := FLibCombiner.FCommandCache[n].ActiveUnit;
+          TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+          TexEnvi(GL_TEXTURE_ENV, FLibCombiner.FCommandCache[n].Arg1, FLibCombiner.FCommandCache[n].Arg2);
+        end;
+      end;
+      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      ActiveTexture := 0;
+
+    end;
+
+    XGL.BeginUpdate;
+    if U > 3 then
+      XGL.MapTexCoordToArbitrary(U)
+    else if (FTexProps[0].Enabled) and (FTexProps[0].MappingMode = tmmUser) then
+      if FTexProps[1].MappingMode = tmmUser then
+        XGL.MapTexCoordToDual
+      else
+        XGL.MapTexCoordToMain
+    else if FTexProps[1].MappingMode = tmmUser then
+      XGL.MapTexCoordToSecond
+    else
+      XGL.MapTexCoordToMain;
+    XGL.EndUpdate;
+
+  end;
+end;
+
+constructor TDGLMultitexturingProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FEnabled          := False;
+  FTextureMode      := tmDecal;
+  FLightDir         := l2eNone;
+  FLightSourceIndex := 0;
+end;
+
+destructor TDGLMultitexturingProperties.Destroy;
+begin
+  if Assigned(FLibCombiner) then
+    FLibCombiner.UnRegisterUser(Self);
+  if Assigned(FLibAsmProg) then
+    FLibAsmProg.UnRegisterUser(Self);
+  FTexProps[0].Free;
+  FTexProps[1].Free;
+  FTexProps[2].Free;
+  FTexProps[3].Free;
+  inherited;
+end;
+
+function TDGLMultitexturingProperties.GetLibCombinerName: string;
+begin
+  if Assigned(FLibCombiner) then
+    Result := FLibCombiner.name
+  else
+    Result := '';
+end;
+
+function TDGLMultitexturingProperties.GetLibAsmProgName: string;
+begin
+  if Assigned(FLibAsmProg) then
+    Result := FLibAsmProg.name
+  else
+    Result := '';
+end;
+
+function TDGLMultitexturingProperties.IsValid: Boolean;
+var
+  i: Integer;
+begin
+  Result := True;
+  if Assigned(FLibCombiner) then
+    Result := Result and FLibCombiner.IsValid;
+  if Assigned(FLibAsmProg) then
+    Result := Result and FLibAsmProg.IsValid;
+  for i    := 0 to High(FTexProps) do
+    if Assigned(FTexProps[i]) and FTexProps[i].FEnabled then
+      Result := Result and FTexProps[i].IsValid;
+end;
+
+procedure TDGLMultitexturingProperties.Loaded;
+var
+  i: Integer;
+begin
+  SetLibCombinerName(FLibCombinerName);
+  SetLibAsmProgName(FLibAsmProgName);
+  for i := 0 to High(FTexProps) do
+    if Assigned(FTexProps[i]) then
+      FTexProps[i].Loaded;
+end;
+
+procedure TDGLMultitexturingProperties.Notification(Sender: TObject; Operation: TOperation);
+begin
+  if Operation = opRemove then
+  begin
+    if Sender = FLibCombiner then
+      FLibCombiner := nil;
+    if Sender = FLibAsmProg then
+      FLibAsmProg := nil;
+  end;
+  inherited;
+end;
+
+procedure TDGLMultitexturingProperties.SetLibCombinerName(const AValue: string);
+var
+  LCombiner: TDGLTextureCombiner;
+begin
+  if csLoading in GetMaterialLibraryEx.ComponentState then
+  begin
+    FLibCombinerName := AValue;
+    Exit;
+  end;
+
+  if Assigned(FLibCombiner) then
+  begin
+    if FLibCombiner.name = AValue then
+      Exit;
+    FLibCombiner.UnRegisterUser(Self);
+    FLibCombiner := nil;
+  end;
+  LCombiner := GetMaterialLibraryEx.Components.GetCombinerByName(AValue);
+  if Assigned(LCombiner) then
+  begin
+    LCombiner.RegisterUser(Self);
+    FLibCombiner := LCombiner;
+  end;
+  NotifyChange(Self);
+end;
+
+procedure TDGLMultitexturingProperties.SetLightSourceIndex(AValue: Integer);
+begin
+  if AValue < 0 then
+    AValue := 0
+  else if AValue > 7 then
+    AValue          := 7;
+  FLightSourceIndex := AValue;
+end;
+
+procedure TDGLMultitexturingProperties.SetLibAsmProgName(const AValue: string);
+var
+  LProg: TDGLASMVertexProgram;
+begin
+  if csLoading in GetMaterialLibraryEx.ComponentState then
+  begin
+    FLibAsmProgName := AValue;
+    Exit;
+  end;
+
+  if Assigned(FLibAsmProg) then
+  begin
+    if FLibAsmProg.name = AValue then
+      Exit;
+    FLibAsmProg.UnRegisterUser(Self);
+    FLibAsmProg := nil;
+  end;
+  LProg := GetMaterialLibraryEx.Components.GetAsmProgByName(AValue);
+  if Assigned(LProg) then
+  begin
+    LProg.RegisterUser(Self);
+    FLibAsmProg := LProg;
+  end;
+  NotifyChange(Self);
+end;
+
+function TDGLMultitexturingProperties.GetTexProps(AIndex: Integer): TDGLTextureProperties;
+begin
+  if not Assigned(FTexProps[AIndex]) then
+    FTexProps[AIndex] := TDGLTextureProperties.Create(Self);
+  Result              := FTexProps[AIndex];
+end;
+
+procedure TDGLMultitexturingProperties.SetTexProps(AIndex: Integer; AValue: TDGLTextureProperties);
+begin
+  FTexProps[AIndex].Assign(AValue);
+end;
+
+procedure TDGLMultitexturingProperties.SetTextureMode(AValue: TDGLTextureMode);
+begin
+  if AValue <> FTextureMode then
+  begin
+    FTextureMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLMultitexturingProperties.UnApply(var ARci: TRenderContextInfo);
+var
+  n: Integer;
+begin
+  for n := 0 to High(FTexProps) do
+  begin
+    if FTexProps[n].Enabled then
+    begin
+      ARci.GLStates.ActiveTexture := n;
+      FTexProps[n].UnApply(ARci);
+    end;
+  end;
+  ARci.GLStates.ActiveTexture := 0;
+
+  if Assigned(FLibAsmProg) then
+    GL.Disable(GL_VERTEX_PROGRAM_ARB);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureProperties'}{$ENDIF}
+
+procedure TDGLTextureProperties.Apply(var ARci: TRenderContextInfo);
+var
+  glTarget: TDGLEnum;
+begin
+  if Assigned(FLibTexture) then
+    with GL do
+    begin
+      FLibTexture.FApplicableSampler := FLibSampler;
+      FLibTexture.Apply(ARci);
+
+      // Apply swizzling if possible
+      glTarget := DecodeGLTextureTarget(FLibTexture.Shape);
+      if ARB_texture_swizzle or EXT_texture_swizzle then
+      begin
+        if FSwizzling.FSwizzles[0] <> FLibTexture.FSwizzles[0] then
+        begin
+          FLibTexture.FSwizzles[0] := FSwizzling.FSwizzles[0];
+          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_R, cTextureSwizzle[FSwizzling.FSwizzles[0]]);
+        end;
+        if FSwizzling.FSwizzles[1] <> FLibTexture.FSwizzles[1] then
+        begin
+          FLibTexture.FSwizzles[1] := FSwizzling.FSwizzles[1];
+          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_G, cTextureSwizzle[FSwizzling.FSwizzles[1]]);
+        end;
+        if FSwizzling.FSwizzles[2] <> FLibTexture.FSwizzles[2] then
+        begin
+          FLibTexture.FSwizzles[2] := FSwizzling.FSwizzles[2];
+          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_B, cTextureSwizzle[FSwizzling.FSwizzles[2]]);
+        end;
+        if FSwizzling.FSwizzles[3] <> FLibTexture.FSwizzles[3] then
+        begin
+          FLibTexture.FSwizzles[3] := FSwizzling.FSwizzles[3];
+          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_A, cTextureSwizzle[FSwizzling.FSwizzles[3]]);
+        end;
+      end;
+
+      if Assigned(FLibSampler) then
+      begin
+        if FLibSampler.IsValid then
+          FLibSampler.Apply(ARci)
+        else if FLibTexture.FLastSampler <> FLibSampler then
+        begin
+          // Sampler object not supported, lets use texture states
+          TexParameterfv(glTarget, GL_TEXTURE_BORDER_COLOR, FLibSampler.BorderColor.AsAddress);
+          TexParameteri(glTarget, GL_TEXTURE_WRAP_S, cTextureWrapMode[FLibSampler.WrapX]);
+          TexParameteri(glTarget, GL_TEXTURE_WRAP_T, cTextureWrapMode[FLibSampler.WrapY]);
+          TexParameteri(glTarget, GL_TEXTURE_WRAP_R, cTextureWrapMode[FLibSampler.WrapZ]);
+          TexParameterf(glTarget, GL_TEXTURE_LOD_BIAS, FLibSampler.LodBias + FLibSampler.FLODBiasFract);
+          TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FLibSampler.MinFilter]);
+          TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FLibSampler.MagFilter]);
+
+          if EXT_texture_filter_anisotropic then
+          begin
+            if FLibSampler.FilteringQuality = tfAnisotropic then
+              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, CurrenTDGLContext.GLStates.MaxTextureAnisotropy)
+            else
+              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+          end;
+
+          TexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE, cTextureCompareMode[FLibSampler.CompareMode]);
+          TexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC, cGLComparisonFunctionToGLEnum[FLibSampler.CompareFunc]);
+
+          if EXT_texture_sRGB_decode then
+          begin
+            if FLibSampler.sRGB_Encode then
+              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
+            else
+              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_SKIP_DECODE_EXT);
+          end;
+
+          FLibTexture.FLastSampler := FLibSampler;
+        end;
+      end;
+
+      if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
+        ARci.GLStates.SeTDGLTextureMatrix(FTextureMatrix);
+
+      if ARci.currentMaterialLevel < mlSM3 then
+      begin
+        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        ApplyMappingMode;
+        if ARci.currentMaterialLevel = mlFixedFunction then
+          XGL.MapTexCoordToMain;
+      end;
+    end;
+end;
+
+procedure TDGLTextureProperties.ApplyMappingMode;
+var
+  R_Dim: Boolean;
+begin
+  with GL do
+  begin
+    R_Dim := ARB_texture_cube_map or EXT_texture3D;
+
+    case MappingMode of
+
+      tmmUser:
+        ; // nothing to do, but checked first (common case)
+
+      tmmObjectLinear:
+        begin
+          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          TexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
+          TexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
+          Enable(GL_TEXTURE_GEN_S);
+          Enable(GL_TEXTURE_GEN_T);
+
+          if R_Dim then
+          begin
+            TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+            TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+            TexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
+            TexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
+            Enable(GL_TEXTURE_GEN_R);
+            Enable(GL_TEXTURE_GEN_Q);
+          end;
+        end;
+
+      tmmEyeLinear:
+        begin
+          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+          // specify planes in eye space, not world space
+          MatrixMode(GL_MODELVIEW);
+          PushMatrix;
+          LoadIdentity;
+          TexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
+          TexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
+          Enable(GL_TEXTURE_GEN_S);
+          Enable(GL_TEXTURE_GEN_T);
+          if R_Dim then
+          begin
+            TexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
+            TexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
+            Enable(GL_TEXTURE_GEN_R);
+            Enable(GL_TEXTURE_GEN_Q);
+          end;
+          PopMatrix;
+        end;
+
+      tmmSphere:
+        begin
+          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+          Enable(GL_TEXTURE_GEN_S);
+          Enable(GL_TEXTURE_GEN_T);
+        end;
+
+      tmmCubeMapReflection, tmmCubeMapCamera:
+        if R_Dim then
+        begin
+          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          Enable(GL_TEXTURE_GEN_S);
+          Enable(GL_TEXTURE_GEN_T);
+          Enable(GL_TEXTURE_GEN_R);
+        end;
+
+      tmmCubeMapNormal, tmmCubeMapLight0:
+        if R_Dim then
+        begin
+          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          Enable(GL_TEXTURE_GEN_S);
+          Enable(GL_TEXTURE_GEN_T);
+          Enable(GL_TEXTURE_GEN_R);
+        end;
+    end;
+  end;
+end;
+
+procedure TDGLTextureProperties.Assign(Source: TPersistent);
+var
+  LTexProp: TDGLTextureProperties;
+begin
+  if Source is TDGLTextureProperties then
+  begin
+    LTexProp       := TDGLTextureProperties(Source);
+    LibTextureName := LTexProp.LibTextureName;
+    LibSamplerName := LTexProp.LibSamplerName;
+    TextureOffset.Assign(LTexProp.TextureOffset);
+    TextureScale.Assign(LTexProp.TextureScale);
+    FTextureRotate := LTexProp.TextureRotate;
+    FEnvColor.Assign(LTexProp.EnvColor);
+    FMappingMode := LTexProp.MappingMode;
+    MappingSCoordinates.Assign(LTexProp.MappingSCoordinates);
+    MappingTCoordinates.Assign(LTexProp.MappingTCoordinates);
+    MappingRCoordinates.Assign(LTexProp.MappingRCoordinates);
+    MappingQCoordinates.Assign(LTexProp.MappingQCoordinates);
+  end;
+  inherited;
+end;
+
+procedure TDGLTextureProperties.CalculateTextureMatrix;
+begin
+  if not(Assigned(FTextureOffset) or Assigned(FTextureScale) or StoreTextureRotate) then
+  begin
+    FTextureMatrixIsIdentity := True;
+    Exit;
+  end;
+
+  if TextureOffset.Equals(NullHmgVector) and TextureScale.Equals(XYZHmgVector) and not StoreTextureRotate then
+    FTextureMatrixIsIdentity := True
+  else
+  begin
+    FTextureMatrixIsIdentity := False;
+    FTextureMatrix           := CreateScaleAndTranslationMatrix(TextureScale.AsVector, TextureOffset.AsVector);
+    if StoreTextureRotate then
+      FTextureMatrix := MatrixMultiply(FTextureMatrix, CreateRotationMatrixZ(DegToRad(FTextureRotate)));
+  end;
+  FTextureOverride := False;
+  NotifyChange(Self);
+end;
+
+constructor TDGLTextureProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FTextureRotate := 0;
+  FMappingMode   := tmmUser;
+  FTextureMatrix := IdentityHmgMatrix;
+  FEnabled       := False;
+  FSwizzling     := TDGLTextureSwizzling.Create(Self);
+  FEnvColor      := TDGLColor.CreateInitialized(Self, clrTransparent);
+end;
+
+destructor TDGLTextureProperties.Destroy;
+begin
+  if Assigned(FLibSampler) then
+    FLibSampler.UnRegisterUser(Self);
+  if Assigned(FLibTexture) then
+    FLibTexture.UnRegisterUser(Self);
+  FTextureOffset.Free;
+  FTextureScale.Free;
+  FMapSCoordinates.Free;
+  FMapTCoordinates.Free;
+  FMapRCoordinates.Free;
+  FMapQCoordinates.Free;
+  FSwizzling.Destroy;
+  FEnvColor.Destroy;
+  inherited;
+end;
+
+function TDGLTextureProperties.GetLibSamplerName: TDGLMaterialComponentName;
+begin
+  if Assigned(FLibSampler) then
+    Result := FLibSampler.name
+  else
+    Result := '';
+end;
+
+function TDGLTextureProperties.GetLibTextureName: TDGLMaterialComponentName;
+begin
+  if Assigned(FLibTexture) then
+    Result := FLibTexture.name
+  else
+    Result := '';
+end;
+
+function TDGLTextureProperties.GetMappingQCoordinates: TDGLCoordinates4;
+begin
+  if not Assigned(FMapQCoordinates) then
+    FMapQCoordinates := TDGLCoordinates4.CreateInitialized(Self, WHmgVector, csVector);
+  Result             := FMapQCoordinates;
+end;
+
+function TDGLTextureProperties.GetMappingRCoordinates: TDGLCoordinates4;
+begin
+  if not Assigned(FMapRCoordinates) then
+    FMapRCoordinates := TDGLCoordinates4.CreateInitialized(Self, ZHmgVector, csVector);
+  Result             := FMapRCoordinates;
+end;
+
+function TDGLTextureProperties.GetMappingSCoordinates: TDGLCoordinates4;
+begin
+  if not Assigned(FMapSCoordinates) then
+    FMapSCoordinates := TDGLCoordinates4.CreateInitialized(Self, XHmgVector, csVector);
+  Result             := FMapSCoordinates;
+end;
+
+function TDGLTextureProperties.GetMappingTCoordinates: TDGLCoordinates4;
+begin
+  if not Assigned(FMapTCoordinates) then
+    FMapTCoordinates := TDGLCoordinates4.CreateInitialized(Self, YHmgVector, csVector);
+  Result             := FMapTCoordinates;
+end;
+
+function TDGLTextureProperties.GetTextureOffset: TDGLCoordinates;
+begin
+  if not Assigned(FTextureOffset) then
+    FTextureOffset := TDGLCoordinates3.CreateInitialized(Self, NullHmgVector, csPoint);
+  Result           := FTextureOffset;
+end;
+
+function TDGLTextureProperties.GetTextureScale: TDGLCoordinates;
+begin
+  if not Assigned(FTextureScale) then
+    FTextureScale := TDGLCoordinates3.CreateInitialized(Self, VectorMake(1, 1, 1, 1), csVector);
+  Result          := FTextureScale;
+end;
+
+function TDGLTextureProperties.IsValid: Boolean;
+begin
+  if Assigned(FLibTexture) then
+    Result := FLibTexture.IsValid
+  else
+    Result := False;
+end;
+
+procedure TDGLTextureProperties.Loaded;
+begin
+  SetLibTextureName(FLibTextureName);
+  SetLibSamplerName(FLibSamplerName);
+  CalculateTextureMatrix;
+end;
+
+procedure TDGLTextureProperties.Notification(Sender: TObject; Operation: TOperation);
+begin
+  if Operation = opRemove then
+  begin
+    if Sender = FLibTexture then
+      FLibTexture := nil
+    else if Sender = FLibSampler then
+      FLibSampler := nil;
+  end;
+end;
+
+procedure TDGLTextureProperties.NotifyChange(Sender: TObject);
+begin
+  inherited;
+  if (Sender = FTextureOffset) or (Sender = FTextureScale) then
+    CalculateTextureMatrix;
+  if (Sender = FLibSampler) and Assigned(FLibTexture) then
+    FLibTexture.FLastSampler := nil;
+end;
+
+procedure TDGLTextureProperties.SetLibSamplerName(const AValue: TDGLMaterialComponentName);
+var
+  LSampler: TDGLTextureSampler;
+begin
+  if csLoading in GetMaterialLibraryEx.ComponentState then
+  begin
+    FLibSamplerName := AValue;
+    Exit;
+  end;
+
+  if Assigned(FLibSampler) then
+  begin
+    if FLibSampler.name = AValue then
+      Exit;
+    FLibSampler.UnRegisterUser(Self);
+    FLibSampler := nil;
+  end;
+  LSampler := GetMaterialLibraryEx.Components.GetSamplerByName(AValue);
+  if Assigned(LSampler) then
+  begin
+    LSampler.RegisterUser(Self);
+    FLibSampler := LSampler;
+  end;
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureProperties.SetLibTextureName(const AValue: TDGLMaterialComponentName);
+var
+  LTexture: TDGLAbstractTexture;
+begin
+  if csLoading in GetMaterialLibraryEx.ComponentState then
+  begin
+    FLibTextureName := AValue;
+    Exit;
+  end;
+
+  if Assigned(FLibTexture) then
+  begin
+    if FLibTexture.name = AValue then
+      Exit;
+    FLibTexture.UnRegisterUser(Self);
+    FLibTexture := nil;
+  end;
+
+  LTexture := GetMaterialLibraryEx.Components.GetTextureByName(AValue);
+
+  if Assigned(LTexture) then
+  begin
+    if LTexture is TDGLFrameBufferAttachment then
+    begin
+      if TDGLFrameBufferAttachment(LTexture).OnlyWrite then
+      begin
+        if IsDesignTime then
+          InformationDlg('Can not use write only attachment as texture')
+        else
+          GLSLogger.LogErrorFmt('Attempt to use write only attachment "%s" as texture', [LTexture.name]);
+        NotifyChange(Self);
+        Exit;
+      end;
+    end;
+    LTexture.RegisterUser(Self);
+    FLibTexture := LTexture;
+  end;
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureProperties.SetMappingMode(const AValue: TDGLTextureMappingMode);
+begin
+  if AValue <> FMappingMode then
+  begin
+    FMappingMode := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureProperties.SetMappingQCoordinates(const AValue: TDGLCoordinates4);
+begin
+  MappingQCoordinates.Assign(AValue);
+end;
+
+procedure TDGLTextureProperties.SetMappingRCoordinates(const AValue: TDGLCoordinates4);
+begin
+  MappingRCoordinates.Assign(AValue);
+end;
+
+procedure TDGLTextureProperties.SetMappingSCoordinates(const AValue: TDGLCoordinates4);
+begin
+  MappingSCoordinates.Assign(AValue);
+end;
+
+procedure TDGLTextureProperties.SetMappingTCoordinates(const AValue: TDGLCoordinates4);
+begin
+  MappingTCoordinates.Assign(AValue);
+end;
+
+procedure TDGLTextureProperties.SetSwizzling(const AValue: TDGLTextureSwizzling);
+begin
+  FSwizzling.Assign(AValue);
+end;
+
+procedure TDGLTextureProperties.SetTextureMatrix(const AValue: TMatrix);
+begin
+  FTextureMatrixIsIdentity := CompareMem(@AValue.V[0], @IdentityHmgMatrix.V[0], SizeOf(TMatrix));
+  FTextureMatrix           := AValue;
+  FTextureOverride         := True;
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureProperties.SetTextureOffset(const AValue: TDGLCoordinates);
+begin
+  TextureOffset.Assign(AValue);
+  CalculateTextureMatrix;
+end;
+
+procedure TDGLTextureProperties.SetTextureRotate(AValue: Single);
+begin
+  if AValue <> FTextureRotate then
+  begin
+    FTextureRotate := AValue;
+    CalculateTextureMatrix;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLTextureProperties.SetTextureScale(const AValue: TDGLCoordinates);
+begin
+  TextureScale.Assign(AValue);
+  CalculateTextureMatrix;
+end;
+
+function TDGLTextureProperties.StoreMappingQCoordinates: Boolean;
+begin
+  if Assigned(FMapQCoordinates) then
+    Result := not VectorEquals(FMapQCoordinates.AsVector, WHmgVector)
+  else
+    Result := False;
+end;
+
+function TDGLTextureProperties.StoreMappingRCoordinates: Boolean;
+begin
+  if Assigned(FMapRCoordinates) then
+    Result := not VectorEquals(FMapRCoordinates.AsVector, ZHmgVector)
+  else
+    Result := False;
+end;
+
+function TDGLTextureProperties.StoreMappingSCoordinates: Boolean;
+begin
+  if Assigned(FMapSCoordinates) then
+    Result := not VectorEquals(FMapSCoordinates.AsVector, XHmgVector)
+  else
+    Result := False;
+end;
+
+function TDGLTextureProperties.StoreMappingTCoordinates: Boolean;
+begin
+  if Assigned(FMapTCoordinates) then
+    Result := not VectorEquals(FMapTCoordinates.AsVector, YHmgVector)
+  else
+    Result := False;
+end;
+
+function TDGLTextureProperties.StoreSwizzling: Boolean;
+begin
+  Result := FSwizzling.StoreSwizzle(0);
+end;
+
+function TDGLTextureProperties.StoreTextureOffset: Boolean;
+begin
+  Result := Assigned(FTextureOffset);
+end;
+
+function TDGLTextureProperties.StoreTextureRotate: Boolean;
+begin
+  Result := Abs(FTextureRotate) > EPSILON;
+end;
+
+function TDGLTextureProperties.StoreTextureScale: Boolean;
+begin
+  Result := Assigned(FTextureScale);
+end;
+
+procedure TDGLTextureProperties.SetEnvColor(const AValue: TDGLColor);
+begin
+  FEnvColor.Assign(AValue);
+  NotifyChange(Self);
+end;
+
+procedure TDGLTextureProperties.UnApply(var ARci: TRenderContextInfo);
+begin
+  if Assigned(FLibTexture) then
+  begin
+    FLibTexture.UnApply(ARci);
+    if Assigned(FLibSampler) then
+      FLibSampler.UnApply(ARci);
+
+    if ARci.currentMaterialLevel < mlSM3 then
+    begin
+      if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
+        ARci.GLStates.SeTDGLTextureMatrix(IdentityHmgMatrix);
+      UnApplyMappingMode;
+    end;
+  end;
+end;
+
+procedure TDGLTextureProperties.UnApplyMappingMode;
+begin
+  if MappingMode <> tmmUser then
+    with GL do
+    begin
+      Disable(GL_TEXTURE_GEN_S);
+      Disable(GL_TEXTURE_GEN_T);
+      if EXT_texture3D or ARB_texture_cube_map then
+      begin
+        Disable(GL_TEXTURE_GEN_R);
+        Disable(GL_TEXTURE_GEN_Q);
+      end;
+    end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLLibMaterialProperty'}{$ENDIF}
+
+function TDGLLibMaterialProperty.GetMaterial: TDGLLibMaterialEx;
+begin
+  if Owner is TDGLLibMaterialEx then
+    Result := TDGLLibMaterialEx(Owner)
+  else if Owner is TDGLLibMaterialProperty then
+    Result := TDGLLibMaterialProperty(Owner).GetMaterial
+  else
+    Result := nil;
+end;
+
+function TDGLLibMaterialProperty.GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+begin
+  if Owner is TDGLBaseMaterialCollectionItem then
+    Result := TDGLBaseMaterialCollectionItem(Owner).GetMaterialLibrary
+  else
+    Result := GetMaterial.GetMaterialLibrary;
+end;
+
+function TDGLLibMaterialProperty.GetMaterialLibraryEx: TDGLMaterialLibraryEx;
+begin
+  if Owner is TDGLBaseMaterialCollectionItem then
+    Result := TDGLBaseMaterialCollectionItem(Owner).GetMaterialLibraryEx
+  else
+    Result := TDGLMaterialLibraryEx(GetMaterial.GetMaterialLibrary);
+end;
+
+procedure TDGLLibMaterialProperty.SetNextPass(const AValue: TDGLLibMaterialName);
+begin
+  if AValue <> FNextPassName then
+  begin
+    FNextPassName := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLLibMaterialProperty.Loaded;
+begin
+end;
+
+procedure TDGLLibMaterialProperty.NotifyChange(Sender: TObject);
+var
+  NA: IGLNotifyAble;
+begin
+  if Assigned(Owner) then
+  begin
+    if Supports(Owner, IGLNotifyAble, NA) then
+      NA.NotifyChange(Self)
+  end;
+  if Assigned(OnNotifyChange) then
+    OnNotifyChange(Self);
+end;
+
+procedure TDGLLibMaterialProperty.SetEnabled(AValue: Boolean);
+begin
+  if FEnabled <> AValue then
+  begin
+    FEnabled := AValue;
+    if Owner is TDGLLibMaterialEx then
+      GetMaterial.NotifyChange(Self);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLLibMaterialsEx'}{$ENDIF}
+
+function TDGLLibMaterialsEx.Add: TDGLLibMaterialEx;
+begin
+  Result := (inherited Add) as TDGLLibMaterialEx;
+end;
+
+constructor TDGLLibMaterialsEx.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner, TDGLLibMaterialEx);
+end;
+
+function TDGLLibMaterialsEx.FindItemID(ID: Integer): TDGLLibMaterialEx;
+begin
+  Result := (inherited FindItemID(ID)) as TDGLLibMaterialEx;
+end;
+
+function TDGLLibMaterialsEx.GetItems(AIndex: Integer): TDGLLibMaterialEx;
+begin
+  Result := TDGLLibMaterialEx(inherited Items[AIndex]);
+end;
+
+function TDGLLibMaterialsEx.GetLibMaterialByName(const AName: string): TDGLLibMaterialEx;
+var
+  LMaterial: TDGLAbstractLibMaterial;
+begin
+  LMaterial := GetMaterial(AName);
+  if Assigned(LMaterial) and (LMaterial is TDGLLibMaterialEx) then
+    Result := TDGLLibMaterialEx(LMaterial)
+  else
+    Result := nil;
+end;
+
+function TDGLLibMaterialsEx.IndexOf(const Item: TDGLLibMaterialEx): Integer;
+var
+  i: Integer;
+begin
+  Result := -1;
+  if Count <> 0 then
+    for i := 0 to Count - 1 do
+      if GetItems(i) = Item then
+      begin
+        Result := i;
+        Exit;
+      end;
+end;
+
+function TDGLLibMaterialsEx.MaterialLibrary: TDGLMaterialLibraryEx;
+begin
+  Result := TDGLMaterialLibraryEx(GetOwner);
+end;
+
+procedure TDGLLibMaterialsEx.SetItems(AIndex: Integer; const AValue: TDGLLibMaterialEx);
+begin
+  inherited Items[AIndex] := AValue;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLMatLibComponents'}{$ENDIF}
+
+function TDGLMatLibComponents.GetAttachmentByName(const AName: TDGLMaterialComponentName): TDGLFrameBufferAttachment;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLFrameBufferAttachment) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLFrameBufferAttachment(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetCombinerByName(const AName: TDGLMaterialComponentName): TDGLTextureCombiner;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLTextureCombiner) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLTextureCombiner(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetItemByName(const AName: TDGLMaterialComponentName): TDGLBaseMaterialCollectionItem;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i].FNameHashKey = n) and (Items[i].name = AName) then
+    begin
+      Result := Items[i];
+      Exit;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetItems(Index: Integer): TDGLBaseMaterialCollectionItem;
+begin
+  Result := TDGLBaseMaterialCollectionItem(inherited GetItems(index));
+end;
+
+function TDGLMatLibComponents.GetNamePath: string;
+var
+  S: string;
+begin
+  Result := ClassName;
+  if GetOwner = nil then
+    Exit;
+  S := GetOwner.GetNamePath;
+  if S = '' then
+    Exit;
+  Result := S + '.Components';
+end;
+
+function TDGLMatLibComponents.GetSamplerByName(const AName: TDGLMaterialComponentName): TDGLTextureSampler;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLTextureSampler) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLTextureSampler(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetShaderByName(const AName: TDGLMaterialComponentName): TDGLShaderEx;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLShaderEx) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLShaderEx(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetAsmProgByName(const AName: TDGLMaterialComponentName): TDGLASMVertexProgram;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLASMVertexProgram) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLASMVertexProgram(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+function TDGLMatLibComponents.GetTextureByName(const AName: TDGLMaterialComponentName): TDGLAbstractTexture;
+var
+  n, i: Integer;
+begin
+  n     := ComputeNameHashKey(AName);
+  for i := 0 to Count - 1 do
+  begin
+    if (Items[i] is TDGLAbstractTexture) and (Items[i].FNameHashKey = n) then
+    begin
+      if Items[i].name = AName then
+      begin
+        Result := TDGLTextureImageEx(Items[i]);
+        Exit;
+      end;
+    end;
+  end;
+  Result := nil;
+end;
+
+class function TDGLMatLibComponents.ItemsClass: TDGLXCollectionItemClass;
+begin
+  Result := TDGLBaseMaterialCollectionItem;
+end;
+
+function TDGLMatLibComponents.MakeUniqueName(const AName: TDGLMaterialComponentName): TDGLMaterialComponentName;
+var
+  i: Integer;
+begin
+  Result := AName;
+  i      := 1;
+  while GetItemByName(Result) <> nil do
+  begin
+    Result := AName + IntToStr(i);
+    Inc(i);
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialLibraryEx'}{$ENDIF}
+
+function TDGLMaterialLibraryEx.AddAttachment(const AName: TDGLMaterialComponentName): TDGLFrameBufferAttachment;
+begin
+  Result      := TDGLFrameBufferAttachment.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+function TDGLMaterialLibraryEx.AddCombiner(const AName: TDGLMaterialComponentName): TDGLTextureCombiner;
+begin
+  Result      := TDGLTextureCombiner.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+function TDGLMaterialLibraryEx.AddSampler(const AName: TDGLMaterialComponentName): TDGLTextureSampler;
+begin
+  Result      := TDGLTextureSampler.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+function TDGLMaterialLibraryEx.AddShader(const AName: TDGLMaterialComponentName): TDGLShaderEx;
+begin
+  Result      := TDGLShaderEx.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+function TDGLMaterialLibraryEx.AddAsmProg(const AName: TDGLMaterialComponentName): TDGLASMVertexProgram;
+begin
+  Result      := TDGLASMVertexProgram.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+function TDGLMaterialLibraryEx.AddTexture(const AName: TDGLMaterialComponentName): TDGLTextureImageEx;
+begin
+  Result      := TDGLTextureImageEx.Create(Components);
+  Result.name := AName;
+  Components.Add(Result);
+end;
+
+constructor TDGLMaterialLibraryEx.Create(AOwner: TComponent);
+begin
+  inherited;
+  FMaterials  := TDGLLibMaterialsEx.Create(Self);
+  FComponents := TDGLMatLibComponents.Create(Self);
+end;
+
+procedure TDGLMaterialLibraryEx.DefineProperties(Filer: TFiler);
+begin
+  Filer.DefineBinaryProperty('ComponentsData', ReadComponents, WriteComponents, Components.Count > 0);
+  inherited;
+end;
+
+destructor TDGLMaterialLibraryEx.Destroy;
+begin
+  FMaterials.Destroy;
+  FComponents.Destroy;
+  inherited;
+end;
+
+function TDGLMaterialLibraryEx.GetMaterials: TDGLLibMaterialsEx;
+begin
+  Result := TDGLLibMaterialsEx(FMaterials);
+end;
+
+procedure TDGLMaterialLibraryEx.GetNames(Proc: TGetStrProc; AClass: CGLBaseMaterialCollectionItem);
+var
+  i: Integer;
+begin
+  for i := 0 to Components.Count - 1 do
+    if Components[i].ClassType = AClass then
+      Proc(Components[i].name)
+end;
+
+procedure TDGLMaterialLibraryEx.Loaded;
+begin
+  inherited;
+end;
+
+procedure TDGLMaterialLibraryEx.ReadComponents(AStream: TStream);
+var
+  LReader: TReader;
+begin
+  LReader := TReader.Create(AStream, 16384);
+  try
+    Components.ReadFromFiler(LReader);
+  finally
+    LReader.Free;
+  end;
+end;
+
+procedure TDGLMaterialLibraryEx.SetComponents(AValue: TDGLMatLibComponents);
+begin
+  FComponents.Assign(AValue);
+end;
+
+procedure TDGLMaterialLibraryEx.SetLevelForAll(const ALevel: TDGLMaterialLevel);
+var
+  i: Integer;
+begin
+  for i                          := Materials.Count - 1 downto 0 do
+    Materials[i].ApplicableLevel := ALevel;
+end;
+
+procedure TDGLMaterialLibraryEx.SetMaterials(AValue: TDGLLibMaterialsEx);
+begin
+  FMaterials.Assign(AValue);
+end;
+
+function TDGLMaterialLibraryEx.StoreMaterials: Boolean;
+begin
+  Result := (FMaterials.Count > 0);
+end;
+
+procedure TDGLMaterialLibraryEx.WriteComponents(AStream: TStream);
+var
+  LWriter: TWriter;
+begin
+  LWriter := TWriter.Create(AStream, 16384);
+  try
+    Components.WriteToFiler(LWriter);
+  finally
+    LWriter.Free;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureSwizzling'}{$ENDIF}
+
+procedure TDGLTextureSwizzling.Assign(Source: TPersistent);
+var
+  LSwizzling: TDGLTextureSwizzling;
+begin
+  if Source is TDGLTextureSwizzling then
+  begin
+    LSwizzling   := TDGLTextureSwizzling(Source);
+    FSwizzles[0] := LSwizzling.FSwizzles[0];
+    FSwizzles[1] := LSwizzling.FSwizzles[1];
+    FSwizzles[2] := LSwizzling.FSwizzles[2];
+    FSwizzles[3] := LSwizzling.FSwizzles[3];
+  end;
+  inherited;
+end;
+
+constructor TDGLTextureSwizzling.Create(AOwner: TPersistent);
+begin
+  inherited;
+  FSwizzles := cDefaultSwizzleVector;
+end;
+
+function TDGLTextureSwizzling.GetSwizzle(AIndex: Integer): TDGLTextureSwizzle;
+begin
+  Result := FSwizzles[AIndex];
+end;
+
+procedure TDGLTextureSwizzling.ReadFromFiler(AReader: TReader);
+begin
+  with AReader do
+  begin
+    ReadInteger;
+    FSwizzles[0] := TDGLTextureSwizzle(ReadInteger);
+    FSwizzles[1] := TDGLTextureSwizzle(ReadInteger);
+    FSwizzles[2] := TDGLTextureSwizzle(ReadInteger);
+    FSwizzles[3] := TDGLTextureSwizzle(ReadInteger);
+  end;
+end;
+
+procedure TDGLTextureSwizzling.SetSwizzle(AIndex: Integer; AValue: TDGLTextureSwizzle);
+begin
+  if AValue <> FSwizzles[AIndex] then
+  begin
+    FSwizzles[AIndex] := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+function TDGLTextureSwizzling.StoreSwizzle(AIndex: Integer): Boolean;
+begin
+  Result := (FSwizzles[AIndex] <> cDefaultSwizzleVector[AIndex]);
+end;
+
+procedure TDGLTextureSwizzling.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0);
+    WriteInteger(Integer(FSwizzles[0]));
+    WriteInteger(Integer(FSwizzles[1]));
+    WriteInteger(Integer(FSwizzles[2]));
+    WriteInteger(Integer(FSwizzles[3]));
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TDGLFrameBufferAttachment'}{$ENDIF}
+
+procedure TDGLFrameBufferAttachment.Apply(var ARci: TRenderContextInfo);
+begin
+  if FIsValid and not FOnlyWrite then
+  begin
+    // Just bind
+    with ARci.GLStates do
+    begin
+      ActiveTextureEnabled[FHandle.Target]          := True;
+      TextureBinding[ActiveTexture, FHandle.Target] := FHandle.handle;
+    end;
+  end
+  else
+    ARci.GLStates.TextureBinding[ARci.GLStates.ActiveTexture, FHandle.Target] := 0;
+end;
+
+procedure TDGLFrameBufferAttachment.Assign(Source: TPersistent);
+var
+  LAttachment: TDGLFrameBufferAttachment;
+begin
+  if Source is TDGLFrameBufferAttachment then
+  begin
+    LAttachment           := TDGLFrameBufferAttachment(Source);
+    FLayered              := LAttachment.Layered;
+    FCubeMap              := LAttachment.CubeMap;
+    FSamples              := LAttachment.Samples;
+    FOnlyWrite            := LAttachment.OnlyWrite;
+    FFixedSamplesLocation := LAttachment.FixedSamplesLocation;
+    FWidth                := LAttachment.InternalWidth;
+    FHeight               := LAttachment.InternalHeight;
+    FDepth                := LAttachment.InternalDepth;
+    FInternalFormat       := LAttachment.InternalFormat;
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
+constructor TDGLFrameBufferAttachment.Create(AOwner: TDGLXCollection);
+begin
+  inherited;
+  FDefferedInit                 := False;
+  FHandle                       := TDGLTextureHandle.Create;
+  FHandle.OnPrapare             := DoOnPrepare;
+  FRenderBufferHandle           := TDGLRenderbufferHandle.Create;
+  FRenderBufferHandle.OnPrapare := DoOnPrepare;
+  FInternalFormat               := tfRGBA8;
+  FWidth                        := 256;
+  FHeight                       := 256;
+  FDepth                        := 0;
+  FSamples                      := -1;
+  FLayered                      := False;
+  FCubeMap                      := False;
+  FOnlyWrite                    := False;
+  FFixedSamplesLocation         := False;
+  Name                          := TDGLMatLibComponents(AOwner).MakeUniqueName('Attachment');
+end;
+
+destructor TDGLFrameBufferAttachment.Destroy;
+begin
+  FHandle.Destroy;
+  FRenderBufferHandle.Destroy;
+  inherited;
+end;
+
+procedure TDGLFrameBufferAttachment.DoOnPrepare(Sender: TDGLContext);
+var
+  LTarget:                     TDGLTextureTarget;
+  w, h, d, S, level, MaxLevel: Integer;
+  glTarget, glFormat, glFace:  TDGLEnum;
+begin
+  if IsDesignTime and FDefferedInit then
+    Exit;
+
+  FHandle.AllocateHandle;
+  FRenderBufferHandle.AllocateHandle;
+  if not(FHandle.IsDataNeedUpdate or FRenderBufferHandle.IsDataNeedUpdate) then
+    Exit;
+
+  // Target
+
+  if FSamples < 0 then
+  begin
+    LTarget := ttTexture2D;
+    if FHeight = 1 then
+      LTarget := ttTexture1D;
+    if FCubeMap then
+      LTarget := ttTextureCube;
+    if FDepth > 0 then
+      LTarget := ttTexture3D;
+    if FLayered then
+    begin
+      if FDepth < 2 then
+        LTarget := ttTexture1DArray
+      else
+        LTarget := ttTexture2DArray;
+      if FCubeMap then
+        LTarget := ttTextureCubeArray;
+    end;
+  end
+  else
+  begin
+    if FDepth > 0 then
+      LTarget := ttTexture2DMultisampleArray
+    else
+      LTarget := ttTexture2DMultisample;
+  end;
+
+  // Check target support
+  if FOnlyWrite and (LTarget = ttTexture2DMultisample) and not Sender.GL.EXT_framebuffer_multisample then
+  begin
+    FIsValid := False;
+    Exit;
+  end;
+  if not IsTargetSupported(LTarget) then
+  begin
+    FIsValid := False;
+    Exit;
+  end;
+
+  // Adjust dimension
+  w := FWidth;
+  h := FHeight;
+  d := FDepth;
+  S := FSamples;
+  if FCubeMap then
+  begin
+    if w > Integer(Sender.GLStates.MaxCubeTextureSize) then
+      w := Sender.GLStates.MaxCubeTextureSize;
+    h   := w;
+    if FLayered then
+    begin
+      if d < 6 then
+        d := 6
+      else if (d mod 6) > 0 then
+        d := 6 * (d div 6 + 1);
+    end;
+  end
+  else if w > Integer(Sender.GLStates.MaxTextureSize) then
+    w := Sender.GLStates.MaxTextureSize;
+  if h > Integer(Sender.GLStates.MaxTextureSize) then
+    h := Sender.GLStates.MaxTextureSize;
+  if FLayered then
+  begin
+    if d > Integer(Sender.GLStates.MaxArrayTextureSize) then
+      d := Sender.GLStates.MaxArrayTextureSize;
+  end
+  else if d > Integer(Sender.GLStates.Max3DTextureSize) then
+    d := Sender.GLStates.Max3DTextureSize;
+  if (S > -1) and (S > Integer(Sender.GLStates.MaxSamples)) then
+    S := Sender.GLStates.MaxSamples;
+
+  glTarget := DecodeGLTextureTarget(LTarget);
+
+  if (FHandle.Target <> LTarget) and (FHandle.Target <> ttNoShape) then
+  begin
+    FHandle.DestroyHandle;
+    FHandle.AllocateHandle;
+  end;
+  FHandle.Target := LTarget;
+
+  glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+
+  if FOnlyWrite and ((LTarget = ttTexture2D) or (LTarget = ttTexture2DMultisample)) and FRenderBufferHandle.IsSupported then
+  begin
+    if LTarget = ttTexture2D then
+      FRenderBufferHandle.SetStorage(glFormat, w, h)
+    else
+      FRenderBufferHandle.SetStorageMultisample(glFormat, S, w, h);
+  end
+  else
+    with Sender do
+    begin
+      GLStates.ActiveTextureEnabled[FHandle.Target]                   := True;
+      GLStates.TextureBinding[GLStates.ActiveTexture, FHandle.Target] := FHandle.handle;
+      MaxLevel                                                        := CalcTextureLevelNumber(LTarget, w, h, d);
+
+      case glTarget of
+
+        GL_TEXTURE_1D:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage1D(glTarget, level, glFormat, w, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+          end;
+
+        GL_TEXTURE_2D:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage2D(glTarget, level, glFormat, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+            Div2(h);
+          end;
+
+        GL_TEXTURE_RECTANGLE:
+          begin
+            GL.TexImage2D(glTarget, 0, glFormat, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+          end;
+
+        GL_TEXTURE_3D:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage3D(glTarget, level, glFormat, w, h, d, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+            Div2(h);
+            Div2(d);
+          end;
+
+        GL_TEXTURE_CUBE_MAP:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            for glFace := GL_TEXTURE_CUBE_MAP_POSITIVE_X to GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
+              GL.TexImage2D(glFace, level, glFormat, w, w, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+          end;
+
+        GL_TEXTURE_1D_ARRAY:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage2D(glTarget, level, glFormat, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+          end;
+
+        GL_TEXTURE_2D_ARRAY:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage3D(glTarget, level, glFormat, w, h, d, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+            Div2(h);
+          end;
+
+        GL_TEXTURE_CUBE_MAP_ARRAY:
+          for level := 0 to MaxLevel - 1 do
+          begin
+            GL.TexImage3D(glTarget, level, glFormat, w, w, d, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+            Div2(w);
+          end;
+      end; // of case
+
+      GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+      FOnlyWrite                                    := False;
+    end; // of texture
+
+  if GL.GetError <> GL_NO_ERROR then
+  begin
+    GL.ClearError;
+    GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.name]);
+    Exit;
+  end
+  else
+    FIsValid := True;
+
+  FHandle.NotifyDataUpdated;
+  FRenderBufferHandle.NotifyDataUpdated;
+end;
+
+class function TDGLFrameBufferAttachment.FriendlyName: string;
+begin
+  Result := 'Framebuffer Attachment';
+end;
+
+procedure TDGLFrameBufferAttachment.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  FRenderBufferHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TDGLFrameBufferAttachment.ReadFromFiler(AReader: TReader);
+var
+  archiveVersion: Integer;
+begin
+  with AReader do
+  begin
+    archiveVersion := ReadInteger;
+    if archiveVersion = 0 then
+    begin
+      Name                  := ReadString;
+      FDefferedInit         := ReadBoolean;
+      FLayered              := ReadBoolean;
+      FCubeMap              := ReadBoolean;
+      FSamples              := ReadInteger;
+      FOnlyWrite            := ReadBoolean;
+      FFixedSamplesLocation := ReadBoolean;
+      FWidth                := ReadInteger;
+      FHeight               := ReadInteger;
+      FDepth                := ReadInteger;
+      FInternalFormat       := TGLInternalFormat(ReadInteger);
+    end
+    else
+      RaiseFilerException(archiveVersion);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetCubeMap(AValue: Boolean);
+begin
+  if FCubeMap <> AValue then
+  begin
+    FCubeMap := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetDepth(AValue: Integer);
+begin
+  if FDepth < 0 then
+    FDepth := 0
+  else if FDepth > 256 then
+    FDepth := 256;
+  if FDepth <> AValue then
+  begin
+    FDepth := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetFixedSamplesLocation(AValue: Boolean);
+begin
+  if FFixedSamplesLocation <> AValue then
+  begin
+    FFixedSamplesLocation := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetHeight(AValue: Integer);
+begin
+  if FHeight < 1 then
+    FHeight := 1
+  else if FHeight > 8192 then
+    FHeight := 8192;
+  if FHeight <> AValue then
+  begin
+    FHeight := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetInternalFormat(const AValue: TGLInternalFormat);
+begin
+  if FInternalFormat <> AValue then
+  begin
+    FInternalFormat := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetLayered(AValue: Boolean);
+begin
+  if FLayered <> AValue then
+  begin
+    FLayered := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetOnlyWrite(AValue: Boolean);
+begin
+  if FOnlyWrite <> AValue then
+  begin
+    if AValue and ((FDepth > 0) or FLayered or FFixedSamplesLocation or FCubeMap) then
+      Exit;
+    FOnlyWrite := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetSamples(AValue: Integer);
+begin
+  if AValue < -1 then
+    AValue := -1;
+  if FSamples <> AValue then
+  begin
+    FSamples := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.SetWidth(AValue: Integer);
+begin
+  if FWidth < 1 then
+    FWidth := 1
+  else if FWidth > 8192 then
+    FWidth := 8192;
+  if FWidth <> AValue then
+  begin
+    FWidth := AValue;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TDGLFrameBufferAttachment.UnApply(var ARci: TRenderContextInfo);
+begin
+  ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+end;
+
+procedure TDGLFrameBufferAttachment.WriteToFiler(AWriter: TWriter);
+begin
+  with AWriter do
+  begin
+    WriteInteger(0); // archive version
+    WriteString(Name);
+    WriteBoolean(FDefferedInit);
+    WriteBoolean(FLayered);
+    WriteBoolean(FCubeMap);
+    WriteInteger(FSamples);
+    WriteBoolean(FOnlyWrite);
+    WriteBoolean(FFixedSamplesLocation);
+    WriteInteger(FWidth);
+    WriteInteger(FHeight);
+    WriteInteger(FDepth);
+    WriteInteger(Integer(FInternalFormat));
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+initialization
+
+RegisterClasses([TDGLTextureImageEx, TDGLFrameBufferAttachment, TDGLTextureSampler, TDGLTextureCombiner, TDGLMaterialLibrary]);
+// TDGLShaderEx, TDGLASMVertexProgram,  TDGLShaderUniform, TDGLShaderUniformDSA, TDGLShaderUniformTexture]);
+
+RegisterXCollectionItemClass(TDGLTextureImage);
+RegisterXCollectionItemClass(TDGLTextureSampler);
+RegisterXCollectionItemClass(TDGLFrameBufferAttachment);
+RegisterXCollectionItemClass(TDGLTextureCombiner);
+R // egisterXCollectionItemClass(TDGLShaderEx);
+// RegisterXCollectionItemClass(TDGLASMVertexProgram);
+
+// vStandartUniformAutoSetExecutor := TStandartUniformAutoSetExecutor.Create;
+
+  finalization
+
+// vStandartUniformAutoSetExecutor.Destroy;
+
+end.
