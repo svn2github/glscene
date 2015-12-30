@@ -12,7 +12,9 @@ unit GLMeshOptimizer;
 interface
 
 uses
-  Classes, Sysutils, GLVectorGeometry, GLVectorFileObjects;
+  System.Classes, System.Sysutils, 
+  //GLS
+  GLVectorGeometry, GLVectorFileObjects;
 
 type
 

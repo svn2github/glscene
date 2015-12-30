@@ -36,7 +36,9 @@ unit GLShadowHDS;
 interface
 
 uses
-  Classes, GLHeightData, GLGraphics, GLVectorGeometry, GLTexture,
+  System.Classes, 
+  //GLS
+  GLHeightData, GLGraphics, GLVectorGeometry, GLTexture,
   GLVectorTypes, GLCoordinates, GLMaterial;
 
 type

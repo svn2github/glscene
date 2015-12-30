@@ -20,12 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  // VCL
-  Classes,
-  SysUtils,
-  Math,
-
-  // GLScene
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  // GLS
   GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLScene,
   GLVectorFileObjects, GLVectorTypes, GLPersistentClasses,
   GLCrossPlatform, GLCoordinates, GLRenderContextInfo, GLState;

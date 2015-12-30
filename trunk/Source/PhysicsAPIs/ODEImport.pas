@@ -151,7 +151,7 @@ uses
 {$IFDEF __MACH__}
   GPCMacOSAll,
   {$ENDIF}
-  Classes,
+  System.Classes,
   GLSModuleLoader;
 
 const

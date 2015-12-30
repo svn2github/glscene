@@ -14,18 +14,17 @@ unit GLSceneToolbar;
 
 interface
 
-implementation
-
 uses
-  Classes,
-  SysUtils,
-  Graphics,
-  ImgList,
-  Controls,
-  ComCtrls,
-  ExtCtrls,
-  ActnList,
-  ToolsAPI,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Graphics,
+  Vcl.ImgList,
+  Vcl.Controls,
+  Vcl.ComCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ActnList,
+  Vcl.ToolsAPI,
+  //GLS
   GLScene,
   GLSGenerics;
 
@@ -45,6 +44,14 @@ type
 
 var
   vReciver: TGLSToolButtonReceiver;
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+implementation
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
 
 function MsgServices: IOTAMessageServices;
   begin

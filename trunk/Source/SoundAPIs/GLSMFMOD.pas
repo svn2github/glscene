@@ -37,9 +37,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-
-  //GLScene
+  System.Classes, System.SysUtils,
+  //GLS
   GLSound, GLScene, GLVectorGeometry,
   FMod, FmodTypes, FmodPresets;
 

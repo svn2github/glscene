@@ -54,7 +54,7 @@ uses
 {$IFDEF __MACH__}
   GPCMacOSAll,
 {$ENDIF}
-  Classes,
+  System.Classes,
   NewtonImport;
 
 const

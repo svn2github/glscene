@@ -10,7 +10,7 @@ unit GLODERegister;
 interface
 
 uses
-  Classes, GLODEManager;
+  System.Classes, GLODEManager;
 
 procedure Register;
 

@@ -1,8 +1,9 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
-// 
-{: 
+//
+{:
   <b>History : </b><font size=-1><ul>
+   <li>30/12/15 - PW - Changed SysUtils unit to System.SysUtils
    <li>04/06/10 - Yar - Added to GLScene
                         (Created by Rustam Asmandiarov aka Predator)
   </ul></font>
@@ -15,7 +16,7 @@ unit GLSArchiveManager;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
   //GLS
   GLPersistentClasses, GLApplicationFileIO;
 
@@ -84,7 +85,7 @@ Type
 
   //****************************************************************************
 
-  //Классы регистрации архивов, для того что бы по расшырениям архива можно было
+  //Классы регистрации архивов, для того что бы по расширениям архива можно было
   //использовать соответсвующий архиватор. Например: GLFilePak,GLFileZLib
 
   {TArchiveFileFormat}
@@ -252,14 +253,14 @@ Type
   function ArcCreateFileStream(const fileName: string; mode: word): TStream;
   function ArcFileStreamExists(const fileName: string): boolean;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-Uses
+uses
   GLStrings;
 
 var
@@ -300,7 +301,7 @@ begin
           Result := GetContent(fileName);
           Exit;
        end;
-   if SysUtils.FileExists(fileName) then begin
+   if FileExists(fileName) then begin
       Result := TFileStream.Create(FileName, mode);
       Exit;
       //????
@@ -323,7 +324,7 @@ begin
          Result:=True;
          Exit;
       end;
-   Result := SysUtils.FileExists(fileName);
+   Result := FileExists(fileName);
 end;
 
 //******************************************************************************
@@ -359,7 +360,7 @@ procedure TLibArchive.CreateArchive(FileName: string;
 var
   fFile: TFileStream;
 begin
-  if OverwriteExistingFile or not SysUtils.FileExists(FileName) then
+  if OverwriteExistingFile or not FileExists(FileName) then
   begin
    fFile := TFileStream.Create(FileName, fmCreate);
    fFile.Free;
@@ -377,7 +378,7 @@ end;
 
 procedure TLibArchive.LoadFromFile(aFileName, aAchiverType: string);
 begin
-  if not SysUtils.FileExists(aFileName) then
+  if not FileExists(aFileName) then
     Exit;
   ArcClass := GetArchiveFileFormats.FindExt(aAchiverType);
   If ArcClass=nil then

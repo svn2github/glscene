@@ -20,11 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes,
   //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext,
-  GLRenderContextInfo
-  , GLVectorTypes;
+  GLRenderContextInfo, GLVectorTypes;
 
 type
 

@@ -29,7 +29,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, OpenGLTOkens, GLContext, GLTexture, GLTextureFormat,
+  System.Classes, System.SysUtils, 
+  //GLS
+  OpenGLTOkens, GLContext, GLTexture, GLTextureFormat,
   GLGraphics, GLCrossPlatform;
 
 type
@@ -95,7 +97,13 @@ type
     property UsePBO: boolean read FUsePBO write SetUsePBO;
   end;
 
+//---------------------------------------------------------  
+//---------------------------------------------------------  
+//---------------------------------------------------------  
 implementation
+//---------------------------------------------------------  
+//---------------------------------------------------------  
+//---------------------------------------------------------  
 
 uses
   GLVectorGeometry;

@@ -35,7 +35,10 @@ interface
 {$MINENUMSIZE 4}
 {$RANGECHECKS OFF}
 
-uses Classes, Types3DS, GLCrossPlatform;
+uses 
+  System.Classes, 
+  //GLS
+  Types3DS, GLCrossPlatform;
 
 type
   TFile3DS = class;

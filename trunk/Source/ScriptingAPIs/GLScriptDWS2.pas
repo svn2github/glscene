@@ -10,7 +10,8 @@ unit GLScriptDWS2;
 interface
 
 uses
-  Classes, SysUtils, XCollection, GLScriptBase, dws2Comp, dws2Exprs,
+  System.Classes, System.SysUtils, 
+  XCollection, GLScriptBase, dws2Comp, dws2Exprs,
   dws2Symbols, GLManager;
 
 type

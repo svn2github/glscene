@@ -21,7 +21,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes,
+  //GLS
   OpenGLTokens,
   GLContext,
   GLTexture,

@@ -38,7 +38,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes,
+  //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLSilhouette,
   GLCrossPlatform, GLPersistentClasses, GLGeometryBB, GLColor,
   GLRenderContextInfo;

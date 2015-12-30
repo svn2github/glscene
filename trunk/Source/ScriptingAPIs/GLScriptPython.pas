@@ -12,11 +12,9 @@ unit GLScriptPython;
 interface
 
 uses
-  Classes, SysUtils,
-
-  // GLScene
+  System.Classes, System.SysUtils,
+  // GLS
   XCollection, GLScriptBase, GLManager,
-
   // Python
   PythonEngine;
 

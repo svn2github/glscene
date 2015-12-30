@@ -16,7 +16,7 @@ unit GLNewtonRegister;
 interface
 
 uses
-  Classes, GLNGDManager;
+  System.Classes, GLNGDManager;
 
 procedure register;
 

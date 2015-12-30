@@ -27,7 +27,10 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, GLVectorGeometry, GLVectorLists, GLCrossPlatform;
+uses 
+  System.Classes, 
+  //GLS
+  GLVectorGeometry, GLVectorLists, GLCrossPlatform;
 
 type
    // TGLSilhouetteStyle

@@ -10,7 +10,8 @@ unit dws2Classes;
 interface
 
 uses
-  Classes, SysUtils,
+  System.Classes, System.SysUtils,
+  //dws
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
   dws2Functions, dws2HelperFunc;
 

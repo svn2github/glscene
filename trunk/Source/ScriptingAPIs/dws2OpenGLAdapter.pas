@@ -18,7 +18,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, Variants,
+  System.Classes, System.Variants,
   dws2Exprs, dws2Symbols, dws2Comp;
 
 type

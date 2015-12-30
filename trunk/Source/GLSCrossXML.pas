@@ -13,9 +13,9 @@ unit GLSCrossXML;
 interface
 
 uses
-  Classes,
-  SysUtils,
-  Variants,
+  System.Classes,
+  System.SysUtils,
+  System.Variants,
   XMLIntf,
   XMLDoc,
   XMLDom;

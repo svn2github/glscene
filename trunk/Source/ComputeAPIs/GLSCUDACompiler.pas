@@ -22,10 +22,10 @@ interface
 {$I cuda.inc}
 
 uses
-  Classes,
-  Forms,
-  GLSCUDAParser
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  System.Classes,
+  Vcl.Forms,
+  GLSCUDAParser,
+  GLSLog;
 
 
 type

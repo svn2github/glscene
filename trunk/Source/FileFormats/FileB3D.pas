@@ -19,7 +19,9 @@ interface
 {$R-}
 
 uses
-  Classes, TypesB3D, GLVectorGeometry, GLVectorTypes, GLVectorLists;
+  System.Classes, 
+  //GLS
+  TypesB3D, GLVectorGeometry, GLVectorTypes, GLVectorLists;
 
 type
   TB3DMaterial = class

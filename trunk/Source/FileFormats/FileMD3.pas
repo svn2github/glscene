@@ -15,7 +15,7 @@ unit FileMD3;
 interface
 
 uses
-  Classes, GLVectorTypes;
+  System.Classes, GLVectorTypes;
 
 type
   // Quake3 MD3 structure types

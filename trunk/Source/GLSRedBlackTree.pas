@@ -44,7 +44,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,
+  System.Classes,
   GLCrossPlatform;
 
 type

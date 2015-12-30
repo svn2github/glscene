@@ -35,7 +35,10 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, GLHeightData, GLCrossPlatform;
+uses 
+  System.Classes, 
+  //GLS
+  GLHeightData, GLCrossPlatform;
 
 type
   TGLAsyncHDS = class;

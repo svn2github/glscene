@@ -20,17 +20,19 @@ unit GLMeshBuilder;
 
 interface
 
-Uses
-  SysUtils, Classes, GLScene, GLVectorFileObjects,
+uses
+  System.SysUtils, System.Classes, 
+  //GLS
+  GLScene, GLVectorFileObjects,
   GLVectorTypes, GLVectorGeometry, GLVectorLists;
 
-Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
-Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
-Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
+procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
+procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
 
 implementation
 
-Function  VectorCombineWeighted(Position,Scale : TAffineVector; X, Y, Z : Single) : TAffineVector;
+function  VectorCombineWeighted(Position,Scale : TAffineVector; X, Y, Z : Single) : TAffineVector;
 
 Begin
   Result.V[0]:= position.V[0]+Scale.V[0]*X;
@@ -38,7 +40,7 @@ Begin
   Result.V[2]:= position.V[2]+Scale.V[2]*Z;
 End;
 
-Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
+procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -141,7 +143,7 @@ Begin
   FGR.TexCoordIndices.Add(TextureOffset+2,TextureOffset+7,TextureOffset+6);
 End;
 
-Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -209,7 +211,7 @@ Begin
 End;
 
 
-Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
+procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;

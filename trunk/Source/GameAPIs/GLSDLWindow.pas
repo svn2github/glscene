@@ -33,9 +33,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, SyncObjs,
+  System.Classes, System.SysUtils, System.SyncObjs,
   // SDL
-  SDL;
+  GLSDL;
 
 type
   // TSDLWindowPixelDepth

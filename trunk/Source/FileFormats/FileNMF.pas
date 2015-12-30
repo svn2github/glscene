@@ -16,7 +16,7 @@ unit FileNMF;
 interface
 
 uses
-  Classes, GLVectorGeometry;
+  System.Classes, GLVectorGeometry;
 
 const
   NMF_HEADER_TAG   = 'NMF ';

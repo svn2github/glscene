@@ -24,16 +24,15 @@ unit GLSDLContext;
 interface
 
 uses
-{$IFDEF MSWINDOWS}
-  Windows,
-{$ENDIF}
-  Classes,
-  SysUtils,
+  Winapi.Windows,
+  System.Classes,
+  System.SysUtils,
+  //GLS
   GLContext,
   GLSDLWindow,
   GLScene,
   //SDL
-  SDL;
+  GLSDL;
 
 type
 

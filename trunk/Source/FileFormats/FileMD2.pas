@@ -25,7 +25,10 @@ interface
 {$R-}
 {$I GLScene.inc}
 
-uses Classes, TypesMD2, GLCrossPlatform;
+uses 
+  System.Classes, 
+  //GLS
+  TypesMD2, GLCrossPlatform;
 
 type
   // TFileMD2

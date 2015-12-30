@@ -17,11 +17,13 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}Registry, {$ENDIF}
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ImgList, StdCtrls, ComCtrls, ToolWin,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Variants, System.Classes, System.Win.Registry,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.ImgList, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin,
   DesignIntf, VCLEditors,
-  GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics;
+  //GLS
+  GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics, System.ImageList;
 
 type
   TGLSCUDAEditorForm = class(TForm)
@@ -58,7 +60,13 @@ type
 function GLSCUDAEditorForm: TGLSCUDAEditorForm;
 procedure ReleaseGLSCUDAEditorForm;
 
+//--------------------------------------------------------
+//--------------------------------------------------------
+//--------------------------------------------------------
 implementation
+//--------------------------------------------------------
+//--------------------------------------------------------
+//--------------------------------------------------------
 
 {$R *.dfm}
 

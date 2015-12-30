@@ -13,7 +13,8 @@ unit GLPolyhedron;
 interface
 
 uses
-  Classes,
+  System.Classes,
+  //GLS
   GLScene, GLVectorGeometry, GLRenderContextInfo;
 
 type
