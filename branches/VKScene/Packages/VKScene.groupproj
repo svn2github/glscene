@@ -1,0 +1,168 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{CA88E812-B9BB-4FD2-812F-5BC40027F9F7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="VKScene_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKScene_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_Computing_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_Computing_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_BASS.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_FMOD.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_OpenAL.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_ODE.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_NGD.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_Cg_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_Cg_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="VKS_SDL.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="VKScene_RunTime">
+        <MSBuild Projects="VKScene_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_RunTime:Clean">
+        <MSBuild Projects="VKScene_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_RunTime:Make">
+        <MSBuild Projects="VKScene_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKScene_DesignTime">
+        <MSBuild Projects="VKScene_DesignTime.dproj"/>
+    </Target>
+    <Target Name="VKScene_DesignTime:Clean">
+        <MSBuild Projects="VKScene_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKScene_DesignTime:Make">
+        <MSBuild Projects="VKScene_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_Computing_RunTime">
+        <MSBuild Projects="VKS_Computing_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKS_Computing_RunTime:Clean">
+        <MSBuild Projects="VKS_Computing_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_Computing_RunTime:Make">
+        <MSBuild Projects="VKS_Computing_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_Computing_DesignTime">
+        <MSBuild Projects="VKS_Computing_DesignTime.dproj"/>
+    </Target>
+    <Target Name="VKS_Computing_DesignTime:Clean">
+        <MSBuild Projects="VKS_Computing_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_Computing_DesignTime:Make">
+        <MSBuild Projects="VKS_Computing_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_BASS">
+        <MSBuild Projects="VKS_BASS.dproj"/>
+    </Target>
+    <Target Name="VKS_BASS:Clean">
+        <MSBuild Projects="VKS_BASS.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_BASS:Make">
+        <MSBuild Projects="VKS_BASS.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_FMOD">
+        <MSBuild Projects="VKS_FMOD.dproj"/>
+    </Target>
+    <Target Name="VKS_FMOD:Clean">
+        <MSBuild Projects="VKS_FMOD.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_FMOD:Make">
+        <MSBuild Projects="VKS_FMOD.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_OpenAL">
+        <MSBuild Projects="VKS_OpenAL.dproj"/>
+    </Target>
+    <Target Name="VKS_OpenAL:Clean">
+        <MSBuild Projects="VKS_OpenAL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_OpenAL:Make">
+        <MSBuild Projects="VKS_OpenAL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_ODE">
+        <MSBuild Projects="VKS_ODE.dproj"/>
+    </Target>
+    <Target Name="VKS_ODE:Clean">
+        <MSBuild Projects="VKS_ODE.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_ODE:Make">
+        <MSBuild Projects="VKS_ODE.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_NGD">
+        <MSBuild Projects="VKS_NGD.dproj"/>
+    </Target>
+    <Target Name="VKS_NGD:Clean">
+        <MSBuild Projects="VKS_NGD.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_NGD:Make">
+        <MSBuild Projects="VKS_NGD.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_Cg_RunTime">
+        <MSBuild Projects="VKS_Cg_RunTime.dproj"/>
+    </Target>
+    <Target Name="VKS_Cg_RunTime:Clean">
+        <MSBuild Projects="VKS_Cg_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_Cg_RunTime:Make">
+        <MSBuild Projects="VKS_Cg_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_Cg_DesignTime">
+        <MSBuild Projects="VKS_Cg_DesignTime.dproj"/>
+    </Target>
+    <Target Name="VKS_Cg_DesignTime:Clean">
+        <MSBuild Projects="VKS_Cg_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_Cg_DesignTime:Make">
+        <MSBuild Projects="VKS_Cg_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="VKS_SDL">
+        <MSBuild Projects="VKS_SDL.dproj"/>
+    </Target>
+    <Target Name="VKS_SDL:Clean">
+        <MSBuild Projects="VKS_SDL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="VKS_SDL:Make">
+        <MSBuild Projects="VKS_SDL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="VKScene_RunTime;VKScene_DesignTime;VKS_Computing_RunTime;VKS_Computing_DesignTime;VKS_BASS;VKS_FMOD;VKS_OpenAL;VKS_ODE;VKS_NGD;VKS_Cg_RunTime;VKS_Cg_DesignTime;VKS_SDL"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="VKScene_RunTime:Clean;VKScene_DesignTime:Clean;VKS_Computing_RunTime:Clean;VKS_Computing_DesignTime:Clean;VKS_BASS:Clean;VKS_FMOD:Clean;VKS_OpenAL:Clean;VKS_ODE:Clean;VKS_NGD:Clean;VKS_Cg_RunTime:Clean;VKS_Cg_DesignTime:Clean;VKS_SDL:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="VKScene_RunTime:Make;VKScene_DesignTime:Make;VKS_Computing_RunTime:Make;VKS_Computing_DesignTime:Make;VKS_BASS:Make;VKS_FMOD:Make;VKS_OpenAL:Make;VKS_ODE:Make;VKS_NGD:Make;VKS_Cg_RunTime:Make;VKS_Cg_DesignTime:Make;VKS_SDL:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

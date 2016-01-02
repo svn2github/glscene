@@ -1,0 +1,4705 @@
+//
+// This unit is part of the GLScene Project   
+//
+{ : VKS.Objects<p>
+
+  Implementation of basic scene objects plus some management routines.<p>
+
+  All objects declared in this unit are part of the basic GLScene package,
+  these are only simple objects and should be kept simple and lightweight.<br>
+
+  More complex or more specialized versions should be placed in dedicated
+  units where they can grow and prosper untammed. "Generic" geometrical
+  objects can be found VKS.GeomObjects.<p>
+
+  <b>History : </b><font size=-1><ul>
+  <li>12/03/13 - Yar - Added TVKSuperellipsoid (contributed by Eric Hardinge)
+  <li>10/03/13 - PW - Added OctahedronBuildList and TetrahedronBuildList
+  <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
+                 getter and a setter methods
+  <li>23/03/11 - Yar - Bugfixed TVKPlane.Assign (thanks ltyrosine)
+                       Replaced plane primitives to triangles, added tangent and binormal attributes
+  <li>29/11/10 - Yar - Bugfixed client color array enabling in TVKPoints.BuildList when it not used (thanks rbenetis)
+  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+  <li>29/06/10 - Yar - Added loColorLogicXor to TVKLines.Options
+  <li>22/04/10 - Yar - Fixes after GLState revision
+  <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TVKDummyCube.DoRender
+  <li>05/03/10 - DanB - More state added to TVKStateCache
+  <li>22/02/10 - Yar - Removed NoZWrite in TVKPlane, TVKSprite
+                 Now use Material.DepthProperties
+  <li>28/12/09 - DanB - Modifying TVKLineBase.LineColor now calls StructureChanged
+  <li>13/03/09 - DanB - ScreenRect now accepts a buffer parameter, rather than using CurrentBuffer
+  <li>05/10/08 - DaStr - Added lsmLoop support to TVKLines
+                (thanks Alejandro Leon Escalera) (BugtrackerID = 2084250)
+  <li>22/01/08 - DaStr - Fixed rendering of TVKPoints
+                (thanks Kapitan) (BugtrackerID = 1876920)
+  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+                 (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
+  <li>15/02/07 - DaStr - Global $R- removed, added default values to
+                 TVKSprite.NoZWrite, MirrorU, MirrorV
+  <li>14/01/07 - DaStr - Fixed TVKCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
+  <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
+  <li>19/10/06 - LC - Fixed TVKLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
+  <li>08/10/05 - Mathx - Fixed TVKLines.nodes.assign problem (thanks to  Yong Yoon Kit);
+                 Also fixed a TVKLineBase.assign problem (object being assigned to
+                 was refering the base lists, not copying them).
+                 Bugtracker ID=830846
+  <li>17/01/05 - SG - Added color support for bezier style TVKLines
+  <li>03/12/04 - MF - Added TVKSprite.AxisAlignedDimensionsUnscaled override
+  <li>06/07/04 - SG - TVKCube.RayCastIntersect fix (Eric Pascual)
+  <li>20/01/04 - SG - Added IcosahedronBuildList
+  <li>30/11/03 - MF - Added TVKSphere.GenerateSilhouette - it now takes the
+                      stacks/slices of the sphere into account
+  <li>10/09/03 - EG - Introduced TVKNodedLines
+  <li>18/08/03 - SG - Added MirrorU and MirrorV to TVKSprite for mirroring textures
+  <li>21/07/03 - EG - TVKTeapot moved to new GLTeapot unit,
+                      TVKDodecahedron moved to new GLPolyhedron unit,
+                      TVKCylinder, TVKCone, TVKTorus, TVKDisk, TVKArrowLine,
+                      TVKAnnulus, TVKFrustrum and TVKPolygon moved to new
+                      VKS.GeomObjects unit
+  <li>16/07/03 - EG - Style changes and cleanups
+  <li>19/06/03 - MF - Added GenerateSilhouette to TVKCube and TVKPlane.
+  <li>13/06/03 - EG - Fixed TVKAnnulus.RayCastIntersect (Alexandre Hirzel)
+  <li>03/06/03 - EG - Added TVKAnnulus.RayCastIntersect (Alexandre Hirzel)
+  <li>01/05/03 - SG - Added NURBS Curve to TVKLines (color not supported yet)
+  <li>14/04/03 - SG - Added a Simple Bezier Spline to TVKLines (color not supported yet)
+  <li>02/04/03 - EG - TVKPlane.RayCastIntersect fix (Erick Schuitema)
+  <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
+  <li>22/01/03 - EG - TVKCube.RayCastIntersect fixes (Dan Bartlett)
+  <li>10/01/03 - EG - TVKCube.RayCastIntersect (Stuart Gooding)
+  <li>08/01/03 - RC - Added TVKPlane.XScope and YScope, to use just a part of the texture
+  <li>27/09/02 - EG - Added TVKPointParameters
+  <li>24/07/02 - EG - Added TVKCylinder.Alignment
+  <li>23/07/02 - EG - Added TVKPoints (experimental)
+  <li>20/07/02 - EG - TVKCylinder.RayCastIntersect and TVKPlane.RayCastIntersect
+  <li>18/07/02 - EG - Added TVKCylinder.Align methods
+  <li>07/07/02 - EG - Added TVKPlane.Style
+  <li>03/07/02 - EG - TVKPolygon now properly setups normals (filippo)
+  <li>17/03/02 - EG - Support for transparent lines
+  <li>02/02/02 - EG - Fixed TVKSprite change notification
+  <li>26/01/02 - EG - TVKPlane & TVKCube now osDirectDraw
+  <li>20/01/02 - EG - TVKSpaceText moved to GLSpaceText
+  <li>22/08/01 - EG - TVKTorus.RayCastIntersect fixes
+  <li>30/07/01 - EG - Updated AxisAlignedDimensions implems
+  <li>16/03/01 - EG - TVKCylinderBase, changed default Stacks from 8 to 4
+  <li>27/02/01 - EG - Fix in TVKCube texcoords, added TVKFrustrum (thx Robin Gerrets)
+  <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
+  <li>05/02/01 - EG - Minor changes to TVKCube.BuildList
+  <li>21/01/01 - EG - BaseProjectionMatrix fix for TVKHUDSprite (picking issue),
+  TVKHUDSprite moved to VKS.HUDObjects
+  <li>14/01/01 - EG - Fixed TVKSphere texture coordinates
+  <li>13/01/01 - EG - TVKSprite matrix compatibility update
+  <li>09/01/01 - EG - TVKSpaceText now handles its TFont.OnFontChange
+  <li>08/01/01 - EG - Added TVKLinesNode (color support) and Node size control
+  <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
+                      updated TVKSprite.BuildList to work with new matrices
+  <li>14/11/00 - EG - Added TVKDummyCube.Destroy (thx Airatz)
+  <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
+  <li>06/08/00 - EG - TRotationSolid renamed to TVKRevolutionSolid & moved to GLExtrusion
+  <li>04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
+  <li>02/08/00 - EG - Added TVKPolygonBase
+  <li>19/07/00 - EG - Added TVKHUDSprite
+  <li>18/07/00 - EG - Added TVKRevolutionSolid
+  <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
+                      Added TVKLineBase (split of TVKLines),
+                      TVKDummyCube now uses osDirectDraw instead of special behaviour
+  <li>13/07/00 - EG - Added TVKArrowLine (code by Aaron Hochwimmer)
+  <li>28/06/00 - EG - Support for "ObjectStyle"
+  <li>23/06/00 - EG - Reduced default Loop count for TVKDisk
+  <li>18/06/00 - EG - TVKMesh and accompanying stuff moved to GLMesh
+  <li>14/06/00 - EG - Added Capacity to TVertexList
+  <li>09/06/00 - EG - First row of Geometry-related upgrades
+  <li>08/06/00 - EG - Added ReleaseFontManager, fixed TVKSpaceText DestroyList,
+  <li>01/06/00 - EG - Added TVKAnnulus (code by Aaron Hochwimmer)
+  <li>29/05/00 - EG - TVKLines now uses TVKNode/TVKNodes
+  <li>28/05/00 - EG - Added persistence ability to TVKLines,
+                      Added defaults for all TVKLines properties
+  <li>27/05/00 - EG - Moved in RogerCao's TVKLines object, added a TLineNode
+                      class (currently private) and various enhancements + fixes,
+                      DodecahedronBuildList now available as a procedure,
+                      CubeWireframeBuildList now available as a procedure
+  <li>26/05/00 - RoC - Added division property to TVKLines, and Spline supported
+  <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
+  <li>14/05/00 - EG - Removed Top/Bottom checks for TVKSphere,
+  Added mmTriangleStrip support in CalcNormals
+  <li>08/05/00 - EG - Uncommented DisableAutoTexture in TVKSpaceText.BuildList
+  <li>07/05/00 - RoC - TVKLines added, to show a list of vertex
+  <li>26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
+  <li>18/04/00 - EG - Overriden TVKDummyCube.Render
+  <li>16/04/00 - EG - FontManager now published and auto-creating
+  <li>12/04/00 - EG - Added TVKCylinderBase.Loops (fixes a bug, thanks Uwe)
+  <li>24/03/00 - EG - Added Rotation to TVKSprite, fixed sprite size
+  <li>20/03/00 - EG - Enhanced FontManager
+  <li>17/03/00 - EG - Fixed SpaceText glBaseList bug,
+  TVKSprite now uses a transposition of the globalmatrix
+  <li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
+  <li>14/03/00 - EG - Added subobjects Barycenter support for TVKDummyCube
+  <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
+  FreeForm and vector file stuff moved to new VKS.VectorFileObjects
+  <li>08/02/00 - EG - Added TVKDummyCube
+  <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
+                      TVertexList.AddVertex, "default"s to properties
+  </ul></font>
+}
+unit VKS.Objects;
+
+interface
+
+{$I VKScene.inc}
+
+uses
+  System.Classes, System.SysUtils, System.Math,
+
+  VKS.VectorGeometry, VKS.VectorTypes, VKS.Scene, VKS.OpenGLAdapter,
+  VKS.OpenGLTokens, VKS.VectorLists, VKS.CrossPlatform, VKS.Context,
+  VKS.Silhouette, VKS.Color, VKS.RenderContextInfo, VKS.BaseClasses,
+  VKS.Nodes, VKS.Coordinates;
+
+type
+
+  // TVKVisibilityDeterminationEvent
+  //
+  TVKVisibilityDeterminationEvent = function(Sender: TObject;
+    var rci: TRenderContextInfo): Boolean of object;
+
+  PVertexRec = ^TVertexRec;
+  TVertexRec = record
+    Position: TVector3f;
+    Normal: TVector3f;
+    Binormal: TVector3f;
+    Tangent: TVector3f;
+    TexCoord: TVector2f;
+  end;
+
+  // TVKDummyCube
+  //
+  { : A simple cube, invisible at run-time.<p>
+    This is a usually non-visible object -except at design-time- used for
+    building hierarchies or groups, when some kind of joint or movement
+    mechanism needs be described, you can use DummyCubes.<br>
+    DummyCube's barycenter is its children's barycenter.<br>
+    The DummyCube can optionnally amalgamate all its children into a single
+    display list (see Amalgamate property). }
+  TVKDummyCube = class(TVKCameraInvariantObject)
+  private
+    { Private Declarations }
+    FCubeSize: TVKFloat;
+    FEdgeColor: TVKColor;
+    FVisibleAtRunTime, FAmalgamate: Boolean;
+    FGroupList: TVKListHandle;
+    FOnVisibilityDetermination: TVKVisibilityDeterminationEvent;
+
+  protected
+    { Protected Declarations }
+    procedure SetCubeSize(const val: TVKFloat);
+    procedure SetEdgeColor(const val: TVKColor);
+    procedure SetVisibleAtRunTime(const val: Boolean);
+    procedure SetAmalgamate(const val: Boolean);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure DoRender(var rci: TRenderContextInfo;
+      renderSelf, renderChildren: Boolean); override;
+    procedure StructureChanged; override;
+    function BarycenterAbsolutePosition: TVector; override;
+
+  published
+    { Published Declarations }
+    property CubeSize: TVKFloat read FCubeSize write SetCubeSize;
+    property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
+    { : If true the dummycube's edges will be visible at runtime.<p>
+      The default behaviour of the dummycube is to be visible at design-time
+      only, and invisible at runtime. }
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
+      write SetVisibleAtRunTime default False;
+    { : Amalgamate the dummy's children in a single OpenGL entity.<p>
+      This activates a special rendering mode, which will compile
+      the rendering of all of the dummycube's children objects into a
+      single display list. This may provide a significant speed up in some
+      situations, however, this means that changes to the children will
+      be ignored untill you call StructureChanged on the dummy cube.<br>
+      Some objects, that have their own display list management, may not
+      be compatible with this behaviour. This will also prevents sorting
+      and culling to operate as usual.<p>
+      In short, this features is best used for static, non-transparent
+      geometry, or when the point of view won't change over a large
+      number of frames. }
+    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
+      default False;
+    { : Camera Invariance Options.<p>
+      These options allow to "deactivate" sensitivity to camera, f.i. by
+      centering the object on the camera or ignoring camera orientation. }
+    property CamInvarianceMode default cimNone;
+    { : Event for custom visibility determination.<p>
+      Event handler should return True if the dummycube and its children
+      are to be considered visible for the current render. }
+    property OnVisibilityDetermination: TVKVisibilityDeterminationEvent
+      read FOnVisibilityDetermination write FOnVisibilityDetermination;
+  end;
+
+  // TVKPlaneStyle
+  //
+  TVKPlaneStyle = (psSingleQuad, psTileTexture);
+  TVKPlaneStyles = set of TVKPlaneStyle;
+
+  // TVKPlane
+  //
+  { : A simple plane object.<p>
+    Note that a plane is always made of a single quad (two triangles) and the
+    tiling is only applied to texture coordinates. }
+  TVKPlane = class(TVKSceneObject)
+  private
+    { Private Declarations }
+    FXOffset, FYOffset: TVKFloat;
+    FXScope, FYScope: TVKFloat;
+    FWidth, FHeight: TVKFloat;
+    FXTiles, FYTiles: Cardinal;
+    FStyle: TVKPlaneStyles;
+    FMesh: array of array of TVertexRec;
+  protected
+    { Protected Declarations }
+    procedure SetHeight(const aValue: Single);
+    procedure SetWidth(const aValue: Single);
+    procedure SetXOffset(const Value: TVKFloat);
+    procedure SetXScope(const Value: TVKFloat);
+    function StoreXScope: Boolean;
+    procedure SetXTiles(const Value: Cardinal);
+    procedure SetYOffset(const Value: TVKFloat);
+    procedure SetYScope(const Value: TVKFloat);
+    function StoreYScope: Boolean;
+    procedure SetYTiles(const Value: Cardinal);
+    procedure SetStyle(const val: TVKPlaneStyles);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    procedure BuildList(var rci: TRenderContextInfo); override;
+    function GenerateSilhouette(const silhouetteParameters
+      : TVKSilhouetteParameters): TVKSilhouette; override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+    { : Computes the screen coordinates of the smallest rectangle encompassing the plane.<p>
+      Returned extents are NOT limited to any physical screen extents. }
+    function ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
+
+    { : Computes the signed distance to the point.<p>
+      Point coordinates are expected in absolute coordinates. }
+    function PointDistance(const aPoint: TVector): Single;
+
+  published
+    { Public Declarations }
+    property Height: TVKFloat read FHeight write SetHeight;
+    property Width: TVKFloat read FWidth write SetWidth;
+    property XOffset: TVKFloat read FXOffset write SetXOffset;
+    property XScope: TVKFloat read FXScope write SetXScope stored StoreXScope;
+    property XTiles: Cardinal read FXTiles write SetXTiles default 1;
+    property YOffset: TVKFloat read FYOffset write SetYOffset;
+    property YScope: TVKFloat read FYScope write SetYScope stored StoreYScope;
+    property YTiles: Cardinal read FYTiles write SetYTiles default 1;
+    property Style: TVKPlaneStyles read FStyle write SetStyle
+      default [psSingleQuad, psTileTexture];
+  end;
+
+  // TVKSprite
+  //
+  { : A rectangular area, perspective projected, but always facing the camera.<p>
+    A TVKSprite is perspective projected and as such is scaled with distance,
+    if you want a 2D sprite that does not get scaled, see TVKHUDSprite. }
+  TVKSprite = class(TVKSceneObject)
+  private
+    { Private Declarations }
+    FWidth: TVKFloat;
+    FHeight: TVKFloat;
+    FRotation: TVKFloat;
+    FAlphaChannel: Single;
+    FMirrorU, FMirrorV: Boolean;
+
+  protected
+    { Protected Declarations }
+    procedure SetWidth(const val: TVKFloat);
+    procedure SetHeight(const val: TVKFloat);
+    procedure SetRotation(const val: TVKFloat);
+    procedure SetAlphaChannel(const val: Single);
+    function StoreAlphaChannel: Boolean;
+    procedure SetMirrorU(const val: Boolean);
+    procedure SetMirrorV(const val: Boolean);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+
+    procedure Assign(Source: TPersistent); override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+
+    procedure SetSize(const Width, Height: TVKFloat);
+    // : Set width and height to "size"
+    procedure SetSquareSize(const Size: TVKFloat);
+
+  published
+    { Published Declarations }
+    { : Sprite Width in 3D world units. }
+    property Width: TVKFloat read FWidth write SetWidth;
+    { : Sprite Height in 3D world units. }
+    property Height: TVKFloat read FHeight write SetHeight;
+    { : This the ON-SCREEN rotation of the sprite.<p>
+      Rotatation=0 is handled faster. }
+    property Rotation: TVKFloat read FRotation write SetRotation;
+    { : If different from 1, this value will replace that of Diffuse.Alpha }
+    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
+      stored StoreAlphaChannel;
+    { : Reverses the texture coordinates in the U and V direction to mirror
+      the texture. }
+    property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
+    property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
+  end;
+
+  // TVKPointStyle
+  //
+  TVKPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive,
+    psSquareAdditive);
+
+  // TVKPointParameters
+  //
+  { : Point parameters as in ARB_point_parameters.<p>
+    Make sure to read the ARB_point_parameters spec if you want to understand
+    what each parameter does. }
+  TVKPointParameters = class(TVKUpdateAbleObject)
+  private
+    { Private Declarations }
+    FEnabled: Boolean;
+    FMinSize, FMaxSize: Single;
+    FFadeTresholdSize: Single;
+    FDistanceAttenuation: TVKCoordinates;
+
+  protected
+    { Protected Declarations }
+    procedure SetEnabled(const val: Boolean);
+    procedure SetMinSize(const val: Single);
+    procedure SetMaxSize(const val: Single);
+    procedure SetFadeTresholdSize(const val: Single);
+    procedure SetDistanceAttenuation(const val: TVKCoordinates);
+
+    procedure DefineProperties(Filer: TFiler); override;
+    procedure ReadData(Stream: TStream);
+    procedure WriteData(Stream: TStream);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+
+    procedure Apply;
+    procedure UnApply;
+
+  published
+    { Published Declarations }
+    property Enabled: Boolean read FEnabled write SetEnabled default False;
+    property MinSize: Single read FMinSize write SetMinSize stored False;
+    property MaxSize: Single read FMaxSize write SetMaxSize stored False;
+    property FadeTresholdSize: Single read FFadeTresholdSize
+      write SetFadeTresholdSize stored False;
+    { : Components XYZ are for constant, linear and quadratic attenuation. }
+    property DistanceAttenuation: TVKCoordinates read FDistanceAttenuation
+      write SetDistanceAttenuation;
+  end;
+
+  // TVKPoints
+  //
+  { : Renders a set of non-transparent colored points.<p>
+    The points positions and their color are defined through the Positions
+    and Colors properties. }
+  TVKPoints = class(TVKImmaterialSceneObject)
+  private
+    { Private Declarations }
+    FPositions: TAffineVectorList;
+    FColors: TVectorList;
+    FSize: Single;
+    FStyle: TVKPointStyle;
+    FPointParameters: TVKPointParameters;
+    FStatic, FNoZWrite: Boolean;
+
+  protected
+    { Protected Declarations }
+    function StoreSize: Boolean;
+    procedure SetNoZWrite(const val: Boolean);
+    procedure SetStatic(const val: Boolean);
+    procedure SetSize(const val: Single);
+    procedure SetPositions(const val: TAffineVectorList);
+    procedure SetColors(const val: TVectorList);
+    procedure SetStyle(const val: TVKPointStyle);
+    procedure SetPointParameters(const val: TVKPointParameters);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure Assign(Source: TPersistent); override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    { : Points positions.<p>
+      If empty, a single point is assumed at (0, 0, 0) }
+    property Positions: TAffineVectorList read FPositions write SetPositions;
+    { : Defines the points colors.<p>
+      <ul>
+      <li>if empty, point color will be opaque white
+      <li>if contains a single color, all points will use that color
+      <li>if contains N colors, the first N points (at max) will be rendered
+      using the corresponding colors.
+      </ul> }
+    property Colors: TVectorList read FColors write SetColors;
+
+  published
+    { Published Declarations }
+    { : If true points do not write their Z to the depth buffer. }
+    property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
+    { : Tells the component if point coordinates are static.<p>
+      If static, changes to the positions should be notified via an
+      explicit StructureChanged call, or may not refresh.<br>
+      Static sets of points may render faster than dynamic ones. }
+    property Static: Boolean read FStatic write SetStatic;
+    { : Point size, all points have a fixed size. }
+    property Size: Single read FSize write SetSize stored StoreSize;
+    { : Points style.<p> }
+    property Style: TVKPointStyle read FStyle write SetStyle default psSquare;
+    { : Point parameters as of ARB_point_parameters.<p>
+      Allows to vary the size and transparency of points depending
+      on their distance to the observer. }
+    property PointParameters: TVKPointParameters read FPointParameters
+      write SetPointParameters;
+
+  end;
+
+  // TLineNodesAspect
+  //
+  { : Possible aspects for the nodes of a TLine. }
+  TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
+
+  // TLineSplineMode
+  //
+  { : Available spline modes for a TLine. }
+  TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
+    lsmSegments, lsmLoop);
+
+  // TVKLinesNode
+  //
+  { : Specialized Node for use in a TVKLines objects.<p>
+    Adds a Color property (TVKColor). }
+  TVKLinesNode = class(TVKNode)
+  private
+    { Private Declarations }
+    FColor: TVKColor;
+
+  protected
+    { Protected Declarations }
+    procedure SetColor(const val: TVKColor);
+    procedure OnColorChange(Sender: TObject);
+    function StoreColor: Boolean;
+
+  public
+    { Public Declarations }
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+  published
+    { Published Declarations }
+
+    { : The node color.<p>
+      Can also defined the line color (interpolated between nodes) if
+      loUseNodeColorForLines is set (in TVKLines). }
+    property Color: TVKColor read FColor write SetColor stored StoreColor;
+  end;
+
+  // TVKLinesNodes
+  //
+  { : Specialized collection for Nodes in a TVKLines objects.<p>
+    Stores TVKLinesNode items. }
+  TVKLinesNodes = class(TVKNodes)
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); overload;
+
+    procedure NotifyChange; override;
+  end;
+
+  // TVKLineBase
+  //
+  { : Base class for line objects.<p>
+    Introduces line style properties (width, color...). }
+  TVKLineBase = class(TVKImmaterialSceneObject)
+  private
+    { Private Declarations }
+    FLineColor: TVKColor;
+    FLinePattern: TVKushort;
+    FLineWidth: Single;
+    FAntiAliased: Boolean;
+
+  protected
+    { Protected Declarations }
+    procedure SetLineColor(const Value: TVKColor);
+    procedure SetLinePattern(const Value: TVKushort);
+    procedure SetLineWidth(const val: Single);
+    function StoreLineWidth: Boolean;
+    procedure SetAntiAliased(const val: Boolean);
+
+    { : Setup OpenGL states according to line style.<p>
+      You must call RestoreLineStyle after drawing your lines.<p>
+      You may use nested calls with SetupLineStyle/RestoreLineStyle. }
+    procedure SetupLineStyle(var rci: TRenderContextInfo);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+    procedure NotifyChange(Sender: TObject); override;
+
+  published
+    { Published Declarations }
+    { : Indicates if OpenGL should smooth line edges.<p>
+      Smoothed lines looks better but are poorly implemented in most OpenGL
+      drivers and take *lots* of rendering time. }
+    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
+      default False;
+    { : Default color of the lines. }
+    property LineColor: TVKColor read FLineColor write SetLineColor;
+    { : Bitwise line pattern.<p>
+      For instance $FFFF (65535) is a white line (stipple disabled), $0000
+      is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
+    property LinePattern: TVKushort read FLinePattern write SetLinePattern
+      default $FFFF;
+    { : Default width of the lines. }
+    property LineWidth: Single read FLineWidth write SetLineWidth
+      stored StoreLineWidth;
+    property Visible;
+  end;
+
+  // TVKNodedLines
+  //
+  { : Class that defines lines via a series of nodes.<p>
+    Base class, does not render anything. }
+  TVKNodedLines = class(TVKLineBase)
+  private
+    { Private Declarations }
+    FNodes: TVKLinesNodes;
+    FNodesAspect: TLineNodesAspect;
+    FNodeColor: TVKColor;
+    FNodeSize: Single;
+    FOldNodeColor: TColorVector;
+
+  protected
+    { Protected Declarations }
+    procedure SetNodesAspect(const Value: TLineNodesAspect);
+    procedure SetNodeColor(const Value: TVKColor);
+    procedure OnNodeColorChanged(Sender: TObject);
+    procedure SetNodes(const aNodes: TVKLinesNodes);
+    procedure SetNodeSize(const val: Single);
+    function StoreNodeSize: Boolean;
+
+    procedure DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+      Color: TVKColor);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+
+    procedure AddNode(const coords: TVKCoordinates); overload;
+    procedure AddNode(const X, Y, Z: TVKFloat); overload;
+    procedure AddNode(const Value: TVector); overload;
+    procedure AddNode(const Value: TAffineVector); overload;
+
+  published
+    { Published Declarations }
+    { : Default color for nodes.<p>
+      lnaInvisible and lnaAxes ignore this setting. }
+    property NodeColor: TVKColor read FNodeColor write SetNodeColor;
+    { : The nodes list.<p> }
+    property Nodes: TVKLinesNodes read FNodes write SetNodes;
+
+    { : Default aspect of line nodes.<p>
+      May help you materialize nodes, segments and control points. }
+    property NodesAspect: TLineNodesAspect read FNodesAspect
+      write SetNodesAspect default lnaAxes;
+    { : Size for the various node aspects. }
+    property NodeSize: Single read FNodeSize write SetNodeSize
+      stored StoreNodeSize;
+  end;
+
+  // TLinesOptions
+  //
+  TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
+  TLinesOptions = set of TLinesOption;
+
+  // TVKLines
+  //
+  { : Set of 3D line segments.<p>
+    You define a 3D Line by adding its nodes in the "Nodes" property. The line
+    may be rendered as a set of segment or as a curve (nodes then act as spline
+    control points).<p>
+    Alternatively, you can also use it to render a set of spacial nodes (points
+    in space), just make the lines transparent and the nodes visible by picking
+    the node aspect that suits you. }
+  TVKLines = class(TVKNodedLines)
+  private
+    { Private Declarations }
+    FDivision: Integer;
+    FSplineMode: TLineSplineMode;
+    FOptions: TLinesOptions;
+    FNURBSOrder: Integer;
+    FNURBSTolerance: Single;
+    FNURBSKnots: TSingleList;
+
+  protected
+    { Protected Declarations }
+    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetDivision(const Value: Integer);
+    procedure SetOptions(const val: TLinesOptions);
+    procedure SetNURBSOrder(const val: Integer);
+    procedure SetNURBSTolerance(const val: Single);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    property NURBSKnots: TSingleList read FNURBSKnots;
+    property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
+    property NURBSTolerance: Single read FNURBSTolerance
+      write SetNURBSTolerance;
+
+  published
+    { Published Declarations }
+    { : Number of divisions for each segment in spline modes.<p>
+      Minimum 1 (disabled), ignored in lsmLines mode. }
+    property Division: Integer read FDivision write SetDivision default 10;
+    { : Default spline drawing mode.<p> }
+    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+      default lsmLines;
+
+    { : Rendering options for the line.<p>
+      <ul>
+      <li>loUseNodeColorForLines: if set lines will be drawn using node
+      colors (and color interpolation between nodes), if not, LineColor
+      will be used (single color).
+      loColorLogicXor: enable logic operation for color of XOR type.
+      </ul> }
+    property Options: TLinesOptions read FOptions write SetOptions;
+  end;
+
+  TCubePart = (cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight);
+  TCubeParts = set of TCubePart;
+
+  // TVKCube
+  //
+  { : A simple cube object.<p>
+    This cube use the same material for each of its faces, ie. all faces look
+    the same. If you want a multi-material cube, use a mesh in conjunction
+    with a TVKFreeForm and a material library. }
+  TVKCube = class(TVKSceneObject)
+  private
+    { Private Declarations }
+    FCubeSize: TAffineVector;
+    FParts: TCubeParts;
+    FNormalDirection: TNormalDirection;
+    function GetCubeWHD(const Index: Integer): TVKFloat;
+    procedure SetCubeWHD(Index: Integer; AValue: TVKFloat);
+    procedure SetParts(aValue: TCubeParts);
+    procedure SetNormalDirection(aValue: TNormalDirection);
+  protected
+    { Protected Declarations }
+    procedure DefineProperties(Filer: TFiler); override;
+    procedure ReadData(Stream: TStream);
+    procedure WriteData(Stream: TStream);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+
+    function GenerateSilhouette(const silhouetteParameters
+      : TVKSilhouetteParameters): TVKSilhouette; override;
+    procedure BuildList(var rci: TRenderContextInfo); override;
+
+    procedure Assign(Source: TPersistent); override;
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+
+  published
+    { Published Declarations }
+    property CubeWidth: TVKFloat index 0 read GetCubeWHD write SetCubeWHD
+      stored False;
+    property CubeHeight: TVKFloat index 1 read GetCubeWHD write SetCubeWHD
+      stored False;
+    property CubeDepth: TVKFloat index 2 read GetCubeWHD write SetCubeWHD
+      stored False;
+    property NormalDirection: TNormalDirection read FNormalDirection
+      write SetNormalDirection default ndOutside;
+    property Parts: TCubeParts read FParts write SetParts
+      default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
+  end;
+
+  // TNormalSmoothing
+  //
+  { : Determines how and if normals are smoothed.<p>
+    - nsFlat : facetted look<br>
+    - nsSmooth : smooth look<br>
+    - nsNone : unlighted rendering, usefull for decla texturing }
+  TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
+
+  // TVKQuadricObject
+  //
+  { : Base class for quadric objects.<p>
+    Introduces some basic Quadric interaction functions (the actual quadric
+    math is part of the GLU library). }
+  TVKQuadricObject = class(TVKSceneObject)
+  private
+    { Private Declarations }
+    FNormals: TNormalSmoothing;
+    FNormalDirection: TNormalDirection;
+
+  protected
+    { Protected Declarations }
+    procedure SetNormals(aValue: TNormalSmoothing);
+    procedure SetNormalDirection(aValue: TNormalDirection);
+    procedure SetupQuadricParams(quadric: PGLUquadricObj);
+    procedure SetNormalQuadricOrientation(quadric: PGLUquadricObj);
+    procedure SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    procedure Assign(Source: TPersistent); override;
+
+  published
+    { Published Declarations }
+    property Normals: TNormalSmoothing read FNormals write SetNormals
+      default nsSmooth;
+    property NormalDirection: TNormalDirection read FNormalDirection
+      write SetNormalDirection default ndOutside;
+  end;
+
+  TAngleLimit1 = -90 .. 90;
+  TAngleLimit2 = 0 .. 360;
+  TCapType = (ctNone, ctCenter, ctFlat);
+
+  // TVKSphere
+  //
+  { : A sphere object.<p>
+    The sphere can have to and bottom caps, as well as being just a slice
+    of sphere. }
+  TVKSphere = class(TVKQuadricObject)
+  private
+    { Private Declarations }
+    FRadius: TVKFloat;
+    FSlices, FStacks: TVKInt;
+    FTop: TAngleLimit1;
+    FBottom: TAngleLimit1;
+    FStart: TAngleLimit2;
+    FStop: TAngleLimit2;
+    FTopCap, FBottomCap: TCapType;
+    procedure SetBottom(aValue: TAngleLimit1);
+    procedure SetBottomCap(aValue: TCapType);
+    procedure SetRadius(const aValue: TVKFloat);
+    procedure SetSlices(aValue: TVKInt);
+    procedure SetStart(aValue: TAngleLimit2);
+    procedure SetStop(aValue: TAngleLimit2);
+    procedure SetStacks(aValue: TVKInt);
+    procedure SetTop(aValue: TAngleLimit1);
+    procedure SetTopCap(aValue: TCapType);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure BuildList(var rci: TRenderContextInfo); override;
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+
+    function GenerateSilhouette(const silhouetteParameters
+      : TVKSilhouetteParameters): TVKSilhouette; override;
+  published
+    { Published Declarations }
+    property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
+    property BottomCap: TCapType read FBottomCap write SetBottomCap
+      default ctNone;
+    property Radius: TVKFloat read FRadius write SetRadius;
+    property Slices: TVKInt read FSlices write SetSlices default 16;
+    property Stacks: TVKInt read FStacks write SetStacks default 16;
+    property Start: TAngleLimit2 read FStart write SetStart default 0;
+    property Stop: TAngleLimit2 read FStop write SetStop default 360;
+    property Top: TAngleLimit1 read FTop write SetTop default 90;
+    property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
+  end;
+
+  // TVKPolygonBase
+  //
+  { : Base class for objects based on a polygon. }
+  TVKPolygonBase = class(TVKSceneObject)
+  private
+    { Private Declarations }
+    FDivision: Integer;
+    FSplineMode: TLineSplineMode;
+
+  protected
+    { Protected Declarations }
+    FNodes: TVKNodes;
+    procedure CreateNodes; dynamic;
+    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetDivision(const Value: Integer);
+    procedure SetNodes(const aNodes: TVKNodes);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+    procedure NotifyChange(Sender: TObject); override;
+
+    procedure AddNode(const coords: TVKCoordinates); overload;
+    procedure AddNode(const X, Y, Z: TVKFloat); overload;
+    procedure AddNode(const Value: TVector); overload;
+    procedure AddNode(const Value: TAffineVector); overload;
+
+  published
+    { Published Declarations }
+    { : The nodes list.<p> }
+    property Nodes: TVKNodes read FNodes write SetNodes;
+    { : Number of divisions for each segment in spline modes.<p>
+      Minimum 1 (disabled), ignored in lsmLines mode. }
+    property Division: Integer read FDivision write SetDivision default 10;
+    { : Default spline drawing mode.<p>
+      This mode is used only for the curve, not for the rotation path. }
+    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+      default lsmLines;
+
+  end;
+
+  // TVKSuperellipsoid
+  //
+  { : A Superellipsoid object.<p>
+    The Superellipsoid can have top and bottom caps,
+    as well as being just a slice of Superellipsoid. }
+  TVKSuperellipsoid = class(TVKQuadricObject)
+  private
+    { Private Declarations }
+    FRadius, FxyCurve, FzCurve: TVKFloat;
+    FSlices, FStacks: TVKInt;
+    FTop: TAngleLimit1;
+    FBottom: TAngleLimit1;
+    FStart: TAngleLimit2;
+    FStop: TAngleLimit2;
+    FTopCap, FBottomCap: TCapType;
+    procedure SetBottom(aValue: TAngleLimit1);
+    procedure SetBottomCap(aValue: TCapType);
+    procedure SetRadius(const aValue: TVKFloat);
+    procedure SetxyCurve(const aValue: TVKFloat);
+    procedure SetzCurve(const aValue: TVKFloat);
+    procedure SetSlices(aValue: TVKInt);
+    procedure SetStart(aValue: TAngleLimit2);
+    procedure SetStop(aValue: TAngleLimit2);
+    procedure SetStacks(aValue: TVKInt);
+    procedure SetTop(aValue: TAngleLimit1);
+    procedure SetTopCap(aValue: TCapType);
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TComponent); override;
+    procedure Assign(Source: TPersistent); override;
+
+    procedure BuildList(var rci: TRenderContextInfo); override;
+    function AxisAlignedDimensionsUnscaled: TVector; override;
+    function RayCastIntersect(const rayStart, rayVector: TVector;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
+      : Boolean; override;
+
+    function GenerateSilhouette(const silhouetteParameters
+      : TVKSilhouetteParameters): TVKSilhouette; override;
+  published
+    { Published Declarations }
+    property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
+    property BottomCap: TCapType read FBottomCap write SetBottomCap
+      default ctNone;
+    property Radius: TVKFloat read FRadius write SetRadius;
+    property xyCurve: TVKFloat read FxyCurve write SetxyCurve;
+    property zCurve: TVKFloat read FzCurve write SetzCurve;
+    property Slices: TVKInt read FSlices write SetSlices default 16;
+    property Stacks: TVKInt read FStacks write SetStacks default 16;
+    property Start: TAngleLimit2 read FStart write SetStart default 0;
+    property Stop: TAngleLimit2 read FStop write SetStop default 360;
+    property Top: TAngleLimit1 read FTop write SetTop default 90;
+    property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
+  end;
+
+
+{ : Issues OpenGL for a unit-size cube stippled wireframe. }
+procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TVKFloat;
+  Stipple: Boolean; const Color: TColorVector);
+{ : Issues OpenGL for a unit-size dodecahedron. }
+procedure DodecahedronBuildList;
+{ : Issues OpenGL for a unit-size icosahedron. }
+procedure IcosahedronBuildList;
+{ : Issues OpenGL for a unit-size octahedron. }
+procedure OctahedronBuildList;
+{ : Issues OpenGL for a unit-size tetrahedron. }
+procedure TetrahedronBuildList;
+
+
+
+var
+  TangentAttributeName: AnsiString = 'Tangent';
+  BinormalAttributeName: AnsiString = 'Binormal';
+
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+implementation
+
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+
+uses
+  VKS.Spline,
+  VKS.XOpenGL,
+  VKS.State;
+
+const
+  cDefaultPointSize: Single = 1.0;
+
+  // CubeWireframeBuildList
+  //
+
+procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TVKFloat;
+  Stipple: Boolean; const Color: TColorVector);
+var
+  mi, ma: Single;
+begin
+{$IFDEF GLS_OPENGL_DEBUG}
+  if GL.GREMEDY_string_marker then
+    GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
+{$ENDIF}
+  rci.GLStates.Disable(stLighting);
+  rci.GLStates.Enable(stLineSmooth);
+  if stipple then
+  begin
+    rci.GLStates.Enable(stLineStipple);
+    rci.GLStates.Enable(stBlend);
+    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    rci.GLStates.LineStippleFactor := 1;
+    rci.GLStates.LineStipplePattern := $CCCC;
+  end;
+  rci.GLStates.LineWidth := 1;
+  ma := 0.5 * Size;
+  mi := -ma;
+
+  GL.Color4fv(@Color);
+  GL.Begin_(GL_LINE_STRIP);
+  // front face
+  GL.Vertex3f(ma, mi, mi);
+  GL.Vertex3f(ma, ma, mi);
+  GL.Vertex3f(ma, ma, ma);
+  GL.Vertex3f(ma, mi, ma);
+  GL.Vertex3f(ma, mi, mi);
+  // partial up back face
+  GL.Vertex3f(mi, mi, mi);
+  GL.Vertex3f(mi, mi, ma);
+  GL.Vertex3f(mi, ma, ma);
+  GL.Vertex3f(mi, ma, mi);
+  // right side low
+  GL.Vertex3f(ma, ma, mi);
+  GL.End_;
+  GL.Begin_(GL_LINES);
+  // right high
+  GL.Vertex3f(ma, ma, ma);
+  GL.Vertex3f(mi, ma, ma);
+  // back low
+  GL.Vertex3f(mi, mi, mi);
+  GL.Vertex3f(mi, ma, mi);
+  // left high
+  GL.Vertex3f(ma, mi, ma);
+  GL.Vertex3f(mi, mi, ma);
+  GL.End_;
+end;
+
+// DodecahedronBuildList
+//
+procedure DodecahedronBuildList;
+const
+  A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
+  B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
+  C = 1 * 0.3;
+const
+  Vertices: packed array [0 .. 19] of TAffineVector = ((X: - A; Y: 0; Z: B),
+    (X: - A; Y: 0; Z: - B), (X: A; Y: 0; Z: - B), (X: A; Y: 0; Z: B), (X: B;
+    Y: - A; Z: 0), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: A;
+    Z: 0), (X: 0; Y: B; Z: - A), (X: 0; Y: - B; Z: - A), (X: 0; Y: - B; Z: A),
+    (X: 0; Y: B; Z: A), (X: - C; Y: - C; Z: C), (X: - C; Y: - C; Z: - C), (X: C;
+    Y: - C; Z: - C), (X: C; Y: - C; Z: C), (X: - C; Y: C; Z: C), (X: - C; Y: C;
+    Z: - C), (X: C; Y: C; Z: - C), (X: C; Y: C; Z: C));
+
+  Polygons: packed array [0 .. 11] of packed array [0 .. 4]
+    of Byte = ((0, 12, 10, 11, 16), (1, 17, 8, 9, 13), (2, 14, 9, 8, 18),
+    (3, 19, 11, 10, 15), (4, 14, 2, 3, 15), (5, 12, 0, 1, 13),
+    (6, 17, 1, 0, 16), (7, 19, 3, 2, 18), (8, 17, 6, 7, 18), (9, 14, 4, 5, 13),
+    (10, 12, 5, 4, 15), (11, 19, 7, 6, 16));
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 11 do
+  begin
+    faceIndices := @polygons[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+//    GL.Begin_(GL_TRIANGLE_FAN);
+//    for j := 0 to 4 do
+//      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+//    GL.End_;
+
+    GL.Begin_(GL_TRIANGLES);
+
+    for j := 1 to 3 do
+    begin
+      GL.Vertex3fv(@vertices[faceIndices^[0]]);
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+      GL.Vertex3fv(@vertices[faceIndices^[j+1]]);
+    end;
+    GL.End_;
+  end;
+end;
+
+// IcosahedronBuildList
+//
+procedure IcosahedronBuildList;
+const
+  A = 0.5;
+  B = 0.30901699437; // 1/(1+Sqrt(5))
+const
+  Vertices: packed array [0 .. 11] of TAffineVector = ((X: 0; Y: - B; Z: - A),
+    (X: 0; Y: - B; Z: A), (X: 0; Y: B; Z: - A), (X: 0; Y: B; Z: A), (X: - A;
+    Y: 0; Z: - B), (X: - A; Y: 0; Z: B), (X: A; Y: 0; Z: - B), (X: A; Y: 0;
+    Z: B), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: - A; Z: 0),
+    (X: B; Y: A; Z: 0));
+  Triangles: packed array [0 .. 19] of packed array [0 .. 2]
+    of Byte = ((2, 9, 11), (3, 11, 9), (3, 5, 1), (3, 1, 7), (2, 6, 0),
+    (2, 0, 4), (1, 8, 10), (0, 10, 8), (9, 4, 5), (8, 5, 4), (11, 7, 6),
+    (10, 6, 7), (3, 9, 5), (3, 7, 11), (2, 4, 9), (2, 11, 6), (0, 8, 4),
+    (0, 6, 10), (1, 5, 8), (1, 10, 7));
+
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 19 do
+  begin
+    faceIndices := @triangles[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+    GL.Begin_(GL_TRIANGLES);
+    for j := 0 to 2 do
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
+  end;
+end;
+
+// OctahedronBuildList
+//
+procedure OctahedronBuildList;
+const
+  Vertices: packed array [0 .. 5] of TAffineVector =
+      ((X: 1.0; Y: 0.0; Z: 0.0),
+       (X: -1.0; Y: 0.0; Z: 0.0),
+       (X: 0.0; Y: 1.0; Z: 0.0),
+       (X: 0.0; Y: -1.0; Z: 0.0),
+       (X: 0.0; Y: 0.0; Z: 1.0),
+       (X: 0.0; Y: 0.0; Z: -1.0));
+
+  Triangles: packed array [0 .. 7] of packed array [0 .. 2]
+    of Byte = ((0, 4, 2), (1, 2, 4), (0, 3, 4), (1, 4, 3),
+               (0, 2, 5), (1, 5, 2), (0, 5, 3), (1, 3, 5));
+
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 7 do
+  begin
+    faceIndices := @triangles[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+    GL.Begin_(GL_TRIANGLES);
+    for j := 0 to 2 do
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
+  end;
+end;
+
+// TetrahedronBuildList
+//
+procedure TetrahedronBuildList;
+const
+  TetT = 1.73205080756887729;
+const
+  Vertices: packed array [0 .. 3] of TAffineVector =
+{
+       ((X: TetT;  Y: TetT;  Z: TetT),
+        (X: TetT;  Y: -TetT; Z: -TetT),
+        (X: -TetT; Y: TetT;  Z: -TetT),
+        (X: -TetT; Y: -TetT; Z: TetT));
+}
+       ((X: 1.0;  Y: 1.0;  Z: 1.0),
+        (X: 1.0;  Y: -1.0; Z: -1.0),
+        (X: -1.0; Y: 1.0;  Z: -1.0),
+        (X: -1.0; Y: -1.0; Z: 1.0));
+
+  Triangles: packed array [0 .. 3] of packed array [0 .. 2]
+    of Byte = ((0, 1, 3), (2, 1, 0), (3, 2, 0), (1, 2, 3));
+
+var
+  i, j: Integer;
+  n: TAffineVector;
+  faceIndices: PByteArray;
+begin
+  for i := 0 to 3 do
+  begin
+    faceIndices := @triangles[i, 0];
+
+    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
+      vertices[faceIndices^[2]]);
+    GL.Normal3fv(@n);
+
+    GL.Begin_(GL_TRIANGLES);
+    for j := 0 to 2 do
+      GL.Vertex3fv(@vertices[faceIndices^[j]]);
+    GL.End_;
+  end;
+end;
+
+// ------------------
+// ------------------ TVKDummyCube ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKDummyCube.Create(AOwner: TComponent);
+begin
+  inherited;
+  ObjectStyle := ObjectStyle + [osDirectDraw];
+  FCubeSize := 1;
+  FEdgeColor := TVKColor.Create(Self);
+  FEdgeColor.Initialize(clrWhite);
+  FGroupList := TVKListHandle.Create;
+  CamInvarianceMode := cimNone;
+end;
+
+// Destroy
+//
+
+destructor TVKDummyCube.Destroy;
+begin
+  FGroupList.Free;
+  FEdgeColor.Free;
+  inherited;
+end;
+
+// Assign
+//
+
+procedure TVKDummyCube.Assign(Source: TPersistent);
+begin
+  if Source is TVKDummyCube then
+  begin
+    FCubeSize := TVKDummyCube(Source).FCubeSize;
+    FEdgeColor.Color := TVKDummyCube(Source).FEdgeColor.Color;
+    FVisibleAtRunTime := TVKDummyCube(Source).FVisibleAtRunTime;
+    NotifyChange(Self);
+  end;
+  inherited Assign(Source);
+end;
+
+// AxisAlignedDimensionsUnscaled
+//
+
+function TVKDummyCube.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.X := 0.5 * Abs(FCubeSize);
+  Result.Y := Result.X;
+  Result.Z := Result.X;
+  Result.W := 0;
+end;
+
+// RayCastIntersect
+//
+
+function TVKDummyCube.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+begin
+  Result := False;
+end;
+
+// BuildList
+//
+
+procedure TVKDummyCube.BuildList(var rci: TRenderContextInfo);
+begin
+  if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
+    CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
+end;
+
+// DoRender
+//
+
+procedure TVKDummyCube.DoRender(var rci: TRenderContextInfo;
+  renderSelf, renderChildren: Boolean);
+begin
+  if Assigned(FOnVisibilityDetermination) then
+    if not FOnVisibilityDetermination(Self, rci) then
+      Exit;
+  if FAmalgamate and (not rci.amalgamating) then
+  begin
+    if FGroupList.Handle = 0 then
+    begin
+      FGroupList.AllocateHandle;
+      Assert(FGroupList.Handle <> 0, 'Handle=0 for ' + ClassName);
+      rci.GLStates.NewList(FGroupList.Handle, GL_COMPILE);
+      rci.amalgamating := True;
+      try
+        inherited;
+      finally
+        rci.amalgamating := False;
+        rci.GLStates.EndList;
+      end;
+    end;
+    rci.GLStates.CallList(FGroupList.Handle);
+  end
+  else
+  begin
+    // proceed as usual
+    inherited;
+  end;
+end;
+
+// StructureChanged
+//
+
+procedure TVKDummyCube.StructureChanged;
+begin
+  if FAmalgamate then
+    FGroupList.DestroyHandle;
+  inherited;
+end;
+
+// BarycenterAbsolutePosition
+//
+
+function TVKDummyCube.BarycenterAbsolutePosition: TVector;
+var
+  i: Integer;
+begin
+  if Count > 0 then
+  begin
+    Result := Children[0].BarycenterAbsolutePosition;
+    for i := 1 to Count - 1 do
+      Result := VectorAdd(Result, Children[i].BarycenterAbsolutePosition);
+    ScaleVector(Result, 1 / Count);
+  end
+  else
+    Result := AbsolutePosition;
+end;
+
+// SetCubeSize
+//
+
+procedure TVKDummyCube.SetCubeSize(const val: TVKFloat);
+begin
+  if val <> FCubeSize then
+  begin
+    FCubeSize := val;
+    StructureChanged;
+  end;
+end;
+
+// SetEdgeColor
+//
+
+procedure TVKDummyCube.SetEdgeColor(const val: TVKColor);
+begin
+  if val <> FEdgeColor then
+  begin
+    FEdgeColor.Assign(val);
+    StructureChanged;
+  end;
+end;
+
+// SetVisibleAtRunTime
+//
+
+procedure TVKDummyCube.SetVisibleAtRunTime(const val: Boolean);
+begin
+  if val <> FVisibleAtRunTime then
+  begin
+    FVisibleAtRunTime := val;
+    StructureChanged;
+  end;
+end;
+
+// SetAmalgamate
+//
+
+procedure TVKDummyCube.SetAmalgamate(const val: Boolean);
+begin
+  if val <> FAmalgamate then
+  begin
+    FAmalgamate := val;
+    if not val then
+      FGroupList.DestroyHandle;
+    inherited StructureChanged;
+  end;
+end;
+
+// ------------------
+// ------------------ TVKPlane ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKPlane.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FWidth := 1;
+  FHeight := 1;
+  FXTiles := 1;
+  FYTiles := 1;
+  FXScope := 1;
+  FYScope := 1;
+  ObjectStyle := ObjectStyle + [osDirectDraw];
+  FStyle := [psSingleQuad, psTileTexture];
+end;
+
+// Assign
+//
+
+procedure TVKPlane.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TVKPlane) then
+  begin
+    FWidth := TVKPlane(Source).FWidth;
+    FHeight := TVKPlane(Source).FHeight;
+    FXOffset := TVKPlane(Source).FXOffset;
+    FXScope := TVKPlane(Source).FXScope;
+    FXTiles := TVKPlane(Source).FXTiles;
+    FYOffset := TVKPlane(Source).FYOffset;
+    FYScope := TVKPlane(Source).FYScope;
+    FYTiles := TVKPlane(Source).FYTiles;
+    FStyle := TVKPlane(Source).FStyle;
+    StructureChanged;
+  end;
+  inherited Assign(Source);
+end;
+
+// AxisAlignedDimensions
+//
+
+function TVKPlane.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.V[0] := 0.5 * Abs(FWidth);
+  Result.V[1] := 0.5 * Abs(FHeight);
+  Result.V[2] := 0;
+end;
+
+// RayCastIntersect
+//
+
+function TVKPlane.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+var
+  locRayStart, locRayVector, ip: TVector;
+  t: Single;
+begin
+  locRayStart := AbsoluteToLocal(rayStart);
+  locRayVector := AbsoluteToLocal(rayVector);
+  if locRayStart.V[2] >= 0 then
+  begin
+    // ray start over plane
+    if locRayVector.V[2] < 0 then
+    begin
+      t := locRayStart.V[2] / locRayVector.V[2];
+      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
+      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
+      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      begin
+        Result := True;
+        if Assigned(intersectNormal) then
+          intersectNormal^ := AbsoluteDirection;
+      end
+      else
+        Result := False;
+    end
+    else
+      Result := False;
+  end
+  else
+  begin
+    // ray start below plane
+    if locRayVector.V[2] > 0 then
+    begin
+      t := locRayStart.V[2] / locRayVector.V[2];
+      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
+      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
+      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      begin
+        Result := True;
+        if Assigned(intersectNormal) then
+          intersectNormal^ := VectorNegate(AbsoluteDirection);
+      end
+      else
+        Result := False;
+    end
+    else
+      Result := False;
+  end;
+  if Result and Assigned(intersectPoint) then
+  begin
+    ip.V[2] := 0;
+    ip.V[3] := 1;
+    intersectPoint^ := LocalToAbsolute(ip);
+  end;
+end;
+
+// GenerateSilhouette
+//
+
+function TVKPlane.GenerateSilhouette(const silhouetteParameters
+  : TVKSilhouetteParameters): TVKSilhouette;
+var
+  hw, hh: Single;
+begin
+  Result := TVKSilhouette.Create;
+
+  hw := FWidth * 0.5;
+  hh := FHeight * 0.5;
+
+  with Result.vertices do
+  begin
+    AddPoint(hw, hh);
+    AddPoint(hw, -hh);
+    AddPoint(-hw, -hh);
+    AddPoint(-hw, hh);
+  end;
+
+  with Result.Indices do
+  begin
+    Add(0, 1);
+    Add(1, 2);
+    Add(2, 3);
+    Add(3, 0);
+  end;
+
+  if silhouetteParameters.CappingRequired then
+    with Result.CapIndices do
+    begin
+      Add(0, 1, 2);
+      Add(2, 3, 0);
+    end;
+end;
+
+// BuildList
+//
+
+procedure TVKPlane.BuildList(var rci: TRenderContextInfo);
+
+  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  begin
+    XGL.TexCoord2fv(@ptr^.TexCoord);
+    GL.Vertex3fv(@ptr^.Position);
+  end;
+
+var
+  hw, hh, posXFact, posYFact, pX, pY1: TVKFloat;
+  tx0, tx1, ty0, ty1, texSFact, texTFact: TVKFloat;
+  texS, texT1: TVKFloat;
+  X, Y: Integer;
+  TanLoc, BinLoc: Integer;
+  pVertex: PVertexRec;
+begin
+  hw := FWidth * 0.5;
+  hh := FHeight * 0.5;
+
+  with GL do
+  begin
+    Normal3fv(@ZVector);
+    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    begin
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      if TanLoc > -1 then
+        VertexAttrib3fv(TanLoc, @XVector);
+      if BinLoc > -1 then
+        VertexAttrib3fv(BinLoc, @YVector);
+    end;
+  end;
+  // determine tex coords extents
+  if psTileTexture in FStyle then
+  begin
+    tx0 := FXOffset;
+    tx1 := FXTiles * FXScope + FXOffset;
+    ty0 := FYOffset;
+    ty1 := FYTiles * FYScope + FYOffset;
+  end
+  else
+  begin
+    tx0 := 0;
+    ty0 := tx0;
+    tx1 := FXScope;
+    ty1 := FYScope;
+  end;
+
+  if psSingleQuad in FStyle then
+  begin
+    // single quad plane
+    GL.Begin_(GL_TRIANGLES);
+    xgl.TexCoord2f(tx1, ty1);
+    GL.Vertex2f(hw, hh);
+    xgl.TexCoord2f(tx0, ty1);
+    GL.Vertex2f(-hw, hh);
+    xgl.TexCoord2f(tx0, ty0);
+    GL.Vertex2f(-hw, -hh);
+
+    GL.Vertex2f(-hw, -hh);
+    xgl.TexCoord2f(tx1, ty0);
+    GL.Vertex2f(hw, -hh);
+    xgl.TexCoord2f(tx1, ty1);
+    GL.Vertex2f(hw, hh);
+    GL.End_;
+    exit;
+  end
+  else
+  begin
+    // multi-quad plane (actually built from tri-strips)
+    texSFact := (tx1 - tx0) / FXTiles;
+    texTFact := (ty1 - ty0) / FYTiles;
+    posXFact := FWidth / FXTiles;
+    posYFact := FHeight / FYTiles;
+    if FMesh = nil then
+    begin
+      SetLength(FMesh, FYTiles+1, FXTiles+1);
+      for Y := 0 to FYTiles do
+      begin
+        texT1 := Y * texTFact;
+        pY1 := Y * posYFact - hh;
+        for X := 0 to FXTiles do
+        begin
+          texS := X * texSFact;
+          pX := X * posXFact - hw;
+          FMesh[Y][X].Position := Vector3fMake(pX, pY1, 0.0);
+          FMesh[Y][X].TexCoord := Vector2fMake(texS, texT1);
+        end;
+      end;
+    end;
+  end;
+
+  with GL do
+  begin
+    Begin_(GL_TRIANGLES);
+    for Y := 0 to FYTiles-1 do
+    begin
+      for X := 0 to FXTiles-1 do
+      begin
+        pVertex := @FMesh[Y][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y][X+1];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X+1];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y+1][X];
+        EmitVertex(pVertex);
+
+        pVertex := @FMesh[Y][X+1];
+        EmitVertex(pVertex);
+      end;
+    end;
+    End_;
+  end;
+end;
+
+// SetWidth
+//
+
+procedure TVKPlane.SetWidth(const aValue: Single);
+begin
+  if aValue <> FWidth then
+  begin
+    FWidth := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// ScreenRect
+//
+
+function TVKPlane.ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
+var
+  v: array [0 .. 3] of TVector;
+  buf: TVKSceneBuffer;
+  hw, hh: TVKFloat;
+begin
+  buf := aBuffer;
+  if Assigned(buf) then
+  begin
+    hw := FWidth * 0.5;
+    hh := FHeight * 0.5;
+    v[0] := LocalToAbsolute(PointMake(-hw, -hh, 0));
+    v[1] := LocalToAbsolute(PointMake(hw, -hh, 0));
+    v[2] := LocalToAbsolute(PointMake(hw, hh, 0));
+    v[3] := LocalToAbsolute(PointMake(-hw, hh, 0));
+    buf.WorldToScreen(@v[0], 4);
+    Result.Left := Round(MinFloat([v[0].V[0], v[1].V[0], v[2].V[0], v[3].V[0]]));
+    Result.Right := Round(MaxFloat([v[0].V[0], v[1].V[0], v[2].V[0], v[3].V[0]]));
+    Result.Top := Round(MinFloat([v[0].V[1], v[1].V[1], v[2].V[1], v[3].V[1]]));
+    Result.Bottom := Round(MaxFloat([v[0].V[1], v[1].V[1], v[2].V[1], v[3].V[1]]));
+  end
+  else
+    FillChar(Result, SizeOf(TVKRect), 0);
+end;
+
+// PointDistance
+//
+
+function TVKPlane.PointDistance(const aPoint: TVector): Single;
+begin
+  Result := VectorDotProduct(VectorSubtract(aPoint, AbsolutePosition),
+    AbsoluteDirection);
+end;
+
+// SetHeight
+//
+
+procedure TVKPlane.SetHeight(const aValue: Single);
+begin
+  if aValue <> FHeight then
+  begin
+    FHeight := aValue;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetXOffset
+//
+
+procedure TVKPlane.SetXOffset(const Value: TVKFloat);
+begin
+  if Value <> FXOffset then
+  begin
+    FXOffset := Value;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetXScope
+//
+
+procedure TVKPlane.SetXScope(const Value: TVKFloat);
+begin
+  if Value <> FXScope then
+  begin
+    FXScope := Value;
+    if FXScope > 1 then
+      FXScope := 1;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// StoreXScope
+//
+
+function TVKPlane.StoreXScope: Boolean;
+begin
+  Result := (FXScope <> 1);
+end;
+
+// SetXTiles
+//
+
+procedure TVKPlane.SetXTiles(const Value: Cardinal);
+begin
+  if Value <> FXTiles then
+  begin
+    FXTiles := Value;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetYOffset
+//
+
+procedure TVKPlane.SetYOffset(const Value: TVKFloat);
+begin
+  if Value <> FYOffset then
+  begin
+    FYOffset := Value;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetYScope
+//
+
+procedure TVKPlane.SetYScope(const Value: TVKFloat);
+begin
+  if Value <> FYScope then
+  begin
+    FYScope := Value;
+    if FYScope > 1 then
+      FYScope := 1;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// StoreYScope
+//
+
+function TVKPlane.StoreYScope: Boolean;
+begin
+  Result := (FYScope <> 1);
+end;
+
+// SetYTiles
+//
+
+procedure TVKPlane.SetYTiles(const Value: Cardinal);
+begin
+  if Value <> FYTiles then
+  begin
+    FYTiles := Value;
+    FMesh := nil;
+    StructureChanged;
+  end;
+end;
+
+// SetStyle
+//
+
+procedure TVKPlane.SetStyle(const val: TVKPlaneStyles);
+begin
+  if val <> FStyle then
+  begin
+    FStyle := val;
+    StructureChanged;
+  end;
+end;
+
+// ------------------
+// ------------------ TVKSprite ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKSprite.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
+  FAlphaChannel := 1;
+  FWidth := 1;
+  FHeight := 1;
+end;
+
+// Assign
+//
+
+procedure TVKSprite.Assign(Source: TPersistent);
+begin
+  if Source is TVKSprite then
+  begin
+    FWidth := TVKSprite(Source).FWidth;
+    FHeight := TVKSprite(Source).FHeight;
+    FRotation := TVKSprite(Source).FRotation;
+    FAlphaChannel := TVKSprite(Source).FAlphaChannel;
+  end;
+  inherited Assign(Source);
+end;
+
+function TVKSprite.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.V[0] := 0.5 * Abs(FWidth);
+  Result.V[1] := 0.5 * Abs(FHeight);
+  // Sprites turn with the camera and can be considered to have the same depth
+  // as width
+  Result.V[2] := 0.5 * Abs(FWidth);
+end;
+
+// BuildList
+//
+
+procedure TVKSprite.BuildList(var rci: TRenderContextInfo);
+var
+  vx, vy: TAffineVector;
+  w, h: Single;
+  mat: TMatrix;
+  u0, v0, u1, v1: Integer;
+begin
+  if FAlphaChannel <> 1 then
+    rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
+
+  mat := rci.PipelineTransformation.ModelViewMatrix;
+  // extraction of the "vecteurs directeurs de la matrice"
+  // (dunno how they are named in english)
+  w := FWidth * 0.5;
+  h := FHeight * 0.5;
+  vx.V[0] := mat.V[0].V[0];
+  vy.V[0] := mat.V[0].V[1];
+  vx.V[1] := mat.V[1].V[0];
+  vy.V[1] := mat.V[1].V[1];
+  vx.V[2] := mat.V[2].V[0];
+  vy.V[2] := mat.V[2].V[1];
+  ScaleVector(vx, w / VectorLength(vx));
+  ScaleVector(vy, h / VectorLength(vy));
+  if FMirrorU then
+  begin
+    u0 := 1;
+    u1 := 0;
+  end
+  else
+  begin
+    u0 := 0;
+    u1 := 1;
+  end;
+  if FMirrorV then
+  begin
+    v0 := 1;
+    v1 := 0;
+  end
+  else
+  begin
+    v0 := 0;
+    v1 := 1;
+  end;
+
+  if FRotation <> 0 then
+  begin
+    GL.PushMatrix;
+    GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
+  end;
+  GL.Begin_(GL_QUADS);
+  xgl.TexCoord2f(u1, v1);
+  GL.Vertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1], vx.V[2] + vy.V[2]);
+  xgl.TexCoord2f(u0, v1);
+  GL.Vertex3f(-vx.V[0] + vy.V[0], -vx.V[1] + vy.V[1], -vx.V[2] + vy.V[2]);
+  xgl.TexCoord2f(u0, v0);
+  GL.Vertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
+  xgl.TexCoord2f(u1, v0);
+  GL.Vertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+  GL.End_;
+  if FRotation <> 0 then
+    GL.PopMatrix;
+end;
+
+// SetWidth
+//
+
+procedure TVKSprite.SetWidth(const val: TVKFloat);
+begin
+  if FWidth <> val then
+  begin
+    FWidth := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetHeight
+//
+
+procedure TVKSprite.SetHeight(const val: TVKFloat);
+begin
+  if FHeight <> val then
+  begin
+    FHeight := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetRotation
+//
+
+procedure TVKSprite.SetRotation(const val: TVKFloat);
+begin
+  if FRotation <> val then
+  begin
+    FRotation := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetAlphaChannel
+//
+
+procedure TVKSprite.SetAlphaChannel(const val: Single);
+begin
+  if val <> FAlphaChannel then
+  begin
+    if val < 0 then
+      FAlphaChannel := 0
+    else if val > 1 then
+      FAlphaChannel := 1
+    else
+      FAlphaChannel := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// StoreAlphaChannel
+//
+
+function TVKSprite.StoreAlphaChannel: Boolean;
+begin
+  Result := (FAlphaChannel <> 1);
+end;
+
+// SetMirrorU
+//
+
+procedure TVKSprite.SetMirrorU(const val: Boolean);
+begin
+  FMirrorU := val;
+  NotifyChange(Self);
+end;
+
+// SetMirrorV
+//
+
+procedure TVKSprite.SetMirrorV(const val: Boolean);
+begin
+  FMirrorV := val;
+  NotifyChange(Self);
+end;
+
+// SetSize
+//
+
+procedure TVKSprite.SetSize(const Width, Height: TVKFloat);
+begin
+  FWidth := Width;
+  FHeight := Height;
+  NotifyChange(Self);
+end;
+
+// SetSquareSize
+//
+
+procedure TVKSprite.SetSquareSize(const Size: TVKFloat);
+begin
+  FWidth := Size;
+  FHeight := Size;
+  NotifyChange(Self);
+end;
+
+// ------------------
+// ------------------ TVKPointParameters ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKPointParameters.Create(AOwner: TPersistent);
+begin
+  inherited Create(AOwner);
+  FMinSize := 0;
+  FMaxSize := 128;
+  FFadeTresholdSize := 1;
+  FDistanceAttenuation := TVKCoordinates.CreateInitialized(Self, XHmgVector,
+    csVector);
+end;
+
+// Destroy
+//
+
+destructor TVKPointParameters.Destroy;
+begin
+  FDistanceAttenuation.Free;
+  inherited;
+end;
+
+// Assign
+//
+
+procedure TVKPointParameters.Assign(Source: TPersistent);
+begin
+  if Source is TVKPointParameters then
+  begin
+    FMinSize := TVKPointParameters(Source).FMinSize;
+    FMaxSize := TVKPointParameters(Source).FMaxSize;
+    FFadeTresholdSize := TVKPointParameters(Source).FFadeTresholdSize;
+    FDistanceAttenuation.Assign(TVKPointParameters(Source).DistanceAttenuation);
+  end;
+end;
+
+// DefineProperties
+//
+
+procedure TVKPointParameters.DefineProperties(Filer: TFiler);
+var
+  defaultParams: Boolean;
+begin
+  inherited;
+  defaultParams := (FMaxSize = 128) and (FMinSize = 0) and
+    (FFadeTresholdSize = 1);
+  Filer.DefineBinaryProperty('PointParams', ReadData, WriteData,
+    not defaultParams);
+end;
+
+// ReadData
+//
+
+procedure TVKPointParameters.ReadData(Stream: TStream);
+begin
+  with Stream do
+  begin
+    Read(FMinSize, SizeOf(Single));
+    Read(FMaxSize, SizeOf(Single));
+    Read(FFadeTresholdSize, SizeOf(Single));
+  end;
+end;
+
+// WriteData
+//
+
+procedure TVKPointParameters.WriteData(Stream: TStream);
+begin
+  with Stream do
+  begin
+    Write(FMinSize, SizeOf(Single));
+    Write(FMaxSize, SizeOf(Single));
+    Write(FFadeTresholdSize, SizeOf(Single));
+  end;
+end;
+
+// Apply
+//
+
+procedure TVKPointParameters.Apply;
+begin
+  if Enabled and GL.ARB_point_parameters then
+  begin
+    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
+    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
+    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
+    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
+      FDistanceAttenuation.AsAddress);
+  end;
+end;
+
+// UnApply
+//
+
+procedure TVKPointParameters.UnApply;
+begin
+  if Enabled and GL.ARB_point_parameters then
+  begin
+    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
+    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
+    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
+    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
+  end;
+end;
+
+// SetEnabled
+//
+
+procedure TVKPointParameters.SetEnabled(const val: Boolean);
+begin
+  if val <> FEnabled then
+  begin
+    FEnabled := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetMinSize
+//
+
+procedure TVKPointParameters.SetMinSize(const val: Single);
+begin
+  if val <> FMinSize then
+  begin
+    if val < 0 then
+      FMinSize := 0
+    else
+      FMinSize := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetMaxSize
+//
+
+procedure TVKPointParameters.SetMaxSize(const val: Single);
+begin
+  if val <> FMaxSize then
+  begin
+    if val < 0 then
+      FMaxSize := 0
+    else
+      FMaxSize := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetFadeTresholdSize
+//
+
+procedure TVKPointParameters.SetFadeTresholdSize(const val: Single);
+begin
+  if val <> FFadeTresholdSize then
+  begin
+    if val < 0 then
+      FFadeTresholdSize := 0
+    else
+      FFadeTresholdSize := val;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetDistanceAttenuation
+//
+
+procedure TVKPointParameters.SetDistanceAttenuation(const val: TVKCoordinates);
+begin
+  FDistanceAttenuation.Assign(val);
+end;
+
+// ------------------
+// ------------------ TVKPoints ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKPoints.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
+  FStyle := psSquare;
+  FSize := cDefaultPointSize;
+  FPositions := TAffineVectorList.Create;
+  FPositions.Add(NullVector);
+  FColors := TVectorList.Create;
+  FPointParameters := TVKPointParameters.Create(Self);
+end;
+
+// Destroy
+//
+
+destructor TVKPoints.Destroy;
+begin
+  FPointParameters.Free;
+  FColors.Free;
+  FPositions.Free;
+  inherited;
+end;
+
+// Assign
+//
+
+procedure TVKPoints.Assign(Source: TPersistent);
+begin
+  if Source is TVKPoints then
+  begin
+    FSize := TVKPoints(Source).FSize;
+    FStyle := TVKPoints(Source).FStyle;
+    FPositions.Assign(TVKPoints(Source).FPositions);
+    FColors.Assign(TVKPoints(Source).FColors);
+    StructureChanged
+  end;
+  inherited Assign(Source);
+end;
+
+// BuildList
+//
+
+procedure TVKPoints.BuildList(var rci: TRenderContextInfo);
+var
+  n: Integer;
+  v: TVector;
+begin
+  n := FPositions.Count;
+  if n = 0 then
+    Exit;
+
+  case FColors.Count of
+    0:
+      GL.Color4f(1, 1, 1, 1);
+    1:
+      GL.Color4fv(PGLFloat(FColors.List));
+  else
+    if FColors.Count < n then
+      n := FColors.Count;
+    GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
+    GL.EnableClientState(GL_COLOR_ARRAY);
+  end;
+  if FColors.Count < 2 then
+    GL.DisableClientState(GL_COLOR_ARRAY);
+
+  rci.GLStates.Disable(stLighting);
+  if n = 0 then
+  begin
+    v := NullHmgPoint;
+    GL.VertexPointer(3, GL_FLOAT, 0, @v);
+    n := 1;
+  end
+  else
+    GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
+  GL.EnableClientState(GL_VERTEX_ARRAY);
+
+  if NoZWrite then
+    rci.GLStates.DepthWriteMask := False;
+  rci.GLStates.PointSize := FSize;
+  PointParameters.Apply;
+  if GL.EXT_compiled_vertex_array and (n > 64) then
+    GL.LockArrays(0, n);
+  case FStyle of
+    psSquare:
+      begin
+        // square point (simplest method, fastest)
+        rci.GLStates.Disable(stBlend);
+      end;
+    psRound:
+      begin
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfGreater, 0.5);
+        rci.GLStates.Disable(stBlend);
+      end;
+    psSmooth:
+      begin
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      end;
+    psSmoothAdditive:
+      begin
+        rci.GLStates.Enable(stPointSmooth);
+        rci.GLStates.Enable(stAlphaTest);
+        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+      end;
+    psSquareAdditive:
+      begin
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+      end;
+  else
+    Assert(False);
+  end;
+  GL.DrawArrays(GL_POINTS, 0, n);
+  if GL.EXT_compiled_vertex_array and (n > 64) then
+    GL.UnlockArrays;
+  PointParameters.UnApply;
+  GL.DisableClientState(GL_VERTEX_ARRAY);
+  if FColors.Count > 1 then
+    GL.DisableClientState(GL_COLOR_ARRAY);
+end;
+
+// StoreSize
+//
+
+function TVKPoints.StoreSize: Boolean;
+begin
+  Result := (FSize <> cDefaultPointSize);
+end;
+
+// SetNoZWrite
+//
+
+procedure TVKPoints.SetNoZWrite(const val: Boolean);
+begin
+  if FNoZWrite <> val then
+  begin
+    FNoZWrite := val;
+    StructureChanged;
+  end;
+end;
+
+// SetStatic
+//
+
+procedure TVKPoints.SetStatic(const val: Boolean);
+begin
+  if FStatic <> val then
+  begin
+    FStatic := val;
+    if val then
+      ObjectStyle := ObjectStyle - [osDirectDraw]
+    else
+      ObjectStyle := ObjectStyle + [osDirectDraw];
+    StructureChanged;
+  end;
+end;
+
+// SetSize
+//
+
+procedure TVKPoints.SetSize(const val: Single);
+begin
+  if FSize <> val then
+  begin
+    FSize := val;
+    StructureChanged;
+  end;
+end;
+
+// SetPositions
+//
+
+procedure TVKPoints.SetPositions(const val: TAffineVectorList);
+begin
+  FPositions.Assign(val);
+  StructureChanged;
+end;
+
+// SetColors
+//
+
+procedure TVKPoints.SetColors(const val: TVectorList);
+begin
+  FColors.Assign(val);
+  StructureChanged;
+end;
+
+// SetStyle
+//
+
+procedure TVKPoints.SetStyle(const val: TVKPointStyle);
+begin
+  if FStyle <> val then
+  begin
+    FStyle := val;
+    StructureChanged;
+  end;
+end;
+
+// SetPointParameters
+//
+
+procedure TVKPoints.SetPointParameters(const val: TVKPointParameters);
+begin
+  FPointParameters.Assign(val);
+end;
+
+// ------------------
+// ------------------ TVKLineBase ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKLineBase.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FLineColor := TVKColor.Create(Self);
+  FLineColor.Initialize(clrWhite);
+  FLinePattern := $FFFF;
+  FAntiAliased := False;
+  FLineWidth := 1.0;
+end;
+
+// Destroy
+//
+
+destructor TVKLineBase.Destroy;
+begin
+  FLineColor.Free;
+  inherited Destroy;
+end;
+
+procedure TVKLineBase.NotifyChange(Sender: TObject);
+begin
+  if Sender = FLineColor then
+    StructureChanged;
+  inherited;
+end;
+
+// SetLineColor
+//
+
+procedure TVKLineBase.SetLineColor(const Value: TVKColor);
+begin
+  FLineColor.Color := Value.Color;
+  StructureChanged;
+end;
+
+// SetLinePattern
+//
+
+procedure TVKLineBase.SetLinePattern(const Value: TVKushort);
+begin
+  if FLinePattern <> Value then
+  begin
+    FLinePattern := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetLineWidth
+//
+
+procedure TVKLineBase.SetLineWidth(const val: Single);
+begin
+  if FLineWidth <> val then
+  begin
+    FLineWidth := val;
+    StructureChanged;
+  end;
+end;
+
+// StoreLineWidth
+//
+
+function TVKLineBase.StoreLineWidth: Boolean;
+begin
+  Result := (FLineWidth <> 1.0);
+end;
+
+// SetAntiAliased
+//
+
+procedure TVKLineBase.SetAntiAliased(const val: Boolean);
+begin
+  if FAntiAliased <> val then
+  begin
+    FAntiAliased := val;
+    StructureChanged;
+  end;
+end;
+
+// Assign
+//
+
+procedure TVKLineBase.Assign(Source: TPersistent);
+begin
+  if Source is TVKLineBase then
+  begin
+    LineColor := TVKLineBase(Source).FLineColor;
+    LinePattern := TVKLineBase(Source).FLinePattern;
+    LineWidth := TVKLineBase(Source).FLineWidth;
+    AntiAliased := TVKLineBase(Source).FAntiAliased;
+  end;
+  inherited Assign(Source);
+end;
+
+// SetupLineStyle
+//
+
+procedure TVKLineBase.SetupLineStyle(var rci: TRenderContextInfo);
+begin
+  with rci.GLStates do
+  begin
+    Disable(stLighting);
+    if FLinePattern <> $FFFF then
+    begin
+      Enable(stLineStipple);
+      Enable(stBlend);
+      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      LineStippleFactor := 1;
+      LineStipplePattern := FLinePattern;
+    end
+    else
+      Disable(stLineStipple);
+    if FAntiAliased then
+    begin
+      Enable(stLineSmooth);
+      Enable(stBlend);
+      SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    end
+    else
+      Disable(stLineSmooth);
+    LineWidth := FLineWidth;
+
+    if FLineColor.Alpha <> 1 then
+    begin
+      if not FAntiAliased then
+      begin
+        Enable(stBlend);
+        SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      end;
+      GL.Color4fv(FLineColor.AsAddress);
+    end
+    else
+      GL.Color3fv(FLineColor.AsAddress);
+
+  end;
+end;
+
+// ------------------
+// ------------------ TVKLinesNode ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKLinesNode.Create(Collection: TCollection);
+begin
+  inherited Create(Collection);
+  FColor := TVKColor.Create(Self);
+  FColor.Initialize((TVKLinesNodes(Collection).GetOwner as TVKLines)
+    .NodeColor.Color);
+  FColor.OnNotifyChange := OnColorChange;
+end;
+
+// Destroy
+//
+
+destructor TVKLinesNode.Destroy;
+begin
+  FColor.Free;
+  inherited Destroy;
+end;
+
+// Assign
+//
+
+procedure TVKLinesNode.Assign(Source: TPersistent);
+begin
+  if Source is TVKLinesNode then
+    FColor.Assign(TVKLinesNode(Source).FColor);
+  inherited;
+end;
+
+// SetColor
+//
+
+procedure TVKLinesNode.SetColor(const val: TVKColor);
+begin
+  FColor.Assign(val);
+end;
+
+// OnColorChange
+//
+
+procedure TVKLinesNode.OnColorChange(Sender: TObject);
+begin
+  (Collection as TVKNodes).NotifyChange;
+end;
+
+// StoreColor
+//
+
+function TVKLinesNode.StoreColor: Boolean;
+begin
+  Result := not VectorEquals((TVKLinesNodes(Collection).GetOwner as TVKLines)
+    .NodeColor.Color, FColor.Color);
+end;
+
+// ------------------
+// ------------------ TVKLinesNodes ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKLinesNodes.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner, TVKLinesNode);
+end;
+
+// NotifyChange
+//
+
+procedure TVKLinesNodes.NotifyChange;
+begin
+  if (GetOwner <> nil) then
+    (GetOwner as TVKBaseSceneObject).StructureChanged;
+end;
+
+// ------------------
+// ------------------ TVKNodedLines ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKNodedLines.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FNodes := TVKLinesNodes.Create(Self);
+  FNodeColor := TVKColor.Create(Self);
+  FNodeColor.Initialize(clrBlue);
+  FNodeColor.OnNotifyChange := OnNodeColorChanged;
+  FOldNodeColor := clrBlue;
+  FNodesAspect := lnaAxes;
+  FNodeSize := 1;
+end;
+
+// Destroy
+//
+
+destructor TVKNodedLines.Destroy;
+begin
+  FNodes.Free;
+  FNodeColor.Free;
+  inherited Destroy;
+end;
+
+// SetNodesAspect
+//
+
+procedure TVKNodedLines.SetNodesAspect(const Value: TLineNodesAspect);
+begin
+  if Value <> FNodesAspect then
+  begin
+    FNodesAspect := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetNodeColor
+//
+
+procedure TVKNodedLines.SetNodeColor(const Value: TVKColor);
+begin
+  FNodeColor.Color := Value.Color;
+  StructureChanged;
+end;
+
+// OnNodeColorChanged
+//
+
+procedure TVKNodedLines.OnNodeColorChanged(Sender: TObject);
+var
+  i: Integer;
+begin
+  // update color for nodes...
+  for i := 0 to Nodes.Count - 1 do
+    if VectorEquals(TVKLinesNode(Nodes[i]).Color.Color, FOldNodeColor) then
+      TVKLinesNode(Nodes[i]).Color.Assign(FNodeColor);
+  SetVector(FOldNodeColor, FNodeColor.Color);
+end;
+
+// SetNodes
+//
+
+procedure TVKNodedLines.SetNodes(const aNodes: TVKLinesNodes);
+begin
+  FNodes.Assign(aNodes);
+  StructureChanged;
+end;
+
+// SetNodeSize
+//
+
+procedure TVKNodedLines.SetNodeSize(const val: Single);
+begin
+  if val <= 0 then
+    FNodeSize := 1
+  else
+    FNodeSize := val;
+  StructureChanged;
+end;
+
+// StoreNodeSize
+//
+
+function TVKNodedLines.StoreNodeSize: Boolean;
+begin
+  Result := FNodeSize <> 1;
+end;
+
+// Assign
+//
+
+procedure TVKNodedLines.Assign(Source: TPersistent);
+begin
+  if Source is TVKNodedLines then
+  begin
+    SetNodes(TVKNodedLines(Source).FNodes);
+    FNodesAspect := TVKNodedLines(Source).FNodesAspect;
+    FNodeColor.Color := TVKNodedLines(Source).FNodeColor.Color;
+    FNodeSize := TVKNodedLines(Source).FNodeSize;
+  end;
+  inherited Assign(Source);
+end;
+
+// DrawNode
+//
+
+procedure TVKNodedLines.DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+  Color: TVKColor);
+begin
+  GL.PushMatrix;
+  GL.Translatef(X, Y, Z);
+  case NodesAspect of
+    lnaAxes:
+      AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
+    lnaCube:
+      CubeWireframeBuildList(rci, FNodeSize, False, Color.Color);
+    lnaDodecahedron:
+      begin
+        if FNodeSize <> 1 then
+        begin
+          GL.PushMatrix;
+          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
+          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+            Color.Color, clrBlack, 0);
+          DodecahedronBuildList;
+          GL.PopMatrix;
+        end
+        else
+        begin
+          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+            Color.Color, clrBlack, 0);
+          DodecahedronBuildList;
+        end;
+      end;
+  else
+    Assert(False)
+  end;
+  GL.PopMatrix;
+end;
+
+// AxisAlignedDimensionsUnscaled
+//
+
+function TVKNodedLines.AxisAlignedDimensionsUnscaled: TVector;
+var
+  i: Integer;
+begin
+  RstVector(Result);
+  for i := 0 to Nodes.Count - 1 do
+    MaxVector(Result, VectorAbs(Nodes[i].AsVector));
+  // EG: commented out, line below looks suspicious, since scale isn't taken
+  // into account in previous loop, must have been hiding another bug... somewhere...
+  // DivideVector(Result, Scale.AsVector);     //DanB ?
+end;
+
+// AddNode (coords)
+//
+
+procedure TVKNodedLines.AddNode(const coords: TVKCoordinates);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  if Assigned(coords) then
+    n.AsVector := coords.AsVector;
+  StructureChanged;
+end;
+
+// AddNode (xyz)
+//
+
+procedure TVKNodedLines.AddNode(const X, Y, Z: TVKFloat);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := VectorMake(X, Y, Z, 1);
+  StructureChanged;
+end;
+
+// AddNode (vector)
+//
+
+procedure TVKNodedLines.AddNode(const Value: TVector);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := Value;
+  StructureChanged;
+end;
+
+// AddNode (affine vector)
+//
+
+procedure TVKNodedLines.AddNode(const Value: TAffineVector);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := VectorMake(Value);
+  StructureChanged;
+end;
+
+// ------------------
+// ------------------ TVKLines ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKLines.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FDivision := 10;
+  FSplineMode := lsmLines;
+  FNURBSKnots := TSingleList.Create;
+  FNURBSOrder := 0;
+  FNURBSTolerance := 50;
+end;
+
+// Destroy
+//
+
+destructor TVKLines.Destroy;
+begin
+  FNURBSKnots.Free;
+  inherited Destroy;
+end;
+
+// SetDivision
+//
+
+procedure TVKLines.SetDivision(const Value: Integer);
+begin
+  if Value <> FDivision then
+  begin
+    if Value < 1 then
+      FDivision := 1
+    else
+      FDivision := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetOptions
+//
+
+procedure TVKLines.SetOptions(const val: TLinesOptions);
+begin
+  FOptions := val;
+  StructureChanged;
+end;
+
+// SetSplineMode
+//
+
+procedure TVKLines.SetSplineMode(const val: TLineSplineMode);
+begin
+  if FSplineMode <> val then
+  begin
+    FSplineMode := val;
+    StructureChanged;
+  end;
+end;
+
+// SetNURBSOrder
+//
+
+procedure TVKLines.SetNURBSOrder(const val: Integer);
+begin
+  if val <> FNURBSOrder then
+  begin
+    FNURBSOrder := val;
+    StructureChanged;
+  end;
+end;
+
+// SetNURBSTolerance
+//
+
+procedure TVKLines.SetNURBSTolerance(const val: Single);
+begin
+  if val <> FNURBSTolerance then
+  begin
+    FNURBSTolerance := val;
+    StructureChanged;
+  end;
+end;
+
+// Assign
+//
+
+procedure TVKLines.Assign(Source: TPersistent);
+begin
+  if Source is TVKLines then
+  begin
+    FDivision := TVKLines(Source).FDivision;
+    FSplineMode := TVKLines(Source).FSplineMode;
+    FOptions := TVKLines(Source).FOptions;
+  end;
+  inherited Assign(Source);
+end;
+
+// BuildList
+//
+
+procedure TVKLines.BuildList(var rci: TRenderContextInfo);
+var
+  i, n: Integer;
+  A, B, C: TVKFloat;
+  f: Single;
+  Spline: TCubicSpline;
+  vertexColor: TVector;
+  nodeBuffer: array of TAffineVector;
+  colorBuffer: array of TVector;
+  nurbsRenderer: PGLUNurbs;
+begin
+  if Nodes.Count > 1 then
+  begin
+    // first, we setup the line color & stippling styles
+    SetupLineStyle(rci);
+    if rci.bufferDepthTest then
+      rci.GLStates.Enable(stDepthTest);
+    if loColorLogicXor in Options then
+    begin
+      rci.GLStates.Enable(stColorLogicOp);
+      rci.GLStates.LogicOpMode := loXOr;
+    end;
+    // Set up the control point buffer for Bezier splines and NURBS curves.
+    // If required this could be optimized by storing a cached node buffer.
+    if (FSplineMode = lsmBezierSpline) or (FSplineMode = lsmNURBSCurve) then
+    begin
+      SetLength(nodeBuffer, Nodes.Count);
+      SetLength(colorBuffer, Nodes.Count);
+      for i := 0 to Nodes.Count - 1 do
+        with TVKLinesNode(Nodes[i]) do
+        begin
+          nodeBuffer[i] := AsAffineVector;
+          colorBuffer[i] := Color.Color;
+        end;
+    end;
+
+    if FSplineMode = lsmBezierSpline then
+    begin
+      // map evaluator
+      rci.GLStates.PushAttrib([sttEval]);
+      GL.Enable(GL_MAP1_VERTEX_3);
+      GL.Enable(GL_MAP1_COLOR_4);
+
+      GL.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
+      GL.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
+    end;
+
+    // start drawing the line
+    if (FSplineMode = lsmNURBSCurve) and (FDivision >= 2) then
+    begin
+      if (FNURBSOrder > 0) and (FNURBSKnots.Count > 0) then
+      begin
+
+        nurbsRenderer := gluNewNurbsRenderer;
+        try
+          gluNurbsProperty(nurbsRenderer, GLU_SAMPLING_TOLERANCE,
+            FNURBSTolerance);
+          gluNurbsProperty(nurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
+          gluBeginCurve(nurbsRenderer);
+          gluNurbsCurve(nurbsRenderer, FNURBSKnots.Count, @FNURBSKnots.List[0],
+            3, @nodeBuffer[0], FNURBSOrder, GL_MAP1_VERTEX_3);
+          gluEndCurve(nurbsRenderer);
+        finally
+          gluDeleteNurbsRenderer(nurbsRenderer);
+        end;
+      end;
+    end
+    else
+    begin
+      // lines, cubic splines or bezier
+      if FSplineMode = lsmSegments then
+        GL.Begin_(GL_LINES)
+      else if FSplineMode = lsmLoop then
+        GL.Begin_(GL_LINE_LOOP)
+      else
+        GL.Begin_(GL_LINE_STRIP);
+      if (FDivision < 2) or (FSplineMode in [lsmLines, lsmSegments,
+        lsmLoop]) then
+      begin
+        // standard line(s), draw directly
+        if loUseNodeColorForLines in Options then
+        begin
+          // node color interpolation
+          for i := 0 to Nodes.Count - 1 do
+            with TVKLinesNode(Nodes[i]) do
+            begin
+              GL.Color4fv(Color.AsAddress);
+              GL.Vertex3f(X, Y, Z);
+            end;
+        end
+        else
+        begin
+          // single color
+          for i := 0 to Nodes.Count - 1 do
+            with Nodes[i] do
+              GL.Vertex3f(X, Y, Z);
+        end;
+      end
+      else if FSplineMode = lsmCubicSpline then
+      begin
+        // cubic spline
+        Spline := Nodes.CreateNewCubicSpline;
+        try
+          f := 1 / FDivision;
+          for i := 0 to (Nodes.Count - 1) * FDivision do
+          begin
+            Spline.SplineXYZ(i * f, A, B, C);
+            if loUseNodeColorForLines in Options then
+            begin
+              n := (i div FDivision);
+              if n < Nodes.Count - 1 then
+                VectorLerp(TVKLinesNode(Nodes[n]).Color.Color,
+                  TVKLinesNode(Nodes[n + 1]).Color.Color, (i mod FDivision) * f,
+                  vertexColor)
+              else
+                SetVector(vertexColor, TVKLinesNode(Nodes[Nodes.Count - 1])
+                  .Color.Color);
+              GL.Color4fv(@vertexColor);
+            end;
+            GL.Vertex3f(A, B, C);
+          end;
+        finally
+          Spline.Free;
+        end;
+      end
+      else if FSplineMode = lsmBezierSpline then
+      begin
+        f := 1 / FDivision;
+        for i := 0 to FDivision do
+          GL.EvalCoord1f(i * f);
+      end;
+      GL.End_;
+    end;
+    rci.GLStates.Disable(stColorLogicOp);
+
+    if FSplineMode = lsmBezierSpline then
+      rci.GLStates.PopAttrib;
+    if Length(nodeBuffer) > 0 then
+    begin
+      SetLength(nodeBuffer, 0);
+      SetLength(colorBuffer, 0);
+    end;
+
+    if FNodesAspect <> lnaInvisible then
+    begin
+      if not rci.ignoreBlendingRequests then
+      begin
+        rci.GLStates.Enable(stBlend);
+        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      end;
+
+      for i := 0 to Nodes.Count - 1 do
+        with TVKLinesNode(Nodes[i]) do
+          DrawNode(rci, X, Y, Z, Color);
+    end;
+  end;
+end;
+
+// ------------------
+// ------------------ TVKCube ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKCube.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FCubeSize := XYZVector;
+  FParts := [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
+  FNormalDirection := ndOutside;
+  ObjectStyle := ObjectStyle + [osDirectDraw];
+end;
+
+// BuildList
+//
+
+procedure TVKCube.BuildList(var rci: TRenderContextInfo);
+var
+  hw, hh, hd, nd: TVKFloat;
+  TanLoc, BinLoc: Integer;
+begin
+  if FNormalDirection = ndInside then
+    nd := -1
+  else
+    nd := 1;
+  hw := FCubeSize.X * 0.5;
+  hh := FCubeSize.Y * 0.5;
+  hd := FCubeSize.Z * 0.5;
+
+  with GL do
+  begin
+    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    begin
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+    end
+    else
+    begin
+      TanLoc := -1;
+      BinLoc := -1;
+    end;
+
+    Begin_(GL_TRIANGLES);
+    if cpFront in FParts then
+    begin
+      Normal3f(0, 0, nd);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, nd, 0, 0);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, nd, 0);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(hw, hh, hd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(-hw * nd, hh * nd, hd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(-hw, -hh, hd);
+      Vertex3f(-hw, -hh, hd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(hw * nd, -hh * nd, hd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(hw, hh, hd);
+    end;
+    if cpBack in FParts then
+    begin
+      Normal3f(0, 0, -nd);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, -nd, 0, 0);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, nd, 0);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(hw, hh, -hd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(hw * nd, -hh * nd, -hd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(-hw, -hh, -hd);
+      Vertex3f(-hw, -hh, -hd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(-hw * nd, hh * nd, -hd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(hw, hh, -hd);
+    end;
+    if cpLeft in FParts then
+    begin
+      Normal3f(-nd, 0, 0);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, 0, 0, nd);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, nd, 0);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(-hw, hh, hd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(-hw, hh * nd, -hd * nd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(-hw, -hh, -hd);
+      Vertex3f(-hw, -hh, -hd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(-hw, -hh * nd, hd * nd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(-hw, hh, hd);
+    end;
+    if cpRight in FParts then
+    begin
+      Normal3f(nd, 0, 0);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, 0, 0, -nd);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, nd, 0);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(hw, hh, hd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(hw, -hh * nd, hd * nd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(hw, -hh, -hd);
+      Vertex3f(hw, -hh, -hd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(hw, hh * nd, -hd * nd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(hw, hh, hd);
+    end;
+    if cpTop in FParts then
+    begin
+      Normal3f(0, nd, 0);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, nd, 0, 0);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, 0, -nd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(-hw, hh, -hd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(-hw * nd, hh, hd * nd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(hw, hh, hd);
+      Vertex3f(hw, hh, hd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(hw * nd, hh, -hd * nd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(-hw, hh, -hd);
+    end;
+    if cpBottom in FParts then
+    begin
+      Normal3f(0, -nd, 0);
+      if TanLoc > -1 then
+        VertexAttrib3f(TanLoc, -nd, 0, 0);
+      if BinLoc > -1 then
+        VertexAttrib3f(BinLoc, 0, 0, nd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(-hw, -hh, -hd);
+      xgl.TexCoord2fv(@XTexPoint);
+      Vertex3f(hw * nd, -hh, -hd * nd);
+      xgl.TexCoord2fv(@XYTexPoint);
+      Vertex3f(hw, -hh, hd);
+      Vertex3f(hw, -hh, hd);
+      xgl.TexCoord2fv(@YTexPoint);
+      Vertex3f(-hw * nd, -hh, hd * nd);
+      xgl.TexCoord2fv(@NullTexPoint);
+      Vertex3f(-hw, -hh, -hd);
+    end;
+    End_;
+  end;
+end;
+
+// GenerateSilhouette
+//
+
+function TVKCube.GenerateSilhouette(const silhouetteParameters
+  : TVKSilhouetteParameters): TVKSilhouette;
+var
+  hw, hh, hd: TVKFloat;
+  connectivity: TConnectivity;
+  sil: TVKSilhouette;
+begin
+  connectivity := TConnectivity.Create(True);
+
+  hw := FCubeSize.X * 0.5;
+  hh := FCubeSize.Y * 0.5;
+  hd := FCubeSize.Z * 0.5;
+
+  if cpFront in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(hw, hh, hd),
+      AffineVectorMake(-hw, hh, hd), AffineVectorMake(-hw, -hh, hd),
+      AffineVectorMake(hw, -hh, hd));
+  end;
+  if cpBack in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(hw, hh, -hd),
+      AffineVectorMake(hw, -hh, -hd), AffineVectorMake(-hw, -hh, -hd),
+      AffineVectorMake(-hw, hh, -hd));
+  end;
+  if cpLeft in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(-hw, hh, hd),
+      AffineVectorMake(-hw, hh, -hd), AffineVectorMake(-hw, -hh, -hd),
+      AffineVectorMake(-hw, -hh, hd));
+  end;
+  if cpRight in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(hw, hh, hd),
+      AffineVectorMake(hw, -hh, hd), AffineVectorMake(hw, -hh, -hd),
+      AffineVectorMake(hw, hh, -hd));
+  end;
+  if cpTop in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(-hw, hh, -hd),
+      AffineVectorMake(-hw, hh, hd), AffineVectorMake(hw, hh, hd),
+      AffineVectorMake(hw, hh, -hd));
+  end;
+  if cpBottom in FParts then
+  begin
+    connectivity.AddQuad(AffineVectorMake(-hw, -hh, -hd),
+      AffineVectorMake(hw, -hh, -hd), AffineVectorMake(hw, -hh, hd),
+      AffineVectorMake(-hw, -hh, hd));
+  end;
+
+  sil := nil;
+  connectivity.CreateSilhouette(silhouetteParameters, sil, False);
+
+  Result := sil;
+
+  connectivity.Free;
+end;
+
+// GetCubeWHD
+//
+function TVKCube.GetCubeWHD(const Index: Integer): TVKFloat;
+begin
+  Result := FCubeSize.V[index];
+end;
+
+
+// SetCubeWHD
+//
+procedure TVKCube.SetCubeWHD(Index: Integer; AValue: TVKFloat);
+begin
+  if AValue <> FCubeSize.V[index] then
+  begin
+    FCubeSize.V[index] := AValue;
+    StructureChanged;
+  end;
+end;
+
+
+// SetParts
+//
+procedure TVKCube.SetParts(aValue: TCubeParts);
+begin
+  if aValue <> FParts then
+  begin
+    FParts := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetNormalDirection
+//
+
+procedure TVKCube.SetNormalDirection(aValue: TNormalDirection);
+begin
+  if aValue <> FNormalDirection then
+  begin
+    FNormalDirection := aValue;
+    StructureChanged;
+  end;
+end;
+
+// Assign
+//
+
+procedure TVKCube.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TVKCube) then
+  begin
+    FCubeSize := TVKCube(Source).FCubeSize;
+    FParts := TVKCube(Source).FParts;
+    FNormalDirection := TVKCube(Source).FNormalDirection;
+  end;
+  inherited Assign(Source);
+end;
+
+// AxisAlignedDimensions
+//
+
+function TVKCube.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.X := FCubeSize.X * 0.5;
+  Result.Y := FCubeSize.Y * 0.5;
+  Result.Z := FCubeSize.Z * 0.5;
+  Result.W := 0;
+end;
+
+// RayCastIntersect
+//
+
+function TVKCube.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+var
+  p: array [0 .. 5] of TVector;
+  rv: TVector;
+  rs, r: TVector;
+  i: Integer;
+  t, e: Single;
+  eSize: TAffineVector;
+begin
+  rs := AbsoluteToLocal(rayStart);
+  SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
+  e := 0.5 + 0.0001; // Small value for floating point imprecisions
+  eSize.X := FCubeSize.X * e;
+  eSize.Y := FCubeSize.Y * e;
+  eSize.Z := FCubeSize.Z * e;
+  p[0] := XHmgVector;
+  p[1] := YHmgVector;
+  p[2] := ZHmgVector;
+  SetVector(p[3], -1, 0, 0);
+  SetVector(p[4], 0, -1, 0);
+  SetVector(p[5], 0, 0, -1);
+  for i := 0 to 5 do
+  begin
+    if VectorDotProduct(p[i], rv) > 0 then
+    begin
+      t := -(p[i].X * rs.X + p[i].Y * rs.Y +
+             p[i].Z * rs.Z + 0.5 *
+        FCubeSize.V[i mod 3]) / (p[i].X * rv.X +
+                                 p[i].Y * rv.Y +
+                                 p[i].Z * rv.Z);
+      MakePoint(r, rs.V[0] + t * rv.X, rs.Y +
+                             t * rv.Y, rs.Z +
+                             t * rv.Z);
+      if (Abs(r.X) <= eSize.X) and
+         (Abs(r.Y) <= eSize.Y) and
+         (Abs(r.Z) <= eSize.Z) and
+        (VectorDotProduct(VectorSubtract(r, rs), rv) > 0) then
+      begin
+        if Assigned(intersectPoint) then
+          MakePoint(intersectPoint^, LocalToAbsolute(r));
+        if Assigned(intersectNormal) then
+          MakeVector(intersectNormal^, LocalToAbsolute(VectorNegate(p[i])));
+        Result := True;
+        Exit;
+      end;
+    end;
+  end;
+  Result := False;
+end;
+
+// DefineProperties
+//
+
+procedure TVKCube.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
+    (FCubeSize.V[0] <> 1) or (FCubeSize.V[1] <> 1) or (FCubeSize.V[2] <> 1));
+end;
+
+// ReadData
+//
+
+procedure TVKCube.ReadData(Stream: TStream);
+begin
+  with Stream do
+  begin
+    Read(FCubeSize, SizeOf(TAffineVector));
+  end;
+end;
+
+// WriteData
+//
+
+procedure TVKCube.WriteData(Stream: TStream);
+begin
+  with Stream do
+  begin
+    Write(FCubeSize, SizeOf(TAffineVector));
+  end;
+end;
+
+// ------------------
+// ------------------ TVKQuadricObject ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKQuadricObject.Create(AOwner: TComponent);
+begin
+  inherited;
+  FNormals := nsSmooth;
+  FNormalDirection := ndOutside;
+end;
+
+// SetNormals
+//
+
+procedure TVKQuadricObject.SetNormals(aValue: TNormalSmoothing);
+begin
+  if aValue <> FNormals then
+  begin
+    FNormals := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetNormalDirection
+//
+
+procedure TVKQuadricObject.SetNormalDirection(aValue: TNormalDirection);
+begin
+  if aValue <> FNormalDirection then
+  begin
+    FNormalDirection := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetupQuadricParams
+//
+
+procedure TVKQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
+const
+  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TVKEnum = (GLU_FLAT,
+    GLU_SMOOTH, GLU_NONE);
+begin
+  gluQuadricDrawStyle(quadric, GLU_FILL);
+  gluQuadricNormals(quadric, cNormalSmoothinToEnum[FNormals]);
+  SetNormalQuadricOrientation(quadric);
+  gluQuadricTexture(quadric, True);
+end;
+
+// SetNormalQuadricOrientation
+//
+
+procedure TVKQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
+const
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TVKEnum =
+    (GLU_INSIDE, GLU_OUTSIDE);
+begin
+  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
+end;
+
+// SetInvertedQuadricOrientation
+//
+
+procedure TVKQuadricObject.SetInvertedQuadricOrientation
+  (quadric: PGLUquadricObj);
+const
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TVKEnum =
+    (GLU_OUTSIDE, GLU_INSIDE);
+begin
+  gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
+end;
+
+// Assign
+//
+
+procedure TVKQuadricObject.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TVKQuadricObject) then
+  begin
+    FNormals := TVKQuadricObject(Source).FNormals;
+    FNormalDirection := TVKQuadricObject(Source).FNormalDirection;
+  end;
+  inherited Assign(Source);
+end;
+
+// ------------------
+// ------------------ TVKSphere ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKSphere.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FRadius := 0.5;
+  FSlices := 16;
+  FStacks := 16;
+  FTop := 90;
+  FBottom := -90;
+  FStart := 0;
+  FStop := 360;
+end;
+
+// BuildList
+//
+
+procedure TVKSphere.BuildList(var rci: TRenderContextInfo);
+var
+  v1, V2, N1: TAffineVector;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
+  uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Single;
+  i, j: Integer;
+  DoReverse: Boolean;
+begin
+  DoReverse := (FNormalDirection = ndInside);
+  rci.GLStates.PushAttrib([sttPolygon]);
+  if DoReverse then
+    rci.GLStates.InvertGLFrontFace;
+
+  // common settings
+  AngTop := DegToRadian(1.0 * FTop);
+  AngBottom := DegToRadian(1.0 * FBottom);
+  AngStart := DegToRadian(1.0 * FStart);
+  AngStop := DegToRadian(1.0 * FStop);
+  StepH := (AngStop - AngStart) / FSlices;
+  StepV := (AngTop - AngBottom) / FStacks;
+  GL.PushMatrix;
+  GL.Scalef(Radius, Radius, Radius);
+
+  // top cap
+  if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
+  begin
+    GL.Begin_(GL_TRIANGLE_FAN);
+    SinCosine(AngTop, SinP, CosP);
+    xgl.TexCoord2f(0.5, 0.5);
+    if DoReverse then
+      GL.Normal3f(0, -1, 0)
+    else
+      GL.Normal3f(0, 1, 0);
+    if FTopCap = ctCenter then
+      GL.Vertex3f(0, 0, 0)
+    else
+    begin
+      GL.Vertex3f(0, SinP, 0);
+      N1 := YVector;
+      if DoReverse then
+        N1.V[1] := -N1.V[1];
+    end;
+    v1.V[1] := SinP;
+    Theta := AngStart;
+    for i := 0 to FSlices do
+    begin
+      SinCosine(Theta, SinT, CosT);
+      v1.V[0] := CosP * SinT;
+      v1.V[2] := CosP * CosT;
+      if FTopCap = ctCenter then
+      begin
+        N1 := VectorPerpendicular(YVector, v1);
+        if DoReverse then
+          NegateVector(N1);
+      end;
+      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      GL.Normal3fv(@N1);
+      GL.Vertex3fv(@v1);
+      Theta := Theta + StepH;
+    end;
+    GL.End_;
+  end;
+
+  // main body
+  Phi := AngTop;
+  Phi2 := Phi - StepV;
+  uTexFactor := 1 / FSlices;
+  vTexFactor := 1 / FStacks;
+
+  for j := 0 to FStacks - 1 do
+  begin
+    Theta := AngStart;
+    SinCosine(Phi, SinP, CosP);
+    SinCosine(Phi2, SinP2, CosP2);
+    v1.V[1] := SinP;
+    V2.V[1] := SinP2;
+    vTexCoord0 := 1 - j * vTexFactor;
+    vTexCoord1 := 1 - (j + 1) * vTexFactor;
+
+    GL.Begin_(GL_TRIANGLE_STRIP);
+    for i := 0 to FSlices do
+    begin
+
+      SinCosine(Theta, SinT, CosT);
+      v1.V[0] := CosP * SinT;
+      V2.V[0] := CosP2 * SinT;
+      v1.V[2] := CosP * CosT;
+      V2.V[2] := CosP2 * CosT;
+
+      uTexCoord := i * uTexFactor;
+      xgl.TexCoord2f(uTexCoord, vTexCoord0);
+      if DoReverse then
+      begin
+        N1 := VectorNegate(v1);
+        GL.Normal3fv(@N1);
+      end
+      else
+        GL.Normal3fv(@v1);
+      GL.Vertex3fv(@v1);
+
+      xgl.TexCoord2f(uTexCoord, vTexCoord1);
+      if DoReverse then
+      begin
+        N1 := VectorNegate(V2);
+        GL.Normal3fv(@N1);
+      end
+      else
+        GL.Normal3fv(@V2);
+      GL.Vertex3fv(@V2);
+
+      Theta := Theta + StepH;
+    end;
+    GL.End_;
+    Phi := Phi2;
+    Phi2 := Phi2 - StepV;
+  end;
+
+  // bottom cap
+  if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
+  begin
+    GL.Begin_(GL_TRIANGLE_FAN);
+    SinCosine(AngBottom, SinP, CosP);
+    xgl.TexCoord2f(0.5, 0.5);
+    if DoReverse then
+      GL.Normal3f(0, 1, 0)
+    else
+      GL.Normal3f(0, -1, 0);
+    if FBottomCap = ctCenter then
+      GL.Vertex3f(0, 0, 0)
+    else
+    begin
+      GL.Vertex3f(0, SinP, 0);
+      if DoReverse then
+        MakeVector(N1, 0, -1, 0)
+      else
+      begin
+        N1 := YVector;
+        NegateVector(N1); 
+      end;
+    end;
+    v1.V[1] := SinP;
+    Theta := AngStop;
+    for i := 0 to FSlices do
+    begin
+      SinCosine(Theta, SinT, CosT);
+      v1.V[0] := CosP * SinT;
+      v1.V[2] := CosP * CosT;
+      if FBottomCap = ctCenter then
+      begin
+        N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
+        if DoReverse then
+          NegateVector(N1);
+      end;
+      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      GL.Normal3fv(@N1);
+      GL.Vertex3fv(@v1);
+      Theta := Theta - StepH;
+    end;
+    GL.End_;
+  end;
+  if DoReverse then
+    rci.GLStates.InvertGLFrontFace;
+  GL.PopMatrix;
+  rci.GLStates.PopAttrib;
+end;
+
+// RayCastIntersect
+//
+
+function TVKSphere.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+var
+  i1, i2: TVector;
+  localStart, localVector: TVector;
+begin
+  // compute coefficients of quartic polynomial
+  SetVector(localStart, AbsoluteToLocal(rayStart));
+  SetVector(localVector, AbsoluteToLocal(rayVector));
+  NormalizeVector(localVector);
+  if RayCastSphereIntersect(localStart, localVector, NullHmgVector, Radius, i1,
+    i2) > 0 then
+  begin
+    Result := True;
+    if Assigned(intersectPoint) then
+      SetVector(intersectPoint^, LocalToAbsolute(i1));
+    if Assigned(intersectNormal) then
+    begin
+      i1.V[3] := 0; // vector transform
+      SetVector(intersectNormal^, LocalToAbsolute(i1));
+    end;
+  end
+  else
+    Result := False;
+end;
+
+// GenerateSilhouette
+//
+
+function TVKSphere.GenerateSilhouette(const silhouetteParameters
+  : TVKSilhouetteParameters): TVKSilhouette;
+var
+  i, j: Integer;
+  s, C, angleFactor: Single;
+  sVec, tVec: TAffineVector;
+  Segments: Integer;
+begin
+  Segments := MaxInteger(FStacks, FSlices);
+
+  // determine a local orthonormal matrix, viewer-oriented
+  sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
+  if VectorLength(sVec) < 1E-3 then
+    sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
+  tVec := VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
+  NormalizeVector(sVec);
+  NormalizeVector(tVec);
+  // generate the silhouette (outline and capping)
+  Result := TVKSilhouette.Create;
+  angleFactor := (2 * PI) / Segments;
+  for i := 0 to Segments - 1 do
+  begin
+    SinCosine(i * angleFactor, FRadius, s, C);
+    Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
+    j := (i + 1) mod Segments;
+    Result.Indices.Add(i, j);
+    if silhouetteParameters.CappingRequired then
+      Result.CapIndices.Add(Segments, i, j)
+  end;
+  if silhouetteParameters.CappingRequired then
+    Result.vertices.Add(NullHmgPoint);
+end;
+
+// SetBottom
+//
+
+procedure TVKSphere.SetBottom(aValue: TAngleLimit1);
+begin
+  if FBottom <> aValue then
+  begin
+    FBottom := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetBottomCap
+//
+
+procedure TVKSphere.SetBottomCap(aValue: TCapType);
+begin
+  if FBottomCap <> aValue then
+  begin
+    FBottomCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetRadius
+//
+
+procedure TVKSphere.SetRadius(const aValue: TVKFloat);
+begin
+  if aValue <> FRadius then
+  begin
+    FRadius := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetSlices
+//
+
+procedure TVKSphere.SetSlices(aValue: Integer);
+begin
+  if aValue <> FSlices then
+  begin
+    if aValue <= 0 then
+      FSlices := 1
+    else
+      FSlices := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStacks
+//
+
+procedure TVKSphere.SetStacks(aValue: TVKInt);
+begin
+  if aValue <> FStacks then
+  begin
+    if aValue <= 0 then
+      FStacks := 1
+    else
+      FStacks := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStart
+//
+
+procedure TVKSphere.SetStart(aValue: TAngleLimit2);
+begin
+  if FStart <> aValue then
+  begin
+    Assert(aValue <= FStop);
+    FStart := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStop
+//
+
+procedure TVKSphere.SetStop(aValue: TAngleLimit2);
+begin
+  if FStop <> aValue then
+  begin
+    Assert(aValue >= FStart);
+    FStop := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetTop
+//
+
+procedure TVKSphere.SetTop(aValue: TAngleLimit1);
+begin
+  if FTop <> aValue then
+  begin
+    FTop := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetTopCap
+//
+
+procedure TVKSphere.SetTopCap(aValue: TCapType);
+begin
+  if FTopCap <> aValue then
+  begin
+    FTopCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+// Assign
+//
+
+procedure TVKSphere.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TVKSphere) then
+  begin
+    FRadius := TVKSphere(Source).FRadius;
+    FSlices := TVKSphere(Source).FSlices;
+    FStacks := TVKSphere(Source).FStacks;
+    FBottom := TVKSphere(Source).FBottom;
+    FTop := TVKSphere(Source).FTop;
+    FStart := TVKSphere(Source).FStart;
+    FStop := TVKSphere(Source).FStop;
+  end;
+  inherited Assign(Source);
+end;
+
+// AxisAlignedDimensions
+//
+
+function TVKSphere.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.V[0] := Abs(FRadius);
+  Result.V[1] := Result.V[0];
+  Result.V[2] := Result.V[0];
+  Result.V[3] := 0;
+end;
+
+// ------------------
+// ------------------ TVKPolygonBase ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKPolygonBase.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  CreateNodes;
+  FDivision := 10;
+  FSplineMode := lsmLines;
+end;
+
+// CreateNodes
+//
+
+procedure TVKPolygonBase.CreateNodes;
+begin
+  FNodes := TVKNodes.Create(Self);
+end;
+
+// Destroy
+//
+
+destructor TVKPolygonBase.Destroy;
+begin
+  FNodes.Free;
+  inherited Destroy;
+end;
+
+// Assign
+//
+
+procedure TVKPolygonBase.Assign(Source: TPersistent);
+begin
+  if Source is TVKPolygonBase then
+  begin
+    SetNodes(TVKPolygonBase(Source).FNodes);
+    FDivision := TVKPolygonBase(Source).FDivision;
+    FSplineMode := TVKPolygonBase(Source).FSplineMode;
+  end;
+  inherited Assign(Source);
+end;
+
+// NotifyChange
+//
+
+procedure TVKPolygonBase.NotifyChange(Sender: TObject);
+begin
+  if Sender = Nodes then
+    StructureChanged;
+  inherited;
+end;
+
+// SetDivision
+//
+
+procedure TVKPolygonBase.SetDivision(const Value: Integer);
+begin
+  if Value <> FDivision then
+  begin
+    if Value < 1 then
+      FDivision := 1
+    else
+      FDivision := Value;
+    StructureChanged;
+  end;
+end;
+
+// SetNodes
+//
+
+procedure TVKPolygonBase.SetNodes(const aNodes: TVKNodes);
+begin
+  FNodes.Assign(aNodes);
+  StructureChanged;
+end;
+
+// SetSplineMode
+//
+
+procedure TVKPolygonBase.SetSplineMode(const val: TLineSplineMode);
+begin
+  if FSplineMode <> val then
+  begin
+    FSplineMode := val;
+    StructureChanged;
+  end;
+end;
+
+// AddNode (coords)
+//
+
+procedure TVKPolygonBase.AddNode(const coords: TVKCoordinates);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  if Assigned(coords) then
+    n.AsVector := coords.AsVector;
+  StructureChanged;
+end;
+
+// AddNode (xyz)
+//
+
+procedure TVKPolygonBase.AddNode(const X, Y, Z: TVKFloat);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := VectorMake(X, Y, Z, 1);
+  StructureChanged;
+end;
+
+// AddNode (vector)
+//
+
+procedure TVKPolygonBase.AddNode(const Value: TVector);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := Value;
+  StructureChanged;
+end;
+
+// AddNode (affine vector)
+//
+
+procedure TVKPolygonBase.AddNode(const Value: TAffineVector);
+var
+  n: TVKNode;
+begin
+  n := Nodes.Add;
+  n.AsVector := VectorMake(Value);
+  StructureChanged;
+end;
+
+// ------------------
+// ------------------ TVKSuperellipsoid ------------------
+// ------------------
+
+// Create
+//
+
+constructor TVKSuperellipsoid.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FRadius := 0.5;
+  FxyCurve := 1.0;
+  FzCurve := 1.0;
+  FSlices := 16;
+  FStacks := 16;
+  FTop := 90;
+  FBottom := -90;
+  FStart := 0;
+  FStop := 360;
+end;
+
+// BuildList
+//
+
+procedure TVKSuperellipsoid.BuildList(var rci: TRenderContextInfo);
+var
+  CosPc1, SinPc1, CosTc2, SinTc2: Double;
+
+  tc1, tc2: integer;
+  v1, v2, vs, N1: TAffineVector;
+  AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
+  SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
+  uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1: Double;
+  i, j: Integer;
+  DoReverse: Boolean;
+
+begin
+  DoReverse := (FNormalDirection = ndInside);
+  if DoReverse then
+    rci.GLStates.InvertGLFrontFace;
+
+  // common settings
+  AngTop := DegToRadian(1.0 * FTop);
+  AngBottom := DegToRadian(1.0 * FBottom);
+  AngStart := DegToRadian(1.0 * FStart);
+  AngStop := DegToRadian(1.0 * FStop);
+  StepH := (AngStop - AngStart) / FSlices;
+  StepV := (AngTop - AngBottom) / FStacks;
+
+  { Even integer used with the Power function, only produce positive points }
+  tc1 := trunc(xyCurve);
+  tc2 := trunc(zCurve);
+  if tc1 mod 2 = 0 then
+    xyCurve := xyCurve + 1e-6;
+  if tc2 mod 2 = 0 then
+    zCurve := zCurve - 1e-6;
+
+  // top cap
+  if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
+  begin
+    GL.Begin_(GL_TRIANGLE_FAN);
+    SinCosine(AngTop, SinP, CosP);
+    xgl.TexCoord2f(0.5, 0.5);
+    if DoReverse then
+      GL.Normal3f(0, -1, 0)
+    else
+      GL.Normal3f(0, 1, 0);
+
+    if FTopCap = ctCenter then
+      GL.Vertex3f(0, 0, 0)
+    else
+    begin { FTopCap = ctFlat }
+      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
+        SinPc1 := Power(SinP, xyCurve)
+      else
+        SinPc1 := -Power(-SinP, xyCurve);
+      GL.Vertex3f(0, SinPc1*Radius, 0);
+
+      N1 := YVector;
+      if DoReverse then
+        N1.Y := -N1.Y;
+    end; { FTopCap = ctFlat }
+
+    //  v1.Y := SinP;
+    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
+      SinPc1 := Power(SinP, xyCurve)
+    else
+      SinPc1 := -Power(-SinP, xyCurve);
+    v1.Y := SinPc1;
+
+    Theta := AngStart;
+
+    for i := 0 to FSlices do
+    begin
+      SinCosine(Theta, SinT, CosT);
+      //    v1.X := CosP * SinT;
+      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP, xyCurve)
+      else
+        CosPc1 := -Power(-CosP, xyCurve);
+
+      if (Sign(SinT) = 1) or (tc2 = zCurve) then
+        SinTc2 := Power(SinT, zCurve)
+      else
+        SinTc2 := -Power(-SinT, zCurve);
+      v1.X := CosPc1 * SinTc2;
+
+      //    v1.Z := CosP * CosT;
+      if (Sign(CosT) = 1) or (tc2 = zCurve) then
+        CosTc2 := Power(CosT, zCurve)
+      else
+        CosTc2 := -Power(-CosT, zCurve);
+      v1.Z := CosPc1 * CosTc2;
+
+      if FTopCap = ctCenter then
+      begin
+        N1 := VectorPerpendicular(YVector, v1);
+        if DoReverse then
+          NegateVector(N1);
+      end;
+      //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      GL.Normal3fv(@N1);
+      vs := v1;
+      ScaleVector(vs, Radius);
+      GL.Vertex3fv(@vs);
+      Theta := Theta + StepH;
+    end;
+    GL.End_;
+  end;
+
+  // main body
+  Phi := AngTop;
+  Phi2 := Phi - StepV;
+  uTexFactor := 1 / FSlices;
+  vTexFactor := 1 / FStacks;
+
+  for j := 0 to FStacks - 1 do
+  begin
+    Theta := AngStart;
+    SinCosine(Phi, SinP, CosP);
+    SinCosine(Phi2, SinP2, CosP2);
+
+    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
+      SinPc1 := Power(SinP, xyCurve)
+    else
+      SinPc1 := -Power(-SinP, xyCurve);
+    v1.Y := SinPc1;
+
+    if (Sign(SinP2) = 1) or (tc1 = xyCurve) then
+      SinPc1 := Power(SinP2, xyCurve)
+    else
+      SinPc1 := -Power(-SinP2, xyCurve);
+    v2.Y := SinPc1;
+
+    vTexCoord0 := 1 - j * vTexFactor;
+    vTexCoord1 := 1 - (j + 1) * vTexFactor;
+
+    GL.Begin_(GL_TRIANGLE_STRIP);
+    for i := 0 to FSlices do
+    begin
+      SinCosine(Theta, SinT, CosT);
+
+      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP, xyCurve)
+      else
+        CosPc1 := -Power(-CosP, xyCurve);
+
+      if (Sign(SinT) = 1) or (tc2 = zCurve) then
+        SinTc2 := Power(SinT, zCurve)
+      else
+        SinTc2 := -Power(-SinT, zCurve);
+      v1.X := CosPc1 * SinTc2;
+
+      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP2, xyCurve)
+      else
+        CosPc1 := -Power(-CosP2, xyCurve);
+      V2.X := CosPc1 * SinTc2;
+
+      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP, xyCurve)
+      else
+        CosPc1 := -Power(-CosP, xyCurve);
+
+      if (Sign(CosT) = 1) or (tc2 = zCurve) then
+        CosTc2 := Power(CosT, zCurve)
+      else
+        CosTc2 := -Power(-CosT, zCurve);
+      v1.Z := CosPc1 * CosTc2;
+
+      if (Sign(CosP2) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP2, xyCurve)
+      else
+        CosPc1 := -Power(-CosP2, xyCurve);
+      V2.Z := CosPc1 * CosTc2;
+
+      uTexCoord := i * uTexFactor;
+      xgl.TexCoord2f(uTexCoord, vTexCoord0);
+      if DoReverse then
+      begin
+        N1 := VectorNegate(v1);
+        GL.Normal3fv(@N1);
+      end
+      else
+        GL.Normal3fv(@v1);
+      vs := v1;
+      ScaleVector(vs, Radius);
+      GL.Vertex3fv(@vs);
+
+      xgl.TexCoord2f(uTexCoord, vTexCoord1);
+      if DoReverse then
+      begin
+        N1 := VectorNegate(V2);
+        GL.Normal3fv(@N1);
+      end
+      else
+        GL.Normal3fv(@v2);
+      vs := v2;
+      ScaleVector(vs, Radius);
+      GL.Vertex3fv(@vs);
+
+      Theta := Theta + StepH;
+    end;
+    GL.End_;
+    Phi := Phi2;
+    Phi2 := Phi2 - StepV;
+  end;
+
+  // bottom cap
+  if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
+  begin
+    GL.Begin_(GL_TRIANGLE_FAN);
+    SinCosine(AngBottom, SinP, CosP);
+    xgl.TexCoord2f(0.5, 0.5);
+    if DoReverse then
+      GL.Normal3f(0, 1, 0)
+    else
+      GL.Normal3f(0, -1, 0);
+    if FBottomCap = ctCenter then
+      GL.Vertex3f(0, 0, 0)
+    else
+    begin { FTopCap = ctFlat }
+      if (Sign(SinP) = 1) or (tc1 = xyCurve) then
+        SinPc1 := Power(SinP, xyCurve)
+      else
+        SinPc1 := -Power(-SinP, xyCurve);
+      GL.Vertex3f(0, SinPc1*Radius, 0);
+
+      if DoReverse then
+        MakeVector(N1, 0, -1, 0)
+      else
+        N1 := YVector;
+    end;
+    //  v1.Y := SinP;
+    if (Sign(SinP) = 1) or (tc1 = xyCurve) then
+      SinPc1 := Power(SinP, xyCurve)
+    else
+      SinPc1 := -Power(-SinP, xyCurve);
+    v1.Y := SinPc1;
+
+    Theta := AngStop;
+    for i := 0 to FSlices do
+    begin
+      SinCosine(Theta, SinT, CosT);
+      //    v1.X := CosP * SinT;
+      if (Sign(CosP) = 1) or (tc1 = xyCurve) then
+        CosPc1 := Power(CosP, xyCurve)
+      else
+        CosPc1 := -Power(-CosP, xyCurve);
+
+      if (Sign(SinT) = 1) or (tc2 = zCurve) then
+        SinTc2 := Power(SinT, zCurve)
+      else
+        SinTc2 := -Power(-SinT, zCurve);
+      v1.X := CosPc1 * SinTc2;
+
+      //    v1.Z := CosP * CosT;
+      if (Sign(CosT) = 1) or (tc2 = zCurve) then
+        CosTc2 := Power(CosT, zCurve)
+      else
+        CosTc2 := -Power(-CosT, zCurve);
+      v1.Z := CosPc1 * CosTc2;
+
+      if FBottomCap = ctCenter then
+      begin
+        N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
+        if DoReverse then
+          NegateVector(N1);
+        GL.Normal3fv(@N1);
+      end;
+      //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      vs := v1;
+      ScaleVector(vs, Radius);
+      GL.Vertex3fv(@vs);
+      Theta := Theta - StepH;
+    end;
+    GL.End_;
+  end;
+  if DoReverse then
+    rci.GLStates.InvertGLFrontFace;
+end;
+
+// RayCastIntersect
+// This will probably not work, karamba
+// RayCastSphereIntersect -> RayCastSuperellipsoidIntersect ??????
+
+function TVKSuperellipsoid.RayCastIntersect(const rayStart, rayVector: TVector;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
+var
+  i1, i2: TVector;
+  localStart, localVector: TVector;
+begin
+  // compute coefficients of quartic polynomial
+  SetVector(localStart, AbsoluteToLocal(rayStart));
+  SetVector(localVector, AbsoluteToLocal(rayVector));
+  NormalizeVector(localVector);
+  if RayCastSphereIntersect(localStart, localVector, NullHmgVector, Radius, i1,
+    i2) > 0 then
+  begin
+    Result := True;
+    if Assigned(intersectPoint) then
+      SetVector(intersectPoint^, LocalToAbsolute(i1));
+    if Assigned(intersectNormal) then
+    begin
+      i1.W := 0; // vector transform
+      SetVector(intersectNormal^, LocalToAbsolute(i1));
+    end;
+  end
+  else
+    Result := False;
+end;
+
+// GenerateSilhouette
+// This will probably not work;
+
+function TVKSuperellipsoid.GenerateSilhouette(const silhouetteParameters
+  : TVKSilhouetteParameters): TVKSilhouette;
+var
+  i, j: Integer;
+  s, C, angleFactor: Single;
+  sVec, tVec: TAffineVector;
+  Segments: Integer;
+begin
+  Segments := MaxInteger(FStacks, FSlices);
+
+  // determine a local orthonormal matrix, viewer-oriented
+  sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
+  if VectorLength(sVec) < 1E-3 then
+    sVec := VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
+  tVec := VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
+  NormalizeVector(sVec);
+  NormalizeVector(tVec);
+  // generate the silhouette (outline and capping)
+  Result := TVKSilhouette.Create;
+  angleFactor := (2 * PI) / Segments;
+  for i := 0 to Segments - 1 do
+  begin
+    SinCosine(i * angleFactor, FRadius, s, C);
+    Result.vertices.AddPoint(VectorCombine(sVec, tVec, s, C));
+    j := (i + 1) mod Segments;
+    Result.Indices.Add(i, j);
+    if silhouetteParameters.CappingRequired then
+      Result.CapIndices.Add(Segments, i, j)
+  end;
+  if silhouetteParameters.CappingRequired then
+    Result.vertices.Add(NullHmgPoint);
+end;
+
+// SetBottom
+//
+
+procedure TVKSuperellipsoid.SetBottom(aValue: TAngleLimit1);
+begin
+  if FBottom <> aValue then
+  begin
+    FBottom := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetBottomCap
+//
+
+procedure TVKSuperellipsoid.SetBottomCap(aValue: TCapType);
+begin
+  if FBottomCap <> aValue then
+  begin
+    FBottomCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetRadius
+//
+
+procedure TVKSuperellipsoid.SetRadius(const aValue: TVKFloat);
+begin
+  if aValue <> FRadius then
+  begin
+    FRadius := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetxyCurve
+//
+
+procedure TVKSuperellipsoid.SetxyCurve(const aValue: TVKFloat);
+begin
+  if aValue <> FxyCurve then
+  begin
+    FxyCurve := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetzCurve
+//
+
+procedure TVKSuperellipsoid.SetzCurve(const aValue: TVKFloat);
+begin
+  if aValue <> FzCurve then
+  begin
+    FzCurve := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetSlices
+//
+
+procedure TVKSuperellipsoid.SetSlices(aValue: Integer);
+begin
+  if aValue <> FSlices then
+  begin
+    if aValue <= 0 then
+      FSlices := 1
+    else
+      FSlices := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStacks
+//
+
+procedure TVKSuperellipsoid.SetStacks(aValue: TVKInt);
+begin
+  if aValue <> FStacks then
+  begin
+    if aValue <= 0 then
+      FStacks := 1
+    else
+      FStacks := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStart
+//
+
+procedure TVKSuperellipsoid.SetStart(aValue: TAngleLimit2);
+begin
+  if FStart <> aValue then
+  begin
+    Assert(aValue <= FStop);
+    FStart := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetStop
+//
+
+procedure TVKSuperellipsoid.SetStop(aValue: TAngleLimit2);
+begin
+  if FStop <> aValue then
+  begin
+    Assert(aValue >= FStart);
+    FStop := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetTop
+//
+
+procedure TVKSuperellipsoid.SetTop(aValue: TAngleLimit1);
+begin
+  if FTop <> aValue then
+  begin
+    FTop := aValue;
+    StructureChanged;
+  end;
+end;
+
+// SetTopCap
+//
+
+procedure TVKSuperellipsoid.SetTopCap(aValue: TCapType);
+begin
+  if FTopCap <> aValue then
+  begin
+    FTopCap := aValue;
+    StructureChanged;
+  end;
+end;
+
+// Assign
+//
+
+procedure TVKSuperellipsoid.Assign(Source: TPersistent);
+begin
+  if Assigned(Source) and (Source is TVKSuperellipsoid) then
+  begin
+    FRadius := TVKSuperellipsoid(Source).FRadius;
+    FSlices := TVKSuperellipsoid(Source).FSlices;
+    FStacks := TVKSuperellipsoid(Source).FStacks;
+    FBottom := TVKSuperellipsoid(Source).FBottom;
+    FTop := TVKSuperellipsoid(Source).FTop;
+    FStart := TVKSuperellipsoid(Source).FStart;
+    FStop := TVKSuperellipsoid(Source).FStop;
+  end;
+  inherited Assign(Source);
+end;
+
+// AxisAlignedDimensions
+//
+
+function TVKSuperellipsoid.AxisAlignedDimensionsUnscaled: TVector;
+begin
+  Result.X := Abs(FRadius);
+  Result.Y := Result.X;
+  Result.Z := Result.X;
+  Result.W := 0;
+end;
+
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+
+initialization
+
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+
+RegisterClasses([TVKSphere, TVKCube, TVKPlane, TVKSprite, TVKPoints,
+  TVKDummyCube, TVKLines, TVKSuperellipsoid]);
+
+end.

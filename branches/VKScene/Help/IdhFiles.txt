@@ -1,0 +1,2 @@
+..\VKScene\Help\IDH_MAIN.H
+..\VKScene\Help\IDH_POPUP.H
