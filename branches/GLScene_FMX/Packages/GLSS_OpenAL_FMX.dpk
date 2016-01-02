@@ -1,6 +1,7 @@
 package GLSS_OpenAL_FMX;
 
 {$R *.res}
+{$R '..\Resources\GLSceneFMXOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,7 +26,8 @@ package GLSS_OpenAL_FMX;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene FMX OpenAL Manager'}
+{$DESCRIPTION 'GLScene FMX OpenAL library'}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires

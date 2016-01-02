@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLS.ScriptDWS2.<p>
    DelphiWebScriptII implementation for the GLScene scripting layer

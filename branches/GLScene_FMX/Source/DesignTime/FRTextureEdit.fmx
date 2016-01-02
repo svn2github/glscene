@@ -2,7 +2,6 @@ object RTextureEdit: TRTextureEdit
   Size.Width = 319.000000000000000000
   Size.Height = 228.000000000000000000
   Size.PlatformDefault = False
-  TabOrder = 0
   object LabelImage: TLabel
     Position.X = 16.000000000000000000
     Position.Y = 24.000000000000000000

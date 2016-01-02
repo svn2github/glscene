@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLShadowHDS.<p>
      Implements an HDS that automatically generates a terrain lightmap texture

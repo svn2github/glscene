@@ -2,7 +2,6 @@ object RFaceEditor: TRFaceEditor
   Size.Width = 433.000000000000000000
   Size.Height = 232.000000000000000000
   Size.PlatformDefault = False
-  TabOrder = 0
   object Label1: TLabel
     Position.X = 16.000000000000000000
     Position.Y = 24.000000000000000000
@@ -36,24 +35,26 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Width = 65.000000000000000000
-      Size.Height = 24.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
+      StyleLookup = ''
       TabOrder = 0
       Text = 'Ambient'
+      ExplicitSize.cx = 65.000000000000000000
+      ExplicitSize.cy = 24.000000000000000000
       inline CEAmbiant: TRColorEditor
         Align = Client
-        Size.Width = 401.000000000000000000
-        Size.Height = 129.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 50.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 401.000000000000000000
-          Size.Height = 129.000000000000000000
+          Size.Width = 50.000000000000000000
+          Size.Height = 50.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 395.000000000000000000
-          Size.Height = 123.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 44.000000000000000000
         end
       end
     end
@@ -62,24 +63,26 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Width = 57.000000000000000000
-      Size.Height = 24.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
+      StyleLookup = ''
       TabOrder = 0
       Text = 'Diffuse'
+      ExplicitSize.cx = 57.000000000000000000
+      ExplicitSize.cy = 24.000000000000000000
       inline CEDiffuse: TRColorEditor
         Align = Client
-        Size.Width = 401.000000000000000000
-        Size.Height = 129.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 50.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 401.000000000000000000
-          Size.Height = 129.000000000000000000
+          Size.Width = 50.000000000000000000
+          Size.Height = 50.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 395.000000000000000000
-          Size.Height = 123.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 44.000000000000000000
         end
       end
     end
@@ -88,24 +91,26 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = True
-      Size.Width = 66.000000000000000000
-      Size.Height = 24.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
+      StyleLookup = ''
       TabOrder = 0
       Text = 'Emission'
+      ExplicitSize.cx = 66.000000000000000000
+      ExplicitSize.cy = 24.000000000000000000
       inline CEEmission: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 129.000000000000000000
+        Size.Height = 148.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 129.000000000000000000
+          Size.Height = 148.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 123.000000000000000000
+          Size.Height = 142.000000000000000000
         end
       end
     end
@@ -114,24 +119,26 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Width = 66.000000000000000000
-      Size.Height = 24.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
+      StyleLookup = ''
       TabOrder = 0
       Text = 'Specular'
+      ExplicitSize.cx = 66.000000000000000000
+      ExplicitSize.cy = 24.000000000000000000
       inline CESpecular: TRColorEditor
         Align = Client
-        Size.Width = 401.000000000000000000
-        Size.Height = 129.000000000000000000
+        Size.Width = 50.000000000000000000
+        Size.Height = 50.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 401.000000000000000000
-          Size.Height = 129.000000000000000000
+          Size.Width = 50.000000000000000000
+          Size.Height = 50.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 395.000000000000000000
-          Size.Height = 123.000000000000000000
+          Size.Width = 44.000000000000000000
+          Size.Height = 44.000000000000000000
         end
       end
     end

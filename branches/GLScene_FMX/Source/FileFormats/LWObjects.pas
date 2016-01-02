@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 //  05/04/13 - Yar - Fixes TLWChunkList.Create for FPC (thanks to VIT)
 //  20/05/10 - Yar - Fixes for Linux x64

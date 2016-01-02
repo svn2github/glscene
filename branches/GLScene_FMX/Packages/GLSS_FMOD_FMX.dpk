@@ -1,6 +1,7 @@
 package GLSS_FMOD_FMX;
 
 {$R *.res}
+{$R '..\Resources\GLSceneFMXFMOD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,7 +26,8 @@ package GLSS_FMOD_FMX;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene FMX FMOD Manager'}
+{$DESCRIPTION 'GLScene FMX FMOD Library'}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires

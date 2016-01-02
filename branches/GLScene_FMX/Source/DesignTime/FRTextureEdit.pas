@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 // FRTextureEdit
 { : Egg<p>
@@ -33,7 +33,8 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListBox,
    
-  GLS.Graphics, GLS.TextureFormat, GLS.Texture, GLS.TextureImageEditors;
+  GLS.Graphics, GLS.TextureFormat, GLS.Texture, GLS.TextureImageEditors,
+  FMX.Controls.Presentation;
 
 type
   TRTextureEdit = class(TFrame)

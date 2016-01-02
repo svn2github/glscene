@@ -1,28 +1,12 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLS.AnimatedSprite<p>
 
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TSpriteAnimation (BugTracker ID = 1938988)
-      <li>25/03/07 - DaStr - Added GLS.CrossPlatform to uses for Delphi5 compatibility
-      <li>14/03/07 - DaStr - Added IGLMaterialLibrarySupported to TSpriteAnimation
-                             Published TGLAnimatedSprite.Visible
-                             Fixed TGLAnimatedSprite.SetMaterialLibrary
-                                                      (subcribed for notification)
-      <li>21/07/04 - SG - Added Margins to Animations, Added comments.
-      <li>20/07/04 - SG - Added FrameRate (alternative for Interval),
-                          Added Interval to Animations, will override
-                          sprite interval if not equal to zero.
-                          Some minor fixes.
-      <li>13/07/04 - SG - Creation
+        <li>02/01/16 - PW - Imported from GLScene
     </ul></font>
 }
 unit GLS.AnimatedSprite;

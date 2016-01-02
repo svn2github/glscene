@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLS.FileWAV<p>
 
@@ -20,7 +20,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.ApplicationFileIO, GLS.SoundFileObjects{$IFDEF MSWINDOWS} ,MMSystem{$ENDIF};
+  Winapi.MMSystem,
+  System.Classes, GLS.ApplicationFileIO, GLS.SoundFileObjects;
 
 type
 

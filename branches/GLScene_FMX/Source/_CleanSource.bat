@@ -9,6 +9,7 @@ del *.bk? /s
 del *.mps /s
 del *.rst /s
 del *.vlb /s
+del *.stat /s
 del *.s /s
 del *.a /s
 echo **************************************
@@ -18,3 +19,4 @@ del *.hpp /s
 del *.bpi /s
 del *.lib /s
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (__recovery) do if exist "%%R" (rd /s /q "%%R")

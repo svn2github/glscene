@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 { : GLS.ThorFX<p>
   <b>History : </b><font size=-1><ul>

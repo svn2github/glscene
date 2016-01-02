@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLS.Types<p>
    Defines vector types for geometry only aiming to imply

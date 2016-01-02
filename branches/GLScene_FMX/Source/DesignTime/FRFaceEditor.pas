@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 { : FRFaceEditor<p>
 
@@ -25,7 +25,7 @@ uses
   FMX.TabControl,
 
   //GLS
-  FRTrackBarEdit, FRColorEditor, GLS.Material;
+  FRTrackBarEdit, FRColorEditor, GLS.Material, FMX.Controls.Presentation;
 
 type
   TRFaceEditor = class(TFrame)

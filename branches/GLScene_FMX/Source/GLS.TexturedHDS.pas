@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {: GLS.TexturedHDS<p>
    Implements a HDS, which automatically maps textures onto a parent HDS .<p>

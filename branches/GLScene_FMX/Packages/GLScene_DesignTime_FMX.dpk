@@ -1,6 +1,8 @@
 package GLScene_DesignTime_FMX;
 
 {$R *.res}
+{$R '..\Resources\GLSceneFMX.dcr'}
+{$R '..\Resources\GLSceneObjects.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,7 +28,7 @@ package GLScene_DesignTime_FMX;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLScene FMX OpenGL 3D library'}
-{$DESIGNONLY}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires

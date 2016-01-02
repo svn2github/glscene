@@ -1,5 +1,5 @@
 //
-// This unit is part of the GLScene Project, http://glscene.org
+// This unit is part of the GLScene Project   
 //
 {
   GLS.FileMD3 - Code for loading animated MD3 files into GLScene

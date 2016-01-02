@@ -1,6 +1,7 @@
 package GLCg_DesignTime_FMX;
 
 {$R *.res}
+{$R '..\Resources\GLSceneFMXCg.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,7 +27,7 @@ package GLCg_DesignTime_FMX;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLScene FMX Cg Shaders'}
-{$DESIGNONLY}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
